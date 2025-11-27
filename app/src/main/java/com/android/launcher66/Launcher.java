@@ -168,6 +168,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -363,7 +364,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private View mWeather;
     private View mWeightWatcher;
     private ArrayList<Object> mWidgetsAndShortcuts;
-    public WeatherManager manager;
+    public WeatherManager weatherManager;
     private ProgressBar musicProgress;
     private SeekBar musicSeekBar;
     private Button mPlayPauseButton;
@@ -476,6 +477,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private int mInitRetryCount = 0;
     private boolean mIsInitializingAppData = false;
     public boolean onResumePip = false;
+    public boolean allowPip = false;
     private boolean onBackPip = false;
     private boolean onWorkspacePip = false;
     private boolean isRecreateActive = false;
@@ -500,6 +502,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private ConstraintLayout prevLayoutTwo ;
     private ConstraintLayout playPauseLayoutTwo;
     private ConstraintLayout nextLayoutTwo;
+    private int orientation;
 
     public static int calculatedStatsWidth;
     public static int calculatedStatsHeight;
@@ -1009,6 +1012,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 path = strs[4];
                 activeController = strs[5];
             }
+            if (path == null || path.isEmpty()) {
+                // Some apps produce null path - we need a value to properly save a bitmap
+                path = String.valueOf(Arrays.hashCode(byts));
+            }
             if (mediaSource == "mediaController") {
                 boolean activeControllerAppRunning = false;
                 ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
@@ -1065,7 +1072,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Id3Info info = lrc.getId3Info(path);
                 byte[] dataPic =  info.dataPic;
                 if (dataPic == null) {
-                    dataPic =  byts;
+                    dataPic = byts;
                 }
                 if (dataPic != null && dataPic.length > 0) {
                     Bitmap bp = BitmapFactory.decodeByteArray(dataPic, 0, dataPic.length);
@@ -1914,6 +1921,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i("onCreate", "onCreate----->");
+        allowPip = true;
         atomicOnCreate.set(true);
         mContext = this;
 
@@ -1939,6 +1947,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false); 
+
+        if (!userLayout) {
+            WindowUtil.restartPinnedPipApp();
+        }
 
         getWindow().addFlags(Integer.MIN_VALUE);
 
@@ -1999,7 +2011,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         screenWidth = getResources().getDisplayMetrics().widthPixels; 
         screenHeight = getResources().getDisplayMetrics().heightPixels; 
 
-        int orientation = getResources().getConfiguration().orientation;
+        orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             orientationDimension = screenHeight;
             calculatedLeftBarWidth = calculateDimension(orientationDimension - getStatusBarHeight(), 7.1);
@@ -2138,7 +2150,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         mStats = new Stats(this);
         
-        manager = WeatherManager.initialize(this);
+        weatherManager = WeatherManager.initialize(this);
         kwAPi = KWAPI.createKWAPI(this, "fangyitong");
         if (kwAPi != null) {
             kwAPi.registerPlayerStatusListener(this, onRefreshKwStatus);
@@ -2152,10 +2164,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Log.d(TAG, "onBackPressed----->");
                 if (isAllAppsVisible()) {
                     if (Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Applications || Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Widgets) {
-                        Log.d(TAG, "showWorkspace");
                         helpers.setInAllApps(false);
                         onBackPip = true;
                         showWorkspace(true);
+                        initPip("showWorkspace", null, false);
                     } else {
                         setButtonVisible(true);
                         Launcher.this.mAllAppsButton.setVisibility(android.view.View.VISIBLE);
@@ -2228,6 +2240,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onResume() {
         super.onResume();
+        allowPip = true;
         if (mHomeButtonPressed && isOnMainWorkspaceScreen()) {
             Log.d(TAG, "Home button resume - minimal processing");
             mHomeButtonPressed = false;
@@ -2361,11 +2374,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (!shouldProcessUpdateOnce(pending)) {
                 Log.d("Recreate page", "Started (onResume pending)");
                 isRecreateActive = true;
-                boolean userLayoutBool = mPrefs.getBoolean(Keys.USER_LAYOUT, false); 
+                userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false); 
                 boolean displayPip = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);
-                if (userLayoutBool && displayPip && (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator())) {
+                if (userLayout && displayPip && (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator())) {
                     Log.i("Recreate page", "user layout");
                     WindowUtil.restartMultiplePips();
+                    WindowUtil.restartPinnedPipApp();
                 }
                 helpers.checkAndResetIfOverlappingOnScreen(-1);
 
@@ -2393,7 +2407,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); 
                 }
 
-                recreateView(userLayoutBool);
+                recreateView(userLayout);
             } else {
                 Log.d("onResume", "Pending updateOnce was duplicate/older; skipping.");
             }
@@ -2405,7 +2419,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (atomicOnCreate.get()) {
                 atomicOnCreate.set(false);
                 // Proceed without initPip because it starts inside initializeAppList()
-                mModel.forceReload();
                 triggerAppData(); 
             } else {
                 if (!onWorkspacePip) {
@@ -2449,7 +2462,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    void recreateView(boolean userLayoutBool) {
+    void recreateView(boolean userLayout) {
         Log.d(TAG, "recreateView");
 
         if (mModel == null || mWorkspace == null) {
@@ -2478,7 +2491,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         // --- Restore visibility of bottom panels ---
-        if (userLayoutBool) {
+        if (userLayout) {
             bottomButtons.setVisibility(View.GONE);
             bottomButtonsWidgets.setVisibility(View.VISIBLE);
         } else {
@@ -2622,11 +2635,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             onBackPip = false;
             onResumePip = false; 
         }, 1500); 
+
+        weatherManager.updateWeather();
     }
 
     @Override 
     protected void onPause() {
         super.onPause();
+        allowPip = false;
         cleanWidgetBar();
         if (mHomeButtonPressed && isOnMainWorkspaceScreen()) return;
         Log.d(TAG, "---->>> onPause");
@@ -2751,9 +2767,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }    
 
     public static boolean isServiceRunning(Class<? extends Service> serviceClass) {
-        ActivityManager manager = (ActivityManager) LauncherApplication.sApp.getSystemService(Context.ACTIVITY_SERVICE);
-        if (manager != null) {
-            List<ActivityManager.RunningServiceInfo> runningServices = manager.getRunningServices(Integer.MAX_VALUE);
+        ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager != null) {
+            List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
             for (ActivityManager.RunningServiceInfo service : runningServices) {
                 if (serviceClass.getName().equals(service.service.getClassName())) {
                     return true;
@@ -2844,7 +2860,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void pipOverview() {
         screenWidth = getResources().getDisplayMetrics().widthPixels;
-        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
         if (userLayout && userStats) {
             helpers.setPipStarted(true);
@@ -2943,8 +2959,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void showWeatherInfo() {
-        if (this.manager != null) {
-            this.manager.addOnWeatherChangedListener(new WeatherManager.OnWeatherChangedListener() { 
+        if (this.weatherManager != null) {
+            this.weatherManager.addOnWeatherChangedListener(new WeatherManager.OnWeatherChangedListener() { 
                 @Override 
                 public void onWeatherChanged(WeatherDescription weather) {
                     if (weather != null) {
@@ -3208,7 +3224,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // Before adding this resetAddInfo(), after a shortcut was added to a workspace screen,
         // if you turned the screen off and then back while in All Apps, Launcher would not
         // return to the workspace. Clearing mAddInfo.container here fixes this issue
-        resetAddInfo();
+        resetAddInfo();      
         return result;
     }
 
@@ -3736,10 +3752,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         mOverviewPanel = findViewById(R.id.overview_panel);
-        boolean userLayoutBool = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         bottomButtons = findViewById(R.id.bottom_buttons);
         bottomButtonsWidgets = findViewById(R.id.bottom_buttons_widgets);
-        if (userLayoutBool) {
+        if (userLayout) {
             bottomButtons.setVisibility(android.view.View.GONE); 
             bottomButtonsWidgets.setVisibility(android.view.View.VISIBLE); 
         } else {
@@ -4305,11 +4321,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 @Override
                 public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                     super.getItemOffsets(outRect, view, parent, state);
-                    int orientation = getResources().getConfiguration().orientation;
                     if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                         if (userLayout && widgetBar) {
-                            outRect.left = (int) (-bottomBarIconMargin * 2.0f);
-                            outRect.right = (int) (-bottomBarIconMargin * 2.0f);
+                            outRect.left = (int) (-bottomBarIconMargin * 1.1f);
+                            outRect.right = (int) (-bottomBarIconMargin * 1.1f);
                         } else {
                             outRect.left = -bottomBarIconMargin;
                             outRect.right = -bottomBarIconMargin; 
@@ -4337,7 +4352,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         
         // Initialize app data
         initializeAppList();
-        
+
+        Intent intentCustomElements = new Intent(Keys.START_ADDING_CUSTOM_ELEMETNS);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("instant", true);
+        intentCustomElements.putExtras(bundle);
+        sendBroadcast(intentCustomElements);
+
         // Force a layout pass
         mRecyclerView.requestLayout();
     }
@@ -4388,7 +4409,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 @Override
                 public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                     super.getItemOffsets(outRect, view, parent, state);
-                    int orientation = getResources().getConfiguration().orientation;
                     if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                         outRect.top = (int) (leftBarIconMargin * 1.5f);
                         outRect.bottom = (int) (leftBarIconMargin * 1.5f);
@@ -4426,6 +4446,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mLeftRecyclerView.setAdapter(mLeftAppListAdapter);
             }
         }
+
+        List<AppInfo> allAppsListCopy = null;
+        if (AllAppsList.data != null) {
+            synchronized (AllAppsList.data) {
+                allAppsListCopy = new ArrayList<>(AllAppsList.data);
+            }
+        }        
         
         List<LeftAppMultiple> leftAppData = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
         
@@ -4437,9 +4464,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
                 
                 boolean found = false;
-                // Try to find app in AllAppsList first
-                if (AllAppsList.data != null) {
-                    for (AppInfo allApp : AllAppsList.data) {
+                if (allAppsListCopy != null) {
+                    for (AppInfo allApp : allAppsListCopy) {
                         if (allApp.getPackageName().equals(multiple.packageName) 
                             && allApp.getClassName().equals(multiple.className)) {
                             AppListBean ab = new AppListBean(
@@ -4495,6 +4521,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+
+        // Create a defensive copy of AllAppsList.data to avoid ConcurrentModificationException
+        List<AppInfo> allAppsListCopy = null;
+        if (AllAppsList.data != null) {
+            synchronized (AllAppsList.data) {
+                allAppsListCopy = new ArrayList<>(AllAppsList.data);
+            }
+        }
         
         if (appData != null && !appData.isEmpty()) {
             for (int i2 = 0; i2 < appData.size(); i2++) {
@@ -4502,8 +4536,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 
                 // Skip apps that shouldn't be shown when widgetBar is true
                 if (userLayout && widgetBar) {
-                    if (i2 == 0 || i2 == 2 || i2 == 3) {
-                        continue;
+                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        if (i2 == 0 || i2 == 2 || i2 == 3) {
+                            continue;
+                        }
+                    } else {
+                        if (i2 == 0 || i2 == 2 || i2 == 3 || i2 == 4) {
+                            continue;
+                        }
                     }
                 }
                 
@@ -4517,9 +4557,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     mAppListData.add(ab3);
                 } else {
                     boolean found = false;
-                    // Try AllAppsList first
-                    if (AllAppsList.data != null) {
-                        for (AppInfo allApp2 : AllAppsList.data) {
+                    // Use the copy instead of the original list
+                    if (allAppsListCopy != null) {
+                        for (AppInfo allApp2 : allAppsListCopy) {
                             if (allApp2.getPackageName().equals(multiple2.packageName) && allApp2.getClassName().equals(multiple2.className)) {
                                 AppListBean ab4 = new AppListBean(allApp2.title.toString(), allApp2.iconBitmap, multiple2.packageName, multiple2.className);
                                 mAppListData.add(ab4);
@@ -4554,7 +4594,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         atomicInitAppData.set(true);
         if (!onResumePip) {
             onResumePip = false;
-            initPip("initializeAppList()", null, true);
+            userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+            if (userLayout) {
+                initPip("initializeAppList()", null, false);
+                mHandler.postDelayed(() -> {
+                    Log.d("initializeAppList()", "openPinnedPip()");
+                    WindowUtil.openPinnedPip();
+                }, 1500); 
+            }
         }
 
         mHandler.postDelayed(() -> {
@@ -4593,6 +4640,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
 
+        // Create defensive copy
+        List<AppInfo> allAppsListCopy = null;
+        if (AllAppsList.data != null) {
+            synchronized (AllAppsList.data) {
+                allAppsListCopy = new ArrayList<>(AllAppsList.data);
+            }
+        }
+
         if (data != null && !data.isEmpty()) {
             for (int i = 0; i < data.size(); i++) {
                 AppMultiple multiple = data.get(i);
@@ -4600,9 +4655,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 // Skip apps that shouldn't be shown when widgetBar is true
                 if (userLayout && widgetBar) {
                     // Only show 2nd, 5th, 6th, 7th and 8th apps (indices 1, 4, 5, 6, 7)
-                    // Skip 1st, 3rd, and 4th apps (indices 0, 2, 3)
-                    if (i == 0 || i == 2 || i == 3) {
-                        continue; // Skip these indices when widgetBar is true
+                    // Skip 1st, 3rd, and 4th apps (indices 0, 2, 3 + 4 for portrait)
+                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        if (i == 0 || i == 2 || i == 3) {
+                            continue;
+                        }
+                    } else {
+                        if (i == 0 || i == 2 || i == 3 || i == 4) {
+                            continue;
+                        }
                     }
                 }
 
@@ -4639,19 +4700,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     mAppListData.add(ab2);
 
                 } else {
-                    Iterator<AppInfo> it = AllAppsList.data.iterator();
-                    while (it.hasNext()) {
-                        AppInfo allApp = it.next();
-                        if (allApp.getPackageName().equals(multiple.packageName)
-                                && allApp.getClassName().equals(multiple.className)) {
-                            AppListBean ab3 = new AppListBean(
-                                    allApp.title.toString(),
-                                    allApp.iconBitmap,
-                                    multiple.packageName,
-                                    multiple.className
-                            );
-                            mAppListData.add(ab3);
-                            break;
+                    if (allAppsListCopy != null) {
+                        for (AppInfo allApp : allAppsListCopy) {
+                            if (allApp.getPackageName().equals(multiple.packageName)
+                                    && allApp.getClassName().equals(multiple.className)) {
+                                AppListBean ab3 = new AppListBean(
+                                        allApp.title.toString(),
+                                        allApp.iconBitmap,
+                                        multiple.packageName,
+                                        multiple.className
+                                );
+                                mAppListData.add(ab3);
+                                break;
+                            }
                         }
                     }
                 }
@@ -4741,6 +4802,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mLeftAppListData == null) mLeftAppListData = new ArrayList<>();
         else mLeftAppListData.clear();
 
+        List<AppInfo> allAppsListCopy = null;
+        if (AllAppsList.data != null) {
+            synchronized (AllAppsList.data) {
+                allAppsListCopy = new ArrayList<>(AllAppsList.data);
+            }
+        }
+
         final List<LeftAppMultiple> src = (leftAppData != null && !leftAppData.isEmpty())
                 ? leftAppData
                 : LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
@@ -4750,17 +4818,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (added == MAX_LEFT) break;
             if (!helpers.isPackageInstalled(row.packageName)) continue;
 
-            for (AppInfo app : AllAppsList.data) {
-                if (row.packageName.equals(app.getPackageName())
-                        && row.className.equals(app.getClassName())) {
-                    mLeftAppListData.add(new AppListBean(
-                            app.title != null ? app.title.toString() : "",
-                            app.iconBitmap,
-                            row.packageName,
-                            row.className
-                    ));
-                    added++;
-                    break;
+            if (allAppsListCopy != null) {
+                for (AppInfo app : allAppsListCopy) {
+                    if (row.packageName.equals(app.getPackageName())
+                            && row.className.equals(app.getClassName())) {
+                        mLeftAppListData.add(new AppListBean(
+                                app.title != null ? app.title.toString() : "",
+                                app.iconBitmap,
+                                row.packageName,
+                                row.className
+                        ));
+                        added++;
+                        break;
+                    }
                 }
             }
         }
@@ -5874,6 +5944,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         resetAddInfo();
         WindowUtil.removePip(null);
+        mWorkspace.triggerStripEmptyScreens("Launcher, completeAddAppWidget()", true);
     }
 
     @Override
@@ -8142,16 +8213,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override 
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "CloseSystemDialogsIntentReceiver");
+            mWorkspace.moveToDefaultScreen(true);
             Intent i = new Intent();
             i.setAction("android.intent.action.MAIN");
             i.addCategory("android.intent.category.HOME");
             if (Launcher.this.getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(Launcher.this.getPackageName()) && !helpers.settingsOpenedBoolean()) {
                 if (colsePipAction.equals(intent.getAction())) {
-                    //WindowUtil.removePip(null);
+                    WindowUtil.removePip(null);
                     return;
                 } else {
                     if (!camera360Action.equals(intent.getAction()) && "com.lsec.pipdie".equals(intent.getAction()) && CarStates.mAccState == 1) {
-                        //initPip("CloseSystemDialogs", null, false);
+                        initPip("CloseSystemDialogs", null, false);
                         return;
                     }
                     return;
@@ -8240,8 +8312,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void bindAddScreens(ArrayList<Long> orderedScreenIds) {
         Log.d(TAG, "bindAddScreens");
         int count2 = orderedScreenIds.size();
-        boolean userLayoutBool = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        if (userLayoutBool) {
+        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        if (userLayout) {
             for (int i = 0; i < count2; i++) {
                 mWorkspace.insertNewWorkspaceScreenBeforeEmptyScreen(orderedScreenIds.get(i).longValue());
             }

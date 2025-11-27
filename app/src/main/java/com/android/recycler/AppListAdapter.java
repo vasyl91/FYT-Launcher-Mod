@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -43,13 +44,20 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
     private static final String RECYCLER_APP = "recycler.app";
     private static final String RECYCLER_APP_MAP = "recycler.app.map";
     private SharedPreferences mPrefs;
+    private int orientation;
 
     public AppListAdapter(Launcher mLauncher, List<AppListBean> mData) {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(mLauncher);
         boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+        orientation = mLauncher.getResources().getConfiguration().orientation;
         if (userLayout && widgetBar) { 
-            this.mMaxCount = 5;
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                this.mMaxCount = 5;
+            } else {
+                this.mMaxCount = 4;
+            }
+            
         }else {
             this.mMaxCount = 8;
         }
@@ -154,22 +162,28 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
-        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);        
         AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
-        if (userLayout && userStats)  {  
-            SharedPreferences statsPrefs = AppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
-            Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
+        if (userLayout)  {  
             helpers.setForegroundAppOpened(true);
             helpers.setInAllApps(false);
             helpers.setInWidgets(false);
             helpers.setInRecent(false);
-            if (apps.contains(appListBean.packageName)) {
-                Intent intentAppMap = new Intent(RECYCLER_APP_MAP);
-                AppListAdapter.this.mLauncher.sendBroadcast(intentAppMap);
-            } else {
-                Intent intentApp = new Intent(RECYCLER_APP);
-                AppListAdapter.this.mLauncher.sendBroadcast(intentApp);
+            boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+            if (autoHideBottomBar) {
+                AppListAdapter.this.mLauncher.getWorkspace().hideBottomBar();
+            }
+            boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
+            if (userStats) {
+                SharedPreferences statsPrefs = AppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+                Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
+                if (apps.contains(appListBean.packageName)) {
+                    Intent intentAppMap = new Intent(RECYCLER_APP_MAP);
+                    AppListAdapter.this.mLauncher.sendBroadcast(intentAppMap);
+                } else {
+                    Intent intentApp = new Intent(RECYCLER_APP);
+                    AppListAdapter.this.mLauncher.sendBroadcast(intentApp);
+                }
             }
         } 
         AppListAdapter.this.mLauncher.cleanWidgetBar();    
@@ -192,14 +206,25 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
             // Map adapter positions to database indices
             // Adapter shows: 2nd(1), 5th(4), 6th(5), 7th(6), 8th(7)
             // Database indices: 0, 1, 2, 3, 4, 5, 6, 7
-            switch (lastClickIndex) {
-                case 0: dbIndex = 1; break;  // 2nd app
-                case 1: dbIndex = 4; break;  // 5th app
-                case 2: dbIndex = 5; break;  // 6th app
-                case 3: dbIndex = 6; break;  // 7th app
-                case 4: dbIndex = 7; break;  // 8th app
-                default: dbIndex = lastClickIndex; break;
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                switch (lastClickIndex) {
+                    case 0: dbIndex = 1; break;  // 2nd app
+                    case 1: dbIndex = 4; break;  // 5th app
+                    case 2: dbIndex = 5; break;  // 6th app
+                    case 3: dbIndex = 6; break;  // 7th app
+                    case 4: dbIndex = 7; break;  // 8th app
+                    default: dbIndex = lastClickIndex; break;
+                }
+            } else {
+                switch (lastClickIndex) {
+                    case 0: dbIndex = 1; break;  // 2nd app
+                    case 2: dbIndex = 5; break;  // 6th app
+                    case 3: dbIndex = 6; break;  // 7th app
+                    case 4: dbIndex = 7; break;  // 8th app
+                    default: dbIndex = lastClickIndex; break;
+                }
             }
+
         }
         
         new AppMultiple(dbIndex, appListBean.name, appListBean.packageName, appListBean.className)

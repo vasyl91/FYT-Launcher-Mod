@@ -112,23 +112,29 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
         WindowUtil.removePip(null);
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
-        boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
-        boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
-        if (userLayout && userStats)  {  
-            SharedPreferences statsPrefs = LeftAppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
-            Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        if (userLayout)  {  
             helpers.setForegroundAppOpened(true);
             helpers.setInAllApps(false);
             helpers.setInWidgets(false);
             helpers.setInRecent(false);
-            if (apps.contains(appListBean.packageName)) {
-                Intent intentLeftAppMap = new Intent(RECYCLER_APP_MAP);
-                LeftAppListAdapter.this.mLauncher.sendBroadcast(intentLeftAppMap);
-            } else {
-                Intent intentLeftApp = new Intent(RECYCLER_APP);
-                LeftAppListAdapter.this.mLauncher.sendBroadcast(intentLeftApp);
-            }   
+            boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+            if (autoHideBottomBar) {
+                LeftAppListAdapter.this.mLauncher.getWorkspace().hideBottomBar();
+            }
+            boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
+            if (userStats) {
+                SharedPreferences statsPrefs = LeftAppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+                Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));  
+                if (apps.contains(appListBean.packageName)) {
+                    Intent intentLeftAppMap = new Intent(RECYCLER_APP_MAP);
+                    LeftAppListAdapter.this.mLauncher.sendBroadcast(intentLeftAppMap);
+                } else {
+                    Intent intentLeftApp = new Intent(RECYCLER_APP);
+                    LeftAppListAdapter.this.mLauncher.sendBroadcast(intentLeftApp);
+                }   
+            }
         }   
     }
 

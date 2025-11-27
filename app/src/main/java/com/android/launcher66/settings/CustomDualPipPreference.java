@@ -2,17 +2,17 @@ package com.android.launcher66.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.RippleDrawable;
-import android.graphics.drawable.StateListDrawable;
-import android.os.Build;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.TouchDelegate;
@@ -49,52 +49,88 @@ public class CustomDualPipPreference extends SwitchPreferenceCompat {
     private View mBoundItemView;
     private WidgetPageManager mPageManager;
 
-    public interface OnPositionClickListener { void onPositionClick(CustomDualPipPreference pref); }
-    @Nullable private OnPositionClickListener mPositionListener;
-
-    public interface OnPreferenceValuesChangedListener { void onPreferenceValuesChanged(); }
-    @Nullable private OnPreferenceValuesChangedListener mValuesChangedListener;
-
-    @Nullable private String mScreenValuePrefKey;
-
+    private final int orientation;
+    private int mTargetW;
+    private int mTargetH;
+    private int mCoverW;
     private int mPendingPositionBtnTextColor = Color.TRANSPARENT;
 
     public CustomDualPipPreference(Context context) { this(context, null); }
     public CustomDualPipPreference(Context context, AttributeSet attrs) { this(context, attrs, androidx.preference.R.attr.switchPreferenceCompatStyle); }
     public CustomDualPipPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        orientation = context.getResources().getConfiguration().orientation;
         setLayoutResource(R.layout.nested_preference_dual_pip);
         setWidgetLayoutResource(0);
     }
 
-    public void setOnPositionClickListener(@Nullable OnPositionClickListener l) { mPositionListener = l; }
-
+    // App picker
+    @Nullable private OnPreferenceClickListener mClickListener;
+    @Override 
+    protected void onClick() { 
+        if (mClickListener != null) {
+            mClickListener.onPreferenceClick(this);
+        }
+        // Don't call super.onClick() to prevent switch toggle on row click
+    }   
+    @Override
+    public void setOnPreferenceClickListener(@Nullable OnPreferenceClickListener listener) { mClickListener = listener; }
+    
+    // Page selector  
+    @Nullable private OnPreferenceValuesChangedListener mValuesChangedListener;
+    @Nullable private String mScreenValuePrefKey;
+    public interface OnPreferenceValuesChangedListener { void onPreferenceValuesChanged(); }
     public void setScreenValuePrefKey(@Nullable String key) { mScreenValuePrefKey = key; }
+    public void setOnPreferenceValuesChangedListener(@Nullable OnPreferenceValuesChangedListener listener) {
+        mValuesChangedListener = listener;
+    }
 
+    // Adjust button
+    public interface OnPositionClickListener { void onPositionClick(CustomDualPipPreference pref); }
+    @Nullable private OnPositionClickListener mPositionListener;
+    public void setOnPositionClickListener(@Nullable OnPositionClickListener l) { mPositionListener = l; }
     public void setPositionButtonTextColor(@ColorInt int color) {
         mPendingPositionBtnTextColor = color;
         if (mPositionButton != null) {
             mPositionButton.setTextColor(color);
         }
-    }
+    } 
     
-    public void setOnPreferenceValuesChangedListener(@Nullable OnPreferenceValuesChangedListener listener) {
-        mValuesChangedListener = listener;
+    // Main switch
+    @Nullable private OnMainSwitchClickListener mMainSwitchClickListener;
+    public interface OnMainSwitchClickListener { void onMainSwitchClick(boolean newValue); }
+    public void setOnMainSwitchClickListener(@Nullable OnMainSwitchClickListener listener) { mMainSwitchClickListener = listener; } 
+    @Override
+    public void setChecked(boolean checked) {
+        boolean wasChecked = isChecked();
+        super.setChecked(checked);
+        
+        // Only fire listener if the value actually changed
+        if (wasChecked != checked && mMainSwitchClickListener != null) {
+            mMainSwitchClickListener.onMainSwitchClick(checked);
+        }
     }
 
-    @Override public void onBindViewHolder(PreferenceViewHolder holder) {
-        super.onBindViewHolder(holder);
+    @Override 
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);       
         mBoundItemView = holder.itemView;
         if (mBoundItemView instanceof LinearLayout) {
-            // Apply relative padding (start, top, end, bottom)
             mBoundItemView.setPaddingRelative(
                 SettingsActivity.nestedPaddingStart,
                 mBoundItemView.getPaddingTop(),
                 SettingsActivity.nestedPaddingEnd,
                 mBoundItemView.getPaddingBottom()
             );
-        }
+        }  
 
+        int paddingStart;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            paddingStart = SettingsActivity.nestedPaddingStart / 3;
+        } else {
+            paddingStart = SettingsActivity.nestedPaddingStart;
+        }
+        
         mMainSwitch = (SwitchCompat) holder.findViewById(androidx.preference.R.id.switchWidget);
         mScreenButtonContainer = (LinearLayout) holder.findViewById(R.id.btnScreenContainer);
         mScreenLabel = (TextView) holder.findViewById(R.id.tvScreenLabel);
@@ -106,7 +142,7 @@ public class CustomDualPipPreference extends SwitchPreferenceCompat {
             ViewGroup.MarginLayoutParams lp = (rawLp instanceof ViewGroup.MarginLayoutParams)
                     ? (ViewGroup.MarginLayoutParams) rawLp
                     : new LinearLayout.LayoutParams(rawLp.width, rawLp.height);
-            lp.setMarginStart(SettingsActivity.nestedPaddingStart);
+            lp.setMarginStart(paddingStart);
             mMainSwitch.setLayoutParams(lp);
         }
 
@@ -156,20 +192,18 @@ public class CustomDualPipPreference extends SwitchPreferenceCompat {
             });
         }
 
-        scheduleRuntimeSizing();
+        mBoundItemView.post(() -> scheduleRuntimeSizing());
+
+        super.onBindViewHolder(holder);
     }
 
-    @Override protected void onClick() { /* keep default: no-op to avoid toggling on row click */ }
-
     private void scheduleRuntimeSizing() {
-        int hNow = (mBoundItemView != null) ? mBoundItemView.getHeight() : 0;
-        if (hNow > 0) applySizing(hNow); else applySizing(resolveRowHeightFallback());
+        applySizing(resolveRowHeightFallback());
         if (mBoundItemView != null) {
             mBoundItemView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override public void onGlobalLayout() {
                     if (mBoundItemView.getHeight() > 0) {
-                        applySizing(mBoundItemView.getHeight());
-                        expandMainSwitchHitArea();
+                        applySizing(resolveRowHeightFallback());
                         mBoundItemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 }
@@ -177,19 +211,27 @@ public class CustomDualPipPreference extends SwitchPreferenceCompat {
         }
         // Also expand immediately using fallback bounds so it's usable right away
         expandMainSwitchHitArea();
-    }
+    }    
 
     private int resolveRowHeightFallback() {
-        TypedValue tv = new TypedValue();
-        if (getContext().getTheme().resolveAttribute(android.R.attr.listPreferredItemHeight, tv, true)) {
-            if (tv.type == TypedValue.TYPE_DIMENSION) {
-                return (int) TypedValue.complexToDimensionPixelSize(tv.data, getContext().getResources().getDisplayMetrics());
-            } else if (tv.resourceId != 0) {
-                try { return getContext().getResources().getDimensionPixelSize(tv.resourceId); } catch (Exception ignored) {}
-            }
-        }
-        float density = getContext().getResources().getDisplayMetrics().density;
-        return Math.round(48 * density);
+        Context context = getContext();
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        
+        // Try to get text sizes from theme attributes
+        TypedValue titleSize = new TypedValue();
+        TypedValue summarySize = new TypedValue();
+        
+        context.getTheme().resolveAttribute(android.R.attr.textAppearanceListItem, titleSize, true);
+        context.getTheme().resolveAttribute(android.R.attr.textAppearanceListItemSecondary, summarySize, true);
+        
+        // Default fallback values
+        float titleHeight = 16 * metrics.scaledDensity * 1.3f;
+        float summaryHeight = 14 * metrics.scaledDensity * 1.3f;
+        
+        float density = metrics.density;
+        int verticalPadding = Math.round(32 * density);
+        
+        return (int) (titleHeight + summaryHeight) + verticalPadding;
     }
 
     private void applySizing(int rowH) {
@@ -202,7 +244,12 @@ public class CustomDualPipPreference extends SwitchPreferenceCompat {
         final float TXT_PCT_OF_BTN_H = 0.50f; // 50% of button height
 
         int btnH = Math.max(1, Math.round(rowH * BTN_H_PCT_OF_ROW));
-        int gapW = SettingsActivity.nestedPaddingStart / 2;
+        int gapW;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            gapW = SettingsActivity.nestedPaddingStart / 4;
+        } else {
+            gapW = SettingsActivity.nestedPaddingStart / 2;
+        }
         float txtPx= Math.max(1, btnH * TXT_PCT_OF_BTN_H);
 
         // Colors
@@ -247,22 +294,12 @@ public class CustomDualPipPreference extends SwitchPreferenceCompat {
             GradientDrawable posBg = new GradientDrawable();
             posBg.setColor(accent);
             posBg.setCornerRadius(dp(12));
-            if (Build.VERSION.SDK_INT >= 21) {
-                ColorStateList rippleColor = ColorStateList.valueOf(0x33FFFFFF);
-                GradientDrawable mask = new GradientDrawable();
-                mask.setColor(Color.WHITE);
-                mask.setCornerRadius(dp(12));
-                RippleDrawable ripple = new RippleDrawable(rippleColor, posBg, mask);
-                mPositionButton.setBackground(ripple);
-            } else {
-                StateListDrawable sld = new StateListDrawable();
-                GradientDrawable pressed = new GradientDrawable();
-                pressed.setColor(darkenColor(accent, 0.85f));
-                pressed.setCornerRadius(dp(12));
-                sld.addState(new int[]{android.R.attr.state_pressed}, pressed);
-                sld.addState(new int[]{}, posBg);
-                mPositionButton.setBackground(sld);
-            }
+            ColorStateList rippleColor = ColorStateList.valueOf(0x33FFFFFF);
+            GradientDrawable mask = new GradientDrawable();
+            mask.setColor(Color.WHITE);
+            mask.setCornerRadius(dp(12));
+            RippleDrawable ripple = new RippleDrawable(rippleColor, posBg, mask);
+            mPositionButton.setBackground(ripple);
             mPositionButton.setClickable(true);
             mPositionButton.setFocusable(true);
         }

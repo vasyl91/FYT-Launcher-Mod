@@ -3,6 +3,7 @@ package com.android.launcher66.settings;
 import android.app.Dialog;
 import android.app.WallpaperManager;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -75,9 +76,17 @@ public class BackgroundWidgetsSelectorDialog extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        
-        int dialogWidth = (int) (Launcher.screenWidth * 0.7);
-        int dialogHeight = (int) (Launcher.screenHeight * 0.8);
+
+        int orientation = requireContext().getResources().getConfiguration().orientation;
+        int dialogWidth;
+        int dialogHeight;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            dialogWidth = (int) (Launcher.screenWidth * 0.8);
+            dialogHeight = (int) (Launcher.screenHeight * 0.7);
+        } else {
+            dialogWidth = (int) (Launcher.screenWidth * 0.7);
+            dialogHeight = (int) (Launcher.screenHeight * 0.8);
+        }
         
         Window window = getDialog().getWindow();
         if (window != null) {

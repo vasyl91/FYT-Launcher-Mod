@@ -171,11 +171,7 @@ public class LauncherApplication extends Application {
                 FileUtil.copyFileFromAssets(this, "firenze.apk", this.apkPath);
             }
         }, 3000);
-        //mAppWallPaper = Utils.getSp().getBoolean("mAppWallPaper", true);
-        //mWallPaperUpdate = Utils.getSp().getBoolean("mWallPaperUpdate", true);
         initGaoDeCoverView();
-
-
         new ObjApp(getApplicationContext());
         sActivityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         sWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);

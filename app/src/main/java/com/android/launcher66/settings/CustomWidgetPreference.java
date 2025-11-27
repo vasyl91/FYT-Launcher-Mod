@@ -2,17 +2,17 @@ package com.android.launcher66.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.RippleDrawable;
-import android.graphics.drawable.StateListDrawable;
-import android.os.Build;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.TouchDelegate;
@@ -48,6 +48,8 @@ public class CustomWidgetPreference extends Preference {
     private View mBoundItemView;
     private WidgetPageManager mPageManager;
 
+    private final int orientation;
+
     public interface OnPositionClickListener { void onPositionClick(CustomWidgetPreference pref); }
     @Nullable private OnPositionClickListener mPositionListener;
 
@@ -62,6 +64,7 @@ public class CustomWidgetPreference extends Preference {
     public CustomWidgetPreference(Context context, AttributeSet attrs) { this(context, attrs, androidx.preference.R.attr.switchPreferenceCompatStyle); }
     public CustomWidgetPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        orientation = context.getResources().getConfiguration().orientation;
         setWidgetLayoutResource(R.layout.widget_preference);
     }
 
@@ -83,15 +86,25 @@ public class CustomWidgetPreference extends Preference {
     @Override public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         mBoundItemView = holder.itemView;
+        
+        int switchWidth = getSwitchWidthFromSwitchPreference();
+        int paddingEnd;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            paddingEnd = switchWidth / 2;
+        } else {
+            paddingEnd = switchWidth;
+        }
+
         if (mBoundItemView != null) {
-            int switchWidth = getSwitchWidthFromSwitchPreference();
+            
             mBoundItemView.setPaddingRelative(
                 mBoundItemView.getPaddingStart(),
                 mBoundItemView.getPaddingTop(),
-                switchWidth, // Right padding to simulate switch space
+                paddingEnd, // Right padding to simulate switch space
                 mBoundItemView.getPaddingBottom()
             );
         }
+        
         mMainSwitch = (SwitchCompat) holder.findViewById(androidx.preference.R.id.switchWidget);
         mScreenButtonContainer = (LinearLayout) holder.findViewById(R.id.btnScreenContainer);
         mScreenLabel = (TextView) holder.findViewById(R.id.tvScreenLabel);
@@ -103,7 +116,7 @@ public class CustomWidgetPreference extends Preference {
             ViewGroup.MarginLayoutParams lp = (rawLp instanceof ViewGroup.MarginLayoutParams)
                     ? (ViewGroup.MarginLayoutParams) rawLp
                     : new LinearLayout.LayoutParams(rawLp.width, rawLp.height);
-            lp.setMarginStart(SettingsActivity.nestedPaddingStart);
+            lp.setMarginStart(paddingEnd);
             mMainSwitch.setLayoutParams(lp);
         }
 
@@ -153,7 +166,7 @@ public class CustomWidgetPreference extends Preference {
             });
         }
 
-        scheduleRuntimeSizing();
+        mBoundItemView.post(() -> scheduleRuntimeSizing());
     }
 
     @Override protected void onClick() { /* keep default: no-op to avoid toggling on row click */ }
@@ -174,43 +187,39 @@ public class CustomWidgetPreference extends Preference {
         // Always apply fallback sizing immediately so buttons are visible
         applySizing(resolveRowHeightFallback());
         expandMainSwitchHitArea();
-        
-        // Then improve sizing when actual dimensions are available
-        mBoundItemView.post(() -> {
-            int actualHeight = mBoundItemView.getHeight();
-            if (actualHeight > 0) {
-                applySizing(actualHeight);
-                expandMainSwitchHitArea();
-            } else {
-                // If still no height, try again after next layout pass
-                ViewTreeObserver vto = mBoundItemView.getViewTreeObserver();
-                if (vto.isAlive()) {
-                    vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            if (mBoundItemView != null && mBoundItemView.getHeight() > 0) {
-                                applySizing(mBoundItemView.getHeight());
-                                expandMainSwitchHitArea();
-                                mBoundItemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            }
-                        }
-                    });
+
+        if (mBoundItemView != null) {
+            mBoundItemView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override public void onGlobalLayout() {
+                    if (mBoundItemView.getHeight() > 0) {
+                        applySizing(resolveRowHeightFallback());
+                        expandMainSwitchHitArea();
+                        mBoundItemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     private int resolveRowHeightFallback() {
-        TypedValue tv = new TypedValue();
-        if (getContext().getTheme().resolveAttribute(android.R.attr.listPreferredItemHeight, tv, true)) {
-            if (tv.type == TypedValue.TYPE_DIMENSION) {
-                return (int) TypedValue.complexToDimensionPixelSize(tv.data, getContext().getResources().getDisplayMetrics());
-            } else if (tv.resourceId != 0) {
-                try { return getContext().getResources().getDimensionPixelSize(tv.resourceId); } catch (Exception ignored) {}
-            }
-        }
-        float density = getContext().getResources().getDisplayMetrics().density;
-        return Math.round(48 * density);
+        Context context = getContext();
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        
+        // Try to get text sizes from theme attributes
+        TypedValue titleSize = new TypedValue();
+        TypedValue summarySize = new TypedValue();
+        
+        context.getTheme().resolveAttribute(android.R.attr.textAppearanceListItem, titleSize, true);
+        context.getTheme().resolveAttribute(android.R.attr.textAppearanceListItemSecondary, summarySize, true);
+        
+        // Default fallback values
+        float titleHeight = 16 * metrics.scaledDensity * 1.3f;
+        float summaryHeight = 14 * metrics.scaledDensity * 1.3f;
+        
+        float density = metrics.density;
+        int verticalPadding = Math.round(32 * density);
+        
+        return (int) (titleHeight + summaryHeight) + verticalPadding;
     }
 
     private void applySizing(int rowH) {
@@ -223,7 +232,12 @@ public class CustomWidgetPreference extends Preference {
         final float TXT_PCT_OF_BTN_H = 0.50f; // 50% of button height
 
         int btnH = Math.max(1, Math.round(rowH * BTN_H_PCT_OF_ROW));
-        int gapW = SettingsActivity.nestedPaddingStart / 2;
+        int gapW;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            gapW = SettingsActivity.nestedPaddingStart / 4;
+        } else {
+            gapW = SettingsActivity.nestedPaddingStart / 2;
+        }
         float txtPx= Math.max(1, btnH * TXT_PCT_OF_BTN_H);
 
         // Colors
@@ -268,22 +282,12 @@ public class CustomWidgetPreference extends Preference {
             GradientDrawable posBg = new GradientDrawable();
             posBg.setColor(accent);
             posBg.setCornerRadius(dp(12));
-            if (Build.VERSION.SDK_INT >= 21) {
-                ColorStateList rippleColor = ColorStateList.valueOf(0x33FFFFFF);
-                GradientDrawable mask = new GradientDrawable();
-                mask.setColor(Color.WHITE);
-                mask.setCornerRadius(dp(12));
-                RippleDrawable ripple = new RippleDrawable(rippleColor, posBg, mask);
-                mPositionButton.setBackground(ripple);
-            } else {
-                StateListDrawable sld = new StateListDrawable();
-                GradientDrawable pressed = new GradientDrawable();
-                pressed.setColor(darkenColor(accent, 0.85f));
-                pressed.setCornerRadius(dp(12));
-                sld.addState(new int[]{android.R.attr.state_pressed}, pressed);
-                sld.addState(new int[]{}, posBg);
-                mPositionButton.setBackground(sld);
-            }
+            ColorStateList rippleColor = ColorStateList.valueOf(0x33FFFFFF);
+            GradientDrawable mask = new GradientDrawable();
+            mask.setColor(Color.WHITE);
+            mask.setCornerRadius(dp(12));
+            RippleDrawable ripple = new RippleDrawable(rippleColor, posBg, mask);
+            mPositionButton.setBackground(ripple);
             mPositionButton.setClickable(true);
             mPositionButton.setFocusable(true);
         }

@@ -63,6 +63,7 @@ public class WindowUtil {
     }
 
     public static void initDefaultApp() {
+        initSurfacePreloader();
         try {
             AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
             if (AppPackageName.isEmpty() || AppPackageName == null) {
@@ -91,6 +92,27 @@ public class WindowUtil {
         }
     }
 
+    public static void initSurfacePreloader() {
+        // Pre-warm common ActivityViews on app start
+        Context ctx = LauncherApplication.sApp;
+        new Thread(() -> {
+            try {
+                Thread.sleep(2000); // Wait for app to stabilize
+                
+                WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_left");
+                WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_right");
+                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_First");
+                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Second");
+                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Third");
+                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Fourth");
+                
+                Log.i(TAG, "Surface preloader initialized");
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to initialize surface preloader", e);
+            }
+        }).start();
+    }
+
     public static void startMapPip(final View v, final boolean show) {
         ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(v, show));
     }
@@ -101,81 +123,85 @@ public class WindowUtil {
     }
 
     public static void openPip(View v, boolean show) {
-        try {
-            if (helpers == null) {
-                helpers = new Helpers();
-            }
-            Log.i(TAG, "openPip(): " +  "show: "+ String.valueOf(show)
-                + " helpers.pipsAdded(): " + String.valueOf(helpers.pipsAdded())
-                + " Utils.topApp(): " + String.valueOf(Utils.topApp()) 
-                + " helpers.pipsAdded() " + String.valueOf(helpers.pipsAdded()) 
-                + " AppPackageName.isEmpty() " + String.valueOf(AppPackageName.isEmpty())
-                + " helpers.isInWidgets() " + String.valueOf(helpers.isInWidgets()) 
-                + " helpers.isInAllApps() " + String.valueOf(helpers.isInAllApps())  
-                + " helpers.isInOverviewMode() " + String.valueOf(helpers.isInOverviewMode()) 
-                + " helpers.isFirstPreferenceWindow() " + String.valueOf(helpers.isFirstPreferenceWindow()) 
-                + " helpers.allAppsVisibility() " + String.valueOf(helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) 
-                + " helpers.isWallpaperWindow() " + String.valueOf(helpers.isWallpaperWindow())
-                + " helpers.isListOpen() " + String.valueOf(helpers.isListOpen()));
-            if ((show && !helpers.pipsAdded()) || (Utils.topApp()
-                && !helpers.pipsAdded()
-                && !helpers.isInWidgets()
-                && !helpers.isInAllApps()
-                && !helpers.isInOverviewMode()
-                && !helpers.isFirstPreferenceWindow()
-                && !helpers.isWallpaperWindow()
-                && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-                || (!helpers.userWasInRecents() && helpers.isListOpen()))) {
-
-                if (prefs == null) {
-                    prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
+        if (Launcher.getLauncher().allowPip) {
+            try {
+                if (helpers == null) {
+                    helpers = new Helpers();
                 }
+                Log.i(TAG, "openPip(): " +  "show: "+ String.valueOf(show)
+                    + " helpers.pipsAdded(): " + String.valueOf(helpers.pipsAdded())
+                    + " Utils.topApp(): " + String.valueOf(Utils.topApp()) 
+                    + " helpers.pipsAdded() " + String.valueOf(helpers.pipsAdded()) 
+                    + " AppPackageName.isEmpty() " + String.valueOf(AppPackageName.isEmpty())
+                    + " helpers.isInWidgets() " + String.valueOf(helpers.isInWidgets()) 
+                    + " helpers.isInAllApps() " + String.valueOf(helpers.isInAllApps())  
+                    + " helpers.isInOverviewMode() " + String.valueOf(helpers.isInOverviewMode()) 
+                    + " helpers.isFirstPreferenceWindow() " + String.valueOf(helpers.isFirstPreferenceWindow()) 
+                    + " helpers.allAppsVisibility() " + String.valueOf(helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) 
+                    + " helpers.isWallpaperWindow() " + String.valueOf(helpers.isWallpaperWindow())
+                    + " helpers.isListOpen() " + String.valueOf(helpers.isListOpen()));
+                if ((show && !helpers.pipsAdded()) || (Utils.topApp()
+                    && !helpers.pipsAdded()
+                    && !helpers.isInWidgets()
+                    && !helpers.isInAllApps()
+                    && !helpers.isInOverviewMode()
+                    && !helpers.isFirstPreferenceWindow()
+                    && !helpers.isWallpaperWindow()
+                    && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
+                    || (!helpers.userWasInRecents() && helpers.isListOpen()))) {
 
-                if (checkIfPinned() && AppPackageName.equals("com.syu.camera360")) {
-                    Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
-                }
-
-                boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
-               
-                if (userLayout) {
-                    // Always try to dismiss existing views before adding a new ones
-                    // It prevents adding a view twice what results in persistent black rectangle
-                    try {
-                        // Dismiss windowed activity
-                        if (mWindowHost != null) {
-                            Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
-                        }
-                        // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
-                        Method getServiceMethod = ActivityManager.class.getMethod("getService");
-                        Object activityManager = getServiceMethod.invoke(null);
-                        Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
-                        Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
-                        setPinnedStackVisibleMethod.invoke(activityManager, false);
-                        Log.i(TAG, "pane: dismissed");
-                    } catch (Throwable t) {
-                        Log.w(TAG, "pane: dismiss failed", t);
+                    if (prefs == null) {
+                        prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
                     }
-                    // Add pips
-                    Launcher.getLauncher().handler.postDelayed(() -> {
-                        Launcher.getLauncher().pipOverview();
+
+                    if (checkIfPinned() && AppPackageName.equals("com.syu.camera360")) {
+                        Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
+                    }
+
+                    boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
+                   
+                    if (userLayout) {
+                        // Always try to dismiss existing views before adding a new ones
+                        // It prevents adding a view twice what results in persistent black rectangle
+                        try {
+                            // Dismiss windowed activity
+                            if (mWindowHost != null) {
+                                Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
+                            }
+                            // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
+                            Method getServiceMethod = ActivityManager.class.getMethod("getService");
+                            Object activityManager = getServiceMethod.invoke(null);
+                            Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
+                            Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
+                            setPinnedStackVisibleMethod.invoke(activityManager, false);
+                            Log.i(TAG, "openPip() pane: dismissed");
+                        } catch (Throwable t) {
+                            Log.w(TAG, "openPip() pane: dismiss failed", t);
+                        }
+                        // Add pips
                         boolean userMap = prefs.getBoolean(Keys.DISPLAY_PIP, true);
                         if (userMap) {
-                            openMultiplePips();
-                            if (checkIfPinned()) {
-                                openPinnedPip();
-                            }
+                            Launcher.getLauncher().pipOverview();
+                            Launcher.getLauncher().handler.postDelayed(() -> {     
+                                if (checkIfPinned()) {
+                                    openPinnedPip();
+                                }
+                            }, delayMillis);
+                            Launcher.getLauncher().handler.postDelayed(() -> {
+                                openMultiplePips();
+                            }, delayMillis + 100);                
                         }
-                    }, delayMillis + 100);
-                } 
+                    } 
 
-                delayMillis = 0;
-                helpers.setPipsAdded(true);
-                helpers.setFirstPreferenceWindow(false);
-                helpers.setWallpaperWindow(false);
-                helpers.setWasInRecents(false);
+                    delayMillis = 0;
+                    helpers.setPipsAdded(true);
+                    helpers.setFirstPreferenceWindow(false);
+                    helpers.setWallpaperWindow(false);
+                    helpers.setWasInRecents(false);
+                }
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
             }
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
@@ -225,6 +251,7 @@ public class WindowUtil {
                 // Dismiss windowed activity
                 if (mWindowHost != null) {
                     Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
+                    prepareNextSurfaceLoad();
                 }
                 // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
                 Method getServiceMethod = ActivityManager.class.getMethod("getService");
@@ -232,14 +259,28 @@ public class WindowUtil {
                 Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
                 Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
                 setPinnedStackVisibleMethod.invoke(activityManager, false);
-                Log.i(TAG, "pane: dismissed");
+                Log.i(TAG, "removePip() pane: dismissed");
             } catch (Throwable t) {
-                Log.w(TAG, "pane: dismiss failed", t);
+                Log.w(TAG, "removePip() pane: dismiss failed", t);
             }
             helpers.setPipsAdded(false);
         }
     }
 
+    public static void prepareNextSurfaceLoad() {
+        Context ctx = LauncherApplication.sApp;
+        new Thread(() -> {
+            WindowHostSurfacePreloader.clearPool();
+            
+            // Re-warm for next use
+            WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_left");
+            WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_right");
+            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_First");
+            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Second");
+            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Third");
+            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Fourth");
+        }).start();
+    }
     
     // WINDOWED PIPS
 
@@ -450,23 +491,44 @@ public class WindowUtil {
 
     // PINNED PIP
 
-    public static void openPinnedPip() {    
-        if (firstPip && firstPipPinned && Helpers.isPackageInstalled(firstPkg)) {
-            openAsPinnedPip(firstPkg, Keys.PIP_FIRST_KEY, Keys.PIP_FIRST_SCREEN);
-        }
-        
-        if (secondPip && secondPipPinned && Helpers.isPackageInstalled(secondPkg)) {
-            openAsPinnedPip(secondPkg, Keys.PIP_SECOND_KEY, Keys.PIP_SECOND_SCREEN);
-        }
-        
-        final String thirdPkg = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
-        if (thirdPip && thirdPipPinned && Helpers.isPackageInstalled(thirdPkg)) {
-            openAsPinnedPip(thirdPkg, Keys.PIP_THIRD_KEY, Keys.PIP_THIRD_SCREEN);
-        }
-        
-        final String fourthPkg = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
-        if (fourthPip && fourthPipPinned && Helpers.isPackageInstalled(fourthPkg)) {
-            openAsPinnedPip(fourthPkg, Keys.PIP_FOURTH_KEY, Keys.PIP_FOURTH_SCREEN);
+    public static void openPinnedPip() { 
+        if (Launcher.getLauncher().allowPip
+            && Utils.topApp()
+            && !helpers.isInWidgets()
+            && !helpers.isInAllApps()
+            && !helpers.isInOverviewMode()
+            && !helpers.isFirstPreferenceWindow()
+            && !helpers.isWallpaperWindow()
+            && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
+            || (!helpers.userWasInRecents() && helpers.isListOpen())) {
+
+            if (prefs == null) {
+                prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+            }
+
+            if (!checkIfPinned()) return;
+
+            firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
+            secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
+            thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
+            fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
+            if (firstPip && firstPipPinned && Helpers.isPackageInstalled(firstPkg)) {
+                openAsPinnedPip(firstPkg, Keys.PIP_FIRST_KEY, Keys.PIP_FIRST_SCREEN);
+            }
+            
+            if (secondPip && secondPipPinned && Helpers.isPackageInstalled(secondPkg)) {
+                openAsPinnedPip(secondPkg, Keys.PIP_SECOND_KEY, Keys.PIP_SECOND_SCREEN);
+            }
+            
+            final String thirdPkg = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
+            if (thirdPip && thirdPipPinned && Helpers.isPackageInstalled(thirdPkg)) {
+                openAsPinnedPip(thirdPkg, Keys.PIP_THIRD_KEY, Keys.PIP_THIRD_SCREEN);
+            }
+            
+            final String fourthPkg = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
+            if (fourthPip && fourthPipPinned && Helpers.isPackageInstalled(fourthPkg)) {
+                openAsPinnedPip(fourthPkg, Keys.PIP_FOURTH_KEY, Keys.PIP_FOURTH_SCREEN);
+            }            
         }
     }
 
@@ -488,6 +550,12 @@ public class WindowUtil {
         editor.apply();
         int currentScreen = Launcher.getLauncher().getWorkspace().getCurrentPage();
 
+        if (helpers == null) {
+            helpers = new Helpers();
+        }
+
+        SystemProperties.set("persist.syu.launcher.haspip", "true");
+
         if (currentScreen == pipScreen && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) {
             String currentPackage = SystemProperties.get("persist.launcher.packagename", "");
             if (!packageName.equals(currentPackage) || (packageName.equals(currentPackage) && checkIfMapSizeChanged(pipKey))) { 
@@ -505,6 +573,9 @@ public class WindowUtil {
                 
                 Launcher.getLauncher().handler.postDelayed(() -> startPinnedPip(packageName), 1000);
             } else {
+                setPinnedPipBounds(pipKey, screenKey);         
+                SystemProperties.set("persist.launcher.packagename", packageName);
+                AppPackageName = packageName; 
                 startPinnedPip(packageName); 
             }
         }
@@ -516,7 +587,7 @@ public class WindowUtil {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         SystemProperties.set("sys.lsec.force_pip", "true");
         if (intent.resolveActivity(LauncherApplication.sApp.getPackageManager()) != null) {
-            LauncherApplication.sApp.startActivity(intent);
+            Launcher.getLauncher().handler.postDelayed(() -> LauncherApplication.sApp.startActivity(intent), 100);
         }  
         checkIfOpenedOnTheRightScreen(500);
         checkIfOpenedOnTheRightScreen(1500);
@@ -584,9 +655,9 @@ public class WindowUtil {
                 Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
                 Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
                 setPinnedStackVisibleMethod.invoke(activityManager, false);
-                Log.i(TAG, "pane: dismissed");
+                Log.i(TAG, "removePinnedPip() pane: dismissed");
             } catch (Throwable t) {
-                Log.w(TAG, "pane: dismiss failed", t);
+                Log.w(TAG, "removePinnedPip() pane: dismiss failed", t);
             }
         }
     }

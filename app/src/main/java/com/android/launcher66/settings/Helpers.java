@@ -26,6 +26,7 @@ import com.android.launcher66.LauncherGlideBitmapLoader;
 public class Helpers {
 
     private static final String TAG = "Helpers";
+    private static SharedPreferences mPrefs;
     // These prefs are reseted on each onCreate or on recreateView in Launcher.java
     private final SharedPreferences sharedPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
     private final SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -41,17 +42,6 @@ public class Helpers {
     public void setDay(boolean day) {
         this.day = day;
         editorSus.putBoolean("day", day);
-        editorSus.apply();
-    }
-
-    private boolean disableMovingPage = false;
-    public boolean getDisableMovingPage() {
-        disableMovingPage = sharedPrefsSus.getBoolean("disableMovingPage", false);
-        return disableMovingPage;
-    }
-    public void setDisableMovingPage(boolean disableMovingPage) {
-        this.disableMovingPage = disableMovingPage;
-        editorSus.putBoolean("disableMovingPage", disableMovingPage);
         editorSus.apply();
     }
 
@@ -508,13 +498,13 @@ public class Helpers {
         }
     }
 
-    /** -1 Check all screens, reset overlapping rectangles on same screen
+/** -1 Check all screens, reset overlapping rectangles on same screen
      *   0 Check only screen 0, reset overlapping rectangles on that screen
      *   1 Check only screen 1, reset overlapping rectangles on that screen
      *   and so on..
      */
     public boolean checkAndResetIfOverlappingOnScreen(int screenToCompare) {
-        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
         
         // Rectangle configurations with their screen keys
         String[] rectangleKeys = {"pipDual", "pipFirst", "pipSecond", "pipThird", "pipFourth", "date", "music", "radio"};
@@ -553,33 +543,50 @@ public class Helpers {
         boolean foundOverlap = false;
         boolean[] needsReset = new boolean[rectangleKeys.length];
         
-        // Check if we should exclude last row (bottom bar area)
-        RectF bottomBarRect = null; 
-        boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false); 
-        float bottomBarWidth = Launcher.screenWidth * 0.071f; // 7.1% of screen width
-        float bottomBarHeight = Launcher.screenHeight * 0.1638f; // 16.38% of screen height
-        float bottomBarTop = Launcher.screenHeight - bottomBarHeight;
-        if (screenToCompare == 0 && !leftBar) {
-            // Check if bottom bar should be excluded on screen 0
-            boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);        
-            if (!autoHideBottomBar) {
-                // Calculate bottom bar area if needed
-                bottomBarRect = new RectF(0, bottomBarTop, Launcher.screenWidth, Launcher.screenHeight);
+        // Calculate bottom bar area if needed
+        RectF bottomBarRect = null;
+        boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
+        boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
+        
+        // Only create bottom bar rect if we're checking screen 0 (or all screens)
+        if (screenToCompare == -1 || screenToCompare == 0) {
+            int screenWidth = Launcher.screenWidth;
+            int screenHeight = Launcher.screenHeight;
+            int bottomBarHeight;
+            int bottomBarWidth;
+            
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                bottomBarHeight = (int) (screenWidth * 0.142);
             } else {
-                // Always occupy the first cell on the scren 0
-                bottomBarRect = new RectF(0, bottomBarTop, bottomBarWidth, Launcher.screenHeight);
+                bottomBarHeight = (int) (screenHeight * 0.1638);
             }
-        } else if (screenToCompare == 0 && leftBar) {
-            // Check if bottom bar should be excluded on screen 0
-            boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);        
-            if (!autoHideBottomBar) {
-                // Calculate bottom bar area if needed
-                bottomBarRect = new RectF(0, bottomBarTop, Launcher.screenWidth, Launcher.screenHeight);
+            
+            float bottomBarTop = screenHeight - bottomBarHeight;
+            
+            if (!leftBar) {
+                // Bottom bar at bottom of screen
+                if (!autoHideBottomBar) {
+                    // Full width bottom bar
+                    bottomBarRect = new RectF(0, bottomBarTop, screenWidth, screenHeight);
+                } else {
+                    // Only first cell when auto-hide is enabled
+                    bottomBarWidth = (int) (screenWidth * 0.071f); // 7.1% of screen width
+                    bottomBarRect = new RectF(0, bottomBarTop, bottomBarWidth, screenHeight);
+                }
             } else {
-                // Always occupy the first cell on the scren 0
-                bottomBarRect = new RectF(0, bottomBarTop, 0, Launcher.screenHeight);
+                // Left bar configuration
+                if (!autoHideBottomBar) {
+                    // Full width bottom bar
+                    bottomBarRect = new RectF(0, bottomBarTop, screenWidth, screenHeight);
+                }
+                // When leftBar && autoHideBottomBar, no bottom bar area to reserve
             }
-        } 
+        }
+        
+        // Calculate right border exclusion area for left bar mode
+        float leftBarWidth = Launcher.screenWidth * 0.071f;
+        int margin = Integer.valueOf(mPrefs.getString("layout_margin", "10"));
         
         // Check for overlaps between rectangles
         for (int i = 0; i < rectangleKeys.length; i++) {
@@ -590,15 +597,29 @@ public class Helpers {
             
             // Get rectangle bounds for first rectangle
             RectF rectA = getRectangleBounds(mPrefs, rectangleKeys[i]);
-            if (rectA.isEmpty()) continue;
+            if (rectA.isEmpty()) {
+                // If rectA is empty it means that it has never been set before (app's fresh start)
+                foundOverlap = true;
+                needsReset[i] = true;
+                Log.i(TAG, "Rectangle " + rectangleKeys[i] + " is empty");
+                continue;
+            }
             
-            // Check for overlap with bottom bar
-            if (bottomBarRect != null && overlapsOrTouches(rectA, bottomBarRect)) {
+            // Check for overlap with bottom bar (only on screen 0)
+            if (screens[i] == 0 && bottomBarRect != null && overlapsOrTouches(rectA, bottomBarRect)) {
                 foundOverlap = true;
                 needsReset[i] = true;
                 Log.i(TAG, "Rectangle " + rectangleKeys[i] + " overlaps with bottom bar");
             }
+
+            // Check for overlap with right border (only in left bar mode)
+            if (leftBar && overlapsOrTouchesBorder(rectA, leftBarWidth, margin)) {
+                foundOverlap = true;
+                needsReset[i] = true;
+                Log.i(TAG, "Rectangle " + rectangleKeys[i] + " overlaps with right border");
+            }
             
+            // Check for overlap with other rectangles
             for (int j = i + 1; j < rectangleKeys.length; j++) {
                 if (!enabledStates[j]) continue;
                 
@@ -620,6 +641,7 @@ public class Helpers {
                     foundOverlap = true;
                     needsReset[i] = true;
                     needsReset[j] = true;
+                    Log.i(TAG, "Rectangle " + rectangleKeys[i] + " overlaps with: " + rectangleKeys[j]);
                 }
             }
         }
@@ -655,6 +677,11 @@ public class Helpers {
     private static boolean overlapsOrTouches(RectF a, RectF b) {
         // If there is any separating gap, they don't intersect.
         return !(a.right < b.left || b.right < a.left || a.bottom < b.top || b.bottom < a.top);
+    }
+
+    private static boolean overlapsOrTouchesBorder(RectF a, float leftBarWidth, int margin) {
+        int width = Launcher.screenWidth;
+        return ((a.right + leftBarWidth) > (width - margin));
     }
 
     private void resetOverlappingRectangles(SharedPreferences mPrefs, String[] rectangleKeys, 
@@ -695,17 +722,28 @@ public class Helpers {
         if (fourthPip) enabledPipCount++;
         
         // Calculate bottom bar area to avoid
-        float bottomBarHeight = Launcher.screenHeight * 0.1638f; // 16.38% of screen height
-        float bottomBarTop = Launcher.screenHeight - bottomBarHeight;
+        boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
+        boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
+        int screenWidth = Launcher.screenWidth;
+        int screenHeight = Launcher.screenHeight;
+        int bottomBarHeight;
+        
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            bottomBarHeight = (int) (screenWidth * 0.142);
+        } else {
+            bottomBarHeight = (int) (screenHeight * 0.1638);
+        }
+        
+        float bottomBarTop = screenHeight - bottomBarHeight;
         
         // Base position for first PIP - ensure it doesn't overlap with bottom bar
         int baseX = margin;
         int baseY = margin + dateMinHeight + margin;
         
-        // Adjust baseY if it would overlap with bottom bar
+        // Adjust baseY if it would overlap with bottom bar on screen 0
         float pipBottom = baseY + pipMinHeight;
-        boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false); 
-        if (screenToCompare == 0 && !leftBar && pipBottom > bottomBarTop) {
+        if (screenToCompare == 0 && !leftBar && !autoHideBottomBar && pipBottom > bottomBarTop) {
             // Calculate available space above bottom bar
             float availableHeight = bottomBarTop - (margin + dateMinHeight + margin);
             
@@ -732,8 +770,9 @@ public class Helpers {
                         int x = baseX;
                         int y = baseY;
                         
-                        // Ensure PIP doesn't overlap with bottom bar
-                        if (screenToCompare == 0 && (y + pipMinHeight) > bottomBarTop) {
+                        // Ensure PIP doesn't overlap with bottom bar on screen 0
+                        int pipScreen = mPrefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1;
+                        if (pipScreen == 0 && !leftBar && !autoHideBottomBar && (y + pipMinHeight) > bottomBarTop) {
                             y = (int) (bottomBarTop - pipMinHeight - margin);
                         }
                         
@@ -754,8 +793,9 @@ public class Helpers {
                         int x = baseX;
                         int y = baseY;
                         
-                        // Ensure PIP doesn't overlap with bottom bar
-                        if (screenToCompare == 0 && (y + pipMinHeight) > bottomBarTop) {
+                        // Ensure PIP doesn't overlap with bottom bar on screen 0
+                        int pipScreen = mPrefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1;
+                        if (pipScreen == 0 && !leftBar && !autoHideBottomBar && (y + pipMinHeight) > bottomBarTop) {
                             y = (int) (bottomBarTop - pipMinHeight - margin);
                         }
                         
@@ -790,8 +830,9 @@ public class Helpers {
                             y = baseY;
                         }
                         
-                        // Ensure PIP doesn't overlap with bottom bar
-                        if (screenToCompare == 0 && (y + pipMinHeight) > bottomBarTop) {
+                        // Ensure PIP doesn't overlap with bottom bar on screen 0
+                        int pipScreen = mPrefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1;
+                        if (pipScreen == 0 && !leftBar && !autoHideBottomBar && (y + pipMinHeight) > bottomBarTop) {
                             y = (int) (bottomBarTop - pipMinHeight - margin);
                         }
                         
@@ -830,8 +871,9 @@ public class Helpers {
                             y = baseY + pipMinHeight + margin;
                         }
                         
-                        // Ensure PIP doesn't overlap with bottom bar
-                        if (screenToCompare == 0 && (y + pipMinHeight) > bottomBarTop) {
+                        // Ensure PIP doesn't overlap with bottom bar on screen 0
+                        int pipScreen = mPrefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1;
+                        if (pipScreen == 0 && !leftBar && !autoHideBottomBar && (y + pipMinHeight) > bottomBarTop) {
                             y = (int) (bottomBarTop - pipMinHeight - margin);
                         }
                         
@@ -866,8 +908,9 @@ public class Helpers {
                             y = baseY + pipMinHeight + margin;
                         }
                         
-                        // Ensure PIP doesn't overlap with bottom bar
-                        if (screenToCompare == 0 && (y + pipMinHeight) > bottomBarTop) {
+                        // Ensure PIP doesn't overlap with bottom bar on screen 0
+                        int pipScreen = mPrefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1;
+                        if (pipScreen == 0 && !leftBar && !autoHideBottomBar && (y + pipMinHeight) > bottomBarTop) {
                             y = (int) (bottomBarTop - pipMinHeight - margin);
                         }
                         
@@ -884,9 +927,11 @@ public class Helpers {
                     
                 case "date":
                     if (compareScreensForReset(Keys.DATE_SCREEN, screenToCompare, mPrefs)) {
-                        // Ensure date doesn't overlap with bottom bar
                         int dateY = margin;
-                        if (screenToCompare == 0 && (dateY + dateMinHeight) > bottomBarTop) {
+                        
+                        // Ensure date doesn't overlap with bottom bar on screen 0
+                        int dateScreen = mPrefs.getInt(Keys.DATE_SCREEN, 1) - 1;
+                        if (dateScreen == 0 && !leftBar && !autoHideBottomBar && (dateY + dateMinHeight) > bottomBarTop) {
                             dateY = (int) (bottomBarTop - dateMinHeight - margin);
                         }
                         
@@ -903,12 +948,13 @@ public class Helpers {
                     
                 case "music":
                     if (compareScreensForReset(Keys.MUSIC_SCREEN, screenToCompare, mPrefs)) {
-                        int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
+                        int musicScreen = mPrefs.getInt(Keys.MUSIC_SCREEN, 1) - 1;
+                        
                         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                             int musicY = margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2);
                             
-                            // Ensure music doesn't overlap with bottom bar
-                            if (screenToCompare == 0 && (musicY + musicMinHeight) > bottomBarTop) {
+                            // Ensure music doesn't overlap with bottom bar on screen 0
+                            if (musicScreen == 0 && !leftBar && !autoHideBottomBar && (musicY + musicMinHeight) > bottomBarTop) {
                                 musicY = (int) (bottomBarTop - musicMinHeight - margin);
                             }
                             
@@ -923,8 +969,8 @@ public class Helpers {
                         } else {
                             int musicY = margin + radioMinHeight + margin;
                             
-                            // Ensure music doesn't overlap with bottom bar
-                            if (screenToCompare == 0 && (musicY + musicMinHeight) > bottomBarTop) {
+                            // Ensure music doesn't overlap with bottom bar on screen 0
+                            if (musicScreen == 0 && !leftBar && !autoHideBottomBar && (musicY + musicMinHeight) > bottomBarTop) {
                                 musicY = (int) (bottomBarTop - musicMinHeight - margin);
                             }
                             
@@ -942,12 +988,13 @@ public class Helpers {
                     
                 case "radio":
                     if (compareScreensForReset(Keys.RADIO_SCREEN, screenToCompare, mPrefs)) {
-                        int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
+                        int radioScreen = mPrefs.getInt(Keys.RADIO_SCREEN, 1) - 1;
+                        
                         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                             int radioY = margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2);
                             
-                            // Ensure radio doesn't overlap with bottom bar
-                            if (screenToCompare == 0 && (radioY + radioMinHeight) > bottomBarTop) {
+                            // Ensure radio doesn't overlap with bottom bar on screen 0
+                            if (radioScreen == 0 && !leftBar && !autoHideBottomBar && (radioY + radioMinHeight) > bottomBarTop) {
                                 radioY = (int) (bottomBarTop - radioMinHeight - margin);
                             }
                             
@@ -962,8 +1009,8 @@ public class Helpers {
                         } else {
                             int radioY = margin;
                             
-                            // Ensure radio doesn't overlap with bottom bar
-                            if (screenToCompare == 0 && (radioY + radioMinHeight) > bottomBarTop) {
+                            // Ensure radio doesn't overlap with bottom bar on screen 0
+                            if (radioScreen == 0 && !leftBar && !autoHideBottomBar && (radioY + radioMinHeight) > bottomBarTop) {
                                 radioY = (int) (bottomBarTop - radioMinHeight - margin);
                             }
                             

@@ -96,18 +96,21 @@ public class WindowHostActivityView {
             try { bundle = ((ActivityOptions) opts).toBundle(); } catch (Throwable ignore) {}
         }
 
-        if (pi != null && tryInvoke(av, "startActivity", new Class[]{PendingIntent.class}, new Object[]{pi})) return true;
-        if (pi != null && tryInvoke(av, "startActivity", new Class[]{PendingIntent.class, Intent.class}, new Object[]{pi, intent})) return true;
-        if (pi != null && opts instanceof ActivityOptions &&
-                tryInvoke(av, "startActivity", new Class[]{PendingIntent.class, Intent.class, ActivityOptions.class}, new Object[]{pi, intent, opts})) return true;
-        if (pi != null && bundle != null &&
-                tryInvoke(av, "startActivity", new Class[]{PendingIntent.class, Intent.class, android.os.Bundle.class}, new Object[]{pi, intent, bundle})) return true;
+        // Try each method and collect errors
+        Exception lastException = null;
 
-        if (tryInvoke(av, "startActivity", new Class[]{Intent.class}, new Object[]{intent})) return true;
+        if (pi != null && tryInvokeWithError(av, "startActivity", new Class[]{PendingIntent.class}, new Object[]{pi})) return true;
+        if (pi != null && tryInvokeWithError(av, "startActivity", new Class[]{PendingIntent.class, Intent.class}, new Object[]{pi, intent})) return true;
+        if (pi != null && opts instanceof ActivityOptions &&
+                tryInvokeWithError(av, "startActivity", new Class[]{PendingIntent.class, Intent.class, ActivityOptions.class}, new Object[]{pi, intent, opts})) return true;
+        if (pi != null && bundle != null &&
+                tryInvokeWithError(av, "startActivity", new Class[]{PendingIntent.class, Intent.class, android.os.Bundle.class}, new Object[]{pi, intent, bundle})) return true;
+
+        if (tryInvokeWithError(av, "startActivity", new Class[]{Intent.class}, new Object[]{intent})) return true;
         if (opts instanceof ActivityOptions &&
-                tryInvoke(av, "startActivity", new Class[]{Intent.class, ActivityOptions.class}, new Object[]{intent, opts})) return true;
+                tryInvokeWithError(av, "startActivity", new Class[]{Intent.class, ActivityOptions.class}, new Object[]{intent, opts})) return true;
         if (bundle != null &&
-                tryInvoke(av, "startActivity", new Class[]{Intent.class, android.os.Bundle.class}, new Object[]{intent, bundle})) return true;
+                tryInvokeWithError(av, "startActivity", new Class[]{Intent.class, android.os.Bundle.class}, new Object[]{intent, bundle})) return true;
 
         Method[] all = sActivityView.getMethods();
         for (Method m : all) {
@@ -124,20 +127,35 @@ public class WindowHostActivityView {
                 else { ok = false; break; }
             }
             if (!ok) continue;
-            try { m.invoke(av, args); Log.i(TAG, "WindowHostActivityView.startActivity via sweep: " + sig(m)); return true; }
-            catch (Throwable ex) { Log.w(TAG, "WindowHostActivityView.startActivity sweep failed: " + sig(m) + " ex=" + ex); }
+            try { 
+                m.invoke(av, args); 
+                Log.i(TAG, "WindowHostActivityView.startActivity via sweep: " + sig(m)); 
+                return true; 
+            }
+            catch (InvocationTargetException ite) { 
+                Throwable cause = ite.getCause();
+                Log.w(TAG, "WindowHostActivityView.startActivity sweep ITE: " + sig(m) + " cause=" + (cause != null ? cause.getMessage() : "null"));
+                lastException = ite;
+            }
+            catch (Throwable ex) { 
+                Log.w(TAG, "WindowHostActivityView.startActivity sweep failed: " + sig(m) + " ex=" + ex); 
+                if (lastException == null) lastException = (Exception) ex;
+            }
         }
-        Log.e(TAG, "WindowHostActivityView.startActivity failed for intent=" + intent + " opts=" + (opts!=null));
+        Log.e(TAG, "WindowHostActivityView.startActivity failed for intent=" + intent + " opts=" + (opts!=null) + 
+            (lastException != null ? " lastError=" + lastException.getMessage() : ""));
         return false;
     }
 
-    private static boolean tryInvoke(Object av, String name, Class<?>[] sig, Object[] args) {
+    private static boolean tryInvokeWithError(Object av, String name, Class<?>[] sig, Object[] args) {
         try {
             Method m = sActivityView.getMethod(name, sig);
             m.invoke(av, args);
             Log.i(TAG, "WindowHostActivityView.startActivity using " + name + Arrays.toString(sig));
             return true;
         } catch (InvocationTargetException ite) {
+            Throwable cause = ite.getCause();
+            Log.w(TAG, "ITE in " + name + Arrays.toString(sig) + ": " + (cause != null ? cause.getMessage() : "null"));
             return false;
         } catch (Throwable t) {
             return false;

@@ -262,7 +262,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         String logcatServiceTimeoutStr = sharedPrefs.getString(Keys.LOGCAT_SERVICE_TIMEOUT, "30");
         logcatServiceTimeout.setSummary(logcatServiceTimeoutStr);
         logcatServiceTimeoutEditText();
-        boolean isDebug = true; //BuildConfig.DEBUG;
+        boolean isDebug = BuildConfig.DEBUG;
 
         versionChecker = new VersionChecker();
         PreferenceCategory appVersion = findPreference("app_version");
@@ -316,8 +316,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         
         if (logcatService != null) {
+            logcatService.setVisible(isDebug);
             logcatService.setOnPreferenceClickListener(this);
-            //logcatService.setVisible(isDebug);
             logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, false);
             if (logcatServiceBool && isDebug) {
                 String summaryText = getString(R.string.logcat_service_summary);

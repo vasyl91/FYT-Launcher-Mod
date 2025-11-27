@@ -623,7 +623,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         WindowUtil.updatePipPositionsForScroll(mUnboundedScrollX);
     }
     protected void pageBeginMoving() {
-        if (!helpers.getDisableMovingPage() && !mIsPageMoving) {
+        if (!mIsPageMoving) {
             mIsPageMoving = true;
             onPageBeginMoving();
         }

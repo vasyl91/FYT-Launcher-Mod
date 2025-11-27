@@ -693,6 +693,23 @@ public class WeatherManager {
         return this.mCurWeather;
     }
 
+    public void updateWeather() {
+        if (!isNetworkAvailable()) {
+            Log.w(TAG, "No network available, cannot update weather");
+            return;
+        }
+        
+        if (mCurLocation != null) {
+            getWeather(
+                mCurLocation.getLatitude(), 
+                mCurLocation.getLongitude(), 
+                tmpCity != null ? tmpCity : cityName
+            );
+        } else {
+            Log.w(TAG, "No location available, cannot update weather");
+        }
+    }
+
     public class mThread_readLocalData extends Thread {
         public mThread_readLocalData() {
         }

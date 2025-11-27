@@ -8,11 +8,13 @@ IMPORTANT: Note that some of the FYT devices do not support the PiP on the main 
 [XDA Forums thread](https://xdaforums.com/t/reverse-engineered-launcher-for-fyt-7862-8581.4702542/)
 
 List of modifications:
-- Up to four PiPs on the single screen or on multiple screens depending on user's choice (from 1.1.7 - debug version is available on XDA Forum).
+- Up to four PiPs on the single screen or on multiple screens depending on user's choice
 - ConstraintLayout which should adapt the launcher to any given resolution and orientation.
 - Universal music widget (requires Notification Listener permission) that works with most of the music players (including the stock one).
 - Enabled widgets (upscaled for better interaction), shortcuts and folders on the main screen. Reworked screen's grid. Extra screens as well.
 - Launcher creator allowing to adjust launcher's layout to user preferences. All elements of the layout but the bottom bar might be turned off. User can also specify which screen should be the main screen.
+- Bottom bar with optional widgets.
+- Auto hide bottm bar option.
 - Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with position on the screen specified by user.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct the sunset and sunrise times, set the wallpaper and the brightness for the day/night mode).
 - Settings fragment with useful tweaks.
@@ -20,21 +22,18 @@ List of modifications:
 - Update feature allowing user to perform easy updates in the launcher's settings.
 - Replaced part of deprecated code with the new one.
 
-**Google Maps bug**
-
-Google Maps switches its UI to minimal whenever user enters the Picture in Picture mode. FYT ROM offers a method that forces apps into PiP mode to display them on top of the launcher's main screen. It allows to "window" most of the apps, even these that do not support PiP at all. The negative aspect of this function is that it doesn't provide essential entry points maintaining the "full screen UI" for apps that do support the PiP mode.
-
-The only reliable way I have found to prevent Google Maps from switching its UI to minimal requires installed root, LSPosed and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/tag/v1.0.0). It successfully forces the app to maintain its full UI inside FYT's Picture in Picture (Remember to select Google Maps in the LSPosed "Enable module" section).
-
-
-Check this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always do the full backup (AllAppUpdate.bin, config.txt etc.) before flashing anything!
-
-Launcher's next version 1.1.7 will have it integrated.
-
 
 **Installation:**
 
 For the first installation download `installer.rar`, unpack it in a FAT32 formatted USB pendrive, then connect pendrive to your unit's USB port and wait, installation should start after few seconds. Once installed you can dirty install updates (including the built-in updater) or debug versions without use of USB pendrive.
+
+**Google Maps bug**
+
+Most of the FYT ROMs offer two ways of displaying apps on the lauuncher screen. Most common one is a "pinned Picture-in-Picture mode" with all it's consequences for the app's UI behavior which in Google Maps case switches the layout to minimal. This method doesn't provide essential entry points to maintain "full screen UI" for apps that support the PiP mode.
+The only reliable way I have found to prevent Google Maps from switching its UI to minimal requires installed root, LSPosed and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/tag/v1.0.0). It successfully forces the app to maintain its full UI inside FYT's Picture in Picture (Remember to select Google Maps in the LSPosed "Enable module" section).
+Check this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always do the full backup (AllAppUpdate.bin, config.txt etc.) before flashing anything!
+
+Second method related to the modified android ActivityView allows to display apps as they are in a windowed mode. This does not affect the layout and does not require root.
 
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
@@ -203,7 +202,7 @@ I can not guarantee fixing all errors.
 ## Generating app in Android Studio
 
 1. Clone the repository. 
-2. Replace `android.jar` in `C:\Users\<UserName>\AppData\Local\Android\Sdk\platforms\android-36` with the file from this [release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android.jar).
+2. Replace `android.jar` in `C:\Users\<UserName>\AppData\Local\Android\Sdk\platforms\android-36` with the file from this [release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android.jar) (only for builds up to 1.1.6, for 1.1.7 and newer use `android.jar` from this [repository](https://github.com/Reginer/aosp-android-jar) - check `targetSdk` inside `app/build.gradle.kts` and choose android version you want to work on).
 3. Open the repository and rebuild the project, if I haven't forgotten anything it should work.
 4. To generate the app use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose exisiting android key alias with password `android`. 
 
@@ -224,6 +223,8 @@ That's tricky. Follow the steps below (requires root on FYT and your phone):
 
 
 ## Modifying android.jar (Deprecated since 1.1.7)
+
+<details>
 
 1. Download already modified [android.jar](https://github.com/Reginer/aosp-android-jar) for the android version you want to work on.
 2. Download and run [Recaf](https://github.com/Col-E/Recaf).
@@ -254,3 +255,5 @@ That's tricky. Follow the steps below (requires root on FYT and your phone):
 
 13. Press Shift + right click in the directory `android_jar_mod\`  and open `PowerShell` from the context menu. Then use in the `PowerShell` the commands provided in the `commands.txt` file (run every command one after another).
 14. Finally you can use prepared `android.jar` from `android_jar_mod\` directory to run your project as described in `Generating app in Android Studio` caption.
+
+</details>

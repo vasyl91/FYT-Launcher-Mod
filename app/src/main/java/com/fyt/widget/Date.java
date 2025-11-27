@@ -155,7 +155,7 @@ public class Date extends AppCompatTextView implements SharedPreferences.OnShare
                 
                 float textWidth = paint.measureText(text);
                 
-                if (textWidth > availableWidth) {
+                if (textWidth >= availableWidth) {
                     float scaledSize = targetSize * (availableWidth / textWidth) * 0.95f;
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
                 }

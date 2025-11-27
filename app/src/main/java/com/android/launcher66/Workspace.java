@@ -295,7 +295,7 @@ public class Workspace extends SmoothPagedView
     public static AbsoluteLayout absoluteLayout;
     private Handler stripHandler = new Handler(Looper.getMainLooper());
     private Runnable stripAction;
-    private static final long STRIP_DELAY = 2000;
+    private static final long STRIP_DELAY = 2500;
     private Helpers helpers = new Helpers();
     public static final long CUSTOM_CONTENT_SCREEN_ID1 = -302;
     private View workspaceView;
@@ -333,6 +333,7 @@ public class Workspace extends SmoothPagedView
     private int autoHideTimeout = 5;
     private boolean isOverlayShowing = false;
     private boolean isOverlayAnimating = false;
+    boolean pipInitialized = false;
     private final Object overlayLock = new Object();
 
     private TextView titleText;
@@ -342,6 +343,7 @@ public class Workspace extends SmoothPagedView
     private TextView tempText;
     private TextView dateText;
     private TextView weekText;
+    private int orientation;
 
     private final Runnable mBindPages = new Runnable() {
         @Override
@@ -836,6 +838,7 @@ public class Workspace extends SmoothPagedView
         blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
         boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
+        orientation = getResources().getConfiguration().orientation;
 
         if (customScreen[0] != null) {
             mWorkspaceScreens.remove(CUSTOM_CONTENT_SCREEN_ID1);
@@ -981,13 +984,15 @@ public class Workspace extends SmoothPagedView
         if (tempText != null) {
             tempText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.75f);
         }
-        dateText = (TextView) barView.findViewById(R.id.date);
-        if (dateText != null) {
-            dateText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.85f); 
-        }
-        weekText = (TextView) barView.findViewById(R.id.curWeek);
-        if (weekText != null) {
-            weekText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.85f);
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            dateText = (TextView) barView.findViewById(R.id.date);
+            if (dateText != null) {
+                dateText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.85f); 
+            }
+            weekText = (TextView) barView.findViewById(R.id.curWeek);
+            if (weekText != null) {
+                weekText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.85f);
+            }
         }
         if (blackTintBar) {
             if (titleText != null) {
@@ -1005,11 +1010,13 @@ public class Workspace extends SmoothPagedView
             if (tempText != null) {
                 tempText.setTextColor(Color.BLACK);
             }
-            if (dateText != null) {
-                dateText.setTextColor(Color.BLACK);
-            }
-            if (weekText != null) {
-                weekText.setTextColor(Color.BLACK);
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                if (dateText != null) {
+                    dateText.setTextColor(Color.BLACK);
+                }
+                if (weekText != null) {
+                    weekText.setTextColor(Color.BLACK);
+                }
             }
         }
     }
@@ -1030,15 +1037,11 @@ public class Workspace extends SmoothPagedView
                 return;
             }
 
-            final int screenWidth = mLauncher.screenWidth;
-            final float collapsedWidth = (float) (0.071 * screenWidth);
-            final float expandedWidth = screenWidth;
-
             showBarIcon = workspaceView.findViewById(R.id.show_bar);
 
             if (bottomBarAllApps.getVisibility() == View.VISIBLE) {
                 // Hide the normal bottom bar
-                hideNormalBottomBar(collapsedWidth);
+                hideNormalBottomBar(mLauncher.calculatedLeftBarWidth);
             } else {
                 // Prevent showing if already showing or animating
                 if (isOverlayShowing || isOverlayAnimating) {
@@ -1065,10 +1068,12 @@ public class Workspace extends SmoothPagedView
                     if (workspaceView != null) {
                         mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
                         mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
-                        mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
                         if (mBarMusicWidget != null) mBarMusicWidget.setVisibility(View.INVISIBLE);
                         if (mBarWeatherWidget != null) mBarWeatherWidget.setVisibility(View.INVISIBLE);
-                        if (mBarDateWidget != null) mBarDateWidget.setVisibility(View.INVISIBLE);
+                        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                            mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
+                            if (mBarDateWidget != null) mBarDateWidget.setVisibility(View.INVISIBLE);
+                        }
                     }
                 }
                 // Show using overlay
@@ -1077,7 +1082,12 @@ public class Workspace extends SmoothPagedView
         }
     }
 
-    private void hideNormalBottomBar(float collapsedWidth) {
+    public void hideBottomBar() {
+        hideNormalBottomBar(mLauncher.calculatedLeftBarWidth);       
+        hideOverlayBottomBar(); 
+    }
+
+    private void hideNormalBottomBar(int collapsedWidth) {
         bottomBarRecycler.animate()
                 .alpha(0f)
                 .setDuration(0)
@@ -1105,17 +1115,29 @@ public class Workspace extends SmoothPagedView
             if (workspaceView != null) {
                 mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
                 mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
-                mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
                 if (mBarMusicWidget != null) mBarMusicWidget.setVisibility(View.INVISIBLE);
                 if (mBarWeatherWidget != null) mBarWeatherWidget.setVisibility(View.INVISIBLE);
-                if (mBarDateWidget != null) mBarDateWidget.setVisibility(View.INVISIBLE);
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
+                    if (mBarDateWidget != null) mBarDateWidget.setVisibility(View.INVISIBLE);
+                }
             }
         }
 
-        ValueAnimator widthAnim = ValueAnimator.ofInt(bottomBarBg.getWidth(), (int) collapsedWidth);
+        final int screenWidth = mLauncher.screenWidth;
+        final int screenHeight = mLauncher.screenHeight;
+        int bottomBarHeight;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            bottomBarHeight = (int) (screenWidth * 0.142);
+        } else {
+            bottomBarHeight = (int) (screenHeight * 0.1638);
+        }
+        Log.d("BottomBar", "Before: width=" + bottomBarBg.getWidth() + ", height=" + bottomBarBg.getHeight());
+        ValueAnimator widthAnim = ValueAnimator.ofInt(bottomBarBg.getWidth(), collapsedWidth);
         widthAnim.addUpdateListener(animator -> {
             ViewGroup.LayoutParams params = bottomBarBg.getLayoutParams();
             params.width = (int) animator.getAnimatedValue();
+            params.height = bottomBarHeight;
             bottomBarBg.setLayoutParams(params);
         });
         widthAnim.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -1128,10 +1150,12 @@ public class Workspace extends SmoothPagedView
         scaleDownY.setDuration(0);
         scaleDownX.start();
         scaleDownY.start();
+        Log.d("BottomBar", "After: width=" + bottomBarBg.getWidth() + ", height=" + bottomBarBg.getHeight());
     }
 
     private void showOverlayBottomBar() {
         synchronized (overlayLock) {
+            mLauncher.weatherManager.updateWeather();
             if (overlayBottomBar != null) {
                 if (isOverlayShowing) {
                     return;
@@ -1144,7 +1168,12 @@ public class Workspace extends SmoothPagedView
             // Calculate dimensions
             int screenWidth = mLauncher.screenWidth;
             int screenHeight = mLauncher.screenHeight;
-            int bottomBarHeight = (int) (screenHeight * 0.1638);
+            int bottomBarHeight;
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                bottomBarHeight = (int) (screenWidth * 0.142);
+            } else {
+                bottomBarHeight = (int) (screenHeight * 0.1638);
+            }
             
             // Create overlay window parameters
             overlayWindowParams = new WindowManager.LayoutParams(
@@ -1266,16 +1295,31 @@ public class Workspace extends SmoothPagedView
         }
     }
 
-    private void forceOriginalSizesLayoutOne(int screenWidth, int bottomBarHeight) {
-        int allAppsWidth = (int) (screenWidth * 0.11);  
-        int allAppsHeight = (int) (bottomBarHeight * 0.67); 
+    private void forceOriginalSizesLayoutOne(int screenWidth, int bottomBarHeight) {    
+        int allAppsWidth, allAppsHeight;
+        int recyclerWidth, recyclerHeight;
+        int showBarWidth, showBarHeight;
         
-        int recyclerWidth = (int) (screenWidth * 0.8795); 
-        int recyclerHeight = bottomBarHeight; 
-        
-        int showBarWidth = (int) (screenWidth * 0.06);
-        int showBarHeight = (int) (bottomBarHeight * 0.67); 
-        
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            allAppsWidth = (int) (screenWidth * 0.11);
+            allAppsHeight = (int) (bottomBarHeight * 0.67);
+            
+            recyclerWidth = (int) (screenWidth * 0.8795);
+            recyclerHeight = (int) (recyclerWidth * 0.142);
+            
+            showBarWidth = (int) (screenWidth * 0.06);
+            showBarHeight = (int) (bottomBarHeight * 0.67);
+        } else {
+            allAppsWidth = (int) (screenWidth * 0.11);
+            allAppsHeight = (int) (bottomBarHeight * 0.67);
+            
+            recyclerWidth = (int) (screenWidth * 0.8795);
+            recyclerHeight = bottomBarHeight;
+            
+            showBarWidth = (int) (screenWidth * 0.06);
+            showBarHeight = (int) (bottomBarHeight * 0.67);
+        }
+            
         // Apply forced dimensions
         ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
         RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
@@ -1328,26 +1372,45 @@ public class Workspace extends SmoothPagedView
     }
 
     private void forceOriginalSizesLayoutTwo(int screenWidth, int bottomBarHeight) {
-        int allAppsWidth = (int) (screenWidth * 0.09);  
-        int allAppsHeight = (int) (bottomBarHeight * 0.67); 
+        int allAppsWidth, allAppsHeight;
+        int recyclerWidth, recyclerHeight;
+        int showBarWidth, showBarHeight;
+        int musicWidgetWidth, dateWidgetWidth, weatherWidgetWidth;
         
-        int recyclerWidth = (int) (screenWidth * 0.4395); 
-        int recyclerHeight = bottomBarHeight; 
-        
-        int showBarWidth = (int) (screenWidth * 0.06);
-        int showBarHeight = (int) (bottomBarHeight * 0.67);
-        
-        int musicWidgetWidth = (int) (screenWidth * 0.28);
-        int dateWidgetWidth = (int) (screenWidth * 0.05);
-        int weatherWidgetWidth = (int) (screenWidth * 0.12);
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            allAppsWidth = (int) (screenWidth * 0.1);
+            allAppsHeight = (int) (bottomBarHeight * 0.67);
+            
+            recyclerWidth = (int) (screenWidth * 0.4385);
+            recyclerHeight = (int) (recyclerWidth * 0.295);
+            
+            showBarWidth = (int) (screenWidth * 0.06);
+            showBarHeight = (int) (bottomBarHeight * 0.67);
+            
+            musicWidgetWidth = (int) (screenWidth * 0.295);
+            dateWidgetWidth = (int) (screenWidth * 0.05);
+            weatherWidgetWidth = (int) (screenWidth * 0.15);
+        } else {
+            allAppsWidth = (int) (screenWidth * 0.09);
+            allAppsHeight = (int) (bottomBarHeight * 0.67);
+            
+            recyclerWidth = (int) (screenWidth * 0.4395);
+            recyclerHeight = bottomBarHeight;
+            
+            showBarWidth = (int) (screenWidth * 0.06);
+            showBarHeight = (int) (bottomBarHeight * 0.67);
+            
+            musicWidgetWidth = (int) (screenWidth * 0.28);
+            dateWidgetWidth = (int) (screenWidth * 0.05);
+            weatherWidgetWidth = (int) (screenWidth * 0.12);
+        }
         
         // Apply forced dimensions
         ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
         RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
         ImageView overlayShowBar = overlayBottomBar.findViewById(R.id.show_bar);
         ImageView overlayBg = overlayBottomBar.findViewById(R.id.iv_list_bg);
-        ViewGroup musicWidget = overlayBottomBar.findViewById(R.id.rl_music_two);
-        ViewGroup dateWidget = overlayBottomBar.findViewById(R.id.bar_widget_date);
+        ViewGroup musicWidget = overlayBottomBar.findViewById(R.id.rl_music_two);            
         ViewGroup weatherWidget = overlayBottomBar.findViewById(R.id.bar_widget_weather);
         
         // Force background to full size
@@ -1395,21 +1458,24 @@ public class Workspace extends SmoothPagedView
                 musicWidget.setLayoutParams(constraintParams);
             }
         }
-        
+
         // Force date widget size
-        if (dateWidget != null) {
-            ViewGroup.LayoutParams dateParams = dateWidget.getLayoutParams();
-            if (dateParams instanceof ConstraintLayout.LayoutParams) {
-                ConstraintLayout.LayoutParams constraintParams = (ConstraintLayout.LayoutParams) dateParams;
-                constraintParams.width = dateWidgetWidth;
-                constraintParams.height = bottomBarHeight;
-                constraintParams.startToEnd = R.id.rl_music_two;
-                constraintParams.endToStart = R.id.bar_widget_weather;
-                constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
-                constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-                dateWidget.setLayoutParams(constraintParams);
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            ViewGroup dateWidget = overlayBottomBar.findViewById(R.id.bar_widget_date);
+            if (dateWidget != null) {
+                ViewGroup.LayoutParams dateParams = dateWidget.getLayoutParams();
+                if (dateParams instanceof ConstraintLayout.LayoutParams) {
+                    ConstraintLayout.LayoutParams constraintParams = (ConstraintLayout.LayoutParams) dateParams;
+                    constraintParams.width = dateWidgetWidth;
+                    constraintParams.height = bottomBarHeight;
+                    constraintParams.startToEnd = R.id.rl_music_two;
+                    constraintParams.endToStart = R.id.bar_widget_weather;
+                    constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+                    constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+                    dateWidget.setLayoutParams(constraintParams);
+                }
             }
-        }
+        }        
         
         // Force weather widget size
         if (weatherWidget != null) {
@@ -1451,13 +1517,12 @@ public class Workspace extends SmoothPagedView
                 @Override
                 public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                     super.getItemOffsets(outRect, view, parent, state);
-                    int orientation = getResources().getConfiguration().orientation;
                     boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
                     widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
                     if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                         if (userLayout && widgetBar) {
-                            outRect.left = (int) (-bottomBarIconMargin * 2.0f);
-                            outRect.right = (int) (-bottomBarIconMargin * 2.0f);
+                            outRect.left = (int) (-bottomBarIconMargin * 1.1f);
+                            outRect.right = (int) (-bottomBarIconMargin * 1.1f);
                         } else {
                             outRect.left = -bottomBarIconMargin;
                             outRect.right = -bottomBarIconMargin; 
@@ -1588,7 +1653,9 @@ public class Workspace extends SmoothPagedView
         if (workspaceView != null && widgetBar) {
             mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
             mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
-            mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
+            }            
             
             // Re-initialize text views
             setWidgetBarTextView(workspaceView);
@@ -1662,10 +1729,12 @@ public class Workspace extends SmoothPagedView
         }
         
         // Cleanup date widget
-        ViewGroup dateWidget = overlayBottomBar.findViewById(R.id.bar_widget_date);
-        if (dateWidget != null) {
-            cleanupViewGroupRecursively(dateWidget);
-        }
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            ViewGroup dateWidget = overlayBottomBar.findViewById(R.id.bar_widget_date);
+            if (dateWidget != null) {
+                cleanupViewGroupRecursively(dateWidget);
+            }
+        } 
     }
 
     private void cleanupViewGroupRecursively(ViewGroup viewGroup) {
@@ -2002,8 +2071,6 @@ public class Workspace extends SmoothPagedView
         if (stripAction != null) {
             stripHandler.removeCallbacks(stripAction);
         }
-
-        helpers.setDisableMovingPage(true);
         
         stripAction = () -> {
             stripEmptyScreens(sourceClass);
@@ -2020,7 +2087,6 @@ public class Workspace extends SmoothPagedView
         Log.i(TAG, "stripEmptyScreens called in: " + sourceClass);
         if (isPageMoving()) {
             mStripScreensOnPageStopMoving = true;
-            helpers.setDisableMovingPage(false);
             return;
         }
 
@@ -2108,7 +2174,6 @@ public class Workspace extends SmoothPagedView
 
         if (removeScreens.isEmpty()) {
             if (pageShift >= 0) setCurrentPage(currentPage - pageShift);
-            helpers.setDisableMovingPage(false);
             return;
         }
 
@@ -2127,7 +2192,6 @@ public class Workspace extends SmoothPagedView
             if (prefs.contains(prefKey) && (!prefs.contains(enabledKey) || prefs.getBoolean(enabledKey, false))) {
                 int oldIndex = prefs.getInt(prefKey, 1) - 1;
                 if (oldIndex < 0) {
-                    helpers.setDisableMovingPage(false);
                     return;
                 }
 
@@ -2178,8 +2242,6 @@ public class Workspace extends SmoothPagedView
         if (pageShift >= 0) {
             setCurrentPage(currentPage - pageShift);
         }
-
-        helpers.setDisableMovingPage(false);
 
         mainHandler.postDelayed(() -> {
             if (!helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) {
@@ -2470,7 +2532,8 @@ public class Workspace extends SmoothPagedView
         backPressed = false;
 
         mainHandler.postDelayed(()-> {
-            if (!helpers.isInOverviewMode() 
+            if (!pipInitialized
+                && !helpers.isInOverviewMode() 
                 && !helpers.openedFromOverviewBoolean() 
                 && getChildCount() > 1 
                 && !mDragController.isDragging()
@@ -2479,6 +2542,7 @@ public class Workspace extends SmoothPagedView
                 Log.d("onPageEndMoving", "openPinnedPip()");
                 WindowUtil.openPinnedPip();
             }
+            pipInitialized = false;
         }, 250);
 
         if (isHardwareAccelerated()) {
@@ -5380,7 +5444,7 @@ public class Workspace extends SmoothPagedView
             boolean external) {
 
         helpers.setWidgetDropPip(true);
-        helpers.setInWidgets(false);
+        //helpers.setInWidgets(false);
         mainHandler.postDelayed(()-> {
             if (!helpers.isInOverviewMode()) {
                 Log.d("animateWidgetDrop", "startMapPip");

@@ -5,25 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Left Bar -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/rl_left_bar"
-        android:background="@drawable/hotseat_bg"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="W,0.071"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/guideline_bottom_bar_height"
-        app:layout_constraintLeft_toLeftOf="parent" />
-
     <!-- Workspace -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/creator_first_screen"
-        android:layout_width="0dp"
+        android:id="@+id/creator_other_screens"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/creator_bar"
-        app:layout_constraintLeft_toRightOf="@id/rl_left_bar"
         app:layout_constraintRight_toRightOf="parent" />    
 
     <!-- Bottom Bar -->
@@ -269,25 +257,5 @@
             android:gravity="center" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Bottom Bar Auto Hide -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/guideline_bottom_bar_height"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="H,0.142"
-        app:layout_constraintBottom_toBottomOf="parent"    
-        android:visibility="invisible" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/creator_bar_auto_hide"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintLeft_toLeftOf="parent" 
-        app:layout_constraintRight_toRightOf="@id/rl_left_bar"
-        app:layout_constraintTop_toTopOf="@id/guideline_bottom_bar_height"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@color/colorPrimaryDark"      
-        android:visibility="invisible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

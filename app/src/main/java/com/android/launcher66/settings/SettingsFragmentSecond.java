@@ -309,6 +309,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 return true;
             });
             pipDualPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
+            pipDualPref.setOnMainSwitchClickListener(newValue -> restartPip.refreshButtons());
         }
         if (pipFirstPref != null) {
             pipFirstPref.setScreenValuePrefKey(Keys.PIP_FIRST_SCREEN);
@@ -327,6 +328,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 return true;
             });
             pipFirstPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
+            pipFirstPref.setOnMainSwitchClickListener(newValue -> restartPip.refreshButtons());
         }
         if (pipSecondPref != null) {
             pipSecondPref.setScreenValuePrefKey(Keys.PIP_SECOND_SCREEN);
@@ -343,6 +345,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 return true;
             });
             pipSecondPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
+            pipSecondPref.setOnMainSwitchClickListener(newValue -> restartPip.refreshButtons());
         }
         if (pipThirdPref != null) {
             pipThirdPref.setScreenValuePrefKey(Keys.PIP_THIRD_SCREEN);
@@ -352,6 +355,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             pipThirdPref.setOnModeSwitchChangeListener(isPip -> enforceSinglePiP(pipThirdPref, isPip));
             pipThirdPref.setOnPreferenceChangeListener((p, v) -> true);
             pipThirdPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
+            pipThirdPref.setOnMainSwitchClickListener(newValue -> restartPip.refreshButtons());
         }
         if (pipFourthPref != null) {
             pipFourthPref.setScreenValuePrefKey(Keys.PIP_FOURTH_SCREEN);
@@ -361,6 +365,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             pipFourthPref.setOnModeSwitchChangeListener(isPip -> enforceSinglePiP(pipFourthPref, isPip));
             pipFourthPref.setOnPreferenceChangeListener((p, v) -> true);
             pipFourthPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
+            pipFourthPref.setOnMainSwitchClickListener(newValue -> restartPip.refreshButtons());
         }
         if (restartPip != null) {
             restartPip.setOnPreferenceClickListener(this);
@@ -433,33 +438,33 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         initUserStats();
         userStatsBool = sharedPrefs.getBoolean(Keys.USER_STATS, false);
         if (statsScreen != null) {
-            statsScreen.setVisible(userStatsBool);
             statsScreen.setOnPreferenceClickListener(this);
             statsScreen.setScreenValuePrefKey(Keys.STATS_SCREEN);
             statsScreen.setOnPositionClickListener(pref -> openPipAdjuster(Keys.STATS_SCREEN));  
             statsScreen.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);  
+            statsScreen.setVisible(userStatsBool);
         }
         if (statsCodes != null) {
-            statsCodes.setVisible(userStatsBool);
             statsCodes.setSummary(getString(R.string.stats_codes_summary, fuelCodeStr, rangeCodeStr, cmdIntCodeStr, cmdArrCodeStr));
             statsCodes.setOnPreferenceClickListener(this);
+            statsCodes.setVisible(userStatsBool);
         }
         if (extraStatsCodes != null) {
-            extraStatsCodes.setVisible(userStatsBool);
             extraStatsCodes.setSummary(getString(R.string.extra_stats_codes_summary, rpmCodeStr, horsePowerCodeStr, vehicleMassCodeStr, engineVolCodeStr, numberOfCylindersCodeStr));
             extraStatsCodes.setOnPreferenceClickListener(this);
+            extraStatsCodes.setVisible(userStatsBool);
         }
         if (mainScreenStats != null) {
-            mainScreenStats.setVisible(userStatsBool);
             mainScreenStats.setOnPreferenceClickListener(this);
+            mainScreenStats.setVisible(userStatsBool);
         }
         if (colorPickerPref != null) {
-            colorPickerPref.setVisible(userStatsBool);
             colorPickerPref.setOnPreferenceClickListener(this);
+            colorPickerPref.setVisible(userStatsBool);
         }
         if (statsBg != null) {
-            statsBg.setVisible(userStatsBool);
             statsBg.setOnPreferenceClickListener(this);
+            statsBg.setVisible(userStatsBool);
         }
         backgroundBool = sharedPrefs.getBoolean(Keys.STATS_BG, false);
         if (bgDrawable != null) {
@@ -476,12 +481,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             bgColorPickerPref.setOnPreferenceClickListener(this);
         }
         if (appList != null) {
-            appList.setVisible(userStatsBool);
             appList.setOnPreferenceClickListener(this);
+            appList.setVisible(userStatsBool);
         }
         if (appStatsCoordinates != null) {
-            appStatsCoordinates.setVisible(userStatsBool);
             appStatsCoordinates.setOnPreferenceClickListener(this);
+            appStatsCoordinates.setVisible(userStatsBool);
         }
         if (displayCanbusReader != null) {
             displayCanbusReader.setOnPreferenceClickListener(this);
@@ -1807,8 +1812,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 // Dual PiP toggled
                 if (newState) {
                     // Dual PiP = ON → disable First/Second and set their custom switches to Window
-                    if (pipFirstPref  != null) { pipFirstPref.setChecked(false);  pipFirstPref.setModeChecked(false); }
-                    if (pipSecondPref != null) { pipSecondPref.setChecked(false); pipSecondPref.setModeChecked(false); }
+                    if (pipFirstPref  != null) { pipFirstPref.setChecked(false);  pipFirstPref.setModeChecked(false); restartPip.refreshButtons(); }
+                    if (pipSecondPref != null) { pipSecondPref.setChecked(false); pipSecondPref.setModeChecked(false); restartPip.refreshButtons(); }
                 }
             } else {
                 // A child (First/Second) was turned ON or its custom mode set to PiP
@@ -1824,6 +1829,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private void openPipAdjuster(String pipScreenKey) {
         int selectedScreen = sharedPrefs.getInt(pipScreenKey, 1) - 1;
         Log.i("PipPositioner", "Adjust: " + pipScreenKey + " screen: " + String.valueOf(selectedScreen));
+        helpers.checkAndResetIfOverlappingOnScreen(-1);
         if (selectedScreen == 0) {
             requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFirstScreen()).commit();
         } else {

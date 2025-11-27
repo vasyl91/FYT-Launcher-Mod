@@ -42,7 +42,6 @@ public class CreatorFirstScreen extends Fragment {
     public static boolean music = false;
     public static boolean radio = false;
     public static boolean stats = false; 
-    public static boolean overlappingMargins = false;
 
     public CreatorFirstScreen() {
         super();
@@ -86,20 +85,8 @@ public class CreatorFirstScreen extends Fragment {
         date = sharedPrefs.getBoolean(Keys.USER_DATE, true);
         music = sharedPrefs.getBoolean(Keys.USER_MUSIC, true);
         radio = sharedPrefs.getBoolean(Keys.USER_RADIO, true); 
-        stats = sharedPrefs.getBoolean(Keys.USER_STATS, true);       
-        checkIfOverlappingMargins();
-        if (overlappingMargins) {
-            Log.i("CreatorFirstScreen", String.valueOf(overlappingMargins));
-            if (helpers != null) {
-                helpers.checkAndResetIfOverlappingOnScreen(-1);
-            }
-            overlappingMargins = false; 
-        }
-        if (leftBar) {
-            if (helpers != null && helpers.hasBarSettingsChanged()) {
-                helpers.checkAndResetIfOverlappingOnScreen(-1); 
-                helpers.setBarSettingsChanged(false); 
-            }            
+        stats = sharedPrefs.getBoolean(Keys.USER_STATS, true);        
+        if (leftBar) {           
             rootView = inflater.inflate(R.layout.creator_left, container, false);
         } else {
             rootView = inflater.inflate(R.layout.creator, container, false);
@@ -243,160 +230,5 @@ public class CreatorFirstScreen extends Fragment {
         } else {
             return false;
         }
-    }
-
-    private void checkIfOverlappingMargins() {
-        if (sharedPrefs == null) {
-            return;
-        }
-        
-        // Default values are set to 0 because they are basically not essential, resetPrefs overwrites them if they are all 0
-        int height = getResources().getDisplayMetrics().heightPixels;
-        int width = getResources().getDisplayMetrics().widthPixels;
-        int margin = Integer.valueOf(sharedPrefs.getString("layout_margin", "10"));
-
-        if (dualPip && !firstPip && !secondPip && compareScreens(Keys.PIP_DUAL_SCREEN)) {
-            int pipDualTopLeftX = sharedPrefs.getInt("pipDualTopLeftX", 0);
-            int pipDualTopLeftY = sharedPrefs.getInt("pipDualTopLeftY", 0);
-            int pipDualTopRightX = sharedPrefs.getInt("pipDualTopRightX", 0);
-            int pipDualTopRightY = sharedPrefs.getInt("pipDualTopRightY", 0);
-            int pipDualBottomRightX = sharedPrefs.getInt("pipDualBottomRightX", 0);
-            int pipDualBottomRightY = sharedPrefs.getInt("pipDualBottomRightY", 0);
-            int pipDualBottomLeftX = sharedPrefs.getInt("pipDualBottomLeftX", 0);
-            int pipDualBottomLeftY = sharedPrefs.getInt("pipDualBottomLeftY", 0);
-
-            if (pipDualTopLeftX < margin || pipDualTopLeftY < margin 
-                || pipDualTopRightX > (width - margin) || pipDualTopRightY < margin 
-                || pipDualBottomRightX > (width - margin) || pipDualBottomRightY > (height - margin) 
-                || pipDualBottomLeftX < margin || pipDualBottomLeftY > (height - margin)) {
-                overlappingMargins = true;
-            }
-        }
-
-        if (firstPip && !dualPip && compareScreens(Keys.PIP_FIRST_SCREEN)) {
-            int pipFirstTopLeftX = sharedPrefs.getInt("pipFirstTopLeftX", 0);
-            int pipFirstTopLeftY = sharedPrefs.getInt("pipFirstTopLeftY", 0);
-            int pipFirstTopRightX = sharedPrefs.getInt("pipFirstTopRightX", 0);
-            int pipFirstTopRightY = sharedPrefs.getInt("pipFirstTopRightY", 0);
-            int pipFirstBottomRightX = sharedPrefs.getInt("pipFirstBottomRightX", 0);
-            int pipFirstBottomRightY = sharedPrefs.getInt("pipFirstBottomRightY", 0);
-            int pipFirstBottomLeftX = sharedPrefs.getInt("pipFirstBottomLeftX", 0);
-            int pipFirstBottomLeftY = sharedPrefs.getInt("pipFirstBottomLeftY", 0);
-
-            if (pipFirstTopLeftX < margin || pipFirstTopLeftY < margin 
-                || pipFirstTopRightX > (width - margin) || pipFirstTopRightY < margin 
-                || pipFirstBottomRightX > (width - margin) || pipFirstBottomRightY > (height - margin) 
-                || pipFirstBottomLeftX < margin || pipFirstBottomLeftY > (height - margin)) {
-                overlappingMargins = true;
-            }
-        }
-
-        if (secondPip && !dualPip && compareScreens(Keys.PIP_SECOND_SCREEN)) {
-            int pipSecondTopLeftX = sharedPrefs.getInt("pipSecondTopLeftX", 0);
-            int pipSecondTopLeftY = sharedPrefs.getInt("pipSecondTopLeftY", 0);
-            int pipSecondTopRightX = sharedPrefs.getInt("pipSecondTopRightX", 0);
-            int pipSecondTopRightY = sharedPrefs.getInt("pipSecondTopRightY", 0);
-            int pipSecondBottomRightX = sharedPrefs.getInt("pipSecondBottomRightX", 0);
-            int pipSecondBottomRightY = sharedPrefs.getInt("pipSecondBottomRightY", 0);
-            int pipSecondBottomLeftX = sharedPrefs.getInt("pipSecondBottomLeftX", 0);
-            int pipSecondBottomLeftY = sharedPrefs.getInt("pipSecondBottomLeftY", 0);
-
-            if (pipSecondTopLeftX < margin || pipSecondTopLeftY < margin 
-                || pipSecondTopRightX > (width - margin) || pipSecondTopRightY < margin 
-                || pipSecondBottomRightX > (width - margin) || pipSecondBottomRightY > (height - margin) 
-                || pipSecondBottomLeftX < margin || pipSecondBottomLeftY > (height - margin)) {
-                overlappingMargins = true;
-            }
-        }
-
-        if (thirdPip && compareScreens(Keys.PIP_THIRD_SCREEN)) {
-            int pipThirdTopLeftX = sharedPrefs.getInt("pipThirdTopLeftX", 0);
-            int pipThirdTopLeftY = sharedPrefs.getInt("pipThirdTopLeftY", 0);
-            int pipThirdTopRightX = sharedPrefs.getInt("pipThirdTopRightX", 0);
-            int pipThirdTopRightY = sharedPrefs.getInt("pipThirdTopRightY", 0);
-            int pipThirdBottomRightX = sharedPrefs.getInt("pipThirdBottomRightX", 0);
-            int pipThirdBottomRightY = sharedPrefs.getInt("pipThirdBottomRightY", 0);
-            int pipThirdBottomLeftX = sharedPrefs.getInt("pipThirdBottomLeftX", 0);
-            int pipThirdBottomLeftY = sharedPrefs.getInt("pipThirdBottomLeftY", 0);
-
-            if (pipThirdTopLeftX < margin || pipThirdTopLeftY < margin 
-                || pipThirdTopRightX > (width - margin) || pipThirdTopRightY < margin 
-                || pipThirdBottomRightX > (width - margin) || pipThirdBottomRightY > (height - margin) 
-                || pipThirdBottomLeftX < margin || pipThirdBottomLeftY > (height - margin)) {
-                overlappingMargins = true;
-            }
-        }
-
-        if (fourthPip && compareScreens(Keys.PIP_FOURTH_SCREEN)) {
-            int pipFourthTopLeftX = sharedPrefs.getInt("pipFourthTopLeftX", 0);
-            int pipFourthTopLeftY = sharedPrefs.getInt("pipFourthTopLeftY", 0);
-            int pipFourthTopRightX = sharedPrefs.getInt("pipFourthTopRightX", 0);
-            int pipFourthTopRightY = sharedPrefs.getInt("pipFourthTopRightY", 0);
-            int pipFourthBottomRightX = sharedPrefs.getInt("pipFourthBottomRightX", 0);
-            int pipFourthBottomRightY = sharedPrefs.getInt("pipFourthBottomRightY", 0);
-            int pipFourthBottomLeftX = sharedPrefs.getInt("pipFourthBottomLeftX", 0);
-            int pipFourthBottomLeftY = sharedPrefs.getInt("pipFourthBottomLeftY", 0);
-
-            if (pipFourthTopLeftX < margin || pipFourthTopLeftY < margin 
-                || pipFourthTopRightX > (width - margin) || pipFourthTopRightY < margin 
-                || pipFourthBottomRightX > (width - margin) || pipFourthBottomRightY > (height - margin) 
-                || pipFourthBottomLeftX < margin || pipFourthBottomLeftY > (height - margin)) {
-                overlappingMargins = true;
-            }
-        }
-
-        if (date && compareScreens(Keys.DATE_SCREEN)) {
-            int dateTopLeftX = sharedPrefs.getInt("dateTopLeftX", 0);
-            int dateTopLeftY = sharedPrefs.getInt("dateTopLeftY", 0);    
-            int dateTopRightX = sharedPrefs.getInt("dateTopRightX", 0);
-            int dateTopRightY = sharedPrefs.getInt("dateTopRightY", 0);
-            int dateBottomRightX = sharedPrefs.getInt("dateBottomRightX", 0);
-            int dateBottomRightY = sharedPrefs.getInt("dateBottomRightY", 0);
-            int dateBottomLeftX = sharedPrefs.getInt("dateBottomLeftX", 0);
-            int dateBottomLeftY = sharedPrefs.getInt("dateBottomLeftY", 0);
-
-            if (dateTopLeftX < margin || dateTopLeftY < margin 
-                || dateTopRightX > (width - margin) || dateTopRightY < margin 
-                || dateBottomRightX > (width - margin) || dateBottomRightY > (height - margin) 
-                || dateBottomLeftX < margin || dateBottomLeftY > (height - margin)) {
-                overlappingMargins = true;
-            } 
-        }
-
-        if (music && compareScreens(Keys.MUSIC_SCREEN)) {
-            int musicTopLeftX = sharedPrefs.getInt("musicTopLeftX", 0);
-            int musicTopLeftY = sharedPrefs.getInt("musicTopLeftY", 0);  
-            int musicTopRightX = sharedPrefs.getInt("musicTopRightX", 0);
-            int musicTopRightY = sharedPrefs.getInt("musicTopRightY", 0);
-            int musicBottomRightX = sharedPrefs.getInt("musicBottomRightX", 0);
-            int musicBottomRightY = sharedPrefs.getInt("musicBottomRightY", 0);
-            int musicBottomLeftX = sharedPrefs.getInt("musicBottomLeftX", 0);
-            int musicBottomLeftY = sharedPrefs.getInt("musicBottomLeftY", 0);
-
-            if (musicTopLeftX < margin || musicTopLeftY < margin
-                || musicTopRightX > (width - margin) || musicTopRightY < margin 
-                || musicBottomRightX > (width - margin) || musicBottomRightY > (height - margin) 
-                || musicBottomLeftX < margin || musicBottomLeftY > (height - margin)) {
-                overlappingMargins = true;
-            } 
-        } 
-
-        if (radio && compareScreens(Keys.RADIO_SCREEN)) {
-            int radioTopLeftX = sharedPrefs.getInt("radioTopLeftX", 0);
-            int radioTopLeftY = sharedPrefs.getInt("radioTopLeftY", 0); 
-            int radioTopRightX = sharedPrefs.getInt("radioTopRightX", 0);
-            int radioTopRightY = sharedPrefs.getInt("radioTopRightY", 0);
-            int radioBottomRightX = sharedPrefs.getInt("radioBottomRightX", 0);
-            int radioBottomRightY = sharedPrefs.getInt("radioBottomRightY", 0);
-            int radioBottomLeftX = sharedPrefs.getInt("radioBottomLeftX", 0);
-            int radioBottomLeftY = sharedPrefs.getInt("radioBottomLeftY", 0);
-
-            if (radioTopLeftX < margin || radioTopLeftY < margin
-                || radioTopRightX > (width - margin) || radioTopRightY < margin 
-                || radioBottomRightX > (width - margin) || radioBottomRightY > (height - margin) 
-                || radioBottomLeftX < margin || radioBottomLeftY > (height - margin)) {
-                overlappingMargins = true;
-            } 
-        }  
     }
 }

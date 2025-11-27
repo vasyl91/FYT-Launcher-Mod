@@ -190,7 +190,9 @@
             android:title="@string/update_version_button" />        
 
         <Preference
-            android:key="empty1"/>
+            android:key="empty1"
+            android:focusable="false"
+            android:clickable="false" />
             
     </PreferenceCategory>
 

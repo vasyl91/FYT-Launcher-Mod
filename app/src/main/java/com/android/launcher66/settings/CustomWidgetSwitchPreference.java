@@ -2,6 +2,7 @@ package com.android.launcher66.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
@@ -13,7 +14,7 @@ import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.TouchDelegate;
@@ -49,6 +50,8 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
     private View mBoundItemView;
     private WidgetPageManager mPageManager;
 
+    private final int orientation;
+
     public interface OnPositionClickListener { void onPositionClick(CustomWidgetSwitchPreference pref); }
     @Nullable private OnPositionClickListener mPositionListener;
 
@@ -62,6 +65,7 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
     public CustomWidgetSwitchPreference(Context context, AttributeSet attrs) { this(context, attrs, androidx.preference.R.attr.switchPreferenceCompatStyle); }
     public CustomWidgetSwitchPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        orientation = context.getResources().getConfiguration().orientation;
         setWidgetLayoutResource(R.layout.widget_switch_preference);
     }
 
@@ -83,6 +87,14 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
     @Override public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         mBoundItemView = holder.itemView;
+
+        int paddingStart;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            paddingStart = SettingsActivity.nestedPaddingStart / 3;
+        } else {
+            paddingStart = SettingsActivity.nestedPaddingStart;
+        }
+        
         mMainSwitch = (SwitchCompat) holder.findViewById(androidx.preference.R.id.switchWidget);
         mScreenButtonContainer = (LinearLayout) holder.findViewById(R.id.btnScreenContainer);
         mScreenLabel = (TextView) holder.findViewById(R.id.tvScreenLabel);
@@ -94,7 +106,7 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
             ViewGroup.MarginLayoutParams lp = (rawLp instanceof ViewGroup.MarginLayoutParams)
                     ? (ViewGroup.MarginLayoutParams) rawLp
                     : new LinearLayout.LayoutParams(rawLp.width, rawLp.height);
-            lp.setMarginStart(SettingsActivity.nestedPaddingStart);
+            lp.setMarginStart(paddingStart);
             mMainSwitch.setLayoutParams(lp);
         }
 
@@ -144,40 +156,50 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
             });
         }
 
-        scheduleRuntimeSizing();
+        mBoundItemView.post(() -> scheduleRuntimeSizing());
     }
 
     @Override protected void onClick() { /* keep default: no-op to avoid toggling on row click */ }
 
     private void scheduleRuntimeSizing() {
-        int hNow = (mBoundItemView != null) ? mBoundItemView.getHeight() : 0;
-        if (hNow > 0) applySizing(hNow); else applySizing(resolveRowHeightFallback());
+        if (mBoundItemView == null) return;
+        
+        // Always apply fallback sizing immediately so buttons are visible
+        applySizing(resolveRowHeightFallback());
+        expandMainSwitchHitArea();
+
         if (mBoundItemView != null) {
             mBoundItemView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override public void onGlobalLayout() {
                     if (mBoundItemView.getHeight() > 0) {
-                        applySizing(mBoundItemView.getHeight());
+                        applySizing(resolveRowHeightFallback());
                         expandMainSwitchHitArea();
                         mBoundItemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 }
             });
         }
-        // Also expand immediately using fallback bounds so it's usable right away
-        expandMainSwitchHitArea();
     }
 
     private int resolveRowHeightFallback() {
-        TypedValue tv = new TypedValue();
-        if (getContext().getTheme().resolveAttribute(android.R.attr.listPreferredItemHeight, tv, true)) {
-            if (tv.type == TypedValue.TYPE_DIMENSION) {
-                return (int) TypedValue.complexToDimensionPixelSize(tv.data, getContext().getResources().getDisplayMetrics());
-            } else if (tv.resourceId != 0) {
-                try { return getContext().getResources().getDimensionPixelSize(tv.resourceId); } catch (Exception ignored) {}
-            }
-        }
-        float density = getContext().getResources().getDisplayMetrics().density;
-        return Math.round(48 * density);
+        Context context = getContext();
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        
+        // Try to get text sizes from theme attributes
+        TypedValue titleSize = new TypedValue();
+        TypedValue summarySize = new TypedValue();
+        
+        context.getTheme().resolveAttribute(android.R.attr.textAppearanceListItem, titleSize, true);
+        context.getTheme().resolveAttribute(android.R.attr.textAppearanceListItemSecondary, summarySize, true);
+        
+        // Default fallback values
+        float titleHeight = 16 * metrics.scaledDensity * 1.3f;
+        float summaryHeight = 14 * metrics.scaledDensity * 1.3f;
+        
+        float density = metrics.density;
+        int verticalPadding = Math.round(32 * density);
+        
+        return (int) (titleHeight + summaryHeight) + verticalPadding;
     }
 
     private void applySizing(int rowH) {
@@ -190,7 +212,12 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
         final float TXT_PCT_OF_BTN_H = 0.50f; // 50% of button height
 
         int btnH = Math.max(1, Math.round(rowH * BTN_H_PCT_OF_ROW));
-        int gapW = SettingsActivity.nestedPaddingStart / 2;
+        int gapW;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            gapW = SettingsActivity.nestedPaddingStart / 4;
+        } else {
+            gapW = SettingsActivity.nestedPaddingStart / 2;
+        }
         float txtPx= Math.max(1, btnH * TXT_PCT_OF_BTN_H);
 
         // Colors

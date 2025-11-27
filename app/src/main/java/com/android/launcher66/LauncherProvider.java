@@ -21,7 +21,6 @@ import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
@@ -86,25 +85,7 @@ public class LauncherProvider extends ContentProvider {
         SqlArguments args = new SqlArguments(uri, selection, selectionArgs);
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         qb.setTables(args.table);
-        SQLiteDatabase db = null;
-        int retries = 3;
-        while (retries > 0) {
-            try {
-                db = this.mOpenHelper.getWritableDatabase();
-                break;
-            } catch (SQLiteDatabaseLockedException e) {
-                retries--;
-                if (retries > 0) {
-                    try {
-                        Thread.sleep(100); // Wait 100ms before retry
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                    }
-                } else {
-                    throw e;
-                }
-            }
-        }
+        SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
         Cursor result = qb.query(db, projection, args.where, args.args, null, null, sortOrder);
         result.setNotificationUri(getContext().getContentResolver(), uri);
         return result;
@@ -265,14 +246,19 @@ public class LauncherProvider extends ContentProvider {
         private final Context mContext;
         private long mMaxItemId;
         private long mMaxScreenId;
-        private boolean mIsInitialized = false;
 
         DatabaseHelper(Context context) {
-            super(context, LauncherProvider.DATABASE_NAME, null, 15);
+            super(context, LauncherProvider.DATABASE_NAME, (SQLiteDatabase.CursorFactory) null, 15);
             this.mMaxItemId = -1L;
             this.mMaxScreenId = -1L;
             this.mContext = context;
             this.mAppWidgetHost = new AppWidgetHost(context, Launcher.APPWIDGET_HOST_ID);
+            if (this.mMaxItemId == -1) {
+                this.mMaxItemId = initializeMaxItemId(getWritableDatabase());
+            }
+            if (this.mMaxScreenId == -1) {
+                this.mMaxScreenId = initializeMaxScreenId(getWritableDatabase());
+            }
         }
 
         private void sendAppWidgetResetNotify() {
@@ -280,31 +266,16 @@ public class LauncherProvider extends ContentProvider {
             resolver.notifyChange(LauncherProvider.CONTENT_APPWIDGET_RESET_URI, null);
         }
 
-        private void ensureInitialized(SQLiteDatabase db) {
-            if (!mIsInitialized) {
-                if (this.mMaxItemId == -1) {
-                    this.mMaxItemId = initializeMaxItemId(db);
-                }
-                if (this.mMaxScreenId == -1) {
-                    this.mMaxScreenId = initializeMaxScreenId(db);
-                }
-                mIsInitialized = true;
-            }
-        }
-
         @Override
         public void onCreate(SQLiteDatabase db) {
             this.mMaxItemId = 1L;
             this.mMaxScreenId = 0L;
-            
             db.execSQL("CREATE TABLE favorites (_id INTEGER PRIMARY KEY,title TEXT,intent TEXT,container INTEGER,screen INTEGER,cellX INTEGER,cellY INTEGER,spanX INTEGER,spanY INTEGER,itemType INTEGER,appWidgetId INTEGER NOT NULL DEFAULT -1,isShortcut INTEGER,iconType INTEGER,iconPackage TEXT,iconResource TEXT,icon BLOB,uri TEXT,displayMode INTEGER,appWidgetProvider TEXT,modified INTEGER NOT NULL DEFAULT 0);");
             addWorkspacesTable(db);
-            
             if (this.mAppWidgetHost != null) {
                 this.mAppWidgetHost.deleteHost();
                 sendAppWidgetResetNotify();
             }
-            
             ContentValuesCallback permuteScreensCb = new ContentValuesCallback() { 
                 @Override
                 public void onRow(ContentValues values) {
@@ -315,7 +286,6 @@ public class LauncherProvider extends ContentProvider {
                     }
                 }
             };
-            
             Uri uri = Uri.parse("content://settings/old_favorites?notify=true");
             if (!convertDatabase(db, uri, permuteScreensCb, true)) {
                 Uri uri2 = LauncherSettings.Favorites.OLD_CONTENT_URI;
@@ -325,28 +295,6 @@ public class LauncherProvider extends ContentProvider {
                 }
             }
             setFlagJustLoadedOldDb();
-            
-            mIsInitialized = true; // Mark as initialized after onCreate completes
-        }
-
-        @Override
-        public SQLiteDatabase getWritableDatabase() {
-            SQLiteDatabase db = super.getWritableDatabase();
-            ensureInitialized(db);
-            return db;
-        }
-
-        @Override
-        public SQLiteDatabase getReadableDatabase() {
-            SQLiteDatabase db = super.getReadableDatabase();
-            ensureInitialized(db);
-            return db;
-        }
-
-        @Override
-        public void onConfigure(SQLiteDatabase db) {
-            super.onConfigure(db);
-            db.enableWriteAheadLogging();
         }
 
         private void addWorkspacesTable(SQLiteDatabase db) {

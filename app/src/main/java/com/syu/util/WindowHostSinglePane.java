@@ -25,6 +25,7 @@ import android.widget.FrameLayout;
 
 import com.android.launcher66.LauncherApplication;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +34,10 @@ import java.util.function.BooleanSupplier;
 
 public class WindowHostSinglePane {
     private static final String TAG = "WindowHostSinglePane";
+    private static final long BLACK_SCREEN_CHECK_DELAY_MS = 800L;
+    private static final int MAX_RESTART_ATTEMPTS = 2;
+    private int restartAttempts = 0;
+    private final AtomicBoolean blackScreenDetected = new AtomicBoolean(false);
 
     // Timing
     private static long REVEAL_FALLBACK_NS = 320_000_000L; // ~320ms
@@ -70,16 +75,25 @@ public class WindowHostSinglePane {
     void show(Activity act, WindowManager wm, ActivityManager am, IBinder token, String pkg, Rect b) {
         if (pkg == null || b == null) return;
 
+        // Pre-warm for next time
+        new Thread(() -> {
+            WindowHostSurfacePreloader.prewarmActivityView(act, "single_" + name);
+        }).start();
+
         this.activity = act;
         this.wm = wm;
 
         if (visible.get() && pkg.equals(currentPkg) && added && root != null && lp != null) {
             setPendingBoundsFast(b);
-            Log.i(TAG, name + ": show suppressed (already visible) — resize-only.");
+            Log.i(TAG, name + ": show suppressed (already visible) – resize-only.");
             return;
         }
 
         final int myGen = ++gen;
+        
+        // Reset restart counter and detection flag for new show
+        restartAttempts = 0;
+        blackScreenDetected.set(false);
 
         forceRemoveWindowNoGen();
 
@@ -97,7 +111,11 @@ public class WindowHostSinglePane {
             startNs = System.nanoTime();
             visible.set(true);
 
-            if (!haveTask) startWhenReady(am, pkg, myGen);
+            if (!haveTask) {
+                startWhenReady(am, pkg, myGen);
+                // Schedule black screen check
+                checkForBlackScreenAndRestart(pkg, myGen);
+            }
             liftCurtainLoop(true, myGen);
         });
     }
@@ -202,7 +220,14 @@ public class WindowHostSinglePane {
 
     private void ensureActivityView(Context ctx, int expectedGen) {
         if (av != null) return;
-        av = WindowHostActivityView.newInstance(ctx);
+        
+        // Try to get pre-warmed instance first
+        av = WindowHostSurfacePreloader.getWarmActivityView("single_" + name);
+        
+        if (av == null) {
+            av = WindowHostActivityView.newInstance(ctx);
+        }
+        
         avReady.set(false);
         firstFrame.set(false);
         WindowHostActivityView.trySetCallback(av, new WindowHostActivityView.Callback() {
@@ -210,12 +235,18 @@ public class WindowHostSinglePane {
             @Override public void onTaskCreated(int id) { if (gen == expectedGen) taskId = id; }
             @Override public void onDestroyed() { if (gen == expectedGen) avReady.set(false); }
         });
+        
+        // Force instant surface readiness
+        View avView = WindowHostActivityView.asView(av);
+        WindowHostSurfacePreloader.forceInstantSurfaceReady(avView);
     }
 
     private void attachChild(int expectedGen) {
         if (host == null || av == null) return;
         View v = WindowHostActivityView.asView(av);
-        if (v.getParent() instanceof ViewGroup) { try { ((ViewGroup) v.getParent()).removeView(v); } catch (Throwable ignore) {} }
+        if (v.getParent() instanceof ViewGroup) { 
+            try { ((ViewGroup) v.getParent()).removeView(v); } catch (Throwable ignore) {} 
+        }
         host.removeAllViews();
         v.setVisibility(View.VISIBLE);
         WindowHostSurfaceTamer.tame(v);
@@ -224,6 +255,8 @@ public class WindowHostSinglePane {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         childAttached = true;
         if (curtain != null) curtain.setVisibility(View.VISIBLE);
+        
+        WindowHostInstantRenderStrategy.applyToContainer(host, "single_" + name);
     }
 
     private void startWhenReady(ActivityManager am, String pkg, int expectedGen) {
@@ -236,12 +269,47 @@ public class WindowHostSinglePane {
     private void startNow(ActivityManager am, String pkg, int expectedGen) {
         if (gen != expectedGen) return;
         if (taskId > 0 && pkg.equals(currentPkg)) return;
+        
+        // Add surface validation
+        if (host != null) {
+            SurfaceView sv = findSurfaceView(host);
+            if (sv != null) {
+                try {
+                    SurfaceHolder holder = sv.getHolder();
+                    if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
+                        Log.w(TAG, name + ": Surface not ready yet, deferring start");
+                        postMainDelayed(() -> startNow(am, pkg, expectedGen), 50);
+                        return;
+                    }
+                } catch (Throwable t) {
+                    Log.w(TAG, name + ": Surface check failed, deferring start");
+                    postMainDelayed(() -> startNow(am, pkg, expectedGen), 50);
+                    return;
+                }
+            }
+        }
+        
         Intent main = mainLaunchIntent(pkg);
         if (main == null) { Log.w(TAG, name + ": no launch intent for " + pkg); return; }
         main.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         Object opts = WindowHostActivityView.makeOptionsWithBounds(hasPendingBounds ? new Rect(pendingBounds) : null);
         boolean ok = WindowHostActivityView.startActivitySmart(av, activity, main, opts);
-        Log.i(TAG, name + (ok ? ": start ok" : ": start failed"));
+        
+        if (!ok) {
+            Log.w(TAG, name + ": start failed, will retry once");
+            postMainDelayed(() -> {
+                if (gen != expectedGen) return;
+                Intent retry = mainLaunchIntent(pkg);
+                if (retry != null) {
+                    retry.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    Object retryOpts = WindowHostActivityView.makeOptionsWithBounds(hasPendingBounds ? new Rect(pendingBounds) : null);
+                    boolean retryOk = WindowHostActivityView.startActivitySmart(av, activity, retry, retryOpts);
+                    Log.i(TAG, name + (retryOk ? ": retry succeeded" : ": retry also failed"));
+                }
+            }, 200);
+        } else {
+            Log.i(TAG, name + ": start ok");
+        }
     }
 
     private void liftCurtainLoop(boolean needFirstFrame, int expectedGen) {
@@ -353,7 +421,9 @@ public class WindowHostSinglePane {
             if (i == null) return null;
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+                    | Intent.FLAG_ACTIVITY_NO_HISTORY
+                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             return i;
         } catch (Throwable t) {
             Log.w(TAG, "mainLaunchIntent failed for " + pkg, t);
@@ -364,5 +434,96 @@ public class WindowHostSinglePane {
     private void postMain(Runnable r) { new Handler(Looper.getMainLooper()).post(r); }
     private void postMainDelayed(Runnable r, long delayMs) {
         new Handler(Looper.getMainLooper()).postDelayed(r, delayMs);
+    }
+
+    private void checkForBlackScreenAndRestart(String pkg, int expectedGen) {
+        if (gen != expectedGen) return;
+        
+        postMainDelayed(() -> {
+            if (gen != expectedGen) return;
+            
+            boolean isBlack = false;
+            
+            // Check if surface is visible and has content
+            if (host != null) {
+                SurfaceView sv = findSurfaceView(host);
+                if (sv != null && sv.getVisibility() == View.VISIBLE) {
+                    // Check if surface holder has a valid surface
+                    try {
+                        SurfaceHolder holder = sv.getHolder();
+                        if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
+                            isBlack = true;
+                        }
+                    } catch (Throwable ignore) {
+                        isBlack = true;
+                    }
+                }
+            }
+            
+            // Also check if the first frame was never rendered
+            if (!firstFrame.get() && restartAttempts < MAX_RESTART_ATTEMPTS) {
+                isBlack = true;
+            }
+            
+            if (isBlack && !blackScreenDetected.get() && restartAttempts < MAX_RESTART_ATTEMPTS) {
+                Log.w(TAG, name + " showing black screen, restarting app: " + pkg);
+                blackScreenDetected.set(true);
+                restartAttempts++;
+                
+                // Restart the app
+                restartPaneApp(pkg, expectedGen);
+            }
+        }, BLACK_SCREEN_CHECK_DELAY_MS);
+    }
+
+    private void restartPaneApp(String pkg, int expectedGen) {
+        if (gen != expectedGen || pkg == null || pkg.isEmpty()) return;
+        
+        // Force stop the app
+        try {
+            ActivityManager am = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+            Method forceStopPackage = am.getClass().getDeclaredMethod("forceStopPackage", String.class);
+            forceStopPackage.setAccessible(true);
+            forceStopPackage.invoke(am, pkg);
+            Log.i(TAG, name + ": Force stopped " + pkg);
+        } catch (Throwable t) {
+            Log.w(TAG, name + ": Failed to force stop " + pkg, t);
+        }
+        
+        // Release and recreate the ActivityView
+        postMainDelayed(() -> {
+            if (gen != expectedGen) return;
+            
+            if (av != null) {
+                try {
+                    WindowHostActivityView.release(av);
+                } catch (Throwable ignore) {}
+                av = null;
+            }
+            taskId = -1;
+            avReady.set(false);
+            firstFrame.set(false);
+            blackScreenDetected.set(false);
+            
+            if (host != null) {
+                host.removeAllViews();
+                childAttached = false;
+            }
+            
+            // Recreate ActivityView
+            ensureActivityView(activity, expectedGen);
+            attachChild(expectedGen);
+            
+            // Restart the activity
+            postMainDelayed(() -> {
+                if (gen != expectedGen) return;
+                ActivityManager am = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+                startWhenReady(am, pkg, expectedGen);
+                
+                // Schedule another check
+                checkForBlackScreenAndRestart(pkg, expectedGen);
+            }, 300);
+            
+        }, 500);
     }
 }

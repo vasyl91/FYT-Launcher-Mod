@@ -414,7 +414,7 @@
     <string name="update_btn">UPDATE</string>
     <string name="progress_dialog_str">Downloading %1$s</string>
     <string name="download_in_progress">Download in progress...</string>
-    <string name="tv_map_str">Welcome to FYT Launcher Mod!\nCreate your own layout to display the navi window.\n\nSome FYT brands do not support the Picture-in-Picture feature. It means that you won\'t be able to display the navi app on the main screen, unless you flash your device with the custom ROM that supports it (provided that such ROM exists for your head unit).\nYou can still use the launcher however you\'ll have to turn off the PiP in the launcher\'s settings (otherwise Google Maps will pop every time you\'ll try to open the home page - if it happens, wipe the launcher\'s data or reinstall it).</string>
+    <string name="tv_map_str">Welcome to FYT Launcher Mod!\nCreate your own layout to display the navi window.\n\nThis Launcher allows to display apps in Picture-in-Picture mode using two different methods, nonetheless it might happen that some units do not support any of them. This means that you won\'t be able to display the navi app on the main screen, unless you flash your device with the custom ROM that supports it (provided that such ROM exists for your head unit).\nYou can still use the launcher however you\'ll have to turn off the PiP in the launcher\'s settings (otherwise Google Maps will pop up every time you\'ll try to open the home page - if it happens, wipe the launcher\'s data or reinstall it).</string>
 
     <string name="materialcolorpicker__errHex">Hex Code Format incorrect</string>
     <string name="materialcolorpicker__inputColor">Color: </string>
@@ -434,10 +434,10 @@
     <string name="pref_fourth_pip_title">Fourth PiP</string>
     <string name="pref_no_app_selected">No app selected</string>
     <string name="pip_list_dialog">Select the front app (not every app is supported)</string>
-    <string name="pip_screen_button">Screen:</string>
+    <string name="pip_screen_button">Page:</string>
     <string name="pip_position_button">\u0020\u0020\u0020ADJUST\u0020\u0020\u0020</string>
-    <string name="double_tap">Screen: %1$s \nDouble tap anywhere \nto hide/show bottom bar</string>
-    <string name="screen_first">Screen: 1</string>
+    <string name="double_tap">Page: %1$s \nDouble tap anywhere \nto hide/show bottom bar</string>
+    <string name="screen_first">Page: 1</string>
     <string name="adjust_widget">Adjust your widget</string>
     <string name="restart_pip">Restart PiP</string>
     <string name="restart_pip_summary">Press to restart the app</string>

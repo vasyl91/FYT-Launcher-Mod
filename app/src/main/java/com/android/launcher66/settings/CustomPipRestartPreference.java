@@ -3,11 +3,13 @@ package com.android.launcher66.settings;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.RippleDrawable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceViewHolder;
 
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
 import java.lang.reflect.InvocationTargetException;
@@ -39,6 +42,7 @@ public class CustomPipRestartPreference extends Preference {
     private AppCompatButton mRestartSecondButton;
     private AppCompatButton mRestartThirdButton;
     private AppCompatButton mRestartFourthButton;
+    private int accent;
 
     public CustomPipRestartPreference(Context context) { this(context, null); }
     public CustomPipRestartPreference(Context context, AttributeSet attrs) { this(context, attrs, androidx.preference.R.attr.switchPreferenceCompatStyle); }
@@ -51,14 +55,27 @@ public class CustomPipRestartPreference extends Preference {
 
     @Override public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+        holder.itemView.setFocusable(false);
+        holder.itemView.setClickable(false);
+        holder.itemView.setBackground(null);
+        holder.itemView.setOnClickListener(null);
+
+        int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
+        int switchWidth = getSwitchWidthFromSwitchPreference();
+        int paddingEnd;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            paddingEnd = switchWidth / 2;
+        } else {
+            paddingEnd = switchWidth;
+        }
+
         mBoundItemView = holder.itemView;
         if (mBoundItemView instanceof LinearLayout) {
-            int switchWidth = getSwitchWidthFromSwitchPreference();
             // Apply relative padding (start, top, end, bottom)
             mBoundItemView.setPaddingRelative(
                 SettingsActivity.nestedPaddingStart,
                 mBoundItemView.getPaddingTop(),
-                switchWidth, // Right padding to simulate switch space
+                paddingEnd, // Right padding to simulate switch space
                 mBoundItemView.getPaddingBottom()
             );
         }
@@ -93,7 +110,7 @@ public class CustomPipRestartPreference extends Preference {
         mRestartButtons.add(mRestartThirdButton);
         mRestartButtons.add(mRestartFourthButton);
 
-        scheduleRuntimeSizing();
+        mBoundItemView.post(() -> scheduleRuntimeSizing());
     }
 
     @Override protected void onClick() { /* keep default: no-op to avoid toggling on row click */ }
@@ -109,13 +126,12 @@ public class CustomPipRestartPreference extends Preference {
     }
 
     private void scheduleRuntimeSizing() {
-        int hNow = (mBoundItemView != null) ? mBoundItemView.getHeight() : 0;
-        if (hNow > 0) applySizing(hNow); else applySizing(resolveRowHeightFallback());
+        applySizing(resolveRowHeightFallback());
         if (mBoundItemView != null) {
             mBoundItemView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override public void onGlobalLayout() {
                     if (mBoundItemView.getHeight() > 0) {
-                        applySizing(mBoundItemView.getHeight());
+                        applySizing(resolveRowHeightFallback());
                         mBoundItemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 }
@@ -124,16 +140,24 @@ public class CustomPipRestartPreference extends Preference {
     }
 
     private int resolveRowHeightFallback() {
-        TypedValue tv = new TypedValue();
-        if (getContext().getTheme().resolveAttribute(android.R.attr.listPreferredItemHeight, tv, true)) {
-            if (tv.type == TypedValue.TYPE_DIMENSION) {
-                return TypedValue.complexToDimensionPixelSize(tv.data, getContext().getResources().getDisplayMetrics());
-            } else if (tv.resourceId != 0) {
-                try { return getContext().getResources().getDimensionPixelSize(tv.resourceId); } catch (Exception ignored) {}
-            }
-        }
-        float density = getContext().getResources().getDisplayMetrics().density;
-        return Math.round(48 * density);
+        Context context = getContext();
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        
+        // Try to get text sizes from theme attributes
+        TypedValue titleSize = new TypedValue();
+        TypedValue summarySize = new TypedValue();
+        
+        context.getTheme().resolveAttribute(android.R.attr.textAppearanceListItem, titleSize, true);
+        context.getTheme().resolveAttribute(android.R.attr.textAppearanceListItemSecondary, summarySize, true);
+        
+        // Default fallback values
+        float titleHeight = 16 * metrics.scaledDensity * 1.3f;
+        float summaryHeight = 14 * metrics.scaledDensity * 1.3f;
+        
+        float density = metrics.density;
+        int verticalPadding = Math.round(32 * density);
+        
+        return (int) (titleHeight + summaryHeight) + verticalPadding;
     }
 
     private void applySizing(int rowH) {
@@ -150,7 +174,7 @@ public class CustomPipRestartPreference extends Preference {
         float txtPx= Math.max(1, btnH * TXT_PCT_OF_BTN_H);
 
         // Colors
-        int accent = ContextCompat.getColor(getContext(), R.color.colorAccent);
+        accent = ContextCompat.getColor(getContext(), R.color.colorAccent);
 
         for (AppCompatButton button : mRestartButtons) {
             if (button != null) {
@@ -162,36 +186,58 @@ public class CustomPipRestartPreference extends Preference {
                 GradientDrawable posBg = new GradientDrawable();
                 if (button == mRestartFirstButton) {
                     boolean firstPip = sharedPrefs.getBoolean(Keys.PIP_FIRST, false);
-                    if (firstPip) {
+                    boolean dualPip = sharedPrefs.getBoolean(Keys.PIP_DUAL, false);
+                    String firstPackage = sharedPrefs.getString(Keys.PIP_FIRST_PACKAGE, "");
+                    if ((firstPip || dualPip) && !firstPackage.isEmpty()) {
                         button.setOnClickListener(v -> restartPipApp(Keys.PIP_FIRST_PACKAGE));
                         posBg.setColor(accent);
+                        button.setClickable(true);
+                        button.setFocusable(true);
                     } else {
                         posBg.setColor(Color.GRAY);
+                        button.setClickable(false);
+                        button.setFocusable(false);
                     }   
                 } else if (button == mRestartSecondButton) {
                     boolean secondPip = sharedPrefs.getBoolean(Keys.PIP_SECOND, false);
-                    if (secondPip) {
+                    boolean dualPip = sharedPrefs.getBoolean(Keys.PIP_DUAL, false);
+                    String secondPackage = sharedPrefs.getString(Keys.PIP_SECOND_PACKAGE, "");
+                    if ((secondPip || dualPip) && !secondPackage.isEmpty()) {
                         button.setOnClickListener(v -> restartPipApp(Keys.PIP_SECOND_PACKAGE));  
-                        posBg.setColor(accent);              
+                        posBg.setColor(accent);
+                        button.setClickable(true);
+                        button.setFocusable(true);
                     } else {
                         posBg.setColor(Color.GRAY);
-                    }   
+                        button.setClickable(false);
+                        button.setFocusable(false);
+                    }
                 } else if (button == mRestartThirdButton) {
                     boolean thirdPip = sharedPrefs.getBoolean(Keys.PIP_THIRD, false);
-                    if (thirdPip) {
+                    String thirdPackage = sharedPrefs.getString(Keys.PIP_THIRD_PACKAGE, "");
+                    if (thirdPip && !thirdPackage.isEmpty()) {
                         button.setOnClickListener(v -> restartPipApp(Keys.PIP_THIRD_PACKAGE));  
-                        posBg.setColor(accent);              
+                        posBg.setColor(accent);
+                        button.setClickable(true);
+                        button.setFocusable(true);
                     } else {
                         posBg.setColor(Color.GRAY);
-                    } 
+                        button.setClickable(false);
+                        button.setFocusable(false);
+                    }
                 } else if (button == mRestartFourthButton) {
                     boolean fourthPip = sharedPrefs.getBoolean(Keys.PIP_FOURTH, false);
-                    if (fourthPip) {   
+                    String fourthPackage = sharedPrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
+                    if (fourthPip && !fourthPackage.isEmpty()) { 
                         button.setOnClickListener(v -> restartPipApp(Keys.PIP_FOURTH_PACKAGE));  
-                        posBg.setColor(accent);             
+                        posBg.setColor(accent);
+                        button.setClickable(true);
+                        button.setFocusable(true);
                     } else {
                         posBg.setColor(Color.GRAY);
-                    }  
+                        button.setClickable(false);
+                        button.setFocusable(false);
+                    }
                 }
                 posBg.setCornerRadius(dp(12));
                 ColorStateList rippleColor = ColorStateList.valueOf(0x33FFFFFF);
@@ -200,8 +246,6 @@ public class CustomPipRestartPreference extends Preference {
                 mask.setCornerRadius(dp(12));
                 RippleDrawable ripple = new RippleDrawable(rippleColor, posBg, mask);
                 button.setBackground(ripple);
-                button.setClickable(true);
-                button.setFocusable(true);
             }
         }
     }
@@ -223,6 +267,76 @@ public class CustomPipRestartPreference extends Preference {
                 forceStopPackage.invoke(activityManager, appPackageName);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    public void refreshButtons() {
+        for (AppCompatButton button : mRestartButtons) {
+            if (button != null) {
+                GradientDrawable posBg = new GradientDrawable();
+                if (button == mRestartFirstButton) {
+                    boolean firstPip = sharedPrefs.getBoolean(Keys.PIP_FIRST, false);
+                    boolean dualPip = sharedPrefs.getBoolean(Keys.PIP_DUAL, false);
+                    String firstPackage = sharedPrefs.getString(Keys.PIP_FIRST_PACKAGE, "");
+                    if ((firstPip || dualPip) && !firstPackage.isEmpty()) {
+                        button.setOnClickListener(v -> restartPipApp(Keys.PIP_FIRST_PACKAGE));
+                        posBg.setColor(accent);
+                        button.setClickable(true);
+                        button.setFocusable(true);
+                    } else {
+                        posBg.setColor(Color.GRAY);
+                        button.setClickable(false);
+                        button.setFocusable(false);
+                    }   
+                } else if (button == mRestartSecondButton) {
+                    boolean secondPip = sharedPrefs.getBoolean(Keys.PIP_SECOND, false);
+                    boolean dualPip = sharedPrefs.getBoolean(Keys.PIP_DUAL, false);
+                    String secondPackage = sharedPrefs.getString(Keys.PIP_SECOND_PACKAGE, "");
+                    if ((secondPip || dualPip) && !secondPackage.isEmpty()) {
+                        button.setOnClickListener(v -> restartPipApp(Keys.PIP_SECOND_PACKAGE));  
+                        posBg.setColor(accent);
+                        button.setClickable(true);
+                        button.setFocusable(true);
+                    } else {
+                        posBg.setColor(Color.GRAY);
+                        button.setClickable(false);
+                        button.setFocusable(false);
+                    }
+                } else if (button == mRestartThirdButton) {
+                    boolean thirdPip = sharedPrefs.getBoolean(Keys.PIP_THIRD, false);
+                    String thirdPackage = sharedPrefs.getString(Keys.PIP_THIRD_PACKAGE, "");
+                    if (thirdPip && !thirdPackage.isEmpty()) {
+                        button.setOnClickListener(v -> restartPipApp(Keys.PIP_THIRD_PACKAGE));  
+                        posBg.setColor(accent);
+                        button.setClickable(true);
+                        button.setFocusable(true);
+                    } else {
+                        posBg.setColor(Color.GRAY);
+                        button.setClickable(false);
+                        button.setFocusable(false);
+                    }
+                } else if (button == mRestartFourthButton) {
+                    boolean fourthPip = sharedPrefs.getBoolean(Keys.PIP_FOURTH, false);
+                    String fourthPackage = sharedPrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
+                    if (fourthPip && !fourthPackage.isEmpty()) {   
+                        button.setOnClickListener(v -> restartPipApp(Keys.PIP_FOURTH_PACKAGE));  
+                        posBg.setColor(accent);
+                        button.setClickable(true);
+                        button.setFocusable(true);
+                    } else {
+                        posBg.setColor(Color.GRAY);
+                        button.setClickable(false);
+                        button.setFocusable(false);
+                    }
+                }
+                posBg.setCornerRadius(dp(12));
+                ColorStateList rippleColor = ColorStateList.valueOf(0x33FFFFFF);
+                GradientDrawable mask = new GradientDrawable();
+                mask.setColor(Color.WHITE);
+                mask.setCornerRadius(dp(12));
+                RippleDrawable ripple = new RippleDrawable(rippleColor, posBg, mask);
+                button.setBackground(ripple);
             }
         }
     }

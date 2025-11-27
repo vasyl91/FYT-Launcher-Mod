@@ -920,7 +920,6 @@ public class LauncherModel extends BroadcastReceiver {
                 }
 
                 Launcher.getLauncher().triggerAppData();
-                initCustomElements();
             }
         };
         runOnWorkerThread(r);
@@ -2477,7 +2476,6 @@ public class LauncherModel extends BroadcastReceiver {
                             + (SystemClock.uptimeMillis()-t) + "ms");
                 }
                 Launcher.getLauncher().triggerAppData();
-                initCustomElements();
             };
             boolean isRunningOnMainThread = !(sWorkerThread.getThreadId() == Process.myTid());
             if (isRunningOnMainThread) {
@@ -2552,7 +2550,6 @@ public class LauncherModel extends BroadcastReceiver {
                         Log.i(TAG, "not binding apps: no Launcher activity");
                     }
                     Launcher.getLauncher().triggerAppData();
-                    initCustomElements();
                 }
             });
 
@@ -2571,11 +2568,6 @@ public class LauncherModel extends BroadcastReceiver {
                 Log.d(TAG, "mItems size=" + sBgWorkspaceItems.size());
             }
         }
-    }
-
-    private static void initCustomElements() {
-        Intent intentCustomElements = new Intent(Keys.START_ADDING_CUSTOM_ELEMETNS);
-        LauncherApplication.sApp.sendBroadcast(intentCustomElements);
     }
 
     void enqueuePackageUpdated(PackageUpdatedTask task) {

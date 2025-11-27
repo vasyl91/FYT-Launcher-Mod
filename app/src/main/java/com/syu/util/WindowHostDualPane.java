@@ -29,6 +29,7 @@ import android.widget.FrameLayout;
 
 import com.android.launcher66.LauncherApplication;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +41,13 @@ public  class WindowHostDualPane {
 
     private static final String PREFS = "pip_window_host_prefs";
     private static final String KEY_SPLIT = "dual_split_ratio";
-    private static final long SURFACE_RESTORE_DELAY_MS = 500L;
+    private static final long SURFACE_RESTORE_DELAY_MS = 500L; 
+    private static final long BLACK_SCREEN_CHECK_DELAY_MS = 800L;
+    private static final int MAX_RESTART_ATTEMPTS = 2;
+    private int leftRestartCount = 0;
+    private int rightRestartCount = 0;
+    private final AtomicBoolean leftBlackScreenDetected = new AtomicBoolean(false);
+    private final AtomicBoolean rightBlackScreenDetected = new AtomicBoolean(false);
 
     // Timing
     private static int  START_WAIT_TIMEOUT_MS = 40;
@@ -94,6 +101,12 @@ public  class WindowHostDualPane {
     void show(Activity act, WindowManager wm, ActivityManager am, IBinder token, String lPkg, String rPkg, Rect b) {
         if (lPkg == null || rPkg == null || b == null) return;
 
+        // Pre-warm ActivityViews in background for next time
+        new Thread(() -> {
+            WindowHostSurfacePreloader.prewarmActivityView(act, "dual_left");
+            WindowHostSurfacePreloader.prewarmActivityView(act, "dual_right");
+        }).start();
+
         this.activity = act;
         this.wm = wm;
 
@@ -108,6 +121,13 @@ public  class WindowHostDualPane {
         }
 
         final int myGen = ++gen;
+        
+        // Reset restart counters and detection flags for new show
+        leftRestartCount = 0;
+        rightRestartCount = 0;
+        leftBlackScreenDetected.set(false);
+        rightBlackScreenDetected.set(false);
+        
         forceRemoveWindowNoGen();
 
         postNextFrame(() -> {
@@ -116,7 +136,7 @@ public  class WindowHostDualPane {
             ensureWindow(act, wm, token);
             setPendingBoundsFast(b);
             applySplitFromBounds();
-            ensureAVs(act, myGen);
+            ensureActivityView(act, myGen);
             if (!leftAttached) attachLeft(myGen);
             if (!rightAttached) attachRight(myGen);
 
@@ -126,8 +146,16 @@ public  class WindowHostDualPane {
             leftFirstFrame.set(false); rightFirstFrame.set(false);
             visible.set(true);
 
-            if (!haveL) startLeftWhenReady(am, lPkg, myGen);
-            if (!haveR) startRightWhenReady(am, rPkg, myGen);
+            if (!haveL) {
+                startLeftWhenReady(am, lPkg, myGen);
+                // Schedule black screen check
+                checkForBlackScreenAndRestart(true, lPkg, myGen);
+            }
+            if (!haveR) {
+                startRightWhenReady(am, rPkg, myGen);
+                // Schedule black screen check
+                checkForBlackScreenAndRestart(false, rPkg, myGen);
+            }
         });
     }
 
@@ -243,30 +271,55 @@ public  class WindowHostDualPane {
         }
     }
 
-    private void ensureAVs(Context ctx, int expectedGen) {
+    private void ensureActivityView(Context ctx, int expectedGen) {
         if (leftAV == null) {
-            leftAV = WindowHostActivityView.newInstance(ctx);
+            // Try to get pre-warmed instance first
+            leftAV = WindowHostSurfacePreloader.getWarmActivityView("dual_left");
+            
+            if (leftAV == null) {
+                leftAV = WindowHostActivityView.newInstance(ctx);
+            }
+            
             leftReady.set(false);
             WindowHostActivityView.trySetCallback(leftAV, new WindowHostActivityView.Callback() {
                 @Override public void onReady() { if (gen == expectedGen) leftReady.set(true); }
                 @Override public void onTaskCreated(int id) { if (gen == expectedGen) leftTask = id; }
             });
+            
+            // Force instant surface readiness
+            View leftView = WindowHostActivityView.asView(leftAV);
+            WindowHostSurfacePreloader.forceInstantSurfaceReady(leftView);
         }
+        
         if (rightAV == null) {
-            rightAV = WindowHostActivityView.newInstance(ctx);
+            // Try to get pre-warmed instance first
+            rightAV = WindowHostSurfacePreloader.getWarmActivityView("dual_right");
+            
+            if (rightAV == null) {
+                rightAV = WindowHostActivityView.newInstance(ctx);
+            }
+            
             rightReady.set(false);
             WindowHostActivityView.trySetCallback(rightAV, new WindowHostActivityView.Callback() {
                 @Override public void onReady() { if (gen == expectedGen) rightReady.set(true); }
                 @Override public void onTaskCreated(int id) { if (gen == expectedGen) rightTask = id; }
             });
+            
+            // Force instant surface readiness
+            View rightView = WindowHostActivityView.asView(rightAV);
+            WindowHostSurfacePreloader.forceInstantSurfaceReady(rightView);
         }
-        leftFirstFrame.set(false); rightFirstFrame.set(false);
+        
+        leftFirstFrame.set(false); 
+        rightFirstFrame.set(false);
     }
 
     private void attachLeft(int expectedGen) {
         if (leftHost == null || leftAV == null) return;
         View v = WindowHostActivityView.asView(leftAV);
-        if (v.getParent() instanceof ViewGroup) { try { ((ViewGroup) v.getParent()).removeView(v); } catch (Throwable ignore) {} }
+        if (v.getParent() instanceof ViewGroup) { 
+            try { ((ViewGroup) v.getParent()).removeView(v); } catch (Throwable ignore) {} 
+        }
         leftHost.removeAllViews();
         v.setVisibility(View.VISIBLE);
         WindowHostSurfaceTamer.tame(v);
@@ -274,12 +327,16 @@ public  class WindowHostDualPane {
         leftHost.addView(v, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         leftAttached = true;
+        
+        WindowHostInstantRenderStrategy.applyToContainer(leftHost, "dual_left");
     }
 
     private void attachRight(int expectedGen) {
         if (rightHost == null || rightAV == null) return;
         View v = WindowHostActivityView.asView(rightAV);
-        if (v.getParent() instanceof ViewGroup) { try { ((ViewGroup) v.getParent()).removeView(v); } catch (Throwable ignore) {} }
+        if (v.getParent() instanceof ViewGroup) { 
+            try { ((ViewGroup) v.getParent()).removeView(v); } catch (Throwable ignore) {} 
+        }
         rightHost.removeAllViews();
         v.setVisibility(View.VISIBLE);
         WindowHostSurfaceTamer.tame(v);
@@ -287,6 +344,8 @@ public  class WindowHostDualPane {
         rightHost.addView(v, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         rightAttached = true;
+        
+        WindowHostInstantRenderStrategy.applyToContainer(rightHost, "dual_right");
     }
 
     private void startLeftWhenReady(ActivityManager am, String pkg, int expectedGen) {
@@ -306,7 +365,27 @@ public  class WindowHostDualPane {
     private void startLeftNow(ActivityManager am, String pkg, int expectedGen) {
         if (gen != expectedGen) return;
         if (leftTask > 0 && pkg.equals(leftPkg)) return;
-        Intent i = mainLaunchIntent(activity, pkg);
+        
+        // Validate left surface
+        if (leftHost != null) {
+            SurfaceView sv = findSurfaceView(leftHost);
+            if (sv != null) {
+                try {
+                    SurfaceHolder holder = sv.getHolder();
+                    if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
+                        Log.w(TAG, "DualLeft: Surface not ready, deferring start");
+                        postMainDelayed(() -> startLeftNow(am, pkg, expectedGen), 50);
+                        return;
+                    }
+                } catch (Throwable t) {
+                    Log.w(TAG, "DualLeft: Surface check failed, deferring start");
+                    postMainDelayed(() -> startLeftNow(am, pkg, expectedGen), 50);
+                    return;
+                }
+            }
+        }
+        
+        Intent i = mainLaunchIntent(pkg);
         if (i == null) return;
         i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         int leftW = hasPendingBounds ? Math.max(1, Math.round(pendingBounds.width() * splitRatio)) : 300;
@@ -314,13 +393,47 @@ public  class WindowHostDualPane {
                 pendingBounds.left + leftW, pendingBounds.bottom) : null;
         Object o = WindowHostActivityView.makeOptionsWithBounds(b);
         boolean ok = WindowHostActivityView.startActivitySmart(leftAV, activity, i, o);
-        Log.i(TAG, "DualLeft " + (ok ? "start ok" : "start failed"));
+        
+        if (!ok) {
+            Log.w(TAG, "DualLeft start failed, will retry once");
+            postMainDelayed(() -> {
+                if (gen != expectedGen) return;
+                Intent retry = mainLaunchIntent(pkg);
+                if (retry != null) {
+                    retry.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    boolean retryOk = WindowHostActivityView.startActivitySmart(leftAV, activity, retry, o);
+                    Log.i(TAG, "DualLeft " + (retryOk ? "retry ok" : "retry failed"));
+                }
+            }, 200);
+        } else {
+            Log.i(TAG, "DualLeft start ok");
+        }
     }
 
     private void startRightNow(ActivityManager am, String pkg, int expectedGen) {
         if (gen != expectedGen) return;
         if (rightTask > 0 && pkg.equals(rightPkg)) return;
-        Intent i = mainLaunchIntent(activity, pkg);
+        
+        // Validate right surface
+        if (rightHost != null) {
+            SurfaceView sv = findSurfaceView(rightHost);
+            if (sv != null) {
+                try {
+                    SurfaceHolder holder = sv.getHolder();
+                    if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
+                        Log.w(TAG, "DualRight: Surface not ready, deferring start");
+                        postMainDelayed(() -> startRightNow(am, pkg, expectedGen), 50);
+                        return;
+                    }
+                } catch (Throwable t) {
+                    Log.w(TAG, "DualRight: Surface check failed, deferring start");
+                    postMainDelayed(() -> startRightNow(am, pkg, expectedGen), 50);
+                    return;
+                }
+            }
+        }
+        
+        Intent i = mainLaunchIntent(pkg);
         if (i == null) return;
         i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         int leftWidth = hasPendingBounds ? Math.max(1, Math.round(pendingBounds.width() * splitRatio)) : 300;
@@ -329,7 +442,21 @@ public  class WindowHostDualPane {
                 pendingBounds.top, pendingBounds.right, pendingBounds.bottom) : null;
         Object o = WindowHostActivityView.makeOptionsWithBounds(b);
         boolean ok = WindowHostActivityView.startActivitySmart(rightAV, activity, i, o);
-        Log.i(TAG, "DualRight " + (ok ? "start ok" : "start failed"));
+        
+        if (!ok) {
+            Log.w(TAG, "DualRight start failed, will retry once");
+            postMainDelayed(() -> {
+                if (gen != expectedGen) return;
+                Intent retry = mainLaunchIntent(pkg);
+                if (retry != null) {
+                    retry.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    boolean retryOk = WindowHostActivityView.startActivitySmart(rightAV, activity, retry, o);
+                    Log.i(TAG, "DualRight " + (retryOk ? "retry ok" : "retry failed"));
+                }
+            }, 200);
+        } else {
+            Log.i(TAG, "DualRight start ok");
+        }
     }
 
     private void hideSurfaces() {
@@ -618,14 +745,16 @@ public  class WindowHostDualPane {
         catch (Throwable t) { new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(r, 16); }
     }
 
-    private static Intent mainLaunchIntent(Context ctx, String pkg) {
+    private static Intent mainLaunchIntent(String pkg) {
         try {
-            PackageManager pm = ctx.getPackageManager();
+            PackageManager pm = LauncherApplication.sApp.getPackageManager();
             Intent i = pm.getLaunchIntentForPackage(pkg);
             if (i == null) return null;
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+                    | Intent.FLAG_ACTIVITY_NO_HISTORY
+                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             return i;
         } catch (Throwable t) {
             Log.w(TAG, "mainLaunchIntent failed for " + pkg, t);
@@ -636,6 +765,136 @@ public  class WindowHostDualPane {
     private void postMain(Runnable r) { new Handler(Looper.getMainLooper()).post(r); }
     private void postMainDelayed(Runnable r, long delayMs) {
         new Handler(Looper.getMainLooper()).postDelayed(r, delayMs);
+    }
+
+    private void checkForBlackScreenAndRestart(boolean isLeft, String pkg, int expectedGen) {
+        if (gen != expectedGen) return;
+        
+        postMainDelayed(() -> {
+            if (gen != expectedGen) return;
+            
+            boolean isBlack = false;
+            AtomicBoolean detectionFlag = isLeft ? leftBlackScreenDetected : rightBlackScreenDetected;
+            int restartCount = isLeft ? leftRestartCount : rightRestartCount;
+            
+            // Check if surface is visible and has content
+            FrameLayout container = isLeft ? leftHost : rightHost;
+            if (container != null) {
+                SurfaceView sv = findSurfaceView(container);
+                if (sv != null && sv.getVisibility() == View.VISIBLE) {
+                    // Check if surface holder has a valid surface
+                    try {
+                        SurfaceHolder holder = sv.getHolder();
+                        if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
+                            isBlack = true;
+                        }
+                    } catch (Throwable ignore) {
+                        isBlack = true;
+                    }
+                }
+            }
+            
+            // Also check if the first frame was never rendered
+            AtomicBoolean firstFrameFlag = isLeft ? leftFirstFrame : rightFirstFrame;
+            if (!firstFrameFlag.get() && restartCount < MAX_RESTART_ATTEMPTS) {
+                isBlack = true;
+            }
+            
+            if (isBlack && !detectionFlag.get() && restartCount < MAX_RESTART_ATTEMPTS) {
+                Log.w(TAG, (isLeft ? "Left" : "Right") + " pane showing black screen, restarting app: " + pkg);
+                detectionFlag.set(true);
+                
+                if (isLeft) {
+                    leftRestartCount++;
+                } else {
+                    rightRestartCount++;
+                }
+                
+                // Restart the app
+                restartPaneApp(isLeft, pkg, expectedGen);
+            }
+        }, BLACK_SCREEN_CHECK_DELAY_MS);
+    }
+
+    private void restartPaneApp(boolean isLeft, String pkg, int expectedGen) {
+        if (gen != expectedGen || pkg == null || pkg.isEmpty()) return;
+        
+        // Force stop the app
+        try {
+            ActivityManager am = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+            Method forceStopPackage = am.getClass().getDeclaredMethod("forceStopPackage", String.class);
+            forceStopPackage.setAccessible(true);
+            forceStopPackage.invoke(am, pkg);
+            Log.i(TAG, "Force stopped " + pkg);
+        } catch (Throwable t) {
+            Log.w(TAG, "Failed to force stop " + pkg, t);
+        }
+        
+        // Release and recreate the ActivityView
+        postMainDelayed(() -> {
+            if (gen != expectedGen) return;
+            
+            if (isLeft) {
+                if (leftAV != null) {
+                    try {
+                        WindowHostActivityView.release(leftAV);
+                    } catch (Throwable ignore) {}
+                    leftAV = null;
+                }
+                leftTask = -1;
+                leftReady.set(false);
+                leftFirstFrame.set(false);
+                leftBlackScreenDetected.set(false);
+                
+                if (leftHost != null) {
+                    leftHost.removeAllViews();
+                    leftAttached = false;
+                }
+                
+                // Recreate
+                ensureActivityView(activity, expectedGen);
+                attachLeft(expectedGen);
+                
+                // Restart the activity
+                postMainDelayed(() -> {
+                    if (gen != expectedGen) return;
+                    startLeftWhenReady((ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE), pkg, expectedGen);
+                    
+                    // Schedule another check
+                    checkForBlackScreenAndRestart(true, pkg, expectedGen);
+                }, 300);
+                
+            } else {
+                if (rightAV != null) {
+                    try {
+                        WindowHostActivityView.release(rightAV);
+                    } catch (Throwable ignore) {}
+                    rightAV = null;
+                }
+                rightTask = -1;
+                rightReady.set(false);
+                rightFirstFrame.set(false);
+                rightBlackScreenDetected.set(false);
+                
+                if (rightHost != null) {
+                    rightHost.removeAllViews();
+                    rightAttached = false;
+                }
+                
+                // Recreate
+                ensureActivityView(activity, expectedGen);
+                attachRight(expectedGen);
+                
+                // Restart the activity
+                postMainDelayed(() -> {
+                    if (gen != expectedGen) return;
+                    startRightWhenReady((ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE), pkg, expectedGen);
+                    
+                    // Schedule another check
+                    checkForBlackScreenAndRestart(false, pkg, expectedGen);
+                }, 300);
+            }
+        }, 500);
     }
 
     static final class DividerView extends FrameLayout {

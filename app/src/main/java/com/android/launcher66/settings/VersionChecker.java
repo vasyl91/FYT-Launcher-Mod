@@ -2,11 +2,11 @@ package com.android.launcher66.settings;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.core.content.FileProvider;
 
 import com.android.async.AsyncTask;
+import com.android.launcher66.BuildConfig;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -120,12 +120,14 @@ public class VersionChecker {
             private boolean isNewerVersion(String current, String latest) {
                 String[] currentParts = current.split("\\.");
                 String[] latestParts = latest.split("\\.");
+                boolean isDebug = BuildConfig.DEBUG;
 
                 int maxLength = Math.max(currentParts.length, latestParts.length);
                 for (int i = 0; i < maxLength; i++) {
                     int currentNum = (i < currentParts.length) ? Integer.parseInt(currentParts[i]) : 0;
                     int latestNum = (i < latestParts.length) ? Integer.parseInt(latestParts[i]) : 0;
                     
+                    if (latestNum == currentNum && isDebug) return true;
                     if (latestNum > currentNum) return true;
                     if (latestNum < currentNum) return false;
                 }
