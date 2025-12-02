@@ -14,9 +14,9 @@
 
 package com.android.gallery3d.glrenderer;
 
-import javax.microedition.khronos.opengles.GL11;
-
 import android.util.Log;
+
+import javax.microedition.khronos.opengles.GL11;
 
 public class RawTexture extends BasicTexture {
     private static final String TAG = "RawTexture";

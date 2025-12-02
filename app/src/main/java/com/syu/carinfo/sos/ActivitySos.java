@@ -2,7 +2,7 @@ package com.syu.carinfo.sos;
 
 import android.app.Activity;
 import android.os.Bundle;
-import com.syu.canbus.R;
+
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;

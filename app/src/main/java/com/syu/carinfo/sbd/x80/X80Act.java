@@ -5,9 +5,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.loopview.MessageHandler;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0375_SBD_WC1_ReservedCdBenTengX80;

@@ -16,7 +16,10 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Build;
 import android.provider.Settings;
+import android.text.format.DateUtils;
 import android.util.Log;
+
+import androidx.preference.PreferenceManager;
 
 import com.android.async.AsyncTask;
 import com.android.launcher66.LauncherApplication;
@@ -44,15 +47,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import android.text.format.DateUtils;
-
-import androidx.preference.PreferenceManager;
 
 import share.ResValue;
 

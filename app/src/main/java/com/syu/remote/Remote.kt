@@ -4,7 +4,11 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.*
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.IBinder
+import android.os.Looper
+import android.os.RemoteException
 import android.util.SparseArray
 import com.syu.ipc.IRemoteModule
 import com.syu.ipc.IRemoteToolkit
@@ -15,7 +19,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.net.HttpURLConnection
-import java.util.*
 import kotlin.random.Random
 
 sealed class AppEvent {

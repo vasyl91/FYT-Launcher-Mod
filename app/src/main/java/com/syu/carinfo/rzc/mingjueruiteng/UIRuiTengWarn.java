@@ -6,8 +6,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import com.syu.canbus.R;
+
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.canbus.warn.DataPack;
 import com.syu.util.HandlerUI;
 import com.syu.util.TimeLocker;

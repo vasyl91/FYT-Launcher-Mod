@@ -2,9 +2,6 @@ package com.android.recycler;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import androidx.preference.PreferenceManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +9,9 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher66.Launcher;
 import com.android.launcher66.R;

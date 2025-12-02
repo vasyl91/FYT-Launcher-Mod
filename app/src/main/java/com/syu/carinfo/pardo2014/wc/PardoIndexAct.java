@@ -6,8 +6,9 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.RadioGroup;
 import android.widget.TabHost;
-import com.syu.canbus.R;
+
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.ui.door.DoorHelper;
 
 @SuppressWarnings({"deprecation", "unchecked"})

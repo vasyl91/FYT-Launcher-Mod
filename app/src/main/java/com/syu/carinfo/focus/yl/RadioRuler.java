@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 

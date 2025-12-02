@@ -3,6 +3,7 @@ package com.syu.carinfo.wc2.ford;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;

@@ -3,6 +3,7 @@ package com.syu.carinfo.daojun.b70;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;

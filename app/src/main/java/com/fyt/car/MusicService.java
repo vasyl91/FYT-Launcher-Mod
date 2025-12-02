@@ -33,7 +33,6 @@ public class MusicService extends Service {
     public static String album = "";
     public static long TOTALMINUTES = 0;
     public static long CURMINUTES = 0;
-    private boolean intentSent = false;
 
     @Override
     public IBinder onBind(Intent arg0) {

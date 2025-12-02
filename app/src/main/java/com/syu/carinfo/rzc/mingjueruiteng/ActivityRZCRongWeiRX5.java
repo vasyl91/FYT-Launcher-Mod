@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;

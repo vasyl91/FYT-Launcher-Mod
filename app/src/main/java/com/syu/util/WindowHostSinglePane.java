@@ -2,6 +2,7 @@ package com.syu.util;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -270,7 +271,7 @@ public class WindowHostSinglePane {
         if (gen != expectedGen) return;
         if (taskId > 0 && pkg.equals(currentPkg)) return;
         
-        // Add surface validation
+        // Validate surface is ready
         if (host != null) {
             SurfaceView sv = findSurfaceView(host);
             if (sv != null) {
@@ -282,33 +283,132 @@ public class WindowHostSinglePane {
                         return;
                     }
                 } catch (Throwable t) {
-                    Log.w(TAG, name + ": Surface check failed, deferring start");
+                    Log.w(TAG, name + ": Surface check failed, deferring start", t);
                     postMainDelayed(() -> startNow(am, pkg, expectedGen), 50);
                     return;
                 }
             }
         }
         
-        Intent main = mainLaunchIntent(pkg);
-        if (main == null) { Log.w(TAG, name + ": no launch intent for " + pkg); return; }
-        main.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        Object opts = WindowHostActivityView.makeOptionsWithBounds(hasPendingBounds ? new Rect(pendingBounds) : null);
-        boolean ok = WindowHostActivityView.startActivitySmart(av, activity, main, opts);
+        // Check app compatibility
+        if (!WindowHostAppCompatibility.canRunInActivityView(activity, pkg)) {
+            Log.e(TAG, name + ": Cannot start " + pkg + ": " + 
+                WindowHostAppCompatibility.getIncompatibilityReason(activity, pkg));
+            
+            android.widget.Toast.makeText(activity, 
+                "Unable to run " + pkg + " in windowed mode. " +
+                WindowHostAppCompatibility.getIncompatibilityReason(activity, pkg), 
+                android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
         
-        if (!ok) {
-            Log.w(TAG, name + ": start failed, will retry once");
+        // Create compatible intent
+        Intent main = WindowHostAppCompatibility.createCompatibleIntent(activity, pkg);
+        if (main == null) {
+            Log.e(TAG, name + ": Failed to create intent for " + pkg);
+            main = mainLaunchIntent(pkg);
+            if (main == null) { 
+                Log.w(TAG, name + ": no launch intent for " + pkg); 
+                return; 
+            }
+        }
+        main.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        
+        // Create compatible options
+        Rect bounds = hasPendingBounds ? new Rect(pendingBounds) : null;
+        Object opts = WindowHostAppCompatibility.createCompatibleOptions(pkg, bounds);
+        if (opts == null) {
+            opts = WindowHostActivityView.makeOptionsWithBounds(bounds);
+        }
+        
+        try {
+            boolean ok = WindowHostActivityView.startActivitySmart(av, activity, main, opts);
+            
+            if (!ok) {
+                Log.w(TAG, name + ": start failed for " + pkg + ", attempting retry");
+                
+                // Retry with different strategy based on app type
+                postMainDelayed(() -> {
+                    if (gen != expectedGen) return;
+                    
+                    Intent retry;
+                    if (WindowHostAppCompatibility.isProblematic(pkg)) {
+                        // For problematic apps, try minimal flags
+                        retry = activity.getPackageManager().getLaunchIntentForPackage(pkg);
+                        if (retry != null) {
+                            retry.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        }
+                    } else {
+                        retry = mainLaunchIntent(pkg);
+                        if (retry != null) {
+                            retry.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        }
+                    }
+                    
+                    if (retry != null) {
+                        Object retryOpts = WindowHostActivityView.makeOptionsWithBounds(bounds);
+                        boolean retryOk = WindowHostActivityView.startActivitySmart(av, activity, retry, retryOpts);
+                        Log.i(TAG, name + (retryOk ? ": retry succeeded" : ": retry failed"));
+                        
+                        if (!retryOk) {
+                            // Final attempt with absolute minimal configuration
+                            postMainDelayed(() -> {
+                                if (gen != expectedGen) return;
+                                attemptMinimalLaunch(pkg, bounds);
+                            }, 300);
+                        }
+                    }
+                }, 200);
+            } else {
+                Log.i(TAG, name + ": start ok for " + pkg);
+            }
+        } catch (SecurityException e) {
+            Log.e(TAG, name + ": SecurityException for " + pkg + " - missing permissions", e);
+            android.widget.Toast.makeText(activity,
+                pkg + " needs additional permissions. Please grant them in Settings.",
+                android.widget.Toast.LENGTH_LONG).show();
+            WindowHostAppCompatibility.registerProblematicApp(pkg);
+        } catch (Exception e) {
+            Log.e(TAG, name + ": Exception starting " + pkg, e);
+            WindowHostAppCompatibility.registerProblematicApp(pkg);
+            
+            // Try one more time with minimal configuration
             postMainDelayed(() -> {
                 if (gen != expectedGen) return;
-                Intent retry = mainLaunchIntent(pkg);
-                if (retry != null) {
-                    retry.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    Object retryOpts = WindowHostActivityView.makeOptionsWithBounds(hasPendingBounds ? new Rect(pendingBounds) : null);
-                    boolean retryOk = WindowHostActivityView.startActivitySmart(av, activity, retry, retryOpts);
-                    Log.i(TAG, name + (retryOk ? ": retry succeeded" : ": retry also failed"));
-                }
-            }, 200);
-        } else {
-            Log.i(TAG, name + ": start ok");
+                attemptMinimalLaunch(pkg, bounds);
+            }, 300);
+        }
+    }
+
+    /**
+     * Last-resort minimal launch attempt
+     */
+    private void attemptMinimalLaunch(String pkg, Rect bounds) {
+        try {
+            Log.i(TAG, name + ": Attempting minimal launch for " + pkg);
+            
+            PackageManager pm = activity.getPackageManager();
+            Intent minimal = pm.getLaunchIntentForPackage(pkg);
+            
+            if (minimal == null) {
+                Log.e(TAG, name + ": No launch intent available");
+                return;
+            }
+            
+            // Absolutely minimal flags
+            minimal.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            
+            // Try with and without bounds
+            ActivityOptions opts = ActivityOptions.makeBasic();
+            if (bounds != null) {
+                opts.setLaunchBounds(bounds);
+            }
+            
+            boolean success = WindowHostActivityView.startActivitySmart(av, activity, minimal, opts);
+            Log.i(TAG, name + ": Minimal launch " + (success ? "succeeded" : "failed"));
+            
+        } catch (Exception e) {
+            Log.e(TAG, name + ": Minimal launch exception", e);
         }
     }
 

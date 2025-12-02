@@ -14,13 +14,13 @@
 
 package com.android.gallery3d.glrenderer;
 
-import java.util.HashMap;
-
-import javax.microedition.khronos.opengles.GL11;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.opengl.GLUtils;
+
+import java.util.HashMap;
+
+import javax.microedition.khronos.opengles.GL11;
 
 // UploadedTextures use a Bitmap for the content of the texture.
 //

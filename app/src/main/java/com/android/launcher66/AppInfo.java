@@ -8,7 +8,9 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.syu.util.CustomIcons;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

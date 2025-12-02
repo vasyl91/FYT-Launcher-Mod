@@ -2349,14 +2349,14 @@ public class LauncherModel extends BroadcastReceiver {
             ArrayList<Long> orderedScreenIds = new ArrayList<Long>();
             synchronized (sBgLock) {
                 mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-                boolean userLayoutBool = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-                if (userLayoutBool) {
+                boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+                if (userLayout) {
                     appWidgets.addAll(sBgAppWidgets);
                     folders.putAll(sBgFolders);
                     workspaceItems.addAll(sBgWorkspaceItems);
+                    itemsIdMap.putAll(sBgItemsIdMap);
+                    orderedScreenIds.addAll(sBgWorkspaceScreens);
                 }
-                itemsIdMap.putAll(sBgItemsIdMap);
-                orderedScreenIds.addAll(sBgWorkspaceScreens);
             }
 
             ArrayList<ItemInfo> currentWorkspaceItems = new ArrayList<ItemInfo>();

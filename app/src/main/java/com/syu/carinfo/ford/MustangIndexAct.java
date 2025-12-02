@@ -5,9 +5,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.focus.FocusSyncBtActi;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;

@@ -88,6 +88,36 @@ public class WindowHostActivityView {
     }
 
     static boolean startActivitySmart(Object av, Context ctx, Intent intent, Object opts) {
+        String packageName = intent.getComponent() != null ? 
+            intent.getComponent().getPackageName() : null;
+        
+        // Check compatibility first
+        if (packageName != null) {
+            if (!WindowHostAppCompatibility.canRunInActivityView(ctx, packageName)) {
+                Log.e(TAG, "App cannot run in ActivityView: " + packageName);
+                Log.e(TAG, "Reason: " + WindowHostAppCompatibility.getIncompatibilityReason(ctx, packageName));
+                return false;
+            }
+            
+            // Use compatible intent if problematic
+            if (WindowHostAppCompatibility.isProblematic(packageName)) {
+                Log.i(TAG, "Using compatible intent for problematic app: " + packageName);
+                intent = WindowHostAppCompatibility.createCompatibleIntent(ctx, packageName);
+                if (intent == null) return false;
+                
+                // Also recreate options
+                Rect bounds = null;
+                if (opts instanceof ActivityOptions) {
+                    try {
+                        bounds = (Rect) ((ActivityOptions) opts).getClass()
+                            .getMethod("getLaunchBounds")
+                            .invoke(opts);
+                    } catch (Exception ignore) {}
+                }
+                opts = WindowHostAppCompatibility.createCompatibleOptions(packageName, bounds);
+            }
+        }
+        
         PendingIntent pi = null;
         try { pi = buildPendingIntent(ctx, intent); } catch (Throwable ignore) {}
 

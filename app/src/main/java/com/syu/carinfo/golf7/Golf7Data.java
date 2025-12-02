@@ -1,7 +1,7 @@
 package com.syu.carinfo.golf7;
 
-import com.syu.canbus.R;
 import com.android.launcher66.LauncherApplication;
+import com.syu.canbus.R;
 import com.syu.carinfo.camry2012.xp.CamryData;
 
 @SuppressWarnings({"deprecation", "unchecked"})

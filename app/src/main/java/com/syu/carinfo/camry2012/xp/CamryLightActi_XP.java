@@ -3,6 +3,7 @@ package com.syu.carinfo.camry2012.xp;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;

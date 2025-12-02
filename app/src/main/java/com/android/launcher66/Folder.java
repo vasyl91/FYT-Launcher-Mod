@@ -4,8 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -34,6 +35,9 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.AutoScrollHelper;
+
 import com.android.launcher66.FolderInfo.FolderListener;
 import com.android.launcher66.settings.Helpers;
 import com.syu.util.WindowUtil;
@@ -41,13 +45,6 @@ import com.syu.util.WindowUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import android.content.ComponentName;
-import android.content.pm.ResolveInfo;
-
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.AutoScrollHelper;
-import androidx.preference.PreferenceManager;
-
 import java.util.List;
 
 /**

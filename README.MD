@@ -15,11 +15,12 @@ List of modifications:
 - Launcher creator allowing to adjust launcher's layout to user preferences. All elements of the layout but the bottom bar might be turned off. User can also specify which screen should be the main screen.
 - Bottom bar with optional widgets.
 - Auto hide bottm bar option.
+- Skins for widgets and bottom bar.
 - Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with position on the screen specified by user.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct the sunset and sunrise times, set the wallpaper and the brightness for the day/night mode).
 - Settings fragment with useful tweaks.
 - New icon for the launcher and its settings with settings' icon in the app drawer.
-- Update feature allowing user to perform easy updates in the launcher's settings.
+- "Update" feature allowing user to perform easy updates in the launcher's settings.
 - Replaced part of deprecated code with the new one.
 
 
@@ -43,7 +44,9 @@ Second method related to the modified android ActivityView allows to display app
 <details>
 
 [<img src="./images/1.png" width="50%">](./images/1.png) [<img src="./images/2.png" width="50%">](./images/2.png)
-[<img src="./images/4.png" width="50%">](./images/4.png)
+[<img src="./images/4.png" width="50%">](./images/4.png) [<img src="./images/5.png" width="50%">](./images/5.png)
+[<img src="./images/6.png" width="50%">](./images/6.png) [<img src="./images/7.png" width="50%">](./images/7.png)
+[<img src="./images/8.png" width="50%">](./images/8.png) [<img src="./images/9.png" width="50%">](./images/9.png)
 [<img src="./images/s1.png" width="50%">](./images/s1.png) [<img src="./images/s2.png" width="50%">](./images/s2.png)
 [<img src="./images/s3.png" width="50%">](./images/s3.png) [<img src="./images/s4.png" width="50%">](./images/s4.png)
 [<img src="./images/s5.png" width="50%">](./images/s5.png) [<img src="./images/s6.png" width="50%">](./images/s6.png)
@@ -202,7 +205,7 @@ I can not guarantee fixing all errors.
 ## Generating app in Android Studio
 
 1. Clone the repository. 
-2. Replace `android.jar` in `C:\Users\<UserName>\AppData\Local\Android\Sdk\platforms\android-36` with the file from this [release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android.jar) (only for builds up to 1.1.6, for 1.1.7 and newer use `android.jar` from this [repository](https://github.com/Reginer/aosp-android-jar) - check `targetSdk` inside `app/build.gradle.kts` and choose android version you want to work on).
+2. Replace `android.jar` in `C:\Users\<UserName>\AppData\Local\Android\Sdk\platforms\android-36` with the file from this [release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android.jar) (only for builds up to 1.1.6, for 1.1.7 and newer use `android.jar` from this [repository](https://github.com/Reginer/aosp-android-jar) - check `targetSdk` inside `app/build.gradle.kts` and choose android version you want to work with).
 3. Open the repository and rebuild the project, if I haven't forgotten anything it should work.
 4. To generate the app use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose exisiting android key alias with password `android`. 
 

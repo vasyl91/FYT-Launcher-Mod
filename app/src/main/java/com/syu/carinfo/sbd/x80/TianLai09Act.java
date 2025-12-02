@@ -5,6 +5,7 @@ import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;

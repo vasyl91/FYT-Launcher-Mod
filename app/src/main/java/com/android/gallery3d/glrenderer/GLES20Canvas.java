@@ -13,13 +13,6 @@
  */
 package com.android.gallery3d.glrenderer;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -29,6 +22,13 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.android.gallery3d.util.IntArray;
+
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GLES20Canvas implements GLCanvas {
     // ************** Constants **********************

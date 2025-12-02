@@ -2,6 +2,7 @@ package com.syu.util;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -366,7 +367,7 @@ public  class WindowHostDualPane {
         if (gen != expectedGen) return;
         if (leftTask > 0 && pkg.equals(leftPkg)) return;
         
-        // Validate left surface
+        // Validate left surface is ready
         if (leftHost != null) {
             SurfaceView sv = findSurfaceView(leftHost);
             if (sv != null) {
@@ -378,35 +379,101 @@ public  class WindowHostDualPane {
                         return;
                     }
                 } catch (Throwable t) {
-                    Log.w(TAG, "DualLeft: Surface check failed, deferring start");
+                    Log.w(TAG, "DualLeft: Surface check failed, deferring start", t);
                     postMainDelayed(() -> startLeftNow(am, pkg, expectedGen), 50);
                     return;
                 }
             }
         }
         
-        Intent i = mainLaunchIntent(pkg);
-        if (i == null) return;
+        // Check app compatibility
+        if (!WindowHostAppCompatibility.canRunInActivityView(activity, pkg)) {
+            Log.e(TAG, "DualLeft: Cannot start " + pkg + ": " + 
+                WindowHostAppCompatibility.getIncompatibilityReason(activity, pkg));
+            
+            android.widget.Toast.makeText(activity, 
+                "Unable to run " + pkg + " in windowed mode. " +
+                WindowHostAppCompatibility.getIncompatibilityReason(activity, pkg), 
+                android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
+        
+        // Create compatible intent
+        Intent i = WindowHostAppCompatibility.createCompatibleIntent(activity, pkg);
+        if (i == null) {
+            Log.e(TAG, "DualLeft: Failed to create intent for " + pkg);
+            i = mainLaunchIntent(pkg);
+            if (i == null) return;
+        }
         i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        
+        // Calculate bounds
         int leftW = hasPendingBounds ? Math.max(1, Math.round(pendingBounds.width() * splitRatio)) : 300;
         Rect b = hasPendingBounds ? new Rect(pendingBounds.left, pendingBounds.top,
                 pendingBounds.left + leftW, pendingBounds.bottom) : null;
-        Object o = WindowHostActivityView.makeOptionsWithBounds(b);
-        boolean ok = WindowHostActivityView.startActivitySmart(leftAV, activity, i, o);
         
-        if (!ok) {
-            Log.w(TAG, "DualLeft start failed, will retry once");
+        // Create compatible options
+        Object o = WindowHostAppCompatibility.createCompatibleOptions(pkg, b);
+        if (o == null) {
+            o = WindowHostActivityView.makeOptionsWithBounds(b);
+        }
+        
+        try {
+            boolean ok = WindowHostActivityView.startActivitySmart(leftAV, activity, i, o);
+            
+            if (!ok) {
+                Log.w(TAG, "DualLeft: start failed for " + pkg + ", attempting retry");
+                
+                // Retry with different strategy based on app type
+                postMainDelayed(() -> {
+                    if (gen != expectedGen) return;
+                    
+                    Intent retry;
+                    if (WindowHostAppCompatibility.isProblematic(pkg)) {
+                        // For problematic apps, try minimal flags
+                        retry = activity.getPackageManager().getLaunchIntentForPackage(pkg);
+                        if (retry != null) {
+                            retry.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        }
+                    } else {
+                        retry = mainLaunchIntent(pkg);
+                        if (retry != null) {
+                            retry.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        }
+                    }
+                    
+                    if (retry != null) {
+                        Object retryOpts = WindowHostActivityView.makeOptionsWithBounds(b);
+                        boolean retryOk = WindowHostActivityView.startActivitySmart(leftAV, activity, retry, retryOpts);
+                        Log.i(TAG, "DualLeft " + pkg + (retryOk ? " retry ok" : " retry failed"));
+                        
+                        if (!retryOk) {
+                            // Final attempt with absolute minimal configuration
+                            postMainDelayed(() -> {
+                                if (gen != expectedGen) return;
+                                attemptMinimalLaunch(leftAV, pkg, b, "DualLeft");
+                            }, 300);
+                        }
+                    }
+                }, 200);
+            } else {
+                Log.i(TAG, "DualLeft " + pkg + " start ok");
+            }
+        } catch (SecurityException e) {
+            Log.e(TAG, "DualLeft: SecurityException for " + pkg + " - missing permissions", e);
+            android.widget.Toast.makeText(activity,
+                pkg + " needs additional permissions. Please grant them in Settings.",
+                android.widget.Toast.LENGTH_LONG).show();
+            WindowHostAppCompatibility.registerProblematicApp(pkg);
+        } catch (Exception e) {
+            Log.e(TAG, "DualLeft: Exception starting " + pkg, e);
+            WindowHostAppCompatibility.registerProblematicApp(pkg);
+            
+            // Try one more time with minimal configuration
             postMainDelayed(() -> {
                 if (gen != expectedGen) return;
-                Intent retry = mainLaunchIntent(pkg);
-                if (retry != null) {
-                    retry.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    boolean retryOk = WindowHostActivityView.startActivitySmart(leftAV, activity, retry, o);
-                    Log.i(TAG, "DualLeft " + (retryOk ? "retry ok" : "retry failed"));
-                }
-            }, 200);
-        } else {
-            Log.i(TAG, "DualLeft start ok");
+                attemptMinimalLaunch(leftAV, pkg, b, "DualLeft");
+            }, 300);
         }
     }
 
@@ -414,7 +481,7 @@ public  class WindowHostDualPane {
         if (gen != expectedGen) return;
         if (rightTask > 0 && pkg.equals(rightPkg)) return;
         
-        // Validate right surface
+        // Validate right surface is ready
         if (rightHost != null) {
             SurfaceView sv = findSurfaceView(rightHost);
             if (sv != null) {
@@ -426,36 +493,134 @@ public  class WindowHostDualPane {
                         return;
                     }
                 } catch (Throwable t) {
-                    Log.w(TAG, "DualRight: Surface check failed, deferring start");
+                    Log.w(TAG, "DualRight: Surface check failed, deferring start", t);
                     postMainDelayed(() -> startRightNow(am, pkg, expectedGen), 50);
                     return;
                 }
             }
         }
         
-        Intent i = mainLaunchIntent(pkg);
-        if (i == null) return;
+        // Check app compatibility
+        if (!WindowHostAppCompatibility.canRunInActivityView(activity, pkg)) {
+            Log.e(TAG, "DualRight: Cannot start " + pkg + ": " + 
+                WindowHostAppCompatibility.getIncompatibilityReason(activity, pkg));
+            
+            android.widget.Toast.makeText(activity, 
+                "Unable to run " + pkg + " in windowed mode. " +
+                WindowHostAppCompatibility.getIncompatibilityReason(activity, pkg), 
+                android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
+        
+        // Create compatible intent
+        Intent i = WindowHostAppCompatibility.createCompatibleIntent(activity, pkg);
+        if (i == null) {
+            Log.e(TAG, "DualRight: Failed to create intent for " + pkg);
+            i = mainLaunchIntent(pkg);
+            if (i == null) return;
+        }
         i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        
+        // Calculate bounds
         int leftWidth = hasPendingBounds ? Math.max(1, Math.round(pendingBounds.width() * splitRatio)) : 300;
         Rect b = hasPendingBounds ? new Rect(
                 pendingBounds.left + leftWidth,
                 pendingBounds.top, pendingBounds.right, pendingBounds.bottom) : null;
-        Object o = WindowHostActivityView.makeOptionsWithBounds(b);
-        boolean ok = WindowHostActivityView.startActivitySmart(rightAV, activity, i, o);
         
-        if (!ok) {
-            Log.w(TAG, "DualRight start failed, will retry once");
+        // Create compatible options
+        Object o = WindowHostAppCompatibility.createCompatibleOptions(pkg, b);
+        if (o == null) {
+            o = WindowHostActivityView.makeOptionsWithBounds(b);
+        }
+        
+        try {
+            boolean ok = WindowHostActivityView.startActivitySmart(rightAV, activity, i, o);
+            
+            if (!ok) {
+                Log.w(TAG, "DualRight: start failed for " + pkg + ", attempting retry");
+                
+                // Retry with different strategy based on app type
+                postMainDelayed(() -> {
+                    if (gen != expectedGen) return;
+                    
+                    Intent retry;
+                    if (WindowHostAppCompatibility.isProblematic(pkg)) {
+                        // For problematic apps, try minimal flags
+                        retry = activity.getPackageManager().getLaunchIntentForPackage(pkg);
+                        if (retry != null) {
+                            retry.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        }
+                    } else {
+                        retry = mainLaunchIntent(pkg);
+                        if (retry != null) {
+                            retry.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        }
+                    }
+                    
+                    if (retry != null) {
+                        Object retryOpts = WindowHostActivityView.makeOptionsWithBounds(b);
+                        boolean retryOk = WindowHostActivityView.startActivitySmart(rightAV, activity, retry, retryOpts);
+                        Log.i(TAG, "DualRight " + pkg + (retryOk ? " retry ok" : " retry failed"));
+                        
+                        if (!retryOk) {
+                            // Final attempt with absolute minimal configuration
+                            postMainDelayed(() -> {
+                                if (gen != expectedGen) return;
+                                attemptMinimalLaunch(rightAV, pkg, b, "DualRight");
+                            }, 300);
+                        }
+                    }
+                }, 200);
+            } else {
+                Log.i(TAG, "DualRight " + pkg + " start ok");
+            }
+        } catch (SecurityException e) {
+            Log.e(TAG, "DualRight: SecurityException for " + pkg + " - missing permissions", e);
+            android.widget.Toast.makeText(activity,
+                pkg + " needs additional permissions. Please grant them in Settings.",
+                android.widget.Toast.LENGTH_LONG).show();
+            WindowHostAppCompatibility.registerProblematicApp(pkg);
+        } catch (Exception e) {
+            Log.e(TAG, "DualRight: Exception starting " + pkg, e);
+            WindowHostAppCompatibility.registerProblematicApp(pkg);
+            
+            // Try one more time with minimal configuration
             postMainDelayed(() -> {
                 if (gen != expectedGen) return;
-                Intent retry = mainLaunchIntent(pkg);
-                if (retry != null) {
-                    retry.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    boolean retryOk = WindowHostActivityView.startActivitySmart(rightAV, activity, retry, o);
-                    Log.i(TAG, "DualRight " + (retryOk ? "retry ok" : "retry failed"));
-                }
-            }, 200);
-        } else {
-            Log.i(TAG, "DualRight start ok");
+                attemptMinimalLaunch(rightAV, pkg, b, "DualRight");
+            }, 300);
+        }
+    }
+
+    /**
+     * Last-resort minimal launch attempt
+     */
+    private void attemptMinimalLaunch(Object av, String pkg, Rect bounds, String paneLabel) {
+        try {
+            Log.i(TAG, paneLabel + ": Attempting minimal launch for " + pkg);
+            
+            PackageManager pm = activity.getPackageManager();
+            Intent minimal = pm.getLaunchIntentForPackage(pkg);
+            
+            if (minimal == null) {
+                Log.e(TAG, paneLabel + ": No launch intent available");
+                return;
+            }
+            
+            // Absolutely minimal flags
+            minimal.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            
+            // Try with and without bounds
+            ActivityOptions opts = ActivityOptions.makeBasic();
+            if (bounds != null) {
+                opts.setLaunchBounds(bounds);
+            }
+            
+            boolean success = WindowHostActivityView.startActivitySmart(av, activity, minimal, opts);
+            Log.i(TAG, paneLabel + ": Minimal launch " + (success ? "succeeded" : "failed"));
+            
+        } catch (Exception e) {
+            Log.e(TAG, paneLabel + ": Minimal launch exception", e);
         }
     }
 

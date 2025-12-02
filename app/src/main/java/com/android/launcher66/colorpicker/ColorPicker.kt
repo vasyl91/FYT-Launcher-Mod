@@ -24,8 +24,8 @@ import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
 import androidx.core.content.ContextCompat
 import androidx.core.view.updatePadding
-import com.android.launcher66.colorpicker.ColorFormatHelper.formatColorValues
 import com.android.launcher66.R
+import com.android.launcher66.colorpicker.ColorFormatHelper.formatColorValues
 import com.google.android.flexbox.FlexboxLayout
 
 class ColorPicker(private val activity: Activity) : Dialog(activity), OnSeekBarChangeListener {

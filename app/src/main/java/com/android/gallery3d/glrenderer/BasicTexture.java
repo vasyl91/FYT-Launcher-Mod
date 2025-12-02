@@ -14,11 +14,11 @@
 
 package com.android.gallery3d.glrenderer;
 
-import java.util.WeakHashMap;
-
 import android.util.Log;
 
 import com.android.gallery3d.common.Utils;
+
+import java.util.WeakHashMap;
 
 // BasicTexture is a Texture corresponds to a real GL texture.
 // The state of a BasicTexture indicates whether its data is loaded to GL memory.

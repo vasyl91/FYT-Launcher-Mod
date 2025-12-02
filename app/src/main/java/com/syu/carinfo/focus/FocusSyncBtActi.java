@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
@@ -25,6 +26,7 @@ import com.syu.module.main.DataMain;
 import com.syu.module.sound.DataSound;
 import com.syu.module.sound.FFuncSound;
 import com.syu.util.HandlerUI;
+
 import java.util.Calendar;
 
 @SuppressWarnings({"deprecation", "unchecked"})

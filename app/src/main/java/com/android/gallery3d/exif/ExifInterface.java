@@ -14,6 +14,11 @@
 
 package com.android.gallery3d.exif;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+import android.util.SparseIntArray;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,11 +43,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TimeZone;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
-import android.util.SparseIntArray;
 
 public class ExifInterface {
     public static final int TAG_NULL = -1;

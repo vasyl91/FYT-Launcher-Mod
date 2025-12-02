@@ -11,10 +11,12 @@ import android.widget.CheckedTextView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.module.canbus.DataCanbus;
+
 import java.util.ArrayList;
 
 @SuppressWarnings({"deprecation", "unchecked"})

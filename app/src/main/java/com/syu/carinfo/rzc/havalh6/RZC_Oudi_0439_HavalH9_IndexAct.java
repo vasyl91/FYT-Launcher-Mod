@@ -3,6 +3,7 @@ package com.syu.carinfo.rzc.havalh6;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.hava.BNRActivityHavaH6SetAct;

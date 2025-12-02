@@ -3,8 +3,8 @@ package com.android.launcher66.settings;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.accessibility.AccessibilityEvent;
 import android.util.Log;
+import android.view.accessibility.AccessibilityEvent;
 
 public class StateAccessibilityService extends AccessibilityService {
 

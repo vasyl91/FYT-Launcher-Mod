@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;

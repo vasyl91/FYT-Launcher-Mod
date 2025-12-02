@@ -2,7 +2,6 @@ package com.fyt.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,8 +12,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.android.launcher66.Launcher;
-import com.android.launcher66.LauncherApplication;
-import com.android.launcher66.R;
 import com.android.launcher66.settings.Helpers;
 
 import java.util.Calendar;

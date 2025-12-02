@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;

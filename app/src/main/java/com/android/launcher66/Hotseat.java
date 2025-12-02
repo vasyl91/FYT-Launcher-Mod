@@ -20,14 +20,15 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
-import com.android.launcher66.CellLayout;
 import com.syu.car.CarStates;
 import com.syu.util.ActivityStartUtils;
 import com.syu.util.JLog;
 import com.syu.util.PackageManagers;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import share.ResValue;
 
 public class Hotseat extends FrameLayout {

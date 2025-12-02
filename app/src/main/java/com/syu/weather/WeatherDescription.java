@@ -1,8 +1,10 @@
 package com.syu.weather;
 
-import org.json.JSONObject;
-import org.json.JSONArray;
 import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.Locale;
 
 public class WeatherDescription {
@@ -145,7 +147,7 @@ public class WeatherDescription {
             weather.city = city;
             weather.weather = weatherDescription;
             weather.curTem = formatTemperature(temp);
-            weather.temDescription = formatTemperature(tempMin) + "-" + formatTemperature(tempMax) + "℃";
+            weather.temDescription = formatTemperature(tempMin) + "-" + formatTemperature(tempMax);
             weather.wind = formatWindSpeed(windSpeed);
             weather.humidity = humidity + "%";
             weather.pressure = pressure + " hPa";
@@ -156,7 +158,7 @@ public class WeatherDescription {
 
             Log.i(TAG, "city = " + weather.city + 
                   "\nweather = " + weather.weather + 
-                  "\ncurrent temperature = " + weather.curTem  + "℃" + 
+                  "\ncurrent temperature = " + weather.curTem + 
                   "\ntemperature description = " + weather.temDescription + 
                   "\nwind = " + weather.wind + 
                   "\nicon = " + weather.iconCode);            

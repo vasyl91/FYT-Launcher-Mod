@@ -14,10 +14,6 @@
 
 package com.android.gallery3d.common;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InterruptedIOException;
-
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -26,6 +22,10 @@ import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Log;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InterruptedIOException;
 
 public class Utils {
     private static final String TAG = "Utils";

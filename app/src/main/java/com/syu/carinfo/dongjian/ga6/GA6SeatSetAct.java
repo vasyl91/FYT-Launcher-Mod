@@ -3,6 +3,7 @@ package com.syu.carinfo.dongjian.ga6;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckedTextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;

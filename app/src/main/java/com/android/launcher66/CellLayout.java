@@ -13,6 +13,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -32,6 +34,7 @@ import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewDebug;
@@ -39,10 +42,14 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LayoutAnimationController;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.FolderIcon.FolderRingAnimator;
+import com.android.launcher66.settings.Keys;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -52,15 +59,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Stack;
-
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.util.TypedValue;
-import android.widget.Button;
-import android.widget.TextView;
-import androidx.preference.PreferenceManager;
-
-import com.android.launcher66.settings.Keys;
 
 public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     static final String TAG = "CellLayout";
@@ -3777,6 +3775,9 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         }
         
         Log.i(TAG, "=== addWidgetsToAllExistingPages COMPLETE ===");
+        if (workspace != null) {
+            workspace.triggerStripEmptyScreens("CellLayout, addWidgetsToPagesImmediately()", true);
+        }
     }
 
     private boolean checkIfPageNeedsWidgets(int pageIndex) {

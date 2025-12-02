@@ -14,6 +14,8 @@
 
 package com.android.gallery3d.exif;
 
+import android.util.Log;
+
 import java.io.BufferedOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -21,8 +23,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-
-import android.util.Log;
 
 /**
  * This class provides a way to replace the Exif header of a JPEG image.

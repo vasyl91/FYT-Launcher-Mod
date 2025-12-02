@@ -13,7 +13,9 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+
 import com.syu.canbus.R;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

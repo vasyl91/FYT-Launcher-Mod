@@ -8,12 +8,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
+
 import java.util.Locale;
 
 @SuppressWarnings({"deprecation", "unchecked"})

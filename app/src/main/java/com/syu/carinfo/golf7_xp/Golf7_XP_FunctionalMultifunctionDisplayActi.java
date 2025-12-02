@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckedTextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.ipc.RemoteModuleProxy;

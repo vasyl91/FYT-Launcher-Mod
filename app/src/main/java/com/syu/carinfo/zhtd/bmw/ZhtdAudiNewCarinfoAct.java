@@ -7,6 +7,7 @@ import android.os.SystemProperties;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.ipc.RemoteModuleProxy;

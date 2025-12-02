@@ -3,9 +3,10 @@ package com.syu.carinfo.aiying.ziyouguang;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class JeepIndexAct extends BaseActivity {

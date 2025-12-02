@@ -10,6 +10,7 @@ import android.net.NetworkCapabilities;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
+
 import com.syu.log.LogPreview;
 
 import java.io.BufferedReader;

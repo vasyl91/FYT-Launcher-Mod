@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
+
 import java.util.ArrayList;
 
 @SuppressWarnings({"deprecation", "unchecked"})

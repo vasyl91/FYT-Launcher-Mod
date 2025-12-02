@@ -2,6 +2,7 @@ package com.syu.carinfo.golf7_xp;
 
 import android.os.Bundle;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.golf7.Golf7Data;

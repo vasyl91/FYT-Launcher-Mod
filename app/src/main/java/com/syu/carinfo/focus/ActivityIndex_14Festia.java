@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
 import com.syu.canbus.R;
 import com.syu.carinfo.ford.FordCarSet_XP;
 import com.syu.module.canbus.DataCanbus;

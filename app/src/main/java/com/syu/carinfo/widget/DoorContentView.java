@@ -10,10 +10,12 @@ import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.FinalShare;
 import com.syu.ui.door.DoorHelper;
+
 import java.lang.ref.WeakReference;
 
 @SuppressWarnings({"deprecation", "unchecked"})

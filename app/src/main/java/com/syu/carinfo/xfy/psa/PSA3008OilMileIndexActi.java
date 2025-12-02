@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.RadioGroup;
 import android.widget.TabHost;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 
 @SuppressWarnings({"deprecation", "unchecked"})

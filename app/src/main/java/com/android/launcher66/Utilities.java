@@ -20,11 +20,14 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
@@ -36,6 +39,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
@@ -43,11 +47,6 @@ import com.fyt.skin.SkinUtils;
 import com.syu.util.Utils;
 
 import java.util.ArrayList;
-
-import android.content.pm.ApplicationInfo;
-import android.content.pm.ResolveInfo;
-import android.graphics.Color;
-import android.util.Pair;
 
 /**
  * Various utilities shared amongst the Launcher's classes.

@@ -4,9 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.widget.DoorContentView;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.CallbackCanbusBase;

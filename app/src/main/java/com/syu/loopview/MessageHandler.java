@@ -2,7 +2,6 @@ package com.syu.loopview;
 
 import android.os.Handler;
 import android.os.Message;
-import com.syu.loopview.LoopView;
 
 public final class MessageHandler extends Handler {
     public static final int WHAT_INVALIDATE_LOOP_VIEW = 1000;

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 import com.syu.carinfo.xfl.chuangku.XflCkFunc;
 import com.syu.module.IUiNotify;

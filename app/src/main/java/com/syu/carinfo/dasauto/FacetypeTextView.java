@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
 import com.syu.canbus.R;
 
 @SuppressWarnings({"deprecation", "unchecked"})

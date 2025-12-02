@@ -6,9 +6,10 @@ import android.os.SystemProperties;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 

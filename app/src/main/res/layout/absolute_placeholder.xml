@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>   
-<AbsoluteLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<?xml version="1.0" encoding="utf-8"?>
+<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/absolute_placeholder"
-    android:background="@drawable/bg_custom" >
+    android:background="@drawable/bg_custom">
 </AbsoluteLayout>

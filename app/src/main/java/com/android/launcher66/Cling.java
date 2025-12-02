@@ -13,9 +13,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-
-import androidx.core.content.ContextCompat;
-
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.FocusFinder;
@@ -24,6 +21,8 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 public class Cling extends FrameLayout implements Insettable, View.OnClickListener, View.OnLongClickListener, View.OnTouchListener {
     static final String FIRST_RUN_CLING_DISMISSED_KEY = "cling_gel.first_run.dismissed";

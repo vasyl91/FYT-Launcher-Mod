@@ -6,9 +6,10 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.carinfo.camry2012.xp.CamryicPetrolElectricActi;
 import com.syu.module.IUiNotify;

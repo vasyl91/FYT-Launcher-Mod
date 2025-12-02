@@ -2,13 +2,12 @@ package com.android.launcher66.settings;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
-
-import android.view.View;
-import android.widget.SeekBar;
 
 import com.android.launcher66.R;
 

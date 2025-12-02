@@ -1,15 +1,15 @@
 package com.android.launcher66.settings;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroupAdapter;
 import androidx.preference.PreferenceViewHolder;
-import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.HashMap;
 import java.util.Map;
 

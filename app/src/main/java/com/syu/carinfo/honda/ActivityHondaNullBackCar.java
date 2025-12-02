@@ -2,7 +2,7 @@ package com.syu.carinfo.honda;
 
 import android.app.Activity;
 import android.os.Bundle;
-import com.syu.canbus.R;
+
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 

@@ -14,12 +14,14 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
+
 import java.util.ArrayList;
 
 @SuppressWarnings({"deprecation", "unchecked"})

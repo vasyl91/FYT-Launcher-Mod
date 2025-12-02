@@ -14,6 +14,8 @@
 
 package com.android.gallery3d.exif;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -22,8 +24,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
-import android.util.Log;
 
 class ExifParser {
     private static final boolean LOGV = false;

@@ -2,6 +2,7 @@ package com.syu.carinfo.rzc.biaozhi408;
 
 import android.os.Bundle;
 import android.view.View;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;

@@ -5,6 +5,7 @@ import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.WallpaperInfo;
 import android.app.WallpaperManager;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import android.graphics.drawable.LevelListDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -51,6 +53,13 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
+import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.android.photos.BitmapRegionTileSource;
 
@@ -59,17 +68,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import android.os.Handler;
-
-import android.widget.Toast;
-import android.content.ActivityNotFoundException;
-
-import androidx.appcompat.app.ActionBar;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 
 public class WallpaperPickerActivity extends WallpaperCropActivity {
     static final String TAG = "WallpaperPickerActivity";

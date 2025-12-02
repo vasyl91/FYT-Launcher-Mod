@@ -4,6 +4,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.RadioGroup;
+
 import com.syu.canbus.R;
 
 @SuppressWarnings({"deprecation", "unchecked"})

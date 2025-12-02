@@ -8,7 +8,6 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.graphics.Rect;
-import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 

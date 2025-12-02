@@ -3,6 +3,7 @@ package com.syu.carinfo.huiteng;
 import android.os.Bundle;
 import android.os.SystemProperties;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;

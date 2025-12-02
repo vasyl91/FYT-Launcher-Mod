@@ -18,9 +18,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.LongSparseArray;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.LongSparseArray;
 import android.view.View;
 import android.view.WindowManager;
 

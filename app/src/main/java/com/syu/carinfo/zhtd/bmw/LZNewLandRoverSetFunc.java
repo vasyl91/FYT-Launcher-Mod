@@ -13,13 +13,15 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0453_LZ_LandRover_KeepCD;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.DataMain;
+
 import java.util.ArrayList;
 
 @SuppressWarnings({"deprecation", "unchecked"})

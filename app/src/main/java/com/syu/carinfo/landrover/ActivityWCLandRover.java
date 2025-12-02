@@ -9,6 +9,7 @@ import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;

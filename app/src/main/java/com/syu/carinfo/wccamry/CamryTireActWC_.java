@@ -2,11 +2,13 @@ package com.syu.carinfo.wccamry;
 
 import android.os.Bundle;
 import android.widget.TextView;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+
 import java.util.Locale;
 
 /* renamed from: com.syu.carinfo.wccamry.CamryTireActWC_备份, reason: invalid class name */

@@ -4,9 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckedTextView;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
 import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;

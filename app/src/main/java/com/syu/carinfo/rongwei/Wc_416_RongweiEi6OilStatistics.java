@@ -2,6 +2,7 @@ package com.syu.carinfo.rongwei;
 
 import android.app.Activity;
 import android.os.Bundle;
+
 import com.syu.canbus.R;
 import com.syu.carinfo.camry2012.xp.VerticalProgressbar;
 import com.syu.module.IUiNotify;

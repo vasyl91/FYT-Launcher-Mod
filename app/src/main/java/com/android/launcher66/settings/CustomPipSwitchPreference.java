@@ -2,11 +2,11 @@ package com.android.launcher66.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.RippleDrawable;
 import android.text.InputFilter;
 import android.text.Spanned;

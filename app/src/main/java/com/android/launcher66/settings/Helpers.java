@@ -498,7 +498,7 @@ public class Helpers {
         }
     }
 
-/** -1 Check all screens, reset overlapping rectangles on same screen
+    /** -1 Check all screens, reset overlapping rectangles on same screen
      *   0 Check only screen 0, reset overlapping rectangles on that screen
      *   1 Check only screen 1, reset overlapping rectangles on that screen
      *   and so on..
@@ -612,8 +612,8 @@ public class Helpers {
                 Log.i(TAG, "Rectangle " + rectangleKeys[i] + " overlaps with bottom bar");
             }
 
-            // Check for overlap with right border (only in left bar mode)
-            if (leftBar && overlapsOrTouchesBorder(rectA, leftBarWidth, margin)) {
+            // Check for overlap with right border (only in left bar mode AND only on screen 0)
+            if (leftBar && screens[i] == 0 && overlapsOrTouchesBorder(rectA, leftBarWidth, margin)) {
                 foundOverlap = true;
                 needsReset[i] = true;
                 Log.i(TAG, "Rectangle " + rectangleKeys[i] + " overlaps with right border");

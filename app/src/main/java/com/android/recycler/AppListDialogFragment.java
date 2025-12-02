@@ -29,8 +29,6 @@ import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
-import com.fyt.skin.SkinAttribute;
-import com.fyt.skin.SkinUtils;
 
 import java.util.ArrayList;
 

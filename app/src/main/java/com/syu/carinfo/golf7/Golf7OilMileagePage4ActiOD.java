@@ -3,6 +3,7 @@ package com.syu.carinfo.golf7;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.camry2012.xp.CamryData;

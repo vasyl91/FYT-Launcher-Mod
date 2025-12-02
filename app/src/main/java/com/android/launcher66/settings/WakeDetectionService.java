@@ -16,7 +16,6 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
-import com.android.launcher66.Workspace;
 import com.syu.util.Utils;
 import com.syu.util.WindowUtil;
 
@@ -96,7 +95,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 if (prefs.getBoolean("night_mode", false)) {
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    handler.postDelayed(() -> {
                         Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
                         LauncherApplication.sApp.startService(nightModeServiceIntent);
                     }, 10000);
@@ -106,6 +105,11 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 boolean userMap = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);        
                 if (userMap) {
                     resetPip();
+                }
+
+                boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+                if (widgetBar) {
+                    handler.postDelayed(() -> Launcher.getLauncher().updateWeather(), 2000);
                 }
             } else if (val.contains("false")) {
                 Log.e(TAG, "ACC turned off, device has been put into sleep mode");
@@ -119,9 +123,9 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     } 
 
     public void resetPip() {  
-        // in some mysterious cases pip won't start when user wakes the device up from the sleep mode 
+        // in some mysterious cases pinned PiP won't start when user wakes the device up from the sleep mode 
         // this serves as some sort of checking function to make sure it starts
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        handler.postDelayed(() -> {
             Helpers helpers = new Helpers();
             int pipScreen = mPrefs.getInt("pip_first_screen", 1) - 1;
             if (!Utils.topApp(WindowUtil.AppPackageName)

@@ -20,8 +20,10 @@ import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.android.async.AsyncTask;
+import com.android.launcher66.LauncherApplication;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.syu.esri.ShapeDB;
@@ -53,6 +55,7 @@ public class WeatherManager {
     public static final String OPEN_WEATHER_CURRENT_URL = "https://api.openweathermap.org/data/2.5/weather?appid=" + OPEN_WEATHER_APPID + "&units=metric";
     
     private FusedLocationProviderClient fusedLocationClient;
+    private SharedPreferences mPrefs;
     public static WeatherManager instance;
     String cityName;
     HandlerThread handlerThread;
@@ -128,6 +131,15 @@ public class WeatherManager {
                 boolean flag = WeatherManager.this.isBetterLocation(location, WeatherManager.this.mCurLocation);
                 if (flag) {
                     WeatherManager.this.mCurLocation = location;
+                    if (mPrefs == null) {
+                        mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+                    }                    
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    double lat = location.getLatitude();
+                    double longt = location.getLongitude();
+                    editor.putString("latiude", String.valueOf(lat));
+                    editor.putString("longitude", String.valueOf(longt));
+                    editor.apply();
                     if (WeatherManager.this.minDis == 0) {
                         WeatherManager.this.stop();
                         WeatherManager.this.minDis = 2000;
@@ -706,7 +718,17 @@ public class WeatherManager {
                 tmpCity != null ? tmpCity : cityName
             );
         } else {
-            Log.w(TAG, "No location available, cannot update weather");
+            if (mPrefs == null) {
+                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+            }    
+            double lat = Double.parseDouble(mPrefs.getString("latiude", "52.408165"));
+            double longt = Double.parseDouble(mPrefs.getString("longitude", "16.932490"));
+            Log.w(TAG, "No location available, using fallback location to update weather");
+            getWeather(
+                lat, 
+                longt, 
+                tmpCity != null ? tmpCity : cityName
+            );
         }
     }
 

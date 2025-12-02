@@ -778,6 +778,17 @@ public class Workspace extends SmoothPagedView
             Log.e(TAG, "insertNewWorkspaceScreen: screen id=" + screenId + " already in mWorkspaceScreens");
             return screenId;
         }
+
+        // Check if an empty screen already exists
+        if (screenId == EXTRA_EMPTY_SCREEN_ID) {
+            for (Long id : mWorkspaceScreens.keySet()) {
+                CellLayout cl = mWorkspaceScreens.get(id);
+                if (id >= 0 && cl.getShortcutsAndWidgets().getChildCount() == 0) {
+                    Log.i(TAG, "insertNewWorkspaceScreen: empty screen already exists at id=" + id + ", skipping creation");
+                    return id;
+                }
+            }
+        }
         
         Log.i(TAG, "insertNewWorkspaceScreen: adding screen id=" + screenId + " at index=" + insertIndex);
         
@@ -954,6 +965,10 @@ public class Workspace extends SmoothPagedView
             // Weather
             mLauncher.initBarWeatherView(mBarWeatherWidget);
 
+            mainHandler.post(() -> {
+                mLauncher.updateWeather();              
+            });
+
             // Bar text sizes
             setWidgetBarTextView(workspaceView);
         }
@@ -1041,7 +1056,14 @@ public class Workspace extends SmoothPagedView
 
             if (bottomBarAllApps.getVisibility() == View.VISIBLE) {
                 // Hide the normal bottom bar
-                hideNormalBottomBar(mLauncher.calculatedLeftBarWidth);
+                final int screenWidth = mLauncher.screenWidth;
+                int collapsedWidth;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    collapsedWidth = (int) (0.071 * screenWidth);
+                } else {
+                    collapsedWidth = mLauncher.calculatedLeftBarWidth;
+                }
+                hideNormalBottomBar(collapsedWidth);
             } else {
                 // Prevent showing if already showing or animating
                 if (isOverlayShowing || isOverlayAnimating) {
@@ -1083,7 +1105,14 @@ public class Workspace extends SmoothPagedView
     }
 
     public void hideBottomBar() {
-        hideNormalBottomBar(mLauncher.calculatedLeftBarWidth);       
+        final int screenWidth = mLauncher.screenWidth;
+        int collapsedWidth;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            collapsedWidth = (int) (0.071 * screenWidth);
+        } else {
+            collapsedWidth = mLauncher.calculatedLeftBarWidth;
+        }
+        hideNormalBottomBar(collapsedWidth);      
         hideOverlayBottomBar(); 
     }
 
@@ -1155,7 +1184,6 @@ public class Workspace extends SmoothPagedView
 
     private void showOverlayBottomBar() {
         synchronized (overlayLock) {
-            mLauncher.weatherManager.updateWeather();
             if (overlayBottomBar != null) {
                 if (isOverlayShowing) {
                     return;
@@ -1225,6 +1253,9 @@ public class Workspace extends SmoothPagedView
             } finally {
                 isOverlayAnimating = false;
             }
+            mainHandler.post(() -> {
+                mLauncher.updateWeather();                
+            });
         }
     }
 
@@ -4372,6 +4403,7 @@ public class Workspace extends SmoothPagedView
             final int[] touchXY = new int[] { (int) mDragViewVisualCenter[0],
                     (int) mDragViewVisualCenter[1] };
             onDropExternal(touchXY, d.dragInfo, dropTargetLayout, false, d);
+            triggerStripEmptyScreens("Workspace, onDrop(), 1", true);
         } else if (mDragInfo != null) {
             final View cell = mDragInfo.cell;
             Log.d(TAG,"onDrop()  mDragInfo = " + mDragInfo);
@@ -4400,13 +4432,13 @@ public class Workspace extends SmoothPagedView
                 // cell also contains a shortcut, then create a folder with the two shortcuts.
                 if (!mInScrollArea && createUserFolderIfNecessary(cell, container,
                         dropTargetLayout, mTargetCell, distance, false, d.dragView, null)) {
-                    triggerStripEmptyScreens("Workspace, onDrop(), 1", false);
+                    triggerStripEmptyScreens("Workspace, onDrop(), 2", false);
                     return;
                 }
 
                 if (addToExistingFolderIfNecessary(cell, dropTargetLayout, mTargetCell,
                         distance, d, false)) {
-                    triggerStripEmptyScreens("Workspace, onDrop(), 2", false);
+                    triggerStripEmptyScreens("Workspace, onDrop(), 3", false);
                     return;
                 } else {
                     promptFolderFullIfNecessary(dropTargetLayout, mTargetCell, (ItemInfo) d.dragInfo);
@@ -4519,7 +4551,7 @@ public class Workspace extends SmoothPagedView
                     if (finalResizeRunnable != null) {
                         finalResizeRunnable.run();
                     }
-                    triggerStripEmptyScreens("Workspace, onDrop(), 3", true);
+                    triggerStripEmptyScreens("Workspace, onDrop(), 4", true);
                 }
             };
             mAnimatingViewIntoPlace = true;

@@ -3,6 +3,7 @@ package com.syu.carinfo.golf7;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;

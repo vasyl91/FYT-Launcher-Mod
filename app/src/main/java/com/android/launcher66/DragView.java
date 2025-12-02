@@ -11,7 +11,6 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-import com.android.launcher66.DragLayer;
 
 public class DragView extends View {
     private static float sDragAlpha = 1.0f;

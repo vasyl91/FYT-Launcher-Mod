@@ -6,12 +6,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.android.launcher66.LauncherApplication;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0452_TZY_UAZ_Patriot;
 import com.syu.module.canbus.DataCanbus;
+
 import java.util.ArrayList;
 import java.util.List;
 

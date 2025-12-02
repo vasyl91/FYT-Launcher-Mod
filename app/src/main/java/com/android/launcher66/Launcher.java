@@ -49,8 +49,9 @@ import android.graphics.drawable.Drawable;
 import android.icu.text.DecimalFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.ConnectivityManager;
-import android.net.NetworkRequest;
+import android.media.session.MediaController;
+import android.media.session.MediaSessionManager;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -365,6 +366,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private View mWeightWatcher;
     private ArrayList<Object> mWidgetsAndShortcuts;
     public WeatherManager weatherManager;
+    private Handler weatherHandler = new Handler(Looper.getMainLooper());
+    private static final long WEATHER_INTERVAL = 5 * 60 * 1000; // 5 minutes.
     private ProgressBar musicProgress;
     private SeekBar musicSeekBar;
     private Button mPlayPauseButton;
@@ -450,7 +453,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean mAttached = false;
     private long mAutoAdvanceTimeLeft = -1;
     private HashMap<View, AppWidgetProviderInfo> mWidgetsToAdvance = new HashMap<>();
-    private Intent mAppMarketIntent = null;
     private final ArrayList<Integer> mSynchronouslyBoundPages = new ArrayList<>();
     private Rect mRectForFolderAnimation = new Rect();
     private HideFromAccessibilityHelper mHideFromAccessibilityHelper = new HideFromAccessibilityHelper();
@@ -459,15 +461,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private FusedLocationProviderClient fusedLocationClient;
     private Helpers helpers = new Helpers();
-    private Context mContext;
     private LinearLayout bottomButtons;
     private LinearLayout bottomButtonsWidgets;
     private boolean temporarilyDisablePlayPauseButton = false;
     private MainViewModel mViewModel;
-    private ConnectivityManager connectivityManager;
-    private NetworkRequest networkRequest;
-    private final Handler nightModeHandler = new Handler(Looper.getMainLooper());
-    private final Handler connectionHandler = new Handler(Looper.getMainLooper());
     private final AtomicBoolean atomicOnCreate = new AtomicBoolean(false);
     private final AtomicBoolean atomicInitAppData = new AtomicBoolean(false);
     private Handler appDataHandler = new Handler(Looper.getMainLooper());
@@ -536,9 +533,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public static int icon_size;
     public static int apps_customize_page_view_margin_top;
     public static int apps_customize_page_view_margin_bottom;
-    public static int apps_workspace_screen_padding_bottom;
-    public static int apps_workspace_screen_padding_left;
-    public static int apps_workspace_screen_padding_right;
     public static int leftBarIconMargin;
     public static int bottomBarIconMargin;
     public static int workspaceIconAndFolderSize;
@@ -1923,7 +1917,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Log.i("onCreate", "onCreate----->");
         allowPip = true;
         atomicOnCreate.set(true);
-        mContext = this;
 
         if (customViewMap == null) {
             customViewMap = new HashMap<>();
@@ -2150,7 +2143,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         mStats = new Stats(this);
         
-        weatherManager = WeatherManager.initialize(this);
         kwAPi = KWAPI.createKWAPI(this, "fangyitong");
         if (kwAPi != null) {
             kwAPi.registerPlayerStatusListener(this, onRefreshKwStatus);
@@ -2233,7 +2225,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
             });
         });
-        WindowUtil.initDefaultApp(); 
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        if (userLayout) {
+            WindowUtil.initDefaultApp();
+        }
         FirstFrameAnimatorHelper.setIsVisible(true);
     }
 
@@ -2347,7 +2342,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             firstLayout.setVisibility(View.VISIBLE);
         }
         isfirstlayout = false;
-        showWeatherInfo();
         lastpath = null;
         if (showKuwoContent && !AppUtil.isInTheTaskbar(getApplicationContext(), FytPackage.KWACTION)) {
             showKuwoContent = false;
@@ -2627,6 +2621,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             });
         } 
 
+        weatherHandler.post(periodicWeatherCheck);
+
         mHandler.postDelayed(()-> {
             closeSystemDialogs();
         }, 250);
@@ -2635,8 +2631,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             onBackPip = false;
             onResumePip = false; 
         }, 1500); 
-
-        weatherManager.updateWeather();
     }
 
     @Override 
@@ -2699,6 +2693,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         } catch (Exception e) {
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
         }
+        weatherHandler.removeCallbacks(periodicWeatherCheck);
     }
 
     @Override
@@ -2956,6 +2951,23 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mTvEq != null) {
             mTvEq.setText(R.string.car_eq);
         }
+    }
+
+    private Runnable periodicWeatherCheck = new Runnable() {
+        @Override
+        public void run() {
+            updateWeather();
+            
+            weatherHandler.postDelayed(this, WEATHER_INTERVAL);
+        }
+    };
+
+    public void updateWeather() {
+        if (weatherManager == null) {
+            weatherManager = WeatherManager.initialize(this);
+        }
+        weatherManager.updateWeather();
+        showWeatherInfo();
     }
 
     public void showWeatherInfo() {
@@ -5088,14 +5100,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Launcher.this.startService(intent);
         } else if (mediaSource == "mediaController") {
             boolean activeControllerAppRunning = false;
-            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                if (appProcess.processName.contains(activeController)) {
+            MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
+            List<MediaController> controllers = msm.getActiveSessions(null);
+            for (MediaController controller : controllers) {
+                if (controller.getPackageName().equals(activeController)) {
                     activeControllerAppRunning = true;
                     if (activeController != null && !activeController.isEmpty()) {
                         sendBroadcast(new Intent("media.play.previous"));
                     }
+                    break; 
                 }
             }
             if (!activeControllerAppRunning || isRadioPlaying()) {
@@ -5144,30 +5157,31 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Launcher.this.startService(intent);
             } else if (mediaSource == "mediaController") {
                 boolean activeControllerAppRunning = false;
-                ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-                List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-                for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                    if (appProcess.processName.contains(activeController)) {
+                MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
+                List<MediaController> controllers = msm.getActiveSessions(null);
+                for (MediaController controller : controllers) {
+                    if (controller.getPackageName().equals(activeController)) {
                         activeControllerAppRunning = true;
-                        if (activeController != null && !activeController.isEmpty()) {
-                            if (mAudioManager.isMusicActive()) {
-                                playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                if (barView) {
-                                    setBarButtonsTint(playPauseButton);
-                                } else {
-                                    setWidgetButtonsTint(playPauseButton);
-                                }
-                                sendBroadcast(new Intent("media.play.pause"));
+                        PlaybackState state = controller.getPlaybackState();
+                        int playbackState = (state != null) ? state.getState() : PlaybackState.STATE_NONE;
+                        if (playbackState == PlaybackState.STATE_PLAYING) {
+                            playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                            if (barView) {
+                                setBarButtonsTint(playPauseButton);
                             } else {
-                                playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                if (barView) {
-                                    setBarButtonsTint(playPauseButton);
-                                } else {
-                                    setWidgetButtonsTint(playPauseButton);
-                                }
-                                sendBroadcast(new Intent("media.play.play"));
+                                setWidgetButtonsTint(playPauseButton);
                             }
+                            sendBroadcast(new Intent("media.play.pause"));
+                        } else {
+                            playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                            if (barView) {
+                                setBarButtonsTint(playPauseButton);
+                            } else {
+                                setWidgetButtonsTint(playPauseButton);
+                            }
+                            sendBroadcast(new Intent("media.play.play"));
                         }
+                        break;
                     }
                 }
                 if (!activeControllerAppRunning || isRadioPlaying()) {
@@ -5210,14 +5224,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Launcher.this.startService(intent);
         } else if (mediaSource == "mediaController") {
             boolean activeControllerAppRunning = false;
-            ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-            for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                if (appProcess.processName.contains(activeController)) {
+            MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
+            List<MediaController> controllers = msm.getActiveSessions(null);
+            for (MediaController controller : controllers) {
+                if (controller.getPackageName().equals(activeController)) {
                     activeControllerAppRunning = true;
                     if (activeController != null && !activeController.isEmpty()) {
                         sendBroadcast(new Intent("media.play.next"));
                     }
+                    break; 
                 }
             }
             if (!activeControllerAppRunning || isRadioPlaying()) {
