@@ -45,7 +45,7 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
     private HashSet<Integer> selectedPositions = new HashSet<>();
     private int positionCorrector = 0;
     private Set<String> apps = new HashSet<String>();
-    private SharedPreferences statsPrefs;
+    private SharedPreferences pipsPrefs;
     private String pipKey;
     private static final Set<String> EXCLUDED_PACKAGES = new HashSet<String>() {{
         add("com.android.launcher66.settings.SettingsActivity");
@@ -61,11 +61,11 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         pipKey = (getArguments() != null) ? getArguments().getString("pip_key", "") : "";
-        statsPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        pipsPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
         // Seed current selection into the "apps" set to reuse original highlighting logic
         apps.clear();
-        String preselected = statsPrefs.getString(pipKey, "");
+        String preselected = pipsPrefs.getString(pipKey, "");
         if (preselected != null && !preselected.isEmpty()) {
             apps.add(preselected);
         }
@@ -99,7 +99,7 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
         protected ArrayList<AppInfo> doInBackground(Void... voids) {
             // Get packages selected in other PiP slots
             Set<String> otherSelectedPackages = getOtherSelectedPackages(pipKey);
-            String currentSelection = statsPrefs.getString(pipKey, "");
+            String currentSelection = pipsPrefs.getString(pipKey, "");
 
             // Create filtered list excluding other selected apps (keep current selection)
             ArrayList<AppInfo> filteredData = new ArrayList<>();
@@ -131,7 +131,7 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
                 public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                     // Re-read saved single selection to keep highlight in sync while scrolling
                     apps.clear();
-                    String saved = statsPrefs.getString(pipKey, "");
+                    String saved = pipsPrefs.getString(pipKey, "");
                     if (saved != null && !saved.isEmpty()) {
                         apps.add(saved);
                     }
@@ -179,7 +179,6 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getDialog() != null && getDialog().getWindow() != null) {
-            getDialog().getWindow().setType(2999);
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0));
             getDialog().getWindow().setLayout(-1, -1);
             getDialog().setCanceledOnTouchOutside(true);
@@ -217,7 +216,7 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
 
         // Persist into DefaultSharedPreferences under the pipKey
         if (pipKey != null && !pipKey.isEmpty()) {
-            SharedPreferences.Editor editor = statsPrefs.edit();
+            SharedPreferences.Editor editor = pipsPrefs.edit();
             editor.putString(pipKey, packageName);
             editor.apply();
         }
@@ -239,7 +238,7 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
 
     private Set<String> getOtherSelectedPackages(String currentKey) {
         Set<String> otherSelected = new HashSet<>();
-        Map<String, ?> allPrefs = statsPrefs.getAll();
+        Map<String, ?> allPrefs = pipsPrefs.getAll();
         for (String key : allPrefs.keySet()) {
             if (key.startsWith("pip_") && !key.equals(currentKey)) {
                 Object value = allPrefs.get(key);

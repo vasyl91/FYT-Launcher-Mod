@@ -29,7 +29,7 @@ public class Air_0261_XP1_kangsheng_FuRuiSi extends AirBase {
     @Override
     protected void onDraw(Canvas canvas) {
         Canvas c = this.mContentCanvas;
-        c.save(2);
+        c.save();
         c.drawColor(0, PorterDuff.Mode.CLEAR);
         c.clipRect(this.mRectEmpty);
         if (this.DATA[20] != 0) {

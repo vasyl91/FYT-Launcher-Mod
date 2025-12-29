@@ -30,10 +30,12 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -44,6 +46,7 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -145,6 +148,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private VersionChecker versionChecker;
     private String latestAppVersion;
     private InputMethodManager imm;
+    private RecyclerView recyclerView;
 
     @NonNull
     @Override
@@ -168,6 +172,78 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         loadingDialog.setCancelable(false); // Prevent dismissing by touching outside
 
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (!LauncherApplication.isFytDevice()) {
+            float scaleFactor = 0.75f;
+            
+            recyclerView = findRecyclerView(view);
+
+            if (recyclerView != null) {
+                // Find RecyclerView by searching through view hierarchy
+                view.post(() -> {
+                    if (recyclerView != null) {
+                        Log.i("SCALE", "Found RecyclerView!");
+                        PreferenceScaleHelper.scaleRecyclerView(recyclerView, scaleFactor);
+                    } else {
+                        Log.e("SCALE", "RecyclerView not found!");
+                        // Fallback: scale whatever is visible now
+                        scaleAllViews(view, scaleFactor);
+                    }
+
+                    refreshRecyclerMultiple();
+                });    
+            }      
+        }
+    }
+
+    private RecyclerView findRecyclerView(View view) {
+        if (view instanceof RecyclerView) {
+            return (RecyclerView) view;
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                RecyclerView found = findRecyclerView(viewGroup.getChildAt(i));
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void scaleAllViews(View view, float scale) {
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View child = viewGroup.getChildAt(i);
+                scaleAllViews(child, scale);
+            }
+        }
+        
+        // Scale text
+        if (view instanceof TextView) {
+            TextView textView = (TextView) view;
+            float currentSizePx = textView.getTextSize();
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, currentSizePx * scale);
+        }
+        
+        // Scale padding
+        int paddingLeft = (int) (view.getPaddingLeft() * scale);
+        int paddingTop = (int) (view.getPaddingTop() * scale);
+        int paddingRight = (int) (view.getPaddingRight() * scale);
+        int paddingBottom = (int) (view.getPaddingBottom() * scale);
+        view.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+        
+        // Scale minimum height
+        if (view.getMinimumHeight() > 0) {
+            view.setMinimumHeight((int) (view.getMinimumHeight() * scale));
+        }
     }
 
     @Override
@@ -649,7 +725,43 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             default:
                 break;
         }
+        if (!LauncherApplication.isFytDevice()) {
+            refreshRecyclerMultiple();
+        }
         return false;
+    }
+
+    private void refreshRecyclerMultiple() {       
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 300);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 500);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 700);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 900);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 1200);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 1400);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 1600);
+    }
+
+    private void refreshRecycler() {
+        if (recyclerView != null) {
+            RecyclerView.Adapter adapter = recyclerView.getAdapter();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }               
+        }
     }
 
     @Override

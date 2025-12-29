@@ -19,10 +19,12 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.async.AsyncTask;
+import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -256,7 +258,15 @@ public class WeatherManager {
             return;
         }
         if (!hasLocationPermission()) {
-            Log.w(TAG, "Location permission not granted, cannot start location updates");
+            Log.w(TAG, "Location permission not granted, cannot start location updates, asking user for permission");
+            ActivityCompat.requestPermissions(
+                    Launcher.getLauncher(),
+                    new String[]{
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
+                    0
+            );
             return;
         }
 

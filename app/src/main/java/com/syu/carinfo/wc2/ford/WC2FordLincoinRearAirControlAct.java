@@ -3,7 +3,7 @@ package com.syu.carinfo.wc2.ford;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;

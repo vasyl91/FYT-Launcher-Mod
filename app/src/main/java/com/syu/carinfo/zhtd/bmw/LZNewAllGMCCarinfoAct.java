@@ -1,7 +1,7 @@
 package com.syu.carinfo.zhtd.bmw;
 
 import android.os.Bundle;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.view.View;
 import android.widget.Button;
 

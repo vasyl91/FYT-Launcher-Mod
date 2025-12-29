@@ -8,12 +8,16 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.Window;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,19 +30,22 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.lang.ref.WeakReference;
 import java.time.ZoneId;
 import java.util.concurrent.Executor;
 
 public class SettingsActivity extends AppCompatActivity {
 
     // Settings main activity 
-
+    private static WeakReference<SettingsActivity> mSettingsActivity;
     private SharedPreferences sharedPrefs;
     private SunTask mSunTask;
     private static final String TAG = "SettingsActivity";
     private final Helpers helpers = new Helpers(); 
-    private boolean isReceiverRegistered = false;    
+    private boolean isReceiverRegistered = false;
+    public static boolean isPortrait = false;
 
+    public static int orientation;
     public static int orientationDimension;
     public static int orientedWidth;
     public static int calculatedStatsWidth;
@@ -74,6 +81,11 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        calculateLayoutDimensions();
+        mSettingsActivity = new WeakReference<>(this);
+        if (!LauncherApplication.isFytDevice()) {
+            setupEdgeToEdge();
+        }
         /**
          *  Update the sunrise and sunset times if the night mode feature is disabled.
          *  This prevents an error related to empty strings and gives more accurate results if the function 
@@ -85,8 +97,6 @@ public class SettingsActivity extends AppCompatActivity {
             getSunriseAndSunsetTimes();
         }
 
-        calculateLayoutDimensions();
-
         // determine class likely containing canbus codes
         SharedPreferences mPrefs = getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
         String can = mPrefs.getString("canbus_class", "empty");
@@ -97,13 +107,40 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentFirst()).commit();       
     }   
 
+    public static SettingsActivity getSettingsActivity() {
+        return mSettingsActivity != null ? mSettingsActivity.get() : null;
+    }
+
+    private void setupEdgeToEdge() {
+        Window window = getWindow();
+        
+        // Make the status bar and navigation bar transparent
+        window.setStatusBarColor(Color.TRANSPARENT);
+        window.setNavigationBarColor(Color.TRANSPARENT);
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android 11+ (API 30+)
+            window.setDecorFitsSystemWindows(false);
+        } else {
+            // Android 8-10 (API 26-29)
+            View decorView = window.getDecorView();
+            int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            decorView.setSystemUiVisibility(flags);
+        }
+        
+        Log.i(TAG, "Edge-to-edge setup complete");
+    }
+
     private void calculateLayoutDimensions() {
         statusBarHeight = getStatusBarHeight();
         screenWidth = getResources().getDisplayMetrics().widthPixels; 
         screenHeight = getResources().getDisplayMetrics().heightPixels; 
 
-        int orientation = getResources().getConfiguration().orientation;
+        orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            isPortrait = true;
             orientationDimension = screenHeight;
             orientedWidth = screenWidth;
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -135,6 +172,9 @@ public class SettingsActivity extends AppCompatActivity {
         progressHeight = calculateDimension(orientationDimension, 13.75);
 
         nestedPaddingStart = calculateDimension(orientationDimension, 6.5);
+        if (!LauncherApplication.isFytDevice()) {
+            nestedPaddingStart = (int) (nestedPaddingStart * 1.5f);
+        }
         nestedPaddingEnd = calculateDimension(orientationDimension, 0.8);
 
         dialogTitle = calculateAdaptiveTextSize(screenWidth, 20);
@@ -165,13 +205,35 @@ public class SettingsActivity extends AppCompatActivity {
         return (int) (baseSize * scaleFactor);
     }
 
-    public int getStatusBarHeight() { 
-          int result = 0;
-          int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-          if (resourceId > 0) {
-              result = getResources().getDimensionPixelSize(resourceId);
-          } 
-          return result;
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        Log.i(TAG, "Status bar height: " + result);
+        return result;
+    }
+
+    public int getNavigationBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        Log.i(TAG, "Navigation bar height: " + result);
+        return result;
+    }
+
+    public int getActionBarHeight() {
+        TypedValue tv = new TypedValue();
+        if (this.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            int height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+            Log.i(TAG, "ActionBar height: " + height);
+            return height;
+        }
+        Log.i(TAG, "ActionBar height: 0 (not found)");
+        return 0;
     }
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -341,6 +403,11 @@ public class SettingsActivity extends AppCompatActivity {
         helpers.setSettingsOpenedBoolean(false);
         clearSkinReferences();
         sharedPrefs = null;
+
+        if (mSettingsActivity != null && mSettingsActivity.get() == this) {
+            mSettingsActivity.clear();
+            mSettingsActivity = null;
+        }
         super.onDestroy();
     }
 }

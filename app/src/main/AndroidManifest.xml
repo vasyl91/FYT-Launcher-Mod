@@ -33,13 +33,13 @@
         android:label="@string/permlab_read_settings"
         android:name="com.android.launcher66.permission.READ_SETTINGS"
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="normal" />
+        android:protectionLevel="signature" />
     <permission
         android:description="@string/permdesc_write_settings"
         android:label="@string/permlab_write_settings"
         android:name="com.android.launcher66.permission.WRITE_SETTINGS"
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="normal" />
+        android:protectionLevel="signature" />
     <permission
         android:name="com.android.launcher66.permission.RECEIVE_LAUNCH_BROADCASTS"
         android:protectionLevel="signature" />
@@ -74,6 +74,8 @@
     <uses-permission android:name="android.permission.READ_LOGS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
     <uses-permission android:name="com.android.launcher66.permission.READ_SETTINGS" />
@@ -145,7 +147,8 @@
             android:icon="@mipmap/ic_settings"
             android:autoRemoveFromRecents="true"
             android:exported="true"
-            android:configChanges="uiMode" >
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"> 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -159,7 +162,7 @@
             android:screenOrientation="nosensor"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -234,17 +237,17 @@
         <service
             android:name="com.android.launcher66.settings.CanbusService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <service
             android:name="com.android.launcher66.settings.CanbusCodeInspector"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <service
             android:name="com.android.launcher66.settings.CanbusCommandLogger"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <service
             android:name="com.android.launcher66.settings.StateAccessibilityService"
@@ -278,17 +281,23 @@
         <service 
             android:name="com.android.launcher66.settings.NightModeService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <service 
             android:name="com.android.launcher66.settings.WakeDetectionService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <service 
             android:name="com.android.launcher66.settings.LogcatService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
+
+        <service
+            android:name="com.android.launcher66.settings.FabOverlayService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="shortService" />
 
         <service
             android:enabled="@bool/debug_memory_enabled"
@@ -345,8 +354,7 @@
                 <action android:name="android.intent.action.PACKAGE_CHANGED" />
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
-
-                <data android:scheme="com.android.launcher66" />
+                <data android:scheme="package" />
             </intent-filter>
         </receiver>
 
@@ -416,7 +424,8 @@
 
         <service
             android:name="com.syu.widget.RestartService"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.android.launcher66.permission.WRITE_SETTINGS">
             <intent-filter>
                 <action android:name="com.syu.widget.RestartService" />
             </intent-filter>
@@ -478,18 +487,19 @@
             </intent-filter>
         </service>
 
-        <receiver
-            android:name="com.syu.util.ServiceRestarter"
-            android:enabled="true"
-            android:exported="true"></receiver>
-
         <service
-            android:exported="true"
-            android:name="com.syu.canbus.ServiceKeepAlive">
+            android:name="com.syu.canbus.ServiceKeepAlive"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.syu.canbus.keepAlive" />
             </intent-filter>
         </service>
+
+        <receiver
+            android:name="com.syu.util.ServiceRestarter"
+            android:enabled="true"
+            android:exported="true">      
+        </receiver>
 
         <receiver
             android:exported="true"

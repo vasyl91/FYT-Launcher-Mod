@@ -3,7 +3,7 @@ package com.syu.carinfo.wc2.ford;
 import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;

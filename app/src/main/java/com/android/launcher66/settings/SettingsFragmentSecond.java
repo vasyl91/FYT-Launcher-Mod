@@ -22,6 +22,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -45,13 +46,16 @@ import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 import androidx.preference.TwoStatePreference;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.colorpicker.ColorPicker;
+import com.android.launcher66.colorpicker.ColorPickerCallback;
 import com.fyt.skin.SkinAttribute;
 import com.fyt.skin.SkinUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
@@ -146,9 +150,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private AlertDialog alertSkipCodesDialog;
     private AlertDialog alertCodesInspectorDialog;
     private AppListStatsDialogFragment appListStatsDialog;
-    private ColorPicker colorPicker;
-    private ColorPicker bgColorPicker;
+    private WeakReference<ColorPicker> colorPicker;
+    private WeakReference<ColorPicker> bgColorPicker;
     private InputMethodManager imm;
+    private RecyclerView recyclerView;
 
     private CustomDualPipPreference pipDualPref;
     private CustomPipSwitchPreference pipFirstPref;
@@ -156,6 +161,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomPipSwitchPreference pipThirdPref;
     private CustomPipSwitchPreference pipFourthPref;
     private CustomPipRestartPreference restartPip;
+    private CustomSwitchPreference fabPreference;
+    private CustomSwitchPreference leftFabPreference;
+    private CustomSwitchPreference rightFabPreference;
     private CustomWidgetSwitchPreference userDate;
     private CustomWidgetSwitchPreference userMusic;
     private CustomWidgetSwitchPreference userRadio;
@@ -165,6 +173,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 if (Keys.PIP_FIRST_PACKAGE.equals(key) || Keys.PIP_SECOND_PACKAGE.equals(key)
                         || Keys.PIP_THIRD_PACKAGE.equals(key) || Keys.PIP_FOURTH_PACKAGE.equals(key)) {
                     updatePipSummaries();
+                    if (restartPip != null) {
+                        restartPip.refreshButtons();
+                    }
                 }
             };
 
@@ -182,6 +193,83 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (!LauncherApplication.isFytDevice()) {
+            float scaleFactor = 0.75f;
+            
+            recyclerView = findRecyclerView(view);
+
+            if (recyclerView != null) {
+                // Find RecyclerView by searching through view hierarchy
+                view.post(() -> {
+                    if (recyclerView != null) {
+                        Log.i("SCALE", "Found RecyclerView!");
+                        PreferenceScaleHelper.scaleRecyclerView(recyclerView, scaleFactor);
+                    } else {
+                        Log.e("SCALE", "RecyclerView not found!");
+                        // Fallback: scale whatever is visible now
+                        scaleAllViews(view, scaleFactor);
+                    }
+
+                    refreshRecyclerMultiple();  
+                });    
+            }      
+        }
+    }
+
+    private RecyclerView findRecyclerView(View view) {
+        if (view instanceof RecyclerView) {
+            return (RecyclerView) view;
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                RecyclerView found = findRecyclerView(viewGroup.getChildAt(i));
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void scaleAllViews(View view, float scale) {
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View child = viewGroup.getChildAt(i);
+                scaleAllViews(child, scale);
+            }
+        }
+        
+        // Scale text
+        if (view instanceof TextView) {
+            TextView textView = (TextView) view;
+            float currentSizePx = textView.getTextSize();
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, currentSizePx * scale);
+        }
+        
+        // Scale padding
+        int paddingLeft = (int) (view.getPaddingLeft() * scale);
+        int paddingTop = (int) (view.getPaddingTop() * scale);
+        int paddingRight = (int) (view.getPaddingRight() * scale);
+        int paddingBottom = (int) (view.getPaddingBottom() * scale);
+        view.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+        
+        // Scale minimum height
+        if (view.getMinimumHeight() > 0) {
+            view.setMinimumHeight((int) (view.getMinimumHeight() * scale));
+        }
+
+        view.postDelayed(()-> {
+            view.requestLayout();
+            view.invalidate();
+        }, 200);
     }
 
     @Override
@@ -213,6 +301,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         pipThirdPref  = findPreference(Keys.PIP_THIRD);
         pipFourthPref = findPreference(Keys.PIP_FOURTH);
         restartPip = findPreference(Keys.RESTART_PIP);
+        fabPreference = findPreference(Keys.FAB_OVERLAY_BUTTON);
+        leftFabPreference = findPreference(Keys.FAB_OVERLAY_BUTTON_LEFT);
+        rightFabPreference = findPreference(Keys.FAB_OVERLAY_BUTTON_RIGHT);
         userDate = findPreference(Keys.USER_DATE);
         userMusic = findPreference(Keys.USER_MUSIC);
         userRadio = findPreference(Keys.USER_RADIO);
@@ -369,7 +460,16 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (restartPip != null) {
             restartPip.setOnPreferenceClickListener(this);
-        } 
+        }
+        if (fabPreference != null) {
+            fabPreference.setOnPreferenceClickListener(this);
+        }  
+        if (leftFabPreference != null) {
+            leftFabPreference.setOnPreferenceClickListener(this);
+        }  
+        if (rightFabPreference != null) {
+            rightFabPreference.setOnPreferenceClickListener(this);
+        }  
         pipBool = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
         setPipGroupVisible(pipBool);
         if (userDate != null) {
@@ -660,9 +760,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 alertExtraCodesDialog.show();
                 break;
             case Keys.COLOR_PICKER:
-                colorPicker = new ColorPicker(requireActivity(), defaultColorR, defaultColorG, defaultColorB);
-                colorPicker.enableAutoClose();
-                colorPicker.setCallback(color -> {
+                ColorPicker picker = ColorPicker.newInstance(defaultColorR, defaultColorG, defaultColorB);
+                colorPicker = new WeakReference<>(picker);
+
+                picker.enableAutoClose();
+
+                ColorPickerCallback callback = color -> {
                     defaultColorR = Color.red(color);
                     defaultColorG = Color.green(color);
                     defaultColorB = Color.blue(color);
@@ -671,8 +774,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     editor.putInt("green", Color.green(color));
                     editor.putInt("blue", Color.blue(color));
                     editor.apply();
-                });
-                colorPicker.show();
+                };
+                picker.setCallback(callback);
+                picker.show(getParentFragmentManager(), "ColorPicker");
                 break;
             case Keys.STATS_BG:
                 bgDrawable.setVisible(backgroundBool);
@@ -688,19 +792,23 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 bgColorPickerPref.setVisible(colorBgBool);
                 break;
             case Keys.BG_COLOR_PICKER:
-                bgColorPicker = new ColorPicker(requireActivity(), bgDefaultColorR, bgDefaultColorG, bgDefaultColorB);
-                bgColorPicker.enableAutoClose();
-                bgColorPicker.setCallback(color -> {
+                ColorPicker bgPicker = ColorPicker.newInstance(bgDefaultColorR, bgDefaultColorG, bgDefaultColorB);
+                bgColorPicker = new WeakReference<>(bgPicker);
+
+                bgPicker.enableAutoClose();
+
+                ColorPickerCallback bgCallback = color -> {
                     bgDefaultColorR = Color.red(color);
                     bgDefaultColorG = Color.green(color);
                     bgDefaultColorB = Color.blue(color);
-                    editor.putString("bg_stats_color", String.format("#%06X", (0xFFFFFF & color)));
+                    editor.putString("bg_stats_color", String.format("#%06X", (0xff4285f4 & color)));
                     editor.putInt("bg_red", Color.red(color));
                     editor.putInt("bg_green", Color.green(color));
                     editor.putInt("bg_blue", Color.blue(color));
                     editor.apply();
-                });
-                bgColorPicker.show();
+                };
+                bgPicker.setCallback(bgCallback);
+                bgPicker.show(getParentFragmentManager(), "ColorPicker");
                 break;
             case Keys.APP_LIST:
                 Log.i("checkStatsPermission()", String.valueOf(checkStatsPermission()));
@@ -805,7 +913,43 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             default:
                 break;
         }
+        if (!LauncherApplication.isFytDevice()) {
+            refreshRecyclerMultiple();
+        }
         return false;
+    }
+
+    private void refreshRecyclerMultiple() {       
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 300);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 500);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 700);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 900);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 1200);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 1400);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            refreshRecycler();
+        }, 1600);
+    }
+
+    private void refreshRecycler() {
+        if (recyclerView != null) {
+            RecyclerView.Adapter adapter = recyclerView.getAdapter();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }               
+        }
     }
 
     @Override
@@ -882,12 +1026,22 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             alertExtraCodesDialog.dismiss();
             alertExtraCodesDialog = null;
         }
-        if (colorPicker != null && colorPicker.isShowing()) {
-            colorPicker.dismiss();
+        if (colorPicker != null) {
+            ColorPicker dialog = colorPicker.get();
+            if (dialog != null && dialog.isAdded()) {
+                dialog.dismissAllowingStateLoss();
+                getParentFragmentManager().executePendingTransactions();
+            }
         }
-        if (bgColorPicker != null && bgColorPicker.isShowing()) {
-            bgColorPicker.dismiss();
+        colorPicker = null;
+        if (bgColorPicker != null) {
+            ColorPicker bgDialog = bgColorPicker.get();
+            if (bgDialog != null && bgDialog.isAdded()) {
+                bgDialog.dismissAllowingStateLoss();
+                getParentFragmentManager().executePendingTransactions();
+            }
         }
+        bgColorPicker = null;
         if (appListStatsDialog != null && appListStatsDialog.isShowing()) {
             appListStatsDialog.dismiss();
             appListStatsDialog = null;
@@ -1747,6 +1901,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (pipThirdPref != null)  pipThirdPref.setVisible(visible);
         if (pipFourthPref != null) pipFourthPref.setVisible(visible);
         if (restartPip != null)    restartPip.setVisible(visible);
+        if (fabPreference != null) fabPreference.setVisible(visible);
+        if (leftFabPreference != null) leftFabPreference.setVisible(visible);
+        if (rightFabPreference != null) rightFabPreference.setVisible(visible);
     }
 
     private void updatePipSummaries() {

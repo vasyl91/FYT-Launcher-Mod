@@ -1,7 +1,7 @@
 package com.syu.carinfo.cyt.yage7;
 
 import android.os.Bundle;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;

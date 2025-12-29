@@ -1,7 +1,7 @@
 package com.syu.carinfo.xbs.tule;
 
 import android.os.Bundle;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.widget.TextView;
 
 import com.android.launcher66.LauncherApplication;

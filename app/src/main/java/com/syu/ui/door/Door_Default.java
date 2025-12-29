@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
-import android.os.SystemProperties;
+import android.SystemProperties;
 
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 import com.syu.module.canbus.DataCanbus;

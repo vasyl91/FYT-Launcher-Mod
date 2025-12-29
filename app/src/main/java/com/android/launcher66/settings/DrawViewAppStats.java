@@ -1,5 +1,7 @@
 package com.android.launcher66.settings;
 
+import static com.android.launcher66.settings.SettingsActivity.getSettingsActivity;
+
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
@@ -26,12 +28,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
 import java.lang.ref.WeakReference;
 
 public class DrawViewAppStats extends View implements View.OnClickListener {
-    
+
     private View barTop;
     private View barBottom;
 
@@ -39,7 +42,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
     private int diffX = -1, diffY = -1;
     private Paint paint;
     private Paint statsWindowPaint;
-    private Canvas canvas;  
+    private Canvas canvas;
     private boolean isInsideStats = false;
 
     private int margin;
@@ -50,6 +53,15 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
     private int statsMinX = -1, statsMaxX = -1, statsMinY = -1, statsMaxY = -1;
     private int coordinatesSize, nameTextSize;
     private float coordinatesMargin;
+
+    private Button mUp;
+    private Button mDown;
+    private Button mLeft;
+    private Button mRight;
+    private Button mUpBottom;
+    private Button mDownBottom;
+    private Button mLeftBottom;
+    private Button mRightBottom;
 
     private SharedPreferences sharedPrefs;
     private Button mConfirmLayout;
@@ -85,7 +97,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
     private Context getSafeContext() {
         return mContextWeakRef != null ? mContextWeakRef.get() : null;
     }
-    
+
     private void initUi(View rootView) {
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getSafeContext());
 
@@ -99,51 +111,51 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         nameTextSize = SettingsActivity.adaptiveNameTextSize;
         statsWidth = SettingsActivity.calculatedStatsWidth;
         statsHeight = SettingsActivity.calculatedStatsHeight;
-        
-        barTop = rootView.findViewById(R.id.creator_bar_top);       
+
+        barTop = rootView.findViewById(R.id.creator_bar_top);
         barBottom = rootView.findViewById(R.id.creator_bar_bottom);
-        
-        Button mUp = rootView.findViewById(R.id.top_up);
+
+        mUp = rootView.findViewById(R.id.top_up);
         mUp.setOnClickListener(this);
         setCalculatedButtonSizes(mUp, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
-        
-        Button mDown = rootView.findViewById(R.id.bottom_down);
+
+        mDown = rootView.findViewById(R.id.bottom_down);
         mDown.setOnClickListener(this);
         setCalculatedButtonSizes(mDown, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
-        
-        Button mLeft = rootView.findViewById(R.id.left_to_left);
+
+        mLeft = rootView.findViewById(R.id.left_to_left);
         mLeft.setOnClickListener(this);
-        setCalculatedButtonSizes(mLeft, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); 
-        
-        Button mRight = rootView.findViewById(R.id.right_to_right); 
-        mRight.setOnClickListener(this); 
-        setCalculatedButtonSizes(mRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);  
-        
-        Button mUpBottom = rootView.findViewById(R.id.top_up_bottom);
+        setCalculatedButtonSizes(mLeft, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);
+
+        mRight = rootView.findViewById(R.id.right_to_right);
+        mRight.setOnClickListener(this);
+        setCalculatedButtonSizes(mRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);
+
+        mUpBottom = rootView.findViewById(R.id.top_up_bottom);
         mUpBottom.setOnClickListener(this);
         setCalculatedButtonSizes(mUpBottom, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
-        
-        Button mDownBottom = rootView.findViewById(R.id.bottom_down_bottom);
+
+        mDownBottom = rootView.findViewById(R.id.bottom_down_bottom);
         mDownBottom.setOnClickListener(this);
         setCalculatedButtonSizes(mDownBottom, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
-        
-        Button mLeftBottom = rootView.findViewById(R.id.left_to_left_bottom);
+
+        mLeftBottom = rootView.findViewById(R.id.left_to_left_bottom);
         mLeftBottom.setOnClickListener(this);
         setCalculatedButtonSizes(mLeftBottom, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);
-        
-        Button mRightBottom = rootView.findViewById(R.id.right_to_right_bottom); 
-        mRightBottom.setOnClickListener(this); 
-        setCalculatedButtonSizes(mRightBottom, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);    
+
+        mRightBottom = rootView.findViewById(R.id.right_to_right_bottom);
+        mRightBottom.setOnClickListener(this);
+        setCalculatedButtonSizes(mRightBottom, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);
 
         setCalculatedTextSize(rootView, R.id.stats_name_string, SettingsActivity.selectionTextSize);
         setCalculatedTextSize(rootView, R.id.stats_name_string_bottom, SettingsActivity.selectionTextSize);
-        
+
         mConfirmLayout = rootView.findViewById(R.id.confirm_layout);
         mConfirmLayout.setOnClickListener(this);
         mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize);
         mConfirmLayoutBottom = rootView.findViewById(R.id.confirm_layout_bottom);
         mConfirmLayoutBottom.setOnClickListener(this);
-        mConfirmLayoutBottom.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize);  
+        mConfirmLayoutBottom.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize);
 
         int topY = sharedPrefs.getInt("topY", 10);
         if (topY < SettingsActivity.statusBarHeight + SettingsActivity.barHeight) {
@@ -152,10 +164,10 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         } else {
             barBottom.setVisibility(View.GONE);
             statsTopLeftY = sharedPrefs.getInt("appStatsTopLeftY", margin + 10) - SettingsActivity.barHeight;
-        }         
-        
-        statsTopLeftX = sharedPrefs.getInt("appStatsTopLeftX", margin + 10);     
-        statsTopRightX = statsTopLeftX + statsWidth;    
+        }
+
+        statsTopLeftX = sharedPrefs.getInt("appStatsTopLeftX", margin + 10);
+        statsTopRightX = statsTopLeftX + statsWidth;
         statsTopRightY = statsTopLeftY;
         statsBottomRightX = statsTopRightX;
         statsBottomRightY = statsTopRightY + statsHeight;
@@ -163,6 +175,10 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         statsBottomLeftY = statsTopLeftY + statsHeight;
 
         initStatsRect(getSafeContext(), new int[]{statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, 0, 1, 2, 3});
+
+        if (!LauncherApplication.isFytDevice()) {
+            scaleView();
+        }
     }
 
     public int calculateAdaptiveTextSize(int screenWidth, double baseSize) {
@@ -171,8 +187,8 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         }
 
         double ratio = screenWidth / 2000.0;
-        double scaleFactor = Math.pow(ratio, 0.5); 
-        
+        double scaleFactor = Math.pow(ratio, 0.5);
+
         return (int) (baseSize * scaleFactor);
     }
 
@@ -199,12 +215,12 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
     }
 
     private AppCompatActivity getActivity() {
-        Context context = mContext;
+        Context context = getSafeContext();
         while (context instanceof ContextWrapper) {
             if (context instanceof AppCompatActivity) {
-                return (AppCompatActivity)context;
+                return (AppCompatActivity) context;
             }
-            context = ((ContextWrapper)context).getBaseContext();
+            context = ((ContextWrapper) context).getBaseContext();
         }
         return null;
     }
@@ -214,13 +230,13 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         super.onVisibilityChanged(changedView, visibility);
         if (visibility == View.VISIBLE) {
             //onResume() called
-            if(changedView == null){
+            if (changedView == null) {
                 return;
             }
             changedView.setFocusableInTouchMode(true);
             changedView.requestFocus();
             changedView.setOnKeyListener((v, keyCode, event) -> {
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
                     // handle back button's click listener
                     savePrefs();
                     getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
@@ -228,10 +244,9 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                 }
                 return false;
             });
-        }
-        else {
+        } else {
             //onPause() called
-        } 
+        }
     }
 
     @Override
@@ -263,30 +278,30 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         statsMaxX = Math.max(point[0].x, point[2].x);
         statsMinY = Math.min(point[0].y, point[2].y);
         statsMaxY = Math.max(point[0].y, point[2].y);
-        canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y, statsWindowPaint); 
-        
+        canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y, statsWindowPaint);
+
         RectF r = rectFromPoints(point[0], point[1], point[2], point[3]);
-        
+
         // coordinates overlay
         drawCoordinates(canvas, r);
 
         // center label
-        drawLabel(canvas, r, mContext.getString(R.string.stats_category));
+        drawLabel(canvas, r, getSafeContext().getString(R.string.stats_category));
     }
 
     private void drawLabel(Canvas canvas, RectF r, String label) {
         if (label == null) return;
-        
+
         // Create text paint
         Paint txt = new Paint(Paint.ANTI_ALIAS_FLAG);
         txt.setColor(Color.BLACK);
         txt.setTextSize(nameTextSize);
         txt.setShadowLayer(2, 1, 1, Color.WHITE);
-        
+
         float textWidth = txt.measureText(label);
         float cx = (r.left + r.right) / 2f;
         float cy = (r.top + r.bottom) / 2f + nameTextSize / 3f;
-        
+
         // Center text if it fits
         canvas.drawText(label, cx - textWidth / 2f, cy, txt);
     }
@@ -343,7 +358,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         float bottom = Math.max(pbl.y, pbr.y);
         if (right <= left || bottom <= top) return new RectF();
         return new RectF(left, top, right, bottom);
-    }    
+    }
 
     public boolean onTouchEvent(MotionEvent event) {
         int eventaction = event.getAction();
@@ -360,13 +375,13 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         diffY = -1;
 
         switch (eventaction) {
-            case MotionEvent.ACTION_DOWN: 
+            case MotionEvent.ACTION_DOWN:
                 if ((statsMinX < X && X < statsMaxX) && (statsMinY < Y && Y < statsMaxY)) {
                     diffX = 0;
                     diffY = 0;
-                    isInsideStats = true;  
+                    isInsideStats = true;
                     break;
-                }  
+                }
                 invalidate();
                 break;
 
@@ -375,15 +390,15 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                     diffX = (int) event.getX() - (statsMinX + (statsMaxX - statsMinX) / 2);
                     diffY = (int) event.getY() - (statsMinY + (statsMaxY - statsMinY) / 2);
                     moveStatsRect(0, 1, 2, 3);
-                    canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y, statsWindowPaint); 
-                    invalidate();                    
+                    canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y, statsWindowPaint);
+                    invalidate();
                 }
                 break;
 
             case MotionEvent.ACTION_UP:
                 isInsideStats = false;
                 break;
-            }
+        }
         invalidate();
         return true;
     }
@@ -395,38 +410,38 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.top_up:
                 up(0, 1, 2, 3);
-                invalidate();  
+                invalidate();
                 break;
             case R.id.bottom_down:
                 down(0, 1, 2, 3);
-                invalidate();  
+                invalidate();
                 break;
             case R.id.left_to_left:
                 left(0, 1, 2, 3);
-                invalidate();  
+                invalidate();
                 break;
             case R.id.right_to_right:
                 right(0, 1, 2, 3);
-                invalidate();  
+                invalidate();
                 break;
             case R.id.confirm_layout:
                 showToast();
                 break;
             case R.id.top_up_bottom:
                 up(0, 1, 2, 3);
-                invalidate();  
+                invalidate();
                 break;
             case R.id.bottom_down_bottom:
                 down(0, 1, 2, 3);
-                invalidate();  
+                invalidate();
                 break;
             case R.id.left_to_left_bottom:
                 left(0, 1, 2, 3);
-                invalidate();  
+                invalidate();
                 break;
             case R.id.right_to_right_bottom:
                 right(0, 1, 2, 3);
-                invalidate();  
+                invalidate();
                 break;
             case R.id.confirm_layout_bottom:
                 showToast();
@@ -440,10 +455,10 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         savePrefs();
         View toastLayout = mInflater.inflate(R.layout.toast, mRootView.findViewById(R.id.toast_layout));
         TextView text = toastLayout.findViewById(R.id.toast_text);
-        String message = mContext.getString(R.string.stats_pos_set);
+        String message = getSafeContext().getString(R.string.stats_pos_set);
         text.setText(message);
         text.setTextSize(30);
-        Toast toast = Toast.makeText(mContext, message, Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.setView(toastLayout);
         toast.show();
@@ -457,16 +472,16 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
             topLeftY = point[0].y;
         }
         SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.putInt("appStatsTopLeftX", point[0].x);  
-        editor.putInt("appStatsTopLeftY", topLeftY);   
-        editor.putInt("topY", topLeftY);   
+        editor.putInt("appStatsTopLeftX", point[0].x);
+        editor.putInt("appStatsTopLeftY", topLeftY);
+        editor.putInt("topY", topLeftY);
         editor.apply();
     }
 
     private void initStatsRect(Context context, int[] values) {
         int topLeftX = values[0];
-        int topLeftY = values[1];         
-        int topRightX = values[2];         
+        int topLeftY = values[1];
+        int topRightX = values[2];
         int topRightY = values[3];
         int bottomRightX = values[4];
         int bottomRightY = values[5];
@@ -486,16 +501,16 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         point[values[10]].y = bottomRightY;
 
         point[values[11]] = new Point();
-        point[values[11]].x = bottomLeftX; 
+        point[values[11]].x = bottomLeftX;
         point[values[11]].y = bottomLeftY;
     }
 
     private void moveStatsRect(int topLeft, int topRight, int bottomRight, int bottomLeft) {
         // allow to move only within the layout borders
-        if (point[topLeft].x >= minBorderX 
-            || point[topLeft].y >= minBorderY 
-            || point[bottomRight].x >= maxBorderX 
-            || point[bottomRight].y >= maxBorderY) {
+        if (point[topLeft].x >= minBorderX
+                || point[topLeft].y >= minBorderY
+                || point[bottomRight].x >= maxBorderX
+                || point[bottomRight].y >= maxBorderY) {
             point[topLeft].x = point[topLeft].x + diffX;
             point[topRight].x = point[topRight].x + diffX;
             point[bottomRight].x = point[bottomRight].x + diffX;
@@ -510,7 +525,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                 point[topRight].x = point[topRight].x + toZeroX;
                 point[bottomRight].x = point[bottomRight].x + toZeroX;
                 point[bottomLeft].x = point[bottomLeft].x + toZeroX;
-            }  
+            }
             if (point[topLeft].y < minBorderY) {
                 barTop.setVisibility(View.GONE);
                 barBottom.setVisibility(View.VISIBLE);
@@ -519,14 +534,14 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                 point[topRight].y = point[topRight].y + toZeroY;
                 point[bottomRight].y = point[bottomRight].y + toZeroY;
                 point[bottomLeft].y = point[bottomLeft].y + toZeroY;
-            } 
+            }
             if (point[bottomRight].x > maxBorderX) {
                 int toMaxX = Math.abs(point[bottomRight].x) - maxBorderX;
                 point[topLeft].x = point[topLeft].x - toMaxX;
                 point[topRight].x = point[topRight].x - toMaxX;
                 point[bottomRight].x = point[bottomRight].x - toMaxX;
                 point[bottomLeft].x = point[bottomLeft].x - toMaxX;
-            }  
+            }
             if (point[bottomRight].y > maxBorderY) {
                 barTop.setVisibility(View.VISIBLE);
                 barBottom.setVisibility(View.GONE);
@@ -535,7 +550,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                 point[topRight].y = point[topRight].y - toMaxY;
                 point[bottomRight].y = point[bottomRight].y - toMaxY;
                 point[bottomLeft].y = point[bottomLeft].y - toMaxY;
-            }                                
+            }
         }
     }
 
@@ -545,7 +560,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
             point[topRight].y = point[topRight].y - 1;
             point[bottomRight].y = point[bottomRight].y - 1;
             point[bottomLeft].y = point[bottomLeft].y - 1;
-        }  
+        }
         if (point[topLeft].y <= (minBorderY + margin) && barBottom.getVisibility() == View.GONE && barTop.getVisibility() == View.VISIBLE) {
             barTop.setVisibility(View.GONE);
             barBottom.setVisibility(View.VISIBLE);
@@ -562,7 +577,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
             point[topRight].y = point[topRight].y + 1;
             point[bottomRight].y = point[bottomRight].y + 1;
             point[bottomLeft].y = point[bottomLeft].y + 1;
-        }   
+        }
         if (point[bottomRight].y >= (maxBorderY - margin) && barBottom.getVisibility() == View.VISIBLE && barTop.getVisibility() == View.GONE) {
             barTop.setVisibility(View.VISIBLE);
             barBottom.setVisibility(View.GONE);
@@ -570,7 +585,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
             point[topRight].y = point[topRight].y - SettingsActivity.barHeight;
             point[bottomRight].y = point[bottomRight].y - SettingsActivity.barHeight;
             point[bottomLeft].y = point[bottomLeft].y - SettingsActivity.barHeight;
-        } 
+        }
     }
 
     private void left(int topLeft, int topRight, int bottomRight, int bottomLeft) {
@@ -579,7 +594,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
             point[topRight].x = point[topRight].x - 1;
             point[bottomRight].x = point[bottomRight].x - 1;
             point[bottomLeft].x = point[bottomLeft].x - 1;
-        } 
+        }
     }
 
     private void right(int topLeft, int topRight, int bottomRight, int bottomLeft) {
@@ -588,6 +603,93 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
             point[topRight].x = point[topRight].x + 1;
             point[bottomRight].x = point[bottomRight].x + 1;
             point[bottomLeft].x = point[bottomLeft].x + 1;
-        }  
+        }
+    }
+
+    // For non FYT devices
+    private void scaleView() {
+        if (mRootView == null) return;
+
+        float scaleFactor = 0.75f;
+        int statusBarHeight = getSettingsActivity().getStatusBarHeight();
+        int navigationBarHeight = getSettingsActivity().getNavigationBarHeight();
+        boolean isPortrait = SettingsActivity.isPortrait;
+
+        // Apply top inset for status bar to the root view
+        mRootView.setPadding(
+                mRootView.getPaddingLeft(),
+                mRootView.getPaddingTop() + statusBarHeight,
+                mRootView.getPaddingRight(),
+                mRootView.getPaddingBottom()
+        );
+
+        // Apply bottom or right inset for navigation bar to both creator bars
+        if (barTop != null) {
+            ViewGroup.LayoutParams params = barTop.getLayoutParams();
+            if (params instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+                if (isPortrait) {
+                    marginParams.bottomMargin += navigationBarHeight;
+                } else {
+                    marginParams.rightMargin += navigationBarHeight;
+                }
+                barTop.setLayoutParams(marginParams);
+            }
+        }
+
+        if (barBottom != null) {
+            ViewGroup.LayoutParams params = barBottom.getLayoutParams();
+            if (params instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+                if (isPortrait) {
+                    marginParams.bottomMargin += navigationBarHeight;
+                } else {
+                    marginParams.rightMargin += navigationBarHeight;
+                }
+                barBottom.setLayoutParams(marginParams);
+            }
+        }
+
+        // Scale buttons in top bar
+        if (mUp != null) scaleButton(mUp, scaleFactor);
+        if (mDown != null) scaleButton(mDown, scaleFactor);
+        if (mLeft != null) scaleButton(mLeft, scaleFactor);
+        if (mRight != null) scaleButton(mRight, scaleFactor);
+        if (mConfirmLayout != null) {
+            scaleButton(mConfirmLayout, scaleFactor);
+            mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize * scaleFactor);
+        }
+
+        // Scale buttons in bottom bar
+        if (mUpBottom != null) scaleButton(mUpBottom, scaleFactor);
+        if (mDownBottom != null) scaleButton(mDownBottom, scaleFactor);
+        if (mLeftBottom != null) scaleButton(mLeftBottom, scaleFactor);
+        if (mRightBottom != null) scaleButton(mRightBottom, scaleFactor);
+        if (mConfirmLayoutBottom != null) {
+            scaleButton(mConfirmLayoutBottom, scaleFactor);
+            mConfirmLayoutBottom.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize * scaleFactor);
+        }
+
+        // Scale text in bars
+        scaleTextView(mRootView, R.id.stats_name_string, SettingsActivity.selectionTextSize * scaleFactor);
+        scaleTextView(mRootView, R.id.stats_name_string_bottom, SettingsActivity.selectionTextSize * scaleFactor);
+    }
+
+    private void scaleButton(Button button, float scaleFactor) {
+        if (button == null) return;
+        ViewGroup.LayoutParams params = button.getLayoutParams();
+        if (params != null) {
+            params.width = (int) (params.width * scaleFactor);
+            params.height = (int) (params.height * scaleFactor);
+            button.setLayoutParams(params);
+        }
+    }
+
+    private void scaleTextView(View rootView, int textViewId, float textSizeSp) {
+        if (rootView == null) return;
+        TextView tv = rootView.findViewById(textViewId);
+        if (tv != null) {
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp);
+        }
     }
 }

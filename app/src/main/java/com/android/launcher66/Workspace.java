@@ -1,7 +1,5 @@
 package com.android.launcher66;
 
-import static com.android.launcher66.Launcher.bottomBarIconMargin;
-
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
@@ -31,6 +29,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -41,6 +40,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcelable;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -89,6 +91,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
+
+import share.Config;
 
 /**
  * The workspace is a wide area with a wallpaper and a finite number of pages.
@@ -981,33 +985,23 @@ public class Workspace extends SmoothPagedView
     private void setWidgetBarTextView(View barView) {
         titleText = (TextView) barView.findViewById(R.id.tv_musicName_two);
         if (titleText != null) {
-            titleText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.85f);
+            adjustTextSize(titleText, 1.0f);
         }
         artistText = (TextView) barView.findViewById(R.id.tv_artist_two);
         if (artistText != null) {
-            artistText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeArtist * 0.85f);
+            adjustTextSize(artistText, 1.0f);
         }
         cityText = (TextView) barView.findViewById(R.id.weather_city1);
         if (cityText != null) {
-            cityText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.75f);
+            adjustTextSize(cityText, 0.65f);
         }
         weatherText = (TextView) barView.findViewById(R.id.weather_weather1);
         if (weatherText != null) {
-            weatherText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.75f);
+            adjustTextSize(weatherText, 0.65f);
         }
         tempText = (TextView) barView.findViewById(R.id.weather_temp1);
         if (tempText != null) {
-            tempText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.75f);
-        }
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            dateText = (TextView) barView.findViewById(R.id.date);
-            if (dateText != null) {
-                dateText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.85f); 
-            }
-            weekText = (TextView) barView.findViewById(R.id.curWeek);
-            if (weekText != null) {
-                weekText.setTextSize(TypedValue.COMPLEX_UNIT_SP, this.mLauncher.textSizeTitle * 0.85f);
-            }
+            adjustTextSize(tempText, 0.65f);
         }
         if (blackTintBar) {
             if (titleText != null) {
@@ -1034,6 +1028,64 @@ public class Workspace extends SmoothPagedView
                 }
             }
         }
+    }
+
+    private void adjustTextSize(View view, float targetSize) {
+        view.post(() -> {
+            if (!(view instanceof TextView)) return;
+
+            TextView textView = (TextView) view;
+            View parent = (View) textView.getParent();
+            if (parent == null) return;
+
+            int parentHeight = parent.getHeight();
+            if (parentHeight <= 0) return;
+
+            // Count TextViews in parent
+            int textViewCount = 0;
+            if (parent instanceof ViewGroup) {
+                ViewGroup vg = (ViewGroup) parent;
+                for (int i = 0; i < vg.getChildCount(); i++) {
+                    if (vg.getChildAt(i) instanceof TextView) {
+                        textViewCount++;
+                    }
+                }
+            }
+            if (textViewCount == 0) return;
+
+            // Real height constraint per TextView
+            int targetHeight = (int) ((parentHeight / textViewCount) * targetSize);
+            textView.setMaxHeight(targetHeight);
+
+            float minSize = 1f;
+            float maxSize = 300f;
+            float bestSize = minSize;
+
+            TextPaint paint = new TextPaint(textView.getPaint());
+
+            while (maxSize - minSize > 0.5f) {
+                float testSize = (minSize + maxSize) / 2f;
+                paint.setTextSize(
+                    TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_SP,
+                        testSize,
+                        getResources().getDisplayMetrics()
+                    )
+                );
+
+                Paint.FontMetrics fm = paint.getFontMetrics();
+                float textHeight = fm.descent - fm.ascent;
+
+                if (textHeight <= targetHeight) {
+                    bestSize = testSize;
+                    minSize = testSize;
+                } else {
+                    maxSize = testSize;
+                }
+            }
+
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, bestSize);
+        });
     }
 
     private static int getResId(String resName) {
@@ -1205,21 +1257,20 @@ public class Workspace extends SmoothPagedView
             
             // Create overlay window parameters
             overlayWindowParams = new WindowManager.LayoutParams(
-                screenWidth,
-                bottomBarHeight,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
-                WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH |
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-                PixelFormat.TRANSLUCENT
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    bottomBarHeight,
+                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                            | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                            | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                            | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                    PixelFormat.TRANSLUCENT
             );
-            
-            // Position at bottom
+
+            overlayWindowParams.layoutInDisplayCutoutMode =
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+
             overlayWindowParams.gravity = Gravity.BOTTOM;
-            overlayWindowParams.x = 0;
-            overlayWindowParams.y = 0;
             
             LayoutInflater inflater = LayoutInflater.from(getContext());
             
@@ -1230,13 +1281,30 @@ public class Workspace extends SmoothPagedView
                 overlayBottomBar = inflater.inflate(R.layout.custom_layout_one_user, null);
             }
 
+            overlayBottomBar.setOnApplyWindowInsetsListener((v, insets) -> {
+                int bottomInset = insets.getSystemWindowInsetBottom();
+
+                // Extend the bar into the nav bar area
+                ViewGroup.LayoutParams lp = v.getLayoutParams();
+                lp.height = bottomBarHeight + bottomInset;
+                v.setLayoutParams(lp);
+
+                // Optional: push content up so buttons stay visible
+                v.setPadding(
+                        v.getPaddingLeft(),
+                        v.getPaddingTop(),
+                        v.getPaddingRight(),
+                        bottomInset
+                );
+
+                return insets.consumeSystemWindowInsets();
+            });
+
             ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
             blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
             if (blackTintBar) {
                 Helpers.applyColorFilterToImageView(overlayAllApps);
             }
-        
-            overlayBottomBar.setLayoutParams(new ViewGroup.LayoutParams(screenWidth, bottomBarHeight));
             
             // Setup the overlay view
             setupOverlayView(screenWidth, bottomBarHeight);
@@ -1245,6 +1313,9 @@ public class Workspace extends SmoothPagedView
             try {
                 overlayWindowManager.addView(overlayBottomBar, overlayWindowParams);
                 isOverlayShowing = true;
+                overlayBottomBar.post(() ->
+                        overlayBottomBar.requestApplyInsets()
+                );
                 showOverlayWithAnimation();
                 setupAutoHideForOverlay();
             } catch (Exception e) {
@@ -1254,7 +1325,8 @@ public class Workspace extends SmoothPagedView
                 isOverlayAnimating = false;
             }
             mainHandler.post(() -> {
-                mLauncher.updateWeather();                
+                mLauncher.updateWeather();   
+                mLauncher.enableRecycler();             
             });
         }
     }
@@ -1545,33 +1617,57 @@ public class Workspace extends SmoothPagedView
         // Check if decoration already added to prevent duplicates
         if (mOverlayRecycler.getTag() == null) {
             mOverlayRecycler.addItemDecoration(new RecyclerView.ItemDecoration() {
+                private int cachedSpacing = -1;
+                private boolean hasCalculated = false;
+                
                 @Override
                 public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                     super.getItemOffsets(outRect, view, parent, state);
-                    boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-                    widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
-                    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                        if (userLayout && widgetBar) {
-                            outRect.left = (int) (-bottomBarIconMargin * 1.1f);
-                            outRect.right = (int) (-bottomBarIconMargin * 1.1f);
-                        } else {
-                            outRect.left = -bottomBarIconMargin;
-                            outRect.right = -bottomBarIconMargin; 
+                    
+                    int itemCount = parent.getAdapter() != null ? parent.getAdapter().getItemCount() : 0;
+                    if (itemCount == 0) return;
+                    
+                    // Only calculate once when view has actual width
+                    if (!hasCalculated && view.getWidth() > 0) {
+                        int itemWidth = view.getWidth();
+                        
+                        // Get available width
+                        int availableWidth = (int) (mLauncher.screenWidth * 0.8795f);
+                        if (widgetBar) {
+                            availableWidth = (int) (mLauncher.screenWidth * 0.4395f);
+                        }   
+                        
+                        // Calculate total width needed for all items
+                        int totalItemsWidth = itemWidth * itemCount;
+                        
+                        // Calculate total spacing available
+                        int totalSpacing = availableWidth - totalItemsWidth;  
+
+                        // Distribute spacing: (itemCount + 1) gaps to include edges
+                        int spacingPerGap = totalSpacing / (itemCount + 1);
+
+                        int adjustedSpacing = spacingPerGap / 2;
+                        if (spacingPerGap < 0) {
+                            adjustedSpacing = (int) (spacingPerGap / 1.5f);
                         }
-                    } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        if (userLayout && widgetBar) {
-                            outRect.left = (int) (bottomBarIconMargin / 2.0f);
-                            outRect.right = (int) (bottomBarIconMargin / 2.0f);
-                        } else {
-                            outRect.left = bottomBarIconMargin;
-                            outRect.right = bottomBarIconMargin;
-                        }
+                        
+                        cachedSpacing = adjustedSpacing;
+                        hasCalculated = true;
                     }
+                    
+                    // Use cached spacing for all items (or 0 if not calculated yet)
+                    outRect.left = cachedSpacing;
+                    outRect.right = cachedSpacing;
                 }
             });
             mOverlayRecycler.addItemDecoration(new SimpleDividerDecoration());
             mOverlayRecycler.setTag(1);
         }
+        
+        // Force recalculation after layout
+        mOverlayRecycler.post(() -> {
+            mOverlayRecycler.invalidateItemDecorations();
+        });
         
         mOverlayRecycler.setAdapter(mBottomRecycler.getAdapter());
     }
@@ -1669,9 +1765,22 @@ public class Workspace extends SmoothPagedView
                 .withEndAction(() -> bottomBarBg.setVisibility(View.VISIBLE))
                 .start();
         }
+
+        if (mLauncher != null) {
+            mainHandler.post(() -> {
+                mLauncher.disableRecycler();
+            });
+        }
     }
 
     private void clearOverlayReferences() {
+        if (mLauncher != null) {
+            mLauncher.clearBarWidgetReferences();
+            mLauncher.removeCustomView(Config.WS_Music_Two);
+        }
+
+        mLauncher.cleanWidgetBar();
+        
         // Clear widget references that might point to overlay views
         clearWidgetReferences();
         
@@ -1746,6 +1855,11 @@ public class Workspace extends SmoothPagedView
 
     private void cleanupOverlayWidgetBar() {
         if (overlayBottomBar == null) return;
+        
+        if (mLauncher != null) {
+            mLauncher.clearBarWidgetReferences();
+            mLauncher.removeCustomView(Config.WS_Music_Two);
+        }
         
         // Cleanup music widget
         ViewGroup musicWidget = overlayBottomBar.findViewById(R.id.rl_music_two);

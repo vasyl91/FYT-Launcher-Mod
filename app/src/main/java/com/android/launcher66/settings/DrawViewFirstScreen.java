@@ -1,5 +1,7 @@
 package com.android.launcher66.settings;
 
+import static com.android.launcher66.settings.SettingsActivity.getSettingsActivity;
+
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
@@ -33,6 +35,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
 import java.lang.ref.WeakReference;
@@ -328,6 +331,10 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
         for (RectangleConfig cfg : rectangleConfigs) {
             if (cfg.enabled) initRectangle(cfg);
+        }
+
+        if (!LauncherApplication.isFytDevice()) {
+            scaleView();
         }
     }
 
@@ -1316,5 +1323,93 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         public int getX() { return point.x; }
         public int getY() { return point.y; }
         public int getID() { return id; }
+    }
+
+    // For non FYT devices
+    private void scaleView() {
+        if (mRootView == null) return;
+        
+        float scaleFactor = 0.75f;
+        int statusBarHeight = getSettingsActivity().getStatusBarHeight();
+        int navigationBarHeight = getSettingsActivity().getNavigationBarHeight();
+        boolean isPortrait = SettingsActivity.isPortrait;
+        
+        // Apply top inset for status bar
+        mRootView.setPadding(
+            mRootView.getPaddingLeft(),
+            mRootView.getPaddingTop() + statusBarHeight,
+            mRootView.getPaddingRight(),
+            mRootView.getPaddingBottom()
+        );
+        
+        // Apply bottom or right inset for navigation bar
+        View creatorBar = mRootView.findViewById(R.id.creator_bar);
+        View creatorBarAutoHide = mRootView.findViewById(R.id.creator_bar_auto_hide);
+        
+        if (creatorBar != null) {
+            ViewGroup.LayoutParams params = creatorBar.getLayoutParams();
+            if (params instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+                if (isPortrait) {
+                    marginParams.bottomMargin += navigationBarHeight;
+                } else {
+                    marginParams.rightMargin += navigationBarHeight;
+                }
+                creatorBar.setLayoutParams(marginParams);
+            }
+        }
+        
+        if (creatorBarAutoHide != null) {
+            ViewGroup.LayoutParams params = creatorBarAutoHide.getLayoutParams();
+            if (params instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+                if (isPortrait) {
+                    marginParams.bottomMargin += navigationBarHeight;
+                } else {
+                    marginParams.rightMargin += navigationBarHeight;
+                }
+                creatorBarAutoHide.setLayoutParams(marginParams);
+            }
+        }
+        
+        // Scale buttons in bottom bar
+        if (mTopUp != null) scaleButton(mTopUp, scaleFactor);
+        if (mTopDown != null) scaleButton(mTopDown, scaleFactor);
+        if (mBottomUp != null) scaleButton(mBottomUp, scaleFactor);
+        if (mBottomDown != null) scaleButton(mBottomDown, scaleFactor);
+        if (mLeftToLeft != null) scaleButton(mLeftToLeft, scaleFactor);
+        if (mLeftToRight != null) scaleButton(mLeftToRight, scaleFactor);
+        if (mRightToLeft != null) scaleButton(mRightToLeft, scaleFactor);
+        if (mRightToRight != null) scaleButton(mRightToRight, scaleFactor);
+        if (mConfirmLayout != null) {
+            scaleButton(mConfirmLayout, scaleFactor);
+            mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize * scaleFactor);
+        }
+        
+        // Scale text in bottom bar
+        scaleTextView(mRootView, R.id.selected_widget_string, SettingsActivity.selectionTextSize * scaleFactor);
+        scaleTextView(mRootView, R.id.rectangle_name, SettingsActivity.selectionTextSize * scaleFactor);
+        scaleTextView(mRootView, R.id.top_button_string, SettingsActivity.arrowTextSize * scaleFactor);
+        scaleTextView(mRootView, R.id.bottom_button_string, SettingsActivity.arrowTextSize * scaleFactor);
+        scaleTextView(mRootView, R.id.left_button_string, SettingsActivity.arrowTextSize * scaleFactor);
+        scaleTextView(mRootView, R.id.right_button_string, SettingsActivity.arrowTextSize * scaleFactor);
+    }
+
+    private void scaleButton(Button button, float scaleFactor) {
+        if (button == null) return;
+        ViewGroup.LayoutParams params = button.getLayoutParams();
+        if (params != null) {
+            params.width = (int) (params.width * scaleFactor);
+            params.height = (int) (params.height * scaleFactor);
+            button.setLayoutParams(params);
+        }
+    }
+
+    private void scaleTextView(View rootView, int textViewId, float textSizeSp) {
+        if (rootView == null) return;
+        TextView tv = rootView.findViewById(textViewId);
+        if (tv != null) {
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp);
+        }
     }
 }

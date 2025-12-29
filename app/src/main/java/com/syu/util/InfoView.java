@@ -40,7 +40,7 @@ public class InfoView extends View {
         Iterator<Chunk> it = this.mInfos.iterator();
         while (it.hasNext()) {
             Chunk chunk = it.next();
-            canvas.save(2);
+            canvas.save();
             int bottom = top + chunk.mBgHeight;
             canvas.clipRect(0, top, width, bottom);
             this.mPaint.setColor(chunk.mBgColor);

@@ -5,18 +5,20 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -52,16 +54,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-//import leakcanary.LeakCanary;
+import leakcanary.LeakCanary;
 
 public class LauncherApplication extends Application {
     public static String bHideUniCar;
-    public static String bHideUniCar_New;
-    public static String bPlatform;
     public static Boolean frontview_endble;
     public static Boolean justfrontView;
     public static boolean mAppWallPaper;
-    public static String mSimUsableFlow;
     public static boolean mWallPaperUpdate;
     public static LauncherApplication sApp;
     public static String sSubplatform;
@@ -119,11 +118,11 @@ public class LauncherApplication extends Application {
         handler.postDelayed(() -> {
             startService(new Intent(this, WakeDetectionService.class));
         }, 1000);
-        /*LeakCanary.Config cfg = LeakCanary.getConfig()
+        LeakCanary.Config cfg = LeakCanary.getConfig()
             .newBuilder()
             .retainedVisibleThreshold(10)
             .build();
-        LeakCanary.setConfig(cfg);*/
+        LeakCanary.setConfig(cfg);
         Log.d("LauncherApplication", "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms");
     }
 
@@ -164,11 +163,11 @@ public class LauncherApplication extends Application {
         CustomIcons.loadIcons(this, R.xml.custom_icons);
         W3Utils.initialize(this);
         CarStates.getCar(this);
-        this.apkPath = String.valueOf(sApp.getFilesDir().getAbsolutePath()) + File.separator + "firenze.apk";
+        this.apkPath = String.valueOf(sApp.getFilesDir().getAbsolutePath()) + File.separator + apkName;
         File file = new File(this.apkPath);
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (!file.exists()) {
-                FileUtil.copyFileFromAssets(this, "firenze.apk", this.apkPath);
+                FileUtil.copyFileFromAssets(this, apkName, this.apkPath);
             }
         }, 3000);
         initGaoDeCoverView();
@@ -185,9 +184,6 @@ public class LauncherApplication extends Application {
         sRootView = new View(this);
     }
 
-    public void addGaoDeCoverView() {
-        this.wm.addView(this.btn_floatView, this.params);
-    }
 
     public void removeGaoDeCoverView() {
         this.wm.removeView(this.btn_floatView);
@@ -295,41 +291,72 @@ public class LauncherApplication extends Application {
     }
 
     public void writeCanOgg() {
+        InputStream assetIs = null;
+        InputStream existingIs = null;
+        FileOutputStream fos = null;
+
         try {
-            AssetManager assetManager = getAssets();
-            InputStream is = assetManager.open("Can_Back.ogg");
-            if (is != null) {
-                boolean bWrite = true;
-                File file = new File("/sdcard/Can_Back.bin");
-                FileInputStream fileInputStream = null;
-                if (file.exists()) {
-                    fileInputStream = new FileInputStream(file);
-                    is.mark(is.available());
-                    bWrite = !ZipCompare.isSameZip(is, fileInputStream);
-                    is.reset();
+            assetIs = getAssets().open("Can_Back.ogg");
+            if (assetIs == null) return;
+
+            File outFile = getWritableCanBackFile(this);
+            boolean bWrite = true;
+
+            File existingFile = getReadableLegacyFile(this);
+            if (existingFile != null && outFile.equals(existingFile)) {
+                existingIs = new FileInputStream(existingFile);
+
+                if (assetIs.markSupported()) {
+                    assetIs.mark(assetIs.available());
+                    bWrite = !ZipCompare.isSameZip(assetIs, existingIs);
+                    assetIs.reset();
                 }
-                if (bWrite) {
-                    FileOutputStream fos = new FileOutputStream(file);
-                    byte[] buffer = new byte[1024];
-                    while (true) {
-                        int len = is.read(buffer);
-                        if (len == -1) {
-                            break;
-                        } else {
-                            fos.write(buffer, 0, len);
-                        }
-                    }
-                    fos.close();
-                }
-                if (fileInputStream != null) {
-                    fileInputStream.close();
-                }
-                is.close();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            if (!bWrite) return;
+
+            File parent = outFile.getParentFile();
+            if (parent != null && !parent.exists()) parent.mkdirs();
+
+            fos = new FileOutputStream(outFile);
+            byte[] buffer = new byte[4096];
+            int len;
+
+            while ((len = assetIs.read(buffer)) != -1) {
+                fos.write(buffer, 0, len);
+            }
+            fos.flush();
+
+        } catch (Throwable t) {
+            Log.w("LauncherApplication", "writeCanOgg failed safely", t);
+        } finally {
+            try { if (assetIs != null) assetIs.close(); } catch (Exception ignored) {}
+            try { if (existingIs != null) existingIs.close(); } catch (Exception ignored) {}
+            try { if (fos != null) fos.close(); } catch (Exception ignored) {}
         }
     }
+
+    private static File getWritableCanBackFile(Context context) {
+        if (hasSystemPrivileges(context)) {
+            return new File("/sdcard/Can_Back.bin");
+        }
+
+        // Always scoped storage for non-system apps
+        return new File(
+            context.getExternalFilesDir(null),
+            "Can_Back.bin"
+        );
+    }
+
+    private static File getReadableLegacyFile(Context context) {
+        if (!hasSystemPrivileges(context)) {
+            return null;
+        }
+
+        File legacy = new File("/sdcard/Can_Back.bin");
+        return legacy.exists() && legacy.canRead() ? legacy : null;
+    }
+
 
     private void cfg() {
         CfgCustom.cfgCustom();
@@ -419,5 +446,31 @@ public class LauncherApplication extends Application {
 
     public static IBinder rootViewWindowToken() {
         return sRootView.getWindowToken();
+    }
+
+    public static boolean hasSystemPrivileges(Context context) {
+        ApplicationInfo ai = context.getApplicationInfo();
+
+        if (ai.uid == 1000) {
+            return true;
+        }
+
+        if ((ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isFytDevice() {
+        String board = SystemProperties.get("ro.product.board");
+        String manufacturer = SystemProperties.get("ro.product.manufacturer");
+        String platform = SystemProperties.get("ro.fyt.platform");
+        String displayId = Build.DISPLAY;
+
+        return (board != null && board.toUpperCase().contains("FYT")) ||
+               (manufacturer != null && manufacturer.toUpperCase().contains("FYT")) ||
+               (platform != null && !platform.isEmpty()) ||
+               (displayId != null && displayId.toUpperCase().contains("FYT"));
     }
 }

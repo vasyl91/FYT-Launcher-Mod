@@ -331,7 +331,7 @@
     <string name="display_canbus_reader">Display canbus reader</string> 
     <string name="codes_guide">Canbus guide</string> 
     <string name="codes_guide_initial_reading_title">Codes logger - initial reading</string> 
-    <string name="codes_guide_initial_reading_one">\'Canbus reader\' might not work for every car! It depends on the source code provided by the manufacturer. \n\nThere are three values essential to properly read the canbus data - cmdInt, cmdArr (these are less important, most of the random combinations should work) and the canbus codes (these are important to determine).</string>
+    <string name="codes_guide_initial_reading_one">\'Canbus reader\' might not work for every car! It depends on the source code provided by the manufacturer. \n\nThere are three values essential to properly read the canbus data - cmdInt, cmdArr represented in logs by CMD (these are less important, most of the random combinations should work) and the canbus codes represented in logs by CODE (these are important to determine).</string>
     <string name="codes_guide_initial_reading_two">Running the \'Initial reading\' should create the txt file containing logs that look like above. Crucial part is to determine codes representing a current fuel consumption and a mileage. \n\nFor the current fuel consumption please look for the code that contains rather few outputs - on the attached screenshot it is the code 91. \n\nFor the mileage it should be the code that usually holds single output that rather doesn\'t change so fast or changes in specific intervals - on the attached screenshot it is the code 92. \n\nThe rest of the codes are negligible unless you are looking for something else.</string>
     <string name="codes_guide_initial_reading_three">\'Time window\' - this is the time (in secods) during which the \'Codes logger\' will save the outputs for each cmdInt and cmdArr loop. \n\n\'Omit single figures\' - this aims to ignore the outputs that are single figures because the current fuel consumption and the mileage are usually represented by more than one digit. Selecting this option might greatly speed up the process because the loop won\'t dwell on the irrelevant outputs. \n\nUseful hint - to efficiently start examining the canbus codes use the narrow scope of starting-max cmdInt and cmdArr. You can set them as you wish provided that they are not greater than maximal values (info provided in the input dialog) and the starting point is not greater than the max value, however the wider range and the longer time window the longer the process lasts.</string> 
     <string name="codes_guide_detailed_reading_title">Code inspector - detailed reading</string> 
@@ -441,6 +441,10 @@
     <string name="adjust_widget">Adjust your widget</string>
     <string name="restart_pip">Restart PiP</string>
     <string name="restart_pip_summary">Press to restart the app</string>
+    <string name="fab_overlay_button">Show floating button that switches apps between PiPs: first &lt;-&gt; third and second &lt;-&gt; fourth</string>
+    <string name="fab_overlay_summary">Set apps for every PiP to show this button.</string>
+    <string name="fab_overlay_button_left">Show floating button that switches apps between PiPs: first &lt;-&gt; third </string>
+    <string name="fab_overlay_button_right">Show floating button that switches apps between PiPs: second &lt;-&gt; fourth</string>
 
     <string name="widgets_background_preference">Choose background for widgets</string>
     <string name="widgets_background_dialog_title">Select background for widgets:</string>

@@ -3,9 +3,15 @@ package com.fyt.widget;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.preference.PreferenceManager;
@@ -110,9 +116,7 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
         }
         
         // Only adjust size once, or when text actually changes
-        if (!isTextSizeAdjusted) {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, targetSize);
-            
+        if (!isTextSizeAdjusted) {            
             // Use a member variable to track the listener
             mPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -126,7 +130,7 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
                         return true;
                     }
                     
-                    adjustTextSize(mText, targetSize);
+                    adjustTextSize(mText, 0.9f);
                     isTextSizeAdjusted = true;
                     return true;
                 }
@@ -137,35 +141,57 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
     }
 
     private void adjustTextSize(String text, float targetSize) {
-        int maxWidth = 0;
-        if (getParent() instanceof android.view.View) {
-            android.view.View parent = (android.view.View) getParent();
-            maxWidth = parent.getWidth() - (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
-        }
-        
-        if (maxWidth <= 0) {
-            maxWidth = getWidth();
-        }
-        
-        if (maxWidth > 0) {
-            setMaxWidth(maxWidth);
-            
-            int availableWidth = maxWidth - getPaddingLeft() - getPaddingRight();
-            
-            if (availableWidth > 0) {
-                android.text.TextPaint paint = new android.text.TextPaint();
-                paint.setTextSize(TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_SP, targetSize, getResources().getDisplayMetrics()));
-                
-                float textWidth = paint.measureText(text);
-                
-                if (textWidth >= availableWidth) {
-                    float scaledSize = targetSize * (availableWidth / textWidth) * 0.95f;
-                    setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
+        postDelayed(() -> {
+            View parent = getParent() instanceof View ? (View) getParent() : null;
+
+            if (parent == null) return;
+
+            int parentHeight = parent.getHeight();
+            if (parentHeight <= 0) return;
+
+            // Count TextViews in parent
+            int textViewCount = 0;
+            if (parent instanceof ViewGroup) {
+                ViewGroup parentGroup = (ViewGroup) parent;
+                for (int i = 0; i < parentGroup.getChildCount(); i++) {
+                    if (parentGroup.getChildAt(i) instanceof TextView) {
+                        textViewCount++;
+                    }
                 }
             }
-        }
+            if (textViewCount == 0) return;
+
+            // Calculate target height for this TextView
+            int targetHeight = (int)((parentHeight / textViewCount) * targetSize);
+
+            // Set max height to prevent overflow
+            setMaxHeight(targetHeight);
+
+            // Binary search for best size
+            float minSize = 1f;
+            float maxSize = 500f;
+            float bestSize = minSize;
+
+            TextPaint paint = new TextPaint(getPaint());
+            int width = getWidth() - getPaddingLeft() - getPaddingRight();
+            if (width <= 0) width = 100;
+
+            while (maxSize - minSize > 0.5f) {
+                float testSize = (minSize + maxSize) / 2f;
+                paint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, testSize, getResources().getDisplayMetrics()));
+
+                StaticLayout layout = new StaticLayout(text, paint, width, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+
+                if (layout.getHeight() <= targetHeight) {
+                    bestSize = testSize;
+                    minSize = testSize;
+                } else {
+                    maxSize = testSize;
+                }
+            }
+
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, bestSize);
+        }, 50);
     }
 
     private String getDateStringFormat(int timeWidgetShow) {

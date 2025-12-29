@@ -157,10 +157,6 @@ class NotificationListener : NotificationListenerService() {
         if (!isReceiverRegistered) {
             val intentFilter = IntentFilter().apply {
                 addAction("titlesInternal")
-                addAction("media.play.play")
-                addAction("media.play.pause")
-                addAction("media.play.next")
-                addAction("media.play.previous")
             }
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -256,10 +252,9 @@ class NotificationListener : NotificationListenerService() {
         override fun onReceive(context: Context, intent: Intent) {
             /** data from the stock music player (com.syu.music) handled by com.fyt.car.MusicService
             *   It is essential to use MediaMetadataRetriever because stock music player doesn't process
-            *   cheracters specific to particular language (ö, ó, ü, ß, ñ etc) and sends chinese signs instead.
+            *   characters specific to particular language (ö, ó, ü, ß, ñ etc) and sends chinese signs instead.
             */
             if (intent.action == "titlesInternal") {
-                val retriever = MediaMetadataRetriever()
                 val bundle = intent.extras ?: return
                 fytState = bundle.getBoolean("play_state", false) 
                 fytMusicPath = bundle.getString("play_path") ?: ""
@@ -267,61 +262,71 @@ class NotificationListener : NotificationListenerService() {
                 fytCurMinutes = bundle.getLong("play_cur", 0L)
                 
                 val file = File(fytMusicPath)
-                if (file.exists()) {
+                if (!file.exists() || fytMusicPath.isEmpty()) return
+                
+                val retriever = MediaMetadataRetriever()
+                try {
                     try {
                         FileInputStream(file).use { fis ->
                             retriever.setDataSource(fis.fd, 0, file.length())
-                        }    
+                        }
                     } catch (e: IllegalArgumentException) {
                         e.printStackTrace()
                         retriever.setDataSource(fytMusicPath)
-                    } finally {                   
-                        musicName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-                        authorName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-                        fytAlbum = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
-                            .toString()
-                        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                            ?.let { fytTotalMinutes = it.toLong() }
-
-                        if (musicNamePrev != musicName) {
-                            musicNamePrev = musicName.toString()
-                            prevCurFyt = 0
-                        }
-
-                        val filename = file.getName()
-                        if (filename.isNotEmpty() && filename.contains(".")) {
-                            pathName = filename.substring(0, filename.lastIndexOf("."))
-                        }
-
-                        if (currentState == PlaybackState.STATE_PLAYING) {
-                            mediaController?.transportControls?.pause()
-                        }
-
-                        if (musicName!!.isNotEmpty() && !musicName!!.contains("Unknown")  && !musicName!!.contains("null")) {
-                            fytSet = false
-                        } 
-                        if (fytState && !fytSet && helpers.isFytMusicAllowed()  && musicName!!.isNotEmpty() && musicName != "Unknown" && musicName != "null") {
-                            handlerControllerTime?.removeCallbacks(updateControllerTime)  
-                            helpers.updateControllerTimeBool(false)
-                            fytSet = true
-                            setStatus(1)
-                            handlerFytTime?.post(updateFytTime)             
-                        } 
+                    }
+                    
+                    // Extract metadata with null safety
+                    musicName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                    authorName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                    fytAlbum = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM) ?: ""
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        ?.let { fytTotalMinutes = it.toLong() }
+                    
+                    // Use safe calls for musicName - convert null to empty string
+                    val currentMusicName = musicName ?: ""
+                    if (musicNamePrev != currentMusicName) {
+                        musicNamePrev = currentMusicName
+                        prevCurFyt = 0
+                    }
+                    
+                    val filename = file.name
+                    if (filename.isNotEmpty() && filename.contains(".")) {
+                        pathName = filename.substring(0, filename.lastIndexOf("."))
+                    }
+                    
+                    if (currentState == PlaybackState.STATE_PLAYING) {
+                        mediaController?.transportControls?.pause()
+                    }
+                    
+                    // Safe validation of musicName
+                    val isValidMusicName = currentMusicName.isNotEmpty() && 
+                                          !currentMusicName.contains("Unknown", ignoreCase = true) && 
+                                          !currentMusicName.contains("null", ignoreCase = true)
+                    
+                    if (isValidMusicName) {
+                        fytSet = false
+                    }
+                    
+                    if (fytState && !fytSet && helpers.isFytMusicAllowed() && isValidMusicName) {
+                        handlerControllerTime?.removeCallbacks(updateControllerTime)  
+                        helpers.updateControllerTimeBool(false)
+                        fytSet = true
+                        setStatus(1)
+                        handlerFytTime?.post(updateFytTime)             
+                    }
+                    
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    try {
                         retriever.release()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
-            // commands for the media players (other than the stock one)
-            } else if (intent.action == "media.play.play") {
-                mediaController?.transportControls?.play()
-            } else if (intent.action == "media.play.pause") {
-                mediaController?.transportControls?.pause()
-            } else if (intent.action == "media.play.next") {
-                mediaController?.transportControls?.skipToNext()
-            } else if (intent.action == "media.play.previous") {
-                mediaController?.transportControls?.skipToPrevious()
             }
         }
-    }   
+    }  
 
     /** from what I tested, only killing the stock player will guarantee stopping it
     *   from playing music. Calling "com.syu.music.playpause" or killing just background 

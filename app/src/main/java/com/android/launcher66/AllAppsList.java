@@ -8,7 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.util.Log;
 import android.widget.Toast;
 

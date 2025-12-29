@@ -1,7 +1,7 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
-import android.os.SystemProperties;
+import android.SystemProperties;
 
 import com.syu.carinfo.dasauto.AirControlPQDZSJ;
 import com.syu.carinfo.dasauto.VwDashBoard_DZSJ;

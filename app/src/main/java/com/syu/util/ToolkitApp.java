@@ -1,6 +1,6 @@
 package com.syu.util;
 
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.view.WindowManager;
 
 public class ToolkitApp {

@@ -3,8 +3,10 @@ package com.fyt.widget;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.appcompat.widget.AppCompatTextView;
@@ -133,8 +135,8 @@ public class Date extends AppCompatTextView implements SharedPreferences.OnShare
 
     private void adjustTextSize(String text, float targetSize) {
         int maxWidth = 0;
-        if (getParent() instanceof android.view.View) {
-            android.view.View parent = (android.view.View) getParent();
+        if (getParent() instanceof View) {
+            View parent = (View) getParent();
             maxWidth = parent.getWidth() - (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
         }
@@ -149,7 +151,7 @@ public class Date extends AppCompatTextView implements SharedPreferences.OnShare
             int availableWidth = maxWidth - getPaddingLeft() - getPaddingRight();
             
             if (availableWidth > 0) {
-                android.text.TextPaint paint = new android.text.TextPaint();
+                TextPaint paint = new TextPaint();
                 paint.setTextSize(TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_SP, targetSize, getResources().getDisplayMetrics()));
                 

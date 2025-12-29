@@ -1,7 +1,7 @@
 package com.syu.module.canbus;
 
 import android.os.RemoteException;
-import android.os.SystemProperties;
+import android.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.air.Air_Activity_RZC_Prado;

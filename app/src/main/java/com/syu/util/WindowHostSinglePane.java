@@ -290,68 +290,28 @@ public class WindowHostSinglePane {
             }
         }
         
-        // Check app compatibility
-        if (!WindowHostAppCompatibility.canRunInActivityView(activity, pkg)) {
-            Log.e(TAG, name + ": Cannot start " + pkg + ": " + 
-                WindowHostAppCompatibility.getIncompatibilityReason(activity, pkg));
-            
-            android.widget.Toast.makeText(activity, 
-                "Unable to run " + pkg + " in windowed mode. " +
-                WindowHostAppCompatibility.getIncompatibilityReason(activity, pkg), 
-                android.widget.Toast.LENGTH_LONG).show();
-            return;
-        }
-        
-        // Create compatible intent
-        Intent main = WindowHostAppCompatibility.createCompatibleIntent(activity, pkg);
-        if (main == null) {
-            Log.e(TAG, name + ": Failed to create intent for " + pkg);
-            main = mainLaunchIntent(pkg);
-            if (main == null) { 
-                Log.w(TAG, name + ": no launch intent for " + pkg); 
-                return; 
-            }
-        }
-        main.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        
-        // Create compatible options
+        // Get bounds
         Rect bounds = hasPendingBounds ? new Rect(pendingBounds) : null;
-        Object opts = WindowHostAppCompatibility.createCompatibleOptions(pkg, bounds);
-        if (opts == null) {
-            opts = WindowHostActivityView.makeOptionsWithBounds(bounds);
-        }
         
         try {
-            boolean ok = WindowHostActivityView.startActivitySmart(av, activity, main, opts);
+            // Use enhanced method that checks for existing process
+            boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(av, activity, pkg, bounds);
             
             if (!ok) {
-                Log.w(TAG, name + ": start failed for " + pkg + ", attempting retry");
+                Log.w(TAG, name + ": start failed for " + pkg + ", attempting fallback");
                 
-                // Retry with different strategy based on app type
+                // Fallback: use standard method with explicit intent
                 postMainDelayed(() -> {
                     if (gen != expectedGen) return;
                     
-                    Intent retry;
-                    if (WindowHostAppCompatibility.isProblematic(pkg)) {
-                        // For problematic apps, try minimal flags
-                        retry = activity.getPackageManager().getLaunchIntentForPackage(pkg);
-                        if (retry != null) {
-                            retry.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                        }
-                    } else {
-                        retry = mainLaunchIntent(pkg);
-                        if (retry != null) {
-                            retry.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        }
-                    }
-                    
-                    if (retry != null) {
-                        Object retryOpts = WindowHostActivityView.makeOptionsWithBounds(bounds);
-                        boolean retryOk = WindowHostActivityView.startActivitySmart(av, activity, retry, retryOpts);
-                        Log.i(TAG, name + (retryOk ? ": retry succeeded" : ": retry failed"));
+                    Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(activity, pkg);
+                    if (fallback != null) {
+                        Object fallbackOpts = WindowHostActivityView.makeOptionsWithBounds(bounds);
+                        boolean retryOk = WindowHostActivityView.startActivitySmart(av, activity, fallback, fallbackOpts);
+                        Log.i(TAG, name + (retryOk ? ": fallback succeeded" : ": fallback failed"));
                         
                         if (!retryOk) {
-                            // Final attempt with absolute minimal configuration
+                            // Final attempt with minimal configuration
                             postMainDelayed(() -> {
                                 if (gen != expectedGen) return;
                                 attemptMinimalLaunch(pkg, bounds);
@@ -360,17 +320,10 @@ public class WindowHostSinglePane {
                     }
                 }, 200);
             } else {
-                Log.i(TAG, name + ": start ok for " + pkg);
+                Log.i(TAG, name + ": start ok for " + pkg + " (process check)");
             }
-        } catch (SecurityException e) {
-            Log.e(TAG, name + ": SecurityException for " + pkg + " - missing permissions", e);
-            android.widget.Toast.makeText(activity,
-                pkg + " needs additional permissions. Please grant them in Settings.",
-                android.widget.Toast.LENGTH_LONG).show();
-            WindowHostAppCompatibility.registerProblematicApp(pkg);
         } catch (Exception e) {
             Log.e(TAG, name + ": Exception starting " + pkg, e);
-            WindowHostAppCompatibility.registerProblematicApp(pkg);
             
             // Try one more time with minimal configuration
             postMainDelayed(() -> {
@@ -521,9 +474,7 @@ public class WindowHostSinglePane {
             if (i == null) return null;
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
-                    | Intent.FLAG_ACTIVITY_NO_HISTORY
-                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             return i;
         } catch (Throwable t) {
             Log.w(TAG, "mainLaunchIntent failed for " + pkg, t);

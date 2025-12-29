@@ -382,6 +382,7 @@ public class ResValue {
     public int music_score_0 = getResId("music_score_0", R.drawable.class);
     public int app_eq_name = getResId("app_eq_name", R.string.class);
     public int youtube_logo = getResId("youtube_logo", R.drawable.class);
+    public int fab_switch_pips = getResId("fab_switch_pips", R.id.class);
 
     public static int getResId(String resName, Class<?> c) {
         try {

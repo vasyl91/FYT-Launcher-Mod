@@ -124,6 +124,10 @@ public final class Keys {
     public static final String PIP_SECOND_PACKAGE = "pip_second_package";
     public static final String PIP_THIRD_PACKAGE = "pip_third_package";
     public static final String PIP_FOURTH_PACKAGE = "pip_fourth_package";
+    public static final String FAB_OVERLAY_BUTTON = "fab_overlay_button";
+    public static final String FAB_OVERLAY_BUTTON_LEFT = "fab_overlay_button_left";
+    public static final String FAB_OVERLAY_BUTTON_RIGHT = "fab_overlay_button_right";
+    public static final String BLOCK_FLOATING_BUTTON = "block_floating_button";
 
     public static final String MUSIC_SCREEN_ID = "music_screen_id";
     public static final String RADIO_SCREEN_ID = "radio_screen_id";
@@ -139,4 +143,16 @@ public final class Keys {
     public static final String RECYCLER_APP_MAP = "recycler_app_map";
     public static final String ALLAPPS = "ALLAPPS";
     public static final String FUELSTATS = "FUELSTATS";
+
+    public static final String KEY_FAB_X = "fab_x";
+    public static final String KEY_FAB_Y = "fab_y";
+    public static final String KEY_POSITION_SAVED = "position_saved";
+    public static final String KEY_FAB_X_LEFT = "fab_x_left";
+    public static final String KEY_FAB_Y_LEFT = "fab_y_left";
+    public static final String KEY_POSITION_SAVED_LEFT = "position_saved_left";
+    public static final String KEY_FAB_X_RIGHT = "fab_x_right";
+    public static final String KEY_FAB_Y_RIGHT = "fab_y_right";
+    public static final String KEY_POSITION_SAVED_RIGHT = "position_saved_right";
+    public static final String SHOW_FAB = "show_fab";
+    public static final String HIDE_FAB = "hide_fab";
 }

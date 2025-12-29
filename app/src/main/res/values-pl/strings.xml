@@ -188,7 +188,7 @@
     <string name="display_canbus_reader">Wyświetlaj opcja skanera</string> 
     <string name="codes_guide">Przewodnik</string> 
     <string name="codes_guide_initial_reading_title">Wstępna weryfikacja kodów</string> 
-    <string name="codes_guide_initial_reading_one">\'Skaner canbus\' może nie być dostepny dla każdego modelu samochodu. Zależy to od kodu źródłowego radia. \n\nSą trzy istotne wartości potrzebne do prawidłowego odczytu danych - cmdInt, cmdArr (mniej ważne, dowolna kombinacja powinna działać) oraz kody canbus (istotne dla prawdiłowego działania).</string>
+    <string name="codes_guide_initial_reading_one">\'Skaner canbus\' może nie być dostepny dla każdego modelu samochodu. Zależy to od kodu źródłowego radia. \n\nSą trzy istotne wartości potrzebne do prawidłowego odczytu danych - cmdInt, cmdArr reprezntowane w logach przez CMD (mniej ważne, dowolna kombinacja powinna działać) oraz kody canbus  reprezntowane w logach przez CODE (istotne dla prawdiłowego działania).</string>
     <string name="codes_guide_initial_reading_two">Uruchomienie \'Wstępnej weryfiakcji\' powinno utworzyć plik txt zawierający wyniki jak powyżej. Głównym zadaniem jest ustalenie, który kod odpowiada za odczyt bieżącego spalania, a który za zasięg. \n\nKod dla bieżącego spalania pownien zawierać kilka odczytów (outputs) - na załączonym screenshocie jest to 91. \n\nKod odpowiedzialny za odczyt zasięgu powinien zawierać raczej powtarzające się odczyty (outputs), lub zmieniające się rzadko wg konkretnego interwału - na załączonym screenshocie jest to 92. \n\nPozostała część kodów jest nieistotna, chyba że szukasz czegoś extra.</string>
     <string name="codes_guide_initial_reading_three">\'Okno czasowe\' - jest to czas (w sekundach) podczas którego \'Wstępna weryfikacja\' będzie zapisywać cmdInt i cmdArr w każdej z pętli. \n\n\'Pomijaj pojedyncze wyniki\' - zaznaczenie tej opcji ma na celu omijanie wyników, ktore są cyframi, ponieważ zarówno bieżące spalanie jak i zasięg są prawie zawsze reprezentowane przez liczby, a nie cyfry. Może to znacząco przyspieszyć czas odczytu. \n\n Przydatna wskazówka - aby efektywnie odczytywać kody canbus ustaw początkowe i max cmdInt i cmdArr w wąskim zakresie. Możesz je oczywiście ustawić tak jak chcesz, jeśli wartości nie są większe od maksymalnych (info w oknie dialogowym) oraz wartość początkowa nie jest większa od max wartości, jednakże im większy zakres i im większe okno czasowe tym dłużej będzie trwał proces odczytu.</string> 
     <string name="codes_guide_detailed_reading_title">Szczegółowa weryfikacja kodów</string> 
@@ -310,6 +310,8 @@
     <string name="widget_bar">Pasek dolny z widgetami</string>
     <string name="restart_pip">Restart PiP</string>
     <string name="restart_pip_summary">Zrestartuj aplikację</string>
+    <string name="fab_overlay_button">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy Dual PiP, a pierwszym i drugim PiP</string>
+    <string name="fab_overlay_summary">Aby wyświetlić przycisk ustaw aplikacje dla wszystkich PiP. Włącz również Dual PiP, oraz trzeci i czwarty PiP. Używaj wyłącznie trybu "Window".</string>
 
     <string name="weather_not_available">N/A</string>
     <string name="clear_sky">Bezchmurne niebo</string>

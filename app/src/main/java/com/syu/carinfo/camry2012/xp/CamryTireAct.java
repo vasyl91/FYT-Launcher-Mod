@@ -1,7 +1,7 @@
 package com.syu.carinfo.camry2012.xp;
 
 import android.os.Bundle;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.widget.TextView;
 
 import com.syu.canbus.BaseActivity;

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
-import android.os.SystemProperties;
+import android.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 import com.syu.util.ToolkitMath;

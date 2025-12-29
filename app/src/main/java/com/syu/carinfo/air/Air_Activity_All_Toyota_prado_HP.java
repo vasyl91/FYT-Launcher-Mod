@@ -3,7 +3,7 @@ package com.syu.carinfo.air;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ProgressBar;

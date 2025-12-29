@@ -19,7 +19,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.TypedValue;
@@ -32,6 +32,7 @@ import android.view.accessibility.AccessibilityManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
@@ -804,7 +805,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
                 .build();
 
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && 
+            ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            
             fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
 
                 @Override
@@ -832,6 +835,15 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     }
                 }
             }, Looper.getMainLooper());
+        } else {            
+            ActivityCompat.requestPermissions(
+                    Launcher.getLauncher(),
+                    new String[]{
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
+                    0
+            );
         }
     }
 

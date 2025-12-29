@@ -187,8 +187,12 @@
         <item name="android:windowBackground">@color/dark_surface</item>
         <item name="android:textColorPrimary">@color/white</item>
         <item name="android:textColorSecondary">@color/gray_medium</item>
-        <item name="android:statusBarColor">@color/lollipopStatusBar</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
     </style>
     
     <style name="SettingsTheme.ActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar.Bridge">

@@ -2,7 +2,7 @@ package com.syu.carinfo.wc.ruijie15;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;

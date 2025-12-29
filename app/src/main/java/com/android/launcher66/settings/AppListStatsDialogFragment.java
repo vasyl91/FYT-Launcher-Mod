@@ -98,7 +98,6 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getDialog().getWindow().setType(2999);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0));
         getDialog().getWindow().setLayout(-1, -1);
         getDialog().setCanceledOnTouchOutside(true);

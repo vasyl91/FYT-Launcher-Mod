@@ -536,19 +536,51 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
     }
 
     protected Bitmap getThumbnailOfLastPhoto() {
-        Cursor cursor = MediaStore.Images.Media.query(getContentResolver(),
+        Cursor cursor = null;
+        try {
+            Bundle queryArgs = new Bundle();
+            queryArgs.putStringArray(
+                android.content.ContentResolver.QUERY_ARG_SORT_COLUMNS,
+                new String[] { MediaStore.Images.ImageColumns.DATE_TAKEN }
+            );
+            queryArgs.putInt(
+                android.content.ContentResolver.QUERY_ARG_SORT_DIRECTION,
+                android.content.ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
+            );
+            queryArgs.putInt(
+                android.content.ContentResolver.QUERY_ARG_LIMIT,
+                1
+            );
+            
+            cursor = getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                new String[] { MediaStore.Images.ImageColumns._ID,
-                    MediaStore.Images.ImageColumns.DATE_TAKEN},
-                null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC LIMIT 1");
-        Bitmap thumb = null;
-        if (cursor.moveToNext()) {
-            int id = cursor.getInt(0);
-            thumb = MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(),
-                    id, MediaStore.Images.Thumbnails.MINI_KIND, null);
+                new String[] { 
+                    MediaStore.Images.ImageColumns._ID,
+                    MediaStore.Images.ImageColumns.DATE_TAKEN
+                },
+                queryArgs,
+                null
+            );
+            
+            Bitmap thumb = null;
+            if (cursor != null && cursor.moveToFirst()) {
+                int id = cursor.getInt(0);
+                thumb = MediaStore.Images.Thumbnails.getThumbnail(
+                    getContentResolver(),
+                    id,
+                    MediaStore.Images.Thumbnails.MINI_KIND,
+                    null
+                );
+            }
+            return thumb;
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting last photo thumbnail", e);
+            return null;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        cursor.close();
-        return thumb;
     }
 
     protected void onStop() {

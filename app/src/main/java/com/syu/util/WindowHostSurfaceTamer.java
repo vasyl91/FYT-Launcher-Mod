@@ -28,8 +28,7 @@ public class WindowHostSurfaceTamer {
         if (sv == null) return;
         
         try {
-            // Basic Z-order setup
-            sv.setCompositionOrder(-1);
+            // Basic Z-order setup (setCompositionOrder doesn't exist in Android API)
             sv.setZOrderOnTop(false);
             sv.setZOrderMediaOverlay(false);
             

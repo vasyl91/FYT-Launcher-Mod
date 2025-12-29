@@ -59,7 +59,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.provider.Settings;
 import android.text.Selection;
 import android.text.SpannableString;
@@ -70,6 +70,7 @@ import android.text.style.RelativeSizeSpan;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
@@ -97,9 +98,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -110,6 +113,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.async.AsyncTask;
 import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
+import com.android.launcher66.settings.FabOverlayService;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.MainViewModel;
@@ -301,6 +305,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private TextView mKwMusicName;
     public boolean mKwPlayState;
     private View mLauncherView;
+    private RecyclerView mRecyclerView;
     private LeftAppListAdapter mLeftAppListAdapter;
     private List<AppListBean> mLeftAppListData;
     private ImageView mMapbgUnitView;
@@ -434,7 +439,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public State mState = State.WORKSPACE;
     private final String colsePipAction = "com.lsec.tyz.action.voice.launcher";
     private final String camera360Action = "FOURCAMERA2_BROADCAST_SEND";
-    private final BroadcastReceiver mCloseSystemDialogsReceiver = new CloseSystemDialogsIntentReceiver(this, null);
+    private BroadcastReceiver mCloseSystemDialogsReceiver = new CloseSystemDialogsIntentReceiver(this, null);
     private final ContentObserver mWidgetObserver = new AppWidgetResetObserver();
     public Handler handler = new Handler(Looper.getMainLooper());
     private ItemInfo mPendingAddInfo = new ItemInfo();
@@ -459,6 +464,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private SharedPreferences mPrefs;
 	private boolean fytData = true;  
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+    private static final int OVERLAY_PERMISSION_REQUEST_CODE = 1002;
+    private static final int REQUEST_CODE_WRITE_SETTINGS = 1003;
+    private static final int REQUEST_CODE_STORAGE = 1004;
+    private static final int REQUEST_CODE_LOCATION = 1005;
+    private static final int REQUEST_CODE_OVERLAY = 1006; 
+    private boolean permissionsRequested = false;
     private FusedLocationProviderClient fusedLocationClient;
     private Helpers helpers = new Helpers();
     private LinearLayout bottomButtons;
@@ -500,6 +511,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private ConstraintLayout playPauseLayoutTwo;
     private ConstraintLayout nextLayoutTwo;
     private int orientation;
+    private boolean floatingButton = false;
 
     public static int calculatedStatsWidth;
     public static int calculatedStatsHeight;
@@ -1012,12 +1024,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             if (mediaSource == "mediaController") {
                 boolean activeControllerAppRunning = false;
-                ActivityManager activityManager = (ActivityManager) getSystemService( Context.ACTIVITY_SERVICE );
-                List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();                        
-                for(ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-                    if (appProcess.processName.contains(activeController)) {
+                MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
+                ComponentName component = new ComponentName(Launcher.this, NotificationListener.class);
+                List<MediaController> controllers = msm.getActiveSessions(component);
+
+                for (MediaController controller : controllers) {
+                    if (controller.getPackageName().equals(activeController)) {
                         activeControllerAppRunning = true;
-                    } 
+                        break;
+                    }
                 }
                 if (!activeControllerAppRunning) {
                     if (Launcher.this.tvMusicName != null) {
@@ -1316,7 +1331,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     setPlayPauseIcon();
                     Widget.update(LauncherApplication.sApp);   
                 }
-            }, 500);
+            }, 300);
         } else {
            setPlayPauseIcon();
         }
@@ -1738,7 +1753,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     };
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() { 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() { 
         @Override 
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null) {
@@ -1809,7 +1824,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                mWorkspace.getCurrentPage() == startPage;
     }
 
-    private final Handler mHandler = new Handler(Looper.getMainLooper()) {
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == 1) {
@@ -2007,7 +2022,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             orientationDimension = screenHeight;
-            calculatedLeftBarWidth = calculateDimension(orientationDimension - getStatusBarHeight(), 7.1);
+            int bottombarHeight = (int) ((screenHeight + getStatusBarHeight()) * 0.142f);
+            calculatedLeftBarWidth = calculateDimension(orientationDimension - bottombarHeight , 7.1);
             orientedWidth = screenWidth;
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             orientationDimension = screenWidth - getStatusBarHeight();
@@ -2071,6 +2087,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             editor.putString("workspace_textSize", String.valueOf(mainScreenIconTextSize));
         }
         editor.apply();
+    }
+
+    public int getActionBarHeight() {
+        TypedValue tv = new TypedValue();
+        if (this.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            int height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+            Log.i(TAG, "ActionBar height: " + height);
+            return height;
+        }
+        Log.i(TAG, "ActionBar height: 0 (not found)");
+        return 0;
     }
 
     public int calculateDimension(int dimension, double percentage) {
@@ -2142,10 +2169,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         grid.layout(this);
 
         mStats = new Stats(this);
-        
-        kwAPi = KWAPI.createKWAPI(this, "fangyitong");
-        if (kwAPi != null) {
-            kwAPi.registerPlayerStatusListener(this, onRefreshKwStatus);
+
+        if (LauncherApplication.hasSystemPrivileges(this)) {
+            kwAPi = KWAPI.createKWAPI(this, "fangyitong");
+            if (kwAPi != null) {
+                kwAPi.registerPlayerStatusListener(this, onRefreshKwStatus);
+            }            
+        } else {
+            Log.w(TAG, "Launcher not installed as a system app, KWAPI can not be created.");
         }
     }
 
@@ -2355,7 +2386,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mKwArtist.setText(R.string.music_author);
             }
         }
-        if (mPlayer == null) {
+        if (mPlayer == null && LauncherApplication.isFytDevice()) {
             mPlayer = new MediaPlayer();
         }
 
@@ -2517,10 +2548,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Log.w(TAG, "recreateView: drag setup skipped", e);
         }
 
-        // --- Re-register your UI elements ---
+        // --- Re-register UI elements ---
         LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);
 
-        Log.d("recreateView", "remove and open Pip");
+        if (isServiceRunning(FabOverlayService.class)) {
+            Intent serviceIntent = new Intent(LauncherApplication.sApp, FabOverlayService.class);
+            stopService(serviceIntent);    
+        }
 
         mHandler.postDelayed(() -> {
             helpers.setFirstPreferenceWindow(false);
@@ -2623,6 +2657,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         weatherHandler.post(periodicWeatherCheck);
 
+        // Floating button
+        floatingButton = checkIfFloatingButton();
+        if (floatingButton) {
+            if (hasOverlayPermission()) {
+                startFabOverlayService();
+            } else {
+                requestOverlayPermission();
+            }
+        }
+
         mHandler.postDelayed(()-> {
             closeSystemDialogs();
         }, 250);
@@ -2631,6 +2675,143 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             onBackPip = false;
             onResumePip = false; 
         }, 1500); 
+
+        // Permissions for non-system app (only check once)
+        if (!permissionsRequested) {
+            checkAndRequestPermissions();
+        }
+    }
+
+    private void checkAndRequestPermissions() {
+        // Build a list of all permissions we need
+        List<String> permissionsToRequest = new ArrayList<>();
+        
+        // Check storage permissions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_MEDIA_AUDIO)
+                    != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(android.Manifest.permission.READ_MEDIA_AUDIO);
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // Android 8.0+
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+                permissionsToRequest.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+        }
+        
+        // Check location permissions
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) 
+                != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) 
+                != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+        
+        // Request all runtime permissions at once if needed
+        if (!permissionsToRequest.isEmpty()) {
+            permissionsRequested = true;
+            ActivityCompat.requestPermissions(
+                    this,
+                    permissionsToRequest.toArray(new String[0]),
+                    REQUEST_CODE_STORAGE
+            );
+        } else {
+            // All runtime permissions granted, now check special permissions
+            checkSpecialPermissions();
+        }
+    }
+
+    private void checkSpecialPermissions() {
+        // Check SYSTEM_ALERT_WINDOW (overlay) permission first
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Log.i(TAG, "SYSTEM_ALERT_WINDOW permission not granted");
+                permissionsRequested = true;
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, REQUEST_CODE_OVERLAY);
+                return; // Exit here, will continue in onActivityResult
+            }
+        }
+        
+        // If overlay is granted (or not needed), check WRITE_SETTINGS
+        checkWriteSettingsPermission();
+    }
+
+    private void checkWriteSettingsPermission() {
+        if (!LauncherApplication.hasSystemPrivileges(this)) {
+            // Check WRITE_SETTINGS permission
+            if (!Settings.System.canWrite(this)) {
+                Log.i(TAG, "WRITE_SETTINGS permission not granted");
+                permissionsRequested = true;
+                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, REQUEST_CODE_WRITE_SETTINGS);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, 
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        
+        if (requestCode == REQUEST_CODE_STORAGE) {
+            // Check if all permissions were granted
+            boolean allGranted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false;
+                    break;
+                }
+            }
+            
+            if (allGranted) {
+                Log.i(TAG, "All runtime permissions granted");
+            } else {
+                Log.w(TAG, "Some permissions were denied");
+            }
+            
+            // Now check special permissions after runtime permissions
+            checkSpecialPermissions();
+        }
+    }
+
+    private boolean checkIfFloatingButton() {
+        boolean floatingBtn = mPrefs.getBoolean(Keys.FAB_OVERLAY_BUTTON, false);
+        boolean floatingBtnLeft = mPrefs.getBoolean(Keys.FAB_OVERLAY_BUTTON_LEFT, false);
+        boolean floatingBtnRight = mPrefs.getBoolean(Keys.FAB_OVERLAY_BUTTON_RIGHT, false);
+        if (!floatingBtn && !floatingBtnLeft && !floatingBtnRight) return false;
+        String firstPkg = mPrefs.getString(Keys.PIP_FIRST_PACKAGE, "");
+        String secondPkg = mPrefs.getString(Keys.PIP_SECOND_PACKAGE, "");
+        String thirdPkg = mPrefs.getString(Keys.PIP_THIRD_PACKAGE, "");
+        String fourthPkg = mPrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
+
+        if (!firstPkg.isEmpty() && !secondPkg.isEmpty() && !thirdPkg.isEmpty() && !fourthPkg.isEmpty()) {
+            return true;
+        } else return false;
+    }
+
+    private void startFabOverlayService() {
+        if (!isServiceRunning(FabOverlayService.class)) {
+            Intent serviceIntent = new Intent(LauncherApplication.sApp, FabOverlayService.class);
+            startService(serviceIntent);
+        } else {
+            showOverlayFab();
+        }
+    }
+    
+    public void showOverlayFab() {
+        Intent intent = new Intent(Keys.SHOW_FAB);
+        sendBroadcast(intent);
+    }
+    
+    public void hideOverlayFab() {
+        Intent intent = new Intent(Keys.HIDE_FAB);
+        sendBroadcast(intent);
     }
 
     @Override 
@@ -2667,6 +2848,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mPlayer.reset();
             mPlayer.release();
             mPlayer = null;
+        }
+        if (isServiceRunning(FabOverlayService.class)) {
+            hideOverlayFab();
         }
     }
 
@@ -2706,11 +2890,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         tools.removeRefreshLisenter(4, refreshMain);
         tools.removeRefreshLisenter(7, refreshMain);
         tools.removeRefreshLisenter(2, refreshBtInfo);
-        unregisterReceiver(removeMusic);
-        unregisterReceiver(mAutoMap);
-        unregisterReceiver(mTrifficReceiver);
-        mHandler.removeMessages(1);
-        mHandler.removeMessages(0);
+        unregisterAllReceivers();
+        TimeUpdateReceiver.unregister(this);
+        if (mHandler != null) {
+            mHandler.removeMessages(1);
+            mHandler.removeMessages(0);
+            mHandler.removeCallbacksAndMessages(null);
+        }
+        clearBarWidgetReferences();
         mWorkspace.removeCallbacks(mBuildLayersRunnable);
         LauncherAppState app = LauncherAppState.getInstance();
         if (isChangingConfigurations()) {
@@ -2759,7 +2946,51 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         clearAllCustomViews();
         LauncherAnimUtils.onDestroyActivity();
         stopServicesOnDestroy();
-    }    
+    }
+
+    private void unregisterAllReceivers() {
+        BroadcastReceiver[] receivers = {
+            removeMusic,
+            mAutoMap,
+            mTrifficReceiver,
+            mReceiver,
+            mCloseSystemDialogsReceiver,
+        };
+        
+        for (BroadcastReceiver receiver : receivers) {
+            if (receiver != null) {
+                try {
+                    unregisterReceiver(receiver);
+                } catch (IllegalArgumentException e) {
+                    // Receiver wasn't registered
+                }
+            }
+        }
+        
+        // Clear references
+        removeMusic = null;
+        mAutoMap = null;
+        mTrifficReceiver = null;
+        mReceiver = null;
+        mCloseSystemDialogsReceiver = null;
+    }      
+
+    private boolean hasOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return Settings.canDrawOverlays(this);
+        }
+        return true;
+    }
+    
+    private void requestOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent intent = new Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName())
+            );
+            startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE);
+        }
+    }  
 
     public static boolean isServiceRunning(Class<? extends Service> serviceClass) {
         ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getSystemService(Context.ACTIVITY_SERVICE);
@@ -2778,6 +3009,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         stopService(new Intent(LauncherApplication.sApp, WakeDetectionService.class));
         stopService(new Intent(LauncherApplication.sApp, NightModeService.class));  
         stopService(new Intent(LauncherApplication.sApp, CanbusService.class));   
+        stopService(new Intent(LauncherApplication.sApp, FabOverlayService.class));   
     }
 
     // Handle widget click events
@@ -3273,6 +3505,30 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mWorkspace.exitOverviewMode(false);
             }
             return;
+        } else if (requestCode == OVERLAY_PERMISSION_REQUEST_CODE) {
+            floatingButton = checkIfFloatingButton();
+            if (floatingButton) {
+                if (hasOverlayPermission()) {
+                    startFabOverlayService();
+                } else {
+                    Toast.makeText(this, "Overlay permission is required", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else if (requestCode == REQUEST_CODE_OVERLAY) {
+            if (Settings.canDrawOverlays(this)) {
+                Log.i(TAG, "SYSTEM_ALERT_WINDOW permission granted");
+            } else {
+                Log.w(TAG, "SYSTEM_ALERT_WINDOW permission denied");
+            }
+            // Continue to next permission check
+            checkWriteSettingsPermission();
+            
+        } else if (requestCode == REQUEST_CODE_WRITE_SETTINGS) {
+            if (Settings.System.canWrite(this)) {
+                Log.i(TAG, "WRITE_SETTINGS permission granted");
+            } else {
+                Log.w(TAG, "WRITE_SETTINGS permission denied");
+            }
         }
 
         boolean delayExitSpringLoadedMode = false;
@@ -4008,9 +4264,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             tvMusicNameTwo = musicBarView.findViewById(ResValue.getInstance().tv_musicName_two);
             ivALbumBgTwo = musicBarView.findViewById(ResValue.getInstance().iv_album_bg_two);
             tvAritstTwo = musicBarView.findViewById(ResValue.getInstance().tv_artist_two);
-            putCustomView(Config.WS_Music_Two, musicBarView.findViewById(ResValue.getInstance().rl_music_two));
-            if (getCustomView(Config.WS_Music_Two) != null) {
-                getCustomView(Config.WS_Music_Two).setOnClickListener(this);
+            View musicWidget = musicBarView.findViewById(ResValue.getInstance().rl_music_two);
+            if (musicWidget != null) {
+                musicWidget.setOnClickListener(this);
             }
         }
     }
@@ -4036,9 +4292,25 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
+    public void clearBarWidgetReferences() {
+        // Music bar
+        mPlayPauseButtonTwo = null;
+        mMusicPrevButtonTwo = null;
+        mMusicNextButtonTwo = null;
+        tvMusicNameTwo = null;
+        ivALbumBgTwo = null;
+        tvAritstTwo = null;
+        
+        // Weather bar
+        weatherCity1 = null;
+        weatherImg1 = null;
+        weatherWeather1 = null;
+        weatherTemp1 = null;
+    }
+
     public void initViews() {
         if (mWorkspace != null) {
-            if (mPlayer == null) {
+            if (mPlayer == null && LauncherApplication.isFytDevice()) {
                 mPlayer = new MediaPlayer();
             }
             mTvNavi = mWorkspace.findViewById(ResValue.getInstance().tv_navi);
@@ -4202,18 +4474,22 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mInitRetryCount++;
         Log.i(TAG, "initAppData() started (attempt " + mInitRetryCount + ")");
         
-        if (!checkDependenciesReady()) {
-            Log.w(TAG, "Dependencies not ready, will retry...");
-            mIsInitializingAppData = false;
-            
-            if (mInitRetryCount < MAX_INIT_RETRIES) {
-                mHandler.postDelayed(() -> initAppData(), 1000);
-            } else {
-                Log.e(TAG, "Max retries reached, initializing with defaults");
-                mInitRetryCount = 0;
-                forceInitializeWithDefaults();
-            }
-            return;
+        if (LauncherApplication.isFytDevice()) {
+            if (!checkDependenciesReady()) {
+                Log.w(TAG, "Dependencies not ready, will retry...");
+                mIsInitializingAppData = false;
+                
+                if (mInitRetryCount < MAX_INIT_RETRIES) {
+                    mHandler.postDelayed(() -> initAppData(), 1000);
+                } else {
+                    Log.e(TAG, "Max retries reached, initializing with defaults");
+                    mInitRetryCount = 0;
+                    forceInitializeWithDefaults();
+                }
+                return;
+            }            
+        } else {
+            forceInitializeWithDefaults();
         }
         
         // bottom recycler
@@ -4227,7 +4503,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mAppListAdapter = new AppListAdapter(this, Collections.emptyList());
         }
         
-        RecyclerView mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
+        mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
         if (mRecyclerView == null) {
             Log.e(TAG, "RecyclerView not found in workspace! Waiting for layout...");
             
@@ -4308,7 +4584,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         
         mHandler.postDelayed(() -> {
-            RecyclerView mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
+            mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
             if (mRecyclerView != null) {
                 setupRecyclerView(mRecyclerView);
                 setupLeftRecyclerView();
@@ -4317,51 +4593,77 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }, 500);
     }
 
-    private void setupRecyclerView(RecyclerView mRecyclerView) {
+    private void setupRecyclerView(RecyclerView recyclerView) {
         Log.d(TAG, "setupRecyclerView started");
-        
+
         // Force visibility
-        mRecyclerView.setVisibility(View.VISIBLE);
-        
+        recyclerView.setVisibility(View.VISIBLE);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(androidx.recyclerview.widget.RecyclerView.HORIZONTAL);
-        mRecyclerView.setLayoutManager(layoutManager);
-        
+        recyclerView.setLayoutManager(layoutManager);
+
         // Check if decoration already added to prevent duplicates
-        if (mRecyclerView.getTag() == null) {
-            mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+        if (recyclerView.getTag() == null) {
+            recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+                private int cachedSpacing = -1;
+                private boolean hasCalculated = false;
+                
                 @Override
                 public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                     super.getItemOffsets(outRect, view, parent, state);
-                    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                        if (userLayout && widgetBar) {
-                            outRect.left = (int) (-bottomBarIconMargin * 1.1f);
-                            outRect.right = (int) (-bottomBarIconMargin * 1.1f);
-                        } else {
-                            outRect.left = -bottomBarIconMargin;
-                            outRect.right = -bottomBarIconMargin; 
+                    
+                    int itemCount = parent.getAdapter() != null ? parent.getAdapter().getItemCount() : 0;
+                    if (itemCount == 0) return;
+                    
+                    // Only calculate once when view has actual width
+                    if (!hasCalculated && view.getWidth() > 0) {
+                        int itemWidth = view.getWidth();
+                        
+                        // Get available width
+                        int availableWidth = (int) (mLauncher.screenWidth * 0.8795f);
+                        if (widgetBar) {
+                            availableWidth = (int) (mLauncher.screenWidth * 0.4395f);
+                        }   
+                        
+                        // Calculate total width needed for all items
+                        int totalItemsWidth = itemWidth * itemCount;
+                        
+                        // Calculate total spacing available
+                        int totalSpacing = availableWidth - totalItemsWidth;  
+
+                        // Distribute spacing: (itemCount + 1) gaps to include edges
+                        int spacingPerGap = totalSpacing / (itemCount + 1);
+
+                        int adjustedSpacing = spacingPerGap / 2;
+                        if (spacingPerGap < 0) {
+                            adjustedSpacing = (int) (spacingPerGap / 1.5f);
                         }
-                    } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        if (userLayout && widgetBar) {
-                            outRect.left = (int) (bottomBarIconMargin / 2.0f);
-                            outRect.right = (int) (bottomBarIconMargin / 2.0f);
-                        } else {
-                            outRect.left = bottomBarIconMargin;
-                            outRect.right = bottomBarIconMargin;
-                        }
+
+                        cachedSpacing = spacingPerGap / 2;
+                        hasCalculated = true;
                     }
+                    
+                    // Use cached spacing for all items (or 0 if not calculated yet)
+                    outRect.left = cachedSpacing >= 0 ? cachedSpacing : 0;
+                    outRect.right = cachedSpacing >= 0 ? cachedSpacing : 0;
                 }
             });
-            mRecyclerView.addItemDecoration(new SimpleDividerDecoration());
-            mRecyclerView.setTag(1);
+            recyclerView.addItemDecoration(new SimpleDividerDecoration());
+            recyclerView.setTag(1);
         }
-        
-        mRecyclerView.setAdapter(mAppListAdapter);
-        
-        Log.d(TAG, "RecyclerView setup complete - Adapter: " + (mAppListAdapter != null) + 
-              ", ItemCount: " + (mAppListAdapter != null ? mAppListAdapter.getItemCount() : 0) +
-              ", Visibility: " + mRecyclerView.getVisibility());
-        
+            
+        // Force recalculation after layout
+        recyclerView.post(() -> {
+            recyclerView.invalidateItemDecorations();
+        });
+
+        recyclerView.setAdapter(mAppListAdapter);
+
+        Log.d(TAG, "RecyclerView setup complete - Adapter: " + (mAppListAdapter != null) +
+                ", ItemCount: " + (mAppListAdapter != null ? mAppListAdapter.getItemCount() : 0) +
+                ", Visibility: " + recyclerView.getVisibility());
+
         // Initialize app data
         initializeAppList();
 
@@ -4372,7 +4674,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         sendBroadcast(intentCustomElements);
 
         // Force a layout pass
-        mRecyclerView.requestLayout();
+        recyclerView.requestLayout();
+
+        boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        if (autoHideBottomBar) {
+            disableRecycler();             
+        } 
     }
 
     private void setupLeftRecyclerView() {
@@ -4418,21 +4725,49 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // Check if decoration already added to prevent duplicates
         if (mLeftRecyclerView.getTag() == null) {
             mLeftRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+                private int cachedSpacing = -1;
+                private boolean hasCalculated = false;
+                
                 @Override
                 public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                     super.getItemOffsets(outRect, view, parent, state);
-                    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                        outRect.top = (int) (leftBarIconMargin * 1.5f);
-                        outRect.bottom = (int) (leftBarIconMargin * 1.5f);
-                    } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        outRect.top = leftBarIconMargin;
-                        outRect.bottom = leftBarIconMargin;
+                    
+                    int itemCount = parent.getAdapter() != null ? parent.getAdapter().getItemCount() : 0;
+                    if (itemCount == 0) return;
+                    
+                    // Only calculate once when view has actual height
+                    if (!hasCalculated && view.getHeight() > 0) {
+                        int itemHeight = view.getHeight();
+                        
+                        // Get available height (you can adjust this percentage like you did with width)
+                        int availableHeight = parent.getHeight() - parent.getPaddingTop() - parent.getPaddingBottom();
+                        
+                        // Calculate total height needed for all items
+                        int totalItemsHeight = itemHeight * itemCount;
+                        
+                        // Calculate total spacing available
+                        int totalSpacing = Math.max(0, availableHeight - totalItemsHeight);
+                        
+                        // Distribute spacing: (itemCount + 1) gaps to include edges
+                        int spacingPerGap = totalSpacing / (itemCount + 1);
+                        
+                        cachedSpacing = spacingPerGap / 2;
+                        hasCalculated = true;
                     }
+                    
+                    // Use cached spacing for all items (or 0 if not calculated yet)
+                    outRect.top = cachedSpacing >= 0 ? cachedSpacing : 0;
+                    outRect.bottom = cachedSpacing >= 0 ? cachedSpacing : 0;
                 }
             });
             mLeftRecyclerView.addItemDecoration(new SimpleDividerDecoration());
             mLeftRecyclerView.setTag(1);
         }
+
+        // Force recalculation after layout
+        mLeftRecyclerView.post(() -> {
+            mLeftRecyclerView.invalidateItemDecorations();
+        });
 
         mLeftRecyclerView.setAdapter(mLeftAppListAdapter);
         
@@ -4631,7 +4966,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     private void refreshRecyclerViewDecorations() {
         // Refresh main recycler view
-        RecyclerView mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
+        mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
         if (mRecyclerView != null && mAppListAdapter != null) {
             mAppListAdapter.notifyDataSetChanged();
         }
@@ -4947,6 +5282,26 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
+    public void enableRecycler() {
+        if (mRecyclerView != null) {
+            mRecyclerView.setEnabled(true);
+            mRecyclerView.setClickable(true);
+            mRecyclerView.setLongClickable(true);
+            mRecyclerView.setVisibility(View.VISIBLE);
+            Log.i(TAG, "Recycler enabled");
+        }
+    }
+
+    public void disableRecycler() {
+        if (mRecyclerView != null) {
+            mRecyclerView.setEnabled(false);
+            mRecyclerView.setClickable(false);
+            mRecyclerView.setLongClickable(false);
+            mRecyclerView.setVisibility(View.GONE);
+            Log.i(TAG, "Recycler disabled");
+        }
+    }
+
     private Bitmap loadAppIconFromPackageManager(String packageName, String className) {
         try {
             PackageManager pm = getPackageManager();
@@ -5101,14 +5456,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         } else if (mediaSource == "mediaController") {
             boolean activeControllerAppRunning = false;
             MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-            List<MediaController> controllers = msm.getActiveSessions(null);
+            ComponentName component = new ComponentName(this, NotificationListener.class);
+            List<MediaController> controllers = msm.getActiveSessions(component);
+
             for (MediaController controller : controllers) {
                 if (controller.getPackageName().equals(activeController)) {
                     activeControllerAppRunning = true;
-                    if (activeController != null && !activeController.isEmpty()) {
-                        sendBroadcast(new Intent("media.play.previous"));
-                    }
-                    break; 
+                    controller.getTransportControls().skipToPrevious();
+                    break;
                 }
             }
             if (!activeControllerAppRunning || isRadioPlaying()) {
@@ -5158,29 +5513,39 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             } else if (mediaSource == "mediaController") {
                 boolean activeControllerAppRunning = false;
                 MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-                List<MediaController> controllers = msm.getActiveSessions(null);
+                ComponentName component = new ComponentName(this, NotificationListener.class);
+                List<MediaController> controllers = msm.getActiveSessions(component);
                 for (MediaController controller : controllers) {
                     if (controller.getPackageName().equals(activeController)) {
                         activeControllerAppRunning = true;
+
                         PlaybackState state = controller.getPlaybackState();
                         int playbackState = (state != null) ? state.getState() : PlaybackState.STATE_NONE;
+
                         if (playbackState == PlaybackState.STATE_PLAYING) {
-                            playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                            if (barView) {
-                                setBarButtonsTint(playPauseButton);
-                            } else {
-                                setWidgetButtonsTint(playPauseButton);
-                            }
-                            sendBroadcast(new Intent("media.play.pause"));
+                            handler.postDelayed(() -> {
+                                if (playbackState == PlaybackState.STATE_PLAYING) {
+                                    playPauseButton.setBackground(
+                                        SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon)
+                                    );
+                                }
+                            }, 500);
+
+                            if (barView) setBarButtonsTint(playPauseButton);
+                            else setWidgetButtonsTint(playPauseButton);
+
+                            controller.getTransportControls().pause();
+
                         } else {
-                            playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                            if (barView) {
-                                setBarButtonsTint(playPauseButton);
-                            } else {
-                                setWidgetButtonsTint(playPauseButton);
-                            }
-                            sendBroadcast(new Intent("media.play.play"));
+                            playPauseButton.setBackground(
+                                SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon)
+                            );
+                            if (barView) setBarButtonsTint(playPauseButton);
+                            else setWidgetButtonsTint(playPauseButton);
+
+                            controller.getTransportControls().play();
                         }
+
                         break;
                     }
                 }
@@ -5225,14 +5590,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         } else if (mediaSource == "mediaController") {
             boolean activeControllerAppRunning = false;
             MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-            List<MediaController> controllers = msm.getActiveSessions(null);
+            ComponentName component = new ComponentName(this, NotificationListener.class);
+            List<MediaController> controllers = msm.getActiveSessions(component);
             for (MediaController controller : controllers) {
                 if (controller.getPackageName().equals(activeController)) {
                     activeControllerAppRunning = true;
-                    if (activeController != null && !activeController.isEmpty()) {
-                        sendBroadcast(new Intent("media.play.next"));
-                    }
-                    break; 
+                    controller.getTransportControls().skipToNext();
+                    break;
                 }
             }
             if (!activeControllerAppRunning || isRadioPlaying()) {
@@ -6650,7 +7014,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (CarStates.mExistCarRadio == 1) {
                     startActivitySafely(v, FytPackage.getIntent(this, FytPackage.CARRADIOACTION), "bt");
                 } else {
-                    startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "bt");
+                    if (helpers.isPackageInstalled("com.syu.radio")) {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.syu.music");
+                        try {
+                            ComponentName componentName = launchIntent.getComponent();
+                            PackageManager pm = getPackageManager();
+                            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+                            String appTitle = appInfo.loadLabel(pm).toString();
+                            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+                            refreshLeftCycle(bean);
+                            cleanWidgetBar();
+                        } catch (PackageManager.NameNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                        startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "bt");
+                    }
                 }
                 WindowUtil.removePip(pipViews);
                 return;
@@ -6660,13 +7038,27 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (CarStates.mExistCarRadio == 1) {
                     startActivitySafely(v, FytPackage.getIntent(this, FytPackage.CARRADIOACTION), "bt");
                 } else {
-                    startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "music");
+                    if (helpers.isPackageInstalled("com.syu.radio")) {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.syu.music");
+                        try {
+                            ComponentName componentName = launchIntent.getComponent();
+                            PackageManager pm = getPackageManager();
+                            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+                            String appTitle = appInfo.loadLabel(pm).toString();
+                            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+                            refreshLeftCycle(bean);
+                            cleanWidgetBar();
+                        } catch (PackageManager.NameNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                        startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "music");
+                    }
                 }
                 WindowUtil.removePip(pipViews);
                 return;
             }
             if (v == getCustomView(Config.WS_Music) || v == getCustomView(Config.WS_Music_Two) || v == getCustomView(Config.WS_Music3)) {
-                if (mediaSource == "fyt") {
+                if (mediaSource == "fyt" && helpers.isPackageInstalled("com.syu.music")) {
                     WindowUtil.removePip(pipViews);
                     Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.syu.music");
                     try {
@@ -6951,9 +7343,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void stopMusic() {
         if (mediaSource == "mediaController") {
-            if (Launcher.this.mPlayPauseButton != null) {
+            if (mPlayPauseButton != null) {
                 mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                 setWidgetButtonsTint(mPlayPauseButton);
+            }
+            if (mPlayPauseButtonTwo != null) {
                 mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                 setBarButtonsTint(mPlayPauseButtonTwo);
             }

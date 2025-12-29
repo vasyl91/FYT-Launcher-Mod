@@ -6,6 +6,8 @@ import android.app.Application;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 
+import com.android.launcher66.LauncherApplication;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
@@ -15,16 +17,20 @@ public class SkinActivityLifecycleCallbacks implements Application.ActivityLifec
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
-        try {
-            @SuppressLint("SoonBlockedPrivateApi") Field field = LayoutInflater.class.getDeclaredField("mFactorySet");
-            field.setAccessible(true);
-            field.setBoolean(layoutInflater, false);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         SkinFactory skinLayoutFactory = new SkinFactory();
-        layoutInflater.setFactory2(skinLayoutFactory);
-        SkinUtils.getSkinManager().addObserver(skinLayoutFactory);
+        if (LauncherApplication.isFytDevice()) {
+            try {
+                @SuppressLint("SoonBlockedPrivateApi") Field field = LayoutInflater.class.getDeclaredField("mFactorySet");
+                field.setAccessible(true);
+                field.setBoolean(layoutInflater, false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            layoutInflater.setFactory2(skinLayoutFactory);
+            SkinUtils.getSkinManager().addObserver(skinLayoutFactory);
+        }
+        SkinUtils.getSkinManager().addObserver(skinLayoutFactory); 
         /*if (activity instanceof Launcher) {
             SkinUtils.getSkinManager().addObserver((Launcher) activity);
         }*/

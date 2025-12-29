@@ -29,6 +29,7 @@ import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
+import com.syu.util.WindowUtil;
 
 import java.util.ArrayList;
 
@@ -47,12 +48,13 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        WindowUtil.removePinnedPip();
         helpers.setListOpen(true);
         helpers.setInOverviewMode(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
         boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
-        if (userLayout && userStats)  {  
+        if (userLayout && userStats)  { 
             helpers.setForegroundAppOpened(false);
             helpers.setInAllApps(false);
             helpers.setInWidgets(false);
@@ -81,7 +83,6 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getDialog().getWindow().setType(2999);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0));
         getDialog().getWindow().setLayout(-1, -1);
         getDialog().setCanceledOnTouchOutside(true);
@@ -130,6 +131,7 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
         currentAppName = null;
         mGridView = null;
         mAdapter = null;
+        WindowUtil.openPinnedPip();
     }
 
     public void clearReferences() {

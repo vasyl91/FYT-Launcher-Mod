@@ -31,7 +31,7 @@ public class Air_0203_Oudi_08AodeSai extends AirBase {
         String str;
         String str2;
         Canvas c = this.mContentCanvas;
-        c.save(2);
+        c.save();
         c.drawColor(0, PorterDuff.Mode.CLEAR);
         c.clipRect(this.mRectEmpty);
         if (this.DATA[32] != 0) {

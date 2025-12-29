@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Rect;
-import android.os.SystemProperties;
+import android.SystemProperties;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -63,7 +63,11 @@ public class WindowUtil {
     }
 
     public static void initDefaultApp() {
+        if (!LauncherApplication.isFytDevice()) return;
         initSurfacePreloader();
+        if (helpers == null) {
+            helpers = new Helpers();
+        }
         try {
             AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
             if (AppPackageName.isEmpty() || AppPackageName == null) {
@@ -123,6 +127,7 @@ public class WindowUtil {
     }
 
     public static void openPip(View v, boolean show) {
+        if (!LauncherApplication.isFytDevice()) return;
         if (Launcher.getLauncher().allowPip) {
             try {
                 if (helpers == null) {
@@ -161,6 +166,7 @@ public class WindowUtil {
                     boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
                    
                     if (userLayout) {
+                        Launcher.mLauncher.sendBroadcast(new Intent(Keys.BLOCK_FLOATING_BUTTON));
                         // Always try to dismiss existing views before adding a new ones
                         // It prevents adding a view twice what results in persistent black rectangle
                         try {
@@ -211,6 +217,7 @@ public class WindowUtil {
     }
 
     public static void removePip(View v) {
+        if (!LauncherApplication.isFytDevice()) return;
         if (helpers == null) {
             helpers = new Helpers();
         }
@@ -285,6 +292,7 @@ public class WindowUtil {
     // WINDOWED PIPS
 
     public static void openMultiplePips() {
+        if (!LauncherApplication.isFytDevice()) return;
         dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
         firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
         secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
@@ -376,7 +384,7 @@ public class WindowUtil {
                     updatePipPositionsForScroll(currentScroll);
                 }
             }, 100); 
-        }
+        }            
     }
 
     private static String getScreenKeyForType(String pipType) {
@@ -491,7 +499,11 @@ public class WindowUtil {
 
     // PINNED PIP
 
-    public static void openPinnedPip() { 
+    public static void openPinnedPip() {
+        if (!LauncherApplication.isFytDevice()) return;
+        if (helpers == null) {
+            helpers = new Helpers();
+        }
         if (Launcher.getLauncher().allowPip
             && Utils.topApp()
             && !helpers.isInWidgets()
@@ -532,7 +544,10 @@ public class WindowUtil {
         }
     }
 
-    private static boolean checkIfPinned() {
+    public static boolean checkIfPinned() {
+        if (prefs == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
+        }
         firstPipPinned = prefs.getBoolean(Keys.PIP_FIRST_MODE, false);
         secondPipPinned = prefs.getBoolean(Keys.PIP_SECOND_MODE, false);
         thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
@@ -607,6 +622,7 @@ public class WindowUtil {
     }
 
     public static void restartPinnedPipApp() {
+        if (!LauncherApplication.isFytDevice()) return;
         if (mWindowHost != null) {
             Launcher.getLauncher().handler.post(() -> mWindowHost.cleanup());
         }
@@ -643,6 +659,7 @@ public class WindowUtil {
     }
 
     public static void removePinnedPip() {
+        if (!LauncherApplication.isFytDevice()) return;
         if (prefs == null) {
             prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
         }
