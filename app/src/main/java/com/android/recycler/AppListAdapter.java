@@ -113,13 +113,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                 }
                 case 877333343: {
                     if (packageName.equals("net.easyconn")) {
-                        WindowUtil.removePip(null);
+                        WindowUtil.removePip();
                     }
                     break;
                 }
                 case 1489048446: {
                     if (packageName.equals("com.nng.igo.primong.igoworld")) {
-                        WindowUtil.removePip(null);
+                        WindowUtil.removePip();
                     }
                     break;
                 }
@@ -158,7 +158,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
     }
 
     private void onClickIcon(AppListBean appListBean) {
-        WindowUtil.removePip(null);
+        WindowUtil.removePip();
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);

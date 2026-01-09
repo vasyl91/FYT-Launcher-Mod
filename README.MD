@@ -2,7 +2,7 @@
 
 **Launcher Mod has been tested on Android 10 with 2000x1200 resolution as it is the only device I own.**
 
-It should get along with all resolutions on Android 8 up to 11. Android 12+ might not allow (depending on the FYT brand) to install the app with `android:sharedUserId="android.uid.system"` without root access or the proper platform keystore. This is a fundamental security restriction that cannot be bypassed. In such case you can use the non-privileged version (keep in mind that multiple PiP feature won't work wtihout system privileges, standard PiP should be up and running) - this version was tested on phone with Android 16.
+It should get along with all resolutions on Android 8 up to 11. Android 12+ might not allow (depending on the FYT brand) to install the app with `android:sharedUserId="android.uid.system"` without root access or the proper platform keystore. This is a fundamental security restriction that cannot be bypassed. In such case you can use the non-privileged version (From 1.1.8; keep in mind that multiple PiP feature won't work wtihout system privileges, standard PiP should be up and running) - this version was tested on phone with Android 16.
 
 IMPORTANT: Note that some of the FYT devices do not support the PiP on the main screen. You can still use the launcher however you'll have to turn off the PiP in the launcher's settings (otherwise Google Maps will pop up every time you'll try to open the home page - if it happens, wipe the launcher's data or reinstall it).
 
@@ -17,8 +17,6 @@ List of modifications:
 - Bottom bar with optional widgets.
 - Auto hide bottm bar option.
 - Skins for widgets and bottom bar.
-- Bottom bar with optional widgets. 
-- Auto hide bottm bar option. 
 - Optional floating buttons allowing to quickly switch the apps between PiPs. (From 1.1.8)
 - Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with position on the screen specified by user.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct the sunset and sunrise times, set the wallpaper and the brightness for the day/night mode).

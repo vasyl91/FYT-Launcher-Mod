@@ -953,7 +953,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                     
                     helpers.setWidgetDropPip(true);
                     Log.i("onDropCompleted()", "startMapPip");
-                    WindowUtil.startMapPip(null, false, 250);
+                    WindowUtil.startMapPip(false, 250);
                 }
             }
         }, 1000);

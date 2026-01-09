@@ -1,15 +1,23 @@
 package com.syu.util;
 
+import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.SystemProperties;
+import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
@@ -23,10 +31,12 @@ import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.fyt.thread.ThreadManager;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WindowUtil {
@@ -43,11 +53,11 @@ public class WindowUtil {
     private static final Map<String, Boolean> pipOffscreenState = new HashMap<>();
     private static final Map<String, Rect> lastPipBounds = new HashMap<>();
 
-    public static boolean dualPip = true;
-    public static boolean firstPip = true;
-    public static boolean secondPip = true;
-    public static boolean thirdPip = true;
-    public static boolean fourthPip = true;
+    public static boolean dualPip = false;
+    public static boolean firstPip = false;
+    public static boolean secondPip = false;
+    public static boolean thirdPip = false;
+    public static boolean fourthPip = false;
     public static boolean firstPipPinned = false;
     public static boolean secondPipPinned = false;
     public static boolean thirdPipPinned = false;
@@ -117,17 +127,18 @@ public class WindowUtil {
         }).start();
     }
 
-    public static void startMapPip(final View v, final boolean show) {
-        ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(v, show));
+    public static void startMapPip(final boolean show) {
+        ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
     }
 
-    public static void startMapPip(final View v, final boolean show, int millis) {
+    public static void startMapPip(final boolean show, int millis) {
         delayMillis = millis;
-        ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(v, show));
+        ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
     }
 
-    public static void openPip(View v, boolean show) {
+    public static void openPip(boolean show) {
         if (!LauncherApplication.isFytDevice()) return;
+        if (Launcher.getLauncher() == null) return;
         if (Launcher.getLauncher().allowPip) {
             try {
                 if (helpers == null) {
@@ -195,7 +206,10 @@ public class WindowUtil {
                             }, delayMillis);
                             Launcher.getLauncher().handler.postDelayed(() -> {
                                 openMultiplePips();
-                            }, delayMillis + 100);                
+                            }, delayMillis + 100);
+                            Launcher.getLauncher().handler.postDelayed(() -> {
+                                Launcher.getLauncher().showOverlayFab();
+                            }, delayMillis + 150);                                           
                         }
                     } 
 
@@ -211,13 +225,14 @@ public class WindowUtil {
         }
     }
 
-    public static void removePip(final View v, int millis) {
+    public static void removePip(int millis) {
         delayMillis = millis;
-        ThreadManager.getLongPool().execute(() -> WindowUtil.removePip(v));
+        ThreadManager.getLongPool().execute(() -> WindowUtil.removePip());
     }
 
-    public static void removePip(View v) {
+    public static void removePip() {
         if (!LauncherApplication.isFytDevice()) return;
+        if (Launcher.getLauncher() == null) return;
         if (helpers == null) {
             helpers = new Helpers();
         }
@@ -255,6 +270,7 @@ public class WindowUtil {
                 }
             }
             try {
+                Launcher.getLauncher().hideOverlayFab();
                 // Dismiss windowed activity
                 if (mWindowHost != null) {
                     Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
@@ -721,5 +737,977 @@ public class WindowUtil {
         if (thirdPip) count++;
         if (fourthPip) count++;
         return Math.min(Math.max(1, count), 2);
+    }
+
+    // -------------- FAB ----------------
+    // --------- left/first <-> third ----------
+    public static void swapLeftAndThird() {
+        try {
+            // Block floating button while swapping (preserve existing behavior)
+            try {
+                if (Launcher.mLauncher != null) {
+                    Launcher.mLauncher.sendBroadcast(new android.content.Intent(Keys.BLOCK_FLOATING_BUTTON));
+                }
+            } catch (Throwable ignore) {}
+
+            WindowHost host = WindowHost.sInstance;
+            if (host == null) {
+                Log.w(TAG, "swapLeftAndThird: WindowHost not available");
+                return;
+            }
+
+            Object dual = reflectGetField(host, "dual");
+            Object third = reflectGetField(host, "third");
+            Object first = reflectGetField(host, "first");
+
+            dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
+            firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
+            thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
+            thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
+
+            // Try dual.left <-> third first (if dual mode active)
+            if ((dualPip && thirdPip && !thirdPipPinned) && (dual != null && third != null)) {
+                try {
+                    Object dualLeftAV = reflectGetField(dual, "leftAV");
+                    ViewGroup dualLeftHost = (ViewGroup) reflectGetField(dual, "leftHost");
+                    Object thirdAv = reflectGetField(third, "av");
+                    ViewGroup thirdHost = (ViewGroup) reflectGetField(third, "host");
+
+                    String dualLeftPkg = (String) reflectGetField(dual, "leftPkg");
+                    String thirdPkg = (String) reflectGetField(third, "currentPkg");
+
+                    final View viewForDual = asView(dualLeftAV);
+                    final View viewForThird = asView(thirdAv);
+
+                    // 1) atomic native-surface swap
+                    boolean atomicOk = false;
+                    try {
+                        if (viewForDual != null && viewForThird != null) {
+                            atomicOk = WindowHostReparenter.swapActivityViewSurfaces(viewForDual, viewForThird, 1000);
+                        } else {
+                            Log.w(TAG, "swapLeftAndThird: viewForDual or viewForThird is null, skipping atomic swap");
+                        }
+                    } catch (Throwable t) {
+                        Log.w(TAG, "swapLeftAndThird: atomic swap threw", t);
+                        atomicOk = false;
+                    }
+
+                    if (atomicOk) {
+                        // Atomic succeeded — update host fields and reattach views after a short delay
+                        try {
+                            if (dualLeftHost != null) try { dualLeftHost.removeAllViews(); } catch (Throwable ignore) {}
+                            if (thirdHost != null)    try { thirdHost.removeAllViews(); }    catch (Throwable ignore) {}
+
+                            invokeIfExists(dualLeftAV, "clearActivityViewGeometryForIme");
+                            invokeIfExists(thirdAv, "clearActivityViewGeometryForIme");
+
+                            reflectSetField(dual, "leftAV", thirdAv);
+                            reflectSetField(third, "av", dualLeftAV);
+
+                            Object dualLeftAttached = reflectGetField(dual, "leftAttached");
+                            Object thirdChildAttached = reflectGetField(third, "childAttached");
+                            if (dualLeftAttached instanceof Boolean && thirdChildAttached instanceof Boolean) {
+                                reflectSetField(dual, "leftAttached", thirdChildAttached);
+                                reflectSetField(third, "childAttached", dualLeftAttached);
+                            }
+
+                            Integer dualLeftTask = (Integer) reflectGetField(dual, "leftTask");
+                            Integer thirdTaskId = (Integer) reflectGetField(third, "taskId");
+                            reflectSetField(dual, "leftTask", thirdTaskId == null ? -1 : thirdTaskId);
+                            reflectSetField(third, "taskId", dualLeftTask == null ? -1 : dualLeftTask);
+
+                            String oldDualLeftPkg = (String) reflectGetField(dual, "leftPkg");
+                            String oldThirdPkg = (String) reflectGetField(third, "currentPkg");
+                            reflectSetField(dual, "leftPkg", oldThirdPkg);
+                            reflectSetField(third, "currentPkg", oldDualLeftPkg);
+
+                            final Object dualRef = dual;
+                            final Object thirdRef = third;
+                            final ViewGroup dualLeftHostFinal = dualLeftHost;
+                            final ViewGroup thirdHostFinal = thirdHost;
+
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                try {
+                                    Object newDualLeftAV = reflectGetField(dualRef, "leftAV");
+                                    Object newThirdAv = reflectGetField(thirdRef, "av");
+                                    View newViewForDual = asView(newDualLeftAV);
+                                    View newViewForThird = asView(newThirdAv);
+
+                                    if (dualLeftHostFinal != null) reparentHostChild(dualLeftHostFinal, newViewForDual);
+                                    if (thirdHostFinal != null)    reparentHostChild(thirdHostFinal, newViewForThird);
+
+                                    invokeIfExists(newDualLeftAV, "updateLocationAndTapExcludeRegion");
+                                    invokeIfExists(newThirdAv, "updateLocationAndTapExcludeRegion");
+                                } catch (Throwable t) {
+                                    Log.w(TAG, "swapLeftAndThird: delayed reattach failed", t);
+                                }
+                            }, 50);
+
+                            Log.i(TAG, "swapLeftAndThird: atomic swap succeeded (scheduled reattach)");
+                            return;
+                        } catch (Throwable t) {
+                            Log.w(TAG, "swapLeftAndThird: atomic followup failed, will try fallback", t);
+                            // continue to fallback logic
+                        }
+                    }
+
+                    // 2) atomic failed — try task-relocate if we have valid task ids
+                    Integer leftTaskId = (Integer) reflectGetField(dual, "leftTask");
+                    Integer thirdTask = (Integer) reflectGetField(third, "taskId");
+                    if (leftTaskId != null && leftTaskId > 0 && thirdTask != null && thirdTask > 0) {
+                        boolean started = attemptTaskRelocateSwap(
+                                dualLeftHost, thirdHost,
+                                dualLeftAV, thirdAv,
+                                leftTaskId, thirdTask,
+                                dualLeftPkg, thirdPkg,
+                                "dual_left", "single_Third",
+                                lastPipBounds.getOrDefault("dual", offscreen),
+                                lastPipBounds.getOrDefault("third", offscreen)
+                        );
+                        if (started) {
+                            Log.i(TAG, "swapLeftAndThird: started task-relocate fallback (async)");
+                            return;
+                        }
+                    }
+
+                    // 3) fallback: overlay double-buffer handoff (keeps old AV until new one ready)
+                    safeOverlaySwapPanes(
+                            dualLeftHost, thirdHost,
+                            dualLeftAV, thirdAv,
+                            dualLeftPkg, thirdPkg,
+                            "dual_left", "single_Third",
+                            lastPipBounds.getOrDefault("dual", offscreen),
+                            lastPipBounds.getOrDefault("third", offscreen),
+                            "leftAV", "av", dual, third
+                    );
+                    return;
+
+                } catch (Throwable t) {
+                    Log.w(TAG, "swapLeftAndThird: error in dual-case fallback", t);
+                }
+            }
+
+            // If no dual or earlier path did not apply, try standalone first<->third
+            if ((firstPip && thirdPip) && (first != null && third != null)) {
+                try {
+                    Object firstAv = reflectGetField(first, "av");
+                    ViewGroup firstHost = (ViewGroup) reflectGetField(first, "host");
+                    Object thirdAv = reflectGetField(third, "av");
+                    ViewGroup thirdHost = (ViewGroup) reflectGetField(third, "host");
+
+                    String firstPkg = (String) reflectGetField(first, "currentPkg");
+                    String thirdPkg = (String) reflectGetField(third, "currentPkg");
+
+                    final View viewFirst = asView(firstAv);
+                    final View viewThird = asView(thirdAv);
+
+                    boolean atomicOk = false;
+                    try {
+                        if (viewFirst != null && viewThird != null) {
+                            atomicOk = WindowHostReparenter.swapActivityViewSurfaces(viewFirst, viewThird, 1000);
+                        } else {
+                            Log.w(TAG, "swapLeftAndThird: viewFirst or viewThird null, skipping atomic");
+                        }
+                    } catch (Throwable t) {
+                        Log.w(TAG, "swapLeftAndThird: atomic swap (standalone) threw", t);
+                        atomicOk = false;
+                    }
+
+                    if (atomicOk) {
+                        try {
+                            if (firstHost != null) try { firstHost.removeAllViews(); } catch (Throwable ignore) {}
+                            if (thirdHost != null) try { thirdHost.removeAllViews(); } catch (Throwable ignore) {}
+
+                            invokeIfExists(firstAv, "clearActivityViewGeometryForIme");
+                            invokeIfExists(thirdAv, "clearActivityViewGeometryForIme");
+
+                            reflectSetField(first, "av", thirdAv);
+                            reflectSetField(third, "av", firstAv);
+
+                            Object firstAttached = reflectGetField(first, "childAttached");
+                            Object thirdAttached = reflectGetField(third, "childAttached");
+                            if (firstAttached instanceof Boolean && thirdAttached instanceof Boolean) {
+                                reflectSetField(first, "childAttached", thirdAttached);
+                                reflectSetField(third, "childAttached", firstAttached);
+                            }
+
+                            Integer firstTask = (Integer) reflectGetField(first, "taskId");
+                            Integer thirdTask = (Integer) reflectGetField(third, "taskId");
+                            reflectSetField(first, "taskId", thirdTask == null ? -1 : thirdTask);
+                            reflectSetField(third, "taskId", firstTask == null ? -1 : firstTask);
+
+                            String firstPkgOld = (String) reflectGetField(first, "currentPkg");
+                            String thirdPkgOld = (String) reflectGetField(third, "currentPkg");
+                            reflectSetField(first, "currentPkg", thirdPkgOld);
+                            reflectSetField(third, "currentPkg", firstPkgOld);
+
+                            final Object firstRef = first;
+                            final Object thirdRef = third;
+                            final ViewGroup firstHostFinal = firstHost;
+                            final ViewGroup thirdHostFinal = thirdHost;
+
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                try {
+                                    Object newFirstAv = reflectGetField(firstRef, "av");
+                                    Object newThirdAv = reflectGetField(thirdRef, "av");
+                                    View vFirst = asView(newFirstAv);
+                                    View vThird = asView(newThirdAv);
+                                    if (firstHostFinal != null) reparentHostChild(firstHostFinal, vFirst);
+                                    if (thirdHostFinal != null) reparentHostChild(thirdHostFinal, vThird);
+                                    invokeIfExists(newFirstAv, "updateLocationAndTapExcludeRegion");
+                                    invokeIfExists(newThirdAv, "updateLocationAndTapExcludeRegion");
+                                } catch (Throwable t) {
+                                    Log.w(TAG, "swapLeftAndThird: delayed reattach failed (standalone)", t);
+                                }
+                            }, 50);
+
+                            Log.i(TAG, "swapLeftAndThird: atomic standalone swap scheduled reattach");
+                            return;
+                        } catch (Throwable t) {
+                            Log.w(TAG, "swapLeftAndThird: atomic standalone followup failed", t);
+                        }
+                    }
+
+                    // Attempt task-relocate for standalone
+                    Integer tA = (Integer) reflectGetField(first, "taskId");
+                    Integer tB = (Integer) reflectGetField(third, "taskId");
+                    if (tA != null && tA > 0 && tB != null && tB > 0) {
+                        boolean started = attemptTaskRelocateSwap(
+                                firstHost, thirdHost,
+                                firstAv, thirdAv,
+                                tA, tB,
+                                firstPkg, thirdPkg,
+                                "single_First", "single_Third",
+                                lastPipBounds.getOrDefault("first", offscreen),
+                                lastPipBounds.getOrDefault("third", offscreen)
+                        );
+                        if (started) {
+                            Log.i(TAG, "swapLeftAndThird: started task-relocate fallback (standalone)");
+                            return;
+                        }
+                    }
+
+                    // Final fallback: overlay handoff
+                    safeOverlaySwapPanes(
+                            firstHost, thirdHost,
+                            firstAv, thirdAv,
+                            firstPkg, thirdPkg,
+                            "single_First", "single_Third",
+                            lastPipBounds.getOrDefault("first", offscreen),
+                            lastPipBounds.getOrDefault("third", offscreen),
+                            "av", "av", first, third
+                    );
+                    return;
+
+                } catch (Throwable t) {
+                    Log.w(TAG, "swapLeftAndThird: standalone handling failed", t);
+                }
+            }
+
+            Log.i(TAG, "swapLeftAndThird: nothing to swap or all strategies failed");
+        } catch (Throwable e) {
+            Log.w(TAG, "swapLeftAndThird: unexpected error", e);
+        }
+    }
+
+    // --------- right/second <-> fourth ----------
+    public static void swapRightAndFourth() {
+        try {
+            // Block floating button while swapping
+            try {
+                if (Launcher.mLauncher != null) {
+                    Launcher.mLauncher.sendBroadcast(new android.content.Intent(Keys.BLOCK_FLOATING_BUTTON));
+                }
+            } catch (Throwable ignore) {}
+
+            WindowHost host = WindowHost.sInstance;
+            if (host == null) {
+                Log.w(TAG, "swapRightAndFourth: WindowHost not available");
+                return;
+            }
+
+            Object dual = reflectGetField(host, "dual");
+            Object fourth = reflectGetField(host, "fourth");
+            Object second = reflectGetField(host, "second");
+
+            dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
+            secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
+            fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
+            fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+
+            // Prefer dual.right <-> fourth if present
+            if ((dualPip && fourthPip && !fourthPipPinned) && (dual != null && fourth != null)) {
+                try {
+                    Object dualRightAV = reflectGetField(dual, "rightAV");
+                    ViewGroup dualRightHost = (ViewGroup) reflectGetField(dual, "rightHost");
+                    Object fourthAv = reflectGetField(fourth, "av");
+                    ViewGroup fourthHost = (ViewGroup) reflectGetField(fourth, "host");
+
+                    String dualRightPkg = (String) reflectGetField(dual, "rightPkg");
+                    String fourthPkg = (String) reflectGetField(fourth, "currentPkg");
+
+                    final View viewForDualRight = asView(dualRightAV);
+                    final View viewForFourth = asView(fourthAv);
+
+                    // 1) atomic native-surface swap
+                    boolean atomicOk = false;
+                    try {
+                        if (viewForDualRight != null && viewForFourth != null) {
+                            atomicOk = WindowHostReparenter.swapActivityViewSurfaces(viewForDualRight, viewForFourth, 1000);
+                        } else {
+                            Log.w(TAG, "swapRightAndFourth: viewForDualRight or viewForFourth null, skipping atomic");
+                        }
+                    } catch (Throwable t) {
+                        Log.w(TAG, "swapRightAndFourth: atomic swap threw", t);
+                        atomicOk = false;
+                    }
+
+                    if (atomicOk) {
+                        try {
+                            if (dualRightHost != null) try { dualRightHost.removeAllViews(); } catch (Throwable ignore) {}
+                            if (fourthHost != null)    try { fourthHost.removeAllViews(); }    catch (Throwable ignore) {}
+
+                            invokeIfExists(dualRightAV, "clearActivityViewGeometryForIme");
+                            invokeIfExists(fourthAv, "clearActivityViewGeometryForIme");
+
+                            reflectSetField(dual, "rightAV", fourthAv);
+                            reflectSetField(fourth, "av", dualRightAV);
+
+                            Object dualRightAttached = reflectGetField(dual, "rightAttached");
+                            Object fourthChildAttached = reflectGetField(fourth, "childAttached");
+                            if (dualRightAttached instanceof Boolean && fourthChildAttached instanceof Boolean) {
+                                reflectSetField(dual, "rightAttached", fourthChildAttached);
+                                reflectSetField(fourth, "childAttached", dualRightAttached);
+                            }
+
+                            Integer dualRightTask = (Integer) reflectGetField(dual, "rightTask");
+                            Integer fourthTaskId = (Integer) reflectGetField(fourth, "taskId");
+                            reflectSetField(dual, "rightTask", fourthTaskId == null ? -1 : fourthTaskId);
+                            reflectSetField(fourth, "taskId", dualRightTask == null ? -1 : dualRightTask);
+
+                            String oldDualRightPkg = (String) reflectGetField(dual, "rightPkg");
+                            String oldFourthPkg = (String) reflectGetField(fourth, "currentPkg");
+                            reflectSetField(dual, "rightPkg", oldFourthPkg);
+                            reflectSetField(fourth, "currentPkg", oldDualRightPkg);
+
+                            final Object dualRef = dual;
+                            final Object fourthRef = fourth;
+                            final ViewGroup dualRightHostFinal = dualRightHost;
+                            final ViewGroup fourthHostFinal = fourthHost;
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                try {
+                                    Object newDualRightAV = reflectGetField(dualRef, "rightAV");
+                                    Object newFourthAv = reflectGetField(fourthRef, "av");
+                                    View viewForDualAfter = asView(newDualRightAV);
+                                    View viewForFourthAfter = asView(newFourthAv);
+                                    if (dualRightHostFinal != null) reparentHostChild(dualRightHostFinal, viewForDualAfter);
+                                    if (fourthHostFinal != null)   reparentHostChild(fourthHostFinal, viewForFourthAfter);
+                                    invokeIfExists(newDualRightAV, "updateLocationAndTapExcludeRegion");
+                                    invokeIfExists(newFourthAv, "updateLocationAndTapExcludeRegion");
+                                } catch (Throwable t) {
+                                    Log.w(TAG, "swapRightAndFourth: delayed reattach failed", t);
+                                }
+                            }, 50);
+
+                            Log.i(TAG, "swapRightAndFourth: atomic swap succeeded (scheduled reattach)");
+                            return;
+                        } catch (Throwable t) {
+                            Log.w(TAG, "swapRightAndFourth: atomic followup failed, will try fallback", t);
+                        }
+                    }
+
+                    // 2) atomic failed — try task-relocate
+                    Integer rightTaskId = (Integer) reflectGetField(dual, "rightTask");
+                    Integer fourthTask = (Integer) reflectGetField(fourth, "taskId");
+                    if (rightTaskId != null && rightTaskId > 0 && fourthTask != null && fourthTask > 0) {
+                        boolean started = attemptTaskRelocateSwap(
+                                dualRightHost, fourthHost,
+                                dualRightAV, fourthAv,
+                                rightTaskId, fourthTask,
+                                dualRightPkg, fourthPkg,
+                                "dual_right", "single_Fourth",
+                                lastPipBounds.getOrDefault("dual", offscreen),
+                                lastPipBounds.getOrDefault("fourth", offscreen)
+                        );
+                        if (started) {
+                            Log.i(TAG, "swapRightAndFourth: started task-relocate fallback (async)");
+                            return;
+                        }
+                    }
+
+                    // 3) overlay fallback
+                    safeOverlaySwapPanes(
+                            dualRightHost, fourthHost,
+                            dualRightAV, fourthAv,
+                            dualRightPkg, fourthPkg,
+                            "dual_right", "single_Fourth",
+                            lastPipBounds.getOrDefault("dual", offscreen),
+                            lastPipBounds.getOrDefault("fourth", offscreen),
+                            "rightAV", "av", dual, fourth
+                    );
+                    return;
+
+                } catch (Throwable t) {
+                    Log.w(TAG, "swapRightAndFourth: dual-case error", t);
+                }
+            }
+
+            // Standalone second <-> fourth
+            if ((secondPip && fourthPip) && (second != null && fourth != null)) {
+                try {
+                    Object secondAv = reflectGetField(second, "av");
+                    ViewGroup secondHost = (ViewGroup) reflectGetField(second, "host");
+                    Object fourthAv = reflectGetField(fourth, "av");
+                    ViewGroup fourthHost = (ViewGroup) reflectGetField(fourth, "host");
+
+                    String secondPkg = (String) reflectGetField(second, "currentPkg");
+                    String fourthPkg = (String) reflectGetField(fourth, "currentPkg");
+
+                    final View viewSecond = asView(secondAv);
+                    final View viewFourth = asView(fourthAv);
+
+                    boolean atomicOk = false;
+                    try {
+                        if (viewSecond != null && viewFourth != null) {
+                            atomicOk = WindowHostReparenter.swapActivityViewSurfaces(viewSecond, viewFourth, 1000);
+                        } else {
+                            Log.w(TAG, "swapRightAndFourth: viewSecond or viewFourth null, skipping atomic");
+                        }
+                    } catch (Throwable t) {
+                        Log.w(TAG, "swapRightAndFourth: atomic (standalone) threw", t);
+                        atomicOk = false;
+                    }
+
+                    if (atomicOk) {
+                        try {
+                            if (secondHost != null) try { secondHost.removeAllViews(); } catch (Throwable ignore) {}
+                            if (fourthHost != null) try { fourthHost.removeAllViews(); } catch (Throwable ignore) {}
+
+                            invokeIfExists(secondAv, "clearActivityViewGeometryForIme");
+                            invokeIfExists(fourthAv, "clearActivityViewGeometryForIme");
+
+                            reflectSetField(second, "av", fourthAv);
+                            reflectSetField(fourth, "av", secondAv);
+
+                            Object secondAttached = reflectGetField(second, "childAttached");
+                            Object fourthAttached = reflectGetField(fourth, "childAttached");
+                            if (secondAttached instanceof Boolean && fourthAttached instanceof Boolean) {
+                                reflectSetField(second, "childAttached", fourthAttached);
+                                reflectSetField(fourth, "childAttached", secondAttached);
+                            }
+
+                            Integer secondTask = (Integer) reflectGetField(second, "taskId");
+                            Integer fourthTask = (Integer) reflectGetField(fourth, "taskId");
+                            reflectSetField(second, "taskId", fourthTask == null ? -1 : fourthTask);
+                            reflectSetField(fourth, "taskId", secondTask == null ? -1 : secondTask);
+
+                            final Object secondRef = second;
+                            final Object fourthRef = fourth;
+                            final ViewGroup secondHostFinal = secondHost;
+                            final ViewGroup fourthHostFinal = fourthHost;
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                try {
+                                    Object newSecondAv = reflectGetField(secondRef, "av");
+                                    Object newFourthAv = reflectGetField(fourthRef, "av");
+                                    View vSecond = asView(newSecondAv);
+                                    View vFourth = asView(newFourthAv);
+                                    if (secondHostFinal != null) reparentHostChild(secondHostFinal, vSecond);
+                                    if (fourthHostFinal != null) reparentHostChild(fourthHostFinal, vFourth);
+                                    invokeIfExists(newSecondAv, "updateLocationAndTapExcludeRegion");
+                                    invokeIfExists(newFourthAv, "updateLocationAndTapExcludeRegion");
+                                } catch (Throwable t) {
+                                    Log.w(TAG, "swapRightAndFourth: delayed reattach failed (standalone)", t);
+                                }
+                            }, 50);
+
+                            Log.i(TAG, "swapRightAndFourth: atomic standalone swap scheduled reattach");
+                            return;
+                        } catch (Throwable t) {
+                            Log.w(TAG, "swapRightAndFourth: atomic standalone followup failed", t);
+                        }
+                    }
+
+                    // try task-relocate
+                    Integer tA = (Integer) reflectGetField(second, "taskId");
+                    Integer tB = (Integer) reflectGetField(fourth, "taskId");
+                    if (tA != null && tA > 0 && tB != null && tB > 0) {
+                        boolean started = attemptTaskRelocateSwap(
+                                secondHost, fourthHost,
+                                secondAv, fourthAv,
+                                tA, tB,
+                                secondPkg, fourthPkg,
+                                "single_Second", "single_Fourth",
+                                lastPipBounds.getOrDefault("second", offscreen),
+                                lastPipBounds.getOrDefault("fourth", offscreen)
+                        );
+                        if (started) {
+                            Log.i(TAG, "swapRightAndFourth: started task-relocate fallback (standalone)");
+                            return;
+                        }
+                    }
+
+                    // overlay fallback
+                    safeOverlaySwapPanes(
+                            secondHost, fourthHost,
+                            secondAv, fourthAv,
+                            secondPkg, fourthPkg,
+                            "single_Second", "single_Fourth",
+                            lastPipBounds.getOrDefault("second", offscreen),
+                            lastPipBounds.getOrDefault("fourth", offscreen),
+                            "av", "av", second, fourth
+                    );
+                    return;
+
+                } catch (Throwable t) {
+                    Log.w(TAG, "swapRightAndFourth: standalone handling failed", t);
+                }
+            }
+
+            Log.i(TAG, "swapRightAndFourth: nothing to swap or all strategies failed");
+        } catch (Throwable e) {
+            Log.w(TAG, "swapRightAndFourth: unexpected error", e);
+        }
+    }
+
+    private static void invokeIfExists(Object obj, String methodName) {
+        if (obj == null) return;
+        try {
+            Method m = obj.getClass().getDeclaredMethod(methodName);
+            m.setAccessible(true);
+            m.invoke(obj);
+        } catch (NoSuchMethodException nsf) {
+            // method not present; that's fine
+        } catch (Throwable t) {
+            Log.w("Windowutil", "invokeIfExists failed: " + methodName, t);
+        }
+    }
+
+    private static Object reflectGetField(Object obj, String name) {
+        if (obj == null) return null;
+        try {
+            Field f = null;
+            try { f = obj.getClass().getDeclaredField(name); } catch (NoSuchFieldException ignored) {}
+            if (f == null) {
+                // fallback case-insensitive search
+                for (Field ff : obj.getClass().getDeclaredFields()) {
+                    if (ff.getName().equalsIgnoreCase(name)) { f = ff; break; }
+                }
+            }
+            if (f == null) return null;
+            f.setAccessible(true);
+            return f.get(obj);
+        } catch (Throwable t) {
+            Log.w(TAG, "reflectGetField failed for " + name + " on " + obj.getClass().getName(), t);
+            return null;
+        }
+    }
+
+    private static void reflectSetField(Object obj, String name, Object value) {
+        if (obj == null) return;
+        try {
+            Field f = null;
+            try { f = obj.getClass().getDeclaredField(name); } catch (NoSuchFieldException ignored) {}
+            if (f == null) {
+                for (Field ff : obj.getClass().getDeclaredFields()) {
+                    if (ff.getName().equalsIgnoreCase(name)) { f = ff; break; }
+                }
+            }
+            if (f == null) return;
+            f.setAccessible(true);
+            f.set(obj, value);
+        } catch (Throwable t) {
+            Log.w(TAG, "reflectSetField failed for " + name + " on " + obj.getClass().getName(), t);
+        }
+    }
+
+    private static View asView(Object avObj) {
+        if (avObj == null) return null;
+        // In this ROM the av objects are ActivityView instances (which are Views)
+        if (avObj instanceof View) return (View) avObj;
+        try {
+            // fallback: try WindowHostActivityView.asView(Object) reflectively if available
+            Class<?> whav = Class.forName("com.syu.util.WindowHostActivityView");
+            try {
+                Method asView = whav.getDeclaredMethod("asView", Object.class);
+                asView.setAccessible(true);
+                Object res = asView.invoke(null, avObj);
+                if (res instanceof View) return (View) res;
+            } catch (NoSuchMethodException ignored) {}
+        } catch (Throwable ignored) {}
+        return null;
+    }
+
+    private static void reparentHostChild(Object hostContainer, View newChild) {
+        try {
+            if (hostContainer == null) return;
+            if (!(hostContainer instanceof ViewGroup)) {
+                Log.w(TAG, "reparentHostChild: hostContainer is not a ViewGroup: " + hostContainer.getClass().getName());
+                return;
+            }
+            ViewGroup vg = (ViewGroup) hostContainer;
+            try { vg.removeAllViews(); } catch (Throwable ignore) {}
+            if (newChild != null) {
+                // detach from previous parent
+                try {
+                    ViewParent p = newChild.getParent();
+                    if (p instanceof ViewGroup) {
+                        ((ViewGroup) p).removeView(newChild);
+                    }
+                } catch (Throwable ignore) {}
+                try {
+                    vg.addView(newChild, new android.widget.FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                } catch (Throwable t) {
+                    try { vg.addView(newChild); } catch (Throwable ignore) {}
+                }
+                // Best-effort: fix native surface parent (mRootSurfaceControl -> new internal SurfaceView)
+                try {
+                    WindowHostReparenter.reparentActivityViewSurface(newChild);
+                } catch (Throwable t) {
+                    Log.w(TAG, "reparentHostChild: reparentActivityViewSurface failed", t);
+                }
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "reparentHostChild failed", t);
+        }
+    }
+
+    private static int getVirtualDisplayIdSafely(Object avObj) {
+        if (avObj == null) return -1;
+        try {
+            Object vdisp = reflectGetField(avObj, "mVirtualDisplay");
+            if (vdisp != null) {
+                try {
+                    Method getDisplay = vdisp.getClass().getMethod("getDisplay");
+                    Object display = getDisplay.invoke(vdisp);
+                    if (display != null) {
+                        Method getId = display.getClass().getMethod("getDisplayId");
+                        Object idObj = getId.invoke(display);
+                        if (idObj instanceof Number) return ((Number) idObj).intValue();
+                    }
+                } catch (Throwable ignore) {}
+            }
+
+            String[] altFields = new String[] { "virtualDisplay", "mVirtualDisp", "mVD", "virtualDisplayObj" };
+            for (String f : altFields) {
+                try {
+                    Object vd = reflectGetField(avObj, f);
+                    if (vd != null) {
+                        try {
+                            Method getDisplay = vd.getClass().getMethod("getDisplay");
+                            Object display = getDisplay.invoke(vd);
+                            if (display != null) {
+                                Method getId = display.getClass().getMethod("getDisplayId");
+                                Object idObj = getId.invoke(display);
+                                if (idObj instanceof Number) return ((Number) idObj).intValue();
+                            }
+                        } catch (Throwable ignore) {}
+                    }
+                } catch (Throwable ignore) {}
+            }
+
+            try {
+                Method m = avObj.getClass().getMethod("getVirtualDisplayId");
+                Object res = m.invoke(avObj);
+                if (res instanceof Number) return ((Number) res).intValue();
+            } catch (Throwable ignore) {}
+
+            try {
+                Method m2 = avObj.getClass().getMethod("getDisplayId");
+                Object res2 = m2.invoke(avObj);
+                if (res2 instanceof Number) return ((Number) res2).intValue();
+            } catch (Throwable ignore) {}
+
+            if (avObj instanceof View) {
+                for (Field ff : avObj.getClass().getDeclaredFields()) {
+                    try {
+                        ff.setAccessible(true);
+                        Object val = ff.get(avObj);
+                        if (val == null) continue;
+                        try {
+                            Method getDisplay = val.getClass().getMethod("getDisplay");
+                            Object display = getDisplay.invoke(val);
+                            if (display != null) {
+                                Method getId = display.getClass().getMethod("getDisplayId");
+                                Object idObj = getId.invoke(display);
+                                if (idObj instanceof Number) return ((Number) idObj).intValue();
+                            }
+                        } catch (Throwable ignore) {}
+                    } catch (Throwable ignore) {}
+                }
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "getVirtualDisplayIdSafely: unexpected error", t);
+        }
+        return -1;
+    }
+
+    private static boolean attemptTaskRelocateSwap(final ViewGroup hostA, final ViewGroup hostB,
+                                                   final Object oldAvA, final Object oldAvB,
+                                                   final int taskA, final int taskB,
+                                                   final String pkgA, final String pkgB,
+                                                   final String poolKeyA, final String poolKeyB,
+                                                   final Rect boundsA, final Rect boundsB) {
+        try {
+            final Activity act = Launcher.getLauncher();
+            if (act == null) return false;
+
+            Object newA = WindowHostSurfacePreloader.getWarmActivityView(poolKeyA);
+            if (newA == null) newA = WindowHostActivityView.newInstance(act);
+            Object newB = WindowHostSurfacePreloader.getWarmActivityView(poolKeyB);
+            if (newB == null) newB = WindowHostActivityView.newInstance(act);
+
+            if (newA == null || newB == null) return false;
+
+            final View newAView = WindowHostActivityView.asView(newA);
+            final View newBView = WindowHostActivityView.asView(newB);
+
+            try { WindowHostSurfacePreloader.forceInstantSurfaceReady(newAView); } catch (Throwable ignore) {}
+            try { WindowHostSurfacePreloader.forceInstantSurfaceReady(newBView); } catch (Throwable ignore) {}
+
+            ActivityOptions optsA = ActivityOptions.makeBasic();
+            ActivityOptions optsB = ActivityOptions.makeBasic();
+            try {
+                int didA = getVirtualDisplayIdSafely(newA);
+                if (didA >= 0) optsA.setLaunchDisplayId(didA);
+            } catch (Throwable ignore) {}
+            try {
+                int didB = getVirtualDisplayIdSafely(newB);
+                if (didB >= 0) optsB.setLaunchDisplayId(didB);
+            } catch (Throwable ignore) {}
+
+            try {
+                Method mA = optsA.getClass().getMethod("setLaunchTaskId", int.class);
+                try { mA.invoke(optsA, taskB); } catch (Throwable ignore) {}
+            } catch (NoSuchMethodException ignored) {}
+            try {
+                Method mB = optsB.getClass().getMethod("setLaunchTaskId", int.class);
+                try { mB.invoke(optsB, taskA); } catch (Throwable ignore) {}
+            } catch (NoSuchMethodException ignored) {}
+
+            Intent intentA = WindowHostActivityView.getLaunchIntentForPackage(act, pkgB);
+            Intent intentB = WindowHostActivityView.getLaunchIntentForPackage(act, pkgA);
+
+            try {
+                boolean okA = WindowHostActivityView.startActivitySmartWithProcessCheck(newA, act, pkgB, boundsA);
+                if (!okA && intentA != null) {
+                    try { WindowHostActivityView.startActivitySmart(newA, act, intentA, optsA); } catch (Throwable ignore) {}
+                }
+            } catch (Throwable t) {
+                Log.w(TAG, "attemptTaskRelocateSwap: start into newA failed", t);
+                if (intentA != null) try { WindowHostActivityView.startActivitySmart(newA, act, intentA, optsA); } catch (Throwable ignore) {}
+            }
+            try {
+                boolean okB = WindowHostActivityView.startActivitySmartWithProcessCheck(newB, act, pkgA, boundsB);
+                if (!okB && intentB != null) {
+                    try { WindowHostActivityView.startActivitySmart(newB, act, intentB, optsB); } catch (Throwable ignore) {}
+                }
+            } catch (Throwable t) {
+                Log.w(TAG, "attemptTaskRelocateSwap: start into newB failed", t);
+                if (intentB != null) try { WindowHostActivityView.startActivitySmart(newB, act, intentB, optsB); } catch (Throwable ignore) {}
+            }
+
+            final AtomicBoolean readyA = new AtomicBoolean(false);
+            final AtomicBoolean readyB = new AtomicBoolean(false);
+            WindowHostActivityView.trySetCallback(newA, new WindowHostActivityView.Callback() {
+                @Override public void onReady() { readyA.set(true); }
+                @Override public void onTaskCreated(int id) {}
+            });
+            WindowHostActivityView.trySetCallback(newB, new WindowHostActivityView.Callback() {
+                @Override public void onReady() { readyB.set(true); }
+                @Override public void onTaskCreated(int id) {}
+            });
+
+            final long deadline = SystemClock.uptimeMillis() + 1200;
+            final Handler h = new Handler(Looper.getMainLooper());
+
+            Object finalNewA = newA;
+            Object finalNewB = newB;
+            h.post(new Runnable() {
+                @Override public void run() {
+                    try {
+                        if ((readyA.get() || SystemClock.uptimeMillis() >= deadline) &&
+                            (readyB.get() || SystemClock.uptimeMillis() >= deadline)) {
+
+                            try {
+                                FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                                try { hostA.removeView(newAView); } catch (Throwable ignore) {}
+                                try { hostA.addView(newAView, lp); } catch (Throwable ignore) {}
+                                try { hostB.removeView(newBView); } catch (Throwable ignore) {}
+                                try { hostB.addView(newBView, lp); } catch (Throwable ignore) {}
+
+                                try { newAView.setAlpha(0f); newAView.animate().alpha(1f).setDuration(140).start(); } catch (Throwable ignore) {}
+                                try { newBView.setAlpha(0f); newBView.animate().alpha(1f).setDuration(140).start(); } catch (Throwable ignore) {}
+
+                                h.postDelayed(() -> {
+                                    try {
+                                        try { View oldA = asView(oldAvA); if (oldA != null && oldA.getParent() instanceof ViewGroup) ((ViewGroup)oldA.getParent()).removeView(oldA); } catch (Throwable ignore) {}
+                                        try { View oldB = asView(oldAvB); if (oldB != null && oldB.getParent() instanceof ViewGroup) ((ViewGroup)oldB.getParent()).removeView(oldB); } catch (Throwable ignore) {}
+
+                                        try { if (oldAvA != null) WindowHostActivityView.release(oldAvA); } catch (Throwable ignore) {}
+                                        try { if (oldAvB != null) WindowHostActivityView.release(oldAvB); } catch (Throwable ignore) {}
+
+                                        invokeIfExists(finalNewA, "updateLocationAndTapExcludeRegion");
+                                        invokeIfExists(finalNewB, "updateLocationAndTapExcludeRegion");
+
+                                        Log.i(TAG, "attemptTaskRelocateSwap: relocated tasks and attached new AVs");
+                                    } catch (Throwable t2) {
+                                        Log.w(TAG, "attemptTaskRelocateSwap: finalization failed", t2);
+                                    }
+                                }, 220);
+
+                            } catch (Throwable t) {
+                                Log.w(TAG, "attemptTaskRelocateSwap: attach new views failed", t);
+                            }
+                            return;
+                        }
+                        h.postDelayed(this, 30);
+                    } catch (Throwable t) {
+                        Log.w(TAG, "attemptTaskRelocateSwap: waiter failure", t);
+                    }
+                }
+            });
+
+            return true;
+
+        } catch (Throwable t) {
+            Log.w(TAG, "attemptTaskRelocateSwap: unexpected error", t);
+            return false;
+        }
+    }
+
+    private static void safeOverlaySwapPanes(final ViewGroup hostA, final ViewGroup hostB,
+                                             final Object oldAvA, final Object oldAvB,
+                                             final String pkgA, final String pkgB,
+                                             final String poolKeyA, final String poolKeyB,
+                                             final Rect boundsA, final Rect boundsB,
+                                             final String avFieldNameA, final String avFieldNameB,
+                                             final Object hostObjA, final Object hostObjB) {
+        try {
+            final Activity act = Launcher.getLauncher();
+            if (act == null) return;
+            if (hostA == null || hostB == null) return;
+
+            Object newA = WindowHostSurfacePreloader.getWarmActivityView(poolKeyA);
+            if (newA == null) newA = WindowHostActivityView.newInstance(act);
+            Object newB = WindowHostSurfacePreloader.getWarmActivityView(poolKeyB);
+            if (newB == null) newB = WindowHostActivityView.newInstance(act);
+
+            if (newA == null || newB == null) {
+                Log.w(TAG, "safeOverlaySwapPanes: failed to obtain new AVs");
+                return;
+            }
+
+            final View newAView = WindowHostActivityView.asView(newA);
+            final View newBView = WindowHostActivityView.asView(newB);
+            final View oldAView = asView(oldAvA);
+            final View oldBView = asView(oldAvB);
+
+            try { newAView.setAlpha(0f); newAView.setVisibility(View.VISIBLE); } catch (Throwable ignore) {}
+            try { newBView.setAlpha(0f); newBView.setVisibility(View.VISIBLE); } catch (Throwable ignore) {}
+
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+            try {
+                if (newAView.getParent() instanceof ViewGroup) try { ((ViewGroup)newAView.getParent()).removeView(newAView); } catch (Throwable ignore) {}
+                hostA.addView(newAView, lp);
+            } catch (Throwable t) {
+                Log.w(TAG, "safeOverlaySwapPanes: add newAView failed", t);
+            }
+            try {
+                if (newBView.getParent() instanceof ViewGroup) try { ((ViewGroup)newBView.getParent()).removeView(newBView); } catch (Throwable ignore) {}
+                hostB.addView(newBView, lp);
+            } catch (Throwable t) {
+                Log.w(TAG, "safeOverlaySwapPanes: add newBView failed", t);
+            }
+
+            WindowHostSurfacePreloader.forceInstantSurfaceReady(newAView);
+            WindowHostSurfacePreloader.forceInstantSurfaceReady(newBView);
+
+            final AtomicBoolean readyA = new AtomicBoolean(false);
+            final AtomicBoolean readyB = new AtomicBoolean(false);
+            WindowHostActivityView.trySetCallback(newA, new WindowHostActivityView.Callback() {
+                @Override public void onReady() { readyA.set(true); }
+                @Override public void onTaskCreated(int id) {}
+            });
+            WindowHostActivityView.trySetCallback(newB, new WindowHostActivityView.Callback() {
+                @Override public void onReady() { readyB.set(true); }
+                @Override public void onTaskCreated(int id) {}
+            });
+
+            try {
+                boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(newA, act, pkgB, boundsA);
+                if (!ok) {
+                    Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(act, pkgB);
+                    if (fallback != null) WindowHostActivityView.startActivitySmart(newA, act, fallback, (ActivityOptions) WindowHostActivityView.makeOptionsWithBounds(boundsA));
+                }
+            } catch (Throwable t) {
+                Log.w(TAG, "safeOverlaySwapPanes: start into newA failed", t);
+            }
+            try {
+                boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(newB, act, pkgA, boundsB);
+                if (!ok) {
+                    Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(act, pkgA);
+                    if (fallback != null) WindowHostActivityView.startActivitySmart(newB, act, fallback, (ActivityOptions) WindowHostActivityView.makeOptionsWithBounds(boundsB));
+                }
+            } catch (Throwable t) {
+                Log.w(TAG, "safeOverlaySwapPanes: start into newB failed", t);
+            }
+
+            final long deadline = SystemClock.uptimeMillis() + 1400;
+            final Handler mainH = new Handler(Looper.getMainLooper());
+            Object finalNewA = newA;
+            Object finalNewB = newB;
+            final Runnable waiter = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        boolean aReady = readyA.get();
+                        boolean bReady = readyB.get();
+                        if ((!aReady || !bReady) && SystemClock.uptimeMillis() < deadline) {
+                            mainH.postDelayed(this, 30);
+                            return;
+                        }
+
+                        final long DURATION = 160L;
+                        try { newAView.animate().alpha(1f).setDuration(DURATION).start(); } catch (Throwable ignore) {}
+                        try { newBView.animate().alpha(1f).setDuration(DURATION).start(); } catch (Throwable ignore) {}
+                        try { if (oldAView != null) oldAView.animate().alpha(0f).setDuration(DURATION).start(); } catch (Throwable ignore) {}
+                        try { if (oldBView != null) oldBView.animate().alpha(0f).setDuration(DURATION).start(); } catch (Throwable ignore) {}
+
+                        mainH.postDelayed(() -> {
+                            try {
+                                try { reflectSetField(hostObjA, avFieldNameA, finalNewA); } catch (Throwable ignore) {}
+                                try { reflectSetField(hostObjB, avFieldNameB, finalNewB); } catch (Throwable ignore) {}
+
+                                invokeIfExists(finalNewA, "updateLocationAndTapExcludeRegion");
+                                invokeIfExists(finalNewB, "updateLocationAndTapExcludeRegion");
+                                invokeIfExists(finalNewA, "clearActivityViewGeometryForIme");
+                                invokeIfExists(finalNewB, "clearActivityViewGeometryForIme");
+
+                                try { if (oldAView != null && oldAView.getParent() instanceof ViewGroup) ((ViewGroup)oldAView.getParent()).removeView(oldAView); } catch (Throwable ignore) {}
+                                try { if (oldBView != null && oldBView.getParent() instanceof ViewGroup) ((ViewGroup)oldBView.getParent()).removeView(oldBView); } catch (Throwable ignore) {}
+
+                                try { if (oldAvA != null) WindowHostActivityView.release(oldAvA); } catch (Throwable ignore) {}
+                                try { if (oldAvB != null) WindowHostActivityView.release(oldAvB); } catch (Throwable ignore) {}
+
+                                Log.i(TAG, "safeOverlaySwapPanes: overlay swap completed successfully");
+                            } catch (Throwable t) {
+                                Log.w(TAG, "safeOverlaySwapPanes: finalization failed", t);
+                            }
+                        }, DURATION + 40);
+
+                    } catch (Throwable t) {
+                        Log.w(TAG, "safeOverlaySwapPanes: waiter failed", t);
+                    }
+                }
+            };
+            mainH.post(waiter);
+
+        } catch (Throwable t) {
+            Log.w(TAG, "safeOverlaySwapPanes: unexpected error", t);
+        }
     }
 }

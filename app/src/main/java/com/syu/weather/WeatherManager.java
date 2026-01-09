@@ -190,7 +190,7 @@ public class WeatherManager {
     public void addOnWeatherChangedListener(OnWeatherChangedListener listener) {
         if (listener != null) {
             if (this.weatherListeners == null) {
-                this.weatherListeners = new ArrayList();
+                this.weatherListeners = new ArrayList<>();
             }
             if (!this.weatherListeners.contains(listener)) {
                 listener.onWeatherChanged(this.mCurWeather);

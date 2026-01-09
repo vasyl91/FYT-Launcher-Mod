@@ -68,13 +68,13 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
                 }
                 case 877333343: {
                     if (packageName.equals("net.easyconn")) {
-                        WindowUtil.removePip(null);
+                        WindowUtil.removePip();
                     }
                     break;
                 }
                 case 1489048446: {
                     if (packageName.equals("com.nng.igo.primong.igoworld")) {
-                        WindowUtil.removePip(null);
+                        WindowUtil.removePip();
                     }
                     break;
                 }
@@ -85,7 +85,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
             } else if (appListBean.packageName.equals("com.android.launcher66") && !appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
                 LeftAppListAdapter.this.mLauncher.onClickAllAppsButton();
             } else if (appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
-                WindowUtil.removePip(null);
+                WindowUtil.removePip();
                 LeftAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
                 Intent settingsIntent = new Intent(LeftAppListAdapter.this.mLauncher, SettingsActivity.class);
                 settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -109,7 +109,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
     }
 
     private void onClickIcon(AppListBean appListBean) {
-        WindowUtil.removePip(null);
+        WindowUtil.removePip();
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
         SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);

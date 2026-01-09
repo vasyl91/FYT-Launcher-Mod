@@ -2439,7 +2439,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         if (isAllAppsVisible()) {
-            WindowUtil.removePip(null);
+            WindowUtil.removePip();
         } else {
             if (atomicOnCreate.get()) {
                 atomicOnCreate.set(false);
@@ -2593,7 +2593,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 || (!helpers.userWasInRecents() && helpers.isListOpen()) || forceOpen) {
 
                     Log.d(whereInitiated, "startMapPip");
-                    WindowUtil.startMapPip(view, forceOpen);
+                    WindowUtil.startMapPip(forceOpen);
 
             }
             helpers.setFirstPreferenceWindow(false);
@@ -2824,7 +2824,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mHandler.postDelayed(()-> {
             if (Utils.topApp(FytPackage.hicarAction)
                 || Utils.topApp(FytPackage.fourcamera2Action)) {
-                WindowUtil.removePip(this.pipViews);
+                WindowUtil.removePip();
             }
         }, 100);        
         InstallShortcutReceiver.enableInstallQueue();
@@ -2859,7 +2859,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onStop();
         Log.d(TAG, "---->>> onStop");
         Log.d("onStop", "removePip");
-        WindowUtil.removePip(pipViews);
+        WindowUtil.removePip();
         isfirstlayout = true;
         FirstFrameAnimatorHelper.setIsVisible(false);
         if(mPlayer != null) {
@@ -2885,7 +2885,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onDestroy();
         Log.d(TAG, "---->>> onDestroy");
         Log.d("onDestroy", "removePip");
-        WindowUtil.removePip(pipViews);
+        WindowUtil.removePip();
         tools.removeRefreshLisenter(0, refreshMain);
         tools.removeRefreshLisenter(4, refreshMain);
         tools.removeRefreshLisenter(7, refreshMain);
@@ -4141,7 +4141,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mWorkspace.isInOverviewMode()) {
             mWorkspace.exitOverviewMode(true);
         }
-        WindowUtil.removePip(null);
+        WindowUtil.removePip();
         if (mPrefs.getBoolean("wallpaper_picker_source", false)) {
             startWallpaperSystem(v);
         } else {
@@ -4192,7 +4192,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mWorkspace.isInOverviewMode()) {
             mWorkspace.exitOverviewMode(true);
         }
-        WindowUtil.removePip(null);
+        WindowUtil.removePip();
         Intent settingsIntent = new Intent(this, SettingsActivity.class);
         try {
             ComponentName componentName = settingsIntent.getComponent();
@@ -5467,7 +5467,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
             }
             if (!activeControllerAppRunning || isRadioPlaying()) {
-                WindowUtil.removePip(Launcher.this.pipViews);
+                WindowUtil.removePip();
                 Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
                 try {
                     ComponentName componentName = launchIntent.getComponent();
@@ -5550,7 +5550,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     }
                 }
                 if (!activeControllerAppRunning || isRadioPlaying()) {
-                    WindowUtil.removePip(Launcher.this.pipViews);
+                    WindowUtil.removePip();
                     Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
                     try {
                         ComponentName componentName = launchIntent.getComponent();
@@ -5600,7 +5600,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
             }
             if (!activeControllerAppRunning || isRadioPlaying()) {
-                WindowUtil.removePip(Launcher.this.pipViews);
+                WindowUtil.removePip();
                 Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
                 try {
                     ComponentName componentName = launchIntent.getComponent();
@@ -6322,7 +6322,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             addWidgetToAutoAdvanceIfNeeded(launcherInfo.hostView, appWidgetInfo);
         }
         resetAddInfo();
-        WindowUtil.removePip(null);
+        WindowUtil.removePip();
         mWorkspace.triggerStripEmptyScreens("Launcher, completeAddAppWidget()", true);
     }
 
@@ -7007,7 +7007,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             if (v == getCustomView(Config.BT)) {
                 startActivitySafely(v, getIntent("com.syu.bt", "com.syu.bt.BtAct"), "bt");
-                WindowUtil.removePip(pipViews);
+                WindowUtil.removePip();
                 return;
             }
             if (v == getCustomView(Config.RADIO)) {
@@ -7030,7 +7030,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "bt");
                     }
                 }
-                WindowUtil.removePip(pipViews);
+                WindowUtil.removePip();
                 return;
             }
             if (v == getCustomView(Config.WS_Radio)) {
@@ -7054,12 +7054,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "music");
                     }
                 }
-                WindowUtil.removePip(pipViews);
+                WindowUtil.removePip();
                 return;
             }
             if (v == getCustomView(Config.WS_Music) || v == getCustomView(Config.WS_Music_Two) || v == getCustomView(Config.WS_Music3)) {
                 if (mediaSource == "fyt" && helpers.isPackageInstalled("com.syu.music")) {
-                    WindowUtil.removePip(pipViews);
+                    WindowUtil.removePip();
                     Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.syu.music");
                     try {
                         ComponentName componentName = launchIntent.getComponent();
@@ -7075,7 +7075,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     startActivitySafely(v, FytPackage.getIntent(this, "com.syu.music"), "music");
                 } else if (mediaSource == "mediaController" && activeController != null) {
                     if (!activeController.isEmpty()) { 
-                        WindowUtil.removePip(pipViews);
+                        WindowUtil.removePip();
                         Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
                         try {
                             ComponentName componentName = launchIntent.getComponent();
@@ -7114,13 +7114,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.WS_Video)) {
-                WindowUtil.removePip(pipViews);
+                WindowUtil.removePip();
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.video"), "music");
                 return;
             }
             if (v == getCustomView(Config.WS_Gallery)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.galleryAction), "galleryAction");
-                WindowUtil.removePip(pipViews);
+                WindowUtil.removePip();
                 return;
             }
             if (v == getCustomView(Config.WS_Miudrive)) {
@@ -7133,7 +7133,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             if (v == getCustomView(Config.WS_Bt) || v == mBtavView) {
                 startActivitySafely(v, getIntent("com.syu.bt", "com.syu.bt.BtAct"), "bt");
-                WindowUtil.removePip(pipViews);
+                WindowUtil.removePip();
                 return;
             }
             if (v == getCustomView(Config.WS_Navi)) {
@@ -7199,7 +7199,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             if (v == getCustomView(Config.VIDEO)) {
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.video"), "music");
-                WindowUtil.removePip(pipViews);
+                WindowUtil.removePip();
                 return;
             }
             if (v == getCustomView(Config.BTAV)) {
@@ -7230,7 +7230,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             if (v == getCustomView(Config.MUSIC)) {
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.music"), "music");
-                WindowUtil.removePip(pipViews);
+                WindowUtil.removePip();
                 return;
             }
             if (v == getCustomView(Config.KLFM)) {
@@ -7273,7 +7273,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             if (v == getCustomView(Config.EQ) || v == getCustomView(Config.WS_EQ)) {
                 startActivitySafely(v, FytPackage.getIntent(this, FytPackage.eqACTION), "eq");
-                WindowUtil.removePip(pipViews);
+                WindowUtil.removePip();
                 return;
             }
             if (v == getCustomView(Config.WS_Time) || v == getCustomView(Config.WS_Time_Two)) {
@@ -8284,7 +8284,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     void showAllApps(boolean animated, AppsCustomizePagedView.ContentType contentType, boolean resetPageToZero) {
         if (mState == State.WORKSPACE) {
             Log.d("showAllApps", String.valueOf(contentType) + ": removePip");
-            WindowUtil.removePip(pipViews, 0);
+            WindowUtil.removePip(0);
             helpers.setForegroundAppOpened(false);
             if (contentType == AppsCustomizePagedView.ContentType.Applications) {
                 helpers.setInAllApps(true);
@@ -8628,7 +8628,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             i.addCategory("android.intent.category.HOME");
             if (Launcher.this.getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(Launcher.this.getPackageName()) && !helpers.settingsOpenedBoolean()) {
                 if (colsePipAction.equals(intent.getAction())) {
-                    WindowUtil.removePip(null);
+                    WindowUtil.removePip();
                     return;
                 } else {
                     if (!camera360Action.equals(intent.getAction()) && "com.lsec.pipdie".equals(intent.getAction()) && CarStates.mAccState == 1) {

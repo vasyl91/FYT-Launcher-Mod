@@ -171,12 +171,21 @@ public class WeatherDescription {
     }
 
     private static String formatTemperature(double temp) {
-        // Validate temperature range
-        if (temp < -100 || temp > 100) {
-            Log.w(TAG, "Invalid temperature detected: " + temp + ", using default");
+        // Validate input
+        if (!Double.isFinite(temp) || temp < -100 || temp > 100) {
+            android.util.Log.w(TAG, "Invalid temperature detected: " + temp + ", using default");
             return "N/A";
         }
-        return String.format(Locale.US, "%.1f℃", temp);
+
+        // Round to nearest integer using standard rules (half-up)
+        long rounded = Math.round(temp);
+
+        // Ensure we never show "-0"
+        if (rounded == 0L) {
+            return "0℃";
+        }
+
+        return String.format(Locale.US, "%d℃", rounded);
     }
     
     private static String formatWindSpeed(double speed) {

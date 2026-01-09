@@ -9,29 +9,34 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
+import android.view.Gravity;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
+import android.widget.ImageView;
 import androidx.core.content.ContextCompat;
 
 import java.util.List;
 import java.util.Set;
 
 public class DeleteDropTarget extends ButtonDropTarget {
-    private static int DELETE_ANIMATION_DURATION = 285;
-    private static int FLING_DELETE_ANIMATION_DURATION = 350;
-    private static float FLING_TO_DELETE_FRICTION = 0.035f;
-    private static int MODE_FLING_DELETE_TO_TRASH = 0;
-    private static int MODE_FLING_DELETE_ALONG_VECTOR = 1;
+    private static final int DELETE_ANIMATION_DURATION = 285;
+    private static final int FLING_DELETE_ANIMATION_DURATION = 350;
+    private static final float FLING_TO_DELETE_FRICTION = 0.035f;
+    private static final int MODE_FLING_DELETE_TO_TRASH = 0;
+    private static final int MODE_FLING_DELETE_ALONG_VECTOR = 1;
 
     private final int mFlingDeleteMode = MODE_FLING_DELETE_ALONG_VECTOR;
 
@@ -41,6 +46,20 @@ public class DeleteDropTarget extends ButtonDropTarget {
     private TransitionDrawable mCurrentDrawable;
 
     private boolean mWaitingForUninstall = false;
+
+    // Overlay related
+    private WindowManager mWindowManager;
+    // Keep a strong reference while the overlay is active, but ALWAYS clear it on removal.
+    private ImageView mOverlayView;
+    private WindowManager.LayoutParams mOverlayParams;
+    private boolean mOverlayAdded = false;
+
+    // Transparent placeholder drawable instance used inside the view for hit testing.
+    private PlaceholderDrawable mPlaceholderDrawable;
+
+    // Resource ids (used to create separate placeholder instances)
+    private final int mUninstallResId = R.drawable.uninstall_target_selector;
+    private final int mRemoveResId = R.drawable.remove_target_selector;
 
     public DeleteDropTarget(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -53,29 +72,49 @@ public class DeleteDropTarget extends ButtonDropTarget {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        // Get the drawable
+
         mOriginalTextColor = getTextColors();
-
-        // Get the hover color
         mHoverColor = ContextCompat.getColor(getContext(), R.color.delete_target_hover_tint);
-        mUninstallDrawable = (TransitionDrawable)
-                ContextCompat.getDrawable(getContext(), R.drawable.uninstall_target_selector);
-        mRemoveDrawable = (TransitionDrawable) ContextCompat.getDrawable(getContext(), R.drawable.remove_target_selector);
 
-        mRemoveDrawable.setCrossFadeEnabled(true);
-        mUninstallDrawable.setCrossFadeEnabled(true);
+        Drawable uninstall = ContextCompat.getDrawable(getContext(), mUninstallResId);
+        Drawable remove = ContextCompat.getDrawable(getContext(), mRemoveResId);
 
-        // The current drawable is set to either the remove drawable or the uninstall drawable 
-        // and is initially set to the remove drawable, as set in the layout xml.
-        mCurrentDrawable = (TransitionDrawable) getCurrentDrawable();
+        if (uninstall instanceof TransitionDrawable) {
+            mUninstallDrawable = (TransitionDrawable) uninstall;
+            mUninstallDrawable.setCrossFadeEnabled(true);
+        } else if (uninstall != null && uninstall.getConstantState() != null) {
+            // fallback wrap
+            Drawable d = uninstall.getConstantState().newDrawable(getContext().getResources()).mutate();
+            mUninstallDrawable = new TransitionDrawable(new Drawable[]{d, d});
+        }
 
-        // Remove the text in the Phone UI in landscape
+        if (remove instanceof TransitionDrawable) {
+            mRemoveDrawable = (TransitionDrawable) remove;
+            mRemoveDrawable.setCrossFadeEnabled(true);
+        } else if (remove != null && remove.getConstantState() != null) {
+            Drawable d = remove.getConstantState().newDrawable(getContext().getResources()).mutate();
+            mRemoveDrawable = new TransitionDrawable(new Drawable[]{d, d});
+        }
+
+        // Choose default current drawable similar to original behavior
+        mCurrentDrawable = mRemoveDrawable != null ? mRemoveDrawable : mUninstallDrawable;
+
+        mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+
+        // Remove the text in the Phone UI in landscape (same behavior as original)
         int orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             if (!LauncherAppState.getInstance().isScreenLarge()) {
                 setText("");
             }
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        // ensure overlay is fully removed and dereferenced when the view is detached
+        removeOverlay();
+        super.onDetachedFromWindow();
     }
 
     private boolean isAllAppsApplication(DragSource source, Object info) {
@@ -108,11 +147,18 @@ public class DeleteDropTarget extends ButtonDropTarget {
     }
 
     private void setHoverColor() {
-        mCurrentDrawable.startTransition(mTransitionDuration);
+        if (mCurrentDrawable != null) {
+            mCurrentDrawable.startTransition(mTransitionDuration);
+            // Guarded overlay access
+            if (mOverlayView != null) mOverlayView.invalidate();
+        }
         setTextColor(mHoverColor);
     }
     private void resetHoverColor() {
-        mCurrentDrawable.resetTransition();
+        if (mCurrentDrawable != null) {
+            mCurrentDrawable.resetTransition();
+            if (mOverlayView != null) mOverlayView.invalidate();
+        }
         setTextColor(mOriginalTextColor);
     }
 
@@ -154,30 +200,70 @@ public class DeleteDropTarget extends ButtonDropTarget {
         return false;
     }
 
+    /**
+     * Create and set a transparent placeholder drawable (from the same resource) so that:
+     * - the view keeps the same intrinsic size for layout/hit-testing
+     * - the placeholder does not draw (transparent)
+     * The overlay is used to draw the visible TransitionDrawable.
+     */
+    private void setPlaceholderForResource(int resId) {
+        Drawable src = ContextCompat.getDrawable(getContext(), resId);
+        if (src == null) {
+            // fallback: clear
+            mPlaceholderDrawable = null;
+            setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+            return;
+        }
+
+        Drawable delegate;
+        if (src.getConstantState() != null) {
+            delegate = src.getConstantState().newDrawable(getContext().getResources()).mutate();
+        } else {
+            // if no constant state, try to use the original (safe fallback)
+            delegate = src.mutate();
+        }
+
+        // Wrap the delegate with a placeholder that is transparent but reports size.
+        mPlaceholderDrawable = new PlaceholderDrawable(delegate);
+        // Set as compound drawable so the view retains the hit area / layout footprint.
+        setCompoundDrawablesRelativeWithIntrinsicBounds(mPlaceholderDrawable, null, null, null);
+        // Ensure delegate receives the correct callback and bounds immediately.
+        mPlaceholderDrawable.ensureDelegateCallbackAndBounds();
+    }
+
     @Override
     public void onDragStart(DragSource source, Object info, int dragAction) {
         boolean isVisible = true;
         boolean useUninstallLabel = !AppsCustomizePagedView.DISABLE_ALL_APPS &&
                 isAllAppsApplication(source, info);
 
-        // If we are dragging an application from AppsCustomize, only show the control if we can
-        // delete the app (it was downloaded), and rename the string to "uninstall" in such a case.
+        // If we are dragging an application from AppsCustomize, only show control if we can
+        // delete the app (it was downloaded), and rename to "uninstall" in such case.
         // Hide the delete target if it is a widget from AppsCustomize.
         if (!willAcceptDrop(info) || isAllAppsWidget(source, info)) {
             isVisible = false;
         }
         Log.i("DeleteDropTarget", String.valueOf(isVisible));
 
-        if (useUninstallLabel) {
-            setCompoundDrawablesRelativeWithIntrinsicBounds(mUninstallDrawable, null, null, null);
-        } else {
-            setCompoundDrawablesRelativeWithIntrinsicBounds(mRemoveDrawable, null, null, null);
+        // Choose the visual drawable for the overlay.
+        TransitionDrawable visual = useUninstallLabel ? mUninstallDrawable : mRemoveDrawable;
+        if (visual == null) {
+            visual = mCurrentDrawable; // fallback
         }
-        mCurrentDrawable = (TransitionDrawable) getCurrentDrawable();
+        mCurrentDrawable = visual;
+
+        // Create and set transparent placeholder (separate instance) for hit-testing/layout
+        int placeholderRes = useUninstallLabel ? mUninstallResId : mRemoveResId;
+        setPlaceholderForResource(placeholderRes);
+
+        // Show overlay that actually draws the selector above other windows.
+        showOverlayDrawable(mCurrentDrawable);
 
         mActive = isVisible;
-        resetHoverColor();
-        ((ViewGroup) getParent()).setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        resetHoverColor(); // overlay will reflect current transition state
+
+        // Maintain parent visibility & text label behavior
+        ((ViewGroup) getParent()).setVisibility(isVisible ? VISIBLE : GONE);
         if (getText().length() > 0) {
             setText(useUninstallLabel ? R.string.delete_target_uninstall_label
                 : R.string.delete_target_label);
@@ -188,25 +274,27 @@ public class DeleteDropTarget extends ButtonDropTarget {
     public void onDragEnd() {
         super.onDragEnd();
         mActive = false;
+
+        // remove overlay drawable
+        removeOverlay();
+
+        // clear placeholder
         setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+        mPlaceholderDrawable = null;
     }
 
     public void onDragEnter(DragObject d) {
         super.onDragEnter(d);
-
         setHoverColor();
     }
 
     public void onDragExit(DragObject d) {
         super.onDragExit(d);
-
         if (!d.dragComplete) {
             resetHoverColor();
         } else {
-            // Restore the hover color if we are deleting
             d.dragView.setColor(mHoverColor);
         }
-        setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
     }
 
     private void animateToTrashAndCompleteDrop(final DragObject d) {
@@ -214,7 +302,8 @@ public class DeleteDropTarget extends ButtonDropTarget {
         final Rect from = new Rect();
         dragLayer.getViewRectRelativeToSelf(d.dragView, from);
         final Rect to = getIconRect(d.dragView.getMeasuredWidth(), d.dragView.getMeasuredHeight(),
-                mCurrentDrawable.getIntrinsicWidth(), mCurrentDrawable.getIntrinsicHeight());
+                mCurrentDrawable != null ? mCurrentDrawable.getIntrinsicWidth() : 0,
+                mCurrentDrawable != null ? mCurrentDrawable.getIntrinsicHeight() : 0);
         final float scale = (float) to.width() / from.width();
 
         mSearchDropTargetBar.deferOnDragEnd();
@@ -339,7 +428,10 @@ public class DeleteDropTarget extends ButtonDropTarget {
 
     public void onDrop(DragObject d) {
         animateToTrashAndCompleteDrop(d);
+        // remove overlay and placeholder here as well to ensure immediate cleanup
+        removeOverlay();
         setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+        mPlaceholderDrawable = null;
     }
 
     /**
@@ -348,7 +440,8 @@ public class DeleteDropTarget extends ButtonDropTarget {
     private AnimatorUpdateListener createFlingToTrashAnimatorListener(final DragLayer dragLayer,
             DragObject d, PointF vel, ViewConfiguration config) {
         final Rect to = getIconRect(d.dragView.getMeasuredWidth(), d.dragView.getMeasuredHeight(),
-                mCurrentDrawable.getIntrinsicWidth(), mCurrentDrawable.getIntrinsicHeight());
+                mCurrentDrawable != null ? mCurrentDrawable.getIntrinsicWidth() : 0,
+                mCurrentDrawable != null ? mCurrentDrawable.getIntrinsicHeight() : 0);
         final Rect from = new Rect();
         dragLayer.getViewRectRelativeToSelf(d.dragView, from);
 
@@ -357,7 +450,10 @@ public class DeleteDropTarget extends ButtonDropTarget {
         float velocity = Math.abs(vel.length());
         float vp = Math.min(1f, velocity / (config.getScaledMaximumFlingVelocity() / 2f));
         int offsetY = (int) (-from.top * vp);
-        int offsetX = (int) (offsetY / (vel.y / vel.x));
+        int offsetX = 0;
+        if (vel.x != 0) {
+            offsetX = (int) (offsetY / (vel.y / vel.x));
+        }
         final float y2 = from.top + offsetY;                        // intermediate t/l
         final float x2 = from.left + offsetX;
         final float x1 = from.left;                                 // drag view t/l
@@ -396,11 +492,6 @@ public class DeleteDropTarget extends ButtonDropTarget {
         };
     }
 
-    /**
-     * Creates an animation from the current drag view along its current velocity vector.
-     * For this animation, the alpha runs for a fixed duration and we update the position
-     * progressively.
-     */
     private static class FlingAlongVectorAnimatorUpdateListener implements AnimatorUpdateListener {
         private DragLayer mDragLayer;
         private PointF mVelocity;
@@ -461,16 +552,13 @@ public class DeleteDropTarget extends ButtonDropTarget {
     public void onFlingToDelete(final DragObject d, int x, int y, PointF vel) {
         final boolean isAllApps = d.dragSource instanceof AppsCustomizePagedView;
 
-        // Don't highlight the icon as it's animating
         d.dragView.setColor(0);
         d.dragView.updateInitialScaleToCurrentScale();
-        // Don't highlight the target if we are flinging from AllApps
         if (isAllApps) {
             resetHoverColor();
         }
 
         if (mFlingDeleteMode == MODE_FLING_DELETE_TO_TRASH) {
-            // Defer animating out the drop target if we are animating to it
             mSearchDropTargetBar.deferOnDragEnd();
             mSearchDropTargetBar.finishAnimations();
         }
@@ -480,11 +568,6 @@ public class DeleteDropTarget extends ButtonDropTarget {
         final int duration = FLING_DELETE_ANIMATION_DURATION;
         final long startTime = AnimationUtils.currentAnimationTimeMillis();
 
-        // NOTE: Because it takes time for the first frame of animation to actually be
-        // called and we expect the animation to be a continuation of the fling, we have
-        // to account for the time that has elapsed since the fling finished.  And since
-        // we don't have a startDelay, we will always get call to update when we call
-        // start() (which we want to ignore).
         final TimeInterpolator tInterpolator = new TimeInterpolator() {
             private int mCount = -1;
             private float mOffset = 0f;
@@ -513,8 +596,6 @@ public class DeleteDropTarget extends ButtonDropTarget {
         Runnable onAnimationEndRunnable = new Runnable() {
             @Override
             public void run() {
-                // If we are dragging from AllApps, then we allow AppsCustomizePagedView to clean up
-                // itself, otherwise, complete the drop to initiate the deletion process
                 if (!isAllApps) {
                     mLauncher.exitSpringLoadedDragMode();
                     completeDrop(d);
@@ -524,5 +605,192 @@ public class DeleteDropTarget extends ButtonDropTarget {
         };
         dragLayer.animateView(d.dragView, updateCb, duration, tInterpolator, onAnimationEndRunnable,
                 DragLayer.ANIMATION_END_DISAPPEAR, null);
+    }
+
+    private void showOverlayDrawable(TransitionDrawable drawable) {
+        if (drawable == null) return;
+
+        mCurrentDrawable = drawable;
+
+        if (mOverlayView == null) {
+            mOverlayView = new ImageView(getContext());
+            mOverlayView.setScaleType(ImageView.ScaleType.CENTER);
+            mOverlayView.setImageDrawable(mCurrentDrawable);
+
+            int windowType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+            int flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                    | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                    | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+
+            mOverlayParams = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    windowType,
+                    flags,
+                    PixelFormat.TRANSLUCENT);
+            mOverlayParams.gravity = Gravity.TOP | Gravity.START;
+        } else {
+            mOverlayView.setImageDrawable(mCurrentDrawable);
+        }
+
+        updateOverlayPosition();
+
+        if (!mOverlayAdded) {
+            try {
+                mWindowManager.addView(mOverlayView, mOverlayParams);
+                mOverlayAdded = true;
+            } catch (Exception e) {
+                Log.w("DeleteDropTarget", "Failed to add overlay view: " + e);
+                // If adding failed, ensure we don't keep a dangling reference to the ImageView/params
+                // which could be detached or otherwise problematic.
+                if (mOverlayView != null) {
+                    try {
+                        mOverlayView.setImageDrawable(null);
+                    } catch (Exception ignore) {}
+                    mOverlayView = null;
+                }
+                mOverlayParams = null;
+                mOverlayAdded = false;
+            }
+        } else {
+            try {
+                mWindowManager.updateViewLayout(mOverlayView, mOverlayParams);
+            } catch (Exception e) {
+                Log.w("DeleteDropTarget", "Failed to update overlay layout: " + e);
+            }
+        }
+    }
+
+    /**
+     * Safely remove overlay and release references to avoid leaks.
+     */
+    private void removeOverlay() {
+        // If overlay was added to WindowManager, remove it.
+        if (mOverlayView != null && mOverlayAdded) {
+            try {
+                mWindowManager.removeViewImmediate(mOverlayView);
+            } catch (Exception e) {
+                Log.w("DeleteDropTarget", "Failed to remove overlay view: " + e);
+            } finally {
+                mOverlayAdded = false;
+            }
+        }
+
+        // Clear drawable and dereference the view & params so it can be GC'd.
+        if (mOverlayView != null) {
+            try {
+                mOverlayView.setImageDrawable(null);
+            } catch (Exception ignore) {}
+            mOverlayView = null;
+        }
+        mOverlayParams = null;
+    }
+
+    private void updateOverlayPosition() {
+        if (mOverlayParams == null || mOverlayView == null) return;
+
+        int[] loc = new int[2];
+        this.getLocationOnScreen(loc);
+        int viewLeft = loc[0];
+        int viewTop = loc[1];
+
+        int drawableWidth = mCurrentDrawable != null ? mCurrentDrawable.getIntrinsicWidth() : mOverlayView.getMeasuredWidth();
+        int drawableHeight = mCurrentDrawable != null ? mCurrentDrawable.getIntrinsicHeight() : mOverlayView.getMeasuredHeight();
+
+        int x = viewLeft + (getWidth() - drawableWidth) / 2;
+        int y = viewTop + (drawableHeight / 2);
+
+        mOverlayParams.x = x;
+        mOverlayParams.y = y;
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (mOverlayAdded && mOverlayView != null) {
+            updateOverlayPosition();
+            try {
+                mWindowManager.updateViewLayout(mOverlayView, mOverlayParams);
+            } catch (Exception e) {
+                Log.w("DeleteDropTarget", "Failed to update overlay during layout: " + e);
+            }
+        }
+
+        // Also ensure placeholder delegate has up-to-date bounds & callback
+        if (mPlaceholderDrawable != null) {
+            mPlaceholderDrawable.ensureDelegateCallbackAndBounds();
+        }
+    }
+
+    /**
+     * Transparent placeholder that reports the intrinsic size/bounds of its delegate
+     * but does not draw anything. We forward the view callback & bounds to the delegate
+     * from setBounds() / ensureDelegateCallbackAndBounds().
+     */
+    private static class PlaceholderDrawable extends Drawable {
+        private final Drawable mDelegate;
+
+        PlaceholderDrawable(Drawable delegate) {
+            mDelegate = delegate;
+        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            // intentionally blank (transparent)
+            // ensure delegate gets callback (in case callback was set after construction)
+            ensureDelegateCallbackAndBounds();
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+            if (mDelegate != null) mDelegate.setAlpha(alpha);
+        }
+
+        @Override
+        public void setColorFilter(android.graphics.ColorFilter colorFilter) {
+            if (mDelegate != null) mDelegate.setColorFilter(colorFilter);
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.TRANSLUCENT;
+        }
+
+        @Override
+        public int getIntrinsicWidth() {
+            return mDelegate != null ? mDelegate.getIntrinsicWidth() : -1;
+        }
+
+        @Override
+        public int getIntrinsicHeight() {
+            return mDelegate != null ? mDelegate.getIntrinsicHeight() : -1;
+        }
+
+        @Override
+        public void setBounds(int left, int top, int right, int bottom) {
+            super.setBounds(left, top, right, bottom);
+            if (mDelegate != null) {
+                mDelegate.setBounds(left, top, right, bottom);
+                // Forward the callback to the delegate (getCallback() is final on Drawable)
+                if (getCallback() != null) {
+                    mDelegate.setCallback(getCallback());
+                }
+            }
+        }
+
+        /**
+         * Ensure delegate has the same callback and bounds as this placeholder.
+         * Call this after setCompoundDrawables... to immediately synchronize.
+         */
+        void ensureDelegateCallbackAndBounds() {
+            if (mDelegate == null) return;
+            if (getCallback() != null) {
+                mDelegate.setCallback(getCallback());
+            }
+            // forward current bounds
+            Rect b = getBounds();
+            mDelegate.setBounds(b.left, b.top, b.right, b.bottom);
+        }
     }
 }

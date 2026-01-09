@@ -3,25 +3,39 @@ package com.android.launcher66;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 
 /**
  * Class for initiating a drag within a view or across multiple views.
+ *
+ * NOTE:
+ * - Animations remain driven by the in-layer DragView (original behavior).
+ * - An overlay ImageView is added to WindowManager as a purely decorative layer that mirrors
+ *   the DragView's position/size during the drag and any animations (including drop animations).
+ * - The overlay is synchronized with the DragView by sampling the DragView's on-screen bounds
+ *   on a short interval while the overlay exists. This preserves the original animated
+ *   transitions while allowing the overlay to be visible above other windows.
  */
 public class DragController {
     private static final String TAG = "Launcher.DragController";
@@ -100,6 +114,74 @@ public class DragController {
     protected int mFlingToDeleteThresholdVelocity;
     private VelocityTracker mVelocityTracker;
 
+    // Overlay fields (decorative only, animations driven by in-layer DragView)
+    private WindowManager mWindowManager;
+    private ImageView mOverlayView;
+    private WindowManager.LayoutParams mOverlayParams;
+    private Bitmap mOverlayBitmap;
+    private boolean mOverlaySyncRunning = false;
+    private final Runnable mOverlaySyncRunnable = new Runnable() {
+        @Override
+        public void run() {
+            // Sample DragView location on screen and update overlay to match.
+            try {
+                if (mDragObject == null || mDragObject.dragView == null || mOverlayView == null
+                        || mOverlayParams == null) {
+                    mOverlaySyncRunning = false;
+                    return;
+                }
+
+                // Get dragView location on screen
+                int[] loc = mCoordinatesTemp;
+                View dragView = (View) mDragObject.dragView;
+                dragView.getLocationOnScreen(loc);
+
+                // Some devices have status-bar / window-inset differences. Use same correction as before.
+                int topInset = getWindowTopInset();
+
+                // Update overlay position (x,y correspond to top-left screen coordinates)
+                mOverlayParams.x = loc[0];
+                mOverlayParams.y = loc[1] - topInset;
+
+                // Update overlay size to match current dragView size (covers animated scaling)
+                int w = Math.round(dragView.getWidth() * dragView.getScaleX());
+                int h = Math.round(dragView.getHeight() * dragView.getScaleY());
+                if (w <= 0) w = Math.max(1, mOverlayParams.width);
+                if (h <= 0) h = Math.max(1, mOverlayParams.height);
+                mOverlayParams.width = w;
+                mOverlayParams.height = h;
+
+                // Apply alpha if DragView supports it
+                float alpha = dragView.getAlpha();
+                mOverlayView.setAlpha(alpha);
+
+                // Apply red tint when over fling-to-delete target
+                if (mOverlayView != null) {
+                    if (mLastDropTarget != null && mFlingToDeleteDropTarget != null
+                            && mLastDropTarget == mFlingToDeleteDropTarget) {
+                        mOverlayView.setColorFilter(0x99FF0000, PorterDuff.Mode.SRC_ATOP);
+                    } else {
+                        mOverlayView.clearColorFilter();
+                    }
+                }
+
+                // Apply transforms by updating layout/size and letting the overlay ImageView render
+                mWindowManager.updateViewLayout(mOverlayView, mOverlayParams);
+
+                // Requeue while overlay exists
+                if (mOverlayView != null) {
+                    mHandler.postDelayed(this, 16); // ~60fps
+                    mOverlaySyncRunning = true;
+                } else {
+                    mOverlaySyncRunning = false;
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Overlay sync failed", e);
+                mOverlaySyncRunning = false;
+            }
+        }
+    };
+
     /**
      * Interface to receive notifications when a drag starts or stops
      */
@@ -135,6 +217,8 @@ public class DragController {
         float density = r.getDisplayMetrics().density;
         mFlingToDeleteThresholdVelocity =
                 (int) (r.getInteger(R.integer.config_flingToDeleteMinVelocity) * density);
+
+        mWindowManager = (WindowManager) launcher.getSystemService(Context.WINDOW_SERVICE);
     }
 
     public boolean dragging() {
@@ -168,7 +252,8 @@ public class DragController {
                 null, initialDragViewScale);
 
         if (dragAction == DRAG_ACTION_MOVE) {
-            v.setVisibility(View.GONE);
+            // Use INVISIBLE so the view keeps its layout space (placeholder) while visually empty.
+            v.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -220,6 +305,7 @@ public class DragController {
         mDragObject.dragSource = source;
         mDragObject.dragInfo = dragInfo;
 
+        // Create the in-layer DragView (authoritative for animations)
         final DragView dragView = mDragObject.dragView = new DragView(mLauncher, b, registrationX,
                 registrationY, 0, 0, b.getWidth(), b.getHeight(), initialDragViewScale);
 
@@ -230,9 +316,91 @@ public class DragController {
             dragView.setDragRegion(new Rect(dragRegion));
         }
 
+        // Create overlay (decorative) that mirrors the DragView visually
+        // If overlay fails (permission), we still keep authoritative DragView so UX/animations preserved.
+        try {
+            createOverlayForBitmap(b, initialDragViewScale);
+            // start sync loop once overlay created
+            startOverlaySync();
+        } catch (Exception e) {
+            // Overlay optional — log and continue with in-layer DragView only
+            Log.w(TAG, "Could not create overlay; continuing without overlay", e);
+            removeOverlay();
+        }
+
         mLauncher.getDragLayer().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
         dragView.show(mMotionDownX, mMotionDownY);
+        // Immediately sync overlay once so it's placed correctly at start
+        if (mOverlayView != null) {
+            mHandler.post(mOverlaySyncRunnable);
+        }
         handleMoveEvent(mMotionDownX, mMotionDownY);
+    }
+
+    /**
+     * Create overlay ImageView in WindowManager for the provided bitmap.
+     * Overlay is decorative and will be synchronized to the in-layer DragView.
+     */
+    private void createOverlayForBitmap(Bitmap b, float initialScale) {
+        removeOverlay(); // safety
+
+        mOverlayBitmap = b;
+        mOverlayView = new ImageView(mLauncher);
+        mOverlayView.setImageBitmap(mOverlayBitmap);
+        mOverlayView.setScaleType(ImageView.ScaleType.FIT_XY);
+        mOverlayView.setAlpha(1f);
+
+        mOverlayParams = new WindowManager.LayoutParams();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mOverlayParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else {
+            mOverlayParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+        }
+        mOverlayParams.format = PixelFormat.TRANSLUCENT;
+        mOverlayParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+        mOverlayParams.gravity = Gravity.TOP | Gravity.LEFT;
+
+        // initial size based on scaled bitmap
+        mOverlayParams.width = (int) (initialScale * b.getWidth());
+        mOverlayParams.height = (int) (initialScale * b.getHeight());
+
+        try {
+            mWindowManager.addView(mOverlayView, mOverlayParams);
+        } catch (Exception e) {
+            // bubble up so caller can fallback
+            removeOverlay();
+            throw e;
+        }
+    }
+
+    private void startOverlaySync() {
+        if (mOverlayView == null || mOverlayParams == null || mOverlaySyncRunning) return;
+        mOverlaySyncRunning = true;
+        mHandler.post(mOverlaySyncRunnable);
+    }
+
+    private void stopOverlaySync() {
+        mOverlaySyncRunning = false;
+        mHandler.removeCallbacks(mOverlaySyncRunnable);
+    }
+
+    /**
+     * Remove overlay view if present (safe wrapper).
+     */
+    private void removeOverlay() {
+        stopOverlaySync();
+        if (mOverlayView != null) {
+            try {
+                mWindowManager.removeViewImmediate(mOverlayView);
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to remove overlay view", e);
+            }
+            mOverlayView = null;
+        }
+        mOverlayBitmap = null;
+        mOverlayParams = null;
     }
 
     /**
@@ -342,6 +510,9 @@ public class DragController {
                 mDragObject.dragView = null;
             }
 
+            // Remove overlay (stop sync and remove view)
+            removeOverlay();
+
             // Only end the drag if we are not deferred
             if (!isDeferred) {
                 for (DragListener listener : mListeners) {
@@ -358,6 +529,9 @@ public class DragController {
      */
     void onDeferredEndDrag(DragView dragView) {
         dragView.remove();
+
+        // In case overlay still exists, remove it now (the drag animation is finished)
+        removeOverlay();
 
         if (mDragObject.deferDragViewCleanupPostAnimation) {
             // If we skipped calling onDragEnd() before, do it now
@@ -474,6 +648,34 @@ public class DragController {
         mDragObject.x = coordinates[0];
         mDragObject.y = coordinates[1];
         checkTouchMove(dropTarget);
+
+        // Update overlay immediately to follow move (overlay sync runnable will continue during animations)
+        if (mOverlayView != null && mOverlayParams != null && mDragObject != null
+                && mDragObject.dragView != null) {
+            try {
+                View dv = (View) mDragObject.dragView;
+                int[] loc = mCoordinatesTemp;
+                dv.getLocationOnScreen(loc);
+                int topInset = getWindowTopInset();
+                mOverlayParams.x = loc[0];
+                mOverlayParams.y = loc[1] - topInset;
+                mOverlayParams.width = Math.round(dv.getWidth() * dv.getScaleX());
+                mOverlayParams.height = Math.round(dv.getHeight() * dv.getScaleY());
+
+                // tint overlay red when over fling-to-delete target
+                if (mLastDropTarget != null && mFlingToDeleteDropTarget != null
+                        && mLastDropTarget == mFlingToDeleteDropTarget) {
+                    mOverlayView.setColorFilter(0x99FF0000, PorterDuff.Mode.SRC_ATOP);
+                } else {
+                    mOverlayView.clearColorFilter();
+                }
+
+                mWindowManager.updateViewLayout(mOverlayView, mOverlayParams);
+                mOverlayView.setAlpha(dv.getAlpha());
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to update overlay on move", e);
+            }
+        }
 
         // Check if we are hovering over the scroll areas
         mDistanceSinceScroll +=
@@ -792,6 +994,20 @@ public class DragController {
 
         void setDirection(int direction) {
             mDirection = direction;
+        }
+    }
+
+    /**
+     * Returns the top inset of the window (status bar / decor top offset) so we can align overlay Y.
+     */
+    private int getWindowTopInset() {
+        try {
+            Rect frame = new Rect();
+            mLauncher.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+            return frame.top;
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to get window top inset, defaulting to 0", e);
+            return 0;
         }
     }
 }

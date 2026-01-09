@@ -138,8 +138,8 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 || (!helpers.userWasInRecents() && helpers.isListOpen())) {
 
                     Log.e(TAG, "reset pip on wake");
-                    WindowUtil.removePip(null);
-                    WindowUtil.startMapPip(null, true, 500);
+                    WindowUtil.removePip();
+                    WindowUtil.startMapPip(true, 500);
             }
         }, 1500);
     }

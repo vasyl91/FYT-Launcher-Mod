@@ -249,7 +249,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 
     public void startEditingFolderName() {
         mFolderName.setHint("");
-        WindowUtil.removePip(null);
+        WindowUtil.removePip();
         mIsEditingName = true;
         mFolderName.postDelayed(new Runnable() {
             @Override
@@ -294,7 +294,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 || (!helpers.userWasInRecents() && helpers.isListOpen())) {
 
                     Log.d("closeFolder()", "startMapPip");
-                    WindowUtil.startMapPip(null, false);
+                    WindowUtil.startMapPip(false);
 
             }
             helpers.setFirstPreferenceWindow(false);

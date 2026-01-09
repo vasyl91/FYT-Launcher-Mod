@@ -164,15 +164,15 @@ public  class WindowHostDualPane {
         setPendingBoundsFast(b);
     }
 
-    void dismissAsync(boolean keepTasks) {
+    void dismissAsync() {
         final int myGen = ++gen;
         visible.set(false);
         cancelPendingRestore();
         parkInvisible();
-        postMain(() -> hardRemoveWindow(!keepTasks, myGen));
+        postMain(() -> hardRemoveWindow(false, myGen));
         DISMISS_EXEC.schedule(() -> postMain(() -> {
             if (gen != myGen) return;
-            if (added || root != null) hardRemoveWindow(!keepTasks, myGen);
+            if (added || root != null) hardRemoveWindow(false, myGen);
         }), 150, TimeUnit.MILLISECONDS);
     }
 

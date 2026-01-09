@@ -36,14 +36,14 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcelable;
-import android.text.Layout;
-import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
@@ -1053,8 +1053,13 @@ public class Workspace extends SmoothPagedView
             }
             if (textViewCount == 0) return;
 
-            // Real height constraint per TextView
+            // Real height constraint per TextView (in px)
             int targetHeight = (int) ((parentHeight / textViewCount) * targetSize);
+
+            // Reserve space for TextView paddings so our measurement is the true text area
+            int verticalPadding = textView.getCompoundPaddingTop() + textView.getCompoundPaddingBottom();
+            int availableHeightForText = Math.max(0, targetHeight - verticalPadding);
+
             textView.setMaxHeight(targetHeight);
 
             float minSize = 1f;
@@ -1063,20 +1068,24 @@ public class Workspace extends SmoothPagedView
 
             TextPaint paint = new TextPaint(textView.getPaint());
 
+            // Use textView's resources for display metrics (safer than getResources())
+            DisplayMetrics dm = textView.getResources().getDisplayMetrics();
+
             while (maxSize - minSize > 0.5f) {
                 float testSize = (minSize + maxSize) / 2f;
                 paint.setTextSize(
                     TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_SP,
                         testSize,
-                        getResources().getDisplayMetrics()
+                        dm
                     )
                 );
 
                 Paint.FontMetrics fm = paint.getFontMetrics();
-                float textHeight = fm.descent - fm.ascent;
+                // Use full font bounds (bottom - top) to include descenders/extra glyph bounds
+                float textHeight = fm.bottom - fm.top;
 
-                if (textHeight <= targetHeight) {
+                if (textHeight <= availableHeightForText) {
                     bestSize = testSize;
                     minSize = testSize;
                 } else {
@@ -1084,6 +1093,8 @@ public class Workspace extends SmoothPagedView
                 }
             }
 
+            // Make sure TextView reserves font padding for descent/ascents
+            textView.setIncludeFontPadding(true);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, bestSize);
         });
     }
@@ -1244,7 +1255,7 @@ public class Workspace extends SmoothPagedView
                 }
             }
             overlayWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-            
+
             // Calculate dimensions
             int screenWidth = mLauncher.screenWidth;
             int screenHeight = mLauncher.screenHeight;
@@ -1254,7 +1265,7 @@ public class Workspace extends SmoothPagedView
             } else {
                 bottomBarHeight = (int) (screenHeight * 0.1638);
             }
-            
+
             // Create overlay window parameters
             overlayWindowParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.MATCH_PARENT,
@@ -1267,13 +1278,16 @@ public class Workspace extends SmoothPagedView
                     PixelFormat.TRANSLUCENT
             );
 
-            overlayWindowParams.layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            // Only touch layoutInDisplayCutoutMode on API 28+ (Android P) to avoid Lint/runtime issues
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                overlayWindowParams.layoutInDisplayCutoutMode =
+                        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            }
 
             overlayWindowParams.gravity = Gravity.BOTTOM;
-            
+
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            
+
             // Choose layout based on widgetBar setting
             if (widgetBar) {
                 overlayBottomBar = inflater.inflate(R.layout.custom_layout_two_user, null);
@@ -1305,10 +1319,10 @@ public class Workspace extends SmoothPagedView
             if (blackTintBar) {
                 Helpers.applyColorFilterToImageView(overlayAllApps);
             }
-            
+
             // Setup the overlay view
             setupOverlayView(screenWidth, bottomBarHeight);
-            
+
             // Add to window manager
             try {
                 overlayWindowManager.addView(overlayBottomBar, overlayWindowParams);
@@ -1325,8 +1339,8 @@ public class Workspace extends SmoothPagedView
                 isOverlayAnimating = false;
             }
             mainHandler.post(() -> {
-                mLauncher.updateWeather();   
-                mLauncher.enableRecycler();             
+                mLauncher.updateWeather();
+                mLauncher.enableRecycler();
             });
         }
     }
@@ -2391,7 +2405,7 @@ public class Workspace extends SmoothPagedView
         mainHandler.postDelayed(() -> {
             if (!helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) {
                 Log.d("stripEmptyScreens", "startMapPip");
-                WindowUtil.startMapPip(null, false);
+                WindowUtil.startMapPip(false);
             }
         }, 250);
     }
@@ -3587,7 +3601,7 @@ public class Workspace extends SmoothPagedView
         if (!LauncherApplication.sApp.getResources().getBoolean(R.bool.wallpaper_show)) {
             return true;
         }
-        WindowUtil.removePip(null);
+        WindowUtil.removePip();
         exitWidgetResizeMode();
         enableOverviewMode(true, -1, true);
         return true;
@@ -3614,7 +3628,7 @@ public class Workspace extends SmoothPagedView
 
         mainHandler.postDelayed(()-> {
             Log.d("exitOverviewMode", "startMapPip");
-            WindowUtil.startMapPip(null, false);
+            WindowUtil.startMapPip(false);
         }, 250);
 
         enableOverviewMode(false, snapPage, animated);
@@ -5594,7 +5608,7 @@ public class Workspace extends SmoothPagedView
         mainHandler.postDelayed(()-> {
             if (!helpers.isInOverviewMode()) {
                 Log.d("animateWidgetDrop", "startMapPip");
-                WindowUtil.startMapPip(null, false);
+                WindowUtil.startMapPip(false);
             }
         }, 250);
 
@@ -6479,7 +6493,7 @@ public class Workspace extends SmoothPagedView
         mainHandler.postDelayed(()-> {
             if (!helpers.isInOverviewMode()) {
                 Log.d("stripEmptyScreensBaseOnDB", "startMapPip");
-                WindowUtil.startMapPip(null, false);
+                WindowUtil.startMapPip(false);
             }
         }, 250);
     }

@@ -12,11 +12,12 @@ import android.view.View;
 import android.view.WindowManager;
 
 public class WindowHost {
+    public static volatile WindowHost sInstance;
+
     private final Activity activity;
     private final WindowManager wm;
     private final ActivityManager am;
     private final IBinder appToken;
-    private final boolean retainTasks = true;
 
     // Panes
     private final WindowHostSinglePane first, second, third, fourth;
@@ -35,12 +36,15 @@ public class WindowHost {
         this.third  = new WindowHostSinglePane("Third");
         this.fourth = new WindowHostSinglePane("Fourth");
         this.dual   = new WindowHostDualPane();
+
+        // publish instance
+        sInstance = this;
     }
 
     // ===== API: Dual =====
     public void showDual(String leftPkg, String rightPkg, Rect bounds) { dual.show(activity, wm, am, appToken, leftPkg, rightPkg, bounds); }
     public void updateDualBounds(Rect bounds) { if (dual != null) dual.updateBounds(bounds); }
-    public void dismissDual()   { dual.dismissAsync(retainTasks); }
+    public void dismissDual()   { dual.dismissAsync(); }
     public void cleanupDual()   { dual.cleanup(); }
     public boolean isDualVisible() { return dual.isVisible(); }
 
@@ -55,17 +59,17 @@ public class WindowHost {
     public void updateThirdBounds(Rect bounds) { if (third != null)  third.updateBounds(bounds); }
     public void updateFourthBounds(Rect bounds) { if (fourth != null) fourth.updateBounds(bounds); }
 
-    public void dismissFirst()  { first.dismissAsync(retainTasks); }
-    public void dismissSecond() { second.dismissAsync(retainTasks); }
-    public void dismissThird()  { third.dismissAsync(retainTasks); }
-    public void dismissFourth() { fourth.dismissAsync(retainTasks); }
+    public void dismissFirst()  { first.dismissAsync(); }
+    public void dismissSecond() { second.dismissAsync(); }
+    public void dismissThird()  { third.dismissAsync(); }
+    public void dismissFourth() { fourth.dismissAsync(); }
 
     public void dismiss() {
-        first.dismissAsync(retainTasks);
-        second.dismissAsync(retainTasks);
-        third.dismissAsync(retainTasks);
-        fourth.dismissAsync(retainTasks);
-        dual.dismissAsync(retainTasks);
+        first.dismissAsync();
+        second.dismissAsync();
+        third.dismissAsync();
+        fourth.dismissAsync();
+        dual.dismissAsync();
     }
 
     public void cleanup() {
@@ -74,6 +78,15 @@ public class WindowHost {
         third.cleanup();
         fourth.cleanup();
         dual.cleanup();
+
+        // Clear published instance if it's this one
+        if (sInstance == this) {
+            sInstance = null;
+        }
+    }
+
+    public static WindowHost getInstance() {
+        return sInstance;
     }
 
     public boolean isFirstVisible()  { return first.isVisible(); }

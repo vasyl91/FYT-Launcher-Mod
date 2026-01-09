@@ -46,6 +46,15 @@ public class FabOverlayService extends Service {
     private boolean floatingBtn = false;
     private boolean floatingBtnLeft = false;
     private boolean floatingBtnRight = false;
+    private boolean dualPip = false;
+    private boolean firstPip = false;
+    private boolean secondPip = false;
+    private boolean thirdPip = false;
+    private boolean fourthPip = false;
+    private boolean firstPipPinned = false;
+    private boolean secondPipPinned = false;
+    private boolean thirdPipPinned = false;
+    private boolean fourthPipPinned = false;
     
     // Preferences
     private SharedPreferences prefs;
@@ -82,13 +91,22 @@ public class FabOverlayService extends Service {
         floatingBtn = prefs.getBoolean(Keys.FAB_OVERLAY_BUTTON, false);
         floatingBtnLeft = prefs.getBoolean(Keys.FAB_OVERLAY_BUTTON_LEFT, false);
         floatingBtnRight = prefs.getBoolean(Keys.FAB_OVERLAY_BUTTON_RIGHT, false);
-        if (floatingBtn) {
+        dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
+        firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
+        secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
+        thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
+        fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);  
+        firstPipPinned = prefs.getBoolean(Keys.PIP_FIRST_MODE, false);
+        secondPipPinned = prefs.getBoolean(Keys.PIP_SECOND_MODE, false);
+        thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
+        fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);             
+        if (isFloatingButton()) {
             setupOverlay();
         }        
-        if (floatingBtnLeft) {
+        if (isFloatingButtonLeft()) {
             setupOverlayLeft();
         }        
-        if (floatingBtnRight) {
+        if (isFloatingButtonRight()) {
             setupOverlayRight();
         }
         IntentFilter filter = new IntentFilter();
@@ -100,6 +118,21 @@ public class FabOverlayService extends Service {
         } else {
             registerReceiver(fabReceiver, filter);
         }
+    }
+
+    private boolean isFloatingButton() {
+        if (!floatingBtn) return false;
+        return (dualPip || (firstPip && !firstPipPinned && secondPip && !secondPipPinned)) && thirdPip && fourthPip && !thirdPipPinned && !fourthPipPinned;
+    }
+
+    private boolean isFloatingButtonLeft() {
+        if (!floatingBtnLeft) return false;
+        return (dualPip || (firstPip && !firstPipPinned)) && thirdPip && !thirdPipPinned;
+    }
+
+    private boolean isFloatingButtonRight() {
+        if (!floatingBtnRight) return false;
+        return (dualPip || (secondPip && !secondPipPinned)) && fourthPip && !fourthPipPinned;
     }
     
     @Override
@@ -309,17 +342,8 @@ public class FabOverlayService extends Service {
     private void onSwitchPipsClicked() {
         if (!blockButton) {
             blockButton = true;
-            WindowUtil.removePip(null);
-            String firstPkg = prefs.getString(Keys.PIP_FIRST_PACKAGE, "");
-            String secondPkg = prefs.getString(Keys.PIP_SECOND_PACKAGE, "");
-            String thirdPkg = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
-            String fourthPkg = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
-            editor.putString(Keys.PIP_FIRST_PACKAGE, thirdPkg);
-            editor.putString(Keys.PIP_SECOND_PACKAGE, fourthPkg);
-            editor.putString(Keys.PIP_THIRD_PACKAGE, firstPkg);
-            editor.putString(Keys.PIP_FOURTH_PACKAGE, secondPkg);
-            editor.apply();
-            WindowUtil.startMapPip(null, false);
+            WindowUtil.swapRightAndFourth();
+            new Handler(Looper.getMainLooper()).postDelayed(()-> WindowUtil.swapLeftAndThird(), 100);
         }
     }
 
@@ -526,14 +550,8 @@ public class FabOverlayService extends Service {
     private void onLeftSwitchPipsClicked() {
         if (!blockButton) {
             blockButton = true;
-            WindowUtil.removePip(null);
-            String firstPkg = prefs.getString(Keys.PIP_FIRST_PACKAGE, "");
-            String thirdPkg = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
-            editor.putString(Keys.PIP_FIRST_PACKAGE, thirdPkg);
-            editor.putString(Keys.PIP_THIRD_PACKAGE, firstPkg);
-            editor.apply();
-            WindowUtil.startMapPip(null, false);
-        }
+            WindowUtil.swapLeftAndThird();
+        } 
     }
 
     // RIGHT
@@ -740,13 +758,7 @@ public class FabOverlayService extends Service {
     private void onRightSwitchPipsClicked() {
         if (!blockButton) {
             blockButton = true;
-            WindowUtil.removePip(null);
-            String secondPkg = prefs.getString(Keys.PIP_SECOND_PACKAGE, "");
-            String fourthPkg = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
-            editor.putString(Keys.PIP_SECOND_PACKAGE, fourthPkg);
-            editor.putString(Keys.PIP_FOURTH_PACKAGE, secondPkg);
-            editor.apply();
-            WindowUtil.startMapPip(null, false);
+            WindowUtil.swapRightAndFourth();
         }
     }
 
@@ -772,7 +784,7 @@ public class FabOverlayService extends Service {
                             hideFab();
                             break;
                         case Keys.BLOCK_FLOATING_BUTTON:
-                            // This is called inside startMapPip() to let the view settle before switching PiPs will be possible
+                            // This is called inside startMapPip() to let the view settle before switching PiPs will be possible again
                             blockButton = true;
                             new Handler(Looper.getMainLooper()).postDelayed(() -> blockButton = false, 5000);
                             break;
