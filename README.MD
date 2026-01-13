@@ -2,7 +2,7 @@
 
 **Launcher Mod has been tested on Android 10 with 2000x1200 resolution as it is the only device I own.**
 
-It should get along with all resolutions on Android 8 up to 11. Android 12+ might not allow (depending on the FYT brand) to install the app with `android:sharedUserId="android.uid.system"` without root access or the proper platform keystore. This is a fundamental security restriction that cannot be bypassed. In such case you can use the non-privileged version (From 1.1.8; keep in mind that multiple PiP feature won't work wtihout system privileges, standard PiP should be up and running) - this version was tested on phone with Android 16.
+It should get along with all resolutions on Android 8 up to 16 provided that you install it as a  privileged/system app. Android 12+ might not allow (depending on the FYT brand) to install the app with `android:sharedUserId="android.uid.system"` without root access or the proper platform keystore. This is a fundamental security restriction that cannot be bypassed. In such case you can use the non-privileged phone version (keep in mind that multiple PiP feature won't work wtihout system privileges, standard PiP should be up and running - only onf FYT devices) - this version was tested on phone with Android 15.
 
 IMPORTANT: Note that some of the FYT devices do not support the PiP on the main screen. You can still use the launcher however you'll have to turn off the PiP in the launcher's settings (otherwise Google Maps will pop up every time you'll try to open the home page - if it happens, wipe the launcher's data or reinstall it).
 
@@ -17,7 +17,8 @@ List of modifications:
 - Bottom bar with optional widgets.
 - Auto hide bottm bar option.
 - Skins for widgets and bottom bar.
-- Optional floating buttons allowing to quickly switch the apps between PiPs. (From 1.1.8)
+- Optional floating buttons allowing to quickly switch the apps between PiPs.
+- Optional transparent overlay square on the status bar that detects swipes and allows to scroll between pages. This might be useful when PiP view occupies most of the visible screen (only for privileged/system app).
 - Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with position on the screen specified by user.
 - Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct the sunset and sunrise times, set the wallpaper and the brightness for the day/night mode).
 - Settings fragment with useful tweaks.
@@ -265,7 +266,7 @@ for build 1.1.7 use `android.jar` from this [repository](https://github.com/Regi
 4. Open the repository and rebuild the project, if I haven't forgotten anything it should work.
 5. To generate the app use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose exisiting android key alias with password `android`. 
 
-To debug the app on FYT device, connect it with your PC. For android 11 and above try to connect with Wi-Fi, USB might be problematic, tricky and in general frustrating (Fck u FYT devs!!!). If you don't have much choice then try to use the 4pin USB cable - in my case this one works fine). 
+To debug the app on FYT device, connect it with your PC. For android 11 and above try to connect with Wi-Fi, USB might be problematic. If you don't have much choice then try to use the 4pin USB cable - in my case this one works fine). 
 If you need the drivers please use [this ones](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/android-34-modded-jar/Unisoc+SPD+Driver.rar). 
 Go to Developer options, click on the three dots in the top right corner and select the second option from the popup (both are in chineese).
 
@@ -274,7 +275,7 @@ Go to Developer options, click on the three dots in the top right corner and sel
 Remember to enable USB debugging.
 
 If you keep getting `unauthorized` while running `adb devices` and your device doesn't display the popup to confirm the connection then it means that you'll have to add adb keys manually.
-That's tricky and unfortunately requires root on your FYT device and on your phone (Fck u FYT devs x2). If you haven't given up, follow the steps below:
+That's tricky and unfortunately requires root on your FYT device and on your phone. If you haven't given up, follow the steps below:
 1. Connect your phone to your PC and confirm the connection. 
 2. Go to `/data/misc/adb/` on your phone and copy it's content (should contain `adb_keys`).
 3. Paste that file in the same directory on your FYT.
