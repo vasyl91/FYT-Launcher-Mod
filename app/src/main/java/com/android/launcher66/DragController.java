@@ -26,17 +26,6 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 
-/**
- * Class for initiating a drag within a view or across multiple views.
- *
- * NOTE:
- * - Animations remain driven by the in-layer DragView (original behavior).
- * - An overlay ImageView is added to WindowManager as a purely decorative layer that mirrors
- *   the DragView's position/size during the drag and any animations (including drop animations).
- * - The overlay is synchronized with the DragView by sampling the DragView's on-screen bounds
- *   on a short interval while the overlay exists. This preserves the original animated
- *   transitions while allowing the overlay to be visible above other windows.
- */
 public class DragController {
     private static final String TAG = "Launcher.DragController";
 
@@ -316,24 +305,31 @@ public class DragController {
             dragView.setDragRegion(new Rect(dragRegion));
         }
 
-        // Create overlay (decorative) that mirrors the DragView visually
-        // If overlay fails (permission), we still keep authoritative DragView so UX/animations preserved.
-        try {
-            createOverlayForBitmap(b, initialDragViewScale);
-            // start sync loop once overlay created
-            startOverlaySync();
-        } catch (Exception e) {
-            // Overlay optional — log and continue with in-layer DragView only
-            Log.w(TAG, "Could not create overlay; continuing without overlay", e);
-            removeOverlay();
+        boolean isFromWidgetDrawer = String.valueOf(source).contains("AppsCustomizePagedView");
+        if (!isFromWidgetDrawer) {
+            // Create overlay (decorative) that mirrors the DragView visually
+            // If overlay fails (permission), we still keep authoritative DragView so UX/animations preserved.
+            try {
+                createOverlayForBitmap(b, initialDragViewScale);
+                // start sync loop once overlay created
+                startOverlaySync();
+            } catch (Exception e) {
+                // Overlay optional — log and continue with in-layer DragView only
+                Log.w(TAG, "Could not create overlay; continuing without overlay", e);
+                removeOverlay();
+            }
         }
 
         mLauncher.getDragLayer().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
         dragView.show(mMotionDownX, mMotionDownY);
-        // Immediately sync overlay once so it's placed correctly at start
-        if (mOverlayView != null) {
-            mHandler.post(mOverlaySyncRunnable);
-        }
+
+        if (!isFromWidgetDrawer) {
+            // Immediately sync overlay once so it's placed correctly at start
+            if (mOverlayView != null) {
+                mHandler.post(mOverlaySyncRunnable);
+            }
+        }        
+
         handleMoveEvent(mMotionDownX, mMotionDownY);
     }
 

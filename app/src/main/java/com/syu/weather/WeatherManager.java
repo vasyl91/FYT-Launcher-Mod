@@ -41,7 +41,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +71,8 @@ public class WeatherManager {
     LocationManager mLocationManager;
     NetworkCheck mNetworkCheck;
     String tmpCity;
-    public List<OnWeatherChangedListener> weatherListeners;
+    // Use WeakReference to avoid leaking activity/listener implementers
+    public List<WeakReference<OnWeatherChangedListener>> weatherListeners;
     boolean isRunning = false;
     long lastLocationTime = 0;
     long lastWeatherTime = 0;
@@ -188,20 +191,63 @@ public class WeatherManager {
     }
 
     public void addOnWeatherChangedListener(OnWeatherChangedListener listener) {
-        if (listener != null) {
-            if (this.weatherListeners == null) {
-                this.weatherListeners = new ArrayList<>();
+        if (listener == null) return;
+
+        if (this.weatherListeners == null) {
+            this.weatherListeners = new ArrayList<>();
+        }
+
+        synchronized (this.weatherListeners) {
+            // Cleanup cleared references and check for existing listener
+            Iterator<WeakReference<OnWeatherChangedListener>> it = this.weatherListeners.iterator();
+            while (it.hasNext()) {
+                OnWeatherChangedListener l = it.next().get();
+                if (l == null) {
+                    it.remove();
+                } else if (l == listener) {
+                    // already registered; still notify current weather
+                    try {
+                        listener.onWeatherChanged(this.mCurWeather);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error notifying listener in addOnWeatherChangedListener", e);
+                    }
+                    return;
+                }
             }
-            if (!this.weatherListeners.contains(listener)) {
+
+            // notify current weather then add as weak reference
+            try {
                 listener.onWeatherChanged(this.mCurWeather);
-                this.weatherListeners.add(listener);
+            } catch (Exception e) {
+                Log.e(TAG, "Error notifying listener in addOnWeatherChangedListener", e);
             }
+
+            this.weatherListeners.add(new WeakReference<>(listener));
         }
     }
 
     public void removeOnWeatherChangedListener(OnWeatherChangedListener listener) {
-        if (this.weatherListeners != null && listener != null && this.weatherListeners.size() != 0 && this.weatherListeners.contains(listener)) {
-            this.weatherListeners.remove(listener);
+        if (this.weatherListeners == null || listener == null) return;
+
+        synchronized (this.weatherListeners) {
+            Iterator<WeakReference<OnWeatherChangedListener>> it = this.weatherListeners.iterator();
+            while (it.hasNext()) {
+                OnWeatherChangedListener l = it.next().get();
+                if (l == null || l == listener) {
+                    it.remove();
+                }
+            }
+        }
+    }
+
+    /**
+     * Explicitly clear all listener references (optional utility).
+     * Call from application/owner when appropriate (e.g. global shutdown).
+     */
+    public void clearListeners() {
+        if (this.weatherListeners == null) return;
+        synchronized (this.weatherListeners) {
+            this.weatherListeners.clear();
         }
     }
 
@@ -548,9 +594,25 @@ public class WeatherManager {
                         WeatherManager.this.lastWeatherTime = SystemClock.elapsedRealtime();
                         WeatherManager.this.mCurWeather = result;
                         if (WeatherManager.this.weatherListeners != null && WeatherManager.this.weatherListeners.size() > 0) {
-                            List<OnWeatherChangedListener> list = new ArrayList<>(WeatherManager.this.weatherListeners);
+                            // collect live listeners while cleaning up cleared refs
+                            List<OnWeatherChangedListener> list = new ArrayList<>();
+                            synchronized (WeatherManager.this.weatherListeners) {
+                                Iterator<WeakReference<OnWeatherChangedListener>> it = WeatherManager.this.weatherListeners.iterator();
+                                while (it.hasNext()) {
+                                    OnWeatherChangedListener l = it.next().get();
+                                    if (l == null) {
+                                        it.remove();
+                                    } else {
+                                        list.add(l);
+                                    }
+                                }
+                            }
                             for (OnWeatherChangedListener listener : list) {
-                                listener.onWeatherChanged(WeatherManager.this.mCurWeather);
+                                try {
+                                    listener.onWeatherChanged(WeatherManager.this.mCurWeather);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Error notifying listener in getWeather", e);
+                                }
                             }
                         }
                     } else {

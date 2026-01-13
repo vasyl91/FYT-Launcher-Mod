@@ -301,6 +301,8 @@
     <string name="widgets_background_dialog_title">Wybierz tło dla widgetów:</string>  
     <string name="bar_background_preference">Wybierz tło dla paska dolnego</string>  
     <string name="bar_background_dialog_title">Wybierz tło dla paska dolnego:</string>
+    <string name="pick_image_manually">Ustaw tło</string>
+    <string name="cancel">Anuluj</string>
     <string name="black_widgets">Kolor tekstu i przycisków wewnątrz widgetów</string>
     <string name="black_bar">Kolor tekstu i przycisków paska dolnego</string>
     <string name="black_color">Czarny</string>
@@ -310,8 +312,12 @@
     <string name="widget_bar">Pasek dolny z widgetami</string>
     <string name="restart_pip">Restart PiP</string>
     <string name="restart_pip_summary">Zrestartuj aplikację</string>
-    <string name="fab_overlay_button">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy Dual PiP, a pierwszym i drugim PiP</string>
-    <string name="fab_overlay_summary">Aby wyświetlić przycisk ustaw aplikacje dla wszystkich PiP. Włącz również Dual PiP, oraz trzeci i czwarty PiP. Używaj wyłącznie trybu "Window".</string>
+    <string name="fab_overlay_button">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy PiP: <b>lewy dual/pierwszy &lt;-&gt; trzeci</b> oraz <b>prawy dual/drugi &lt;-&gt; czwarty</b></string>
+    <string name="fab_overlay_button_left">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy PiP: <b>lewy dual/pierwszy &lt;-&gt; trzeci</b></string>
+    <string name="fab_overlay_button_right">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy PiP: <b>prawy dual/drugi &lt;-&gt; czwarty</b></string>
+    <string name="fab_overlay_summary">Aby wyświetlić przycisk ustaw aplikacje dla wszystkich PiP, używaj wyłącznie trybu `Window`.</string>
+    <string name="swipe_detector">Wykrywanie przesunięcia dla paska stanu</string>
+    <string name="swipe_detector_summary">Środkowo-dolna część paska stanu będzie wykrywać przesunięcia palcem i tym samym pozwoli na przechodzenie pomiędzy ekranami. Funkcja może być przydatna w momencie gdy widok PiP zakrywa większość widocznego ekranu.</string>
 
     <string name="weather_not_available">N/A</string>
     <string name="clear_sky">Bezchmurne niebo</string>

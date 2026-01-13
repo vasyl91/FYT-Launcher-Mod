@@ -1781,7 +1781,7 @@ public class Workspace extends SmoothPagedView
         }
 
         if (mLauncher != null) {
-            mainHandler.post(() -> {
+            new Handler(Looper.getMainLooper()).post(() -> {
                 mLauncher.disableRecycler();
             });
         }

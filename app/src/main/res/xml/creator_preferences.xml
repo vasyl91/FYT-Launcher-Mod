@@ -60,6 +60,12 @@
             android:title="@string/fab_overlay_button_right"
             app:summary="@string/fab_overlay_summary"
             app:layout="@layout/nested_preference_category_switch" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="swipe_detector"
+            android:defaultValue="false"
+            android:title="@string/swipe_detector"
+            app:summary="@string/swipe_detector_summary"
+            app:layout="@layout/nested_preference_category_switch" />
         <com.android.launcher66.settings.CustomWidgetSwitchPreference
             android:key="user_date"
             android:defaultValue="true"

@@ -217,8 +217,53 @@ for build 1.1.7 use `android.jar` from this [repository](https://github.com/Regi
 
 </details>
 
-3. Open the repository and rebuild the project, if I haven't forgotten anything it should work.
-4. To generate the app use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose exisiting android key alias with password `android`. 
+3. For non-privileged devices change the beginning of the `AndroidManifest.xml` with:
+
+<details>
+
+```
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.INSTALL_PACKAGE" />
+            <data android:mimeType="application/vnd.android.package-archive" />
+        </intent>
+    </queries>
+
+    <permission
+        android:name="com.android.launcher66.permission.PRELOAD_WORKSPACE"
+        android:protectionLevel="privileged|signature" />
+    <permission
+        android:description="@string/permdesc_install_shortcut"
+        android:label="@string/permlab_install_shortcut"
+        android:name="com.android.launcher.permission.INSTALL_SHORTCUT"
+        android:protectionLevel="dangerous"
+        tools:ignore="ReservedSystemPermission" />
+    <permission
+        android:description="@string/permdesc_uninstall_shortcut"
+        android:label="@string/permlab_uninstall_shortcut"
+        android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"
+        android:protectionLevel="dangerous"
+        tools:ignore="ReservedSystemPermission" />
+    <permission
+        android:description="@string/permdesc_read_settings"
+        android:label="@string/permlab_read_settings"
+        android:name="com.android.launcher66.permission.READ_SETTINGS"
+        android:protectionLevel="signature" />
+    <permission
+        android:description="@string/permdesc_write_settings"
+        android:label="@string/permlab_write_settings"
+        android:name="com.android.launcher66.permission.WRITE_SETTINGS"
+        android:protectionLevel="signature" />
+```
+
+</details>
+
+4. Open the repository and rebuild the project, if I haven't forgotten anything it should work.
+5. To generate the app use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose exisiting android key alias with password `android`. 
 
 To debug the app on FYT device, connect it with your PC. For android 11 and above try to connect with Wi-Fi, USB might be problematic, tricky and in general frustrating (Fck u FYT devs!!!). If you don't have much choice then try to use the 4pin USB cable - in my case this one works fine). 
 If you need the drivers please use [this ones](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/android-34-modded-jar/Unisoc+SPD+Driver.rar). 

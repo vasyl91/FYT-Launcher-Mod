@@ -119,6 +119,7 @@ import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.MainViewModel;
 import com.android.launcher66.settings.NightModeService;
 import com.android.launcher66.settings.SettingsActivity;
+import com.android.launcher66.settings.StatusBarSwipeDetector;
 import com.android.launcher66.settings.WakeDetectionService;
 import com.android.recycler.AppListAdapter;
 import com.android.recycler.AppListBean;
@@ -512,6 +513,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private ConstraintLayout nextLayoutTwo;
     private int orientation;
     private boolean floatingButton = false;
+    private boolean statusBarSwipeDetection = false;
 
     public static int calculatedStatsWidth;
     public static int calculatedStatsHeight;
@@ -2016,19 +2018,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void calculateLayoutDimensions() {
-        screenWidth = getResources().getDisplayMetrics().widthPixels; 
-        screenHeight = getResources().getDisplayMetrics().heightPixels; 
+        screenWidth = LauncherApplication.getScreenWidth(); 
+        screenHeight = LauncherApplication.getScreenHeight(); 
 
         orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             orientationDimension = screenHeight;
-            int bottombarHeight = (int) ((screenHeight + getStatusBarHeight()) * 0.142f);
+            int bottombarHeight = (int) (screenHeight * 0.142f);
             calculatedLeftBarWidth = calculateDimension(orientationDimension - bottombarHeight , 7.1);
             orientedWidth = screenWidth;
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            orientationDimension = screenWidth - getStatusBarHeight();
+            orientationDimension = screenWidth;
             calculatedLeftBarWidth = calculateDimension(orientationDimension, 7.1);
-            orientedWidth = screenHeight + getStatusBarHeight();
+            orientedWidth = screenHeight;
         } 
 
         calculatedStatsWidth = calculateDimension(orientationDimension, 21.75);
@@ -2617,6 +2619,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         editor.putBoolean("user_init_layout", mPrefs.getBoolean(Keys.USER_LAYOUT, false));
         editor.apply();
 
+        statusBarSwipeDetection = mPrefs.getBoolean(Keys.SWIPE_DETECTOR, false);
+        if (LauncherApplication.hasSystemPrivileges(this) && statusBarSwipeDetection && !isServiceRunning(StatusBarSwipeDetector.class)) {
+            mHandler.postDelayed(() -> {
+                Intent statusBarSwipeDetectorIntent = new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class);
+                startService(statusBarSwipeDetectorIntent);
+            }, 500);
+        }
+
         if (!isServiceRunning(NightModeService.class) && mPrefs.getBoolean(Keys.NIGHT_MODE, false) && helpers.displayStateBoolean()) {
             mHandler.postDelayed(() -> {
                 Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
@@ -2627,8 +2637,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (!isServiceRunning(CanbusService.class)) {
             mHandler.postDelayed(() -> {
                 new CanbusAsyncTask(LauncherApplication.sApp).execute();
-            }, 7000); 
+            }, 7100); 
         }
+
         final boolean alreadyOnHome = mHasFocus;
 
         if (mWorkspace == null) {
@@ -2683,34 +2694,31 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void checkAndRequestPermissions() {
-        // Build a list of all permissions we need
         List<String> permissionsToRequest = new ArrayList<>();
-        
-        // Check storage permissions
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_MEDIA_AUDIO)
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_MEDIA_IMAGES)
                     != PackageManager.PERMISSION_GRANTED) {
-                permissionsToRequest.add(android.Manifest.permission.READ_MEDIA_AUDIO);
+                permissionsToRequest.add(android.Manifest.permission.READ_MEDIA_IMAGES);
             }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // Android 8.0+
+        } else {
+            // For older Android versions, request READ_EXTERNAL_STORAGE if not granted.
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 permissionsToRequest.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
-                permissionsToRequest.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
         }
-        
-        // Check location permissions
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) 
+
+        // Keep your location / other checks as-is if you need them; they were fine.
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             permissionsToRequest.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
         }
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) 
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             permissionsToRequest.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
         }
-        
-        // Request all runtime permissions at once if needed
+
         if (!permissionsToRequest.isEmpty()) {
             permissionsRequested = true;
             ActivityCompat.requestPermissions(
@@ -2719,7 +2727,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     REQUEST_CODE_STORAGE
             );
         } else {
-            // All runtime permissions granted, now check special permissions
+            // All runtime permissions granted, continue with special checks or your flow
             checkSpecialPermissions();
         }
     }
@@ -2851,6 +2859,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         if (isServiceRunning(FabOverlayService.class)) {
             hideOverlayFab();
+        }
+
+        if (isServiceRunning(StatusBarSwipeDetector.class)) {
+            mHandler.postDelayed(() -> {
+                stopService(new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class));
+            }, 500);
         }
     }
 
@@ -3009,7 +3023,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         stopService(new Intent(LauncherApplication.sApp, WakeDetectionService.class));
         stopService(new Intent(LauncherApplication.sApp, NightModeService.class));  
         stopService(new Intent(LauncherApplication.sApp, CanbusService.class));   
-        stopService(new Intent(LauncherApplication.sApp, FabOverlayService.class));   
+        stopService(new Intent(LauncherApplication.sApp, FabOverlayService.class));
+        stopService(new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class));   
     }
 
     // Handle widget click events
@@ -4640,13 +4655,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             adjustedSpacing = (int) (spacingPerGap / 1.5f);
                         }
 
-                        cachedSpacing = spacingPerGap / 2;
+                        cachedSpacing = adjustedSpacing;
                         hasCalculated = true;
                     }
                     
                     // Use cached spacing for all items (or 0 if not calculated yet)
-                    outRect.left = cachedSpacing >= 0 ? cachedSpacing : 0;
-                    outRect.right = cachedSpacing >= 0 ? cachedSpacing : 0;
+                    outRect.left = cachedSpacing;
+                    outRect.right = cachedSpacing;
                 }
             });
             recyclerView.addItemDecoration(new SimpleDividerDecoration());
@@ -4732,8 +4747,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                     super.getItemOffsets(outRect, view, parent, state);
                     
-                    int itemCount = parent.getAdapter() != null ? parent.getAdapter().getItemCount() : 0;
-                    if (itemCount == 0) return;
+                    int itemCount = 5;
                     
                     // Only calculate once when view has actual height
                     if (!hasCalculated && view.getHeight() > 0) {

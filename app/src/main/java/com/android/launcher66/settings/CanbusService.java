@@ -351,12 +351,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     };
 
-    private boolean pass() {
-        if (helpers.isInRecent() && curForegroundApp.equals("com.android.launcher66")) {
-            return true;
-        } else return false;
-    }
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {

@@ -135,8 +135,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void calculateLayoutDimensions() {
         statusBarHeight = getStatusBarHeight();
-        screenWidth = getResources().getDisplayMetrics().widthPixels; 
-        screenHeight = getResources().getDisplayMetrics().heightPixels; 
+        screenWidth = LauncherApplication.getScreenWidth(); 
+        screenHeight = LauncherApplication.getScreenHeight(); 
 
         orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -144,8 +144,8 @@ public class SettingsActivity extends AppCompatActivity {
             orientationDimension = screenHeight;
             orientedWidth = screenWidth;
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            orientationDimension = screenWidth - getStatusBarHeight();
-            orientedWidth = screenHeight + getStatusBarHeight();
+            orientationDimension = screenWidth;
+            orientedWidth = screenHeight;
         } 
 
         calculatedStatsWidth = calculateDimension(orientationDimension, 21.75);

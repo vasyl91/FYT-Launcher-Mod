@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.syu.util.WindowUtil;
@@ -71,6 +72,8 @@ public class FabOverlayService extends Service {
     private int screenWidth;
     private int screenHeight;
     private int statusBarHeight;
+    private int sizeInPx;
+    private int orientedWidth;
     
     @Override
     public IBinder onBind(Intent intent) {
@@ -84,8 +87,8 @@ public class FabOverlayService extends Service {
         Log.i(TAG, "Service created");
         prefs = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
         editor = prefs.edit();
-        screenWidth = getResources().getDisplayMetrics().widthPixels;
-        screenHeight = getResources().getDisplayMetrics().heightPixels;
+        screenWidth = LauncherApplication.getScreenWidth(); 
+        screenHeight = LauncherApplication.getScreenHeight(); 
         statusBarHeight = getStatusBarHeight();
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         floatingBtn = prefs.getBoolean(Keys.FAB_OVERLAY_BUTTON, false);
@@ -99,7 +102,23 @@ public class FabOverlayService extends Service {
         firstPipPinned = prefs.getBoolean(Keys.PIP_FIRST_MODE, false);
         secondPipPinned = prefs.getBoolean(Keys.PIP_SECOND_MODE, false);
         thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
-        fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);             
+        fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);  
+        
+        // Set initial size
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            orientedWidth = screenWidth;
+        } else {
+            orientedWidth = screenHeight;
+        } 
+        float density = getResources().getDisplayMetrics().density;
+        if (density > 1.5) {
+            density = 1.5F;
+        } else {
+            density = 1.0F;
+        }
+        sizeInPx = (int) (orientedWidth * 0.08 * density);
+
         if (isFloatingButton()) {
             setupOverlay();
         }        
@@ -174,13 +193,6 @@ public class FabOverlayService extends Service {
         fabSwitchPips.setBackgroundTintList(ColorStateList.valueOf(blackWithAlpha));
         fabSwitchPips.setSize(FloatingActionButton.SIZE_MINI);
 
-        // Set initial size
-        int orientation = getResources().getConfiguration().orientation;
-        int buttonSize = screenHeight;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            buttonSize = screenWidth;
-        } 
-        int sizeInPx = (int) (buttonSize * 0.08 * getResources().getDisplayMetrics().density);
         params.width = sizeInPx;
         params.height = sizeInPx;        
         
@@ -382,13 +394,6 @@ public class FabOverlayService extends Service {
         leftFabSwitchPips.setBackgroundTintList(ColorStateList.valueOf(blackWithAlpha));
         leftFabSwitchPips.setSize(FloatingActionButton.SIZE_MINI);
 
-        // Set initial size
-        int orientation = getResources().getConfiguration().orientation;
-        int buttonSize = screenHeight;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            buttonSize = screenWidth;
-        } 
-        int sizeInPx = (int) (buttonSize * 0.08 * getResources().getDisplayMetrics().density);
         leftFabParams.width = sizeInPx;
         leftFabParams.height = sizeInPx;        
         
@@ -590,13 +595,6 @@ public class FabOverlayService extends Service {
         rightFabSwitchPips.setBackgroundTintList(ColorStateList.valueOf(blackWithAlpha));
         rightFabSwitchPips.setSize(FloatingActionButton.SIZE_MINI);
 
-        // Set initial size
-        int orientation = getResources().getConfiguration().orientation;
-        int buttonSize = screenHeight;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            buttonSize = screenWidth;
-        } 
-        int sizeInPx = (int) (buttonSize * 0.08 * getResources().getDisplayMetrics().density);
         rightFabParams.width = sizeInPx;
         rightFabParams.height = sizeInPx;        
         

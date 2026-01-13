@@ -11,6 +11,7 @@ import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Handler;
@@ -20,6 +21,7 @@ import android.os.StrictMode;
 import android.os.SystemClock;
 import android.SystemProperties;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
@@ -54,7 +56,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import leakcanary.LeakCanary;
+//import leakcanary.LeakCanary;
 
 public class LauncherApplication extends Application {
     public static String bHideUniCar;
@@ -118,11 +120,11 @@ public class LauncherApplication extends Application {
         handler.postDelayed(() -> {
             startService(new Intent(this, WakeDetectionService.class));
         }, 1000);
-        LeakCanary.Config cfg = LeakCanary.getConfig()
+        /*LeakCanary.Config cfg = LeakCanary.getConfig()
             .newBuilder()
             .retainedVisibleThreshold(10)
             .build();
-        LeakCanary.setConfig(cfg);
+        LeakCanary.setConfig(cfg);*/
         Log.d("LauncherApplication", "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms");
     }
 
@@ -268,16 +270,6 @@ public class LauncherApplication extends Application {
         return result;
     }
 
-    public static int getScreenWidth() {
-        int result = sWindowManager.getDefaultDisplay().getWidth();
-        return result;
-    }
-
-    public static int getScreenHeight() {
-        int result = sWindowManager.getDefaultDisplay().getHeight();
-        return result;
-    }
-
     public static void showWindow(PopupWindow window, int gravity, int x, int y) {
         window.showAtLocation(sRootView, gravity, x, y);
     }
@@ -394,9 +386,30 @@ public class LauncherApplication extends Application {
     }
 
     private void initWindow() {
-        Configuration config = getResources().getConfiguration();
-        int smallestScreenWidth = config.smallestScreenWidthDp;
-        Log.i("SCREEN", " LauncherApplication.getScreenWidth() == " + getScreenWidth() + "  LauncherApplication.getScreenHeight() = " + getScreenHeight() + "  smallestScreenWidth = " + smallestScreenWidth);
+        Log.i("SCREEN", " LauncherApplication.getScreenWidth() == " + getScreenWidth() + "  LauncherApplication.getScreenHeight() = " + getScreenHeight() + "  smallestScreenWidth = " + getSmallestScreenWidth());
+    }
+
+    public static int getScreenHeight() {
+        return getRealScreenSize().y;
+    }
+
+    public static int getScreenWidth() {
+        return getRealScreenSize().x;
+    }
+
+    public static int getSmallestScreenWidth() {
+        Configuration config = getAppContext().getResources().getConfiguration();
+        return config.smallestScreenWidthDp;
+    }
+
+    public static Point getRealScreenSize() {
+        if (sWindowManager == null) return new Point(0, 0);
+
+        Display display = sWindowManager.getDefaultDisplay();
+        Point screenSize = new Point();
+
+        display.getRealSize(screenSize);
+        return screenSize;
     }
 
     private void connectService() {

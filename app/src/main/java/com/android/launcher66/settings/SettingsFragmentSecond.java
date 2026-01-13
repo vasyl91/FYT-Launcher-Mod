@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import android.Manifest;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -22,7 +24,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -56,8 +57,10 @@ import com.fyt.skin.SkinAttribute;
 import com.fyt.skin.SkinUtils;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -68,6 +71,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private SharedPreferences sharedPrefs;
     private SharedPreferences.Editor editor;
     private final Helpers helpers = new Helpers();
+
+    private static final int REQ_READ_WALLPAPER = 9001;
+    private enum PendingDialog {
+        NONE,
+        WIDGETS,
+        BAR
+    }
+    private PendingDialog pendingDialog = PendingDialog.NONE;
 
     private int defaultColorR = 255;
     private int defaultColorG = 255;
@@ -164,6 +175,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomSwitchPreference fabPreference;
     private CustomSwitchPreference leftFabPreference;
     private CustomSwitchPreference rightFabPreference;
+    private CustomSwitchPreference swipeDetector;
     private CustomWidgetSwitchPreference userDate;
     private CustomWidgetSwitchPreference userMusic;
     private CustomWidgetSwitchPreference userRadio;
@@ -226,8 +238,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (view instanceof RecyclerView) {
             return (RecyclerView) view;
         }
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
+        if (view instanceof ViewGroup viewGroup) {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 RecyclerView found = findRecyclerView(viewGroup.getChildAt(i));
                 if (found != null) {
@@ -239,8 +250,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     private void scaleAllViews(View view, float scale) {
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
+        if (view instanceof ViewGroup viewGroup) {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 View child = viewGroup.getChildAt(i);
                 scaleAllViews(child, scale);
@@ -248,8 +258,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         
         // Scale text
-        if (view instanceof TextView) {
-            TextView textView = (TextView) view;
+        if (view instanceof TextView textView) {
             float currentSizePx = textView.getTextSize();
             textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, currentSizePx * scale);
         }
@@ -304,6 +313,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         fabPreference = findPreference(Keys.FAB_OVERLAY_BUTTON);
         leftFabPreference = findPreference(Keys.FAB_OVERLAY_BUTTON_LEFT);
         rightFabPreference = findPreference(Keys.FAB_OVERLAY_BUTTON_RIGHT);
+        swipeDetector = findPreference(Keys.SWIPE_DETECTOR);
         userDate = findPreference(Keys.USER_DATE);
         userMusic = findPreference(Keys.USER_MUSIC);
         userRadio = findPreference(Keys.USER_RADIO);
@@ -469,6 +479,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }  
         if (rightFabPreference != null) {
             rightFabPreference.setOnPreferenceClickListener(this);
+        }   
+        if (swipeDetector != null) {
+            swipeDetector.setOnPreferenceClickListener(this);
+            if (!LauncherApplication.hasSystemPrivileges(this.requireContext())) {
+                swipeDetector.setVisible(false);
+            }
         }  
         pipBool = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
         setPipGroupVisible(pipBool);
@@ -492,8 +508,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (widgetsBackground != null) {
             widgetsBackground.setOnPreferenceClickListener(preference -> {
-                BackgroundWidgetsSelectorDialog widgetsDialog = new BackgroundWidgetsSelectorDialog();
-                widgetsDialog.show(getParentFragmentManager(), "widgets_background_selector");
+                checkAndShowWidgetsBackgroundSelector();
                 return true;
             });
         }
@@ -502,8 +517,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (barBackground != null) {
             barBackground.setOnPreferenceClickListener(preference -> {
-                BackgroundBarSelectorDialog barDialog = new BackgroundBarSelectorDialog();
-                barDialog.show(getParentFragmentManager(), "bar_background_selector");
+                checkAndShowBarBackgroundSelector();
                 return true;
             });
         }
@@ -655,7 +669,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         switch (preference.getKey()) {
             case Keys.DISPLAY_PIP:
                 pipBool = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
-                if (statsScreen != null) statsScreen.setVisible(pipBool);
                 setPipGroupVisible(pipBool);
                 if (!pipBool) {
                     // Turn off all PiP switches when hidden
@@ -919,28 +932,88 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         return false;
     }
 
+    private void checkAndShowWidgetsBackgroundSelector() {
+        List<String> perms = getMissingReadWallpaperPermissions(requireContext());
+        if (perms.isEmpty()) {
+            BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(), "widgets", "bg_custom");
+            pendingDialog = PendingDialog.NONE;
+        } else {
+            pendingDialog = PendingDialog.WIDGETS;
+            requestPermissions(perms.toArray(new String[0]), REQ_READ_WALLPAPER);
+        }
+    }
+
+    private void checkAndShowBarBackgroundSelector() {
+        List<String> perms = getMissingReadWallpaperPermissions(requireContext());
+        if (perms.isEmpty()) {
+            BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(), "bar", "app_list_bg");
+            pendingDialog = PendingDialog.NONE;
+        } else {
+            pendingDialog = PendingDialog.BAR;
+            requestPermissions(perms.toArray(new String[0]), REQ_READ_WALLPAPER);
+        }
+    }
+
+    private static List<String> getMissingReadWallpaperPermissions(@NonNull Context ctx) {
+        List<String> perms = new ArrayList<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
+                perms.add(Manifest.permission.READ_MEDIA_IMAGES);
+            }
+            // Some OEM/Platform implementations still require legacy READ_EXTERNAL_STORAGE; request it if not granted.
+            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                perms.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                perms.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
+        }
+        return perms;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode != REQ_READ_WALLPAPER) return;
+
+        boolean anyGranted = false;
+        for (int r : grantResults) {
+            if (r == PackageManager.PERMISSION_GRANTED) {
+                anyGranted = true;
+                break;
+            }
+        }
+        Log.i("SettingsFragmentSecond", "onRequestPermissionsResult: anyGranted=" + anyGranted + " pendingDialog=" + pendingDialog);
+
+        switch (pendingDialog) {
+            case WIDGETS:
+                BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(), "widgets", "bg_custom");
+                break;
+            case BAR:
+                BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(), "bar", "app_list_bg");
+                break;
+            case NONE:
+            default:
+                break;
+        }
+        pendingDialog = PendingDialog.NONE;
+    }
+
     private void refreshRecyclerMultiple() {       
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 300);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 500);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 700);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 900);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 1200);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 1400);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 1600);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 300);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 500);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 700);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 900);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1200);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1400);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1600);
     }
 
     private void refreshRecycler() {
@@ -1904,6 +1977,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (fabPreference != null) fabPreference.setVisible(visible);
         if (leftFabPreference != null) leftFabPreference.setVisible(visible);
         if (rightFabPreference != null) rightFabPreference.setVisible(visible);
+        if (swipeDetector != null && LauncherApplication.hasSystemPrivileges(this.requireContext())) swipeDetector.setVisible(visible);
     }
 
     private void updatePipSummaries() {
@@ -1985,7 +2059,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
     private void openPipAdjuster(String pipScreenKey) {
         int selectedScreen = sharedPrefs.getInt(pipScreenKey, 1) - 1;
-        Log.i("PipPositioner", "Adjust: " + pipScreenKey + " screen: " + String.valueOf(selectedScreen));
+        Log.i("PipPositioner", "Adjust: " + pipScreenKey + " screen: " + selectedScreen);
         helpers.checkAndResetIfOverlappingOnScreen(-1);
         if (selectedScreen == 0) {
             requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFirstScreen()).commit();

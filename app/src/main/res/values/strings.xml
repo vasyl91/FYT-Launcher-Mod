@@ -441,15 +441,19 @@
     <string name="adjust_widget">Adjust your widget</string>
     <string name="restart_pip">Restart PiP</string>
     <string name="restart_pip_summary">Press to restart the app</string>
-    <string name="fab_overlay_button">Show floating button that switches apps between PiPs: first &lt;-&gt; third and second &lt;-&gt; fourth</string>
-    <string name="fab_overlay_summary">Set apps for every PiP to show this button.</string>
-    <string name="fab_overlay_button_left">Show floating button that switches apps between PiPs: first &lt;-&gt; third </string>
-    <string name="fab_overlay_button_right">Show floating button that switches apps between PiPs: second &lt;-&gt; fourth</string>
+    <string name="fab_overlay_button">Show floating button that switches apps between PiPs: <b>left dual/first &lt;-&gt; third</b> and <b>right dual/second &lt;-&gt; fourth</b></string>
+    <string name="fab_overlay_button_left">Show floating button that switches apps between PiPs: <b>left dual/first &lt;-&gt; third</b></string>
+    <string name="fab_overlay_button_right">Show floating button that switches apps between PiPs: <b>right dual/second &lt;-&gt; fourth</b></string>
+    <string name="fab_overlay_summary">Set apps for every PiP and use only `Window` mode to show this button.</string>
+    <string name="swipe_detector">Swipe detection for status bar</string>
+    <string name="swipe_detector_summary">Bottom center part of the status bar will detect swipes and allow to scroll between pages. This might be useful when PiP view occupies most of the visible screen.</string>
 
     <string name="widgets_background_preference">Choose background for widgets</string>
     <string name="widgets_background_dialog_title">Select background for widgets:</string>
     <string name="bar_background_preference">Choose background for bottom bar</string>
     <string name="bar_background_dialog_title">Select background for bottom bar:</string>
+    <string name="pick_image_manually">Pick wallpaper</string>
+    <string name="cancel">Cancel</string>
     <string name="black_widgets">Widgets text and buttons color</string>
     <string name="black_bar">Bottom bar text and buttons color</string>
     <string name="black_color">Black</string>
