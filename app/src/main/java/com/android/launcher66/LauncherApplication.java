@@ -56,7 +56,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-//import leakcanary.LeakCanary;
+import leakcanary.LeakCanary;
 
 public class LauncherApplication extends Application {
     public static String bHideUniCar;
@@ -120,11 +120,11 @@ public class LauncherApplication extends Application {
         handler.postDelayed(() -> {
             startService(new Intent(this, WakeDetectionService.class));
         }, 1000);
-        /*LeakCanary.Config cfg = LeakCanary.getConfig()
+        LeakCanary.Config cfg = LeakCanary.getConfig()
             .newBuilder()
             .retainedVisibleThreshold(10)
             .build();
-        LeakCanary.setConfig(cfg);*/
+        LeakCanary.setConfig(cfg);
         Log.d("LauncherApplication", "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms");
     }
 

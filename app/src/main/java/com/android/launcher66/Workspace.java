@@ -444,6 +444,16 @@ public class Workspace extends SmoothPagedView
     public Rect estimateItemPosition(CellLayout cl, ItemInfo pendingInfo,
             int hCell, int vCell, int hSpan, int vSpan) {
         Rect r = new Rect();
+        if (cl == null) {
+            Log.w(TAG, "estimateItemPosition: CellLayout is null; attempting fallback");
+            if (getChildCount() > 0) {
+                cl = (CellLayout) getChildAt(numCustomPages());
+            }
+            if (cl == null) {
+                // Give a zero rect to avoid crash. Caller should handle this case.
+                return r;
+            }
+        }
         cl.cellToRect(hCell, vCell, hSpan, vSpan, r);
         return r;
     }
@@ -2449,22 +2459,33 @@ public class Workspace extends SmoothPagedView
             Log.e("WIDGET", "Invalid spans: " + spanX + "x" + spanY);
             return;
         }
+
+        CellLayout layout;
         if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
             if (getScreenWithId(screenId) == null) {
+                Log.w(TAG, "Workspace: screenId " + screenId + " not found; creating missing workspace screen");
+                try {
+                    // Try to insert a workspace screen with the requested id so the item can be added.
+                    insertNewWorkspaceScreen(screenId);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to create workspace screen for id=" + screenId, e);
+                    new Throwable().printStackTrace();
+                    return;
+                }
+                // sanity-check: if still null, bail out (shouldn't happen)
                 if (getScreenWithId(screenId) == null) {
-                    Log.e(TAG, "Skipping child, screenId " + screenId + " not found");
-                    // DEBUGGING - Print out the stack trace to see where we are adding from
+                    Log.e(TAG, "Failed to obtain CellLayout for newly created screenId " + screenId);
                     new Throwable().printStackTrace();
                     return;
                 }
             }
+            layout = getScreenWithId(screenId);
+            child.setOnKeyListener(new IconKeyEventListener());
         }
         if (screenId == EXTRA_EMPTY_SCREEN_ID) {
             // This should never happen
             throw new RuntimeException("Screen id should not be EXTRA_EMPTY_SCREEN_ID");
         }
-
-        final CellLayout layout;
         if (container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
             layout = mLauncher.getHotseat().getLayout();
             child.setOnKeyListener(null);
@@ -5566,8 +5587,31 @@ public class Workspace extends SmoothPagedView
     private void getFinalPositionForDropAnimation(int[] loc, float[] scaleXY,
             DragView dragView, CellLayout layout, ItemInfo info, int[] targetCell,
             boolean external, boolean scale) {
-        // Now we animate the dragView, (ie. the widget or shortcut preview) into its final
-        // location and size on the home screen.
+
+        // Try to resolve missing layout
+        if (layout == null) {
+            Log.w(TAG, "getFinalPositionForDropAnimation: layout is null. Trying to resolve from ItemInfo: container="
+                    + info.container + " screenId=" + info.screenId);
+            if (info.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                layout = getScreenWithId(info.screenId);
+                if (layout == null && getChildCount() > 0) {
+                    // fallback to first non-custom page
+                    layout = (CellLayout) getChildAt(numCustomPages());
+                    Log.w(TAG, "Falling back to page index " + numCustomPages());
+                }
+            } else if (info.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
+                layout = mLauncher.getHotseat().getLayout();
+            }
+        }
+
+        if (layout == null) {
+            // Still null: abort animation in a safe way
+            Log.e(TAG, "getFinalPositionForDropAnimation: Unable to resolve CellLayout; aborting drop animation");
+            loc[0] = loc[1] = 0;
+            scaleXY[0] = scaleXY[1] = 1f;
+            return;
+        }
+ 
         int spanX = info.spanX;
         int spanY = info.spanY;
 
