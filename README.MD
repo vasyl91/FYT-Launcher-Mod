@@ -1,10 +1,10 @@
 # Reverse engineered launcher for FYT 7862/8581 with launcher creator, night mode and fuel statistics.
 
-**Launcher Mod has been tested on Android 10 with 2000x1200 resolution as it is the only device I own.**
+**Launcher Mod has been tested on Android 10 with 2000x1200 resolution as this is the only device I own.**
 
-It should get along with all resolutions on Android 8 up to 16 provided that you install it as a  privileged/system app. Android 12+ might not allow (depending on the FYT brand) to install the app with `android:sharedUserId="android.uid.system"` without root access or the proper platform keystore. This is a fundamental security restriction that cannot be bypassed. In such case you can use the non-privileged phone version (keep in mind that multiple PiP feature won't work wtihout system privileges, standard PiP should be up and running - only onf FYT devices) - this version was tested on phone with Android 15.
+It should get along with all resolutions on Android 8 up to 16 provided that you install it as a privileged/system app. Android 12+ might not allow (depending on the FYT brand) to install the app with `android:sharedUserId="android.uid.system"` without root access or the proper platform keystore. This is a fundamental security restriction that cannot be bypassed. In such case you can use the non-privileged phone version (keep in mind that multiple PiP feature won't work wtihout system privileges, standard PiP should be up and running - only on FYT devices) - this version was tested on phone with Android 15.
 
-IMPORTANT: Note that some of the FYT devices do not support the PiP on the main screen. You can still use the launcher however you'll have to turn off the PiP in the launcher's settings (otherwise Google Maps will pop up every time you'll try to open the home page - if it happens, wipe the launcher's data or reinstall it).
+IMPORTANT: Note that some of the FYT devices do not support the pinned PiP on the main screen. You can still use the launcher however you'll have to turn off the PiP in the launcher's settings (otherwise Google Maps will pop up every time you'll try to open the home page - if it happens, wipe the launcher's data or reinstall it).
 
 [XDA Forums thread](https://xdaforums.com/t/reverse-engineered-launcher-for-fyt-7862-8581.4702542/)
 
@@ -29,18 +29,24 @@ List of modifications:
 
 **Installation:**
 
-For the first installation download `installer.rar`, unpack it in a FAT32 formatted USB pendrive, then connect pendrive to your unit's USB port and wait, installation should start after few seconds. Once installed you can dirty install updates (including the built-in updater) or debug versions without use of USB pendrive.
+For the first installation download `installer.zip`, unpack it in a FAT32 formatted USB pendrive, then connect pendrive to your unit's USB port and wait, installation should start after few seconds. Once installed you can dirty install updates (including via the built-in updater) or debug versions without using the USB pendrive again.
+
+If installation doesn't start automatically please check other USB ports. If it doesn't start regardless the USB port, then it means that either your device is not a FYT device or indeed it is a FYT device but operates on Android 12 or higher (some brands do not allow to install apps with scripts on the USB pendrive).
+
+Following this method is important because it installs the launcher as a privileged/system app enabling it to work properly. 
 
 **Google Maps bug**
 
-Most of the FYT ROMs offer two ways of displaying apps on the lauuncher screen. Most common one is a "pinned Picture-in-Picture mode" with all it's consequences for the app's UI behavior which in Google Maps case switches the layout to minimal. This method doesn't provide essential entry points to maintain "full screen UI" for apps that support the PiP mode.
-The only reliable way I have found to prevent Google Maps from switching its UI to minimal requires installed root, LSPosed and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/tag/v1.0.0). It successfully forces the app to maintain its full UI inside FYT's Picture in Picture (Remember to select Google Maps in the LSPosed "Enable module" section).
+Most of the FYT ROMs offer two ways of displaying apps on the lauuncher's screen. The most common one is a "pinned Picture-in-Picture mode" with all it's consequences for the app's UI behavior which in Google Maps case switches the layout to minimal. This method doesn't provide essential entry points to maintain "full screen UI" for apps that support the PiP mode.
+The only reliable way I have found to prevent Google Maps from switching its UI to minimal requires installed root, LSPosed and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/tag/v1.0.1). It successfully forces the app to maintain its full UI inside FYT's Picture in Picture (remember to select Google Maps in the LSPosed "Enable module" section).
 Check this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always do the full backup (AllAppUpdate.bin, config.txt etc.) before flashing anything!
 
-Second method related to the modified android ActivityView allows to display apps as they are in a windowed mode. This does not affect the layout and does not require root.
+Second method related to the modified android ActivityView allows to display apps as they are in a windowed mode. This does not affect the layout and does not require root. Multiple PiP feature uses this method.
 
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
+
+![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/switch_buttons.gif)
 
 **Gallery:**
 
@@ -57,6 +63,7 @@ Second method related to the modified android ActivityView allows to display app
 [<img src="./images/v1.png" width="50%">](./images/v1.png) [<img src="./images/v2.png" width="50%">](./images/v2.png)
 [<img src="./images/v3.png" width="50%">](./images/v3.png) [<img src="./images/v4.png" width="50%">](./images/v4.png)
 [<img src="./images/v5.png" width="50%">](./images/v5.png) [<img src="./images/v6.png" width="50%">](./images/v6.png)
+[<img src="./images/v7.png" width="50%">](./images/v7.png) [<img src="./images/v8.png" width="50%">](./images/v8.png)
 
 </details>
 
@@ -263,10 +270,10 @@ for build 1.1.7 use `android.jar` from this [repository](https://github.com/Regi
 
 </details>
 
-4. Open the repository and rebuild the project, if I haven't forgotten anything it should work.
+4. Open the repository and rebuild the project.
 5. To generate the app use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose exisiting android key alias with password `android`. 
 
-To debug the app on FYT device, connect it with your PC. For android 11 and above try to connect with Wi-Fi, USB might be problematic. If you don't have much choice then try to use the 4pin USB cable - in my case this one works fine). 
+To debug the app on FYT device, connect it with your PC. For android 11 and above try to connect with Wi-Fi, USB might be problematic. If you don't have much choice then try to use the 4pin USB cable - in my case this one works fine. 
 If you need the drivers please use [this ones](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/android-34-modded-jar/Unisoc+SPD+Driver.rar). 
 Go to Developer options, click on the three dots in the top right corner and select the second option from the popup (both are in chineese).
 
@@ -275,11 +282,11 @@ Go to Developer options, click on the three dots in the top right corner and sel
 Remember to enable USB debugging.
 
 If you keep getting `unauthorized` while running `adb devices` and your device doesn't display the popup to confirm the connection then it means that you'll have to add adb keys manually.
-That's tricky and unfortunately requires root on your FYT device and on your phone. If you haven't given up, follow the steps below:
+That's tricky and unfortunately requires root both on your FYT device and on your phone. If you haven't given up, follow the steps below:
 1. Connect your phone to your PC and confirm the connection. 
 2. Go to `/data/misc/adb/` on your phone and copy it's content (should contain `adb_keys`).
-3. Paste that file in the same directory on your FYT.
-4. Install Termux terminal, open it and run the following commands `chmod 0640 /data/misc/adb/`, `chown system:shell /data/misc/adb/`, `chcon u:object_r:adb_keys_file:s0 /data/misc/adb/` (don't worry if you get some error with the last one).
+3. Paste that file in the same directory on your FYT unit.
+4. Install Termux terminal on your FYT unit, open it and run the following commands `chmod 0640 /data/misc/adb/`, `chown system:shell /data/misc/adb/`, `chcon u:object_r:adb_keys_file:s0 /data/misc/adb/` (don't worry if you get some errors with the last one).
 
 
 ## Modifying android.jar (Deprecated since 1.1.7)

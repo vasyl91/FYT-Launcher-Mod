@@ -29,3 +29,12 @@
 -keepclassmembers class **.R$* {
     public static <fields>;
 }
+
+# LitePal + model keep rules (prevent obfuscation/removal of LitePal runtime and model classes)
+-keep class org.litepal.** { *; }
+
+# Keep all classes that extend LitePalSupport (model classes), including their fields/methods.
+-keep class * extends org.litepal.crud.LitePalSupport { *; }
+
+# Keep annotation metadata used by LitePal/annotation processors
+-keepattributes *Annotation*

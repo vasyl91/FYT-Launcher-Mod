@@ -1222,7 +1222,7 @@ public class Workspace extends SmoothPagedView
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             bottomBarHeight = (int) (screenWidth * 0.142);
         } else {
-            bottomBarHeight = (int) (screenHeight * 0.1638);
+            bottomBarHeight = (int) ((screenHeight - mLauncher.getStatusBarHeight()) * 0.1638);
         }
         Log.d("BottomBar", "Before: width=" + bottomBarBg.getWidth() + ", height=" + bottomBarBg.getHeight());
         ValueAnimator widthAnim = ValueAnimator.ofInt(bottomBarBg.getWidth(), collapsedWidth);
@@ -1263,7 +1263,7 @@ public class Workspace extends SmoothPagedView
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 bottomBarHeight = (int) (screenWidth * 0.142);
             } else {
-                bottomBarHeight = (int) (screenHeight * 0.1638);
+                bottomBarHeight = (int) ((screenHeight - mLauncher.getStatusBarHeight()) * 0.1638);
             }
 
             // Create overlay window parameters
