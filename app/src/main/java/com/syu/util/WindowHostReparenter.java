@@ -299,6 +299,51 @@ public class WindowHostReparenter {
         }
     }
 
+    /**
+     * Public helper: notify WindowManager that an ActivityView's display (rootSurfaceControl)
+     * should be reparented to the provided host view's window token.
+     *
+     * This is a best-effort call that will return true if the WindowSession.reparentDisplayContent
+     * invocation succeeded. It prefers the hostView.getWindowToken() IBinder as the parent.
+     */
+    public static boolean notifyReparentDisplayContentToHost(View avView, View hostView) {
+        if (avView == null || hostView == null) return false;
+        try {
+            Object rootSurfaceControl = getFieldObject(avView, "mRootSurfaceControl");
+            if (rootSurfaceControl == null) {
+                Log.w(TAG, "notifyReparentDisplayContentToHost: no rootSurfaceControl for avView");
+                return false;
+            }
+
+            // get WindowSession
+            Class<?> wmGlobalCls = Class.forName("android.view.WindowManagerGlobal");
+            Method getWindowSessionM = wmGlobalCls.getMethod("getWindowSession");
+            Object windowSession = getWindowSessionM.invoke(null);
+            if (windowSession == null) {
+                Log.w(TAG, "notifyReparentDisplayContentToHost: windowSession is null");
+                return false;
+            }
+
+            Object token = null;
+            try {
+                token = hostView.getWindowToken();
+            } catch (Throwable ignore) {}
+
+            int displayId = tryGetVirtualDisplayId(avView, -1);
+
+            boolean res = invokeReparentDisplayContent(windowSession, token, rootSurfaceControl, displayId);
+            if (!res) {
+                Log.w(TAG, "notifyReparentDisplayContentToHost: invokeReparentDisplayContent returned false");
+            } else {
+                Log.i(TAG, "notifyReparentDisplayContentToHost: succeeded for displayId=" + displayId);
+            }
+            return res;
+        } catch (Throwable t) {
+            Log.w(TAG, "notifyReparentDisplayContentToHost: unexpected failure", t);
+            return false;
+        }
+    }
+
     // Get display id from avView.mVirtualDisplay.getDisplay().getDisplayId(), return defaultIfMissing on failure
     private static int tryGetVirtualDisplayId(View avView, int defaultIfMissing) {
         try {

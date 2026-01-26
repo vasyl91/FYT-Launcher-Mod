@@ -172,7 +172,7 @@ public class WeatherManager {
         void onResult(int i, RecentWeather recentWeather);
     }
 
-    private boolean isNetworkAvailable() {
+    public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager =
             (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {

@@ -36,5 +36,8 @@
 # Keep all classes that extend LitePalSupport (model classes), including their fields/methods.
 -keep class * extends org.litepal.crud.LitePalSupport { *; }
 
-# Keep annotation metadata used by LitePal/annotation processors
+# Keep all classes under com.syu.util package
+-keep class com.syu.util.** { *; }
+
+# Keep all annotations
 -keepattributes *Annotation*

@@ -821,6 +821,9 @@ public class WindowUtil {
                             reflectSetField(dual, "leftPkg", oldThirdPkg);
                             reflectSetField(third, "currentPkg", oldDualLeftPkg);
 
+                            // Update preferences: swapped first <-> third packages (dual.left maps to first)
+                            swapPrefsPackages(Keys.PIP_FIRST_PACKAGE, Keys.PIP_THIRD_PACKAGE);
+
                             final Object dualRef = dual;
                             final Object thirdRef = third;
                             final ViewGroup dualLeftHostFinal = dualLeftHost;
@@ -865,6 +868,8 @@ public class WindowUtil {
                                 lastPipBounds.getOrDefault("third", offscreen)
                         );
                         if (started) {
+                            // update prefs for the logical swap (first <-> third)
+                            swapPrefsPackages(Keys.PIP_FIRST_PACKAGE, Keys.PIP_THIRD_PACKAGE);
                             Log.i(TAG, "swapLeftAndThird: started task-relocate fallback (async)");
                             return;
                         }
@@ -880,6 +885,10 @@ public class WindowUtil {
                             lastPipBounds.getOrDefault("third", offscreen),
                             "leftAV", "av", dual, third
                     );
+
+                    // Update prefs for fallback overlay swap
+                    swapPrefsPackages(Keys.PIP_FIRST_PACKAGE, Keys.PIP_THIRD_PACKAGE);
+
                     return;
 
                 } catch (Throwable t) {
@@ -941,6 +950,9 @@ public class WindowUtil {
                             reflectSetField(first, "currentPkg", thirdPkgOld);
                             reflectSetField(third, "currentPkg", firstPkgOld);
 
+                            // Update prefs: swap first <-> third
+                            swapPrefsPackages(Keys.PIP_FIRST_PACKAGE, Keys.PIP_THIRD_PACKAGE);
+
                             final Object firstRef = first;
                             final Object thirdRef = third;
                             final ViewGroup firstHostFinal = firstHost;
@@ -982,6 +994,8 @@ public class WindowUtil {
                                 lastPipBounds.getOrDefault("third", offscreen)
                         );
                         if (started) {
+                            // update prefs for the logical swap (first <-> third)
+                            swapPrefsPackages(Keys.PIP_FIRST_PACKAGE, Keys.PIP_THIRD_PACKAGE);
                             Log.i(TAG, "swapLeftAndThird: started task-relocate fallback (standalone)");
                             return;
                         }
@@ -997,6 +1011,10 @@ public class WindowUtil {
                             lastPipBounds.getOrDefault("third", offscreen),
                             "av", "av", first, third
                     );
+
+                    // Update prefs for fallback overlay swap
+                    swapPrefsPackages(Keys.PIP_FIRST_PACKAGE, Keys.PIP_THIRD_PACKAGE);
+
                     return;
 
                 } catch (Throwable t) {
@@ -1090,6 +1108,9 @@ public class WindowUtil {
                             reflectSetField(dual, "rightPkg", oldFourthPkg);
                             reflectSetField(fourth, "currentPkg", oldDualRightPkg);
 
+                            // Update preferences: swapped second <-> fourth packages (dual.right maps to second)
+                            swapPrefsPackages(Keys.PIP_SECOND_PACKAGE, Keys.PIP_FOURTH_PACKAGE);
+
                             final Object dualRef = dual;
                             final Object fourthRef = fourth;
                             final ViewGroup dualRightHostFinal = dualRightHost;
@@ -1130,6 +1151,8 @@ public class WindowUtil {
                                 lastPipBounds.getOrDefault("fourth", offscreen)
                         );
                         if (started) {
+                            // update prefs for the logical swap (second <-> fourth)
+                            swapPrefsPackages(Keys.PIP_SECOND_PACKAGE, Keys.PIP_FOURTH_PACKAGE);
                             Log.i(TAG, "swapRightAndFourth: started task-relocate fallback (async)");
                             return;
                         }
@@ -1145,6 +1168,10 @@ public class WindowUtil {
                             lastPipBounds.getOrDefault("fourth", offscreen),
                             "rightAV", "av", dual, fourth
                     );
+
+                    // Update prefs for fallback overlay swap
+                    swapPrefsPackages(Keys.PIP_SECOND_PACKAGE, Keys.PIP_FOURTH_PACKAGE);
+
                     return;
 
                 } catch (Throwable t) {
@@ -1220,6 +1247,9 @@ public class WindowUtil {
                                 }
                             }, 50);
 
+                            // Update prefs: swap second <-> fourth
+                            swapPrefsPackages(Keys.PIP_SECOND_PACKAGE, Keys.PIP_FOURTH_PACKAGE);
+
                             Log.i(TAG, "swapRightAndFourth: atomic standalone swap scheduled reattach");
                             return;
                         } catch (Throwable t) {
@@ -1241,6 +1271,8 @@ public class WindowUtil {
                                 lastPipBounds.getOrDefault("fourth", offscreen)
                         );
                         if (started) {
+                            // update prefs for the logical swap (second <-> fourth)
+                            swapPrefsPackages(Keys.PIP_SECOND_PACKAGE, Keys.PIP_FOURTH_PACKAGE);
                             Log.i(TAG, "swapRightAndFourth: started task-relocate fallback (standalone)");
                             return;
                         }
@@ -1256,6 +1288,10 @@ public class WindowUtil {
                             lastPipBounds.getOrDefault("fourth", offscreen),
                             "av", "av", second, fourth
                     );
+
+                    // Update prefs for fallback overlay swap
+                    swapPrefsPackages(Keys.PIP_SECOND_PACKAGE, Keys.PIP_FOURTH_PACKAGE);
+
                     return;
 
                 } catch (Throwable t) {
@@ -1365,6 +1401,13 @@ public class WindowUtil {
                     WindowHostReparenter.reparentActivityViewSurface(newChild);
                 } catch (Throwable t) {
                     Log.w(TAG, "reparentHostChild: reparentActivityViewSurface failed", t);
+                }
+                // Additionally notify WindowManager about the reparent so ActivityView's
+                // updateLocationAndTapExcludeRegion won't crash with "not the parent window".
+                try {
+                    WindowHostReparenter.notifyReparentDisplayContentToHost(newChild, vg);
+                } catch (Throwable t) {
+                    Log.w(TAG, "reparentHostChild: notifyReparentDisplayContentToHost failed", t);
                 }
             }
         } catch (Throwable t) {
@@ -1708,6 +1751,27 @@ public class WindowUtil {
 
         } catch (Throwable t) {
             Log.w(TAG, "safeOverlaySwapPanes: unexpected error", t);
+        }
+    }
+
+    /**
+     * Swap two package preference values safely (used when swapping PiP panes so the stored package
+     * positions match the new layout).
+     */
+    private static void swapPrefsPackages(String keyA, String keyB) {
+        try {
+            if (prefs == null) {
+                prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+            }
+            String a = prefs.getString(keyA, "");
+            String b = prefs.getString(keyB, "");
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(keyA, b);
+            editor.putString(keyB, a);
+            editor.apply();
+            Log.i(TAG, "swapPrefsPackages: swapped " + keyA + " <-> " + keyB + " (" + b + " / " + a + ")");
+        } catch (Throwable t) {
+            Log.w(TAG, "swapPrefsPackages failed for " + keyA + " and " + keyB, t);
         }
     }
 }

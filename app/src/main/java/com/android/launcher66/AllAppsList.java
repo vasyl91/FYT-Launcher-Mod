@@ -63,7 +63,9 @@ public class AllAppsList {
 
     private boolean allowSettings(AppInfo info) {
         return !info.componentName.getPackageName().contains("com.android.launcher") 
-        || info.componentName.getClassName().equals("com.android.launcher66.settings.SettingsActivity");   
+        || info.componentName.getClassName().equals("com.android.launcher66.settings.SettingsActivity")
+        || info.componentName.getPackageName().contains("leakcanary")
+        || info.componentName.getClassName().contains("leakcanary");   
     } 
 
     public void clear() {

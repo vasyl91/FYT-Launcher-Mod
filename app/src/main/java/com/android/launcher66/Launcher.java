@@ -373,7 +373,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private ArrayList<Object> mWidgetsAndShortcuts;
     public WeatherManager weatherManager;
     private Handler weatherHandler = new Handler(Looper.getMainLooper());
-    private static final long WEATHER_INTERVAL = 5 * 60 * 1000; // 5 minutes.
+    private static final long WEATHER_INTERVAL = 2 * 60 * 1000; // 2 minutes.
     private ProgressBar musicProgress;
     private SeekBar musicSeekBar;
     private Button mPlayPauseButton;
@@ -3203,9 +3203,23 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Runnable periodicWeatherCheck = new Runnable() {
         @Override
         public void run() {
+            if (weatherManager == null) {
+                weatherManager = WeatherManager.initialize(mLauncher);
+            }
+            long interval;
+            if (!weatherManager.isNetworkAvailable()
+                || (weatherCity1 != null && (String.valueOf(weatherCity1.getText()).isEmpty() || weatherCity1.getText().toString().contains("N/A")))
+                || (weatherWeather1 != null && (String.valueOf(weatherWeather1.getText()).isEmpty() || weatherWeather1.getText().toString().contains("N/A")))
+                || (weatherTemp1 != null && (String.valueOf(weatherTemp1.getText()).isEmpty() || weatherTemp1.getText().toString().contains("N/A")))) {
+                    // speed up the check interval if there is no connection or any part of the weather data is not properly updated.
+                    interval = 10 * 1000; // 10s
+            } else {
+                interval = WEATHER_INTERVAL;
+            }
+
             updateWeather();
             
-            weatherHandler.postDelayed(this, WEATHER_INTERVAL);
+            weatherHandler.postDelayed(this, interval);
         }
     };
 
@@ -3213,8 +3227,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (weatherManager == null) {
             weatherManager = WeatherManager.initialize(this);
         }
-        weatherManager.updateWeather();
-        showWeatherInfo();
+        if (weatherManager.isNetworkAvailable()) {
+            weatherManager.updateWeather();
+            showWeatherInfo();            
+        }
     }
 
     public void showWeatherInfo() {

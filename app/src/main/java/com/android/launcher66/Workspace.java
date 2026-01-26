@@ -5648,7 +5648,6 @@ public class Workspace extends SmoothPagedView
             boolean external) {
 
         helpers.setWidgetDropPip(true);
-        //helpers.setInWidgets(false);
         mainHandler.postDelayed(()-> {
             if (!helpers.isInOverviewMode()) {
                 Log.d("animateWidgetDrop", "startMapPip");
