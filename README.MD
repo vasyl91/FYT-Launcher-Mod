@@ -37,7 +37,7 @@ Following this method is important because it installs the launcher as a privile
 
 **Google Maps bug**
 
-Most of the FYT ROMs offer two ways of displaying apps on the lauuncher's screen. The most common one is a "pinned Picture-in-Picture mode" with all it's consequences for the app's UI behavior which in Google Maps case switches the layout to minimal. This method doesn't provide essential entry points to maintain "full screen UI" for apps that support the PiP mode.
+Most of the FYT ROMs offer two ways of displaying apps on the launcher's screen. The most common one is a "pinned Picture-in-Picture mode" with all it's consequences for the app's UI behavior which in Google Maps case switches the layout to minimal. This method doesn't provide essential entry points to maintain "full screen UI" for apps that support the PiP mode.
 The only reliable way I have found to prevent Google Maps from switching its UI to minimal requires installed root, LSPosed and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/tag/v1.0.1). It successfully forces the app to maintain its full UI inside FYT's Picture in Picture (remember to select Google Maps in the LSPosed "Enable module" section).
 Check this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always do the full backup (AllAppUpdate.bin, config.txt etc.) before flashing anything!
 
