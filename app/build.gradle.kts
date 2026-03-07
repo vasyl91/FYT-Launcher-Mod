@@ -19,13 +19,17 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = "1.1.9"
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["runnerBuilder"] = "de.mannodermaus.junit5.AndroidJUnit5Builder"
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -40,9 +44,11 @@ android {
             )
             enableAndroidTestCoverage = true
             enableUnitTestCoverage = true
+            buildConfigField("Boolean", "IS_DEBUG_FEATURES_ENABLED", "false")
         }
         debug {
             isCrunchPngs = false
+            buildConfigField("Boolean", "IS_DEBUG_FEATURES_ENABLED", "true")
         }
     }
 

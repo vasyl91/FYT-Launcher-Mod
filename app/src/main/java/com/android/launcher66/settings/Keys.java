@@ -58,6 +58,8 @@ public final class Keys {
     public static final String MUSIC_SCREEN = "music_screen";
     public static final String RADIO_SCREEN = "radio_screen";
     public static final String STATS_SCREEN = "stats_screen";
+    public static final String STATS_WIDTH = "stats_width";
+    public static final String STATS_WIDTH_SELECTOR = "stats_width_selector";
     public static final String STATS_CODES = "stats_codes";
     public static final String EXTRA_STATS_CODES = "extra_stats_codes";
     public static final String MAIN_SCREEN_STATS = "main_screen_stats";
@@ -67,6 +69,8 @@ public final class Keys {
     public static final String BG_COLOR = "bg_color";
     public static final String BG_COLOR_PICKER = "bg_color_picker";
     public static final String APP_LIST = "app_list";
+    public static final String APP_STATS_WIDTH = "app_stats_width";
+    public static final String APP_STATS_WIDTH_SELECTOR = "app_stats_width_selector";
     public static final String APP_STATS_COORDINATES = "app_stats_coordinates";
     public static final String DISPLAY_CANBUS_READER = "display_canbus_reader";
     public static final String CODES_GUIDE = "codes_guide";

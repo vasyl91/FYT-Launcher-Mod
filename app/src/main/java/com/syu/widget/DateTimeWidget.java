@@ -25,7 +25,6 @@ public class DateTimeWidget extends Widget {
     }
 
     @Override
-        // com.syu.widget.Widget
     void updateViews(RemoteViews views) {
         int index;
         views.setTextViewText(ResValue.getInstance().dt_weekday1, TimeUtil.getWeekDay(this.mContext));
@@ -84,7 +83,6 @@ public class DateTimeWidget extends Widget {
     }
 
     @Override
-        // com.syu.widget.Widget
     void addLisenter(RemoteViews views) {
         Intent mIntent = new Intent("android.settings.DATE_SETTINGS");
         PendingIntent pendIntent = PendingIntent.getActivity(this.mContext, 0, mIntent, PendingIntent.FLAG_IMMUTABLE);
@@ -92,7 +90,6 @@ public class DateTimeWidget extends Widget {
     }
 
     @Override
-        // com.syu.widget.Widget
     void getLayoutId() {
         this.layoutId = ResValue.getInstance().fyt_xml_dtwidget;
     }

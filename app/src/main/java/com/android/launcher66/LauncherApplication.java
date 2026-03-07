@@ -2,6 +2,7 @@ package com.android.launcher66;
 
 import android.app.ActivityManager;
 import android.app.Application;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,9 +28,11 @@ import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
-import com.android.launcher66.settings.LogcatService;
+import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.LogcatWorker;
 import com.android.launcher66.settings.WakeDetectionService;
 import com.fyt.skin.SkinManager;
 import com.fyt.skin.util.FileUtil;
@@ -98,13 +101,13 @@ public class LauncherApplication extends Application {
         super.onCreate();
         Log.d("LauncherApplication", "onCreate()");
         long start = SystemClock.elapsedRealtime();
+        initData();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean logcatBoolean = prefs.getBoolean("logcat_service", true);
+        boolean logcatBoolean = prefs.getBoolean(Keys.LOGCAT_SERVICE, true);
         boolean isDebug = BuildConfig.DEBUG;
         if (logcatBoolean && isDebug) {
-            startService(new Intent(this, LogcatService.class));
+            LogcatWorker.get().start(this);
         }
-        initData();
         initProperties();
         sHandler = new Handler(Looper.getMainLooper());
         CrashHandler.getInstance(getApplicationContext());
@@ -117,9 +120,7 @@ public class LauncherApplication extends Application {
         if (isDebug) {
             enableStrictMode();
         }
-        handler.postDelayed(() -> {
-            startService(new Intent(this, WakeDetectionService.class));
-        }, 1000);
+        handler.postDelayed(() -> startService(new Intent(this, WakeDetectionService.class)), 1000);
         LeakCanary.Config cfg = LeakCanary.getConfig()
             .newBuilder()
             .retainedVisibleThreshold(10)
@@ -188,7 +189,13 @@ public class LauncherApplication extends Application {
 
 
     public void removeGaoDeCoverView() {
-        this.wm.removeView(this.btn_floatView);
+        try {
+            if (btn_floatView != null && btn_floatView.isAttachedToWindow()) {
+                wm.removeView(btn_floatView);
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initGaoDeCoverView() {
@@ -291,10 +298,10 @@ public class LauncherApplication extends Application {
             assetIs = getAssets().open("Can_Back.ogg");
             if (assetIs == null) return;
 
-            File outFile = getWritableCanBackFile(this);
+            File outFile = getWritableCanBackFile();
             boolean bWrite = true;
 
-            File existingFile = getReadableLegacyFile(this);
+            File existingFile = getReadableLegacyFile();
             if (existingFile != null && outFile.equals(existingFile)) {
                 existingIs = new FileInputStream(existingFile);
 
@@ -328,20 +335,20 @@ public class LauncherApplication extends Application {
         }
     }
 
-    private static File getWritableCanBackFile(Context context) {
-        if (hasSystemPrivileges(context)) {
+    private static File getWritableCanBackFile() {
+        if (hasSystemPrivileges()) {
             return new File("/sdcard/Can_Back.bin");
         }
 
         // Always scoped storage for non-system apps
         return new File(
-            context.getExternalFilesDir(null),
+            sApp.getExternalFilesDir(null),
             "Can_Back.bin"
         );
     }
 
-    private static File getReadableLegacyFile(Context context) {
-        if (!hasSystemPrivileges(context)) {
+    private static File getReadableLegacyFile() {
+        if (!hasSystemPrivileges()) {
             return null;
         }
 
@@ -461,8 +468,8 @@ public class LauncherApplication extends Application {
         return sRootView.getWindowToken();
     }
 
-    public static boolean hasSystemPrivileges(Context context) {
-        ApplicationInfo ai = context.getApplicationInfo();
+    public static boolean hasSystemPrivileges() {
+        ApplicationInfo ai = sApp.getApplicationInfo();
 
         if (ai.uid == 1000) {
             return true;
@@ -485,5 +492,18 @@ public class LauncherApplication extends Application {
                (manufacturer != null && manufacturer.toUpperCase().contains("FYT")) ||
                (platform != null && !platform.isEmpty()) ||
                (displayId != null && displayId.toUpperCase().contains("FYT"));
+    }
+
+    public static boolean isServiceRunning(Class<? extends Service> serviceClass) {
+        ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager != null) {
+            List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
+            for (ActivityManager.RunningServiceInfo service : runningServices) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

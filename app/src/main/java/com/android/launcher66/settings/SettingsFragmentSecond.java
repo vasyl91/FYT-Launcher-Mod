@@ -119,8 +119,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private String rpmCodeStr;
     private String horsePowerCodeStr;
     private String vehicleMassCodeStr;
-    private String engineVolCodeStr;
-    private String numberOfCylindersCodeStr;
     private EditText startingInt;
     private String startingCmdInt;
     private String startingCmdArr;
@@ -328,8 +326,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         rpmCodeStr = sharedPrefs.getString("rpm_code_int", "0");
         horsePowerCodeStr = sharedPrefs.getString("horse_power_code_int", "0");
         vehicleMassCodeStr = sharedPrefs.getString("vehicle_mass_code_int", "0");
-        engineVolCodeStr = sharedPrefs.getString("engine_volume_code_int", "0");
-        numberOfCylindersCodeStr = sharedPrefs.getString("cylinders_number_code_int", "0");
 
         mainScreenStats = findPreference(Keys.MAIN_SCREEN_STATS);
         colorPickerPref = findPreference(Keys.COLOR_PICKER);
@@ -482,7 +478,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }   
         if (swipeDetector != null) {
             swipeDetector.setOnPreferenceClickListener(this);
-            if (!LauncherApplication.hasSystemPrivileges(this.requireContext())) {
+            if (!LauncherApplication.hasSystemPrivileges()) {
                 swipeDetector.setVisible(false);
             }
         }  
@@ -564,7 +560,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             statsCodes.setVisible(userStatsBool);
         }
         if (extraStatsCodes != null) {
-            extraStatsCodes.setSummary(getString(R.string.extra_stats_codes_summary, rpmCodeStr, horsePowerCodeStr, vehicleMassCodeStr, engineVolCodeStr, numberOfCylindersCodeStr));
+            extraStatsCodes.setSummary(getString(R.string.extra_stats_codes_summary, rpmCodeStr, horsePowerCodeStr, vehicleMassCodeStr));
             extraStatsCodes.setOnPreferenceClickListener(this);
             extraStatsCodes.setVisible(userStatsBool);
         }
@@ -757,8 +753,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 rpmCodeStr = sharedPrefs.getString("rpm_code_int", "0");
                 horsePowerCodeStr = sharedPrefs.getString("horse_power_code_int", "0");
                 vehicleMassCodeStr = sharedPrefs.getString("vehicle_mass_code_int", "0");
-                engineVolCodeStr = sharedPrefs.getString("engine_volume_code_int", "0");
-                numberOfCylindersCodeStr = sharedPrefs.getString("cylinders_number_code_int", "0");
 
                 alertExtraCodesDialog = displayExtraCodesDialog().create();
 
@@ -1571,8 +1565,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     private AlertDialog.Builder displayExtraCodesDialog() {
-        EditText numberOfCylindersCodeInt;
-        EditText engineVolCodeInt;
         EditText vehicleMassCodeInt;
         EditText horsePowerCodeInt;
         LayoutInflater inflater = LayoutInflater.from(this.requireContext());
@@ -1581,8 +1573,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         rpmCodeInt = dialogView.findViewById(R.id.rpm_code_int);
         horsePowerCodeInt = dialogView.findViewById(R.id.horse_power_code_int);
         vehicleMassCodeInt = dialogView.findViewById(R.id.vehicle_mass_code_int);
-        engineVolCodeInt = dialogView.findViewById(R.id.engine_volume_code_int);
-        numberOfCylindersCodeInt = dialogView.findViewById(R.id.cylinders_number_code_int);
 
         ConstraintLayout constraintInspector = dialogView.findViewById(R.id.constraint_extra);
         constraintInspector.setPadding(padding, padding, padding, padding);
@@ -1592,39 +1582,27 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         setCalculatedSizes(dialogView, R.id.rpm_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
         setCalculatedSizes(dialogView, R.id.horse_power_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
         setCalculatedSizes(dialogView, R.id.vehicle_mass_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.engine_volume_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.cylinders_number_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
 
         dialogExtraCodesEditText(rpmCodeInt);
         dialogExtraCodesEditText(horsePowerCodeInt);
         dialogExtraCodesEditText(vehicleMassCodeInt);
-        dialogExtraCodesEditText(engineVolCodeInt);
-        dialogExtraCodesEditText(numberOfCylindersCodeInt);
 
         rpmCodeInt.setText(rpmCodeStr);
         horsePowerCodeInt.setText(horsePowerCodeStr);
         vehicleMassCodeInt.setText(vehicleMassCodeStr);
-        engineVolCodeInt.setText(engineVolCodeStr);
-        numberOfCylindersCodeInt.setText(numberOfCylindersCodeStr);
 
         rpmCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
         horsePowerCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
         vehicleMassCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        engineVolCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        numberOfCylindersCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> {
                 rpmCodeStr = rpmCodeInt.getText().toString();
                 horsePowerCodeStr = horsePowerCodeInt.getText().toString();
                 vehicleMassCodeStr = vehicleMassCodeInt.getText().toString();
-                engineVolCodeStr = engineVolCodeInt.getText().toString();
-                numberOfCylindersCodeStr = numberOfCylindersCodeInt.getText().toString();
                 saveExtraCode(rpmCodeInt);
                 saveExtraCode(horsePowerCodeInt);
                 saveExtraCode(vehicleMassCodeInt);
-                saveExtraCode(engineVolCodeInt);
-                saveExtraCode(numberOfCylindersCodeInt);
                 dialog.dismiss();
             });
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
@@ -1632,13 +1610,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 rpmCodeStr = rpmCodeInt.getText().toString();
                 horsePowerCodeStr = horsePowerCodeInt.getText().toString();
                 vehicleMassCodeStr = vehicleMassCodeInt.getText().toString();
-                engineVolCodeStr = engineVolCodeInt.getText().toString();
-                numberOfCylindersCodeStr = numberOfCylindersCodeInt.getText().toString();
                 saveExtraCode(rpmCodeInt);
                 saveExtraCode(horsePowerCodeInt);
                 saveExtraCode(vehicleMassCodeInt);
-                saveExtraCode(engineVolCodeInt);
-                saveExtraCode(numberOfCylindersCodeInt);
                 dialog.dismiss();
             });
         return builder;
@@ -1837,9 +1811,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         extraStatsCodes.setSummary(getString(R.string.extra_stats_codes_summary,
             sharedPrefs.getString("rpm_code_int", "0"),
             sharedPrefs.getString("horse_power_code_int", "0"),
-            sharedPrefs.getString("vehicle_mass_code_int", "0"),
-            sharedPrefs.getString("engine_volume_code_int", "0"),
-            sharedPrefs.getString("cylinders_number_code_int", "0")));
+            sharedPrefs.getString("vehicle_mass_code_int", "0")));
     }
 
     private void saveSkipCodes() {
@@ -1977,7 +1949,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (fabPreference != null) fabPreference.setVisible(visible);
         if (leftFabPreference != null) leftFabPreference.setVisible(visible);
         if (rightFabPreference != null) rightFabPreference.setVisible(visible);
-        if (swipeDetector != null && LauncherApplication.hasSystemPrivileges(this.requireContext())) swipeDetector.setVisible(visible);
+        if (swipeDetector != null && LauncherApplication.hasSystemPrivileges()) swipeDetector.setVisible(visible);
     }
 
     private void updatePipSummaries() {

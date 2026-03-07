@@ -270,67 +270,95 @@ public class WindowHostSinglePane {
     private void startNow(ActivityManager am, String pkg, int expectedGen) {
         if (gen != expectedGen) return;
         if (taskId > 0 && pkg.equals(currentPkg)) return;
-        
-        // Validate surface is ready
-        if (host != null) {
+
+        // Compose actual start logic into a runnable so we can run it after stability delay
+        Runnable doStart = () -> {
+            if (gen != expectedGen) return;
+            if (taskId > 0 && pkg.equals(currentPkg)) return;
+
+            // Validate surface once more (defer briefly if still not ready)
+            if (host != null) {
+                SurfaceView sv = findSurfaceView(host);
+                if (sv != null) {
+                    try {
+                        SurfaceHolder holder = sv.getHolder();
+                        if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
+                            Log.w(TAG, name + ": Surface not ready yet, deferring start");
+                            postMainDelayed(() -> startNow(am, pkg, expectedGen), 50);
+                            return;
+                        }
+                    } catch (Throwable t) {
+                        Log.w(TAG, name + ": Surface check failed, deferring start", t);
+                        postMainDelayed(() -> startNow(am, pkg, expectedGen), 50);
+                        return;
+                    }
+                }
+            }
+
+            // Get launch bounds
+            Rect bounds = hasPendingBounds ? new Rect(pendingBounds) : null;
+
+            try {
+                // Use enhanced method that checks for existing process
+                boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(av, activity, pkg, bounds);
+
+                if (!ok) {
+                    Log.w(TAG, name + ": start failed for " + pkg + ", attempting fallback");
+
+                    // Fallback: use standard method with explicit intent
+                    postMainDelayed(() -> {
+                        if (gen != expectedGen) return;
+
+                        Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(activity, pkg);
+                        if (fallback != null) {
+                            Object fallbackOpts = WindowHostActivityView.makeOptionsWithBounds(bounds);
+                            boolean retryOk = WindowHostActivityView.startActivitySmart(av, activity, fallback, fallbackOpts);
+                            Log.i(TAG, name + (retryOk ? ": fallback succeeded" : ": fallback failed"));
+
+                            if (!retryOk) {
+                                // Final attempt with minimal configuration
+                                postMainDelayed(() -> {
+                                    if (gen != expectedGen) return;
+                                    attemptMinimalLaunch(pkg, bounds);
+                                }, 300);
+                            }
+                        }
+                    }, 200);
+                } else {
+                    Log.i(TAG, name + ": start ok for " + pkg + " (process check)");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, name + ": Exception starting " + pkg, e);
+
+                // Try one more time with minimal configuration
+                postMainDelayed(() -> {
+                    if (gen != expectedGen) return;
+                    attemptMinimalLaunch(pkg, bounds);
+                }, 300);
+            }
+        };
+
+        // Wait for surface stability or first frame before starting (avoid transient states during reparent)
+        waitUntil(() -> {
+            if (host == null || !childAttached) return false;
             SurfaceView sv = findSurfaceView(host);
             if (sv != null) {
                 try {
                     SurfaceHolder holder = sv.getHolder();
-                    if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
-                        Log.w(TAG, name + ": Surface not ready yet, deferring start");
-                        postMainDelayed(() -> startNow(am, pkg, expectedGen), 50);
-                        return;
-                    }
-                } catch (Throwable t) {
-                    Log.w(TAG, name + ": Surface check failed, deferring start", t);
-                    postMainDelayed(() -> startNow(am, pkg, expectedGen), 50);
-                    return;
-                }
+                    android.view.Surface s = (holder != null) ? holder.getSurface() : null;
+                    if (s != null && s.isValid() && firstFrame.get()) return true;
+                } catch (Throwable ignore) {}
             }
-        }
-        
-        // Get bounds
-        Rect bounds = hasPendingBounds ? new Rect(pendingBounds) : null;
-        
-        try {
-            // Use enhanced method that checks for existing process
-            boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(av, activity, pkg, bounds);
-            
-            if (!ok) {
-                Log.w(TAG, name + ": start failed for " + pkg + ", attempting fallback");
-                
-                // Fallback: use standard method with explicit intent
-                postMainDelayed(() -> {
-                    if (gen != expectedGen) return;
-                    
-                    Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(activity, pkg);
-                    if (fallback != null) {
-                        Object fallbackOpts = WindowHostActivityView.makeOptionsWithBounds(bounds);
-                        boolean retryOk = WindowHostActivityView.startActivitySmart(av, activity, fallback, fallbackOpts);
-                        Log.i(TAG, name + (retryOk ? ": fallback succeeded" : ": fallback failed"));
-                        
-                        if (!retryOk) {
-                            // Final attempt with minimal configuration
-                            postMainDelayed(() -> {
-                                if (gen != expectedGen) return;
-                                attemptMinimalLaunch(pkg, bounds);
-                            }, 300);
-                        }
-                    }
-                }, 200);
-            } else {
-                Log.i(TAG, name + ": start ok for " + pkg + " (process check)");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, name + ": Exception starting " + pkg, e);
-            
-            // Try one more time with minimal configuration
-            postMainDelayed(() -> {
-                if (gen != expectedGen) return;
-                attemptMinimalLaunch(pkg, bounds);
-            }, 300);
-        }
+            // Allow proceeding if firstFrame was already reported
+            return firstFrame.get();
+        }, 400 /* timeout ms */, 25 /* step ms */, () -> {
+            // onOk: small stabilization delay then start
+            postMainDelayed(doStart, 80);
+        }, () -> {
+            // onTimeout: log and attempt anyway (fallback)
+            Log.w(TAG, name + ": surface stability wait timed out, proceeding to start anyway");
+            postMainDelayed(doStart, 80);
+        });
     }
 
     /**

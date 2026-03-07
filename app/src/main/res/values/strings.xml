@@ -296,14 +296,19 @@
 
     <string name="instantaneous_consumption">\u0020Fuel consum.:</string>
     <string name="driving_mileage">\u0020Cruising Range:</string>
+    <string name="instantaneous_consumption_mini">\u0020C:</string>
+    <string name="driving_mileage_mini">\u0020R:</string>
     <string name="instantaneous_consumption_val">%1$s L/100km\u0020</string>
     <string name="driving_mileage_val">%1$s km\u0020</string>
+    <string name="instantaneous_consumption_val_mini">%1$s\u0020</string>
+    <string name="driving_mileage_val_mini">%1$s\u0020</string>
+    <string name="stats_resize">Double tap the widget to resize</string>
     <string name="stats_window">Fuel statistics</string>
     <string name="stats_codes">Statistics codes</string>
     <string name="stats_window_summary"><![CDATA[Use canbus reader or look for the necessary canbus codes in the class <b>%1$s</b> and its subclasses (please refer to README.MD)]]></string>
     <string name="stats_codes_summary">Press this preference to set the canbus codes. \nFuel: %1$s, Range: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Additional statistics data <b>(optional)</b></string>
-    <string name="extra_stats_codes_summary">Press this preference to set additional car info for approximate fuel consumption. \nRPM canbus code: %1$s, Horsepower: %2$s, Vehicle mass: %3$s, Engine volume: %4$s, Number of cylinders: %5$s</string>
+    <string name="extra_stats_codes_summary">Press this preference to set additional car info for approximate fuel consumption. \nRPM canbus code: %1$s, Horsepower: %2$s, Vehicle mass: %3$s</string>
     <string name="stats_dialog_title">Canbus codes:</string>
     <string name="fuel_code_text">Fuel code:</string>
     <string name="range_code_text">Range code:</string>
@@ -314,8 +319,6 @@
     <string name="rpm_code_text">RPM canbus code:</string>
     <string name="horse_power_code_text">Horsepower:</string>
     <string name="vehicle_mass_code_text">Vehicle mass (in kg):</string>
-    <string name="engine_volume_code_text">Engine volume (in cm³):</string>
-    <string name="cylinders_number_code_text">Number of cylinders:</string>
     <string name="main_screen_stats_window">Display the fuel statistics on the main screen</string>
     <string name="color_picker">Statistics text color</string>
     <string name="stats_bg">Statistics background</string>

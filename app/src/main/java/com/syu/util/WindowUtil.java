@@ -1,5 +1,7 @@
 package com.syu.util;
 
+import static com.syu.util.WindowHostActivityView.findSurfaceView;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -14,6 +16,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -183,7 +187,34 @@ public class WindowUtil {
                         try {
                             // Dismiss windowed activity
                             if (mWindowHost != null) {
+                                // Dismiss windowed activity on main thread (existing)
                                 Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
+
+                                // Wait until host windows are fully detached, then clear and rewarm safely
+                                Launcher.getLauncher().handler.post(() -> {
+                                    try {
+                                        // Wait for handoff (all host windows detached) then clear pool and prewarm
+                                        mWindowHost.awaitHandoff(() -> {
+                                            try {
+                                                WindowHostSurfacePreloader.clearPool();
+                                                // Re-warm for next use
+                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_left");
+                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_right");
+                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_First");
+                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Second");
+                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Third");
+                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Fourth");
+                                                Log.i(TAG, "removePip(): awaitHandoff completed; prewarmed ActivityViews");
+                                            } catch (Throwable t) {
+                                                Log.w(TAG, "removePip(): prewarm after handoff failed", t);
+                                            }
+                                        });
+                                    } catch (Throwable t) {
+                                        // If awaitHandoff itself fails for any reason, fall back to immediate clear/prewarm with a small delay
+                                        Log.w(TAG, "removePip(): awaitHandoff failed, falling back", t);
+                                        Launcher.getLauncher().handler.postDelayed(() -> prepareNextSurfaceLoad(), 120);
+                                    }
+                                });
                             }
                             // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
                             Method getServiceMethod = ActivityManager.class.getMethod("getService");
@@ -273,8 +304,34 @@ public class WindowUtil {
                 Launcher.getLauncher().hideOverlayFab();
                 // Dismiss windowed activity
                 if (mWindowHost != null) {
+                    // Dismiss windowed activity on main thread (existing)
                     Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
-                    prepareNextSurfaceLoad();
+
+                    // Wait until host windows are fully detached, then clear and rewarm safely
+                    Launcher.getLauncher().handler.post(() -> {
+                        try {
+                            // Wait for handoff (all host windows detached) then clear pool and prewarm
+                            mWindowHost.awaitHandoff(() -> {
+                                try {
+                                    WindowHostSurfacePreloader.clearPool();
+                                    // Re-warm for next use
+                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_left");
+                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_right");
+                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_First");
+                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Second");
+                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Third");
+                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Fourth");
+                                    Log.i(TAG, "removePip(): awaitHandoff completed; prewarmed ActivityViews");
+                                } catch (Throwable t) {
+                                    Log.w(TAG, "removePip(): prewarm after handoff failed", t);
+                                }
+                            });
+                        } catch (Throwable t) {
+                            // If awaitHandoff itself fails for any reason, fall back to immediate clear/prewarm with a small delay
+                            Log.w(TAG, "removePip(): awaitHandoff failed, falling back", t);
+                            Launcher.getLauncher().handler.postDelayed(() -> prepareNextSurfaceLoad(), 120);
+                        }
+                    });
                 }
                 // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
                 Method getServiceMethod = ActivityManager.class.getMethod("getService");
@@ -1382,6 +1439,7 @@ public class WindowUtil {
             }
             ViewGroup vg = (ViewGroup) hostContainer;
             try { vg.removeAllViews(); } catch (Throwable ignore) {}
+
             if (newChild != null) {
                 // detach from previous parent
                 try {
@@ -1390,24 +1448,85 @@ public class WindowUtil {
                         ((ViewGroup) p).removeView(newChild);
                     }
                 } catch (Throwable ignore) {}
+
+                // Add child immediately so view hierarchy is consistent (visual handoff)
                 try {
-                    vg.addView(newChild, new android.widget.FrameLayout.LayoutParams(
+                    vg.addView(newChild, new FrameLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 } catch (Throwable t) {
                     try { vg.addView(newChild); } catch (Throwable ignore) {}
                 }
-                // Best-effort: fix native surface parent (mRootSurfaceControl -> new internal SurfaceView)
+
+                // Best-effort: attempt native reparent and wait until WindowSession reports success.
+                final View finalChild = newChild;
+                final ViewGroup finalVg = vg;
+                final long deadline = SystemClock.uptimeMillis() + 1000; // 1s timeout
+                final Handler mainH = new Handler(Looper.getMainLooper());
+
+                final Runnable waiter = new Runnable() {
+                    @Override public void run() {
+                        try {
+                            boolean ok = false;
+                            try {
+                                // Try notifyReparentDisplayContentToHost which internally tries WindowSession.reparentDisplayContent
+                                ok = WindowHostReparenter.notifyReparentDisplayContentToHost(finalChild, finalVg);
+                            } catch (Throwable t) {
+                                Log.d(TAG, "reparentHostChild: notifyReparentDisplayContentToHost threw", t);
+                                ok = false;
+                            }
+
+                            // Additionally accept success if ActivityView reports stable virtual display id or Surface valid
+                            if (!ok) {
+                                try {
+                                    // Try to detect ActivityView readiness (best-effort)
+                                    int did = getVirtualDisplayIdSafely(finalChild);
+                                    if (did >= 0) ok = true;
+                                    else {
+                                        // check inner Surface validity
+                                        SurfaceView sv = findSurfaceView(finalChild);
+                                        if (sv != null) {
+                                            SurfaceHolder holder = sv.getHolder();
+                                            if (holder != null) {
+                                                android.view.Surface s = holder.getSurface();
+                                                if (s != null && s.isValid()) ok = true;
+                                            }
+                                        }
+                                    }
+                                } catch (Throwable ignore) {}
+                            }
+
+                            if (ok) {
+                                // Success: now notify ActivityView to update geometry safely
+                                try { invokeIfExists(finalChild, "updateLocationAndTapExcludeRegion"); } catch (Throwable ignore) {}
+                                try { invokeIfExists(finalChild, "clearActivityViewGeometryForIme"); } catch (Throwable ignore) {}
+                                // done
+                                return;
+                            }
+
+                            // Not yet ok: retry if we have time left
+                            if (SystemClock.uptimeMillis() < deadline) {
+                                mainH.postDelayed(this, 40);
+                                return;
+                            } else {
+                                // Timed out — log and still attempt the safe notifications (best-effort)
+                                Log.w(TAG, "reparentHostChild: native reparent did not confirm within timeout; proceeding anyway");
+                                try { invokeIfExists(finalChild, "updateLocationAndTapExcludeRegion"); } catch (Throwable ignore) {}
+                                try { invokeIfExists(finalChild, "clearActivityViewGeometryForIme"); } catch (Throwable ignore) {}
+                            }
+                        } catch (Throwable t) {
+                            Log.w(TAG, "reparentHostChild: waiter failure", t);
+                        }
+                    }
+                };
+
+                // start waiting
+                mainH.post(waiter);
+
+                // Also attempt native reparent immediately (best-effort)
                 try {
-                    WindowHostReparenter.reparentActivityViewSurface(newChild);
+                    WindowHostReparenter.reparentActivityViewSurface(finalChild);
                 } catch (Throwable t) {
                     Log.w(TAG, "reparentHostChild: reparentActivityViewSurface failed", t);
-                }
-                // Additionally notify WindowManager about the reparent so ActivityView's
-                // updateLocationAndTapExcludeRegion won't crash with "not the parent window".
-                try {
-                    WindowHostReparenter.notifyReparentDisplayContentToHost(newChild, vg);
-                } catch (Throwable t) {
-                    Log.w(TAG, "reparentHostChild: notifyReparentDisplayContentToHost failed", t);
                 }
             }
         } catch (Throwable t) {

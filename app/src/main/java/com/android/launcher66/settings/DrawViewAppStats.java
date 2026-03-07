@@ -4,7 +4,11 @@ import static com.android.launcher66.settings.SettingsActivity.getSettingsActivi
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,6 +18,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -21,10 +26,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -32,278 +39,391 @@ import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DrawViewAppStats extends View implements View.OnClickListener {
 
-    private View barTop;
-    private View barBottom;
+    // Core
+    private final SharedPreferences sharedPrefs;
+    private LayoutInflater mInflater;
+    private View mRootView;
+    private WeakReference<Context> mContextWeakRef;
+    private Helpers helpers;
+    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private Runnable mInvalidateRunnable = () -> invalidate();
 
-    private Point[] point = new Point[4];
-    private int diffX = -1, diffY = -1;
-    private Paint paint;
-    private Paint statsWindowPaint;
-    private Canvas canvas;
-    private boolean isInsideStats = false;
+    // Rectangles
+    private final List<RectangleConfig> rectangleConfigs = new ArrayList<>();
+    private final Map<String, Paint> rectanglePaints = new HashMap<>();
+    private final Map<String, Integer[]> rectangleBallIds = new HashMap<>();
 
-    private int margin;
-    private int statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, statsWidth, statsHeight;
+    // Points & handles
+    private final ArrayList<ColorBall> colorballs = new ArrayList<>();
+    private final Point[] point = new Point[400];
+    private int nextBallId = 0;
 
-    private int minBorderX, minBorderY, maxBorderX, maxBorderY;
+    // UI
+    private GestureDetector gestureDetector;
+    private Button mTopDown, mBottomUp, mLeftToLeft, mLeftToRight, mRightToLeft, mRightToRight, mTopUp, mBottomDown, mConfirmLayout;
+    private TextView rectangleName;
+    private AlertDialog alertDialog;
 
-    private int statsMinX = -1, statsMaxX = -1, statsMinY = -1, statsMaxY = -1;
-    private int coordinatesSize, nameTextSize;
+    // Sizing / prefs
+    private final int margin;
+    private final int nameTextSize;
+    private float handleRadiusPx;
     private float coordinatesMargin;
 
-    private Button mUp;
-    private Button mDown;
-    private Button mLeft;
-    private Button mRight;
-    private Button mUpBottom;
-    private Button mDownBottom;
-    private Button mLeftBottom;
-    private Button mRightBottom;
+    // Interaction
+    private String selectedWidgetKey = null;
+    private int activeBallId = -1;
+    private String activeRectKey = null;
+    private boolean draggingWholeRect = false;
+    private int lastX = 0, lastY = 0;
 
-    private SharedPreferences sharedPrefs;
-    private Button mConfirmLayout;
-    private Button mConfirmLayoutBottom;
-    private View mRootView;
-    private LayoutInflater mInflater;
-    private WeakReference<Context> mContextWeakRef;
-    private Handler mHandler = new Handler(Looper.getMainLooper());
-    private Runnable mInvalidateRunnable = new Runnable() {
-        @Override
-        public void run() {
-            invalidate();
-        }
-    };
+    // Bounds
+    private int minBorderX, minBorderY, maxBorderX, maxBorderY;
+
+    private static boolean firstPip = false;
+    private static boolean secondPip = false;
+    private static boolean thirdPip = false;
+    private static boolean fourthPip = false;
 
     public DrawViewAppStats(LayoutInflater inflater, View rootView, Context context) {
         super(context);
         this.mContextWeakRef = new WeakReference<>(context);
         this.mInflater = inflater;
         this.mRootView = rootView;
+        this.sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        this.margin = Integer.parseInt(sharedPrefs.getString("layout_margin", "10"));
+        this.nameTextSize = SettingsActivity.adaptiveNameTextSize;        
+
         initUi(rootView);
-    }
-
-
-    public DrawViewAppStats(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
     }
 
     public DrawViewAppStats(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.mContextWeakRef = new WeakReference<>(context);
+        this.sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        this.margin = Integer.parseInt(sharedPrefs.getString("layout_margin", "10"));
+        this.nameTextSize = SettingsActivity.adaptiveNameTextSize;     
+
+        initUi(null);
+    }
+
+    public DrawViewAppStats(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        this.mContextWeakRef = new WeakReference<>(context);
+        this.sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        this.margin = Integer.parseInt(sharedPrefs.getString("layout_margin", "10"));
+        this.nameTextSize = SettingsActivity.adaptiveNameTextSize;     
+
+        initUi(null);
     }
 
     private Context getSafeContext() {
         return mContextWeakRef != null ? mContextWeakRef.get() : null;
     }
 
-    private void initUi(View rootView) {
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getSafeContext());
+    public void addRectangle(String name, String key, String color, boolean shouldIntersect) {
+        int minWidth = SettingsActivity.calculatedPipMinWidth;
+        int minHeight = SettingsActivity.calculatedPipMinHeight;
+        boolean enabled = false;
 
-        margin = Integer.parseInt(sharedPrefs.getString("layout_margin", "10"));
-
-        paint = new Paint();
-        setFocusable(true); // necessary for getting the touch events
-        canvas = new Canvas();
-
-        coordinatesSize = SettingsActivity.adaptiveCoordinatesSize;
-        nameTextSize = SettingsActivity.adaptiveNameTextSize;
-        statsWidth = SettingsActivity.calculatedStatsWidth;
-        statsHeight = SettingsActivity.calculatedStatsHeight;
-
-        barTop = rootView.findViewById(R.id.creator_bar_top);
-        barBottom = rootView.findViewById(R.id.creator_bar_bottom);
-
-        mUp = rootView.findViewById(R.id.top_up);
-        mUp.setOnClickListener(this);
-        setCalculatedButtonSizes(mUp, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
-
-        mDown = rootView.findViewById(R.id.bottom_down);
-        mDown.setOnClickListener(this);
-        setCalculatedButtonSizes(mDown, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
-
-        mLeft = rootView.findViewById(R.id.left_to_left);
-        mLeft.setOnClickListener(this);
-        setCalculatedButtonSizes(mLeft, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);
-
-        mRight = rootView.findViewById(R.id.right_to_right);
-        mRight.setOnClickListener(this);
-        setCalculatedButtonSizes(mRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);
-
-        mUpBottom = rootView.findViewById(R.id.top_up_bottom);
-        mUpBottom.setOnClickListener(this);
-        setCalculatedButtonSizes(mUpBottom, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
-
-        mDownBottom = rootView.findViewById(R.id.bottom_down_bottom);
-        mDownBottom.setOnClickListener(this);
-        setCalculatedButtonSizes(mDownBottom, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim);
-
-        mLeftBottom = rootView.findViewById(R.id.left_to_left_bottom);
-        mLeftBottom.setOnClickListener(this);
-        setCalculatedButtonSizes(mLeftBottom, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);
-
-        mRightBottom = rootView.findViewById(R.id.right_to_right_bottom);
-        mRightBottom.setOnClickListener(this);
-        setCalculatedButtonSizes(mRightBottom, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim);
-
-        setCalculatedTextSize(rootView, R.id.stats_name_string, SettingsActivity.selectionTextSize);
-        setCalculatedTextSize(rootView, R.id.stats_name_string_bottom, SettingsActivity.selectionTextSize);
-
-        mConfirmLayout = rootView.findViewById(R.id.confirm_layout);
-        mConfirmLayout.setOnClickListener(this);
-        mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize);
-        mConfirmLayoutBottom = rootView.findViewById(R.id.confirm_layout_bottom);
-        mConfirmLayoutBottom.setOnClickListener(this);
-        mConfirmLayoutBottom.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize);
-
-        int topY = sharedPrefs.getInt("topY", 10);
-        if (topY < SettingsActivity.statusBarHeight + SettingsActivity.barHeight) {
-            barTop.setVisibility(View.GONE);
-            statsTopLeftY = sharedPrefs.getInt("appStatsTopLeftY", margin + 10);
-        } else {
-            barBottom.setVisibility(View.GONE);
-            statsTopLeftY = sharedPrefs.getInt("appStatsTopLeftY", margin + 10) - SettingsActivity.barHeight;
+        switch (key) {
+            case "appStats":
+                minWidth = SettingsActivity.calculatedStatsWidth;
+                minHeight = SettingsActivity.calculatedStatsHeight;
+                enabled = true;
+                break;
+            default:
+                minWidth = SettingsActivity.calculatedStatsWidth;
+                minHeight = SettingsActivity.calculatedStatsHeight;
+                enabled = true;
         }
 
-        statsTopLeftX = sharedPrefs.getInt("appStatsTopLeftX", margin + 10);
-        statsTopRightX = statsTopLeftX + statsWidth;
-        statsTopRightY = statsTopLeftY;
-        statsBottomRightX = statsTopRightX;
-        statsBottomRightY = statsTopRightY + statsHeight;
-        statsBottomLeftX = statsTopLeftX;
-        statsBottomLeftY = statsTopLeftY + statsHeight;
+        RectangleConfig config = new RectangleConfig(name, key, color, shouldIntersect, minWidth, minHeight, enabled);
+        rectangleConfigs.add(config);
 
-        initStatsRect(getSafeContext(), new int[]{statsTopLeftX, statsTopLeftY, statsTopRightX, statsTopRightY, statsBottomRightX, statsBottomRightY, statsBottomLeftX, statsBottomLeftY, 0, 1, 2, 3});
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setColor(Color.parseColor(color));
+        p.setStyle(Paint.Style.FILL);
+        p.setAlpha(128);
+        rectanglePaints.put(key, p);
+
+        Integer[] ballIds = new Integer[]{nextBallId++, nextBallId++, nextBallId++, nextBallId++};
+        rectangleBallIds.put(key, ballIds);
+
+        if (config.enabled) {
+            initRectangle(config);
+        }
+        invalidate();
+    }
+
+    // Never returns 0, max value is 2
+    private static int countEnabledPips() {
+        int count = 0;
+        if (firstPip) count++;
+        if (secondPip) count++;
+        if (thirdPip) count++;
+        if (fourthPip) count++;
+        return Math.min(Math.max(1, count), 2);
+    }
+
+    private void initUi(View rootView) {
+        helpers = new Helpers();
+        helpers.checkAndResetIfOverlappingOnScreen(-1); 
+        helpers.setUserOpenedCreator(true);
+        helpers.setBarSettingsChanged(false);
+
+        handleRadiusPx = 20f * getResources().getDisplayMetrics().density;
+
+        if (rootView != null) {
+            rectangleName = rootView.findViewById(R.id.rectangle_name);
+            View creatorBar = rootView.findViewById(R.id.creator_bar); 
+            View creatorView = rootView.findViewById(R.id.creator_other_screens);   
+            gestureDetector = new GestureDetector(getSafeContext(), new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onDoubleTap(MotionEvent event) {
+                    final int X = (int) event.getX();
+                    final int Y = (int) event.getY();
+                    String getKey = hitTestRect(X, Y);
+                    if (String.valueOf(getKey).equals("appStats")) {
+                        saveStatsAndRedraw();
+                        return true;
+                    }
+                    if (creatorBar.getVisibility() == View.VISIBLE) {
+                        creatorBar.setVisibility(View.GONE); 
+                    } else {
+                        creatorBar.setVisibility(View.VISIBLE); 
+                    }
+                    return true; 
+                }
+            });
+
+            creatorView.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    boolean gestureHandled = gestureDetector.onTouchEvent(event);
+                    if (gestureHandled) return true; 
+                    return true; 
+                }
+            });
+
+            mTopUp = rootView.findViewById(R.id.top_up);
+            mTopDown = rootView.findViewById(R.id.top_down);
+            mBottomUp = rootView.findViewById(R.id.bottom_up);
+            mBottomDown = rootView.findViewById(R.id.bottom_down);
+            mLeftToLeft = rootView.findViewById(R.id.left_to_left);
+            mLeftToRight = rootView.findViewById(R.id.left_to_right);
+            mRightToLeft = rootView.findViewById(R.id.right_to_left);
+            mRightToRight = rootView.findViewById(R.id.right_to_right);
+            mConfirmLayout = rootView.findViewById(R.id.confirm_layout);
+
+            if (mTopUp != null) { mTopUp.setOnClickListener(this); setCalculatedButtonSizes(mTopUp, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim); }
+            if (mTopDown != null) { mTopDown.setOnClickListener(this); setCalculatedButtonSizes(mTopDown, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim); }
+            if (mBottomUp != null) { mBottomUp.setOnClickListener(this); setCalculatedButtonSizes(mBottomUp, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim); }
+            if (mBottomDown != null) { mBottomDown.setOnClickListener(this); setCalculatedButtonSizes(mBottomDown, SettingsActivity.arrowLongDim, SettingsActivity.arrowShortDim); }
+            if (mLeftToLeft != null) { mLeftToLeft.setOnClickListener(this); setCalculatedButtonSizes(mLeftToLeft, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
+            if (mLeftToRight != null) { mLeftToRight.setOnClickListener(this); setCalculatedButtonSizes(mLeftToRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
+            if (mRightToLeft != null) { mRightToLeft.setOnClickListener(this); setCalculatedButtonSizes(mRightToLeft, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
+            if (mRightToRight != null) { mRightToRight.setOnClickListener(this); setCalculatedButtonSizes(mRightToRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
+            if (mConfirmLayout != null) { mConfirmLayout.setOnClickListener(this); mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize); }
+
+            setCalculatedTextSize(rootView, R.id.selected_widget_string, SettingsActivity.selectionTextSize);
+            setCalculatedTextSize(rootView, R.id.rectangle_name, SettingsActivity.selectionTextSize);
+            setCalculatedTextSize(rootView, R.id.top_button_string, SettingsActivity.arrowTextSize);
+            setCalculatedTextSize(rootView, R.id.bottom_button_string, SettingsActivity.arrowTextSize);
+            setCalculatedTextSize(rootView, R.id.left_button_string, SettingsActivity.arrowTextSize);
+            setCalculatedTextSize(rootView, R.id.right_button_string, SettingsActivity.arrowTextSize);
+
+            TextView rectangleName = rootView.findViewById(R.id.rectangle_name);
+            rectangleName.setSelected(true);
+        }
+
+        for (RectangleConfig cfg : rectangleConfigs) {
+            if (cfg.enabled) initRectangle(cfg);
+        }
 
         if (!LauncherApplication.isFytDevice()) {
             scaleView();
         }
     }
 
-    public int calculateAdaptiveTextSize(int screenWidth, double baseSize) {
-        if (screenWidth <= 0 || baseSize <= 0) {
-            throw new IllegalArgumentException("Invalid input parameters");
-        }
+    private void initRectangle(RectangleConfig config) {
+        int topLeftX = sharedPrefs.getInt(config.key + "TopLeftX", margin);
+        int topLeftY = sharedPrefs.getInt(config.key + "TopLeftY", margin);
+        int topRightX = sharedPrefs.getInt(config.key + "TopRightX", margin + config.minWidth);
+        int topRightY = sharedPrefs.getInt(config.key + "TopRightY", margin);
+        int bottomRightX = sharedPrefs.getInt(config.key + "BottomRightX", margin + config.minWidth);
+        int bottomRightY = sharedPrefs.getInt(config.key + "BottomRightY", margin + config.minHeight);
+        int bottomLeftX = sharedPrefs.getInt(config.key + "BottomLeftX", margin);
+        int bottomLeftY = sharedPrefs.getInt(config.key + "BottomLeftY", margin + config.minHeight);
 
-        double ratio = screenWidth / 2000.0;
-        double scaleFactor = Math.pow(ratio, 0.5);
-
-        return (int) (baseSize * scaleFactor);
-    }
-
-    private void setCalculatedTextSize(View view, int dateId, int textSize) {
-        TextView textView = (TextView) view.findViewById(dateId);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-    }
-
-    private void setCalculatedButtonSizes(Button button, int width, int height) {
-        // Get the current LayoutParams
-        ViewGroup.LayoutParams params = button.getLayoutParams();
-
-        // Check if the LayoutParams is an instance of MarginLayoutParams
-        if (params instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-            marginParams.width = width;
-            marginParams.height = height;
-            button.setLayoutParams(marginParams);
-        } else {
-            // Handle cases where MarginLayoutParams aren't supported and create new LayoutParams if necessary
-            ViewGroup.MarginLayoutParams newParams = new ViewGroup.MarginLayoutParams(width, height);
-            button.setLayoutParams(newParams);
-        }
-    }
-
-    private AppCompatActivity getActivity() {
-        Context context = getSafeContext();
-        while (context instanceof ContextWrapper) {
-            if (context instanceof AppCompatActivity) {
-                return (AppCompatActivity) context;
+        int orientation = getResources().getConfiguration().orientation;
+        if ((config.key).contains("pip") && !sharedPrefs.contains(config.key + "TopLeftX")) {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                topLeftY = margin + getMinHeight("date") + margin;
+                bottomRightY = topLeftY + config.minHeight;
+                topRightX = margin + config.minWidth;
+                bottomRightX = topRightX;
+                bottomLeftY = bottomRightY;
             }
-            context = ((ContextWrapper) context).getBaseContext();
         }
-        return null;
+
+        Integer[] ids = rectangleBallIds.get(config.key);
+        if (ids == null) return;
+
+        ensurePoint(ids[0], new Point(topLeftX, topLeftY));
+        ensurePoint(ids[1], new Point(topRightX, topRightY));
+        ensurePoint(ids[2], new Point(bottomRightX, bottomRightY));
+        ensurePoint(ids[3], new Point(bottomLeftX, bottomLeftY));
+
+        ensureBall(ids[0], point[ids[0]]);
+        ensureBall(ids[1], point[ids[1]]);
+        ensureBall(ids[2], point[ids[2]]);
+        ensureBall(ids[3], point[ids[3]]);
     }
 
-    @Override
-    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-        super.onVisibilityChanged(changedView, visibility);
-        if (visibility == View.VISIBLE) {
-            //onResume() called
-            if (changedView == null) {
-                return;
-            }
-            changedView.setFocusableInTouchMode(true);
-            changedView.requestFocus();
-            changedView.setOnKeyListener((v, keyCode, event) -> {
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                    // handle back button's click listener
-                    savePrefs();
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
-                    return true;
-                }
-                return false;
-            });
-        } else {
-            //onPause() called
-        }
+    private void ensurePoint(int id, Point p) { point[id] = p; }
+
+    private void ensureBall(int id, Point p) {
+        int resId = 0;
+        try { resId = R.drawable.gray_circle; } catch (Throwable ignored) {}
+        while (colorballs.size() <= id) colorballs.add(null);
+        colorballs.set(id, new ColorBall(getSafeContext(), resId, p, id));
     }
 
-    @Override
-    public void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mHandler.removeCallbacks(mInvalidateRunnable);
-        setOnKeyListener(null);
-        mContextWeakRef = null;
-        mInflater = null;
-        mRootView = null;
+    private int getMinWidth(String key) {
+        for (RectangleConfig c : rectangleConfigs) if (c.key.equals(key)) return c.minWidth;
+        return 0;
+    }
+
+    private int getMinHeight(String key) {
+        for (RectangleConfig c : rectangleConfigs) if (c.key.equals(key)) return c.minHeight;
+        return 0;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        paint.setAntiAlias(true);
-        paint.setDither(true);
-        paint.setColor(Color.parseColor("#8c8b8b"));
-        paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setStrokeWidth(5);
+        super.onDraw(canvas);
 
-        canvas.drawPaint(paint);
+        // Background
+        Paint bg = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bg.setColor(Color.parseColor("#8c8b8b"));
+        bg.setStyle(Paint.Style.FILL);
+        canvas.drawPaint(bg);
 
-        statsWindowPaint = new Paint();
-        statsWindowPaint.setColor(Color.parseColor("#0ca7f5"));
-        statsWindowPaint.setAlpha(128);
+        // Screen and double tap hint
+        Paint hint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        hint.setColor(Color.parseColor("#cccccc"));
+        hint.setTextSize(nameTextSize * 1.2f);
+        hint.setTextAlign(Paint.Align.CENTER);
+        hint.setShadowLayer(2, 1, 1, Color.WHITE);
+        float centerX = getWidth() / 2f;
+        float centerY = SettingsActivity.screenHeight / 2f;
+        float lineHeight = hint.getTextSize() * 1.2f; 
+        String centerText = getSafeContext().getString(R.string.double_tap, String.valueOf(("In app")));
+        String[] lines = centerText.split("\\n");
+        float startY = centerY - ((lines.length - 1) * lineHeight / 2f);
+        for (int i = 0; i < lines.length; i++) {
+            canvas.drawText(lines[i], centerX, startY + (i * lineHeight), hint);
+        }
 
-        statsMinX = Math.min(point[0].x, point[2].x);
-        statsMaxX = Math.max(point[0].x, point[2].x);
-        statsMinY = Math.min(point[0].y, point[2].y);
-        statsMaxY = Math.max(point[0].y, point[2].y);
-        canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y, statsWindowPaint);
+        // Draw rectangles (and glare if both opted-in and overlapping)
+        for (RectangleConfig config : rectangleConfigs) {
+            if (!config.enabled) continue;
+            drawRectangle(canvas, config);
+        }
+    }
 
-        RectF r = rectFromPoints(point[0], point[1], point[2], point[3]);
+    private void drawRectangle(Canvas canvas, RectangleConfig config) {
+        Integer[] ids = rectangleBallIds.get(config.key);
+        Paint p = rectanglePaints.get(config.key);
+        if (ids == null || p == null) return;
+
+        RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
+        if (r.isEmpty()) return;
+
+        // base fill
+        canvas.drawRect(r, p);
+
+        // red glare only when BOTH rectangles opted-in and overlap
+        if (config.shouldIntersect) {
+            boolean overlapsWithOptIn = false;
+            for (RectangleConfig other : rectangleConfigs) {
+                if (other == config || !other.enabled) continue;
+                if (!other.shouldIntersect) continue;
+                Integer[] oids = rectangleBallIds.get(other.key);
+                if (oids == null) continue;
+                RectF or = rectFromBallIds(oids[0], oids[1], oids[2], oids[3]);
+                if (!or.isEmpty() && RectF.intersects(r, or)) { overlapsWithOptIn = true; break; }
+            }
+            if (overlapsWithOptIn) {
+                Paint overlay = new Paint(Paint.ANTI_ALIAS_FLAG);
+                overlay.setStyle(Paint.Style.FILL);
+                overlay.setColor(Color.RED);
+                overlay.setAlpha(255);
+                canvas.drawRect(r, overlay);
+            }
+        }
+
+        // border
+        Paint border = new Paint(Paint.ANTI_ALIAS_FLAG);
+        border.setColor(Color.BLACK);
+        border.setStyle(Paint.Style.STROKE);
+        border.setStrokeWidth(2f);
+        canvas.drawRect(r, border);
 
         // coordinates overlay
         drawCoordinates(canvas, r);
 
         // center label
-        drawLabel(canvas, r, getSafeContext().getString(R.string.stats_category));
+        drawLabel(canvas, r, config.name);
     }
 
     private void drawLabel(Canvas canvas, RectF r, String label) {
         if (label == null) return;
-
+        
         // Create text paint
         Paint txt = new Paint(Paint.ANTI_ALIAS_FLAG);
         txt.setColor(Color.BLACK);
         txt.setTextSize(nameTextSize);
         txt.setShadowLayer(2, 1, 1, Color.WHITE);
-
+        
         float textWidth = txt.measureText(label);
+        float rectWidth = r.width();
+        float maxTextWidth = rectWidth - (coordinatesMargin * 1.5f);
         float cx = (r.left + r.right) / 2f;
         float cy = (r.top + r.bottom) / 2f + nameTextSize / 3f;
-
-        // Center text if it fits
-        canvas.drawText(label, cx - textWidth / 2f, cy, txt);
+        
+        // Check if text width exceeds 60% of rectangle width
+        if (textWidth > maxTextWidth) {
+            // Calculate scroll parameters
+            float scrollWidth = textWidth - maxTextWidth;
+            float scrollProgress = (System.currentTimeMillis() % 5000) / 5000f; // 5 second cycle
+            float xOffset = scrollWidth * scrollProgress;
+            
+            // Create clipping rectangle that is 60% of the original rectangle width, centered
+            float clipLeft = cx - maxTextWidth / 2f;
+            float clipRight = cx + maxTextWidth / 2f;
+            RectF clipRect = new RectF(clipLeft, r.top, clipRight, r.bottom);
+            
+            // Clip to the 80% width area and draw scrolling text
+            canvas.save();
+            canvas.clipRect(clipRect);
+            canvas.drawText(label, cx - textWidth / 2f - xOffset, cy, txt);
+            canvas.restore();
+            
+            // Invalidate to trigger redraw for animation
+            mHandler.postDelayed(mInvalidateRunnable, 16); // ~60 FPS
+        } else {
+            // Center text if it fits
+            canvas.drawText(label, cx - textWidth / 2f, cy, txt);
+        }
     }
 
     // Draw numeric coordinates around the rectangle (top, left, bottom, right)
@@ -350,7 +470,11 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         coordinatesMargin = leftW + rightW;
     }
 
-    private RectF rectFromPoints(Point ptl, Point ptr, Point pbr, Point pbl) {
+    private RectF rectFromBallIds(int tl, int tr, int br, int bl) {
+        Point ptl = (tl >= 0 && tl < point.length) ? point[tl] : null;
+        Point ptr = (tr >= 0 && tr < point.length) ? point[tr] : null;
+        Point pbr = (br >= 0 && br < point.length) ? point[br] : null;
+        Point pbl = (bl >= 0 && bl < point.length) ? point[bl] : null;
         if (ptl == null || ptr == null || pbr == null || pbl == null) return new RectF();
         float left = Math.min(ptl.x, pbl.x);
         float right = Math.max(ptr.x, pbr.x);
@@ -360,272 +484,574 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         return new RectF(left, top, right, bottom);
     }
 
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int eventaction = event.getAction();
+        final int X = (int) event.getX();
+        final int Y = (int) event.getY();
 
-        int X = (int) event.getX();
-        int Y = (int) event.getY();
+        if (gestureDetector != null && gestureDetector.onTouchEvent(event)) {
+            return true;
+        }
 
         minBorderX = margin;
         minBorderY = margin;
         maxBorderX = getWidth() - margin;
         maxBorderY = getHeight() - margin;
 
-        diffX = -1;
-        diffY = -1;
-
-        switch (eventaction) {
-            case MotionEvent.ACTION_DOWN:
-                if ((statsMinX < X && X < statsMaxX) && (statsMinY < Y && Y < statsMaxY)) {
-                    diffX = 0;
-                    diffY = 0;
-                    isInsideStats = true;
-                    break;
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN: {
+                // First, check for corner ball hit
+                activeBallId = hitTestBall(X, Y);
+                if (activeBallId >= 0) {
+                    activeRectKey = findRectKeyByBall(activeBallId);
+                    selectedWidgetKey = activeRectKey;
+                    updateSelectedLabel();
+                    draggingWholeRect = false;
+                    lastX = X; lastY = Y;
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                    return true;
                 }
-                invalidate();
-                break;
 
-            case MotionEvent.ACTION_MOVE:
-                if (isInsideStats) {
-                    diffX = (int) event.getX() - (statsMinX + (statsMaxX - statsMinX) / 2);
-                    diffY = (int) event.getY() - (statsMinY + (statsMaxY - statsMinY) / 2);
-                    moveStatsRect(0, 1, 2, 3);
-                    canvas.drawRect(point[0].x, point[2].y, point[2].x, point[0].y, statsWindowPaint);
+                // Check if inside a rectangle
+                String insideKey = hitTestRect(X, Y);
+                if (insideKey != null) {
+                    // Check for edge hit first
+                    int edgeIdx = hitTestEdge(X, Y, insideKey);
+                    if (edgeIdx >= 0) {
+                        activeRectKey = insideKey;
+                        selectedWidgetKey = activeRectKey;
+                        updateSelectedLabel();
+                        draggingWholeRect = false;
+                        lastX = X; lastY = Y;
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                        invalidate();
+                        return true;
+                    }
+                    
+                    // Otherwise, drag whole rectangle
+                    activeRectKey = insideKey;
+                    selectedWidgetKey = activeRectKey;
+                    updateSelectedLabel();
+                    draggingWholeRect = true;
+                    lastX = X; lastY = Y;
+                    getParent().requestDisallowInterceptTouchEvent(true);
                     invalidate();
+                    return true;
+                }
+                return false;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                if (activeRectKey == null) return false;
+                
+                if (draggingWholeRect) {
+                    Integer[] ids = rectangleBallIds.get(activeRectKey);
+                    if (ids == null) return false;
+
+                    int dx = X - lastX;
+                    int dy = Y - lastY;
+                    if (dx == 0 && dy == 0) return true;
+
+                    // clamp to margins
+                    RectF before = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
+                    if (before.isEmpty()) return true;
+                    RectF after = new RectF(before);
+                    after.offset(dx, dy);
+
+                    float clampedDx = dx;
+                    float clampedDy = dy;
+                    if (after.left < minBorderX) clampedDx += (minBorderX - after.left);
+                    if (after.right > maxBorderX) clampedDx -= (after.right - maxBorderX);
+                    if (after.top < minBorderY) clampedDy += (minBorderY - after.top);
+                    if (after.bottom > maxBorderY) clampedDy -= (after.bottom - maxBorderY);
+
+                    for (int id : ids) {
+                        point[id].x += (int) clampedDx;
+                        point[id].y += (int) clampedDy;
+                    }
+                    lastX = X; lastY = Y;
+                    invalidate();
+                    return true;
+                }
+                return false;
+            }
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL: {
+                savePrefs();
+                activeBallId = -1;
+                activeRectKey = null;
+                draggingWholeRect = false;
+                getParent().requestDisallowInterceptTouchEvent(false);
+                invalidate();
+                return true;
+            }
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private int hitTestBall(int x, int y) {
+        // Invisible handles but generous hit radius at corner points
+        final float radius = Math.max(handleRadiusPx, 40f * getResources().getDisplayMetrics().density);
+        final float r2 = radius * radius;
+        for (ColorBall b : colorballs) {
+            if (b == null) continue;
+            float dx = x - b.getX();
+            float dy = y - b.getY();
+            if (dx * dx + dy * dy <= r2) return b.getID();
+        }
+        return -1;
+    }
+
+    private String hitTestRect(int x, int y) {
+        for (int i = rectangleConfigs.size() - 1; i >= 0; i--) {
+            RectangleConfig cfg = rectangleConfigs.get(i);
+            if (!cfg.enabled) continue;
+            Integer[] ids = rectangleBallIds.get(cfg.key);
+            if (ids == null) continue;
+            RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
+            if (!r.isEmpty() && r.contains(x, y)) return cfg.key;
+        }
+        return null;
+    }
+
+    private int hitTestEdge(int x, int y, String rectKey) {
+        Integer[] ids = rectangleBallIds.get(rectKey);
+        if (ids == null) return -1;
+        
+        RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
+        if (r.isEmpty()) return -1;
+        
+        // Edge hit detection with generous touch area
+        float edgeTolerance = Math.max(30f * getResources().getDisplayMetrics().density, handleRadiusPx);
+        
+        // Check if inside the rectangle bounds (with tolerance)
+        if (x < r.left - edgeTolerance || x > r.right + edgeTolerance ||
+            y < r.top - edgeTolerance || y > r.bottom + edgeTolerance) {
+            return -1;
+        }
+        
+        // Determine which edge is closest
+        float distToTop = Math.abs(y - r.top);
+        float distToBottom = Math.abs(y - r.bottom);
+        float distToLeft = Math.abs(x - r.left);
+        float distToRight = Math.abs(x - r.right);
+        
+        float minDist = Math.min(Math.min(distToTop, distToBottom), Math.min(distToLeft, distToRight));
+        
+        if (minDist > edgeTolerance) {
+            return -1; // Not close enough to any edge
+        }
+        
+        // Return edge index: 0=top, 1=right, 2=bottom, 3=left
+        if (minDist == distToTop) return 0;
+        if (minDist == distToRight) return 1;
+        if (minDist == distToBottom) return 2;
+        if (minDist == distToLeft) return 3;
+        
+        return -1;
+    }
+
+    private RectangleConfig getConfig(String key) {
+        for (RectangleConfig c : rectangleConfigs) if (c.key.equals(key)) return c;
+        return null;
+    }
+
+    private String findRectKeyByBall(int ballId) {
+        for (Map.Entry<String, Integer[]> e : rectangleBallIds.entrySet()) {
+            Integer[] arr = e.getValue();
+            for (int id : arr) if (id == ballId) return e.getKey();
+        }
+        return null;
+    }
+    
+    @Override
+    public void onClick(View v) {
+        if (selectedWidgetKey == null) return;
+        Integer[] ids = rectangleBallIds.get(selectedWidgetKey);
+        RectangleConfig cfg = getConfig(selectedWidgetKey);
+        if (ids == null || cfg == null) return;
+
+        maxBorderX = getWidth();
+        maxBorderY = getHeight();
+
+        final int STEP = 1;
+        RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
+        if (r.isEmpty()) return;
+
+        switch (v.getId()) {
+            case R.id.top_up: {
+                RectF cand = new RectF(r.left, r.top - STEP, r.right, r.bottom);
+                if (cand.top >= margin) { candToPoints(ids, cand); saveAndRedraw(); }
+                break;
+            }
+            case R.id.top_down: {
+                RectF cand = new RectF(r.left, r.top + STEP, r.right, r.bottom);
+                if (cand.height() >= cfg.minHeight) { candToPoints(ids, cand); saveAndRedraw(); }
+                break;
+            }
+            case R.id.bottom_up: {
+                float newBottom = Math.max(r.top + cfg.minHeight, r.bottom - STEP);
+                RectF cand = new RectF(r.left, r.top, r.right, newBottom);
+                candToPoints(ids, cand); saveAndRedraw();
+                break;
+            }
+            case R.id.bottom_down: {
+                RectF cand = new RectF(r.left, r.top, r.right, r.bottom + STEP);
+                if (cand.bottom <= (maxBorderY - margin)) { candToPoints(ids, cand); saveAndRedraw(); }
+                break;
+            }
+            case R.id.left_to_left: {
+                RectF cand = new RectF(r.left - STEP, r.top, r.right, r.bottom);
+                if (cand.left >= (minBorderX)) { candToPoints(ids, cand); saveAndRedraw(); }
+                break;
+            }
+            case R.id.left_to_right: {
+                float newLeft = Math.min(r.right - cfg.minWidth, r.left + STEP);
+                RectF cand = new RectF(newLeft, r.top, r.right, r.bottom);
+                candToPoints(ids, cand); saveAndRedraw();
+                break;
+            }
+            case R.id.right_to_left: {
+                float newRight = Math.max(r.left + cfg.minWidth, r.right - STEP);
+                RectF cand = new RectF(r.left, r.top, newRight, r.bottom);
+                candToPoints(ids, cand); saveAndRedraw();
+                break;
+            }
+            case R.id.right_to_right: {
+                RectF cand = new RectF(r.left, r.top, r.right + STEP, r.bottom);
+                if (cand.right <= (maxBorderX - margin)) { candToPoints(ids, cand); saveAndRedraw(); }
+                break;
+            }
+            case R.id.confirm_layout: {
+                if (hasAnyIntersection()) {
+                    displayDialog();
+                } else {
+                    savePrefs();
+                    String message = getSafeContext().getString(R.string.layout_set);
+                    if (mInflater != null && mRootView != null) {
+                        View toastLayout = mInflater.inflate(R.layout.toast, mRootView.findViewById(R.id.toast_layout));
+                        TextView text = toastLayout.findViewById(R.id.toast_text);
+                        text.setText(message);
+                        text.setTextSize(30);
+                        Toast toast = Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toast.setView(toastLayout);
+                        toast.show();
+                    } else {
+                        Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG).show();
+                    }
                 }
                 break;
-
-            case MotionEvent.ACTION_UP:
-                isInsideStats = false;
-                break;
+            }
         }
-        invalidate();
-        return true;
+    }
+
+    private void candToPoints(Integer[] ids, RectF cand) {
+        point[ids[0]].x = (int) cand.left;  point[ids[0]].y = (int) cand.top;
+        point[ids[1]].x = (int) cand.right; point[ids[1]].y = (int) cand.top;
+        point[ids[2]].x = (int) cand.right; point[ids[2]].y = (int) cand.bottom;
+        point[ids[3]].x = (int) cand.left;  point[ids[3]].y = (int) cand.bottom;
+    }
+
+    private void setCalculatedTextSize(View view, int textViewId, int textSizeSp) {
+        if (view == null) return;
+        TextView tv = view.findViewById(textViewId);
+        if (tv != null) tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp);
+    }
+
+    private void setCalculatedButtonSizes(Button button, int width, int height) {
+        if (button == null) return;
+        ViewGroup.LayoutParams params = button.getLayoutParams();
+        if (params instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams mp = (ViewGroup.MarginLayoutParams) params;
+            mp.width = width; mp.height = height;
+            button.setLayoutParams(mp);
+        } else {
+            ViewGroup.MarginLayoutParams mp = new ViewGroup.MarginLayoutParams(width, height);
+            button.setLayoutParams(mp);
+        }
+    }
+
+    private AppCompatActivity getActivity() {
+        Context context = getSafeContext();
+        while (context instanceof ContextWrapper) {
+            if (context instanceof AppCompatActivity) {
+                return (AppCompatActivity)context;
+            }
+            context = ((ContextWrapper)context).getBaseContext();
+        }
+        return null;
     }
 
     @Override
-    public void onClick(View v) {
-        maxBorderX = getWidth();
-        maxBorderY = getHeight();
-        switch (v.getId()) {
-            case R.id.top_up:
-                up(0, 1, 2, 3);
-                invalidate();
-                break;
-            case R.id.bottom_down:
-                down(0, 1, 2, 3);
-                invalidate();
-                break;
-            case R.id.left_to_left:
-                left(0, 1, 2, 3);
-                invalidate();
-                break;
-            case R.id.right_to_right:
-                right(0, 1, 2, 3);
-                invalidate();
-                break;
-            case R.id.confirm_layout:
-                showToast();
-                break;
-            case R.id.top_up_bottom:
-                up(0, 1, 2, 3);
-                invalidate();
-                break;
-            case R.id.bottom_down_bottom:
-                down(0, 1, 2, 3);
-                invalidate();
-                break;
-            case R.id.left_to_left_bottom:
-                left(0, 1, 2, 3);
-                invalidate();
-                break;
-            case R.id.right_to_right_bottom:
-                right(0, 1, 2, 3);
-                invalidate();
-                break;
-            case R.id.confirm_layout_bottom:
-                showToast();
-                break;
-            default:
-                break;
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (visibility == View.VISIBLE) {
+            //onResume() called
+            if(changedView == null){
+                return;
+            }
+            changedView.setFocusableInTouchMode(true);
+            changedView.requestFocus();
+            changedView.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    // handle back button's click listener
+                    if (hasAnyIntersection()) {
+                        displayDialog();
+                    } else {
+                        savePrefs();
+                        getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
+                    }
+                    return true;
+                }
+                return false;
+            });
         }
+        else {
+            //onPause() called
+        } 
     }
 
-    private void showToast() {
-        savePrefs();
-        View toastLayout = mInflater.inflate(R.layout.toast, mRootView.findViewById(R.id.toast_layout));
-        TextView text = toastLayout.findViewById(R.id.toast_text);
-        String message = getSafeContext().getString(R.string.stats_pos_set);
-        text.setText(message);
-        text.setTextSize(30);
-        Toast toast = Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.setView(toastLayout);
-        toast.show();
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mHandler.removeCallbacks(mInvalidateRunnable);
+        if (alertDialog != null && alertDialog.isShowing()) {
+            alertDialog.dismiss();
+        }
+        alertDialog = null;
+        setOnKeyListener(null);
+        mContextWeakRef = null;
+        mInflater = null;
+        mRootView = null;
+    }
+
+    private void displayDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getSafeContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        builder.setTitle(getSafeContext().getString(R.string.overlapping));
+        builder.setMessage(getSafeContext().getString(R.string.wont_save));
+        builder.setPositiveButton(getSafeContext().getString(R.string.proceed_and_reset), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                helpers.checkAndResetIfOverlappingOnScreen(-1);
+                getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
+            }
+        });
+        builder.setNegativeButton(getSafeContext().getString(R.string.dismiss), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        alertDialog = builder.create();
+        alertDialog.show();
+        Button negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, 0, 80, 0);
+        negativeButton.setLayoutParams(params);
+    }
+
+    private void saveAndRedraw() { savePrefs(); invalidate(); }
+
+    private void saveStatsAndRedraw() { 
+        int statsWidthSelector = sharedPrefs.getInt(Keys.APP_STATS_WIDTH_SELECTOR, 0);
+        if (statsWidthSelector == 0) {
+            statsWidthSelector = 1;
+        } else if (statsWidthSelector == 1) {
+            statsWidthSelector = 2;
+        } else if (statsWidthSelector == 2) {
+            statsWidthSelector = 0;
+        }
+        saveStatsPrefs(statsWidthSelector); 
+        invalidate(); 
+    }
+
+    private void updateSelectedLabel() {
+        RectangleConfig cfg = getConfig(selectedWidgetKey);
+        if (cfg != null && rectangleName != null) rectangleName.setText(cfg.name);
     }
 
     private void savePrefs() {
-        int topLeftY = point[0].y;
-        if (barBottom.getVisibility() == View.GONE) {
-            topLeftY = point[0].y + SettingsActivity.barHeight;
-        } else {
-            topLeftY = point[0].y;
+        SharedPreferences.Editor e = sharedPrefs.edit();
+        for (RectangleConfig cfg : rectangleConfigs) {
+            if (!cfg.enabled) continue;
+            Integer[] ids = rectangleBallIds.get(cfg.key);
+            if (ids == null) continue;
+            e.putInt(cfg.key + "TopLeftX", point[ids[0]].x);
+            e.putInt(cfg.key + "TopLeftY", point[ids[0]].y);
+            e.putInt(cfg.key + "TopRightX", point[ids[1]].x);
+            e.putInt(cfg.key + "TopRightY", point[ids[1]].y);
+            e.putInt(cfg.key + "BottomRightX", point[ids[2]].x);
+            e.putInt(cfg.key + "BottomRightY", point[ids[2]].y);
+            e.putInt(cfg.key + "BottomLeftX", point[ids[3]].x);
+            e.putInt(cfg.key + "BottomLeftY", point[ids[3]].y);
         }
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.putInt("appStatsTopLeftX", point[0].x);
-        editor.putInt("appStatsTopLeftY", topLeftY);
-        editor.putInt("topY", topLeftY);
-        editor.apply();
+        e.apply();
     }
 
-    private void initStatsRect(Context context, int[] values) {
-        int topLeftX = values[0];
-        int topLeftY = values[1];
-        int topRightX = values[2];
-        int topRightY = values[3];
-        int bottomRightX = values[4];
-        int bottomRightY = values[5];
-        int bottomLeftX = values[6];
-        int bottomLeftY = values[7];
+    private void saveStatsPrefs(int widthSelector) {
+        SharedPreferences.Editor e = sharedPrefs.edit();
 
-        point[values[8]] = new Point();
-        point[values[8]].x = topLeftX;
-        point[values[8]].y = topLeftY;
+        // Determine desired width from the statsWidth selector
+        int desiredWidth;
+        switch (widthSelector) {
+            case 1:
+                desiredWidth = (SettingsActivity.calculatedStatsWidth / 3) * 2;
+                break;
+            case 2:
+                desiredWidth = SettingsActivity.calculatedStatsWidth / 4;
+                break;
+            case 0:
+            default:
+                desiredWidth = SettingsActivity.calculatedStatsWidth;
+                break;
+        }
 
-        point[values[9]] = new Point();
-        point[values[9]].x = topRightX;
-        point[values[9]].y = topRightY;
+        // Screen width and allowed width considering margins
+        int screenWidth = android.content.res.Resources.getSystem().getDisplayMetrics().widthPixels;
+        int allowedWidth = Math.max(0, screenWidth - 2 * margin);
 
-        point[values[10]] = new Point();
-        point[values[10]].x = bottomRightX;
-        point[values[10]].y = bottomRightY;
+        // Clamp desired width to not exceed available space
+        if (desiredWidth > allowedWidth) desiredWidth = allowedWidth;
 
-        point[values[11]] = new Point();
-        point[values[11]].x = bottomLeftX;
-        point[values[11]].y = bottomLeftY;
-    }
+        // For each rectangle config, adjust the stats rectangle and save coordinates
+        for (RectangleConfig cfg : rectangleConfigs) {
+            if (!cfg.key.equals("appStats")) continue;
+            if (!cfg.enabled) continue;
+            Integer[] ids = rectangleBallIds.get(cfg.key);
+            if (ids == null || ids.length < 4) continue;
 
-    private void moveStatsRect(int topLeft, int topRight, int bottomRight, int bottomLeft) {
-        // allow to move only within the layout borders
-        if (point[topLeft].x >= minBorderX
-                || point[topLeft].y >= minBorderY
-                || point[bottomRight].x >= maxBorderX
-                || point[bottomRight].y >= maxBorderY) {
-            point[topLeft].x = point[topLeft].x + diffX;
-            point[topRight].x = point[topRight].x + diffX;
-            point[bottomRight].x = point[bottomRight].x + diffX;
-            point[bottomLeft].x = point[bottomLeft].x + diffX;
-            point[topLeft].y = point[topLeft].y + diffY;
-            point[topRight].y = point[topRight].y + diffY;
-            point[bottomRight].y = point[bottomRight].y + diffY;
-            point[bottomLeft].y = point[bottomLeft].y + diffY;
-            if (point[topLeft].x < minBorderX) {
-                int toZeroX = Math.abs(point[topLeft].x) + margin;
-                point[topLeft].x = point[topLeft].x + toZeroX;
-                point[topRight].x = point[topRight].x + toZeroX;
-                point[bottomRight].x = point[bottomRight].x + toZeroX;
-                point[bottomLeft].x = point[bottomLeft].x + toZeroX;
+            // Current center X of the rectangle (use top-left and top-right)
+            int curLeftX = point[ids[0]].x;
+            int curRightX = point[ids[1]].x;
+            int centerX = (curLeftX + curRightX) / 2;
+
+            // Compute new left/right ensuring margins
+            int newLeft = centerX - desiredWidth / 2;
+            int newRight = newLeft + desiredWidth;
+
+            if (newLeft < margin) {
+                newLeft = margin;
+                newRight = newLeft + desiredWidth;
             }
-            if (point[topLeft].y < minBorderY) {
-                barTop.setVisibility(View.GONE);
-                barBottom.setVisibility(View.VISIBLE);
-                int toZeroY = Math.abs(point[topLeft].y) + margin;
-                point[topLeft].y = point[topLeft].y + toZeroY;
-                point[topRight].y = point[topRight].y + toZeroY;
-                point[bottomRight].y = point[bottomRight].y + toZeroY;
-                point[bottomLeft].y = point[bottomLeft].y + toZeroY;
+            if (newRight > screenWidth - margin) {
+                newRight = screenWidth - margin;
+                newLeft = newRight - desiredWidth;
+                if (newLeft < margin) { // final safety clamp if desiredWidth > allowedWidth
+                    newLeft = margin;
+                }
             }
-            if (point[bottomRight].x > maxBorderX) {
-                int toMaxX = Math.abs(point[bottomRight].x) - maxBorderX;
-                point[topLeft].x = point[topLeft].x - toMaxX;
-                point[topRight].x = point[topRight].x - toMaxX;
-                point[bottomRight].x = point[bottomRight].x - toMaxX;
-                point[bottomLeft].x = point[bottomLeft].x - toMaxX;
+
+            // Assign adjusted x coordinates to all relevant corner points
+            point[ids[0]].x = newLeft;   // TopLeft
+            point[ids[3]].x = newLeft;   // BottomLeft
+            point[ids[1]].x = newRight;  // TopRight
+            point[ids[2]].x = newRight;  // BottomRight
+
+            // Save corners to preferences (as before)
+            e.putInt(cfg.key + "TopLeftX", point[ids[0]].x);
+            e.putInt(cfg.key + "TopLeftY", point[ids[0]].y);
+            e.putInt(cfg.key + "TopRightX", point[ids[1]].x);
+            e.putInt(cfg.key + "TopRightY", point[ids[1]].y);
+            e.putInt(cfg.key + "BottomRightX", point[ids[2]].x);
+            e.putInt(cfg.key + "BottomRightY", point[ids[2]].y);
+            e.putInt(cfg.key + "BottomLeftX", point[ids[3]].x);
+            e.putInt(cfg.key + "BottomLeftY", point[ids[3]].y);
+            // Save the computed width and selector
+            e.putInt(Keys.APP_STATS_WIDTH, desiredWidth);
+            e.putInt(Keys.APP_STATS_WIDTH_SELECTOR, widthSelector);
+        }
+
+        e.apply();
+    }
+
+    /** Returns true if any two enabled rectangles intersect (overlap or touch). */
+    public boolean hasAnyIntersection() {
+        for (int i = 0; i < rectangleConfigs.size(); i++) {
+            RectangleConfig a = rectangleConfigs.get(i);
+            if (!a.enabled) continue;
+
+            Integer[] ia = rectangleBallIds.get(a.key);
+            if (ia == null) continue;
+
+            RectF ra = rectFromBallIds(ia[0], ia[1], ia[2], ia[3]);
+            if (ra.isEmpty()) continue;
+
+            for (int j = i + 1; j < rectangleConfigs.size(); j++) {
+                RectangleConfig b = rectangleConfigs.get(j);
+                if (!b.enabled) continue;
+                if (!b.shouldIntersect) continue;
+
+                Integer[] ib = rectangleBallIds.get(b.key);
+                if (ib == null) continue;
+
+                RectF rb = rectFromBallIds(ib[0], ib[1], ib[2], ib[3]);
+                if (rb.isEmpty()) continue;
+
+                if (overlapsOrTouches(ra, rb)) {
+                    return true;
+                }
             }
-            if (point[bottomRight].y > maxBorderY) {
-                barTop.setVisibility(View.VISIBLE);
-                barBottom.setVisibility(View.GONE);
-                int toMaxY = Math.abs(point[bottomRight].y) - maxBorderY;
-                point[topLeft].y = point[topLeft].y - toMaxY;
-                point[topRight].y = point[topRight].y - toMaxY;
-                point[bottomRight].y = point[bottomRight].y - toMaxY;
-                point[bottomLeft].y = point[bottomLeft].y - toMaxY;
+        }
+        return false;
+    }
+
+    /** Inclusive overlap check: counts edge/corner touching as intersection. */
+    private static boolean overlapsOrTouches(RectF a, RectF b) {
+        // If there is any separating gap, they don't intersect.
+        return !(a.right < b.left || b.right < a.left || a.bottom < b.top || b.bottom < a.top);
+    }
+
+    public static class ColorBall {
+        private final Bitmap bitmap;
+        private final Point point;
+        private final int id;
+
+        public ColorBall(Context context, int resId, Point point, int id) {
+            this.id = id;
+            this.point = point;
+            Bitmap bmp = null;
+            if (resId != 0) {
+                try { bmp = BitmapFactory.decodeResource(context.getResources(), resId); }
+                catch (Throwable ignored) {}
             }
+            this.bitmap = bmp;
         }
-    }
 
-    private void up(int topLeft, int topRight, int bottomRight, int bottomLeft) {
-        if (point[topLeft].y > (minBorderY + margin)) {
-            point[topLeft].y = point[topLeft].y - 1;
-            point[topRight].y = point[topRight].y - 1;
-            point[bottomRight].y = point[bottomRight].y - 1;
-            point[bottomLeft].y = point[bottomLeft].y - 1;
-        }
-        if (point[topLeft].y <= (minBorderY + margin) && barBottom.getVisibility() == View.GONE && barTop.getVisibility() == View.VISIBLE) {
-            barTop.setVisibility(View.GONE);
-            barBottom.setVisibility(View.VISIBLE);
-            point[topLeft].y = point[topLeft].y + SettingsActivity.barHeight;
-            point[topRight].y = point[topRight].y + SettingsActivity.barHeight;
-            point[bottomRight].y = point[bottomRight].y + SettingsActivity.barHeight;
-            point[bottomLeft].y = point[bottomLeft].y + SettingsActivity.barHeight;
-        }
+        public int getWidthOfBall() { return bitmap == null ? 0 : bitmap.getWidth(); }
+        public int getHeightOfBall() { return bitmap == null ? 0 : bitmap.getHeight(); }
+        public Bitmap getBitmap() { return bitmap; }
+        public int getX() { return point.x; }
+        public int getY() { return point.y; }
+        public int getID() { return id; }
     }
-
-    private void down(int topLeft, int topRight, int bottomRight, int bottomLeft) {
-        if (point[bottomRight].y < (maxBorderY - margin)) {
-            point[topLeft].y = point[topLeft].y + 1;
-            point[topRight].y = point[topRight].y + 1;
-            point[bottomRight].y = point[bottomRight].y + 1;
-            point[bottomLeft].y = point[bottomLeft].y + 1;
-        }
-        if (point[bottomRight].y >= (maxBorderY - margin) && barBottom.getVisibility() == View.VISIBLE && barTop.getVisibility() == View.GONE) {
-            barTop.setVisibility(View.VISIBLE);
-            barBottom.setVisibility(View.GONE);
-            point[topLeft].y = point[topLeft].y - SettingsActivity.barHeight;
-            point[topRight].y = point[topRight].y - SettingsActivity.barHeight;
-            point[bottomRight].y = point[bottomRight].y - SettingsActivity.barHeight;
-            point[bottomLeft].y = point[bottomLeft].y - SettingsActivity.barHeight;
-        }
-    }
-
-    private void left(int topLeft, int topRight, int bottomRight, int bottomLeft) {
-        if (point[topLeft].x > (minBorderX + margin)) {
-            point[topLeft].x = point[topLeft].x - 1;
-            point[topRight].x = point[topRight].x - 1;
-            point[bottomRight].x = point[bottomRight].x - 1;
-            point[bottomLeft].x = point[bottomLeft].x - 1;
-        }
-    }
-
-    private void right(int topLeft, int topRight, int bottomRight, int bottomLeft) {
-        if (point[bottomRight].x < (maxBorderX - margin)) {
-            point[topLeft].x = point[topLeft].x + 1;
-            point[topRight].x = point[topRight].x + 1;
-            point[bottomRight].x = point[bottomRight].x + 1;
-            point[bottomLeft].x = point[bottomLeft].x + 1;
-        }
-    }
-
+    
     // For non FYT devices
     private void scaleView() {
         if (mRootView == null) return;
-
+        
         float scaleFactor = 0.75f;
         int statusBarHeight = getSettingsActivity().getStatusBarHeight();
         int navigationBarHeight = getSettingsActivity().getNavigationBarHeight();
         boolean isPortrait = SettingsActivity.isPortrait;
-
-        // Apply top inset for status bar to the root view
+        
+        // Apply top inset for status bar
         mRootView.setPadding(
-                mRootView.getPaddingLeft(),
-                mRootView.getPaddingTop() + statusBarHeight,
-                mRootView.getPaddingRight(),
-                mRootView.getPaddingBottom()
+            mRootView.getPaddingLeft(),
+            mRootView.getPaddingTop() + statusBarHeight,
+            mRootView.getPaddingRight(),
+            mRootView.getPaddingBottom()
         );
-
-        // Apply bottom or right inset for navigation bar to both creator bars
-        if (barTop != null) {
-            ViewGroup.LayoutParams params = barTop.getLayoutParams();
+        
+        // Apply bottom or right inset for navigation bar
+        View creatorBar = mRootView.findViewById(R.id.creator_bar);
+        View creatorBarAutoHide = mRootView.findViewById(R.id.creator_bar_auto_hide);
+        
+        if (creatorBar != null) {
+            ViewGroup.LayoutParams params = creatorBar.getLayoutParams();
             if (params instanceof ViewGroup.MarginLayoutParams) {
                 ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
                 if (isPortrait) {
@@ -633,12 +1059,12 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                 } else {
                     marginParams.rightMargin += navigationBarHeight;
                 }
-                barTop.setLayoutParams(marginParams);
+                creatorBar.setLayoutParams(marginParams);
             }
         }
-
-        if (barBottom != null) {
-            ViewGroup.LayoutParams params = barBottom.getLayoutParams();
+        
+        if (creatorBarAutoHide != null) {
+            ViewGroup.LayoutParams params = creatorBarAutoHide.getLayoutParams();
             if (params instanceof ViewGroup.MarginLayoutParams) {
                 ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
                 if (isPortrait) {
@@ -646,33 +1072,31 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                 } else {
                     marginParams.rightMargin += navigationBarHeight;
                 }
-                barBottom.setLayoutParams(marginParams);
+                creatorBarAutoHide.setLayoutParams(marginParams);
             }
         }
-
-        // Scale buttons in top bar
-        if (mUp != null) scaleButton(mUp, scaleFactor);
-        if (mDown != null) scaleButton(mDown, scaleFactor);
-        if (mLeft != null) scaleButton(mLeft, scaleFactor);
-        if (mRight != null) scaleButton(mRight, scaleFactor);
+        
+        // Scale buttons in bottom bar
+        if (mTopUp != null) scaleButton(mTopUp, scaleFactor);
+        if (mTopDown != null) scaleButton(mTopDown, scaleFactor);
+        if (mBottomUp != null) scaleButton(mBottomUp, scaleFactor);
+        if (mBottomDown != null) scaleButton(mBottomDown, scaleFactor);
+        if (mLeftToLeft != null) scaleButton(mLeftToLeft, scaleFactor);
+        if (mLeftToRight != null) scaleButton(mLeftToRight, scaleFactor);
+        if (mRightToLeft != null) scaleButton(mRightToLeft, scaleFactor);
+        if (mRightToRight != null) scaleButton(mRightToRight, scaleFactor);
         if (mConfirmLayout != null) {
             scaleButton(mConfirmLayout, scaleFactor);
             mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize * scaleFactor);
         }
-
-        // Scale buttons in bottom bar
-        if (mUpBottom != null) scaleButton(mUpBottom, scaleFactor);
-        if (mDownBottom != null) scaleButton(mDownBottom, scaleFactor);
-        if (mLeftBottom != null) scaleButton(mLeftBottom, scaleFactor);
-        if (mRightBottom != null) scaleButton(mRightBottom, scaleFactor);
-        if (mConfirmLayoutBottom != null) {
-            scaleButton(mConfirmLayoutBottom, scaleFactor);
-            mConfirmLayoutBottom.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize * scaleFactor);
-        }
-
-        // Scale text in bars
-        scaleTextView(mRootView, R.id.stats_name_string, SettingsActivity.selectionTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.stats_name_string_bottom, SettingsActivity.selectionTextSize * scaleFactor);
+        
+        // Scale text in bottom bar
+        scaleTextView(mRootView, R.id.selected_widget_string, SettingsActivity.selectionTextSize * scaleFactor);
+        scaleTextView(mRootView, R.id.rectangle_name, SettingsActivity.selectionTextSize * scaleFactor);
+        scaleTextView(mRootView, R.id.top_button_string, SettingsActivity.arrowTextSize * scaleFactor);
+        scaleTextView(mRootView, R.id.bottom_button_string, SettingsActivity.arrowTextSize * scaleFactor);
+        scaleTextView(mRootView, R.id.left_button_string, SettingsActivity.arrowTextSize * scaleFactor);
+        scaleTextView(mRootView, R.id.right_button_string, SettingsActivity.arrowTextSize * scaleFactor);
     }
 
     private void scaleButton(Button button, float scaleFactor) {

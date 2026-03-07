@@ -270,7 +270,14 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
             View creatorView = rootView.findViewById(R.id.creator_other_screens);   
             gestureDetector = new GestureDetector(getSafeContext(), new GestureDetector.SimpleOnGestureListener() {
                 @Override
-                public boolean onDoubleTap(MotionEvent e) {
+                public boolean onDoubleTap(MotionEvent event) {
+                    final int X = (int) event.getX();
+                    final int Y = (int) event.getY();
+                    String getKey = hitTestRect(X, Y);
+                    if (String.valueOf(getKey).equals("stats")) { 
+                        saveStatsAndRedraw();
+                        return true;
+                    }
                     if (creatorBar.getVisibility() == View.VISIBLE) {
                         creatorBar.setVisibility(View.GONE); 
                     } else {
@@ -565,7 +572,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
         final int X = (int) event.getX();
         final int Y = (int) event.getY();
 
-        if (gestureDetector.onTouchEvent(event)) {
+        if (gestureDetector != null && gestureDetector.onTouchEvent(event)) {
             return true;
         }
 
@@ -623,7 +630,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
             case MotionEvent.ACTION_MOVE: {
                 if (activeRectKey == null) return false;
                 
-                if (activeBallId >= 0) {
+                if (activeBallId >= 0 && !activeRectKey.equals("stats")) {
                     Integer[] ids = rectangleBallIds.get(activeRectKey);
                     RectangleConfig cfg = getConfig(activeRectKey);
                     if (ids == null || cfg == null) return false;
@@ -635,7 +642,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
                     }
                     lastX = X; lastY = Y;
                     return true;
-                } else if (draggingEdge) {
+                } else if (draggingEdge && !activeRectKey.equals("stats")) {
                     Integer[] ids = rectangleBallIds.get(activeRectKey);
                     RectangleConfig cfg = getConfig(activeRectKey);
                     if (ids == null || cfg == null) return false;
@@ -1088,6 +1095,19 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
 
     private void saveAndRedraw() { savePrefs(); invalidate(); }
 
+    private void saveStatsAndRedraw() { 
+        int statsWidthSelector = sharedPrefs.getInt(Keys.STATS_WIDTH_SELECTOR, 0);
+        if (statsWidthSelector == 0) {
+            statsWidthSelector = 1;
+        } else if (statsWidthSelector == 1) {
+            statsWidthSelector = 2;
+        } else if (statsWidthSelector == 2) {
+            statsWidthSelector = 0;
+        }
+        saveStatsPrefs(statsWidthSelector); 
+        invalidate(); 
+    }
+
     private void updateSelectedLabel() {
         RectangleConfig cfg = getConfig(selectedWidgetKey);
         if (cfg != null && rectangleName != null) rectangleName.setText(cfg.name);
@@ -1108,6 +1128,82 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
             e.putInt(cfg.key + "BottomLeftX", point[ids[3]].x);
             e.putInt(cfg.key + "BottomLeftY", point[ids[3]].y);
         }
+        e.apply();
+    }
+
+    private void saveStatsPrefs(int widthSelector) {
+        SharedPreferences.Editor e = sharedPrefs.edit();
+
+        // Determine desired width from the statsWidth selector
+        int desiredWidth;
+        switch (widthSelector) {
+            case 1:
+                desiredWidth = (SettingsActivity.calculatedStatsWidth / 3) * 2;
+                break;
+            case 2:
+                desiredWidth = SettingsActivity.calculatedStatsWidth / 4;
+                break;
+            case 0:
+            default:
+                desiredWidth = SettingsActivity.calculatedStatsWidth;
+                break;
+        }
+
+        // Screen width and allowed width considering margins
+        int screenWidth = android.content.res.Resources.getSystem().getDisplayMetrics().widthPixels;
+        int allowedWidth = Math.max(0, screenWidth - 2 * margin);
+
+        // Clamp desired width to not exceed available space
+        if (desiredWidth > allowedWidth) desiredWidth = allowedWidth;
+
+        // For each rectangle config, adjust the stats rectangle and save coordinates
+        for (RectangleConfig cfg : rectangleConfigs) {
+            if (!cfg.key.equals("stats")) continue;
+            if (!cfg.enabled) continue;
+            Integer[] ids = rectangleBallIds.get(cfg.key);
+            if (ids == null || ids.length < 4) continue;
+
+            // Current center X of the rectangle (use top-left and top-right)
+            int curLeftX = point[ids[0]].x;
+            int curRightX = point[ids[1]].x;
+            int centerX = (curLeftX + curRightX) / 2;
+
+            // Compute new left/right ensuring margins
+            int newLeft = centerX - desiredWidth / 2;
+            int newRight = newLeft + desiredWidth;
+
+            if (newLeft < margin) {
+                newLeft = margin;
+                newRight = newLeft + desiredWidth;
+            }
+            if (newRight > screenWidth - margin) {
+                newRight = screenWidth - margin;
+                newLeft = newRight - desiredWidth;
+                if (newLeft < margin) { // final safety clamp if desiredWidth > allowedWidth
+                    newLeft = margin;
+                }
+            }
+
+            // Assign adjusted x coordinates to all relevant corner points
+            point[ids[0]].x = newLeft;   // TopLeft
+            point[ids[3]].x = newLeft;   // BottomLeft
+            point[ids[1]].x = newRight;  // TopRight
+            point[ids[2]].x = newRight;  // BottomRight
+
+            // Save corners to preferences (as before)
+            e.putInt(cfg.key + "TopLeftX", point[ids[0]].x);
+            e.putInt(cfg.key + "TopLeftY", point[ids[0]].y);
+            e.putInt(cfg.key + "TopRightX", point[ids[1]].x);
+            e.putInt(cfg.key + "TopRightY", point[ids[1]].y);
+            e.putInt(cfg.key + "BottomRightX", point[ids[2]].x);
+            e.putInt(cfg.key + "BottomRightY", point[ids[2]].y);
+            e.putInt(cfg.key + "BottomLeftX", point[ids[3]].x);
+            e.putInt(cfg.key + "BottomLeftY", point[ids[3]].y);
+            // Save the computed width and selector
+            e.putInt(Keys.STATS_WIDTH, desiredWidth);
+            e.putInt(Keys.STATS_WIDTH_SELECTOR, widthSelector);
+        }
+
         e.apply();
     }
 

@@ -35,7 +35,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -408,7 +407,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             if (helpers.logcatRunBoolean()) {
                 int delay = helpers.returnCountDownLogcat() * 1000;
                 setCountDownTimer(delay);
-                setTickRunnable(delay + 1000);
+                setTickRunnable(delay);
             } else {
                 logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
                 helpers.setCountDownLogcat(0);
@@ -683,13 +682,11 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 break;
             case Keys.LOGCAT_SERVICE_RUN:
                 if (!helpers.logcatRunBoolean()) {
-                    // start the service
                     int logcatTimeout = Integer.parseInt(sharedPrefs.getString(Keys.LOGCAT_SERVICE_TIMEOUT, "30")) * 1000;
                     startLogcatRun();
                     setCountDownTimer(logcatTimeout);
-                    setTickRunnable(logcatTimeout + 1000);
+                    setTickRunnable(logcatTimeout);
                 } else {
-                    // stop the service
                     stopLogcatRun();
                 }
                 break;
@@ -866,13 +863,11 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     };
 
     public void startLogcatRun() {
-        Intent intent = new Intent(this.requireContext(), LogcatService.class);
-        this.requireContext().startService(intent);
+        LogcatWorker.get().start(requireContext());
     }
 
     public void stopLogcatRun() {
-        Intent intent = new Intent(this.requireContext(), LogcatService.class);
-        this.requireContext().stopService(intent);
+        LogcatWorker.get().stop(true, requireContext());
         removeTickRunnable();
         cancelCountDownTimer();
         logcatRun.setSummary(getString(R.string.logcat_service_run_summary));

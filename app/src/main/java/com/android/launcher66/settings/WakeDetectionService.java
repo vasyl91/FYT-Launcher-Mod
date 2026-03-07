@@ -90,6 +90,22 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
             Helpers helpers = new Helpers();
             if (val.contains("true")) {
                 Log.e(TAG, "Device awakened from sleep");
+                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+                long lastSleepTimestamp = mPrefs.getLong("sleep_timestamp", -1L);
+                boolean resetPip = false;
+
+                if (lastSleepTimestamp > 0) {
+                    long currentTime = System.currentTimeMillis();
+                    long diff = currentTime - lastSleepTimestamp;
+
+                    // 10 minutes = 10 * 60 * 1000 ms
+                    if (diff > 10 * 60 * 1000) {
+                        Log.e(TAG, "Sleep duration exceeded 10 minutes: " + diff + " ms");
+                        WindowUtil.removePip();
+                        resetPip();
+                        resetPip = true;
+                    }
+                }
 
                 helpers.setDisplayStateBoolean(true);
 
@@ -101,11 +117,11 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     }, 10000);
                 }
 
-                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
                 boolean userMap = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);        
-                if (userMap) {
+                if (!resetPip && userMap) {
                     resetPip();
                 }
+                resetPip = false;
 
                 boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
                 if (widgetBar) {
@@ -113,6 +129,9 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 }
             } else if (val.contains("false")) {
                 Log.e(TAG, "ACC turned off, device has been put into sleep mode");
+                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+                long sleepTimestamp = System.currentTimeMillis();
+                mPrefs.edit().putLong("sleep_timestamp", sleepTimestamp).apply();
 
                 helpers.setDisplayStateBoolean(false);
 
@@ -126,22 +145,8 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
         // in some mysterious cases pinned PiP won't start when user wakes the device up from the sleep mode 
         // this serves as some sort of checking function to make sure it starts
         handler.postDelayed(() -> {
-            Helpers helpers = new Helpers();
-            int pipScreen = mPrefs.getInt("pip_first_screen", 1) - 1;
-            if (!Utils.topApp(WindowUtil.AppPackageName)
-                && !helpers.isFirstPreferenceWindow()
-                && !helpers.isWallpaperWindow()
-                && !helpers.isInOverviewMode()
-                && !Launcher.getLauncher().mDragController.isDragging()
-                && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-                && Launcher.getWorkspace().getCurrentPage() == pipScreen
-                || (!helpers.userWasInRecents() && helpers.isListOpen())) {
-
-                    Log.e(TAG, "reset pip on wake");
-                    WindowUtil.removePip();
-                    WindowUtil.startMapPip(true, 500);
-            }
-        }, 1500);
+            WindowUtil.openPip(false);
+        }, 2500);
     }
 
     public static class PropertyChangeClass {

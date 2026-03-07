@@ -8,8 +8,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -63,7 +69,94 @@ public class WindowHostActivityView {
     }
 
     static void trySetCallback(Object av, Callback cb) {
-        if (sStateCb == null) return;
+        if (sStateCb == null) {
+            final int MAX_MS = 800;       // total max wait
+            final int POLL_MS = 25;       // poll step
+            final int STABLE_MS = 160;    // require continuous stable window
+            final Handler h = new Handler(Looper.getMainLooper());
+            final long start = SystemClock.uptimeMillis();
+            final View avView = asView(av);
+
+            // Holder callback (if we can find a SurfaceView) — still useful to get early events
+            final SurfaceView sv = findSurfaceView(avView);
+            final SurfaceHolder.Callback2 holderCb = new SurfaceHolder.Callback2() {
+                @Override public void surfaceCreated(SurfaceHolder holder) { /* noop: poll will detect */ }
+                @Override public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) { /* noop */ }
+                @Override public void surfaceDestroyed(SurfaceHolder holder) {
+                    try { cb.onDestroyed(); } catch (Throwable ignore) {}
+                }
+                @Override public void surfaceRedrawNeeded(SurfaceHolder holder) { /* noop */ }
+            };
+            if (sv != null) {
+                try { sv.getHolder().addCallback(holderCb); } catch (Throwable ignore) {}
+            }
+
+            final long[] lastGoodStart = new long[]{ -1L }; // when stability window started
+
+            final Runnable poll = new Runnable() {
+                @Override public void run() {
+                    long now = SystemClock.uptimeMillis();
+                    long elapsed = now - start;
+                    boolean ok = false;
+                    // declare s outside inner try so it can be referenced later for cleanup
+                    SurfaceView s = null;
+                    try {
+                        // Check surface validity
+                        s = findSurfaceView(avView);
+                        if (s != null) {
+                            try {
+                                SurfaceHolder holder = s.getHolder();
+                                if (holder != null) {
+                                    android.view.Surface surface = holder.getSurface();
+                                    if (surface != null && surface.isValid()) ok = true;
+                                }
+                            } catch (Throwable ignore) { ok = false; }
+                        }
+
+                        // Also require a virtual display id (if available) as extra signal
+                        if (ok) {
+                            try {
+                                java.lang.reflect.Method gv = av.getClass().getMethod("getVirtualDisplayId");
+                                Object res = gv.invoke(av);
+                                if (!(res instanceof Integer) || ((Integer) res) < 0) ok = false;
+                            } catch (Throwable ignored) {
+                                // If method not present, we rely on the surface alone, but still use stability window.
+                            }
+                        }
+                    } catch (Throwable ignore) { ok = false; }
+
+                    if (ok) {
+                        if (lastGoodStart[0] < 0) lastGoodStart[0] = now;
+                        long stableFor = now - lastGoodStart[0];
+                        if (stableFor >= STABLE_MS) {
+                            // stable long enough — call onReady and cleanup
+                            try {
+                                if (s != null) s.getHolder().removeCallback(holderCb);
+                            } catch (Throwable ignore) {}
+                            try { cb.onReady(); } catch (Throwable ignore) {}
+                            return;
+                        }
+                    } else {
+                        lastGoodStart[0] = -1L;
+                    }
+
+                    if (elapsed < MAX_MS) {
+                        h.postDelayed(this, POLL_MS);
+                    } else {
+                        // timed out, clean up and give up (callers should fallback)
+                        try {
+                            SurfaceView s2 = findSurfaceView(avView);
+                            if (s2 != null) s2.getHolder().removeCallback(holderCb);
+                        } catch (Throwable ignore) {}
+                        // don't call onReady
+                    }
+                }
+            };
+            h.post(poll);
+            return;
+        }
+
+        // existing branch when platform has StateCallback
         try {
             Method setCb = sActivityView.getMethod("setCallback", sStateCb);
             Object proxy = null;
@@ -87,6 +180,19 @@ public class WindowHostActivityView {
         } catch (Throwable t) {
             Log.i(TAG, "ActivityView.setCallback failed/absent", t);
         }
+    }
+
+    public static SurfaceView findSurfaceView(View v) {
+        if (v == null) return null;
+        if (v instanceof SurfaceView) return (SurfaceView) v;
+        if (v instanceof ViewGroup) {
+            ViewGroup g = (ViewGroup) v;
+            for (int i = 0; i < g.getChildCount(); i++) {
+                SurfaceView res = findSurfaceView(g.getChildAt(i));
+                if (res != null) return res;
+            }
+        }
+        return null;
     }
 
     static boolean startActivitySmart(Object av, Context ctx, Intent intent, Object opts) {

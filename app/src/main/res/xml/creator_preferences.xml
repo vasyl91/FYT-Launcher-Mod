@@ -140,7 +140,7 @@
         <com.android.launcher66.settings.CustomWidgetPreference
             android:key="stats_display"
             android:title="@string/stats_screen_summary"
-            app:summary="@string/adjust_widget" />   
+            app:summary="@string/stats_resize" />   
         <Preference
             android:key="stats_codes"
             android:title="@string/stats_codes"
@@ -177,7 +177,8 @@
             android:summary="@string/app_list_stats_summary"  />
         <Preference
             android:key="app_stats_coordinates"
-            android:title="@string/stats_coordinates_string"  />
+            android:title="@string/stats_coordinates_string"
+            app:summary="@string/stats_resize" />   
 
     </PreferenceCategory>
 

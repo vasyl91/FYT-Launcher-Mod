@@ -55,7 +55,6 @@ public class DateMusicWidget extends Widget {
     }
 
     @Override
-        // com.syu.widget.Widget
     void updateViews(RemoteViews views) {
         LogPreview.show("updateViews");
         if (Launcher.mainState == 8) {
@@ -225,7 +224,6 @@ public class DateMusicWidget extends Widget {
     }
 
     @Override
-        // com.syu.widget.Widget
     void addLisenter(RemoteViews views) {
         Intent intent = new Intent(WidgetProvider.APP_WIDGET_START);
         intent.setComponent(new ComponentName("com.syu.music", "com.syu.music.MAct"));
@@ -254,7 +252,6 @@ public class DateMusicWidget extends Widget {
     }
 
     @Override
-        // com.syu.widget.Widget
     void getLayoutId() {
         this.layoutId = ResValue.getInstance().fyt_xml_dtmusicwidget;
     }

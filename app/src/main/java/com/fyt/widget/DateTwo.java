@@ -74,15 +74,15 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
             getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
             mPreDrawListener = null;
         }
-        
+
         // Unregister preference change listener
         mPrefs.unregisterOnSharedPreferenceChangeListener(this);
-        
+
         // Clear static reference to prevent context leaks
         if (mDateTwo == this) {
             mDateTwo = null;
         }
-        
+
         super.onDetachedFromWindow();
     }
 
@@ -106,7 +106,7 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
     public void setDateTwo() {
         String mText = TimeUtil.getDateOfToday(this.mContext, getDateStringFormat(5));
         float targetSize = Launcher.textSizeBasic;
-        
+
         setText(mText);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
@@ -114,9 +114,9 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
         if (blackTintWidgets) {
             setTextColor(Color.BLACK);
         }
-        
+
         // Only adjust size once, or when text actually changes
-        if (!isTextSizeAdjusted) {            
+        if (!isTextSizeAdjusted) {
             // Use a member variable to track the listener
             mPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -125,17 +125,17 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
                         getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
                         mPreDrawListener = null;
                     }
-                    
+
                     if (!isAttachedToWindow()) {
                         return true;
                     }
-                    
+
                     adjustTextSize(mText, 0.9f);
                     isTextSizeAdjusted = true;
                     return true;
                 }
             };
-            
+
             getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
         }
     }
@@ -167,17 +167,32 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
             // Set max height to prevent overflow
             setMaxHeight(targetHeight);
 
-            // Binary search for best size
+            // Prepare density-based upper bound (in SP) so we don't pick absurdly large fonts
+            float scaledDensity = getResources().getDisplayMetrics().scaledDensity;
+            // Estimate maximum SP that could fit into targetHeight: divide pixel height by scaledDensity
+            float maxSpFromHeight = Math.max(8f, targetHeight / Math.max(1f, scaledDensity));
+            // Use a reasonable safety multiplier to allow multi-line spacing
+            maxSpFromHeight = maxSpFromHeight * 0.9f; // keep a little headroom
+
+            // Binary search for best size (in SP units)
             float minSize = 1f;
-            float maxSize = 500f;
-            float bestSize = minSize;
+            float maxSize = Math.min(500f, maxSpFromHeight);
+            float bestSize = Math.max(minSize, Math.min( (float)Launcher.textSizeBasic, maxSize )); // start from reasonable default
 
             TextPaint paint = new TextPaint(getPaint());
             int width = getWidth() - getPaddingLeft() - getPaddingRight();
-            if (width <= 0) width = 100;
+            if (width <= 0 && parent != null) {
+                width = parent.getWidth() - getPaddingLeft() - getPaddingRight();
+            }
+            if (width <= 0) {
+                // fallback to a fraction of screen width if nothing else available
+                width = getResources().getDisplayMetrics().widthPixels / 3;
+            }
 
-            while (maxSize - minSize > 0.5f) {
+            // Narrow the binary search tolerance a bit for stability
+            while (maxSize - minSize > 0.25f) {
                 float testSize = (minSize + maxSize) / 2f;
+                // convert SP to px for paint
                 paint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, testSize, getResources().getDisplayMetrics()));
 
                 StaticLayout layout = new StaticLayout(text, paint, width, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
@@ -190,7 +205,10 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
                 }
             }
 
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, bestSize);
+            // Clamp final size to safe bounds
+            final float finalBestSize = Math.max(8f, Math.min(bestSize, maxSize));
+
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, finalBestSize);
         }, 50);
     }
 

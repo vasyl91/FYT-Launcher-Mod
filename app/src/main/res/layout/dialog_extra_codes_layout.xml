@@ -89,40 +89,5 @@
             app:layout_constraintStart_toEndOf="@id/guideline_extra"  
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBaseline_toBaselineOf="@id/vehicle_mass_code_text" />
-
-        <!-- Engine Volume Row -->
-        <TextView
-            android:id="@+id/engine_volume_code_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/engine_volume_code_text"
-            app:layout_constraintTop_toBottomOf="@id/vehicle_mass_code_text"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/engine_volume_code_int"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/guideline_extra"  
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@id/engine_volume_code_text" />
-
-        <!-- Cylinders Row -->
-        <TextView
-            android:id="@+id/cylinders_number_code_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/cylinders_number_code_text"
-            app:layout_constraintTop_toBottomOf="@id/engine_volume_code_text"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/cylinders_number_code_int"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/guideline_extra"  
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@id/cylinders_number_code_text"
-            app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

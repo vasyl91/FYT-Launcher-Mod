@@ -151,16 +151,20 @@
     <string name="proceed_and_reset">Kontynuuj i resetuj</string>
     <string name="dismiss">Odrzuć</string>
 
-    <string name="instantaneous_consumption">\u0020Zużycie:</string>
+    <string name="instantaneous_consumption">\u0020Spalanie:</string>
     <string name="driving_mileage">\u0020Zasięg:</string>
+    <string name="instantaneous_consumption_mini">\u0020S:</string>
+    <string name="driving_mileage_mini">\u0020Z:</string>
     <string name="instantaneous_consumption_val">%1$s L/100km\u0020</string>
     <string name="driving_mileage_val">%1$s km\u0020</string>
+    <string name="instantaneous_consumption_val_mini">%1$s\u0020</string>
+    <string name="driving_mileage_val_mini">%1$s\u0020</string>
     <string name="stats_window">Statystyki paliwa</string>
     <string name="stats_codes">Kody canbus</string>
     <string name="stats_window_summary"><![CDATA[Aby znaleźć niezbędne kody użyj skanera canbus lub przeszukaj klasę <b>%1$s</b> i jej subklasy (zapoznaj się z README.MD)]]></string>
     <string name="stats_codes_summary">Naciśnij i wprowadź kody dla modułu canbus \nFuel: %1$s, Range: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Dodatkowe dane <b>(opcjonalne)</b></string>
-    <string name="extra_stats_codes_summary">Naciśnij i wprowadź dodatkowe dane dla przybliżonych obliczeń spalania paliwa \nRPM kod canbus: %1$s, Konie mechaniczne: %2$s, Masa pojazdu: %3$s, Pojemność silnika: %4$s, Ilość cylindrów: %5$s</string>
+    <string name="extra_stats_codes_summary">Naciśnij i wprowadź dodatkowe dane dla przybliżonych obliczeń spalania paliwa \nRPM kod canbus: %1$s, Konie mechaniczne: %2$s, Masa pojazdu: %3$s</string>
     <string name="stats_dialog_title">Kody canbus:</string>
     <string name="fuel_code_text">Kod paliwa:</string>
     <string name="range_code_text">Kod zasięgu:</string>
@@ -171,8 +175,6 @@
     <string name="rpm_code_text">RPM kod canbus:</string>
     <string name="horse_power_code_text">Konie mechaniczne:</string>
     <string name="vehicle_mass_code_text">Masa pojazdu (kg):</string>
-    <string name="engine_volume_code_text">Pojemność silnika (cm³):</string>
-    <string name="cylinders_number_code_text">Ilość cylindrów:</string>
     <string name="main_screen_stats_window">Wyświetlaj statystyki na ekranie głównym</string>
     <string name="color_picker">Kolor tekstu</string>
     <string name="stats_bg">Wyświetlaj tło</string>

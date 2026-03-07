@@ -366,138 +366,182 @@ public  class WindowHostDualPane {
     private void startLeftNow(ActivityManager am, String pkg, int expectedGen) {
         if (gen != expectedGen) return;
         if (leftTask > 0 && pkg.equals(leftPkg)) return;
-        
-        // Validate left surface is ready
-        if (leftHost != null) {
+
+        // Compose start logic into runnable
+        Runnable doStartLeft = () -> {
+            if (gen != expectedGen) return;
+            if (leftTask > 0 && pkg.equals(leftPkg)) return;
+
+            // Validate left surface readiness
+            if (leftHost != null) {
+                SurfaceView sv = findSurfaceView(leftHost);
+                if (sv != null) {
+                    try {
+                        SurfaceHolder holder = sv.getHolder();
+                        if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
+                            Log.w(TAG, "DualLeft: Surface not ready, deferring start");
+                            postMainDelayed(() -> startLeftNow(am, pkg, expectedGen), 50);
+                            return;
+                        }
+                    } catch (Throwable t) {
+                        Log.w(TAG, "DualLeft: Surface check failed, deferring start", t);
+                        postMainDelayed(() -> startLeftNow(am, pkg, expectedGen), 50);
+                        return;
+                    }
+                }
+            }
+
+            int leftW = hasPendingBounds ? Math.max(1, Math.round(pendingBounds.width() * splitRatio)) : 300;
+            Rect b = hasPendingBounds ? new Rect(pendingBounds.left, pendingBounds.top,
+                    pendingBounds.left + leftW, pendingBounds.bottom) : null;
+
+            try {
+                // Use enhanced method that checks for existing process
+                boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(leftAV, activity, pkg, b);
+
+                if (!ok) {
+                    Log.w(TAG, "DualLeft: start failed for " + pkg + ", attempting fallback");
+
+                    // Fallback: use standard method with explicit intent
+                    postMainDelayed(() -> {
+                        if (gen != expectedGen) return;
+
+                        Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(activity, pkg);
+                        if (fallback != null) {
+                            Object fallbackOpts = WindowHostActivityView.makeOptionsWithBounds(b);
+                            boolean retryOk = WindowHostActivityView.startActivitySmart(leftAV, activity, fallback, fallbackOpts);
+                            Log.i(TAG, "DualLeft " + pkg + (retryOk ? " fallback ok" : " fallback failed"));
+
+                            if (!retryOk) {
+                                // Final attempt with minimal configuration
+                                postMainDelayed(() -> {
+                                    if (gen != expectedGen) return;
+                                    attemptMinimalLaunch(leftAV, pkg, b, "DualLeft");
+                                }, 300);
+                            }
+                        }
+                    }, 200);
+                } else {
+                    Log.i(TAG, "DualLeft " + pkg + " start ok (process check)");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "DualLeft: Exception starting " + pkg, e);
+
+                // Try minimal launch as last resort
+                postMainDelayed(() -> {
+                    if (gen != expectedGen) return;
+                    attemptMinimalLaunch(leftAV, pkg, b, "DualLeft");
+                }, 300);
+            }
+        };
+
+        // Wait for left surface stability / first frame
+        waitUntil(() -> {
+            if (leftHost == null || !leftAttached) return false;
             SurfaceView sv = findSurfaceView(leftHost);
             if (sv != null) {
                 try {
                     SurfaceHolder holder = sv.getHolder();
-                    if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
-                        Log.w(TAG, "DualLeft: Surface not ready, deferring start");
-                        postMainDelayed(() -> startLeftNow(am, pkg, expectedGen), 50);
-                        return;
-                    }
-                } catch (Throwable t) {
-                    Log.w(TAG, "DualLeft: Surface check failed, deferring start", t);
-                    postMainDelayed(() -> startLeftNow(am, pkg, expectedGen), 50);
-                    return;
-                }
+                    android.view.Surface s = (holder != null) ? holder.getSurface() : null;
+                    if (s != null && s.isValid() && leftFirstFrame.get()) return true;
+                } catch (Throwable ignore) {}
             }
-        }
-        
-        // Calculate bounds
-        int leftW = hasPendingBounds ? Math.max(1, Math.round(pendingBounds.width() * splitRatio)) : 300;
-        Rect b = hasPendingBounds ? new Rect(pendingBounds.left, pendingBounds.top,
-                pendingBounds.left + leftW, pendingBounds.bottom) : null;
-        
-        try {
-            // Use enhanced method that checks for existing process
-            boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(leftAV, activity, pkg, b);
-            
-            if (!ok) {
-                Log.w(TAG, "DualLeft: start failed for " + pkg + ", attempting fallback");
-                
-                // Fallback: use standard method with explicit intent
-                postMainDelayed(() -> {
-                    if (gen != expectedGen) return;
-                    
-                    Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(activity, pkg);
-                    if (fallback != null) {
-                        Object fallbackOpts = WindowHostActivityView.makeOptionsWithBounds(b);
-                        boolean retryOk = WindowHostActivityView.startActivitySmart(leftAV, activity, fallback, fallbackOpts);
-                        Log.i(TAG, "DualLeft " + pkg + (retryOk ? " fallback ok" : " fallback failed"));
-                        
-                        if (!retryOk) {
-                            // Final attempt with minimal configuration
-                            postMainDelayed(() -> {
-                                if (gen != expectedGen) return;
-                                attemptMinimalLaunch(leftAV, pkg, b, "DualLeft");
-                            }, 300);
-                        }
-                    }
-                }, 200);
-            } else {
-                Log.i(TAG, "DualLeft " + pkg + " start ok (process check)");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "DualLeft: Exception starting " + pkg, e);
-            
-            // Try one more time with minimal configuration
-            postMainDelayed(() -> {
-                if (gen != expectedGen) return;
-                attemptMinimalLaunch(leftAV, pkg, b, "DualLeft");
-            }, 300);
-        }
+            return leftFirstFrame.get();
+        }, 400, 25, () -> postMainDelayed(doStartLeft, 80), () -> {
+            Log.w(TAG, "DualLeft: surface stability wait timed out, proceeding anyway");
+            postMainDelayed(doStartLeft, 80);
+        });
     }
 
     private void startRightNow(ActivityManager am, String pkg, int expectedGen) {
         if (gen != expectedGen) return;
         if (rightTask > 0 && pkg.equals(rightPkg)) return;
-        
-        // Validate right surface is ready
-        if (rightHost != null) {
+
+        // Compose start logic into runnable
+        Runnable doStartRight = () -> {
+            if (gen != expectedGen) return;
+            if (rightTask > 0 && pkg.equals(rightPkg)) return;
+
+            // Validate right surface readiness
+            if (rightHost != null) {
+                SurfaceView sv = findSurfaceView(rightHost);
+                if (sv != null) {
+                    try {
+                        SurfaceHolder holder = sv.getHolder();
+                        if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
+                            Log.w(TAG, "DualRight: Surface not ready, deferring start");
+                            postMainDelayed(() -> startRightNow(am, pkg, expectedGen), 50);
+                            return;
+                        }
+                    } catch (Throwable t) {
+                        Log.w(TAG, "DualRight: Surface check failed, deferring start", t);
+                        postMainDelayed(() -> startRightNow(am, pkg, expectedGen), 50);
+                        return;
+                    }
+                }
+            }
+
+            int leftWidth = hasPendingBounds ? Math.max(1, Math.round(pendingBounds.width() * splitRatio)) : 300;
+            Rect b = hasPendingBounds ? new Rect(
+                    pendingBounds.left + leftWidth,
+                    pendingBounds.top, pendingBounds.right, pendingBounds.bottom) : null;
+
+            try {
+                // Use enhanced method that checks for existing process
+                boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(rightAV, activity, pkg, b);
+
+                if (!ok) {
+                    Log.w(TAG, "DualRight: start failed for " + pkg + ", attempting fallback");
+
+                    // Fallback: use standard method with explicit intent
+                    postMainDelayed(() -> {
+                        if (gen != expectedGen) return;
+
+                        Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(activity, pkg);
+                        if (fallback != null) {
+                            Object fallbackOpts = WindowHostActivityView.makeOptionsWithBounds(b);
+                            boolean retryOk = WindowHostActivityView.startActivitySmart(rightAV, activity, fallback, fallbackOpts);
+                            Log.i(TAG, "DualRight " + pkg + (retryOk ? " fallback ok" : " fallback failed"));
+
+                            if (!retryOk) {
+                                // Final attempt with minimal configuration
+                                postMainDelayed(() -> {
+                                    if (gen != expectedGen) return;
+                                    attemptMinimalLaunch(rightAV, pkg, b, "DualRight");
+                                }, 300);
+                            }
+                        }
+                    }, 200);
+                } else {
+                    Log.i(TAG, "DualRight " + pkg + " start ok (process check)");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "DualRight: Exception starting " + pkg, e);
+
+                // Try minimal launch as last resort
+                postMainDelayed(() -> {
+                    if (gen != expectedGen) return;
+                    attemptMinimalLaunch(rightAV, pkg, b, "DualRight");
+                }, 300);
+            }
+        };
+
+        // Wait for right surface stability / first frame
+        waitUntil(() -> {
+            if (rightHost == null || !rightAttached) return false;
             SurfaceView sv = findSurfaceView(rightHost);
             if (sv != null) {
                 try {
                     SurfaceHolder holder = sv.getHolder();
-                    if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
-                        Log.w(TAG, "DualRight: Surface not ready, deferring start");
-                        postMainDelayed(() -> startRightNow(am, pkg, expectedGen), 50);
-                        return;
-                    }
-                } catch (Throwable t) {
-                    Log.w(TAG, "DualRight: Surface check failed, deferring start", t);
-                    postMainDelayed(() -> startRightNow(am, pkg, expectedGen), 50);
-                    return;
-                }
+                    android.view.Surface s = (holder != null) ? holder.getSurface() : null;
+                    if (s != null && s.isValid() && rightFirstFrame.get()) return true;
+                } catch (Throwable ignore) {}
             }
-        }
-        
-        // Calculate bounds
-        int leftWidth = hasPendingBounds ? Math.max(1, Math.round(pendingBounds.width() * splitRatio)) : 300;
-        Rect b = hasPendingBounds ? new Rect(
-                pendingBounds.left + leftWidth,
-                pendingBounds.top, pendingBounds.right, pendingBounds.bottom) : null;
-        
-        try {
-            // Use enhanced method that checks for existing process
-            boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(rightAV, activity, pkg, b);
-            
-            if (!ok) {
-                Log.w(TAG, "DualRight: start failed for " + pkg + ", attempting fallback");
-                
-                // Fallback: use standard method with explicit intent
-                postMainDelayed(() -> {
-                    if (gen != expectedGen) return;
-                    
-                    Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(activity, pkg);
-                    if (fallback != null) {
-                        Object fallbackOpts = WindowHostActivityView.makeOptionsWithBounds(b);
-                        boolean retryOk = WindowHostActivityView.startActivitySmart(rightAV, activity, fallback, fallbackOpts);
-                        Log.i(TAG, "DualRight " + pkg + (retryOk ? " fallback ok" : " fallback failed"));
-                        
-                        if (!retryOk) {
-                            // Final attempt with minimal configuration
-                            postMainDelayed(() -> {
-                                if (gen != expectedGen) return;
-                                attemptMinimalLaunch(rightAV, pkg, b, "DualRight");
-                            }, 300);
-                        }
-                    }
-                }, 200);
-            } else {
-                Log.i(TAG, "DualRight " + pkg + " start ok (process check)");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "DualRight: Exception starting " + pkg, e);
-            
-            // Try one more time with minimal configuration
-            postMainDelayed(() -> {
-                if (gen != expectedGen) return;
-                attemptMinimalLaunch(rightAV, pkg, b, "DualRight");
-            }, 300);
-        }
+            return rightFirstFrame.get();
+        }, 400, 25, () -> postMainDelayed(doStartRight, 80), () -> {
+            Log.w(TAG, "DualRight: surface stability wait timed out, proceeding anyway");
+            postMainDelayed(doStartRight, 80);
+        });
     }
 
     /**

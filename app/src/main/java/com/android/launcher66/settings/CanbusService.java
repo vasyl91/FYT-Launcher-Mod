@@ -79,6 +79,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private final PropertyChangeClass mPropertyChangeClass = new PropertyChangeClass();
     private boolean userLayout = false;
     private boolean userStats = false;
+    private int statsWidthSelector;
     private boolean estimateOil = false;
     private int fuel = 0;
     private int range = 0;
@@ -86,8 +87,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private double velocity = 0;
     private int horsePower = 0;
     private int vehicleMass = 0;
-    private int engineVolume = 0;
-    private int numberOfCylinders = 0;
     private int revolutionsPerMinute = 0;
 
     private Workspace workspaceRef = null;
@@ -109,8 +108,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
         userStats = prefs.getBoolean(Keys.USER_STATS, false);
         horsePower = Integer.parseInt(prefs.getString("horse_power_code_int", "0"));
         vehicleMass = Integer.parseInt(prefs.getString("vehicle_mass_code_int", "0")); // in kg
-        engineVolume = Integer.parseInt(prefs.getString("engine_volume_code_int", "0")); // in cm³
-        numberOfCylinders = Integer.parseInt(prefs.getString("cylinders_number_code_int", "0"));
         helpers = new Helpers();
         accessibilityManager = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
         registerAccessibilityEventListener();
@@ -438,7 +435,13 @@ public class CanbusService extends Service implements PropertyChangeListener {
             wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
             LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             int leftBarSize = Launcher.calculatedLeftBarWidth;
-            statsWidth = Launcher.calculatedStatsWidth;
+            if (mapApp) {
+                statsWidthSelector = prefs.getInt(Keys.APP_STATS_WIDTH_SELECTOR, 0);
+                statsWidth = prefs.getInt(Keys.APP_STATS_WIDTH, Launcher.calculatedStatsWidth);
+            } else {
+                statsWidthSelector = prefs.getInt(Keys.STATS_WIDTH_SELECTOR, 0);
+                statsWidth = prefs.getInt(Keys.STATS_WIDTH, Launcher.calculatedStatsWidth);
+            }
             statsHeight = Launcher.calculatedStatsHeight;
 
             if (getResources().getDisplayMetrics().widthPixels <= 1024
@@ -465,15 +468,30 @@ public class CanbusService extends Service implements PropertyChangeListener {
             absoluteStats = li.inflate(R.layout.absolute_stats, null); 
 
             TextView consumptionTV = absoluteStats.findViewById(R.id.instantaneous_consumption_str);
-            consumptionTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
             TextView mileageTV = absoluteStats.findViewById(R.id.driving_mileage_str);
+
+            if (statsWidthSelector == 1) {
+                consumptionTV.setText(consumptionTV.getContext().getString(R.string.instantaneous_consumption_mini));
+                mileageTV.setText(mileageTV.getContext().getString(R.string.driving_mileage_mini));
+            } else if (statsWidthSelector == 2) {
+                consumptionTV.setText("");
+                mileageTV.setText(""); 
+            }
+            consumptionTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
             mileageTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
 
             consumptionTextView = absoluteStats.findViewById(R.id.instantaneous_consumption_val);
-            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
-            consumptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
             mileageTextView = absoluteStats.findViewById(R.id.driving_mileage_val);
-            mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, "-.-")); 
+
+            if (statsWidthSelector == 2) {
+                consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
+                mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val_mini, "-.-"));      
+            } else {
+                consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
+                mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, "-.-"));                
+            }
+            
+            consumptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic); 
             mileageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
             if (background) {
                 if (drawableBg) {
@@ -754,12 +772,20 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
                 if (value > 0 && value < 3001) {
                     estimateOil = false;
-                    consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%d.%d", value / 10, value % 10)));
+                    if (statsWidthSelector == 2) {
+                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, String.format(Locale.getDefault(), "%d.%d", value / 10, value % 10)));
+                    } else {
+                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%d.%d", value / 10, value % 10)));   
+                    }
                 } else {
-                    if (horsePower > 0 && vehicleMass > 0 && engineVolume > 0 && numberOfCylinders > 0) {
+                    if (horsePower > 0 && vehicleMass > 0) {
                         estimateOil = true;
                     } else {
-                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
+                        if (statsWidthSelector == 2) {
+                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
+                        } else {
+                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));  
+                        }
                     }
                 }
             }         
@@ -773,9 +799,17 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 ((TextView) absoluteStats.findViewById(R.id.driving_mileage_str)).setTextColor(Color.parseColor(textColor));
                 ((TextView) absoluteStats.findViewById(R.id.driving_mileage_val)).setTextColor(Color.parseColor(textColor));
                 if (value > -1 && value < 2001) {
-                    mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, String.valueOf(value)));
+                    if (statsWidthSelector == 2) {
+                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val_mini, String.valueOf(value)));
+                    } else {
+                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, String.valueOf(value)));              
+                    }
                 } else {
-                    mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, "-.-")); 
+                    if (statsWidthSelector == 2) {
+                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val_mini, "-.-")); 
+                    } else {
+                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, "-.-"));               
+                    }
                 }
             }
         }
@@ -786,7 +820,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
             revolutionsPerMinute = DataCanbus.DATA[rpm];          
         }
     }
-    
+
+    private int aboveSpeedCounter = 0;
+    private boolean speedValidated = false;
+    private static final int REQUIRED_SAMPLES = 4; // 2s / 0.5s = 4
+        
     /**
      * In my case canbus stops sending the fuel consumption when the speed drops below ~40km/h.
      * This is an attemp to ROUGHLY estimate the fuel consumption to provide some insight even though it undoubtedly is an inaccurate calculation.
@@ -817,11 +855,34 @@ public class CanbusService extends Service implements PropertyChangeListener {
                                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
                                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
                                 if (revolutionsPerMinute > -1) {
-                                    if (velocity > 0.5) {
-                                        double fuelConsumption = calculateFuelConsumption(velocity, revolutionsPerMinute, horsePower, vehicleMass, engineVolume, numberOfCylinders);
-                                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
+                                    // Step 1: 2-second validation sampled every 500ms
+                                    if (velocity > 5) {
+                                        if (!speedValidated) {
+                                            aboveSpeedCounter++;
+                                            if (aboveSpeedCounter >= REQUIRED_SAMPLES) {
+                                                speedValidated = true; // Passed 2-second check once
+                                            }
+                                        }
                                     } else {
-                                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
+                                        // Reset validation if it drops below threshold
+                                        aboveSpeedCounter = 0;
+                                        speedValidated = false;
+                                    }
+
+                                    // Step 2: Allow flow only after validation
+                                    if (speedValidated && velocity < 38 && velocity > 5) {
+                                        double fuelConsumption = calculateFuelConsumption(velocity, revolutionsPerMinute, horsePower, vehicleMass);
+                                        if (statsWidthSelector == 2) {
+                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
+                                        } else {
+                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
+                                        }
+                                    } else {
+                                        if (statsWidthSelector == 2) {
+                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
+                                        } else {
+                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
+                                        }
                                     }
                                 } 
                             }
@@ -841,57 +902,130 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
 
-    // AI generated
-    private static final double FUEL_DENSITY = 0.84; // kg/L (Average gasoline density)
-    private static final double AIR_FUEL_RATIO = 14.7; // Stoichiometric air-fuel ratio for gasoline
-    private static final double RPM_TO_SPEED_RATIO = 40.0; // Approximate RPM to speed (km/h) ratio
+    private static final double FUEL_DENSITY = 0.74; // kg/L (tune per fuel/vehicle)
+    private static final double AIR_DENSITY = 1.225; // kg/m^3
+    private static final double DEFAULT_BSFC = 0.28; // kg/kWh (≈280 g/kWh) - tune per vehicle
+    private static final double DEFAULT_CdA = 0.66; // Cd * frontal area (m^2) - tune per vehicle
+    private static final double DEFAULT_CRR = 0.015; // rolling resistance coefficient - tune per tyres/surface
+    private static final double G = 9.81;
+    private static final double RPM_TO_SPEED_RATIO = 40.0; // fallback mapping rpm := speed * ratio (km/h -> rpm)
+    private static final double IDLE_FUEL_L_PER_H = 1.1; // typical idle fuel consumption (L/h) - tune as needed
+    private static final double MIN_SPEED_FOR_CONVERSION_KMH = 5.0; // below this we use a safe conversion floor
+    private static final double MAX_REASONABLE_L_PER_100KM = 200.0; // hard cap to avoid absurd display
 
-    public static double calculateFuelConsumption(double speedVal, int rpmInput, int horsePowerVal, int vehicleMassVal, int engineVolumeVal, int numCylindersVal) { 
-        double rpmVal;
-        if (rpmInput == 0) {
-            // Estimate RPM based on speed (very simplified assumption)
-            rpmVal = speedVal * RPM_TO_SPEED_RATIO;
-            if (rpmVal == 0) {
-                rpmVal = 1000; // Avoid division by zero and set a minimum RPM when speed is zero. A stationary idling RPM can be assumed.
-            }
+    // --- Smoothing state (keeps method backward-compatible; internal smoothing only) ---
+    private static double smoothedLPer100km = Double.NaN;
+    // Tune these: lower values => smoother/slower. Use larger rise alpha to show spikes quickly.
+    private static final double SMOOTH_ALPHA_RISE = 0.35; // reacts faster when consumption increases
+    private static final double SMOOTH_ALPHA_FALL = 0.12; // reacts slower when consumption decreases
+
+    // --- Decreasing detection state for the "3 second decrease => show 0.8 L/100km" rule ---
+    private static double lastSpeedForDecrease = Double.NaN;
+    private static long decreaseStartTimeMs = -1;
+    private static final long DECREASE_HOLD_MS = 3000; // 3 seconds
+    private static final double DECREASE_EPS_KMH = 0.5; // tolerance to ignore tiny jitter
+    private static final double FORCED_DISPLAY_ON_LONG_DECAY_L100 = 0.8; // value to show after 5s decreasing
+
+    public static double calculateFuelConsumption(double speedVal, int rpmInput, int horsePowerVal, int vehicleMassVal) {
+        long now = System.currentTimeMillis();
+
+        // Defensive bounds
+        if (speedVal < 0) speedVal = 0;
+        if (vehicleMassVal <= 0) vehicleMassVal = 1200; // fallback mass
+        if (horsePowerVal < 0) horsePowerVal = 0;
+
+        // --- detect sustained decreasing speed ---
+        if (Double.isNaN(lastSpeedForDecrease)) {
+            lastSpeedForDecrease = speedVal;
+            decreaseStartTimeMs = -1;
         } else {
-           rpmVal = rpmInput;
-        }     
-
-        // Calculate torque (approximation)
-        double torque = (horsePowerVal * 7121) / rpmVal; // 7121 is a constant for unit conversion
-
-        // Calculate engine power based on torque and rpm.
-        double calculatedhorsePowerVal = (torque * rpmVal) / 7121;
-
-        // Calculate theoretical air intake (using engine volume and estimated rpmVal).
-        double airIntake_stage1 = engineVolumeVal * rpmVal;
-        double airIntake_stage2 = airIntake_stage1 / 2.0; // Use 2.0 to ensure double division
-        double airIntake_stage3 = airIntake_stage2 / 1000000.0; // Use 1000000.0
-        double airIntake = airIntake_stage3 * numCylindersVal;
-
-        //Calculate fuel consumption in kg/hour
-        double fuelConsumptionKgPerHour = (airIntake / AIR_FUEL_RATIO) * FUEL_DENSITY;
-
-        // More realistic road resistance calculation (simplified)
-        double roadResistanceForce = 0.01 * 9.81 * vehicleMassVal; // Rolling resistance + some aerodynamic drag
-
-        // Calculate power needed to overcome road resistance
-        double powerForResistance = roadResistanceForce * (speedVal/3.6);
-
-        // Add a factor related to acceleration (simplified)
-        double accelerationFactor = 0.0;
-        if (speedVal > 0.5) {
-            accelerationFactor = 0.001 * vehicleMassVal * (speedVal/3.6);
+            if (speedVal < lastSpeedForDecrease - DECREASE_EPS_KMH) {
+                // speed decreased beyond epsilon
+                if (decreaseStartTimeMs == -1) decreaseStartTimeMs = now;
+            } else if (speedVal > lastSpeedForDecrease + DECREASE_EPS_KMH) {
+                // speed increased -> reset decreasing detection
+                decreaseStartTimeMs = -1;
+            }
+            lastSpeedForDecrease = speedVal;
         }
 
-        double totalPowerNeeded = powerForResistance + (calculatedhorsePowerVal * 745.7) * accelerationFactor; // convert HP to Watts
+        // If decreasing lasted longer than threshold, force the display to 0.8 L/100km
+        if (decreaseStartTimeMs != -1 && (now - decreaseStartTimeMs) >= DECREASE_HOLD_MS) {
+            smoothedLPer100km = FORCED_DISPLAY_ON_LONG_DECAY_L100;
+            // return rounded to 1 decimal
+            return Math.round(smoothedLPer100km * 10.0) / 10.0;
+        }
 
-        // Adjust fuel consumption based on total power needed (very simplified)
-        double adjustedFuelConsumptionKgPerHour = fuelConsumptionKgPerHour * (1 + (totalPowerNeeded / (calculatedhorsePowerVal * 745.7))); // 745.7 is the conversion from HP to HP to Watts
+        // 1) Estimate rpm if not available
+        double rpmVal;
+        if (rpmInput <= 0) {
+            rpmVal = (speedVal > 0.1) ? (speedVal * RPM_TO_SPEED_RATIO) : 900.0; // assume idle ~900 rpm if stationary
+        } else {
+            rpmVal = rpmInput;
+        }
 
-        // Convert fuel consumption to L/100km
-        return (adjustedFuelConsumptionKgPerHour / FUEL_DENSITY) * (100 / speedVal);
+        // 2) Speed in m/s
+        double v = speedVal / 3.6;
+
+        // 3) Aerodynamic power (Watts): 0.5 * rho * CdA * v^3
+        double cdA = DEFAULT_CdA; // could be tuned externally if available
+        double aeroPowerW = 0.5 * AIR_DENSITY * cdA * v * v * v;
+
+        // 4) Rolling resistance power (Watts): Crr * m * g * v
+        double crr = DEFAULT_CRR;
+        double rollingPowerW = crr * vehicleMassVal * G * v;
+
+        // 5) Slope/acceleration unknown here; we can use a small extra baseline to account for auxiliaries
+        double auxiliaryPowerW = 400.0; // ~400 W for ancillaries (fan, electrics); tweak as needed
+
+        // 6) Tractive power needed (Watts) to overcome resistances
+        double tractivePowerW = aeroPowerW + rollingPowerW;
+
+        // 7) Estimate available engine power at current rpm as fraction of peak hp (very approximate)
+        double assumedMaxRpm = 6000.0;
+        double rpmFraction = Math.min(1.0, Math.max(0.05, rpmVal / assumedMaxRpm));
+        double engineMaxPowerW = horsePowerVal * 745.7; // convert HP to Watts (peak)
+        double approxEnginePowerW = engineMaxPowerW * rpmFraction * 0.85; // reflect driveline losses/partial load
+
+        // 8) Ensure mechanicalPowerW is reasonable (prevents tiny numbers)
+        double mechanicalPowerW = Math.max(tractivePowerW + auxiliaryPowerW, approxEnginePowerW * 0.25);
+
+        // 9) Detect likely mountain / heavy-load scenario: high RPM but low vehicle speed => engine working hard without speed increase.
+        double bsfcMultiplier = 1.0;
+        if (rpmVal > 2500 && speedVal < 30 && rpmInput > 0) {
+            bsfcMultiplier = 1.25; // tune between 1.1..1.5 if needed
+        }
+
+        // 10) Convert mechanicalPowerW to kW and compute fuel mass rate using BSFC
+        double powerKW = Math.max(0.0, mechanicalPowerW) / 1000.0;
+        double bsfc = DEFAULT_BSFC * bsfcMultiplier; // kg / kWh
+        double fuelKgPerHour = powerKW * bsfc;
+
+        // Ensure we at least account for idle fuel
+        double idleKgPerHour = IDLE_FUEL_L_PER_H * FUEL_DENSITY;
+        if (fuelKgPerHour < idleKgPerHour) fuelKgPerHour = idleKgPerHour;
+
+        // Convert to L/h
+        double fuelLPerHour = fuelKgPerHour / FUEL_DENSITY;
+
+        // 11) Convert to L/100km for display. Avoid dividing by very small speeds.
+        double speedForConversion = Math.max(speedVal, MIN_SPEED_FOR_CONVERSION_KMH);
+        double lPer100kmRaw = (fuelLPerHour / speedForConversion) * 100.0;
+
+        // 12) Apply some sanity clamps
+        if (Double.isNaN(lPer100kmRaw) || Double.isInfinite(lPer100kmRaw)) lPer100kmRaw = IDLE_FUEL_L_PER_H * 100.0 / Math.max(speedForConversion, 1.0);
+        lPer100kmRaw = Math.max(0.0, Math.min(MAX_REASONABLE_L_PER_100KM, lPer100kmRaw));
+
+        // --- Smoothing: asymmetric EMA (rise quicker than fall) ---
+        if (Double.isNaN(smoothedLPer100km)) {
+            smoothedLPer100km = lPer100kmRaw;
+        } else {
+            double alpha = (lPer100kmRaw > smoothedLPer100km) ? SMOOTH_ALPHA_RISE : SMOOTH_ALPHA_FALL;
+            smoothedLPer100km = alpha * lPer100kmRaw + (1.0 - alpha) * smoothedLPer100km;
+        }
+
+        // return rounded to 1 decimal place
+        return Math.round(smoothedLPer100km * 10.0) / 10.0;
     }
 
     public static class PropertyChangeClass {
