@@ -4495,9 +4495,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void initAppData() {
-        // Prevent re-entrant calls
+        // Prevent re-entrant calls — but schedule a deferred retry so the refresh is not lost
         if (mIsInitializingAppData) {
-            Log.i(TAG, "initAppData() already in progress, skipping duplicate call");
+            Log.i(TAG, "initAppData() already in progress, scheduling deferred retry");
+            mHandler.postDelayed(() -> {
+                if (!mIsInitializingAppData) {
+                    initAppData();
+                }
+            }, 3500);
             return;
         }
         
@@ -9051,6 +9056,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mAppsCustomizeContent != null) {
             mAppsCustomizeContent.updateApps(apps);
         }
+
+        // Refresh bottom bar icons — AllAppsList.data has been updated by the package event
+        triggerAppData();
     }
 
     @Override
@@ -9071,6 +9079,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (!AppsCustomizePagedView.DISABLE_ALL_APPS && mAppsCustomizeContent != null) {
                 mAppsCustomizeContent.removeApps(appInfos);
             }
+            // Refresh bottom bar icons — AllAppsList.data has changed
+            triggerAppData();
         }
     }
 
