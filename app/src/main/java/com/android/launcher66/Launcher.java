@@ -4479,59 +4479,95 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         updateView();
     }
 
-public void triggerAppData() {
-    if (!isOnUiThread()) {
-        runOnUiThread(this::triggerAppData);
-        return;
-    }
-    Log.i(TAG, "triggerAppData() called by LauncherModel");
-    mInitRetryCount = 0;          // reset so initAppData can re-run if needed later
-    atomicInitAppData.set(true);
-    if (appDataHandler != null) {
-        appDataHandler.removeCallbacksAndMessages(null);
-    }
-    if (mRecyclerView != null) {
-        setupRecyclerView(mRecyclerView);
-    }
-    initializeAppList();
-}
-
-/** Returns true if we're currently running on the main/UI thread. */
-private boolean isOnUiThread() {
-    return Looper.myLooper() == Looper.getMainLooper();
-}
-
-private static final long APP_DATA_DELAY_MS = 1000L; // 1 second between retries
-
-private void initAppData() {
-    mInitRetryCount++;
-    Log.i(TAG, "initAppData() started (attempt " + mInitRetryCount + ")");
-
-    if (AllAppsList.data == null || AllAppsList.data.isEmpty()) {
-        Log.w(TAG, "AllAppsList not ready");
-        if (mInitRetryCount < MAX_INIT_RETRIES) {
-            Log.w(TAG, "Dependencies not ready, will retry...");
-            appDataHandler.postDelayed(this::initAppData, APP_DATA_DELAY);
-        } else {
-            Log.e(TAG, "Max retries reached, initializing with defaults");
-            if (mRecyclerView != null) {
-                setupRecyclerView(mRecyclerView);
-            }
-            initializeAppList();
+    public void triggerAppData() {
+        if (pendingAction != null) {
+            appDataHandler.removeCallbacks(pendingAction);
         }
-        return;
+        
+        pendingAction = new Runnable() {
+            @Override
+            public void run() {
+                initAppData();
+            }
+        };
+        
+        appDataHandler.postDelayed(pendingAction, APP_DATA_DELAY);
     }
 
-    Log.d(TAG, "Dependencies ready, initializing app data");
-    atomicInitAppData.set(true);
-    if (appDataHandler != null) {
-        appDataHandler.removeCallbacksAndMessages(null);
-    }
-    if (mRecyclerView != null) {
+    public void initAppData() {
+        // Prevent re-entrant calls
+        if (mIsInitializingAppData) {
+            Log.i(TAG, "initAppData() already in progress, skipping duplicate call");
+            return;
+        }
+        
+        mIsInitializingAppData = true;
+        mInitRetryCount++;
+        Log.i(TAG, "initAppData() started (attempt " + mInitRetryCount + ")");
+        
+        if (LauncherApplication.isFytDevice()) {
+            if (!checkDependenciesReady()) {
+                Log.w(TAG, "Dependencies not ready, will retry...");
+                mIsInitializingAppData = false;
+                
+                if (mInitRetryCount < MAX_INIT_RETRIES) {
+                    mHandler.postDelayed(() -> initAppData(), 1000);
+                } else {
+                    Log.e(TAG, "Max retries reached, initializing with defaults");
+                    mInitRetryCount = 0;
+                    forceInitializeWithDefaults();
+                }
+                return;
+            }            
+        } else {
+            forceInitializeWithDefaults();
+        }
+        
+        // bottom recycler
+        if (mWorkspace == null) {
+            Log.i(TAG, "mWorkspace null on initAppData(), reinitializing workspace");
+            mWorkspace = (Workspace) mDragLayer.findViewById(R.id.workspace);
+        }
+        
+        // Ensure adapter is created before finding RecyclerView
+        if (mAppListAdapter == null) {
+            mAppListAdapter = new AppListAdapter(this, Collections.emptyList());
+        }
+        
+        mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
+        if (mRecyclerView == null) {
+            Log.e(TAG, "RecyclerView not found in workspace! Waiting for layout...");
+            
+            // Reset flag before early return so retry can work
+            mIsInitializingAppData = false;
+            
+            if (mInitRetryCount < MAX_INIT_RETRIES) {
+                // Wait for the workspace to be laid out properly
+                if (mWorkspace.getViewTreeObserver().isAlive()) {
+                    mWorkspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            mWorkspace.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            initAppData();
+                        }
+                    });
+                } else {
+                    mHandler.postDelayed(() -> initAppData(), 1000);
+                }
+            } else {
+                Log.e(TAG, "Max retries reached for RecyclerView, resetting");
+                mInitRetryCount = 0;
+            }
+            return; 
+        }
+        
+        Log.d(TAG, "All dependencies ready, proceeding with setup");
         setupRecyclerView(mRecyclerView);
+        mHandler.post(() -> setupLeftRecyclerView());
+        
+        // Reset retry count on success
+        mInitRetryCount = 0;
     }
-    initializeAppList();
-}
 
     private boolean checkDependenciesReady() {
         // Check if AllAppsList is populated
