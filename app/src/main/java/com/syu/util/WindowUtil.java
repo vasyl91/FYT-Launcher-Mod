@@ -289,7 +289,6 @@ public class WindowUtil {
         boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
         boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
         if (userLayout) {
-            Helpers helpers = new Helpers();
             if (userStats) {
                 if (!helpers.isForegroundAppOpened() && !helpers.isInRecent() && !helpers.isInAllApps()) {
                     helpers.setPipStarted(false);

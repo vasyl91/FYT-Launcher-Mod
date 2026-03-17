@@ -126,7 +126,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
             }
             if (TextUtils.isEmpty(appListBean.packageName) || TextUtils.isEmpty(appListBean.className)) {
                 AppListDialogFragment dialog = getDialog();
-                dialog.show(AppListAdapter.this.mLauncher.getSupportFragmentManager(), "");
+                dialog.show(AppListAdapter.this.mLauncher.getSupportFragmentManager(), AppListDialogFragment.TAG);
                 AppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
             } else if (appListBean.packageName.equals("com.android.launcher66") && !appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
                 AppListAdapter.this.mLauncher.onClickAllAppsButton();
@@ -151,7 +151,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
         });
         appListHolder.itemView.setOnLongClickListener(view -> {
             AppListDialogFragment dialog = getDialog();
-            dialog.show(AppListAdapter.this.mLauncher.getSupportFragmentManager(), "");
+            dialog.show(AppListAdapter.this.mLauncher.getSupportFragmentManager(), AppListDialogFragment.TAG);
             AppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
             return true;
         });

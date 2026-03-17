@@ -126,7 +126,7 @@ public class VersionChecker {
                 for (int i = 0; i < maxLength; i++) {
                     int currentNum = (i < currentParts.length) ? Integer.parseInt(currentParts[i]) : 0;
                     int latestNum = (i < latestParts.length) ? Integer.parseInt(latestParts[i]) : 0;
-                    
+
                     if (latestNum == currentNum && isDebug) return true;
                     if (latestNum > currentNum) return true;
                     if (latestNum < currentNum) return false;

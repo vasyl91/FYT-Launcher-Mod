@@ -2960,6 +2960,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         clearAllCustomViews();
         LauncherAnimUtils.onDestroyActivity();
         stopServicesOnDestroy();
+        // Clear static references to avoid memory leaks after Activity destruction
+        if (mLauncher == this) {
+            mLauncher = null;
+        }
+        mAllAppView = null;
+        wallpaperButton = null;
+        widgetButton = null;
+        settingsButton = null;
+        wallpaperButtonWidgets = null;
+        settingsButtonWidgets = null;
     }
 
     private void unregisterAllReceivers() {
@@ -4969,7 +4979,32 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             createDefaultAppEntries(); 
         }
         
-        if (mAppListAdapter != null) {
+        // Regression guard: if the new list has fewer real-app entries than the DB rows
+        // that are actually installed, it means AllAppsList.data was transiently incomplete
+        // (e.g. during a package update). Keep the current list to avoid wiping the bar.
+        boolean safeToUpdate = true;
+        if (appData != null && !appData.isEmpty() && mAppListAdapter != null && mAppListAdapter.getItemCount() > 0) {
+            int installedDbCount = 0;
+            for (AppMultiple m : appData) {
+                if (!m.packageName.equals(FytPackage.AddAction) && !m.packageName.equals(FytPackage.AppAction)
+                        && helpers.isPackageInstalled(m.packageName)) {
+                    installedDbCount++;
+                }
+            }
+            int newRealCount = 0;
+            for (AppListBean b : mAppListData) {
+                if (!b.packageName.equals(FytPackage.AddAction) && !b.packageName.equals(FytPackage.AppAction)) {
+                    newRealCount++;
+                }
+            }
+            if (newRealCount < installedDbCount) {
+                Log.w(TAG, "initializeAppList: new list (" + newRealCount + " real apps) is fewer than installed DB entries ("
+                        + installedDbCount + ") — AllAppsList may be incomplete, keeping current list");
+                safeToUpdate = false;
+            }
+        }
+
+        if (mAppListAdapter != null && safeToUpdate) {
             mAppListAdapter.notifyDataSetChanged(mAppListData);
         }
         
@@ -5082,6 +5117,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     mAppListData.add(ab2);
 
                 } else {
+                    boolean found = false;
                     if (allAppsListCopy != null) {
                         for (AppInfo allApp : allAppsListCopy) {
                             if (allApp.getPackageName().equals(multiple.packageName)
@@ -5093,14 +5129,53 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                         multiple.className
                                 );
                                 mAppListData.add(ab3);
+                                found = true;
                                 break;
                             }
                         }
                     }
+                    // Fallback: if not found in AllAppsList but package IS installed,
+                    // load the icon directly from PackageManager so the app doesn't disappear.
+                    if (!found && helpers.isPackageInstalled(multiple.packageName)) {
+                        Bitmap icon = loadAppIconFromPackageManager(multiple.packageName, multiple.className);
+                        AppListBean ab = new AppListBean(multiple.name, icon, multiple.packageName, multiple.className);
+                        mAppListData.add(ab);
+                    } else if (!found) {
+                        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
+                        AppListBean ab = new AppListBean(multiple.name, bmp, multiple.packageName, multiple.className);
+                        mAppListData.add(ab);
+                    }
                 }
             }
         }
-        mAppListAdapter.notifyDataSetChanged(mAppListData);
+        // Regression guard: only update adapter if the new list has at least as many
+        // real apps as there are installed entries in the DB.  This prevents the bar
+        // from going blank when AllAppsList.data is transiently incomplete (e.g. a
+        // PACKAGE_CHANGED/update event causes a momentary remove-then-re-add cycle).
+        boolean safeToUpdate = true;
+        if (data != null && !data.isEmpty() && mAppListAdapter != null && mAppListAdapter.getItemCount() > 0) {
+            int installedDbCount = 0;
+            for (AppMultiple m : data) {
+                if (!m.packageName.equals(FytPackage.AddAction) && !m.packageName.equals(FytPackage.AppAction)
+                        && helpers.isPackageInstalled(m.packageName)) {
+                    installedDbCount++;
+                }
+            }
+            int newRealCount = 0;
+            for (AppListBean b : mAppListData) {
+                if (!b.packageName.equals(FytPackage.AddAction) && !b.packageName.equals(FytPackage.AppAction)) {
+                    newRealCount++;
+                }
+            }
+            if (newRealCount < installedDbCount) {
+                Log.w(TAG, "refreshCycle: new list (" + newRealCount + " real apps) fewer than installed DB entries ("
+                        + installedDbCount + ") — keeping current list to avoid blank bar");
+                safeToUpdate = false;
+            }
+        }
+        if (safeToUpdate) {
+            mAppListAdapter.notifyDataSetChanged(mAppListData);
+        }
     }
 
     public void refreshLeftCycle(AppListBean bean) {
@@ -5335,6 +5410,33 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mRecyclerView.setVisibility(View.GONE);
             Log.i(TAG, "Recycler disabled");
         }
+    }
+
+    /**
+     * Returns true if any of the given package names is currently configured as a bottom-bar
+     * shortcut (stored in AppMultiple) or left-bar shortcut (LeftAppMultiple).
+     * Used to avoid needlessly re-running initAppData for unrelated package change events.
+     */
+    private boolean isPackageInBottomBar(ArrayList<String> packageNames) {
+        if (packageNames == null || packageNames.isEmpty()) return false;
+        if (mAppListData != null) {
+            for (AppListBean bean : mAppListData) {
+                if (packageNames.contains(bean.packageName)) return true;
+            }
+        }
+        if (mLeftAppListData != null) {
+            for (AppListBean bean : mLeftAppListData) {
+                if (packageNames.contains(bean.packageName)) return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isAppInfoInBottomBar(ArrayList<AppInfo> appInfos) {
+        if (appInfos == null || appInfos.isEmpty()) return false;
+        ArrayList<String> pkgs = new ArrayList<>();
+        for (AppInfo ai : appInfos) pkgs.add(ai.getPackageName());
+        return isPackageInBottomBar(pkgs);
     }
 
     private Bitmap loadAppIconFromPackageManager(String packageName, String className) {
@@ -9057,8 +9159,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mAppsCustomizeContent.updateApps(apps);
         }
 
-        // Refresh bottom bar icons — AllAppsList.data has been updated by the package event
-        triggerAppData();
+        // Refresh bottom bar icons only if the changed apps are actually shown there
+        if (isAppInfoInBottomBar(apps)) {
+            triggerAppData();
+        }
     }
 
     @Override
@@ -9079,8 +9183,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (!AppsCustomizePagedView.DISABLE_ALL_APPS && mAppsCustomizeContent != null) {
                 mAppsCustomizeContent.removeApps(appInfos);
             }
-            // Refresh bottom bar icons — AllAppsList.data has changed
-            triggerAppData();
+            // Only refresh the bottom bar if the affected package is actually shown there.
+            // For update-triggered transient removals (packageRemoved=false) we skip the refresh
+            // to avoid wiping the bar while AllAppsList.data is momentarily incomplete.
+            if (packageRemoved && isPackageInBottomBar(packageNames)) {
+                triggerAppData();
+            }
         }
     }
 

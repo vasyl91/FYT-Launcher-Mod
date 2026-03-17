@@ -259,7 +259,7 @@ public class CustomPipRestartPreference extends Preference {
             sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         }
         String appPackageName = sharedPrefs.getString(key, "");
-        if (!appPackageName.isEmpty() && appPackageName != null) {
+        if (!appPackageName.isEmpty()) {
             ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
             try {
                 Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);

@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -14,14 +15,19 @@ import android.view.Display;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
-import com.syu.util.Utils;
+import com.android.recycler.AppListDialogFragment;
 import com.syu.util.WindowUtil;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class WakeDetectionService extends Service implements PropertyChangeListener {
 
@@ -90,6 +96,8 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
             Helpers helpers = new Helpers();
             if (val.contains("true")) {
                 Log.e(TAG, "Device awakened from sleep");
+                handler.postDelayed(() -> pressHomeButton(), 500);
+                handler.postDelayed(() -> dismissAppListDialog(), 500);
                 mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
                 long lastSleepTimestamp = mPrefs.getLong("sleep_timestamp", -1L);
                 boolean resetPip = false;
@@ -98,11 +106,13 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     long currentTime = System.currentTimeMillis();
                     long diff = currentTime - lastSleepTimestamp;
 
-                    // 10 minutes = 10 * 60 * 1000 ms
-                    if (diff > 10 * 60 * 1000) {
-                        Log.e(TAG, "Sleep duration exceeded 10 minutes: " + diff + " ms");
+                    // 15 minutes = 10 * 60 * 1000 ms
+                    if (diff > 15 * 60 * 1000) {
+                        Log.e(TAG, "Sleep duration exceeded 15 minutes: " + diff + " ms");
                         WindowUtil.removePip();
+                        getSharedPreferences("HelpersPrefs", 0).edit().clear().apply();
                         resetPip();
+                        restartPip();
                         resetPip = true;
                     }
                 }
@@ -119,9 +129,8 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
 
                 boolean userMap = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);        
                 if (!resetPip && userMap) {
-                    resetPip();
+                    restartPip();
                 }
-                resetPip = false;
 
                 boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
                 if (widgetBar) {
@@ -129,6 +138,9 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 }
             } else if (val.contains("false")) {
                 Log.e(TAG, "ACC turned off, device has been put into sleep mode");
+
+                WindowUtil.removePip();
+
                 mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
                 long sleepTimestamp = System.currentTimeMillis();
                 mPrefs.edit().putLong("sleep_timestamp", sleepTimestamp).apply();
@@ -141,12 +153,74 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
         } 
     } 
 
-    public void resetPip() {  
+    public void pressHomeButton() {
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
+        homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        homeIntent.setClass(this, Launcher.class);
+        startActivity(homeIntent);
+    }
+
+    public void dismissAppListDialog() {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        FragmentManager fm = launcher.getSupportFragmentManager();
+        DialogFragment dialog = (DialogFragment) fm.findFragmentByTag(AppListDialogFragment.TAG);
+        if (dialog != null && dialog.isAdded()) {
+            dialog.dismissAllowingStateLoss();
+            Log.e(TAG, "AppListDialogFragment dismissed on wake-up");
+            Helpers helpers = new Helpers();
+            helpers.setListOpen(false);
+            Intent intentClose = new Intent(Keys.LIST_CLOSE);
+            LauncherApplication.sApp.sendBroadcast(intentClose);
+        }
+    }
+
+    public void restartPip() {
         // in some mysterious cases pinned PiP won't start when user wakes the device up from the sleep mode 
         // this serves as some sort of checking function to make sure it starts
-        handler.postDelayed(() -> {
-            WindowUtil.openPip(false);
-        }, 2500);
+        handler.postDelayed(() -> WindowUtil.openPip(false), 2500);
+    }
+
+    public void resetPip() {  
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        }
+        boolean firstPip = mPrefs.getBoolean(Keys.PIP_FIRST, false);
+        boolean dualPip = mPrefs.getBoolean(Keys.PIP_DUAL, false);
+        String firstPackage = mPrefs.getString(Keys.PIP_FIRST_PACKAGE, "");
+        if ((firstPip || dualPip) && !firstPackage.isEmpty()) {
+            restartPipApp(Keys.PIP_FIRST_PACKAGE);
+        } 
+        boolean secondPip = mPrefs.getBoolean(Keys.PIP_SECOND, false);
+        String secondPackage = mPrefs.getString(Keys.PIP_SECOND_PACKAGE, "");
+        if ((secondPip || dualPip) && !secondPackage.isEmpty()) {
+            restartPipApp(Keys.PIP_SECOND_PACKAGE);
+        }
+        boolean thirdPip = mPrefs.getBoolean(Keys.PIP_THIRD, false);
+        String thirdPackage = mPrefs.getString(Keys.PIP_THIRD_PACKAGE, "");
+        if (thirdPip && !thirdPackage.isEmpty()) {
+            restartPipApp(Keys.PIP_THIRD_PACKAGE);
+        }
+        boolean fourthPip = mPrefs.getBoolean(Keys.PIP_FOURTH, false);
+        String fourthPackage = mPrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
+        if (fourthPip && !fourthPackage.isEmpty()) { 
+            restartPipApp(Keys.PIP_FOURTH_PACKAGE);  
+        }
+    }
+
+    public void restartPipApp(String key) {
+        String appPackageName = mPrefs.getString(key, "");
+        if (!appPackageName.isEmpty()) {
+            ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            try {
+                Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
+                forceStopPackage.setAccessible(true);
+                forceStopPackage.invoke(activityManager, appPackageName);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static class PropertyChangeClass {

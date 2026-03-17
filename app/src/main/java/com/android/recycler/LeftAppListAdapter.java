@@ -80,7 +80,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
                 }
             }
             if (TextUtils.isEmpty(appListBean.packageName) || TextUtils.isEmpty(appListBean.className)) {
-                LeftAppListAdapter.this.mDialog.show(LeftAppListAdapter.this.mLauncher.getSupportFragmentManager(), "");
+                LeftAppListAdapter.this.mDialog.show(LeftAppListAdapter.this.mLauncher.getSupportFragmentManager(), AppListDialogFragment.TAG);
                 LeftAppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
             } else if (appListBean.packageName.equals("com.android.launcher66") && !appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
                 LeftAppListAdapter.this.mLauncher.onClickAllAppsButton();

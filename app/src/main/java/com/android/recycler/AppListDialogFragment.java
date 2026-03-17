@@ -34,6 +34,7 @@ import com.syu.util.WindowUtil;
 import java.util.ArrayList;
 
 public class AppListDialogFragment extends DialogFragment implements AdapterView.OnItemClickListener {
+    public static final String TAG = "AppListDialogFragment";
     ImageView currentAppIcon;
     TextView currentAppName;
     AppSelectAdapter mAdapter;

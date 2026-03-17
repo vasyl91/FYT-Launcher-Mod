@@ -3744,15 +3744,15 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             
             CellLayout page = (CellLayout) pageView;
             final int pageIndex = i;
-            
+
             // Check if this page needs any widgets
             boolean needsWidgets = checkIfPageNeedsWidgets(pageIndex);
-            
+
             if (!needsWidgets) {
                 Log.i(TAG, "Page " + pageIndex + " does not need any widgets");
                 continue;
             }
-            
+
             Log.i(TAG, "Page " + pageIndex + " needs widgets - processing...");
             
             // Process this page - check if CellLayout is ready
@@ -3781,48 +3781,48 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     }
 
     private boolean checkIfPageNeedsWidgets(int pageIndex) {
-        if (prefs.getBoolean(Keys.USER_DATE, true) && 
+        if (prefs.getBoolean(Keys.USER_DATE, true) &&
             prefs.getInt(Keys.DATE_SCREEN, 1) - 1 == pageIndex) {
             return true;
         }
-        if (prefs.getBoolean(Keys.USER_MUSIC, true) && 
+        if (prefs.getBoolean(Keys.USER_MUSIC, true) &&
             prefs.getInt(Keys.MUSIC_SCREEN, 1) - 1 == pageIndex) {
             return true;
         }
-        if (prefs.getBoolean(Keys.USER_RADIO, true) && 
+        if (prefs.getBoolean(Keys.USER_RADIO, true) &&
             prefs.getInt(Keys.RADIO_SCREEN, 1) - 1 == pageIndex) {
             return true;
         }
-        if (prefs.getBoolean(Keys.PIP_DUAL, false) && 
+        if (prefs.getBoolean(Keys.PIP_DUAL, false) &&
             prefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1 == pageIndex) {
             return true;
         }
-        if (prefs.getBoolean(Keys.PIP_FIRST, false) && 
+        if (prefs.getBoolean(Keys.PIP_FIRST, false) &&
             prefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1 == pageIndex) {
             return true;
         }
-        if (prefs.getBoolean(Keys.PIP_SECOND, false) && 
+        if (prefs.getBoolean(Keys.PIP_SECOND, false) &&
             prefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1 == pageIndex) {
             return true;
         }
-        if (prefs.getBoolean(Keys.PIP_THIRD, false) && 
+        if (prefs.getBoolean(Keys.PIP_THIRD, false) &&
             prefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1 == pageIndex) {
             return true;
         }
-        if (prefs.getBoolean(Keys.PIP_FOURTH, false) && 
+        if (prefs.getBoolean(Keys.PIP_FOURTH, false) &&
             prefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1 == pageIndex) {
             return true;
         }
         if (prefs.getInt(Keys.STATS_SCREEN, 1) - 1 == pageIndex) {
             return true;
         }
-        
+
         return false;
     }
 
     private void addWidgetsToPage(CellLayout page, int pageIndex) {
         Log.i(TAG, "Adding widgets to page " + pageIndex);
-        
+
         // Check if CellLayout is properly initialized
         if (page.mCellWidth <= 0 || page.mCellHeight <= 0 || page.mCountX <= 0 || page.mCountY <= 0) {
             Log.w(TAG, "CellLayout not initialized for page " + pageIndex + ", retrying...");
@@ -4130,17 +4130,17 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             case "date":
                 mLauncher.handler.postDelayed(() -> {
                     handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
-                }, 100);                
+                }, 100);
                 break;
             case "music":
                 mLauncher.handler.postDelayed(() -> {
                     handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
-                }, 150);  
+                }, 150);
                 break;
             case "radio":
                 mLauncher.handler.postDelayed(() -> {
                     handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
-                }, 200);  
+                }, 200);
                 break;
         }
 
@@ -4172,16 +4172,14 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         info.spanX = spanX;
         info.spanY = spanY;
 
-        // Persist
+        // Persist to DB (fast, runs on main thread — no delay needed)
         LauncherModel.addItemToDatabase(mLauncher, info, LauncherSettings.Favorites.CONTAINER_DESKTOP,
                 info.screenId, info.cellX, info.cellY, false);
 
-        mLauncher.handler.postDelayed(() -> {
+        // Add view and immediately init — single post() replaces two separate postDelayed()
+        // calls at 200ms and 400ms, saving at least 400ms per widget.
+        mLauncher.handler.post(() -> {
             addViewToCellLayout(widgetView, 0, childId, lp, true);
-        }, 200);
-
-        // Initialize widget-specific behavior
-        mLauncher.handler.postDelayed(() -> {
             switch (prefix) {
                 case "date":
                     mLauncher.initDateWidgetView(widgetView);
@@ -4196,7 +4194,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     mLauncher.bindRadioWidgetOnclickListener();
                     break;
             }
-        }, 400);
+        });
 
         Log.i(TAG, prefix + " widget added at [" + startCell[0] + "," + startCell[1] + "] spanning " + spanX + "x" + spanY);
 
@@ -4425,11 +4423,13 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         LauncherModel.addItemToDatabase(mLauncher, info, LauncherSettings.Favorites.CONTAINER_DESKTOP,
                 info.screenId, info.cellX, info.cellY, false);
         
-        mLauncher.handler.postDelayed(() -> {
+        // Use post() instead of postDelayed(100ms) — conflict handling runs synchronously above,
+        // so there is no race to guard against.
+        mLauncher.handler.post(() -> {
             addViewToCellLayout(placeholder, 0, childId, lp, false);
             Log.i(TAG, "Added " + pipType + " PiP placeholder at [" + startCell[0] + "," + startCell[1] + 
                   "] spanning " + spanX + "x" + spanY);
-        }, 100);
+        });
 
         Workspace workspace = Launcher.getWorkspace();
         if (workspace != null) {
@@ -4547,8 +4547,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         
         mLauncher.handler.postDelayed(() -> {
             addViewToCellLayout(mStatsPlaceholder, 0, childId, lp, false);
-        }, 200); 
-             
+        }, 200);
+
         Log.i(TAG, "Added stats placeholder at [" + startCell[0] + "," + startCell[1] + 
               "] spanning " + spanX + "x" + spanY);
 
