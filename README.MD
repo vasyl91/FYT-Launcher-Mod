@@ -15,7 +15,7 @@ List of modifications:
 - Enabled widgets (upscaled for better interaction), shortcuts and folders on the main screen. Reworked screen's grid. Extra screens as well.
 - Launcher creator allowing to adjust launcher's layout to user preferences. All elements of the layout but the bottom bar might be turned off. User can also specify which screen should be the main screen.
 - Bottom bar with optional widgets.
-- Auto hide bottm bar option.
+- Auto hide bottom bar option.
 - Skins for widgets and bottom bar.
 - Optional floating buttons allowing to quickly switch the apps between PiPs.
 - Optional transparent overlay square on the status bar that detects swipes and allows to scroll between pages. This might be useful when PiP view occupies most of the visible screen (only for privileged/system app).
@@ -29,11 +29,11 @@ List of modifications:
 
 **Installation:**
 
-For the first installation download `installer.zip`, unpack it in a FAT32 formatted USB pendrive, then connect pendrive to your unit's USB port and wait, installation should start after few seconds. Once installed you can dirty install updates (including via the built-in updater) or debug versions without using the USB pendrive again.
+For the first installation download `installer.zip`, unpack it in a FAT32 formatted USB pendrive, then connect pendrive to your unit's USB port and wait, installation should start after few seconds. Once installed you can dirty install updates (also through the built-in updater) or debug versions without using the USB pendrive again.
 
 If installation doesn't start automatically please check other USB ports. If it doesn't start regardless the USB port, then it means that either your device is not a FYT device or indeed it is a FYT device but operates on Android 12 or higher (some brands do not allow to install apps with scripts on the USB pendrive).
 
-Following this method is important because it installs the launcher as a privileged/system app enabling it to work properly. 
+Following this method is important because it installs the launcher as a privileged/system app what is crucial it to have it working properly. 
 
 **Google Maps bug**
 
@@ -41,7 +41,7 @@ Most of the FYT ROMs offer two ways of displaying apps on the launcher's screen.
 The only reliable way I have found to prevent Google Maps from switching its UI to minimal requires installed root, LSPosed and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/tag/v1.0.1). It successfully forces the app to maintain its full UI inside FYT's Picture in Picture (remember to select Google Maps in the LSPosed "Enable module" section).
 Check this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always do the full backup (AllAppUpdate.bin, config.txt etc.) before flashing anything!
 
-Second method related to the modified android ActivityView allows to display apps as they are in a windowed mode. This does not affect the layout and does not require root. Multiple PiP feature uses this method.
+Second method related to the modified android ActivityView class allows to display apps as they are in a windowed mode. This does not affect the layout and does not require root. Multiple PiP feature uses this method.
 
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
