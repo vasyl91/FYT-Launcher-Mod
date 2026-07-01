@@ -83,6 +83,8 @@ public class ResValue {
     public int musicbutton_next_two = getResId("music_next_two", R.id.class);
     public int musicbutton_playpause = getResId("music_playpause", R.id.class);
     public int musicbutton_playpause_two = getResId("music_playpause_two", R.id.class);
+    public int musicbutton_favorite = getResId("music_favorite", R.id.class);
+    public int musicbutton_favorite_two = getResId("music_favorite_two", R.id.class);
     public int rl_music = getResId("rl_music", R.id.class);
     public int rl_music_two = getResId("rl_music_two", R.id.class);
     public int rl_music3 = getResId("rl_music3", R.id.class);

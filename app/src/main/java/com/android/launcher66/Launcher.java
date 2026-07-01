@@ -316,6 +316,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Button mMusicNextButtonTwo;
     private Button mMusicPrevButton;
     private Button mMusicPrevButtonTwo;
+    private Button mMusicFavoriteButton;
+    private Button mMusicFavoriteButtonTwo;
     private ImageView mNaviMycar;
     private View mNaviRunView;
     private View mNaviView;
@@ -508,9 +510,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private ConstraintLayout prevLayout;
     private ConstraintLayout playPauseLayout;
     private ConstraintLayout nextLayout;
+    private ConstraintLayout favoriteLayout;
     private ConstraintLayout prevLayoutTwo ;
     private ConstraintLayout playPauseLayoutTwo;
     private ConstraintLayout nextLayoutTwo;
+    private ConstraintLayout favoriteLayoutTwo;
     private int orientation;
     private boolean floatingButton = false;
     private boolean statusBarSwipeDetection = false;
@@ -1071,11 +1075,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     }
                     if (Launcher.this.musicSeekBar != null) {
                         Launcher.this.musicSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListenerImp(Launcher.this, null));
-                    } 
+                    }
+                    updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
                     return;         
                 }
             }
 
+            updateFavoriteButtonState();
             setPlayPauseIcon(false);
 
             if ("true".equals(state)) {
@@ -4264,9 +4270,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mPlayPauseButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_playpause);
             mMusicPrevButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_prev);
             mMusicNextButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_next);
+            mMusicFavoriteButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_favorite);
             setWidgetButtonsTint(mPlayPauseButton);
             setWidgetButtonsTint(mMusicPrevButton);
-            setWidgetButtonsTint(mMusicNextButton);          
+            setWidgetButtonsTint(mMusicNextButton);
+            updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
             tvMusicName = musicWidgetView.findViewById(ResValue.getInstance().tv_musicName);
             ivALbumBg = musicWidgetView.findViewById(ResValue.getInstance().iv_album_bg);
             ivMusicScore = musicWidgetView.findViewById(ResValue.getInstance().music_score);
@@ -4299,9 +4307,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mPlayPauseButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_playpause_two);
             mMusicPrevButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_prev_two);
             mMusicNextButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_next_two);
+            mMusicFavoriteButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_favorite_two);
             setBarButtonsTint(mPlayPauseButtonTwo);
             setBarButtonsTint(mMusicPrevButtonTwo);
             setBarButtonsTint(mMusicNextButtonTwo);
+            updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
             tvMusicNameTwo = musicBarView.findViewById(ResValue.getInstance().tv_musicName_two);
             ivALbumBgTwo = musicBarView.findViewById(ResValue.getInstance().iv_album_bg_two);
             tvAritstTwo = musicBarView.findViewById(ResValue.getInstance().tv_artist_two);
@@ -4338,6 +4348,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mPlayPauseButtonTwo = null;
         mMusicPrevButtonTwo = null;
         mMusicNextButtonTwo = null;
+        mMusicFavoriteButtonTwo = null;
         tvMusicNameTwo = null;
         ivALbumBgTwo = null;
         tvAritstTwo = null;
@@ -5511,6 +5522,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         prevLayout = musicWidgetView.findViewById(R.id.constraint_layout_prev);
         playPauseLayout = musicWidgetView.findViewById(R.id.constraint_layout_playpause);
         nextLayout = musicWidgetView.findViewById(R.id.constraint_layout_next);
+        favoriteLayout = musicWidgetView.findViewById(R.id.constraint_layout_favorite);
         
         // Set up previous button
         View.OnClickListener prevClickListener = v -> onPrevButtonClicked(false);
@@ -5532,15 +5544,29 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mMusicNextButton != null) {
             mMusicNextButton.setOnClickListener(nextClickListener);
         }
+
+        View.OnClickListener favoriteClickListener = v -> onFavoriteButtonClicked(false);
+        if (favoriteLayout != null) {
+            favoriteLayout.setOnClickListener(favoriteClickListener);
+        }
+        if (mMusicFavoriteButton != null) {
+            mMusicFavoriteButton.setOnClickListener(favoriteClickListener);
+        }
         
         // Make layouts clickable
         prevLayout.setClickable(true);
         playPauseLayout.setClickable(true);
         nextLayout.setClickable(true);
+        if (favoriteLayout != null) {
+            favoriteLayout.setClickable(true);
+        }
         
         prevLayout.setFocusable(true);
         playPauseLayout.setFocusable(true);
         nextLayout.setFocusable(true);
+        if (favoriteLayout != null) {
+            favoriteLayout.setFocusable(true);
+        }
     }
 
     public void bindMusicBarOnclickListener(View musicBarView) {
@@ -5549,6 +5575,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         prevLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_prev_two);
         playPauseLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_playpause_two);
         nextLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_next_two);
+        favoriteLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_favorite_two);
         
         // Set up previous button
         View.OnClickListener prevClickListener = v -> onPrevButtonClicked(true);
@@ -5570,15 +5597,71 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mMusicNextButtonTwo != null) {
             mMusicNextButtonTwo.setOnClickListener(nextClickListener);
         }
+
+        View.OnClickListener favoriteClickListener = v -> onFavoriteButtonClicked(true);
+        if (favoriteLayoutTwo != null) {
+            favoriteLayoutTwo.setOnClickListener(favoriteClickListener);
+        }
+        if (mMusicFavoriteButtonTwo != null) {
+            mMusicFavoriteButtonTwo.setOnClickListener(favoriteClickListener);
+        }
         
         // Make LayoutTwos clickable
         prevLayoutTwo.setClickable(true);
         playPauseLayoutTwo.setClickable(true);
         nextLayoutTwo.setClickable(true);
+        if (favoriteLayoutTwo != null) {
+            favoriteLayoutTwo.setClickable(true);
+        }
         
         prevLayoutTwo.setFocusable(true);
         playPauseLayoutTwo.setFocusable(true);
         nextLayoutTwo.setFocusable(true);
+        if (favoriteLayoutTwo != null) {
+            favoriteLayoutTwo.setFocusable(true);
+        }
+    }
+
+    public void onFavoriteButtonClicked(boolean barView) {
+        if (barView && mWorkspace != null) {
+            mWorkspace.scheduleAutoHide();
+        }
+        String preferredPackage = "mediaController".equals(mediaSource) ? activeController : null;
+        int stateBefore = MediaFavoriteController.getCurrentFavoriteState(this, preferredPackage);
+        boolean sent = MediaFavoriteController.favoriteCurrent(this, preferredPackage);
+        if (sent) {
+            if (stateBefore == MediaFavoriteController.FAVORITE_STATE_FAVORITED) {
+                updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED);
+            } else if (stateBefore == MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED) {
+                updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_FAVORITED);
+            }
+            mHandler.postDelayed(this::updateFavoriteButtonState, 700);
+        }
+    }
+
+    private void updateFavoriteButtonState() {
+        String preferredPackage = "mediaController".equals(mediaSource) ? activeController : null;
+        updateFavoriteButtonState(MediaFavoriteController.getCurrentFavoriteState(this, preferredPackage));
+    }
+
+    private void updateFavoriteButtonState(int favoriteState) {
+        int drawable = favoriteState == MediaFavoriteController.FAVORITE_STATE_FAVORITED
+                ? R.drawable.music_favorite_p
+                : R.drawable.btn_ic_favorite;
+        setFavoriteButtonBackground(mMusicFavoriteButton, drawable, false);
+        setFavoriteButtonBackground(mMusicFavoriteButtonTwo, drawable, true);
+    }
+
+    private void setFavoriteButtonBackground(Button button, int drawable, boolean barView) {
+        if (button == null) {
+            return;
+        }
+        button.setBackground(SkinUtils.getDrawable(drawable));
+        if (barView) {
+            setBarButtonsTint(button);
+        } else {
+            setWidgetButtonsTint(button);
+        }
     }
     
     public void onPrevButtonClicked(boolean barView) {
@@ -5756,6 +5839,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void setBarButtonsTint(Button button) {
+        if (button == null) {
+            return;
+        }
         barTint = mPrefs.getBoolean(Keys.BLACK_BAR, false);
         if (barTint) {
             helpers.applyColorFilterToButton(button);
@@ -5763,6 +5849,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void setWidgetButtonsTint(Button button) {
+        if (button == null) {
+            return;
+        }
         widgetTint = mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
         if (widgetTint) {
             helpers.applyColorFilterToButton(button);
@@ -6498,15 +6587,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             cleanupViewRecursively(prevLayoutTwo);
             cleanupViewRecursively(playPauseLayoutTwo);
             cleanupViewRecursively(nextLayoutTwo);
+            cleanupViewRecursively(favoriteLayoutTwo);
             cleanupViewRecursively(mMusicNextButtonTwo);
             cleanupViewRecursively(mMusicPrevButtonTwo);
             cleanupViewRecursively(mPlayPauseButtonTwo);
+            cleanupViewRecursively(mMusicFavoriteButtonTwo);
             prevLayoutTwo = null;
             playPauseLayoutTwo = null;
             nextLayoutTwo = null;
+            favoriteLayoutTwo = null;
             mMusicNextButtonTwo = null;
             mMusicPrevButtonTwo = null;
             mPlayPauseButtonTwo = null;
+            mMusicFavoriteButtonTwo = null;
             removeCustomView("WS_Music_Two");
         }
     }    

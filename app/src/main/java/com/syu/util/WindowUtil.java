@@ -380,7 +380,7 @@ public class WindowUtil {
         if (dualPip && !mWindowHost.isDualVisible() && !firstPipPinned && !secondPipPinned 
             && Helpers.isPackageInstalled(firstPkg) && Helpers.isPackageInstalled(secondPkg)) {    
             try {
-                Rect rDual = offscreen;
+                Rect rDual = getInitialPipBounds(workspace, "dual");
                 if (rDual != null) {
                     mWindowHost.showDual(firstPkg, secondPkg, rDual);
                     Log.i(TAG, "dual: show " + firstPkg + " and " + secondPkg);
@@ -392,7 +392,7 @@ public class WindowUtil {
             if (firstPip && !mWindowHost.isFirstVisible() && Helpers.isPackageInstalled(firstPkg)) {
                 if (!firstPipPinned) {
                     try {
-                        Rect rFirst = offscreen;
+                        Rect rFirst = getInitialPipBounds(workspace, "first");
                         if (rFirst != null) {
                             mWindowHost.showFirst(firstPkg, rFirst);
                             Log.i(TAG, "first: show " + firstPkg);
@@ -406,7 +406,7 @@ public class WindowUtil {
             if (secondPip && !mWindowHost.isSecondVisible() && Helpers.isPackageInstalled(secondPkg)) {
                 if (!secondPipPinned) {
                     try {
-                        Rect rSecond = offscreen;
+                        Rect rSecond = getInitialPipBounds(workspace, "second");
                         if (rSecond != null) {
                             mWindowHost.showSecond(secondPkg, rSecond);
                             Log.i(TAG, "second: show " + secondPkg);
@@ -422,7 +422,7 @@ public class WindowUtil {
         if (thirdPip && !mWindowHost.isThirdVisible() && Helpers.isPackageInstalled(thirdPkg)) {
             if (!thirdPipPinned) {
                 try {
-                    Rect rThird = offscreen;
+                    Rect rThird = getInitialPipBounds(workspace, "third");
                     if (rThird != null) {
                         mWindowHost.showThird(thirdPkg, rThird);
                         Log.i(TAG, "third: show " + thirdPkg);
@@ -437,7 +437,7 @@ public class WindowUtil {
         if (fourthPip && !mWindowHost.isFourthVisible() && Helpers.isPackageInstalled(fourthPkg)) {
             if (!fourthPipPinned) {
                 try {
-                    Rect rFourth = offscreen;
+                    Rect rFourth = getInitialPipBounds(workspace, "fourth");
                     if (rFourth != null) {
                         mWindowHost.showFourth(fourthPkg, rFourth);
                         Log.i(TAG, "fourth: show " + fourthPkg);
@@ -467,6 +467,38 @@ public class WindowUtil {
             case "third": return Keys.PIP_THIRD_SCREEN;
             case "fourth": return Keys.PIP_FOURTH_SCREEN;
             default: return "";
+        }
+    }
+
+    private static Rect getInitialPipBounds(Workspace workspace, String pipType) {
+        Rect fallback = new Rect(offscreen);
+        try {
+            if (workspace == null || prefs == null) return fallback;
+
+            String screenKey = getScreenKeyForType(pipType);
+            if (screenKey.isEmpty()) return fallback;
+
+            int pipHomeScreen = prefs.getInt(screenKey, 1) - 1;
+            if (pipHomeScreen < 0 || pipHomeScreen >= workspace.getChildCount()) return fallback;
+
+            CellLayout pipHomeCellLayout = (CellLayout) workspace.getChildAt(pipHomeScreen);
+            if (pipHomeCellLayout == null) return fallback;
+
+            int[] basePos = pipHomeCellLayout.getPipPlaceholderPosition(pipType);
+            if (basePos == null) return fallback;
+
+            int pageWidth = workspace.getViewportWidth();
+            int pageCount = workspace.getChildCount();
+            int maxScroll = Math.max(0, (pageCount - 1) * pageWidth);
+            int currentScroll = Math.max(0, Math.min(workspace.mUnboundedScrollX, maxScroll));
+            int pipAbsoluteX = (pipHomeScreen * pageWidth) + basePos[0];
+            int pipScreenX = pipAbsoluteX - currentScroll;
+
+            return new Rect(pipScreenX, basePos[1],
+                    pipScreenX + basePos[2], basePos[1] + basePos[3]);
+        } catch (Throwable t) {
+            Log.w(TAG, "getInitialPipBounds failed for " + pipType, t);
+            return fallback;
         }
     }
 
@@ -1802,7 +1834,7 @@ public class WindowUtil {
                 boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(newA, act, pkgB, boundsA);
                 if (!ok) {
                     Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(act, pkgB);
-                    if (fallback != null) WindowHostActivityView.startActivitySmart(newA, act, fallback, (ActivityOptions) WindowHostActivityView.makeOptionsWithBounds(boundsA));
+                    if (fallback != null) WindowHostActivityView.startActivitySmart(newA, act, fallback, (ActivityOptions) WindowHostActivityView.makeOptionsWithBounds(pkgB, boundsA));
                 }
             } catch (Throwable t) {
                 Log.w(TAG, "safeOverlaySwapPanes: start into newA failed", t);
@@ -1811,7 +1843,7 @@ public class WindowUtil {
                 boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(newB, act, pkgA, boundsB);
                 if (!ok) {
                     Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(act, pkgA);
-                    if (fallback != null) WindowHostActivityView.startActivitySmart(newB, act, fallback, (ActivityOptions) WindowHostActivityView.makeOptionsWithBounds(boundsB));
+                    if (fallback != null) WindowHostActivityView.startActivitySmart(newB, act, fallback, (ActivityOptions) WindowHostActivityView.makeOptionsWithBounds(pkgA, boundsB));
                 }
             } catch (Throwable t) {
                 Log.w(TAG, "safeOverlaySwapPanes: start into newB failed", t);

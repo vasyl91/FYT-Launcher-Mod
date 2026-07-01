@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 public class WindowHostActivityView {
     private static final String TAG = "WindowHostActivityView";
+    private static final String GOOGLE_MAPS_PACKAGE = "com.google.android.apps.maps";
     private static Class<?> sActivityView, sStateCb;
 
     static void ensureLoaded() {
@@ -339,13 +340,22 @@ public class WindowHostActivityView {
      * and prevent fresh launches after inactivity
      */
     static Object createCompatibleOptions(Rect bounds) {
+        return createCompatibleOptions(null, bounds);
+    }
+
+    static Object createCompatibleOptions(String packageName, Rect bounds) {
         try {
             ActivityOptions options = ActivityOptions.makeBasic();
-            
+
+            if (isGoogleMapsPackage(packageName)) {
+                Log.i(TAG, "Google Maps ActivityView launch: using display-only options");
+                return options;
+            }
+
             if (bounds != null) {
                 options.setLaunchBounds(bounds);
             }
-            
+
             // Set windowing mode for freeform
             try {
                 options.getClass()
@@ -408,8 +418,31 @@ public class WindowHostActivityView {
         try { sActivityView.getMethod("release").invoke(av); } catch (Throwable ignore) {}
     }
 
+    static boolean isGoogleMapsPackage(String packageName) {
+        return GOOGLE_MAPS_PACKAGE.equals(packageName);
+    }
+
+    static boolean hasRealLaunchBounds(String packageName, Rect bounds) {
+        if (!isGoogleMapsPackage(packageName)) return true;
+        return bounds != null
+                && bounds.width() > 1
+                && bounds.height() > 1
+                && bounds.right > 0
+                && bounds.bottom > 0
+                && bounds.left > -1000
+                && bounds.top > -1000;
+    }
+
+    static boolean shouldWaitForRealBounds(String packageName, Rect bounds) {
+        return isGoogleMapsPackage(packageName) && !hasRealLaunchBounds(packageName, bounds);
+    }
+
     static Object makeOptionsWithBounds(Rect b) {
-        return createCompatibleOptions(b);
+        return createCompatibleOptions(null, b);
+    }
+
+    static Object makeOptionsWithBounds(String packageName, Rect b) {
+        return createCompatibleOptions(packageName, b);
     }
 
     private static PendingIntent buildPendingIntent(Context ctx, Intent intent) {
@@ -536,7 +569,7 @@ public class WindowHostActivityView {
             Log.i(TAG, "Fresh start for " + packageName + " - no existing process");
         }
         
-        Object opts = createCompatibleOptions(bounds);
+        Object opts = createCompatibleOptions(packageName, bounds);
         return startActivitySmart(av, ctx, intent, opts);
     }
 }
