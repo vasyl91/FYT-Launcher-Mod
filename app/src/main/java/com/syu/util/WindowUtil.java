@@ -84,7 +84,7 @@ public class WindowUtil {
         }
         try {
             AppPackageName = SystemProperties.get("persist.launcher.packagename", "");
-            if (AppPackageName.isEmpty() || AppPackageName == null) {
+            if (AppPackageName == null || AppPackageName.isEmpty()) {
                 if (prefs == null) {
                     prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);  
                 }

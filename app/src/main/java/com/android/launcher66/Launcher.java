@@ -661,7 +661,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override 
         public void onReceive(Context arg0, Intent intent) {
             String action = intent.getAction();
-            if ((mediaSource == "fyt" || activeController == null) && "com.fyt.systemui.remove".equals(action)) {
+            if (("fyt".equals(mediaSource) || activeController == null) && "com.fyt.systemui.remove".equals(action)) {
                 Bundle bundle = intent.getExtras();
                 String packageName = bundle.getString("pkg");
                 if ("com.syu.music".equals(packageName)) {
@@ -1013,10 +1013,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (strs != null && strs.length > 5) {
                 musictitle = strs[0];
                 artist = strs[1];   
-                if (artist == "null") {
+                if ("null".equals(artist)) {
                     artist = strs[3];
                 }
-                if (artist == "null") {
+                if ("null".equals(artist)) {
                     artist = "\u0020";
                 }
                 state = strs[2];
@@ -1028,7 +1028,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 // Some apps produce null path - we need a value to properly save a bitmap
                 path = String.valueOf(Arrays.hashCode(byts));
             }
-            if (mediaSource == "mediaController") {
+            if ("mediaController".equals(mediaSource)) {
                 boolean activeControllerAppRunning = false;
                 MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
                 ComponentName component = new ComponentName(Launcher.this, NotificationListener.class);
@@ -1237,7 +1237,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
                 return;
             }
-            if (CarStates.mAppID != 8 && (mediaSource == "fyt" || activeController == null)) {
+            if (CarStates.mAppID != 8 && ("fyt".equals(mediaSource) || activeController == null)) {
                 if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
                     if (fytData) { // from metadata
                         musictitle = MusicService.music_name;
@@ -5668,12 +5668,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (barView) {
             mWorkspace.scheduleAutoHide();
         }
-        if (mediaSource == "fyt") {
+        if ("fyt".equals(mediaSource)) {
             Intent intent = new Intent();
             intent.setAction("com.syu.music.prev");
             intent.setPackage("com.syu.music");
             Launcher.this.startService(intent);
-        } else if (mediaSource == "mediaController") {
+        } else if ("mediaController".equals(mediaSource)) {
             boolean activeControllerAppRunning = false;
             MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
             ComponentName component = new ComponentName(this, NotificationListener.class);
@@ -5710,7 +5710,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.scheduleAutoHide();
         }
         if (!temporarilyDisablePlayPauseButton) {
-            if (mediaSource == "fyt") {
+            if ("fyt".equals(mediaSource)) {
                 if (MusicService.state.booleanValue()) {
                     playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                     if (barView) {
@@ -5730,7 +5730,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 intent.setAction("com.syu.music.playpause");
                 intent.setPackage("com.syu.music");
                 Launcher.this.startService(intent);
-            } else if (mediaSource == "mediaController") {
+            } else if ("mediaController".equals(mediaSource)) {
                 boolean activeControllerAppRunning = false;
                 MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
                 ComponentName component = new ComponentName(this, NotificationListener.class);
@@ -5802,12 +5802,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (barView) {
             mWorkspace.scheduleAutoHide();
         }
-        if (mediaSource == "fyt") {
+        if ("fyt".equals(mediaSource)) {
             Intent intent = new Intent();
             intent.setAction("com.syu.music.next");
             intent.setPackage("com.syu.music");
             Launcher.this.startService(intent);
-        } else if (mediaSource == "mediaController") {
+        } else if ("mediaController".equals(mediaSource)) {
             boolean activeControllerAppRunning = false;
             MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
             ComponentName component = new ComponentName(this, NotificationListener.class);
@@ -7288,7 +7288,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.WS_Music) || v == getCustomView(Config.WS_Music_Two) || v == getCustomView(Config.WS_Music3)) {
-                if (mediaSource == "fyt" && helpers.isPackageInstalled("com.syu.music")) {
+                if ("fyt".equals(mediaSource) && helpers.isPackageInstalled("com.syu.music")) {
                     WindowUtil.removePip();
                     Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.syu.music");
                     try {
@@ -7303,7 +7303,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         throw new RuntimeException(e);
                     }
                     startActivitySafely(v, FytPackage.getIntent(this, "com.syu.music"), "music");
-                } else if (mediaSource == "mediaController" && activeController != null) {
+                } else if ("mediaController".equals(mediaSource) && activeController != null) {
                     if (!activeController.isEmpty()) { 
                         WindowUtil.removePip();
                         Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
@@ -7572,7 +7572,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void stopMusic() {
-        if (mediaSource == "mediaController") {
+        if ("mediaController".equals(mediaSource)) {
             if (mPlayPauseButton != null) {
                 mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                 setWidgetButtonsTint(mPlayPauseButton);

@@ -289,20 +289,31 @@ public final class MediaFavoriteController {
     }
 
     private static boolean isNegativeFavoriteAction(String text) {
-        return text.contains("dislike")
+        boolean explicitNegative = text.contains("dislike")
                 || text.contains("unlike")
                 || text.contains("unfavorite")
                 || text.contains("unfavourite")
                 || text.contains("unlove")
-                || text.contains("remove")
-                || text.contains("delete")
                 || text.contains("thumbs_down")
                 || text.contains("thumbs down")
                 || text.contains("thumb_down")
                 || text.contains("thumb down")
                 || text.contains("thumbdown")
                 || text.contains("not_interested")
-                || text.contains("not interested")
+                || text.contains("not interested");
+        if (explicitNegative) {
+            return true;
+        }
+
+        boolean removeLikeAction = text.contains("remove")
+                || text.contains("delete")
                 || text.contains("hide");
+        return removeLikeAction && (text.contains("favorite")
+                || text.contains("favourite")
+                || text.contains("like")
+                || text.contains("heart")
+                || text.contains("love")
+                || text.contains("library")
+                || text.contains("save"));
     }
 }
