@@ -21,6 +21,8 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.MediaFavoriteController;
+import com.android.launcher66.MediaFavoriteReceiver;
 import com.android.launcher66.R;
 import com.fyt.car.MusicService;
 import com.syu.car.CarStates;
@@ -125,6 +127,13 @@ public class DateMusicWidget extends Widget {
         } else {
             views.setImageViewResource(ResValue.getInstance().musicbutton_playpause, ResValue.getInstance().music_pause_icon);
         }
+        int favoriteState = MediaFavoriteController.getCurrentFavoriteState(this.mContext, null);
+        views.setImageViewResource(
+                ResValue.getInstance().musicbutton_favorite,
+                favoriteState == MediaFavoriteController.FAVORITE_STATE_FAVORITED
+                        ? R.drawable.music_favorite_p
+                        : R.drawable.btn_ic_favorite
+        );
         if (MusicService.CURMINUTES >= 0) {
             long curProgress = MusicService.CURMINUTES;
             long totalProgress = MusicService.TOTALMINUTES;
@@ -240,6 +249,7 @@ public class DateMusicWidget extends Widget {
         views.setOnClickPendingIntent(ResValue.getInstance().musicbutton_prev, getPIntend(this.mContext, "com.syu.music.prev"));
         views.setOnClickPendingIntent(ResValue.getInstance().musicbutton_playpause, getPIntend(this.mContext, "com.syu.music.playpause"));
         views.setOnClickPendingIntent(ResValue.getInstance().musicbutton_next, getPIntend(this.mContext, "com.syu.music.next"));
+        views.setOnClickPendingIntent(ResValue.getInstance().musicbutton_favorite, getFavoriteIntent(this.mContext));
         views.setOnClickPendingIntent(ResValue.getInstance().Radiobutton_prev, getPIntend(this.mContext, WidgetProvider.RADIOPREV));
         views.setOnClickPendingIntent(ResValue.getInstance().Radiobutton_next, getPIntend(this.mContext, WidgetProvider.RADIONEXT));
         views.setOnClickPendingIntent(ResValue.getInstance().btavbutton_prev, getPIntend(this.mContext, "com.syu.bt.byav.widgetPrev"));
@@ -249,6 +259,12 @@ public class DateMusicWidget extends Widget {
 
     public PendingIntent getPIntend(Context context, String action) {
         return PendingIntent.getService(context, 0, new Intent(action), PendingIntent.FLAG_IMMUTABLE);
+    }
+
+    public PendingIntent getFavoriteIntent(Context context) {
+        Intent intent = new Intent(context, MediaFavoriteReceiver.class);
+        intent.setAction(MediaFavoriteController.ACTION_FAVORITE);
+        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     @Override

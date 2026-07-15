@@ -49,6 +49,7 @@ public class WindowHostSinglePane {
             Executors.newSingleThreadScheduledExecutor();
             
     private Activity activity;
+    private ActivityManager activityManager;
     private WindowManager wm;
     private final String name;
     private WindowManager.LayoutParams lp;
@@ -67,6 +68,7 @@ public class WindowHostSinglePane {
 
     private final Rect pendingBounds = new Rect();
     private boolean hasPendingBounds = false;
+    private boolean startDeferredForBounds = false;
     private long startNs = 0L;
 
     WindowHostSinglePane(String name) { this.name = name; }
@@ -76,12 +78,14 @@ public class WindowHostSinglePane {
     void show(Activity act, WindowManager wm, ActivityManager am, IBinder token, String pkg, Rect b) {
         if (pkg == null || b == null) return;
 
-        // Pre-warm for next time
-        new Thread(() -> {
-            WindowHostSurfacePreloader.prewarmActivityView(act, "single_" + name);
-        }).start();
+        if (!WindowHostActivityView.isGoogleMapsPackage(pkg)) {
+            new Thread(() -> {
+                WindowHostSurfacePreloader.prewarmActivityView(act, "single_" + name);
+            }).start();
+        }
 
         this.activity = act;
+        this.activityManager = am;
         this.wm = wm;
 
         if (visible.get() && pkg.equals(currentPkg) && added && root != null && lp != null) {
@@ -103,7 +107,7 @@ public class WindowHostSinglePane {
 
             ensureWindow(act, wm, token);
             setPendingBoundsFast(b);
-            ensureActivityView(act, myGen);
+            ensureActivityView(act, myGen, pkg);
             if (!childAttached) attachChild(myGen);
 
             boolean haveTask = (taskId > 0) && pkg.equals(currentPkg);
@@ -113,9 +117,15 @@ public class WindowHostSinglePane {
             visible.set(true);
 
             if (!haveTask) {
-                startWhenReady(am, pkg, myGen);
-                // Schedule black screen check
-                checkForBlackScreenAndRestart(pkg, myGen);
+                if (WindowHostActivityView.shouldWaitForRealBounds(pkg, b)) {
+                    startDeferredForBounds = true;
+                    Log.i(TAG, name + ": deferring Google Maps start until real bounds are available");
+                } else {
+                    startDeferredForBounds = false;
+                    startWhenReady(am, pkg, myGen);
+                    // Schedule black screen check
+                    checkForBlackScreenAndRestart(pkg, myGen);
+                }
             }
             liftCurtainLoop(true, myGen);
         });
@@ -123,6 +133,17 @@ public class WindowHostSinglePane {
 
     public void updateBounds(Rect b) {
         setPendingBoundsFast(b);
+        if (startDeferredForBounds
+                && currentPkg != null
+                && WindowHostActivityView.hasRealLaunchBounds(currentPkg, b)) {
+            startDeferredForBounds = false;
+            ActivityManager am = activityManager != null
+                    ? activityManager
+                    : (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+            Log.i(TAG, name + ": starting deferred Google Maps after bounds update: " + b);
+            startWhenReady(am, currentPkg, gen);
+            checkForBlackScreenAndRestart(currentPkg, gen);
+        }
     }
 
     void dismissAsync() {
@@ -144,6 +165,7 @@ public class WindowHostSinglePane {
         avReady.set(false); firstFrame.set(false);
         currentPkg = null; taskId = -1;
         hasPendingBounds = false; pendingBounds.setEmpty();
+        startDeferredForBounds = false;
     }
 
     private void ensureWindow(Activity act, WindowManager wm, IBinder token) {
@@ -219,12 +241,13 @@ public class WindowHostSinglePane {
         }
     }
 
-    private void ensureActivityView(Context ctx, int expectedGen) {
+    private void ensureActivityView(Context ctx, int expectedGen, String pkg) {
         if (av != null) return;
-        
-        // Try to get pre-warmed instance first
-        av = WindowHostSurfacePreloader.getWarmActivityView("single_" + name);
-        
+
+        if (!WindowHostActivityView.isGoogleMapsPackage(pkg)) {
+            av = WindowHostSurfacePreloader.getWarmActivityView("single_" + name);
+        }
+
         if (av == null) {
             av = WindowHostActivityView.newInstance(ctx);
         }
@@ -311,7 +334,7 @@ public class WindowHostSinglePane {
 
                         Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(activity, pkg);
                         if (fallback != null) {
-                            Object fallbackOpts = WindowHostActivityView.makeOptionsWithBounds(bounds);
+                            Object fallbackOpts = WindowHostActivityView.makeOptionsWithBounds(pkg, bounds);
                             boolean retryOk = WindowHostActivityView.startActivitySmart(av, activity, fallback, fallbackOpts);
                             Log.i(TAG, name + (retryOk ? ": fallback succeeded" : ": fallback failed"));
 
@@ -380,11 +403,7 @@ public class WindowHostSinglePane {
             minimal.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             
             // Try with and without bounds
-            ActivityOptions opts = ActivityOptions.makeBasic();
-            if (bounds != null) {
-                opts.setLaunchBounds(bounds);
-            }
-            
+            ActivityOptions opts = (ActivityOptions) WindowHostActivityView.makeOptionsWithBounds(pkg, bounds);
             boolean success = WindowHostActivityView.startActivitySmart(av, activity, minimal, opts);
             Log.i(TAG, name + ": Minimal launch " + (success ? "succeeded" : "failed"));
             
@@ -416,6 +435,7 @@ public class WindowHostSinglePane {
         visible.set(false);
         root = null; host = null; curtain = null; lp = null;
         hasPendingBounds = false; pendingBounds.setEmpty();
+        startDeferredForBounds = false;
     }
 
     private void forceRemoveWindowNoGen() {
@@ -424,6 +444,7 @@ public class WindowHostSinglePane {
         added = false; visible.set(false);
         root = null; host = null; curtain = null; lp = null;
         hasPendingBounds = false; pendingBounds.setEmpty();
+        startDeferredForBounds = false;
     }
 
     private void parkInvisible() {
@@ -590,7 +611,7 @@ public class WindowHostSinglePane {
             }
             
             // Recreate ActivityView
-            ensureActivityView(activity, expectedGen);
+            ensureActivityView(activity, expectedGen, pkg);
             attachChild(expectedGen);
             
             // Restart the activity

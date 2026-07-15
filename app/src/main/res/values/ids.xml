@@ -39,6 +39,8 @@
     <item type="id" name="music_playpause" />
     <item type="id" name="music_prev" />
     <item type="id" name="music_next" />
+    <item type="id" name="music_favorite" />
+    <item type="id" name="music_favorite_two" />
     <item type="id" name="iv_list_bg" />
     <item type="id" name="recycler_view" />
     <item type="id" name="drag_container" />
@@ -6484,4 +6486,3 @@
     <item type="id" name="infoview_speed" />
     <item type="id" name="btn_close" />
 </resources>
-
