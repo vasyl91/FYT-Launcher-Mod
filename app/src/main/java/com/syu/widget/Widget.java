@@ -7,7 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
+import android.os.SystemClock;
 import android.util.SparseArray;
 import android.widget.RemoteViews;
 
@@ -28,6 +28,11 @@ public abstract class Widget {
     protected AppWidgetManager widgetManager;
     protected static SparseArray<Widget> mWidgets = new SparseArray<>();
     protected static HashMap<Class<? extends WidgetProvider>, Class<? extends Widget>> clazzs = new HashMap<>();
+    private static final long WIDGET_UPDATE_THROTTLE_MS = 250L;
+    private static final Handler sWidgetUpdateHandler = new Handler(Looper.getMainLooper());
+    private static final Object sWidgetUpdateLock = new Object();
+    private static final HashMap<Class<?>, Long> sLastWidgetUpdateMs = new HashMap<>();
+    private static final HashMap<Class<?>, Runnable> sPendingWidgetUpdates = new HashMap<>();
     protected int layoutId = 0;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Runnable refresh = new Runnable() { 
@@ -94,13 +99,53 @@ public abstract class Widget {
     }
 
     public static void widgetUpdate(Context context, Class<?> clazz) {
+        if (context == null || clazz == null) {
+            return;
+        }
+
+        final Context appContext = context.getApplicationContext() != null
+                ? context.getApplicationContext()
+                : context;
+        long now = SystemClock.uptimeMillis();
+        boolean updateNow = false;
+
+        synchronized (sWidgetUpdateLock) {
+            Long lastUpdate = sLastWidgetUpdateMs.get(clazz);
+            long elapsed = lastUpdate == null ? WIDGET_UPDATE_THROTTLE_MS : now - lastUpdate;
+            if (!sPendingWidgetUpdates.containsKey(clazz) && elapsed >= WIDGET_UPDATE_THROTTLE_MS) {
+                sLastWidgetUpdateMs.put(clazz, now);
+                updateNow = true;
+            } else if (!sPendingWidgetUpdates.containsKey(clazz)) {
+                long delay = Math.max(0L, WIDGET_UPDATE_THROTTLE_MS - elapsed);
+                Runnable pending = () -> {
+                    synchronized (sWidgetUpdateLock) {
+                        sPendingWidgetUpdates.remove(clazz);
+                        sLastWidgetUpdateMs.put(clazz, SystemClock.uptimeMillis());
+                    }
+                    performWidgetUpdate(appContext, clazz);
+                };
+                sPendingWidgetUpdates.put(clazz, pending);
+                sWidgetUpdateHandler.postDelayed(pending, delay);
+            }
+        }
+
+        if (updateNow) {
+            performWidgetUpdate(appContext, clazz);
+        }
+    }
+
+    private static void performWidgetUpdate(Context context, Class<?> clazz) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            sWidgetUpdateHandler.post(() -> performWidgetUpdate(context, clazz));
+            return;
+        }
+
         int[] ids;
         AppWidgetManager manager = AppWidgetManager.getInstance(LauncherApplication.sApp);
         if (clazzs.get(clazz) != null && (ids = manager.getAppWidgetIds(new ComponentName(context, clazz))) != null) {
             for (int id : ids) {
                 Widget widget = getWidget(id);
                 if (widget != null) {
-                    Log.d("LZP", "widgetUpdate...");
                     widget.update();
                 }
             }

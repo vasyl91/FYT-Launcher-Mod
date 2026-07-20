@@ -31,11 +31,16 @@ import androidx.preference.PreferenceManager
 import com.android.launcher66.settings.Helpers
 import com.fyt.car.LauncherNotify
 import com.fyt.car.MusicService
+import com.syu.widget.DateMusicProvider
+import com.syu.widget.DateRadioProvider
+import com.syu.widget.Widget
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicBoolean
+
+private const val ACTIVE_SESSION_POLL_MS = 250L
 
 class NotificationListener : NotificationListenerService() {
     
@@ -218,6 +223,7 @@ class NotificationListener : NotificationListenerService() {
         artist = null
         albumCover = null
         fytAlbumCover = null
+        MediaWidgetState.clearExternal()
 
         audioManager = null
         mediaSessionManager = null
@@ -399,7 +405,7 @@ class NotificationListener : NotificationListenerService() {
             if (am.isMusicActive) {
                 service.checkActiveSessions()
             }
-            service.handler?.postDelayed(this, 10)
+            service.handler?.postDelayed(this, ACTIVE_SESSION_POLL_MS)
         }
     }
 
@@ -467,6 +473,7 @@ class NotificationListener : NotificationListenerService() {
                     this.putInt("prevState", service.currentState!!)
                 }
                 service.helpers.setCounter(0)
+                service.updateExternalMediaWidgetState(false)
             } else {
                 set()
             }
@@ -572,6 +579,7 @@ class NotificationListener : NotificationListenerService() {
         }
         activeControllerPackage = ""
         source = "fyt" 
+        MediaWidgetState.clearExternal()
         
         LauncherNotify.NOTIFIER_MUSIC.set(
             null,
@@ -649,6 +657,7 @@ class NotificationListener : NotificationListenerService() {
             albumCover,
             source
         )
+        updateExternalMediaWidgetState(true)
         paused = false
 
         if (totalMinutes == 0.toLong() && !verifyIfLive) {
@@ -660,6 +669,41 @@ class NotificationListener : NotificationListenerService() {
                 verifyIfLive = false
             }, 700)    
         }
+    }
+
+    private fun updateExternalMediaWidgetState(isPlaying: Boolean) {
+        val controller = mediaController ?: return
+        val currentMeta = meta ?: controller.metadata ?: return
+
+        val title = currentMeta.getString(MediaMetadata.METADATA_KEY_TITLE) ?: song ?: ""
+        var resolvedArtist = currentMeta.getString(MediaMetadata.METADATA_KEY_ARTIST)
+        if (resolvedArtist.isNullOrEmpty()) {
+            resolvedArtist = currentMeta.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
+        }
+        if (resolvedArtist.isNullOrEmpty()) {
+            resolvedArtist = currentMeta.getString(MediaMetadata.METADATA_KEY_AUTHOR)
+        }
+        if (resolvedArtist.isNullOrEmpty()) {
+            resolvedArtist = artist ?: ""
+        }
+
+        val resolvedAlbum = currentMeta.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: album ?: ""
+        val duration = currentMeta.getLong(MediaMetadata.METADATA_KEY_DURATION)
+        val position = if (duration == 0L) 0L else controller.playbackState?.position ?: curMinutes
+        val packageName = controller.packageName ?: activeControllerPackage
+
+        MediaWidgetState.updateExternal(
+            title,
+            resolvedArtist,
+            resolvedAlbum,
+            packageName,
+            isPlaying,
+            duration,
+            position,
+            albumCover
+        )
+        Widget.widgetUpdate(this, DateMusicProvider::class.java)
+        Widget.widgetUpdate(this, DateRadioProvider::class.java)
     }
 
     @Throws(PackageManager.NameNotFoundException::class)
