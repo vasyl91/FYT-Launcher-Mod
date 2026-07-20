@@ -44,6 +44,8 @@ public  class WindowHostDualPane {
     private static final String KEY_SPLIT = "dual_split_ratio";
     private static final long SURFACE_RESTORE_DELAY_MS = 500L; 
     private static final long BLACK_SCREEN_CHECK_DELAY_MS = 800L;
+    private static final long GOOGLE_MAPS_BLACK_SCREEN_CHECK_DELAY_MS = 3000L;
+    private static final long DEFERRED_BOUNDS_FALLBACK_MS = 900L;
     private static final int MAX_RESTART_ATTEMPTS = 2;
     private int leftRestartCount = 0;
     private int rightRestartCount = 0;
@@ -87,6 +89,8 @@ public  class WindowHostDualPane {
     private boolean hasPendingBounds = false;
     private boolean leftStartDeferredForBounds = false;
     private boolean rightStartDeferredForBounds = false;
+    private int leftStartIssuedForGen = -1;
+    private int rightStartIssuedForGen = -1;
 
     // sizing - overlapping divider design
     private final int DIVIDER_VISUAL_PX = dp(8);         // what user sees
@@ -105,14 +109,12 @@ public  class WindowHostDualPane {
     void show(Activity act, WindowManager wm, ActivityManager am, IBinder token, String lPkg, String rPkg, Rect b) {
         if (lPkg == null || rPkg == null || b == null) return;
 
-        new Thread(() -> {
-            if (!WindowHostActivityView.isGoogleMapsPackage(lPkg)) {
-                WindowHostSurfacePreloader.prewarmActivityView(act, "dual_left");
-            }
-            if (!WindowHostActivityView.isGoogleMapsPackage(rPkg)) {
-                WindowHostSurfacePreloader.prewarmActivityView(act, "dual_right");
-            }
-        }).start();
+        if (!WindowHostActivityView.isGoogleMapsPackage(lPkg)) {
+            WindowHostSurfacePreloader.schedulePrewarmActivityView(act, "dual_left");
+        }
+        if (!WindowHostActivityView.isGoogleMapsPackage(rPkg)) {
+            WindowHostSurfacePreloader.schedulePrewarmActivityView(act, "dual_right");
+        }
 
         this.activity = act;
         this.activityManager = am;
@@ -159,9 +161,10 @@ public  class WindowHostDualPane {
                 if (WindowHostActivityView.shouldWaitForRealBounds(lPkg, leftBounds)) {
                     leftStartDeferredForBounds = true;
                     Log.i(TAG, "DualLeft: deferring Google Maps start until real bounds are available");
+                    scheduleDeferredBoundsFallback(true, lPkg, myGen);
                 } else {
                     leftStartDeferredForBounds = false;
-                    startLeftWhenReady(am, lPkg, myGen);
+                    startLeftWhenReadyOnce(am, lPkg, myGen, leftBounds, false);
                     // Schedule black screen check
                     checkForBlackScreenAndRestart(true, lPkg, myGen);
                 }
@@ -171,9 +174,10 @@ public  class WindowHostDualPane {
                 if (WindowHostActivityView.shouldWaitForRealBounds(rPkg, rightBounds)) {
                     rightStartDeferredForBounds = true;
                     Log.i(TAG, "DualRight: deferring Google Maps start until real bounds are available");
+                    scheduleDeferredBoundsFallback(false, rPkg, myGen);
                 } else {
                     rightStartDeferredForBounds = false;
-                    startRightWhenReady(am, rPkg, myGen);
+                    startRightWhenReadyOnce(am, rPkg, myGen, rightBounds, false);
                     // Schedule black screen check
                     checkForBlackScreenAndRestart(false, rPkg, myGen);
                 }
@@ -192,7 +196,7 @@ public  class WindowHostDualPane {
                 && WindowHostActivityView.hasRealLaunchBounds(leftPkg, getLeftLaunchBounds())) {
             leftStartDeferredForBounds = false;
             Log.i(TAG, "DualLeft: starting deferred Google Maps after bounds update: " + getLeftLaunchBounds());
-            startLeftWhenReady(am, leftPkg, gen);
+            startLeftWhenReadyOnce(am, leftPkg, gen, getLeftLaunchBounds(), false);
             checkForBlackScreenAndRestart(true, leftPkg, gen);
         }
         if (rightStartDeferredForBounds
@@ -200,20 +204,22 @@ public  class WindowHostDualPane {
                 && WindowHostActivityView.hasRealLaunchBounds(rightPkg, getRightLaunchBounds())) {
             rightStartDeferredForBounds = false;
             Log.i(TAG, "DualRight: starting deferred Google Maps after bounds update: " + getRightLaunchBounds());
-            startRightWhenReady(am, rightPkg, gen);
+            startRightWhenReadyOnce(am, rightPkg, gen, getRightLaunchBounds(), false);
             checkForBlackScreenAndRestart(false, rightPkg, gen);
         }
     }
 
     void dismissAsync() {
         final int myGen = ++gen;
+        final boolean releaseLeftAV = true;
+        final boolean releaseRightAV = true;
         visible.set(false);
         cancelPendingRestore();
         parkInvisible();
-        postMain(() -> hardRemoveWindow(false, myGen));
+        postMain(() -> hardRemoveWindow(releaseLeftAV, releaseRightAV, myGen));
         DISMISS_EXEC.schedule(() -> postMain(() -> {
             if (gen != myGen) return;
-            if (added || root != null) hardRemoveWindow(false, myGen);
+            if (added || root != null) hardRemoveWindow(releaseLeftAV, releaseRightAV, myGen);
         }), 150, TimeUnit.MILLISECONDS);
     }
 
@@ -230,6 +236,8 @@ public  class WindowHostDualPane {
         hasPendingBounds = false; pendingBounds.setEmpty();
         leftStartDeferredForBounds = false;
         rightStartDeferredForBounds = false;
+        leftStartIssuedForGen = -1;
+        rightStartIssuedForGen = -1;
     }
 
     private void ensureWindow(Activity act, WindowManager wm, IBinder token) {
@@ -325,16 +333,14 @@ public  class WindowHostDualPane {
                 leftAV = WindowHostActivityView.newInstance(ctx);
             }
             
-            leftReady.set(false);
-            WindowHostActivityView.trySetCallback(leftAV, new WindowHostActivityView.Callback() {
-                @Override public void onReady() { if (gen == expectedGen) leftReady.set(true); }
-                @Override public void onTaskCreated(int id) { if (gen == expectedGen) leftTask = id; }
-            });
-            
-            // Force instant surface readiness
-            View leftView = WindowHostActivityView.asView(leftAV);
-            WindowHostSurfacePreloader.forceInstantSurfaceReady(leftView);
         }
+        leftReady.set(false);
+        WindowHostActivityView.trySetCallback(leftAV, new WindowHostActivityView.Callback() {
+            @Override public void onReady() { if (gen == expectedGen) leftReady.set(true); }
+            @Override public void onTaskCreated(int id) { if (gen == expectedGen) leftTask = id; }
+        });
+        View leftView = WindowHostActivityView.asView(leftAV);
+        WindowHostSurfacePreloader.forceInstantSurfaceReady(leftView);
         
         if (rightAV == null) {
             if (!WindowHostActivityView.isGoogleMapsPackage(rPkg)) {
@@ -345,16 +351,14 @@ public  class WindowHostDualPane {
                 rightAV = WindowHostActivityView.newInstance(ctx);
             }
             
-            rightReady.set(false);
-            WindowHostActivityView.trySetCallback(rightAV, new WindowHostActivityView.Callback() {
-                @Override public void onReady() { if (gen == expectedGen) rightReady.set(true); }
-                @Override public void onTaskCreated(int id) { if (gen == expectedGen) rightTask = id; }
-            });
-            
-            // Force instant surface readiness
-            View rightView = WindowHostActivityView.asView(rightAV);
-            WindowHostSurfacePreloader.forceInstantSurfaceReady(rightView);
         }
+        rightReady.set(false);
+        WindowHostActivityView.trySetCallback(rightAV, new WindowHostActivityView.Callback() {
+            @Override public void onReady() { if (gen == expectedGen) rightReady.set(true); }
+            @Override public void onTaskCreated(int id) { if (gen == expectedGen) rightTask = id; }
+        });
+        View rightView = WindowHostActivityView.asView(rightAV);
+        WindowHostSurfacePreloader.forceInstantSurfaceReady(rightView);
         
         leftFirstFrame.set(false); 
         rightFirstFrame.set(false);
@@ -401,11 +405,31 @@ public  class WindowHostDualPane {
         }, () -> { if (gen != expectedGen) return; startLeftNow(am, pkg, expectedGen); });
     }
 
+    private void startLeftWhenReadyOnce(ActivityManager am, String pkg, int expectedGen, Rect bounds, boolean fallback) {
+        if (gen != expectedGen) return;
+        if (leftStartIssuedForGen == expectedGen) {
+            Log.i(TAG, "DualLeft: suppressed duplicate start for gen=" + expectedGen + " pkg=" + pkg);
+            return;
+        }
+        leftStartIssuedForGen = expectedGen;
+        startLeftWhenReady(am, pkg, expectedGen);
+    }
+
     private void startRightWhenReady(ActivityManager am, String pkg, int expectedGen) {
         waitUntil(() -> rightReady.get() && rightAttached, START_WAIT_TIMEOUT_MS, START_WAIT_STEP_MS, () -> {
             if (gen != expectedGen) return;
             startRightNow(am, pkg, expectedGen);
         }, () -> { if (gen != expectedGen) return; startRightNow(am, pkg, expectedGen); });
+    }
+
+    private void startRightWhenReadyOnce(ActivityManager am, String pkg, int expectedGen, Rect bounds, boolean fallback) {
+        if (gen != expectedGen) return;
+        if (rightStartIssuedForGen == expectedGen) {
+            Log.i(TAG, "DualRight: suppressed duplicate start for gen=" + expectedGen + " pkg=" + pkg);
+            return;
+        }
+        rightStartIssuedForGen = expectedGen;
+        startRightWhenReady(am, pkg, expectedGen);
     }
 
     private Rect getLeftLaunchBounds() {
@@ -420,6 +444,101 @@ public  class WindowHostDualPane {
         int leftWidth = Math.max(1, Math.round(pendingBounds.width() * splitRatio));
         return new Rect(pendingBounds.left + leftWidth,
                 pendingBounds.top, pendingBounds.right, pendingBounds.bottom);
+    }
+
+    private void scheduleDeferredBoundsFallback(boolean left, String pkg, int expectedGen) {
+        if (!WindowHostActivityView.isGoogleMapsPackage(pkg)) return;
+        postMainDelayed(() -> {
+            if (gen != expectedGen || !visible.get()) {
+                return;
+            }
+            if (left) {
+                if (!leftStartDeferredForBounds || leftPkg == null) return;
+                Rect hostBounds = resolveDeferredHostBoundsFallback();
+                if (hostBounds != null) {
+                    setPendingBoundsFast(hostBounds);
+                    applySplitFromBounds();
+                }
+                Rect fallback = getLeftLaunchBounds();
+                if (!WindowHostActivityView.hasRealLaunchBounds(leftPkg, fallback)) {
+                    Log.w(TAG, "DualLeft: deferred Google Maps fallback skipped, no valid bounds");
+                    return;
+                }
+                leftStartDeferredForBounds = false;
+                ActivityManager am = activityManager != null
+                        ? activityManager
+                        : (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+                Log.i(TAG, "DualLeft: starting deferred Google Maps after fallback bounds: " + fallback);
+                startLeftWhenReadyOnce(am, leftPkg, expectedGen, fallback, true);
+                checkForBlackScreenAndRestart(true, leftPkg, expectedGen);
+            } else {
+                if (!rightStartDeferredForBounds || rightPkg == null) return;
+                Rect hostBounds = resolveDeferredHostBoundsFallback();
+                if (hostBounds != null) {
+                    setPendingBoundsFast(hostBounds);
+                    applySplitFromBounds();
+                }
+                Rect fallback = getRightLaunchBounds();
+                if (!WindowHostActivityView.hasRealLaunchBounds(rightPkg, fallback)) {
+                    Log.w(TAG, "DualRight: deferred Google Maps fallback skipped, no valid bounds");
+                    return;
+                }
+                rightStartDeferredForBounds = false;
+                ActivityManager am = activityManager != null
+                        ? activityManager
+                        : (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+                Log.i(TAG, "DualRight: starting deferred Google Maps after fallback bounds: " + fallback);
+                startRightWhenReadyOnce(am, rightPkg, expectedGen, fallback, true);
+                checkForBlackScreenAndRestart(false, rightPkg, expectedGen);
+            }
+        }, DEFERRED_BOUNDS_FALLBACK_MS);
+    }
+
+    private Rect resolveDeferredHostBoundsFallback() {
+        if (hasPendingBounds && pendingBounds.width() > 1 && pendingBounds.height() > 1
+                && pendingBounds.right > 0 && pendingBounds.bottom > 0) {
+            return clampFallbackBounds(new Rect(pendingBounds));
+        }
+        if (root != null && root.getWidth() > 1 && root.getHeight() > 1) {
+            return clampFallbackBounds(new Rect(0, 0, root.getWidth(), root.getHeight()));
+        }
+        if (activity != null) {
+            android.util.DisplayMetrics dm = activity.getResources().getDisplayMetrics();
+            if (dm.widthPixels > 1 && dm.heightPixels > 1) {
+                return clampFallbackBounds(new Rect(0, 0, dm.widthPixels, dm.heightPixels));
+            }
+        }
+        return null;
+    }
+
+    private Rect clampFallbackBounds(Rect candidate) {
+        if (candidate == null || activity == null) {
+            return candidate;
+        }
+        android.util.DisplayMetrics dm = activity.getResources().getDisplayMetrics();
+        int maxRight = Math.max(2, dm.widthPixels);
+        int maxBottom = Math.max(2, dm.heightPixels - getNavigationBarInsetPx());
+        Rect out = new Rect(candidate);
+        out.left = clamp(out.left, 0, maxRight - 2);
+        out.top = clamp(out.top, 0, maxBottom - 2);
+        out.right = clamp(out.right, out.left + 2, maxRight);
+        out.bottom = clamp(out.bottom, out.top + 2, maxBottom);
+        return out;
+    }
+
+    private int getNavigationBarInsetPx() {
+        try {
+            int id = activity.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+            if (id > 0) {
+                return Math.max(0, activity.getResources().getDimensionPixelSize(id));
+            }
+        } catch (Throwable ignored) {
+        }
+        return 0;
+    }
+
+    private static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(value, max));
     }
 
     private void startLeftNow(ActivityManager am, String pkg, int expectedGen) {
@@ -853,21 +972,25 @@ public  class WindowHostDualPane {
     }
 
     private void hardRemoveWindow(boolean releaseAVs, int expectedGen) {
+        hardRemoveWindow(releaseAVs, releaseAVs, expectedGen);
+    }
+
+    private void hardRemoveWindow(boolean releaseLeftAV, boolean releaseRightAV, int expectedGen) {
         if (gen != expectedGen) return;
         cancelPendingRestore();
         if (leftHost != null && leftAttached) { try { leftHost.removeAllViews(); } catch (Throwable ignore) {} leftAttached = false; }
         if (rightHost != null && rightAttached) { try { rightHost.removeAllViews(); } catch (Throwable ignore) {} rightAttached = false; }
         if (added && wm != null && root != null) { try { wm.removeViewImmediate(root); } catch (Throwable ignore) {} }
-        if (releaseAVs) {
-            if (leftAV != null)  { try { WindowHostActivityView.release(leftAV); } catch (Throwable ignore) {} leftAV = null; leftTask = -1; leftReady.set(false); }
-            if (rightAV != null) { try { WindowHostActivityView.release(rightAV); } catch (Throwable ignore) {} rightAV = null; rightTask = -1; rightReady.set(false); }
-        }
+        if (releaseLeftAV && leftAV != null)  { try { WindowHostActivityView.release(leftAV); } catch (Throwable ignore) {} leftAV = null; leftTask = -1; leftReady.set(false); }
+        if (releaseRightAV && rightAV != null) { try { WindowHostActivityView.release(rightAV); } catch (Throwable ignore) {} rightAV = null; rightTask = -1; rightReady.set(false); }
         added = false;
         visible.set(false);
         root = null; leftHost = null; rightHost = null; divider = null; lp = null;
         hasPendingBounds = false; pendingBounds.setEmpty();
         leftStartDeferredForBounds = false;
         rightStartDeferredForBounds = false;
+        leftStartIssuedForGen = -1;
+        rightStartIssuedForGen = -1;
         surfacesHidden.set(false);
     }
 
@@ -882,18 +1005,35 @@ public  class WindowHostDualPane {
         hasPendingBounds = false; pendingBounds.setEmpty();
         leftStartDeferredForBounds = false;
         rightStartDeferredForBounds = false;
+        leftStartIssuedForGen = -1;
+        rightStartIssuedForGen = -1;
         surfacesHidden.set(false);
     }
 
     private void parkInvisible() {
         if (added && wm != null && lp != null && root != null) {
+            Rect parkBounds = resolveParkingBounds();
             lp.x = -3000; lp.y = -3000; lp.alpha = 0f;
-            lp.width = 600; lp.height = 600;
+            lp.width = Math.max(1, parkBounds.width());
+            lp.height = Math.max(1, parkBounds.height());
             try { wm.updateViewLayout(root, lp); } catch (Throwable ignore) {}
             root.setAlpha(0f); 
             root.setVisibility(View.INVISIBLE);
             WindowHostSurfaceTamer.forceCleanup(root);
         }
+    }
+
+    private Rect resolveParkingBounds() {
+        if (hasPendingBounds && pendingBounds.width() > 1 && pendingBounds.height() > 1) {
+            return new Rect(0, 0, pendingBounds.width(), pendingBounds.height());
+        }
+        if (lp != null && lp.width > 1 && lp.height > 1) {
+            return new Rect(0, 0, lp.width, lp.height);
+        }
+        if (root != null && root.getWidth() > 1 && root.getHeight() > 1) {
+            return new Rect(0, 0, root.getWidth(), root.getHeight());
+        }
+        return new Rect(0, 0, 1, 1);
     }
 
     private void waitUntil(BooleanSupplier cond, int timeoutMs, int stepMs, Runnable onOk, Runnable onTimeout) {
@@ -938,11 +1078,13 @@ public  class WindowHostDualPane {
 
     private void checkForBlackScreenAndRestart(boolean isLeft, String pkg, int expectedGen) {
         if (gen != expectedGen) return;
+        final boolean isGoogleMaps = WindowHostActivityView.isGoogleMapsPackage(pkg);
         
         postMainDelayed(() -> {
             if (gen != expectedGen) return;
             
             boolean isBlack = false;
+            boolean surfaceInvalid = false;
             AtomicBoolean detectionFlag = isLeft ? leftBlackScreenDetected : rightBlackScreenDetected;
             int restartCount = isLeft ? leftRestartCount : rightRestartCount;
             
@@ -955,17 +1097,23 @@ public  class WindowHostDualPane {
                     try {
                         SurfaceHolder holder = sv.getHolder();
                         if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
-                            isBlack = true;
+                            surfaceInvalid = true;
                         }
                     } catch (Throwable ignore) {
-                        isBlack = true;
+                        surfaceInvalid = true;
                     }
                 }
             }
+
+            if (surfaceInvalid) {
+                isBlack = true;
+            }
             
-            // Also check if the first frame was never rendered
+            // Google Maps can keep a valid ActivityView surface while delaying first-frame callbacks.
             AtomicBoolean firstFrameFlag = isLeft ? leftFirstFrame : rightFirstFrame;
-            if (!firstFrameFlag.get() && restartCount < MAX_RESTART_ATTEMPTS) {
+            if (!firstFrameFlag.get()
+                    && restartCount < MAX_RESTART_ATTEMPTS
+                    && (!isGoogleMaps || surfaceInvalid)) {
                 isBlack = true;
             }
             
@@ -982,21 +1130,25 @@ public  class WindowHostDualPane {
                 // Restart the app
                 restartPaneApp(isLeft, pkg, expectedGen);
             }
-        }, BLACK_SCREEN_CHECK_DELAY_MS);
+        }, getBlackScreenCheckDelayMs(pkg));
     }
 
     private void restartPaneApp(boolean isLeft, String pkg, int expectedGen) {
         if (gen != expectedGen || pkg == null || pkg.isEmpty()) return;
         
-        // Force stop the app
-        try {
-            ActivityManager am = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-            Method forceStopPackage = am.getClass().getDeclaredMethod("forceStopPackage", String.class);
-            forceStopPackage.setAccessible(true);
-            forceStopPackage.invoke(am, pkg);
-            Log.i(TAG, "Force stopped " + pkg);
-        } catch (Throwable t) {
-            Log.w(TAG, "Failed to force stop " + pkg, t);
+        if (WindowHostActivityView.isGoogleMapsPackage(pkg)) {
+            Log.i(TAG, (isLeft ? "Left" : "Right") + ": Recreating ActivityView without force-stopping " + pkg);
+        } else {
+            // Force stop the app
+            try {
+                ActivityManager am = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+                Method forceStopPackage = am.getClass().getDeclaredMethod("forceStopPackage", String.class);
+                forceStopPackage.setAccessible(true);
+                forceStopPackage.invoke(am, pkg);
+                Log.i(TAG, "Force stopped " + pkg);
+            } catch (Throwable t) {
+                Log.w(TAG, "Failed to force stop " + pkg, t);
+            }
         }
         
         // Release and recreate the ActivityView
@@ -1064,6 +1216,12 @@ public  class WindowHostDualPane {
                 }, 300);
             }
         }, 500);
+    }
+
+    private long getBlackScreenCheckDelayMs(String pkg) {
+        return WindowHostActivityView.isGoogleMapsPackage(pkg)
+                ? GOOGLE_MAPS_BLACK_SCREEN_CHECK_DELAY_MS
+                : BLACK_SCREEN_CHECK_DELAY_MS;
     }
 
     static final class DividerView extends FrameLayout {

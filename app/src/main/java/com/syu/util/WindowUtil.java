@@ -48,14 +48,23 @@ public class WindowUtil {
     private static SharedPreferences prefs;
     private static Helpers helpers;
     public static String AppPackageName = "";
-    public static int delayMillis = 0;
     private static WindowHost mWindowHost;
     private static String firstPkg;
     private static String secondPkg;
+    private static String activeHostSignature = "";
+    private static final long SURFACE_PRELOAD_DELAY_MS = 2000L;
+    private static final long PIP_LAYOUT_RETRY_DELAY_MS = 180L;
+    private static final long PIP_LAYOUT_REARM_DELAY_MS = 1500L;
+    private static final int MAX_PIP_LAYOUT_RETRIES = 50;
+    private static final int MAX_PIP_LAYOUT_REARMS = 2;
+    private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
+    private static final AtomicBoolean SURFACE_PRELOAD_STARTED = new AtomicBoolean(false);
     private static final AtomicInteger SCREEN_SWITCH_GEN = new AtomicInteger();
+    private static final AtomicInteger PIP_OPEN_GEN = new AtomicInteger();
     private static Rect offscreen = new Rect(-3000, -3000, -2400, -2400);
     private static final Map<String, Boolean> pipOffscreenState = new HashMap<>();
     private static final Map<String, Rect> lastPipBounds = new HashMap<>();
+    private static int pipLayoutRearmCount = 0;
 
     public static boolean dualPip = false;
     public static boolean firstPip = false;
@@ -111,39 +120,37 @@ public class WindowUtil {
     }
 
     public static void initSurfacePreloader() {
-        // Pre-warm common ActivityViews on app start
-        Context ctx = LauncherApplication.sApp;
-        new Thread(() -> {
+        if (!SURFACE_PRELOAD_STARTED.compareAndSet(false, true)) {
+            return;
+        }
+        MAIN_HANDLER.postDelayed(() -> {
             try {
-                Thread.sleep(2000); // Wait for app to stabilize
-                
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_left");
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_right");
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_First");
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Second");
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Third");
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Fourth");
-                
-                Log.i(TAG, "Surface preloader initialized");
+                WindowHostSurfacePreloader.clearPool();
+                Log.i(TAG, "Surface preloader initialized without global ActivityView prewarm");
             } catch (Exception e) {
                 Log.e(TAG, "Failed to initialize surface preloader", e);
             }
-        }).start();
+        }, SURFACE_PRELOAD_DELAY_MS);
     }
 
     public static void startMapPip(final boolean show) {
-        ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
+        ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show, 0));
     }
 
     public static void startMapPip(final boolean show, int millis) {
-        delayMillis = millis;
-        ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
+        final int delayMillis = Math.max(0, millis);
+        ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show, delayMillis));
     }
 
     public static void openPip(boolean show) {
+        openPip(show, 0);
+    }
+
+    private static void openPip(boolean show, int delayMillis) {
         if (!LauncherApplication.isFytDevice()) return;
-        if (Launcher.getLauncher() == null) return;
-        if (Launcher.getLauncher().allowPip) {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        if (launcher.allowPip) {
             try {
                 if (helpers == null) {
                     helpers = new Helpers();
@@ -152,69 +159,49 @@ public class WindowUtil {
                     + " helpers.pipsAdded(): " + String.valueOf(helpers.pipsAdded())
                     + " Utils.topApp(): " + String.valueOf(Utils.topApp()) 
                     + " helpers.pipsAdded() " + String.valueOf(helpers.pipsAdded()) 
-                    + " AppPackageName.isEmpty() " + String.valueOf(AppPackageName.isEmpty())
+                    + " AppPackageName.isEmpty() " + String.valueOf(AppPackageName == null || AppPackageName.isEmpty())
                     + " helpers.isInWidgets() " + String.valueOf(helpers.isInWidgets()) 
                     + " helpers.isInAllApps() " + String.valueOf(helpers.isInAllApps())  
                     + " helpers.isInOverviewMode() " + String.valueOf(helpers.isInOverviewMode()) 
                     + " helpers.isFirstPreferenceWindow() " + String.valueOf(helpers.isFirstPreferenceWindow()) 
-                    + " helpers.allAppsVisibility() " + String.valueOf(helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) 
+                    + " helpers.allAppsVisibility() " + String.valueOf(isAllAppsVisible())
                     + " helpers.isWallpaperWindow() " + String.valueOf(helpers.isWallpaperWindow())
                     + " helpers.isListOpen() " + String.valueOf(helpers.isListOpen()));
-                if ((show && !helpers.pipsAdded()) || (Utils.topApp()
-                    && !helpers.pipsAdded()
-                    && !helpers.isInWidgets()
-                    && !helpers.isInAllApps()
-                    && !helpers.isInOverviewMode()
-                    && !helpers.isFirstPreferenceWindow()
-                    && !helpers.isWallpaperWindow()
-                    && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-                    || (!helpers.userWasInRecents() && helpers.isListOpen()))) {
+                if (shouldOpenPipFromLauncherState(show)) {
 
                     if (prefs == null) {
                         prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
                     }
 
-                    if (checkIfPinned() && AppPackageName.equals("com.syu.camera360")) {
-                        Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
+                    if (checkIfPinned() && FytPackage.OUT360.equals(AppPackageName)) {
+                        launcher.sendBroadcast(new Intent("com.syu.camera360.show"));
                     }
 
                     boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
                    
                     if (userLayout) {
-                        Launcher.mLauncher.sendBroadcast(new Intent(Keys.BLOCK_FLOATING_BUTTON));
+                        launcher.sendBroadcast(new Intent(Keys.BLOCK_FLOATING_BUTTON));
+                        boolean userMap = prefs.getBoolean(Keys.DISPLAY_PIP, true);
+                        String desiredHostSignature = buildDesiredHostSignature(prefs);
+                        if (userMap && canReuseWindowHost(desiredHostSignature)) {
+                            Log.i(TAG, "openPip(): reusing visible window host");
+                            updateVisiblePipPositions();
+                            launcher.showOverlayFab();
+                            helpers.setPipsAdded(true);
+                            helpers.setFirstPreferenceWindow(false);
+                            helpers.setWallpaperWindow(false);
+                            helpers.setWasInRecents(false);
+                            return;
+                        }
                         // Always try to dismiss existing views before adding a new ones
                         // It prevents adding a view twice what results in persistent black rectangle
                         try {
-                            // Dismiss windowed activity
-                            if (mWindowHost != null) {
-                                // Dismiss windowed activity on main thread (existing)
-                                Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
-
-                                // Wait until host windows are fully detached, then clear and rewarm safely
-                                Launcher.getLauncher().handler.post(() -> {
-                                    try {
-                                        // Wait for handoff (all host windows detached) then clear pool and prewarm
-                                        mWindowHost.awaitHandoff(() -> {
-                                            try {
-                                                WindowHostSurfacePreloader.clearPool();
-                                                // Re-warm for next use
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_left");
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_right");
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_First");
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Second");
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Third");
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Fourth");
-                                                Log.i(TAG, "removePip(): awaitHandoff completed; prewarmed ActivityViews");
-                                            } catch (Throwable t) {
-                                                Log.w(TAG, "removePip(): prewarm after handoff failed", t);
-                                            }
-                                        });
-                                    } catch (Throwable t) {
-                                        // If awaitHandoff itself fails for any reason, fall back to immediate clear/prewarm with a small delay
-                                        Log.w(TAG, "removePip(): awaitHandoff failed, falling back", t);
-                                        Launcher.getLauncher().handler.postDelayed(() -> prepareNextSurfaceLoad(), 120);
-                                    }
-                                });
+                            // Only dismiss an actually visible host. On Home resume the previous removePip()
+                            // usually already detached it and prewarmed the next ActivityViews.
+                            if (hasVisibleWindowHost()) {
+                                dismissWindowHost("openPip()");
+                            } else {
+                                Log.i(TAG, "openPip(): no visible window host, reusing warm ActivityView pool");
                             }
                             // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
                             Method getServiceMethod = ActivityManager.class.getMethod("getService");
@@ -227,24 +214,30 @@ public class WindowUtil {
                             Log.w(TAG, "openPip() pane: dismiss failed", t);
                         }
                         // Add pips
-                        boolean userMap = prefs.getBoolean(Keys.DISPLAY_PIP, true);
                         if (userMap) {
-                            Launcher.getLauncher().pipOverview();
-                            Launcher.getLauncher().handler.postDelayed(() -> {     
+                            final int openGen = PIP_OPEN_GEN.incrementAndGet();
+                            launcher.pipOverview();
+                            launcher.handler.postDelayed(() -> {
+                                if (openGen != PIP_OPEN_GEN.get()) return;
+                                if (Launcher.getLauncher() == null) return;
                                 if (checkIfPinned()) {
                                     openPinnedPip();
                                 }
                             }, delayMillis);
-                            Launcher.getLauncher().handler.postDelayed(() -> {
+                            launcher.handler.postDelayed(() -> {
+                                if (openGen != PIP_OPEN_GEN.get()) return;
+                                if (Launcher.getLauncher() == null) return;
                                 openMultiplePips();
                             }, delayMillis + 100);
-                            Launcher.getLauncher().handler.postDelayed(() -> {
-                                Launcher.getLauncher().showOverlayFab();
+                            launcher.handler.postDelayed(() -> {
+                                if (openGen != PIP_OPEN_GEN.get()) return;
+                                Launcher currentLauncher = Launcher.getLauncher();
+                                if (currentLauncher == null) return;
+                                currentLauncher.showOverlayFab();
                             }, delayMillis + 150);                                           
                         }
                     } 
 
-                    delayMillis = 0;
                     helpers.setPipsAdded(true);
                     helpers.setFirstPreferenceWindow(false);
                     helpers.setWallpaperWindow(false);
@@ -257,31 +250,37 @@ public class WindowUtil {
     }
 
     public static void removePip(int millis) {
-        delayMillis = millis;
-        ThreadManager.getLongPool().execute(() -> WindowUtil.removePip());
+        final int delayMillis = Math.max(0, millis);
+        ThreadManager.getLongPool().execute(() -> WindowUtil.removePipInternal(delayMillis));
     }
 
     public static void removePip() {
+        removePipInternal(0);
+    }
+
+    private static void removePipInternal(int delayMillis) {
         if (!LauncherApplication.isFytDevice()) return;
-        if (Launcher.getLauncher() == null) return;
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        PIP_OPEN_GEN.incrementAndGet();
         if (helpers == null) {
             helpers = new Helpers();
         }
         if (helpers.pipsAdded()) {
             Log.d(TAG, "removePip..");
-            Launcher.getLauncher().handler.postDelayed(() -> {
-                if (checkIfPinned() && WindowUtil.AppPackageName.equals("com.syu.camera360")) {
+            launcher.handler.postDelayed(() -> {
+                if (Launcher.getLauncher() == null) return;
+                if (checkIfPinned() && FytPackage.OUT360.equals(WindowUtil.AppPackageName)) {
                     LauncherApplication.sApp.sendBroadcast(new Intent("com.syu.camera360.hide"));
                 }
             }, delayMillis);
-            if (AppPackageName.equals(FytPackage.GaodeACTION)) {
+            if (FytPackage.GaodeACTION.equals(AppPackageName)) {
                 try {
                     LauncherApplication.sApp.removeGaoDeCoverView();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            delayMillis = 0;
         }
         if (prefs == null) {
             prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);  
@@ -300,38 +299,8 @@ public class WindowUtil {
                 }
             }
             try {
-                Launcher.getLauncher().hideOverlayFab();
-                // Dismiss windowed activity
-                if (mWindowHost != null) {
-                    // Dismiss windowed activity on main thread (existing)
-                    Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
-
-                    // Wait until host windows are fully detached, then clear and rewarm safely
-                    Launcher.getLauncher().handler.post(() -> {
-                        try {
-                            // Wait for handoff (all host windows detached) then clear pool and prewarm
-                            mWindowHost.awaitHandoff(() -> {
-                                try {
-                                    WindowHostSurfacePreloader.clearPool();
-                                    // Re-warm for next use
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_left");
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_right");
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_First");
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Second");
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Third");
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Fourth");
-                                    Log.i(TAG, "removePip(): awaitHandoff completed; prewarmed ActivityViews");
-                                } catch (Throwable t) {
-                                    Log.w(TAG, "removePip(): prewarm after handoff failed", t);
-                                }
-                            });
-                        } catch (Throwable t) {
-                            // If awaitHandoff itself fails for any reason, fall back to immediate clear/prewarm with a small delay
-                            Log.w(TAG, "removePip(): awaitHandoff failed, falling back", t);
-                            Launcher.getLauncher().handler.postDelayed(() -> prepareNextSurfaceLoad(), 120);
-                        }
-                    });
-                }
+                launcher.hideOverlayFab();
+                dismissWindowHost("removePip()");
                 // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
                 Method getServiceMethod = ActivityManager.class.getMethod("getService");
                 Object activityManager = getServiceMethod.invoke(null);
@@ -346,41 +315,228 @@ public class WindowUtil {
         }
     }
 
-    public static void prepareNextSurfaceLoad() {
-        Context ctx = LauncherApplication.sApp;
-        new Thread(() -> {
-            WindowHostSurfacePreloader.clearPool();
-            
-            // Re-warm for next use
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_left");
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_right");
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_First");
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Second");
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Third");
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Fourth");
-        }).start();
+    private static boolean shouldOpenPipFromLauncherState(boolean show) {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null || !launcher.allowPip) return false;
+        if (helpers == null) {
+            helpers = new Helpers();
+        }
+
+        boolean pipsMissing = !helpers.pipsAdded() || !hasVisibleWindowHost();
+        boolean launcherSurfaceAvailable = !helpers.isInWidgets()
+                && !helpers.isInAllApps()
+                && !helpers.isInOverviewMode()
+                && !helpers.isFirstPreferenceWindow()
+                && !helpers.isWallpaperWindow()
+                && !isAllAppsVisible();
+
+        if (show && pipsMissing) {
+            return launcherSurfaceAvailable;
+        }
+
+        boolean homeReady = Utils.topApp() && pipsMissing && launcherSurfaceAvailable;
+        boolean listRecovery = !helpers.userWasInRecents()
+                && helpers.isListOpen()
+                && pipsMissing
+                && launcherSurfaceAvailable;
+        return homeReady || listRecovery;
     }
-    
+
+    private static boolean isAllAppsVisible() {
+        return helpers != null
+                && Launcher.mAppsCustomizeTabHost != null
+                && helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility());
+    }
+
+    public static void prepareNextSurfaceLoad() {
+        MAIN_HANDLER.post(() -> {
+            WindowHostSurfacePreloader.clearPool();
+            Log.i(TAG, "prepareNextSurfaceLoad: cleared warm ActivityView pool");
+        });
+    }
+
+    private static boolean hasVisibleWindowHost() {
+        return mWindowHost != null
+                && (mWindowHost.isDualVisible()
+                || mWindowHost.isFirstVisible()
+                || mWindowHost.isSecondVisible()
+                || mWindowHost.isThirdVisible()
+                || mWindowHost.isFourthVisible());
+    }
+
+    private static String buildDesiredHostSignature(SharedPreferences sourcePrefs) {
+        if (sourcePrefs == null) return "";
+        return "dual=" + sourcePrefs.getBoolean(Keys.PIP_DUAL, false)
+                + ";first=" + sourcePrefs.getBoolean(Keys.PIP_FIRST, false)
+                + ";second=" + sourcePrefs.getBoolean(Keys.PIP_SECOND, false)
+                + ";third=" + sourcePrefs.getBoolean(Keys.PIP_THIRD, false)
+                + ";fourth=" + sourcePrefs.getBoolean(Keys.PIP_FOURTH, false)
+                + ";firstPinned=" + firstPipPinned
+                + ";secondPinned=" + secondPipPinned
+                + ";thirdPinned=" + thirdPipPinned
+                + ";fourthPinned=" + fourthPipPinned
+                + ";firstPkg=" + sourcePrefs.getString(Keys.PIP_FIRST_PACKAGE, "")
+                + ";secondPkg=" + sourcePrefs.getString(Keys.PIP_SECOND_PACKAGE, "")
+                + ";thirdPkg=" + sourcePrefs.getString(Keys.PIP_THIRD_PACKAGE, "")
+                + ";fourthPkg=" + sourcePrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
+    }
+
+    private static boolean canReuseWindowHost(String desiredHostSignature) {
+        return hasVisibleWindowHost()
+                && desiredHostSignature != null
+                && desiredHostSignature.equals(activeHostSignature);
+    }
+
+    private static void updateVisiblePipPositions() {
+        updateVisiblePipPositions(0);
+    }
+
+    private static void updateVisiblePipPositions(int attempt) {
+        Launcher launcher = Launcher.getLauncher();
+        Workspace workspace = launcher == null ? null : launcher.getWorkspace();
+        if (!hasVisibleWindowHost()) {
+            return;
+        }
+        if (!isWorkspaceReadyForPip(workspace)) {
+            if (attempt < MAX_PIP_LAYOUT_RETRIES) {
+                MAIN_HANDLER.postDelayed(() -> updateVisiblePipPositions(attempt + 1), PIP_LAYOUT_RETRY_DELAY_MS);
+            } else {
+                Log.w(TAG, "updateVisiblePipPositions: giving up, workspace not ready");
+            }
+            return;
+        }
+        updatePipPositionsForScroll(workspace.mUnboundedScrollX);
+    }
+
+    private static void dismissWindowHost(String source) {
+        if (mWindowHost == null) return;
+        if (!hasVisibleWindowHost()) {
+            Log.i(TAG, source + ": no visible window host, skipping dismiss");
+            return;
+        }
+        activeHostSignature = "";
+        WindowHost host = mWindowHost;
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        launcher.handler.post(host::dismiss);
+        launcher.handler.post(() -> {
+            try {
+                host.awaitHandoff(() -> {
+                    try {
+                        cleanupDismissedHost(source, host);
+                        WindowHostSurfacePreloader.clearPool();
+                        Log.i(TAG, source + ": awaitHandoff completed; cleaned dismissed host and cleared warm pool");
+                    } catch (Throwable t) {
+                        Log.w(TAG, source + ": cleanup after handoff failed", t);
+                    }
+                });
+            } catch (Throwable t) {
+                Log.w(TAG, source + ": awaitHandoff failed, falling back", t);
+                Launcher currentLauncher = Launcher.getLauncher();
+                if (currentLauncher != null) {
+                    currentLauncher.handler.postDelayed(() -> prepareNextSurfaceLoad(), 120);
+                }
+            }
+        });
+    }
+
+    private static void cleanupDismissedHost(String source, WindowHost host) {
+        if (host == null) return;
+        try {
+            host.cleanup();
+        } catch (Throwable t) {
+            Log.w(TAG, source + ": host cleanup failed", t);
+        }
+        if (mWindowHost == host) {
+            mWindowHost = null;
+            activeHostSignature = "";
+        }
+    }
+
     // WINDOWED PIPS
 
     public static void openMultiplePips() {
+        openMultiplePips(0, PIP_OPEN_GEN.get());
+    }
+
+    private static void openMultiplePips(int attempt, int expectedOpenGen) {
         if (!LauncherApplication.isFytDevice()) return;
+        if (expectedOpenGen != PIP_OPEN_GEN.get()) return;
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        if (prefs == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        }
         dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
         firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
         secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
         thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
         fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
 
-        mWindowHost = new WindowHost(Launcher.getLauncher());
         firstPkg = prefs.getString(Keys.PIP_FIRST_PACKAGE, "");
         secondPkg = prefs.getString(Keys.PIP_SECOND_PACKAGE, "");
-        
-        Workspace workspace = Launcher.getLauncher().getWorkspace();
+        final String thirdPkg = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
+        final String fourthPkg = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
+        String desiredHostSignature = buildDesiredHostSignature(prefs);
+
+        Workspace workspace = launcher.getWorkspace();
+        if (canReuseWindowHost(desiredHostSignature)) {
+            Log.i(TAG, "openMultiplePips: visible host unchanged, updating bounds only");
+            updateVisiblePipPositions();
+            return;
+        }
+
+        if (!isWorkspaceReadyForPip(workspace)) {
+            retryOpenMultiplePips(attempt, expectedOpenGen, "workspace not ready");
+            return;
+        }
+
+        Rect rDual = null;
+        Rect rFirst = null;
+        Rect rSecond = null;
+        Rect rThird = null;
+        Rect rFourth = null;
+        boolean needsBoundsRetry = false;
+
+        if (dualPip && !firstPipPinned && !secondPipPinned
+                && Helpers.isPackageInstalled(firstPkg) && Helpers.isPackageInstalled(secondPkg)) {
+            rDual = getInitialPipBounds(workspace, "dual");
+            needsBoundsRetry |= rDual == null;
+        } else {
+            if (firstPip && !firstPipPinned && Helpers.isPackageInstalled(firstPkg)) {
+                rFirst = getInitialPipBounds(workspace, "first");
+                needsBoundsRetry |= rFirst == null;
+            }
+
+            if (secondPip && !secondPipPinned && Helpers.isPackageInstalled(secondPkg)) {
+                rSecond = getInitialPipBounds(workspace, "second");
+                needsBoundsRetry |= rSecond == null;
+            }
+        }
+
+        if (thirdPip && !thirdPipPinned && Helpers.isPackageInstalled(thirdPkg)) {
+            rThird = getInitialPipBounds(workspace, "third");
+            needsBoundsRetry |= rThird == null;
+        }
+
+        if (fourthPip && !fourthPipPinned && Helpers.isPackageInstalled(fourthPkg)) {
+            rFourth = getInitialPipBounds(workspace, "fourth");
+            needsBoundsRetry |= rFourth == null;
+        }
+
+        if (needsBoundsRetry) {
+            retryOpenMultiplePips(attempt, expectedOpenGen, "placeholder bounds not ready");
+            return;
+        }
+
+        releaseInactiveWindowHost("openMultiplePips");
+        mWindowHost = new WindowHost(launcher);
+        activeHostSignature = desiredHostSignature;
+        pipLayoutRearmCount = 0;
         
         if (dualPip && !mWindowHost.isDualVisible() && !firstPipPinned && !secondPipPinned 
             && Helpers.isPackageInstalled(firstPkg) && Helpers.isPackageInstalled(secondPkg)) {    
             try {
-                Rect rDual = getInitialPipBounds(workspace, "dual");
                 if (rDual != null) {
                     mWindowHost.showDual(firstPkg, secondPkg, rDual);
                     Log.i(TAG, "dual: show " + firstPkg + " and " + secondPkg);
@@ -392,7 +548,6 @@ public class WindowUtil {
             if (firstPip && !mWindowHost.isFirstVisible() && Helpers.isPackageInstalled(firstPkg)) {
                 if (!firstPipPinned) {
                     try {
-                        Rect rFirst = getInitialPipBounds(workspace, "first");
                         if (rFirst != null) {
                             mWindowHost.showFirst(firstPkg, rFirst);
                             Log.i(TAG, "first: show " + firstPkg);
@@ -406,7 +561,6 @@ public class WindowUtil {
             if (secondPip && !mWindowHost.isSecondVisible() && Helpers.isPackageInstalled(secondPkg)) {
                 if (!secondPipPinned) {
                     try {
-                        Rect rSecond = getInitialPipBounds(workspace, "second");
                         if (rSecond != null) {
                             mWindowHost.showSecond(secondPkg, rSecond);
                             Log.i(TAG, "second: show " + secondPkg);
@@ -418,11 +572,9 @@ public class WindowUtil {
             }
         }
         
-        final String thirdPkg = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
         if (thirdPip && !mWindowHost.isThirdVisible() && Helpers.isPackageInstalled(thirdPkg)) {
             if (!thirdPipPinned) {
                 try {
-                    Rect rThird = getInitialPipBounds(workspace, "third");
                     if (rThird != null) {
                         mWindowHost.showThird(thirdPkg, rThird);
                         Log.i(TAG, "third: show " + thirdPkg);
@@ -433,11 +585,9 @@ public class WindowUtil {
             }
         }
         
-        final String fourthPkg = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
         if (fourthPip && !mWindowHost.isFourthVisible() && Helpers.isPackageInstalled(fourthPkg)) {
             if (!fourthPipPinned) {
                 try {
-                    Rect rFourth = getInitialPipBounds(workspace, "fourth");
                     if (rFourth != null) {
                         mWindowHost.showFourth(fourthPkg, rFourth);
                         Log.i(TAG, "fourth: show " + fourthPkg);
@@ -450,13 +600,64 @@ public class WindowUtil {
         
         if (workspace != null) {
             workspace.postDelayed(() -> {
-                Workspace ws = Launcher.getLauncher().getWorkspace();
+                Launcher currentLauncher = Launcher.getLauncher();
+                if (currentLauncher == null) return;
+                Workspace ws = currentLauncher.getWorkspace();
                 if (ws != null) {
                     int currentScroll = ws.mUnboundedScrollX;
                     updatePipPositionsForScroll(currentScroll);
                 }
             }, 100); 
         }            
+    }
+
+    private static void releaseInactiveWindowHost(String source) {
+        WindowHost host = mWindowHost;
+        if (host == null || hasVisibleWindowHost()) {
+            return;
+        }
+        try {
+            host.cleanup();
+            Log.i(TAG, source + ": released inactive window host before rebuild");
+        } catch (Throwable t) {
+            Log.w(TAG, source + ": failed to release inactive window host", t);
+        }
+        if (mWindowHost == host) {
+            mWindowHost = null;
+            activeHostSignature = "";
+        }
+    }
+
+    private static void retryOpenMultiplePips(int attempt, int expectedOpenGen, String reason) {
+        if (attempt >= MAX_PIP_LAYOUT_RETRIES) {
+            Log.w(TAG, "openMultiplePips: giving up after " + attempt + " retries, " + reason);
+            activeHostSignature = "";
+            if (helpers == null) {
+                helpers = new Helpers();
+            }
+            helpers.setPipsAdded(false);
+            if (pipLayoutRearmCount < MAX_PIP_LAYOUT_REARMS) {
+                pipLayoutRearmCount++;
+                MAIN_HANDLER.postDelayed(() -> {
+                    if (expectedOpenGen != PIP_OPEN_GEN.get()) return;
+                    if (Launcher.getLauncher() == null) return;
+                    if (!hasVisibleWindowHost()) {
+                        startMapPip(false);
+                    }
+                }, PIP_LAYOUT_REARM_DELAY_MS);
+            }
+            return;
+        }
+        Log.i(TAG, "openMultiplePips: deferring, " + reason + " attempt=" + attempt);
+        MAIN_HANDLER.postDelayed(() -> openMultiplePips(attempt + 1, expectedOpenGen), PIP_LAYOUT_RETRY_DELAY_MS);
+    }
+
+    private static boolean isWorkspaceReadyForPip(Workspace workspace) {
+        if (workspace == null || workspace.getChildCount() <= 0) return false;
+        if (workspace.getWidth() <= 1 || workspace.getHeight() <= 1) return false;
+        if (workspace.getViewportWidth() <= 1 || workspace.getViewportHeight() <= 1) return false;
+        View firstChild = workspace.getChildAt(0);
+        return firstChild != null && firstChild.getWidth() > 1 && firstChild.getHeight() > 1;
     }
 
     private static String getScreenKeyForType(String pipType) {
@@ -471,43 +672,61 @@ public class WindowUtil {
     }
 
     private static Rect getInitialPipBounds(Workspace workspace, String pipType) {
-        Rect fallback = new Rect(offscreen);
         try {
-            if (workspace == null || prefs == null) return fallback;
+            if (workspace == null || prefs == null || !isWorkspaceReadyForPip(workspace)) return null;
 
             String screenKey = getScreenKeyForType(pipType);
-            if (screenKey.isEmpty()) return fallback;
+            if (screenKey.isEmpty()) return null;
 
             int pipHomeScreen = prefs.getInt(screenKey, 1) - 1;
-            if (pipHomeScreen < 0 || pipHomeScreen >= workspace.getChildCount()) return fallback;
+            if (pipHomeScreen < 0 || pipHomeScreen >= workspace.getChildCount()) return null;
 
             CellLayout pipHomeCellLayout = (CellLayout) workspace.getChildAt(pipHomeScreen);
-            if (pipHomeCellLayout == null) return fallback;
+            if (pipHomeCellLayout == null) return null;
 
             int[] basePos = pipHomeCellLayout.getPipPlaceholderPosition(pipType);
-            if (basePos == null) return fallback;
+            if (basePos == null) return null;
 
             int pageWidth = workspace.getViewportWidth();
+            if (pageWidth <= 1) return null;
             int pageCount = workspace.getChildCount();
             int maxScroll = Math.max(0, (pageCount - 1) * pageWidth);
             int currentScroll = Math.max(0, Math.min(workspace.mUnboundedScrollX, maxScroll));
             int pipAbsoluteX = (pipHomeScreen * pageWidth) + basePos[0];
             int pipScreenX = pipAbsoluteX - currentScroll;
 
-            return new Rect(pipScreenX, basePos[1],
+            Rect bounds = new Rect(pipScreenX, basePos[1],
                     pipScreenX + basePos[2], basePos[1] + basePos[3]);
+            if (!isUsableInitialPipBounds(workspace, bounds)) return null;
+            return bounds;
         } catch (Throwable t) {
             Log.w(TAG, "getInitialPipBounds failed for " + pipType, t);
-            return fallback;
+            return null;
         }
+    }
+
+    private static boolean isUsableInitialPipBounds(Workspace workspace, Rect bounds) {
+        if (workspace == null || bounds == null || bounds.width() <= 1 || bounds.height() <= 1) {
+            return false;
+        }
+        if (offscreen.equals(bounds)) return false;
+        int pageWidth = Math.max(1, workspace.getViewportWidth());
+        int pageCount = Math.max(1, workspace.getChildCount());
+        int minLeft = -pageWidth;
+        int maxRight = pageWidth * (pageCount + 1);
+        return bounds.right > minLeft
+                && bounds.left < maxRight
+                && bounds.bottom > 0;
     }
 
     public static void updatePipPositionsForScroll(int scrollOffset) {
         try {
-            if (Launcher.getLauncher() == null) return;
+            Launcher launcher = Launcher.getLauncher();
+            if (launcher == null) return;
             
-            Workspace workspace = Launcher.getLauncher().getWorkspace();
+            Workspace workspace = launcher.getWorkspace();
             if (workspace == null || mWindowHost == null) return;
+            if (!isWorkspaceReadyForPip(workspace)) return;
             
             if (prefs == null) {
                 prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
@@ -529,9 +748,18 @@ public class WindowUtil {
         if (mWindowHost == null) return;
 
         String screenKey = getScreenKeyForType(pipType);
+        Launcher launcher = Launcher.getLauncher();
+        if (screenKey.isEmpty() || prefs == null || launcher == null) return;
         int pipHomeScreen = prefs.getInt(screenKey, 1) - 1;
 
-        Workspace workspace = Launcher.getLauncher().getWorkspace();
+        Workspace workspace = launcher.getWorkspace();
+        if (workspace == null) return;
+        int pageCount = workspace.getChildCount();
+        if (pipHomeScreen < 0 || pipHomeScreen >= pageCount) {
+            Log.w(TAG, "Skipping " + pipType + " PiP bounds update for invalid screen " + pipHomeScreen
+                    + " pageCount=" + pageCount);
+            return;
+        }
         CellLayout pipHomeCellLayout = (CellLayout) workspace.getChildAt(pipHomeScreen);
 
         if (pipHomeCellLayout == null) return;
@@ -540,13 +768,13 @@ public class WindowUtil {
         if (basePos == null) return;
 
         int pageWidth = workspace.getViewportWidth();
+        if (pageWidth <= 0) return;
 
         // Protect against overscroll: the provided scrollOffset may be "unbounded" (overscroll)
         // while the logical maximum scroll is (pageCount - 1) * pageWidth. If there is only one
         // page (pageCount == 1) or the user is overscrolling at the edges, we should not move PiPs
         // beyond the real pages — they should stay visually anchored. Compute an effectiveScroll
         // clamped to the [0, maxScroll] range and use that for position calculations.
-        int pageCount = workspace.getChildCount();
         int maxScroll = Math.max(0, (pageCount - 1) * pageWidth);
         int effectiveScroll = Math.max(0, Math.min(scrollOffset, maxScroll));
 
@@ -597,7 +825,11 @@ public class WindowUtil {
 
     public static void restartMultiplePips() {
         if (mWindowHost != null) {
-            Launcher.getLauncher().handler.post(() -> mWindowHost.cleanup());
+            activeHostSignature = "";
+            Launcher launcher = Launcher.getLauncher();
+            if (launcher != null) {
+                launcher.handler.post(() -> mWindowHost.cleanup());
+            }
         }
     }
 
@@ -608,15 +840,9 @@ public class WindowUtil {
         if (helpers == null) {
             helpers = new Helpers();
         }
-        if (Launcher.getLauncher().allowPip
-            && Utils.topApp()
-            && !helpers.isInWidgets()
-            && !helpers.isInAllApps()
-            && !helpers.isInOverviewMode()
-            && !helpers.isFirstPreferenceWindow()
-            && !helpers.isWallpaperWindow()
-            && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-            || (!helpers.userWasInRecents() && helpers.isListOpen())) {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        if (shouldOpenPipFromLauncherState(false)) {
 
             if (prefs == null) {
                 prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
@@ -628,6 +854,8 @@ public class WindowUtil {
             secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
             thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
             fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
+            firstPkg = prefs.getString(Keys.PIP_FIRST_PACKAGE, "");
+            secondPkg = prefs.getString(Keys.PIP_SECOND_PACKAGE, "");
             if (firstPip && firstPipPinned && Helpers.isPackageInstalled(firstPkg)) {
                 openAsPinnedPip(firstPkg, Keys.PIP_FIRST_KEY, Keys.PIP_FIRST_SCREEN);
             }
@@ -662,12 +890,17 @@ public class WindowUtil {
     }
 
     private static void openAsPinnedPip(String packageName, String pipKey, String screenKey) {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        Workspace workspace = launcher.getWorkspace();
+        if (workspace == null) return;
+        if (packageName == null || packageName.isEmpty()) return;
         // Update screen
         SharedPreferences.Editor editor = prefs.edit();
         int pipScreen = prefs.getInt(screenKey, 1) - 1;
         editor.putInt(Keys.PINNED_PIP_SCREEN, pipScreen + 1);
         editor.apply();
-        int currentScreen = Launcher.getLauncher().getWorkspace().getCurrentPage();
+        int currentScreen = workspace.getCurrentPage();
 
         if (helpers == null) {
             helpers = new Helpers();
@@ -675,7 +908,7 @@ public class WindowUtil {
 
         SystemProperties.set("persist.syu.launcher.haspip", "true");
 
-        if (currentScreen == pipScreen && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) {
+        if (currentScreen == pipScreen && !isAllAppsVisible()) {
             String currentPackage = SystemProperties.get("persist.launcher.packagename", "");
             if (!packageName.equals(currentPackage) || (packageName.equals(currentPackage) && checkIfMapSizeChanged(pipKey))) { 
                 // save previous values
@@ -690,7 +923,7 @@ public class WindowUtil {
                 AppPackageName = packageName; 
                 restartPinnedPipApp();
                 
-                Launcher.getLauncher().handler.postDelayed(() -> startPinnedPip(packageName), 1000);
+                launcher.handler.postDelayed(() -> startPinnedPip(packageName), 1000);
             } else {
                 setPinnedPipBounds(pipKey, screenKey);         
                 SystemProperties.set("persist.launcher.packagename", packageName);
@@ -701,12 +934,18 @@ public class WindowUtil {
     }
 
     private static void startPinnedPip(String packageName) {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        if (packageName == null || packageName.isEmpty()) return;
         Intent intent = FytPackage.getIntent(LauncherApplication.sApp, packageName);
         intent.putExtra("force_pip", true);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         SystemProperties.set("sys.lsec.force_pip", "true");
         if (intent.resolveActivity(LauncherApplication.sApp.getPackageManager()) != null) {
-            Launcher.getLauncher().handler.postDelayed(() -> LauncherApplication.sApp.startActivity(intent), 100);
+            launcher.handler.postDelayed(() -> {
+                if (Launcher.getLauncher() == null) return;
+                LauncherApplication.sApp.startActivity(intent);
+            }, 100);
         }  
         checkIfOpenedOnTheRightScreen(500);
         checkIfOpenedOnTheRightScreen(1500);
@@ -715,11 +954,17 @@ public class WindowUtil {
 
     // removes an error where windows shows up when user quickly changes to the screen on which it shouldn't appear
     private static void checkIfOpenedOnTheRightScreen(int delay) {
-        Launcher.getLauncher().handler.postDelayed(() -> {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        launcher.handler.postDelayed(() -> {
+            Launcher currentLauncher = Launcher.getLauncher();
+            if (currentLauncher == null || prefs == null) return;
+            Workspace workspace = currentLauncher.getWorkspace();
+            if (workspace == null) return;
             int pipScreen = prefs.getInt(Keys.PINNED_PIP_SCREEN, 1) - 1;
-            int currentScreen = Launcher.getLauncher().getWorkspace().getCurrentPage();
+            int currentScreen = workspace.getCurrentPage();
 
-            if (Launcher.getLauncher().getWorkspace().getChildCount() > 1 && currentScreen != pipScreen) {
+            if (workspace.getChildCount() > 1 && currentScreen != pipScreen) {
                 removePinnedPip();
             }
         }, delay);
@@ -727,18 +972,26 @@ public class WindowUtil {
 
     public static void restartPinnedPipApp() {
         if (!LauncherApplication.isFytDevice()) return;
+        Launcher launcher = Launcher.getLauncher();
         if (mWindowHost != null) {
-            Launcher.getLauncher().handler.post(() -> mWindowHost.cleanup());
-        }
-        if (!AppPackageName.isEmpty() && AppPackageName != null) {
-            ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-            try {
-                Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
-                forceStopPackage.setAccessible(true);
-                forceStopPackage.invoke(activityManager, AppPackageName);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
+            if (launcher != null) {
+                launcher.handler.post(() -> mWindowHost.cleanup());
             }
+        }
+        String packageName = AppPackageName;
+        if (packageName == null || packageName.isEmpty()) return;
+        if (FytPackage.GMAPS.equals(packageName)) {
+            Log.i(TAG, "restartPinnedPipApp: skip force-stop for Google Maps");
+            return;
+        }
+        ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager == null) return;
+        try {
+            Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
+            forceStopPackage.setAccessible(true);
+            forceStopPackage.invoke(activityManager, packageName);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 
