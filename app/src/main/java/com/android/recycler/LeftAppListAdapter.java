@@ -10,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.launcher66.AppInfo;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
 import com.android.launcher66.settings.Helpers;
@@ -20,39 +22,100 @@ import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SettingsActivity;
 import com.syu.util.WindowUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> {
+public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> implements AppListDialogFragment.ItemClickDataListener {
     private int lastClickIndex;
     private View mAddAppView;
     private List<AppListBean> mData;
-    private AppListDialogFragment mDialog;
+    private WeakReference<AppListDialogFragment> mDialogRef;
     private Launcher mLauncher;
     private int mMaxCount;
     private boolean showAddAppView;
     private Helpers helpers = new Helpers();
     private static final String RECYCLER_APP = "recycler.app";
     private static final String RECYCLER_APP_MAP = "recycler.app.map";
+    private long mDataSignature;
 
     public LeftAppListAdapter(Launcher launcher, List<AppListBean> data) {
         this.mMaxCount = 5;
         this.mData = data;
         this.mLauncher = launcher;
+        this.mDataSignature = calculateDataSignature(data);
+        setHasStableIds(true);
+    }
+
+    private AppListDialogFragment getDialog() {
+        AppListDialogFragment dialog = mDialogRef != null ? mDialogRef.get() : null;
+        if (dialog == null) {
+            dialog = new AppListDialogFragment();
+            dialog.setItemClickDataListener(this);
+            mDialogRef = new WeakReference<>(dialog);
+        }
+        return dialog;
+    }
+
+    public void clearDialogReference() {
+        if (mDialogRef != null) {
+            mDialogRef.clear();
+            mDialogRef = null;
+        }
+    }
+
+    private void showAppPickerDialog(int position) {
+        FragmentManager fragmentManager = mLauncher.getSupportFragmentManager();
+        if (fragmentManager.isStateSaved()) {
+            return;
+        }
+        AppListDialogFragment dialog = getDialog();
+        if (dialog.isAdded()) {
+            return;
+        }
+        dialog.show(fragmentManager, AppListDialogFragment.TAG);
+        lastClickIndex = position;
     }
 
     public void notifyDataSetChanged(final List<AppListBean> data) {
         this.mLauncher.runOnUiThread(() -> {
+            long newSignature = calculateDataSignature(data);
+            if (LeftAppListAdapter.this.mDataSignature == newSignature) {
+                LeftAppListAdapter.this.mData = data;
+                return;
+            }
             LeftAppListAdapter.this.mData = data;
+            LeftAppListAdapter.this.mDataSignature = newSignature;
             LeftAppListAdapter.this.notifyDataSetChanged();
         });
+    }
+
+    private long calculateDataSignature(List<AppListBean> data) {
+        long signature = 1125899906842597L;
+        if (data == null) {
+            return signature;
+        }
+        signature = (signature * 31L) + data.size();
+        for (int i = 0; i < data.size(); i++) {
+            AppListBean bean = data.get(i);
+            signature = (signature * 31L) + (bean == null ? 0L : bean.contentSignature(i));
+        }
+        return signature;
     }
 
     @Override
     public int getItemCount() {
         this.showAddAppView = (this.mData.size() > this.mMaxCount);
         return this.mData.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        if (position < 0 || position >= this.mData.size()) {
+            return RecyclerView.NO_ID;
+        }
+        return this.mData.get(position).stableId(position);
     }
 
     public void onBindViewHolder(final LeftAppListHolder appListHolder, int position) {
@@ -80,8 +143,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
                 }
             }
             if (TextUtils.isEmpty(appListBean.packageName) || TextUtils.isEmpty(appListBean.className)) {
-                LeftAppListAdapter.this.mDialog.show(LeftAppListAdapter.this.mLauncher.getSupportFragmentManager(), AppListDialogFragment.TAG);
-                LeftAppListAdapter.this.lastClickIndex = appListHolder.getBindingAdapterPosition();
+                showAppPickerDialog(appListHolder.getBindingAdapterPosition());
             } else if (appListBean.packageName.equals("com.android.launcher66") && !appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
                 LeftAppListAdapter.this.mLauncher.onClickAllAppsButton();
             } else if (appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
@@ -136,6 +198,25 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
                 }   
             }
         }   
+    }
+
+    @Override
+    public void onClickData(AppInfo appInfo) {
+        if (appInfo == null || lastClickIndex < 0 || lastClickIndex >= mData.size()) {
+            return;
+        }
+        AppListBean appListBean = new AppListBean(
+                appInfo.title.toString(),
+                appInfo.iconBitmap,
+                appInfo.getPackageName(),
+                appInfo.getClassName());
+        mData.remove(lastClickIndex);
+        mData.add(lastClickIndex, appListBean);
+        mDataSignature = calculateDataSignature(mData);
+        notifyDataSetChanged();
+        clearDialogReference();
+        new LeftAppMultiple(lastClickIndex, appListBean.name, appListBean.packageName, appListBean.className)
+                .saveOrUpdate("index = ?", String.valueOf(lastClickIndex));
     }
 
     @Override

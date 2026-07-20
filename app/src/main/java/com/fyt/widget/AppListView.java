@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
-import android.SystemProperties;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -18,14 +17,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.launcher66.R;
-import com.android.launcher66.settings.Helpers;
 import com.syu.car.CarStates;
 import com.syu.util.FytPackage;
 import com.syu.utils.W3Utils;
 
 import java.util.ArrayList;
 
-import share.Config;
 import share.ResValue;
 
 public class AppListView extends ListView {
@@ -128,16 +125,7 @@ public class AppListView extends ListView {
         Adapter_AppList.setfocus(arg);
         Adapter_AppList.notifyDataSetChanged();
         if (arg == 8) {
-            if (Config.EXISTAMPAUTO) {
-                String str = SystemProperties.get("persist.sys.navi.packagename", "");
-                if ((str.equals("") || str == null || str.equals(FytPackage.GaodeACTION)) && Helpers.isPackageInstalled(FytPackage.GaodeACTION)) {
-                    SystemProperties.set("persist.sys.navi.packagename", FytPackage.GaodeACTION);
-                    Intent intent = new Intent();
-                    intent.setComponent(new ComponentName(FytPackage.GaodeACTION, "com.autonavi.auto.remote.fill.UsbFillActivity"));
-                    startActivitySafely(intent);
-                    return;
-                } 
-                CarStates.getCar(context).mTools.sendInt(0, 24, 0);
+            if (startResolvedNavigation()) {
                 return;
             }
             CarStates.getCar(context).mTools.sendInt(0, 24, 0);
@@ -148,6 +136,27 @@ public class AppListView extends ListView {
             intent2.setComponent(new ComponentName(String_ActionPack[arg][0], String_ActionPack[arg][1]));
             startActivitySafely(intent2);
         }
+    }
+
+    private static boolean startResolvedNavigation() {
+        String navigationPackage = FytPackage.resolveNavigationPackage(context);
+        if (navigationPackage == null || navigationPackage.equals("")) {
+            return false;
+        }
+
+        FytPackage.setDefaultNavigationPackage(navigationPackage);
+        try {
+            CarStates.getCar(context).mTools.sendStr(0, 9, navigationPackage);
+        } catch (Exception e) {
+            Log.w("AppListView", "Failed to assign default navigation package: " + navigationPackage, e);
+        }
+
+        Intent navigationIntent = FytPackage.getLaunchIntent(context, navigationPackage);
+        if (navigationIntent == null) {
+            return false;
+        }
+        startActivitySafely(navigationIntent);
+        return true;
     }
 
     static void startActivitySafely(Intent intent) {

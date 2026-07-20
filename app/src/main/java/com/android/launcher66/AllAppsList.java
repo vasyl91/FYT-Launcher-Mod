@@ -8,11 +8,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.SystemProperties;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.android.launcher66.settings.Helpers;
 import com.syu.car.CarStates;
 import com.syu.util.FytPackage;
 
@@ -49,6 +47,8 @@ public class AllAppsList {
                     }
                     if (info.componentName.getPackageName().equals(FytPackage.GaodeACTION)) {
                         Config.EXISTAMPAUTO = true;
+                    }
+                    if (FytPackage.isNavigationPackage(LauncherApplication.sApp, info.componentName.getPackageName())) {
                         setDefaultNavi();
                     }
                     if (info.componentName.getPackageName().equals(FytPackage.voiceAction)) {
@@ -141,6 +141,8 @@ public class AllAppsList {
                 }
                 if (packageName.equals(FytPackage.GaodeACTION)) {
                     Config.EXISTAMPAUTO = true;
+                }
+                if (FytPackage.isNavigationPackage(LauncherApplication.sApp, packageName)) {
                     setDefaultNavi();
                 }
                 if (packageName.equals(FytPackage.voiceAction)) {
@@ -277,9 +279,10 @@ public class AllAppsList {
 
     private void setDefaultNavi() {
         try {
-            String naviPackage = SystemProperties.get("persist.sys.navi.packagename", "");
-            if ((naviPackage.equals("") || naviPackage == null) && Helpers.isPackageInstalled(FytPackage.GaodeACTION)) {
-                CarStates.getCar(LauncherApplication.sApp).mTools.sendStr(0, 9, FytPackage.GaodeACTION);
+            String naviPackage = FytPackage.resolveNavigationPackage(LauncherApplication.sApp);
+            if (naviPackage != null && !naviPackage.equals("")) {
+                FytPackage.setDefaultNavigationPackage(naviPackage);
+                CarStates.getCar(LauncherApplication.sApp).mTools.sendStr(0, 9, naviPackage);
             }
         } catch (Exception e) {
             Toast.makeText(LauncherApplication.sApp, LauncherApplication.sApp.getString(R.string.init_default_app_error), Toast.LENGTH_LONG).show();
