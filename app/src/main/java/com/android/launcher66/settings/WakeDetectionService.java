@@ -9,6 +9,7 @@ import android.hardware.display.DisplayManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Display;
 
@@ -20,7 +21,9 @@ import androidx.fragment.app.FragmentManager;
 
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.ServiceIntentGate;
 import com.android.recycler.AppListDialogFragment;
+import com.syu.util.FytPackage;
 import com.syu.util.WindowUtil;
 
 import java.beans.PropertyChangeEvent;
@@ -40,6 +43,9 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     private SharedPreferences mPrefs;
     private static final String TAG = "WakeDetection";
     private static final String DISPLAY_ON = "display_on";
+    private static final long DISPLAY_ON_DEBOUNCE_MS = 2500L;
+    public static final String ACTION_WAKE_REFRESH = "com.android.launcher66.action.WAKE_REFRESH";
+    private long lastDisplayOnHandledMs = 0L;
 
     @Override
     public void onCreate() {
@@ -66,6 +72,10 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
             public void onDisplayChanged(int displayId) {
                 if (displayId == Display.DEFAULT_DISPLAY) {
                     Display display = displayManager.getDisplay(displayId);
+                    if (display == null) {
+                        Log.w(TAG, "Default display unavailable during display change");
+                        return;
+                    }
                     int state = display.getState();
                     mPropertyChangeClass.setBoolean(DISPLAY_ON, state == Display.STATE_ON);
                 }
@@ -95,9 +105,19 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
             String val = String.valueOf(evt.getNewValue());
             Helpers helpers = new Helpers();
             if (val.contains("true")) {
+                helpers.setDisplayStateBoolean(true);
+                long now = SystemClock.uptimeMillis();
+                if (lastDisplayOnHandledMs > 0L
+                        && now - lastDisplayOnHandledMs < DISPLAY_ON_DEBOUNCE_MS) {
+                    Log.i(TAG, "Ignoring duplicate display-on event after " + (now - lastDisplayOnHandledMs) + " ms");
+                    return;
+                }
+                lastDisplayOnHandledMs = now;
                 Log.e(TAG, "Device awakened from sleep");
                 handler.postDelayed(() -> pressHomeButton(), 500);
                 handler.postDelayed(() -> dismissAppListDialog(), 500);
+                handler.postDelayed(() -> sendWakeRefresh("early"), 900);
+                handler.postDelayed(() -> sendWakeRefresh("late"), 1800);
                 mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
                 long lastSleepTimestamp = mPrefs.getLong("sleep_timestamp", -1L);
                 boolean resetPip = false;
@@ -116,14 +136,11 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                         resetPip = true;
                     }
                 }
-
-                helpers.setDisplayStateBoolean(true);
-
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 if (prefs.getBoolean("night_mode", false)) {
                     handler.postDelayed(() -> {
                         Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
-                        LauncherApplication.sApp.startService(nightModeServiceIntent);
+                        ServiceIntentGate.startIfAvailable(LauncherApplication.sApp, nightModeServiceIntent, "wake night mode");
                     }, 10000);
                 }
 
@@ -134,9 +151,15 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
 
                 boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
                 if (widgetBar) {
-                    handler.postDelayed(() -> Launcher.getLauncher().updateWeather(), 2000);
+                    handler.postDelayed(() -> {
+                        Launcher launcher = Launcher.getLauncher();
+                        if (launcher != null) {
+                            launcher.updateWeather();
+                        }
+                    }, 2000);
                 }
             } else if (val.contains("false")) {
+                lastDisplayOnHandledMs = 0L;
                 Log.e(TAG, "ACC turned off, device has been put into sleep mode");
 
                 WindowUtil.removePip();
@@ -176,6 +199,12 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
         }
     }
 
+    private void sendWakeRefresh(String phase) {
+        Intent intent = new Intent(ACTION_WAKE_REFRESH);
+        intent.putExtra("phase", phase);
+        LauncherApplication.sApp.sendBroadcast(intent);
+    }
+
     public void restartPip() {
         // in some mysterious cases pinned PiP won't start when user wakes the device up from the sleep mode 
         // this serves as some sort of checking function to make sure it starts
@@ -212,6 +241,10 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     public void restartPipApp(String key) {
         String appPackageName = mPrefs.getString(key, "");
         if (!appPackageName.isEmpty()) {
+            if (FytPackage.GMAPS.equals(appPackageName)) {
+                Log.i(TAG, "Skipping force-stop for Google Maps during wake PiP reset");
+                return;
+            }
             ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             try {
                 Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);

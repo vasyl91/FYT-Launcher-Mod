@@ -51,6 +51,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+import com.android.launcher66.ServiceIntentGate;
 import com.android.launcher66.colorpicker.ColorPicker;
 import com.android.launcher66.colorpicker.ColorPickerCallback;
 import com.fyt.skin.SkinAttribute;
@@ -1258,7 +1259,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         extras.putInt("cmdInt", Integer.parseInt(sharedPrefs.getString(Keys.CMD_INT, "0")));
         extras.putInt("cmdArr", Integer.parseInt(sharedPrefs.getString(Keys.CMD_ARR, "0")));
         intent.putExtras(extras);
-        this.requireContext().startService(intent);
+        ServiceIntentGate.startIfAvailable(this.requireContext(), intent, "canbus code inspector");
     }
 
     public void stopCanbusCodeInspector() {
@@ -1271,7 +1272,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
     private void startLoggerService() {
         Intent loggerIntent = new Intent(this.requireContext(), CanbusCommandLogger.class);
-        this.requireContext().startService(loggerIntent);
+        ServiceIntentGate.startIfAvailable(this.requireContext(), loggerIntent, "canbus command logger");
     }
 
     private void stopLoggerService() {

@@ -377,6 +377,10 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
     }
 
     public void onWindowVisible() {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher != null && launcher.isReturningHomeFromAllApps()) {
+            return;
+        }
         if (getVisibility() == View.VISIBLE) {
             this.mContent.setVisibility(View.VISIBLE);
             this.mAppsCustomizePane.loadAssociatedPages(this.mAppsCustomizePane.getCurrentPage(), true);

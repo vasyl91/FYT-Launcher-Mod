@@ -119,7 +119,11 @@ public class LauncherApplication extends Application {
         if (isDebug) {
             enableStrictMode();
         }
-        handler.postDelayed(() -> startService(new Intent(this, WakeDetectionService.class)), 1000);
+        handler.postDelayed(() -> ServiceIntentGate.startIfAvailable(
+                this,
+                new Intent(this, WakeDetectionService.class),
+                "wake detection"
+        ), 1000);
         /*LeakCanary.Config cfg = LeakCanary.getConfig()
             .newBuilder()
             .retainedVisibleThreshold(10)

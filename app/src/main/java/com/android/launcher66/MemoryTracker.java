@@ -74,7 +74,14 @@ public class MemoryTracker extends Service {
     }
 
     public static void startTrackingMe(Context context, String name) {
-        context.startService(new Intent(context, (Class<?>) MemoryTracker.class).setAction(ACTION_START_TRACKING).putExtra("pid", Process.myPid()).putExtra("name", name));
+        ServiceIntentGate.startIfAvailable(
+                context,
+                new Intent(context, (Class<?>) MemoryTracker.class)
+                        .setAction(ACTION_START_TRACKING)
+                        .putExtra("pid", Process.myPid())
+                        .putExtra("name", name),
+                "memory tracker"
+        );
     }
 
     public ProcessMemInfo getMemInfo(int pid) {
