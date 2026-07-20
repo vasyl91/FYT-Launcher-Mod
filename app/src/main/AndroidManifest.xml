@@ -302,6 +302,17 @@
             android:exported="false" />
 
         <service
+            android:name="com.android.launcher66.SystemUiBridgeService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.fyt.launcher.systemui.wifi" />
+                <action android:name="com.fyt.launcher.systemui.bt" />
+                <action android:name="com.fyt.launcher.systemui.signal" />
+            </intent-filter>
+        </service>
+
+        <service
             android:enabled="@bool/debug_memory_enabled"
             android:name="com.android.launcher66.MemoryTracker" />
 
@@ -459,6 +470,10 @@
 
         <receiver
             android:name="com.android.launcher66.MediaFavoriteReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.android.launcher66.MediaTransportReceiver"
             android:exported="false" />
 
         <service
