@@ -45,6 +45,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
     private static final String RECYCLER_APP_MAP = "recycler.app.map";
     private SharedPreferences mPrefs;
     private int orientation;
+    private Bitmap mSettingsIconBitmap;
+    private long mDataSignature;
 
     public AppListAdapter(Launcher mLauncher, List<AppListBean> mData) {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(mLauncher);
@@ -63,6 +65,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
         }
         this.mData = mData;
         this.mLauncher = mLauncher;
+        this.mDataSignature = calculateDataSignature(mData);
+        setHasStableIds(true);
     }
 
     private AppListDialogFragment getDialog() {
@@ -84,9 +88,28 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
 
     public void notifyDataSetChanged(final List<AppListBean> list) {
         this.mLauncher.runOnUiThread(() -> {
+            long newSignature = calculateDataSignature(list);
+            if (AppListAdapter.this.mDataSignature == newSignature) {
+                AppListAdapter.this.mData = list;
+                return;
+            }
             AppListAdapter.this.mData = list;
+            AppListAdapter.this.mDataSignature = newSignature;
             AppListAdapter.this.notifyDataSetChanged();
         });
+    }
+
+    private long calculateDataSignature(List<AppListBean> list) {
+        long signature = 1125899906842597L;
+        if (list == null) {
+            return signature;
+        }
+        signature = (signature * 31L) + list.size();
+        for (int i = 0; i < list.size(); i++) {
+            AppListBean bean = list.get(i);
+            signature = (signature * 31L) + (bean == null ? 0L : bean.contentSignature(i));
+        }
+        return signature;
     }
 
     @Override
@@ -96,10 +119,18 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
     }
 
     @Override
+    public long getItemId(int position) {
+        if (position < 0 || position >= this.mData.size()) {
+            return RecyclerView.NO_ID;
+        }
+        return this.mData.get(position).stableId(position);
+    }
+
+    @Override
     public void onBindViewHolder(final AppListHolder appListHolder, int position) {
         final AppListBean appListBean = this.mData.get(position);
         if (appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
-            appListHolder.mAppIcon.setImageBitmap(drawableToBitmap(ContextCompat.getDrawable(AppListAdapter.this.mLauncher, R.drawable.icon_settings)));
+            appListHolder.mAppIcon.setImageBitmap(getSettingsIconBitmap());
         } else {
             appListHolder.mAppIcon.setImageBitmap(appListBean.icon);
         }
@@ -241,5 +272,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
+    }
+
+    private Bitmap getSettingsIconBitmap() {
+        if (mSettingsIconBitmap == null) {
+            mSettingsIconBitmap = drawableToBitmap(ContextCompat.getDrawable(AppListAdapter.this.mLauncher, R.drawable.icon_settings));
+        }
+        return mSettingsIconBitmap;
     }
 }

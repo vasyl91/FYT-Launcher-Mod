@@ -153,6 +153,8 @@ import com.syu.utils.W3Utils;
 import com.syu.weather.WeatherDescription;
 import com.syu.weather.WeatherManager;
 import com.syu.widget.DateMusicProvider;
+import com.syu.widget.DateNaviProvider;
+import com.syu.widget.DateRadioProvider;
 import com.syu.widget.DateTimeProvider;
 import com.syu.widget.TimeUpdateReceiver;
 import com.syu.widget.Widget;
@@ -227,6 +229,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final String RUNTIME_STATE_PENDING_ADD_WIDGET_ID = "launcher.add_widget_id";
     static final int SCREEN_COUNT = 5;
     public static final String SHOW_WEIGHT_WATCHER = "debug.show_mem";
+    private static final long PIP_INIT_THROTTLE_MS = 700L;
+    private static final long WIDGET_UPDATE_THROTTLE_MS = 350L;
+    private static final long POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS = 1200L;
+    private static final long SERVICE_RUNNING_CACHE_MS = 15000L;
+    private static final long WEATHER_UPDATE_MIN_INTERVAL_MS = 10000L;
+    private static final long WEATHER_HOME_DEFER_MS = 1500L;
+    private static final long FAST_HOME_RESUME_DEFER_MS = 450L;
+    private static final long FAST_HOME_PIP_DEFER_MS = 1000L;
+    private static final long WAKE_HOME_RECOVERY_WINDOW_MS = 30000L;
+    private static final long FOCUS_HOME_RECOVERY_THROTTLE_MS = 1200L;
     static final String TAG = "Launcher";
     private static final String TOOLBAR_ICON_METADATA_NAME = "com.android.launcher.toolbar_icon";
     private static final String TOOLBAR_VOICE_SEARCH_ICON_METADATA_NAME = "com.android.launcher.toolbar_voice_search_icon";
@@ -412,6 +424,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private TextView weatherWind;
     static final int APPWIDGET_HOST_ID = LauncherApplication.appWidget_Host_Id;
     private static final Object sLock = new Object();
+    private static final Object sServiceRunningCacheLock = new Object();
+    private static final Map<String, Boolean> sServiceRunningCache = new HashMap<>();
+    private static final Map<String, Long> sServiceRunningCacheTime = new HashMap<>();
     private static int sScreen = 0;
     private static int NEW_APPS_PAGE_MOVE_DELAY = HttpURLConnection.HTTP_INTERNAL_ERROR;
     private static int NEW_APPS_ANIMATION_INACTIVE_TIMEOUT_SECONDS = 5;
@@ -484,6 +499,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Handler appDataHandler = new Handler(Looper.getMainLooper());
     private Runnable pendingAction;
     private static final long APP_DATA_DELAY = 1500;
+    private static final long APP_DATA_FAST_DELAY = 120;
     private static final int MAX_INIT_RETRIES = 10;
     private int mInitRetryCount = 0;
     private boolean mIsInitializingAppData = false;
@@ -491,9 +507,35 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public boolean allowPip = false;
     private boolean onBackPip = false;
     private boolean onWorkspacePip = false;
+    private boolean mPipInitPending = false;
+    private long mLastPipInitMs = 0L;
+    private boolean mWidgetUpdatePending = false;
+    private long mLastWidgetUpdateMs = 0L;
+    private boolean mPostResumeAppDataRefreshPending = false;
+    private boolean mPostResumeAppDataDirty = true;
+    private long mLastPostResumeAppDataRefreshMs = 0L;
+    private boolean mStatusBarSwipeDetectorStartPending = false;
+    private boolean mNightModeServiceStartPending = false;
+    private boolean mCanbusServiceStartPending = false;
+    private boolean mWeatherUpdatePending = false;
+    private long mLastWeatherUpdateMs = 0L;
+    private Runnable mPendingWeatherUpdateRunnable;
+    private WeatherManager.OnWeatherChangedListener mWeatherChangedListener;
+    private WeatherManager mWeatherListenerOwner;
+    private final Map<String, Bitmap> mAppIconBitmapCache = new HashMap<>();
     private boolean isRecreateActive = false;
     private boolean mHomeButtonPressed = false;
-    private boolean mSkipPostResume = false;
+    private boolean mHomeWorkspaceRefreshHandled = false;
+    private boolean mHomeFromAllAppsPending = false;
+    private boolean mFastHomeResumePending = false;
+    private boolean mWakeHomeRecoveryPending = false;
+    private long mLastWakeRefreshMs = 0L;
+    private long mLastFocusHomeRecoveryMs = 0L;
+    private Runnable mWakeHomeRecoveryRunnable;
+    private Runnable mFastHomeDeferredResumeRunnable;
+    private Runnable mFastHomeDeferredPipRunnable;
+    private long mLastAppListSourceSignature = Long.MIN_VALUE;
+    private long mLastLeftAppListSourceSignature = Long.MIN_VALUE;
     private boolean widgetBar = false;
     private boolean barTint = false;
     private boolean widgetTint = false;
@@ -942,7 +984,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     if (Launcher.this.mTvSpeed != null) {
                         Launcher.this.mTvSpeed.setText(String.valueOf(LauncherApplication.sApp.getResources().getString(R.string.car_speed)) + Launcher.this.carSpeed);
                     }
-                    Widget.update(LauncherApplication.sApp);
+                    requestWidgetUpdate(DateNaviProvider.class);
                     return;
                 }
                 return;
@@ -1326,7 +1368,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     Launcher.this.tvAritstTwo.setSelected(true);
                 }                   
             }
-            Widget.update(LauncherApplication.sApp);
+            requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
         }
     };
 
@@ -1337,12 +1379,41 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 @Override
                 public void run() {
                     setPlayPauseIcon();
-                    Widget.update(LauncherApplication.sApp);   
+                    requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
                 }
             }, 300);
         } else {
            setPlayPauseIcon();
         }
+    }
+
+    private void requestWidgetUpdate(Class<?>... providers) {
+        if (providers != null && providers.length > 0) {
+            for (Class<?> provider : providers) {
+                Widget.widgetUpdate(LauncherApplication.sApp, provider);
+            }
+            return;
+        }
+
+        long now = SystemClock.uptimeMillis();
+        long elapsed = now - mLastWidgetUpdateMs;
+        if (!mWidgetUpdatePending && elapsed >= WIDGET_UPDATE_THROTTLE_MS) {
+            mLastWidgetUpdateMs = now;
+            Widget.update(LauncherApplication.sApp);
+            return;
+        }
+
+        if (mWidgetUpdatePending) {
+            return;
+        }
+
+        mWidgetUpdatePending = true;
+        long delay = Math.max(0L, WIDGET_UPDATE_THROTTLE_MS - elapsed);
+        mHandler.postDelayed(() -> {
+            mWidgetUpdatePending = false;
+            mLastWidgetUpdateMs = SystemClock.uptimeMillis();
+            Widget.update(LauncherApplication.sApp);
+        }, delay);
     }
 
     public void setPlayPauseIcon() {
@@ -1620,7 +1691,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     }
                 }
             }
-            Widget.update(LauncherApplication.sApp);
+            requestWidgetUpdate(DateRadioProvider.class);
         }
     };
     private IUiRefresher refreshVideo = new IUiRefresher() { 
@@ -1757,7 +1828,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     }
                 }
             }
-            Widget.update(LauncherApplication.sApp);
+            requestWidgetUpdate(DateRadioProvider.class);
         }
     };
 
@@ -1778,13 +1849,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         Launcher.this.mUserPresent = true;
                         Launcher.this.updateRunning();
                         break;                     
+                    case WakeDetectionService.ACTION_WAKE_REFRESH:
+                        repairLayoutAfterWake(intent.getStringExtra("phase"));
+                        break;
                     case Intent.ACTION_CLOSE_SYSTEM_DIALOGS:
                         String reason = intent.getStringExtra(Keys.SYSTEM_DIALOG_REASON_KEY);
                         if (reason != null) {
                             if (reason.equals(Keys.SYSTEM_DIALOG_REASON_HOME_KEY)) {
                                 mHomeButtonPressed = true;
+                                mHomeWorkspaceRefreshHandled = false;
+                                mHomeFromAllAppsPending = isAllAppsVisible()
+                                        || (mAppsCustomizeTabHost != null
+                                        && mAppsCustomizeTabHost.getVisibility() == View.VISIBLE);
                                 if (isOnMainWorkspaceScreen()) {
-                                    // Already where we should be, no action needed
+                                    mHomeFromAllAppsPending = false;
+                                    mHomeWorkspaceRefreshHandled = refreshWorkspaceAfterHome();
                                     return;
                                 }
                                 // Only run the complex logic if we're not already on main workspace
@@ -1801,10 +1880,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 }
                                 LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);
                                 
-                                if (mWorkspace.isInOverviewMode()) {
+                                if (mWorkspace != null && mWorkspace.isInOverviewMode()) {
                                     showHotseat(true, true);
                                     mWorkspace.exitOverviewMode(true);
                                     updateWallpaperVisibility(true);
+                                }
+                                mHomeWorkspaceRefreshHandled = refreshWorkspaceAfterHome();
+                                if (mHomeFromAllAppsPending && mHomeWorkspaceRefreshHandled) {
+                                    mOnResumeState = State.NONE;
                                 }
                             } else if (reason.equals(Keys.SYSTEM_DIALOG_REASON_RECENT_APPS)) {
                                 helpers.setPipStarted(false);
@@ -1823,13 +1906,277 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     };
 
     private boolean isOnMainWorkspaceScreen() {
-        int startPage = Integer.parseInt(mPrefs.getString("start_page", "1"));
-        return mState == State.WORKSPACE && 
+        if (mWorkspace == null || mDragController == null) {
+            return false;
+        }
+        return mState == State.WORKSPACE &&
+               mWorkspace.getVisibility() == View.VISIBLE &&
                !mWorkspace.isInOverviewMode() && 
                !isAllAppsVisible() && 
                mWorkspace.getOpenFolder() == null &&
                !mDragController.isDragging() &&
-               mWorkspace.getCurrentPage() == startPage;
+               mWorkspace.getCurrentPage() == getStartPageIndex();
+    }
+
+    private int getStartPageIndex() {
+        try {
+            int startPage = Integer.parseInt(mPrefs.getString(Keys.START_PAGE, "1"));
+            return Math.max(0, startPage - 1);
+        } catch (NumberFormatException e) {
+            Log.w(TAG, "Invalid start_page preference, falling back to first page", e);
+            return 0;
+        }
+    }
+
+    private boolean refreshWorkspaceAfterHome() {
+        if (mWorkspace == null) {
+            return false;
+        }
+
+        if (mState != State.WORKSPACE) {
+            showWorkspace(false, null);
+        } else if (mWorkspace.isInOverviewMode()) {
+            mWorkspace.exitOverviewMode(false);
+        }
+
+        mWorkspace.setVisibility(View.VISIBLE);
+        if (mWorkspace.getCurrentPage() != getStartPageIndex()) {
+            mWorkspace.moveToDefaultScreen(false);
+        }
+        mWorkspace.requestLayout();
+        mWorkspace.invalidate();
+
+        if (mAppsCustomizeTabHost != null) {
+            mAppsCustomizeTabHost.setVisibility(View.GONE);
+        }
+        showHotseat(false, true);
+        updateWallpaperVisibility(true);
+        forceWorkspaceLayoutPass();
+        return true;
+    }
+
+    private void repairLayoutAfterWake(String phase) {
+        String wakePhase = phase == null ? "unknown" : phase;
+        mWakeHomeRecoveryPending = true;
+        mLastWakeRefreshMs = SystemClock.uptimeMillis();
+        Log.d(TAG, "Wake layout repair: " + wakePhase);
+        refreshWorkspaceAfterHome();
+        scheduleWakeLayoutRepair(250L, wakePhase);
+        scheduleWakeLayoutRepair(900L, wakePhase);
+    }
+
+    private void scheduleWakeLayoutRepair(long delayMs, String phase) {
+        Runnable repair = () -> {
+            if (mPaused || mWorkspace == null) {
+                return;
+            }
+            Log.d(TAG, "Wake layout repair pass: " + phase + " +" + delayMs + "ms");
+            refreshWorkspaceAfterHome();
+            forceWorkspaceLayoutPass();
+        };
+        mHandler.postDelayed(repair, delayMs);
+    }
+
+    private boolean shouldRunWakeHomeRecovery() {
+        if (mWakeHomeRecoveryPending) {
+            return true;
+        }
+        return mLastWakeRefreshMs > 0L
+                && SystemClock.uptimeMillis() - mLastWakeRefreshMs <= WAKE_HOME_RECOVERY_WINDOW_MS;
+    }
+
+    private void scheduleWakeHomeRecovery(String source) {
+        if (mWorkspace == null) {
+            mWakeHomeRecoveryPending = true;
+            return;
+        }
+        if (mWakeHomeRecoveryRunnable != null) {
+            mHandler.removeCallbacks(mWakeHomeRecoveryRunnable);
+        }
+        runWakeHomeRecoveryPass(source + ":now");
+        mWakeHomeRecoveryRunnable = () -> {
+            mWakeHomeRecoveryRunnable = null;
+            runWakeHomeRecoveryPass(source + ":late");
+            mWakeHomeRecoveryPending = false;
+        };
+        mHandler.postDelayed(mWakeHomeRecoveryRunnable, 900L);
+    }
+
+    private void runWakeHomeRecoveryPass(String source) {
+        if (mPaused || mWorkspace == null) {
+            mWakeHomeRecoveryPending = true;
+            return;
+        }
+        refreshWorkspaceAfterHome();
+        repairWorkspaceChromeAfterHome(source);
+        forceWorkspaceLayoutPass();
+        WindowUtil.updatePipPositionsForScroll(mWorkspace.mUnboundedScrollX);
+    }
+
+    private void scheduleFocusHomeRecovery(String source) {
+        if (mWorkspace == null || isAllAppsVisible()) {
+            return;
+        }
+        if (!shouldRunWakeHomeRecovery()) {
+            return;
+        }
+        long now = SystemClock.uptimeMillis();
+        if (now - mLastFocusHomeRecoveryMs < FOCUS_HOME_RECOVERY_THROTTLE_MS) {
+            return;
+        }
+        mLastFocusHomeRecoveryMs = now;
+        mWakeHomeRecoveryPending = true;
+        scheduleWakeHomeRecovery(source);
+    }
+
+    private void repairWorkspaceChromeAfterHome(String source) {
+        boolean currentUserLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        if (bottomButtons != null && bottomButtonsWidgets != null) {
+            bottomButtons.setVisibility(currentUserLayout ? View.GONE : View.VISIBLE);
+            bottomButtonsWidgets.setVisibility(currentUserLayout ? View.VISIBLE : View.GONE);
+        }
+
+        if (mWorkspace != null) {
+            mWorkspace.post(() -> {
+                if (mWorkspace == null) return;
+                for (int i = 0; i < mWorkspace.getChildCount(); i++) {
+                    View child = mWorkspace.getChildAt(i);
+                    if (child instanceof CellLayout) {
+                        ((CellLayout) child).triggerAddCustomElements();
+                    }
+                }
+                restoreBottomRecyclerAfterHome(source);
+                mWorkspace.requestLayout();
+                mWorkspace.invalidate();
+            });
+        }
+
+        markAppDataDirty();
+        if (atomicInitAppData.get()) {
+            requestPostResumeAppDataRefresh();
+        } else {
+            triggerAppData();
+        }
+    }
+
+    private void restoreBottomRecyclerAfterHome(String source) {
+        if (mWorkspace == null) return;
+
+        RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
+        if (recycler != null) {
+            mRecyclerView = recycler;
+            if (mAppListAdapter != null && recycler.getAdapter() != mAppListAdapter) {
+                recycler.setAdapter(mAppListAdapter);
+            }
+            if (recycler.getLayoutManager() == null) {
+                recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), RecyclerView.HORIZONTAL, false));
+            }
+            installBottomRecyclerDecorations(recycler);
+            recycler.setEnabled(true);
+            recycler.setClickable(true);
+            recycler.setLongClickable(true);
+            recycler.invalidateItemDecorations();
+            recycler.requestLayout();
+        }
+
+        RecyclerView leftRecycler = (RecyclerView) mWorkspace.findViewById(R.id.left_recycler_view);
+        if (leftRecycler != null) {
+            if (mLeftAppListAdapter != null && leftRecycler.getAdapter() != mLeftAppListAdapter) {
+                leftRecycler.setAdapter(mLeftAppListAdapter);
+            }
+            if (leftRecycler.getLayoutManager() == null) {
+                leftRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false));
+            }
+            installLeftRecyclerDecorations(leftRecycler);
+            leftRecycler.invalidateItemDecorations();
+            leftRecycler.requestLayout();
+        }
+        Log.d(TAG, "Wake home recycler restore: " + source);
+    }
+
+    private void clearRecyclerDecorations(RecyclerView recyclerView) {
+        if (recyclerView == null) return;
+        for (int i = recyclerView.getItemDecorationCount() - 1; i >= 0; i--) {
+            recyclerView.removeItemDecorationAt(i);
+        }
+        recyclerView.setTag(null);
+    }
+
+    private void installBottomRecyclerDecorations(RecyclerView recyclerView) {
+        if (recyclerView == null) return;
+        clearRecyclerDecorations(recyclerView);
+        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+
+                int itemCount = parent.getAdapter() != null ? parent.getAdapter().getItemCount() : 0;
+                if (itemCount == 0 || view.getWidth() <= 0) {
+                    outRect.left = 0;
+                    outRect.right = 0;
+                    return;
+                }
+
+                int availableWidth = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
+                if (availableWidth <= 0) {
+                    availableWidth = (int) (mLauncher.screenWidth * (widgetBar ? 0.4395f : 0.8795f));
+                }
+
+                int totalItemsWidth = view.getWidth() * itemCount;
+                int totalSpacing = Math.max(0, availableWidth - totalItemsWidth);
+                int spacingPerGap = totalSpacing / (itemCount + 1);
+                int adjustedSpacing = Math.max(0, spacingPerGap / 2);
+                outRect.left = adjustedSpacing;
+                outRect.right = adjustedSpacing;
+            }
+        });
+        recyclerView.addItemDecoration(new SimpleDividerDecoration());
+        recyclerView.setTag(1);
+    }
+
+    private void installLeftRecyclerDecorations(RecyclerView recyclerView) {
+        if (recyclerView == null) return;
+        clearRecyclerDecorations(recyclerView);
+        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+
+                int itemCount = 5;
+                if (view.getHeight() <= 0) {
+                    outRect.top = 0;
+                    outRect.bottom = 0;
+                    return;
+                }
+
+                int availableHeight = parent.getHeight() - parent.getPaddingTop() - parent.getPaddingBottom();
+                int totalItemsHeight = view.getHeight() * itemCount;
+                int totalSpacing = Math.max(0, availableHeight - totalItemsHeight);
+                int spacingPerGap = totalSpacing / (itemCount + 1);
+                int adjustedSpacing = Math.max(0, spacingPerGap / 2);
+                outRect.top = adjustedSpacing;
+                outRect.bottom = adjustedSpacing;
+            }
+        });
+        recyclerView.addItemDecoration(new SimpleDividerDecoration());
+        recyclerView.setTag(1);
+    }
+
+    private void forceWorkspaceLayoutPass() {
+        if (mDragLayer != null) {
+            mDragLayer.clearAnimation();
+            mDragLayer.requestLayout();
+            mDragLayer.invalidate();
+        }
+        if (mWorkspace != null) {
+            mWorkspace.clearAnimation();
+            mWorkspace.requestLayout();
+            mWorkspace.invalidate();
+        }
+        if (mHotseat != null) {
+            mHotseat.clearAnimation();
+            mHotseat.refreshLayoutAfterWake();
+        }
     }
 
     private Handler mHandler = new Handler(Looper.getMainLooper()) {
@@ -2018,7 +2365,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         
         initRegisterReceiver();
         
-        Widget.update(LauncherApplication.sApp);
+        requestWidgetUpdate();
 		
         onBackPressedX();
     }
@@ -2248,6 +2595,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 IntentFilter filter = new IntentFilter();
                 filter.addAction("android.intent.action.SCREEN_OFF");
                 filter.addAction(Intent.ACTION_USER_PRESENT);
+                filter.addAction(WakeDetectionService.ACTION_WAKE_REFRESH);
                 filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
                 filter.addAction(Keys.UPDATE_USER_PAGE);
                 filter.addAction("pause.button");
@@ -2275,13 +2623,31 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onResume() {
         super.onResume();
         allowPip = true;
-        if (mHomeButtonPressed && isOnMainWorkspaceScreen()) {
-            Log.d(TAG, "Home button resume - minimal processing");
-            mHomeButtonPressed = false;
-            mSkipPostResume = true; // Set flag for onPostResume
-            return;
+        boolean homeButtonResume = mHomeButtonPressed;
+        boolean homeRefreshAlreadyHandled = mHomeWorkspaceRefreshHandled;
+        boolean fastHomeFromAllApps = mHomeFromAllAppsPending
+                && (homeRefreshAlreadyHandled || mState == State.WORKSPACE);
+        boolean fastHomeFromApp = homeButtonResume
+                && !fastHomeFromAllApps
+                && (homeRefreshAlreadyHandled || mState == State.WORKSPACE)
+                && !mRestoring
+                && !mOnResumeNeedsLoad;
+        boolean wakeHomeRecovery = homeButtonResume && shouldRunWakeHomeRecovery();
+        mHomeButtonPressed = false;
+        mHomeWorkspaceRefreshHandled = false;
+        if (homeButtonResume && !homeRefreshAlreadyHandled) {
+            Log.d(TAG, "Home button resume - forcing workspace refresh");
+            mHomeWorkspaceRefreshHandled = refreshWorkspaceAfterHome();
+            fastHomeFromAllApps = mHomeFromAllAppsPending && mHomeWorkspaceRefreshHandled;
+            fastHomeFromApp = !fastHomeFromAllApps
+                    && mHomeWorkspaceRefreshHandled
+                    && !mRestoring
+                    && !mOnResumeNeedsLoad;
+            wakeHomeRecovery = shouldRunWakeHomeRecovery();
         }
-        mSkipPostResume = false;
+        if (fastHomeFromAllApps) {
+            mOnResumeState = State.NONE;
+        }
         isRecreateActive = false;
         Log.d(TAG, "onResume----->");
 
@@ -2343,6 +2709,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mWaitingForResume != null) {
             mWaitingForResume.setStayPressed(false);
         }
+        if (fastHomeFromAllApps || fastHomeFromApp) {
+            mFastHomeResumePending = true;
+            if (wakeHomeRecovery) {
+                scheduleWakeHomeRecovery("fastHome");
+            }
+            InstallShortcutReceiver.disableAndFlushInstallQueue(this);
+            if (mWorkspace != null) {
+                mWorkspace.updateInteractionForState();
+                mWorkspace.onResume();
+            }
+            scheduleFastHomeDeferredResumeWork(true);
+            return;
+        }
         if (mAppsCustomizeContent != null) {
             mAppsCustomizeContent.resetDrawableState();
         }
@@ -2359,6 +2738,158 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         mWorkspace.updateInteractionForState();
         mWorkspace.onResume();
+        registerResumeRefreshersAndNotify();
+        restoreResumeMediaState();
+
+        setPlayPauseIcon(true);
+
+        processPendingUpdateOnResume();
+
+        if (wakeHomeRecovery) {
+            scheduleWakeHomeRecovery("normalHome");
+        }
+
+        if (isAllAppsVisible()) {
+            WindowUtil.removePip();
+        } else {
+            if (atomicOnCreate.get()) {
+                atomicOnCreate.set(false);
+                // Proceed without initPip because it starts inside initializeAppList()
+                triggerAppData();
+            } else {
+                if (!onWorkspacePip) {
+                    onResumePip = true;
+                    if (!isRecreateActive || !helpers.onWidgetDropPipBool()) {
+                        initPip("onResume", null, false);
+                    }
+                }
+                onWorkspacePip = false;
+                onBackPip = false;
+            }
+        }
+    }
+
+    private void scheduleFastHomeDeferredResumeWork(boolean processPendingUpdate) {
+        if (mFastHomeDeferredResumeRunnable != null) {
+            mHandler.removeCallbacks(mFastHomeDeferredResumeRunnable);
+        }
+        if (mFastHomeDeferredPipRunnable != null) {
+            mHandler.removeCallbacks(mFastHomeDeferredPipRunnable);
+            mFastHomeDeferredPipRunnable = null;
+        }
+
+        mFastHomeDeferredResumeRunnable = () -> {
+            mFastHomeDeferredResumeRunnable = null;
+            if (mPaused || mWorkspace == null) {
+                mHomeFromAllAppsPending = false;
+                mFastHomeResumePending = false;
+                return;
+            }
+
+            if (mAppsCustomizeContent != null) {
+                mAppsCustomizeContent.resetDrawableState();
+            }
+            updateVoiceButtonProxyVisible(false);
+            updateGlobalIcons();
+            mWorkspace.reinflateWidgetsIfNecessary();
+            if (mWorkspace.getCustomContentCallbacks() != null && mWorkspace.isOnOrMovingToCustomContent()) {
+                mWorkspace.getCustomContentCallbacks().onShow();
+            }
+            registerResumeRefreshersAndNotify();
+            restoreResumeMediaState();
+            setPlayPauseIcon(true);
+            if (processPendingUpdate) {
+                processPendingUpdateOnResume();
+            }
+            scheduleFastHomeDeferredPip();
+            mHomeFromAllAppsPending = false;
+            mFastHomeResumePending = false;
+        };
+        mHandler.postDelayed(mFastHomeDeferredResumeRunnable, FAST_HOME_RESUME_DEFER_MS);
+    }
+
+    private void processPendingUpdateOnResume() {
+        // Poll any pending updateOnce that the app-level receiver saved while launcher was stopped.
+        long pending = PendingUpdateStore.pollPendingAndClear(this);
+        if (pending <= 0) {
+            return;
+        }
+
+        Log.d("onResume", "Found pending updateOnce: " + pending);
+        if (shouldProcessUpdateOnce(pending)) {
+            Log.d("onResume", "Pending updateOnce was duplicate/older; skipping.");
+            return;
+        }
+
+        Log.d("Recreate page", "Started (onResume pending)");
+        isRecreateActive = true;
+        boolean currentUserLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean displayPip = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);
+        if (currentUserLayout && displayPip
+                && (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator())) {
+            Log.i("Recreate page", "user layout");
+            WindowUtil.restartMultiplePips();
+            WindowUtil.restartPinnedPipApp();
+        }
+        helpers.checkAndResetIfOverlappingOnScreen(-1);
+
+        if (mPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
+            Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
+            if (isServiceRunning(NightModeService.class)) {
+                stopService(nightModeServiceIntent);
+                setServiceRunningCache(NightModeService.class, false);
+            }
+            if (ServiceIntentGate.startIfAvailable(this, nightModeServiceIntent, "resume night mode")) {
+                setServiceRunningCache(NightModeService.class, true);
+            }
+        }
+
+        if (helpers.hasCorrectionChanged()) {
+            sendBroadcast(new Intent(Keys.RECREATE));
+            helpers.setCorrectionChanged(false);
+        }
+
+        helpers.setUserOpenedCreator(false);
+        helpers.setBarSettingsChanged(false);
+
+        getWindow().addFlags(Integer.MIN_VALUE);
+        if (mPrefs.getBoolean("transparent_statusbar", false)) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+
+        recreateView(currentUserLayout);
+    }
+
+    private void cancelFastHomeDeferredWork() {
+        if (mFastHomeDeferredResumeRunnable != null) {
+            mHandler.removeCallbacks(mFastHomeDeferredResumeRunnable);
+            mFastHomeDeferredResumeRunnable = null;
+        }
+        if (mFastHomeDeferredPipRunnable != null) {
+            mHandler.removeCallbacks(mFastHomeDeferredPipRunnable);
+            mFastHomeDeferredPipRunnable = null;
+        }
+        mHomeFromAllAppsPending = false;
+        mFastHomeResumePending = false;
+    }
+
+    private void scheduleFastHomeDeferredPip() {
+        mFastHomeDeferredPipRunnable = () -> {
+            mFastHomeDeferredPipRunnable = null;
+            if (mPaused || mWorkspace == null || isAllAppsVisible()) {
+                return;
+            }
+            onResumePip = false;
+            onBackPip = false;
+            initPip("fastHomeFromAllApps", null, false);
+        };
+        mHandler.postDelayed(mFastHomeDeferredPipRunnable, FAST_HOME_PIP_DEFER_MS);
+    }
+
+    private void registerResumeRefreshersAndNotify() {
         LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(refreshMusic, true);
         LauncherNotify.NOTIFIER_VIDEO.addUiRefresher(refreshVideo, true);
         LauncherNotify.NOTIFIER_BTAV.addUiRefresher(refreshBtav, true);
@@ -2377,6 +2908,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         tools.notify(1, 1);
         tools.notify(7, 1000);
         tools.notify(2, 0, 1, 2, 28, 26, 13, 9, 7);
+    }
+
+    private void restoreResumeMediaState() {
         if (firstLayout != null && !isfirstlayout) {
             firstLayout.setVisibility(View.VISIBLE);
         }
@@ -2396,73 +2930,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         if (mPlayer == null && LauncherApplication.isFytDevice()) {
             mPlayer = new MediaPlayer();
-        }
-
-        setPlayPauseIcon(true);
-
-        // Poll any pending updateOnce that the app-level receiver saved while launcher was stopped.
-        long pending = PendingUpdateStore.pollPendingAndClear(this);
-        if (pending > 0) {
-            Log.d("onResume", "Found pending updateOnce: " + pending);
-            if (!shouldProcessUpdateOnce(pending)) {
-                Log.d("Recreate page", "Started (onResume pending)");
-                isRecreateActive = true;
-                userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false); 
-                boolean displayPip = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);
-                if (userLayout && displayPip && (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator())) {
-                    Log.i("Recreate page", "user layout");
-                    WindowUtil.restartMultiplePips();
-                    WindowUtil.restartPinnedPipApp();
-                }
-                helpers.checkAndResetIfOverlappingOnScreen(-1);
-
-                if (mPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
-                    Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
-                    if (isServiceRunning(NightModeService.class)) {
-                        stopService(nightModeServiceIntent);
-                    }
-                    startService(nightModeServiceIntent);
-                }
-
-                if (helpers.hasCorrectionChanged()) {
-                    sendBroadcast(new Intent(Keys.RECREATE));
-                    helpers.setCorrectionChanged(false);
-                }
-
-                helpers.setUserOpenedCreator(false);
-                helpers.setBarSettingsChanged(false);
-
-                getWindow().addFlags(Integer.MIN_VALUE);       
-                if (mPrefs.getBoolean("transparent_statusbar", false)) {
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); 
-                    getWindow().setStatusBarColor(Color.TRANSPARENT);
-                } else {
-                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS); 
-                }
-
-                recreateView(userLayout);
-            } else {
-                Log.d("onResume", "Pending updateOnce was duplicate/older; skipping.");
-            }
-        }
-
-        if (isAllAppsVisible()) {
-            WindowUtil.removePip();
-        } else {
-            if (atomicOnCreate.get()) {
-                atomicOnCreate.set(false);
-                // Proceed without initPip because it starts inside initializeAppList()
-                triggerAppData(); 
-            } else {
-                if (!onWorkspacePip) {
-                    onResumePip = true;
-                    if (!isRecreateActive || !helpers.onWidgetDropPipBool()) {
-                        initPip("onResume", null, false);
-                    }
-                }
-                onWorkspacePip = false;
-                onBackPip = false;
-            }
         }
     }
 
@@ -2561,7 +3028,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         if (isServiceRunning(FabOverlayService.class)) {
             Intent serviceIntent = new Intent(LauncherApplication.sApp, FabOverlayService.class);
-            stopService(serviceIntent);    
+            stopService(serviceIntent);
+            setServiceRunningCache(FabOverlayService.class, false);
         }
 
         mHandler.postDelayed(() -> {
@@ -2590,17 +3058,29 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void initPip(String whereInitiated, View view, boolean forceOpen) {
+        long now = SystemClock.uptimeMillis();
+        if (!forceOpen && (mPipInitPending || now - mLastPipInitMs < PIP_INIT_THROTTLE_MS)) {
+            Log.d(whereInitiated, "startMapPip coalesced");
+            return;
+        }
+        mPipInitPending = true;
+
         // mWorkspace.getCurrentPage() is determined with slight delay
         mHandler.postDelayed(()-> {
-            if (helpers.displayStateBoolean()
-                && !helpers.isFirstPreferenceWindow() 
-                && !helpers.isWallpaperWindow() 
-                && !helpers.isInOverviewMode()
-                && !mDragController.isDragging()
-                && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
-                || (!helpers.userWasInRecents() && helpers.isListOpen()) || forceOpen) {
+            mPipInitPending = false;
+            boolean shouldStartPip = (helpers.displayStateBoolean()
+                    && !helpers.isFirstPreferenceWindow()
+                    && !helpers.isWallpaperWindow()
+                    && !helpers.isInOverviewMode()
+                    && !mDragController.isDragging()
+                    && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility()))
+                    || (!helpers.userWasInRecents() && helpers.isListOpen())
+                    || forceOpen;
+
+            if (shouldStartPip) {
 
                     Log.d(whereInitiated, "startMapPip");
+                    mLastPipInitMs = SystemClock.uptimeMillis();
                     WindowUtil.startMapPip(forceOpen);
 
             }
@@ -2614,35 +3094,73 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onPostResume() {
         super.onPostResume();
         helpers.setWidgetDropPip(false);
-        if (mSkipPostResume) {
-            mSkipPostResume = false;
-            Log.d(TAG, "Skipping onPostResume due to home button");
+
+        if (mHomeFromAllAppsPending) {
+            requestPostResumeAppDataRefresh();
+            scheduleWeatherCheckAfterHome();
+            mHandler.postDelayed(() -> {
+                onBackPip = false;
+                onResumePip = false;
+            }, 1500);
+            if (!permissionsRequested) {
+                checkAndRequestPermissions();
+            }
             return;
         }
 
-        SharedPreferences.Editor editor = mPrefs.edit();
-        editor = mPrefs.edit();
-        editor.putBoolean("user_init_layout", mPrefs.getBoolean(Keys.USER_LAYOUT, false));
-        editor.apply();
+        if (mFastHomeResumePending) {
+            mFastHomeResumePending = false;
+            requestPostResumeAppDataRefresh();
+            scheduleWeatherCheckAfterHome();
+            mHandler.postDelayed(() -> {
+                onBackPip = false;
+                onResumePip = false;
+            }, 1500);
+            if (!permissionsRequested) {
+                checkAndRequestPermissions();
+            }
+            return;
+        }
+
+        boolean currentUserLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        if (mPrefs.getBoolean("user_init_layout", !currentUserLayout) != currentUserLayout) {
+            mPrefs.edit().putBoolean("user_init_layout", currentUserLayout).apply();
+        }
 
         statusBarSwipeDetection = mPrefs.getBoolean(Keys.SWIPE_DETECTOR, false);
-        if (LauncherApplication.hasSystemPrivileges() && statusBarSwipeDetection && !isServiceRunning(StatusBarSwipeDetector.class)) {
+        if (LauncherApplication.hasSystemPrivileges()
+                && statusBarSwipeDetection
+                && !mStatusBarSwipeDetectorStartPending
+                && !isServiceRunning(StatusBarSwipeDetector.class)) {
+            mStatusBarSwipeDetectorStartPending = true;
             mHandler.postDelayed(() -> {
+                mStatusBarSwipeDetectorStartPending = false;
                 Intent statusBarSwipeDetectorIntent = new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class);
-                startService(statusBarSwipeDetectorIntent);
+                if (ServiceIntentGate.startIfAvailable(this, statusBarSwipeDetectorIntent, "status bar swipe detector")) {
+                    setServiceRunningCache(StatusBarSwipeDetector.class, true);
+                }
             }, 500);
         }
 
-        if (!isServiceRunning(NightModeService.class) && mPrefs.getBoolean(Keys.NIGHT_MODE, false) && helpers.displayStateBoolean()) {
+        if (!mNightModeServiceStartPending
+                && !isServiceRunning(NightModeService.class)
+                && mPrefs.getBoolean(Keys.NIGHT_MODE, false)
+                && helpers.displayStateBoolean()) {
+            mNightModeServiceStartPending = true;
             mHandler.postDelayed(() -> {
+                mNightModeServiceStartPending = false;
                 Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
-                startService(nightModeServiceIntent);
+                if (ServiceIntentGate.startIfAvailable(this, nightModeServiceIntent, "delayed night mode")) {
+                    setServiceRunningCache(NightModeService.class, true);
+                }
             }, 7000);
         }
 
-        if (!isServiceRunning(CanbusService.class)) {
+        if (!mCanbusServiceStartPending && !isServiceRunning(CanbusService.class)) {
+            mCanbusServiceStartPending = true;
             mHandler.postDelayed(() -> {
                 new CanbusAsyncTask(LauncherApplication.sApp).execute();
+                mCanbusServiceStartPending = false;
             }, 7100); 
         }
 
@@ -2660,19 +3178,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.moveToDefaultScreen(true);
         }
 
-        if (atomicInitAppData.get()) {
-            bg.execute(() -> {
-                List<AppMultiple> data = LitePal.findAll(AppMultiple.class, new long[0]);
-                List<LeftAppMultiple> left = LitePal.findAll(LeftAppMultiple.class, new long[0]);
-                // process data off main thread if possible
-                runOnUiThread(() -> {
-                    refreshCycle(data);
-                    refreshLeftBar(left);
-                });
-            });
-        } 
+        requestPostResumeAppDataRefresh();
 
-        weatherHandler.post(periodicWeatherCheck);
+        scheduleWeatherCheckAfterHome();
 
         // Floating button
         floatingButton = checkIfFloatingButton();
@@ -2697,6 +3205,50 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (!permissionsRequested) {
             checkAndRequestPermissions();
         }
+    }
+
+    private void requestPostResumeAppDataRefresh() {
+        if (!atomicInitAppData.get()) {
+            return;
+        }
+
+        if (!mPostResumeAppDataDirty) {
+            return;
+        }
+
+        long now = SystemClock.uptimeMillis();
+        long elapsed = now - mLastPostResumeAppDataRefreshMs;
+        if (!mPostResumeAppDataRefreshPending && elapsed >= POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS) {
+            runPostResumeAppDataRefresh();
+            return;
+        }
+
+        if (mPostResumeAppDataRefreshPending) {
+            return;
+        }
+
+        mPostResumeAppDataRefreshPending = true;
+        long delay = Math.max(0L, POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS - elapsed);
+        mHandler.postDelayed(() -> {
+            mPostResumeAppDataRefreshPending = false;
+            runPostResumeAppDataRefresh();
+        }, delay);
+    }
+
+    private void runPostResumeAppDataRefresh() {
+        if (!mPostResumeAppDataDirty) {
+            return;
+        }
+        mPostResumeAppDataDirty = false;
+        mLastPostResumeAppDataRefreshMs = SystemClock.uptimeMillis();
+        bg.execute(() -> {
+            List<AppMultiple> data = LitePal.order("\"index\" asc").find(AppMultiple.class);
+            List<LeftAppMultiple> left = LitePal.findAll(LeftAppMultiple.class, new long[0]);
+            runOnUiThread(() -> {
+                refreshCycle(data);
+                refreshLeftBar(left);
+            });
+        });
     }
 
     private void checkAndRequestPermissions() {
@@ -2764,8 +3316,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
                 intent.setData(Uri.parse("package:" + getPackageName()));
                 startActivityForResult(intent, REQUEST_CODE_WRITE_SETTINGS);
+                return;
             }
         }
+        permissionsRequested = true;
     }
 
     @Override
@@ -2812,7 +3366,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private void startFabOverlayService() {
         if (!isServiceRunning(FabOverlayService.class)) {
             Intent serviceIntent = new Intent(LauncherApplication.sApp, FabOverlayService.class);
-            startService(serviceIntent);
+            if (ServiceIntentGate.startIfAvailable(this, serviceIntent, "fab overlay")) {
+                setServiceRunningCache(FabOverlayService.class, true);
+            }
         } else {
             showOverlayFab();
         }
@@ -2833,6 +3389,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onPause();
         allowPip = false;
         cleanWidgetBar();
+        cancelFastHomeDeferredWork();
         if (mHomeButtonPressed && isOnMainWorkspaceScreen()) return;
         Log.d(TAG, "---->>> onPause");
         mHandler.postDelayed(()-> {
@@ -2870,6 +3427,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (isServiceRunning(StatusBarSwipeDetector.class)) {
             mHandler.postDelayed(() -> {
                 stopService(new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class));
+                setServiceRunningCache(StatusBarSwipeDetector.class, false);
             }, 500);
         }
     }
@@ -2897,7 +3455,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         } catch (Exception e) {
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
         }
-        weatherHandler.removeCallbacks(periodicWeatherCheck);
+        cancelWeatherCallbacks();
     }
 
     @Override
@@ -2912,6 +3470,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         tools.removeRefreshLisenter(2, refreshBtInfo);
         unregisterAllReceivers();
         TimeUpdateReceiver.unregister(this);
+        cancelWeatherCallbacks();
+        if (mWeatherListenerOwner != null && mWeatherChangedListener != null) {
+            mWeatherListenerOwner.removeOnWeatherChangedListener(mWeatherChangedListener);
+            mWeatherChangedListener = null;
+            mWeatherListenerOwner = null;
+        }
         if (mHandler != null) {
             mHandler.removeMessages(1);
             mHandler.removeMessages(0);
@@ -3023,24 +3587,50 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }  
 
     public static boolean isServiceRunning(Class<? extends Service> serviceClass) {
+        String serviceName = serviceClass.getName();
+        long now = SystemClock.uptimeMillis();
+        synchronized (sServiceRunningCacheLock) {
+            Long checkedAt = sServiceRunningCacheTime.get(serviceName);
+            Boolean running = sServiceRunningCache.get(serviceName);
+            if (checkedAt != null && running != null && now - checkedAt < SERVICE_RUNNING_CACHE_MS) {
+                return running;
+            }
+        }
+
         ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getSystemService(Context.ACTIVITY_SERVICE);
+        boolean isRunning = false;
         if (activityManager != null) {
             List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
             for (ActivityManager.RunningServiceInfo service : runningServices) {
-                if (serviceClass.getName().equals(service.service.getClassName())) {
-                    return true;
+                if (serviceName.equals(service.service.getClassName())) {
+                    isRunning = true;
+                    break;
                 }
             }
         }
-        return false;
+        setServiceRunningCache(serviceClass, isRunning);
+        return isRunning;
+    }
+
+    private static void setServiceRunningCache(Class<? extends Service> serviceClass, boolean isRunning) {
+        synchronized (sServiceRunningCacheLock) {
+            String serviceName = serviceClass.getName();
+            sServiceRunningCache.put(serviceName, isRunning);
+            sServiceRunningCacheTime.put(serviceName, SystemClock.uptimeMillis());
+        }
     }
 
     private void stopServicesOnDestroy() {
         stopService(new Intent(LauncherApplication.sApp, WakeDetectionService.class));
-        stopService(new Intent(LauncherApplication.sApp, NightModeService.class));  
-        stopService(new Intent(LauncherApplication.sApp, CanbusService.class));   
+        setServiceRunningCache(WakeDetectionService.class, false);
+        stopService(new Intent(LauncherApplication.sApp, NightModeService.class));
+        setServiceRunningCache(NightModeService.class, false);
+        stopService(new Intent(LauncherApplication.sApp, CanbusService.class));
+        setServiceRunningCache(CanbusService.class, false);
         stopService(new Intent(LauncherApplication.sApp, FabOverlayService.class));
-        stopService(new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class));   
+        setServiceRunningCache(FabOverlayService.class, false);
+        stopService(new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class));
+        setServiceRunningCache(StatusBarSwipeDetector.class, false);
     }
 
     // Handle widget click events
@@ -3239,60 +3829,115 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     };
 
+    private void scheduleWeatherCheckAfterHome() {
+        weatherHandler.removeCallbacks(periodicWeatherCheck);
+        weatherHandler.postDelayed(periodicWeatherCheck, WEATHER_HOME_DEFER_MS);
+    }
+
     public void updateWeather() {
+        if (weatherManager == null) {
+            weatherManager = WeatherManager.initialize(this);
+        }
+        showWeatherInfo();
+
+        long now = SystemClock.uptimeMillis();
+        long elapsed = now - mLastWeatherUpdateMs;
+        if (!mWeatherUpdatePending && elapsed >= WEATHER_UPDATE_MIN_INTERVAL_MS) {
+            runWeatherUpdate();
+            return;
+        }
+
+        if (mWeatherUpdatePending) {
+            return;
+        }
+
+        mWeatherUpdatePending = true;
+        long delay = Math.max(0L, WEATHER_UPDATE_MIN_INTERVAL_MS - elapsed);
+        mPendingWeatherUpdateRunnable = () -> {
+            mWeatherUpdatePending = false;
+            mPendingWeatherUpdateRunnable = null;
+            runWeatherUpdate();
+        };
+        weatherHandler.postDelayed(mPendingWeatherUpdateRunnable, delay);
+    }
+
+    private void runWeatherUpdate() {
+        mLastWeatherUpdateMs = SystemClock.uptimeMillis();
         if (weatherManager == null) {
             weatherManager = WeatherManager.initialize(this);
         }
         if (weatherManager.isNetworkAvailable()) {
             weatherManager.updateWeather();
-            showWeatherInfo();            
         }
+    }
+
+    private void cancelWeatherCallbacks() {
+        weatherHandler.removeCallbacks(periodicWeatherCheck);
+        if (mPendingWeatherUpdateRunnable != null) {
+            weatherHandler.removeCallbacks(mPendingWeatherUpdateRunnable);
+            mPendingWeatherUpdateRunnable = null;
+        }
+        mWeatherUpdatePending = false;
     }
 
     public void showWeatherInfo() {
         if (this.weatherManager != null) {
-            this.weatherManager.addOnWeatherChangedListener(new WeatherManager.OnWeatherChangedListener() { 
-                @Override 
-                public void onWeatherChanged(WeatherDescription weather) {
-                    if (weather != null) {
-                        if (Launcher.this.weatherImg != null) {
-                            Launcher.this.weatherImg.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
-                        }
-                        String range = weather.getTemDescription().replaceAll("\\.\\d", "");
-                        String temp = weather.getCurTem().replaceAll("\\.\\d", "");
-                        if (Launcher.this.weatherCity != null) {
-                            Launcher.this.weatherCity.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
-                        }
-                        if (Launcher.this.weatherWeather != null) {
-                            Launcher.this.weatherWeather.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
-                        }
-                        if (Launcher.this.weatherTemp != null) {
-                            Launcher.this.weatherTemp.setText(new StringBuilder(String.valueOf(temp)).toString());
-                        }
-                        if (Launcher.this.weatherTempRange != null) {
-                            Launcher.this.weatherTempRange.setText(new StringBuilder(String.valueOf(range)).toString());
-                        }
-                        if (Launcher.this.weatherImg1 != null) {
-                            Launcher.this.weatherImg1.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
-                        }
-                        if (Launcher.this.weatherCity1 != null) {
-                            Launcher.this.weatherCity1.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
-                        }
-                        if (Launcher.this.weatherWeather1 != null) {
-                            Launcher.this.weatherWeather1.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
-                        }
-                        if (Launcher.this.weatherTemp1 != null) {
-                            Launcher.this.weatherTemp1.setText(new StringBuilder(String.valueOf(temp)).toString());
-                        }
-                        if (Launcher.this.weatherTempRange1 != null) {
-                            Launcher.this.weatherTempRange1.setText(new StringBuilder(String.valueOf(range)).toString());
-                        }
-                        if (Launcher.this.weatherWind != null) {
-                            Launcher.this.weatherWind.setText(new StringBuilder(String.valueOf(weather.getWind())).toString());
+            if (mWeatherChangedListener == null) {
+                mWeatherChangedListener = new WeatherManager.OnWeatherChangedListener() {
+                    @Override
+                    public void onWeatherChanged(WeatherDescription weather) {
+                        if (weather != null) {
+                            if (Launcher.this.weatherImg != null) {
+                                Launcher.this.weatherImg.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
+                            }
+                            String range = weather.getTemDescription().replaceAll("\\.\\d", "");
+                            String temp = weather.getCurTem().replaceAll("\\.\\d", "");
+                            if (Launcher.this.weatherCity != null) {
+                                Launcher.this.weatherCity.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
+                            }
+                            if (Launcher.this.weatherWeather != null) {
+                                Launcher.this.weatherWeather.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
+                            }
+                            if (Launcher.this.weatherTemp != null) {
+                                Launcher.this.weatherTemp.setText(new StringBuilder(String.valueOf(temp)).toString());
+                            }
+                            if (Launcher.this.weatherTempRange != null) {
+                                Launcher.this.weatherTempRange.setText(new StringBuilder(String.valueOf(range)).toString());
+                            }
+                            if (Launcher.this.weatherImg1 != null) {
+                                Launcher.this.weatherImg1.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
+                            }
+                            if (Launcher.this.weatherCity1 != null) {
+                                Launcher.this.weatherCity1.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
+                            }
+                            if (Launcher.this.weatherWeather1 != null) {
+                                Launcher.this.weatherWeather1.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
+                            }
+                            if (Launcher.this.weatherTemp1 != null) {
+                                Launcher.this.weatherTemp1.setText(new StringBuilder(String.valueOf(temp)).toString());
+                            }
+                            if (Launcher.this.weatherTempRange1 != null) {
+                                Launcher.this.weatherTempRange1.setText(new StringBuilder(String.valueOf(range)).toString());
+                            }
+                            if (Launcher.this.weatherWind != null) {
+                                Launcher.this.weatherWind.setText(new StringBuilder(String.valueOf(weather.getWind())).toString());
+                            }
                         }
                     }
+                };
+            }
+            if (mWeatherListenerOwner != this.weatherManager) {
+                if (mWeatherListenerOwner != null) {
+                    mWeatherListenerOwner.removeOnWeatherChangedListener(mWeatherChangedListener);
                 }
-            });
+                this.weatherManager.addOnWeatherChangedListener(mWeatherChangedListener);
+                mWeatherListenerOwner = this.weatherManager;
+            } else {
+                WeatherDescription weather = this.weatherManager.getThisWeather();
+                if (weather != null) {
+                    mWeatherChangedListener.onWeatherChanged(weather);
+                }
+            }
         }
     }
 
@@ -3750,6 +4395,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         mHasFocus = hasFocus;
+        if (hasFocus) {
+            scheduleFocusHomeRecovery("focus");
+        }
     }
 
     private boolean acceptFilter() {
@@ -4501,6 +5149,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void triggerAppData() {
+        markAppDataDirty();
         if (pendingAction != null) {
             appDataHandler.removeCallbacks(pendingAction);
         }
@@ -4512,7 +5161,22 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         };
         
-        appDataHandler.postDelayed(pendingAction, APP_DATA_DELAY);
+        appDataHandler.postDelayed(pendingAction, getAppDataDelayMs());
+    }
+
+    private void markAppDataDirty() {
+        mPostResumeAppDataDirty = true;
+    }
+
+    private long getAppDataDelayMs() {
+        if (mWorkspace != null
+                && mWorkspace.isLaidOut()
+                && AllAppsList.data != null
+                && !AllAppsList.data.isEmpty()
+                && mWorkspace.findViewById(R.id.recycler_view) != null) {
+            return APP_DATA_FAST_DELAY;
+        }
+        return APP_DATA_DELAY;
     }
 
     public void initAppData() {
@@ -4589,7 +5253,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         
         Log.d(TAG, "All dependencies ready, proceeding with setup");
         setupRecyclerView(mRecyclerView);
-        mHandler.post(() -> setupLeftRecyclerView());
+        mHandler.post(() -> {
+            setupLeftRecyclerView();
+            mIsInitializingAppData = false;
+        });
         
         // Reset retry count on success
         mInitRetryCount = 0;
@@ -4660,55 +5327,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         layoutManager.setOrientation(androidx.recyclerview.widget.RecyclerView.HORIZONTAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        // Check if decoration already added to prevent duplicates
-        if (recyclerView.getTag() == null) {
-            recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-                private int cachedSpacing = -1;
-                private boolean hasCalculated = false;
-                
-                @Override
-                public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                    super.getItemOffsets(outRect, view, parent, state);
-                    
-                    int itemCount = parent.getAdapter() != null ? parent.getAdapter().getItemCount() : 0;
-                    if (itemCount == 0) return;
-                    
-                    // Only calculate once when view has actual width
-                    if (!hasCalculated && view.getWidth() > 0) {
-                        int itemWidth = view.getWidth();
-                        
-                        // Get available width
-                        int availableWidth = (int) (mLauncher.screenWidth * 0.8795f);
-                        if (widgetBar) {
-                            availableWidth = (int) (mLauncher.screenWidth * 0.4395f);
-                        }   
-                        
-                        // Calculate total width needed for all items
-                        int totalItemsWidth = itemWidth * itemCount;
-                        
-                        // Calculate total spacing available
-                        int totalSpacing = availableWidth - totalItemsWidth;  
-
-                        // Distribute spacing: (itemCount + 1) gaps to include edges
-                        int spacingPerGap = totalSpacing / (itemCount + 1);
-
-                        int adjustedSpacing = spacingPerGap / 2;
-                        if (spacingPerGap < 0) {
-                            adjustedSpacing = (int) (spacingPerGap / 1.5f);
-                        }
-
-                        cachedSpacing = adjustedSpacing;
-                        hasCalculated = true;
-                    }
-                    
-                    // Use cached spacing for all items (or 0 if not calculated yet)
-                    outRect.left = cachedSpacing;
-                    outRect.right = cachedSpacing;
-                }
-            });
-            recyclerView.addItemDecoration(new SimpleDividerDecoration());
-            recyclerView.setTag(1);
-        }
+        installBottomRecyclerDecorations(recyclerView);
             
         // Force recalculation after layout
         recyclerView.post(() -> {
@@ -4764,11 +5383,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             return;
         }
-        
+
         Log.d(TAG, "Setting up left RecyclerView");
 
         mLeftRecyclerView.setVisibility(View.VISIBLE);
-        
+
         // Initialize adapter FIRST, before any layout might occur
         if (mLeftAppListAdapter == null) {
             mLeftAppListAdapter = new LeftAppListAdapter(this, Collections.emptyList());
@@ -4776,49 +5395,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         // Then setup layout manager
         LinearLayoutManager leftLayoutManager = new LinearLayoutManager(getApplicationContext());
-        leftLayoutManager.setOrientation(androidx.recyclerview.widget.RecyclerView.VERTICAL); 
+        leftLayoutManager.setOrientation(androidx.recyclerview.widget.RecyclerView.VERTICAL);
         mLeftRecyclerView.setLayoutManager(leftLayoutManager);
-        
-        // Check if decoration already added to prevent duplicates
-        if (mLeftRecyclerView.getTag() == null) {
-            mLeftRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-                private int cachedSpacing = -1;
-                private boolean hasCalculated = false;
-                
-                @Override
-                public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                    super.getItemOffsets(outRect, view, parent, state);
-                    
-                    int itemCount = 5;
-                    
-                    // Only calculate once when view has actual height
-                    if (!hasCalculated && view.getHeight() > 0) {
-                        int itemHeight = view.getHeight();
-                        
-                        // Get available height (you can adjust this percentage like you did with width)
-                        int availableHeight = parent.getHeight() - parent.getPaddingTop() - parent.getPaddingBottom();
-                        
-                        // Calculate total height needed for all items
-                        int totalItemsHeight = itemHeight * itemCount;
-                        
-                        // Calculate total spacing available
-                        int totalSpacing = Math.max(0, availableHeight - totalItemsHeight);
-                        
-                        // Distribute spacing: (itemCount + 1) gaps to include edges
-                        int spacingPerGap = totalSpacing / (itemCount + 1);
-                        
-                        cachedSpacing = spacingPerGap / 2;
-                        hasCalculated = true;
-                    }
-                    
-                    // Use cached spacing for all items (or 0 if not calculated yet)
-                    outRect.top = cachedSpacing >= 0 ? cachedSpacing : 0;
-                    outRect.bottom = cachedSpacing >= 0 ? cachedSpacing : 0;
-                }
-            });
-            mLeftRecyclerView.addItemDecoration(new SimpleDividerDecoration());
-            mLeftRecyclerView.setTag(1);
-        }
+
+        installLeftRecyclerDecorations(mLeftRecyclerView);
 
         // Force recalculation after layout
         mLeftRecyclerView.post(() -> {
@@ -4833,7 +5413,114 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mLeftRecyclerView.requestLayout();
     }
 
+    private Map<String, AppInfo> buildAppInfoLookup() {
+        Map<String, AppInfo> lookup = new HashMap<>();
+        if (AllAppsList.data == null) {
+            return lookup;
+        }
+
+        synchronized (AllAppsList.data) {
+            for (AppInfo app : AllAppsList.data) {
+                if (app == null || TextUtils.isEmpty(app.getPackageName())) {
+                    continue;
+                }
+                lookup.put(appLookupKey(app.getPackageName(), app.getClassName()), app);
+            }
+        }
+        return lookup;
+    }
+
+    private String appLookupKey(String packageName, String className) {
+        return packageName + "/" + (className == null ? "" : className);
+    }
+
+    private AppInfo findAppInfo(Map<String, AppInfo> lookup, String packageName, String className) {
+        if (lookup == null || TextUtils.isEmpty(packageName)) {
+            return null;
+        }
+        return lookup.get(appLookupKey(packageName, className));
+    }
+
+    private boolean isPackageInstalledCached(Map<String, Boolean> cache, String packageName) {
+        if (TextUtils.isEmpty(packageName)) {
+            return false;
+        }
+        Boolean cached = cache.get(packageName);
+        if (cached != null) {
+            return cached;
+        }
+        boolean installed = helpers.isPackageInstalled(packageName);
+        cache.put(packageName, installed);
+        return installed;
+    }
+
+    private long appendStringSignature(long signature, String value) {
+        return (signature * 31L) + (value == null ? 0L : value.hashCode());
+    }
+
+    private int getAllAppsDataSize() {
+        return AllAppsList.data == null ? 0 : AllAppsList.data.size();
+    }
+
+    private long calculateAppRowsSignature(List<AppMultiple> rows, boolean currentUserLayout, boolean currentWidgetBar) {
+        long signature = 1125899906842597L;
+        signature = (signature * 31L) + (currentUserLayout ? 1L : 0L);
+        signature = (signature * 31L) + (currentWidgetBar ? 1L : 0L);
+        signature = (signature * 31L) + orientation;
+        signature = (signature * 31L) + getAllAppsDataSize();
+        if (rows == null) {
+            return signature;
+        }
+        signature = (signature * 31L) + rows.size();
+        for (AppMultiple row : rows) {
+            if (row == null) {
+                signature *= 31L;
+                continue;
+            }
+            signature = (signature * 31L) + row.id;
+            signature = (signature * 31L) + row.index;
+            signature = appendStringSignature(signature, row.name);
+            signature = appendStringSignature(signature, row.packageName);
+            signature = appendStringSignature(signature, row.className);
+        }
+        return signature;
+    }
+
+    private long calculateLeftAppRowsSignature(List<LeftAppMultiple> rows) {
+        long signature = 1469598103934665603L;
+        signature = (signature * 31L) + (mPrefs.getBoolean(Keys.USER_LAYOUT, false) ? 1L : 0L);
+        signature = (signature * 31L) + (mPrefs.getBoolean(Keys.LEFT_BAR, false) ? 1L : 0L);
+        signature = (signature * 31L) + getAllAppsDataSize();
+        if (rows == null) {
+            return signature;
+        }
+        signature = (signature * 31L) + rows.size();
+        for (LeftAppMultiple row : rows) {
+            if (row == null) {
+                signature *= 31L;
+                continue;
+            }
+            signature = (signature * 31L) + row.id;
+            signature = (signature * 31L) + row.index;
+            signature = appendStringSignature(signature, row.name);
+            signature = appendStringSignature(signature, row.packageName);
+            signature = appendStringSignature(signature, row.className);
+        }
+        return signature;
+    }
+
     private void initializeLeftAppData() {
+        List<LeftAppMultiple> leftAppData = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
+        long sourceSignature = calculateLeftAppRowsSignature(leftAppData);
+        if (sourceSignature == mLastLeftAppListSourceSignature
+                && mLeftAppListAdapter != null
+                && mLeftAppListAdapter.getItemCount() > 0
+                && mLeftAppListData != null
+                && !mLeftAppListData.isEmpty()) {
+            Log.d(TAG, "initializeLeftAppData: unchanged, skipping rebuild");
+            return;
+        }
+
         if (mLeftAppListData == null) {
             mLeftAppListData = new ArrayList<AppListBean>();
         } else {
@@ -4850,74 +5537,56 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         }
 
-        List<AppInfo> allAppsListCopy = null;
-        if (AllAppsList.data != null) {
-            synchronized (AllAppsList.data) {
-                allAppsListCopy = new ArrayList<>(AllAppsList.data);
-            }
-        }        
-        
-        List<LeftAppMultiple> leftAppData = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
+        Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
+        Map<String, Boolean> installCache = new HashMap<>();
         
         if (leftAppData != null && !leftAppData.isEmpty()) {
             for (LeftAppMultiple multiple : leftAppData) {
-                if (!helpers.isPackageInstalled(multiple.packageName) || 
-                    multiple.packageName.isEmpty() || multiple.name.isEmpty()) {
+                if (TextUtils.isEmpty(multiple.packageName)
+                        || TextUtils.isEmpty(multiple.name)
+                        || !isPackageInstalledCached(installCache, multiple.packageName)) {
                     continue;
                 }
                 
-                boolean found = false;
-                if (allAppsListCopy != null) {
-                    for (AppInfo allApp : allAppsListCopy) {
-                        if (allApp.getPackageName().equals(multiple.packageName) 
-                            && allApp.getClassName().equals(multiple.className)) {
-                            AppListBean ab = new AppListBean(
-                                allApp.title.toString(), 
-                                allApp.iconBitmap, 
-                                multiple.packageName, 
-                                multiple.className
-                            );
-                            mLeftAppListData.add(ab);
-                            found = true;
-                            break;
-                        }
-                    }
+                AppInfo allApp = findAppInfo(appInfoLookup, multiple.packageName, multiple.className);
+                if (allApp != null) {
+                    AppListBean ab = new AppListBean(
+                        allApp.title.toString(),
+                        allApp.iconBitmap,
+                        multiple.packageName,
+                        multiple.className
+                    );
+                    mLeftAppListData.add(ab);
+                    continue;
                 }
                 
                 // If not found in AllAppsList but package is installed, load icon from package manager
-                if (!found && helpers.isPackageInstalled(multiple.packageName)) {
-                    Bitmap icon = loadAppIconFromPackageManager(multiple.packageName, multiple.className);
-                    if (icon != null) {
-                        AppListBean ab = new AppListBean(
-                            multiple.name, 
-                            icon, 
-                            multiple.packageName, 
-                            multiple.className
-                        );
-                        mLeftAppListData.add(ab);
-                    }
+                Bitmap icon = loadAppIconFromPackageManager(multiple.packageName, multiple.className);
+                if (icon != null) {
+                    AppListBean ab = new AppListBean(
+                        multiple.name,
+                        icon,
+                        multiple.packageName,
+                        multiple.className
+                    );
+                    mLeftAppListData.add(ab);
                 }
             }
         }
         
         if (mLeftAppListData != null && mLeftAppListAdapter != null) {
             mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
+            mLastLeftAppListSourceSignature = sourceSignature;
             Log.d(TAG, "Left app data initialized with " + mLeftAppListData.size() + " items");
         }
     }
 
     private void initializeAppList() {
         Log.d(TAG, "initializeAppList");
-
-        if (mAppListData == null) {
-            mAppListData = new ArrayList<AppListBean>();
-        } else {
-            mAppListData.clear();
-        }
         
         List<AppMultiple> appData = null;
         try {
-            appData = LitePal.findAll(AppMultiple.class, new long[0]);
+            appData = LitePal.order("\"index\" asc").find(AppMultiple.class);
         } catch (Exception e) {
             Log.e(TAG, "Database error in initializeAppList: " + e.getMessage());
         }
@@ -4925,13 +5594,25 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
 
-        // Create a defensive copy of AllAppsList.data to avoid ConcurrentModificationException
-        List<AppInfo> allAppsListCopy = null;
-        if (AllAppsList.data != null) {
-            synchronized (AllAppsList.data) {
-                allAppsListCopy = new ArrayList<>(AllAppsList.data);
-            }
+        long sourceSignature = calculateAppRowsSignature(appData, userLayout, widgetBar);
+        if (sourceSignature == mLastAppListSourceSignature
+                && mAppListAdapter != null
+                && mAppListAdapter.getItemCount() > 0
+                && mAppListData != null
+                && !mAppListData.isEmpty()) {
+            Log.d(TAG, "initializeAppList: unchanged, skipping rebuild");
+            finishAppListInitialization();
+            return;
         }
+
+        if (mAppListData == null) {
+            mAppListData = new ArrayList<AppListBean>();
+        } else {
+            mAppListData.clear();
+        }
+
+        Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
+        Map<String, Boolean> installCache = new HashMap<>();
         
         if (appData != null && !appData.isEmpty()) {
             for (int i2 = 0; i2 < appData.size(); i2++) {
@@ -4951,33 +5632,28 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
                 
                 if (multiple2.packageName.equals(FytPackage.AppAction)) {
-                    Bitmap bmp = helpers.glideLoader(R.drawable.ic_apps);
+                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_apps);
                     AppListBean ab2 = new AppListBean(Utils.getNameToStr("car_app"), bmp, multiple2.packageName, multiple2.className);
                     mAppListData.add(ab2);
-                } else if (multiple2.packageName.equals(FytPackage.AddAction) || !helpers.isPackageInstalled(multiple2.packageName)) {
+                } else if (multiple2.packageName.equals(FytPackage.AddAction)
+                        || !isPackageInstalledCached(installCache, multiple2.packageName)) {
                     Bitmap bmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
                     AppListBean ab3 = new AppListBean(multiple2.name, bmp2, multiple2.packageName, multiple2.className);
                     mAppListData.add(ab3);
                 } else {
-                    boolean found = false;
-                    // Use the copy instead of the original list
-                    if (allAppsListCopy != null) {
-                        for (AppInfo allApp2 : allAppsListCopy) {
-                            if (allApp2.getPackageName().equals(multiple2.packageName) && allApp2.getClassName().equals(multiple2.className)) {
-                                AppListBean ab4 = new AppListBean(allApp2.title.toString(), allApp2.iconBitmap, multiple2.packageName, multiple2.className);
-                                mAppListData.add(ab4);
-                                found = true;
-                                break;
-                            }
-                        }
+                    AppInfo allApp2 = findAppInfo(appInfoLookup, multiple2.packageName, multiple2.className);
+                    if (allApp2 != null) {
+                        AppListBean ab4 = new AppListBean(allApp2.title.toString(), allApp2.iconBitmap, multiple2.packageName, multiple2.className);
+                        mAppListData.add(ab4);
+                        continue;
                     }
                     
                     // If not found in AllAppsList but package is installed, load from package manager
-                    if (!found && helpers.isPackageInstalled(multiple2.packageName)) {
+                    if (isPackageInstalledCached(installCache, multiple2.packageName)) {
                         Bitmap icon = loadAppIconFromPackageManager(multiple2.packageName, multiple2.className);
                         AppListBean ab = new AppListBean(multiple2.name, icon, multiple2.packageName, multiple2.className);
                         mAppListData.add(ab);
-                    } else if (!found) {
+                    } else {
                         // Not installed and not found
                         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
                         AppListBean ab = new AppListBean(multiple2.name, bmp, multiple2.packageName, multiple2.className);
@@ -4998,7 +5674,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             int installedDbCount = 0;
             for (AppMultiple m : appData) {
                 if (!m.packageName.equals(FytPackage.AddAction) && !m.packageName.equals(FytPackage.AppAction)
-                        && helpers.isPackageInstalled(m.packageName)) {
+                        && isPackageInstalledCached(installCache, m.packageName)) {
                     installedDbCount++;
                 }
             }
@@ -5017,8 +5693,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         if (mAppListAdapter != null && safeToUpdate) {
             mAppListAdapter.notifyDataSetChanged(mAppListData);
+            mLastAppListSourceSignature = sourceSignature;
         }
-        
+
+        finishAppListInitialization();
+    }
+
+    private void finishAppListInitialization() {
+        mLastPostResumeAppDataRefreshMs = SystemClock.uptimeMillis();
+        mPostResumeAppDataDirty = false;
         atomicInitAppData.set(true);
         if (!onResumePip) {
             onResumePip = false;
@@ -5031,10 +5714,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }, 1500); 
             }
         }
-
-        mHandler.postDelayed(() -> {
-            mIsInitializingAppData = false;
-        }, 3000);  
     }
 
     @Override
@@ -5042,7 +5721,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onConfigurationChanged(newConfig);
         
         // Refresh decorations when orientation changes
+        markAppDataDirty();
+        requestPostResumeAppDataRefresh();
         refreshRecyclerViewDecorations();
+        scheduleFocusHomeRecovery("configuration");
     }
 
     private void refreshRecyclerViewDecorations() {
@@ -5064,17 +5746,26 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void refreshCycle(List<AppMultiple> data) {
-        mAppListData.clear();
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
-
-        // Create defensive copy
-        List<AppInfo> allAppsListCopy = null;
-        if (AllAppsList.data != null) {
-            synchronized (AllAppsList.data) {
-                allAppsListCopy = new ArrayList<>(AllAppsList.data);
-            }
+        long sourceSignature = calculateAppRowsSignature(data, userLayout, widgetBar);
+        if (sourceSignature == mLastAppListSourceSignature
+                && mAppListAdapter != null
+                && mAppListAdapter.getItemCount() > 0
+                && mAppListData != null
+                && !mAppListData.isEmpty()) {
+            Log.d(TAG, "refreshCycle: unchanged, skipping adapter rebuild");
+            return;
         }
+
+        if (mAppListData == null) {
+            mAppListData = new ArrayList<>();
+        } else {
+            mAppListData.clear();
+        }
+
+        Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
+        Map<String, Boolean> installCache = new HashMap<>();
 
         if (data != null && !data.isEmpty()) {
             for (int i = 0; i < data.size(); i++) {
@@ -5095,20 +5786,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     }
                 }
 
-                // Check if app is uninstalled and update database if needed
-                if (!multiple.packageName.equals(FytPackage.AddAction) && 
-                    !multiple.packageName.equals(FytPackage.AppAction) && 
-                    !helpers.isPackageInstalled(multiple.packageName)) {
-                    
-                    // Update the database entry to AddAction placeholder
-                    multiple.packageName = FytPackage.AddAction;
-                    multiple.className = "";
-                    multiple.name = "";
-                    multiple.save(); // Persist the change to database
-                }
-
                 if (multiple.packageName.equals(FytPackage.AppAction)) {
-                    Bitmap bmp = helpers.glideLoader(R.drawable.ic_apps);
+                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_apps);
                     AppListBean ab = new AppListBean(
                             Utils.getNameToStr("car_app"),
                             bmp,
@@ -5128,30 +5807,24 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     mAppListData.add(ab2);
 
                 } else {
-                    boolean found = false;
-                    if (allAppsListCopy != null) {
-                        for (AppInfo allApp : allAppsListCopy) {
-                            if (allApp.getPackageName().equals(multiple.packageName)
-                                    && allApp.getClassName().equals(multiple.className)) {
-                                AppListBean ab3 = new AppListBean(
-                                        allApp.title.toString(),
-                                        allApp.iconBitmap,
-                                        multiple.packageName,
-                                        multiple.className
-                                );
-                                mAppListData.add(ab3);
-                                found = true;
-                                break;
-                            }
-                        }
+                    AppInfo allApp = findAppInfo(appInfoLookup, multiple.packageName, multiple.className);
+                    if (allApp != null) {
+                        AppListBean ab3 = new AppListBean(
+                                allApp.title.toString(),
+                                allApp.iconBitmap,
+                                multiple.packageName,
+                                multiple.className
+                        );
+                        mAppListData.add(ab3);
+                        continue;
                     }
                     // Fallback: if not found in AllAppsList but package IS installed,
                     // load the icon directly from PackageManager so the app doesn't disappear.
-                    if (!found && helpers.isPackageInstalled(multiple.packageName)) {
+                    if (isPackageInstalledCached(installCache, multiple.packageName)) {
                         Bitmap icon = loadAppIconFromPackageManager(multiple.packageName, multiple.className);
                         AppListBean ab = new AppListBean(multiple.name, icon, multiple.packageName, multiple.className);
                         mAppListData.add(ab);
-                    } else if (!found) {
+                    } else {
                         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
                         AppListBean ab = new AppListBean(multiple.name, bmp, multiple.packageName, multiple.className);
                         mAppListData.add(ab);
@@ -5168,7 +5841,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             int installedDbCount = 0;
             for (AppMultiple m : data) {
                 if (!m.packageName.equals(FytPackage.AddAction) && !m.packageName.equals(FytPackage.AppAction)
-                        && helpers.isPackageInstalled(m.packageName)) {
+                        && isPackageInstalledCached(installCache, m.packageName)) {
                     installedDbCount++;
                 }
             }
@@ -5186,6 +5859,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         if (safeToUpdate) {
             mAppListAdapter.notifyDataSetChanged(mAppListData);
+            mLastAppListSourceSignature = sourceSignature;
         }
     }
 
@@ -5210,9 +5884,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         
         // Create a list of currently installed apps (excluding placeholders)
         List<LeftAppMultiple> currentInstalled = new ArrayList<>();
+        Map<String, Boolean> installCache = new HashMap<>();
         for (LeftAppMultiple row : physical) {
-            if (helpers.isPackageInstalled(row.packageName) && 
-                !row.packageName.isEmpty() && !row.name.isEmpty()) {
+            if (!TextUtils.isEmpty(row.packageName)
+                    && !TextUtils.isEmpty(row.name)
+                    && isPackageInstalledCached(installCache, row.packageName)) {
                 currentInstalled.add(row);
             }
         }
@@ -5267,42 +5943,57 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         Log.d(TAG, "--------------->>>   refreshLeftBar");
 
-        if (mLeftAppListData == null) mLeftAppListData = new ArrayList<>();
-        else mLeftAppListData.clear();
-
-        List<AppInfo> allAppsListCopy = null;
-        if (AllAppsList.data != null) {
-            synchronized (AllAppsList.data) {
-                allAppsListCopy = new ArrayList<>(AllAppsList.data);
-            }
-        }
-
         final List<LeftAppMultiple> src = (leftAppData != null && !leftAppData.isEmpty())
                 ? leftAppData
                 : LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
+        long sourceSignature = calculateLeftAppRowsSignature(src);
+        if (sourceSignature == mLastLeftAppListSourceSignature
+                && mLeftAppListAdapter != null
+                && mLeftAppListAdapter.getItemCount() > 0
+                && mLeftAppListData != null
+                && !mLeftAppListData.isEmpty()) {
+            Log.d(TAG, "refreshLeftBar: unchanged, skipping adapter rebuild");
+            return;
+        }
+
+        if (mLeftAppListData == null) mLeftAppListData = new ArrayList<>();
+        else mLeftAppListData.clear();
+
+        Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
+        Map<String, Boolean> installCache = new HashMap<>();
 
         int added = 0;
         for (LeftAppMultiple row : src) {
             if (added == MAX_LEFT) break;
-            if (!helpers.isPackageInstalled(row.packageName)) continue;
+            if (!isPackageInstalledCached(installCache, row.packageName)) continue;
 
-            if (allAppsListCopy != null) {
-                for (AppInfo app : allAppsListCopy) {
-                    if (row.packageName.equals(app.getPackageName())
-                            && row.className.equals(app.getClassName())) {
-                        mLeftAppListData.add(new AppListBean(
-                                app.title != null ? app.title.toString() : "",
-                                app.iconBitmap,
-                                row.packageName,
-                                row.className
-                        ));
-                        added++;
-                        break;
-                    }
-                }
+            AppInfo app = findAppInfo(appInfoLookup, row.packageName, row.className);
+            if (app != null) {
+                mLeftAppListData.add(new AppListBean(
+                        app.title != null ? app.title.toString() : "",
+                        app.iconBitmap,
+                        row.packageName,
+                        row.className
+                ));
+                added++;
+                continue;
+            }
+
+            Bitmap icon = loadAppIconFromPackageManager(row.packageName, row.className);
+            if (icon != null) {
+                mLeftAppListData.add(new AppListBean(
+                        row.name != null ? row.name : "",
+                        icon,
+                        row.packageName,
+                        row.className
+                ));
+                added++;
             }
         }
-        if (mLeftAppListAdapter != null) mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
+        if (mLeftAppListAdapter != null) {
+            mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
+            mLastLeftAppListSourceSignature = sourceSignature;
+        }
     }
 
     private void createDefaultAppEntries() {
@@ -5320,7 +6011,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Bitmap icon3 = loadAppIconFromPackageManager("com.syu.video", "com.syu.video.main.VideoListActivity");
         Bitmap icon4 = loadAppIconFromPackageManager("com.syu.radio", "com.syu.radio.Launch");
         Bitmap icon5 = loadAppIconFromPackageManager("com.syu.bt", "com.syu.bt.BtAct");
-        Bitmap icon6 = helpers.glideLoader(R.drawable.icon_settings);
+        Bitmap icon6 = BitmapFactory.decodeResource(getResources(), R.drawable.icon_settings);
         Bitmap icon7 = loadAppIconFromPackageManager("com.syu.settings", "com.syu.settings.MainActivity");
         Bitmap icon8 = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
 
@@ -5451,26 +6142,43 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private Bitmap loadAppIconFromPackageManager(String packageName, String className) {
+        String cacheKey = appIconCacheKey(packageName, className);
+        Bitmap cached = mAppIconBitmapCache.get(cacheKey);
+        if (cached != null) {
+            return cached;
+        }
+
         try {
             PackageManager pm = getPackageManager();
             ComponentName component = new ComponentName(packageName, className);
             Drawable drawable = pm.getActivityIcon(component);
-            
+            Bitmap bitmap;
             if (drawable instanceof BitmapDrawable) {
-                return ((BitmapDrawable) drawable).getBitmap();
+                bitmap = ((BitmapDrawable) drawable).getBitmap();
             } else {
-                // Convert drawable to bitmap
-                Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), 
-                        drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                int width = Math.max(1, drawable.getIntrinsicWidth());
+                int height = Math.max(1, drawable.getIntrinsicHeight());
+                bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(bitmap);
                 drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
                 drawable.draw(canvas);
-                return bitmap;
             }
+            if (bitmap != null) {
+                mAppIconBitmapCache.put(cacheKey, bitmap);
+            }
+            return bitmap;
         } catch (Exception e) {
             Log.e(TAG, "Error loading icon for " + packageName + ": " + e.getMessage());
             return BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
         }
+    }
+
+    private String appIconCacheKey(String packageName, String className) {
+        return String.valueOf(packageName) + "/" + String.valueOf(className);
+    }
+
+    private void clearAppIconBitmapCache() {
+        mAppIconBitmapCache.clear();
     }
 
     private void initAnim() {
@@ -5487,8 +6195,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (fromUser) {
-                Launcher.this.mPlayer.seekTo(progress);
-                Launcher.this.musicSeekBar.setProgress(progress);
+                boolean handled = false;
+                if ("mediaController".equals(Launcher.this.mediaSource)) {
+                    handled = MediaTransportController.seekToProgress(
+                            Launcher.this,
+                            Launcher.this.getPreferredMediaControllerPackage(),
+                            progress,
+                            seekBar.getMax()
+                    );
+                }
+                if (!handled && Launcher.this.mPlayer != null) {
+                    Launcher.this.mPlayer.seekTo(progress);
+                }
+                if (Launcher.this.musicSeekBar != null) {
+                    Launcher.this.musicSeekBar.setProgress(progress);
+                }
             }
         }
 
@@ -5626,7 +6347,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (barView && mWorkspace != null) {
             mWorkspace.scheduleAutoHide();
         }
-        String preferredPackage = "mediaController".equals(mediaSource) ? activeController : null;
+        String preferredPackage = getPreferredMediaControllerPackage();
         int stateBefore = MediaFavoriteController.getCurrentFavoriteState(this, preferredPackage);
         boolean sent = MediaFavoriteController.favoriteCurrent(this, preferredPackage);
         if (sent) {
@@ -5634,13 +6355,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED);
             } else if (stateBefore == MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED) {
                 updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_FAVORITED);
+            } else {
+                updateFavoriteButtonState(MediaFavoriteController.getCurrentFavoriteState(this, preferredPackage));
             }
             mHandler.postDelayed(this::updateFavoriteButtonState, 700);
         }
     }
 
     private void updateFavoriteButtonState() {
-        String preferredPackage = "mediaController".equals(mediaSource) ? activeController : null;
+        String preferredPackage = getPreferredMediaControllerPackage();
         updateFavoriteButtonState(MediaFavoriteController.getCurrentFavoriteState(this, preferredPackage));
     }
 
@@ -5664,45 +6387,60 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
     
+    private String getPreferredMediaControllerPackage() {
+        if ("mediaController".equals(mediaSource) && activeController != null && !activeController.isEmpty()) {
+            return activeController;
+        }
+        return null;
+    }
+
+    private void refreshLeftCycleForIntent(Intent launchIntent) {
+        if (launchIntent == null || launchIntent.getComponent() == null) {
+            return;
+        }
+
+        try {
+            ComponentName componentName = launchIntent.getComponent();
+            PackageManager pm = getPackageManager();
+            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+            String appTitle = appInfo.loadLabel(pm).toString();
+            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+            refreshLeftCycle(bean);
+            cleanWidgetBar();
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "Unable to refresh music app cycle", e);
+        }
+    }
+
+    private void openActiveMusicPlayer(View v) {
+        WindowUtil.removePip();
+        Intent launchIntent = MediaTransportController.getActivePlayerLaunchIntent(
+                this,
+                getPreferredMediaControllerPackage()
+        );
+        if (launchIntent == null) {
+            return;
+        }
+        refreshLeftCycleForIntent(launchIntent);
+        startActivitySafely(v, launchIntent, "music");
+    }
+
     public void onPrevButtonClicked(boolean barView) {
         if (barView) {
             mWorkspace.scheduleAutoHide();
         }
-        if ("fyt".equals(mediaSource)) {
-            Intent intent = new Intent();
-            intent.setAction("com.syu.music.prev");
-            intent.setPackage("com.syu.music");
-            Launcher.this.startService(intent);
-        } else if ("mediaController".equals(mediaSource)) {
-            boolean activeControllerAppRunning = false;
-            MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-            ComponentName component = new ComponentName(this, NotificationListener.class);
-            List<MediaController> controllers = msm.getActiveSessions(component);
 
-            for (MediaController controller : controllers) {
-                if (controller.getPackageName().equals(activeController)) {
-                    activeControllerAppRunning = true;
-                    controller.getTransportControls().skipToPrevious();
-                    break;
-                }
-            }
-            if (!activeControllerAppRunning || isRadioPlaying()) {
-                WindowUtil.removePip();
-                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                try {
-                    ComponentName componentName = launchIntent.getComponent();
-                    PackageManager pm = getPackageManager();
-                    ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                    String appTitle = appInfo.loadLabel(pm).toString();
-                    AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                    Launcher.this.refreshLeftCycle(bean);
-                    cleanWidgetBar();
-                } catch (PackageManager.NameNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-                startActivity(launchIntent);
-            }
+        if (isRadioPlaying() && "mediaController".equals(mediaSource)) {
+            openActiveMusicPlayer(null);
+            return;
         }
+
+        MediaTransportController.handleAction(
+                this,
+                MediaTransportController.ACTION_PREVIOUS,
+                getPreferredMediaControllerPackage()
+        );
+        requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
     }
 
     public void onPlayPauseButtonClicked(Button playPauseButton, boolean barView) {
@@ -5710,8 +6448,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.scheduleAutoHide();
         }
         if (!temporarilyDisablePlayPauseButton) {
-            if ("fyt".equals(mediaSource)) {
-                if (MusicService.state.booleanValue()) {
+            if (playPauseButton != null) {
+                if (MusicService.state.booleanValue() || (mAudioManager != null && mAudioManager.isMusicActive())) {
                     playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                     if (barView) {
                         setBarButtonsTint(playPauseButton);
@@ -5726,65 +6464,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         setWidgetButtonsTint(playPauseButton);
                     }
                 }
-                Intent intent = new Intent();
-                intent.setAction("com.syu.music.playpause");
-                intent.setPackage("com.syu.music");
-                Launcher.this.startService(intent);
-            } else if ("mediaController".equals(mediaSource)) {
-                boolean activeControllerAppRunning = false;
-                MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-                ComponentName component = new ComponentName(this, NotificationListener.class);
-                List<MediaController> controllers = msm.getActiveSessions(component);
-                for (MediaController controller : controllers) {
-                    if (controller.getPackageName().equals(activeController)) {
-                        activeControllerAppRunning = true;
+            }
 
-                        PlaybackState state = controller.getPlaybackState();
-                        int playbackState = (state != null) ? state.getState() : PlaybackState.STATE_NONE;
-
-                        if (playbackState == PlaybackState.STATE_PLAYING) {
-                            handler.postDelayed(() -> {
-                                if (playbackState == PlaybackState.STATE_PLAYING) {
-                                    playPauseButton.setBackground(
-                                        SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon)
-                                    );
-                                }
-                            }, 500);
-
-                            if (barView) setBarButtonsTint(playPauseButton);
-                            else setWidgetButtonsTint(playPauseButton);
-
-                            controller.getTransportControls().pause();
-
-                        } else {
-                            playPauseButton.setBackground(
-                                SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon)
-                            );
-                            if (barView) setBarButtonsTint(playPauseButton);
-                            else setWidgetButtonsTint(playPauseButton);
-
-                            controller.getTransportControls().play();
-                        }
-
-                        break;
-                    }
-                }
-                if (!activeControllerAppRunning || isRadioPlaying()) {
-                    WindowUtil.removePip();
-                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                    try {
-                        ComponentName componentName = launchIntent.getComponent();
-                        PackageManager pm = getPackageManager();
-                        ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                        String appTitle = appInfo.loadLabel(pm).toString();
-                        AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                        Launcher.this.refreshLeftCycle(bean);
-                        cleanWidgetBar();
-                    } catch (PackageManager.NameNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    startActivity(launchIntent);
-                }
+            if (isRadioPlaying() && "mediaController".equals(mediaSource)) {
+                openActiveMusicPlayer(null);
+            } else {
+                MediaTransportController.handleAction(
+                        this,
+                        MediaTransportController.ACTION_PLAY_PAUSE,
+                        getPreferredMediaControllerPackage()
+                );
+                setPlayPauseIcon(true);
             }
         }
 
@@ -5794,6 +6484,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             @Override
             public void run() {
                 temporarilyDisablePlayPauseButton = false;
+                setPlayPauseIcon();
+                requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
             }
         }, 500);
     }
@@ -5802,40 +6494,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (barView) {
             mWorkspace.scheduleAutoHide();
         }
-        if ("fyt".equals(mediaSource)) {
-            Intent intent = new Intent();
-            intent.setAction("com.syu.music.next");
-            intent.setPackage("com.syu.music");
-            Launcher.this.startService(intent);
-        } else if ("mediaController".equals(mediaSource)) {
-            boolean activeControllerAppRunning = false;
-            MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-            ComponentName component = new ComponentName(this, NotificationListener.class);
-            List<MediaController> controllers = msm.getActiveSessions(component);
-            for (MediaController controller : controllers) {
-                if (controller.getPackageName().equals(activeController)) {
-                    activeControllerAppRunning = true;
-                    controller.getTransportControls().skipToNext();
-                    break;
-                }
-            }
-            if (!activeControllerAppRunning || isRadioPlaying()) {
-                WindowUtil.removePip();
-                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                try {
-                    ComponentName componentName = launchIntent.getComponent();
-                    PackageManager pm = getPackageManager();
-                    ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                    String appTitle = appInfo.loadLabel(pm).toString();
-                    AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                    Launcher.this.refreshLeftCycle(bean);
-                    cleanWidgetBar();
-                } catch (PackageManager.NameNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-                startActivity(launchIntent);
-            }
+
+        if (isRadioPlaying() && "mediaController".equals(mediaSource)) {
+            openActiveMusicPlayer(null);
+            return;
         }
+
+        MediaTransportController.handleAction(
+                this,
+                MediaTransportController.ACTION_NEXT,
+                getPreferredMediaControllerPackage()
+        );
+        requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
     }
 
     private void setBarButtonsTint(Button button) {
@@ -5930,7 +6600,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetPrev");
                 intent.setPackage("com.syu.bt");
-                Launcher.this.startService(intent);
+                ServiceIntentGate.startIfAvailable(Launcher.this, intent, "btav prev");
             });
         }
         if (mBtavNextButton != null) {
@@ -5938,7 +6608,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetNext");
                 intent.setPackage("com.syu.bt");
-                Launcher.this.startService(intent);
+                ServiceIntentGate.startIfAvailable(Launcher.this, intent, "btav next");
             });
         }
         if (mBtavPlayPauseButton != null) {
@@ -5946,7 +6616,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetPlayPause");
                 intent.setPackage("com.syu.bt");
-                Launcher.this.startService(intent);
+                ServiceIntentGate.startIfAvailable(Launcher.this, intent, "btav playpause");
             });
         }
         if (mBtavIcon != null) {
@@ -6725,6 +7395,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // also will cancel mWaitingForResult.
             closeSystemDialogs();
 
+            if (mHomeFromAllAppsPending
+                    && (mHomeWorkspaceRefreshHandled || mState == State.WORKSPACE)) {
+                mOnResumeState = State.NONE;
+                if (mAppsCustomizeTabHost != null) {
+                    mAppsCustomizeTabHost.setVisibility(View.GONE);
+                }
+                return;
+            }
+
             final boolean alreadyOnHome = mHasFocus && ((intent.getFlags() &
                     Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
                     != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
@@ -6748,6 +7427,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // otherwise, just wait until onResume to set the state back to Workspace
             if (alreadyOnHome) {
                 showWorkspace(true);
+                if (shouldRunWakeHomeRecovery()) {
+                    scheduleWakeHomeRecovery("newIntent");
+                }
             } else {
                 mOnResumeState = State.WORKSPACE;
             }
@@ -7228,7 +7910,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 onClickShowBarButton();
             }
             if (v == getCustomView(Config.NAVI)) {
-                CarStates.getCar(getApplicationContext()).mTools.sendInt(0, 24, 0);
+                openNavigation(v);
                 return;
             }
             if (v == getCustomView(Config.VOICE)) {
@@ -7288,39 +7970,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.WS_Music) || v == getCustomView(Config.WS_Music_Two) || v == getCustomView(Config.WS_Music3)) {
-                if ("fyt".equals(mediaSource) && helpers.isPackageInstalled("com.syu.music")) {
-                    WindowUtil.removePip();
-                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.syu.music");
-                    try {
-                        ComponentName componentName = launchIntent.getComponent();
-                        PackageManager pm = getPackageManager();
-                        ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                        String appTitle = appInfo.loadLabel(pm).toString();
-                        AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                        refreshLeftCycle(bean);
-                        cleanWidgetBar();
-                    } catch (PackageManager.NameNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    startActivitySafely(v, FytPackage.getIntent(this, "com.syu.music"), "music");
-                } else if ("mediaController".equals(mediaSource) && activeController != null) {
-                    if (!activeController.isEmpty()) { 
-                        WindowUtil.removePip();
-                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                        try {
-                            ComponentName componentName = launchIntent.getComponent();
-                            PackageManager pm = getPackageManager();
-                            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                            String appTitle = appInfo.loadLabel(pm).toString();
-                            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                            refreshLeftCycle(bean);
-                            cleanWidgetBar();
-                        } catch (PackageManager.NameNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        startActivity(launchIntent);
-                    }
-                }         
+                openActiveMusicPlayer(v);
                 return;
             }
             if (v == getCustomView(Config.WS_Maps)) {
@@ -7367,7 +8017,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.WS_Navi)) {
-                CarStates.getCar(getApplicationContext()).mTools.sendInt(0, 24, 0);
+                openNavigation(v);
                 return;
             }
             if (v == getCustomView(Config.WS_Gaode)) {
@@ -7520,21 +8170,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent4 = new Intent(FytPackage.DVRSERVICE);
                 intent4.setAction(FytPackage.RECACTION);
                 intent4.setPackage(FytPackage.INNER_DVR);
-                startService(intent4);
+                ServiceIntentGate.startIfAvailable(this, intent4, "dvr record");
                 return;
             }
             if (v == getCustomView(Config.WS_Dvr_Lock)) {
                 Intent intent5 = new Intent(FytPackage.DVRSERVICE);
                 intent5.setAction(FytPackage.LOCKACTION);
                 intent5.setPackage(FytPackage.INNER_DVR);
-                startService(intent5);
+                ServiceIntentGate.startIfAvailable(this, intent5, "dvr lock");
                 return;
             }
             if (v == getCustomView(Config.WS_Dvr_Catch)) {
                 Intent intent6 = new Intent(FytPackage.DVRSERVICE);
                 intent6.setAction(FytPackage.PHOTOACTION);
                 intent6.setPackage(FytPackage.INNER_DVR);
-                startService(intent6);
+                ServiceIntentGate.startIfAvailable(this, intent6, "dvr photo");
                 return;
             }
             if (v == getCustomView(Config.WS_BRIGHT) || v == getCustomView(Config.BRIGHT)) {
@@ -7737,6 +8387,25 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
+    private void openNavigation(View v) {
+        String navigationPackage = FytPackage.resolveNavigationPackage(this);
+        if (!TextUtils.isEmpty(navigationPackage)) {
+            FytPackage.setDefaultNavigationPackage(navigationPackage);
+            try {
+                CarStates.getCar(getApplicationContext()).mTools.sendStr(0, 9, navigationPackage);
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to assign default navigation package: " + navigationPackage, e);
+            }
+
+            Intent navigationIntent = FytPackage.getLaunchIntent(this, navigationPackage);
+            if (navigationIntent != null && startActivitySafely(v, navigationIntent, navigationPackage)) {
+                return;
+            }
+        }
+
+        CarStates.getCar(getApplicationContext()).mTools.sendInt(0, 24, 0);
+    }
+
     public boolean startActivitySafely(final View v, final Intent intent, final Object tag) {
         if (intent == null) {
             Toast.makeText(getApplicationContext(), R.string.activity_not_found, Toast.LENGTH_LONG).show();
@@ -7903,14 +8572,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Intent intent = new Intent("com.syu.execute_tts");
         intent.putExtra("raw_text", value);
         intent.setPackage(FytPackage.voiceAction);
-        startService(intent);
+        ServiceIntentGate.startIfAvailable(this, intent, "voice execute");
     }
 
     public void stopVoice() {
         LogPreview.show("stopVoice");
         Intent intent = new Intent("com.syu.cancle_tts");
         intent.setPackage(FytPackage.voiceAction);
-        startService(intent);
+        ServiceIntentGate.startIfAvailable(this, intent, "voice cancel");
     }
 
     boolean start(View v, Intent intent, Object tag) {
@@ -8171,6 +8840,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public boolean isAllAppsVisible() {
         return mState == State.APPS_CUSTOMIZE || mOnResumeState == State.APPS_CUSTOMIZE;
+    }
+
+    public boolean isReturningHomeFromAllApps() {
+        return mHomeFromAllAppsPending;
     }
 
     
@@ -8504,6 +9177,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void onWorkspaceShown(boolean animated) {  
+        if (mHomeFromAllAppsPending) {
+            onWorkspacePip = true;
+            return;
+        }
         if (((!onResumePip || onBackPip) && !isRecreateActive) || helpers.isInWidgets()) {
             onWorkspacePip = true;
             helpers.setInWidgets(false);
@@ -8608,6 +9285,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mHotseat.setAlpha(1.0f);
                 mHotseat.setVisibility(android.view.View.VISIBLE);
             }
+            mHotseat.clearAnimation();
+            mHotseat.requestLayout();
+            mHotseat.invalidate();
         }
     }
 
@@ -8981,6 +9661,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void bindAppsAdded(final ArrayList<Long> newScreens, final ArrayList<ItemInfo> addNotAnimated, final ArrayList<ItemInfo> addAnimated, final ArrayList<AppInfo> addedApps) {
         Log.d(TAG, "bindAppsAdded");
+        FytPackage.invalidatePackageCache();
+        clearAppIconBitmapCache();
         Runnable r = new Runnable() { 
             @Override
             public void run() {
@@ -8998,6 +9680,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.removeExtraEmptyScreen();
             if (!AppsCustomizePagedView.DISABLE_ALL_APPS && addedApps != null && mAppsCustomizeContent != null) {
                 mAppsCustomizeContent.addApps(addedApps);
+            }
+            if (isAppInfoInBottomBar(addedApps)) {
+                triggerAppData();
             }
         }
     }
@@ -9234,6 +9919,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void bindAppsUpdated(final ArrayList<AppInfo> apps) {
+        FytPackage.invalidatePackageCache();
+        clearAppIconBitmapCache();
         Runnable r = new Runnable() {
             public void run() {
                 bindAppsUpdated(apps);
@@ -9260,6 +9947,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void bindComponentsRemoved(final ArrayList<String> packageNames, final ArrayList<AppInfo> appInfos, final boolean packageRemoved) {
+        FytPackage.invalidatePackageCache();
+        clearAppIconBitmapCache();
         Runnable r = new Runnable() { 
             @Override
             public void run() {

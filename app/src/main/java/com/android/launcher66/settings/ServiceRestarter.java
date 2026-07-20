@@ -9,6 +9,8 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.ServiceIntentGate;
+
 public class ServiceRestarter extends BroadcastReceiver {
     private static final String TAG = "ServiceRestarter";
 
@@ -35,6 +37,6 @@ public class ServiceRestarter extends BroadcastReceiver {
         extras.putInt("cmdInt", Integer.parseInt(mPrefs.getString("cmdInt_code_int", "0")));
         extras.putInt("cmdArr", Integer.parseInt(mPrefs.getString("cmdArr_code_int", "0")));
         intent.putExtras(extras);
-        context.startService(intent);
+        ServiceIntentGate.startIfAvailable(context, intent, "service restarter canbus");
     }
 }

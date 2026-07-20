@@ -11,6 +11,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.async.AsyncTask;
 import com.android.launcher66.R;
+import com.android.launcher66.ServiceIntentGate;
 import com.syu.canbus.FuncMain;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.main.FinalShare;
@@ -71,7 +72,7 @@ public class CanbusAsyncTask extends AsyncTask<Void, Void, Void> {
 	        extras.putInt("cmdInt", Integer.parseInt(mPrefs.getString("cmdInt_code_int", "0")));
 	        extras.putInt("cmdArr", Integer.parseInt(mPrefs.getString("cmdArr_code_int", "0")));
 	        intent.putExtras(extras);
-	        this.mContext.startService(intent);
+	        ServiceIntentGate.startIfAvailable(this.mContext, intent, "async canbus");
         }, 1000);
     }
 }

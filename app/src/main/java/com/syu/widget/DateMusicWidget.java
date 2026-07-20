@@ -23,7 +23,11 @@ import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.MediaFavoriteController;
 import com.android.launcher66.MediaFavoriteReceiver;
+import com.android.launcher66.MediaTransportController;
+import com.android.launcher66.MediaTransportReceiver;
+import com.android.launcher66.MediaWidgetState;
 import com.android.launcher66.R;
+import com.android.launcher66.ServiceIntentGate;
 import com.fyt.car.MusicService;
 import com.syu.car.CarStates;
 import com.syu.log.LogPreview;
@@ -35,9 +39,17 @@ import java.io.File;
 import share.ResValue;
 
 public class DateMusicWidget extends Widget {
+    private static final int REQUEST_OPEN_PLAYER = 2000;
+    private static final int REQUEST_PREVIOUS = 2001;
+    private static final int REQUEST_PLAY_PAUSE = 2002;
+    private static final int REQUEST_NEXT = 2003;
+    private static final int REQUEST_FAVORITE = 2004;
+
     private int count;
     private String music_path_pre;
     private boolean runAnimation;
+    private int externalAlbumArtHash;
+    private Bitmap externalAlbumArtBitmap;
     private final Runnable runnable;
     private static final int[] mImageRes = {ResValue.getInstance().time00, ResValue.getInstance().time01, ResValue.getInstance().time02, ResValue.getInstance().time03, ResValue.getInstance().time04, ResValue.getInstance().time05, ResValue.getInstance().time06, ResValue.getInstance().time07, ResValue.getInstance().time08, ResValue.getInstance().time09};
     private static final int[] mImageId = {ResValue.getInstance().mtu_img_ht1, ResValue.getInstance().mtu_img_hu1, ResValue.getInstance().mtu_img_mt1, ResValue.getInstance().mtu_img_mu1};
@@ -58,7 +70,6 @@ public class DateMusicWidget extends Widget {
 
     @Override
     void updateViews(RemoteViews views) {
-        LogPreview.show("updateViews");
         if (Launcher.mainState == 8) {
             if (MusicService.state.booleanValue()) {
                 int i = ResValue.getInstance().widget_music_score;
@@ -151,7 +162,8 @@ public class DateMusicWidget extends Widget {
             views.setTextViewText(ResValue.getInstance().music_cur_time, cur);
             views.setTextViewText(ResValue.getInstance().music_total_time, total);
         }
-        if (CarStates.mAppID != 8) {
+        boolean showingExternalMedia = applyExternalMediaSnapshot(views);
+        if (!showingExternalMedia && CarStates.mAppID != 8) {
             clearMusicCache(views);
         }
     }
@@ -163,6 +175,82 @@ public class DateMusicWidget extends Widget {
         views.setTextViewText(ResValue.getInstance().music_cur_time, "00:00");
         views.setTextViewText(ResValue.getInstance().music_total_time, "00:00");
         views.setProgressBar(ResValue.getInstance().music_progress, 1000, 0, false);
+    }
+
+    private boolean applyExternalMediaSnapshot(RemoteViews views) {
+        MediaWidgetState.Snapshot snapshot = MediaWidgetState.getExternalSnapshot();
+        if (snapshot == null || !snapshot.hasContent()) {
+            return false;
+        }
+
+        views.setTextViewText(
+                ResValue.getInstance().music_name,
+                snapshot.title.isEmpty()
+                        ? this.mContext.getResources().getString(R.string.music_name)
+                        : snapshot.title
+        );
+        views.setTextViewText(
+                ResValue.getInstance().music_art,
+                snapshot.artist.isEmpty()
+                        ? this.mContext.getResources().getString(R.string.music_author)
+                        : snapshot.artist
+        );
+        if (snapshot.albumArt != null && snapshot.albumArt.length > 0) {
+            Bitmap bp = getExternalAlbumArtBitmap(snapshot.albumArt);
+            if (bp != null) {
+                views.setImageViewBitmap(ResValue.getInstance().ivwidget_album_bg, bp);
+            }
+        } else {
+            externalAlbumArtHash = 0;
+            externalAlbumArtBitmap = null;
+            views.setImageViewResource(ResValue.getInstance().ivwidget_album_bg, ResValue.getInstance().musicwidget_album_def);
+        }
+
+        if (snapshot.playing) {
+            views.setImageViewResource(
+                    ResValue.getInstance().musicbutton_playpause,
+                    Launcher.sNightMode
+                            ? ResValue.getInstance().music_playpause_icon_n
+                            : ResValue.getInstance().music_playpause_icon
+            );
+        } else {
+            views.setImageViewResource(
+                    ResValue.getInstance().musicbutton_playpause,
+                    Launcher.sNightMode
+                            ? ResValue.getInstance().music_pause_icon_n
+                            : ResValue.getInstance().music_pause_icon
+            );
+        }
+
+        if (snapshot.totalMs > 0) {
+            int percent = (int) ((1000 * Math.max(0L, snapshot.positionMs)) / snapshot.totalMs);
+            views.setProgressBar(ResValue.getInstance().music_progress, 1000, percent, false);
+        } else {
+            views.setProgressBar(ResValue.getInstance().music_progress, 1000, 0, false);
+        }
+        views.setTextViewText(ResValue.getInstance().music_cur_time, timeParse(snapshot.positionMs));
+        views.setTextViewText(ResValue.getInstance().music_total_time, timeParse(snapshot.totalMs));
+        return true;
+    }
+
+    private Bitmap getExternalAlbumArtBitmap(byte[] albumArt) {
+        int hash = java.util.Arrays.hashCode(albumArt);
+        if (externalAlbumArtBitmap != null && externalAlbumArtHash == hash) {
+            return externalAlbumArtBitmap;
+        }
+
+        Bitmap bp = BitmapFactory.decodeByteArray(albumArt, 0, albumArt.length);
+        if (bp == null) {
+            externalAlbumArtHash = 0;
+            externalAlbumArtBitmap = null;
+            return null;
+        }
+        if (LauncherApplication.sApp.getResources().getBoolean(R.bool.music_bitmap_circular)) {
+            bp = makeRoundCorner(bp);
+        }
+        externalAlbumArtHash = hash;
+        externalAlbumArtBitmap = bp;
+        return externalAlbumArtBitmap;
     }
 
     private static Bitmap big(Bitmap bitmap) {
@@ -234,9 +322,10 @@ public class DateMusicWidget extends Widget {
 
     @Override
     void addLisenter(RemoteViews views) {
-        Intent intent = new Intent(WidgetProvider.APP_WIDGET_START);
-        intent.setComponent(new ComponentName("com.syu.music", "com.syu.music.MAct"));
-        views.setOnClickPendingIntent(ResValue.getInstance().dt_music_layout, PendingIntent.getActivity(this.mContext, 0, intent, PendingIntent.FLAG_IMMUTABLE));
+        views.setOnClickPendingIntent(
+                ResValue.getInstance().dt_music_layout,
+                getTransportIntent(this.mContext, MediaTransportController.ACTION_OPEN_PLAYER, REQUEST_OPEN_PLAYER)
+        );
         Intent intent2 = new Intent(WidgetProvider.APP_WIDGET_START);
         intent2.setComponent(new ComponentName("com.syu.radio", "com.syu.radio.Launch"));
         views.setOnClickPendingIntent(ResValue.getInstance().dt_radio_layout, PendingIntent.getActivity(this.mContext, 0, intent2, PendingIntent.FLAG_IMMUTABLE));
@@ -246,9 +335,18 @@ public class DateMusicWidget extends Widget {
         Intent mIntent4 = new Intent("android.settings.DATE_SETTINGS");
         PendingIntent pendIntent = PendingIntent.getActivity(this.mContext, 0, mIntent4, PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(ResValue.getInstance().dt_layout, pendIntent);
-        views.setOnClickPendingIntent(ResValue.getInstance().musicbutton_prev, getPIntend(this.mContext, "com.syu.music.prev"));
-        views.setOnClickPendingIntent(ResValue.getInstance().musicbutton_playpause, getPIntend(this.mContext, "com.syu.music.playpause"));
-        views.setOnClickPendingIntent(ResValue.getInstance().musicbutton_next, getPIntend(this.mContext, "com.syu.music.next"));
+        views.setOnClickPendingIntent(
+                ResValue.getInstance().musicbutton_prev,
+                getTransportIntent(this.mContext, MediaTransportController.ACTION_PREVIOUS, REQUEST_PREVIOUS)
+        );
+        views.setOnClickPendingIntent(
+                ResValue.getInstance().musicbutton_playpause,
+                getTransportIntent(this.mContext, MediaTransportController.ACTION_PLAY_PAUSE, REQUEST_PLAY_PAUSE)
+        );
+        views.setOnClickPendingIntent(
+                ResValue.getInstance().musicbutton_next,
+                getTransportIntent(this.mContext, MediaTransportController.ACTION_NEXT, REQUEST_NEXT)
+        );
         views.setOnClickPendingIntent(ResValue.getInstance().musicbutton_favorite, getFavoriteIntent(this.mContext));
         views.setOnClickPendingIntent(ResValue.getInstance().Radiobutton_prev, getPIntend(this.mContext, WidgetProvider.RADIOPREV));
         views.setOnClickPendingIntent(ResValue.getInstance().Radiobutton_next, getPIntend(this.mContext, WidgetProvider.RADIONEXT));
@@ -258,13 +356,25 @@ public class DateMusicWidget extends Widget {
     }
 
     public PendingIntent getPIntend(Context context, String action) {
-        return PendingIntent.getService(context, 0, new Intent(action), PendingIntent.FLAG_IMMUTABLE);
+        Intent intent = new Intent(action);
+        return ServiceIntentGate.getServiceOrNoop(
+                context,
+                action == null ? 0 : action.hashCode(),
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+        );
+    }
+
+    public PendingIntent getTransportIntent(Context context, String action, int requestCode) {
+        Intent intent = new Intent(context, MediaTransportReceiver.class);
+        intent.setAction(action);
+        return PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     public PendingIntent getFavoriteIntent(Context context) {
         Intent intent = new Intent(context, MediaFavoriteReceiver.class);
         intent.setAction(MediaFavoriteController.ACTION_FAVORITE);
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        return PendingIntent.getBroadcast(context, REQUEST_FAVORITE, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     @Override

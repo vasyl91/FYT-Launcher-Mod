@@ -265,9 +265,10 @@ public class WindowHostActivityView {
      */
     private static Intent createCompatibleIntent(Context ctx, Intent original) {
         Intent intent;
+        String pkg = null;
         
         if (original.getComponent() != null) {
-            String pkg = original.getComponent().getPackageName();
+            pkg = original.getComponent().getPackageName();
             intent = ctx.getPackageManager().getLaunchIntentForPackage(pkg);
             if (intent == null) {
                 intent = new Intent(original);
@@ -280,9 +281,21 @@ public class WindowHostActivityView {
         } else {
             intent = new Intent(original);
         }
+        if (pkg == null) {
+            pkg = intent.getPackage();
+        }
         
         // Clear ALL existing flags to start fresh
         intent.setFlags(0);
+
+        if (isGoogleMapsPackage(pkg)) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            Log.i(TAG, "Created Google Maps compatible intent without task-clearing flags");
+            return intent;
+        }
         
         // Flags that preserve existing activity/process state. These ensure we DON'T create a fresh instance
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);           // Required for ActivityView
@@ -295,8 +308,8 @@ public class WindowHostActivityView {
         intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);   // Indicates we want existing instance
         intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY); // Treat like resuming from recents
             
-        Log.i(TAG, "Created compatible intent with state-preserving flags for " + 
-            (original.getComponent() != null ? original.getComponent().getPackageName() : "unknown"));
+        Log.i(TAG, "Created compatible intent with state-preserving flags for "
+            + (pkg != null ? pkg : "unknown"));
         return intent;
     }
     
@@ -312,6 +325,15 @@ public class WindowHostActivityView {
             
             // Clear and set compatible flags that preserve process state
             i.setFlags(0);
+
+            if (isGoogleMapsPackage(pkg)) {
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                i.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                Log.i(TAG, "Created Google Maps launch intent without task-clearing flags");
+                return i;
+            }
             
             // Core flags for process preservation
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -348,7 +370,12 @@ public class WindowHostActivityView {
             ActivityOptions options = ActivityOptions.makeBasic();
 
             if (isGoogleMapsPackage(packageName)) {
-                Log.i(TAG, "Google Maps ActivityView launch: using display-only options");
+                if (hasRealLaunchBounds(packageName, bounds)) {
+                    options.setLaunchBounds(bounds);
+                    Log.i(TAG, "Google Maps ActivityView launch: using bounds-only options " + bounds);
+                } else {
+                    Log.i(TAG, "Google Maps ActivityView launch: using display-only options");
+                }
                 return options;
             }
 
@@ -415,7 +442,20 @@ public class WindowHostActivityView {
     }
 
     static void release(Object av) {
-        try { sActivityView.getMethod("release").invoke(av); } catch (Throwable ignore) {}
+        if (av == null) return;
+        try {
+            ensureLoaded();
+            try {
+                sActivityView.getMethod("release").invoke(av);
+                return;
+            } catch (NoSuchMethodException noPublicMethod) {
+                Method release = sActivityView.getDeclaredMethod("release");
+                release.setAccessible(true);
+                release.invoke(av);
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "ActivityView.release failed", t);
+        }
     }
 
     static boolean isGoogleMapsPackage(String packageName) {
@@ -551,11 +591,13 @@ public class WindowHostActivityView {
             
             // Add extra flags to ensure we resume instead of recreate
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-            intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+            if (!isGoogleMapsPackage(packageName)) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+                intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+            }
             
             // If we have a task ID, try to move it to front instead of starting fresh
-            if (existingTaskId >= 0) {
+            if (existingTaskId >= 0 && !isGoogleMapsPackage(packageName)) {
                 try {
                     ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
                     Method moveTaskToFront = am.getClass().getMethod("moveTaskToFront", int.class, int.class);
@@ -564,6 +606,8 @@ public class WindowHostActivityView {
                 } catch (Exception e) {
                     Log.w(TAG, "Failed to move task to front, will try normal start", e);
                 }
+            } else if (existingTaskId >= 0) {
+                Log.i(TAG, "Skipping moveTaskToFront for Google Maps ActivityView attach");
             }
         } else {
             Log.i(TAG, "Fresh start for " + packageName + " - no existing process");

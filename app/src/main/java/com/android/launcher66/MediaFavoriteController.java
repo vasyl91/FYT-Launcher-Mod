@@ -20,8 +20,11 @@ public final class MediaFavoriteController {
     public static final int FAVORITE_STATE_FAVORITED = 2;
 
     private static final String TAG = "MediaFavorite";
+    private static final String PREFS_NAME = "media_favorite_state";
+    private static final String PREF_PREFIX = "favorite:";
     private static final String SPOTIFY_PACKAGE = "com.spotify.music";
     private static final String APPLE_MUSIC_PACKAGE = "com.apple.android.music";
+    private static final String YOUTUBE_MUSIC_PACKAGE = "com.google.android.apps.youtube.music";
 
     private MediaFavoriteController() {
     }
@@ -32,7 +35,16 @@ public final class MediaFavoriteController {
 
     public static boolean toggleFavoriteCurrent(Context context, String preferredPackage) {
         MediaController controller = getTargetController(context, preferredPackage);
-        return controller != null && toggleFavorite(controller);
+        if (controller == null) {
+            return false;
+        }
+
+        int stateBefore = getCurrentFavoriteState(context, preferredPackage);
+        boolean sent = toggleFavorite(controller, toPrivateState(stateBefore));
+        if (sent) {
+            cachePublicFavoriteState(context, controller, getExpectedStateAfterToggle(stateBefore));
+        }
+        return sent;
     }
 
     public static int getCurrentFavoriteState(Context context, String preferredPackage) {
@@ -41,11 +53,39 @@ public final class MediaFavoriteController {
             return FAVORITE_STATE_UNKNOWN;
         }
 
-        PlaybackState state = controller.getPlaybackState();
+        PlaybackState state = safePlaybackState(controller);
         FavoriteActions actions = state == null
                 ? new FavoriteActions()
                 : findFavoriteActions(state.getCustomActions());
-        return toPublicState(getFavoriteState(controller, actions));
+        int currentState = toPublicState(getFavoriteState(controller, actions));
+        if (currentState != FAVORITE_STATE_UNKNOWN) {
+            cachePublicFavoriteState(context, controller, currentState);
+            return currentState;
+        }
+
+        return getCachedPublicFavoriteState(context, controller);
+    }
+
+    public static String describeCurrentFavoriteState(Context context, String preferredPackage) {
+        MediaController controller = getTargetController(context, preferredPackage);
+        if (controller == null) {
+            return "controller=none";
+        }
+
+        PlaybackState state = safePlaybackState(controller);
+        FavoriteActions actions = state == null
+                ? new FavoriteActions()
+                : findFavoriteActions(state.getCustomActions());
+        FavoriteState observedState = getFavoriteState(controller, actions);
+        int cachedState = getCachedPublicFavoriteState(context, controller);
+        boolean ratingAction = state != null && (state.getActions() & PlaybackState.ACTION_SET_RATING) != 0;
+
+        return "observed=" + observedState
+                + ", cached=" + publicStateName(cachedState)
+                + ", ratingAction=" + ratingAction
+                + ", positiveAction=" + actionName(actions.positive)
+                + ", negativeAction=" + actionName(actions.negative)
+                + ", toggleAction=" + actionName(actions.toggle);
     }
 
     private static MediaController getTargetController(Context context, String preferredPackage) {
@@ -71,7 +111,7 @@ public final class MediaFavoriteController {
             return null;
         }
 
-        if (isTargetPackage(preferredPackage)) {
+        if (isExternalPackage(preferredPackage)) {
             for (MediaController controller : controllers) {
                 if (preferredPackage.equals(controller.getPackageName())) {
                     return controller;
@@ -81,13 +121,17 @@ public final class MediaFavoriteController {
 
         MediaController fallback = null;
         for (MediaController controller : controllers) {
-            if (!isTargetPackage(controller.getPackageName())) {
+            if (controller == null || !isExternalPackage(controller.getPackageName())) {
+                continue;
+            }
+            PlaybackState state = safePlaybackState(controller);
+            boolean favoriteCapable = hasFavoriteCapability(controller, state);
+            if (!favoriteCapable && !isKnownFavoritePackage(controller.getPackageName())) {
                 continue;
             }
             if (fallback == null) {
                 fallback = controller;
             }
-            PlaybackState state = controller.getPlaybackState();
             if (state != null && state.getState() == PlaybackState.STATE_PLAYING) {
                 return controller;
             }
@@ -95,24 +139,62 @@ public final class MediaFavoriteController {
         return fallback;
     }
 
-    private static boolean isTargetPackage(String packageName) {
-        return SPOTIFY_PACKAGE.equals(packageName) || APPLE_MUSIC_PACKAGE.equals(packageName);
+    private static boolean isExternalPackage(String packageName) {
+        return packageName != null
+                && !packageName.isEmpty()
+                && !"null".equals(packageName)
+                && !"com.syu.music".equals(packageName);
     }
 
-    private static boolean toggleFavorite(MediaController controller) {
+    private static boolean isKnownFavoritePackage(String packageName) {
+        return SPOTIFY_PACKAGE.equals(packageName)
+                || APPLE_MUSIC_PACKAGE.equals(packageName)
+                || YOUTUBE_MUSIC_PACKAGE.equals(packageName);
+    }
+
+    private static PlaybackState safePlaybackState(MediaController controller) {
+        try {
+            return controller.getPlaybackState();
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to read playback state for " + controller.getPackageName(), e);
+            return null;
+        }
+    }
+
+    private static boolean hasFavoriteCapability(MediaController controller, PlaybackState state) {
+        if (state != null) {
+            if ((state.getActions() & PlaybackState.ACTION_SET_RATING) != 0) {
+                return true;
+            }
+            FavoriteActions actions = findFavoriteActions(state.getCustomActions());
+            if (actions.positive != null || actions.negative != null || actions.toggle != null) {
+                return true;
+            }
+        }
+        return getMetadataFavoriteState(controller.getMetadata()) != FavoriteState.UNKNOWN;
+    }
+
+    private static boolean toggleFavorite(MediaController controller, FavoriteState assumedState) {
         PlaybackState state = controller.getPlaybackState();
         if (state == null) {
             return false;
         }
 
         FavoriteActions actions = findFavoriteActions(state.getCustomActions());
-        FavoriteState favoriteState = getFavoriteState(controller, actions);
-        Log.d(TAG, "Favorite state for " + controller.getPackageName() + ": " + favoriteState);
+        FavoriteState observedState = getFavoriteState(controller, actions);
+        FavoriteState favoriteState = observedState == FavoriteState.UNKNOWN ? assumedState : observedState;
+        Log.d(TAG, "Favorite state for " + controller.getPackageName()
+                + ": observed=" + observedState + " assumed=" + assumedState + " effective=" + favoriteState);
 
         if (favoriteState == FavoriteState.FAVORITED) {
             if (sendCustomAction(controller, actions.negative, "unfavorite")) return true;
             if (sendRating(controller, state, false)) return true;
             if (sendCustomAction(controller, actions.toggle, "toggle favorite")) return true;
+            if (observedState == FavoriteState.UNKNOWN
+                    && isKnownFavoritePackage(controller.getPackageName())
+                    && sendCustomAction(controller, actions.positive, "single favorite action fallback")) {
+                return true;
+            }
             Log.d(TAG, "No unfavorite action exposed by " + controller.getPackageName());
             return false;
         }
@@ -151,20 +233,24 @@ public final class MediaFavoriteController {
             return false;
         }
 
-        try {
-            controller.getTransportControls().setRating(Rating.newHeartRating(favorite));
-            Log.d(TAG, "Sent heart rating " + favorite + " for " + controller.getPackageName());
-            return true;
-        } catch (Exception e) {
-            Log.w(TAG, "Heart rating failed for " + controller.getPackageName(), e);
+        if (!favorite) {
+            if (sendRatingValue(controller, Rating.newHeartRating(false), "heart rating false")) return true;
+            if (sendRatingValue(controller, Rating.newUnratedRating(Rating.RATING_HEART), "heart unrated")) return true;
+            if (sendRatingValue(controller, Rating.newUnratedRating(Rating.RATING_THUMB_UP_DOWN), "thumb unrated")) return true;
+            return false;
         }
 
+        if (sendRatingValue(controller, Rating.newHeartRating(true), "heart rating true")) return true;
+        return sendRatingValue(controller, Rating.newThumbRating(true), "thumb rating true");
+    }
+
+    private static boolean sendRatingValue(MediaController controller, Rating rating, String label) {
         try {
-            controller.getTransportControls().setRating(Rating.newThumbRating(favorite));
-            Log.d(TAG, "Sent thumb rating " + favorite + " for " + controller.getPackageName());
+            controller.getTransportControls().setRating(rating);
+            Log.d(TAG, "Sent " + label + " for " + controller.getPackageName());
             return true;
         } catch (Exception e) {
-            Log.w(TAG, "Thumb rating failed for " + controller.getPackageName(), e);
+            Log.w(TAG, label + " failed for " + controller.getPackageName(), e);
             return false;
         }
     }
@@ -187,7 +273,11 @@ public final class MediaFavoriteController {
         if (metadata == null) {
             return FavoriteState.UNKNOWN;
         }
-        return ratingToFavoriteState(metadata.getRating(MediaMetadata.METADATA_KEY_USER_RATING));
+        FavoriteState userRatingState = ratingToFavoriteState(metadata.getRating(MediaMetadata.METADATA_KEY_USER_RATING));
+        if (userRatingState != FavoriteState.UNKNOWN) {
+            return userRatingState;
+        }
+        return ratingToFavoriteState(metadata.getRating(MediaMetadata.METADATA_KEY_RATING));
     }
 
     private static FavoriteState ratingToFavoriteState(Rating rating) {
@@ -211,6 +301,102 @@ public final class MediaFavoriteController {
             return FAVORITE_STATE_NOT_FAVORITED;
         }
         return FAVORITE_STATE_UNKNOWN;
+    }
+
+    private static FavoriteState toPrivateState(int state) {
+        if (state == FAVORITE_STATE_FAVORITED) {
+            return FavoriteState.FAVORITED;
+        }
+        if (state == FAVORITE_STATE_NOT_FAVORITED) {
+            return FavoriteState.NOT_FAVORITED;
+        }
+        return FavoriteState.UNKNOWN;
+    }
+
+    private static String publicStateName(int state) {
+        if (state == FAVORITE_STATE_FAVORITED) {
+            return "favorited";
+        }
+        if (state == FAVORITE_STATE_NOT_FAVORITED) {
+            return "not_favorited";
+        }
+        return "unknown";
+    }
+
+    private static String actionName(PlaybackState.CustomAction action) {
+        if (action == null) {
+            return "none";
+        }
+        return action.getAction() + " | " + action.getName();
+    }
+
+    private static int getExpectedStateAfterToggle(int stateBefore) {
+        if (stateBefore == FAVORITE_STATE_FAVORITED) {
+            return FAVORITE_STATE_NOT_FAVORITED;
+        }
+        return FAVORITE_STATE_FAVORITED;
+    }
+
+    private static int getCachedPublicFavoriteState(Context context, MediaController controller) {
+        String key = getTrackCacheKey(controller);
+        if (key == null) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getInt(key, FAVORITE_STATE_UNKNOWN);
+    }
+
+    private static void cachePublicFavoriteState(Context context, MediaController controller, int state) {
+        String key = getTrackCacheKey(controller);
+        if (key == null) {
+            return;
+        }
+
+        if (state == FAVORITE_STATE_UNKNOWN) {
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                    .edit()
+                    .remove(key)
+                    .apply();
+        } else {
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                    .edit()
+                    .putInt(key, state)
+                    .apply();
+        }
+    }
+
+    private static String getTrackCacheKey(MediaController controller) {
+        MediaMetadata metadata = controller.getMetadata();
+        if (metadata == null) {
+            return null;
+        }
+
+        String mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID);
+        if (mediaId != null && !mediaId.isEmpty()) {
+            return PREF_PREFIX + controller.getPackageName() + ":id:" + mediaId;
+        }
+
+        String title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE);
+        String artist = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST);
+        String album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM);
+        if (isEmpty(title) && isEmpty(artist) && isEmpty(album)) {
+            return null;
+        }
+        return PREF_PREFIX + controller.getPackageName()
+                + ":track:" + normalize(title)
+                + ":" + normalize(artist)
+                + ":" + normalize(album);
+    }
+
+    private static boolean isEmpty(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private static String normalize(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.trim().toLowerCase(Locale.US);
     }
 
     private static FavoriteActions findFavoriteActions(List<PlaybackState.CustomAction> actions) {
@@ -307,7 +493,8 @@ public final class MediaFavoriteController {
 
         boolean removeLikeAction = text.contains("remove")
                 || text.contains("delete")
-                || text.contains("hide");
+                || text.contains("hide")
+                || text.contains("undo");
         return removeLikeAction && (text.contains("favorite")
                 || text.contains("favourite")
                 || text.contains("like")

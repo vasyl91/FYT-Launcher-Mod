@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat;
 
 import com.syu.car.CarStates;
 import com.syu.util.ActivityStartUtils;
+import com.syu.util.FytPackage;
 import com.syu.util.JLog;
 import com.syu.util.PackageManagers;
 
@@ -129,6 +130,28 @@ public class Hotseat extends FrameLayout {
         resetLayout();
     }
 
+    void refreshLayoutAfterWake() {
+        if (this.mContent == null) {
+            requestLayout();
+            invalidate();
+            return;
+        }
+        LauncherAppState app = LauncherAppState.getInstance();
+        DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
+        this.mAllAppsButtonRank = grid.hotseatAllAppsRank;
+        if (!this.mIsLandscape) {
+            this.mContent.setGridSize(1, (int) grid.numHotseatIcons);
+        } else {
+            this.mContent.setGridSize((int) grid.numHotseatIcons, 1);
+        }
+        this.mContent.setIsHotseat(true);
+        this.mContent.clearAnimation();
+        this.mContent.requestLayout();
+        this.mContent.invalidate();
+        requestLayout();
+        invalidate();
+    }
+
     void resetLayout() {
         this.mContent.removeAllViewsInLayout();
         if (!AppsCustomizePagedView.DISABLE_ALL_APPS) {
@@ -180,7 +203,7 @@ public class Hotseat extends FrameLayout {
                     Intent intent = (Intent) v.getTag();
                     if (pkg != null && !pkg.equals("")) {
                         if (PackageManagers.NAVI.equals(pkg)) {
-                            CarStates.getCar(Hotseat.this.mLauncher).mTools.sendInt(0, 24, 0);
+                            Hotseat.this.openNavigation(v);
                         } else {
                             ActivityStartUtils.startActivitySafely(Hotseat.this.mLauncher, newBtn, intent, pkg);
                         }
@@ -285,5 +308,25 @@ public class Hotseat extends FrameLayout {
         mainIntent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         mainIntent2.setComponent(new ComponentName(pkg, app.activityInfo.name));
         return mainIntent2;
+    }
+
+    private void openNavigation(View v) {
+        String navigationPackage = FytPackage.resolveNavigationPackage(getContext());
+        if (navigationPackage != null && !navigationPackage.equals("")) {
+            FytPackage.setDefaultNavigationPackage(navigationPackage);
+            try {
+                CarStates.getCar(this.mLauncher).mTools.sendStr(0, 9, navigationPackage);
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to assign default navigation package: " + navigationPackage, e);
+            }
+
+            Intent navigationIntent = FytPackage.getLaunchIntent(getContext(), navigationPackage);
+            if (navigationIntent != null
+                    && ActivityStartUtils.startActivitySafely(this.mLauncher, v, navigationIntent, navigationPackage)) {
+                return;
+            }
+        }
+
+        CarStates.getCar(this.mLauncher).mTools.sendInt(0, 24, 0);
     }
 }
