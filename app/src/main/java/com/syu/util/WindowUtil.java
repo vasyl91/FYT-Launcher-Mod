@@ -151,7 +151,6 @@ public class WindowUtil {
                 Log.i(TAG, "openPip(): " +  "show: "+ String.valueOf(show)
                     + " helpers.pipsAdded(): " + String.valueOf(helpers.pipsAdded())
                     + " Utils.topApp(): " + String.valueOf(Utils.topApp()) 
-                    + " helpers.pipsAdded() " + String.valueOf(helpers.pipsAdded()) 
                     + " AppPackageName.isEmpty() " + String.valueOf(AppPackageName.isEmpty())
                     + " helpers.isInWidgets() " + String.valueOf(helpers.isInWidgets()) 
                     + " helpers.isInAllApps() " + String.valueOf(helpers.isInAllApps())  

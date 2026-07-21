@@ -71,6 +71,10 @@ public class WindowHostSinglePane {
     private boolean startDeferredForBounds = false;
     private long startNs = 0L;
 
+    private int blackConfirmCount = 0;
+    private static final int REQUIRED_BLACK_CONFIRMATIONS = 2;
+    private static final long BLACK_SCREEN_CONFIRM_DELAY_MS = 700L;
+
     WindowHostSinglePane(String name) { this.name = name; }
 
     boolean isVisible() { return visible.get(); }
@@ -98,6 +102,7 @@ public class WindowHostSinglePane {
         
         // Reset restart counter and detection flag for new show
         restartAttempts = 0;
+        blackConfirmCount = 0;
         blackScreenDetected.set(false);
 
         forceRemoveWindowNoGen();
@@ -221,6 +226,7 @@ public class WindowHostSinglePane {
             lp.height = Math.max(1, b.height());
             lp.x = b.left; lp.y = b.top;
             lp.alpha = 1f;
+            lp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE; 
             try { wm.updateViewLayout(root, lp); } catch (Throwable ignore) {}
             root.setVisibility(View.VISIBLE);
             root.setAlpha(1f);
@@ -245,6 +251,7 @@ public class WindowHostSinglePane {
         if (av != null) return;
 
         if (!WindowHostActivityView.isGoogleMapsPackage(pkg)) {
+            WindowHostSurfacePreloader.keepWarm("single_" + name);
             av = WindowHostSurfacePreloader.getWarmActivityView("single_" + name);
         }
 
@@ -429,13 +436,44 @@ public class WindowHostSinglePane {
     private void hardRemoveWindow(boolean releaseAV, int expectedGen) {
         if (gen != expectedGen) return;
         if (host != null && childAttached) { try { host.removeAllViews(); } catch (Throwable ignore) {} childAttached = false; }
-        if (added && wm != null && root != null) { try { wm.removeViewImmediate(root); } catch (Throwable ignore) {} }
+
+        final View toRemove = root;
+        final WindowManager wmRef = wm;
+
+        if (added && wmRef != null && toRemove != null) {
+            try { wmRef.removeViewImmediate(toRemove); }
+            catch (Throwable t) { Log.w(TAG, name + ": hardRemoveWindow: removeViewImmediate threw, will verify", t); }
+        }
+
         if (releaseAV && av != null) { try { WindowHostActivityView.release(av); } catch (Throwable ignore) {} av = null; taskId = -1; }
+
         added = false;
         visible.set(false);
         root = null; host = null; curtain = null; lp = null;
         hasPendingBounds = false; pendingBounds.setEmpty();
         startDeferredForBounds = false;
+
+        if (toRemove != null && wmRef != null) {
+            verifyDetached(toRemove, wmRef, 0);
+        }
+    }
+
+    private void verifyDetached(View v, WindowManager wmRef, int attempt) {
+        postMainDelayed(() -> {
+            boolean stillAttached;
+            try { stillAttached = v.isAttachedToWindow(); } catch (Throwable t) { stillAttached = false; }
+
+            if (!stillAttached) return;
+
+            Log.w(TAG, name + ": verifyDetached: view still attached after removal (attempt " + attempt + "), forcing again");
+            try { wmRef.removeViewImmediate(v); } catch (Throwable ignore) {}
+
+            if (attempt < 4) {
+                verifyDetached(v, wmRef, attempt + 1);
+            } else {
+                Log.e(TAG, name + ": verifyDetached: giving up after " + (attempt + 1) + " attempts, view may still be leaked");
+            }
+        }, 150);
     }
 
     private void forceRemoveWindowNoGen() {
@@ -451,6 +489,7 @@ public class WindowHostSinglePane {
         if (added && wm != null && lp != null && root != null) {
             lp.x = -3000; lp.y = -3000; lp.alpha = 0f;
             lp.width = 600; lp.height = 600;
+            lp.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
             try { wm.updateViewLayout(root, lp); } catch (Throwable ignore) {}
             root.setAlpha(0f);
             root.setVisibility(View.INVISIBLE);
@@ -538,17 +577,16 @@ public class WindowHostSinglePane {
 
     private void checkForBlackScreenAndRestart(String pkg, int expectedGen) {
         if (gen != expectedGen) return;
-        
+
         postMainDelayed(() -> {
             if (gen != expectedGen) return;
-            
+
             boolean isBlack = false;
-            
+
             // Check if surface is visible and has content
             if (host != null) {
                 SurfaceView sv = findSurfaceView(host);
                 if (sv != null && sv.getVisibility() == View.VISIBLE) {
-                    // Check if surface holder has a valid surface
                     try {
                         SurfaceHolder holder = sv.getHolder();
                         if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
@@ -559,36 +597,40 @@ public class WindowHostSinglePane {
                     }
                 }
             }
-            
+
             // Also check if the first frame was never rendered
             if (!firstFrame.get() && restartAttempts < MAX_RESTART_ATTEMPTS) {
                 isBlack = true;
             }
-            
-            if (isBlack && !blackScreenDetected.get() && restartAttempts < MAX_RESTART_ATTEMPTS) {
-                Log.w(TAG, name + " showing black screen, restarting app: " + pkg);
-                blackScreenDetected.set(true);
-                restartAttempts++;
-                
-                // Restart the app
-                restartPaneApp(pkg, expectedGen);
+
+            if (!isBlack) {
+                blackConfirmCount = 0;
+                return;
             }
+
+            if (blackScreenDetected.get() || restartAttempts >= MAX_RESTART_ATTEMPTS) {
+                return;
+            }
+
+            blackConfirmCount++;
+
+            if (blackConfirmCount < REQUIRED_BLACK_CONFIRMATIONS) {
+                postMainDelayed(() -> checkForBlackScreenAndRestart(pkg, expectedGen), BLACK_SCREEN_CONFIRM_DELAY_MS);
+                return;
+            }
+
+            Log.w(TAG, name + " showing black screen (confirmed), restarting app: " + pkg);
+            blackScreenDetected.set(true);
+            blackConfirmCount = 0;
+            restartAttempts++;
+
+            restartPaneApp(pkg, expectedGen);
+
         }, BLACK_SCREEN_CHECK_DELAY_MS);
     }
 
     private void restartPaneApp(String pkg, int expectedGen) {
         if (gen != expectedGen || pkg == null || pkg.isEmpty()) return;
-        
-        // Force stop the app
-        try {
-            ActivityManager am = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-            Method forceStopPackage = am.getClass().getDeclaredMethod("forceStopPackage", String.class);
-            forceStopPackage.setAccessible(true);
-            forceStopPackage.invoke(am, pkg);
-            Log.i(TAG, name + ": Force stopped " + pkg);
-        } catch (Throwable t) {
-            Log.w(TAG, name + ": Failed to force stop " + pkg, t);
-        }
         
         // Release and recreate the ActivityView
         postMainDelayed(() -> {

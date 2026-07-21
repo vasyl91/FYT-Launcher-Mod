@@ -22,7 +22,7 @@ public class WindowHostSurfacePreloader {
     // Pool of pre-warmed ActivityViews
     private static final Map<String, Object> warmPool = new ConcurrentHashMap<>();
     private static final Map<String, Long> warmTimestamps = new ConcurrentHashMap<>();
-    private static final long WARM_EXPIRY_MS = 30_000L; // 30 seconds
+    private static final long WARM_EXPIRY_MS = 90_000L; // 90 seconds
     
     /**
      * Pre-create and warm up an ActivityView for instant use
@@ -32,32 +32,46 @@ public class WindowHostSurfacePreloader {
             // Check if we already have a warm instance
             Object existing = warmPool.get(key);
             Long timestamp = warmTimestamps.get(key);
-            
+
             if (existing != null && timestamp != null) {
                 long age = System.currentTimeMillis() - timestamp;
                 if (age < WARM_EXPIRY_MS) {
                     Log.i(TAG, "Using existing warm ActivityView for: " + key);
+                    warmTimestamps.put(key, System.currentTimeMillis());
                     return existing;
                 }
             }
-            
+
             // Create new ActivityView
             Object av = WindowHostActivityView.newInstance(ctx);
             View avView = WindowHostActivityView.asView(av);
-            
+
             // Force immediate surface creation
             forceSurfaceCreation(avView);
-            
+
             // Store in pool
             warmPool.put(key, av);
             warmTimestamps.put(key, System.currentTimeMillis());
-            
+
             Log.i(TAG, "Pre-warmed ActivityView for: " + key);
             return av;
-            
+
         } catch (Throwable t) {
             Log.e(TAG, "Failed to prewarm ActivityView for: " + key, t);
             return null;
+        }
+    }
+
+    /**
+     * Refresh the timestamp of an existing entry in the pool, if it still exists.
+     * Call this periodically (e.g. every dozen or so seconds) for keys that are
+     * currently "reserved" and will be used shortly, so they don't expire at the
+     * worst possible moment (right before reattaching).
+     */
+    public static void keepWarm(String key) {
+        if (warmPool.containsKey(key)) {
+            warmTimestamps.put(key, System.currentTimeMillis());
+            Log.d(TAG, "Refreshed warm timestamp for: " + key);
         }
     }
     

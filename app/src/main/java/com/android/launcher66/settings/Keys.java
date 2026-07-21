@@ -34,6 +34,7 @@ public final class Keys {
     public static final String WALLPAPER_PICKER_SOURCE = "wallpaper_picker_source"; 
     public static final String ALL_APPS_TEXT_SIZE = "all_apps_textSize"; 
     public static final String WORKSPACE_TEXT_SIZE = "workspace_textSize";
+    public static final String LAUNCHER_HOME = "launcher_home";
     public static final String DEFAULT_WALLPAPERS = "default_wallpapers";
     public static final String SAVE_DAY_WALLPAPER = "save_day_wallpaper";    
     public static final String SAVE_NIGHT_WALLPAPER = "save_night_wallpaper";

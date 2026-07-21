@@ -61,6 +61,10 @@
             android:key="workspace_textSize"
             android:title="@string/workspace_textSize_str"
             android:summary="28" />
+        <SwitchPreferenceCompat
+            android:key="launcher_home"
+            android:defaultValue="true"
+            android:title="@string/launcher_home" />
 
     </PreferenceCategory>
 

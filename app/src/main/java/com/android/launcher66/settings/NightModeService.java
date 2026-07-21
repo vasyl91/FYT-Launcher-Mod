@@ -31,6 +31,7 @@ import java.time.ZoneId;
 
 public class NightModeService extends Service {
     private static final String TAG = "NightModeService";
+    private static SunTask currentSunTask;
     private final Handler nightModeHandler = new Handler(Looper.getMainLooper());
     private boolean isNightModeRunning = false;
     private final Handler checkTimeHandler = new Handler(Looper.getMainLooper());
@@ -189,8 +190,8 @@ public class NightModeService extends Service {
                     final JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
                     jobScheduler.cancelAll();
                     String urlString = "https://api.sunrise-sunset.org/json?lat=" + lat + "&lng=" + longt + "&date=today" + "&tzid=" + String.valueOf(ZoneId.systemDefault());
-                    SunTask sunTask = new SunTask(LauncherApplication.sApp, lat, longt, false);
-                    sunTask.execute(urlString);
+                    currentSunTask = new SunTask(LauncherApplication.sApp, lat, longt, false);
+                    currentSunTask.execute(urlString);
                 }
             });
         } else {
@@ -202,6 +203,13 @@ public class NightModeService extends Service {
                     },
                     0
             );
+        }
+    }
+
+    public static void cancelSunTask() {
+        if (currentSunTask != null) {
+            currentSunTask.cancel(true);
+            currentSunTask = null;
         }
     }
 }

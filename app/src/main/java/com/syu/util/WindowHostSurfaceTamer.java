@@ -1,6 +1,5 @@
 package com.syu.util;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,12 +12,15 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class WindowHostSurfaceTamer {
     private static final String TAG = "SurfaceTamer";
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private static final AtomicBoolean drawing = new AtomicBoolean(false);
     
     /**
      * Aggressively tame and prepare surface for immediate rendering
@@ -61,7 +63,7 @@ public class WindowHostSurfaceTamer {
                 private boolean initialized = false;
                 
                 @Override
-                public void surfaceCreated(SurfaceHolder h) {
+                public void surfaceCreated(@NonNull SurfaceHolder h) {
                     if (!initialized) {
                         initialized = true;
                         forceInitialDraw(h);
@@ -69,7 +71,7 @@ public class WindowHostSurfaceTamer {
                 }
                 
                 @Override
-                public void surfaceChanged(SurfaceHolder h, int format, int width, int height) {
+                public void surfaceChanged(@NonNull SurfaceHolder h, int format, int width, int height) {
                     if (width > 0 && height > 0 && !initialized) {
                         initialized = true;
                         forceInitialDraw(h);
@@ -77,12 +79,12 @@ public class WindowHostSurfaceTamer {
                 }
                 
                 @Override
-                public void surfaceDestroyed(SurfaceHolder h) {
+                public void surfaceDestroyed(@NonNull SurfaceHolder h) {
                     initialized = false;
                 }
                 
                 @Override
-                public void surfaceRedrawNeeded(SurfaceHolder h) {
+                public void surfaceRedrawNeeded(@NonNull SurfaceHolder h) {
                     forceInitialDraw(h);
                 }
             });
@@ -110,13 +112,20 @@ public class WindowHostSurfaceTamer {
      * Force an initial draw to wake up the surface
      */
     private static void forceInitialDraw(SurfaceHolder holder) {
+        // If the previous lockCanvas attempt is still in progress (or has just
+        // started from another execution path), skip this one to avoid overlapping
+        // attempts and buffer contention (dequeueBuffer).
+        if (!drawing.compareAndSet(false, true)) {
+            return;
+        }
+
         Canvas canvas = null;
         try {
             canvas = holder.lockCanvas();
             if (canvas != null) {
                 // Draw transparent background
                 canvas.drawColor(Color.TRANSPARENT);
-                
+
                 // Draw a single pixel to ensure surface is active
                 Paint paint = new Paint();
                 paint.setColor(Color.TRANSPARENT);
@@ -130,76 +139,8 @@ public class WindowHostSurfaceTamer {
                     holder.unlockCanvasAndPost(canvas);
                 } catch (Throwable ignore) {}
             }
+            drawing.set(false);
         }
-    }
-    
-    /**
-     * Create a snapshot placeholder that shows while surface loads
-     */
-    static ImageView createLoadingPlaceholder(ViewGroup container, String tag) {
-        ImageView placeholder = new ImageView(container.getContext());
-        placeholder.setTag(tag);
-        placeholder.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        placeholder.setBackgroundColor(Color.argb(255, 32, 32, 32)); // Dark gray
-        
-        // Create a simple "loading" bitmap
-        Bitmap loadingBitmap = createLoadingBitmap(400, 300);
-        placeholder.setImageBitmap(loadingBitmap);
-        
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        );
-        
-        return placeholder;
-    }
-    
-    /**
-     * Create a loading indicator bitmap
-     */
-    private static Bitmap createLoadingBitmap(int width, int height) {
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        
-        // Dark background
-        canvas.drawColor(Color.argb(255, 32, 32, 32));
-        
-        // Loading spinner/text
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.argb(180, 200, 200, 200));
-        paint.setTextSize(24);
-        paint.setTextAlign(Paint.Align.CENTER);
-        
-        String text = "Loading...";
-        float textX = width / 2f;
-        float textY = height / 2f;
-        
-        canvas.drawText(text, textX, textY, paint);
-        
-        return bitmap;
-    }
-    
-    /**
-     * Try to capture current surface content as placeholder
-     */
-    static Bitmap captureSurfaceSnapshot(SurfaceView sv) {
-        try {
-            // Enable drawing cache temporarily
-            sv.setDrawingCacheEnabled(true);
-            sv.buildDrawingCache(true);
-            
-            Bitmap snapshot = sv.getDrawingCache();
-            if (snapshot != null) {
-                // Create a copy since drawing cache is recycled
-                Bitmap copy = Bitmap.createBitmap(snapshot);
-                sv.setDrawingCacheEnabled(false);
-                return copy;
-            }
-        } catch (Throwable e) {
-            Log.w(TAG, "Failed to capture surface snapshot", e);
-        }
-        
-        return null;
     }
     
     /**
@@ -218,9 +159,9 @@ public class WindowHostSurfaceTamer {
                 SurfaceHolder holder = sv.getHolder();
                 holder.removeCallback(holder.getSurface() != null ? 
                     new SurfaceHolder.Callback() {
-                        public void surfaceCreated(SurfaceHolder h) {}
-                        public void surfaceChanged(SurfaceHolder h, int format, int width, int height) {}
-                        public void surfaceDestroyed(SurfaceHolder h) {}
+                        public void surfaceCreated(@NonNull SurfaceHolder h) {}
+                        public void surfaceChanged(@NonNull SurfaceHolder h, int format, int width, int height) {}
+                        public void surfaceDestroyed(@NonNull SurfaceHolder h) {}
                     } : null);
             } catch (Throwable ignore) {}
             
@@ -258,68 +199,10 @@ public class WindowHostSurfaceTamer {
         }
     }
     
-    /**
-     * Ultra-aggressive surface wake-up for instant display
-     */
-    static void ultraWakeupSurface(View root) {
-        SurfaceView sv = findSurfaceView(root);
-        if (sv == null) return;
-        
-        try {
-            // Multiple aggressive techniques in parallel
-            
-            // Technique 1: Z-order manipulation
-            mainHandler.post(() -> {
-                try {
-                    sv.setZOrderOnTop(true);
-                    sv.requestLayout();
-                    mainHandler.postDelayed(() -> {
-                        sv.setZOrderOnTop(false);
-                        sv.requestLayout();
-                    }, 16);
-                } catch (Throwable ignore) {}
-            });
-            
-            // Technique 2: Format cycling
-            mainHandler.postDelayed(() -> {
-                try {
-                    SurfaceHolder holder = sv.getHolder();
-                    holder.setFormat(PixelFormat.RGB_565);
-                    holder.setFormat(PixelFormat.RGBA_8888);
-                } catch (Throwable ignore) {}
-            }, 16);
-            
-            // Technique 3: Multiple forced draws
-            for (int i = 0; i < 10; i++) {
-                final int delay = i * 16;
-                mainHandler.postDelayed(() -> {
-                    forceInitialDraw(sv.getHolder());
-                }, delay);
-            }
-            
-            // Technique 4: Visibility cycling
-            mainHandler.postDelayed(() -> {
-                try {
-                    sv.setVisibility(View.INVISIBLE);
-                    sv.requestLayout();
-                    mainHandler.postDelayed(() -> {
-                        sv.setVisibility(View.VISIBLE);
-                        sv.requestLayout();
-                    }, 16);
-                } catch (Throwable ignore) {}
-            }, 32);
-            
-            Log.i(TAG, "Ultra wakeup applied to surface");
-            
-        } catch (Throwable e) {
-            Log.w(TAG, "Failed ultra wakeup", e);
-        }
-    }
-    
     private static SurfaceView findSurfaceView(View v) {
         if (v instanceof SurfaceView) return (SurfaceView) v;
-        if (v instanceof ViewGroup) {
-            ViewGroup g = (ViewGroup) v;
+        if (v instanceof ViewGroup g) {
+
             for (int i = 0; i < g.getChildCount(); i++) {
                 SurfaceView res = findSurfaceView(g.getChildAt(i));
                 if (res != null) return res;

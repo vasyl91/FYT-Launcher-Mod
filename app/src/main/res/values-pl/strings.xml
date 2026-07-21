@@ -133,7 +133,10 @@
     <string name="wallpaper_picker">Tapety</string>
     <string name="wallpaper_picker_source">Źródło tapet</string> 
     <string name="wallpaper_picker_system">Tapety systemowe</string> 
-    <string name="wallpaper_picker_launcher">Wbudowane tapety</string>       
+    <string name="wallpaper_picker_launcher">Wbudowane tapety</string>   
+    <string name="all_apps_textSize_str">Rozmiar tekstu ikon w menu aplikacji (max. 50)</string>  
+    <string name="workspace_textSize_str">Rozmiar tekstu ikon na ekranie głównym (max. 50)</string>       
+    <string name="launcher_home">Po wybudzeniu urządzenia zawsze pokazuj ekran główny</string>        
     <string name="device_settings">Ustawienia android</string> 
     <string name="layout_category">Layout</string>
     <string name="misc_category">Różne</string>

@@ -31,6 +31,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class WakeDetectionService extends Service implements PropertyChangeListener {
 
@@ -41,6 +44,11 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     private DisplayManager.DisplayListener displayListener;
     private final PropertyChangeClass mPropertyChangeClass = new PropertyChangeClass();
     private SharedPreferences mPrefs;
+
+    private static final Object sServiceRunningCacheLock = new Object();
+    private static final Map<String, Boolean> sServiceRunningCache = new HashMap<>();
+    private static final Map<String, Long> sServiceRunningCacheTime = new HashMap<>();
+    private static final long SERVICE_RUNNING_CACHE_MS = 15000L;
     private static final String TAG = "WakeDetection";
     private static final String DISPLAY_ON = "display_on";
     private static final long DISPLAY_ON_DEBOUNCE_MS = 2500L;
@@ -114,11 +122,14 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 }
                 lastDisplayOnHandledMs = now;
                 Log.e(TAG, "Device awakened from sleep");
-                handler.postDelayed(() -> pressHomeButton(), 500);
-                handler.postDelayed(() -> dismissAppListDialog(), 500);
+                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+                if (mPrefs.getBoolean(Keys.LAUNCHER_HOME, true)) {
+                    handler.postDelayed(this::pressHomeButton, 500);
+                }
+                handler.postDelayed(this::pressHomeButton, 500);
+                handler.postDelayed(this::dismissAppListDialog, 500);
                 handler.postDelayed(() -> sendWakeRefresh("early"), 900);
                 handler.postDelayed(() -> sendWakeRefresh("late"), 1800);
-                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
                 long lastSleepTimestamp = mPrefs.getLong("sleep_timestamp", -1L);
                 boolean resetPip = false;
 
@@ -170,11 +181,48 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
 
                 helpers.setDisplayStateBoolean(false);
 
-                Intent nightModeIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
-                LauncherApplication.sApp.stopService(nightModeIntent);       
+                if (isServiceRunning(NightModeService.class)) {
+                    NightModeService.cancelSunTask();
+                    Intent nightModeIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
+                    LauncherApplication.sApp.stopService(nightModeIntent);  
+                }     
             }    
         } 
     } 
+
+    private boolean isServiceRunning(Class<? extends Service> serviceClass) {
+        String serviceName = serviceClass.getName();
+        long now = SystemClock.uptimeMillis();
+        synchronized (sServiceRunningCacheLock) {
+            Long checkedAt = sServiceRunningCacheTime.get(serviceName);
+            Boolean running = sServiceRunningCache.get(serviceName);
+            if (checkedAt != null && running != null && now - checkedAt < SERVICE_RUNNING_CACHE_MS) {
+                return running;
+            }
+        }
+
+        ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getSystemService(Context.ACTIVITY_SERVICE);
+        boolean isRunning = false;
+        if (activityManager != null) {
+            List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
+            for (ActivityManager.RunningServiceInfo service : runningServices) {
+                if (serviceName.equals(service.service.getClassName())) {
+                    isRunning = true;
+                    break;
+                }
+            }
+        }
+        setServiceRunningCache(serviceClass, isRunning);
+        return isRunning;
+    }
+
+    private static void setServiceRunningCache(Class<? extends Service> serviceClass, boolean isRunning) {
+        synchronized (sServiceRunningCacheLock) {
+            String serviceName = serviceClass.getName();
+            sServiceRunningCache.put(serviceName, isRunning);
+            sServiceRunningCacheTime.put(serviceName, SystemClock.uptimeMillis());
+        }
+    }
 
     public void pressHomeButton() {
         Intent homeIntent = new Intent(Intent.ACTION_MAIN);

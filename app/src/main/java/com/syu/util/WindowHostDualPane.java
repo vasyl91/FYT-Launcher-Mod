@@ -97,6 +97,11 @@ public  class WindowHostDualPane {
     private int minPaneWidthPx = dp(120);
     private float splitRatio = 0.5f; // persisted
 
+    private int leftBlackConfirmCount = 0;
+    private int rightBlackConfirmCount = 0;
+    private static final int REQUIRED_BLACK_CONFIRMATIONS = 2;
+    private static final long BLACK_SCREEN_CONFIRM_DELAY_MS = 700L;
+
     // drag
     private final DividerDragController dragController = new DividerDragController();
 
@@ -133,6 +138,8 @@ public  class WindowHostDualPane {
         // Reset restart counters and detection flags for new show
         leftRestartCount = 0;
         rightRestartCount = 0;
+        leftBlackConfirmCount = 0;
+        rightBlackConfirmCount = 0;
         leftBlackScreenDetected.set(false);
         rightBlackScreenDetected.set(false);
         
@@ -309,6 +316,7 @@ public  class WindowHostDualPane {
             lp.height = Math.max(1, b.height());
             lp.x = b.left; lp.y = b.top;
             lp.alpha = 1f;
+            lp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE; 
             try { wm.updateViewLayout(root, lp); } catch (Throwable ignore) {}
             root.setVisibility(View.VISIBLE);
             root.setAlpha(1f);
@@ -318,6 +326,7 @@ public  class WindowHostDualPane {
     private void ensureActivityView(Context ctx, int expectedGen, String lPkg, String rPkg) {
         if (leftAV == null) {
             if (!WindowHostActivityView.isGoogleMapsPackage(lPkg)) {
+                WindowHostSurfacePreloader.keepWarm("dual_left");    
                 leftAV = WindowHostSurfacePreloader.getWarmActivityView("dual_left");
             }
 
@@ -338,6 +347,7 @@ public  class WindowHostDualPane {
         
         if (rightAV == null) {
             if (!WindowHostActivityView.isGoogleMapsPackage(rPkg)) {
+                WindowHostSurfacePreloader.keepWarm("dual_right"); 
                 rightAV = WindowHostSurfacePreloader.getWarmActivityView("dual_right");
             }
 
@@ -857,18 +867,49 @@ public  class WindowHostDualPane {
         cancelPendingRestore();
         if (leftHost != null && leftAttached) { try { leftHost.removeAllViews(); } catch (Throwable ignore) {} leftAttached = false; }
         if (rightHost != null && rightAttached) { try { rightHost.removeAllViews(); } catch (Throwable ignore) {} rightAttached = false; }
-        if (added && wm != null && root != null) { try { wm.removeViewImmediate(root); } catch (Throwable ignore) {} }
+
+        final View toRemove = root;
+        final WindowManager wmRef = wm;
+
+        if (added && wmRef != null && toRemove != null) {
+            try { wmRef.removeViewImmediate(toRemove); }
+            catch (Throwable t) { Log.w(TAG, "hardRemoveWindow: removeViewImmediate threw, will verify", t); }
+        }
+
         if (releaseAVs) {
             if (leftAV != null)  { try { WindowHostActivityView.release(leftAV); } catch (Throwable ignore) {} leftAV = null; leftTask = -1; leftReady.set(false); }
             if (rightAV != null) { try { WindowHostActivityView.release(rightAV); } catch (Throwable ignore) {} rightAV = null; rightTask = -1; rightReady.set(false); }
         }
+
         added = false;
-        visible.set(false);
         root = null; leftHost = null; rightHost = null; divider = null; lp = null;
         hasPendingBounds = false; pendingBounds.setEmpty();
         leftStartDeferredForBounds = false;
         rightStartDeferredForBounds = false;
+        visible.set(false);
         surfacesHidden.set(false);
+
+        if (toRemove != null && wmRef != null) {
+            verifyDetached(toRemove, wmRef, 0);
+        }
+    }
+
+    private void verifyDetached(View v, WindowManager wmRef, int attempt) {
+        postMainDelayed(() -> {
+            boolean stillAttached;
+            try { stillAttached = v.isAttachedToWindow(); } catch (Throwable t) { stillAttached = false; }
+
+            if (!stillAttached) return; // OK, faktycznie odłączony
+
+            Log.w(TAG, "verifyDetached: view still attached after removal (attempt " + attempt + "), forcing again");
+            try { wmRef.removeViewImmediate(v); } catch (Throwable ignore) {}
+
+            if (attempt < 4) {
+                verifyDetached(v, wmRef, attempt + 1);
+            } else {
+                Log.e(TAG, "verifyDetached: giving up after " + (attempt + 1) + " attempts, view may still be leaked");
+            }
+        }, 150);
     }
 
     private void forceRemoveWindowNoGen() {
@@ -889,6 +930,7 @@ public  class WindowHostDualPane {
         if (added && wm != null && lp != null && root != null) {
             lp.x = -3000; lp.y = -3000; lp.alpha = 0f;
             lp.width = 600; lp.height = 600;
+            lp.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
             try { wm.updateViewLayout(root, lp); } catch (Throwable ignore) {}
             root.setAlpha(0f); 
             root.setVisibility(View.INVISIBLE);
@@ -938,20 +980,24 @@ public  class WindowHostDualPane {
 
     private void checkForBlackScreenAndRestart(boolean isLeft, String pkg, int expectedGen) {
         if (gen != expectedGen) return;
-        
+
         postMainDelayed(() -> {
             if (gen != expectedGen) return;
-            
+
+            if (surfacesHidden.get()) {
+                postMainDelayed(() -> checkForBlackScreenAndRestart(isLeft, pkg, expectedGen), 300);
+                return;
+            }
+
             boolean isBlack = false;
             AtomicBoolean detectionFlag = isLeft ? leftBlackScreenDetected : rightBlackScreenDetected;
             int restartCount = isLeft ? leftRestartCount : rightRestartCount;
-            
+
             // Check if surface is visible and has content
             FrameLayout container = isLeft ? leftHost : rightHost;
             if (container != null) {
                 SurfaceView sv = findSurfaceView(container);
                 if (sv != null && sv.getVisibility() == View.VISIBLE) {
-                    // Check if surface holder has a valid surface
                     try {
                         SurfaceHolder holder = sv.getHolder();
                         if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
@@ -962,42 +1008,47 @@ public  class WindowHostDualPane {
                     }
                 }
             }
-            
+
             // Also check if the first frame was never rendered
             AtomicBoolean firstFrameFlag = isLeft ? leftFirstFrame : rightFirstFrame;
             if (!firstFrameFlag.get() && restartCount < MAX_RESTART_ATTEMPTS) {
                 isBlack = true;
             }
-            
-            if (isBlack && !detectionFlag.get() && restartCount < MAX_RESTART_ATTEMPTS) {
-                Log.w(TAG, (isLeft ? "Left" : "Right") + " pane showing black screen, restarting app: " + pkg);
-                detectionFlag.set(true);
-                
-                if (isLeft) {
-                    leftRestartCount++;
-                } else {
-                    rightRestartCount++;
-                }
-                
-                // Restart the app
-                restartPaneApp(isLeft, pkg, expectedGen);
+
+            if (!isBlack) {
+                if (isLeft) leftBlackConfirmCount = 0; else rightBlackConfirmCount = 0;
+                return;
             }
+
+            if (detectionFlag.get() || restartCount >= MAX_RESTART_ATTEMPTS) {
+                return;
+            }
+
+            if (isLeft) leftBlackConfirmCount++; else rightBlackConfirmCount++;
+            int confirmCount = isLeft ? leftBlackConfirmCount : rightBlackConfirmCount;
+
+            if (confirmCount < REQUIRED_BLACK_CONFIRMATIONS) {
+                postMainDelayed(() -> checkForBlackScreenAndRestart(isLeft, pkg, expectedGen), BLACK_SCREEN_CONFIRM_DELAY_MS);
+                return;
+            }
+
+            Log.w(TAG, (isLeft ? "Left" : "Right") + " pane showing black screen (confirmed), restarting app: " + pkg);
+            detectionFlag.set(true);
+            if (isLeft) leftBlackConfirmCount = 0; else rightBlackConfirmCount = 0;
+
+            if (isLeft) {
+                leftRestartCount++;
+            } else {
+                rightRestartCount++;
+            }
+
+            restartPaneApp(isLeft, pkg, expectedGen);
+
         }, BLACK_SCREEN_CHECK_DELAY_MS);
     }
 
     private void restartPaneApp(boolean isLeft, String pkg, int expectedGen) {
         if (gen != expectedGen || pkg == null || pkg.isEmpty()) return;
-        
-        // Force stop the app
-        try {
-            ActivityManager am = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-            Method forceStopPackage = am.getClass().getDeclaredMethod("forceStopPackage", String.class);
-            forceStopPackage.setAccessible(true);
-            forceStopPackage.invoke(am, pkg);
-            Log.i(TAG, "Force stopped " + pkg);
-        } catch (Throwable t) {
-            Log.w(TAG, "Failed to force stop " + pkg, t);
-        }
         
         // Release and recreate the ActivityView
         postMainDelayed(() -> {

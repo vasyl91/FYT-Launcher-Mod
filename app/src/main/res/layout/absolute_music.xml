@@ -76,7 +76,7 @@
         <com.google.android.flexbox.FlexboxLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            app:flexWrap="wrap"
+            app:flexWrap="nowrap"
             app:flexDirection="row"
             app:justifyContent="space_between" >
 

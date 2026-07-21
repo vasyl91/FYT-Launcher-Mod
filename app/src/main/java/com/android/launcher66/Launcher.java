@@ -6253,7 +6253,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         
         // Set up play/pause button
-        View.OnClickListener playPauseClickListener = v -> onPlayPauseButtonClicked(mPlayPauseButton, false);
+        View.OnClickListener playPauseClickListener = v -> onPlayPauseButtonClicked(false);
         playPauseLayout.setOnClickListener(playPauseClickListener);
         if (mPlayPauseButton != null) {
             mPlayPauseButton.setOnClickListener(playPauseClickListener);
@@ -6306,7 +6306,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         
         // Set up play/pause button
-        View.OnClickListener playPauseClickListener = v -> onPlayPauseButtonClicked(mPlayPauseButtonTwo, true);
+        View.OnClickListener playPauseClickListener = v -> onPlayPauseButtonClicked(true);
         playPauseLayoutTwo.setOnClickListener(playPauseClickListener);
         if (mPlayPauseButtonTwo != null) {
             mPlayPauseButtonTwo.setOnClickListener(playPauseClickListener);
@@ -6443,38 +6443,102 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
     }
 
-    public void onPlayPauseButtonClicked(Button playPauseButton, boolean barView) {
+    public void onPlayPauseButtonClicked(boolean barView) {
         if (barView) {
             mWorkspace.scheduleAutoHide();
         }
         if (!temporarilyDisablePlayPauseButton) {
-            if (playPauseButton != null) {
-                if (MusicService.state.booleanValue() || (mAudioManager != null && mAudioManager.isMusicActive())) {
-                    playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                    if (barView) {
-                        setBarButtonsTint(playPauseButton);
+            if ("fyt".equals(mediaSource)) {
+                if (Launcher.this.mPlayPauseButton != null) {
+                    if (MusicService.state.booleanValue()) {
+                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                        setWidgetButtonsTint(mPlayPauseButton);
                     } else {
-                        setWidgetButtonsTint(playPauseButton);
-                    }
-                } else {
-                    playPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                    if (barView) {
-                        setBarButtonsTint(playPauseButton);
-                    } else {
-                        setWidgetButtonsTint(playPauseButton);
+                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                        setWidgetButtonsTint(mPlayPauseButton);
                     }
                 }
-            }
+                if (Launcher.this.mPlayPauseButtonTwo != null && barView) {
+                    if (MusicService.state.booleanValue()) {
+                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                        setBarButtonsTint(mPlayPauseButtonTwo);
+                    } else {
+                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                        setBarButtonsTint(mPlayPauseButtonTwo);
+                    }
+                } 
+                Intent intent = new Intent();
+                intent.setAction("com.syu.music.playpause");
+                intent.setPackage("com.syu.music");
+                Launcher.this.startService(intent);
+            } else if ("mediaController".equals(mediaSource)) {
+                boolean activeControllerAppRunning = false;
+                MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
+                ComponentName component = new ComponentName(this, NotificationListener.class);
+                List<MediaController> controllers = msm.getActiveSessions(component);
+                for (MediaController controller : controllers) {
+                    if (controller.getPackageName().equals(activeController)) {
+                        activeControllerAppRunning = true;
 
-            if (isRadioPlaying() && "mediaController".equals(mediaSource)) {
-                openActiveMusicPlayer(null);
-            } else {
-                MediaTransportController.handleAction(
-                        this,
-                        MediaTransportController.ACTION_PLAY_PAUSE,
-                        getPreferredMediaControllerPackage()
-                );
-                setPlayPauseIcon(true);
+                        PlaybackState state = controller.getPlaybackState();
+                        int playbackState = (state != null) ? state.getState() : PlaybackState.STATE_NONE;
+
+                        if (playbackState == PlaybackState.STATE_PLAYING) {
+                            handler.postDelayed(() -> {
+                                if (playbackState == PlaybackState.STATE_PLAYING) {
+                                    if (Launcher.this.mPlayPauseButton != null) {
+                                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                                        setWidgetButtonsTint(mPlayPauseButton);
+                                    }
+                                    if (Launcher.this.mPlayPauseButtonTwo != null && barView) {
+                                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                                        setBarButtonsTint(mPlayPauseButtonTwo);
+                                    } 
+                                    controller.getTransportControls().pause();  
+                                } else {
+                                    if (Launcher.this.mPlayPauseButton != null) {
+                                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                                        setWidgetButtonsTint(mPlayPauseButton);
+                                    }
+                                    if (Launcher.this.mPlayPauseButtonTwo != null && barView) {
+                                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                                        setBarButtonsTint(mPlayPauseButtonTwo);
+                                    }   
+                                    controller.getTransportControls().play();
+                                }
+                            }, 350);
+
+                        } else {
+                            if (Launcher.this.mPlayPauseButton != null) {
+                                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                                setWidgetButtonsTint(mPlayPauseButton);
+                            }
+                            if (Launcher.this.mPlayPauseButtonTwo != null && barView) {
+                                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                                setBarButtonsTint(mPlayPauseButtonTwo);
+                            }   
+
+                            controller.getTransportControls().play();
+                        }
+                        break;
+                    }
+                }
+                if (!activeControllerAppRunning || isRadioPlaying()) {
+                    WindowUtil.removePip();
+                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
+                    try {
+                        ComponentName componentName = launchIntent.getComponent();
+                        PackageManager pm = getPackageManager();
+                        ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+                        String appTitle = appInfo.loadLabel(pm).toString();
+                        AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+                        Launcher.this.refreshLeftCycle(bean);
+                        cleanWidgetBar();
+                    } catch (PackageManager.NameNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                    startActivity(launchIntent);
+                }
             }
         }
 
@@ -6484,8 +6548,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             @Override
             public void run() {
                 temporarilyDisablePlayPauseButton = false;
-                setPlayPauseIcon();
-                requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
             }
         }, 500);
     }

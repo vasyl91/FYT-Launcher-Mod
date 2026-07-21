@@ -95,15 +95,19 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String[] url) throws Exception {
+        if (isCancelled()) return "";
         getTimes(url[0]);
-        boolean nightMode = mPrefs.getBoolean("night_mode", false); 
+        if (isCancelled()) return "";
+        boolean nightMode = mPrefs.getBoolean("night_mode", false);
         if (nightMode && !mOnlyGetTimes) {
+            if (isCancelled()) return "";
             setWallpapers();
+            if (isCancelled()) return "";
             boolean brightnessBool = mPrefs.getBoolean("brightness", false);
             if (brightnessBool) {
                 setBrightness();
             }
-            if (notArctic()) {
+            if (!isCancelled() && notArctic()) {
                 scheduleJob(this.mContext, timeToJob);
             }
         }

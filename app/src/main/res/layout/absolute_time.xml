@@ -8,43 +8,71 @@
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/ll_time"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        app:flexWrap="wrap"
+        android:layout_height="wrap_content"
+        app:flexWrap="nowrap"
         app:flexDirection="row"
         app:justifyContent="space_around"
         app:alignItems="center" >
 
-        <com.fyt.widget.DigitClock
-            android:id="@+id/digit_clock"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_layout_clock"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true" />
+            app:layout_flexBasisPercent="70%"
+            app:layout_flexGrow="0"
+            app:layout_flexShrink="0">
 
-        <com.google.android.flexbox.FlexboxLayout     
-            android:layout_width="wrap_content"
+            <com.fyt.widget.DigitClock
+                android:id="@+id/digit_clock"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_layout_date"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:flexWrap="wrap"
-            app:flexDirection="column"
-            app:justifyContent="space_evenly" >
+            app:layout_flexBasisPercent="30%"
+            app:layout_flexGrow="0"
+            app:layout_flexShrink="0">
 
-            <com.fyt.widget.Date
-                android:textSize="0sp"
-                android:textColor="@android:color/white"
-                android:id="@+id/date"
+            <com.google.android.flexbox.FlexboxLayout     
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:singleLine="true" />
+                android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:flexDirection="column"
+                app:justifyContent="space_evenly" >
 
-            <com.fyt.widget.WeekDay
-                android:textSize="0sp"
-                android:textColor="@android:color/white"
-                android:id="@+id/curWeek"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:singleLine="true"/>
+                <com.fyt.widget.Date
+                    android:textSize="0sp"
+                    android:textColor="@android:color/white"
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:singleLine="true" />
 
-        </com.google.android.flexbox.FlexboxLayout>
+                <com.fyt.widget.WeekDay
+                    android:textSize="0sp"
+                    android:textColor="@android:color/white"
+                    android:id="@+id/curWeek"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:singleLine="true"/>
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.flexbox.FlexboxLayout>
 </AbsoluteLayout>

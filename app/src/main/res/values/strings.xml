@@ -276,7 +276,8 @@
     <string name="wallpaper_picker_system">System wallpaper picker</string> 
     <string name="wallpaper_picker_launcher">In-app wallpaper picker</string> 
     <string name="all_apps_textSize_str">Set all apps icon text size (max. 50)</string>  
-    <string name="workspace_textSize_str">Set main screen icon text size (max. 50)</string>      
+    <string name="workspace_textSize_str">Set main screen icon text size (max. 50)</string>     
+    <string name="launcher_home">Home screen always on top while device wakes up</string>    
     <string name="device_settings">Device settings</string> 
     <string name="layout_category">Layout</string>
     <string name="misc_category">Miscellaneous</string>

@@ -299,6 +299,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference accessibilityPreference = findPreference(Keys.ACCESSIBILITY_SETTINGS);
         Preference wallpaperPicker = findPreference(Keys.WALLPAPER_PICKER);
         Preference wallpaperPickerSource = findPreference(Keys.WALLPAPER_PICKER_SOURCE);
+        Preference launcherHome = findPreference(Keys.LAUNCHER_HOME);
 
         allAppsTextSize = findPreference(Keys.ALL_APPS_TEXT_SIZE);
         String allAppsTextSizeStr = sharedPrefs.getString(Keys.ALL_APPS_TEXT_SIZE, "18");
@@ -384,6 +385,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (workspaceTextSize != null) {
             workspaceTextSize.setOnPreferenceClickListener(this);
+        }
+        if (launcherHome != null) {
+            launcherHome.setOnPreferenceClickListener(this);
         }
         nightMode();
         if (logcatCategory != null) {
