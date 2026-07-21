@@ -4,16 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,10 +28,6 @@ public class WindowHostSurfacePreloader {
      * Pre-create and warm up an ActivityView for instant use
      */
     public static Object prewarmActivityView(Context ctx, String key) {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            schedulePrewarmActivityView(ctx, key);
-            return null;
-        }
         try {
             // Check if we already have a warm instance
             Object existing = warmPool.get(key);
@@ -47,9 +39,6 @@ public class WindowHostSurfacePreloader {
                     Log.i(TAG, "Using existing warm ActivityView for: " + key);
                     return existing;
                 }
-                releaseExpired(key, existing, "expired");
-            } else if (existing != null) {
-                releaseExpired(key, existing, "missing timestamp");
             }
             
             // Create new ActivityView
@@ -61,9 +50,8 @@ public class WindowHostSurfacePreloader {
             
             // Store in pool
             warmPool.put(key, av);
-            long createdAt = System.currentTimeMillis();
-            warmTimestamps.put(key, createdAt);
-            scheduleExpiryCheck(key, av, createdAt);
+            warmTimestamps.put(key, System.currentTimeMillis());
+            
             Log.i(TAG, "Pre-warmed ActivityView for: " + key);
             return av;
             
@@ -71,10 +59,6 @@ public class WindowHostSurfacePreloader {
             Log.e(TAG, "Failed to prewarm ActivityView for: " + key, t);
             return null;
         }
-    }
-
-    public static void schedulePrewarmActivityView(Context ctx, String key) {
-        new Handler(Looper.getMainLooper()).post(() -> prewarmActivityView(ctx, key));
     }
     
     /**
@@ -90,45 +74,19 @@ public class WindowHostSurfacePreloader {
         
         return av;
     }
-
-    private static void scheduleExpiryCheck(String key, Object av, long timestamp) {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            Object current = warmPool.get(key);
-            Long currentTimestamp = warmTimestamps.get(key);
-            if (current == av && currentTimestamp != null && currentTimestamp == timestamp) {
-                releaseExpired(key, av, "ttl");
-            }
-        }, WARM_EXPIRY_MS + 1_000L);
-    }
-
-    private static void releaseExpired(String key, Object av, String reason) {
-        warmPool.remove(key);
-        warmTimestamps.remove(key);
-        try {
-            WindowHostActivityView.release(av);
-            Log.i(TAG, "Released warm ActivityView for: " + key + " reason=" + reason);
-        } catch (Throwable t) {
-            Log.w(TAG, "Failed to release expired ActivityView for: " + key, t);
-        }
-    }
     
     /**
      * Clear all pre-warmed instances
      */
     public static void clearPool() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            new Handler(Looper.getMainLooper()).post(WindowHostSurfacePreloader::clearPool);
-            return;
-        }
-        List<Map.Entry<String, Object>> entries = new ArrayList<>(warmPool.entrySet());
-        for (Map.Entry<String, Object> entry : entries) {
+        for (Object av : warmPool.values()) {
             try {
-                WindowHostActivityView.release(entry.getValue());
+                WindowHostActivityView.release(av);
             } catch (Throwable ignore) {}
         }
         warmPool.clear();
         warmTimestamps.clear();
-        Log.i(TAG, "Cleared all pre-warmed ActivityViews count=" + entries.size());
+        Log.i(TAG, "Cleared all pre-warmed ActivityViews");
     }
     
     /**
