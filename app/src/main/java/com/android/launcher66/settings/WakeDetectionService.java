@@ -126,7 +126,6 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 if (mPrefs.getBoolean(Keys.LAUNCHER_HOME, true)) {
                     handler.postDelayed(this::pressHomeButton, 500);
                 }
-                handler.postDelayed(this::pressHomeButton, 500);
                 handler.postDelayed(this::dismissAppListDialog, 500);
                 handler.postDelayed(() -> sendWakeRefresh("early"), 900);
                 handler.postDelayed(() -> sendWakeRefresh("late"), 1800);
