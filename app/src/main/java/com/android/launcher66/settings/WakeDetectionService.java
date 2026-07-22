@@ -182,8 +182,10 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
 
                 if (isServiceRunning(NightModeService.class)) {
                     NightModeService.cancelSunTask();
-                    Intent nightModeIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
-                    LauncherApplication.sApp.stopService(nightModeIntent);  
+                    handler.postDelayed(() -> {
+                        Intent nightModeIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
+                        LauncherApplication.sApp.stopService(nightModeIntent);  
+                    }, 100);  // Small delay ensures onCancelled() completes    
                 }     
             }    
         } 
