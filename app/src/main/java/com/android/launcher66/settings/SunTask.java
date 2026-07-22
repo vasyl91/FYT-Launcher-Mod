@@ -118,7 +118,17 @@ public class SunTask extends AsyncTask<String, Void, String> {
     protected void onProgress(Void[] progress) {
         //
     }
-
+    
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        // Shut down the scheduler to cancel any pending wallpaper tasks
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdownNow();  // Forcefully cancel all pending tasks
+            Log.d(TAG, "SunTask cancelled - ScheduledExecutorService shut down");
+        }
+    }
+    
     private void getTimes(String url) {        
         if (isConnectionAvailable(this.mContext)) {
             try {
