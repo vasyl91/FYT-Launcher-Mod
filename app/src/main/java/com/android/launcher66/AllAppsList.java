@@ -279,10 +279,12 @@ public class AllAppsList {
 
     private void setDefaultNavi() {
         try {
-            String naviPackage = FytPackage.resolveNavigationPackage(LauncherApplication.sApp);
-            if (naviPackage != null && !naviPackage.equals("")) {
-                FytPackage.setDefaultNavigationPackage(naviPackage);
-                CarStates.getCar(LauncherApplication.sApp).mTools.sendStr(0, 9, naviPackage);
+            if (LauncherApplication.isFytDevice()) {
+                String naviPackage = FytPackage.resolveNavigationPackage(LauncherApplication.sApp);
+                if (naviPackage != null && !naviPackage.equals("")) {
+                    FytPackage.setDefaultNavigationPackage(naviPackage);
+                    CarStates.getCar(LauncherApplication.sApp).mTools.sendStr(0, 9, naviPackage);
+                }
             }
         } catch (Exception e) {
             Toast.makeText(LauncherApplication.sApp, LauncherApplication.sApp.getString(R.string.init_default_app_error), Toast.LENGTH_LONG).show();

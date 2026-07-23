@@ -175,6 +175,9 @@ public class WindowHostSinglePane {
 
     private void ensureWindow(Activity act, WindowManager wm, IBinder token) {
         if (added && root != null && lp != null) return;
+        if (root != null) {
+            try { if (root.isAttachedToWindow()) wm.removeViewImmediate(root); } catch (Throwable ignore) {}
+        }
 
         FrameLayout rootView = new FrameLayout(act);
         rootView.setBackgroundColor(Color.TRANSPARENT);
@@ -468,10 +471,14 @@ public class WindowHostSinglePane {
             Log.w(TAG, name + ": verifyDetached: view still attached after removal (attempt " + attempt + "), forcing again");
             try { wmRef.removeViewImmediate(v); } catch (Throwable ignore) {}
 
-            if (attempt < 4) {
+            if (attempt < 10) {
                 verifyDetached(v, wmRef, attempt + 1);
             } else {
-                Log.e(TAG, name + ": verifyDetached: giving up after " + (attempt + 1) + " attempts, view may still be leaked");
+                Log.e(TAG,"giving up after " + (attempt+1) + " attempts — neutralizing leaked view");
+                try {
+                    v.setVisibility(View.GONE);
+                    if (v instanceof ViewGroup) disableTouchRecursively((ViewGroup) v);
+                } catch (Throwable ignore) {}
             }
         }, 150);
     }
@@ -490,7 +497,11 @@ public class WindowHostSinglePane {
             lp.x = -3000; lp.y = -3000; lp.alpha = 0f;
             lp.width = 600; lp.height = 600;
             lp.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
-            try { wm.updateViewLayout(root, lp); } catch (Throwable ignore) {}
+            try { wm.updateViewLayout(root, lp); }
+            catch (Throwable t) {
+                Log.w(TAG, name + ": parkInvisible updateViewLayout failed, forcing removal", t);
+                try { wm.removeViewImmediate(root); } catch (Throwable ignore2) {}
+            }
             root.setAlpha(0f);
             root.setVisibility(View.INVISIBLE);
             WindowHostSurfaceTamer.forceCleanup(root);
@@ -667,5 +678,29 @@ public class WindowHostSinglePane {
             }, 300);
             
         }, 500);
+    }
+
+    private static void disableTouchRecursively(ViewGroup root) {
+        disableTouchRecursively((View) root);
+    }
+
+    private static void disableTouchRecursively(View v) {
+        if (v == null) return;
+        try {
+            v.setOnTouchListener(null);
+            v.setOnClickListener(null);
+            v.setOnLongClickListener(null);
+            v.setClickable(false);
+            v.setFocusable(false);
+            v.setFocusableInTouchMode(false);
+            v.setVisibility(View.GONE);
+        } catch (Throwable ignore) {}
+
+        if (v instanceof ViewGroup) {
+            ViewGroup g = (ViewGroup) v;
+            for (int i = 0; i < g.getChildCount(); i++) {
+                disableTouchRecursively(g.getChildAt(i));
+            }
+        }
     }
 }
