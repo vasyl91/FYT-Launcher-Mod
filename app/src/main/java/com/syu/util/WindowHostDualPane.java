@@ -215,6 +215,7 @@ public  class WindowHostDualPane {
     void dismissAsync() {
         final int myGen = ++gen;
         visible.set(false);
+        dragController.interactive.set(false);
         cancelPendingRestore();
         parkInvisible();
         postMain(() -> hardRemoveWindow(false, myGen));
@@ -241,6 +242,9 @@ public  class WindowHostDualPane {
 
     private void ensureWindow(Activity act, WindowManager wm, IBinder token) {
         if (added && root != null && lp != null) return;
+        if (root != null) {
+            try { if (root.isAttachedToWindow()) wm.removeViewImmediate(root); } catch (Throwable ignore) {}
+        }
 
         // Root container
         FrameLayout rootView = new FrameLayout(act);
@@ -899,15 +903,19 @@ public  class WindowHostDualPane {
             boolean stillAttached;
             try { stillAttached = v.isAttachedToWindow(); } catch (Throwable t) { stillAttached = false; }
 
-            if (!stillAttached) return; // OK, faktycznie odłączony
+            if (!stillAttached) return;
 
             Log.w(TAG, "verifyDetached: view still attached after removal (attempt " + attempt + "), forcing again");
             try { wmRef.removeViewImmediate(v); } catch (Throwable ignore) {}
 
-            if (attempt < 4) {
+            if (attempt < 10) {
                 verifyDetached(v, wmRef, attempt + 1);
             } else {
-                Log.e(TAG, "verifyDetached: giving up after " + (attempt + 1) + " attempts, view may still be leaked");
+                Log.e(TAG,"giving up after " + (attempt+1) + " attempts — neutralizing leaked view");
+                try {
+                    v.setVisibility(View.GONE);
+                    if (v instanceof ViewGroup) disableTouchRecursively((ViewGroup) v);
+                } catch (Throwable ignore) {}
             }
         }, 150);
     }
@@ -931,7 +939,11 @@ public  class WindowHostDualPane {
             lp.x = -3000; lp.y = -3000; lp.alpha = 0f;
             lp.width = 600; lp.height = 600;
             lp.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
-            try { wm.updateViewLayout(root, lp); } catch (Throwable ignore) {}
+            try { wm.updateViewLayout(root, lp); }
+            catch (Throwable t) {
+                Log.w(TAG, "parkInvisible updateViewLayout failed, forcing removal", t);
+                try { wm.removeViewImmediate(root); } catch (Throwable ignore2) {}
+            }
             root.setAlpha(0f); 
             root.setVisibility(View.INVISIBLE);
             WindowHostSurfaceTamer.forceCleanup(root);
@@ -1176,9 +1188,11 @@ public  class WindowHostDualPane {
         private int startLeftW;
         private int pendingLeft = -1, pendingRight = -1;
         private int minW, maxW, totalW;
+        private final AtomicBoolean interactive = new AtomicBoolean(true);
 
         @Override
         public boolean onTouch(View v, MotionEvent e) {
+            if (!interactive.get()) return false;
             if (root == null || leftHost == null || rightHost == null) return false;
 
             switch (e.getActionMasked()) {
@@ -1314,6 +1328,30 @@ public  class WindowHostDualPane {
             leftHost.setLayoutParams(leftLp);
             rightHost.setLayoutParams(rightLp);
             divider.setLayoutParams(dividerLp);
+        }
+    }
+
+    private static void disableTouchRecursively(ViewGroup root) {
+        disableTouchRecursively((View) root);
+    }
+
+    private static void disableTouchRecursively(View v) {
+        if (v == null) return;
+        try {
+            v.setOnTouchListener(null);
+            v.setOnClickListener(null);
+            v.setOnLongClickListener(null);
+            v.setClickable(false);
+            v.setFocusable(false);
+            v.setFocusableInTouchMode(false);
+            v.setVisibility(View.GONE);
+        } catch (Throwable ignore) {}
+
+        if (v instanceof ViewGroup) {
+            ViewGroup g = (ViewGroup) v;
+            for (int i = 0; i < g.getChildCount(); i++) {
+                disableTouchRecursively(g.getChildAt(i));
+            }
         }
     }
 }
