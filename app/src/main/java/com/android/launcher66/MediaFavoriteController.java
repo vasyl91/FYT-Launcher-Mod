@@ -13,6 +13,9 @@ import android.util.Log;
 import java.util.List;
 import java.util.Locale;
 
+import android.os.Handler;
+import android.os.Looper;
+
 public final class MediaFavoriteController {
     public static final String ACTION_FAVORITE = "com.android.launcher66.action.MEDIA_FAVORITE";
     public static final int FAVORITE_STATE_UNKNOWN = 0;
@@ -25,6 +28,10 @@ public final class MediaFavoriteController {
     private static final String SPOTIFY_PACKAGE = "com.spotify.music";
     private static final String APPLE_MUSIC_PACKAGE = "com.apple.android.music";
     private static final String YOUTUBE_MUSIC_PACKAGE = "com.google.android.apps.youtube.music";
+    private static final String YOUTUBE_PACKAGE = "com.google.android.youtube";
+    private static final String YOUTUBE_REVANCED_PACKAGE = "app.revanced.android.youtube";
+
+    private static final boolean isMediaDebug = true;
 
     private MediaFavoriteController() {
     }
@@ -40,7 +47,7 @@ public final class MediaFavoriteController {
         }
 
         int stateBefore = getCurrentFavoriteState(context, preferredPackage);
-        boolean sent = toggleFavorite(controller, toPrivateState(stateBefore));
+        boolean sent = toggleFavorite(context, controller, toPrivateState(stateBefore));
         if (sent) {
             cachePublicFavoriteState(context, controller, getExpectedStateAfterToggle(stateBefore));
         }
@@ -61,6 +68,10 @@ public final class MediaFavoriteController {
         if (currentState != FAVORITE_STATE_UNKNOWN) {
             cachePublicFavoriteState(context, controller, currentState);
             return currentState;
+        }
+
+        if (YOUTUBE_PACKAGE.equals(controller.getPackageName()) || YOUTUBE_REVANCED_PACKAGE.equals(controller.getPackageName())) {
+            return getCachedPublicFavoriteState(context, controller);
         }
 
         return getCachedPublicFavoriteState(context, controller);
@@ -149,7 +160,9 @@ public final class MediaFavoriteController {
     private static boolean isKnownFavoritePackage(String packageName) {
         return SPOTIFY_PACKAGE.equals(packageName)
                 || APPLE_MUSIC_PACKAGE.equals(packageName)
-                || YOUTUBE_MUSIC_PACKAGE.equals(packageName);
+                || YOUTUBE_MUSIC_PACKAGE.equals(packageName)
+                || YOUTUBE_PACKAGE.equals(packageName)
+                || YOUTUBE_REVANCED_PACKAGE.equals(packageName);
     }
 
     private static PlaybackState safePlaybackState(MediaController controller) {
@@ -174,7 +187,7 @@ public final class MediaFavoriteController {
         return getMetadataFavoriteState(controller.getMetadata()) != FavoriteState.UNKNOWN;
     }
 
-    private static boolean toggleFavorite(MediaController controller, FavoriteState assumedState) {
+    private static boolean toggleFavorite(Context context, MediaController controller, FavoriteState assumedState) {
         PlaybackState state = controller.getPlaybackState();
         if (state == null) {
             return false;
@@ -185,6 +198,39 @@ public final class MediaFavoriteController {
         FavoriteState favoriteState = observedState == FavoriteState.UNKNOWN ? assumedState : observedState;
         Log.d(TAG, "Favorite state for " + controller.getPackageName()
                 + ": observed=" + observedState + " assumed=" + assumedState + " effective=" + favoriteState);
+
+        if (isMediaDebug) {
+            dumpFavoriteDebug(
+                context,
+                controller,
+                actions,
+                observedState,
+                favoriteState);
+        }
+
+        String pkg = controller.getPackageName();
+        if (YOUTUBE_PACKAGE.equals(pkg) || YOUTUBE_REVANCED_PACKAGE.equals(pkg)) {
+            if (actions.positive != null) {
+                return sendCustomAction(controller,
+                        actions.positive,
+                        "youtube like toggle");
+            }
+
+            if (favoriteState == FavoriteState.FAVORITED) {
+                if (sendRatingValue(controller,
+                        Rating.newUnratedRating(Rating.RATING_THUMB_UP_DOWN),
+                        "youtube remove like")) {
+                    return true;
+                }
+                return false;
+            }
+
+            if (sendRatingValue(controller, Rating.newThumbRating(true), "youtube like")) {
+                return true;
+            }
+
+            return false;
+        }
 
         if (favoriteState == FavoriteState.FAVORITED) {
             if (sendCustomAction(controller, actions.negative, "unfavorite")) return true;
@@ -233,21 +279,82 @@ public final class MediaFavoriteController {
             return false;
         }
 
-        if (!favorite) {
-            if (sendRatingValue(controller, Rating.newHeartRating(false), "heart rating false")) return true;
-            if (sendRatingValue(controller, Rating.newUnratedRating(Rating.RATING_HEART), "heart unrated")) return true;
-            if (sendRatingValue(controller, Rating.newUnratedRating(Rating.RATING_THUMB_UP_DOWN), "thumb unrated")) return true;
-            return false;
+        int ratingStyle = getRatingStyle(controller.getMetadata());
+
+        if (ratingStyle == Rating.RATING_THUMB_UP_DOWN) {
+            if (!favorite) {
+                return sendRatingValue(controller, Rating.newUnratedRating(Rating.RATING_THUMB_UP_DOWN), "thumb unrated");
+            }
+            return sendRatingValue(controller, Rating.newThumbRating(true), "thumb rating true");
         }
 
-        if (sendRatingValue(controller, Rating.newHeartRating(true), "heart rating true")) return true;
-        return sendRatingValue(controller, Rating.newThumbRating(true), "thumb rating true");
+        if (ratingStyle == Rating.RATING_HEART) {
+            if (!favorite) {
+                return sendRatingValue(controller, Rating.newHeartRating(false), "heart rating false");
+            }
+            return sendRatingValue(controller, Rating.newHeartRating(true), "heart rating true");
+        }
+
+        if (!favorite) {
+            if (sendRatingValue(controller, Rating.newUnratedRating(Rating.RATING_THUMB_UP_DOWN), "thumb unrated (fallback)")) return true;
+            if (sendRatingValue(controller, Rating.newUnratedRating(Rating.RATING_HEART), "heart unrated (fallback)")) return true;
+            return sendRatingValue(controller, Rating.newHeartRating(false), "heart rating false (fallback)");
+        }
+        if (sendRatingValue(controller, Rating.newThumbRating(true), "thumb rating true (fallback)")) return true;
+        return sendRatingValue(controller, Rating.newHeartRating(true), "heart rating true (fallback)");
+    }
+
+    private static int getRatingStyle(MediaMetadata metadata) {
+        if (metadata == null) {
+            return Rating.RATING_NONE;
+        }
+        Rating userRating = metadata.getRating(MediaMetadata.METADATA_KEY_USER_RATING);
+        if (userRating != null) {
+            return userRating.getRatingStyle();
+        }
+        Rating rating = metadata.getRating(MediaMetadata.METADATA_KEY_RATING);
+        if (rating != null) {
+            return rating.getRatingStyle();
+        }
+        return Rating.RATING_NONE;
     }
 
     private static boolean sendRatingValue(MediaController controller, Rating rating, String label) {
         try {
+            Log.d(TAG, "Sending rating...");
+
             controller.getTransportControls().setRating(rating);
-            Log.d(TAG, "Sent " + label + " for " + controller.getPackageName());
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+
+                MediaMetadata md = controller.getMetadata();
+
+                if (md == null) {
+                    Log.d(TAG, "Metadata after rating = null");
+                    return;
+                }
+
+                Rating ur = md.getRating(MediaMetadata.METADATA_KEY_USER_RATING);
+                Rating r = md.getRating(MediaMetadata.METADATA_KEY_RATING);
+
+                Log.d(TAG, "After setRating()");
+                Log.d(TAG, "USER_RATING = " + ur);
+                Log.d(TAG, "RATING      = " + r);
+
+            }, 1000);
+
+            Log.d(TAG, "Rating object = " + rating);
+            Log.d(TAG, "Rating style  = " + rating.getRatingStyle());
+            Log.d(TAG, "isRated       = " + rating.isRated());
+
+            try {
+                Log.d(TAG, "hasHeart      = " + rating.hasHeart());
+            } catch (Exception ignored) {}
+
+            try {
+                Log.d(TAG, "thumbUp       = " + rating.isThumbUp());
+            } catch (Exception ignored) {}
+
+            Log.d(TAG, "setRating() finished");
             return true;
         } catch (Exception e) {
             Log.w(TAG, label + " failed for " + controller.getPackageName(), e);
@@ -281,7 +388,14 @@ public final class MediaFavoriteController {
     }
 
     private static FavoriteState ratingToFavoriteState(Rating rating) {
-        if (rating == null || !rating.isRated()) {
+        if (rating == null) {
+            return FavoriteState.UNKNOWN;
+        }
+        if (!rating.isRated()) {
+            if (rating.getRatingStyle() == Rating.RATING_HEART
+                    || rating.getRatingStyle() == Rating.RATING_THUMB_UP_DOWN) {
+                return FavoriteState.NOT_FAVORITED;
+            }
             return FavoriteState.UNKNOWN;
         }
         if (rating.getRatingStyle() == Rating.RATING_HEART) {
@@ -503,4 +617,107 @@ public final class MediaFavoriteController {
                 || text.contains("library")
                 || text.contains("save"));
     }
+
+    private static void dumpFavoriteDebug(Context context,
+                                          MediaController controller,
+                                          FavoriteActions actions,
+                                          FavoriteState observedState,
+                                          FavoriteState effectiveState) {
+
+        Log.d(TAG, "================== FAVORITE DEBUG ==================");
+        Log.d(TAG, "Package        : " + controller.getPackageName());
+
+        PlaybackState state = controller.getPlaybackState();
+        Log.d(TAG, "PlaybackState  : " + (state == null ? "null" : state.getState()));
+
+        if (state != null) {
+            Log.d(TAG, "Actions mask   : 0x" + Long.toHexString(state.getActions()));
+            dumpActions(state.getActions());
+
+            List<PlaybackState.CustomAction> list = state.getCustomActions();
+            if (list == null || list.isEmpty()) {
+                Log.d(TAG, "CustomActions  : NONE");
+            } else {
+                for (int i = 0; i < list.size(); i++) {
+                    PlaybackState.CustomAction a = list.get(i);
+
+                    Log.d(TAG,
+                            "Action[" + i + "]"
+                                    + "\n    id    = " + a.getAction()
+                                    + "\n    name  = " + a.getName()
+                                    + "\n    icon  = " + a.getIcon());
+                }
+            }
+        }
+
+        MediaMetadata md = controller.getMetadata();
+
+        if (md == null) {
+            Log.d(TAG, "Metadata       : null");
+        } else {
+
+            Log.d(TAG, "MediaId        : " + md.getString(MediaMetadata.METADATA_KEY_MEDIA_ID));
+            Log.d(TAG, "Title          : " + md.getString(MediaMetadata.METADATA_KEY_TITLE));
+            Log.d(TAG, "Artist         : " + md.getString(MediaMetadata.METADATA_KEY_ARTIST));
+            Log.d(TAG, "Album          : " + md.getString(MediaMetadata.METADATA_KEY_ALBUM));
+
+            Rating userRating =
+                    md.getRating(MediaMetadata.METADATA_KEY_USER_RATING);
+
+            Rating rating =
+                    md.getRating(MediaMetadata.METADATA_KEY_RATING);
+
+            dumpRating("USER_RATING", userRating);
+            dumpRating("RATING", rating);
+        }
+
+        Log.d(TAG, "Detected positive : " + actionName(actions.positive));
+        Log.d(TAG, "Detected negative : " + actionName(actions.negative));
+        Log.d(TAG, "Detected toggle   : " + actionName(actions.toggle));
+
+        Log.d(TAG, "Observed state    : " + observedState);
+        Log.d(TAG, "Effective state   : " + effectiveState);
+
+        Log.d(TAG, "Cached state      : "
+                + publicStateName(
+                        getCachedPublicFavoriteState(
+                                context,
+                                controller)));
+
+        Log.d(TAG, "====================================================");
+    }
+
+    private static void dumpRating(String name, Rating rating) {
+
+        if (rating == null) {
+            Log.d(TAG, name + " = null");
+            return;
+        }
+
+        Log.d(TAG, name + ".isRated      = " + rating.isRated());
+        Log.d(TAG, name + ".style        = " + rating.getRatingStyle());
+
+        try {
+            Log.d(TAG, name + ".hasHeart     = " + rating.hasHeart());
+        } catch (Exception ignored) {
+        }
+
+        try {
+            Log.d(TAG, name + ".isThumbUp    = " + rating.isThumbUp());
+        } catch (Exception ignored) {
+        }
+    }
+
+    private static void dumpActions(long actions) {
+        Log.d(TAG, "ACTION_PLAY            = " + ((actions & PlaybackState.ACTION_PLAY) != 0));
+        Log.d(TAG, "ACTION_PAUSE           = " + ((actions & PlaybackState.ACTION_PAUSE) != 0));
+        Log.d(TAG, "ACTION_PLAY_PAUSE      = " + ((actions & PlaybackState.ACTION_PLAY_PAUSE) != 0));
+        Log.d(TAG, "ACTION_SKIP_NEXT       = " + ((actions & PlaybackState.ACTION_SKIP_TO_NEXT) != 0));
+        Log.d(TAG, "ACTION_SKIP_PREV       = " + ((actions & PlaybackState.ACTION_SKIP_TO_PREVIOUS) != 0));
+        Log.d(TAG, "ACTION_STOP            = " + ((actions & PlaybackState.ACTION_STOP) != 0));
+        Log.d(TAG, "ACTION_SET_RATING      = " + ((actions & PlaybackState.ACTION_SET_RATING) != 0));
+        Log.d(TAG, "ACTION_SEEK_TO         = " + ((actions & PlaybackState.ACTION_SEEK_TO) != 0));
+        Log.d(TAG, "ACTION_FAST_FORWARD    = " + ((actions & PlaybackState.ACTION_FAST_FORWARD) != 0));
+        Log.d(TAG, "ACTION_REWIND          = " + ((actions & PlaybackState.ACTION_REWIND) != 0));
+    }    
 }
