@@ -27,6 +27,8 @@ public class WeekDayTwo extends AppCompatTextView implements SharedPreferences.O
     private boolean isTextSizeAdjusted = false;
     private SharedPreferences mPrefs;
     private int mDefaultTextColor;
+    private int adjustmentAttempts = 0;
+    private static final int MAX_ADJUSTMENT_ATTEMPTS = 5;
 
     public WeekDayTwo(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -108,39 +110,45 @@ public class WeekDayTwo extends AppCompatTextView implements SharedPreferences.O
 
         setText(mText);
 
-        // Only adjust size once, or when text actually changes
-        if (!isTextSizeAdjusted) {
-            // Use a member variable to track the listener
-            mPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    if (mPreDrawListener != null) {
-                        getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
-                        mPreDrawListener = null;
-                    }
+        // Reset adjustment counter for fresh text
+        adjustmentAttempts = 0;
+        isTextSizeAdjusted = false;
 
-                    if (!isAttachedToWindow()) {
-                        return true;
-                    }
+        // Add pre-draw listener to adjust size when layout is ready
+        mPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                if (mPreDrawListener != null) {
+                    getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
+                    mPreDrawListener = null;
+                }
 
-                    adjustTextSize(mText, 0.55f);
-                    isTextSizeAdjusted = true;
+                if (!isAttachedToWindow()) {
                     return true;
                 }
-            };
 
-            getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
-        }
+                adjustTextSize(mText);
+                return true;
+            }
+        };
+
+        getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
     }
 
-    private void adjustTextSize(String text, float targetSize) {
+    private void adjustTextSize(String text) {
         postDelayed(() -> {
             View parent = getParent() instanceof View ? (View) getParent() : null;
 
-            if (parent == null) return;
+            if (parent == null) {
+                retryAdjustment(text);
+                return;
+            }
 
             int parentHeight = parent.getHeight();
-            if (parentHeight <= 0) return;
+            if (parentHeight <= 0) {
+                retryAdjustment(text);
+                return;
+            }
 
             // Count TextViews in parent
             int textViewCount = 0;
@@ -152,9 +160,13 @@ public class WeekDayTwo extends AppCompatTextView implements SharedPreferences.O
                     }
                 }
             }
-            if (textViewCount == 0) return;
+            if (textViewCount == 0) {
+                retryAdjustment(text);
+                return;
+            }
 
             // Calculate target height for this TextView
+            float targetSize = 0.55f;
             int targetHeight = (int)((parentHeight / textViewCount) * targetSize);
 
             // Set max height to prevent overflow
@@ -166,7 +178,7 @@ public class WeekDayTwo extends AppCompatTextView implements SharedPreferences.O
             maxSpFromHeight = maxSpFromHeight * 0.9f;
 
             // Binary search for best size (in SP units)
-            float minSize = 1f;
+            float minSize = 8f; // Minimum size to prevent too small text
             float maxSize = Math.min(500f, maxSpFromHeight);
             float bestSize = Math.max(minSize, Math.min((float)getTextSize() / scaledDensity, maxSize));
 
@@ -177,6 +189,12 @@ public class WeekDayTwo extends AppCompatTextView implements SharedPreferences.O
             }
             if (width <= 0) {
                 width = getResources().getDisplayMetrics().widthPixels / 3;
+            }
+
+            // If width is still invalid, retry
+            if (width <= 0) {
+                retryAdjustment(text);
+                return;
             }
 
             while (maxSize - minSize > 0.25f) {
@@ -196,6 +214,19 @@ public class WeekDayTwo extends AppCompatTextView implements SharedPreferences.O
             final float finalBestSize = Math.max(8f, Math.min(bestSize, maxSize));
 
             setTextSize(TypedValue.COMPLEX_UNIT_SP, finalBestSize);
+            isTextSizeAdjusted = true;
         }, 50);
+    }
+
+    private void retryAdjustment(String text) {
+        // Retry adjustment if dimensions are not yet available
+        if (adjustmentAttempts < MAX_ADJUSTMENT_ATTEMPTS) {
+            adjustmentAttempts++;
+            postDelayed(() -> adjustTextSize(text), 100);
+        } else {
+            // Fallback: set a reasonable minimum size
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+            isTextSizeAdjusted = true;
+        }
     }
 }
