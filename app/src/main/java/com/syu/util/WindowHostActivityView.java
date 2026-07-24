@@ -362,29 +362,22 @@ public class WindowHostActivityView {
                     .getMethod("setLaunchWindowingMode", int.class)
                     .invoke(options, 5 /*WINDOWING_MODE_FREEFORM*/);
             } catch (Exception ignore) {}
-            
+
             try {
                 // Tell the system to reuse existing task if available
                 options.getClass()
                     .getMethod("setTaskAlwaysOnTop", boolean.class)
                     .invoke(options, false);
             } catch (Exception ignore) {}
-            
-            try {
-                // Prefer reusing existing task over creating new one
-                options.getClass()
-                    .getMethod("setLaunchDisplayId", int.class)
-                    .invoke(options, 0); // Default display
-            } catch (Exception ignore) {}
-            
+
             try {
                 Method setLaunchActivityType = options.getClass()
                     .getMethod("setLaunchActivityType", int.class);
                 setLaunchActivityType.invoke(options, 0); // ACTIVITY_TYPE_UNDEFINED (let system decide)
             } catch (Exception ignore) {}
-            
+
             return options;
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Failed to create compatible options", e);
             return null;
@@ -537,38 +530,26 @@ public class WindowHostActivityView {
     static boolean startActivitySmartWithProcessCheck(Object av, Context ctx, String packageName, Rect bounds) {
         boolean processAlive = isProcessAlive(ctx, packageName);
         int existingTaskId = getTaskIdForPackage(ctx, packageName);
-        
+
         Intent intent = getLaunchIntentForPackage(ctx, packageName);
         if (intent == null) {
             Log.e(TAG, "No launch intent for " + packageName);
             return false;
         }
-        
+
         // If process is alive or task exists, ensure we use resume flags
         if (processAlive || existingTaskId >= 0) {
-            Log.i(TAG, "Existing process/task detected for " + packageName + 
+            Log.i(TAG, "Existing process/task detected for " + packageName +
                 " - using resume mode (processAlive=" + processAlive + ", taskId=" + existingTaskId + ")");
-            
+
             // Add extra flags to ensure we resume instead of recreate
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
             intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
-            
-            // If we have a task ID, try to move it to front instead of starting fresh
-            if (existingTaskId >= 0) {
-                try {
-                    ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
-                    Method moveTaskToFront = am.getClass().getMethod("moveTaskToFront", int.class, int.class);
-                    moveTaskToFront.invoke(am, existingTaskId, 0);
-                    Log.i(TAG, "Moved task " + existingTaskId + " to front for " + packageName);
-                } catch (Exception e) {
-                    Log.w(TAG, "Failed to move task to front, will try normal start", e);
-                }
-            }
         } else {
             Log.i(TAG, "Fresh start for " + packageName + " - no existing process");
         }
-        
+
         Object opts = createCompatibleOptions(packageName, bounds);
         return startActivitySmart(av, ctx, intent, opts);
     }
