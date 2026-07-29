@@ -27,6 +27,8 @@ import java.util.Arrays;
 public class WindowHostActivityView {
     private static final String TAG = "WindowHostActivityView";
     private static final String GOOGLE_MAPS_PACKAGE = "com.google.android.apps.maps";
+    private static final String YOUTUBE_PACKAGE = "com.google.android.youtube";
+    private static final String YOUTUBE_REVANCED_PACKAGE = "app.revanced.android.youtube";
     private static Class<?> sActivityView, sStateCb;
 
     static void ensureLoaded() {
@@ -347,11 +349,9 @@ public class WindowHostActivityView {
         try {
             ActivityOptions options = ActivityOptions.makeBasic();
 
-            if (isGoogleMapsPackage(packageName)) {
-                Log.i(TAG, "Google Maps ActivityView launch: using display-only options");
-                return options;
-            }
-
+            // FIX: Removed the Google Maps-specific bypass!
+            // Google Maps MUST receive setLaunchBounds() and FREEFORM (5) windowing mode
+            // so the system can correctly associate the Task size with the VirtualDisplay container.
             if (bounds != null) {
                 options.setLaunchBounds(bounds);
             }
@@ -413,6 +413,10 @@ public class WindowHostActivityView {
 
     static boolean isGoogleMapsPackage(String packageName) {
         return GOOGLE_MAPS_PACKAGE.equals(packageName);
+    }
+
+    static boolean isYouTubePackage(String packageName) {
+        return YOUTUBE_PACKAGE.equals(packageName) || YOUTUBE_REVANCED_PACKAGE.equals(packageName);
     }
 
     static boolean hasRealLaunchBounds(String packageName, Rect bounds) {

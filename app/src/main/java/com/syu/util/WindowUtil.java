@@ -40,6 +40,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -56,6 +57,47 @@ public class WindowUtil {
     private static Rect offscreen = new Rect(-3000, -3000, -2400, -2400);
     private static final Map<String, Boolean> pipOffscreenState = new HashMap<>();
     private static final Map<String, Rect> lastPipBounds = new HashMap<>();
+
+    // --- Reparent settle guard -------------------------------------------------
+    // reparentHostChild() moves an ActivityView's underlying window/surface between
+    // host containers (single<->dual switch, pane swap). The "ok" signal it waits for
+    // is a heuristic (VirtualDisplay id present / Surface valid) and can be true
+    // before WMS has actually finished registering the new parent window for that
+    // display. Any layout-affecting call on the ActivityView during that gap
+    // (setLayoutParams -> requestLayout -> traversal -> ActivityView.gatherTransparentRegion
+    // -> updateLocationAndTapExcludeRegion) can hit:
+    //   IllegalArgumentException: The given window is not the parent window of this display.
+    // ...and it hits it from inside the framework's own traversal, not from our
+    // reflective calls, so our usual try/catch around updateLocationAndTapExcludeRegion
+    // never sees it. Consumers should check isReparentUnsettled(view) before doing
+    // anything that forces a layout pass on a just-reparented ActivityView.
+    private static final Map<View, Long> sReparentUnsettledUntil = new WeakHashMap<>();
+    private static final long REPARENT_SETTLE_GRACE_MS = 250L;
+
+    private static void markReparentInFlight(View child) {
+        if (child == null) return;
+        synchronized (sReparentUnsettledUntil) {
+            sReparentUnsettledUntil.put(child, Long.MAX_VALUE);
+        }
+    }
+
+    private static void markReparentSettled(View child) {
+        if (child == null) return;
+        synchronized (sReparentUnsettledUntil) {
+            sReparentUnsettledUntil.put(child, SystemClock.uptimeMillis() + REPARENT_SETTLE_GRACE_MS);
+        }
+    }
+
+    /** True while {@code child}'s ActivityView is mid native-reparent or still inside its post-reparent settle window. */
+    public static boolean isReparentUnsettled(View child) {
+        if (child == null) return false;
+        Long until;
+        synchronized (sReparentUnsettledUntil) {
+            until = sReparentUnsettledUntil.get(child);
+        }
+        if (until == null) return false;
+        return SystemClock.uptimeMillis() < until;
+    }
 
     public static boolean dualPip = false;
     public static boolean firstPip = false;
@@ -540,21 +582,22 @@ public class WindowUtil {
 
         int pageWidth = workspace.getViewportWidth();
 
-        // Protect against overscroll: the provided scrollOffset may be "unbounded" (overscroll)
-        // while the logical maximum scroll is (pageCount - 1) * pageWidth. If there is only one
-        // page (pageCount == 1) or the user is overscrolling at the edges, we should not move PiPs
-        // beyond the real pages — they should stay visually anchored. Compute an effectiveScroll
-        // clamped to the [0, maxScroll] range and use that for position calculations.
         int pageCount = workspace.getChildCount();
         int maxScroll = Math.max(0, (pageCount - 1) * pageWidth);
         int effectiveScroll = Math.max(0, Math.min(scrollOffset, maxScroll));
 
-        // scrollOffset is the absolute scroll position (0 for page 0, pageWidth for page 1, etc.)
         int pipAbsoluteX = (pipHomeScreen * pageWidth) + basePos[0];
         int pipScreenX = pipAbsoluteX - effectiveScroll;
 
         Rect bounds = new Rect(pipScreenX, basePos[1],
                                pipScreenX + basePos[2], basePos[1] + basePos[3]);
+
+        // OPTIMIZATION: If the new bounds are identical to the previously applied ones,
+        // skip the update to avoid unnecessary IPC operations.
+        Rect last = lastPipBounds.get(pipType);
+        if (last != null && last.equals(bounds)) {
+            return;
+        }
 
         updatePipBounds(pipType, bounds);
         lastPipBounds.put(pipType, new Rect(bounds));
@@ -928,6 +971,14 @@ public class WindowUtil {
 
                                     invokeIfExists(newDualLeftAV, "updateLocationAndTapExcludeRegion");
                                     invokeIfExists(newThirdAv, "updateLocationAndTapExcludeRegion");
+
+                                    // Force the dual pane to recompute correct per-pane geometry
+                                    // (portrait-safe/supersample vs plain match-parent) for the
+                                    // pkg that just moved in, instead of leaving it at whatever
+                                    // transform reparentHostChild reset it to until the user
+                                    // happens to drag the divider.
+                                    invokeIfExists(dualRef, "forceResyncGeometry");
+                                    invokeIfExists(thirdRef, "resyncGeometryAfterSurfaceSwap");
                                 } catch (Throwable t) {
                                     Log.w(TAG, "swapLeftAndThird: delayed reattach failed", t);
                                 }
@@ -1055,6 +1106,8 @@ public class WindowUtil {
                                     if (thirdHostFinal != null) reparentHostChild(thirdHostFinal, vThird);
                                     invokeIfExists(newFirstAv, "updateLocationAndTapExcludeRegion");
                                     invokeIfExists(newThirdAv, "updateLocationAndTapExcludeRegion");
+                                    invokeIfExists(firstRef, "resyncGeometryAfterSurfaceSwap");
+                                    invokeIfExists(thirdRef, "resyncGeometryAfterSurfaceSwap");
                                 } catch (Throwable t) {
                                     Log.w(TAG, "swapLeftAndThird: delayed reattach failed (standalone)", t);
                                 }
@@ -1212,6 +1265,8 @@ public class WindowUtil {
                                     if (fourthHostFinal != null)   reparentHostChild(fourthHostFinal, viewForFourthAfter);
                                     invokeIfExists(newDualRightAV, "updateLocationAndTapExcludeRegion");
                                     invokeIfExists(newFourthAv, "updateLocationAndTapExcludeRegion");
+                                    invokeIfExists(dualRef, "forceResyncGeometry");
+                                    invokeIfExists(fourthRef, "resyncGeometryAfterSurfaceSwap");
                                 } catch (Throwable t) {
                                     Log.w(TAG, "swapRightAndFourth: delayed reattach failed", t);
                                 }
@@ -1329,6 +1384,8 @@ public class WindowUtil {
                                     if (fourthHostFinal != null) reparentHostChild(fourthHostFinal, vFourth);
                                     invokeIfExists(newSecondAv, "updateLocationAndTapExcludeRegion");
                                     invokeIfExists(newFourthAv, "updateLocationAndTapExcludeRegion");
+                                    invokeIfExists(secondRef, "resyncGeometryAfterSurfaceSwap");
+                                    invokeIfExists(fourthRef, "resyncGeometryAfterSurfaceSwap");
                                 } catch (Throwable t) {
                                     Log.w(TAG, "swapRightAndFourth: delayed reattach failed (standalone)", t);
                                 }
@@ -1471,6 +1528,10 @@ public class WindowUtil {
             try { vg.removeAllViews(); } catch (Throwable ignore) {}
 
             if (newChild != null) {
+                // Block layout-affecting calls on this view (see isReparentUnsettled) until
+                // the waiter below confirms the native reparent or times out.
+                markReparentInFlight(newChild);
+
                 // detach from previous parent
                 try {
                     ViewParent p = newChild.getParent();
@@ -1486,6 +1547,21 @@ public class WindowUtil {
                 } catch (Throwable t) {
                     try { vg.addView(newChild); } catch (Throwable ignore) {}
                 }
+
+                // Clear any transform left over from whichever host this view previously
+                // lived in (e.g. portrait-safe scaling applied for YouTube/portrait video).
+                // scaleX/scaleY/translationX/translationY/pivot are not part of LayoutParams,
+                // so addView() above does not reset them -- without this the view keeps
+                // rendering at its old host's scale/offset instead of filling the new one
+                // (shows up as a shrunken/offset strip after a single<->dual swap).
+                try {
+                    newChild.setScaleX(1f);
+                    newChild.setScaleY(1f);
+                    newChild.setTranslationX(0f);
+                    newChild.setTranslationY(0f);
+                    newChild.setPivotX(0f);
+                    newChild.setPivotY(0f);
+                } catch (Throwable ignore) {}
 
                 // Best-effort: attempt native reparent and wait until WindowSession reports success.
                 final View finalChild = newChild;
@@ -1529,6 +1605,7 @@ public class WindowUtil {
                                 // Success: now notify ActivityView to update geometry safely
                                 try { invokeIfExists(finalChild, "updateLocationAndTapExcludeRegion"); } catch (Throwable ignore) {}
                                 try { invokeIfExists(finalChild, "clearActivityViewGeometryForIme"); } catch (Throwable ignore) {}
+                                markReparentSettled(finalChild);
                                 // done
                                 return;
                             }
@@ -1542,9 +1619,13 @@ public class WindowUtil {
                                 Log.w(TAG, "reparentHostChild: native reparent did not confirm within timeout; proceeding anyway");
                                 try { invokeIfExists(finalChild, "updateLocationAndTapExcludeRegion"); } catch (Throwable ignore) {}
                                 try { invokeIfExists(finalChild, "clearActivityViewGeometryForIme"); } catch (Throwable ignore) {}
+                                markReparentSettled(finalChild);
                             }
                         } catch (Throwable t) {
                             Log.w(TAG, "reparentHostChild: waiter failure", t);
+                            // Fail-safe: don't leave the view permanently marked unsettled if the
+                            // waiter itself blew up — that would wedge WindowHostDualPane's retry loop.
+                            markReparentSettled(finalChild);
                         }
                     }
                 };
