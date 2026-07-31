@@ -39,6 +39,8 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
     private static final String RECYCLER_APP = "recycler.app";
     private static final String RECYCLER_APP_MAP = "recycler.app.map";
     private long mDataSignature;
+    private static final int APP_PICKER_STATE_RETRY_LIMIT = 4;
+    private static final long APP_PICKER_STATE_RETRY_MS = 150L;
 
     public LeftAppListAdapter(Launcher launcher, List<AppListBean> data) {
         this.mMaxCount = 5;
@@ -66,8 +68,22 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
     }
 
     private void showAppPickerDialog(int position) {
+        showAppPickerDialog(position, 0);
+    }
+
+    private void showAppPickerDialog(int position, int attempt) {
+        if (position == RecyclerView.NO_POSITION) {
+            return;
+        }
         FragmentManager fragmentManager = mLauncher.getSupportFragmentManager();
         if (fragmentManager.isStateSaved()) {
+            View decor = mLauncher.getWindow() == null ? null : mLauncher.getWindow().getDecorView();
+            if (decor != null && attempt < APP_PICKER_STATE_RETRY_LIMIT) {
+                decor.postDelayed(
+                        () -> showAppPickerDialog(position, attempt + 1),
+                        APP_PICKER_STATE_RETRY_MS
+                );
+            }
             return;
         }
         AppListDialogFragment dialog = getDialog();
