@@ -520,7 +520,9 @@ public class WindowUtil {
             if (screenKey.isEmpty()) return fallback;
 
             int pipHomeScreen = prefs.getInt(screenKey, 1) - 1;
-            if (pipHomeScreen < 0 || pipHomeScreen >= workspace.getChildCount()) return fallback;
+            if (pipHomeScreen < 0 || pipHomeScreen >= workspace.getChildCount()) {
+                return fallback;
+            }
 
             CellLayout pipHomeCellLayout = (CellLayout) workspace.getChildAt(pipHomeScreen);
             if (pipHomeCellLayout == null) return fallback;
@@ -772,7 +774,11 @@ public class WindowUtil {
         if (mWindowHost != null) {
             Launcher.getLauncher().handler.post(() -> mWindowHost.cleanup());
         }
-        if (!AppPackageName.isEmpty() && AppPackageName != null) {
+        if (AppPackageName != null && !AppPackageName.isEmpty()) {
+            if (FytPackage.GMAPS.equals(AppPackageName)) {
+                Log.i(TAG, "restartPinnedPipApp: skip force-stop for Google Maps");
+                return;
+            }
             ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
             try {
                 Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);

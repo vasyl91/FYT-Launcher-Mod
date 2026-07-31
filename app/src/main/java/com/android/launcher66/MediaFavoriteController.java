@@ -12,6 +12,8 @@ import android.util.Log;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -30,6 +32,8 @@ public final class MediaFavoriteController {
     private static final String YOUTUBE_MUSIC_PACKAGE = "com.google.android.apps.youtube.music";
     private static final String YOUTUBE_PACKAGE = "com.google.android.youtube";
     private static final String YOUTUBE_REVANCED_PACKAGE = "app.revanced.android.youtube";
+    private static final String YOUTUBE_MUSIC_REVANCED_PACKAGE = "app.revanced.android.apps.youtube.music";
+    private static final ExecutorService FAVORITE_CACHE_EXECUTOR = Executors.newSingleThreadExecutor();
 
     private static final boolean isMediaDebug = true;
 
@@ -70,10 +74,6 @@ public final class MediaFavoriteController {
             return currentState;
         }
 
-        if (YOUTUBE_PACKAGE.equals(controller.getPackageName()) || YOUTUBE_REVANCED_PACKAGE.equals(controller.getPackageName())) {
-            return getCachedPublicFavoriteState(context, controller);
-        }
-
         return getCachedPublicFavoriteState(context, controller);
     }
 
@@ -97,6 +97,10 @@ public final class MediaFavoriteController {
                 + ", positiveAction=" + actionName(actions.positive)
                 + ", negativeAction=" + actionName(actions.negative)
                 + ", toggleAction=" + actionName(actions.toggle);
+    }
+
+    public static boolean isFavoriteTemporarilyDisabledPackage(String packageName) {
+        return YOUTUBE_PACKAGE.equals(packageName) || YOUTUBE_REVANCED_PACKAGE.equals(packageName);
     }
 
     private static MediaController getTargetController(Context context, String preferredPackage) {
@@ -123,6 +127,9 @@ public final class MediaFavoriteController {
         }
 
         if (isExternalPackage(preferredPackage)) {
+            if (isFavoriteTemporarilyDisabledPackage(preferredPackage)) {
+                return null;
+            }
             for (MediaController controller : controllers) {
                 if (preferredPackage.equals(controller.getPackageName())) {
                     return controller;
@@ -133,6 +140,9 @@ public final class MediaFavoriteController {
         MediaController fallback = null;
         for (MediaController controller : controllers) {
             if (controller == null || !isExternalPackage(controller.getPackageName())) {
+                continue;
+            }
+            if (isFavoriteTemporarilyDisabledPackage(controller.getPackageName())) {
                 continue;
             }
             PlaybackState state = safePlaybackState(controller);
@@ -161,8 +171,7 @@ public final class MediaFavoriteController {
         return SPOTIFY_PACKAGE.equals(packageName)
                 || APPLE_MUSIC_PACKAGE.equals(packageName)
                 || YOUTUBE_MUSIC_PACKAGE.equals(packageName)
-                || YOUTUBE_PACKAGE.equals(packageName)
-                || YOUTUBE_REVANCED_PACKAGE.equals(packageName);
+                || YOUTUBE_MUSIC_REVANCED_PACKAGE.equals(packageName);
     }
 
     private static PlaybackState safePlaybackState(MediaController controller) {
@@ -192,6 +201,10 @@ public final class MediaFavoriteController {
         if (state == null) {
             return false;
         }
+        if (isFavoriteTemporarilyDisabledPackage(controller.getPackageName())) {
+            Log.d(TAG, "Favorite disabled for " + controller.getPackageName());
+            return false;
+        }
 
         FavoriteActions actions = findFavoriteActions(state.getCustomActions());
         FavoriteState observedState = getFavoriteState(controller, actions);
@@ -206,30 +219,6 @@ public final class MediaFavoriteController {
                 actions,
                 observedState,
                 favoriteState);
-        }
-
-        String pkg = controller.getPackageName();
-        if (YOUTUBE_PACKAGE.equals(pkg) || YOUTUBE_REVANCED_PACKAGE.equals(pkg)) {
-            if (actions.positive != null) {
-                return sendCustomAction(controller,
-                        actions.positive,
-                        "youtube like toggle");
-            }
-
-            if (favoriteState == FavoriteState.FAVORITED) {
-                if (sendRatingValue(controller,
-                        Rating.newUnratedRating(Rating.RATING_THUMB_UP_DOWN),
-                        "youtube remove like")) {
-                    return true;
-                }
-                return false;
-            }
-
-            if (sendRatingValue(controller, Rating.newThumbRating(true), "youtube like")) {
-                return true;
-            }
-
-            return false;
         }
 
         if (favoriteState == FavoriteState.FAVORITED) {
@@ -466,17 +455,20 @@ public final class MediaFavoriteController {
             return;
         }
 
-        if (state == FAVORITE_STATE_UNKNOWN) {
-            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                    .edit()
-                    .remove(key)
-                    .apply();
-        } else {
-            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                    .edit()
-                    .putInt(key, state)
-                    .apply();
-        }
+        Context appContext = context.getApplicationContext();
+        FAVORITE_CACHE_EXECUTOR.execute(() -> {
+            if (state == FAVORITE_STATE_UNKNOWN) {
+                appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                        .edit()
+                        .remove(key)
+                        .apply();
+            } else {
+                appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                        .edit()
+                        .putInt(key, state)
+                        .apply();
+            }
+        });
     }
 
     private static String getTrackCacheKey(MediaController controller) {

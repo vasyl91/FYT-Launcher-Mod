@@ -49,7 +49,11 @@ public class Stats {
     public Stats(Launcher launcher) {
         mLauncher = launcher;
 
-        loadStats();
+        mIntents = new ArrayList<String>(INITIAL_STATS_SIZE);
+        mHistogram = new ArrayList<Integer>(INITIAL_STATS_SIZE);
+        if (ENABLE_STATS) {
+            loadStats();
+        }
 
         if (LOCAL_LAUNCH_LOG) {
             try {
