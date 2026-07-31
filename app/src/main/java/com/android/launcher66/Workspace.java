@@ -817,7 +817,7 @@ public class Workspace extends SmoothPagedView
         // Add to data structures
         if (screenId == EXTRA_EMPTY_SCREEN_ID) {
             mScreenOrder.remove(EXTRA_EMPTY_SCREEN_ID);
-            Long maxScreen = Math.abs(Collections.max(mScreenOrder));
+            Long maxScreen = mScreenOrder.isEmpty() ? 0L : Math.abs(Collections.max(mScreenOrder));
             if (maxScreen == 302) {
                 screenId = 1;
             } else {
@@ -2178,7 +2178,41 @@ public class Workspace extends SmoothPagedView
         return layout;
     }
 
+    public boolean isScreenStateReadyForCustomElements() {
+        int childCount = getChildCount();
+        if (childCount <= 0 || mScreenOrder.isEmpty() || mWorkspaceScreens.isEmpty()) {
+            return false;
+        }
+        if (mScreenOrder.size() < childCount) {
+            return false;
+        }
+        for (int i = 0; i < childCount; i++) {
+            View child = getChildAt(i);
+            if (!(child instanceof CellLayout) || !canResolveScreenId((CellLayout) child)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean canResolveScreenId(CellLayout layout) {
+        if (layout == null) {
+            return false;
+        }
+        for (Map.Entry<Long, CellLayout> e : mWorkspaceScreens.entrySet()) {
+            if (e.getValue() == layout) {
+                return true;
+            }
+        }
+        int index = indexOfChild(layout);
+        return index >= 0 && index < mScreenOrder.size();
+    }
+
     public long getIdForScreen(CellLayout layout) {
+        if (layout == null) {
+            Log.w(TAG, "getIdForScreen(): null layout; returning extra empty screen id");
+            return EXTRA_EMPTY_SCREEN_ID;
+        }
         // 1) Check existing mapping
         for (Map.Entry<Long, CellLayout> e : mWorkspaceScreens.entrySet()) {
             if (e.getValue() == layout) {
@@ -2203,7 +2237,7 @@ public class Workspace extends SmoothPagedView
         }
 
         // 4) Layout has no ID, assign a new ID 
-        Long maxScreen = Math.abs(Collections.max(mScreenOrder));
+        Long maxScreen = mScreenOrder.isEmpty() ? 0L : Math.abs(Collections.max(mScreenOrder));
         long newId;
         if (maxScreen == 302) {
             newId = 1;
@@ -2212,7 +2246,8 @@ public class Workspace extends SmoothPagedView
         }
         mScreenOrder.add(newId);
         mWorkspaceScreens.put(newId, layout);
-        Log.i(TAG, "getIdForScreen(): assigned new virtual screenId=" + newId);
+        Log.w(TAG, "getIdForScreen(): assigned new virtual screenId=" + newId
+                + " orderWasEmpty=" + (maxScreen == 0L));
         return newId;
     }
 
@@ -2254,6 +2289,10 @@ public class Workspace extends SmoothPagedView
 
     public void stripEmptyScreens(String sourceClass) {
         Log.i(TAG, "stripEmptyScreens called in: " + sourceClass);
+        if (getChildCount() <= 0 || mScreenOrder.isEmpty()) {
+            Log.w(TAG, "stripEmptyScreens skipped: workspace screen state not ready");
+            return;
+        }
         if (isPageMoving()) {
             mStripScreensOnPageStopMoving = true;
             return;
@@ -2302,8 +2341,11 @@ public class Workspace extends SmoothPagedView
         }
 
         for (Integer rank : customScreens) {
-            if (rank >= 0 && rank < mWorkspaceScreens.size()) {
+            if (rank >= 0 && rank < getChildCount()) {
                 cl = ((CellLayout) getChildAt(rank));
+                if (!canResolveScreenId(cl)) {
+                    continue;
+                }
                 long customScreenId = getIdForScreen(cl);
                 if (removeScreens.contains(customScreenId)) {
                     removeScreens.remove(customScreenId);
@@ -2312,9 +2354,11 @@ public class Workspace extends SmoothPagedView
         }   
 
         cl = ((CellLayout) getChildAt(0));
-        long customScreenId = getIdForScreen(cl);
-        if (removeScreens.contains(customScreenId)) {
-            removeScreens.remove(customScreenId);
+        if (canResolveScreenId(cl)) {
+            long customScreenId = getIdForScreen(cl);
+            if (removeScreens.contains(customScreenId)) {
+                removeScreens.remove(customScreenId);
+            }
         }
 
         int minScreens = 1 + numCustomPages();
@@ -5839,6 +5883,11 @@ public class Workspace extends SmoothPagedView
     void updateItemLocationsInDatabase(CellLayout cl) {
         int count = cl.getShortcutsAndWidgets().getChildCount();
 
+        if (!mLauncher.isHotseatLayout(cl) && !canResolveScreenId(cl)) {
+            Log.w(TAG, "updateItemLocationsInDatabase: screen id not ready, skipping update");
+            return;
+        }
+
         long screenId = getIdForScreen(cl);
         int container = Favorites.CONTAINER_DESKTOP;
 
@@ -5956,6 +6005,11 @@ public class Workspace extends SmoothPagedView
 
     void saveWorkspaceScreenToDb(CellLayout cl) {
         int count = cl.getShortcutsAndWidgets().getChildCount();
+
+        if (!mLauncher.isHotseatLayout(cl) && !canResolveScreenId(cl)) {
+            Log.w(TAG, "saveWorkspaceScreenToDb: screen id not ready, skipping screen");
+            return;
+        }
 
         long screenId = getIdForScreen(cl);
         int container = Favorites.CONTAINER_DESKTOP;

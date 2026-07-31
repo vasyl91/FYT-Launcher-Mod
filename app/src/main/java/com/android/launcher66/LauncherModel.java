@@ -1974,17 +1974,27 @@ public class LauncherModel extends BroadcastReceiver {
                 if (itemsToRemove.size() > 0) {
                     ContentProviderClient client = contentResolver.acquireContentProviderClient(
                             LauncherSettings.Favorites.CONTENT_URI);
-                    // Remove dead items
-                    for (long id : itemsToRemove) {
-                        if (DEBUG_LOADERS) {
-                            Log.d(TAG, "Removed id = " + id);
+                    try {
+                        if (client == null) {
+                            Log.w(TAG, "Could not acquire favorites provider to remove dead items");
+                        } else {
+                            // Remove dead items
+                            for (long id : itemsToRemove) {
+                                if (DEBUG_LOADERS) {
+                                    Log.d(TAG, "Removed id = " + id);
+                                }
+                                // Don't notify content observers
+                                try {
+                                    client.delete(LauncherSettings.Favorites.getContentUri(id, false),
+                                            null, null);
+                                } catch (RemoteException e) {
+                                    Log.w(TAG, "Could not remove id = " + id);
+                                }
+                            }
                         }
-                        // Don't notify content observers
-                        try {
-                            client.delete(LauncherSettings.Favorites.getContentUri(id, false),
-                                    null, null);
-                        } catch (RemoteException e) {
-                            Log.w(TAG, "Could not remove id = " + id);
+                    } finally {
+                        if (client != null) {
+                            client.close();
                         }
                     }
                 }
