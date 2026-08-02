@@ -27,7 +27,7 @@
 
     <!-- Workspace -->
     <AbsoluteLayout
-        android:id="@+id/user_layout"
+        android:id="@+id/user_layout_left"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

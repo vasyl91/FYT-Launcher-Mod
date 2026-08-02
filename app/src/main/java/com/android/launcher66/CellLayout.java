@@ -4363,7 +4363,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
         int leftBarWidth = mLauncher.calculatedLeftBarWidth;
         int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
-        int orientedMargin = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 0 : margin;
         int dateMinWidth = mLauncher.calculatedDateMinWidth;
         int radioMinHeight = mLauncher.calculatedRadioMinHeight;
         int topLeftX, topRightX, topLeftY, bottomLeftY, width, height;
@@ -4372,8 +4371,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             case "date":
                 int dateMinHeight = mLauncher.calculatedDateMinHeight;
                 if (leftBar && currentScreen == 0) {
-                    topLeftX = prefs.getInt("dateTopLeftX", margin) + orientedMargin + leftBarWidth;
-                    topRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth) + orientedMargin + leftBarWidth;
+                    topLeftX = prefs.getInt("dateTopLeftX", margin) + leftBarWidth;
+                    topRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth) + leftBarWidth;
                 } else {
                     topLeftX = prefs.getInt("dateTopLeftX", margin);
                     topRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth);
@@ -4389,8 +4388,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 int musicMinWidth = mLauncher.calculatedMusicMinWidth;
                 int musicMinHeight = mLauncher.calculatedMusicMinHeight;
                 if (leftBar && currentScreen == 0) {
-                    topLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin) + orientedMargin + leftBarWidth;
-                    topRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth) + orientedMargin + leftBarWidth;
+                    topLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin) + leftBarWidth;
+                    topRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth) + leftBarWidth;
                 } else {
                     topLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin);
                     topRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);
@@ -4407,8 +4406,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             case "radio":
                 int radioMinWidth = mLauncher.calculatedRadioMinWidth;
                 if (leftBar && currentScreen == 0) {
-                    topLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin) + orientedMargin + leftBarWidth;
-                    topRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin + radioMinWidth) + orientedMargin + leftBarWidth;
+                    topLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin) + leftBarWidth;
+                    topRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin + radioMinWidth) + leftBarWidth;
                 } else {
                     topLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin);
                     topRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin + radioMinWidth);
@@ -4702,11 +4701,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         }
 
         int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
-        int orientedMargin = margin;
-        int orientation = getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            orientedMargin = 0;
-        }
 
         int leftBarWidth = mLauncher.calculatedLeftBarWidth;
         int pipMinWidth = mLauncher.calculatedPipMinWidth;
@@ -4715,8 +4709,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         // Get bounds from preferences
         int topLeftX, topRightX;
         if (leftBar && currentScreen == 0) {
-            topLeftX = prefs.getInt(pipKey + "TopLeftX", margin) + orientedMargin + leftBarWidth;
-            topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth) + orientedMargin + leftBarWidth;
+            topLeftX = prefs.getInt(pipKey + "TopLeftX", margin) + leftBarWidth;
+            topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth) + leftBarWidth;
         } else {
             topLeftX = prefs.getInt(pipKey + "TopLeftX", margin);
             topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth);
@@ -4845,11 +4839,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         }
 
         int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
-        int orientedMargin = margin;
-        int orientation = getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            orientedMargin = 0;
-        }
 
         int leftBarWidth = mLauncher.calculatedLeftBarWidth;
         int statsWidth = mLauncher.calculatedStatsWidth;
@@ -4859,7 +4848,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         int topLeftX, topRightX;
         if (leftBar && currentScreen == 0) {
             topLeftX = prefs.getInt("statsTopLeftX", margin) + leftBarWidth;
-            topRightX = prefs.getInt("statsTopRightX", margin + statsWidth) + orientedMargin + leftBarWidth;
+            topRightX = prefs.getInt("statsTopRightX", margin + statsWidth) + leftBarWidth;
         } else {
             topLeftX = prefs.getInt("statsTopLeftX", margin);
             topRightX = prefs.getInt("statsTopRightX", margin + statsWidth);
