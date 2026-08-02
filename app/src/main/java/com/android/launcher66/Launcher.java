@@ -6079,7 +6079,20 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         boolean safeToUpdate = true;
         if (appData != null && !appData.isEmpty() && hasExistingAppListData) {
             int installedDbCount = 0;
-            for (AppMultiple m : appData) {
+            for (int i2 = 0; i2 < appData.size(); i2++) {
+                AppMultiple m = appData.get(i2);
+                if (userLayout && widgetBar) {
+                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        if (i2 == 0 || i2 == 2 || i2 == 3) {
+                            continue;
+                        }
+                    } else {
+                        if (i2 == 0 || i2 == 2 || i2 == 3 || i2 == 4) {
+                            continue;
+                        }
+                    }
+                }
+
                 if (!m.packageName.equals(FytPackage.AddAction) && !m.packageName.equals(FytPackage.AppAction)
                         && isPackageInstalledCached(installCache, m.packageName)) {
                     installedDbCount++;
@@ -6255,7 +6268,26 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         boolean safeToUpdate = true;
         if (data != null && !data.isEmpty() && hasExistingAppListData) {
             int installedDbCount = 0;
-            for (AppMultiple m : data) {
+            for (int i = 0; i < data.size(); i++) {
+                AppMultiple m = data.get(i);
+
+                // Mirror the widgetBar slot-skipping above: rows that are intentionally
+                // hidden when widgetBar is on must not be counted as "missing" real
+                // apps, otherwise this guard permanently (and incorrectly) rejects a
+                // valid, correctly-filtered list every time userLayout && widgetBar
+                // is active.
+                if (userLayout && widgetBar) {
+                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        if (i == 0 || i == 2 || i == 3) {
+                            continue;
+                        }
+                    } else {
+                        if (i == 0 || i == 2 || i == 3 || i == 4) {
+                            continue;
+                        }
+                    }
+                }
+
                 if (!m.packageName.equals(FytPackage.AddAction) && !m.packageName.equals(FytPackage.AppAction)
                         && isPackageInstalledCached(installCache, m.packageName)) {
                     installedDbCount++;

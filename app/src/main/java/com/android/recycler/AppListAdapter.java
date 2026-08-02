@@ -165,6 +165,18 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
             appListHolder.mAppIcon.setImageBitmap(appListBean.icon);
         }
         appListHolder.itemView.setOnClickListener(view -> {
+            if (!isComponentAvailable(appListBean.packageName, appListBean.className)) {
+                if (!TextUtils.isEmpty(appListBean.packageName) || !TextUtils.isEmpty(appListBean.className)) {
+                    appListBean.packageName = "";
+                    appListBean.className = "";
+                    int pos = appListHolder.getBindingAdapterPosition();
+                    if (pos != RecyclerView.NO_POSITION) {
+                        notifyItemChanged(pos);
+                    }
+                }
+                showAppPickerDialog(appListHolder.getBindingAdapterPosition());
+                return;
+            }
             final String packageName = appListBean.packageName;
             switch (packageName.hashCode()) {
                 case -1958346218: {
@@ -305,5 +317,21 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
             mSettingsIconBitmap = drawableToBitmap(ContextCompat.getDrawable(AppListAdapter.this.mLauncher, R.drawable.icon_settings));
         }
         return mSettingsIconBitmap;
+    }
+
+    private boolean isComponentAvailable(String packageName, String className) {
+        if (TextUtils.isEmpty(packageName) || TextUtils.isEmpty(className)) {
+            return false;
+        }
+        if ("com.android.launcher66".equals(packageName)) {
+            return true;
+        }
+        try {
+            Intent intent = new Intent();
+            intent.setComponent(new ComponentName(packageName, className));
+            return mLauncher.getPackageManager().resolveActivity(intent, 0) != null;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
