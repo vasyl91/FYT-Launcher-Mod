@@ -2411,6 +2411,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             recyclerView.invalidateItemDecorations();
             recyclerView.requestLayout();
         }, HOME_LAYOUT_HEALTH_RETRY_MS);
+        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        recyclerView.invalidateItemDecorations();
+                    }
+                });
     }
 
     private void clearRecyclerDecorations(RecyclerView recyclerView) {
@@ -2478,6 +2486,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
                 int itemHeight = view.getHeight();
                 if (itemHeight <= 0) {
+                    parent.post(parent::invalidateItemDecorations);
+
+                    outRect.set(0, 0, 0, 0);
+                    return;
+                }
+                if (itemHeight <= 0) {
                     itemHeight = getFallbackRecyclerItemSize();
                 }
 
@@ -2486,8 +2500,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     availableHeight = parent.getMeasuredHeight() - parent.getPaddingTop() - parent.getPaddingBottom();
                 }
                 if (availableHeight <= 0) {
-                    availableHeight = Math.max(screenHeight, getResources().getDisplayMetrics().heightPixels)
-                            - parent.getPaddingTop() - parent.getPaddingBottom();
+                    parent.post(parent::invalidateItemDecorations);
+
+                    outRect.set(0, 0, 0, 0);
+                    return;
                 }
 
                 int totalItemsHeight = itemHeight * itemCount;
