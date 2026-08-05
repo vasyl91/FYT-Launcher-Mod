@@ -15,7 +15,7 @@
     <string name="activity_not_found">未安装该应用。</string>
     <string name="widgets_tab_label">小部件</string>
     <string name="widget_adder">小部件</string>
-    <string name="toggle_weight_watcher">显示内存空间</string>
+    <string name="toggle_weight_watcher">显示内存</string>
     <string name="long_press_widget_to_add">触摸并按住小部件即可选择。</string>
     <string name="market">商店</string>
     <string name="widget_dims_format">%1$d × %2$d</string>
@@ -118,7 +118,7 @@
     <string name="car_music">音乐</string>
     <string name="car_bt">蓝牙</string>
     <string name="car_carlife">百度CarLife</string>
-    <string name="music_unknown">未知名</string>
+    <string name="music_unknown">未知</string>
     <string name="car_bt_music">蓝牙音乐</string>
     <string name="car_app">应用</string>
     <string name="car_eq">EQ</string>
@@ -151,7 +151,7 @@
     <string name="am">上午</string>
     <string name="pm">下午</string>
     <string name="dvr_switch">请打开内置DVR开关</string>
-    <string name="app_name">时 间</string>
+    <string name="app_name">时间</string>
     <string name="widget_name">车载控件</string>
     <string name="dtwidget_name">日期</string>
     <string name="dtmusicwidget_name">音乐</string>
@@ -469,7 +469,7 @@
     <string name="weather_not_available">N/A</string>
     <string name="clear_sky">晴</string>
     <string name="few_clouds">少云</string>
-    <string name="scattered_clouds">散云</string>
+    <string name="scattered_clouds">疏云</string>
     <string name="broken_clouds">多云</string>
     <string name="overcast_clouds">阴</string>
     <string name="shower_rain">阵雨</string>
@@ -477,7 +477,7 @@
     <string name="thunderstorm">雷阵雨</string>
     <string name="snow">雪</string>
     <string name="mist">薄雾</string>
-    <string name="thunderstorm_with_light_rain">雷阵雨伴有小到中雨</string>
+    <string name="thunderstorm_with_light_rain">雷阵雨伴有小雨</string>
     <string name="thunderstorm_with_rain">雷阵雨伴有雨</string>
     <string name="thunderstorm_with_heavy_rain">雷阵雨伴有大雨</string>
     <string name="light_thunderstorm">小雷阵雨</string>
@@ -488,10 +488,10 @@
     <string name="thunderstorm_with_heavy_drizzle">雷阵雨伴有大毛毛雨</string>
     <string name="light_intensity_drizzle">小毛毛雨</string>
     <string name="drizzle">毛毛雨</string>
-    <string name="heavy_intensity_drizzle">大毛毛雨</string>
-    <string name="light_intensity_drizzle_rain">小毛毛雨伴雨</string>
-    <string name="drizzle_rain">毛毛雨伴雨</string>
-    <string name="heavy_intensity_drizzle_rain">大毛毛雨伴雨</string>
+    <string name="heavy_intensity_drizzle">强毛毛雨</string>
+    <string name="light_intensity_drizzle_rain">小细雨</string>
+    <string name="drizzle_rain">细雨</string>
+    <string name="heavy_intensity_drizzle_rain">强细雨</string>
     <string name="shower_rain_and_drizzle">阵雨伴毛毛雨</string>
     <string name="heavy_shower_rain_and_drizzle">强阵雨伴毛毛雨</string>
     <string name="shower_drizzle">毛毛雨阵雨</string>
@@ -509,7 +509,7 @@
     <string name="sleet">雨夹雪</string>
     <string name="light_shower_sleet">小阵雨夹雪</string>
     <string name="shower_sleet">阵雨夹雪</string>
-    <string name="light_rain_and_snow">小到中雨夹雪</string>
+    <string name="light_rain_and_snow">小雨夹雪</string>
     <string name="rain_and_snow">雨夹雪</string>
     <string name="light_shower_snow">小阵雪</string>
     <string name="shower_snow">阵雪</string>
