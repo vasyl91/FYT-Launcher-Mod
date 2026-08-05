@@ -1,7 +1,5 @@
 package com.syu.util;
 
-import static com.syu.util.WindowHostActivityView.findSurfaceView;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -16,8 +14,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -46,6 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class WindowUtil {
     private static final String TAG = "WindowUtil";
+    private static final String RESYNC_GEOMETRY_METHOD = "resyncGeometryAfterSurfaceSwap";
     private static SharedPreferences prefs;
     private static Helpers helpers;
     public static String AppPackageName = "";
@@ -73,6 +70,8 @@ public class WindowUtil {
     // anything that forces a layout pass on a just-reparented ActivityView.
     private static final Map<View, Long> sReparentUnsettledUntil = new WeakHashMap<>();
     private static final long REPARENT_SETTLE_GRACE_MS = 250L;
+    private static final Handler retryHandler = new Handler(Looper.getMainLooper());
+    private static boolean pipRetryPending = false;
 
     private static void markReparentInFlight(View child) {
         if (child == null) return;
@@ -201,15 +200,33 @@ public class WindowUtil {
                     + " helpers.allAppsVisibility() " + String.valueOf(helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) 
                     + " helpers.isWallpaperWindow() " + String.valueOf(helpers.isWallpaperWindow())
                     + " helpers.isListOpen() " + String.valueOf(helpers.isListOpen()));
-                if ((show && !helpers.pipsAdded()) || (Utils.topApp()
-                    && !helpers.pipsAdded()
-                    && !helpers.isInWidgets()
-                    && !helpers.isInAllApps()
-                    && !helpers.isInOverviewMode()
-                    && !helpers.isFirstPreferenceWindow()
-                    && !helpers.isWallpaperWindow()
-                    && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
-                    || (!helpers.userWasInRecents() && helpers.isListOpen()))) {
+
+                boolean canOpen =
+                        (show && !helpers.pipsAdded())
+                                || (Utils.topApp()
+                                && !helpers.pipsAdded()
+                                && !helpers.isInWidgets()
+                                && !helpers.isInAllApps()
+                                && !helpers.isInOverviewMode()
+                                && !helpers.isFirstPreferenceWindow()
+                                && !helpers.isWallpaperWindow()
+                                && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility()))
+                                || (!helpers.userWasInRecents() && helpers.isListOpen());
+
+                if (!canOpen) {
+                    if (!pipRetryPending) {
+                        // Utils.topApp() might still return wrong app name after going back to home
+                        // retry once
+                        pipRetryPending = true;
+                        retryHandler.postDelayed(() -> {
+                            WindowUtil.startMapPip(show);
+                        }, 180);
+                    }
+                    return;
+                }
+
+                if (canOpen) {
+                    pipRetryPending = false;
 
                     if (prefs == null) {
                         prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
@@ -406,6 +423,17 @@ public class WindowUtil {
 
     public static void openMultiplePips() {
         if (!LauncherApplication.isFytDevice()) return;
+
+        // openMultiplePips() can be re-entered (e.g. two openPip() calls close together)
+        // before the previous WindowHost's panes were ever dismissed. Overwriting
+        // mWindowHost unconditionally used to leave the old ActivityViews attached to
+        // the same Activity tasks as the new ones, fighting over visibility forever.
+        if (mWindowHost != null) {
+            try {
+                mWindowHost.dismiss();
+            } catch (Throwable ignore) {}
+        }
+
         dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
         firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
         secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
@@ -912,16 +940,16 @@ public class WindowUtil {
                     String dualLeftPkg = (String) reflectGetField(dual, "leftPkg");
                     String thirdPkg = (String) reflectGetField(third, "currentPkg");
 
-                    final View viewForDual = asView(dualLeftAV);
+                    final View viewForDualLeft = asView(dualLeftAV);
                     final View viewForThird = asView(thirdAv);
 
                     // 1) atomic native-surface swap
                     boolean atomicOk = false;
                     try {
-                        if (viewForDual != null && viewForThird != null) {
-                            atomicOk = WindowHostReparenter.swapActivityViewSurfaces(viewForDual, viewForThird, 1000);
+                        if (viewForDualLeft != null && viewForThird != null) {
+                            atomicOk = WindowHostReparenter.swapActivityViewSurfaces(viewForDualLeft, viewForThird, 1000);
                         } else {
-                            Log.w(TAG, "swapLeftAndThird: viewForDual or viewForThird is null, skipping atomic swap");
+                            Log.w(TAG, "swapLeftAndThird: viewForDualLeft or viewForThird is null, skipping atomic swap");
                         }
                     } catch (Throwable t) {
                         Log.w(TAG, "swapLeftAndThird: atomic swap threw", t);
@@ -969,22 +997,18 @@ public class WindowUtil {
                                 try {
                                     Object newDualLeftAV = reflectGetField(dualRef, "leftAV");
                                     Object newThirdAv = reflectGetField(thirdRef, "av");
-                                    View newViewForDual = asView(newDualLeftAV);
+                                    View newViewForDualLeft = asView(newDualLeftAV);
                                     View newViewForThird = asView(newThirdAv);
 
-                                    if (dualLeftHostFinal != null) reparentHostChild(dualLeftHostFinal, newViewForDual);
+                                    if (dualLeftHostFinal != null) reparentHostChild(dualLeftHostFinal, newViewForDualLeft);
                                     if (thirdHostFinal != null)    reparentHostChild(thirdHostFinal, newViewForThird);
-
-                                    invokeIfExists(newDualLeftAV, "updateLocationAndTapExcludeRegion");
-                                    invokeIfExists(newThirdAv, "updateLocationAndTapExcludeRegion");
 
                                     // Force the dual pane to recompute correct per-pane geometry
                                     // (portrait-safe/supersample vs plain match-parent) for the
                                     // pkg that just moved in, instead of leaving it at whatever
                                     // transform reparentHostChild reset it to until the user
                                     // happens to drag the divider.
-                                    invokeIfExists(dualRef, "forceResyncGeometry");
-                                    invokeIfExists(thirdRef, "resyncGeometryAfterSurfaceSwap");
+                                    resyncAfterSwap(dualRef, thirdRef);
                                 } catch (Throwable t) {
                                     Log.w(TAG, "swapLeftAndThird: delayed reattach failed", t);
                                 }
@@ -1106,14 +1130,13 @@ public class WindowUtil {
                                 try {
                                     Object newFirstAv = reflectGetField(firstRef, "av");
                                     Object newThirdAv = reflectGetField(thirdRef, "av");
-                                    View vFirst = asView(newFirstAv);
-                                    View vThird = asView(newThirdAv);
-                                    if (firstHostFinal != null) reparentHostChild(firstHostFinal, vFirst);
-                                    if (thirdHostFinal != null) reparentHostChild(thirdHostFinal, vThird);
-                                    invokeIfExists(newFirstAv, "updateLocationAndTapExcludeRegion");
-                                    invokeIfExists(newThirdAv, "updateLocationAndTapExcludeRegion");
-                                    invokeIfExists(firstRef, "resyncGeometryAfterSurfaceSwap");
-                                    invokeIfExists(thirdRef, "resyncGeometryAfterSurfaceSwap");
+                                    View newViewForFirst = asView(newFirstAv);
+                                    View newViewForThird = asView(newThirdAv);
+
+                                    if (firstHostFinal != null) reparentHostChild(firstHostFinal, newViewForFirst);
+                                    if (thirdHostFinal != null) reparentHostChild(thirdHostFinal, newViewForThird);
+
+                                    resyncAfterSwap(firstRef, thirdRef);
                                 } catch (Throwable t) {
                                     Log.w(TAG, "swapLeftAndThird: delayed reattach failed (standalone)", t);
                                 }
@@ -1219,7 +1242,7 @@ public class WindowUtil {
                         if (viewForDualRight != null && viewForFourth != null) {
                             atomicOk = WindowHostReparenter.swapActivityViewSurfaces(viewForDualRight, viewForFourth, 1000);
                         } else {
-                            Log.w(TAG, "swapRightAndFourth: viewForDualRight or viewForFourth null, skipping atomic");
+                            Log.w(TAG, "swapRightAndFourth: viewForDualRight or viewForFourth is null, skipping atomic swap");
                         }
                     } catch (Throwable t) {
                         Log.w(TAG, "swapRightAndFourth: atomic swap threw", t);
@@ -1265,14 +1288,13 @@ public class WindowUtil {
                                 try {
                                     Object newDualRightAV = reflectGetField(dualRef, "rightAV");
                                     Object newFourthAv = reflectGetField(fourthRef, "av");
-                                    View viewForDualAfter = asView(newDualRightAV);
-                                    View viewForFourthAfter = asView(newFourthAv);
-                                    if (dualRightHostFinal != null) reparentHostChild(dualRightHostFinal, viewForDualAfter);
-                                    if (fourthHostFinal != null)   reparentHostChild(fourthHostFinal, viewForFourthAfter);
-                                    invokeIfExists(newDualRightAV, "updateLocationAndTapExcludeRegion");
-                                    invokeIfExists(newFourthAv, "updateLocationAndTapExcludeRegion");
-                                    invokeIfExists(dualRef, "forceResyncGeometry");
-                                    invokeIfExists(fourthRef, "resyncGeometryAfterSurfaceSwap");
+                                    View newViewForDualRight = asView(newDualRightAV);
+                                    View newViewForFourth = asView(newFourthAv);
+
+                                    if (dualRightHostFinal != null) reparentHostChild(dualRightHostFinal, newViewForDualRight);
+                                    if (fourthHostFinal != null)   reparentHostChild(fourthHostFinal, newViewForFourth);
+
+                                    resyncAfterSwap(dualRef, fourthRef);
                                 } catch (Throwable t) {
                                     Log.w(TAG, "swapRightAndFourth: delayed reattach failed", t);
                                 }
@@ -1376,6 +1398,14 @@ public class WindowUtil {
                             reflectSetField(second, "taskId", fourthTask == null ? -1 : fourthTask);
                             reflectSetField(fourth, "taskId", secondTask == null ? -1 : secondTask);
 
+                            String secondPkgOld = (String) reflectGetField(second, "currentPkg");
+                            String fourthPkgOld = (String) reflectGetField(fourth, "currentPkg");
+                            reflectSetField(second, "currentPkg", fourthPkgOld);
+                            reflectSetField(fourth, "currentPkg", secondPkgOld);
+
+                            // Update prefs: swap second <-> fourth
+                            swapPrefsPackages(Keys.PIP_SECOND_PACKAGE, Keys.PIP_FOURTH_PACKAGE);
+
                             final Object secondRef = second;
                             final Object fourthRef = fourth;
                             final ViewGroup secondHostFinal = secondHost;
@@ -1384,21 +1414,17 @@ public class WindowUtil {
                                 try {
                                     Object newSecondAv = reflectGetField(secondRef, "av");
                                     Object newFourthAv = reflectGetField(fourthRef, "av");
-                                    View vSecond = asView(newSecondAv);
-                                    View vFourth = asView(newFourthAv);
-                                    if (secondHostFinal != null) reparentHostChild(secondHostFinal, vSecond);
-                                    if (fourthHostFinal != null) reparentHostChild(fourthHostFinal, vFourth);
-                                    invokeIfExists(newSecondAv, "updateLocationAndTapExcludeRegion");
-                                    invokeIfExists(newFourthAv, "updateLocationAndTapExcludeRegion");
-                                    invokeIfExists(secondRef, "resyncGeometryAfterSurfaceSwap");
-                                    invokeIfExists(fourthRef, "resyncGeometryAfterSurfaceSwap");
+                                    View newViewForSecond = asView(newSecondAv);
+                                    View newViewForFourth = asView(newFourthAv);
+
+                                    if (secondHostFinal != null) reparentHostChild(secondHostFinal, newViewForSecond);
+                                    if (fourthHostFinal != null) reparentHostChild(fourthHostFinal, newViewForFourth);
+
+                                    resyncAfterSwap(secondRef, fourthRef);
                                 } catch (Throwable t) {
                                     Log.w(TAG, "swapRightAndFourth: delayed reattach failed (standalone)", t);
                                 }
                             }, 50);
-
-                            // Update prefs: swap second <-> fourth
-                            swapPrefsPackages(Keys.PIP_SECOND_PACKAGE, Keys.PIP_FOURTH_PACKAGE);
 
                             Log.i(TAG, "swapRightAndFourth: atomic standalone swap scheduled reattach");
                             return;
@@ -1462,9 +1488,16 @@ public class WindowUtil {
             m.setAccessible(true);
             m.invoke(obj);
         } catch (NoSuchMethodException nsf) {
-            // method not present; that's fine
+            Log.w(TAG, "invokeIfExists: " + obj.getClass().getSimpleName()
+                    + " no such method: " + methodName + " — the geometry will not be resynchronized after the swap");
         } catch (Throwable t) {
-            Log.w("Windowutil", "invokeIfExists failed: " + methodName, t);
+            Log.w(TAG, "invokeIfExists failed: " + methodName, t);
+        }
+    }
+
+    private static void resyncAfterSwap(Object... hostRefs) {
+        for (Object ref : hostRefs) {
+            invokeIfExists(ref, RESYNC_GEOMETRY_METHOD);
         }
     }
 
@@ -1537,6 +1570,7 @@ public class WindowUtil {
                 // Block layout-affecting calls on this view (see isReparentUnsettled) until
                 // the waiter below confirms the native reparent or times out.
                 markReparentInFlight(newChild);
+                try { newChild.setVisibility(View.INVISIBLE); } catch (Throwable ignore) {}
 
                 // detach from previous parent
                 try {
@@ -1574,64 +1608,54 @@ public class WindowUtil {
                 final ViewGroup finalVg = vg;
                 final long deadline = SystemClock.uptimeMillis() + 1000; // 1s timeout
                 final Handler mainH = new Handler(Looper.getMainLooper());
+                final int[] consecutiveOk = {0};
+                final int REQUIRED_STABLE_TICKS = 6;
 
                 final Runnable waiter = new Runnable() {
                     @Override public void run() {
                         try {
-                            boolean ok = false;
+                            boolean ok;
                             try {
-                                // Try notifyReparentDisplayContentToHost which internally tries WindowSession.reparentDisplayContent
                                 ok = WindowHostReparenter.notifyReparentDisplayContentToHost(finalChild, finalVg);
                             } catch (Throwable t) {
                                 Log.d(TAG, "reparentHostChild: notifyReparentDisplayContentToHost threw", t);
                                 ok = false;
                             }
 
-                            // Additionally accept success if ActivityView reports stable virtual display id or Surface valid
-                            if (!ok) {
-                                try {
-                                    // Try to detect ActivityView readiness (best-effort)
-                                    int did = getVirtualDisplayIdSafely(finalChild);
-                                    if (did >= 0) ok = true;
-                                    else {
-                                        // check inner Surface validity
-                                        SurfaceView sv = findSurfaceView(finalChild);
-                                        if (sv != null) {
-                                            SurfaceHolder holder = sv.getHolder();
-                                            if (holder != null) {
-                                                android.view.Surface s = holder.getSurface();
-                                                if (s != null && s.isValid()) ok = true;
-                                            }
-                                        }
-                                    }
-                                } catch (Throwable ignore) {}
-                            }
+                            consecutiveOk[0] = ok ? (consecutiveOk[0] + 1) : 0;
 
-                            if (ok) {
-                                // Success: now notify ActivityView to update geometry safely
+                            // NOTE: notifyReparentDisplayContentToHost() confirms WindowSession.reparentDisplayContent()
+                            // succeeded -- but ActivityView's own automatic surfaceCreated() ->
+                            // updateLocationAndTapExcludeRegion() calls a *different* WMS entrypoint
+                            // (updateDisplayContentLocation) that can still fail for tens of ms afterwards
+                            // (confirmed via logcat: crashed ~60-86ms after reparentDisplayContent's own
+                            // success was logged). Require the signal to hold across several consecutive
+                            // polls before trusting it, instead of acting on the first true.
+                            if (ok && consecutiveOk[0] >= REQUIRED_STABLE_TICKS) {
                                 try { invokeIfExists(finalChild, "updateLocationAndTapExcludeRegion"); } catch (Throwable ignore) {}
                                 try { invokeIfExists(finalChild, "clearActivityViewGeometryForIme"); } catch (Throwable ignore) {}
+                                resizeVirtualDisplaySafely(finalChild, finalVg.getWidth(), finalVg.getHeight());
                                 markReparentSettled(finalChild);
-                                // done
+                                try { finalChild.setVisibility(View.VISIBLE); } catch (Throwable ignore) {}
                                 return;
                             }
 
-                            // Not yet ok: retry if we have time left
+                            // Not yet stable: retry if we have time left
                             if (SystemClock.uptimeMillis() < deadline) {
                                 mainH.postDelayed(this, 40);
-                                return;
                             } else {
-                                // Timed out — log and still attempt the safe notifications (best-effort)
                                 Log.w(TAG, "reparentHostChild: native reparent did not confirm within timeout; proceeding anyway");
                                 try { invokeIfExists(finalChild, "updateLocationAndTapExcludeRegion"); } catch (Throwable ignore) {}
                                 try { invokeIfExists(finalChild, "clearActivityViewGeometryForIme"); } catch (Throwable ignore) {}
+                                resizeVirtualDisplaySafely(finalChild, finalVg.getWidth(), finalVg.getHeight());
                                 markReparentSettled(finalChild);
+                                try { finalChild.setVisibility(View.VISIBLE); } catch (Throwable ignore) {}
                             }
                         } catch (Throwable t) {
                             Log.w(TAG, "reparentHostChild: waiter failure", t);
-                            // Fail-safe: don't leave the view permanently marked unsettled if the
-                            // waiter itself blew up — that would wedge WindowHostDualPane's retry loop.
+                            resizeVirtualDisplaySafely(finalChild, finalVg.getWidth(), finalVg.getHeight());
                             markReparentSettled(finalChild);
+                            try { finalChild.setVisibility(View.VISIBLE); } catch (Throwable ignore) {}
                         }
                     }
                 };
@@ -1719,6 +1743,43 @@ public class WindowUtil {
             Log.w(TAG, "getVirtualDisplayIdSafely: unexpected error", t);
         }
         return -1;
+    }
+
+    private static int resolveDensityDpiSafely(View avView) {
+        if (avView == null) return 160;
+        try {
+            Method m = avView.getClass().getDeclaredMethod("getBaseDisplayDensity");
+            m.setAccessible(true);
+            Object v = m.invoke(avView);
+            if (v instanceof Integer && ((Integer) v) > 0) return (Integer) v;
+        } catch (Throwable ignore) {}
+
+        try {
+            android.util.DisplayMetrics dm = avView.getResources().getDisplayMetrics();
+            if (dm != null && dm.densityDpi > 0) return dm.densityDpi;
+        } catch (Throwable ignore) {}
+
+        return 160;
+    }
+
+    /**
+     * Best-effort resize of the ActivityView's underlying VirtualDisplay to match the
+     * pane it's about to become visible in. Called from reparentHostChild()'s waiter
+     * BEFORE setVisibility(VISIBLE), so the correct-size frame is already queued by the
+     * time the surface is shown — instead of flashing the old host's resolution until
+     * the separate isReparentUnsettled-guarded resync cycle catches up later.
+     */
+    private static void resizeVirtualDisplaySafely(View avView, int width, int height) {
+        if (avView == null || width < 50 || height < 50) return;
+        try {
+            Object vd = reflectGetField(avView, "mVirtualDisplay");
+            if (vd == null) return;
+            int density = Math.max(120, resolveDensityDpiSafely(avView));
+            Method resize = vd.getClass().getMethod("resize", int.class, int.class, int.class);
+            resize.invoke(vd, width, height, density);
+        } catch (Throwable t) {
+            Log.w(TAG, "resizeVirtualDisplaySafely failed", t);
+        }
     }
 
     private static boolean attemptTaskRelocateSwap(final ViewGroup hostA, final ViewGroup hostB,

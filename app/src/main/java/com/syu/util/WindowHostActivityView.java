@@ -411,8 +411,9 @@ public class WindowHostActivityView {
         try { sActivityView.getMethod("release").invoke(av); } catch (Throwable ignore) {}
     }
 
-    static boolean isGoogleMapsPackage(String packageName) {
-        return GOOGLE_MAPS_PACKAGE.equals(packageName);
+    static boolean isGoogleMapsPackage(String pkg) {
+        if (pkg == null) return false;
+        return pkg.equals(GOOGLE_MAPS_PACKAGE) || pkg.contains(GOOGLE_MAPS_PACKAGE);
     }
 
     static boolean isYouTubePackage(String packageName) {

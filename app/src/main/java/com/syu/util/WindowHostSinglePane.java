@@ -24,7 +24,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.android.launcher66.LauncherApplication;
+import androidx.annotation.NonNull;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Executors;
@@ -41,15 +41,14 @@ public class WindowHostSinglePane {
     private final AtomicBoolean blackScreenDetected = new AtomicBoolean(false);
 
     // Timing
-    private static long REVEAL_FALLBACK_NS = 320_000_000L; // ~320ms
-    private static int  START_WAIT_TIMEOUT_MS = 40;
-    private static int  START_WAIT_STEP_MS    = 4;
+    private static final long REVEAL_FALLBACK_NS = 320_000_000L; // ~320ms
+    private static final int  START_WAIT_TIMEOUT_MS = 40;
+    private static final int  START_WAIT_STEP_MS    = 4;
 
     private static final ScheduledExecutorService DISMISS_EXEC =
             Executors.newSingleThreadScheduledExecutor();
             
     private Activity activity;
-    private ActivityManager activityManager;
     private WindowManager wm;
     private final String name;
     private WindowManager.LayoutParams lp;
@@ -57,7 +56,7 @@ public class WindowHostSinglePane {
     public boolean added;
     private boolean childAttached;
 
-    private Object av;              // android.app.ActivityView
+    private Object av;
     private final AtomicBoolean avReady = new AtomicBoolean(false);
     private final AtomicBoolean firstFrame = new AtomicBoolean(false);
     private final AtomicBoolean visible = new AtomicBoolean(false);
@@ -73,72 +72,26 @@ public class WindowHostSinglePane {
 
     private int blackConfirmCount = 0;
     private static final int REQUIRED_BLACK_CONFIRMATIONS = 2;
-    private static final long BLACK_SCREEN_CONFIRM_DELAY_MS = 700L;
+    private static final long BLACK_SCREEN_CONFIRM_DELAY_MS = 800L;
+    private static final int EXTRA_SETTLE_RETRIES = 20;
 
     // VirtualDisplay size cache (Size Guard - prevents resize spam)
     private int lastVdW = -1;
     private int lastVdH = -1;
     private int lastVdDpi = -1;
 
-    // YouTube
-    private static final float YT_SUPERSAMPLE = 1.30f;
-    private static final long YT_MAX_PIXELS = 3_000_000L;
-    private static final float YT_DENSITY_COMP = 0.62f;
-    private static final float YT_UI_BOOST = 1.08f;
-    private static final int YT_TARGET_DP_WIDTH = 380;
-    private static final float YT_DENSITY_BLEND = 0.40f;
-    private int ytVdW = -1, ytVdH = -1, ytVdDensity = -1;
-    private int appliedSurfW = -1, appliedSurfH = -1, appliedVdW = -1, appliedVdH = -1, appliedDpi = -1;
-    private int lastAppliedPaneW = -1;
-    private int lastAppliedPaneH = -1;
-    private static final int YT_MODE_UNKNOWN = 0;
-    private static final int YT_MODE_PORTRAIT = 1;
-    private static final int YT_MODE_LANDSCAPE = 2;
-    private static final int YT_SWITCH_HYSTERESIS_PX = 24;
-    private int ytMode = YT_MODE_UNKNOWN;
-    private static final long YT_MODE_SWITCH_SETTLE_MS = 450L; // mode must stay stable this long (parity with DualPane)
-    private int pendingYtMode = YT_MODE_UNKNOWN;
-    private long pendingYtModeSince = 0L;
-
     WindowHostSinglePane(String name) { this.name = name; }
 
     boolean isVisible() { return visible.get(); }
 
-    private void resetVdCache() {
-        lastVdW = -1;
-        lastVdH = -1;
-        lastVdDpi = -1;
-    }
-
-    private static void forceStopApp(Context ctx, String pkg) {
-        if (pkg == null || pkg.isEmpty() || ctx == null) return;
-        try {
-            ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
-            Method forceStopPackage = am.getClass().getDeclaredMethod("forceStopPackage", String.class);
-            forceStopPackage.setAccessible(true);
-            forceStopPackage.invoke(am, pkg);
-            Log.i(TAG, "Force stopped " + pkg + " prior to SinglePane launch");
-        } catch (Throwable t) {
-            Log.w(TAG, "Failed to force stop " + pkg, t);
-        }
-    }
-
-    void show(Activity act, WindowManager wm, ActivityManager am, IBinder token, String pkg, Rect b) {
+    void show(Activity act, WindowManager wm, IBinder token, String pkg, Rect b) {
         if (pkg == null || b == null) return;
 
-        // Critical fix preventing a silent crash of the native OpenGL Maps context when switching panels
-        if (WindowHostActivityView.isGoogleMapsPackage(pkg)) {
-            forceStopApp(act, pkg);
-        }
-
         if (!WindowHostActivityView.isGoogleMapsPackage(pkg)) {
-            new Thread(() -> {
-                WindowHostSurfacePreloader.prewarmActivityView(act, "single_" + name);
-            }).start();
+            new Thread(() -> WindowHostSurfacePreloader.prewarmActivityView(act, "single_" + name)).start();
         }
 
         this.activity = act;
-        this.activityManager = am;
         this.wm = wm;
 
         if (visible.get() && pkg.equals(currentPkg) && added && root != null && lp != null) {
@@ -162,7 +115,7 @@ public class WindowHostSinglePane {
             setPendingBoundsFast(b);
             resetPaneToMatchParent();
             ensureActivityView(act, myGen, pkg);
-            if (!childAttached) attachChild(myGen);
+            if (!childAttached) attachChild();
 
             boolean haveTask = (taskId > 0) && pkg.equals(currentPkg);
             currentPkg = pkg;
@@ -175,11 +128,11 @@ public class WindowHostSinglePane {
                     startDeferredForBounds = true;
                 } else {
                     startDeferredForBounds = false;
-                    startWhenReady(am, pkg, myGen);
+                    startWhenReady(pkg, myGen);
                     checkForBlackScreenAndRestart(pkg, myGen);
                 }
             }
-            liftCurtainLoop(true, myGen);
+            liftCurtainLoop(myGen);
         });
     }
 
@@ -189,11 +142,8 @@ public class WindowHostSinglePane {
                 && currentPkg != null
                 && WindowHostActivityView.hasRealLaunchBounds(currentPkg, b)) {
             startDeferredForBounds = false;
-            ActivityManager am = activityManager != null
-                    ? activityManager
-                    : (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
             Log.i(TAG, name + ": starting deferred Google Maps after bounds update: " + b);
-            startWhenReady(am, currentPkg, gen);
+            startWhenReady(currentPkg, gen);
             checkForBlackScreenAndRestart(currentPkg, gen);
         }
     }
@@ -218,12 +168,13 @@ public class WindowHostSinglePane {
         currentPkg = null; taskId = -1;
         hasPendingBounds = false; pendingBounds.setEmpty();
         startDeferredForBounds = false;
-        ytVdW = ytVdH = ytVdDensity = -1;
-        resetAppliedYtParams();
         resetVdCache();
-        ytMode = YT_MODE_UNKNOWN;
-        pendingYtMode = YT_MODE_UNKNOWN;
-        pendingYtModeSince = 0L;
+    }
+
+    private void resetVdCache() {
+        lastVdW = -1;
+        lastVdH = -1;
+        lastVdDpi = -1;
     }
 
     private void ensureWindow(Activity act, WindowManager wm, IBinder token) {
@@ -255,7 +206,8 @@ public class WindowHostSinglePane {
                 | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
                 | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
                 | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
         p.gravity = Gravity.TOP | Gravity.START;
         p.width = 1; p.height = 1; p.x = -10000; p.y = -10000;
         p.alpha = 1f;
@@ -277,17 +229,22 @@ public class WindowHostSinglePane {
     public void resyncGeometryAfterSurfaceSwap() {
         if (host == null || av == null) return;
 
-        ytVdW = ytVdH = ytVdDensity = -1;
-        ytMode = pendingYtMode = YT_MODE_UNKNOWN;
-        pendingYtModeSince = 0L;
-        lastAppliedPaneW = lastAppliedPaneH = -1;
-        resetAppliedYtParams();
         resetVdCache();
 
-        if (hasPendingBounds && WindowHostActivityView.isYouTubePackage(currentPkg)) {
+        View v = WindowHostActivityView.asView(av);
+        if (v != null) {
+            SurfaceView sv = findSurfaceView(v);
+            if (sv != null && sv.getHolder() != null) {
+                try { sv.getHolder().setSizeFromLayout(); } catch (Throwable ignore) {}
+            }
+        }
+
+        if (hasPendingBounds) {
             int w = freshPaneWidthPx(pendingBounds.width());
             int h = pendingBounds.height() > 0 ? pendingBounds.height() : freshPaneWidthPx(0);
             applyPortraitSafeChildSize(w, h);
+        } else if (host.getWidth() > 0 && host.getHeight() > 0) {
+            applyPortraitSafeChildSize(host.getWidth(), host.getHeight());
         }
     }
 
@@ -295,20 +252,9 @@ public class WindowHostSinglePane {
         applyPortraitSafeChildSize(realWidth, realHeight, 30);
     }
 
-    private int freshPaneWidthPx(int fallback) {
-        if (hasPendingBounds && pendingBounds.width() > 0) return pendingBounds.width();
-        if (host != null) {
-            ViewGroup.LayoutParams hlp = host.getLayoutParams();
-            if (hlp != null && hlp.width > 0) return hlp.width;
-            if (host.getWidth() > 0) return host.getWidth();
-        }
-        return fallback;
-    }
-
     private void applyPortraitSafeChildSize(int realWidth, int realHeight, int retriesLeft) {
         if (host == null || av == null || !childAttached) return;
         View v = WindowHostActivityView.asView(av);
-        if (v == null) return;
 
         if (WindowUtil.isReparentUnsettled(v)) {
             if (retriesLeft > 0) {
@@ -331,9 +277,6 @@ public class WindowHostSinglePane {
         final int paneW = Math.max(1, realWidth);
         final int paneH = Math.max(1, realHeight);
 
-        int vdW = paneW;
-        int vdH = paneH;
-
         FrameLayout.LayoutParams flp = new FrameLayout.LayoutParams(paneW, paneH);
         flp.gravity = Gravity.TOP | Gravity.START;
         flp.leftMargin = 0;
@@ -346,12 +289,19 @@ public class WindowHostSinglePane {
         v.setTranslationY(0f);
 
         resetSurfaceSizeFromLayout();
-        enforcePaneVirtualDisplay(vdW, vdH);
-
-        appliedVdW = vdW;
-        appliedVdH = vdH;
+        enforcePaneVirtualDisplay(paneW, paneH);
 
         refreshTapRegionSafely(8);
+    }
+
+    private int freshPaneWidthPx(int fallback) {
+        if (hasPendingBounds && pendingBounds.width() > 0) return pendingBounds.width();
+        if (host != null) {
+            ViewGroup.LayoutParams hlp = host.getLayoutParams();
+            if (hlp != null && hlp.width > 0) return hlp.width;
+            if (host.getWidth() > 0) return host.getWidth();
+        }
+        return fallback;
     }
 
     private void resetActivityViewForReuse(Object paneAV) {
@@ -377,51 +327,6 @@ public class WindowHostSinglePane {
                 }
             }
         } catch (Throwable ignore) {}
-    }
-
-    private int resolveStableYtMode(int paneW, int paneH) {
-        int delta = paneW - paneH;
-        if (ytMode == YT_MODE_UNKNOWN) return (delta < 0) ? YT_MODE_PORTRAIT : YT_MODE_LANDSCAPE;
-        if (ytMode == YT_MODE_PORTRAIT) return (delta > YT_SWITCH_HYSTERESIS_PX) ? YT_MODE_LANDSCAPE : YT_MODE_PORTRAIT;
-        return (delta < -YT_SWITCH_HYSTERESIS_PX) ? YT_MODE_PORTRAIT : YT_MODE_LANDSCAPE;
-    }
-
-    private void resetAppliedYtParams() {
-        appliedSurfW = appliedSurfH = appliedVdW = appliedVdH = appliedDpi = -1;
-    }
-
-    private void applyYtSurfaceAndVdIfChanged(int surfW, int surfH, int vdW, int vdH, int densityDpi) {
-        if (appliedSurfW == surfW && appliedSurfH == surfH &&
-                appliedVdW == vdW && appliedVdH == vdH && appliedDpi == densityDpi) {
-            return;
-        }
-        setSurfaceFixedSize(surfW, surfH);
-        boolean resized = enforcePaneVirtualDisplay(vdW, vdH, densityDpi);
-
-        if (!resized) {
-            Log.w(TAG, name + ": VD resize failed, will retry on next apply (surf=" +
-                    surfW + "x" + surfH + " vd=" + vdW + "x" + vdH + ")");
-            return;
-        }
-
-        appliedSurfW = surfW;
-        appliedSurfH = surfH;
-        appliedVdW = vdW;
-        appliedVdH = vdH;
-        appliedDpi = densityDpi;
-    }
-
-    private void setSurfaceFixedSize(int w, int h) {
-        View avView = WindowHostActivityView.asView(av);
-        if (avView == null) return;
-        try {
-            SurfaceView sv = findSurfaceView(avView);
-            if (sv == null) return;
-            SurfaceHolder holder = sv.getHolder();
-            if (holder != null) holder.setFixedSize(Math.max(1, w), Math.max(1, h));
-        } catch (Throwable t) {
-            Log.w(TAG, name + ": setSurfaceFixedSize failed: " + w + "x" + h, t);
-        }
     }
 
     private void resetSurfaceSizeFromLayout() {
@@ -451,7 +356,10 @@ public class WindowHostSinglePane {
                 postNextFrame(() -> resetPaneToMatchParent(paneHost, paneAV, retriesLeft - 1));
                 return;
             }
-            Log.w(TAG, "resetPaneToMatchParent: reparent guard did not clear in time, applying anyway");
+            Log.w(TAG, "resetPaneToMatchParent: reparent guard did not clear in "
+                    + retriesLeft + " frames, extending wait");
+            postMainDelayed(() -> resetPaneToMatchParent(paneHost, paneAV, EXTRA_SETTLE_RETRIES), 100);
+            return;
         }
 
         v.setLayoutParams(new FrameLayout.LayoutParams(
@@ -479,13 +387,8 @@ public class WindowHostSinglePane {
             if (h <= 0) h = Math.max(1, paneHost.getHeight());
         }
 
-        if (paneAV == av) { 
-            ytVdW = ytVdH = ytVdDensity = -1;
-            ytMode = pendingYtMode = YT_MODE_UNKNOWN;
-            pendingYtModeSince = 0L;
-        }
         resetSurfaceSizeFromLayout();
-        enforcePaneVirtualDisplay(Math.max(1, w), Math.max(1, h));
+        enforcePaneVirtualDisplay(w, h);
     }
 
     private int resolveDensityDpi(View avView) {
@@ -504,26 +407,19 @@ public class WindowHostSinglePane {
         return 160;
     }
 
-    private boolean resizeActivityViewVirtualDisplay(int width, int height) {
-        View avView = WindowHostActivityView.asView(av);
-        if (avView == null) return false;
-        int density = resolveDensityDpi(avView);
-        return resizeActivityViewVirtualDisplay(width, height, density);
-    }
-
-    private boolean resizeActivityViewVirtualDisplay(int width, int height, int densityDpi) {
+    private void resizeActivityViewVirtualDisplay(int width, int height, int densityDpi) {
         View avView = WindowHostActivityView.asView(av);
         if (avView == null) {
             Log.d(TAG, name + ": resizeVD skip - avView null");
-            return false;
+            return;
         }
-        if (width <= 0 || height <= 0) return false;
+        if (width <= 0 || height <= 0) return;
 
         int safeDensity = Math.max(120, densityDpi);
 
         // Size deduplication (Size Guard) – ignore the call if the size hasn't changed
         if (width == lastVdW && height == lastVdH && safeDensity == lastVdDpi) {
-            return true;
+            return;
         }
 
         try {
@@ -532,7 +428,7 @@ public class WindowHostSinglePane {
             Object vd = vdField.get(avView);
             if (vd == null) {
                 Log.d(TAG, name + ": resizeVD skip - mVirtualDisplay is null (avReady=" + avReady.get() + ")");
-                return false;
+                return;
             }
 
             Method resize = vd.getClass().getMethod("resize", int.class, int.class, int.class);
@@ -543,19 +439,56 @@ public class WindowHostSinglePane {
             lastVdDpi = safeDensity;
 
             Log.d(TAG, name + ": Fourth: resizeVD OK -> " + width + "x" + height + " @" + safeDensity);
-            return true;
         } catch (Throwable t) {
             Log.w(TAG, name + ": resizeActivityViewVirtualDisplay failed: " + width + "x" + height + " @" + densityDpi, t);
-            return false;
         }
     }
 
-    private boolean enforcePaneVirtualDisplay(int paneW, int paneH) {
-        return resizeActivityViewVirtualDisplay(Math.max(1, paneW), Math.max(1, paneH));
+    private void enforcePaneVirtualDisplay(int paneW, int paneH) {
+        View avView = WindowHostActivityView.asView(av);
+        if (avView == null) return;
+        int density = resolveDensityDpi(avView);
+        resizeActivityViewVirtualDisplay(Math.max(1, paneW), Math.max(1, paneH), density);
+        if (WindowHostActivityView.isGoogleMapsPackage(currentPkg)) {
+            notifyGoogleMapsSurfaceResize(avView, paneW, paneH);
+        }
     }
 
-    private boolean enforcePaneVirtualDisplay(int paneW, int paneH, int densityDpi) {
-        return resizeActivityViewVirtualDisplay(Math.max(1, paneW), Math.max(1, paneH), densityDpi);
+    private void notifyGoogleMapsSurfaceResize(View avView, int w, int h) {
+        notifyGoogleMapsSurfaceResize(avView, w, h, 8);
+    }
+
+    private void notifyGoogleMapsSurfaceResize(View avView, int w, int h, int retriesLeft) {
+        if (avView == null) return;
+
+        // Guard against the reparent race documented in WindowUtil.isReparentUnsettled():
+        // requestLayout() on an ActivityView that was just native-reparented (e.g. swapped
+        // in from a single pane) can throw deep inside the framework's own traversal
+        // ("window is not the parent window of this display"). Defer instead of crashing.
+        if (WindowUtil.isReparentUnsettled(avView)) {
+            if (retriesLeft > 0) {
+                postMainDelayed(() -> notifyGoogleMapsSurfaceResize(avView, w, h, retriesLeft - 1), 32);
+            }
+            return;
+        }
+
+        avView.requestLayout();
+        avView.invalidate();
+
+        SurfaceView sv = findSurfaceView(avView);
+        if (sv != null) {
+            sv.requestLayout();
+            sv.invalidate();
+            SurfaceHolder holder = sv.getHolder();
+            if (holder != null) {
+                try {
+                    holder.setFixedSize(w, h);
+                    postNextFrame(() -> {
+                        try { holder.setSizeFromLayout(); } catch (Throwable ignore) {}
+                    });
+                } catch (Throwable ignore) {}
+            }
+        }
     }
 
     private void clearTapRegionQuietly() {
@@ -627,17 +560,10 @@ public class WindowHostSinglePane {
                 applyPortraitSafeChildSize(b.width(), b.height());
             } else if (host != null && av != null && childAttached) {
                 View avView = WindowHostActivityView.asView(av);
-                if (avView != null) {
-                    avView.setLayoutParams(new FrameLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                    ytVdW = ytVdH = ytVdDensity = -1;
-                    resetAppliedYtParams();
-                    ytMode = YT_MODE_UNKNOWN;
-                    pendingYtMode = YT_MODE_UNKNOWN;
-                    pendingYtModeSince = 0L;
-                    resetSurfaceSizeFromLayout();
-                    enforcePaneVirtualDisplay(b.width(), b.height());
-                }
+                avView.setLayoutParams(new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                resetSurfaceSizeFromLayout();
+                enforcePaneVirtualDisplay(b.width(), b.height());
             }
 
             if (host != null && childAttached) {
@@ -655,47 +581,61 @@ public class WindowHostSinglePane {
     }
 
     private void ensureActivityView(Context ctx, int expectedGen, String pkg) {
-        if (av != null) return;
+        if (av == null) {
+            if (!WindowHostActivityView.isGoogleMapsPackage(pkg)) {
+                WindowHostSurfacePreloader.keepWarm("single_" + name);
+                av = WindowHostSurfacePreloader.getWarmActivityView("single_" + name);
+            }
 
-        av = WindowHostActivityView.newInstance(ctx);
-        
-        avReady.set(false);
-        firstFrame.set(false);
-        WindowHostActivityView.trySetCallback(av, new WindowHostActivityView.Callback() {
-            @Override public void onReady() { if (gen == expectedGen) avReady.set(true); }
-            @Override public void onTaskCreated(int id) { if (gen == expectedGen) taskId = id; }
-            @Override public void onDestroyed() { if (gen == expectedGen) avReady.set(false); }
-        });
-        
-        View avView = WindowHostActivityView.asView(av);
-        WindowHostSurfacePreloader.forceInstantSurfaceReady(avView);
+            if (av == null) {
+                av = WindowHostActivityView.newInstance(ctx);
+            }
+
+            avReady.set(false);
+            firstFrame.set(false);
+            WindowHostActivityView.trySetCallback(av, new WindowHostActivityView.Callback() {
+                @Override public void onReady() { if (gen == expectedGen) avReady.set(true); }
+                @Override public void onTaskCreated(int id) { if (gen == expectedGen) taskId = id; }
+                @Override public void onDestroyed() { if (gen == expectedGen) avReady.set(false); }
+            });
+
+            if (!WindowHostActivityView.isGoogleMapsPackage(pkg)) {
+                View avView = WindowHostActivityView.asView(av);
+                WindowHostSurfacePreloader.forceInstantSurfaceReady(avView);
+            }
+        }
     }
 
-    private void attachChild(int expectedGen) {
+    private void attachChild() {
         if (host == null || av == null) return;
+
+        boolean isMaps = WindowHostActivityView.isGoogleMapsPackage(currentPkg);
+        if (isMaps) {
+            resetVdCache();
+        }
+
         View v = WindowHostActivityView.asView(av);
         resetActivityViewForReuse(av);
-
-        ytVdW = ytVdH = ytVdDensity = -1;
-        resetAppliedYtParams();
-        resetVdCache();
-        ytMode = YT_MODE_UNKNOWN;
-        pendingYtMode = YT_MODE_UNKNOWN;
-        pendingYtModeSince = 0L;
 
         if (v.getParent() instanceof ViewGroup) { 
             try { ((ViewGroup) v.getParent()).removeView(v); } catch (Throwable ignore) {} 
         }
         host.removeAllViews();
         v.setVisibility(View.VISIBLE);
-        WindowHostSurfaceTamer.tame(v);
+
+        if (!isMaps) {
+            WindowHostSurfaceTamer.tame(v);
+        }
+
         hookFirstFrame(v);
         host.addView(v, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         childAttached = true;
         if (curtain != null) curtain.setVisibility(View.VISIBLE);
 
-        WindowHostInstantRenderStrategy.applyToContainer(host, "single_" + name);
+        if (!isMaps) {
+            WindowHostInstantRenderStrategy.applyToContainer(host, "single_" + name);
+        }
 
         if (hasPendingBounds && WindowHostActivityView.isYouTubePackage(currentPkg)) {
             postNextFrame(() -> {
@@ -707,14 +647,14 @@ public class WindowHostSinglePane {
         }
     }
 
-    private void startWhenReady(ActivityManager am, String pkg, int expectedGen) {
+    private void startWhenReady(String pkg, int expectedGen) {
         waitUntil(() -> avReady.get() && childAttached, START_WAIT_TIMEOUT_MS, START_WAIT_STEP_MS, () -> {
             if (gen != expectedGen) return;
-            startNow(am, pkg, expectedGen);
-        }, () -> { if (gen != expectedGen) return; startNow(am, pkg, expectedGen); });
+            startNow(pkg, expectedGen);
+        }, () -> { if (gen != expectedGen) return; startNow(pkg, expectedGen); });
     }
 
-    private void startNow(ActivityManager am, String pkg, int expectedGen) {
+    private void startNow(String pkg, int expectedGen) {
         if (gen != expectedGen) return;
         if (taskId > 0 && pkg.equals(currentPkg)) return;
 
@@ -729,12 +669,12 @@ public class WindowHostSinglePane {
                         SurfaceHolder holder = sv.getHolder();
                         if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
                             Log.w(TAG, name + ": Surface not ready yet, deferring start");
-                            postMainDelayed(() -> startNow(am, pkg, expectedGen), 50);
+                            postMainDelayed(() -> startNow(pkg, expectedGen), 50);
                             return;
                         }
                     } catch (Throwable t) {
                         Log.w(TAG, name + ": Surface check failed, deferring start", t);
-                        postMainDelayed(() -> startNow(am, pkg, expectedGen), 50);
+                        postMainDelayed(() -> startNow(pkg, expectedGen), 50);
                         return;
                     }
                 }
@@ -789,9 +729,7 @@ public class WindowHostSinglePane {
                 } catch (Throwable ignore) {}
             }
             return firstFrame.get();
-        }, 400, 25, () -> {
-            postMainDelayed(doStart, 80);
-        }, () -> {
+        }, 400, 25, () -> postMainDelayed(doStart, 80), () -> {
             Log.w(TAG, name + ": surface stability wait timed out, proceeding to start anyway");
             postMainDelayed(doStart, 80);
         });
@@ -820,10 +758,10 @@ public class WindowHostSinglePane {
         }
     }
 
-    private void liftCurtainLoop(boolean needFirstFrame, int expectedGen) {
+    private void liftCurtainLoop(int expectedGen) {
         if (gen != expectedGen || root == null) return;
         long now = System.nanoTime();
-        boolean gateOk = !needFirstFrame || firstFrame.get() || (now - startNs) >= REVEAL_FALLBACK_NS;
+        boolean gateOk = firstFrame.get() || (now - startNs) >= REVEAL_FALLBACK_NS;
         if (gateOk) {
             if (curtain != null && curtain.getAlpha() > 0f) {
                 curtain.setAlpha(0f);
@@ -831,7 +769,7 @@ public class WindowHostSinglePane {
             }
             return;
         }
-        postNextFrame(() -> liftCurtainLoop(needFirstFrame, expectedGen));
+        postNextFrame(() -> liftCurtainLoop(expectedGen));
     }
 
     private void hardRemoveWindow(boolean releaseAV, int expectedGen) {
@@ -851,12 +789,7 @@ public class WindowHostSinglePane {
         added = false;
         visible.set(false);
         root = null; host = null; curtain = null; lp = null;
-        ytVdW = ytVdH = ytVdDensity = -1;
-        resetAppliedYtParams();
         resetVdCache();
-        ytMode = YT_MODE_UNKNOWN;
-        pendingYtMode = YT_MODE_UNKNOWN;
-        pendingYtModeSince = 0L;
         hasPendingBounds = false; pendingBounds.setEmpty();
         startDeferredForBounds = false;
 
@@ -894,12 +827,7 @@ public class WindowHostSinglePane {
         root = null; host = null; curtain = null; lp = null;
         hasPendingBounds = false; pendingBounds.setEmpty();
         startDeferredForBounds = false;
-        ytVdW = ytVdH = ytVdDensity = -1;
-        resetAppliedYtParams();
         resetVdCache();
-        ytMode = YT_MODE_UNKNOWN;
-        pendingYtMode = YT_MODE_UNKNOWN;
-        pendingYtModeSince = 0L;
     }
 
     private void parkInvisible() {
@@ -925,12 +853,12 @@ public class WindowHostSinglePane {
             try {
                 SurfaceHolder h = sv.getHolder();
                 h.addCallback(new SurfaceHolder.Callback2() {
-                    @Override public void surfaceCreated(SurfaceHolder holder) { }
-                    @Override public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                    @Override public void surfaceCreated(@NonNull SurfaceHolder holder) { }
+                    @Override public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
                         if (width > 0 && height > 0) firstFrame.set(true);
                     }
-                    @Override public void surfaceDestroyed(SurfaceHolder holder) { }
-                    @Override public void surfaceRedrawNeeded(SurfaceHolder holder) { firstFrame.set(true); }
+                    @Override public void surfaceDestroyed(@NonNull SurfaceHolder holder) { }
+                    @Override public void surfaceRedrawNeeded(@NonNull SurfaceHolder holder) { firstFrame.set(true); }
                 });
             } catch (Throwable ignore) {}
         } else {
@@ -949,8 +877,7 @@ public class WindowHostSinglePane {
 
     private SurfaceView findSurfaceView(View v) {
         if (v instanceof SurfaceView) return (SurfaceView) v;
-        if (v instanceof ViewGroup) {
-            ViewGroup g = (ViewGroup) v;
+        if (v instanceof ViewGroup g) {
             for (int i=0;i<g.getChildCount();i++) {
                 SurfaceView res = findSurfaceView(g.getChildAt(i));
                 if (res != null) return res;
@@ -974,21 +901,6 @@ public class WindowHostSinglePane {
     private static void postNextFrame(Runnable r) {
         try { Choreographer.getInstance().postFrameCallback(ft -> r.run()); }
         catch (Throwable t) { new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(r, 16); }
-    }
-
-    private static Intent mainLaunchIntent(String pkg) {
-        try {
-            PackageManager pm = LauncherApplication.sApp.getPackageManager();
-            Intent i = pm.getLaunchIntentForPackage(pkg);
-            if (i == null) return null;
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            return i;
-        } catch (Throwable t) {
-            Log.w(TAG, "mainLaunchIntent failed for " + pkg, t);
-            return null;
-        }
     }
 
     private void postMain(Runnable r) { new Handler(Looper.getMainLooper()).post(r); }
@@ -1081,12 +993,11 @@ public class WindowHostSinglePane {
             }
             
             ensureActivityView(activity, expectedGen, pkg);
-            attachChild(expectedGen);
+            attachChild();
             
             postMainDelayed(() -> {
                 if (gen != expectedGen) return;
-                ActivityManager am = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-                startWhenReady(am, pkg, expectedGen);
+                startWhenReady(pkg, expectedGen);
                 
                 checkForBlackScreenAndRestart(pkg, expectedGen);
             }, 300);
@@ -1110,8 +1021,7 @@ public class WindowHostSinglePane {
             v.setVisibility(View.GONE);
         } catch (Throwable ignore) {}
 
-        if (v instanceof ViewGroup) {
-            ViewGroup g = (ViewGroup) v;
+        if (v instanceof ViewGroup g) {
             for (int i = 0; i < g.getChildCount(); i++) {
                 disableTouchRecursively(g.getChildAt(i));
             }

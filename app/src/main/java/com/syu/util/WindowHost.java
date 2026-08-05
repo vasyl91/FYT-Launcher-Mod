@@ -1,7 +1,6 @@
 package com.syu.util;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -16,7 +15,6 @@ public class WindowHost {
 
     private final Activity activity;
     private final WindowManager wm;
-    private final ActivityManager am;
     private final IBinder appToken;
 
     // Panes
@@ -26,7 +24,6 @@ public class WindowHost {
     public WindowHost(Activity activity) {
         this.activity = activity;
         this.wm = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
-        this.am = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
         View decor = activity.getWindow().getDecorView();
         this.appToken = decor.getWindowToken();
         if (appToken == null) throw new IllegalStateException("Call after onResume() so window token exists.");
@@ -42,17 +39,17 @@ public class WindowHost {
     }
 
     // ===== API: Dual =====
-    public void showDual(String leftPkg, String rightPkg, Rect bounds) { dual.show(activity, wm, am, appToken, leftPkg, rightPkg, bounds); }
+    public void showDual(String leftPkg, String rightPkg, Rect bounds) { dual.show(activity, wm, appToken, leftPkg, rightPkg, bounds); }
     public void updateDualBounds(Rect bounds) { if (dual != null) dual.updateBounds(bounds); }
     public void dismissDual()   { dual.dismissAsync(); }
     public void cleanupDual()   { dual.cleanup(); }
     public boolean isDualVisible() { return dual.isVisible(); }
 
     // ===== API: Singles =====
-    public void showFirst(String pkg, Rect bounds)  { first.show(activity, wm, am, appToken, pkg, bounds); }
-    public void showSecond(String pkg, Rect bounds) { second.show(activity, wm, am, appToken, pkg, bounds); }
-    public void showThird(String pkg, Rect bounds)  { third.show(activity, wm, am, appToken, pkg, bounds); }
-    public void showFourth(String pkg, Rect bounds) { fourth.show(activity, wm, am, appToken, pkg, bounds); }
+    public void showFirst(String pkg, Rect bounds)  { first.show(activity, wm, appToken, pkg, bounds); }
+    public void showSecond(String pkg, Rect bounds) { second.show(activity, wm, appToken, pkg, bounds); }
+    public void showThird(String pkg, Rect bounds)  { third.show(activity, wm, appToken, pkg, bounds); }
+    public void showFourth(String pkg, Rect bounds) { fourth.show(activity, wm, appToken, pkg, bounds); }
 
     public void updateFirstBounds(Rect bounds) { if (first != null) first.updateBounds(bounds); }
     public void updateSecondBounds(Rect bounds) { if (second != null) second.updateBounds(bounds); }

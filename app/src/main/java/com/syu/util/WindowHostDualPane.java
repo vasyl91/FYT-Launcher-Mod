@@ -25,6 +25,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+
 import com.android.launcher66.LauncherApplication;
 
 import java.lang.reflect.Method;
@@ -40,21 +42,21 @@ public class WindowHostDualPane {
     private static final String PREFS = "pip_window_host_prefs";
     private static final String KEY_SPLIT = "dual_split_ratio";
     private static final long SURFACE_RESTORE_DELAY_MS = 500L; 
-    private static final long BLACK_SCREEN_CHECK_DELAY_MS = 1200L; // Wydłużono dla stabilizacji GL
+    private static final long BLACK_SCREEN_CHECK_DELAY_MS = 1200L;
     private static final int MAX_RESTART_ATTEMPTS = 2;
     private int leftRestartCount = 0;
     private int rightRestartCount = 0;
     private final AtomicBoolean leftBlackScreenDetected = new AtomicBoolean(false);
     private final AtomicBoolean rightBlackScreenDetected = new AtomicBoolean(false);
 
-    private static int START_WAIT_TIMEOUT_MS = 60;
-    private static int START_WAIT_STEP_MS    = 4;
+    private static final int START_WAIT_TIMEOUT_MS = 60;
+    private static final int START_WAIT_STEP_MS    = 4;
 
     private static final ScheduledExecutorService DISMISS_EXEC =
             Executors.newSingleThreadScheduledExecutor();
             
     private Activity activity;
-    private ActivityManager activityManager;
+
     private WindowManager wm;
     private WindowManager.LayoutParams lp;
     private FrameLayout root;
@@ -96,6 +98,7 @@ public class WindowHostDualPane {
     private int rightBlackConfirmCount = 0;
     private static final int REQUIRED_BLACK_CONFIRMATIONS = 2;
     private static final long BLACK_SCREEN_CONFIRM_DELAY_MS = 800L;
+    private static final int EXTRA_SETTLE_RETRIES = 20;
 
     private final DividerDragController dragController = new DividerDragController();
     private final Handler resizeHandler = new Handler(Looper.getMainLooper());
@@ -103,9 +106,7 @@ public class WindowHostDualPane {
     private Runnable pendingLeftResizeRunnable = null;
     private Runnable pendingRightResizeRunnable = null;
 
-    private int lastLeftVdW = -1, lastLeftVdH = -1;
-    private int lastRightVdW = -1, lastRightVdH = -1;
-
+    private final java.util.Map<Object, int[]> vdSizeCache = new java.util.WeakHashMap<>();
     boolean isVisible() { return visible.get(); }
 
     private static void forceStopApp(Context ctx, String pkg) {
@@ -121,7 +122,7 @@ public class WindowHostDualPane {
         }
     }
 
-    void show(Activity act, WindowManager wm, ActivityManager am, IBinder token, String lPkg, String rPkg, Rect b) {
+    void show(Activity act, WindowManager wm, IBinder token, String lPkg, String rPkg, Rect b) {
         if (lPkg == null || rPkg == null || b == null) return;
 
         new Thread(() -> {
@@ -134,7 +135,6 @@ public class WindowHostDualPane {
         }).start();
 
         this.activity = act;
-        this.activityManager = am;
         this.wm = wm;
 
         float saved = loadSplitRatio();
@@ -169,8 +169,8 @@ public class WindowHostDualPane {
             setPendingBoundsFast(b);
             applySplitFromBounds();
             ensureActivityView(act, myGen, lPkg, rPkg);
-            if (!leftAttached) attachLeft(myGen);
-            if (!rightAttached) attachRight(myGen);
+            if (!leftAttached) attachLeft();
+            if (!rightAttached) attachRight();
 
             leftFirstFrame.set(false); rightFirstFrame.set(false);
             visible.set(true);
@@ -181,7 +181,7 @@ public class WindowHostDualPane {
                     leftStartDeferredForBounds = true;
                 } else {
                     leftStartDeferredForBounds = false;
-                    startLeftWhenReady(am, lPkg, myGen);
+                    startLeftWhenReady(lPkg, myGen);
                     checkForBlackScreenAndRestart(true, lPkg, myGen);
                 }
             }
@@ -191,7 +191,7 @@ public class WindowHostDualPane {
                     rightStartDeferredForBounds = true;
                 } else {
                     rightStartDeferredForBounds = false;
-                    startRightWhenReady(am, rPkg, myGen);
+                    startRightWhenReady(rPkg, myGen);
                     checkForBlackScreenAndRestart(false, rPkg, myGen);
                 }
             }
@@ -204,21 +204,18 @@ public class WindowHostDualPane {
         if (boundsChanged) {
             applySplitFromBounds();
         }
-        ActivityManager am = activityManager != null
-                ? activityManager
-                : (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
         if (leftStartDeferredForBounds
                 && leftPkg != null
                 && WindowHostActivityView.hasRealLaunchBounds(leftPkg, getLeftLaunchBounds())) {
             leftStartDeferredForBounds = false;
-            startLeftWhenReady(am, leftPkg, gen);
+            startLeftWhenReady(leftPkg, gen);
             checkForBlackScreenAndRestart(true, leftPkg, gen);
         }
         if (rightStartDeferredForBounds
                 && rightPkg != null
                 && WindowHostActivityView.hasRealLaunchBounds(rightPkg, getRightLaunchBounds())) {
             rightStartDeferredForBounds = false;
-            startRightWhenReady(am, rightPkg, gen);
+            startRightWhenReady(rightPkg, gen);
             checkForBlackScreenAndRestart(false, rightPkg, gen);
         }
     }
@@ -251,6 +248,14 @@ public class WindowHostDualPane {
         hasPendingBounds = false; pendingBounds.setEmpty();
         leftStartDeferredForBounds = false;
         rightStartDeferredForBounds = false;
+    }
+
+    private void resetVdCache() {
+        vdSizeCache.clear();
+    }
+
+    private void resetVdCache(Object paneAV) {
+        if (paneAV != null) vdSizeCache.remove(paneAV);
     }
 
     public void flushPendingResizes() {
@@ -287,7 +292,7 @@ public class WindowHostDualPane {
         right.setWillNotDraw(true);
         right.setClickable(false);
 
-        DividerView divider = new DividerView(act, DIVIDER_VISUAL_PX, DIVIDER_GUARD_PX);
+        DividerView divider = new DividerView(act, DIVIDER_VISUAL_PX);
         divider.setClickable(false); 
         divider.setFocusable(false);
         divider.setFocusableInTouchMode(false);
@@ -312,7 +317,7 @@ public class WindowHostDualPane {
                 | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
                 | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED; // KLUCOWE dla OpenGL/Maps
+                | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
         p.gravity = Gravity.TOP | Gravity.START;
         p.width = 1; p.height = 1; p.x = -10000; p.y = -10000;
         p.alpha = 1f;
@@ -328,7 +333,13 @@ public class WindowHostDualPane {
         this.divider = divider; this.lp = p;
 
         applySplitImmediate();
-        root.getViewTreeObserver().addOnGlobalLayoutListener(() -> applySplitImmediate());
+        root.getViewTreeObserver().addOnGlobalLayoutListener(this::applySplitImmediate);
+    }
+
+    public void resyncGeometryAfterSurfaceSwap() {
+        lastAppliedSplitLeftW = lastAppliedSplitRightW = -1;
+        resetVdCache();
+        applySplitImmediate();
     }
 
     private void resetPaneToMatchParent(FrameLayout paneHost, Object paneAV) {
@@ -338,13 +349,17 @@ public class WindowHostDualPane {
     private void resetPaneToMatchParent(FrameLayout paneHost, Object paneAV, int retriesLeft) {
         if (paneHost == null || paneAV == null) return;
         View v = WindowHostActivityView.asView(paneAV);
-        if (v == null) return;
 
         if (WindowUtil.isReparentUnsettled(v)) {
             if (retriesLeft > 0) {
                 postNextFrame(() -> resetPaneToMatchParent(paneHost, paneAV, retriesLeft - 1));
                 return;
             }
+
+            Log.w(TAG, "resetPaneToMatchParent: reparent guard did not clear in "
+                    + retriesLeft + " frames, extending wait");
+            postMainDelayed(() -> resetPaneToMatchParent(paneHost, paneAV, EXTRA_SETTLE_RETRIES), 100);
+            return;
         }
 
         v.setLayoutParams(new FrameLayout.LayoutParams(
@@ -356,23 +371,33 @@ public class WindowHostDualPane {
         v.setTranslationX(0f);
         v.setTranslationY(0f);
 
-        if (surfacesHidden.get()) {
-            return;
+        if (surfacesHidden.get()) return;
+
+        int paneW = paneHost.getWidth();
+        int paneH = paneHost.getHeight();
+        if (paneW <= 0 && paneHost.getLayoutParams() != null) paneW = paneHost.getLayoutParams().width;
+        if (paneH <= 0 && paneHost.getLayoutParams() != null) paneH = paneHost.getLayoutParams().height;
+        if (paneW <= 0 && hasPendingBounds) {
+            int totalW = pendingBounds.width();
+            paneW = (paneHost == leftHost) ? Math.round(totalW * splitRatio) : (totalW - Math.round(totalW * splitRatio));
+        }
+        if (paneH <= 0 && hasPendingBounds) paneH = pendingBounds.height();
+
+        if (paneW > 50 && paneH > 50) {
+            resetVdCache();
+            enforcePaneVirtualDisplay(paneAV, paneW, paneH);
         }
 
         postNextFrame(() -> {
             if (!paneHost.isAttachedToWindow() || !v.isAttachedToWindow()) return;
+            int w = paneHost.getWidth() > 0 ? paneHost.getWidth() : (paneHost.getLayoutParams() != null ? paneHost.getLayoutParams().width : 0);
+            int h = paneHost.getHeight() > 0 ? paneHost.getHeight() : (paneHost.getLayoutParams() != null ? paneHost.getLayoutParams().height : 0);
+            if (w <= 0 && hasPendingBounds) w = (paneHost == leftHost) ? Math.round(pendingBounds.width() * splitRatio) : (pendingBounds.width() - Math.round(pendingBounds.width() * splitRatio));
+            if (h <= 0 && hasPendingBounds) h = pendingBounds.height();
 
-            int paneW = paneHost.getWidth();
-            int paneH = paneHost.getHeight();
-
-            if (paneW <= 0 && paneHost.getLayoutParams() != null) paneW = paneHost.getLayoutParams().width;
-            if (paneH <= 0 && paneHost.getLayoutParams() != null) paneH = paneHost.getLayoutParams().height;
-            if (paneW <= 0 && hasPendingBounds) paneW = pendingBounds.width();
-            if (paneH <= 0 && hasPendingBounds) paneH = pendingBounds.height();
-
-            if (paneW > 50 && paneH > 50) { // Zabezpieczenie minimalnego rozmiaru ramki
-                enforcePaneVirtualDisplay(paneAV, paneW, paneH);
+            if (w > 50 && h > 50) {
+                resetVdCache();
+                enforcePaneVirtualDisplay(paneAV, w, h);
                 refreshTapRegionSafely(paneAV, 4);
                 postNextFrame(() -> refreshTapRegionSafely(paneAV, 4));
             }
@@ -390,6 +415,16 @@ public class WindowHostDualPane {
         v.setScaleY(1f);
         v.setTranslationX(0f);
         v.setTranslationY(0f);
+
+        try {
+            SurfaceView sv = findSurfaceView(v);
+            if (sv != null) {
+                SurfaceHolder holder = sv.getHolder();
+                if (holder != null) {
+                    holder.setSizeFromLayout();
+                }
+            }
+        } catch (Throwable ignore) {}
     }    
 
     private void setPendingBoundsFast(Rect b) {
@@ -459,8 +494,13 @@ public class WindowHostDualPane {
         rightFirstFrame.set(false);
     }
 
-    private void attachLeft(int expectedGen) {
+    private void attachLeft() {
         if (leftHost == null || leftAV == null) return;
+
+        resetVdCache(leftAV);
+
+        boolean isMaps = WindowHostActivityView.isGoogleMapsPackage(leftPkg);
+
         View v = WindowHostActivityView.asView(leftAV);
         resetActivityViewForReuse(leftAV);
 
@@ -471,8 +511,7 @@ public class WindowHostDualPane {
         }
         leftHost.removeAllViews();
         v.setVisibility(View.VISIBLE);
-        
-        boolean isMaps = WindowHostActivityView.isGoogleMapsPackage(leftPkg);
+
         if (!isMaps) {
             WindowHostSurfaceTamer.tame(v);
         }
@@ -487,8 +526,13 @@ public class WindowHostDualPane {
         }
     }
 
-    private void attachRight(int expectedGen) {
+    private void attachRight() {
         if (rightHost == null || rightAV == null) return;
+
+        resetVdCache(rightAV);
+
+        boolean isMaps = WindowHostActivityView.isGoogleMapsPackage(rightPkg);
+
         View v = WindowHostActivityView.asView(rightAV);
         resetActivityViewForReuse(rightAV);
 
@@ -499,8 +543,7 @@ public class WindowHostDualPane {
         }
         rightHost.removeAllViews();
         v.setVisibility(View.VISIBLE);
-        
-        boolean isMaps = WindowHostActivityView.isGoogleMapsPackage(rightPkg);
+
         if (!isMaps) {
             WindowHostSurfaceTamer.tame(v);
         }
@@ -515,18 +558,18 @@ public class WindowHostDualPane {
         }
     }
 
-    private void startLeftWhenReady(ActivityManager am, String pkg, int expectedGen) {
-        waitUntil(() -> leftReady.get() && leftAttached, START_WAIT_TIMEOUT_MS, START_WAIT_STEP_MS, () -> {
+    private void startLeftWhenReady(String pkg, int expectedGen) {
+        waitUntil(() -> leftReady.get() && leftAttached, () -> {
             if (gen != expectedGen) return;
-            startLeftNow(am, pkg, expectedGen);
-        }, () -> { if (gen != expectedGen) return; startLeftNow(am, pkg, expectedGen); });
+            startLeftNow(pkg, expectedGen);
+        }, () -> { if (gen != expectedGen) return; startLeftNow(pkg, expectedGen); });
     }
 
-    private void startRightWhenReady(ActivityManager am, String pkg, int expectedGen) {
-        waitUntil(() -> rightReady.get() && rightAttached, START_WAIT_TIMEOUT_MS, START_WAIT_STEP_MS, () -> {
+    private void startRightWhenReady(String pkg, int expectedGen) {
+        waitUntil(() -> rightReady.get() && rightAttached, () -> {
             if (gen != expectedGen) return;
-            startRightNow(am, pkg, expectedGen);
-        }, () -> { if (gen != expectedGen) return; startRightNow(am, pkg, expectedGen); });
+            startRightNow(pkg, expectedGen);
+        }, () -> { if (gen != expectedGen) return; startRightNow(pkg, expectedGen); });
     }
 
     private Rect getLeftLaunchBounds() {
@@ -547,7 +590,7 @@ public class WindowHostDualPane {
                 pendingBounds.top, pendingBounds.right, pendingBounds.bottom);
     }
 
-    private void startLeftNow(ActivityManager am, String pkg, int expectedGen) {
+    private void startLeftNow(String pkg, int expectedGen) {
         if (gen != expectedGen) return;
         if (leftTask > 0 && pkg.equals(leftPkg)) return;
 
@@ -585,7 +628,7 @@ public class WindowHostDualPane {
         postMainDelayed(doStartLeft, 80);
     }
 
-    private void startRightNow(ActivityManager am, String pkg, int expectedGen) {
+    private void startRightNow(String pkg, int expectedGen) {
         if (gen != expectedGen) return;
         if (rightTask > 0 && pkg.equals(rightPkg)) return;
 
@@ -753,8 +796,28 @@ public class WindowHostDualPane {
     }
 
     private void applySplitImmediate() {
+        applySplitImmediate(30);
+    }
+
+    private void applySplitImmediate(int retriesLeft) {
         if (root == null || leftHost == null || rightHost == null || divider == null) return;
         if (!hasPendingBounds) return;
+
+        // Guard against resizing the pane *containers* while either ActivityView is
+        // still mid native-reparent (see WindowUtil.isReparentUnsettled()). Resizing
+        // leftHost/rightHost forces a layout traversal on the (INVISIBLE-but-still-
+        // laid-out) child ActivityView, which can throw deep inside the framework's
+        // own traversal before reparentHostChild's waiter has confirmed success.
+        View leftView  = leftAV  != null ? WindowHostActivityView.asView(leftAV)  : null;
+        View rightView = rightAV != null ? WindowHostActivityView.asView(rightAV) : null;
+        if (WindowUtil.isReparentUnsettled(leftView) || WindowUtil.isReparentUnsettled(rightView)) {
+            if (retriesLeft > 0) {
+                postNextFrame(() -> applySplitImmediate(retriesLeft - 1));
+            } else {
+                postMainDelayed(() -> applySplitImmediate(EXTRA_SETTLE_RETRIES), 100);
+            }
+            return;
+        }
 
         int totalWidth = Math.max(1, pendingBounds.width());
 
@@ -793,26 +856,20 @@ public class WindowHostDualPane {
         }
     }
 
-    public void forceResyncGeometry() {
-        lastAppliedSplitLeftW = -1;
-        lastAppliedSplitRightW = -1;
-        applySplitImmediate();
-    }
-
     private void hookFirstFrame(View root, boolean isLeft) {
         SurfaceView sv = findSurfaceView(root);
         if (sv != null) {
             try {
                 SurfaceHolder h = sv.getHolder();
                 h.addCallback(new SurfaceHolder.Callback2() {
-                    @Override public void surfaceCreated(SurfaceHolder holder) { }
-                    @Override public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                    @Override public void surfaceCreated(@NonNull SurfaceHolder holder) { }
+                    @Override public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
                         if (width > 0 && height > 0) {
                             if (isLeft) leftFirstFrame.set(true); else rightFirstFrame.set(true);
                         }
                     }
-                    @Override public void surfaceDestroyed(SurfaceHolder holder) { }
-                    @Override public void surfaceRedrawNeeded(SurfaceHolder holder) {
+                    @Override public void surfaceDestroyed(@NonNull SurfaceHolder holder) { }
+                    @Override public void surfaceRedrawNeeded(@NonNull SurfaceHolder holder) {
                         if (isLeft) leftFirstFrame.set(true); else rightFirstFrame.set(true);
                     }
                 });
@@ -822,8 +879,7 @@ public class WindowHostDualPane {
 
     private SurfaceView findSurfaceView(View v) {
         if (v instanceof SurfaceView) return (SurfaceView) v;
-        if (v instanceof ViewGroup) {
-            ViewGroup g = (ViewGroup) v;
+        if (v instanceof ViewGroup g) {
             for (int i = 0; i < g.getChildCount(); i++) {
                 SurfaceView res = findSurfaceView(g.getChildAt(i));
                 if (res != null) return res;
@@ -851,8 +907,8 @@ public class WindowHostDualPane {
         }
 
         if (releaseAVs) {
-            if (leftAV != null)  { try { WindowHostActivityView.release(leftAV); } catch (Throwable ignore) {} leftAV = null; leftTask = -1; leftReady.set(false); }
-            if (rightAV != null) { try { WindowHostActivityView.release(rightAV); } catch (Throwable ignore) {} rightAV = null; rightTask = -1; rightReady.set(false); }
+            if (leftAV != null)  { try { WindowHostActivityView.release(leftAV); } catch (Throwable ignore) {} resetVdCache(leftAV); leftAV = null; leftTask = -1; leftReady.set(false); }
+            if (rightAV != null) { try { WindowHostActivityView.release(rightAV); } catch (Throwable ignore) {} resetVdCache(rightAV); rightAV = null; rightTask = -1; rightReady.set(false); }
         }
 
         added = false;
@@ -897,20 +953,22 @@ public class WindowHostDualPane {
         }
     }
 
-    private void waitUntil(BooleanSupplier cond, int timeoutMs, int stepMs, Runnable onOk, Runnable onTimeout) {
+    private void waitUntil(BooleanSupplier cond, Runnable onOk, Runnable onTimeout) {
         final long start = SystemClock.uptimeMillis();
         final Runnable[] tick = new Runnable[1];
         tick[0] = () -> {
             if (cond.getAsBoolean()) { onOk.run(); return; }
             long elapsed = SystemClock.uptimeMillis() - start;
-            if (elapsed >= timeoutMs) { onTimeout.run(); return; }
-            postMainDelayed(tick[0], stepMs);
+            if (elapsed >= START_WAIT_TIMEOUT_MS) { onTimeout.run(); return; }
+            postMainDelayed(tick[0], START_WAIT_STEP_MS);
         };
         postMain(tick[0]);
     }
 
     private static int dp(int v) { return Math.round(LauncherApplication.sApp.getResources().getDisplayMetrics().density * v); }
-    private static int clampPx(int v, int min, int max) { if (v < min) return min; if (v > max) return max; return v; }
+    private static int clampPx(int v, int min, int max) { if (v < min) return min;
+        return Math.min(v, max);
+    }
 
     private static void postNextFrame(Runnable r) {
         try { Choreographer.getInstance().postFrameCallback(ft -> r.run()); }
@@ -1008,11 +1066,11 @@ public class WindowHostDualPane {
                 }
                 
                 ensureActivityView(activity, expectedGen, pkg, rightPkg);
-                attachLeft(expectedGen);
+                attachLeft();
                 
                 postMainDelayed(() -> {
                     if (gen != expectedGen) return;
-                    startLeftWhenReady((ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE), pkg, expectedGen);
+                    startLeftWhenReady(pkg, expectedGen);
                     checkForBlackScreenAndRestart(true, pkg, expectedGen);
                 }, 300);
                 
@@ -1032,11 +1090,11 @@ public class WindowHostDualPane {
                 }
                 
                 ensureActivityView(activity, expectedGen, leftPkg, pkg);
-                attachRight(expectedGen);
+                attachRight();
                 
                 postMainDelayed(() -> {
                     if (gen != expectedGen) return;
-                    startRightWhenReady((ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE), pkg, expectedGen);
+                    startRightWhenReady(pkg, expectedGen);
                     checkForBlackScreenAndRestart(false, pkg, expectedGen);
                 }, 300);
             }
@@ -1044,7 +1102,7 @@ public class WindowHostDualPane {
     }
 
     static final class DividerView extends FrameLayout {
-        public DividerView(Context ctx, int visualWidthPx, int guardPx) {
+        public DividerView(Context ctx, int visualWidthPx) {
             super(ctx);
             setWillNotDraw(false);
             setBackgroundColor(Color.TRANSPARENT);
@@ -1076,7 +1134,7 @@ public class WindowHostDualPane {
         }
 
         @Override 
-        protected void onDraw(android.graphics.Canvas canvas) {
+        protected void onDraw(@NonNull android.graphics.Canvas canvas) {
             super.onDraw(canvas);
             float cx = getWidth() / 2f, cy = getHeight() / 2f;
             canvas.drawCircle(cx, cy - spacingPx, dotRadiusPx, p);
@@ -1134,7 +1192,7 @@ public class WindowHostDualPane {
 
                     if (!touchCaptured) {
                         if (adx > SLOP || ady > SLOP) {
-                            if (adx > ady && adx > SLOP) {
+                            if (adx > ady) {
                                 touchCaptured = true;
                                 dragging = true;
                                 try {
@@ -1177,13 +1235,19 @@ public class WindowHostDualPane {
                         dragging = false;
                         posted = false;
                         pendingLeft = pendingRight = -1;
-                        
+
                         saveSplitRatio();
-                        
-                        // Obydwie opóźnione operacje zapobiegają wyprzedzeniu aktualizacji klatek EGL
+
                         postMainDelayed(() -> {
                             restoreSurfaces();
                             flushPendingResizes();
+
+                            if (WindowHostActivityView.isGoogleMapsPackage(leftPkg) && leftAV != null && leftHost != null) {
+                                notifyGoogleMapsSurfaceResize(WindowHostActivityView.asView(leftAV), leftHost.getWidth(), leftHost.getHeight());
+                            }
+                            if (WindowHostActivityView.isGoogleMapsPackage(rightPkg) && rightAV != null && rightHost != null) {
+                                notifyGoogleMapsSurfaceResize(WindowHostActivityView.asView(rightAV), rightHost.getWidth(), rightHost.getHeight());
+                            }
                         }, 120);
                     }
 
@@ -1205,6 +1269,9 @@ public class WindowHostDualPane {
 
         private void applyWidths(int leftW, int rightW) {
             if (root == null || leftHost == null || rightHost == null || divider == null) return;
+
+            if (leftAV != null && WindowUtil.isReparentUnsettled(WindowHostActivityView.asView(leftAV))) return;
+            if (rightAV != null && WindowUtil.isReparentUnsettled(WindowHostActivityView.asView(rightAV))) return;
 
             int tw = Math.max(1, leftW + rightW);
 
@@ -1231,8 +1298,6 @@ public class WindowHostDualPane {
             leftHost.setLayoutParams(leftLp);
             rightHost.setLayoutParams(rightLp);
             divider.setLayoutParams(dividerLp);
-
-            forceResyncGeometry();
         }
     }
 
@@ -1252,52 +1317,88 @@ public class WindowHostDualPane {
         return 160;
     }
 
-    private boolean resizeActivityViewVirtualDisplay(Object paneAV, int width, int height, int densityDpi) {
+    private void resizeActivityViewVirtualDisplay(Object paneAV, int width, int height, int densityDpi) {
         View avView = WindowHostActivityView.asView(paneAV);
-        if (avView == null || width <= 0 || height <= 0) return false;
+        if (avView == null || width <= 0 || height <= 0) return;
 
         try {
             java.lang.reflect.Field vdField = avView.getClass().getDeclaredField("mVirtualDisplay");
             vdField.setAccessible(true);
             Object vd = vdField.get(avView);
-            if (vd == null) return false;
+            if (vd == null) return;
 
             Method resize = vd.getClass().getMethod("resize", int.class, int.class, int.class);
             int safeDensity = Math.max(120, densityDpi);
             resize.invoke(vd, width, height, safeDensity);
-            return true;
         } catch (Throwable t) {
             Log.w(TAG, "resizeActivityViewVirtualDisplay failed", t);
-            return false;
         }
     }
 
     private void enforcePaneVirtualDisplay(Object paneAV, int paneW, int paneH) {
         if (paneAV == null || paneW < 50 || paneH < 50) return;
-        
+
         if (surfacesHidden.get()) return;
 
         View avView = WindowHostActivityView.asView(paneAV);
-        if (avView == null) return;
 
-        boolean isLeft = (paneAV == leftAV);
-        int lastW = isLeft ? lastLeftVdW : lastRightVdW;
-        int lastH = isLeft ? lastLeftVdH : lastRightVdH;
+        int[] last = vdSizeCache.get(paneAV);
 
-        if (Math.abs(paneW - lastW) < 8 && Math.abs(paneH - lastH) < 8) {
+        if (last != null && Math.abs(paneW - last[0]) < 8 && Math.abs(paneH - last[1]) < 8) {
             return;
         }
 
-        if (isLeft) {
-            lastLeftVdW = paneW;
-            lastLeftVdH = paneH;
-        } else {
-            lastRightVdW = paneW;
-            lastRightVdH = paneH;
+        if (last == null) {
+            last = new int[2];
+            vdSizeCache.put(paneAV, last);
         }
+        last[0] = paneW;
+        last[1] = paneH;
 
         int density = resolveDensityDpi(avView);
         resizeActivityViewVirtualDisplay(paneAV, paneW, paneH, density);
+
+        String currentPkg = (paneAV == leftAV) ? leftPkg : rightPkg;
+        if (WindowHostActivityView.isGoogleMapsPackage(currentPkg)) {
+            notifyGoogleMapsSurfaceResize(avView, paneW, paneH);
+        }
+    }
+
+    private void notifyGoogleMapsSurfaceResize(View avView, int w, int h) {
+        notifyGoogleMapsSurfaceResize(avView, w, h, 8);
+    }
+
+    private void notifyGoogleMapsSurfaceResize(View avView, int w, int h, int retriesLeft) {
+        if (avView == null) return;
+
+        // Guard against the reparent race documented in WindowUtil.isReparentUnsettled():
+        // requestLayout() on an ActivityView that was just native-reparented (e.g. swapped
+        // in from a single pane) can throw deep inside the framework's own traversal
+        // ("window is not the parent window of this display"). Defer instead of crashing.
+        if (WindowUtil.isReparentUnsettled(avView)) {
+            if (retriesLeft > 0) {
+                postMainDelayed(() -> notifyGoogleMapsSurfaceResize(avView, w, h, retriesLeft - 1), 32);
+            }
+            return;
+        }
+
+        avView.requestLayout();
+        avView.invalidate();
+
+        SurfaceView sv = findSurfaceView(avView);
+        if (sv != null) {
+            sv.requestLayout();
+            sv.invalidate();
+            SurfaceHolder holder = sv.getHolder();
+            if (holder != null) {
+                try {
+                    holder.setFixedSize(w, h);
+                    postNextFrame(() -> {
+                        try { holder.setSizeFromLayout(); } catch (Throwable ignore) {}
+                    });
+                } catch (Throwable ignore) {}
+            }
+        }
     }
 
     private void clearTapRegionQuietly(Object paneAV) {
