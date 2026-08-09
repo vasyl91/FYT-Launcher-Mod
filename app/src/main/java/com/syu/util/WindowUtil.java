@@ -17,6 +17,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.graphics.PixelFormat;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -54,20 +57,7 @@ public class WindowUtil {
     private static Rect offscreen = new Rect(-3000, -3000, -2400, -2400);
     private static final Map<String, Boolean> pipOffscreenState = new HashMap<>();
     private static final Map<String, Rect> lastPipBounds = new HashMap<>();
-
-    // --- Reparent settle guard -------------------------------------------------
-    // reparentHostChild() moves an ActivityView's underlying window/surface between
-    // host containers (single<->dual switch, pane swap). The "ok" signal it waits for
-    // is a heuristic (VirtualDisplay id present / Surface valid) and can be true
-    // before WMS has actually finished registering the new parent window for that
-    // display. Any layout-affecting call on the ActivityView during that gap
-    // (setLayoutParams -> requestLayout -> traversal -> ActivityView.gatherTransparentRegion
-    // -> updateLocationAndTapExcludeRegion) can hit:
-    //   IllegalArgumentException: The given window is not the parent window of this display.
-    // ...and it hits it from inside the framework's own traversal, not from our
-    // reflective calls, so our usual try/catch around updateLocationAndTapExcludeRegion
-    // never sees it. Consumers should check isReparentUnsettled(view) before doing
-    // anything that forces a layout pass on a just-reparented ActivityView.
+    private static volatile boolean forcePipBoundsUpdate = false;
     private static final Map<View, Long> sReparentUnsettledUntil = new WeakHashMap<>();
     private static final long REPARENT_SETTLE_GRACE_MS = 250L;
     private static final Handler retryHandler = new Handler(Looper.getMainLooper());
@@ -119,7 +109,6 @@ public class WindowUtil {
 
     public static void initDefaultApp() {
         if (!LauncherApplication.isFytDevice()) return;
-        initSurfacePreloader();
         if (helpers == null) {
             helpers = new Helpers();
         }
@@ -151,27 +140,6 @@ public class WindowUtil {
         }
     }
 
-    public static void initSurfacePreloader() {
-        // Pre-warm common ActivityViews on app start
-        Context ctx = LauncherApplication.sApp;
-        new Thread(() -> {
-            try {
-                Thread.sleep(2000); // Wait for app to stabilize
-                
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_left");
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_right");
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_First");
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Second");
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Third");
-                WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Fourth");
-                
-                Log.i(TAG, "Surface preloader initialized");
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to initialize surface preloader", e);
-            }
-        }).start();
-    }
-
     public static void startMapPip(final boolean show) {
         ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
     }
@@ -179,6 +147,74 @@ public class WindowUtil {
     public static void startMapPip(final boolean show, int millis) {
         delayMillis = millis;
         ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
+    }
+
+    /** Window in which a repeated call to openPip() with the same configuration is skipped. */
+    private static final long OPEN_PIP_DEBOUNCE_MS = 4000L;
+ 
+    private static volatile long lastOpenPipAtMs = 0L;
+    private static volatile String lastOpenPipSignature = null;
+
+    /**
+     * Signature of what openPip() is about to display: panel flags + packages + show mode.
+     * Changing anything in the PiP settings changes the signature, so the rebuild will proceed.
+     */
+    private static String currentPipSignature(boolean show) {
+        try {
+            if (prefs == null) return null;
+            return (show ? "S" : "-")
+                    + "|" + prefs.getBoolean(Keys.PIP_DUAL, false)
+                    + "|" + prefs.getBoolean(Keys.PIP_FIRST, false)
+                    + "|" + prefs.getBoolean(Keys.PIP_SECOND, false)
+                    + "|" + prefs.getBoolean(Keys.PIP_THIRD, false)
+                    + "|" + prefs.getBoolean(Keys.PIP_FOURTH, false)
+                    + "|" + prefs.getString(Keys.PIP_FIRST_PACKAGE, "")
+                    + "|" + prefs.getString(Keys.PIP_SECOND_PACKAGE, "")
+                    + "|" + prefs.getString(Keys.PIP_THIRD_PACKAGE, "")
+                    + "|" + prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    /** Whether anything is still actually on the screen (not just the pipsAdded flag). */
+    private static boolean panesStillOnScreen() {
+        try {
+            WindowHost host = mWindowHost;
+            if (host == null) return false;
+            return host.isDualVisible()
+                    || host.isFirstVisible()
+                    || host.isSecondVisible()
+                    || host.isThirdVisible()
+                    || host.isFourthVisible();
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+ 
+    /**
+     * @return true if this openPip() call is a duplicate of the previous one and should be skipped.
+     *         As a side effect, stores the current signature and timestamp.
+     */
+    private static boolean shouldDebounceOpenPip(boolean show) {
+        final String sig = currentPipSignature(show);
+        final long now = SystemClock.uptimeMillis();
+        boolean awaitingBounds = true;
+        try {
+            awaitingBounds = mWindowHost != null && mWindowHost.isAnyPaneAwaitingBounds();
+        } catch (Throwable ignore) { }
+ 
+        boolean duplicate = sig != null
+                && sig.equals(lastOpenPipSignature)
+                && (now - lastOpenPipAtMs) < OPEN_PIP_DEBOUNCE_MS
+                && panesStillOnScreen()
+                && !awaitingBounds;
+ 
+        if (duplicate) return true;
+ 
+        lastOpenPipSignature = sig;
+        lastOpenPipAtMs = now;
+        return false;
     }
 
     public static void openPip(boolean show) {
@@ -232,6 +268,19 @@ public class WindowUtil {
                         prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
                     }
 
+                    // A repeated trigger (onResume / startMapPip / retry) can enter here again
+                    // within ~2 s and disrupt the panels that have just been restored. If the configuration
+                    // is the same and the panels are still present, there is nothing to rebuild.
+                    if (shouldDebounceOpenPip(show)) {
+                        Log.i(TAG, "openPip(): debounced - identical layout already on screen");
+                        delayMillis = 0;
+                        helpers.setPipsAdded(true);
+                        helpers.setFirstPreferenceWindow(false);
+                        helpers.setWallpaperWindow(false);
+                        helpers.setWasInRecents(false);
+                        return;
+                    }
+
                     if (checkIfPinned() && AppPackageName.equals("com.syu.camera360")) {
                         Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
                     }
@@ -247,32 +296,6 @@ public class WindowUtil {
                             if (mWindowHost != null) {
                                 // Dismiss windowed activity on main thread (existing)
                                 Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
-
-                                // Wait until host windows are fully detached, then clear and rewarm safely
-                                Launcher.getLauncher().handler.post(() -> {
-                                    try {
-                                        // Wait for handoff (all host windows detached) then clear pool and prewarm
-                                        mWindowHost.awaitHandoff(() -> {
-                                            try {
-                                                WindowHostSurfacePreloader.clearPool();
-                                                // Re-warm for next use
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_left");
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_right");
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_First");
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Second");
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Third");
-                                                WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Fourth");
-                                                Log.i(TAG, "removePip(): awaitHandoff completed; prewarmed ActivityViews");
-                                            } catch (Throwable t) {
-                                                Log.w(TAG, "removePip(): prewarm after handoff failed", t);
-                                            }
-                                        });
-                                    } catch (Throwable t) {
-                                        // If awaitHandoff itself fails for any reason, fall back to immediate clear/prewarm with a small delay
-                                        Log.w(TAG, "removePip(): awaitHandoff failed, falling back", t);
-                                        Launcher.getLauncher().handler.postDelayed(() -> prepareNextSurfaceLoad(), 120);
-                                    }
-                                });
                             }
                             // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
                             Method getServiceMethod = ActivityManager.class.getMethod("getService");
@@ -363,32 +386,6 @@ public class WindowUtil {
                 if (mWindowHost != null) {
                     // Dismiss windowed activity on main thread (existing)
                     Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
-
-                    // Wait until host windows are fully detached, then clear and rewarm safely
-                    Launcher.getLauncher().handler.post(() -> {
-                        try {
-                            // Wait for handoff (all host windows detached) then clear pool and prewarm
-                            mWindowHost.awaitHandoff(() -> {
-                                try {
-                                    WindowHostSurfacePreloader.clearPool();
-                                    // Re-warm for next use
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_left");
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "dual_right");
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_First");
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Second");
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Third");
-                                    WindowHostSurfacePreloader.prewarmActivityView(LauncherApplication.sApp, "single_Fourth");
-                                    Log.i(TAG, "removePip(): awaitHandoff completed; prewarmed ActivityViews");
-                                } catch (Throwable t) {
-                                    Log.w(TAG, "removePip(): prewarm after handoff failed", t);
-                                }
-                            });
-                        } catch (Throwable t) {
-                            // If awaitHandoff itself fails for any reason, fall back to immediate clear/prewarm with a small delay
-                            Log.w(TAG, "removePip(): awaitHandoff failed, falling back", t);
-                            Launcher.getLauncher().handler.postDelayed(() -> prepareNextSurfaceLoad(), 120);
-                        }
-                    });
                 }
                 // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
                 Method getServiceMethod = ActivityManager.class.getMethod("getService");
@@ -403,34 +400,17 @@ public class WindowUtil {
             helpers.setPipsAdded(false);
         }
     }
-
-    public static void prepareNextSurfaceLoad() {
-        Context ctx = LauncherApplication.sApp;
-        new Thread(() -> {
-            WindowHostSurfacePreloader.clearPool();
-            
-            // Re-warm for next use
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_left");
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "dual_right");
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_First");
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Second");
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Third");
-            WindowHostSurfacePreloader.prewarmActivityView(ctx, "single_Fourth");
-        }).start();
-    }
     
+    // =====================================================================================
     // WINDOWED PIPS
+    // =====================================================================================
 
     public static void openMultiplePips() {
         if (!LauncherApplication.isFytDevice()) return;
-
-        // openMultiplePips() can be re-entered (e.g. two openPip() calls close together)
-        // before the previous WindowHost's panes were ever dismissed. Overwriting
-        // mWindowHost unconditionally used to leave the old ActivityViews attached to
-        // the same Activity tasks as the new ones, fighting over visibility forever.
-        if (mWindowHost != null) {
+        final WindowHost previousHost = mWindowHost;
+        if (previousHost != null) {
             try {
-                mWindowHost.dismiss();
+                previousHost.dismiss();
             } catch (Throwable ignore) {}
         }
 
@@ -441,6 +421,8 @@ public class WindowUtil {
         fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
 
         mWindowHost = new WindowHost(Launcher.getLauncher());
+        forcePipBoundsUpdate = true;
+
         firstPkg = prefs.getString(Keys.PIP_FIRST_PACKAGE, "");
         secondPkg = prefs.getString(Keys.PIP_SECOND_PACKAGE, "");
         
@@ -516,16 +498,40 @@ public class WindowUtil {
                 }
             }
         }
-        
-        if (workspace != null) {
-            workspace.postDelayed(() -> {
-                Workspace ws = Launcher.getLauncher().getWorkspace();
-                if (ws != null) {
-                    int currentScroll = ws.mUnboundedScrollX;
-                    updatePipPositionsForScroll(currentScroll);
-                }
-            }, 100); 
-        }            
+        Launcher.getLauncher().handler.postDelayed(() -> pumpPipBoundsUntilReady(16), 100);
+
+        // The previous host's ActivityViews still hold the embedded tasks. Retire them: they are
+        // released only once the freshly created panes have taken those tasks over, which is what
+        // stops every open/remove PiP cycle from leaking a VirtualDisplay for good.
+        if (previousHost != null && previousHost != mWindowHost) {
+            Launcher.getLauncher().handler.postDelayed(previousHost::retireActivityViews, 1200);
+        }          
+    }
+
+    /**
+     * Applies the dimensions to newly created panels, retrying until none of the panels
+     * reports that it is still waiting for bounds (WindowHost.isAnyPaneAwaitingBounds()).
+     */
+    private static void pumpPipBoundsUntilReady(int attemptsLeft) {
+        try {
+            Launcher launcher = Launcher.getLauncher();
+            if (launcher == null || mWindowHost == null) return;
+ 
+            Workspace ws = launcher.getWorkspace();
+            if (ws != null) {
+                updatePipPositionsForScroll(ws.mUnboundedScrollX);
+            }
+ 
+            if (!mWindowHost.isAnyPaneAwaitingBounds()) return;
+            if (attemptsLeft <= 0) {
+                Log.w(TAG, "pumpPipBoundsUntilReady: gave up, panes still awaiting bounds");
+                return;
+            }
+            forcePipBoundsUpdate = true;
+            launcher.handler.postDelayed(() -> pumpPipBoundsUntilReady(attemptsLeft - 1), 120);
+        } catch (Throwable t) {
+            Log.w(TAG, "pumpPipBoundsUntilReady failed", t);
+        }
     }
 
     private static String getScreenKeyForType(String pipType) {
@@ -590,7 +596,8 @@ public class WindowUtil {
             updatePipPosition("second", scrollOffset);
             updatePipPosition("third", scrollOffset);
             updatePipPosition("fourth", scrollOffset);
-            
+ 
+            forcePipBoundsUpdate = false;
         } catch (Exception e) {
             Log.e(TAG, "Error updating PiP positions during scroll", e);
         }
@@ -622,10 +629,10 @@ public class WindowUtil {
         Rect bounds = new Rect(pipScreenX, basePos[1],
                                pipScreenX + basePos[2], basePos[1] + basePos[3]);
 
-        // OPTIMIZATION: If the new bounds are identical to the previously applied ones,
+        // If the new bounds are identical to the previously applied ones,
         // skip the update to avoid unnecessary IPC operations.
         Rect last = lastPipBounds.get(pipType);
-        if (last != null && last.equals(bounds)) {
+        if (!forcePipBoundsUpdate && last != null && last.equals(bounds)) {
             return;
         }
 
@@ -673,7 +680,9 @@ public class WindowUtil {
         }
     }
 
+    // =====================================================================================
     // PINNED PIP
+    // =====================================================================================
 
     public static void openPinnedPip() {
         if (!LauncherApplication.isFytDevice()) return;
@@ -903,7 +912,131 @@ public class WindowUtil {
         return Math.min(Math.max(1, count), 2);
     }
 
-    // -------------- FAB ----------------
+    // =====================================================================================
+    // FAB
+    // =====================================================================================
+
+    public static void swapAllPanes() {
+        try {
+            if (prefs == null) {
+                prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+            }
+            dualPip         = prefs.getBoolean(Keys.PIP_DUAL, false);
+            firstPip        = prefs.getBoolean(Keys.PIP_FIRST, false);
+            secondPip       = prefs.getBoolean(Keys.PIP_SECOND, false);
+            thirdPip        = prefs.getBoolean(Keys.PIP_THIRD, false);
+            fourthPip       = prefs.getBoolean(Keys.PIP_FOURTH, false);
+            thirdPipPinned  = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
+            fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+
+            int covers = coverForRightAndFourthSwap() + coverForLeftAndThirdSwap();
+
+            if (covers <= 0) {
+                // Nie ma czego zaslaniac -- stara sciezka.
+                swapRightAndFourth();
+                new Handler(Looper.getMainLooper()).postDelayed(WindowUtil::swapLeftAndThird, 100);
+                return;
+            }
+
+            WindowHostSplash.beginSyncedReveal(covers, 4000L);
+
+            final Handler main = new Handler(Looper.getMainLooper());
+            // Zapas na narysowanie zaslon, ZANIM watek glowny zostanie zablokowany przez swap.
+            main.postDelayed(() -> {
+                try {
+                    swapRightAndFourth();
+                } catch (Throwable t) {
+                    Log.w(TAG, "swapAllPanes: right/fourth failed", t);
+                }
+                main.postDelayed(() -> {
+                    try {
+                        swapLeftAndThird();
+                    } catch (Throwable t) {
+                        Log.w(TAG, "swapAllPanes: left/third failed", t);
+                    }
+                }, 32);
+            }, 48);
+        } catch (Throwable t) {
+            Log.w(TAG, "swapAllPanes failed", t);
+            WindowHostSplash.cancelSyncedReveal();
+        }
+    }
+
+    /**
+     * Raises the covers for the left/first <-> third pair, each with the app icon that is coming
+     * INTO that window (the panel fields are replaced only later, so the panel itself does not know).
+     *
+     * @return the number of covers actually raised -- needed for the reveal barrier
+     */
+    private static int coverForLeftAndThirdSwap() {
+        int covered = 0;
+        try {
+            WindowHost host = WindowHost.sInstance;
+            if (host == null) return 0;
+
+            Object dual  = reflectGetField(host, "dual");
+            Object third = reflectGetField(host, "third");
+            Object first = reflectGetField(host, "first");
+
+            String dualLeftPkgNow = (String) reflectGetField(dual, "leftPkg");
+            String thirdPkgNow    = (String) reflectGetField(third, "currentPkg");
+            String firstPkgNow    = (String) reflectGetField(first, "currentPkg");
+
+            boolean dualBranch = (dualPip && thirdPip && !thirdPipPinned)
+                    && (dual != null && third != null);
+
+            if (dualBranch) {
+                invokeIfExists(dual,  "coverLeftForHandoff", thirdPkgNow);
+                invokeIfExists(third, "coverForHandoff", dualLeftPkgNow);
+                covered += 2;
+            } else if (first != null && third != null) {
+                invokeIfExists(first, "coverForHandoff", thirdPkgNow);
+                invokeIfExists(third, "coverForHandoff", firstPkgNow);
+                covered += 2;
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "coverForLeftAndThirdSwap failed", t);
+        }
+        return covered;
+    }
+
+    /**
+     * Raises the covers for the right/second <-> fourth pair. See coverForLeftAndThirdSwap().
+     *
+     * @return the number of covers actually raised
+     */
+    private static int coverForRightAndFourthSwap() {
+        int covered = 0;
+        try {
+            WindowHost host = WindowHost.sInstance;
+            if (host == null) return 0;
+
+            Object dual   = reflectGetField(host, "dual");
+            Object fourth = reflectGetField(host, "fourth");
+            Object second = reflectGetField(host, "second");
+
+            String dualRightPkgNow = (String) reflectGetField(dual, "rightPkg");
+            String fourthPkgNow    = (String) reflectGetField(fourth, "currentPkg");
+            String secondPkgNow    = (String) reflectGetField(second, "currentPkg");
+
+            boolean dualBranch = (dualPip && fourthPip && !fourthPipPinned)
+                    && (dual != null && fourth != null);
+
+            if (dualBranch) {
+                invokeIfExists(dual,   "coverRightForHandoff", fourthPkgNow);
+                invokeIfExists(fourth, "coverForHandoff", dualRightPkgNow);
+                covered += 2;
+            } else if (second != null && fourth != null) {
+                invokeIfExists(second, "coverForHandoff", fourthPkgNow);
+                invokeIfExists(fourth, "coverForHandoff", secondPkgNow);
+                covered += 2;
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "coverForRightAndFourthSwap failed", t);
+        }
+        return covered;
+    }
+
     // --------- left/first <-> third ----------
     public static void swapLeftAndThird() {
         try {
@@ -928,6 +1061,8 @@ public class WindowUtil {
             firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
             thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
             thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
+
+            coverForLeftAndThirdSwap();
 
             // Try dual.left <-> third first (if dual mode active)
             if ((dualPip && thirdPip && !thirdPipPinned) && (dual != null && third != null)) {
@@ -961,9 +1096,6 @@ public class WindowUtil {
                         try {
                             if (dualLeftHost != null) try { dualLeftHost.removeAllViews(); } catch (Throwable ignore) {}
                             if (thirdHost != null)    try { thirdHost.removeAllViews(); }    catch (Throwable ignore) {}
-
-                            invokeIfExists(dualLeftAV, "clearActivityViewGeometryForIme");
-                            invokeIfExists(thirdAv, "clearActivityViewGeometryForIme");
 
                             reflectSetField(dual, "leftAV", thirdAv);
                             reflectSetField(third, "av", dualLeftAV);
@@ -1095,9 +1227,6 @@ public class WindowUtil {
                             if (firstHost != null) try { firstHost.removeAllViews(); } catch (Throwable ignore) {}
                             if (thirdHost != null) try { thirdHost.removeAllViews(); } catch (Throwable ignore) {}
 
-                            invokeIfExists(firstAv, "clearActivityViewGeometryForIme");
-                            invokeIfExists(thirdAv, "clearActivityViewGeometryForIme");
-
                             reflectSetField(first, "av", thirdAv);
                             reflectSetField(third, "av", firstAv);
 
@@ -1222,6 +1351,8 @@ public class WindowUtil {
             fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
             fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
 
+            coverForRightAndFourthSwap();
+
             // Prefer dual.right <-> fourth if present
             if ((dualPip && fourthPip && !fourthPipPinned) && (dual != null && fourth != null)) {
                 try {
@@ -1253,9 +1384,6 @@ public class WindowUtil {
                         try {
                             if (dualRightHost != null) try { dualRightHost.removeAllViews(); } catch (Throwable ignore) {}
                             if (fourthHost != null)    try { fourthHost.removeAllViews(); }    catch (Throwable ignore) {}
-
-                            invokeIfExists(dualRightAV, "clearActivityViewGeometryForIme");
-                            invokeIfExists(fourthAv, "clearActivityViewGeometryForIme");
 
                             reflectSetField(dual, "rightAV", fourthAv);
                             reflectSetField(fourth, "av", dualRightAV);
@@ -1380,9 +1508,6 @@ public class WindowUtil {
                             if (secondHost != null) try { secondHost.removeAllViews(); } catch (Throwable ignore) {}
                             if (fourthHost != null) try { fourthHost.removeAllViews(); } catch (Throwable ignore) {}
 
-                            invokeIfExists(secondAv, "clearActivityViewGeometryForIme");
-                            invokeIfExists(fourthAv, "clearActivityViewGeometryForIme");
-
                             reflectSetField(second, "av", fourthAv);
                             reflectSetField(fourth, "av", secondAv);
 
@@ -1495,6 +1620,20 @@ public class WindowUtil {
         }
     }
 
+    private static void invokeIfExists(Object obj, String methodName, String arg) {
+        if (obj == null) return;
+        try {
+            Method m = obj.getClass().getDeclaredMethod(methodName, String.class);
+            m.setAccessible(true);
+            m.invoke(obj, arg);
+        } catch (NoSuchMethodException nsf) {
+            invokeIfExists(obj, methodName);
+        } catch (Throwable t) {
+            Log.w(TAG, "invokeIfExists failed: " + methodName, t);
+        }
+    }
+
+
     private static void resyncAfterSwap(Object... hostRefs) {
         for (Object ref : hostRefs) {
             invokeIfExists(ref, RESYNC_GEOMETRY_METHOD);
@@ -1567,33 +1706,14 @@ public class WindowUtil {
             try { vg.removeAllViews(); } catch (Throwable ignore) {}
 
             if (newChild != null) {
-                // Block layout-affecting calls on this view (see isReparentUnsettled) until
-                // the waiter below confirms the native reparent or times out.
                 markReparentInFlight(newChild);
-                try { newChild.setVisibility(View.INVISIBLE); } catch (Throwable ignore) {}
-
-                // detach from previous parent
                 try {
                     ViewParent p = newChild.getParent();
                     if (p instanceof ViewGroup) {
                         ((ViewGroup) p).removeView(newChild);
                     }
                 } catch (Throwable ignore) {}
-
-                // Add child immediately so view hierarchy is consistent (visual handoff)
-                try {
-                    vg.addView(newChild, new FrameLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                } catch (Throwable t) {
-                    try { vg.addView(newChild); } catch (Throwable ignore) {}
-                }
-
-                // Clear any transform left over from whichever host this view previously
-                // lived in (e.g. portrait-safe scaling applied for YouTube/portrait video).
-                // scaleX/scaleY/translationX/translationY/pivot are not part of LayoutParams,
-                // so addView() above does not reset them -- without this the view keeps
-                // rendering at its old host's scale/offset instead of filling the new one
-                // (shows up as a shrunken/offset strip after a single<->dual swap).
+                try { newChild.setVisibility(View.GONE); } catch (Throwable ignore) {}
                 try {
                     newChild.setScaleX(1f);
                     newChild.setScaleY(1f);
@@ -1608,13 +1728,13 @@ public class WindowUtil {
                 final ViewGroup finalVg = vg;
                 final long deadline = SystemClock.uptimeMillis() + 1000; // 1s timeout
                 final Handler mainH = new Handler(Looper.getMainLooper());
-                final int[] consecutiveOk = {0};
-                final int REQUIRED_STABLE_TICKS = 6;
+                final long[] firstOkAt = { -1L };
+                final long MIN_STABLE_WINDOW_MS = 120L;
 
                 final Runnable waiter = new Runnable() {
                     @Override public void run() {
                         try {
-                            boolean ok;
+                            boolean ok = false;
                             try {
                                 ok = WindowHostReparenter.notifyReparentDisplayContentToHost(finalChild, finalVg);
                             } catch (Throwable t) {
@@ -1622,53 +1742,49 @@ public class WindowUtil {
                                 ok = false;
                             }
 
-                            consecutiveOk[0] = ok ? (consecutiveOk[0] + 1) : 0;
+                            if (!ok) {
+                                firstOkAt[0] = -1L; // każdy false zeruje okno stabilności
+                            } else if (firstOkAt[0] < 0) {
+                                firstOkAt[0] = SystemClock.uptimeMillis();
+                            }
+                            boolean stable = ok && firstOkAt[0] > 0
+                                    && (SystemClock.uptimeMillis() - firstOkAt[0]) >= MIN_STABLE_WINDOW_MS;
 
-                            // NOTE: notifyReparentDisplayContentToHost() confirms WindowSession.reparentDisplayContent()
-                            // succeeded -- but ActivityView's own automatic surfaceCreated() ->
-                            // updateLocationAndTapExcludeRegion() calls a *different* WMS entrypoint
-                            // (updateDisplayContentLocation) that can still fail for tens of ms afterwards
-                            // (confirmed via logcat: crashed ~60-86ms after reparentDisplayContent's own
-                            // success was logged). Require the signal to hold across several consecutive
-                            // polls before trusting it, instead of acting on the first true.
-                            if (ok && consecutiveOk[0] >= REQUIRED_STABLE_TICKS) {
-                                try { invokeIfExists(finalChild, "updateLocationAndTapExcludeRegion"); } catch (Throwable ignore) {}
-                                try { invokeIfExists(finalChild, "clearActivityViewGeometryForIme"); } catch (Throwable ignore) {}
-                                resizeVirtualDisplaySafely(finalChild, finalVg.getWidth(), finalVg.getHeight());
-                                markReparentSettled(finalChild);
-                                try { finalChild.setVisibility(View.VISIBLE); } catch (Throwable ignore) {}
+                            if (stable) {
+                                attachNow();
                                 return;
                             }
 
-                            // Not yet stable: retry if we have time left
                             if (SystemClock.uptimeMillis() < deadline) {
                                 mainH.postDelayed(this, 40);
+                                return;
                             } else {
-                                Log.w(TAG, "reparentHostChild: native reparent did not confirm within timeout; proceeding anyway");
-                                try { invokeIfExists(finalChild, "updateLocationAndTapExcludeRegion"); } catch (Throwable ignore) {}
-                                try { invokeIfExists(finalChild, "clearActivityViewGeometryForIme"); } catch (Throwable ignore) {}
-                                resizeVirtualDisplaySafely(finalChild, finalVg.getWidth(), finalVg.getHeight());
-                                markReparentSettled(finalChild);
-                                try { finalChild.setVisibility(View.VISIBLE); } catch (Throwable ignore) {}
+                                Log.w(TAG, "reparentHostChild: native reparent did not confirm within timeout; attaching anyway");
+                                attachNow();
                             }
                         } catch (Throwable t) {
                             Log.w(TAG, "reparentHostChild: waiter failure", t);
-                            resizeVirtualDisplaySafely(finalChild, finalVg.getWidth(), finalVg.getHeight());
-                            markReparentSettled(finalChild);
-                            try { finalChild.setVisibility(View.VISIBLE); } catch (Throwable ignore) {}
+                            attachNow();
                         }
                     }
+                    private void attachNow() {
+                        try {
+                            finalVg.addView(finalChild, new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                        } catch (Throwable t) {
+                            try { finalVg.addView(finalChild); } catch (Throwable ignore) {}
+                        }
+                        try { WindowHostActivityView.syncGeometryWithoutIme(finalChild); } catch (Throwable ignore) {}
+                        resizeVirtualDisplaySafely(finalChild, finalVg.getWidth(), finalVg.getHeight());
+                        mainH.post(() -> {
+                            try { WindowHostActivityView.syncGeometryWithoutIme(finalChild); } catch (Throwable ignore) {}
+                            markReparentSettled(finalChild);
+                            try { finalChild.setVisibility(View.VISIBLE); } catch (Throwable ignore) {}
+                        });
+                    }
                 };
-
                 // start waiting
                 mainH.post(waiter);
-
-                // Also attempt native reparent immediately (best-effort)
-                try {
-                    WindowHostReparenter.reparentActivityViewSurface(finalChild);
-                } catch (Throwable t) {
-                    Log.w(TAG, "reparentHostChild: reparentActivityViewSurface failed", t);
-                }
             }
         } catch (Throwable t) {
             Log.w(TAG, "reparentHostChild failed", t);
@@ -1763,6 +1879,45 @@ public class WindowUtil {
     }
 
     /**
+     * Same-purpose helper as WindowHostDualPane/WindowHostSinglePane's own
+     * kickSurfaceRedraw(), duplicated here as a static so the swap/reparent path
+     * (attachNow() below) can call it too. resizeVirtualDisplaySafely() only resizes the
+     * embedded app's VirtualDisplay resolution -- it does NOT tell the *outer* SurfaceView
+     * (the one compositing that VirtualDisplay's content into our host container) to
+     * resize its own native buffer to match. Without this, content renders at the correct,
+     * newly-resized resolution internally, but only the OLD buffer's worth of it is
+     * actually visible -- shows up as "correctly scaled but cropped" after a swap.
+     */
+    private static SurfaceView findSurfaceViewStatic(View v) {
+        if (v instanceof SurfaceView) return (SurfaceView) v;
+        if (v instanceof ViewGroup) {
+            ViewGroup g = (ViewGroup) v;
+            for (int i = 0; i < g.getChildCount(); i++) {
+                SurfaceView res = findSurfaceViewStatic(g.getChildAt(i));
+                if (res != null) return res;
+            }
+        }
+        return null;
+    }
+
+    private static void kickSurfaceRedraw(View avView, int w, int h) {
+        if (avView == null || w <= 0 || h <= 0) return;
+        try {
+            SurfaceView sv = findSurfaceViewStatic(avView);
+            if (sv == null) return;
+            sv.requestLayout();
+            sv.invalidate();
+            SurfaceHolder holder = sv.getHolder();
+            if (holder != null) {
+                holder.setFixedSize(w, h);
+                retryHandler.post(() -> {
+                    try { holder.setSizeFromLayout(); } catch (Throwable ignore) {}
+                });
+            }
+        } catch (Throwable ignore) {}
+    }
+
+    /**
      * Best-effort resize of the ActivityView's underlying VirtualDisplay to match the
      * pane it's about to become visible in. Called from reparentHostChild()'s waiter
      * BEFORE setVisibility(VISIBLE), so the correct-size frame is already queued by the
@@ -1780,30 +1935,58 @@ public class WindowUtil {
         } catch (Throwable t) {
             Log.w(TAG, "resizeVirtualDisplaySafely failed", t);
         }
+        // Resize the outer SurfaceView's own buffer to match -- see kickSurfaceRedraw()
+        // above for why this is needed in addition to the VirtualDisplay resize.
+        kickSurfaceRedraw(avView, width, height);
+    }
+
+    /**
+     * Everything that is safe to do to a freshly created ActivityView before it renders.
+     *
+     * Replaces WindowHostSurfacePreloader.forceInstantSurfaceReady(). That class had already been
+     * stripped down to exactly this; what it must NOT do is call lockCanvas()/unlockCanvasAndPost()
+     * or pre-measure the view at an arbitrary size -- a stale CPU buffer on the SurfaceView's
+     * SurfaceControl clips the embedded display, and a bogus pre-layout makes the embedded app
+     * start with a bogus configuration.
+     */
+    private static void prepareNewActivityViewSurface(View avView) {
+        if (avView == null) return;
+        try {
+            SurfaceView sv = WindowHostActivityView.findSurfaceView(avView);
+            if (sv == null) return;
+
+            sv.setVisibility(View.VISIBLE);
+
+            SurfaceHolder holder = sv.getHolder();
+            if (holder != null) {
+                holder.setFormat(PixelFormat.RGBA_8888);
+                holder.setSizeFromLayout();
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "prepareNewActivityViewSurface failed", t);
+        }
     }
 
     private static boolean attemptTaskRelocateSwap(final ViewGroup hostA, final ViewGroup hostB,
                                                    final Object oldAvA, final Object oldAvB,
                                                    final int taskA, final int taskB,
                                                    final String pkgA, final String pkgB,
-                                                   final String poolKeyA, final String poolKeyB,
+                                                   final String poolKeyA, final String poolKeyB, 
                                                    final Rect boundsA, final Rect boundsB) {
         try {
             final Activity act = Launcher.getLauncher();
             if (act == null) return false;
 
-            Object newA = WindowHostSurfacePreloader.getWarmActivityView(poolKeyA);
-            if (newA == null) newA = WindowHostActivityView.newInstance(act);
-            Object newB = WindowHostSurfacePreloader.getWarmActivityView(poolKeyB);
-            if (newB == null) newB = WindowHostActivityView.newInstance(act);
+            Object newA = WindowHostActivityView.newInstance(act);
+            Object newB = WindowHostActivityView.newInstance(act);
 
             if (newA == null || newB == null) return false;
 
             final View newAView = WindowHostActivityView.asView(newA);
             final View newBView = WindowHostActivityView.asView(newB);
 
-            try { WindowHostSurfacePreloader.forceInstantSurfaceReady(newAView); } catch (Throwable ignore) {}
-            try { WindowHostSurfacePreloader.forceInstantSurfaceReady(newBView); } catch (Throwable ignore) {}
+            prepareNewActivityViewSurface(newAView);
+            prepareNewActivityViewSurface(newBView);
 
             ActivityOptions optsA = ActivityOptions.makeBasic();
             ActivityOptions optsB = ActivityOptions.makeBasic();
@@ -1920,7 +2103,7 @@ public class WindowUtil {
     private static void safeOverlaySwapPanes(final ViewGroup hostA, final ViewGroup hostB,
                                              final Object oldAvA, final Object oldAvB,
                                              final String pkgA, final String pkgB,
-                                             final String poolKeyA, final String poolKeyB,
+                                             final String poolKeyA, final String poolKeyB, // vestigial: warm pool removed
                                              final Rect boundsA, final Rect boundsB,
                                              final String avFieldNameA, final String avFieldNameB,
                                              final Object hostObjA, final Object hostObjB) {
@@ -1929,10 +2112,8 @@ public class WindowUtil {
             if (act == null) return;
             if (hostA == null || hostB == null) return;
 
-            Object newA = WindowHostSurfacePreloader.getWarmActivityView(poolKeyA);
-            if (newA == null) newA = WindowHostActivityView.newInstance(act);
-            Object newB = WindowHostSurfacePreloader.getWarmActivityView(poolKeyB);
-            if (newB == null) newB = WindowHostActivityView.newInstance(act);
+            Object newA = WindowHostActivityView.newInstance(act);
+            Object newB = WindowHostActivityView.newInstance(act);
 
             if (newA == null || newB == null) {
                 Log.w(TAG, "safeOverlaySwapPanes: failed to obtain new AVs");
@@ -1963,8 +2144,8 @@ public class WindowUtil {
                 Log.w(TAG, "safeOverlaySwapPanes: add newBView failed", t);
             }
 
-            WindowHostSurfacePreloader.forceInstantSurfaceReady(newAView);
-            WindowHostSurfacePreloader.forceInstantSurfaceReady(newBView);
+            prepareNewActivityViewSurface(newAView);
+            prepareNewActivityViewSurface(newBView);
 
             final AtomicBoolean readyA = new AtomicBoolean(false);
             final AtomicBoolean readyB = new AtomicBoolean(false);
@@ -2024,8 +2205,6 @@ public class WindowUtil {
 
                                 invokeIfExists(finalNewA, "updateLocationAndTapExcludeRegion");
                                 invokeIfExists(finalNewB, "updateLocationAndTapExcludeRegion");
-                                invokeIfExists(finalNewA, "clearActivityViewGeometryForIme");
-                                invokeIfExists(finalNewB, "clearActivityViewGeometryForIme");
 
                                 try { if (oldAView != null && oldAView.getParent() instanceof ViewGroup) ((ViewGroup)oldAView.getParent()).removeView(oldAView); } catch (Throwable ignore) {}
                                 try { if (oldBView != null && oldBView.getParent() instanceof ViewGroup) ((ViewGroup)oldBView.getParent()).removeView(oldBView); } catch (Throwable ignore) {}

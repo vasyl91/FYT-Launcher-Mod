@@ -449,6 +449,10 @@
     <string name="fab_overlay_button_left">Show floating button that switches apps between PiPs: <b>left dual/first &lt;-&gt; third</b></string>
     <string name="fab_overlay_button_right">Show floating button that switches apps between PiPs: <b>right dual/second &lt;-&gt; fourth</b></string>
     <string name="fab_overlay_summary">Set apps for every PiP and use only `Window` mode to show this button.</string>
+    <string name="extended_divider">Extend touchable area around divider\'s three dots</string>
+    <string name="cover_splash">PiP splash color</string>
+    <string name="cover_splash_icon">Average of the apps\' icon\'s opaque pixels</string>
+    <string name="cover_splash_night_mode">White and grey depending on the night mode</string>
     <string name="swipe_detector">Swipe detection for status bar</string>
     <string name="swipe_detector_summary">Bottom center part of the status bar will detect swipes and allow to scroll between pages. This might be useful when PiP view occupies most of the visible screen.</string>
 

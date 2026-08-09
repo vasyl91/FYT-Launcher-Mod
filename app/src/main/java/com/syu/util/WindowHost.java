@@ -82,6 +82,27 @@ public class WindowHost {
         }
     }
 
+    /**
+     * Detaches every ActivityView from this (now obsolete) host and hands them to
+     * WindowHostAvReaper, which releases each one only after its VirtualDisplay stops hosting a
+     * task -- i.e. after the new WindowHost has taken the embedded app over.
+     *
+     * Call this INSTEAD of cleanup() when the host object is being replaced but the embedded
+     * apps must keep running.
+     */
+    public void retireActivityViews() {
+        java.util.List<Object> retired = new java.util.ArrayList<>();
+        try { first.takeActivityViews(retired); }  catch (Throwable ignore) {}
+        try { second.takeActivityViews(retired); } catch (Throwable ignore) {}
+        try { third.takeActivityViews(retired); }  catch (Throwable ignore) {}
+        try { fourth.takeActivityViews(retired); } catch (Throwable ignore) {}
+        try { dual.takeActivityViews(retired); }   catch (Throwable ignore) {}
+ 
+        if (sInstance == this) sInstance = null;
+ 
+        WindowHostAvReaper.retireAll(retired);
+    }
+
     public static WindowHost getInstance() {
         return sInstance;
     }
@@ -90,6 +111,23 @@ public class WindowHost {
     public boolean isSecondVisible() { return second.isVisible(); }
     public boolean isThirdVisible()  { return third.isVisible(); }
     public boolean isFourthVisible() { return fourth.isVisible(); }
+
+    /**
+     * True if any visible panel is still waiting for valid dimensions and therefore has not yet
+     * started its app. In this state, a subsequent openPip() is NOT a duplicate -- it is the call
+     * that provides the dimensions needed to unblock the startup.
+     */
+    public boolean isAnyPaneAwaitingBounds() {
+        try {
+            return first.isAwaitingBounds()
+                    || second.isAwaitingBounds()
+                    || third.isAwaitingBounds()
+                    || fourth.isAwaitingBounds()
+                    || dual.isAwaitingBounds();
+        } catch (Throwable t) {
+            return true;  
+        }
+    }
 
     /** Waits until all host windows are detached (or times out ~120ms), then runs action. */
     public void awaitHandoff(Runnable action) { awaitHandoff(120, action); }

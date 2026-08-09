@@ -61,6 +61,18 @@
             app:summary="@string/fab_overlay_summary"
             app:layout="@layout/nested_preference_category_switch" />
         <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="extended_divider"
+            android:defaultValue="true"
+            android:title="@string/extended_divider"
+            app:layout="@layout/nested_preference_category_switch" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="cover_splash"
+            android:defaultValue="true"
+            android:title="@string/cover_splash"
+            android:summaryOn="@string/cover_splash_icon"
+            android:summaryOff="@string/cover_splash_night_mode"
+            app:layout="@layout/nested_preference_category_switch" />
+        <com.android.launcher66.settings.CustomSwitchPreference
             android:key="swipe_detector"
             android:defaultValue="false"
             android:title="@string/swipe_detector"

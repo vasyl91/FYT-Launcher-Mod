@@ -95,13 +95,7 @@ public class WindowHostReparenter {
                 Log.w(TAG, "swap: WindowSession reparent step failed", t);
             }
 
-            // 5) Geometry / IME updates
-            invokeIfExists(avA, "clearActivityViewGeometryForIme");
-            invokeIfExists(avB, "clearActivityViewGeometryForIme");
-            invokeIfExists(avA, "updateLocationAndTapExcludeRegion");
-            invokeIfExists(avB, "updateLocationAndTapExcludeRegion");
-
-            // 6) record swap time for cooldown
+            // 5) record swap time for cooldown
             synchronized (lastSwapTimestamps) {
                 lastSwapTimestamps.put(avA, System.currentTimeMillis());
                 lastSwapTimestamps.put(avB, System.currentTimeMillis());
@@ -541,21 +535,12 @@ public class WindowHostReparenter {
                 return;
             }
 
-            // Only attempt to update Location/IME if transaction succeeded.
             try {
-                Method clearIme = avView.getClass().getDeclaredMethod("clearActivityViewGeometryForIme");
-                clearIme.setAccessible(true);
-                clearIme.invoke(avView);
-            } catch (NoSuchMethodException ns) {
-                // ignore
-            } catch (Throwable t) {
-                Log.w(TAG, "clearActivityViewGeometryForIme invocation failed (after successful reparent)", t);
-            }
-
-            try {
-                Method upd = avView.getClass().getDeclaredMethod("updateLocationAndTapExcludeRegion");
-                upd.setAccessible(true);
-                upd.invoke(avView);
+                if (!WindowHostActivityView.syncGeometryWithoutIme(avView)) {
+                    Method upd = avView.getClass().getDeclaredMethod("updateLocationAndTapExcludeRegion");
+                    upd.setAccessible(true);
+                    upd.invoke(avView);
+                }
             } catch (NoSuchMethodException ns) {
                 // ignore
             } catch (Throwable t) {

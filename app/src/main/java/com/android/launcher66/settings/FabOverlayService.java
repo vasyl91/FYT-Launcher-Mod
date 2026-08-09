@@ -352,11 +352,14 @@ public class FabOverlayService extends Service {
      * Handle FAB click
      */
     private void onSwitchPipsClicked() {
-        if (!blockButton) {
-            blockButton = true;
-            WindowUtil.swapRightAndFourth();
-            new Handler(Looper.getMainLooper()).postDelayed(()-> WindowUtil.swapLeftAndThird(), 100);
-        }
+        if (blockButton) return;
+        blockButton = true;
+        WindowUtil.swapAllPanes();
+        unblockButtonAfterSwap();
+    }
+
+    private void unblockButtonAfterSwap() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> blockButton = false, 3000);
     }
 
     // LEFT
@@ -553,10 +556,10 @@ public class FabOverlayService extends Service {
      * Handle left FAB click
      */
     private void onLeftSwitchPipsClicked() {
-        if (!blockButton) {
-            blockButton = true;
-            WindowUtil.swapLeftAndThird();
-        } 
+        if (blockButton) return;
+        blockButton = true;
+        WindowUtil.swapLeftAndThird();
+        unblockButtonAfterSwap();
     }
 
     // RIGHT
@@ -754,10 +757,10 @@ public class FabOverlayService extends Service {
      * Handle right FAB click
      */
     private void onRightSwitchPipsClicked() {
-        if (!blockButton) {
-            blockButton = true;
-            WindowUtil.swapRightAndFourth();
-        }
+        if (blockButton) return;
+        blockButton = true;
+        WindowUtil.swapRightAndFourth();
+        unblockButtonAfterSwap();
     }
 
     public int getStatusBarHeight() { 

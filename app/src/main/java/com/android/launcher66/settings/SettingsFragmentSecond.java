@@ -174,6 +174,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomSwitchPreference fabPreference;
     private CustomSwitchPreference leftFabPreference;
     private CustomSwitchPreference rightFabPreference;
+    private CustomSwitchPreference extendedDivider;
+    private CustomSwitchPreference coverSplash;
     private CustomSwitchPreference swipeDetector;
     private CustomWidgetSwitchPreference userDate;
     private CustomWidgetSwitchPreference userMusic;
@@ -312,6 +314,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         fabPreference = findPreference(Keys.FAB_OVERLAY_BUTTON);
         leftFabPreference = findPreference(Keys.FAB_OVERLAY_BUTTON_LEFT);
         rightFabPreference = findPreference(Keys.FAB_OVERLAY_BUTTON_RIGHT);
+        extendedDivider = findPreference(Keys.EXTENDED_DIVIDER);
+        coverSplash = findPreference(Keys.COVER_SPLASH);
         swipeDetector = findPreference(Keys.SWIPE_DETECTOR);
         userDate = findPreference(Keys.USER_DATE);
         userMusic = findPreference(Keys.USER_MUSIC);
@@ -476,7 +480,13 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }  
         if (rightFabPreference != null) {
             rightFabPreference.setOnPreferenceClickListener(this);
+        }  
+        if (extendedDivider != null) {
+            extendedDivider.setOnPreferenceClickListener(this);
         }   
+        if (coverSplash != null) {
+            coverSplash.setOnPreferenceClickListener(this);
+        }
         if (swipeDetector != null) {
             swipeDetector.setOnPreferenceClickListener(this);
             if (!LauncherApplication.hasSystemPrivileges()) {
@@ -1950,6 +1960,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (fabPreference != null) fabPreference.setVisible(visible);
         if (leftFabPreference != null) leftFabPreference.setVisible(visible);
         if (rightFabPreference != null) rightFabPreference.setVisible(visible);
+        if (extendedDivider != null) extendedDivider.setVisible(visible);
+        if (coverSplash != null) coverSplash.setVisible(visible);
         if (swipeDetector != null && LauncherApplication.hasSystemPrivileges()) swipeDetector.setVisible(visible);
     }
 

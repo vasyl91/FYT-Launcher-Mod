@@ -133,6 +133,8 @@ public final class Keys {
     public static final String FAB_OVERLAY_BUTTON_LEFT = "fab_overlay_button_left";
     public static final String FAB_OVERLAY_BUTTON_RIGHT = "fab_overlay_button_right";
     public static final String BLOCK_FLOATING_BUTTON = "block_floating_button";
+    public static final String EXTENDED_DIVIDER = "extended_divider";
+    public static final String COVER_SPLASH = "cover_splash";
     public static final String SWIPE_DETECTOR = "swipe_detector";
 
     public static final String MUSIC_SCREEN_ID = "music_screen_id";

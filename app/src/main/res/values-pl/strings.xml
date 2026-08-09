@@ -321,6 +321,10 @@
     <string name="fab_overlay_button_left">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy PiP: <b>lewy dual/pierwszy &lt;-&gt; trzeci</b></string>
     <string name="fab_overlay_button_right">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy PiP: <b>prawy dual/drugi &lt;-&gt; czwarty</b></string>
     <string name="fab_overlay_summary">Aby wyświetlić przycisk ustaw aplikacje dla wszystkich PiP, używaj wyłącznie trybu `Window`.</string>
+    <string name="extended_divider">Rozszerz strefę dotyku w środkowej części dividera</string>
+    <string name="cover_splash">Kolor splasha PiP</string>
+    <string name="cover_splash_icon">Średnia z nieprzezroczystych pikseli ikon aplikacji</string>
+    <string name="cover_splash_night_mode">Biały i szary w zależności od trybu nocnego</string>
     <string name="swipe_detector">Wykrywanie przesunięcia dla paska stanu</string>
     <string name="swipe_detector_summary">Środkowo-dolna część paska stanu będzie wykrywać przesunięcia palcem i tym samym pozwoli na przechodzenie pomiędzy ekranami. Funkcja może być przydatna w momencie gdy widok PiP zakrywa większość widocznego ekranu.</string>
 

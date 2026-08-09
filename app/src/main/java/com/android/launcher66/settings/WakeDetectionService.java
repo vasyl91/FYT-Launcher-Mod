@@ -24,6 +24,7 @@ import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.ServiceIntentGate;
 import com.android.recycler.AppListDialogFragment;
 import com.syu.util.FytPackage;
+import com.syu.util.WindowHost;
 import com.syu.util.WindowUtil;
 
 import java.beans.PropertyChangeEvent;
@@ -37,7 +38,7 @@ import java.util.Map;
 
 public class WakeDetectionService extends Service implements PropertyChangeListener {
 
-    // Intent.ACTION_SCREEN_ON doesn't work on fyt...
+    // Intent.ACTION_SCREEN_ON doesn't work on FYT...
 
     private DisplayManager displayManager;
     private Handler handler;
@@ -54,6 +55,19 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     private static final long DISPLAY_ON_DEBOUNCE_MS = 2500L;
     public static final String ACTION_WAKE_REFRESH = "com.android.launcher66.action.WAKE_REFRESH";
     private long lastDisplayOnHandledMs = 0L;
+
+    /**
+     * Delays between successive "is PiP actually up?" checks after a wake, in ms.
+     * Total budget here is ~13 s, which comfortably covers a slow cold resume.
+     */
+    private static final long[] PIP_ENSURE_DELAYS_MS = { 2500L, 1500L, 2000L, 3000L, 4000L };
+
+    /**
+     * Bumped whenever a new wake starts an ensure loop, or the screen goes off. Any attempt from
+     * an older generation aborts -- this is what stops a queued openPip() from firing after the
+     * device has already gone back to sleep.
+     */
+    private int pipEnsureGeneration = 0;
 
     @Override
     public void onCreate() {
@@ -142,21 +156,26 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                         WindowUtil.removePip();
                         getSharedPreferences("HelpersPrefs", 0).edit().clear().apply();
                         resetPip();
+                        // resetPip() force-stops the PiP apps; the ensure loop's first attempt is
+                        // 2500 ms out, which is enough for those kills to land before we relaunch.
                         restartPip();
                         resetPip = true;
                     }
                 }
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                if (prefs.getBoolean("night_mode", false)) {
+                if (prefs.getBoolean(Keys.NIGHT_MODE, false)) {
                     handler.postDelayed(() -> {
                         Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
                         ServiceIntentGate.startIfAvailable(LauncherApplication.sApp, nightModeServiceIntent, "wake night mode");
                     }, 10000);
                 }
 
-                boolean userMap = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);        
+                boolean userMap = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);
                 if (!resetPip && userMap) {
                     restartPip();
+                } else if (!userMap) {
+                    // PiP disabled in settings -- make sure nothing from an earlier wake reopens it.
+                    pipEnsureGeneration++;
                 }
 
                 boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
@@ -171,6 +190,10 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
             } else if (val.contains("false")) {
                 lastDisplayOnHandledMs = 0L;
                 Log.e(TAG, "ACC turned off, device has been put into sleep mode");
+
+                // Kill any ensure loop still in flight. Without this a wake followed quickly by a
+                // sleep leaves a queued openPip() that fires with the screen already off.
+                pipEnsureGeneration++;
 
                 WindowUtil.removePip();
 
@@ -254,10 +277,97 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
         LauncherApplication.sApp.sendBroadcast(intent);
     }
 
+    /**
+     * Makes sure PiP really comes back after a wake, instead of firing one openPip() and hoping.
+     *
+     * Each attempt first asks whether PiP is already healthy; only if it is not does it call
+     * openPip() again. WindowUtil has its own debounce, so a redundant call while everything is
+     * already on screen costs nothing.
+     */
     public void restartPip() {
-        // in some mysterious cases pinned PiP won't start when user wakes the device up from the sleep mode 
-        // this serves as some sort of checking function to make sure it starts
-        handler.postDelayed(() -> WindowUtil.openPip(false), 2500);
+        final int generation = ++pipEnsureGeneration;
+        schedulePipEnsureAttempt(generation, 0);
+    }
+
+    private void schedulePipEnsureAttempt(final int generation, final int attempt) {
+        if (attempt >= PIP_ENSURE_DELAYS_MS.length) {
+            Log.w(TAG, "PiP ensure: gave up after " + attempt + " attempts");
+            return;
+        }
+
+        handler.postDelayed(() -> {
+            if (generation != pipEnsureGeneration) return;   // superseded by a newer wake / sleep
+            if (!isPipExpected()) return;
+
+            if (isPipHealthy()) {
+                if (attempt > 0) Log.i(TAG, "PiP ensure: healthy after " + attempt + " retries");
+                return;
+            }
+
+            if (Launcher.getLauncher() == null) {
+                Log.i(TAG, "PiP ensure: launcher not available yet (attempt " + attempt + ")");
+            } else {
+                Log.i(TAG, "PiP ensure: PiP not up, calling openPip (attempt " + attempt + ")");
+                WindowUtil.openPip(false);
+            }
+
+            schedulePipEnsureAttempt(generation, attempt + 1);
+        }, PIP_ENSURE_DELAYS_MS[attempt]);
+    }
+
+    /** Is PiP supposed to be on screen at all? */
+    private boolean isPipExpected() {
+        try {
+            if (mPrefs == null) {
+                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+            }
+            if (!mPrefs.getBoolean(Keys.DISPLAY_PIP, true)) return false;
+
+            return mPrefs.getBoolean(Keys.PIP_DUAL, false)
+                    || mPrefs.getBoolean(Keys.PIP_FIRST, false)
+                    || mPrefs.getBoolean(Keys.PIP_SECOND, false)
+                    || mPrefs.getBoolean(Keys.PIP_THIRD, false)
+                    || mPrefs.getBoolean(Keys.PIP_FOURTH, false);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /**
+     * Every enabled, non-pinned pane is on screen and none of them is still waiting for usable
+     * bounds. Pinned panes are excluded on purpose: openMultiplePips() does not route those through
+     * WindowHost at all, so their visibility says nothing.
+     */
+    private boolean isPipHealthy() {
+        try {
+            WindowHost host = WindowHost.getInstance();
+            if (host == null) return false;
+
+            // A pane that still has no real bounds has not launched its app yet.
+            if (host.isAnyPaneAwaitingBounds()) return false;
+
+            boolean dualPip   = mPrefs.getBoolean(Keys.PIP_DUAL, false);
+            boolean firstPip  = mPrefs.getBoolean(Keys.PIP_FIRST, false);
+            boolean secondPip = mPrefs.getBoolean(Keys.PIP_SECOND, false);
+            boolean thirdPip  = mPrefs.getBoolean(Keys.PIP_THIRD, false);
+            boolean fourthPip = mPrefs.getBoolean(Keys.PIP_FOURTH, false);
+            boolean thirdPinned  = mPrefs.getBoolean(Keys.PIP_THIRD_MODE, false);
+            boolean fourthPinned = mPrefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+
+            if (dualPip) {
+                if (!host.isDualVisible()) return false;
+            } else {
+                if (firstPip && !host.isFirstVisible()) return false;
+                if (secondPip && !host.isSecondVisible()) return false;
+            }
+            if (thirdPip && !thirdPinned && !host.isThirdVisible()) return false;
+            if (fourthPip && !fourthPinned && !host.isFourthVisible()) return false;
+
+            return true;
+        } catch (Throwable t) {
+            Log.w(TAG, "isPipHealthy check failed", t);
+            return false;
+        }
     }
 
     public void resetPip() {  
@@ -290,10 +400,6 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     public void restartPipApp(String key) {
         String appPackageName = mPrefs.getString(key, "");
         if (!appPackageName.isEmpty()) {
-            if (FytPackage.GMAPS.equals(appPackageName)) {
-                Log.i(TAG, "Skipping force-stop for Google Maps during wake PiP reset");
-                return;
-            }
             ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             try {
                 Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
