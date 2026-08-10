@@ -539,6 +539,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private long mLastWakeRefreshMs = 0L;
     private long mLastFocusHomeRecoveryMs = 0L;
     private long mLastWorkspaceNullLoaderMs = 0L;
+    private long mLastForceReloadMs = 0L;
+    private boolean mLeftRecyclerLayoutPending = false;
+    private static final long FORCE_RELOAD_THROTTLE_MS = 1500L;
     private Runnable mWakeHomeRecoveryRunnable;
     private Runnable mHomeLayoutWatchdogRunnable;
     private Runnable mFastHomeDeferredResumeRunnable;
@@ -2379,13 +2382,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (mLeftAppListAdapter != null && leftRecycler.getAdapter() != mLeftAppListAdapter) {
                 leftRecycler.setAdapter(mLeftAppListAdapter);
             }
-            if (leftRecycler.getLayoutManager() == null) {
-                leftRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false));
+            if (!(leftRecycler.getLayoutManager() instanceof EvenVerticalLayoutManager)) {
+                leftRecycler.setLayoutManager(
+                        new EvenVerticalLayoutManager(getApplicationContext(), MAX_LEFT));
             }
             installLeftRecyclerDecorations(leftRecycler);
             leftRecycler.clearAnimation();
             leftRecycler.setVisibility(View.VISIBLE);
-            refreshRecyclerDecorationsAfterLayout(leftRecycler);
         }
         Log.d(TAG, "Wake home recycler restore: " + source);
     }
@@ -2431,6 +2434,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     private void installBottomRecyclerDecorations(RecyclerView recyclerView) {
         if (recyclerView == null) return;
+        if (Integer.valueOf(1).equals(recyclerView.getTag()) && recyclerView.getItemDecorationCount() > 0) {
+            return;
+        }
         clearRecyclerDecorations(recyclerView);
         recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
@@ -2471,49 +2477,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     private void installLeftRecyclerDecorations(RecyclerView recyclerView) {
         if (recyclerView == null) return;
+        if (Integer.valueOf(1).equals(recyclerView.getTag()) && recyclerView.getItemDecorationCount() > 0) {
+            return;
+        }
         clearRecyclerDecorations(recyclerView);
-        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                super.getItemOffsets(outRect, view, parent, state);
-
-                int itemCount = parent.getAdapter() != null ? Math.min(5, parent.getAdapter().getItemCount()) : 5;
-                if (itemCount == 0) {
-                    outRect.top = 0;
-                    outRect.bottom = 0;
-                    return;
-                }
-
-                int itemHeight = view.getHeight();
-                if (itemHeight <= 0) {
-                    parent.post(parent::invalidateItemDecorations);
-
-                    outRect.set(0, 0, 0, 0);
-                    return;
-                }
-                if (itemHeight <= 0) {
-                    itemHeight = getFallbackRecyclerItemSize();
-                }
-
-                int availableHeight = parent.getHeight() - parent.getPaddingTop() - parent.getPaddingBottom();
-                if (availableHeight <= 0) {
-                    availableHeight = parent.getMeasuredHeight() - parent.getPaddingTop() - parent.getPaddingBottom();
-                }
-                if (availableHeight <= 0) {
-                    parent.post(parent::invalidateItemDecorations);
-
-                    outRect.set(0, 0, 0, 0);
-                    return;
-                }
-
-                int totalItemsHeight = itemHeight * itemCount;
-                int totalSpacing = Math.max(0, availableHeight - totalItemsHeight);
-                int spacingPerGap = totalSpacing / (itemCount + 1);
-                int adjustedSpacing = Math.max(0, spacingPerGap / 2);
-                outRect.top = adjustedSpacing;
-                outRect.bottom = adjustedSpacing;
-            }
-        });
         recyclerView.addItemDecoration(new SimpleDividerDecoration());
         recyclerView.setTag(1);
     }
@@ -3198,7 +3165,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         isRecreateActive = true;
         boolean currentUserLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         boolean displayPip = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);
-        if (currentUserLayout && displayPip
+        if (currentUserLayout && displayPip && !atomicOnCreate.get()
                 && (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator())) {
             Log.i("Recreate page", "user layout");
             WindowUtil.restartMultiplePips();
@@ -3232,6 +3199,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         } else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+
+        if (atomicOnCreate.get()) {
+            Log.d("Recreate page", "Skipping recreateView — activity was recreated, loader already running");
+            isRecreateActive = false;
+            requestCustomElementsSetup("onResumePendingFreshCreate");
+            return;
         }
 
         recreateView(currentUserLayout);
@@ -3345,8 +3319,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         try {
-            Log.d(TAG, "recreateView: forceReload()");
-            mModel.forceReload();
+            long nowReload = SystemClock.uptimeMillis();
+            if (mWorkspaceLoading || nowReload - mLastForceReloadMs < FORCE_RELOAD_THROTTLE_MS) {
+                Log.d(TAG, "recreateView: loader already in flight, skipping forceReload()");
+            } else {
+                mLastForceReloadMs = nowReload;
+                Log.d(TAG, "recreateView: forceReload()");
+                mModel.forceReload();
+            }
         } catch (Exception e) {
             Log.e(TAG, "recreateView: forceReload failed", e);
         }
@@ -5711,13 +5691,27 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // Force visibility
         recyclerView.setVisibility(View.VISIBLE);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        layoutManager.setOrientation(androidx.recyclerview.widget.RecyclerView.HORIZONTAL);
-        recyclerView.setLayoutManager(layoutManager);
+        // Do not recreate the LayoutManager if the correct one is already attached —
+        // setLayoutManager() detaches all children and causes a visible flicker.
+        RecyclerView.LayoutManager existingLm = recyclerView.getLayoutManager();
+        boolean lmOk = (existingLm instanceof LinearLayoutManager)
+                && ((LinearLayoutManager) existingLm).getOrientation() == RecyclerView.HORIZONTAL;
+        if (!lmOk) {
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+            layoutManager.setOrientation(RecyclerView.HORIZONTAL);
+            recyclerView.setLayoutManager(layoutManager);
+        }
 
-        recyclerView.setAdapter(mAppListAdapter);
+        // Re-setting the SAME adapter still rebinds all rows.
+        if (recyclerView.getAdapter() != mAppListAdapter) {
+            recyclerView.setAdapter(mAppListAdapter);
+        }
+        // No change/remove/add animations = no flicker when notifyDataSetChanged() is called.
+        if (recyclerView.getItemAnimator() != null) {
+            recyclerView.setItemAnimator(null);
+        }
+
         installBottomRecyclerDecorations(recyclerView);
-        refreshRecyclerDecorationsAfterLayout(recyclerView);
 
         Log.d(TAG, "RecyclerView setup complete - Adapter: " + (mAppListAdapter != null) +
                 ", ItemCount: " + (mAppListAdapter != null ? mAppListAdapter.getItemCount() : 0) +
@@ -5728,40 +5722,50 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         requestCustomElementsSetup("setupRecyclerView");
 
-        // Force a layout pass
+        // One call instead of two — each one adds an OnGlobalLayoutListener + 2 postDelayed
         refreshRecyclerDecorationsAfterLayout(recyclerView);
 
         boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
         if (autoHideBottomBar) {
-            disableRecycler();             
-        } 
+            disableRecycler();
+        }
     }
 
     private void setupLeftRecyclerView() {
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
-        
+
         if (!(userLayout && leftBar || !userLayout)) {
             return;
         }
-        
+
         RecyclerView mLeftRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.left_recycler_view);
-        
+
         if (mLeftRecyclerView == null) {
+            if (mLeftRecyclerLayoutPending) {
+                Log.d(TAG, "Left RecyclerView lookup already pending, skipping duplicate");
+                return;
+            }
             Log.e("Launcher", "Left RecyclerView not found! Waiting for layout...");
+            mLeftRecyclerLayoutPending = true;
             if (mWorkspace.getViewTreeObserver().isAlive()) {
                 mWorkspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
                         mWorkspace.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        mLeftRecyclerLayoutPending = false;
                         setupLeftRecyclerView();
                     }
                 });
             } else {
-                mHandler.postDelayed(() -> setupLeftRecyclerView(), 500);
+                mHandler.postDelayed(() -> {
+                    mLeftRecyclerLayoutPending = false;
+                    setupLeftRecyclerView();
+                }, 500);
             }
             return;
         }
+        mLeftRecyclerLayoutPending = false;
 
         Log.d(TAG, "Setting up left RecyclerView");
 
@@ -5772,20 +5776,20 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mLeftAppListAdapter = new LeftAppListAdapter(this, Collections.emptyList());
         }
 
-        // Then setup layout manager
-        LinearLayoutManager leftLayoutManager = new LinearLayoutManager(getApplicationContext());
-        leftLayoutManager.setOrientation(androidx.recyclerview.widget.RecyclerView.VERTICAL);
-        mLeftRecyclerView.setLayoutManager(leftLayoutManager);
+        if (!(mLeftRecyclerView.getLayoutManager() instanceof EvenVerticalLayoutManager)) {
+            mLeftRecyclerView.setLayoutManager(
+                    new EvenVerticalLayoutManager(getApplicationContext(), MAX_LEFT));
+        }
+
+        if (mLeftRecyclerView.getAdapter() != mLeftAppListAdapter) {
+            mLeftRecyclerView.setAdapter(mLeftAppListAdapter);
+        }
+        if (mLeftRecyclerView.getItemAnimator() != null) {
+            mLeftRecyclerView.setItemAnimator(null);
+        }
 
         installLeftRecyclerDecorations(mLeftRecyclerView);
 
-        // Force recalculation after layout
-        mLeftRecyclerView.post(() -> {
-            mLeftRecyclerView.invalidateItemDecorations();
-        });
-
-        mLeftRecyclerView.setAdapter(mLeftAppListAdapter);
-        
         // Initialize left app data
         initializeLeftAppData();
 
@@ -11004,5 +11008,149 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void propertyChange(PropertyChangeEvent evt) {
         Widget.widgetUpdate(LauncherApplication.sApp, DateTimeProvider.class);
         Widget.widgetUpdate(LauncherApplication.sApp, DateMusicProvider.class);
+    }
+
+    public static class EvenVerticalLayoutManager extends LinearLayoutManager {
+        private static final String LM_TAG = "EvenVerticalLM";
+        private static final String LM_PREFS = "LauncherPrefs";
+        private static final String KEY_ITEM_HEIGHT = "left_bar_item_height";
+
+        private static int sCachedNaturalItemHeight = -1;
+
+        private final int mMaxItems;
+        private final Context mAppContext;
+        private RecyclerView mHost;
+        private int mNaturalItemHeight = -1;
+        private int mSlotHeight = -1;
+
+        public EvenVerticalLayoutManager(Context context, int maxItems) {
+            super(context, RecyclerView.VERTICAL, false);
+            mMaxItems = Math.max(1, maxItems);
+            mAppContext = context.getApplicationContext();
+            mNaturalItemHeight = loadNaturalItemHeight();
+        }
+
+        private int loadNaturalItemHeight() {
+            if (sCachedNaturalItemHeight > 0) {
+                return sCachedNaturalItemHeight;
+            }
+            try {
+                int stored = mAppContext
+                        .getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
+                        .getInt(KEY_ITEM_HEIGHT, -1);
+                if (stored > 0) {
+                    sCachedNaturalItemHeight = stored;
+                }
+                return stored;
+            } catch (Exception e) {
+                return -1;
+            }
+        }
+
+        private void storeNaturalItemHeight(int height) {
+            sCachedNaturalItemHeight = height;
+            try {
+                mAppContext.getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
+                        .edit().putInt(KEY_ITEM_HEIGHT, height).apply();
+            } catch (Exception ignored) {
+            }
+        }
+
+        @Override
+        public void onAttachedToWindow(RecyclerView view) {
+            super.onAttachedToWindow(view);
+            mHost = view;
+        }
+
+        @Override
+        public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
+            super.onDetachedFromWindow(view, recycler);
+            mHost = null;
+        }
+
+        @Override
+        public void onMeasure(RecyclerView.Recycler recycler, RecyclerView.State state,
+                              int widthSpec, int heightSpec) {
+            applySpacing(View.MeasureSpec.getSize(heightSpec));
+            super.onMeasure(recycler, state, widthSpec, heightSpec);
+        }
+
+        private boolean applySpacing(int total) {
+            if (mNaturalItemHeight <= 0) {
+                mNaturalItemHeight = loadNaturalItemHeight();
+            }
+            int count = Math.min(getItemCount(), mMaxItems);
+            if (total <= 0 || count <= 0 || mNaturalItemHeight <= 0) {
+                return false;
+            }
+
+            int free = total - count * mNaturalItemHeight;
+            if (free <= 0) {
+                mSlotHeight = total / count;
+                return true;
+            }
+
+            int gap = free / (count + 1);
+            int edge = gap / 2;
+            mSlotHeight = mNaturalItemHeight + gap;
+
+            if (mHost != null
+                    && (mHost.getPaddingTop() != edge || mHost.getPaddingBottom() != edge)) {
+                Log.d(LM_TAG, "H=" + total + " n=" + count + " h=" + mNaturalItemHeight
+                        + " gap=" + gap + " slot=" + mSlotHeight + " edge=" + edge);
+                mHost.setPadding(mHost.getPaddingLeft(), edge, mHost.getPaddingRight(), edge);
+            }
+            return true;
+        }
+
+        @Override
+        public void measureChildWithMargins(View child, int widthUsed, int heightUsed) {
+            ViewGroup.LayoutParams lp = child.getLayoutParams();
+            if (lp == null) {
+                super.measureChildWithMargins(child, widthUsed, heightUsed);
+                return;
+            }
+
+            if (mSlotHeight > 0) {
+                lp.height = mSlotHeight;
+                super.measureChildWithMargins(child, widthUsed, heightUsed);
+                return;
+            }
+
+            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            super.measureChildWithMargins(child, widthUsed, heightUsed);
+            int natural = child.getMeasuredHeight();
+            if (natural > 0 && mNaturalItemHeight <= 0) {
+                mNaturalItemHeight = natural;
+                storeNaturalItemHeight(natural);
+                if (applySpacing(getHeight()) && mSlotHeight > 0) {
+                    lp.height = mSlotHeight;
+                    super.measureChildWithMargins(child, widthUsed, heightUsed);
+                }
+            }
+        }
+
+        @Override
+        public void onItemsChanged(RecyclerView recyclerView) {
+            super.onItemsChanged(recyclerView);
+            applySpacing(getHeight());
+        }
+
+        public void invalidateItemMetrics() {
+            mNaturalItemHeight = -1;
+            mSlotHeight = -1;
+            sCachedNaturalItemHeight = -1;
+            try {
+                mAppContext.getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
+                        .edit().remove(KEY_ITEM_HEIGHT).apply();
+            } catch (Exception ignored) {
+            }
+            requestLayout();
+        }
+
+        @Override
+        public boolean canScrollVertically() {
+            return getItemCount() > mMaxItems && super.canScrollVertically();
+        }
     }
 }
