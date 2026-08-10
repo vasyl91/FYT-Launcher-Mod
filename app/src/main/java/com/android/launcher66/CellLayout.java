@@ -4370,7 +4370,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         switch (prefix) {
             case "date":
                 int dateMinHeight = mLauncher.calculatedDateMinHeight;
-                if (leftBar && currentScreen == 0) {
+                if (isLeftBarOffsetActive(currentScreen)) {
                     topLeftX = prefs.getInt("dateTopLeftX", margin) + leftBarWidth;
                     topRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth) + leftBarWidth;
                 } else {
@@ -4387,7 +4387,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 int mapMinWidth = mLauncher.calculatedPipMinWidth;
                 int musicMinWidth = mLauncher.calculatedMusicMinWidth;
                 int musicMinHeight = mLauncher.calculatedMusicMinHeight;
-                if (leftBar && currentScreen == 0) {
+                if (isLeftBarOffsetActive(currentScreen)) {
                     topLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin) + leftBarWidth;
                     topRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth) + leftBarWidth;
                 } else {
@@ -4405,7 +4405,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
             case "radio":
                 int radioMinWidth = mLauncher.calculatedRadioMinWidth;
-                if (leftBar && currentScreen == 0) {
+                if (isLeftBarOffsetActive(currentScreen)) {
                     topLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin) + leftBarWidth;
                     topRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin + radioMinWidth) + leftBarWidth;
                 } else {
@@ -4708,7 +4708,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
         // Get bounds from preferences
         int topLeftX, topRightX;
-        if (leftBar && currentScreen == 0) {
+        if (isLeftBarOffsetActive(currentScreen)) {
             topLeftX = prefs.getInt(pipKey + "TopLeftX", margin) + leftBarWidth;
             topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth) + leftBarWidth;
         } else {
@@ -4846,7 +4846,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
         // Get bounds from preferences
         int topLeftX, topRightX;
-        if (leftBar && currentScreen == 0) {
+        if (isLeftBarOffsetActive(currentScreen)) {
             topLeftX = prefs.getInt("statsTopLeftX", margin) + leftBarWidth;
             topRightX = prefs.getInt("statsTopRightX", margin + statsWidth) + leftBarWidth;
         } else {
@@ -4915,6 +4915,21 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         if (currentWorkspace != null) {
             currentWorkspace.triggerStripEmptyScreens("CellLayout, addStatsPlaceholder()", false);
         }
+    }
+
+    /**
+     * leftBar must be read from THIS page instance, not inherited from the setup host
+     * (ensurePagesExistForCustomElements() sets the field only on the host).
+     */
+    private boolean isLeftBarOffsetActive(int currentScreen) {
+        if (currentScreen != 0) {
+            return false;
+        }
+        SharedPreferences p = (prefs != null)
+                ? prefs
+                : PreferenceManager.getDefaultSharedPreferences(getContext());
+        leftBar = p.getBoolean(Keys.LEFT_BAR, false);
+        return leftBar && p.getBoolean(Keys.USER_LAYOUT, false);
     }
 
     public int[] getStatsPlaceholderPosition() {
