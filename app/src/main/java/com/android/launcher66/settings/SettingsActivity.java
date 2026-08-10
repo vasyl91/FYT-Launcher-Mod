@@ -26,6 +26,8 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.LauncherApplication;
+import com.fyt.skin.SkinAttribute;
+import com.fyt.skin.SkinUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -104,7 +106,12 @@ public class SettingsActivity extends AppCompatActivity {
             new CanbusClasses().execute();
         }
         helpers.setSettingsOpenedBoolean(true);
-        getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentFirst()).commit();       
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, new SettingsFragmentFirst())
+                .commit();
+        }     
     }   
 
     public static SettingsActivity getSettingsActivity() {
@@ -264,6 +271,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("FieldMayBeFinal")
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override 
         public void onReceive(Context context, Intent intent) {
@@ -362,14 +370,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void clearSkinReferences() {
         try {
-            if (getLayoutInflater() != null) {
-                try {
-                    getLayoutInflater().setFactory2(null);
-                } catch (IllegalStateException e) {
-                    Log.d(TAG, "Layout inflater factory already set");
-                }
+            SkinAttribute skinAttribute = SkinUtils.getSkinAttr();
+            if (skinAttribute != null) {
+                skinAttribute.clear();
             }
-            
         } catch (Exception e) {
             Log.w(TAG, "Error clearing skin references", e);
         }
@@ -395,13 +399,14 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        stopWatch(); 
+        stopWatch();
         if (mSunTask != null) {
             mSunTask.cancel(true);
             mSunTask = null;
         }
         helpers.setSettingsOpenedBoolean(false);
         clearSkinReferences();
+        mReceiver = null;
         sharedPrefs = null;
 
         if (mSettingsActivity != null && mSettingsActivity.get() == this) {
