@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class WindowUtil {
     private static final String TAG = "WindowUtil";
     private static final String RESYNC_GEOMETRY_METHOD = "resyncGeometryAfterSurfaceSwap";
+    private static Launcher launcher = null;
     private static SharedPreferences prefs;
     private static Helpers helpers;
     public static String AppPackageName = "";
@@ -191,6 +193,14 @@ public class WindowUtil {
             return false;
         }
     }
+
+    public static boolean isPipOnScreen() {
+        try {
+            if (panesStillOnScreen()) return true;      // realna widoczność okien
+            if (helpers != null && helpers.pipsAdded()) return true;
+        } catch (Throwable ignore) { }
+        return false;
+    }
  
     /**
      * @return true if this openPip() call is a duplicate of the previous one and should be skipped.
@@ -219,8 +229,9 @@ public class WindowUtil {
 
     public static void openPip(boolean show) {
         if (!LauncherApplication.isFytDevice()) return;
-        if (Launcher.getLauncher() == null) return;
-        if (Launcher.getLauncher().allowPip) {
+        launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        if (launcher.allowPip) {
             try {
                 if (helpers == null) {
                     helpers = new Helpers();
@@ -295,7 +306,7 @@ public class WindowUtil {
                             // Dismiss windowed activity
                             if (mWindowHost != null) {
                                 // Dismiss windowed activity on main thread (existing)
-                                Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
+                                launcher.handler.post(() -> mWindowHost.dismiss());
                             }
                             // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
                             Method getServiceMethod = ActivityManager.class.getMethod("getService");
@@ -310,17 +321,17 @@ public class WindowUtil {
                         // Add pips
                         boolean userMap = prefs.getBoolean(Keys.DISPLAY_PIP, true);
                         if (userMap) {
-                            Launcher.getLauncher().pipOverview();
-                            Launcher.getLauncher().handler.postDelayed(() -> {     
+                            launcher.pipOverview();
+                            launcher.handler.postDelayed(() -> {     
                                 if (checkIfPinned()) {
                                     openPinnedPip();
                                 }
                             }, delayMillis);
-                            Launcher.getLauncher().handler.postDelayed(() -> {
+                            launcher.handler.postDelayed(() -> {
                                 openMultiplePips();
                             }, delayMillis + 100);
-                            Launcher.getLauncher().handler.postDelayed(() -> {
-                                Launcher.getLauncher().showOverlayFab();
+                            launcher.handler.postDelayed(() -> {
+                                launcher.showOverlayFab();
                             }, delayMillis + 150);                                           
                         }
                     } 
@@ -344,13 +355,16 @@ public class WindowUtil {
 
     public static void removePip() {
         if (!LauncherApplication.isFytDevice()) return;
-        if (Launcher.getLauncher() == null) return;
+        launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        launcher.handler.post(launcher::cancelPipWatchdog);
         if (helpers == null) {
             helpers = new Helpers();
         }
+        pipRetryPending = false;  
         if (helpers.pipsAdded()) {
             Log.d(TAG, "removePip..");
-            Launcher.getLauncher().handler.postDelayed(() -> {
+            launcher.handler.postDelayed(() -> {
                 if (checkIfPinned() && WindowUtil.AppPackageName.equals("com.syu.camera360")) {
                     LauncherApplication.sApp.sendBroadcast(new Intent("com.syu.camera360.hide"));
                 }
@@ -381,11 +395,11 @@ public class WindowUtil {
                 }
             }
             try {
-                Launcher.getLauncher().hideOverlayFab();
+                launcher.hideOverlayFab();
                 // Dismiss windowed activity
                 if (mWindowHost != null) {
                     // Dismiss windowed activity on main thread (existing)
-                    Launcher.getLauncher().handler.post(() -> mWindowHost.dismiss());
+                    launcher.handler.post(() -> mWindowHost.dismiss());
                 }
                 // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
                 Method getServiceMethod = ActivityManager.class.getMethod("getService");
@@ -406,7 +420,9 @@ public class WindowUtil {
     // =====================================================================================
 
     public static void openMultiplePips() {
-        if (!LauncherApplication.isFytDevice()) return;
+        if (!LauncherApplication.isFytDevice()) return;   
+        launcher = Launcher.getLauncher();
+        if (launcher == null) return;
         final WindowHost previousHost = mWindowHost;
         if (previousHost != null) {
             try {
@@ -420,13 +436,13 @@ public class WindowUtil {
         thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
         fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
 
-        mWindowHost = new WindowHost(Launcher.getLauncher());
+        mWindowHost = new WindowHost(launcher);
         forcePipBoundsUpdate = true;
 
         firstPkg = prefs.getString(Keys.PIP_FIRST_PACKAGE, "");
         secondPkg = prefs.getString(Keys.PIP_SECOND_PACKAGE, "");
         
-        Workspace workspace = Launcher.getLauncher().getWorkspace();
+        Workspace workspace = launcher.getWorkspace();
         
         if (dualPip && !mWindowHost.isDualVisible() && !firstPipPinned && !secondPipPinned 
             && Helpers.isPackageInstalled(firstPkg) && Helpers.isPackageInstalled(secondPkg)) {    
@@ -498,13 +514,13 @@ public class WindowUtil {
                 }
             }
         }
-        Launcher.getLauncher().handler.postDelayed(() -> pumpPipBoundsUntilReady(16), 100);
+        launcher.handler.postDelayed(() -> pumpPipBoundsUntilReady(16), 100);
 
         // The previous host's ActivityViews still hold the embedded tasks. Retire them: they are
         // released only once the freshly created panes have taken those tasks over, which is what
         // stops every open/remove PiP cycle from leaking a VirtualDisplay for good.
         if (previousHost != null && previousHost != mWindowHost) {
-            Launcher.getLauncher().handler.postDelayed(previousHost::retireActivityViews, 1200);
+            launcher.handler.postDelayed(previousHost::retireActivityViews, 1200);
         }          
     }
 
@@ -514,7 +530,7 @@ public class WindowUtil {
      */
     private static void pumpPipBoundsUntilReady(int attemptsLeft) {
         try {
-            Launcher launcher = Launcher.getLauncher();
+            launcher = Launcher.getLauncher();
             if (launcher == null || mWindowHost == null) return;
  
             Workspace ws = launcher.getWorkspace();
@@ -581,9 +597,10 @@ public class WindowUtil {
 
     public static void updatePipPositionsForScroll(int scrollOffset) {
         try {
-            if (Launcher.getLauncher() == null) return;
+            launcher = Launcher.getLauncher();
+            if (launcher == null) return;
             
-            Workspace workspace = Launcher.getLauncher().getWorkspace();
+            Workspace workspace = launcher.getWorkspace();
             if (workspace == null || mWindowHost == null) return;
             
             if (prefs == null) {
@@ -605,11 +622,13 @@ public class WindowUtil {
 
     private static void updatePipPosition(String pipType, int scrollOffset) {
         if (mWindowHost == null) return;
+        launcher = Launcher.getLauncher();
+        if (launcher == null) return;
 
         String screenKey = getScreenKeyForType(pipType);
         int pipHomeScreen = prefs.getInt(screenKey, 1) - 1;
 
-        Workspace workspace = Launcher.getLauncher().getWorkspace();
+        Workspace workspace = launcher.getWorkspace();
         CellLayout pipHomeCellLayout = (CellLayout) workspace.getChildAt(pipHomeScreen);
 
         if (pipHomeCellLayout == null) return;
@@ -675,8 +694,10 @@ public class WindowUtil {
     }
 
     public static void restartMultiplePips() {
+        launcher = Launcher.getLauncher();
+        if (launcher == null) return;
         if (mWindowHost != null) {
-            Launcher.getLauncher().handler.post(() -> mWindowHost.cleanup());
+            launcher.handler.post(() -> mWindowHost.cleanup());
         }
     }
 
@@ -686,10 +707,12 @@ public class WindowUtil {
 
     public static void openPinnedPip() {
         if (!LauncherApplication.isFytDevice()) return;
+        launcher = Launcher.getLauncher();
+        if (launcher == null) return;
         if (helpers == null) {
             helpers = new Helpers();
         }
-        if (Launcher.getLauncher().allowPip
+        if (launcher.allowPip
             && Utils.topApp()
             && !helpers.isInWidgets()
             && !helpers.isInAllApps()
@@ -743,12 +766,14 @@ public class WindowUtil {
     }
 
     private static void openAsPinnedPip(String packageName, String pipKey, String screenKey) {
+        launcher = Launcher.getLauncher();
+        if (launcher == null) return;
         // Update screen
         SharedPreferences.Editor editor = prefs.edit();
         int pipScreen = prefs.getInt(screenKey, 1) - 1;
         editor.putInt(Keys.PINNED_PIP_SCREEN, pipScreen + 1);
         editor.apply();
-        int currentScreen = Launcher.getLauncher().getWorkspace().getCurrentPage();
+        int currentScreen = launcher.getWorkspace().getCurrentPage();
 
         if (helpers == null) {
             helpers = new Helpers();
@@ -771,7 +796,7 @@ public class WindowUtil {
                 AppPackageName = packageName; 
                 restartPinnedPipApp();
                 
-                Launcher.getLauncher().handler.postDelayed(() -> startPinnedPip(packageName), 1000);
+                launcher.handler.postDelayed(() -> startPinnedPip(packageName), 1000);
             } else {
                 setPinnedPipBounds(pipKey, screenKey);         
                 SystemProperties.set("persist.launcher.packagename", packageName);
@@ -782,12 +807,14 @@ public class WindowUtil {
     }
 
     private static void startPinnedPip(String packageName) {
+        launcher = Launcher.getLauncher();
+        if (launcher == null) return;
         Intent intent = FytPackage.getIntent(LauncherApplication.sApp, packageName);
         intent.putExtra("force_pip", true);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         SystemProperties.set("sys.lsec.force_pip", "true");
         if (intent.resolveActivity(LauncherApplication.sApp.getPackageManager()) != null) {
-            Launcher.getLauncher().handler.postDelayed(() -> LauncherApplication.sApp.startActivity(intent), 100);
+            launcher.handler.postDelayed(() -> LauncherApplication.sApp.startActivity(intent), 100);
         }  
         checkIfOpenedOnTheRightScreen(500);
         checkIfOpenedOnTheRightScreen(1500);
@@ -796,11 +823,13 @@ public class WindowUtil {
 
     // removes an error where windows shows up when user quickly changes to the screen on which it shouldn't appear
     private static void checkIfOpenedOnTheRightScreen(int delay) {
-        Launcher.getLauncher().handler.postDelayed(() -> {
+        launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        launcher.handler.postDelayed(() -> {
             int pipScreen = prefs.getInt(Keys.PINNED_PIP_SCREEN, 1) - 1;
             int currentScreen = Launcher.getLauncher().getWorkspace().getCurrentPage();
 
-            if (Launcher.getLauncher().getWorkspace().getChildCount() > 1 && currentScreen != pipScreen) {
+            if (launcher.getWorkspace().getChildCount() > 1 && currentScreen != pipScreen) {
                 removePinnedPip();
             }
         }, delay);
@@ -808,8 +837,10 @@ public class WindowUtil {
 
     public static void restartPinnedPipApp() {
         if (!LauncherApplication.isFytDevice()) return;
+        launcher = Launcher.getLauncher();
+        if (launcher == null) return;
         if (mWindowHost != null) {
-            Launcher.getLauncher().handler.post(() -> mWindowHost.cleanup());
+            launcher.handler.post(() -> mWindowHost.cleanup());
         }
         if (AppPackageName != null && !AppPackageName.isEmpty()) {
             if (FytPackage.GMAPS.equals(AppPackageName)) {
@@ -869,6 +900,8 @@ public class WindowUtil {
     }
 
     private static void setPinnedPipBounds(String pipKey, String screenKey) {
+        launcher = Launcher.getLauncher();
+        if (launcher == null) return;
         boolean leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
         int pipScreen = prefs.getInt(screenKey, 1) - 1;
         int margin = Integer.valueOf(prefs.getString("layout_margin", "10"));
@@ -885,18 +918,18 @@ public class WindowUtil {
         String bottomRightXKey = pipKey + "BottomRightX";
         String bottomRightYKey = pipKey + "BottomRightY";
 
-        int mapMinWidth = Launcher.getLauncher().calculatedPipMinWidth / countEnabledPips();
+        int mapMinWidth = launcher.calculatedPipMinWidth / countEnabledPips();
 
         if (leftBar && pipScreen == 0) {
-            mapTopLeftX = prefs.getInt(topLeftXKey, margin) + orientedMargin + Launcher.getLauncher().calculatedLeftBarWidth;
-            mapBottomRightX = prefs.getInt(bottomRightXKey, margin + mapMinWidth) + orientedMargin + Launcher.getLauncher().calculatedLeftBarWidth;
+            mapTopLeftX = prefs.getInt(topLeftXKey, margin) + orientedMargin + launcher.calculatedLeftBarWidth;
+            mapBottomRightX = prefs.getInt(bottomRightXKey, margin + mapMinWidth) + orientedMargin + launcher.calculatedLeftBarWidth;
         } else {
             mapTopLeftX = prefs.getInt(topLeftXKey, margin);
             mapBottomRightX = prefs.getInt(bottomRightXKey, margin + mapMinWidth);
         }
         
-        int mapTopLeftY = prefs.getInt(topLeftYKey, margin + Launcher.getLauncher().calculatedDateMinHeight + margin) + Launcher.getLauncher().getStatusBarHeight();
-        int mapBottomRightY = prefs.getInt(bottomRightYKey, margin + Launcher.getLauncher().calculatedDateMinHeight + margin + Launcher.getLauncher().calculatedPipMinHeight) + Launcher.getLauncher().getStatusBarHeight();
+        int mapTopLeftY = prefs.getInt(topLeftYKey, margin + launcher.calculatedDateMinHeight + margin) + launcher.getStatusBarHeight();
+        int mapBottomRightY = prefs.getInt(bottomRightYKey, margin + launcher.calculatedDateMinHeight + margin + launcher.calculatedPipMinHeight) + launcher.getStatusBarHeight();
 
         // top-left x, top left y, bottom right x, bottom right y
         SystemProperties.set("sys.lsec.pip_rect", String.valueOf(mapTopLeftX + " " + mapTopLeftY + " " + mapBottomRightX + " " + mapBottomRightY));
@@ -1043,7 +1076,7 @@ public class WindowUtil {
             // Block floating button while swapping (preserve existing behavior)
             try {
                 if (Launcher.mLauncher != null) {
-                    Launcher.mLauncher.sendBroadcast(new android.content.Intent(Keys.BLOCK_FLOATING_BUTTON));
+                    Launcher.mLauncher.sendBroadcast(new Intent(Keys.BLOCK_FLOATING_BUTTON));
                 }
             } catch (Throwable ignore) {}
 
@@ -1332,7 +1365,7 @@ public class WindowUtil {
             // Block floating button while swapping
             try {
                 if (Launcher.mLauncher != null) {
-                    Launcher.mLauncher.sendBroadcast(new android.content.Intent(Keys.BLOCK_FLOATING_BUTTON));
+                    Launcher.mLauncher.sendBroadcast(new Intent(Keys.BLOCK_FLOATING_BUTTON));
                 }
             } catch (Throwable ignore) {}
 
@@ -1871,7 +1904,7 @@ public class WindowUtil {
         } catch (Throwable ignore) {}
 
         try {
-            android.util.DisplayMetrics dm = avView.getResources().getDisplayMetrics();
+            DisplayMetrics dm = avView.getResources().getDisplayMetrics();
             if (dm != null && dm.densityDpi > 0) return dm.densityDpi;
         } catch (Throwable ignore) {}
 
@@ -1974,7 +2007,9 @@ public class WindowUtil {
                                                    final String poolKeyA, final String poolKeyB, 
                                                    final Rect boundsA, final Rect boundsB) {
         try {
-            final Activity act = Launcher.getLauncher();
+            launcher = Launcher.getLauncher();
+            if (launcher == null) return false;
+            final Activity act = launcher;
             if (act == null) return false;
 
             Object newA = WindowHostActivityView.newInstance(act);
@@ -2108,7 +2143,9 @@ public class WindowUtil {
                                              final String avFieldNameA, final String avFieldNameB,
                                              final Object hostObjA, final Object hostObjB) {
         try {
-            final Activity act = Launcher.getLauncher();
+            launcher = Launcher.getLauncher();
+            if (launcher == null) return;
+            final Activity act = launcher;
             if (act == null) return;
             if (hostA == null || hostB == null) return;
 

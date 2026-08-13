@@ -231,6 +231,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     static final int SCREEN_COUNT = 5;
     public static final String SHOW_WEIGHT_WATCHER = "debug.show_mem";
     private static final long PIP_INIT_THROTTLE_MS = 700L;
+    private static final long PIP_WATCHDOG_DELAY_MS = 1200L;
+    private static final int  PIP_WATCHDOG_MAX_RETRIES = 2;
     private static final long WIDGET_UPDATE_THROTTLE_MS = 350L;
     private static final long POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS = 1200L;
     private static final long SERVICE_RUNNING_CACHE_MS = 15000L;
@@ -547,6 +549,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Runnable mFastHomeDeferredResumeRunnable;
     private Runnable mCustomElementsSetupRunnable;
     private Runnable mFastHomeDeferredPipRunnable;
+    private Runnable mPipWatchdogRunnable;
+    private int mPipWatchdogRetries = 0;
     private long mLastAppListSourceSignature = Long.MIN_VALUE;
     private long mLastLeftAppListSourceSignature = Long.MIN_VALUE;
     private boolean widgetBar = false;
@@ -1958,6 +1962,59 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
+    private void schedulePipWatchdog(String source) {
+        cancelPipWatchdog();
+        if (!mPrefs.getBoolean(Keys.USER_LAYOUT, false)) return;
+        if (!mPrefs.getBoolean(Keys.DISPLAY_PIP, true)) return;
+
+        mPipWatchdogRunnable = () -> {
+            mPipWatchdogRunnable = null;
+            runPipWatchdog(source);
+        };
+        mHandler.postDelayed(mPipWatchdogRunnable, PIP_WATCHDOG_DELAY_MS);
+    }
+
+    public void cancelPipWatchdog() {
+        if (mPipWatchdogRunnable != null) {
+            mHandler.removeCallbacks(mPipWatchdogRunnable);
+            mPipWatchdogRunnable = null;
+        }
+    }
+
+    private void runPipWatchdog(String source) {
+        if (mPaused || mWorkspace == null) return;
+        if (isAllAppsVisible()) return;
+        if (mState != State.WORKSPACE) return;
+        if (helpers.isInOverviewMode() || helpers.isInAllApps() || helpers.isInWidgets()) return;
+        if (mDragController != null && mDragController.isDragging()) return;
+
+        if (WindowUtil.isPipOnScreen()) {
+            mPipWatchdogRetries = 0;
+            return;
+        }
+
+        if (mPipWatchdogRetries >= PIP_WATCHDOG_MAX_RETRIES) {
+            Log.e(TAG, "pipWatchdog(" + source + "): PiP nadal nie wystartowal po "
+                    + mPipWatchdogRetries + " probach - rezygnuje");
+            mPipWatchdogRetries = 0;
+            return;
+        }
+
+        mPipWatchdogRetries++;
+        Log.w(TAG, "pipWatchdog(" + source + "): PiP nie wystartowal, wymuszam (proba "
+                + mPipWatchdogRetries + ")");
+        onResumePip = false;
+        onBackPip = false;
+        onWorkspacePip = false;
+        initPip("pipWatchdog", null, true);          
+
+        mPipWatchdogRunnable = () -> {
+            mPipWatchdogRunnable = null;
+            runPipWatchdog(source + "+retry");
+        };
+        mHandler.postDelayed(mPipWatchdogRunnable, PIP_WATCHDOG_DELAY_MS);
+    }
+
     private void cancelWakeHomeRecovery(String source) {
         boolean hadPendingRecovery = mWakeHomeRecoveryPending || mWakeHomeRecoveryRunnable != null;
         if (mWakeHomeRecoveryRunnable != null) {
@@ -2958,6 +3015,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onResume() {
         super.onResume();
         allowPip = true;
+        onWorkspacePip = false;
         boolean homeButtonResume = mHomeButtonPressed;
         boolean homeRefreshAlreadyHandled = mHomeWorkspaceRefreshHandled;
         boolean fastHomeFromAllApps = mHomeFromAllAppsPending
@@ -3106,6 +3164,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         }
         scheduleHomeLayoutWatchdog("onResume", !isAllAppsVisible());
+        schedulePipWatchdog("onResume");
     }
 
     private void scheduleFastHomeDeferredResumeWork(boolean processPendingUpdate) {
@@ -3233,6 +3292,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             onResumePip = false;
             onBackPip = false;
             initPip("fastHomeFromAllApps", null, false);
+            schedulePipWatchdog("fastHomeFromAllApps");
         };
         mHandler.postDelayed(mFastHomeDeferredPipRunnable, FAST_HOME_PIP_DEFER_MS);
     }
@@ -3423,11 +3483,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         scheduleHomeLayoutWatchdog("recreateView", true);
     }
 
-    private void initPip(String whereInitiated, View view, boolean forceOpen) {
+    private boolean initPip(String whereInitiated, View view, boolean forceOpen) {
         long now = SystemClock.uptimeMillis();
         if (!forceOpen && (mPipInitPending || now - mLastPipInitMs < PIP_INIT_THROTTLE_MS)) {
             Log.d(whereInitiated, "startMapPip coalesced");
-            return;
+            return false;
         }
         mPipInitPending = true;
 
@@ -3444,16 +3504,26 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     || forceOpen;
 
             if (shouldStartPip) {
-
-                    Log.d(whereInitiated, "startMapPip");
-                    mLastPipInitMs = SystemClock.uptimeMillis();
-                    WindowUtil.startMapPip(forceOpen);
-
+                Log.d(whereInitiated, "startMapPip");
+                mLastPipInitMs = SystemClock.uptimeMillis();
+                WindowUtil.startMapPip(forceOpen);
+            } else {
+                Log.w(whereInitiated, "startMapPip SKIPPED"
+                        + " display=" + helpers.displayStateBoolean()
+                        + " prefWin=" + helpers.isFirstPreferenceWindow()
+                        + " wallpaper=" + helpers.isWallpaperWindow()
+                        + " overview=" + helpers.isInOverviewMode()
+                        + " dragging=" + mDragController.isDragging()
+                        + " allApps=" + helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
+                        + " wasInRecents=" + helpers.userWasInRecents()
+                        + " listOpen=" + helpers.isListOpen());
             }
             helpers.setFirstPreferenceWindow(false);
             helpers.setWallpaperWindow(false);
             helpers.setWasInRecents(false);
         }, 250);
+
+        return true;
     }
 
     @Override
@@ -9852,15 +9922,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         onWorkspaceShown(animated);
     }
 
-    public void onWorkspaceShown(boolean animated) {  
+    public void onWorkspaceShown(boolean animated) {
         if (mHomeFromAllAppsPending) {
-            onWorkspacePip = true;
-            return;
+            return;                      // PiP will start from scheduleFastHomeDeferredPip()
         }
         if (((!onResumePip || onBackPip) && !isRecreateActive) || helpers.isInWidgets()) {
-            onWorkspacePip = true;
             helpers.setInWidgets(false);
-            initPip("onWorkspaceShown()", null, false);
+            onWorkspacePip = initPip("onWorkspaceShown()", null, false);
+            schedulePipWatchdog("onWorkspaceShown");
         }
     }
 
