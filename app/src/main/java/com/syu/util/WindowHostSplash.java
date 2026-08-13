@@ -455,7 +455,28 @@ public final class WindowHostSplash {
         }
     }
 
-    /** Average of the icon's opaque pixels, darkened a little so a light icon stays readable. */
+    /** Resolution the icon is scaled down to before analysis. */
+    private static final int   SAMPLE_SIZE     = 24;
+    /** Radius of the sampling ring, as a fraction of the bitmap size. */
+    private static final float RING_RADIUS     = 0.46f;
+    /** How many points are taken around the ring. */
+    private static final int   RING_STEPS      = 72;
+    /** Fraction of ring points that must be opaque before we consider the icon to have a plate. */
+    private static final float RING_MIN_FILL   = 0.60f;
+    /** Fraction of ring points that must share one color for it to count as a uniform plate. */
+    private static final float RING_MIN_SAME   = 0.75f;
+    /** Max per-channel deviation from the median still counted as "the same color". */
+    private static final int   RING_TOLERANCE  = 26;
+    /** Multiplier applied to a detected plate color. 1.0f = use it verbatim. */
+    private static final float PLATE_DARKEN    = 1.0f;
+    /** Existing darkening for the averaging path. */
+    private static final float AVG_DARKEN      = 0.62f;
+
+    /**
+     * If the icon sits on a uniform plate (Google Maps, YouTube - a logo on a white field),
+     * that plate color is used as is, so the tile blends with the icon. Otherwise it returns 
+     * average of the opaque pixels, darkened.
+     */
     private static int backgroundFor(String pkg, Drawable icon) {
         final int fallback = Color.rgb(32, 33, 36);
         if (icon == null) return fallback;
@@ -466,36 +487,122 @@ public final class WindowHostSplash {
         }
 
         int color = fallback;
+        Bitmap src = (icon instanceof BitmapDrawable) ? ((BitmapDrawable) icon).getBitmap() : null;
+        Bitmap bmp = null;
         try {
-            Bitmap bmp;
-            if (icon instanceof BitmapDrawable && ((BitmapDrawable) icon).getBitmap() != null) {
-                bmp = Bitmap.createScaledBitmap(((BitmapDrawable) icon).getBitmap(), 16, 16, true);
-            } else {
-                bmp = Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_8888);
-                Canvas c = new Canvas(bmp);
-                icon.setBounds(0, 0, 16, 16);
-                icon.draw(c);
-            }
+            bmp = rasterize(icon, src, SAMPLE_SIZE);
+            if (bmp != null) {
+                int[] px = new int[SAMPLE_SIZE * SAMPLE_SIZE];
+                bmp.getPixels(px, 0, SAMPLE_SIZE, 0, 0, SAMPLE_SIZE, SAMPLE_SIZE);
 
-            long r = 0, g = 0, b = 0, n = 0;
-            int[] px = new int[16 * 16];
-            bmp.getPixels(px, 0, 16, 0, 0, 16, 16);
-            for (int p : px) {
-                if (Color.alpha(p) < 128) continue;
-                r += Color.red(p); g += Color.green(p); b += Color.blue(p);
-                n++;
-            }
-            if (n > 0) {
-                // 0.62 keeps the hue but pushes it dark enough for the icon to stand out.
-                color = Color.rgb(
-                        (int) (r / n * 0.62f),
-                        (int) (g / n * 0.62f),
-                        (int) (b / n * 0.62f));
+                int plate = uniformEdgeColor(px, SAMPLE_SIZE);
+                if (plate != 0) {
+                    // The icon brings its own background - keep it, skip the averaging entirely.
+                    color = (PLATE_DARKEN == 1.0f) ? plate : scaleRgb(plate, PLATE_DARKEN);
+                } else {
+                    int avg = averageOpaque(px);
+                    if (avg != 0) color = scaleRgb(avg, AVG_DARKEN);
+                }
             }
         } catch (Throwable ignored) {
+        } finally {
+            // Never recycle the drawable's own bitmap - createScaledBitmap may return it unchanged.
+            if (bmp != null && bmp != src) bmp.recycle();
         }
 
         if (pkg != null) colorCache.put(pkg, color);
         return color;
+    }
+
+    /** Scales or draws the icon into a square bitmap of the given side. */
+    private static Bitmap rasterize(Drawable icon, Bitmap src, int size) {
+        if (src != null && !src.isRecycled()) {
+            return Bitmap.createScaledBitmap(src, size, size, true);
+        }
+        Bitmap bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bmp);
+        icon.setBounds(0, 0, size, size);
+        icon.draw(c);
+        return bmp;
+    }
+
+    /**
+     * Samples pixels along a circle just inside the icon edge - this works for square icons
+     * as well as round or adaptive ones, since the ring stays within the mask - and decides
+     * whether they form a uniform plate.
+     *
+     * @return the plate color (always opaque), or 0 when there is no plate.
+     */
+    private static int uniformEdgeColor(int[] px, int size) {
+        final float c = (size - 1) / 2f;
+        final float radius = size * RING_RADIUS;
+
+        int[] samples = new int[RING_STEPS];
+        int count = 0;
+        for (int i = 0; i < RING_STEPS; i++) {
+            double a = 2 * Math.PI * i / RING_STEPS;
+            int x = Math.round(c + (float) (radius * Math.cos(a)));
+            int y = Math.round(c + (float) (radius * Math.sin(a)));
+            if (x < 0 || y < 0 || x >= size || y >= size) continue;
+            int p = px[y * size + x];
+            if (Color.alpha(p) < 200) continue;   // a gap in the ring means there is no full plate
+            samples[count++] = p;
+        }
+        if (count < RING_STEPS * RING_MIN_FILL) return 0;
+
+        // Per-channel median: robust against the few points where the logo touches the edge.
+        int mr = channelMedian(samples, count, 16);
+        int mg = channelMedian(samples, count, 8);
+        int mb = channelMedian(samples, count, 0);
+
+        long r = 0, g = 0, b = 0;
+        int same = 0;
+        for (int i = 0; i < count; i++) {
+            int p = samples[i];
+            int pr = Color.red(p), pg = Color.green(p), pb = Color.blue(p);
+            if (Math.abs(pr - mr) > RING_TOLERANCE
+                    || Math.abs(pg - mg) > RING_TOLERANCE
+                    || Math.abs(pb - mb) > RING_TOLERANCE) continue;
+            r += pr; g += pg; b += pb;
+            same++;
+        }
+        if (same < count * RING_MIN_SAME) return 0;   // multi-colored edge - not a plate
+
+        // Averaged over in-tolerance points only, so stray logo pixels cannot shift the result.
+        return Color.rgb((int) (r / same), (int) (g / same), (int) (b / same));
+    }
+
+    /** Returns 0 when there are no opaque pixels. */
+    private static int averageOpaque(int[] px) {
+        long r = 0, g = 0, b = 0, n = 0;
+        for (int p : px) {
+            if (Color.alpha(p) < 128) continue;
+            r += Color.red(p); g += Color.green(p); b += Color.blue(p);
+            n++;
+        }
+        if (n == 0) return 0;
+        return Color.rgb((int) (r / n), (int) (g / n), (int) (b / n));
+    }
+
+    /** Median of a single channel (shift: 16 = R, 8 = G, 0 = B). */
+    private static int channelMedian(int[] samples, int count, int shift) {
+        int[] ch = new int[count];
+        for (int i = 0; i < count; i++) ch[i] = (samples[i] >> shift) & 0xFF;
+        java.util.Arrays.sort(ch);
+        return ch[count / 2];
+    }
+
+    private static int scaleRgb(int color, float f) {
+        return Color.rgb(
+                (int) (Color.red(color) * f),
+                (int) (Color.green(color) * f),
+                (int) (Color.blue(color) * f));
+    }
+
+    /** True when the tile needs dark foreground (label, ripple) to stay readable. */
+    private static boolean isLightBackground(int color) {
+        return (0.299f * Color.red(color)
+                + 0.587f * Color.green(color)
+                + 0.114f * Color.blue(color)) > 160f;
     }
 }
