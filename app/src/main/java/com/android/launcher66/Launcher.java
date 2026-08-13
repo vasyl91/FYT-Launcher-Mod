@@ -3611,7 +3611,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mLastPostResumeAppDataRefreshMs = SystemClock.uptimeMillis();
         bg.execute(() -> {
             List<AppMultiple> data = LitePal.order("\"index\" asc").find(AppMultiple.class);
-            List<LeftAppMultiple> left = LitePal.findAll(LeftAppMultiple.class, new long[0]);
+            List<LeftAppMultiple> left = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
             runOnUiThread(() -> {
                 refreshCycle(data);
                 refreshLeftBar(left);
@@ -5958,8 +5958,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     continue;
                 }
                 
-                // If not found in AllAppsList but package is installed, load icon from package manager
-                Bitmap icon = loadAppIconFromPackageManager(multiple.packageName, multiple.className);
+                // If not found in AllAppsList but package is installed, load icon from package manager.
+                // Strict variant: returns null for uninstalled/unresolvable components, so the row is
+                // dropped (and the remaining icons re-flow) instead of showing the "add app" icon.
+                Bitmap icon = loadLeftBarIconStrict(multiple.packageName, multiple.className);
                 if (icon != null) {
                     AppListBean ab = new AppListBean(
                         multiple.name,
@@ -6456,7 +6458,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 continue;
             }
 
-            Bitmap icon = loadAppIconFromPackageManager(row.packageName, row.className);
+            Bitmap icon = loadLeftBarIconStrict(row.packageName, row.className);
             if (icon != null) {
                 nextLeftAppListData.add(new AppListBean(
                         row.name != null ? row.name : "",
@@ -6472,6 +6474,57 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
             mLastLeftAppListSourceSignature = sourceSignature;
         }
+    }
+
+    /**
+     * Clears every left-bar row pointing at one of the just-uninstalled packages and compacts the
+     * remaining rows upwards, mirroring the ordering logic of refreshLeftCycle().
+     * Returns true when the database was actually modified.
+     */
+    private boolean pruneLeftBarRows(ArrayList<String> packageNames) {
+        if (packageNames == null || packageNames.isEmpty()) {
+            return false;
+        }
+        List<LeftAppMultiple> physical = LitePal.order("id asc").find(LeftAppMultiple.class);
+        if (physical == null || physical.isEmpty()) {
+            return false;
+        }
+
+        List<LeftAppMultiple> survivors = new ArrayList<>();
+        boolean removed = false;
+        for (LeftAppMultiple row : physical) {
+            if (row == null || TextUtils.isEmpty(row.packageName)) {
+                continue;
+            }
+            if (packageNames.contains(row.packageName)) {
+                removed = true;
+                continue;
+            }
+            survivors.add(row);
+        }
+        if (!removed) {
+            return false;
+        }
+
+        for (int i = 0; i < physical.size(); i++) {
+            LeftAppMultiple dst = physical.get(i);
+            ContentValues v = new ContentValues();
+            if (i < survivors.size()) {
+                LeftAppMultiple src = survivors.get(i);
+                v.put("name", src.name == null ? "" : src.name);
+                v.put("packageName", src.packageName == null ? "" : src.packageName);
+                v.put("className", src.className == null ? "" : src.className);
+            } else {
+                v.put("name", "");
+                v.put("packageName", "");
+                v.put("className", "");
+            }
+            LitePal.update(LeftAppMultiple.class, v, dst.id);
+        }
+
+        mLastLeftAppListSourceSignature = Long.MIN_VALUE;
+        Log.d(TAG, "pruneLeftBarRows: left bar compacted after uninstall of " + packageNames);
+        return true;
     }
 
     private void createDefaultAppEntries() {
@@ -6649,6 +6702,70 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Log.e(TAG, "Error loading icon for " + packageName + ": " + e.getMessage());
             return BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
         }
+    }
+
+    /**
+     * Strict icon loader used ONLY by the left bar. Returns null when the package/component can
+     * no longer be resolved (e.g. it has just been uninstalled) instead of falling back to the
+     * "add app" placeholder icon that the bottom bar legitimately uses.
+     */
+    private Bitmap loadLeftBarIconStrict(String packageName, String className) {
+        if (TextUtils.isEmpty(packageName)) {
+            return null;
+        }
+        PackageManager pm = getPackageManager();
+        try {
+            pm.getApplicationInfo(packageName, 0);
+        } catch (Exception e) {
+            // Package gone -> caller must drop this row completely.
+            return null;
+        }
+
+        String cacheKey = appIconCacheKey(packageName, className);
+        Bitmap cached = mAppIconBitmapCache.get(cacheKey);
+        if (cached != null && !cached.isRecycled()) {
+            return cached;
+        }
+
+        Drawable drawable = null;
+        try {
+            if (!TextUtils.isEmpty(className)) {
+                drawable = pm.getActivityIcon(new ComponentName(packageName, className));
+            }
+        } catch (Exception e) {
+            drawable = null;
+        }
+        if (drawable == null) {
+            // Activity renamed but package still installed -> fall back to its launch component.
+            try {
+                Intent launch = pm.getLaunchIntentForPackage(packageName);
+                if (launch != null && launch.getComponent() != null) {
+                    drawable = pm.getActivityIcon(launch.getComponent());
+                }
+            } catch (Exception e) {
+                drawable = null;
+            }
+        }
+        if (drawable == null) {
+            Log.w(TAG, "loadLeftBarIconStrict: no icon for " + packageName + "/" + className);
+            return null;
+        }
+
+        Bitmap bitmap;
+        if (drawable instanceof BitmapDrawable && ((BitmapDrawable) drawable).getBitmap() != null) {
+            bitmap = ((BitmapDrawable) drawable).getBitmap();
+        } else {
+            int width = Math.max(1, drawable.getIntrinsicWidth());
+            int height = Math.max(1, drawable.getIntrinsicHeight());
+            bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+        }
+        if (bitmap != null) {
+            mAppIconBitmapCache.put(cacheKey, bitmap);
+        }
+        return bitmap;
     }
 
     private String appIconCacheKey(String packageName, String className) {
@@ -10535,8 +10652,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // Only refresh the bottom bar if the affected package is actually shown there.
             // For update-triggered transient removals (packageRemoved=false) we skip the refresh
             // to avoid wiping the bar while AllAppsList.data is momentarily incomplete.
-            if (packageRemoved && isPackageInBottomBar(packageNames)) {
-                triggerAppData();
+            if (packageRemoved) {
+                // Drop + compact the left-bar rows first, otherwise the stale row survives in the
+                // DB and comes back (as a placeholder) on the next rebuild.
+                boolean leftBarChanged = pruneLeftBarRows(packageNames);
+                if (leftBarChanged || isPackageInBottomBar(packageNames)) {
+                    mLastLeftAppListSourceSignature = Long.MIN_VALUE;
+                    triggerAppData();
+                }
             }
         }
     }
