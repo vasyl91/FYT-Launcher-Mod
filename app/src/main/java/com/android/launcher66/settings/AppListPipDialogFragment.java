@@ -27,6 +27,7 @@ import com.android.launcher66.AppInfo;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,22 +37,44 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
 
     /** Single-select dialog to choose one app for a PiP slot (saved to DefaultSharedPreferences). */
 
+    public static final String TAG = "AppListPipDialog";
+
     ImageView currentAppIcon;
     TextView currentAppName;
     AppSelectAdapter mAdapter;
     ArrayList<AppInfo> mData;
     GridView mGridView;
     private ItemClickDataListener mItemClickDataListener;
-    private HashSet<Integer> selectedPositions = new HashSet<>();
     private int positionCorrector = 0;
-    private Set<String> apps = new HashSet<String>();
+    private final Set<String> apps = new HashSet<String>();
     private SharedPreferences pipsPrefs;
     private String pipKey;
+
+    /** Set in onDestroyView so the background task never touches a dead view tree. */
+    private volatile boolean mViewDestroyed;
+
     private static final Set<String> EXCLUDED_PACKAGES = new HashSet<String>() {{
         add("com.android.launcher66.settings.SettingsActivity");
         add("com.syu.settings");
         add("com.syu.onekeynavi");
         add("ru.fytmods.frontapp");
+        add("vasyl.titles");
+        add("com.syu.widget.music");
+        add("com.syu.screensaver");
+        add("com.ava.car");
+        add("cn.teyes.online");
+        add("com.syu.gallery");
+        add("com.syu.radio");
+        add("com.syu.video");
+        add("com.syu.av");
+        add("com.syu.steer");
+        add("com.syu.eq");
+        add("com.syu.filemanager");
+        add("com.syu.fourcamera2");
+        add("com.syu.carlink");
+        add("com.topjohnwu.magisk");
+        add("app.revanced.android.gms");
+        add("org.lsposed.manager");
     }};
 
     public interface ItemClickDataListener {
@@ -60,6 +83,8 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mViewDestroyed = false;
+
         pipKey = (getArguments() != null) ? getArguments().getString("pip_key", "") : "";
         pipsPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
@@ -71,25 +96,38 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
         }
 
         View view = inflater.inflate(R.layout.dialog_piplist, container);
-        
+
         // Initialize UI components
         this.currentAppIcon = (ImageView) view.findViewById(R.id.current_app_icon);
         this.currentAppName = (TextView) view.findViewById(R.id.current_app_name);
         this.mGridView = (GridView) view.findViewById(R.id.gridview);
-        
+
         // Start background task to filter apps
-        new FilterAppsTask().execute();
-        
-        view.setOnClickListener(v -> {
-            AppListPipDialogFragment.this.dismiss();
-        });
+        new FilterAppsTask(this, pipsPrefs, pipKey).execute();
+
+        view.setOnClickListener(v -> AppListPipDialogFragment.this.dismiss());
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().requestFeature(1);
         }
         return view;
     }
 
-    private class FilterAppsTask extends AsyncTask<Void, Void, ArrayList<AppInfo>> {
+    /**
+     * Static so it does not hold an implicit reference to the fragment. The weak reference
+     * is resolved only in onPostExecute and yields null once the dialog is gone, which both
+     * prevents the leak and the NPE on the already nulled GridView.
+     */
+    private static class FilterAppsTask extends AsyncTask<Void, Void, ArrayList<AppInfo>> {
+        private final WeakReference<AppListPipDialogFragment> fragmentRef;
+        private final SharedPreferences prefs;
+        private final String key;
+
+        FilterAppsTask(AppListPipDialogFragment fragment, SharedPreferences prefs, String key) {
+            this.fragmentRef = new WeakReference<>(fragment);
+            this.prefs = prefs;
+            this.key = key;
+        }
+
         @Override
         protected void onProgress(Void[] progress) {
             //
@@ -98,8 +136,8 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
         @Override
         protected ArrayList<AppInfo> doInBackground(Void... voids) {
             // Get packages selected in other PiP slots
-            Set<String> otherSelectedPackages = getOtherSelectedPackages(pipKey);
-            String currentSelection = pipsPrefs.getString(pipKey, "");
+            Set<String> otherSelectedPackages = getOtherSelectedPackages(prefs, key);
+            String currentSelection = prefs.getString(key, "");
 
             // Create filtered list excluding other selected apps (keep current selection)
             ArrayList<AppInfo> filteredData = new ArrayList<>();
@@ -107,7 +145,7 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
                 String packageName = app.getPackageName();
                 if (packageName.equals(currentSelection)) {
                     filteredData.add(app);
-                } else if (!otherSelectedPackages.contains(packageName) 
+                } else if (!otherSelectedPackages.contains(packageName)
                         && !EXCLUDED_PACKAGES.contains(packageName)
                         && !packageName.toLowerCase().contains("launcher")) {
                     // Check for launcher in app name (in background)
@@ -122,40 +160,12 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
 
         @Override
         protected void onPostExecute(ArrayList<AppInfo> filteredData) {
-            mData = filteredData;
-            mAdapter = new AppSelectAdapter(mData);
-            mGridView.setAdapter(mAdapter);
-            mGridView.setOnItemClickListener(AppListPipDialogFragment.this);
-            mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
-                @Override
-                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                    // Re-read saved single selection to keep highlight in sync while scrolling
-                    apps.clear();
-                    String saved = pipsPrefs.getString(pipKey, "");
-                    if (saved != null && !saved.isEmpty()) {
-                        apps.add(saved);
-                    }
-                    for (int i = 0; i < totalItemCount; i++) {
-                        View cellView = mGridView.getChildAt(i - firstVisibleItem);
-                        positionCorrector = firstVisibleItem;
-                        if (cellView == null) {
-                            continue;
-                        }
-                        AppInfo allApp = mData.get(i);
-                        if (apps.contains(String.valueOf(allApp.getPackageName()))) {
-                            cellView.setBackgroundColor(Color.parseColor("#FC6B03"));
-                            cellView.getBackground().setAlpha(90);
-                        } else {
-                            cellView.setBackgroundColor(Color.TRANSPARENT);
-                        }
-                    }
-                }
-
-                @Override
-                public void onScrollStateChanged(AbsListView view, int scrollState) {
-                    // No implementation needed
-                }
-            });
+            AppListPipDialogFragment f = fragmentRef.get();
+            if (f == null || f.mViewDestroyed || f.mGridView == null || !f.isAdded()) {
+                // Dialog was closed while filtering - nothing to bind to
+                return;
+            }
+            f.bindFilteredApps(filteredData);
         }
 
         @Override
@@ -163,14 +173,54 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
 
         }
     }
-    
-    private String getAppNameFromPackage(String packageName) {
+
+    /** Called from FilterAppsTask once the view tree is confirmed alive. */
+    private void bindFilteredApps(ArrayList<AppInfo> filteredData) {
+        mData = filteredData;
+        mAdapter = new AppSelectAdapter(mData);
+        mGridView.setAdapter(mAdapter);
+        mGridView.setOnItemClickListener(this);
+        mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (mViewDestroyed || mGridView == null || mData == null) {
+                    return;
+                }
+                // Re-read saved single selection to keep highlight in sync while scrolling
+                apps.clear();
+                String saved = pipsPrefs.getString(pipKey, "");
+                if (saved != null && !saved.isEmpty()) {
+                    apps.add(saved);
+                }
+                for (int i = 0; i < totalItemCount && i < mData.size(); i++) {
+                    View cellView = mGridView.getChildAt(i - firstVisibleItem);
+                    positionCorrector = firstVisibleItem;
+                    if (cellView == null) {
+                        continue;
+                    }
+                    AppInfo allApp = mData.get(i);
+                    if (apps.contains(String.valueOf(allApp.getPackageName()))) {
+                        cellView.setBackgroundColor(Color.parseColor("#FC6B03"));
+                        cellView.getBackground().setAlpha(90);
+                    } else {
+                        cellView.setBackgroundColor(Color.TRANSPARENT);
+                    }
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                // No implementation needed
+            }
+        });
+    }
+
+    private static String getAppNameFromPackage(String packageName) {
         try {
             PackageManager packageManager = LauncherApplication.sApp.getPackageManager();
             ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
             return packageManager.getApplicationLabel(appInfo).toString();
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -187,23 +237,38 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
+        if (mData == null || position < 0 || position >= mData.size()) {
+            return;
+        }
         AppInfo allApp = this.mData.get(position);
-        View cellView = (View) this.mGridView.getChildAt(position - positionCorrector);
-        cellView.setBackgroundColor(colorToSet(allApp.getPackageName()));
-        cellView.getBackground().setAlpha(alphaToSet(allApp.getPackageName()));
+        // getChildAt() returns null for recycled/off-screen cells - the click itself
+        // must still be handled, only the immediate highlight is skipped.
+        View cellView = this.mGridView.getChildAt(position - positionCorrector);
+        if (cellView != null) {
+            cellView.setBackgroundColor(colorToSet(allApp.getPackageName()));
+            if (cellView.getBackground() != null) {
+                cellView.getBackground().setAlpha(alphaToSet(allApp.getPackageName()));
+            }
+        }
         toggleSelection(allApp.getPackageName());
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mViewDestroyed = true;
         if (mGridView != null) {
+            mGridView.setOnItemClickListener(null);
+            mGridView.setOnScrollListener(null);
             mGridView.setAdapter(null);
         }
         mAdapter = null;
         currentAppIcon = null;
         currentAppName = null;
         mGridView = null;
+        mData = null;
+        // Public API - the caller has no hook to clear it, so release it here
+        mItemClickDataListener = null;
     }
 
     /**
@@ -215,14 +280,14 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
         apps.add(packageName);
 
         // Persist into DefaultSharedPreferences under the pipKey
-        if (pipKey != null && !pipKey.isEmpty()) {
+        if (pipKey != null && !pipKey.isEmpty() && pipsPrefs != null) {
             SharedPreferences.Editor editor = pipsPrefs.edit();
             editor.putString(pipKey, packageName);
             editor.apply();
         }
 
         // Notify optional listener
-        if (mItemClickDataListener != null) {
+        if (mItemClickDataListener != null && mData != null) {
             // Find the AppInfo to pass back
             for (AppInfo info : mData) {
                 if (packageName.equals(info.getPackageName())) {
@@ -236,9 +301,9 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
         dismiss();
     }
 
-    private Set<String> getOtherSelectedPackages(String currentKey) {
+    private static Set<String> getOtherSelectedPackages(SharedPreferences prefs, String currentKey) {
         Set<String> otherSelected = new HashSet<>();
-        Map<String, ?> allPrefs = pipsPrefs.getAll();
+        Map<String, ?> allPrefs = prefs.getAll();
         for (String key : allPrefs.keySet()) {
             if (key.startsWith("pip_") && !key.equals(currentKey)) {
                 Object value = allPrefs.get(key);

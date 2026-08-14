@@ -124,6 +124,7 @@ import com.android.launcher66.settings.StatusBarSwipeDetector;
 import com.android.launcher66.settings.WakeDetectionService;
 import com.android.recycler.AppListAdapter;
 import com.android.recycler.AppListBean;
+import com.android.recycler.AppListDialogFragment;
 import com.android.recycler.AppMultiple;
 import com.android.recycler.LeftAppListAdapter;
 import com.android.recycler.LeftAppMultiple;
@@ -1878,6 +1879,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 mHomeFromAllAppsPending = isAllAppsVisible()
                                         || (mAppsCustomizeTabHost != null
                                         && mAppsCustomizeTabHost.getVisibility() == View.VISIBLE);
+                                AppListDialogFragment.dismissListDialog();
                                 if (isOnMainWorkspaceScreen()) {
                                     mHomeFromAllAppsPending = false;
                                     mHomeWorkspaceRefreshHandled = refreshWorkspaceAfterHome();
@@ -1902,6 +1904,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                     showHotseat(true, true);
                                     mWorkspace.exitOverviewMode(true);
                                     updateWallpaperVisibility(true);
+                                    helpers.setInOverviewMode(false);
                                 }
                                 mHomeWorkspaceRefreshHandled = refreshWorkspaceAfterHome();
                                 scheduleHomeLayoutWatchdog("homeBroadcast", true);
@@ -2036,6 +2039,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             showWorkspace(false, null);
         } else if (mWorkspace.isInOverviewMode()) {
             mWorkspace.exitOverviewMode(false);
+            helpers.setInOverviewMode(false);
         }
 
         mWorkspace.setVisibility(View.VISIBLE);
@@ -3500,7 +3504,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     && !helpers.isInOverviewMode()
                     && !mDragController.isDragging()
                     && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility()))
-                    || (!helpers.userWasInRecents() && helpers.isListOpen())
+                    || (!helpers.userWasInRecents() && helpers.isListOpen() && !helpers.pipsAdded())
                     || forceOpen;
 
             if (shouldStartPip) {
@@ -3824,6 +3828,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override 
     protected void onPause() {
+        AppListDialogFragment.dismissListDialog();
         super.onPause();
         allowPip = false;
         cleanWidgetBar();

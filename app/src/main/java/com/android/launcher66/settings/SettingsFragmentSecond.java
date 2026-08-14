@@ -40,6 +40,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
@@ -159,7 +160,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private AlertDialog alertCodesLoggerDialog;
     private AlertDialog alertSkipCodesDialog;
     private AlertDialog alertCodesInspectorDialog;
-    private AppListStatsDialogFragment appListStatsDialog;
+    private WeakReference<AppListStatsDialogFragment> appListStatsDialog;
     private WeakReference<ColorPicker> colorPicker;
     private WeakReference<ColorPicker> bgColorPicker;
     private InputMethodManager imm;
@@ -831,11 +832,15 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             case Keys.APP_LIST:
                 Log.i("checkStatsPermission()", String.valueOf(checkStatsPermission()));
                 if (checkStatsPermission()) {
-                    if (appListStatsDialog != null && appListStatsDialog.isShowing()) {
-                        appListStatsDialog.dismiss();
+                    AppListStatsDialogFragment previous =
+                            (appListStatsDialog != null) ? appListStatsDialog.get() : null;
+                    if (previous != null && previous.isShowing()) {
+                        previous.dismiss();
                     }
-                    appListStatsDialog = new AppListStatsDialogFragment();
-                    appListStatsDialog.show(requireActivity().getSupportFragmentManager(), "");
+                    AppListStatsDialogFragment dialog = new AppListStatsDialogFragment();
+                    appListStatsDialog = new WeakReference<>(dialog);
+                    dialog.show(requireActivity().getSupportFragmentManager(),
+                            AppListStatsDialogFragment.TAG);
                 } else {
                     Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
                     startActivity(intent);
@@ -1120,9 +1125,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             }
         }
         bgColorPicker = null;
-        if (appListStatsDialog != null && appListStatsDialog.isShowing()) {
-            appListStatsDialog.dismiss();
-            appListStatsDialog = null;
+        if (appListStatsDialog != null) {
+            AppListStatsDialogFragment statsDialog = appListStatsDialog.get();
+            if (statsDialog != null && statsDialog.isAdded()) {
+                statsDialog.dismissAllowingStateLoss();
+                getParentFragmentManager().executePendingTransactions();
+            }
+        }
+        appListStatsDialog = null;
+        Fragment pipPicker = requireActivity()
+                .getSupportFragmentManager()
+                .findFragmentByTag(AppListPipDialogFragment.TAG);
+        if (pipPicker instanceof AppListPipDialogFragment && pipPicker.isAdded()) {
+            ((AppListPipDialogFragment) pipPicker).dismissAllowingStateLoss();
+            requireActivity().getSupportFragmentManager().executePendingTransactions();
         }
         if (alertSkipCodesDialog != null && alertSkipCodesDialog.isShowing()) {
             alertSkipCodesDialog.dismiss();
@@ -2000,7 +2016,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Bundle args = new Bundle();
         args.putString("pip_key", whichKey);
         dlg.setArguments(args);
-        dlg.show(requireActivity().getSupportFragmentManager(), "AppListPipDialog");
+        dlg.show(requireActivity().getSupportFragmentManager(), AppListPipDialogFragment.TAG);
     }
 
     private void enforceSinglePiP(@Nullable CustomPipSwitchPreference source, boolean isPip) {

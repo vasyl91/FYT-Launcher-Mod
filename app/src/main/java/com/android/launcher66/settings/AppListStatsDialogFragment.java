@@ -32,9 +32,13 @@ import java.util.Set;
 
 public class AppListStatsDialogFragment extends DialogFragment implements AdapterView.OnItemClickListener {
 
-    /** Dialog window tha displays apps which user can select to display stats window
+    /** Dialog window that displays apps which the user can select to display a stats window
      *  while the selected app is running in foreground
      */
+
+    public static final String TAG = "AppListStatsDialog";
+    private static final String PREFS_NAME = "AppStatsPrefs";
+    private static final String KEY_STATS_APPS = "stats_apps";
 
     ImageView currentAppIcon;
     TextView currentAppName;
@@ -42,10 +46,12 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
     ArrayList<AppInfo> mData;
     GridView mGridView;
     private ItemClickDataListener mItemClickDataListener;
-    private HashSet<Integer> selectedPositions = new HashSet<>();
     private int positionCorrector = 0;
     private Set<String> apps = new HashSet<String>();
     private SharedPreferences statsPrefs;
+
+    /** Set in onDestroyView so listeners never touch a dead view tree. */
+    private volatile boolean mViewDestroyed;
 
     public interface ItemClickDataListener {
         void onClickData(AppInfo appInfo);
@@ -53,8 +59,13 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        statsPrefs = getActivity().getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
-        apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
+        mViewDestroyed = false;
+
+        // Application context on purpose: the prefs object outlives single callbacks and
+        // getActivity() can already be null by the time toggleSelection() runs.
+        statsPrefs = LauncherApplication.sApp.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        apps = new HashSet<>(statsPrefs.getStringSet(KEY_STATS_APPS, new HashSet<String>()));
+
         View view = inflater.inflate(R.layout.dialog_applist, container);
         this.mData = AllAppsList.data;
         this.currentAppIcon = (ImageView) view.findViewById(R.id.current_app_icon);
@@ -66,8 +77,11 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
         this.mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
-                for (int i = 0; i < totalItemCount; i++) {
+                if (mViewDestroyed || mGridView == null || mData == null) {
+                    return;
+                }
+                apps = new HashSet<>(statsPrefs.getStringSet(KEY_STATS_APPS, new HashSet<String>()));
+                for (int i = 0; i < totalItemCount && i < mData.size(); i++) {
                     View cellView = mGridView.getChildAt(i - firstVisibleItem);
                     positionCorrector = firstVisibleItem;
                     if (cellView == null) {
@@ -85,43 +99,61 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                // 
+                //
             }
         });
-        view.setOnClickListener(v -> {
-            AppListStatsDialogFragment.this.dismiss();      
-        });    
-        getDialog().getWindow().requestFeature(1);
+        view.setOnClickListener(v -> AppListStatsDialogFragment.this.dismiss());
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().requestFeature(1);
+        }
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0));
-        getDialog().getWindow().setLayout(-1, -1);
-        getDialog().setCanceledOnTouchOutside(true);
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0));
+            getDialog().getWindow().setLayout(-1, -1);
+            getDialog().setCanceledOnTouchOutside(true);
+        }
     }
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
+        if (mData == null || position < 0 || position >= mData.size()) {
+            return;
+        }
         AppInfo allApp = this.mData.get(position);
-        View cellView = (View) this.mGridView.getChildAt(position - positionCorrector);
-        cellView.setBackgroundColor(colorToSet(allApp.getPackageName()));
-        cellView.getBackground().setAlpha(alphaToSet(allApp.getPackageName()));
+        // getChildAt() returns null for recycled/off-screen cells - the click itself
+        // must still be handled, only the immediate highlight is skipped.
+        View cellView = this.mGridView.getChildAt(position - positionCorrector);
+        if (cellView != null) {
+            cellView.setBackgroundColor(colorToSet(allApp.getPackageName()));
+            if (cellView.getBackground() != null) {
+                cellView.getBackground().setAlpha(alphaToSet(allApp.getPackageName()));
+            }
+        }
         toggleSelection(allApp.getPackageName());
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mViewDestroyed = true;
         if (mGridView != null) {
+            mGridView.setOnItemClickListener(null);
+            mGridView.setOnScrollListener(null);
             mGridView.setAdapter(null);
         }
         mAdapter = null;
         currentAppIcon = null;
         currentAppName = null;
         mGridView = null;
+        // mData points at the shared AllAppsList.data - drop the reference, never clear it
+        mData = null;
+        // Public API - the caller has no hook to clear it, so release it here
+        mItemClickDataListener = null;
     }
 
     public void toggleSelection(String packageName) {
@@ -130,11 +162,16 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
         } else {
             apps.add(packageName);
         }
-        getActivity().getSharedPreferences("AppStatsPrefs", 0).edit().clear().commit();
-        statsPrefs = getActivity().getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = statsPrefs.edit(); 
-        editor.putStringSet("stats_apps", apps);
-        editor.apply();
+        if (statsPrefs == null) {
+            return;
+        }
+        // Defensive copy: SharedPreferences keeps a reference to the stored Set, so writing
+        // the live "apps" instance and mutating it afterwards corrupts the persisted value.
+        // This also replaces the previous clear().commit() - commit() blocked the UI thread
+        // on every single tap and was not needed, putStringSet overwrites the key anyway.
+        statsPrefs.edit()
+                .putStringSet(KEY_STATS_APPS, new HashSet<>(apps))
+                .apply();
     }
 
     public int colorToSet(String packageName) {
