@@ -23,7 +23,6 @@ import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.ServiceIntentGate;
 import com.android.recycler.AppListDialogFragment;
-import com.syu.util.FytPackage;
 import com.syu.util.WindowHost;
 import com.syu.util.WindowUtil;
 
@@ -340,7 +339,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
      */
     private boolean isPipHealthy() {
         try {
-            WindowHost host = WindowHost.getInstance();
+            WindowHost host = WindowUtil.getActiveWindowHost();
             if (host == null) return false;
 
             // A pane that still has no real bounds has not launched its app yet.
@@ -361,9 +360,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 if (secondPip && !host.isSecondVisible()) return false;
             }
             if (thirdPip && !thirdPinned && !host.isThirdVisible()) return false;
-            if (fourthPip && !fourthPinned && !host.isFourthVisible()) return false;
-
-            return true;
+            return !fourthPip || fourthPinned || host.isFourthVisible();
         } catch (Throwable t) {
             Log.w(TAG, "isPipHealthy check failed", t);
             return false;
@@ -406,7 +403,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 forceStopPackage.setAccessible(true);
                 forceStopPackage.invoke(activityManager, appPackageName);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
+                Log.e(TAG, "restartPipApp() failed: " + e);
             }
         }
     }

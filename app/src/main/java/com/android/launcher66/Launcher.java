@@ -150,6 +150,8 @@ import com.syu.util.JLog;
 import com.syu.util.Lrc;
 import com.syu.util.Utils;
 import com.syu.util.WeatherUtils;
+import com.syu.util.WindowHost;
+import com.syu.util.WindowHostAvReaper;
 import com.syu.util.WindowUtil;
 import com.syu.utils.W3Utils;
 import com.syu.weather.WeatherDescription;
@@ -515,6 +517,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean mIsInitializingAppData = false;
     public boolean onResumePip = false;
     public boolean allowPip = false;
+    private volatile WindowHost mWindowHost;
     private boolean onBackPip = false;
     private boolean onWorkspacePip = false;
     private boolean mPipInitPending = false;
@@ -539,6 +542,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean mHomeFromAllAppsPending = false;
     private boolean mFastHomeResumePending = false;
     private boolean mWakeHomeRecoveryPending = false;
+    private boolean mRefreshersRegistered = false;
     private long mLastWakeRefreshMs = 0L;
     private long mLastFocusHomeRecoveryMs = 0L;
     private long mLastWorkspaceNullLoaderMs = 0L;
@@ -2871,6 +2875,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void initVariable() {
+        Launcher previous = mLauncher;
+        if (previous != null && previous != this) {
+            WindowHost oldHost = previous.getWindowHost();
+            if (oldHost != null) {
+                previous.setWindowHost(null);
+                try {
+                    oldHost.retireActivityViews();
+                } catch (Throwable t) {
+                    Log.w(TAG, "onCreate: retire poprzedniego hosta nieudany", t);
+                }
+            }
+        }        
         mLauncher = this;
         app = LauncherApplication.sApp;
                 
@@ -3308,13 +3324,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         LauncherNotify.NOTIFIER_DVR.addUiRefresher(refreshDvr, true);
         LauncherNotify.NOTIFIER_NAVIVIEW.addUiRefresher(refreshNaviView, false);
         LauncherNotify.NOTIFIER_NAVISTATE.addUiRefresher(refreshNaviState, false);
+
         tools = CarStates.getCar(app).getTools();
-        tools.addRefreshLisenter(1, refreshRadioBand, 0);
-        tools.addRefreshLisenter(1, refreshRadioFreq, 1, 2);
-        tools.addRefreshLisenter(0, refreshMain, 0, 50, 60, 101, 31, 4);
-        tools.addRefreshLisenter(4, refreshMain, 2, 3);
-        tools.addRefreshLisenter(7, refreshMain, 1000);
-        tools.addRefreshLisenter(2, refreshBtInfo, 0, 1, 2, 28, 26, 13, 9, 7);
+
+        if (!mRefreshersRegistered) {
+            mRefreshersRegistered = true;
+            tools.addRefreshLisenter(1, refreshRadioBand, 0);
+            tools.addRefreshLisenter(1, refreshRadioFreq, 1, 2);
+            tools.addRefreshLisenter(0, refreshMain, 0, 50, 60, 101, 31, 4);
+            tools.addRefreshLisenter(4, refreshMain, 2, 3);
+            tools.addRefreshLisenter(7, refreshMain, 1000);
+            tools.addRefreshLisenter(2, refreshBtInfo, 0, 1, 2, 28, 26, 13, 9, 7);
+        }
+
         tools.notify(0, 0, 50, 60, 101, 31);
         tools.notify(1, 0);
         tools.notify(1, 1);
@@ -3907,11 +3929,31 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Log.d(TAG, "---->>> onDestroy");
         Log.d("onDestroy", "removePip");
         WindowUtil.removePip();
+        if (mWindowHost != null) {
+            try {
+                mWindowHost.cleanup();
+            } catch (Throwable t) {
+                Log.w(TAG, "onDestroy: WindowHost cleanup failed", t);
+            }
+            mWindowHost = null;
+        }        
         tools.removeRefreshLisenter(0, refreshMain);
         tools.removeRefreshLisenter(4, refreshMain);
         tools.removeRefreshLisenter(7, refreshMain);
         tools.removeRefreshLisenter(2, refreshBtInfo);
+        tools.removeRefreshLisenter(1, refreshRadioBand);
+        tools.removeRefreshLisenter(1, refreshRadioFreq);
+        purgeMyRefreshListeners();
+        mRefreshersRegistered = false;
         unregisterAllReceivers();
+        if (kwAPi != null) {
+            try {
+                kwAPi.unRegisterPlayerStatusListener(this);
+            } catch (Throwable t) {
+                Log.w(TAG, "onDestroy: KWAPI unregister failed", t);
+            }
+            kwAPi = null;
+        }        
         TimeUpdateReceiver.unregister(this);
         cancelWeatherCallbacks();
         if (mWeatherListenerOwner != null && mWeatherChangedListener != null) {
@@ -3924,6 +3966,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mHandler.removeMessages(0);
             mHandler.removeCallbacksAndMessages(null);
         }
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
+        WindowHostAvReaper.releaseAll();
         clearBarWidgetReferences();
         mWorkspace.removeCallbacks(mBuildLayersRunnable);
         LauncherAppState app = LauncherAppState.getInstance();
@@ -3983,6 +4029,81 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         settingsButton = null;
         wallpaperButtonWidgets = null;
         settingsButtonWidgets = null;
+    }
+
+    /**
+     * Removes every listener owned by this Activity from RemoteTools' Callback lists.
+     *
+     * removeRefreshLisenter() leaves one entry behind (channel 7 / refreshMain), which keeps
+     * this$0 alive and leaks the whole Launcher. This is a belt-and-braces sweep: it walks the
+     * RemoteTools instance looking for Callback objects and drops any Lisenter whose target is
+     * one of our listeners. Call it from onDestroy(), AFTER the regular removeRefreshLisenter()
+     * calls, so the normal path stays in charge and this only mops up what it missed.
+     */
+    private void purgeMyRefreshListeners() {
+        if (tools == null) return;
+        try {
+            java.util.Set<Object> mine = java.util.Collections.newSetFromMap(
+                    new java.util.IdentityHashMap<Object, Boolean>());
+            mine.add(refreshMain);
+            mine.add(refreshRadioBand);
+            mine.add(refreshRadioFreq);
+            mine.add(refreshBtInfo);
+
+            int removed = 0;
+            for (java.lang.reflect.Field f : tools.getClass().getDeclaredFields()) {
+                f.setAccessible(true);
+                Object v = f.get(tools);
+                if (v instanceof java.util.Map) {
+                    for (Object o : ((java.util.Map<?, ?>) v).values()) removed += purgeCallback(o, mine);
+                } else if (v instanceof java.util.Collection) {
+                    for (Object o : (java.util.Collection<?>) v) removed += purgeCallback(o, mine);
+                } else if (v instanceof Object[]) {
+                    for (Object o : (Object[]) v) removed += purgeCallback(o, mine);
+                } else {
+                    removed += purgeCallback(v, mine);
+                }
+            }
+            if (removed > 0) {
+                Log.i(TAG, "purgeMyRefreshListeners: swept " + removed + " stale entry/entries");
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "purgeMyRefreshListeners failed", t);
+        }
+    }
+
+    /** Drops our listeners from a single Callback's mLisenters list. Returns how many were removed. */
+    private static int purgeCallback(Object cb, java.util.Set<Object> mine) {
+        if (!(cb instanceof com.syu.remote.Callback)) return 0;
+        try {
+            java.lang.reflect.Field fList =
+                    com.syu.remote.Callback.class.getDeclaredField("mLisenters");
+            fList.setAccessible(true);
+            java.util.List<?> list = (java.util.List<?>) fList.get(cb);
+            if (list == null) return 0;
+
+            int removed = 0;
+            java.lang.reflect.Field fTarget = null;
+            // The list is touched from the binder thread too, so guard the iteration.
+            synchronized (list) {
+                for (java.util.Iterator<?> it = list.iterator(); it.hasNext(); ) {
+                    Object entry = it.next();
+                    if (entry == null) continue;
+                    if (fTarget == null) {
+                        fTarget = entry.getClass().getDeclaredField("lisenter");
+                        fTarget.setAccessible(true);
+                    }
+                    if (mine.contains(fTarget.get(entry))) {
+                        it.remove();
+                        removed++;
+                    }
+                }
+            }
+            return removed;
+        } catch (Throwable t) {
+            Log.w(TAG, "purgeCallback failed", t);
+            return 0;
+        }
     }
 
     private void unregisterAllReceivers() {
@@ -9570,6 +9691,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public static Launcher getLauncher() {
         return mLauncher;
+    }
+
+    public WindowHost getWindowHost() {
+        return mWindowHost;
+    }
+
+    public void setWindowHost(WindowHost host) {
+        mWindowHost = host;
     }
 
     SearchDropTargetBar getSearchBar() {

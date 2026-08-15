@@ -1,13 +1,11 @@
 package com.syu.util;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.SystemProperties;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -42,53 +40,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class WindowUtil {
     private static final String TAG = "WindowUtil";
     private static final String RESYNC_GEOMETRY_METHOD = "resyncGeometryAfterSurfaceSwap";
-    private static Launcher launcher = null;
     private static SharedPreferences prefs;
     private static Helpers helpers;
     public static String AppPackageName = "";
     public static int delayMillis = 0;
-    private static WindowHost mWindowHost;
     private static String firstPkg;
     private static String secondPkg;
-    private static final AtomicInteger SCREEN_SWITCH_GEN = new AtomicInteger();
-    private static Rect offscreen = new Rect(-3000, -3000, -2400, -2400);
-    private static final Map<String, Boolean> pipOffscreenState = new HashMap<>();
+    private static final Rect offscreen = new Rect(-3000, -3000, -2400, -2400);
     private static final Map<String, Rect> lastPipBounds = new HashMap<>();
     private static volatile boolean forcePipBoundsUpdate = false;
     private static final Map<View, Long> sReparentUnsettledUntil = new WeakHashMap<>();
     private static final long REPARENT_SETTLE_GRACE_MS = 250L;
     private static final Handler retryHandler = new Handler(Looper.getMainLooper());
     private static boolean pipRetryPending = false;
-
-    private static void markReparentInFlight(View child) {
-        if (child == null) return;
-        synchronized (sReparentUnsettledUntil) {
-            sReparentUnsettledUntil.put(child, Long.MAX_VALUE);
-        }
-    }
-
-    private static void markReparentSettled(View child) {
-        if (child == null) return;
-        synchronized (sReparentUnsettledUntil) {
-            sReparentUnsettledUntil.put(child, SystemClock.uptimeMillis() + REPARENT_SETTLE_GRACE_MS);
-        }
-    }
-
-    /** True while {@code child}'s ActivityView is mid native-reparent or still inside its post-reparent settle window. */
-    public static boolean isReparentUnsettled(View child) {
-        if (child == null) return false;
-        Long until;
-        synchronized (sReparentUnsettledUntil) {
-            until = sReparentUnsettledUntil.get(child);
-        }
-        if (until == null) return false;
-        return SystemClock.uptimeMillis() < until;
-    }
 
     public static boolean dualPip = false;
     public static boolean firstPip = false;
@@ -99,15 +67,6 @@ public class WindowUtil {
     public static boolean secondPipPinned = false;
     public static boolean thirdPipPinned = false;
     public static boolean fourthPipPinned = false;
-
-    static {
-        // Initialize state
-        pipOffscreenState.put("dual", false);
-        pipOffscreenState.put("first", false);
-        pipOffscreenState.put("second", false);
-        pipOffscreenState.put("third", false);
-        pipOffscreenState.put("fourth", false);
-    }
 
     public static void initDefaultApp() {
         if (!LauncherApplication.isFytDevice()) return;
@@ -153,7 +112,6 @@ public class WindowUtil {
 
     /** Window in which a repeated call to openPip() with the same configuration is skipped. */
     private static final long OPEN_PIP_DEBOUNCE_MS = 4000L;
- 
     private static volatile long lastOpenPipAtMs = 0L;
     private static volatile String lastOpenPipSignature = null;
 
@@ -179,10 +137,33 @@ public class WindowUtil {
         }
     }
 
+    private static WindowHost host() {
+        Launcher l = Launcher.getLauncher();
+        return (l == null) ? null : l.getWindowHost();
+    }
+
+    private static void setHost(WindowHost host) {
+        Launcher l = Launcher.getLauncher();
+        if (l != null) l.setWindowHost(host);
+    }
+
+    public static WindowHost getActiveWindowHost() {
+        return host();
+    }
+
+    /** Launcher.getWorkspace() is static; returns null before onCreate finishes or after onDestroy. */
+    private static Workspace workspace() {
+        try {
+            return Launcher.getWorkspace();
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
     /** Whether anything is still actually on the screen (not just the pipsAdded flag). */
     private static boolean panesStillOnScreen() {
         try {
-            WindowHost host = mWindowHost;
+            WindowHost host = host();
             if (host == null) return false;
             return host.isDualVisible()
                     || host.isFirstVisible()
@@ -211,17 +192,18 @@ public class WindowUtil {
         final long now = SystemClock.uptimeMillis();
         boolean awaitingBounds = true;
         try {
-            awaitingBounds = mWindowHost != null && mWindowHost.isAnyPaneAwaitingBounds();
+            final WindowHost h = host();
+            awaitingBounds = h != null && h.isAnyPaneAwaitingBounds();
         } catch (Throwable ignore) { }
- 
+
         boolean duplicate = sig != null
                 && sig.equals(lastOpenPipSignature)
                 && (now - lastOpenPipAtMs) < OPEN_PIP_DEBOUNCE_MS
                 && panesStillOnScreen()
                 && !awaitingBounds;
- 
+
         if (duplicate) return true;
- 
+
         lastOpenPipSignature = sig;
         lastOpenPipAtMs = now;
         return false;
@@ -229,24 +211,24 @@ public class WindowUtil {
 
     public static void openPip(boolean show) {
         if (!LauncherApplication.isFytDevice()) return;
-        launcher = Launcher.getLauncher();
+        final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         if (launcher.allowPip) {
             try {
                 if (helpers == null) {
                     helpers = new Helpers();
                 }
-                Log.i(TAG, "openPip(): " +  "show: "+ String.valueOf(show)
-                    + " helpers.pipsAdded(): " + String.valueOf(helpers.pipsAdded())
-                    + " Utils.topApp(): " + String.valueOf(Utils.topApp()) 
-                    + " AppPackageName.isEmpty() " + String.valueOf(AppPackageName.isEmpty())
-                    + " helpers.isInWidgets() " + String.valueOf(helpers.isInWidgets()) 
-                    + " helpers.isInAllApps() " + String.valueOf(helpers.isInAllApps())  
-                    + " helpers.isInOverviewMode() " + String.valueOf(helpers.isInOverviewMode()) 
-                    + " helpers.isFirstPreferenceWindow() " + String.valueOf(helpers.isFirstPreferenceWindow()) 
-                    + " helpers.allAppsVisibility() " + String.valueOf(helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) 
-                    + " helpers.isWallpaperWindow() " + String.valueOf(helpers.isWallpaperWindow())
-                    + " helpers.isListOpen() " + String.valueOf(helpers.isListOpen()));
+                Log.i(TAG, "openPip(): " +  "show: "+ show
+                    + " helpers.pipsAdded(): " + helpers.pipsAdded()
+                    + " Utils.topApp(): " + Utils.topApp()
+                    + " AppPackageName.isEmpty() " + AppPackageName.isEmpty()
+                    + " helpers.isInWidgets() " + helpers.isInWidgets()
+                    + " helpers.isInAllApps() " + helpers.isInAllApps()
+                    + " helpers.isInOverviewMode() " + helpers.isInOverviewMode()
+                    + " helpers.isFirstPreferenceWindow() " + helpers.isFirstPreferenceWindow()
+                    + " helpers.allAppsVisibility() " + helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
+                    + " helpers.isWallpaperWindow() " + helpers.isWallpaperWindow()
+                    + " helpers.isListOpen() " + helpers.isListOpen());
 
                 boolean canOpen =
                         (show && !helpers.pipsAdded())
@@ -258,16 +240,14 @@ public class WindowUtil {
                                 && !helpers.isFirstPreferenceWindow()
                                 && !helpers.isWallpaperWindow()
                                 && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility()))
-                                || (!helpers.userWasInRecents() && helpers.isListOpen());
+                                || (!helpers.userWasInRecents() && helpers.isListOpen() && !helpers.pipsAdded());
 
                 if (!canOpen) {
                     if (!pipRetryPending) {
                         // Utils.topApp() might still return wrong app name after going back to home
                         // retry once
                         pipRetryPending = true;
-                        retryHandler.postDelayed(() -> {
-                            WindowUtil.startMapPip(show);
-                        }, 180);
+                        retryHandler.postDelayed(() -> WindowUtil.startMapPip(show), 180);
                     }
                     return;
                 }
@@ -304,9 +284,10 @@ public class WindowUtil {
                         // It prevents adding a view twice what results in persistent black rectangle
                         try {
                             // Dismiss windowed activity
-                            if (mWindowHost != null) {
+                            final WindowHost host = host();
+                            if (host != null) {
                                 // Dismiss windowed activity on main thread (existing)
-                                launcher.handler.post(() -> mWindowHost.dismiss());
+                                launcher.handler.post(host::dismiss);
                             }
                             // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
                             Method getServiceMethod = ActivityManager.class.getMethod("getService");
@@ -327,12 +308,8 @@ public class WindowUtil {
                                     openPinnedPip();
                                 }
                             }, delayMillis);
-                            launcher.handler.postDelayed(() -> {
-                                openMultiplePips();
-                            }, delayMillis + 100);
-                            launcher.handler.postDelayed(() -> {
-                                launcher.showOverlayFab();
-                            }, delayMillis + 150);                                           
+                            launcher.handler.postDelayed(WindowUtil::openMultiplePips, delayMillis + 100);
+                            launcher.handler.postDelayed(launcher::showOverlayFab, delayMillis + 150);
                         }
                     } 
 
@@ -343,19 +320,19 @@ public class WindowUtil {
                     helpers.setWasInRecents(false);
                 }
             } catch (ActivityNotFoundException e) {
-                e.printStackTrace();
+                Log.e(TAG, "openPip() failed: " + e);
             }
         }
     }
 
     public static void removePip(int millis) {
         delayMillis = millis;
-        ThreadManager.getLongPool().execute(() -> WindowUtil.removePip());
+        ThreadManager.getLongPool().execute(WindowUtil::removePip);
     }
 
     public static void removePip() {
         if (!LauncherApplication.isFytDevice()) return;
-        launcher = Launcher.getLauncher();
+        final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         launcher.handler.post(launcher::cancelPipWatchdog);
         if (helpers == null) {
@@ -373,7 +350,7 @@ public class WindowUtil {
                 try {
                     LauncherApplication.sApp.removeGaoDeCoverView();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "removeGaoDeCoverView() failed: " + e);
                 }
             }
             delayMillis = 0;
@@ -397,9 +374,10 @@ public class WindowUtil {
             try {
                 launcher.hideOverlayFab();
                 // Dismiss windowed activity
-                if (mWindowHost != null) {
+                final WindowHost host = host();
+                if (host != null) {
                     // Dismiss windowed activity on main thread (existing)
-                    launcher.handler.post(() -> mWindowHost.dismiss());
+                    launcher.handler.post(host::dismiss);
                 }
                 // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
                 Method getServiceMethod = ActivityManager.class.getMethod("getService");
@@ -420,15 +398,20 @@ public class WindowUtil {
     // =====================================================================================
 
     public static void openMultiplePips() {
-        if (!LauncherApplication.isFytDevice()) return;   
-        launcher = Launcher.getLauncher();
+        if (!LauncherApplication.isFytDevice()) return;
+
+        final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
-        final WindowHost previousHost = mWindowHost;
+
+        final WindowHost previousHost = host();
         if (previousHost != null) {
             try {
                 previousHost.dismiss();
             } catch (Throwable ignore) {}
         }
+        
+        Workspace workspace = workspace();
+        if (workspace == null) return;
 
         dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
         firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
@@ -436,32 +419,31 @@ public class WindowUtil {
         thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
         fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
 
-        mWindowHost = new WindowHost(launcher);
+        final WindowHost host = new WindowHost(launcher);
+        setHost(host);
         forcePipBoundsUpdate = true;
 
         firstPkg = prefs.getString(Keys.PIP_FIRST_PACKAGE, "");
         secondPkg = prefs.getString(Keys.PIP_SECOND_PACKAGE, "");
         
-        Workspace workspace = launcher.getWorkspace();
-        
-        if (dualPip && !mWindowHost.isDualVisible() && !firstPipPinned && !secondPipPinned 
+        if (dualPip && !host.isDualVisible() && !firstPipPinned && !secondPipPinned 
             && Helpers.isPackageInstalled(firstPkg) && Helpers.isPackageInstalled(secondPkg)) {    
             try {
                 Rect rDual = getInitialPipBounds(workspace, "dual");
                 if (rDual != null) {
-                    mWindowHost.showDual(firstPkg, secondPkg, rDual);
+                    host.showDual(firstPkg, secondPkg, rDual);
                     Log.i(TAG, "dual: show " + firstPkg + " and " + secondPkg);
                 }
             } catch (Throwable t) {
                 Log.w(TAG, "dual: open failed", t);
             }
         } else {
-            if (firstPip && !mWindowHost.isFirstVisible() && Helpers.isPackageInstalled(firstPkg)) {
+            if (firstPip && !host.isFirstVisible() && Helpers.isPackageInstalled(firstPkg)) {
                 if (!firstPipPinned) {
                     try {
                         Rect rFirst = getInitialPipBounds(workspace, "first");
                         if (rFirst != null) {
-                            mWindowHost.showFirst(firstPkg, rFirst);
+                            host.showFirst(firstPkg, rFirst);
                             Log.i(TAG, "first: show " + firstPkg);
                         }
                     } catch (Throwable t) {
@@ -470,12 +452,12 @@ public class WindowUtil {
                 }
             }
             
-            if (secondPip && !mWindowHost.isSecondVisible() && Helpers.isPackageInstalled(secondPkg)) {
+            if (secondPip && !host.isSecondVisible() && Helpers.isPackageInstalled(secondPkg)) {
                 if (!secondPipPinned) {
                     try {
                         Rect rSecond = getInitialPipBounds(workspace, "second");
                         if (rSecond != null) {
-                            mWindowHost.showSecond(secondPkg, rSecond);
+                            host.showSecond(secondPkg, rSecond);
                             Log.i(TAG, "second: show " + secondPkg);
                         }
                     } catch (Throwable t) {
@@ -486,12 +468,12 @@ public class WindowUtil {
         }
         
         final String thirdPkg = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
-        if (thirdPip && !mWindowHost.isThirdVisible() && Helpers.isPackageInstalled(thirdPkg)) {
+        if (thirdPip && !host.isThirdVisible() && Helpers.isPackageInstalled(thirdPkg)) {
             if (!thirdPipPinned) {
                 try {
                     Rect rThird = getInitialPipBounds(workspace, "third");
                     if (rThird != null) {
-                        mWindowHost.showThird(thirdPkg, rThird);
+                        host.showThird(thirdPkg, rThird);
                         Log.i(TAG, "third: show " + thirdPkg);
                     }
                 } catch (Throwable t) {
@@ -501,12 +483,12 @@ public class WindowUtil {
         }
         
         final String fourthPkg = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
-        if (fourthPip && !mWindowHost.isFourthVisible() && Helpers.isPackageInstalled(fourthPkg)) {
+        if (fourthPip && !host.isFourthVisible() && Helpers.isPackageInstalled(fourthPkg)) {
             if (!fourthPipPinned) {
                 try {
                     Rect rFourth = getInitialPipBounds(workspace, "fourth");
                     if (rFourth != null) {
-                        mWindowHost.showFourth(fourthPkg, rFourth);
+                        host.showFourth(fourthPkg, rFourth);
                         Log.i(TAG, "fourth: show " + fourthPkg);
                     }
                 } catch (Throwable t) {
@@ -519,7 +501,7 @@ public class WindowUtil {
         // The previous host's ActivityViews still hold the embedded tasks. Retire them: they are
         // released only once the freshly created panes have taken those tasks over, which is what
         // stops every open/remove PiP cycle from leaking a VirtualDisplay for good.
-        if (previousHost != null && previousHost != mWindowHost) {
+        if (previousHost != null && previousHost != host) {
             launcher.handler.postDelayed(previousHost::retireActivityViews, 1200);
         }          
     }
@@ -530,15 +512,16 @@ public class WindowUtil {
      */
     private static void pumpPipBoundsUntilReady(int attemptsLeft) {
         try {
-            launcher = Launcher.getLauncher();
-            if (launcher == null || mWindowHost == null) return;
+            final Launcher launcher = Launcher.getLauncher();
+            final WindowHost host = host();
+            if (launcher == null || host == null) return;
  
-            Workspace ws = launcher.getWorkspace();
-            if (ws != null) {
-                updatePipPositionsForScroll(ws.mUnboundedScrollX);
+            Workspace workspace = workspace();
+            if (workspace != null) {
+                updatePipPositionsForScroll(workspace.mUnboundedScrollX);
             }
  
-            if (!mWindowHost.isAnyPaneAwaitingBounds()) return;
+            if (!host.isAnyPaneAwaitingBounds()) return;
             if (attemptsLeft <= 0) {
                 Log.w(TAG, "pumpPipBoundsUntilReady: gave up, panes still awaiting bounds");
                 return;
@@ -551,14 +534,14 @@ public class WindowUtil {
     }
 
     private static String getScreenKeyForType(String pipType) {
-        switch (pipType) {
-            case "dual": return Keys.PIP_DUAL_SCREEN;
-            case "first": return Keys.PIP_FIRST_SCREEN;
-            case "second": return Keys.PIP_SECOND_SCREEN;
-            case "third": return Keys.PIP_THIRD_SCREEN;
-            case "fourth": return Keys.PIP_FOURTH_SCREEN;
-            default: return "";
-        }
+        return switch (pipType) {
+            case "dual" -> Keys.PIP_DUAL_SCREEN;
+            case "first" -> Keys.PIP_FIRST_SCREEN;
+            case "second" -> Keys.PIP_SECOND_SCREEN;
+            case "third" -> Keys.PIP_THIRD_SCREEN;
+            case "fourth" -> Keys.PIP_FOURTH_SCREEN;
+            default -> "";
+        };
     }
 
     private static Rect getInitialPipBounds(Workspace workspace, String pipType) {
@@ -597,40 +580,38 @@ public class WindowUtil {
 
     public static void updatePipPositionsForScroll(int scrollOffset) {
         try {
-            launcher = Launcher.getLauncher();
+            final Launcher launcher = Launcher.getLauncher();
             if (launcher == null) return;
-            
-            Workspace workspace = launcher.getWorkspace();
-            if (workspace == null || mWindowHost == null) return;
-            
+
+            final Workspace workspace = workspace();
+            if (workspace == null) return;
+
+            final WindowHost host = host();
+            if (host == null) return;
+
             if (prefs == null) {
                 prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
             }
-            
+
             // Update positions for currently visible PiPs without dismissing them
-            updatePipPosition("dual", scrollOffset);
-            updatePipPosition("first", scrollOffset);
-            updatePipPosition("second", scrollOffset);
-            updatePipPosition("third", scrollOffset);
-            updatePipPosition("fourth", scrollOffset);
- 
+            updatePipPosition(host, workspace, "dual", scrollOffset);
+            updatePipPosition(host, workspace, "first", scrollOffset);
+            updatePipPosition(host, workspace, "second", scrollOffset);
+            updatePipPosition(host, workspace, "third", scrollOffset);
+            updatePipPosition(host, workspace, "fourth", scrollOffset);
+
             forcePipBoundsUpdate = false;
         } catch (Exception e) {
             Log.e(TAG, "Error updating PiP positions during scroll", e);
         }
     }
 
-    private static void updatePipPosition(String pipType, int scrollOffset) {
-        if (mWindowHost == null) return;
-        launcher = Launcher.getLauncher();
-        if (launcher == null) return;
-
+    private static void updatePipPosition(WindowHost host, Workspace workspace,
+                                          String pipType, int scrollOffset) {
         String screenKey = getScreenKeyForType(pipType);
         int pipHomeScreen = prefs.getInt(screenKey, 1) - 1;
 
-        Workspace workspace = launcher.getWorkspace();
         CellLayout pipHomeCellLayout = (CellLayout) workspace.getChildAt(pipHomeScreen);
-
         if (pipHomeCellLayout == null) return;
 
         int[] basePos = pipHomeCellLayout.getPipPlaceholderPosition(pipType);
@@ -655,36 +636,36 @@ public class WindowUtil {
             return;
         }
 
-        updatePipBounds(pipType, bounds);
+        updatePipBounds(host, pipType, bounds);
         lastPipBounds.put(pipType, new Rect(bounds));
     }
 
-    private static void updatePipBounds(String pipType, Rect bounds) {
+    private static void updatePipBounds(WindowHost host, String pipType, Rect bounds) {
         try {
             switch (pipType) {
                 case "dual":
-                    if (mWindowHost.isDualVisible()) {
-                        mWindowHost.updateDualBounds(bounds);
+                    if (host.isDualVisible()) {
+                        host.updateDualBounds(bounds);
                     }
                     break;
                 case "first":
-                    if (mWindowHost.isFirstVisible() && !firstPipPinned) {
-                        mWindowHost.updateFirstBounds(bounds);
+                    if (host.isFirstVisible() && !firstPipPinned) {
+                        host.updateFirstBounds(bounds);
                     }
                     break;
                 case "second":
-                    if (mWindowHost.isSecondVisible() && !secondPipPinned) {
-                        mWindowHost.updateSecondBounds(bounds);
+                    if (host.isSecondVisible() && !secondPipPinned) {
+                        host.updateSecondBounds(bounds);
                     }
                     break;
                 case "third":
-                    if (mWindowHost.isThirdVisible() && !thirdPipPinned) {
-                        mWindowHost.updateThirdBounds(bounds);
+                    if (host.isThirdVisible() && !thirdPipPinned) {
+                        host.updateThirdBounds(bounds);
                     }
                     break;
                 case "fourth":
-                    if (mWindowHost.isFourthVisible() && !fourthPipPinned) {
-                        mWindowHost.updateFourthBounds(bounds);
+                    if (host.isFourthVisible() && !fourthPipPinned) {
+                        host.updateFourthBounds(bounds);
                     }
                     break;
             }
@@ -694,10 +675,14 @@ public class WindowUtil {
     }
 
     public static void restartMultiplePips() {
-        launcher = Launcher.getLauncher();
+        final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
-        if (mWindowHost != null) {
-            launcher.handler.post(() -> mWindowHost.cleanup());
+        final WindowHost host = host();
+        if (host != null) {
+            launcher.handler.post(() -> {
+                host.cleanup();
+                setHost(null);
+            });
         }
     }
 
@@ -707,7 +692,7 @@ public class WindowUtil {
 
     public static void openPinnedPip() {
         if (!LauncherApplication.isFytDevice()) return;
-        launcher = Launcher.getLauncher();
+        final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         if (helpers == null) {
             helpers = new Helpers();
@@ -760,20 +745,20 @@ public class WindowUtil {
         secondPipPinned = prefs.getBoolean(Keys.PIP_SECOND_MODE, false);
         thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
         fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
-        if (firstPipPinned || secondPipPinned || thirdPipPinned || fourthPipPinned) {
-            return true;
-        } else return false;
+        return firstPipPinned || secondPipPinned || thirdPipPinned || fourthPipPinned;
     }
 
     private static void openAsPinnedPip(String packageName, String pipKey, String screenKey) {
-        launcher = Launcher.getLauncher();
+        final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         // Update screen
         SharedPreferences.Editor editor = prefs.edit();
         int pipScreen = prefs.getInt(screenKey, 1) - 1;
         editor.putInt(Keys.PINNED_PIP_SCREEN, pipScreen + 1);
         editor.apply();
-        int currentScreen = launcher.getWorkspace().getCurrentPage();
+        Workspace workspace = workspace();
+        if (workspace == null) return;
+        int currentScreen = workspace.getCurrentPage();
 
         if (helpers == null) {
             helpers = new Helpers();
@@ -783,7 +768,7 @@ public class WindowUtil {
 
         if (currentScreen == pipScreen && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) {
             String currentPackage = SystemProperties.get("persist.launcher.packagename", "");
-            if (!packageName.equals(currentPackage) || (packageName.equals(currentPackage) && checkIfMapSizeChanged(pipKey))) { 
+            if (!packageName.equals(currentPackage) || checkIfMapSizeChanged(pipKey)) {
                 // save previous values
                 editor.putInt("prevPinnedPipTopLeftX", prefs.getInt(pipKey + "TopLeftX", 107));  
                 editor.putInt("prevPinnedPipTopLeftY", prefs.getInt(pipKey + "TopLeftY", 57));  
@@ -807,7 +792,7 @@ public class WindowUtil {
     }
 
     private static void startPinnedPip(String packageName) {
-        launcher = Launcher.getLauncher();
+        final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         Intent intent = FytPackage.getIntent(LauncherApplication.sApp, packageName);
         intent.putExtra("force_pip", true);
@@ -823,13 +808,13 @@ public class WindowUtil {
 
     // removes an error where windows shows up when user quickly changes to the screen on which it shouldn't appear
     private static void checkIfOpenedOnTheRightScreen(int delay) {
-        launcher = Launcher.getLauncher();
+        final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         launcher.handler.postDelayed(() -> {
+            Workspace workspace = workspace();
+            if (workspace == null) return;
             int pipScreen = prefs.getInt(Keys.PINNED_PIP_SCREEN, 1) - 1;
-            int currentScreen = Launcher.getLauncher().getWorkspace().getCurrentPage();
-
-            if (launcher.getWorkspace().getChildCount() > 1 && currentScreen != pipScreen) {
+            if (workspace.getChildCount() > 1 && workspace.getCurrentPage() != pipScreen) {
                 removePinnedPip();
             }
         }, delay);
@@ -837,10 +822,14 @@ public class WindowUtil {
 
     public static void restartPinnedPipApp() {
         if (!LauncherApplication.isFytDevice()) return;
-        launcher = Launcher.getLauncher();
+        final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
-        if (mWindowHost != null) {
-            launcher.handler.post(() -> mWindowHost.cleanup());
+        final WindowHost host = host();
+        if (host != null) {
+            launcher.handler.post(() -> {
+                host.cleanup();
+                setHost(null);
+            });
         }
         if (AppPackageName != null && !AppPackageName.isEmpty()) {
             if (FytPackage.GMAPS.equals(AppPackageName)) {
@@ -853,7 +842,7 @@ public class WindowUtil {
                 forceStopPackage.setAccessible(true);
                 forceStopPackage.invoke(activityManager, AppPackageName);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
+                Log.e(TAG, "restartPinnedPipApp() failed: " + e);
             }
         }
     }
@@ -869,13 +858,10 @@ public class WindowUtil {
         int curMapBottomRightX = prefs.getInt(pipKey + "BottomRightX", 687);
         int curMapBottomRightY = prefs.getInt(pipKey + "BottomRightY", 513);
 
-        if (prevPinnedPipTopLeftX != curMapTopLeftX
-            || prevPinnedPipTopLeftY != curMapTopLeftY
-            || prevPinnedPipBottomRightX != curMapBottomRightX
-            || prevPinnedPipBottomRightY != curMapBottomRightY) {
-            return true;
-        }  
-        return false;
+        return prevPinnedPipTopLeftX != curMapTopLeftX
+                || prevPinnedPipTopLeftY != curMapTopLeftY
+                || prevPinnedPipBottomRightX != curMapBottomRightX
+                || prevPinnedPipBottomRightY != curMapBottomRightY;
     }
 
     public static void removePinnedPip() {
@@ -900,16 +886,11 @@ public class WindowUtil {
     }
 
     private static void setPinnedPipBounds(String pipKey, String screenKey) {
-        launcher = Launcher.getLauncher();
+        final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         boolean leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
         int pipScreen = prefs.getInt(screenKey, 1) - 1;
-        int margin = Integer.valueOf(prefs.getString("layout_margin", "10"));
-        int orientedMargin = margin;
-        int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            orientedMargin = 0;
-        } 
+        int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
         int mapTopLeftX, mapBottomRightX; 
 
         // Get the specific key for the PiP
@@ -918,21 +899,24 @@ public class WindowUtil {
         String bottomRightXKey = pipKey + "BottomRightX";
         String bottomRightYKey = pipKey + "BottomRightY";
 
-        int mapMinWidth = launcher.calculatedPipMinWidth / countEnabledPips();
+        int mapMinWidth = Launcher.calculatedPipMinWidth / countEnabledPips();
 
         if (leftBar && pipScreen == 0) {
-            mapTopLeftX = prefs.getInt(topLeftXKey, margin) + orientedMargin + launcher.calculatedLeftBarWidth;
-            mapBottomRightX = prefs.getInt(bottomRightXKey, margin + mapMinWidth) + orientedMargin + launcher.calculatedLeftBarWidth;
+            mapTopLeftX = prefs.getInt(topLeftXKey, margin) + Launcher.calculatedLeftBarWidth;
+            mapBottomRightX = prefs.getInt(bottomRightXKey, margin + mapMinWidth) + Launcher.calculatedLeftBarWidth;
         } else {
             mapTopLeftX = prefs.getInt(topLeftXKey, margin);
             mapBottomRightX = prefs.getInt(bottomRightXKey, margin + mapMinWidth);
         }
-        
-        int mapTopLeftY = prefs.getInt(topLeftYKey, margin + launcher.calculatedDateMinHeight + margin) + launcher.getStatusBarHeight();
-        int mapBottomRightY = prefs.getInt(bottomRightYKey, margin + launcher.calculatedDateMinHeight + margin + launcher.calculatedPipMinHeight) + launcher.getStatusBarHeight();
+
+        int mapTopLeftY = prefs.getInt(topLeftYKey, margin + Launcher.calculatedDateMinHeight + margin)
+                + launcher.getStatusBarHeight();
+        int mapBottomRightY = prefs.getInt(bottomRightYKey,
+                margin + Launcher.calculatedDateMinHeight + margin + Launcher.calculatedPipMinHeight)
+                + launcher.getStatusBarHeight();
 
         // top-left x, top left y, bottom right x, bottom right y
-        SystemProperties.set("sys.lsec.pip_rect", String.valueOf(mapTopLeftX + " " + mapTopLeftY + " " + mapBottomRightX + " " + mapBottomRightY));
+        SystemProperties.set("sys.lsec.pip_rect", mapTopLeftX + " " + mapTopLeftY + " " + mapBottomRightX + " " + mapBottomRightY);
     }
 
     // Never returns 0, max value is 2
@@ -1004,7 +988,7 @@ public class WindowUtil {
     private static int coverForLeftAndThirdSwap() {
         int covered = 0;
         try {
-            WindowHost host = WindowHost.sInstance;
+            WindowHost host = host();
             if (host == null) return 0;
 
             Object dual  = reflectGetField(host, "dual");
@@ -1041,7 +1025,7 @@ public class WindowUtil {
     private static int coverForRightAndFourthSwap() {
         int covered = 0;
         try {
-            WindowHost host = WindowHost.sInstance;
+            WindowHost host = host();
             if (host == null) return 0;
 
             Object dual   = reflectGetField(host, "dual");
@@ -1080,7 +1064,7 @@ public class WindowUtil {
                 }
             } catch (Throwable ignore) {}
 
-            WindowHost host = WindowHost.sInstance;
+            WindowHost host = host();
             if (host == null) {
                 Log.w(TAG, "swapLeftAndThird: WindowHost not available");
                 return;
@@ -1121,7 +1105,6 @@ public class WindowUtil {
                         }
                     } catch (Throwable t) {
                         Log.w(TAG, "swapLeftAndThird: atomic swap threw", t);
-                        atomicOk = false;
                     }
 
                     if (atomicOk) {
@@ -1196,7 +1179,6 @@ public class WindowUtil {
                                 dualLeftAV, thirdAv,
                                 leftTaskId, thirdTask,
                                 dualLeftPkg, thirdPkg,
-                                "dual_left", "single_Third",
                                 lastPipBounds.getOrDefault("dual", offscreen),
                                 lastPipBounds.getOrDefault("third", offscreen)
                         );
@@ -1213,10 +1195,9 @@ public class WindowUtil {
                             dualLeftHost, thirdHost,
                             dualLeftAV, thirdAv,
                             dualLeftPkg, thirdPkg,
-                            "dual_left", "single_Third",
                             lastPipBounds.getOrDefault("dual", offscreen),
                             lastPipBounds.getOrDefault("third", offscreen),
-                            "leftAV", "av", dual, third
+                            "leftAV", dual, third
                     );
 
                     // Update prefs for fallback overlay swap
@@ -1252,7 +1233,6 @@ public class WindowUtil {
                         }
                     } catch (Throwable t) {
                         Log.w(TAG, "swapLeftAndThird: atomic swap (standalone) threw", t);
-                        atomicOk = false;
                     }
 
                     if (atomicOk) {
@@ -1320,7 +1300,6 @@ public class WindowUtil {
                                 firstAv, thirdAv,
                                 tA, tB,
                                 firstPkg, thirdPkg,
-                                "single_First", "single_Third",
                                 lastPipBounds.getOrDefault("first", offscreen),
                                 lastPipBounds.getOrDefault("third", offscreen)
                         );
@@ -1337,10 +1316,9 @@ public class WindowUtil {
                             firstHost, thirdHost,
                             firstAv, thirdAv,
                             firstPkg, thirdPkg,
-                            "single_First", "single_Third",
                             lastPipBounds.getOrDefault("first", offscreen),
                             lastPipBounds.getOrDefault("third", offscreen),
-                            "av", "av", first, third
+                            "av", first, third
                     );
 
                     // Update prefs for fallback overlay swap
@@ -1369,7 +1347,7 @@ public class WindowUtil {
                 }
             } catch (Throwable ignore) {}
 
-            WindowHost host = WindowHost.sInstance;
+            WindowHost host = host();
             if (host == null) {
                 Log.w(TAG, "swapRightAndFourth: WindowHost not available");
                 return;
@@ -1410,7 +1388,6 @@ public class WindowUtil {
                         }
                     } catch (Throwable t) {
                         Log.w(TAG, "swapRightAndFourth: atomic swap threw", t);
-                        atomicOk = false;
                     }
 
                     if (atomicOk) {
@@ -1477,7 +1454,6 @@ public class WindowUtil {
                                 dualRightAV, fourthAv,
                                 rightTaskId, fourthTask,
                                 dualRightPkg, fourthPkg,
-                                "dual_right", "single_Fourth",
                                 lastPipBounds.getOrDefault("dual", offscreen),
                                 lastPipBounds.getOrDefault("fourth", offscreen)
                         );
@@ -1494,10 +1470,9 @@ public class WindowUtil {
                             dualRightHost, fourthHost,
                             dualRightAV, fourthAv,
                             dualRightPkg, fourthPkg,
-                            "dual_right", "single_Fourth",
                             lastPipBounds.getOrDefault("dual", offscreen),
                             lastPipBounds.getOrDefault("fourth", offscreen),
-                            "rightAV", "av", dual, fourth
+                            "rightAV", dual, fourth
                     );
 
                     // Update prefs for fallback overlay swap
@@ -1533,7 +1508,6 @@ public class WindowUtil {
                         }
                     } catch (Throwable t) {
                         Log.w(TAG, "swapRightAndFourth: atomic (standalone) threw", t);
-                        atomicOk = false;
                     }
 
                     if (atomicOk) {
@@ -1600,7 +1574,6 @@ public class WindowUtil {
                                 secondAv, fourthAv,
                                 tA, tB,
                                 secondPkg, fourthPkg,
-                                "single_Second", "single_Fourth",
                                 lastPipBounds.getOrDefault("second", offscreen),
                                 lastPipBounds.getOrDefault("fourth", offscreen)
                         );
@@ -1617,10 +1590,9 @@ public class WindowUtil {
                             secondHost, fourthHost,
                             secondAv, fourthAv,
                             secondPkg, fourthPkg,
-                            "single_Second", "single_Fourth",
                             lastPipBounds.getOrDefault("second", offscreen),
                             lastPipBounds.getOrDefault("fourth", offscreen),
-                            "av", "av", second, fourth
+                            "av", second, fourth
                     );
 
                     // Update prefs for fallback overlay swap
@@ -1728,14 +1700,38 @@ public class WindowUtil {
         return null;
     }
 
+    private static void markReparentInFlight(View child) {
+        if (child == null) return;
+        synchronized (sReparentUnsettledUntil) {
+            sReparentUnsettledUntil.put(child, Long.MAX_VALUE);
+        }
+    }
+
+    private static void markReparentSettled(View child) {
+        if (child == null) return;
+        synchronized (sReparentUnsettledUntil) {
+            sReparentUnsettledUntil.put(child, SystemClock.uptimeMillis() + REPARENT_SETTLE_GRACE_MS);
+        }
+    }
+
+    /** True while {@code child}'s ActivityView is mid native-reparent or still inside its post-reparent settle window. */
+    public static boolean isReparentUnsettled(View child) {
+        if (child == null) return false;
+        Long until;
+        synchronized (sReparentUnsettledUntil) {
+            until = sReparentUnsettledUntil.get(child);
+        }
+        if (until == null) return false;
+        return SystemClock.uptimeMillis() < until;
+    }
+
     private static void reparentHostChild(Object hostContainer, View newChild) {
         try {
             if (hostContainer == null) return;
-            if (!(hostContainer instanceof ViewGroup)) {
+            if (!(hostContainer instanceof ViewGroup vg)) {
                 Log.w(TAG, "reparentHostChild: hostContainer is not a ViewGroup: " + hostContainer.getClass().getName());
                 return;
             }
-            ViewGroup vg = (ViewGroup) hostContainer;
             try { vg.removeAllViews(); } catch (Throwable ignore) {}
 
             if (newChild != null) {
@@ -1767,7 +1763,7 @@ public class WindowUtil {
                 final Runnable waiter = new Runnable() {
                     @Override public void run() {
                         try {
-                            boolean ok = false;
+                            boolean ok;
                             try {
                                 ok = WindowHostReparenter.notifyReparentDisplayContentToHost(finalChild, finalVg);
                             } catch (Throwable t) {
@@ -1790,7 +1786,6 @@ public class WindowUtil {
 
                             if (SystemClock.uptimeMillis() < deadline) {
                                 mainH.postDelayed(this, 40);
-                                return;
                             } else {
                                 Log.w(TAG, "reparentHostChild: native reparent did not confirm within timeout; attaching anyway");
                                 attachNow();
@@ -1923,8 +1918,7 @@ public class WindowUtil {
      */
     private static SurfaceView findSurfaceViewStatic(View v) {
         if (v instanceof SurfaceView) return (SurfaceView) v;
-        if (v instanceof ViewGroup) {
-            ViewGroup g = (ViewGroup) v;
+        if (v instanceof ViewGroup g) {
             for (int i = 0; i < g.getChildCount(); i++) {
                 SurfaceView res = findSurfaceViewStatic(g.getChildAt(i));
                 if (res != null) return res;
@@ -2004,18 +1998,13 @@ public class WindowUtil {
                                                    final Object oldAvA, final Object oldAvB,
                                                    final int taskA, final int taskB,
                                                    final String pkgA, final String pkgB,
-                                                   final String poolKeyA, final String poolKeyB, 
                                                    final Rect boundsA, final Rect boundsB) {
         try {
-            launcher = Launcher.getLauncher();
+            final Launcher launcher = Launcher.getLauncher();
             if (launcher == null) return false;
-            final Activity act = launcher;
-            if (act == null) return false;
 
-            Object newA = WindowHostActivityView.newInstance(act);
-            Object newB = WindowHostActivityView.newInstance(act);
-
-            if (newA == null || newB == null) return false;
+            Object newA = WindowHostActivityView.newInstance(launcher);
+            Object newB = WindowHostActivityView.newInstance(launcher);
 
             final View newAView = WindowHostActivityView.asView(newA);
             final View newBView = WindowHostActivityView.asView(newB);
@@ -2043,44 +2032,40 @@ public class WindowUtil {
                 try { mB.invoke(optsB, taskA); } catch (Throwable ignore) {}
             } catch (NoSuchMethodException ignored) {}
 
-            Intent intentA = WindowHostActivityView.getLaunchIntentForPackage(act, pkgB);
-            Intent intentB = WindowHostActivityView.getLaunchIntentForPackage(act, pkgA);
+            Intent intentA = WindowHostActivityView.getLaunchIntentForPackage(launcher, pkgB);
+            Intent intentB = WindowHostActivityView.getLaunchIntentForPackage(launcher, pkgA);
 
             try {
-                boolean okA = WindowHostActivityView.startActivitySmartWithProcessCheck(newA, act, pkgB, boundsA);
+                boolean okA = WindowHostActivityView.startActivitySmartWithProcessCheck(newA, launcher, pkgB, boundsA);
                 if (!okA && intentA != null) {
-                    try { WindowHostActivityView.startActivitySmart(newA, act, intentA, optsA); } catch (Throwable ignore) {}
+                    try { WindowHostActivityView.startActivitySmart(newA, launcher, intentA, optsA); } catch (Throwable ignore) {}
                 }
             } catch (Throwable t) {
                 Log.w(TAG, "attemptTaskRelocateSwap: start into newA failed", t);
-                if (intentA != null) try { WindowHostActivityView.startActivitySmart(newA, act, intentA, optsA); } catch (Throwable ignore) {}
+                if (intentA != null) try { WindowHostActivityView.startActivitySmart(newA, launcher, intentA, optsA); } catch (Throwable ignore) {}
             }
             try {
-                boolean okB = WindowHostActivityView.startActivitySmartWithProcessCheck(newB, act, pkgA, boundsB);
+                boolean okB = WindowHostActivityView.startActivitySmartWithProcessCheck(newB, launcher, pkgA, boundsB);
                 if (!okB && intentB != null) {
-                    try { WindowHostActivityView.startActivitySmart(newB, act, intentB, optsB); } catch (Throwable ignore) {}
+                    try { WindowHostActivityView.startActivitySmart(newB, launcher, intentB, optsB); } catch (Throwable ignore) {}
                 }
             } catch (Throwable t) {
                 Log.w(TAG, "attemptTaskRelocateSwap: start into newB failed", t);
-                if (intentB != null) try { WindowHostActivityView.startActivitySmart(newB, act, intentB, optsB); } catch (Throwable ignore) {}
+                if (intentB != null) try { WindowHostActivityView.startActivitySmart(newB, launcher, intentB, optsB); } catch (Throwable ignore) {}
             }
 
             final AtomicBoolean readyA = new AtomicBoolean(false);
             final AtomicBoolean readyB = new AtomicBoolean(false);
             WindowHostActivityView.trySetCallback(newA, new WindowHostActivityView.Callback() {
                 @Override public void onReady() { readyA.set(true); }
-                @Override public void onTaskCreated(int id) {}
             });
             WindowHostActivityView.trySetCallback(newB, new WindowHostActivityView.Callback() {
                 @Override public void onReady() { readyB.set(true); }
-                @Override public void onTaskCreated(int id) {}
             });
 
             final long deadline = SystemClock.uptimeMillis() + 1200;
             final Handler h = new Handler(Looper.getMainLooper());
 
-            Object finalNewA = newA;
-            Object finalNewB = newB;
             h.post(new Runnable() {
                 @Override public void run() {
                     try {
@@ -2106,8 +2091,8 @@ public class WindowUtil {
                                         try { if (oldAvA != null) WindowHostActivityView.release(oldAvA); } catch (Throwable ignore) {}
                                         try { if (oldAvB != null) WindowHostActivityView.release(oldAvB); } catch (Throwable ignore) {}
 
-                                        invokeIfExists(finalNewA, "updateLocationAndTapExcludeRegion");
-                                        invokeIfExists(finalNewB, "updateLocationAndTapExcludeRegion");
+                                        invokeIfExists(newA, "updateLocationAndTapExcludeRegion");
+                                        invokeIfExists(newB, "updateLocationAndTapExcludeRegion");
 
                                         Log.i(TAG, "attemptTaskRelocateSwap: relocated tasks and attached new AVs");
                                     } catch (Throwable t2) {
@@ -2138,24 +2123,16 @@ public class WindowUtil {
     private static void safeOverlaySwapPanes(final ViewGroup hostA, final ViewGroup hostB,
                                              final Object oldAvA, final Object oldAvB,
                                              final String pkgA, final String pkgB,
-                                             final String poolKeyA, final String poolKeyB, // vestigial: warm pool removed
                                              final Rect boundsA, final Rect boundsB,
-                                             final String avFieldNameA, final String avFieldNameB,
+                                             final String avFieldNameA,
                                              final Object hostObjA, final Object hostObjB) {
         try {
-            launcher = Launcher.getLauncher();
+            final Launcher launcher = Launcher.getLauncher();
             if (launcher == null) return;
-            final Activity act = launcher;
-            if (act == null) return;
             if (hostA == null || hostB == null) return;
 
-            Object newA = WindowHostActivityView.newInstance(act);
-            Object newB = WindowHostActivityView.newInstance(act);
-
-            if (newA == null || newB == null) {
-                Log.w(TAG, "safeOverlaySwapPanes: failed to obtain new AVs");
-                return;
-            }
+            Object newA = WindowHostActivityView.newInstance(launcher);
+            Object newB = WindowHostActivityView.newInstance(launcher);
 
             final View newAView = WindowHostActivityView.asView(newA);
             final View newBView = WindowHostActivityView.asView(newB);
@@ -2188,27 +2165,25 @@ public class WindowUtil {
             final AtomicBoolean readyB = new AtomicBoolean(false);
             WindowHostActivityView.trySetCallback(newA, new WindowHostActivityView.Callback() {
                 @Override public void onReady() { readyA.set(true); }
-                @Override public void onTaskCreated(int id) {}
             });
             WindowHostActivityView.trySetCallback(newB, new WindowHostActivityView.Callback() {
                 @Override public void onReady() { readyB.set(true); }
-                @Override public void onTaskCreated(int id) {}
             });
 
             try {
-                boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(newA, act, pkgB, boundsA);
+                boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(newA, launcher, pkgB, boundsA);
                 if (!ok) {
-                    Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(act, pkgB);
-                    if (fallback != null) WindowHostActivityView.startActivitySmart(newA, act, fallback, (ActivityOptions) WindowHostActivityView.makeOptionsWithBounds(pkgB, boundsA));
+                    Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(launcher, pkgB);
+                    if (fallback != null) WindowHostActivityView.startActivitySmart(newA, launcher, fallback, WindowHostActivityView.makeOptionsWithBounds(pkgB, boundsA));
                 }
             } catch (Throwable t) {
                 Log.w(TAG, "safeOverlaySwapPanes: start into newA failed", t);
             }
             try {
-                boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(newB, act, pkgA, boundsB);
+                boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(newB, launcher, pkgA, boundsB);
                 if (!ok) {
-                    Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(act, pkgA);
-                    if (fallback != null) WindowHostActivityView.startActivitySmart(newB, act, fallback, (ActivityOptions) WindowHostActivityView.makeOptionsWithBounds(pkgA, boundsB));
+                    Intent fallback = WindowHostActivityView.getLaunchIntentForPackage(launcher, pkgA);
+                    if (fallback != null) WindowHostActivityView.startActivitySmart(newB, launcher, fallback, WindowHostActivityView.makeOptionsWithBounds(pkgA, boundsB));
                 }
             } catch (Throwable t) {
                 Log.w(TAG, "safeOverlaySwapPanes: start into newB failed", t);
@@ -2216,8 +2191,6 @@ public class WindowUtil {
 
             final long deadline = SystemClock.uptimeMillis() + 1400;
             final Handler mainH = new Handler(Looper.getMainLooper());
-            Object finalNewA = newA;
-            Object finalNewB = newB;
             final Runnable waiter = new Runnable() {
                 @Override
                 public void run() {
@@ -2237,11 +2210,11 @@ public class WindowUtil {
 
                         mainH.postDelayed(() -> {
                             try {
-                                try { reflectSetField(hostObjA, avFieldNameA, finalNewA); } catch (Throwable ignore) {}
-                                try { reflectSetField(hostObjB, avFieldNameB, finalNewB); } catch (Throwable ignore) {}
+                                try { reflectSetField(hostObjA, avFieldNameA, newA); } catch (Throwable ignore) {}
+                                try { reflectSetField(hostObjB, "av", newB); } catch (Throwable ignore) {}
 
-                                invokeIfExists(finalNewA, "updateLocationAndTapExcludeRegion");
-                                invokeIfExists(finalNewB, "updateLocationAndTapExcludeRegion");
+                                invokeIfExists(newA, "updateLocationAndTapExcludeRegion");
+                                invokeIfExists(newB, "updateLocationAndTapExcludeRegion");
 
                                 try { if (oldAView != null && oldAView.getParent() instanceof ViewGroup) ((ViewGroup)oldAView.getParent()).removeView(oldAView); } catch (Throwable ignore) {}
                                 try { if (oldBView != null && oldBView.getParent() instanceof ViewGroup) ((ViewGroup)oldBView.getParent()).removeView(oldBView); } catch (Throwable ignore) {}

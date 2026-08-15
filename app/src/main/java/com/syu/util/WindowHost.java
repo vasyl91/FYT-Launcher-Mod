@@ -10,12 +10,22 @@ import android.os.SystemClock;
 import android.view.View;
 import android.view.WindowManager;
 
+/**
+ * Owns the PiP panes for a single Launcher instance.
+ *
+ * This class deliberately holds NO static reference to itself. The owning Activity
+ * (Launcher) keeps the only reference, via Launcher#getWindowHost()/#setWindowHost(),
+ * so the host -- and the Activity it points at -- can be garbage collected as soon as
+ * the Activity is destroyed. Obtain the current host with Launcher.getLauncher().getWindowHost().
+ */
 public class WindowHost {
-    public static volatile WindowHost sInstance;
 
     private final Activity activity;
     private final WindowManager wm;
     private final IBinder appToken;
+
+    /** Single main-looper handler for this host; cleared in cleanup() so no tick outlives it. */
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     // Panes
     private final WindowHostSinglePane first, second, third, fourth;
@@ -33,9 +43,6 @@ public class WindowHost {
         this.third  = new WindowHostSinglePane("Third");
         this.fourth = new WindowHostSinglePane("Fourth");
         this.dual   = new WindowHostDualPane();
-
-        // publish instance
-        sInstance = this;
     }
 
     // ===== API: Dual =====
@@ -69,6 +76,11 @@ public class WindowHost {
         dual.dismissAsync();
     }
 
+    /**
+     * Tears every pane down. The caller owns the reference, so the caller is also responsible for
+     * clearing it afterwards (Launcher#setWindowHost(null)) -- this method no longer touches any
+     * global state.
+     */
     public void cleanup() {
         first.cleanup();
         second.cleanup();
@@ -76,10 +88,8 @@ public class WindowHost {
         fourth.cleanup();
         dual.cleanup();
 
-        // Clear published instance if it's this one
-        if (sInstance == this) {
-            sInstance = null;
-        }
+        // Drop any pending awaitHandoff() tick so nothing keeps this host (and the Activity) alive.
+        try { mainHandler.removeCallbacksAndMessages(null); } catch (Throwable ignore) {}
     }
 
     /**
@@ -88,7 +98,8 @@ public class WindowHost {
      * task -- i.e. after the new WindowHost has taken the embedded app over.
      *
      * Call this INSTEAD of cleanup() when the host object is being replaced but the embedded
-     * apps must keep running.
+     * apps must keep running. By the time this runs, Launcher already points at the replacement
+     * host, so this method must not clear the owner's reference.
      */
     public void retireActivityViews() {
         java.util.List<Object> retired = new java.util.ArrayList<>();
@@ -97,14 +108,10 @@ public class WindowHost {
         try { third.takeActivityViews(retired); }  catch (Throwable ignore) {}
         try { fourth.takeActivityViews(retired); } catch (Throwable ignore) {}
         try { dual.takeActivityViews(retired); }   catch (Throwable ignore) {}
- 
-        if (sInstance == this) sInstance = null;
- 
-        WindowHostAvReaper.retireAll(retired);
-    }
 
-    public static WindowHost getInstance() {
-        return sInstance;
+        try { mainHandler.removeCallbacksAndMessages(null); } catch (Throwable ignore) {}
+
+        WindowHostAvReaper.retireAll(retired);
     }
 
     public boolean isFirstVisible()  { return first.isVisible(); }
@@ -148,8 +155,8 @@ public class WindowHost {
         return !first.added && !second.added && !third.added && !fourth.added && !dual.added;
     }
 
-    private void postMain(Runnable r) { new Handler(Looper.getMainLooper()).post(r); }
+    private void postMain(Runnable r) { mainHandler.post(r); }
     private void postMainDelayed(Runnable r, long delayMs) {
-        new Handler(Looper.getMainLooper()).postDelayed(r, delayMs);
+        mainHandler.postDelayed(r, delayMs);
     }
 }

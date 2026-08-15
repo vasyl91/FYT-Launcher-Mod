@@ -24,7 +24,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Reflection facade over the ROM's hidden android.app.ActivityView.
@@ -61,6 +64,24 @@ public class WindowHostActivityView {
         return av;
     }
 
+    // identityHashCode gets recycled across GC cycles, which makes cross-cycle log
+    // correlation unreliable. A monotonic counter plus a weak map gives stable IDs.
+    private static final AtomicInteger sAvSeq = new AtomicInteger();
+    private static final Map<Object, Integer> sAvIds =
+            Collections.synchronizedMap(new WeakHashMap<>());
+
+    private static int avId(Object av) {
+        if (av == null) return -1;
+        synchronized (sAvIds) {
+            Integer id = sAvIds.get(av);
+            if (id == null) {
+                id = sAvSeq.incrementAndGet();
+                sAvIds.put(av, id);
+            }
+            return id;
+        }
+    }
+
     private static Object newInstanceRaw(Context ctx) {
         try {
             try {
@@ -87,7 +108,37 @@ public class WindowHostActivityView {
     static View asView(Object av) { return (View) av; }
 
     static void release(Object av) {
-        try { sActivityView.getMethod("release").invoke(av); } catch (Throwable ignore) {}
+        if (av == null) return;
+        final int id = System.identityHashCode(av);
+
+        boolean ok = false;
+        try {
+            sActivityView.getMethod("release").invoke(av);
+            ok = true;
+        } catch (Throwable t) {
+            // release() throws IllegalStateException when mVirtualDisplay == null.
+            Log.w(TAG, "AV release id=" + id + " threw, falling back to performRelease()", t);
+            try {
+                Method m = sActivityView.getDeclaredMethod("performRelease");
+                m.setAccessible(true);
+                m.invoke(av);
+                ok = true;
+            } catch (Throwable t2) {
+                Log.w(TAG, "AV release id=" + id + " fallback failed", t2);
+            }
+        }
+    }
+
+    /** Reads a private ActivityView field without throwing; returns null on any failure. */
+    private static Object readFieldQuietly(Object av, String name) {
+        try {
+            Field f = findField(av.getClass(), name);
+            if (f == null) return null;
+            f.setAccessible(true);
+            return f.get(av);
+        } catch (Throwable ignore) {
+            return null;
+        }
     }
 
     // =====================================================================================
