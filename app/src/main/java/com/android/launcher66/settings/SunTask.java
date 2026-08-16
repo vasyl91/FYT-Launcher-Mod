@@ -1,6 +1,5 @@
 package com.android.launcher66.settings;
 
-import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -9,12 +8,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.os.Build;
 import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -28,8 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,11 +41,15 @@ import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import share.ResValue;
@@ -75,10 +75,34 @@ public class SunTask extends AsyncTask<String, Void, String> {
     private long sunriseCorrectionValue;
     private long sunsetCorrectionValue;
     private static final Object LOCK = new Object();
+    private static final String KEY_STATE = "wallpaperState";          // "Day" / "Night"
+    private static final String KEY_SOURCE = "wallpaperSource";        // "file" / "default"
+    private static final String KEY_SIGNATURE = "wallpaperSignature";  // File hash or resource ID
+    private static final String KEY_WALLPAPER_ID = "wallpaperId";      // ID from WallpaperManager
+    private static final String SOURCE_FILE = "file";
+    private static final String SOURCE_DEFAULT = "default";
     private static final int MAX_RETRIES = 5;
     private static final long INITIAL_DELAY_MS = 0;
     private boolean mOnlyGetTimes;
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    public static final int JOB_ID = 123;
+
+    /*
+     * One shared thread for all instances. Previously, each instance created its own
+     * ScheduledExecutorService, which was shut down only in onCancelled() — under normal
+     * task completion, the thread remained alive forever.
+     */
+    private static final ScheduledExecutorService SCHEDULER =
+            Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread thread = new Thread(r, "SunTask-wallpaper");
+                thread.setDaemon(true);
+                return thread;
+            });
+    private final List<ScheduledFuture<?>> mScheduledTasks =
+            Collections.synchronizedList(new ArrayList<>());
+
+    private void schedule(Runnable task, long delayMs) {
+        mScheduledTasks.add(SCHEDULER.schedule(task, delayMs, TimeUnit.MILLISECONDS));
+    }
 
     public SunTask(Context context, double latiude, double longitude, boolean onlyGetTimes) {
         this.mContext = context;
@@ -122,11 +146,14 @@ public class SunTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onCancelled() {
         super.onCancelled();
-        // Shut down the scheduler to cancel any pending wallpaper tasks
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdownNow();  // Forcefully cancel all pending tasks
-            Log.d(TAG, "SunTask cancelled - ScheduledExecutorService shut down");
+        // Cancel only this instance's tasks — the shared scheduler remains available for others.
+        synchronized (mScheduledTasks) {
+            for (ScheduledFuture<?> future : mScheduledTasks) {
+                future.cancel(false);
+            }
+            mScheduledTasks.clear();
         }
+        Log.d(TAG, "SunTask cancelled - pending wallpaper tasks dropped");
     }
     
     private void getTimes(String url) {        
@@ -237,79 +264,129 @@ public class SunTask extends AsyncTask<String, Void, String> {
     }
 
     private void setWallpapers() {
-        File mFile = new File(this.mContext.getFilesDir(), "wallpaper_img");
-        if (mFile.exists() && !defaultWallpapers) {
-            if (allowSetDayWallpaper()) {
-                File image = new File(mFile, "Day.webp");
-                if (isFileValid(image)) {
-                    setWallpaperFromFile(image, "Day", 0, INITIAL_DELAY_MS);
-                } else {
-                    setDefaultWallpapers();
-                }
-            } else if (allowSetNightWallpaper()) {
-                File image = new File(mFile, "Night.webp");
-                if (isFileValid(image)) {
-                    setWallpaperFromFile(image, "Night", 0, INITIAL_DELAY_MS);
-                } else {
-                    setDefaultWallpapers();
-                }
-            }            
+        String name = allowSetDayWallpaper() ? "Day" : "Night";
+        File image = new File(new File(this.mContext.getFilesDir(), "wallpaper_img"), name + ".webp");
+
+        // Use the user's file only if it actually exists and the default has not been forced.
+        if (isFileValid(image)) {
+            setWallpaperFromFile(image, name, 0, INITIAL_DELAY_MS);
         } else {
-            setDefaultWallpapers();
+            setDefaultWallpaper(name);
         }
     }
 
-    private void setDefaultWallpapers() {
-        if (allowSetDayWallpaper()) {
-            setDefaultWallpaper("Day");
-        } else if (allowSetNightWallpaper()) {
-            setDefaultWallpaper("Night");
-        }   
-    }
-
     private void setWallpaperFromFile(File imageFile, String name, int retryCount, long delayMs) {
-        scheduler.schedule(() -> {
+        schedule(() -> {
             synchronized (LOCK) {
+                if (isCancelled()) return;
+
+                // The file may have been removed, or the user may have reverted to the default — fallback.
+                if (!isFileValid(imageFile)) {
+                    Log.d(TAG, "No custom wallpaper for " + name + ", using default");
+                    setDefaultWallpaper(name);
+                    return;
+                }
+
+                String signature = fileSignature(imageFile);
+                if (alreadyApplied(name, SOURCE_FILE, signature)) {
+                    Log.d(TAG, "Wallpaper already set: " + name);
+                    return;
+                }
+
+                Bitmap bitmap = decodeBitmapSafely(imageFile);
+                if (bitmap == null) {
+                    retryOrFallback(imageFile, name, retryCount, delayMs, "decode failed");
+                    return;
+                }
+
                 try {
-                    Bitmap newWallpaperBitmap = decodeBitmapSafely(imageFile);
-                    if (newWallpaperBitmap == null) {
-                        if (retryCount < MAX_RETRIES) {
-                            long nextDelay = (delayMs == 0) ? 2000 : delayMs * 2;
-                            setWallpaperFromFile(imageFile, name, retryCount + 1, nextDelay);
-                        }
-                        return;
+                    bitmap.prepareToDraw();
+                    int wallpaperId = mWallpaperManager.setBitmap(
+                            bitmap, null, true, WallpaperManager.FLAG_SYSTEM);
+                    if (wallpaperId == 0) {
+                        throw new IOException("setBitmap returned 0");
                     }
-                    SharedPreferences idPrefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
-                    SharedPreferences.Editor idEditor = idPrefs.edit();
-                    idEditor.putInt("previousDrawableId", 0);
-                    idEditor.putString("previousDayState", "null");
-                    idEditor.apply();
-                    setWallpaperIfDifferent(newWallpaperBitmap, name, 0, INITIAL_DELAY_MS);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error decoding bitmap", e);
+                    // Signature calculated from the SOURCE FILE, not from what WallpaperManager returns.
+                    rememberApplied(name, SOURCE_FILE, signature, wallpaperId);
+                    Log.d(TAG, "Wallpaper set from file: " + name + " (id=" + wallpaperId + ")");
+                } catch (IOException | IllegalStateException | IllegalArgumentException e) {
+                    retryOrFallback(imageFile, name, retryCount, delayMs, String.valueOf(e.getMessage()));
+                } finally {
+                    bitmap.recycle();
                 }
             }
-        }, delayMs, TimeUnit.MILLISECONDS);
+        }, delayMs);
+    }
+
+    private void retryOrFallback(File imageFile, String name, int retryCount, long delayMs, String reason) {
+        if (retryCount < MAX_RETRIES) {
+            long nextDelay = (delayMs == 0) ? 2000 : delayMs * 2;
+            Log.w(TAG, "Retry " + (retryCount + 1) + " for " + name + ": " + reason);
+            setWallpaperFromFile(imageFile, name, retryCount + 1, nextDelay);
+        } else {
+            Log.e(TAG, "Giving up on custom " + name + " (" + reason + "), falling back to default");
+            setDefaultWallpaper(name);
+        }
     }
 
     private void setDefaultWallpaper(String name) {
-        SharedPreferences idPrefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
-        int previousDrawableId = idPrefs.getInt("previousDrawableId", 0);  
-        String previousDayState = idPrefs.getString("previousDayState", "null");
         int drawableId = name.equals("Day") ? ResValue.getInstance().def_bg : ResValue.getInstance().def_bg_n;
-        if (!previousDayState.equals(name) && previousDrawableId != drawableId) {
-            try {
-                mWallpaperManager.setResource(drawableId);           
-                SharedPreferences.Editor idEditor = idPrefs.edit();
-                idEditor.putInt("previousDrawableId", drawableId);
-                idEditor.putString("previousDayState", name);
-                idEditor.apply();
-                Log.d(TAG, "Default wallpaper set successfully: " + name);
-            } catch (IOException e) {
-                Log.e(TAG, "Failed setting the default wallpaper: " + e.getMessage());
-            }
-        } else {
+        String signature = String.valueOf(drawableId);
+
+        if (alreadyApplied(name, SOURCE_DEFAULT, signature)) {
             Log.d(TAG, "Default wallpaper already set: " + name);
+            return;
+        }
+
+        try {
+            int wallpaperId = mWallpaperManager.setResource(drawableId, WallpaperManager.FLAG_SYSTEM);
+            rememberApplied(name, SOURCE_DEFAULT, signature, wallpaperId);
+            Log.d(TAG, "Default wallpaper set: " + name + " (id=" + drawableId + ")");
+        } catch (IOException e) {
+            Log.e(TAG, "Failed setting the default wallpaper: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Skip the update only when EVERYTHING matches: time of day, source,
+     * image signature, and the system wallpaper ID. The last condition detects
+     * a wallpaper change made outside the launcher and forces the wallpaper to be set again.
+     */
+    private boolean alreadyApplied(String state, String source, String signature) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+        return state.equals(prefs.getString(KEY_STATE, "null"))
+                && source.equals(prefs.getString(KEY_SOURCE, "null"))
+                && signature.equals(prefs.getString(KEY_SIGNATURE, ""))
+                && mWallpaperManager.getWallpaperId(WallpaperManager.FLAG_SYSTEM)
+                   == prefs.getInt(KEY_WALLPAPER_ID, -1);
+    }
+
+    private void rememberApplied(String state, String source, String signature, int wallpaperId) {
+        PreferenceManager.getDefaultSharedPreferences(this.mContext).edit()
+                .putString(KEY_STATE, state)
+                .putString(KEY_SOURCE, source)
+                .putString(KEY_SIGNATURE, signature)
+                .putInt(KEY_WALLPAPER_ID, wallpaperId)
+                .apply();
+    }
+
+    /** MD5 hash of the file contents — changes when the user replaces Day.webp/Night.webp. */
+    private String fileSignature(File file) {
+        try (InputStream in = new FileInputStream(file)) {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                digest.update(buffer, 0, read);
+            }
+            StringBuilder hex = new StringBuilder();
+            for (byte b : digest.digest()) {
+                hex.append(String.format(Locale.US, "%02x", b));
+            }
+            return hex.toString();
+        } catch (IOException | NoSuchAlgorithmException e) {
+            Log.e(TAG, "Cannot hash " + file.getName() + ", using size/mtime", e);
+            return file.length() + "_" + file.lastModified();
         }
     }
 
@@ -346,103 +423,6 @@ public class SunTask extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void setWallpaperIfDifferent(Bitmap newWallpaperBitmap, String name, int retryCount, long delayMs) {
-        scheduler.schedule(() -> {
-            synchronized (LOCK) {
-                try {
-                    if (newWallpaperBitmap == null || newWallpaperBitmap.isRecycled()) {
-                        throw new IllegalStateException("Invalid bitmap");
-                    }
-
-                    if (areBitmapsHashEqual(name)) {
-                        Log.d(TAG, "Wallpaper already set.");
-                        return;
-                    }
-
-                    newWallpaperBitmap.prepareToDraw();
-                    mWallpaperManager.setBitmap(newWallpaperBitmap, null, true, WallpaperManager.FLAG_SYSTEM);
-                    saveBitmapHash(name);
-                    Log.d(TAG, "Wallpaper set successfully.");
-                } catch (IOException | IllegalStateException e) {
-                    Log.e(TAG, "Retry " + (retryCount + 1) + " failed: " + e.getMessage());
-                    if (retryCount < MAX_RETRIES) {
-                        long nextDelay = (delayMs == 0) ? 2000 : delayMs * 2; 
-                        setWallpaperIfDifferent(newWallpaperBitmap, name, retryCount + 1, nextDelay);
-                    }
-                }
-            }
-        }, delayMs, TimeUnit.MILLISECONDS); 
-    }
-
-    private boolean areBitmapsHashEqual(String name) {
-        String savedWallpaperHash = mPrefs.getString(name + "_hash", "");
-
-        Drawable mWallpaper = mWallpaperManager.getDrawable();
-        Bitmap currentWallpaperBitmap = drawableToBitmap(mWallpaper);
-
-        Bitmap normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        normalizedBitmap.compress(getWebPFormat(), 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-
-        try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            byte[] hashBytes = digest.digest(byteArray);
-
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            String currentWallpaperHash = hexString.toString();
-            Log.i("HASH", "CUR: " + currentWallpaperHash + " Saved: " + savedWallpaperHash);
-            return savedWallpaperHash.equals(currentWallpaperHash);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public void saveBitmapHash(String name) {
-        Drawable mWallpaper = mWallpaperManager.getDrawable();
-        Bitmap currentWallpaperBitmap = drawableToBitmap(mWallpaper);
-
-        Bitmap normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);
-        
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        normalizedBitmap.compress(getWebPFormat(), 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-
-        try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            byte[] hashBytes = digest.digest(byteArray);
-
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            SharedPreferences hashPrefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
-            SharedPreferences.Editor hashEditor = hashPrefs.edit();
-            hashEditor.putString(name + "_hash", hexString.toString());
-            hashEditor.apply();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private Bitmap.CompressFormat getWebPFormat() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return Bitmap.CompressFormat.WEBP_LOSSLESS;
-        } else {
-            return Bitmap.CompressFormat.WEBP;
-        }
-    }
-
     private void setBrightness() {
         final int dayBrightness = mPrefs.getInt("day_seek_bar", 70);
         final int nightBrightness = mPrefs.getInt("night_seek_bar", 0);
@@ -469,21 +449,6 @@ public class SunTask extends AsyncTask<String, Void, String> {
         }).start();
     }
     
-    public Bitmap drawableToBitmap(Drawable drawable) {
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
-    }
-
-    public Bitmap normalizeBitmap(Bitmap bitmap) {
-        Bitmap normalizedBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(normalizedBitmap);
-        canvas.drawBitmap(bitmap, 0, 0, null);
-        return normalizedBitmap;
-    }
-
     private long stringToLong(String timeStr) {
         DateTimeFormatter parser = DateTimeFormatter.ofPattern("h:mm:ss a", Locale.ENGLISH);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TIME_CONST);
@@ -594,7 +559,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
     }
 
     private JobInfo getJobInfo(final ComponentName name, long time) {
-        return new JobInfo.Builder(123, name)
+        return new JobInfo.Builder(JOB_ID, name)
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
                     .setMinimumLatency(time)
                     .setRequiresDeviceIdle(false)
