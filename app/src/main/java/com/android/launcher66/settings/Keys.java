@@ -26,6 +26,9 @@ public final class Keys {
     public static final String DOWNLOAD_PERCENTAGE = "download_percentage";
     public static final String STATUSBAR = "transparent_statusbar";
     public static final String CREATOR_FIRST = "launcher_creator_first";
+    public static final String FAVORITE_CACHE = "favorite_cache";
+    public static final String OAUTH_FOR_YOUTUBE_REVANCED = "oauth_for_youtube_revanced";
+    public static final String YOUTUBE_REVANCED_KIDS = "youtube_revanced_kids";
     public static final String FYT_DATA = "fyt_data"; 
     public static final String DEVICE_SETTINGS = "device_settings";
     public static final String NOTIFICATION_SETTINGS = "notification_settings";

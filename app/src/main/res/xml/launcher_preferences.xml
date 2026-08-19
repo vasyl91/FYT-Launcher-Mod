@@ -24,17 +24,41 @@
             android:title="@string/layout_creator" />
 
     </PreferenceCategory>
-
+    
     <PreferenceCategory
-        app:key="misc_category"
-        app:title="@string/misc_category">
+        app:key="music_widget_category"
+        app:title="@string/music_widget_category">
 
+        <SwitchPreferenceCompat
+            android:key="use_favorite_cache"
+            android:defaultValue="false"
+            android:title="@string/use_favorite_cache"
+            android:summaryOn="@string/use_favorite_cache_on"
+            android:summaryOff="@string/use_favorite_cache_off" />
+        <Preference
+            android:key="oauth_for_youtube_revanced"
+            android:title="@string/oauth_for_youtube_revanced"
+            android:maxLines="5" />
+        <SwitchPreferenceCompat
+            android:key="youtube_revanced_kids"
+            android:defaultValue="false"
+            android:title="@string/youtube_revanced_kids"
+            android:summaryOn="@string/youtube_revanced_kids_on"
+            android:summaryOff="@string/youtube_revanced_kids_off"
+            android:maxLines="5" />
         <SwitchPreferenceCompat
             android:key="fyt_data"
             android:defaultValue="false"
             android:title="@string/fyt_title_source"
             android:summaryOn="@string/fyt_metadata"
-            android:summaryOff="@string/fyt_file" />
+            android:summaryOff="@string/fyt_file"
+            android:maxLines="5" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="misc_category"
+        app:title="@string/misc_category">
         <Preference
             android:key="device_settings"
             android:title="@string/device_settings" />

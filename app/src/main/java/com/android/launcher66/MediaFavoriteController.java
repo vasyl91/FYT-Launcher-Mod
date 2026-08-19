@@ -1,22 +1,42 @@
 package com.android.launcher66;
 
+import android.app.Notification;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Icon;
+import android.media.MediaDescription;
 import android.media.MediaMetadata;
 import android.media.Rating;
 import android.media.session.MediaController;
+import android.media.session.MediaSession;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import android.os.Handler;
 import android.os.Looper;
+import android.service.notification.StatusBarNotification;
+import android.util.Log;
+
+import androidx.preference.PreferenceManager;
+
+import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.RevancedOAuth;
+import com.syu.widget.DateMusicProvider;
+import com.syu.widget.Widget;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class MediaFavoriteController {
     public static final String ACTION_FAVORITE = "com.android.launcher66.action.MEDIA_FAVORITE";
@@ -35,7 +55,35 @@ public final class MediaFavoriteController {
     private static final String YOUTUBE_MUSIC_REVANCED_PACKAGE = "app.revanced.android.apps.youtube.music";
     private static final ExecutorService FAVORITE_CACHE_EXECUTOR = Executors.newSingleThreadExecutor();
 
-    private static final boolean isMediaDebug = true;
+    /** True once the user has granted access to the YouTube Data API. */
+    private static boolean isLoggedOAuth() {
+        return RevancedOAuth.isLoggedIn(LauncherApplication.sApp);
+    }
+
+    private static final boolean isMediaDebug = false;
+
+    private static SharedPreferences mPrefs;
+
+    private static final String DEBUG_TAG = "MediaDebug";
+    private static final Pattern VIDEO_ID_IN_URL =
+            Pattern.compile("(?:/vi/|/vi_webp/|[?&]v=)([A-Za-z0-9_-]{11})");
+    private static final Pattern BARE_VIDEO_ID =
+            Pattern.compile("^[A-Za-z0-9_-]{11}$");
+    private static volatile String lastDebugKey = null;
+
+    /**
+     * Keys published by the ReVanced patch. The sequence number is bumped on
+     * every like interaction made inside YouTube itself, which is what lets
+     * the launcher tell a real event apart from a stale value, and lets it
+     * ignore the ratings it sent itself - those never bump the counter.
+     */
+    private static final String KEY_LIKE_EVENT_SEQ =
+            "com.android.launcher66.LIKE_EVENT_SEQ";
+    private static final String KEY_LIKE_STATUS =
+            "com.android.launcher66.LIKE_STATUS";
+
+    private static volatile long lastSeenLikeEventSeq = 0L;
+    private static boolean ratingFetcherReported = false;
 
     private MediaFavoriteController() {
     }
@@ -51,23 +99,88 @@ public final class MediaFavoriteController {
         }
 
         int stateBefore = getCurrentFavoriteState(context, preferredPackage);
+        int expected = getExpectedStateAfterToggle(stateBefore);
+
+        if (isYouTubePackage(controller.getPackageName())
+                && YouTubeRevancedLikeState.hasFetcher()) {
+            // The Data API is the only write that reaches the account, so it is
+            // used on its own here. Sending the rating over the media session as
+            // well would make YouTube fire its own request, which lands after
+            // ours and stores the rating where the API cannot see it.
+            String videoId = findVideoId(controller);
+            if (videoId == null || videoId.isEmpty()) {
+                return false;
+            }
+
+            YouTubeRevancedLikeState.setState(videoId, expected);
+
+            // The session rating is sent only after the account has been
+            // updated. It makes YouTube refresh its own thumb, but it also
+            // makes it fire a request of its own - one that stores the rating
+            // where the Data API cannot see it. Sending it second means our
+            // write is the one that already landed.
+            YouTubeRevancedLikeState.applyRating(
+                    context,
+                    videoId,
+                    expected == FAVORITE_STATE_FAVORITED,
+                    () -> mirrorRatingToSession(
+                            controller, expected == FAVORITE_STATE_FAVORITED)
+            );
+            return true;
+        }
+
         boolean sent = toggleFavorite(context, controller, toPrivateState(stateBefore));
         if (sent) {
-            cachePublicFavoriteState(context, controller, getExpectedStateAfterToggle(stateBefore));
+            if (isYouTubePackage(controller.getPackageName())) {
+                // No account connected: the session rating is all there is, and
+                // it only updates YouTube's own interface.
+                YouTubeRevancedLikeState.setState(findVideoId(controller), expected);
+            } else {
+                cachePublicFavoriteState(context, controller, expected);
+            }
         }
         return sent;
     }
 
     public static int getCurrentFavoriteState(Context context, String preferredPackage) {
+        if (isMediaDebug) {
+            Log.d(DEBUG_TAG, "getCurrentFavoriteState called");
+        }
+
         MediaController controller = getTargetController(context, preferredPackage);
         if (controller == null) {
+            if (isMediaDebug) {
+                Log.d(DEBUG_TAG, "getCurrentFavoriteState: no controller");
+            }
             return FAVORITE_STATE_UNKNOWN;
+        }
+
+        // Dump once per track regardless of the resolved state. Previously this
+        // sat in the UNKNOWN branch, which stopped being reached once the patch
+        // started delivering USER_RATING.
+        if (isMediaDebug) {
+            dumpMediaDebugOncePerTrack(context, controller);
         }
 
         PlaybackState state = safePlaybackState(controller);
         FavoriteActions actions = state == null
                 ? new FavoriteActions()
                 : findFavoriteActions(state.getCustomActions());
+        if (isYouTubePackage(controller.getPackageName())) {
+            String videoId = findVideoId(controller);
+
+            // The published USER_RATING is never consulted here. A rating sent
+            // by the launcher takes a different path inside YouTube than a tap
+            // in its own UI, so that value stays stale until the next track and
+            // would undo what the user just did. The status is tracked for the
+            // current video only and starts over whenever playback moves on.
+            applyInAppLikeEvent(controller, videoId);
+
+            ensureRatingFetcher(context);
+            YouTubeRevancedLikeState.requestRefresh(videoId);
+            return YouTubeRevancedLikeState.getState(videoId);
+        }
+
         int currentState = toPublicState(getFavoriteState(controller, actions));
         if (currentState != FAVORITE_STATE_UNKNOWN) {
             cachePublicFavoriteState(context, controller, currentState);
@@ -77,30 +190,49 @@ public final class MediaFavoriteController {
         return getCachedPublicFavoriteState(context, controller);
     }
 
-    public static String describeCurrentFavoriteState(Context context, String preferredPackage) {
-        MediaController controller = getTargetController(context, preferredPackage);
-        if (controller == null) {
-            return "controller=none";
+    public static boolean isFavoriteTemporarilyDisabledPackage(String packageName) {
+        // Videos made for kids expose no rating at all: YouTube reports "none"
+        // however they were rated. The button is disabled for them, the same
+        // way it is for a player whose state cannot be read.
+        if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)
+                && YouTubeRevancedLikeState.isCurrentMadeForKids()
+                && !isKidsRatingAllowed()) {
+            return true;
         }
 
-        PlaybackState state = safePlaybackState(controller);
-        FavoriteActions actions = state == null
-                ? new FavoriteActions()
-                : findFavoriteActions(state.getCustomActions());
-        FavoriteState observedState = getFavoriteState(controller, actions);
-        int cachedState = getCachedPublicFavoriteState(context, controller);
-        boolean ratingAction = state != null && (state.getActions() & PlaybackState.ACTION_SET_RATING) != 0;
+        // With an account connected the status arrives a moment after the track
+        // starts. Until then the button is disabled: an enabled one would send
+        // a rating derived from a state nobody has confirmed yet.
+        //
+        // Videos made for kids are the exception. Their status never resolves,
+        // because YouTube reports no rating for them at all, so this rule would
+        // keep the button disabled for good and override the preference that is
+        // supposed to control exactly that.
+        if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)
+                && YouTubeRevancedLikeState.hasFetcher()
+                && !YouTubeRevancedLikeState.isCurrentMadeForKids()
+                && !YouTubeRevancedLikeState.isCurrentStateResolved()) {
+            return true;
+        }
 
-        return "observed=" + observedState
-                + ", cached=" + publicStateName(cachedState)
-                + ", ratingAction=" + ratingAction
-                + ", positiveAction=" + actionName(actions.positive)
-                + ", negativeAction=" + actionName(actions.negative)
-                + ", toggleAction=" + actionName(actions.toggle);
-    }
-
-    public static boolean isFavoriteTemporarilyDisabledPackage(String packageName) {
-        return YOUTUBE_PACKAGE.equals(packageName) || YOUTUBE_REVANCED_PACKAGE.equals(packageName);
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        }
+        if (mPrefs.getBoolean(Keys.FAVORITE_CACHE, false)) {
+            if (isLoggedOAuth()) {
+                // YouTube ENABLED in settings and user granted permission to OAuth to get like state for YouTube Revanced
+                return false;
+            } else {
+                // YouTube ENABLED in settings, not logged in OAuth
+                return YOUTUBE_REVANCED_PACKAGE.equals(packageName);
+            }
+        } else if (isLoggedOAuth()) {
+            // YouTube DISABLED in settings and user granted permission to OAuth to get like state for YouTube Revanced
+            return YOUTUBE_PACKAGE.equals(packageName);
+        } else {
+            // YouTube DISABLED in settings, not logged in OAuth
+            return YOUTUBE_PACKAGE.equals(packageName) || YOUTUBE_REVANCED_PACKAGE.equals(packageName);
+        }
     }
 
     private static MediaController getTargetController(Context context, String preferredPackage) {
@@ -193,7 +325,7 @@ public final class MediaFavoriteController {
                 return true;
             }
         }
-        return getMetadataFavoriteState(controller.getMetadata()) != FavoriteState.UNKNOWN;
+        return getMetadataFavoriteState(controller) != FavoriteState.UNKNOWN;
     }
 
     private static boolean toggleFavorite(Context context, MediaController controller, FavoriteState assumedState) {
@@ -254,12 +386,28 @@ public final class MediaFavoriteController {
             return false;
         }
         try {
-            controller.getTransportControls().sendCustomAction(action.getAction(), (Bundle) null);
+            controller.getTransportControls().sendCustomAction(action.getAction(), null);
             Log.d(TAG, "Sent " + label + " custom action for " + controller.getPackageName() + ": " + action.getAction());
             return true;
         } catch (Exception e) {
             Log.w(TAG, "Failed to send " + label + " custom action for " + controller.getPackageName(), e);
             return false;
+        }
+    }
+
+    /**
+     * Repeats the rating over the media session so YouTube redraws its own
+     * thumb. The account has already been updated at this point; this call is
+     * only about the on-screen state inside the application.
+     */
+    private static void mirrorRatingToSession(MediaController controller, boolean favorite) {
+        try {
+            PlaybackState state = safePlaybackState(controller);
+            if (state != null) {
+                sendRating(controller, state, favorite);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Could not mirror the rating to the media session", e);
         }
     }
 
@@ -352,7 +500,7 @@ public final class MediaFavoriteController {
     }
 
     private static FavoriteState getFavoriteState(MediaController controller, FavoriteActions actions) {
-        FavoriteState metadataState = getMetadataFavoriteState(controller.getMetadata());
+        FavoriteState metadataState = getMetadataFavoriteState(controller);
         if (metadataState != FavoriteState.UNKNOWN) {
             return metadataState;
         }
@@ -365,15 +513,171 @@ public final class MediaFavoriteController {
         return FavoriteState.UNKNOWN;
     }
 
-    private static FavoriteState getMetadataFavoriteState(MediaMetadata metadata) {
+    private static FavoriteState getMetadataFavoriteState(MediaController controller) {
+        MediaMetadata metadata = controller == null ? null : controller.getMetadata();
         if (metadata == null) {
             return FavoriteState.UNKNOWN;
         }
-        FavoriteState userRatingState = ratingToFavoriteState(metadata.getRating(MediaMetadata.METADATA_KEY_USER_RATING));
+
+        if (isYouTubePackage(controller.getPackageName())) {
+            // The published USER_RATING cannot be trusted at all here. It only
+            // reflects taps inside YouTube's own UI, and a rating sent by the
+            // launcher takes a different path internally, so the value stays
+            // stale until the next track. Reading it made the launcher invert
+            // the user's action: a like was treated as an unlike. The status
+            // therefore comes solely from YouTubeRevancedLikeState, fed by the Data
+            // API and by the launcher's own actions.
+            return FavoriteState.UNKNOWN;
+        }
+
+        FavoriteState userRatingState =
+                ratingToFavoriteState(metadata.getRating(MediaMetadata.METADATA_KEY_USER_RATING));
         if (userRatingState != FavoriteState.UNKNOWN) {
             return userRatingState;
         }
         return ratingToFavoriteState(metadata.getRating(MediaMetadata.METADATA_KEY_RATING));
+    }
+    /**
+     * Reads a long stored under an application specific key.
+     *
+     * MediaMetadata.getLong is annotated with the set of keys the framework
+     * knows about, and custom ones are not part of it. At runtime the value is
+     * simply read from the underlying bundle - YouTube publishes its own video
+     * dimension keys the same way. Routing the key through a parameter stops
+     * the annotation check from firing on a constant it cannot accept.
+     */
+    private static String describePublicState(int state) {
+        return switch (state) {
+            case FAVORITE_STATE_FAVORITED -> "FAVORITED";
+            case FAVORITE_STATE_NOT_FAVORITED -> "NOT_FAVORITED";
+            default -> "UNKNOWN";
+        };
+    }
+
+    private static long readCustomLong(MediaMetadata metadata, String key) {
+        try {
+            return metadata.getLong(key);
+        } catch (Exception e) {
+            return 0L;
+        }
+    }
+
+    private static void applyInAppLikeEvent(MediaController controller, String videoId) {
+        if (videoId == null || videoId.isEmpty()) {
+            return;
+        }
+
+        MediaMetadata metadata = controller.getMetadata();
+        if (metadata == null) {
+            return;
+        }
+
+        long seq = readCustomLong(metadata, KEY_LIKE_EVENT_SEQ);
+        if (seq == 0L || seq == lastSeenLikeEventSeq) {
+            return;
+        }
+
+        boolean firstReading = lastSeenLikeEventSeq == 0L;
+        lastSeenLikeEventSeq = seq;
+
+        // The first number seen after a launcher restart describes whatever
+        // YouTube published last, which may predate the current track. Only
+        // the sequence is recorded, so a later change is still detected.
+        if (firstReading) {
+            return;
+        }
+
+        // -1 = cleared, 0 = none, 1 = like, 2 = dislike, as published by the
+        // extension. A cleared status accompanies a track change rather than a
+        // user action, so nothing is decided from it: the real status is looked
+        // up instead, and until it arrives the button stays disabled.
+        long status = readCustomLong(metadata, KEY_LIKE_STATUS);
+        if (status < 0L) {
+            Log.d(TAG, "Like status cleared for " + videoId + ", waiting for the API");
+            return;
+        }
+
+        int state = status == 1L ? FAVORITE_STATE_FAVORITED : FAVORITE_STATE_NOT_FAVORITED;
+
+        Log.d(TAG, "In-app like event #" + seq
+                + ": status=" + status
+                + " -> " + describePublicState(state)
+                + " for " + videoId);
+        YouTubeRevancedLikeState.setState(videoId, state);
+    }
+
+    /**
+     * Connects the like state holder to the YouTube Data API once the user has
+     * authorised it. Cheap and idempotent, so it can be called from the read
+     * path; it does nothing while no account is connected.
+     */
+    private static void ensureRatingFetcher(Context context) {
+        if (YouTubeRevancedLikeState.hasFetcher()) {
+            return;
+        }
+        if (!isLoggedOAuth()) {
+            if (!ratingFetcherReported) {
+                ratingFetcherReported = true;
+                Log.d(TAG, "No Google account linked, the like status will not be resolved");
+            }
+            return;
+        }
+
+        Log.d(TAG, "Installing the YouTube rating fetcher");
+
+        Context appContext = context.getApplicationContext();
+
+        // The lookup runs on a background thread; the widget has to be told
+        // once the answer lands, or the new state waits for the next tick.
+        YouTubeRevancedLikeState.setOnUpdated(() -> new Handler(Looper.getMainLooper())
+                .post(() -> Widget.widgetUpdate(appContext, DateMusicProvider.class)));
+
+        YouTubeRevancedLikeState.setKidsChecker(
+                videoId -> RevancedOAuth.isMadeForKids(appContext, videoId));
+
+        YouTubeRevancedLikeState.setFetcher(videoId -> {
+            String rating = RevancedOAuth.fetchRating(appContext, videoId);
+            if ("like".equals(rating)) {
+                return FAVORITE_STATE_FAVORITED;
+            }
+            if ("none".equals(rating) || "dislike".equals(rating)) {
+                return FAVORITE_STATE_NOT_FAVORITED;
+            }
+            return FAVORITE_STATE_UNKNOWN;
+        });
+    }
+
+    /**
+     * Whether the favorite button is greyed out for videos made for kids.
+     *
+     * YouTube exposes no rating for them, so the alternative is to show them
+     * as not liked, which is misleading. On by default; the switch lets the
+     * user pick the other behaviour.
+     */
+    private static boolean isKidsRatingAllowed() {
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        }
+        return mPrefs.getBoolean(Keys.YOUTUBE_REVANCED_KIDS, false);
+    }
+
+    public static void refreshWidget(Context context) {
+        if (context != null) {
+            Widget.widgetUpdate(context.getApplicationContext(), DateMusicProvider.class);
+        }
+    }
+
+    /**
+     * True only for the patched YouTube build.
+     *
+     * The whole Data API path depends on the media id the ReVanced patch
+     * publishes, so it applies to that build alone. Stock YouTube, YouTube
+     * Music and every other player keep the original behaviour: their state
+     * comes from the metadata and the custom actions they expose, and the
+     * rating is sent over the media session.
+     */
+    private static boolean isYouTubePackage(String packageName) {
+        return YOUTUBE_REVANCED_PACKAGE.equals(packageName);
     }
 
     private static FavoriteState ratingToFavoriteState(Rating rating) {
@@ -441,6 +745,13 @@ public final class MediaFavoriteController {
     }
 
     private static int getCachedPublicFavoriteState(Context context, MediaController controller) {
+        // YouTube is tracked per playing video by YouTubeRevancedLikeState and must not
+        // fall back to this store: a status kept across tracks would be a guess,
+        // since a like made before playback started is invisible to the launcher.
+        if (controller != null && isYouTubePackage(controller.getPackageName())) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
+
         String key = getTrackCacheKey(controller);
         if (key == null) {
             return FAVORITE_STATE_UNKNOWN;
@@ -450,6 +761,10 @@ public final class MediaFavoriteController {
     }
 
     private static void cachePublicFavoriteState(Context context, MediaController controller, int state) {
+        if (controller != null && isYouTubePackage(controller.getPackageName())) {
+            return;
+        }
+
         String key = getTrackCacheKey(controller);
         if (key == null) {
             return;
@@ -679,6 +994,68 @@ public final class MediaFavoriteController {
         Log.d(TAG, "====================================================");
     }
 
+    private static void dumpNotificationActions(Context context, MediaController controller) {
+        NotificationListener listener = NotificationListener.getInstance();
+        if (listener == null) {
+            Log.d(DEBUG_TAG, "NotificationListener not connected");
+            return;
+        }
+
+        String pkg = controller.getPackageName();
+
+        StatusBarNotification[] active;
+        try {
+            active = listener.getActiveNotifications();
+        } catch (SecurityException e) {
+            Log.w(DEBUG_TAG, "No notification listener access", e);
+            return;
+        }
+
+        Resources res;
+        try {
+            res = context.getPackageManager().getResourcesForApplication(pkg);
+        } catch (Exception e) {
+            return;
+        }
+
+        for (StatusBarNotification sbn : active) {
+            if (!pkg.equals(sbn.getPackageName())) continue;
+            Notification.Action[] actions = sbn.getNotification().actions;
+            if (actions == null) continue;
+            for (Notification.Action a : actions) {
+                String iconName = "?";
+                try {
+                    Icon icon = a.getIcon();
+                    int resId = getResIdFromIcon(icon);
+
+                    if (resId != 0) {
+                        iconName = res.getResourceEntryName(resId);
+                    }
+                } catch (Exception ignored) {}
+                Log.d(DEBUG_TAG, "NotifAction title=" + a.title + " icon=" + iconName);
+            }
+        }
+    }
+
+    public static int getResIdFromIcon(Icon icon) {
+        if (icon == null) return 0;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // API 28+ (Android 9.0+)
+            return icon.getResId();
+        } else {
+            // API 26–27
+            try {
+                Method method = icon.getClass().getMethod("getResId");
+                Object result = method.invoke(icon);
+                return result != null ? (Integer) result : 0;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 0;
+            }
+        }
+    }
+
     private static void dumpRating(String name, Rating rating) {
 
         if (rating == null) {
@@ -712,4 +1089,465 @@ public final class MediaFavoriteController {
         Log.d(TAG, "ACTION_FAST_FORWARD    = " + ((actions & PlaybackState.ACTION_FAST_FORWARD) != 0));
         Log.d(TAG, "ACTION_REWIND          = " + ((actions & PlaybackState.ACTION_REWIND) != 0));
     }    
+
+    private static void dumpMediaDebugOncePerTrack(Context context, MediaController controller) {
+        String key = getTrackCacheKey(controller);
+        if (key != null && key.equals(lastDebugKey)) {
+            return;
+        }
+        lastDebugKey = key;
+        dumpMediaDebug(context, controller);
+    }
+
+    public static void dumpMediaDebug(Context context, MediaController controller) {
+        String pkg = controller.getPackageName();
+        Log.d(DEBUG_TAG, "=========== " + pkg + " ===========");
+
+        MediaMetadata md = controller.getMetadata();
+        if (md == null) {
+            Log.d(DEBUG_TAG, "  metadata = null");
+        } else {
+            for (String key : md.keySet()) {
+                Log.d(DEBUG_TAG, "  META " + key + " = " + describeMetadataValue(md, key));
+            }
+            MediaDescription d = md.getDescription();
+            Log.d(DEBUG_TAG, "  desc.mediaId  = " + d.getMediaId());
+            Log.d(DEBUG_TAG, "  desc.iconUri  = " + d.getIconUri());
+            try {
+                Log.d(DEBUG_TAG, "  desc.mediaUri = " + d.getMediaUri());
+            } catch (Throwable ignored) {
+            }
+            dumpBundle("desc.extras", d.getExtras());
+        }
+
+        dumpBundle("controller.extras", controller.getExtras());
+
+        PlaybackState ps = controller.getPlaybackState();
+        if (ps == null) {
+            Log.d(DEBUG_TAG, "  playbackState = null");
+        } else {
+            Log.d(DEBUG_TAG, "  state   = " + ps.getState());
+            Log.d(DEBUG_TAG, "  actions = 0x" + Long.toHexString(ps.getActions()));
+            dumpBundle("playbackState.extras", ps.getExtras());
+        }
+
+        List<MediaSession.QueueItem> queue = null;
+        try {
+            queue = controller.getQueue();
+        } catch (Throwable ignored) {
+        }
+        if (queue == null || queue.isEmpty()) {
+            Log.d(DEBUG_TAG, "  queue: empty");
+        } else {
+            for (MediaSession.QueueItem q : queue) {
+                MediaDescription qd = q.getDescription();
+                Log.d(DEBUG_TAG, "  queue mediaId=" + qd.getMediaId()
+                        + " title=" + qd.getTitle()
+                        + " iconUri=" + qd.getIconUri());
+            }
+        }
+        Log.d(DEBUG_TAG, "  queueTitle = " + controller.getQueueTitle());
+
+        dumpNotificationActions(context, controller);
+
+        Log.d(DEBUG_TAG, "  >>> videoId candidate = " + findVideoId(controller));
+        Log.d(DEBUG_TAG, "==================================================");
+    }
+
+    /**
+     * True when the key may hold a CharSequence.
+     *
+     * MediaMetadata has no way to query a value's type without reading it,
+     * and reading a Long, Bitmap or Rating as text makes the framework log a
+     * ClassCastException warning. So the non-text keys are excluded by name:
+     * the framework ones explicitly, plus the pixel-size and numeric keys
+     * that apps such as YouTube add under their own namespace.
+     */
+    private static boolean isTextMetadataKey(String key) {
+        if (key == null) {
+            return false;
+        }
+        if (MediaMetadata.METADATA_KEY_ALBUM_ART.equals(key)
+                || MediaMetadata.METADATA_KEY_ART.equals(key)
+                || MediaMetadata.METADATA_KEY_DISPLAY_ICON.equals(key)
+                || MediaMetadata.METADATA_KEY_USER_RATING.equals(key)
+                || MediaMetadata.METADATA_KEY_RATING.equals(key)
+                || MediaMetadata.METADATA_KEY_DURATION.equals(key)
+                || MediaMetadata.METADATA_KEY_YEAR.equals(key)
+                || MediaMetadata.METADATA_KEY_TRACK_NUMBER.equals(key)
+                || MediaMetadata.METADATA_KEY_NUM_TRACKS.equals(key)
+                || MediaMetadata.METADATA_KEY_DISC_NUMBER.equals(key)
+                || MediaMetadata.METADATA_KEY_BT_FOLDER_TYPE.equals(key)) {
+            return false;
+        }
+        return !key.endsWith("_PX") && !key.endsWith("_NUMBER");
+    }
+
+    private static String findVideoId(MediaController controller) {
+        List<String> candidates = new ArrayList<>();
+
+        MediaMetadata md = controller.getMetadata();
+        if (md != null) {
+            // Fast path: the ReVanced patch publishes the video id here.
+            try {
+                String mediaId = md.getString(MediaMetadata.METADATA_KEY_MEDIA_ID);
+                if (mediaId != null && BARE_VIDEO_ID.matcher(mediaId).matches()) {
+                    return mediaId;
+                }
+            } catch (Throwable ignored) {
+            }
+
+            // Fallback: scan the remaining text keys. Non-text keys are skipped
+            // because getString() on them floods logcat with Bundle warnings.
+            for (String key : md.keySet()) {
+                if (!isTextMetadataKey(key)) {
+                    continue;
+                }
+                try {
+                    String s = md.getString(key);
+                    if (s != null && !s.isEmpty()) {
+                        candidates.add(s);
+                    }
+                } catch (Throwable ignored) {
+                }
+            }
+            MediaDescription d = md.getDescription();
+            if (d.getMediaId() != null) {
+                candidates.add(d.getMediaId());
+            }
+            if (d.getIconUri() != null) {
+                candidates.add(d.getIconUri().toString());
+            }
+            try {
+                if (d.getMediaUri() != null) {
+                    candidates.add(d.getMediaUri().toString());
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+
+        try {
+            List<MediaSession.QueueItem> queue = controller.getQueue();
+            if (queue != null) {
+                for (MediaSession.QueueItem q : queue) {
+                    MediaDescription qd = q.getDescription();
+                    if (qd.getMediaId() != null) {
+                        candidates.add(qd.getMediaId());
+                    }
+                    if (qd.getIconUri() != null) {
+                        candidates.add(qd.getIconUri().toString());
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
+        for (String s : candidates) {
+            Matcher m = VIDEO_ID_IN_URL.matcher(s);
+            if (m.find()) {
+                return m.group(1);
+            }
+        }
+        for (String s : candidates) {
+            if (BARE_VIDEO_ID.matcher(s).matches()) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    private static String describeMetadataValue(MediaMetadata md, String key) {
+        try {
+            CharSequence text = md.getText(key);
+            if (text != null) {
+                return "Text: " + text;
+            }
+        } catch (Throwable ignored) {
+        }
+        try {
+            Rating r = md.getRating(key);
+            if (r != null) {
+                return "Rating: style=" + r.getRatingStyle() + " rated=" + r.isRated();
+            }
+        } catch (Throwable ignored) {
+        }
+        try {
+            Bitmap b = md.getBitmap(key);
+            if (b != null) {
+                return "Bitmap " + b.getWidth() + "x" + b.getHeight();
+            }
+        } catch (Throwable ignored) {
+        }
+        try {
+            long l = md.getLong(key);
+            if (l != 0L) {
+                return "Long: " + l;
+            }
+        } catch (Throwable ignored) {
+        }
+        return "(empty)";
+    }
+
+    private static void dumpBundle(String label, Bundle b) {
+        if (b == null) {
+            Log.d(DEBUG_TAG, "  " + label + " = null");
+            return;
+        }
+        try {
+            Set<String> keys = b.keySet();
+            if (keys.isEmpty()) {
+                Log.d(DEBUG_TAG, "  " + label + " = empty");
+                return;
+            }
+            for (String k : keys) {
+                Log.d(DEBUG_TAG, "  " + label + "[" + k + "] = " + b.get(k));
+            }
+        } catch (Throwable e) {
+            Log.w(DEBUG_TAG, "  " + label + " unreadable: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Holds the like status of the video currently playing in YouTube.
+     *
+     * Deliberately not a cache: only the current video is tracked, and switching
+     * to another one drops what was known. Persisting the status across tracks
+     * would be guessing, because the launcher cannot see a like made before
+     * playback started - YouTube does not expose it at load time.
+     *
+     * The status is fed from two sources:
+     *
+     *   - likes and unlikes made inside YouTube, which the patch reports through
+     *     a sequence counter in the media metadata
+     *   - ratings the launcher sends itself
+     *
+     * A third source, the YouTube Data API, plugs into {@link Fetcher} and will
+     * supply the status of a video that was already liked when playback started.
+     * Until then an unknown status is reported as not favorited, so the button
+     * stays usable rather than greyed out.
+     */
+    public static final class YouTubeRevancedLikeState {
+
+        private static final String TAG = "YouTubeRevancedLikeState";
+
+        /** Resolves the like status of a video. Called on a background thread. */
+        public interface Fetcher {
+            /**
+             * @return one of the MediaFavoriteController.FAVORITE_STATE_* values,
+             *         or FAVORITE_STATE_UNKNOWN when the status cannot be told
+             * @throws Exception on network or authentication failure
+             */
+            int fetchRating(String videoId) throws Exception;
+        }
+
+        private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+
+        private static volatile String currentVideoId;
+        private static volatile int currentState = MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+
+        private static volatile Fetcher fetcher;
+        private static volatile KidsChecker kidsChecker;
+
+        /**
+         * Id of the video known to be made for kids, and the id most recently
+         * asked about. Keeping both means the flag can never leak onto the
+         * next video: it only applies while the two match.
+         */
+        private static volatile String madeForKidsVideoId;
+        private static volatile String lastQueriedVideoId;
+        private static volatile String fetchedVideoId;
+        private static volatile Runnable onUpdated;
+        private static volatile boolean fetchInFlight;
+
+        private YouTubeRevancedLikeState() {
+        }
+
+        /** Reports whether a video is marked as made for kids. */
+        public interface KidsChecker {
+            Boolean isMadeForKids(String videoId);
+        }
+
+        public static void setKidsChecker(KidsChecker checker) {
+            kidsChecker = checker;
+        }
+
+        public static void setFetcher(Fetcher newFetcher) {
+            fetcher = newFetcher;
+        }
+
+        /**
+         * Installs the callback fired after a status arrives, so the widget can be
+         * redrawn. Runs on a background thread.
+         */
+        public static void setOnUpdated(Runnable callback) {
+            onUpdated = callback;
+        }
+
+        public static boolean hasFetcher() {
+            return fetcher != null;
+        }
+
+        /**
+         * Returns the status of the given video. Anything not known is reported as
+         * not favorited, which keeps the button usable.
+         */
+        public static int getState(String videoId) {
+            lastQueriedVideoId = videoId;
+
+            if (videoId == null || videoId.isEmpty()) {
+                return unknownState();
+            }
+
+            if (!videoId.equals(currentVideoId)) {
+                return unknownState();
+            }
+
+            // Videos made for kids never report a rating, so claiming anything
+            // about them would be a guess. Reporting UNKNOWN greys the button
+            // out, which is what stock YouTube does when it cannot rate.
+            if (isCurrentMadeForKids() && !isKidsRatingAllowed()) {
+                return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+            }
+
+            return currentState == MediaFavoriteController.FAVORITE_STATE_UNKNOWN
+                    ? unknownState()
+                    : currentState;
+        }
+
+        /**
+         * What to report while nothing is known about the current video.
+         *
+         * With an account connected the answer is on its way, so UNKNOWN is
+         * honest and the button greys out until it arrives. Without one no
+         * answer is ever coming, and a permanently grey button would just look
+         * broken - so it reads as not favorited and stays usable.
+         */
+        private static int unknownState() {
+            return hasFetcher()
+                    ? MediaFavoriteController.FAVORITE_STATE_UNKNOWN
+                    : MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED;
+        }
+
+        /** Records the status of the given video, discarding any previous one. */
+        public static void setState(String videoId, int state) {
+            if (videoId == null || videoId.isEmpty()) {
+                return;
+            }
+            currentVideoId = videoId;
+            currentState = state;
+        }
+
+        /**
+         * True once the status of the video being asked about is settled,
+         * either by a lookup or by an action the user took.
+         */
+        public static boolean isCurrentStateResolved() {
+            String videoId = lastQueriedVideoId;
+            return videoId != null
+                    && videoId.equals(currentVideoId)
+                    && currentState != MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+        }
+
+        public static boolean isCurrentMadeForKids() {
+            String kidsId = madeForKidsVideoId;
+            return kidsId != null && kidsId.equals(lastQueriedVideoId);
+        }
+
+        /** Forgets everything, e.g. when playback moves to another video. */
+        public static void clear() {
+            madeForKidsVideoId = null;
+            currentVideoId = null;
+            currentState = MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+            fetchedVideoId = null;
+        }
+
+        /**
+         * @param onApplied run on the executor thread once the account has been
+         *                  updated, so the caller can mirror the change locally
+         */
+        public static void applyRating(
+                Context context, String videoId, boolean like, Runnable onApplied) {
+            if (videoId == null || videoId.isEmpty()) {
+                return;
+            }
+
+            Context appContext = context.getApplicationContext();
+            EXECUTOR.execute(() -> {
+                boolean applied = RevancedOAuth.setRating(appContext, videoId, like);
+                if (applied && onApplied != null) {
+                    onApplied.run();
+                }
+                if (!applied) {
+                    // The account was not updated, so the optimistic value is
+                    // wrong; drop it and let the next lookup settle the state.
+                    if (videoId.equals(currentVideoId)) {
+                        currentState = MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+                    }
+                    fetchedVideoId = null;
+                }
+
+                Runnable callback = onUpdated;
+                if (callback != null) {
+                    callback.run();
+                }
+            });
+        }
+
+        /**
+         * Asks the Data API for the status of the given video. Does nothing until
+         * a fetcher is installed, and never queues more than one request at a time
+         * so the widget refresh loop cannot flood the API.
+         */
+        public static void requestRefresh(String videoId) {
+            Fetcher currentFetcher = fetcher;
+            if (currentFetcher == null || videoId == null || videoId.isEmpty()) {
+                return;
+            }
+
+            synchronized (YouTubeRevancedLikeState.class) {
+                // Asked once per video. Without this the widget refresh loop
+                // would fire a request several times per second.
+                if (fetchInFlight || videoId.equals(fetchedVideoId)) {
+                    return;
+                }
+                fetchInFlight = true;
+                fetchedVideoId = videoId;
+            }
+
+            EXECUTOR.execute(() -> {
+                try {
+                    KidsChecker checker = kidsChecker;
+                    if (checker != null) {
+                        Boolean madeForKids = checker.isMadeForKids(videoId);
+                        if (Boolean.TRUE.equals(madeForKids)) {
+                            madeForKidsVideoId = videoId;
+                        } else if (videoId.equals(madeForKidsVideoId)) {
+                            madeForKidsVideoId = null;
+                        }
+                    }
+
+                    int state = currentFetcher.fetchRating(videoId);
+                    if (state == MediaFavoriteController.FAVORITE_STATE_UNKNOWN) {
+                        // Nothing usable came back; allow another attempt later
+                        // instead of leaving this video marked as handled.
+                        fetchedVideoId = null;
+                    } else {
+                        setState(videoId, state);
+
+                        Runnable callback = onUpdated;
+                        if (callback != null) {
+                            callback.run();
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to fetch rating for " + videoId, e);
+                    fetchedVideoId = null;
+                } finally {
+                    synchronized (YouTubeRevancedLikeState.class) {
+                        fetchInFlight = false;
+                    }
+                }
+            });
+        }
+    }
 }

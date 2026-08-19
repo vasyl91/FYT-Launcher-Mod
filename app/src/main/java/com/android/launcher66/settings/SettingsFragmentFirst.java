@@ -65,6 +65,7 @@ import com.android.launcher66.BuildConfig;
 import com.android.launcher66.DeviceProfile;
 import com.android.launcher66.LauncherAppState;
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.MediaFavoriteController;
 import com.android.launcher66.R;
 import com.android.launcher66.WallpaperPickerActivity;
 import com.fyt.skin.SkinAttribute;
@@ -111,6 +112,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private boolean tickRunnableBool = false;   
     private boolean countDownTimerBool = false;  
     private Preference settingsSecondFragment;
+    private Preference youtubeRevancedKids;
     private Preference allAppsTextSize; 
     private EditText allAppsTextSizeEditText;
     private AlertDialog alertAllAppsTextSizeDialog;
@@ -293,7 +295,12 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference transparentStatusbar = findPreference(Keys.STATUSBAR);
         Preference userLayout = findPreference(Keys.USER_LAYOUT);
         settingsSecondFragment = findPreference(Keys.CREATOR_FIRST);
+
+        Preference favoriteCache = findPreference(Keys.FAVORITE_CACHE);
+        Preference oauthForYoutubeRevanced = findPreference(Keys.OAUTH_FOR_YOUTUBE_REVANCED);
+        youtubeRevancedKids = findPreference(Keys.YOUTUBE_REVANCED_KIDS);
         Preference fytData = findPreference(Keys.FYT_DATA);
+
         Preference deviceSettings = findPreference(Keys.DEVICE_SETTINGS);
         Preference notificationPreference = findPreference(Keys.NOTIFICATION_SETTINGS);
         Preference accessibilityPreference = findPreference(Keys.ACCESSIBILITY_SETTINGS);
@@ -361,6 +368,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (transparentStatusbar != null) {
             transparentStatusbar.setOnPreferenceClickListener(this);
+        }
+        if (favoriteCache != null) {
+            favoriteCache.setOnPreferenceClickListener(this);
+        }
+        if (oauthForYoutubeRevanced != null && youtubeRevancedKids != null) {
+            oauthForYoutubeRevanced.setOnPreferenceClickListener(this);
+            youtubeRevancedKids.setOnPreferenceClickListener(this);
+            RevancedOAuth.syncPreference(requireContext(), oauthForYoutubeRevanced, youtubeRevancedKids);            
         }
         if (fytData != null) {
             fytData.setOnPreferenceClickListener(this);
@@ -549,6 +564,12 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 break;
             case Keys.CREATOR_FIRST:
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
+                break;
+            case Keys.OAUTH_FOR_YOUTUBE_REVANCED:
+                RevancedOAuth.handlePreferenceClick(requireActivity(), preference, youtubeRevancedKids);
+                break;
+            case Keys.YOUTUBE_REVANCED_KIDS:
+                MediaFavoriteController.refreshWidget(requireContext());
                 break;
             case Keys.DEVICE_SETTINGS:
                 Intent intentSettings = new Intent(Settings.ACTION_SETTINGS);
@@ -771,18 +792,24 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         clearPreferenceListeners(getPreferenceScreen());
         handler.removeCallbacksAndMessages(null);
         mHandler.removeCallbacksAndMessages(null);
-        versionChecker.cancelCheck();
-        versionChecker.cancelDownload();
-        versionChecker.cancelInstall();
+        if (versionChecker != null) {
+            versionChecker.cancelCheck();
+            versionChecker.cancelDownload();
+            versionChecker.cancelInstall();
+        }
         progressDialogDismiss();
         removeTickRunnable();
         cancelCountDownTimer();
         dismissDialogs();
         mPropertyChangeClass.deleteObserver(Keys.DOWNLOAD_PERCENTAGE, this);
+        
         SkinAttribute skinAttribute = SkinUtils.getSkinAttr();
         if (skinAttribute != null) {
             skinAttribute.clear();
         }
+
+        recyclerView = null;
+        rootView = null;
     }
 
     private void clearPreferenceListeners(PreferenceGroup group) {

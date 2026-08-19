@@ -295,6 +295,32 @@
     <string name="proceed_and_reset">Proceed and reset</string>
     <string name="dismiss">Dismiss</string>
 
+    <string name="music_widget_category">Music Widget</string>
+    <string name="use_favorite_cache">Use favorite cache for regular YouTube</string>
+    <string name="use_favorite_cache_on">The Favorite button will be enabled, but like state information will be stored only in the launcher - Music Widget won\'t know whether you liked or disliked a video elsewhere</string>
+    <string name="use_favorite_cache_off">The Favorite button will be disabled</string>
+    <string name="oauth_for_youtube_revanced">Enable Google Authorization for YouTube ReVanced to retrieve the like status</string>
+    <string name="youtube_revanced_kids">Favorite button for YouTube ReVanced videos with madeForKids=true</string>
+    <string name="youtube_revanced_kids_on">The Favorite button will be enabled but videos liked on YouTube might appear as not liked in the widget.</string>
+    <string name="youtube_revanced_kids_off">Videos that return madeForKids=true never correctly reflect the like state due to a YouTube API bug - videos liked on YouTube appear as not liked in the widget. The Favorite button will be disabled to prevent confusion.</string>
+    <string name="oauth_status_gmscore">ReVanced GmsCore: %1$s</string>
+    <string name="oauth_status_youtube">YouTube ReVanced: %1$s (requires the \"Expose like status in MediaSession\" patch)</string>
+    <string name="oauth_installed">installed</string>
+    <string name="oauth_not_installed">not installed</string>
+    <string name="oauth_status_not_connected">Not connected</string>
+    <string name="oauth_status_connected">Connected as %1$s</string>
+    <string name="oauth_missing_gmscore">Please install ReVanced GmsCore</string>
+    <string name="oauth_missing_youtube">Please install YouTube ReVanced patched with \"Expose like status in MediaSession\"</string>
+    <string name="oauth_logged_in">Logged in as %1$s</string>
+    <string name="oauth_already_logged_in">Already logged in as %1$s, double tap to log out</string>
+    <string name="oauth_unknown_account">unknown account</string>
+    <string name="oauth_logout_title">Log out</string>
+    <string name="oauth_logout_message">Log out of %1$s?</string>
+    <string name="oauth_yes">Yes</string>
+    <string name="oauth_no">No</string>
+    <string name="oauth_logged_out">Logged out</string>
+    <string name="oauth_cancelled">Authorization cancelled</string>
+
     <string name="instantaneous_consumption">\u0020Fuel consum.:</string>
     <string name="driving_mileage">\u0020Cruising Range:</string>
     <string name="instantaneous_consumption_mini">\u0020C:</string>

@@ -154,6 +154,32 @@
     <string name="proceed_and_reset">Kontynuuj i resetuj</string>
     <string name="dismiss">Odrzuć</string>
 
+    <string name="music_widget_category">Music Widget</string>
+    <string name="use_favorite_cache">Używaj pamięci podręcznej ulubionych dla zwykłego YouTube</string>
+    <string name="use_favorite_cache_on">Przycisk Ulubione będzie włączony, ale informacje o stanie polubienia będą przechowywane tylko w launcherze - Music Widget nie będzie wiedzieć, czy film został polubiony lub \"odlubiony\" w innym miejscu</string>
+    <string name="use_favorite_cache_off">Przycisk Ulubione będzie wyłączony</string>
+    <string name="oauth_for_youtube_revanced">Włącz autoryzację Google dla YouTube ReVanced, aby uzyskać informacje o stanie polubienia</string>
+    <string name="youtube_revanced_kids">Przycisk Ulubione dla filmów YouTube ReVanced z wartością madeForKids=true</string>
+    <string name="youtube_revanced_kids_on">Przycisk Ulubione będzie włączony, ale filmy polubione w YouTube mogą być wyświetlane w widżecie jako niepolubione.</string>
+    <string name="youtube_revanced_kids_off">Filmy z wartością madeForKids=true, nieprawidłowo odzwierciedlają stan polubienia z powodu błędu w YouTube API - filmy polubione w YouTube są wyświetlane w widżecie jako niepolubione. Przycisk Ulubione zostanie wyłączony, aby uniknąć nieporozumień</string>
+    <string name="oauth_status_gmscore">ReVanced GmsCore: %1$s</string>
+    <string name="oauth_status_youtube">YouTube ReVanced: %1$s (wymaga poprawki „Expose like status in MediaSession”)</string>
+    <string name="oauth_installed">zainstalowany</string>
+    <string name="oauth_not_installed">niezainstalowany</string>
+    <string name="oauth_status_not_connected">Niepołączono</string>
+    <string name="oauth_status_connected">Połączono jako %1$s</string>
+    <string name="oauth_missing_gmscore">Zainstaluj ReVanced GmsCore</string>
+    <string name="oauth_missing_youtube">Zainstaluj YouTube ReVanced z poprawką „Expose like status in MediaSession”</string>
+    <string name="oauth_logged_in">Zalogowano jako %1$s</string>
+    <string name="oauth_already_logged_in">Już zalogowano jako %1$s, dotknij dwukrotnie, aby się wylogować</string>
+    <string name="oauth_unknown_account">nieznane konto</string>
+    <string name="oauth_logout_title">Wyloguj</string>
+    <string name="oauth_logout_message">Wylogować z konta %1$s?</string>
+    <string name="oauth_yes">Tak</string>
+    <string name="oauth_no">Nie</string>
+    <string name="oauth_logged_out">Wylogowano</string>
+    <string name="oauth_cancelled">Anulowano autoryzację</string>
+
     <string name="instantaneous_consumption">\u0020Spalanie:</string>
     <string name="driving_mileage">\u0020Zasięg:</string>
     <string name="instantaneous_consumption_mini">\u0020S:</string>

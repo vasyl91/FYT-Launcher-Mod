@@ -108,6 +108,7 @@ class NotificationListener : NotificationListenerService() {
     override fun onListenerConnected() {    
         super.onListenerConnected() 
         isCleanedUp = false
+        instance = this
         contextRef = WeakReference(this)
         paused = false
 
@@ -162,6 +163,7 @@ class NotificationListener : NotificationListenerService() {
         if (!isReceiverRegistered) {
             val intentFilter = IntentFilter().apply {
                 addAction("titlesInternal")
+                addAction("dumpMediaDebug")
             }
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -191,6 +193,8 @@ class NotificationListener : NotificationListenerService() {
     private fun cleanupResources() { 
         if (isCleanedUp) return
         isCleanedUp = true
+
+        if (instance === this) instance = null
 
         safeUnregisterReceiver()
         safeUnregisterSessionListener()
@@ -260,6 +264,10 @@ class NotificationListener : NotificationListenerService() {
             *   It is essential to use MediaMetadataRetriever because stock music player doesn't process
             *   characters specific to particular language (ö, ó, ü, ß, ñ etc) and sends chinese signs instead.
             */
+            if (intent.action == "dumpMediaDebug") {
+                MediaDebugDump.dumpAll()
+                return
+            }
             if (intent.action == "titlesInternal") {
                 val bundle = intent.extras ?: return
                 fytState = bundle.getBoolean("play_state", false) 
@@ -706,38 +714,47 @@ class NotificationListener : NotificationListenerService() {
         Widget.widgetUpdate(this, DateRadioProvider::class.java)
     }
 
-    @Throws(PackageManager.NameNotFoundException::class)
-    fun getHighResAppIcon(context: Context, packageName: String): Bitmap {
-        val pm = context.packageManager
-        val appInfo = pm.getApplicationInfo(packageName, 0)
-        var iconDrawable: Drawable? = null
+    fun getHighResAppIcon(context: Context, packageName: String): Bitmap? {
+        return try {
+            val pm = context.packageManager
+            val appInfo = pm.getApplicationInfo(packageName, 0)
+            var iconDrawable: Drawable? = null
 
-        if (appInfo.icon != 0) {
-            try {
-                val resources = pm.getResourcesForApplication(appInfo)
-                val densities = intArrayOf(640, 480, 320, 240, 160)  // From XXXHIGH to MEDIUM
+            if (appInfo.icon != 0) {
+                try {
+                    val resources = pm.getResourcesForApplication(appInfo)
+                    val densities = intArrayOf(640, 480, 320, 240, 160)  // Od XXXHIGH do MEDIUM
 
-                for (density in densities) {
-                    iconDrawable = try {
-                        resources.getDrawableForDensity(appInfo.icon, density, context.theme)
-                    } catch (e: Resources.NotFoundException) {
-                        null
+                    for (density in densities) {
+                        iconDrawable = try {
+                            resources.getDrawableForDensity(appInfo.icon, density, context.theme)
+                        } catch (e: Resources.NotFoundException) {
+                            null
+                        }
+                        if (iconDrawable != null) break
                     }
-                    if (iconDrawable != null) break
+                } catch (e: Exception) {
+                    Log.e("NotificationListener", "Error getting high res icon: ${e.message}")
                 }
-            } catch (e: Exception) {
-                Log.e("NotificationListener", "Error getting high res icon: ${e.message}")
             }
+
+            // Domyślna ikona jako fallback
+            iconDrawable = iconDrawable ?: pm.getApplicationIcon(packageName)
+            drawableToBitmap(iconDrawable)
+        } catch (e: PackageManager.NameNotFoundException) {
+            Log.w("NotificationListener", "Application not found: $packageName")
+            null
+        } catch (e: Exception) {
+            Log.e("NotificationListener", "Error retrieving app icon for $packageName: ${e.message}")
+            null
         }
-
-        // Fallback to default icon if there's no hugh res icon
-        iconDrawable = iconDrawable ?: pm.getApplicationIcon(packageName)
-
-        return drawableToBitmap(iconDrawable)
     }
     
-    fun drawableToBitmap(drawable: Drawable?): Bitmap {
-        val bitmap = createBitmap(drawable!!.intrinsicWidth, drawable.intrinsicHeight)
+    fun drawableToBitmap(drawable: Drawable?): Bitmap? {
+        if (drawable == null || drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) {
+            return null
+        }
+        val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
         val canvas = Canvas(bitmap)
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
@@ -781,5 +798,12 @@ class NotificationListener : NotificationListenerService() {
                 }
             }
         }
+    }
+
+    companion object {
+        @Volatile
+        @JvmStatic
+        var instance: NotificationListener? = null
+            private set
     }
 }
