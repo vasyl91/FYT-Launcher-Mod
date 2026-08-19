@@ -303,6 +303,8 @@
     <string name="youtube_revanced_kids">Favorite button for YouTube ReVanced videos with madeForKids=true</string>
     <string name="youtube_revanced_kids_on">The Favorite button will be enabled but videos liked on YouTube might appear as not liked in the widget.</string>
     <string name="youtube_revanced_kids_off">Videos that return madeForKids=true never correctly reflect the like state due to a YouTube API bug - videos liked on YouTube appear as not liked in the widget. The Favorite button will be disabled to prevent confusion.</string>
+    <string name="copy_patch_url">Tap to copy the URL of the „Expose like status in MediaSession” patch for ReVanced Manager</string>
+    <string name="url_copied">URL copied to clipboard</string>
     <string name="oauth_status_gmscore">ReVanced GmsCore: %1$s</string>
     <string name="oauth_status_youtube">YouTube ReVanced: %1$s (requires the \"Expose like status in MediaSession\" patch)</string>
     <string name="oauth_installed">installed</string>

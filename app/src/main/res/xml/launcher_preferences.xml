@@ -45,7 +45,10 @@
             android:title="@string/youtube_revanced_kids"
             android:summaryOn="@string/youtube_revanced_kids_on"
             android:summaryOff="@string/youtube_revanced_kids_off"
-            android:maxLines="5" />
+            android:maxLines="5" />          
+        <Preference
+            android:key="copy_patch_url"
+            android:title="@string/copy_patch_url" />
         <SwitchPreferenceCompat
             android:key="fyt_data"
             android:defaultValue="false"

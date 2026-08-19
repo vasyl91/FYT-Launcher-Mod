@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.WallpaperManager;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -299,6 +301,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference favoriteCache = findPreference(Keys.FAVORITE_CACHE);
         Preference oauthForYoutubeRevanced = findPreference(Keys.OAUTH_FOR_YOUTUBE_REVANCED);
         youtubeRevancedKids = findPreference(Keys.YOUTUBE_REVANCED_KIDS);
+        Preference copyPatchUrl = findPreference(Keys.COPY_PATCH_URL);
         Preference fytData = findPreference(Keys.FYT_DATA);
 
         Preference deviceSettings = findPreference(Keys.DEVICE_SETTINGS);
@@ -376,6 +379,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             oauthForYoutubeRevanced.setOnPreferenceClickListener(this);
             youtubeRevancedKids.setOnPreferenceClickListener(this);
             RevancedOAuth.syncPreference(requireContext(), oauthForYoutubeRevanced, youtubeRevancedKids);            
+        }
+        if (copyPatchUrl != null) {
+            copyPatchUrl.setOnPreferenceClickListener(this);
         }
         if (fytData != null) {
             fytData.setOnPreferenceClickListener(this);
@@ -570,6 +576,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 break;
             case Keys.YOUTUBE_REVANCED_KIDS:
                 MediaFavoriteController.refreshWidget(requireContext());
+                break;
+            case Keys.COPY_PATCH_URL:
+                ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("URL", "https://raw.githubusercontent.com/vasyl91/Expose-like-status-in-MediaSession/main/patches-bundle.json");
+                if (clipboard != null) {
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(LauncherApplication.sApp, R.string.url_copied, Toast.LENGTH_SHORT).show();
+                }
                 break;
             case Keys.DEVICE_SETTINGS:
                 Intent intentSettings = new Intent(Settings.ACTION_SETTINGS);

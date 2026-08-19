@@ -303,6 +303,8 @@
     <string name="youtube_revanced_kids">适用于 madeForKids=true 的 YouTube ReVanced 视频的收藏按钮</string>
     <string name="youtube_revanced_kids_on">收藏按钮将启用，但在 YouTube 中已点赞的视频可能会在小组件中显示为未点赞。</string>
     <string name="youtube_revanced_kids_off">由于 YouTube API 的错误，madeForKids=true 的视频无法正确反映点赞状态 - 在 YouTube 中已点赞的视频会在小组件中显示为未点赞。为避免造成混淆，收藏按钮将被禁用。</string>
+    <string name="copy_patch_url">点击以复制适用于 ReVanced Manager 的“Expose like status in MediaSession”补丁链接</string>
+    <string name="url_copied">链接已复制到剪贴板</string>
     <string name="oauth_status_gmscore">ReVanced GmsCore：%1$s</string>
     <string name="oauth_status_youtube">YouTube ReVanced：%1$s（需要“Expose like status in MediaSession”补丁）</string>
     <string name="oauth_installed">已安装</string>

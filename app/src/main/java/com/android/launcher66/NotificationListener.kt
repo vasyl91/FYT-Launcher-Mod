@@ -723,7 +723,7 @@ class NotificationListener : NotificationListenerService() {
             if (appInfo.icon != 0) {
                 try {
                     val resources = pm.getResourcesForApplication(appInfo)
-                    val densities = intArrayOf(640, 480, 320, 240, 160)  // Od XXXHIGH do MEDIUM
+                    val densities = intArrayOf(640, 480, 320, 240, 160)
 
                     for (density in densities) {
                         iconDrawable = try {
@@ -737,8 +737,6 @@ class NotificationListener : NotificationListenerService() {
                     Log.e("NotificationListener", "Error getting high res icon: ${e.message}")
                 }
             }
-
-            // Domyślna ikona jako fallback
             iconDrawable = iconDrawable ?: pm.getApplicationIcon(packageName)
             drawableToBitmap(iconDrawable)
         } catch (e: PackageManager.NameNotFoundException) {
