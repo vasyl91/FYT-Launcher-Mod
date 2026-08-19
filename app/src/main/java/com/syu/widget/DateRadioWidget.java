@@ -72,7 +72,7 @@ public class DateRadioWidget extends Widget {
     void updateViews(RemoteViews views) {
         int i;
         int index;
-        if (Launcher.mainState == 8) {
+        if (Launcher.getLauncher().mainState == 8) {
             if (MusicService.state) {
                 int i2 = ResValue.getInstance().widget_music_score;
                 int i3 = ResValue.getInstance().music_score_0;
@@ -90,8 +90,8 @@ public class DateRadioWidget extends Widget {
                 LauncherApplication.handler.removeCallbacks(this.runnable);
                 this.runAnimation = false;
             }
-        } else if (Launcher.mainState == 3) {
-            if (Launcher.btavState == 1) {
+        } else if (Launcher.getLauncher().mainState == 3) {
+            if (Launcher.getLauncher().btavState == 1) {
                 int i5 = ResValue.getInstance().widget_btav_score;
                 int i6 = ResValue.getInstance().music_score_0;
                 int i7 = this.count;
@@ -172,30 +172,30 @@ public class DateRadioWidget extends Widget {
             views.setTextViewText(ResValue.getInstance().music_cur_time, cur);
             views.setTextViewText(ResValue.getInstance().music_total_time, total);
         }
-        if (Launcher.radioFreqState > 5000) {
+        if (Launcher.getLauncher().radioFreqState > 5000) {
             views.setTextViewText(ResValue.getInstance().tv_band, "FM");
             views.setTextViewText(ResValue.getInstance().tv_unit, "MHz");
-        } else if (Launcher.radioFreqState < 5000 && Launcher.radioFreqState > 500) {
+        } else if (Launcher.getLauncher().radioFreqState < 5000 && Launcher.getLauncher().radioFreqState > 500) {
             views.setTextViewText(ResValue.getInstance().tv_band, "AM");
             views.setTextViewText(ResValue.getInstance().tv_unit, "KHz");
         }
-        views.setTextViewText(ResValue.getInstance().tv_freq, Launcher.radioFreq);
-        if (Launcher.btName != null) {
-            views.setTextViewText(ResValue.getInstance().btav_name, Launcher.btName);
+        views.setTextViewText(ResValue.getInstance().tv_freq, Launcher.getLauncher().radioFreq);
+        if (Launcher.getLauncher().btName != null) {
+            views.setTextViewText(ResValue.getInstance().btav_name, Launcher.getLauncher().btName);
         } else {
             views.setTextViewText(ResValue.getInstance().btav_name, this.mContext.getResources().getString(R.string.music_name));
         }
-        if (Launcher.btArtist != null) {
-            views.setTextViewText(ResValue.getInstance().btav_artist, Launcher.btArtist);
+        if (Launcher.getLauncher().btArtist != null) {
+            views.setTextViewText(ResValue.getInstance().btav_artist, Launcher.getLauncher().btArtist);
         } else {
             views.setTextViewText(ResValue.getInstance().btav_artist, this.mContext.getResources().getString(R.string.music_author));
         }
-        if (Launcher.btavState == 1) {
+        if (Launcher.getLauncher().btavState == 1) {
             views.setImageViewResource(ResValue.getInstance().btavbutton_playpause, ResValue.getInstance().music_playpause_icon);
         } else {
             views.setImageViewResource(ResValue.getInstance().btavbutton_playpause, ResValue.getInstance().music_pause_icon);
         }
-        if (Launcher.phoneState == 0) {
+        if (Launcher.getLauncher().phoneState == 0) {
             views.setTextViewText(ResValue.getInstance().btav_name, this.mContext.getResources().getString(R.string.music_name));
             views.setTextViewText(ResValue.getInstance().btav_artist, this.mContext.getResources().getString(R.string.music_author));
         }

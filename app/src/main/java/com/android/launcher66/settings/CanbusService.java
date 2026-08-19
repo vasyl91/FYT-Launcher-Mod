@@ -333,7 +333,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 }
             }
             
-            if (Launcher.mAppsCustomizeTabHost != null) {
+            if (Launcher.getLauncher().mAppsCustomizeTabHost != null) {
                 if (helpers.userWasInRecents() && !getCurrentActivityName().equals("com.android.launcher66")) {
                     helpers.setInRecent(false);
                     helpers.setInAllApps(false);
@@ -341,7 +341,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     helpers.setWasInRecents(true);
                     mPropertyChangeClass.setBoolean(Keys.ALLAPPS, false);
                 } else {
-                    mPropertyChangeClass.setBoolean(Keys.ALLAPPS, helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility()));
+                    mPropertyChangeClass.setBoolean(Keys.ALLAPPS, helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility()));
                 }
             }  
             mPropertyChangeClass.setString(Keys.FUELSTATS, curForegroundApp);
@@ -407,7 +407,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             if (userLayout 
                 && prefs.getBoolean("main_screen_stats", true)
                 && helpers.hasPipStarted()
-                && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) {
+                && !helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())) {
 
                 addStatsView(false);
             }

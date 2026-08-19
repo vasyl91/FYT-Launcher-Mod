@@ -2457,7 +2457,7 @@ public class Workspace extends SmoothPagedView
         }
 
         mainHandler.postDelayed(() -> {
-            if (!helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) {
+            if (!helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())) {
                 Log.d("stripEmptyScreens", "startMapPip");
                 WindowUtil.startMapPip(false);
             }
@@ -2761,7 +2761,7 @@ public class Workspace extends SmoothPagedView
                 && !helpers.openedFromOverviewBoolean() 
                 && getChildCount() > 1 
                 && !mDragController.isDragging()
-                && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) {
+                && !helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())) {
                 
                 Log.d("onPageEndMoving", "openPinnedPip()");
                 WindowUtil.openPinnedPip();

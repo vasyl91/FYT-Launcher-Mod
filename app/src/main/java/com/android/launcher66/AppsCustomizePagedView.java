@@ -564,7 +564,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 SharedPreferences statsPrefs = AppsCustomizePagedView.this.getContext().getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
                 Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
                 if (apps.contains(appInfo.getPackageName())) {
-                    Launcher.mAppsCustomizeTabHost.setVisibility(View.GONE);
+                    Launcher.getLauncher().mAppsCustomizeTabHost.setVisibility(View.GONE);
                     helpers.setAllAppsShouldBeVisible(true);
                     helpers.setForegroundAppOpened(true);
                     Intent intent = new Intent(Keys.STATS_APP_FOREGROUND);

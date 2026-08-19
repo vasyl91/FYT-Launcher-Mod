@@ -226,7 +226,7 @@ public class WindowUtil {
                     + " helpers.isInAllApps() " + helpers.isInAllApps()
                     + " helpers.isInOverviewMode() " + helpers.isInOverviewMode()
                     + " helpers.isFirstPreferenceWindow() " + helpers.isFirstPreferenceWindow()
-                    + " helpers.allAppsVisibility() " + helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
+                    + " helpers.allAppsVisibility() " + helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())
                     + " helpers.isWallpaperWindow() " + helpers.isWallpaperWindow()
                     + " helpers.isListOpen() " + helpers.isListOpen());
 
@@ -239,7 +239,7 @@ public class WindowUtil {
                                 && !helpers.isInOverviewMode()
                                 && !helpers.isFirstPreferenceWindow()
                                 && !helpers.isWallpaperWindow()
-                                && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility()))
+                                && !helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility()))
                                 || (!helpers.userWasInRecents() && helpers.isListOpen() && !helpers.pipsAdded());
 
                 if (!canOpen) {
@@ -704,7 +704,7 @@ public class WindowUtil {
             && !helpers.isInOverviewMode()
             && !helpers.isFirstPreferenceWindow()
             && !helpers.isWallpaperWindow()
-            && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())
+            && !helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())
             || (!helpers.userWasInRecents() && helpers.isListOpen())) {
 
             if (prefs == null) {
@@ -766,7 +766,7 @@ public class WindowUtil {
 
         SystemProperties.set("persist.syu.launcher.haspip", "true");
 
-        if (currentScreen == pipScreen && !helpers.allAppsVisibility(Launcher.mAppsCustomizeTabHost.getVisibility())) {
+        if (currentScreen == pipScreen && !helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())) {
             String currentPackage = SystemProperties.get("persist.launcher.packagename", "");
             if (!packageName.equals(currentPackage) || checkIfMapSizeChanged(pipKey)) {
                 // save previous values

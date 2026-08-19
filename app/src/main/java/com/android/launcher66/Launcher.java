@@ -211,7 +211,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final int EXIT_SPRINGLOADED_MODE_LONG_TIMEOUT = 600;
     static final String INTENT_EXTRA_IGNORE_LAUNCH_ANIMATION = "com.android.launcher66.intent.extra.shortcut.INGORE_LAUNCH_ANIMATION";
     static final boolean LOGD = false;
-    private static final String PREFERENCES = "launcher.preferences";
+    private static final String PREFERENCES = "Launcher.getLauncher().preferences";
     private static final int REQUEST_BIND_APPWIDGET = 11;
     private static final int REQUEST_CREATE_APPWIDGET = 5;
     private static final int REQUEST_CREATE_SHORTCUT = 1;
@@ -219,18 +219,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final int REQUEST_PICK_APPWIDGET = 9;
     private static final int REQUEST_PICK_SHORTCUT = 7;
     private static final int REQUEST_PICK_WALLPAPER = 10;
-    private static final String RUNTIME_STATE = "launcher.state";
-    private static final String RUNTIME_STATE_CURRENT_SCREEN = "launcher.current_screen";
-    private static final String RUNTIME_STATE_PENDING_ADD_CELL_X = "launcher.add_cell_x";
-    private static final String RUNTIME_STATE_PENDING_ADD_CELL_Y = "launcher.add_cell_y";
-    private static final String RUNTIME_STATE_PENDING_ADD_CONTAINER = "launcher.add_container";
-    private static final String RUNTIME_STATE_PENDING_ADD_SCREEN = "launcher.add_screen";
-    private static final String RUNTIME_STATE_PENDING_ADD_SPAN_X = "launcher.add_span_x";
-    private static final String RUNTIME_STATE_PENDING_ADD_SPAN_Y = "launcher.add_span_y";
-    private static final String RUNTIME_STATE_PENDING_ADD_WIDGET_INFO = "launcher.add_widget_info";
-    private static final String RUNTIME_STATE_PENDING_FOLDER_RENAME = "launcher.rename_folder";
-    private static final String RUNTIME_STATE_PENDING_FOLDER_RENAME_ID = "launcher.rename_folder_id";
-    private static final String RUNTIME_STATE_PENDING_ADD_WIDGET_ID = "launcher.add_widget_id";
+    private static final String RUNTIME_STATE = "Launcher.getLauncher().state";
+    private static final String RUNTIME_STATE_CURRENT_SCREEN = "Launcher.getLauncher().current_screen";
+    private static final String RUNTIME_STATE_PENDING_ADD_CELL_X = "Launcher.getLauncher().add_cell_x";
+    private static final String RUNTIME_STATE_PENDING_ADD_CELL_Y = "Launcher.getLauncher().add_cell_y";
+    private static final String RUNTIME_STATE_PENDING_ADD_CONTAINER = "Launcher.getLauncher().add_container";
+    private static final String RUNTIME_STATE_PENDING_ADD_SCREEN = "Launcher.getLauncher().add_screen";
+    private static final String RUNTIME_STATE_PENDING_ADD_SPAN_X = "Launcher.getLauncher().add_span_x";
+    private static final String RUNTIME_STATE_PENDING_ADD_SPAN_Y = "Launcher.getLauncher().add_span_y";
+    private static final String RUNTIME_STATE_PENDING_ADD_WIDGET_INFO = "Launcher.getLauncher().add_widget_info";
+    private static final String RUNTIME_STATE_PENDING_FOLDER_RENAME = "Launcher.getLauncher().rename_folder";
+    private static final String RUNTIME_STATE_PENDING_FOLDER_RENAME_ID = "Launcher.getLauncher().rename_folder_id";
+    private static final String RUNTIME_STATE_PENDING_ADD_WIDGET_ID = "Launcher.getLauncher().add_widget_id";
     static final int SCREEN_COUNT = 5;
     public static final String SHOW_WEIGHT_WATCHER = "debug.show_mem";
     private static final long PIP_INIT_THROTTLE_MS = 700L;
@@ -252,8 +252,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final long CUSTOM_ELEMENTS_SETUP_DEBOUNCE_MS = 150L;
     private static final long WORKSPACE_NULL_LOADER_THROTTLE_MS = 1200L;
     static final String TAG = "Launcher";
-    private static final String TOOLBAR_ICON_METADATA_NAME = "com.android.launcher.toolbar_icon";
-    private static final String TOOLBAR_VOICE_SEARCH_ICON_METADATA_NAME = "com.android.launcher.toolbar_voice_search_icon";
+    private static final String TOOLBAR_ICON_METADATA_NAME = "com.android.Launcher.getLauncher().toolbar_icon";
+    private static final String TOOLBAR_VOICE_SEARCH_ICON_METADATA_NAME = "com.android.Launcher.getLauncher().toolbar_voice_search_icon";
     private String mediaSource = "fyt";
     private AudioManager mAudioManager;
     private String activeController;
@@ -261,17 +261,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean userLayout;
     private boolean leftBar;
     private String musictitle = null;
-    private static KWAPI kwAPi;
-    public static TextView mAllAppView;
+    private KWAPI kwAPi;
+    public TextView mAllAppView;
     public static Launcher mLauncher;
     public static LauncherModel mModel;
     public static Workspace mWorkspace;
-    public static boolean sNightMode;
-    public static View wallpaperButton;
-    public static View widgetButton;
-    public static View settingsButton;
-    public static View wallpaperButtonWidgets;
-    public static View settingsButtonWidgets;
+    public boolean sNightMode;
+    public View wallpaperButton;
+    public View widgetButton;
+    public View settingsButton;
+    public View wallpaperButtonWidgets;
+    public View settingsButtonWidgets;
     LauncherApplication app;
     private ProgressBar btavProgress;
     public int carSpeed;
@@ -290,7 +290,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private LauncherAppWidgetHost mAppWidgetHost;
     private AppWidgetManager mAppWidgetManager;
     private AppsCustomizePagedView mAppsCustomizeContent;
-    public static AppsCustomizeTabHost mAppsCustomizeTabHost;
+    public AppsCustomizeTabHost mAppsCustomizeTabHost;
     private long mAutoAdvanceSentTime;
     private MyAutoMapReceiver mAutoMap;
     private int mBrightLevel;
@@ -453,18 +453,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static ArrayList<ComponentName> mIntentsOnWorkspaceFromUpgradePath = null;
     private static ArrayList<PendingAddArguments> sPendingAddList = new ArrayList<>();
     static final String FORCE_ENABLE_ROTATION_PROPERTY = "launcher_force_rotate";
-    public static boolean sForceEnableRotation = isPropertyEnabled(FORCE_ENABLE_ROTATION_PROPERTY);
-    public static int mainState = 0;
-    private static int count = 0;
-    public static String freq = "87.50";
-    public static int radioFreqState = 0;
-    public static String radioFreq = "87.50";
-    public static int btTotalTime = 0;
-    public static int btCurTime = 0;
-    public static String btName = null;
-    public static String btArtist = null;
-    public static int btavState = 0;
-    public static int phoneState = 0;
+    public boolean sForceEnableRotation = isPropertyEnabled(FORCE_ENABLE_ROTATION_PROPERTY);
+    public int mainState = 0;
+    private int count = 0;
+    public String freq = "87.50";
+    public int radioFreqState = 0;
+    public String radioFreq = "87.50";
+    public int btTotalTime = 0;
+    public int btCurTime = 0;
+    public String btName = null;
+    public String btArtist = null;
+    public int btavState = 0;
+    public int phoneState = 0;
     boolean isfirstlayout = false;
     public State mState = State.WORKSPACE;
     private final String colsePipAction = "com.lsec.tyz.action.voice.launcher";
@@ -629,8 +629,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Runnable mBuildLayersRunnable = new Runnable() { 
         @Override
         public void run() {
-            if (Launcher.mWorkspace != null) {
-                Launcher.mWorkspace.buildPageHardwareLayers();
+            if (Launcher.getLauncher().mWorkspace != null) {
+                Launcher.getLauncher().mWorkspace.buildPageHardwareLayers();
             }
         }
     };
@@ -638,8 +638,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     Runnable runnable_register = new Runnable() { 
         @Override
         public void run() {
-            TimeUpdateReceiver.register(Launcher.mLauncher);
-            Launcher.this.sendBroadcast(new Intent(TimeUpdateReceiver.SHOW_TIME));
+            TimeUpdateReceiver.register(Launcher.getLauncher().mLauncher);
+            Launcher.getLauncher().sendBroadcast(new Intent(TimeUpdateReceiver.SHOW_TIME));
         }
     };
 
@@ -680,42 +680,42 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (status != null) {
                 switch ($SWITCH_TABLE$cn$kuwo$autosdk$api$PlayerStatus()[status.ordinal()]) {
                     case 2:
-                        Launcher.this.mKwPlayState = true;
-                        Launcher.this.showKuwoContent = true;
+                        Launcher.getLauncher().mKwPlayState = true;
+                        Launcher.getLauncher().showKuwoContent = true;
                         break;
                     case 3:
                     default:
-                        Launcher.this.mKwPlayState = false;
-                        Launcher.this.showKuwoContent = false;
+                        Launcher.getLauncher().mKwPlayState = false;
+                        Launcher.getLauncher().showKuwoContent = false;
                         break;
                     case 4:
-                        Launcher.this.mKwPlayState = false;
-                        Launcher.this.showKuwoContent = true;
+                        Launcher.getLauncher().mKwPlayState = false;
+                        Launcher.getLauncher().showKuwoContent = true;
                         break;
                 }
             }
-            if (Launcher.this.kuwomusic_playpause != null) {
-                if (Launcher.this.mKwPlayState) {
-                    Launcher.this.kuwomusic_playpause.setBackgroundResource(ResValue.getInstance().music_playpause_icon);
+            if (Launcher.getLauncher().kuwomusic_playpause != null) {
+                if (Launcher.getLauncher().mKwPlayState) {
+                    Launcher.getLauncher().kuwomusic_playpause.setBackgroundResource(ResValue.getInstance().music_playpause_icon);
                 } else {
-                    Launcher.this.kuwomusic_playpause.setBackgroundResource(ResValue.getInstance().music_pause_icon);
+                    Launcher.getLauncher().kuwomusic_playpause.setBackgroundResource(ResValue.getInstance().music_pause_icon);
                 }
             }
             if (music == null) {
                 return;
             }
-            if (Launcher.this.mKwMusicName != null) {
-                if (Launcher.this.showKuwoContent) {
-                    Launcher.this.mKwMusicName.setText(music.name);
+            if (Launcher.getLauncher().mKwMusicName != null) {
+                if (Launcher.getLauncher().showKuwoContent) {
+                    Launcher.getLauncher().mKwMusicName.setText(music.name);
                 } else {
-                    Launcher.this.mKwMusicName.setText(R.string.car_kuwo);
+                    Launcher.getLauncher().mKwMusicName.setText(R.string.car_kuwo);
                 }
             }
-            if (Launcher.this.mKwArtist != null) {
-                if (Launcher.this.showKuwoContent) {
-                    Launcher.this.mKwArtist.setText(music.artist);
+            if (Launcher.getLauncher().mKwArtist != null) {
+                if (Launcher.getLauncher().showKuwoContent) {
+                    Launcher.getLauncher().mKwArtist.setText(music.artist);
                 } else {
-                    Launcher.this.mKwArtist.setText(R.string.music_author);
+                    Launcher.getLauncher().mKwArtist.setText(R.string.music_author);
                 }
             }
         }
@@ -730,7 +730,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 String packageName = bundle.getString("pkg");
                 if ("com.syu.music".equals(packageName)) {
                     MusicService.state = false;
-                    Launcher.this.handler.postDelayed(new Runnable() { 
+                    Launcher.getLauncher().handler.postDelayed(new Runnable() { 
                         @Override 
                         public void run() {
                             String[] strArr = new String[5];
@@ -757,45 +757,45 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         }
                     }, 1000L);
                 } else if (FytPackage.GaodeACTION.equals(packageName)) {
-                    Launcher.this.handler.postDelayed(new Runnable() { 
+                    Launcher.getLauncher().handler.postDelayed(new Runnable() { 
                         @Override
                         public void run() {
-                            if (Launcher.this.mInitNaviInfoView != null && Launcher.this.mNaviRunView != null) {
-                                Launcher.this.mInitNaviInfoView.setVisibility(View.VISIBLE);
-                                Launcher.this.mNaviRunView.setVisibility(View.GONE);
+                            if (Launcher.getLauncher().mInitNaviInfoView != null && Launcher.getLauncher().mNaviRunView != null) {
+                                Launcher.getLauncher().mInitNaviInfoView.setVisibility(View.VISIBLE);
+                                Launcher.getLauncher().mNaviRunView.setVisibility(View.GONE);
                             }
-                            if (Launcher.this.mTurnIconView != null) {
-                                Launcher.this.mTurnIconView.setImageResource(ResValue.getInstance().default_icon);
+                            if (Launcher.getLauncher().mTurnIconView != null) {
+                                Launcher.getLauncher().mTurnIconView.setImageResource(ResValue.getInstance().default_icon);
                             }
-                            if (Launcher.this.mCurCityView != null) {
-                                Launcher.this.mCurCityView.setText("");
+                            if (Launcher.getLauncher().mCurCityView != null) {
+                                Launcher.getLauncher().mCurCityView.setText("");
                             }
-                            if (Launcher.this.mCurDis_RemainView != null) {
-                                Launcher.this.mCurDis_RemainView.setText(Utils.getNameToStr("car_distance"));
+                            if (Launcher.getLauncher().mCurDis_RemainView != null) {
+                                Launcher.getLauncher().mCurDis_RemainView.setText(Utils.getNameToStr("car_distance"));
                             }
-                            if (Launcher.this.mCurDis_AllView != null) {
-                                Launcher.this.mCurDis_AllView.setText("0");
+                            if (Launcher.getLauncher().mCurDis_AllView != null) {
+                                Launcher.getLauncher().mCurDis_AllView.setText("0");
                             }
-                            if (Launcher.this.mCurDis_SurplusView != null) {
-                                Launcher.this.mCurDis_SurplusView.setText("0km");
+                            if (Launcher.getLauncher().mCurDis_SurplusView != null) {
+                                Launcher.getLauncher().mCurDis_SurplusView.setText("0km");
                             }
-                            if (Launcher.this.mCamera_DisView != null) {
-                                Launcher.this.mCamera_DisView.setText("");
+                            if (Launcher.getLauncher().mCamera_DisView != null) {
+                                Launcher.getLauncher().mCamera_DisView.setText("");
                             }
-                            if (Launcher.this.mCamera_DisImageView != null) {
-                                Launcher.this.mCamera_DisImageView.setVisibility(View.GONE);
+                            if (Launcher.getLauncher().mCamera_DisImageView != null) {
+                                Launcher.getLauncher().mCamera_DisImageView.setVisibility(View.GONE);
                             }
-                            if (Launcher.this.mCurRemainTimeView != null) {
-                                Launcher.this.mCurRemainTimeView.setText("");
+                            if (Launcher.getLauncher().mCurRemainTimeView != null) {
+                                Launcher.getLauncher().mCurRemainTimeView.setText("");
                             }
-                            if (Launcher.this.mNextRoadNameView != null) {
-                                Launcher.this.mNextRoadNameView.setText(Utils.getNameToStr("car_realnavi"));
+                            if (Launcher.getLauncher().mNextRoadNameView != null) {
+                                Launcher.getLauncher().mNextRoadNameView.setText(Utils.getNameToStr("car_realnavi"));
                             }
-                            if (Launcher.this.mNaviMycar != null) {
-                                Launcher.this.mNaviMycar.setVisibility(View.VISIBLE);
+                            if (Launcher.getLauncher().mNaviMycar != null) {
+                                Launcher.getLauncher().mNaviMycar.setVisibility(View.VISIBLE);
                             }
-                            if (Launcher.this.mCurSpeedView != null) {
-                                Launcher.this.mCurSpeedView.setText("0km/h");
+                            if (Launcher.getLauncher().mCurSpeedView != null) {
+                                Launcher.getLauncher().mCurSpeedView.setText("0km/h");
                             }
                         }
                     }, 1000L);
@@ -812,11 +812,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 musicName = strs[0];
                 artist = strs[1];
             }
-            if (musicName != null && !musicName.equals("") && !musicName.trim().equals("") && Launcher.this.mBtavName != null) {
-                Launcher.this.mBtavName.setText(musicName);
+            if (musicName != null && !musicName.equals("") && !musicName.trim().equals("") && Launcher.getLauncher().mBtavName != null) {
+                Launcher.getLauncher().mBtavName.setText(musicName);
             }
-            if (artist != null && !artist.equals("") && Launcher.this.mBtavAritst != null) {
-                Launcher.this.mBtavAritst.setText(artist);
+            if (artist != null && !artist.equals("") && Launcher.getLauncher().mBtavAritst != null) {
+                Launcher.getLauncher().mBtavAritst.setText(artist);
             }
         }
     };
@@ -826,11 +826,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (ints != null && ints.length > 0) {
                 int mDvrRecState = ints[0];
                 if (mDvrRecState == 1) {
-                    if (Launcher.this.getCustomView(Config.WS_Dvr_Rec) != null) {
-                        Launcher.this.getCustomView(Config.WS_Dvr_Rec).setBackgroundResource(ResValue.getInstance().dvr_stop_btn);
+                    if (Launcher.getLauncher().getCustomView(Config.WS_Dvr_Rec) != null) {
+                        Launcher.getLauncher().getCustomView(Config.WS_Dvr_Rec).setBackgroundResource(ResValue.getInstance().dvr_stop_btn);
                     }
-                } else if (mDvrRecState == 0 && Launcher.this.getCustomView(Config.WS_Dvr_Rec) != null) {
-                    Launcher.this.getCustomView(Config.WS_Dvr_Rec).setBackgroundResource(ResValue.getInstance().dvr_rec_btn);
+                } else if (mDvrRecState == 0 && Launcher.getLauncher().getCustomView(Config.WS_Dvr_Rec) != null) {
+                    Launcher.getLauncher().getCustomView(Config.WS_Dvr_Rec).setBackgroundResource(ResValue.getInstance().dvr_rec_btn);
                 }
             }
         }
@@ -838,13 +838,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private IUiRefresher refreshNaviState = new IUiRefresher() { 
         @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
-            Launcher.this.handleNaviState();
+            Launcher.getLauncher().handleNaviState();
         }
     };
     private IUiRefresher refreshNaviView = new IUiRefresher() { 
         @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
-            Launcher.this.handleView();
+            Launcher.getLauncher().handleView();
         }
     };
     private int volume = -1;
@@ -853,74 +853,74 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (updateCode == 0) {
                 if (ints != null && ints.length > 0) {
-                    if (Launcher.this.mRadioPauseButton != null) {
+                    if (Launcher.getLauncher().mRadioPauseButton != null) {
                         if (ints[0] == 1) {
-                            Launcher.this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_playpause_icon);
+                            Launcher.getLauncher().mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_playpause_icon);
                         } else {
-                            Launcher.this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_pause_icon);
+                            Launcher.getLauncher().mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_pause_icon);
                         }
                     }
                     if (LauncherApplication.sApp.getResources().getBoolean(R.bool.worksapce_switch_widget)) {
                         switch (ints[0]) {
                             case 1:
-                                if (Launcher.this.mPageRadio != null && Launcher.this.mPageRadio.getVisibility() != View.VISIBLE) {
+                                if (Launcher.getLauncher().mPageRadio != null && Launcher.getLauncher().mPageRadio.getVisibility() != View.VISIBLE) {
                                     LogPreview.show("mPageRadio != null");
-                                    Launcher.this.mPageRadio.setVisibility(View.VISIBLE);
-                                    if (Launcher.this.mPageTime != null) {
-                                        Launcher.this.mPageTime.setVisibility(View.GONE);
+                                    Launcher.getLauncher().mPageRadio.setVisibility(View.VISIBLE);
+                                    if (Launcher.getLauncher().mPageTime != null) {
+                                        Launcher.getLauncher().mPageTime.setVisibility(View.GONE);
                                     }
-                                    if (Launcher.this.mPageMusic != null) {
-                                        Launcher.this.mPageMusic.setVisibility(View.GONE);
+                                    if (Launcher.getLauncher().mPageMusic != null) {
+                                        Launcher.getLauncher().mPageMusic.setVisibility(View.GONE);
                                     }
-                                    if (Launcher.this.mPageBTAV != null) {
-                                        Launcher.this.mPageBTAV.setVisibility(View.GONE);
+                                    if (Launcher.getLauncher().mPageBTAV != null) {
+                                        Launcher.getLauncher().mPageBTAV.setVisibility(View.GONE);
                                         break;
                                     }
                                 }
                                 break;
                             case 3:
-                                if (Launcher.this.mPageBTAV != null && Launcher.this.mPageBTAV.getVisibility() != View.VISIBLE) {
+                                if (Launcher.getLauncher().mPageBTAV != null && Launcher.getLauncher().mPageBTAV.getVisibility() != View.VISIBLE) {
                                     LogPreview.show("mPageBTAV != null");
-                                    Launcher.this.mPageBTAV.setVisibility(View.VISIBLE);
-                                    if (Launcher.this.mPageTime != null) {
-                                        Launcher.this.mPageTime.setVisibility(View.GONE);
+                                    Launcher.getLauncher().mPageBTAV.setVisibility(View.VISIBLE);
+                                    if (Launcher.getLauncher().mPageTime != null) {
+                                        Launcher.getLauncher().mPageTime.setVisibility(View.GONE);
                                     }
-                                    if (Launcher.this.mPageRadio != null) {
-                                        Launcher.this.mPageRadio.setVisibility(View.GONE);
+                                    if (Launcher.getLauncher().mPageRadio != null) {
+                                        Launcher.getLauncher().mPageRadio.setVisibility(View.GONE);
                                     }
-                                    if (Launcher.this.mPageMusic != null) {
-                                        Launcher.this.mPageMusic.setVisibility(View.GONE);
+                                    if (Launcher.getLauncher().mPageMusic != null) {
+                                        Launcher.getLauncher().mPageMusic.setVisibility(View.GONE);
                                         break;
                                     }
                                 }
                                 break;
                             case 8:
-                                if (Launcher.this.mPageMusic != null && Launcher.this.mPageMusic.getVisibility() != View.VISIBLE) {
+                                if (Launcher.getLauncher().mPageMusic != null && Launcher.getLauncher().mPageMusic.getVisibility() != View.VISIBLE) {
                                     LogPreview.show("mPageMusic != null");
-                                    Launcher.this.mPageMusic.setVisibility(View.VISIBLE);
-                                    if (Launcher.this.mPageTime != null) {
-                                        Launcher.this.mPageTime.setVisibility(View.GONE);
+                                    Launcher.getLauncher().mPageMusic.setVisibility(View.VISIBLE);
+                                    if (Launcher.getLauncher().mPageTime != null) {
+                                        Launcher.getLauncher().mPageTime.setVisibility(View.GONE);
                                     }
-                                    if (Launcher.this.mPageRadio != null) {
-                                        Launcher.this.mPageRadio.setVisibility(View.GONE);
+                                    if (Launcher.getLauncher().mPageRadio != null) {
+                                        Launcher.getLauncher().mPageRadio.setVisibility(View.GONE);
                                     }
-                                    if (Launcher.this.mPageBTAV != null) {
-                                        Launcher.this.mPageBTAV.setVisibility(View.GONE);
+                                    if (Launcher.getLauncher().mPageBTAV != null) {
+                                        Launcher.getLauncher().mPageBTAV.setVisibility(View.GONE);
                                         break;
                                     }
                                 }
                                 break;
                             default:
-                                if (Launcher.this.mPageTime != null && Launcher.this.mPageTime.getVisibility() != View.VISIBLE) {
-                                    Launcher.this.mPageTime.setVisibility(View.VISIBLE);
-                                    if (Launcher.this.mPageRadio != null) {
-                                        Launcher.this.mPageRadio.setVisibility(View.GONE);
+                                if (Launcher.getLauncher().mPageTime != null && Launcher.getLauncher().mPageTime.getVisibility() != View.VISIBLE) {
+                                    Launcher.getLauncher().mPageTime.setVisibility(View.VISIBLE);
+                                    if (Launcher.getLauncher().mPageRadio != null) {
+                                        Launcher.getLauncher().mPageRadio.setVisibility(View.GONE);
                                     }
-                                    if (Launcher.this.mPageMusic != null) {
-                                        Launcher.this.mPageMusic.setVisibility(View.GONE);
+                                    if (Launcher.getLauncher().mPageMusic != null) {
+                                        Launcher.getLauncher().mPageMusic.setVisibility(View.GONE);
                                     }
-                                    if (Launcher.this.mPageBTAV != null) {
-                                        Launcher.this.mPageBTAV.setVisibility(View.GONE);
+                                    if (Launcher.getLauncher().mPageBTAV != null) {
+                                        Launcher.getLauncher().mPageBTAV.setVisibility(View.GONE);
                                         break;
                                     }
                                 }
@@ -934,42 +934,42 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             if (updateCode == 50) {
                 if (ints != null && ints.length > 0 && ints[0] == 0) {
-                    if (Launcher.this.mInitNaviInfoView != null && Launcher.this.mNaviRunView != null) {
-                        Launcher.this.mInitNaviInfoView.setVisibility(View.VISIBLE);
-                        Launcher.this.mNaviRunView.setVisibility(View.GONE);
+                    if (Launcher.getLauncher().mInitNaviInfoView != null && Launcher.getLauncher().mNaviRunView != null) {
+                        Launcher.getLauncher().mInitNaviInfoView.setVisibility(View.VISIBLE);
+                        Launcher.getLauncher().mNaviRunView.setVisibility(View.GONE);
                     }
-                    if (Launcher.this.mTurnIconView != null) {
-                        Launcher.this.mTurnIconView.setImageResource(ResValue.getInstance().default_icon);
+                    if (Launcher.getLauncher().mTurnIconView != null) {
+                        Launcher.getLauncher().mTurnIconView.setImageResource(ResValue.getInstance().default_icon);
                     }
-                    if (Launcher.this.mCurCityView != null) {
-                        Launcher.this.mCurCityView.setText("");
+                    if (Launcher.getLauncher().mCurCityView != null) {
+                        Launcher.getLauncher().mCurCityView.setText("");
                     }
-                    if (Launcher.this.mCurDis_RemainView != null) {
-                        Launcher.this.mCurDis_RemainView.setText(Utils.getNameToStr("car_distance"));
+                    if (Launcher.getLauncher().mCurDis_RemainView != null) {
+                        Launcher.getLauncher().mCurDis_RemainView.setText(Utils.getNameToStr("car_distance"));
                     }
-                    if (Launcher.this.mCurDis_AllView != null) {
-                        Launcher.this.mCurDis_AllView.setText("0");
+                    if (Launcher.getLauncher().mCurDis_AllView != null) {
+                        Launcher.getLauncher().mCurDis_AllView.setText("0");
                     }
-                    if (Launcher.this.mCurDis_SurplusView != null) {
-                        Launcher.this.mCurDis_SurplusView.setText("0km");
+                    if (Launcher.getLauncher().mCurDis_SurplusView != null) {
+                        Launcher.getLauncher().mCurDis_SurplusView.setText("0km");
                     }
-                    if (Launcher.this.mCamera_DisView != null) {
-                        Launcher.this.mCamera_DisView.setText("");
+                    if (Launcher.getLauncher().mCamera_DisView != null) {
+                        Launcher.getLauncher().mCamera_DisView.setText("");
                     }
-                    if (Launcher.this.mCurRemainTimeView != null) {
-                        Launcher.this.mCurRemainTimeView.setText("");
+                    if (Launcher.getLauncher().mCurRemainTimeView != null) {
+                        Launcher.getLauncher().mCurRemainTimeView.setText("");
                     }
-                    if (Launcher.this.mCurRemainTimeView != null) {
-                        Launcher.this.mCurRemainTimeView.setText("");
+                    if (Launcher.getLauncher().mCurRemainTimeView != null) {
+                        Launcher.getLauncher().mCurRemainTimeView.setText("");
                     }
-                    if (Launcher.this.mNextRoadNameView != null) {
-                        Launcher.this.mNextRoadNameView.setText(Utils.getNameToStr("car_realnavi"));
+                    if (Launcher.getLauncher().mNextRoadNameView != null) {
+                        Launcher.getLauncher().mNextRoadNameView.setText(Utils.getNameToStr("car_realnavi"));
                     }
-                    if (Launcher.this.mNaviMycar != null) {
-                        Launcher.this.mNaviMycar.setVisibility(View.VISIBLE);
+                    if (Launcher.getLauncher().mNaviMycar != null) {
+                        Launcher.getLauncher().mNaviMycar.setVisibility(View.VISIBLE);
                     }
-                    if (Launcher.this.mCurSpeedView != null) {
-                        Launcher.this.mCurSpeedView.setText("0km/h");
+                    if (Launcher.getLauncher().mCurSpeedView != null) {
+                        Launcher.getLauncher().mCurSpeedView.setText("0km/h");
                         return;
                     }
                     return;
@@ -979,14 +979,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (updateCode == 4) {
                 if (ints != null && ints.length > 0) {
                     if (ints[0] == 1) {
-                        if (Launcher.this.mCarLightView != null) {
-                            Launcher.this.mCarLightView.setBackgroundResource(ResValue.getInstance().navi_mycar2);
+                        if (Launcher.getLauncher().mCarLightView != null) {
+                            Launcher.getLauncher().mCarLightView.setBackgroundResource(ResValue.getInstance().navi_mycar2);
                             return;
                         }
                         return;
                     } else {
-                        if (Launcher.this.mCarLightView != null) {
-                            Launcher.this.mCarLightView.setBackgroundResource(ResValue.getInstance().navi_mycar1);
+                        if (Launcher.getLauncher().mCarLightView != null) {
+                            Launcher.getLauncher().mCarLightView.setBackgroundResource(ResValue.getInstance().navi_mycar1);
                             return;
                         }
                         return;
@@ -996,15 +996,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             if (updateCode == 101) {
                 if (ints != null && ints.length > 0) {
-                    Launcher.this.carSpeed = ints[0];
-                    if (Launcher.this.carSpeed == 1) {
-                        Launcher.this.carSpeed = 0;
+                    Launcher.getLauncher().carSpeed = ints[0];
+                    if (Launcher.getLauncher().carSpeed == 1) {
+                        Launcher.getLauncher().carSpeed = 0;
                     }
-                    if (Launcher.this.mTurntableView != null) {
-                        Launcher.this.mTurntableView.setTargetWithAnim(Launcher.this.carSpeed * 100);
+                    if (Launcher.getLauncher().mTurntableView != null) {
+                        Launcher.getLauncher().mTurntableView.setTargetWithAnim(Launcher.getLauncher().carSpeed * 100);
                     }
-                    if (Launcher.this.mTvSpeed != null) {
-                        Launcher.this.mTvSpeed.setText(String.valueOf(LauncherApplication.sApp.getResources().getString(R.string.car_speed)) + Launcher.this.carSpeed);
+                    if (Launcher.getLauncher().mTvSpeed != null) {
+                        Launcher.getLauncher().mTvSpeed.setText(String.valueOf(LauncherApplication.sApp.getResources().getString(R.string.car_speed)) + Launcher.getLauncher().carSpeed);
                     }
                     requestWidgetUpdate(DateNaviProvider.class);
                     return;
@@ -1013,11 +1013,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             if (updateCode == 3) {
                 if (ints != null && ints.length > 0) {
-                    if (ints[0] == 0 && Launcher.this.volume > 0) {
-                        Launcher.this.setSoundBtn();
+                    if (ints[0] == 0 && Launcher.getLauncher().volume > 0) {
+                        Launcher.getLauncher().setSoundBtn();
                         return;
                     } else {
-                        Launcher.this.setSoundCloseBtn();
+                        Launcher.getLauncher().setSoundCloseBtn();
                         return;
                     }
                 }
@@ -1025,12 +1025,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             if (updateCode == 2) {
                 if (ints != null && ints.length > 0) {
-                    Launcher.this.volume = ints[0];
-                    if (Launcher.this.volume > 0) {
-                        Launcher.this.setSoundBtn();
+                    Launcher.getLauncher().volume = ints[0];
+                    if (Launcher.getLauncher().volume > 0) {
+                        Launcher.getLauncher().setSoundBtn();
                         return;
                     } else {
-                        Launcher.this.setSoundCloseBtn();
+                        Launcher.getLauncher().setSoundCloseBtn();
                         return;
                     }
                 }
@@ -1044,7 +1044,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (updateCode == 31 && ints != null && ints.length > 0) {
-                Launcher.this.mBrightLevel = ints[0];
+                Launcher.getLauncher().mBrightLevel = ints[0];
             }
         }
     };
@@ -1054,9 +1054,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override
         public void setScrollY(int scroll) {
             scrollY = scroll;
-            if (Launcher.mWorkspace.isOnOrMovingToCustomContent()) {
-                Launcher.this.mSearchDropTargetBar.setTranslationY(-scrollY);
-                Launcher.this.getQsbBar().setTranslationY(-scrollY);
+            if (Launcher.getLauncher().mWorkspace.isOnOrMovingToCustomContent()) {
+                Launcher.getLauncher().mSearchDropTargetBar.setTranslationY(-scrollY);
+                Launcher.getLauncher().getQsbBar().setTranslationY(-scrollY);
             }
         }
     };
@@ -1095,7 +1095,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if ("mediaController".equals(mediaSource)) {
                 boolean activeControllerAppRunning = false;
                 MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-                ComponentName component = new ComponentName(Launcher.this, NotificationListener.class);
+                ComponentName component = new ComponentName(Launcher.getLauncher(), NotificationListener.class);
                 List<MediaController> controllers = msm.getActiveSessions(component);
 
                 for (MediaController controller : controllers) {
@@ -1105,40 +1105,40 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     }
                 }
                 if (!activeControllerAppRunning) {
-                    if (Launcher.this.tvMusicName != null) {
-                        Launcher.this.tvMusicName.setText(R.string.music_name);
+                    if (Launcher.getLauncher().tvMusicName != null) {
+                        Launcher.getLauncher().tvMusicName.setText(R.string.music_name);
                     }
-                    if (Launcher.this.tvMusicNameTwo != null) {
-                        Launcher.this.tvMusicNameTwo.setText(R.string.music_name);
+                    if (Launcher.getLauncher().tvMusicNameTwo != null) {
+                        Launcher.getLauncher().tvMusicNameTwo.setText(R.string.music_name);
                     }
-                    if (Launcher.this.mPlayPauseButton != null) {
-                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                    if (Launcher.getLauncher().mPlayPauseButton != null) {
+                        Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                         setWidgetButtonsTint(mPlayPauseButton);
                     }
-                    if (Launcher.this.mPlayPauseButtonTwo != null) {
-                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                    if (Launcher.getLauncher().mPlayPauseButtonTwo != null) {
+                        Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                         setBarButtonsTint(mPlayPauseButtonTwo);
                     }
-                    if (Launcher.this.tvAritst != null) {
-                        Launcher.this.tvAritst.setText(R.string.music_author);
+                    if (Launcher.getLauncher().tvAritst != null) {
+                        Launcher.getLauncher().tvAritst.setText(R.string.music_author);
                     }
-                    if (Launcher.this.tvAritstTwo != null) {
-                        Launcher.this.tvAritstTwo.setText(R.string.music_author);
+                    if (Launcher.getLauncher().tvAritstTwo != null) {
+                        Launcher.getLauncher().tvAritstTwo.setText(R.string.music_author);
                     }
-                    if (Launcher.this.tvAlbum != null) {
-                        Launcher.this.tvAlbum.setText(R.string.music_album);
+                    if (Launcher.getLauncher().tvAlbum != null) {
+                        Launcher.getLauncher().tvAlbum.setText(R.string.music_album);
                     }  
-                    if (Launcher.this.tvCurTime != null) {
-                        Launcher.this.tvCurTime.setText("00:00");
+                    if (Launcher.getLauncher().tvCurTime != null) {
+                        Launcher.getLauncher().tvCurTime.setText("00:00");
                     }
-                    if (Launcher.this.tvTotalTime != null) {
-                        Launcher.this.tvTotalTime.setText("00:00");
+                    if (Launcher.getLauncher().tvTotalTime != null) {
+                        Launcher.getLauncher().tvTotalTime.setText("00:00");
                     }
-                    if (Launcher.this.musicProgress != null) {
-                        Launcher.this.musicProgress.setProgress(0);
+                    if (Launcher.getLauncher().musicProgress != null) {
+                        Launcher.getLauncher().musicProgress.setProgress(0);
                     }
-                    if (Launcher.this.musicSeekBar != null) {
-                        Launcher.this.musicSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListenerImp(Launcher.this, null));
+                    if (Launcher.getLauncher().musicSeekBar != null) {
+                        Launcher.getLauncher().musicSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListenerImp(Launcher.getLauncher(), null));
                     }
                     updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
                     return;         
@@ -1160,9 +1160,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     if (bp != null) {
                         if (LauncherApplication.sApp.getResources().getBoolean(R.bool.music_bitmap_circular)) {
                             if (Utils.getNameToBool("isRoundedCorner")) {
-                                bp = Launcher.GetRoundedCornerBitmap(bp);
+                                bp = Launcher.getLauncher().GetRoundedCornerBitmap(bp);
                             } else {
-                                bp = Launcher.makeRoundCorner(bp);
+                                bp = Launcher.getLauncher().makeRoundCorner(bp);
                             }
                         }
                         
@@ -1172,86 +1172,86 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         }
                         
                         Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), bp);
-                        if (Launcher.this.ivALbumBg != null) {
-                            Launcher.this.ivALbumBg.setImageDrawable(drawable);
+                        if (Launcher.getLauncher().ivALbumBg != null) {
+                            Launcher.getLauncher().ivALbumBg.setImageDrawable(drawable);
                         }
-                        if (Launcher.this.ivALbumBgTwo != null) {
-                            Launcher.this.ivALbumBgTwo.setImageDrawable(drawable);
+                        if (Launcher.getLauncher().ivALbumBgTwo != null) {
+                            Launcher.getLauncher().ivALbumBgTwo.setImageDrawable(drawable);
                         }
                     }
                 } else {
-                    Launcher.this.lastpath = null;
+                    Launcher.getLauncher().lastpath = null;
                     lastProcessedPath = null; // Reset when no image data
                     
                     // Try to load the last saved bitmap
                     Bitmap savedBitmap = getBitmapFromPreferences();
                     if (savedBitmap != null) {
                         Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), savedBitmap);
-                        if (Launcher.this.ivALbumBg != null) {
-                            Launcher.this.ivALbumBg.setImageDrawable(drawable);
+                        if (Launcher.getLauncher().ivALbumBg != null) {
+                            Launcher.getLauncher().ivALbumBg.setImageDrawable(drawable);
                         }
-                        if (Launcher.this.ivALbumBgTwo != null) {
-                            Launcher.this.ivALbumBgTwo.setImageDrawable(drawable);
+                        if (Launcher.getLauncher().ivALbumBgTwo != null) {
+                            Launcher.getLauncher().ivALbumBgTwo.setImageDrawable(drawable);
                         }
                     } else {
                         // Use default if no saved bitmap
-                        if (Launcher.this.ivALbumBg != null) {
-                            Launcher.this.ivALbumBg.setImageResource(ResValue.getInstance().music_album_def);
+                        if (Launcher.getLauncher().ivALbumBg != null) {
+                            Launcher.getLauncher().ivALbumBg.setImageResource(ResValue.getInstance().music_album_def);
                         }
-                        if (Launcher.this.ivALbumBgTwo != null) {
-                            Launcher.this.ivALbumBgTwo.setImageResource(ResValue.getInstance().music_album_def);
+                        if (Launcher.getLauncher().ivALbumBgTwo != null) {
+                            Launcher.getLauncher().ivALbumBgTwo.setImageResource(ResValue.getInstance().music_album_def);
                         }
                     }
                 }
-                if (Launcher.this.ivMusicScore != null) {
-                    ((AnimationDrawable) Launcher.this.ivMusicScore.getDrawable()).start();
+                if (Launcher.getLauncher().ivMusicScore != null) {
+                    ((AnimationDrawable) Launcher.getLauncher().ivMusicScore.getDrawable()).start();
                 }
-                if (Launcher.this.ivMusicScore2 != null) {
-                    ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).start();
+                if (Launcher.getLauncher().ivMusicScore2 != null) {
+                    ((AnimationDrawable) Launcher.getLauncher().ivMusicScore2.getDrawable()).start();
                 }
 
                 if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
                     saveTitleToPreferences(musictitle);
-                    if (Launcher.this.tvMusicName != null) {
-                        if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
-                            Launcher.this.tvMusicName.setText(musictitle); 
+                    if (Launcher.getLauncher().tvMusicName != null) {
+                        if (!(Launcher.getLauncher().tvMusicName.getText().toString()).equals(musictitle)) {
+                            Launcher.getLauncher().tvMusicName.setText(musictitle); 
                         } else {
                             if (!mediaSource.equals(helpers.returnMediaSourcePre())) {
                                 helpers.setMediaSourcePre(mediaSource);
-                                Launcher.this.tvMusicName.setText("\u0020" + musictitle + "\u0020"); 
+                                Launcher.getLauncher().tvMusicName.setText("\u0020" + musictitle + "\u0020"); 
                             }                       
                         }
-                        Launcher.this.tvMusicName.setSelected(true);
+                        Launcher.getLauncher().tvMusicName.setSelected(true);
                     }
-                    if (Launcher.this.tvMusicNameTwo != null) {
-                        if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
-                            Launcher.this.tvMusicNameTwo.setText(musictitle); 
+                    if (Launcher.getLauncher().tvMusicNameTwo != null) {
+                        if (!(Launcher.getLauncher().tvMusicNameTwo.getText().toString()).equals(musictitle)) {
+                            Launcher.getLauncher().tvMusicNameTwo.setText(musictitle); 
                         } else {
                             if (!mediaSource.equals(helpers.returnMediaSourcePre())) {
                                 helpers.setMediaSourcePre(mediaSource);
-                                Launcher.this.tvMusicNameTwo.setText("\u0020" + musictitle + "\u0020"); 
+                                Launcher.getLauncher().tvMusicNameTwo.setText("\u0020" + musictitle + "\u0020"); 
                             }                           
                         }
-                        Launcher.this.tvMusicNameTwo.setSelected(true);  
+                        Launcher.getLauncher().tvMusicNameTwo.setSelected(true);  
                     }
                 }
                 if (artist != null && !artist.isEmpty()) {
                     saveArtistToPreferences(artist);
-                    if (Launcher.this.tvAritst != null) {
-                        if (!(Launcher.this.tvAritst.getText().toString()).equals(artist)) {
-                            Launcher.this.tvAritst.setText(artist);                         
+                    if (Launcher.getLauncher().tvAritst != null) {
+                        if (!(Launcher.getLauncher().tvAritst.getText().toString()).equals(artist)) {
+                            Launcher.getLauncher().tvAritst.setText(artist);                         
                         }
-                        Launcher.this.tvAritst.setSelected(true); 
+                        Launcher.getLauncher().tvAritst.setSelected(true); 
                     }  
-                    if (Launcher.this.tvAritstTwo != null) {
-                        if (!(Launcher.this.tvAritstTwo.getText().toString()).equals(artist)) {
-                            Launcher.this.tvAritstTwo.setText(artist);                         
+                    if (Launcher.getLauncher().tvAritstTwo != null) {
+                        if (!(Launcher.getLauncher().tvAritstTwo.getText().toString()).equals(artist)) {
+                            Launcher.getLauncher().tvAritstTwo.setText(artist);                         
                         }
-                        Launcher.this.tvAritstTwo.setSelected(true); 
+                        Launcher.getLauncher().tvAritstTwo.setSelected(true); 
                     }                  
                 }
-                if (album != null && !album.isEmpty() && !album.trim().isEmpty() && Launcher.this.tvAlbum != null) {
-                    Launcher.this.tvAlbum.setText(album);
+                if (album != null && !album.isEmpty() && !album.trim().isEmpty() && Launcher.getLauncher().tvAlbum != null) {
+                    Launcher.getLauncher().tvAlbum.setText(album);
                 }
                 if (lngs != null && lngs.length > 1) {
                     long curProgress = lngs[1];
@@ -1262,39 +1262,39 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         }
                         int progressPercent = (int) ((1000 * curProgress) / totalProgress);
                         if (progressPercent < 5) {
-                            if (Launcher.this.musicSeekBar != null) {
-                                Launcher.this.musicSeekBar.setProgress(5);
+                            if (Launcher.getLauncher().musicSeekBar != null) {
+                                Launcher.getLauncher().musicSeekBar.setProgress(5);
                             }
-                            if (Launcher.this.musicProgress != null) {
-                                Launcher.this.musicProgress.setProgress(progressPercent);
+                            if (Launcher.getLauncher().musicProgress != null) {
+                                Launcher.getLauncher().musicProgress.setProgress(progressPercent);
                             }
                         } else {
-                            if (Launcher.this.musicSeekBar != null) {
-                                Launcher.this.musicSeekBar.setProgress(progressPercent);
+                            if (Launcher.getLauncher().musicSeekBar != null) {
+                                Launcher.getLauncher().musicSeekBar.setProgress(progressPercent);
                             }
-                            if (Launcher.this.musicProgress != null) {
-                                Launcher.this.musicProgress.setProgress(progressPercent);
+                            if (Launcher.getLauncher().musicProgress != null) {
+                                Launcher.getLauncher().musicProgress.setProgress(progressPercent);
                             }
                         }
                     }
                     if (curProgress == 0 && totalProgress == 0) {
-                        if (Launcher.this.musicProgress != null) {
-                            Launcher.this.musicProgress.setProgress(0);
+                        if (Launcher.getLauncher().musicProgress != null) {
+                            Launcher.getLauncher().musicProgress.setProgress(0);
                         }  
-                        if (Launcher.this.tvAritst != null) {
-                            Launcher.this.tvAritst.setText("Live");
+                        if (Launcher.getLauncher().tvAritst != null) {
+                            Launcher.getLauncher().tvAritst.setText("Live");
                         }    
-                        if (Launcher.this.tvAritstTwo != null) {
-                            Launcher.this.tvAritstTwo.setText("Live");
+                        if (Launcher.getLauncher().tvAritstTwo != null) {
+                            Launcher.getLauncher().tvAritstTwo.setText("Live");
                         }                   
                     }
-                    String cur = Launcher.this.timeParse(curProgress);
-                    String total = Launcher.this.timeParse(totalProgress);
-                    if (Launcher.this.tvCurTime != null && cur != null) {
-                        Launcher.this.tvCurTime.setText(cur);
+                    String cur = Launcher.getLauncher().timeParse(curProgress);
+                    String total = Launcher.getLauncher().timeParse(totalProgress);
+                    if (Launcher.getLauncher().tvCurTime != null && cur != null) {
+                        Launcher.getLauncher().tvCurTime.setText(cur);
                     }
-                    if (Launcher.this.tvTotalTime != null && total != null) {
-                        Launcher.this.tvTotalTime.setText(total);
+                    if (Launcher.getLauncher().tvTotalTime != null && total != null) {
+                        Launcher.getLauncher().tvTotalTime.setText(total);
                         return;
                     }
                     return;
@@ -1310,84 +1310,84 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         String filename = file.getName();
                         musictitle = filename.substring(0, filename.lastIndexOf("."));
                     }
-                    Utils.setTextStr(Launcher.this.tvMusicName, musictitle);
-                    Utils.setTextStr(Launcher.this.tvMusicNameTwo, musictitle); 
+                    Utils.setTextStr(Launcher.getLauncher().tvMusicName, musictitle);
+                    Utils.setTextStr(Launcher.getLauncher().tvMusicNameTwo, musictitle); 
                     if (MusicService.author_name != null && !MusicService.author_name.isEmpty()) {
-                        Utils.setTextStr(Launcher.this.tvAritst, MusicService.author_name);
-                        Utils.setTextStr(Launcher.this.tvAritstTwo, MusicService.author_name);
+                        Utils.setTextStr(Launcher.getLauncher().tvAritst, MusicService.author_name);
+                        Utils.setTextStr(Launcher.getLauncher().tvAritstTwo, MusicService.author_name);
                     } else {
-                        Utils.setTextId(Launcher.this.tvAritst, R.string.music_author);
-                        Utils.setTextId(Launcher.this.tvAritstTwo, R.string.music_author);
+                        Utils.setTextId(Launcher.getLauncher().tvAritst, R.string.music_author);
+                        Utils.setTextId(Launcher.getLauncher().tvAritstTwo, R.string.music_author);
                     }                            
                 } else {
-                    Utils.setTextId(Launcher.this.tvMusicName, R.string.music_name);
-                    Utils.setTextId(Launcher.this.tvMusicNameTwo, R.string.music_name); 
-                    Utils.setTextId(Launcher.this.tvAritst, R.string.music_author);
-                    Utils.setTextId(Launcher.this.tvAritstTwo, R.string.music_author);         
+                    Utils.setTextId(Launcher.getLauncher().tvMusicName, R.string.music_name);
+                    Utils.setTextId(Launcher.getLauncher().tvMusicNameTwo, R.string.music_name); 
+                    Utils.setTextId(Launcher.getLauncher().tvAritst, R.string.music_author);
+                    Utils.setTextId(Launcher.getLauncher().tvAritstTwo, R.string.music_author);         
                 }
 
-                Utils.setTextStr(Launcher.this.tvCurTime, "00:00");
-                Utils.setTextStr(Launcher.this.tvTotalTime, "00:00");
-                if (Launcher.this.musicSeekBar != null) {
-                    Launcher.this.musicSeekBar.setProgress(0);
+                Utils.setTextStr(Launcher.getLauncher().tvCurTime, "00:00");
+                Utils.setTextStr(Launcher.getLauncher().tvTotalTime, "00:00");
+                if (Launcher.getLauncher().musicSeekBar != null) {
+                    Launcher.getLauncher().musicSeekBar.setProgress(0);
                 }
-                if (Launcher.this.musicProgress != null) {
-                    Launcher.this.musicProgress.setProgress(0);
+                if (Launcher.getLauncher().musicProgress != null) {
+                    Launcher.getLauncher().musicProgress.setProgress(0);
                 }
-                if (Launcher.this.mPlayPauseButton != null) {
-                    Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                if (Launcher.getLauncher().mPlayPauseButton != null) {
+                    Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                     setWidgetButtonsTint(mPlayPauseButton);
                     return;
                 }
-                if (Launcher.this.mPlayPauseButtonTwo != null) {
-                    Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                if (Launcher.getLauncher().mPlayPauseButtonTwo != null) {
+                    Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                     setBarButtonsTint(mPlayPauseButtonTwo);
                     return;
                 }
                 return;
             }
-            if (Launcher.this.ivMusicScore != null) {
-                ((AnimationDrawable) Launcher.this.ivMusicScore.getDrawable()).selectDrawable(0);
-                ((AnimationDrawable) Launcher.this.ivMusicScore.getDrawable()).stop();
+            if (Launcher.getLauncher().ivMusicScore != null) {
+                ((AnimationDrawable) Launcher.getLauncher().ivMusicScore.getDrawable()).selectDrawable(0);
+                ((AnimationDrawable) Launcher.getLauncher().ivMusicScore.getDrawable()).stop();
             }
-            if (Launcher.this.ivMusicScore2 != null) {
-                ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).selectDrawable(0);
-                ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).stop();
+            if (Launcher.getLauncher().ivMusicScore2 != null) {
+                ((AnimationDrawable) Launcher.getLauncher().ivMusicScore2.getDrawable()).selectDrawable(0);
+                ((AnimationDrawable) Launcher.getLauncher().ivMusicScore2.getDrawable()).stop();
             }
-            /*if (Launcher.this.mPlayPauseButton != null) {
-                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+            /*if (Launcher.getLauncher().mPlayPauseButton != null) {
+                Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }
-            if (Launcher.this.mPlayPauseButtonTwo != null) {
-                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+            if (Launcher.getLauncher().mPlayPauseButtonTwo != null) {
+                Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }*/
             if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
-                if (Launcher.this.tvMusicName != null) {
-                    if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
-                        Launcher.this.tvMusicName.setText(musictitle);                                                  
+                if (Launcher.getLauncher().tvMusicName != null) {
+                    if (!(Launcher.getLauncher().tvMusicName.getText().toString()).equals(musictitle)) {
+                        Launcher.getLauncher().tvMusicName.setText(musictitle);                                                  
                     }
-                    Launcher.this.tvMusicName.setSelected(true);
+                    Launcher.getLauncher().tvMusicName.setSelected(true);
                 }
-                if (Launcher.this.tvMusicNameTwo != null) {
-                    if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
-                        Launcher.this.tvMusicNameTwo.setText(musictitle);                       
+                if (Launcher.getLauncher().tvMusicNameTwo != null) {
+                    if (!(Launcher.getLauncher().tvMusicNameTwo.getText().toString()).equals(musictitle)) {
+                        Launcher.getLauncher().tvMusicNameTwo.setText(musictitle);                       
                     }
-                    Launcher.this.tvMusicNameTwo.setSelected(true); 
+                    Launcher.getLauncher().tvMusicNameTwo.setSelected(true); 
                 }
             }
-            if (artist != null && !artist.isEmpty() && Launcher.this.tvAritst != null) {
-                if (Launcher.this.tvAritst != null) {
-                    if (!(Launcher.this.tvAritst.getText().toString()).equals(artist)) {
-                        Launcher.this.tvAritst.setText(artist);              
+            if (artist != null && !artist.isEmpty() && Launcher.getLauncher().tvAritst != null) {
+                if (Launcher.getLauncher().tvAritst != null) {
+                    if (!(Launcher.getLauncher().tvAritst.getText().toString()).equals(artist)) {
+                        Launcher.getLauncher().tvAritst.setText(artist);              
                     }
-                    Launcher.this.tvAritst.setSelected(true);
+                    Launcher.getLauncher().tvAritst.setSelected(true);
                 }                   
             }
-            if (artist != null && !artist.isEmpty() && Launcher.this.tvAritstTwo != null) {
-                if (Launcher.this.tvAritstTwo != null) {
-                    if (!(Launcher.this.tvAritstTwo.getText().toString()).equals(artist)) {
-                        Launcher.this.tvAritstTwo.setText(artist);              
+            if (artist != null && !artist.isEmpty() && Launcher.getLauncher().tvAritstTwo != null) {
+                if (Launcher.getLauncher().tvAritstTwo != null) {
+                    if (!(Launcher.getLauncher().tvAritstTwo.getText().toString()).equals(artist)) {
+                        Launcher.getLauncher().tvAritstTwo.setText(artist);              
                     }
-                    Launcher.this.tvAritstTwo.setSelected(true);
+                    Launcher.getLauncher().tvAritstTwo.setSelected(true);
                 }                   
             }
             requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
@@ -1439,21 +1439,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void setPlayPauseIcon() {
-        if (Launcher.this.mPlayPauseButton != null && !temporarilyDisablePlayPauseButton) {
+        if (Launcher.getLauncher().mPlayPauseButton != null && !temporarilyDisablePlayPauseButton) {
             if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
-                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                 setWidgetButtonsTint(mPlayPauseButton);
             } else {
-                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                 setWidgetButtonsTint(mPlayPauseButton);
             }
         }
-        if (Launcher.this.mPlayPauseButtonTwo != null && !temporarilyDisablePlayPauseButton) {
+        if (Launcher.getLauncher().mPlayPauseButtonTwo != null && !temporarilyDisablePlayPauseButton) {
             if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
-                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                 setBarButtonsTint(mPlayPauseButtonTwo);
             } else {
-                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                 setBarButtonsTint(mPlayPauseButtonTwo);
             }
         }         
@@ -1481,80 +1481,80 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Bitmap savedBitmap = getBitmapFromPreferences();
         if (savedBitmap != null) {
             Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), savedBitmap);
-            if (Launcher.this.ivALbumBg != null) {
-                Launcher.this.ivALbumBg.setImageDrawable(drawable);
+            if (Launcher.getLauncher().ivALbumBg != null) {
+                Launcher.getLauncher().ivALbumBg.setImageDrawable(drawable);
             }
-            if (Launcher.this.ivALbumBgTwo != null) {
-                Launcher.this.ivALbumBgTwo.setImageDrawable(drawable);
+            if (Launcher.getLauncher().ivALbumBgTwo != null) {
+                Launcher.getLauncher().ivALbumBgTwo.setImageDrawable(drawable);
             }
         } else {
             // Use default if no saved bitmap
-            if (Launcher.this.ivALbumBg != null) {
-                Launcher.this.ivALbumBg.setImageResource(ResValue.getInstance().music_album_def);
+            if (Launcher.getLauncher().ivALbumBg != null) {
+                Launcher.getLauncher().ivALbumBg.setImageResource(ResValue.getInstance().music_album_def);
             }
-            if (Launcher.this.ivALbumBgTwo != null) {
-                Launcher.this.ivALbumBgTwo.setImageResource(ResValue.getInstance().music_album_def);
+            if (Launcher.getLauncher().ivALbumBgTwo != null) {
+                Launcher.getLauncher().ivALbumBgTwo.setImageResource(ResValue.getInstance().music_album_def);
             }
         }
 
         String musictitle = mPrefs.getString(MUSIC_TITLE_PREF, null);
         if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
-            if (Launcher.this.tvMusicName != null) {
-                if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
-                    Launcher.this.tvMusicName.setText(musictitle); 
+            if (Launcher.getLauncher().tvMusicName != null) {
+                if (!(Launcher.getLauncher().tvMusicName.getText().toString()).equals(musictitle)) {
+                    Launcher.getLauncher().tvMusicName.setText(musictitle); 
                 } else {
                     if (!mediaSource.equals(helpers.returnMediaSourcePre())) {
                         helpers.setMediaSourcePre(mediaSource);
-                        Launcher.this.tvMusicName.setText("\u0020" + musictitle + "\u0020"); 
+                        Launcher.getLauncher().tvMusicName.setText("\u0020" + musictitle + "\u0020"); 
                     }                       
                 }
-                Launcher.this.tvMusicName.setSelected(true);
+                Launcher.getLauncher().tvMusicName.setSelected(true);
             }
-            if (Launcher.this.tvMusicNameTwo != null) {
-                if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
-                    Launcher.this.tvMusicNameTwo.setText(musictitle); 
+            if (Launcher.getLauncher().tvMusicNameTwo != null) {
+                if (!(Launcher.getLauncher().tvMusicNameTwo.getText().toString()).equals(musictitle)) {
+                    Launcher.getLauncher().tvMusicNameTwo.setText(musictitle); 
                 } else {
                     if (!mediaSource.equals(helpers.returnMediaSourcePre())) {
                         helpers.setMediaSourcePre(mediaSource);
-                        Launcher.this.tvMusicNameTwo.setText("\u0020" + musictitle + "\u0020"); 
+                        Launcher.getLauncher().tvMusicNameTwo.setText("\u0020" + musictitle + "\u0020"); 
                     }                           
                 }
-                Launcher.this.tvMusicNameTwo.setSelected(true);  
+                Launcher.getLauncher().tvMusicNameTwo.setSelected(true);  
             }
         }
 
         String artist = mPrefs.getString(ARTIST_PREF, null);
         if (artist != null && !artist.isEmpty()) {
-            if (Launcher.this.tvAritst != null) {
-                if (!(Launcher.this.tvAritst.getText().toString()).equals(artist)) {
-                    Launcher.this.tvAritst.setText(artist);                         
+            if (Launcher.getLauncher().tvAritst != null) {
+                if (!(Launcher.getLauncher().tvAritst.getText().toString()).equals(artist)) {
+                    Launcher.getLauncher().tvAritst.setText(artist);                         
                 }
-                Launcher.this.tvAritst.setSelected(true); 
+                Launcher.getLauncher().tvAritst.setSelected(true); 
             }  
-            if (Launcher.this.tvAritstTwo != null) {
-                if (!(Launcher.this.tvAritstTwo.getText().toString()).equals(artist)) {
-                    Launcher.this.tvAritstTwo.setText(artist);                         
+            if (Launcher.getLauncher().tvAritstTwo != null) {
+                if (!(Launcher.getLauncher().tvAritstTwo.getText().toString()).equals(artist)) {
+                    Launcher.getLauncher().tvAritstTwo.setText(artist);                         
                 }
-                Launcher.this.tvAritstTwo.setSelected(true); 
+                Launcher.getLauncher().tvAritstTwo.setSelected(true); 
             }                  
         }
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        if (Launcher.this.mPlayPauseButton != null) {
+        if (Launcher.getLauncher().mPlayPauseButton != null) {
             if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
-                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                 setWidgetButtonsTint(mPlayPauseButton);
             } else {
-                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                 setWidgetButtonsTint(mPlayPauseButton);
             }
         }
-        if (Launcher.this.mPlayPauseButtonTwo != null) {
+        if (Launcher.getLauncher().mPlayPauseButtonTwo != null) {
             if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
-                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                 setBarButtonsTint(mPlayPauseButtonTwo);
             } else {
-                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                 setBarButtonsTint(mPlayPauseButtonTwo);
             }
         }    
@@ -1655,9 +1655,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 int band = ints[0];
                 Log.d(TAG, "-------->>> FinalRadio.U_BAND" + band);
                 if (band == 65536 || band == 65537 || band == 65538) {
-                    Launcher.this.radioBand = 0;
+                    Launcher.getLauncher().radioBand = 0;
                 } else if (band == 0 || band == 1) {
-                    Launcher.this.radioBand = 1;
+                    Launcher.getLauncher().radioBand = 1;
                 }
             }
         }
@@ -1669,47 +1669,47 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mHandler.postDelayed(() -> {
                     if (isRadioPlaying()) stopMusic();
                 }, 500);
-                Launcher.radioFreqState = ints[0];
+                Launcher.getLauncher().radioFreqState = ints[0];
                 if (ints[0] > 5000) {
                     int fmFreq = ints[0];
-                    Launcher.freq = Launcher.this.freqToString(fmFreq);
-                    String str = Launcher.this.freqToString(ints[0]);
+                    Launcher.getLauncher().freq = Launcher.getLauncher().freqToString(fmFreq);
+                    String str = Launcher.getLauncher().freqToString(ints[0]);
                     String freqs = String.valueOf(str.substring(0, str.length() - 2)) + "." + str.substring(str.length() - 2, str.length());
-                    Launcher.radioFreq = freqs;
-                    if (Launcher.this.tvCurFreq != null) {
-                        Launcher.this.tvCurFreq.setText(freqs);
+                    Launcher.getLauncher().radioFreq = freqs;
+                    if (Launcher.getLauncher().tvCurFreq != null) {
+                        Launcher.getLauncher().tvCurFreq.setText(freqs);
                     }
-                    if (Launcher.this.tvBand != null) {
-                        if (Launcher.this.tvBand.getBackground() != null) {
-                            Launcher.this.tvBand.setBackgroundResource(ResValue.getInstance().fm);
+                    if (Launcher.getLauncher().tvBand != null) {
+                        if (Launcher.getLauncher().tvBand.getBackground() != null) {
+                            Launcher.getLauncher().tvBand.setBackgroundResource(ResValue.getInstance().fm);
                         } else {
-                            Launcher.this.tvBand.setText("FM");
+                            Launcher.getLauncher().tvBand.setText("FM");
                         }
                     }
-                    if (Launcher.this.tvUnit != null) {
-                        Launcher.this.tvUnit.setText("MHz");
+                    if (Launcher.getLauncher().tvUnit != null) {
+                        Launcher.getLauncher().tvUnit.setText("MHz");
                     }
-                    if (Launcher.this.img_freq_point != null) {
-                        Launcher.this.img_freq_point.setTargetMarkAnim(fmFreq, 8750, 10800);
+                    if (Launcher.getLauncher().img_freq_point != null) {
+                        Launcher.getLauncher().img_freq_point.setTargetMarkAnim(fmFreq, 8750, 10800);
                     }
                 } else if (ints[0] < 5000 && ints[0] > 500) {
-                    Launcher.freq = Launcher.this.freqToString(ints[0]);
-                    Launcher.radioFreq = Launcher.freq;
-                    if (Launcher.this.tvCurFreq != null) {
-                        Launcher.this.tvCurFreq.setText(Launcher.freq);
+                    Launcher.getLauncher().freq = Launcher.getLauncher().freqToString(ints[0]);
+                    Launcher.getLauncher().radioFreq = Launcher.getLauncher().freq;
+                    if (Launcher.getLauncher().tvCurFreq != null) {
+                        Launcher.getLauncher().tvCurFreq.setText(Launcher.getLauncher().freq);
                     }
-                    if (Launcher.this.tvBand != null) {
-                        if (Launcher.this.tvBand.getBackground() != null) {
-                            Launcher.this.tvBand.setBackgroundResource(ResValue.getInstance().am);
+                    if (Launcher.getLauncher().tvBand != null) {
+                        if (Launcher.getLauncher().tvBand.getBackground() != null) {
+                            Launcher.getLauncher().tvBand.setBackgroundResource(ResValue.getInstance().am);
                         } else {
-                            Launcher.this.tvBand.setText("AM");
+                            Launcher.getLauncher().tvBand.setText("AM");
                         }
                     }
-                    if (Launcher.this.tvUnit != null) {
-                        Launcher.this.tvUnit.setText("KHz");
+                    if (Launcher.getLauncher().tvUnit != null) {
+                        Launcher.getLauncher().tvUnit.setText("KHz");
                     }
-                    if (Launcher.this.img_freq_point != null) {
-                        Launcher.this.img_freq_point.setTargetMarkAnim(ints[0], 522, 1620);
+                    if (Launcher.getLauncher().img_freq_point != null) {
+                        Launcher.getLauncher().img_freq_point.setTargetMarkAnim(ints[0], 522, 1620);
                     }
                 }
             }
@@ -1720,12 +1720,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) { 
             if (strs != null && strs.length > 0) {
-                Launcher.this.mVideoPlayState = strs[0];
-                if (Launcher.this.video_playpause != null && Launcher.this.mVideoPlayState != null) {
-                    if ("true".equals(Launcher.this.mVideoPlayState)) {
-                        Launcher.this.video_playpause.setBackgroundResource(ResValue.getInstance().music_playpause_icon);
-                    } else if ("false".equals(Launcher.this.mVideoPlayState)) {
-                        Launcher.this.video_playpause.setBackgroundResource(ResValue.getInstance().music_pause_icon);
+                Launcher.getLauncher().mVideoPlayState = strs[0];
+                if (Launcher.getLauncher().video_playpause != null && Launcher.getLauncher().mVideoPlayState != null) {
+                    if ("true".equals(Launcher.getLauncher().mVideoPlayState)) {
+                        Launcher.getLauncher().video_playpause.setBackgroundResource(ResValue.getInstance().music_playpause_icon);
+                    } else if ("false".equals(Launcher.getLauncher().mVideoPlayState)) {
+                        Launcher.getLauncher().video_playpause.setBackgroundResource(ResValue.getInstance().music_pause_icon);
                     }
                 }
             }
@@ -1737,116 +1737,116 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (updateCode == 0) {
                 if (strs != null && strs.length > 0) {
-                    Launcher.btName = strs[0];
-                    if (Launcher.this.mBtavName != null) {
-                        if (Launcher.btName == null || Launcher.btName.isEmpty()) {
-                            Launcher.this.mBtavName.setText(R.string.car_bt_music);
+                    Launcher.getLauncher().btName = strs[0];
+                    if (Launcher.getLauncher().mBtavName != null) {
+                        if (Launcher.getLauncher().btName == null || Launcher.getLauncher().btName.isEmpty()) {
+                            Launcher.getLauncher().mBtavName.setText(R.string.car_bt_music);
                         } else {
-                            Launcher.this.mBtavName.setText(Launcher.btName);
+                            Launcher.getLauncher().mBtavName.setText(Launcher.getLauncher().btName);
                         }
                     }
                 }
             } else if (updateCode == 1) {
                 if (strs != null && strs.length > 0) {
-                    Launcher.btArtist = strs[0];
-                    if (Launcher.this.mBtavAritst != null) {
-                        if (Launcher.btArtist == null || Launcher.btArtist.isEmpty()) {
-                            Launcher.this.mBtavAritst.setText(R.string.music_author);
+                    Launcher.getLauncher().btArtist = strs[0];
+                    if (Launcher.getLauncher().mBtavAritst != null) {
+                        if (Launcher.getLauncher().btArtist == null || Launcher.getLauncher().btArtist.isEmpty()) {
+                            Launcher.getLauncher().mBtavAritst.setText(R.string.music_author);
                         } else {
-                            Launcher.this.mBtavAritst.setText(Launcher.btArtist);
+                            Launcher.getLauncher().mBtavAritst.setText(Launcher.getLauncher().btArtist);
                         }
                     }
                 }
             } else if (updateCode == 26) {
                 if (strs != null && strs.length > 0) {
                     String btAlbum = strs[0];
-                    if (Launcher.this.mBtavAlbum != null) {
+                    if (Launcher.getLauncher().mBtavAlbum != null) {
                         if (btAlbum == null || btAlbum.isEmpty()) {
-                            Launcher.this.mBtavAlbum.setText(R.string.music_album);
+                            Launcher.getLauncher().mBtavAlbum.setText(R.string.music_album);
                         } else {
-                            Launcher.this.mBtavAlbum.setText(btAlbum);
+                            Launcher.getLauncher().mBtavAlbum.setText(btAlbum);
                         }
                     }
                 }
             } else if (updateCode == 2) {
                 if (ints != null && ints.length > 0) {
-                    Launcher.btTotalTime = ints[0];
-                    String bttotal = Launcher.this.timeChangeParse(Launcher.btTotalTime);
-                    if (Launcher.this.tvBtavTotalTime != null) {
+                    Launcher.getLauncher().btTotalTime = ints[0];
+                    String bttotal = Launcher.getLauncher().timeChangeParse(Launcher.getLauncher().btTotalTime);
+                    if (Launcher.getLauncher().tvBtavTotalTime != null) {
                         if (bttotal == null || bttotal.isEmpty()) {
-                            Launcher.this.tvBtavTotalTime.setText("00:00:00");
+                            Launcher.getLauncher().tvBtavTotalTime.setText("00:00:00");
                         } else {
-                            Launcher.this.tvBtavTotalTime.setText(bttotal);
+                            Launcher.getLauncher().tvBtavTotalTime.setText(bttotal);
                         }
                     }
                 }
             } else if (updateCode == 28) {
                 if (ints != null && ints.length > 0) {
-                    Launcher.btCurTime = ints[0];
-                    String btcur = Launcher.this.timeChangeParse(Launcher.btCurTime);
-                    if (Launcher.this.tvBtavCurTime != null) {
+                    Launcher.getLauncher().btCurTime = ints[0];
+                    String btcur = Launcher.getLauncher().timeChangeParse(Launcher.getLauncher().btCurTime);
+                    if (Launcher.getLauncher().tvBtavCurTime != null) {
                         if (btcur == null || btcur.equals("")) {
-                            Launcher.this.tvBtavCurTime.setText("00:00:00");
+                            Launcher.getLauncher().tvBtavCurTime.setText("00:00:00");
                         } else {
-                            Launcher.this.tvBtavCurTime.setText(btcur);
+                            Launcher.getLauncher().tvBtavCurTime.setText(btcur);
                         }
                     }
-                    if (Launcher.btTotalTime <= 0) {
-                        if (Launcher.this.btavProgress != null) {
-                            Launcher.this.btavProgress.setProgress(0);
+                    if (Launcher.getLauncher().btTotalTime <= 0) {
+                        if (Launcher.getLauncher().btavProgress != null) {
+                            Launcher.getLauncher().btavProgress.setProgress(0);
                         }
                     } else {
-                        if (Launcher.btCurTime < 0) {
-                            Launcher.btCurTime = 0;
+                        if (Launcher.getLauncher().btCurTime < 0) {
+                            Launcher.getLauncher().btCurTime = 0;
                         }
-                        int progressPercent = (Launcher.btCurTime * 1000) / Launcher.btTotalTime;
+                        int progressPercent = (Launcher.getLauncher().btCurTime * 1000) / Launcher.getLauncher().btTotalTime;
                         if (progressPercent < 5) {
-                            if (Launcher.this.btavProgress != null) {
-                                Launcher.this.btavProgress.setProgress(5);
+                            if (Launcher.getLauncher().btavProgress != null) {
+                                Launcher.getLauncher().btavProgress.setProgress(5);
                             }
-                        } else if (Launcher.this.btavProgress != null) {
-                            Launcher.this.btavProgress.setProgress(progressPercent);
+                        } else if (Launcher.getLauncher().btavProgress != null) {
+                            Launcher.getLauncher().btavProgress.setProgress(progressPercent);
                         }
                     }
                 }
             } else if (updateCode == 13) {
                 if (ints != null && ints.length > 0) {
-                    Launcher.btavState = ints[0];
-                    if (Launcher.btavState == 1) {
-                        if (Launcher.this.mBtavPlayPauseButton != null) {
-                            Launcher.this.mBtavPlayPauseButton.setBackgroundResource(ResValue.getInstance().btav_playpause_icon);
+                    Launcher.getLauncher().btavState = ints[0];
+                    if (Launcher.getLauncher().btavState == 1) {
+                        if (Launcher.getLauncher().mBtavPlayPauseButton != null) {
+                            Launcher.getLauncher().mBtavPlayPauseButton.setBackgroundResource(ResValue.getInstance().btav_playpause_icon);
                         }
-                    } else if (Launcher.this.mBtavPlayPauseButton != null) {
-                        Launcher.this.mBtavPlayPauseButton.setBackgroundResource(ResValue.getInstance().btav_pause_icon);
+                    } else if (Launcher.getLauncher().mBtavPlayPauseButton != null) {
+                        Launcher.getLauncher().mBtavPlayPauseButton.setBackgroundResource(ResValue.getInstance().btav_pause_icon);
                     }
                 }
             } else if (updateCode == 9) {
                 if (ints != null && ints.length > 0) {
-                    Launcher.phoneState = ints[0];
+                    Launcher.getLauncher().phoneState = ints[0];
                     if (ints[0] == 0) {
-                        Launcher.this.bClear = true;
-                        if (Launcher.this.btavProgress != null) {
-                            Launcher.this.btavProgress.setProgress(0);
+                        Launcher.getLauncher().bClear = true;
+                        if (Launcher.getLauncher().btavProgress != null) {
+                            Launcher.getLauncher().btavProgress.setProgress(0);
                         }
-                        if (Launcher.this.tvBtavCurTime != null) {
-                            Launcher.this.tvBtavCurTime.setText("00:00:00");
+                        if (Launcher.getLauncher().tvBtavCurTime != null) {
+                            Launcher.getLauncher().tvBtavCurTime.setText("00:00:00");
                         }
-                        if (Launcher.this.tvBtavTotalTime != null) {
-                            Launcher.this.tvBtavTotalTime.setText("00:00:00");
+                        if (Launcher.getLauncher().tvBtavTotalTime != null) {
+                            Launcher.getLauncher().tvBtavTotalTime.setText("00:00:00");
                         }
-                    } else if (Launcher.this.bClear) {
-                        Launcher.this.tools.notify(2, 2, 28);
-                        Launcher.this.bClear = false;
+                    } else if (Launcher.getLauncher().bClear) {
+                        Launcher.getLauncher().tools.notify(2, 2, 28);
+                        Launcher.getLauncher().bClear = false;
                     }
                 }
             } else if (updateCode == 7 && strs != null && strs.length > 0) {
                 String btName2 = strs[0];
-                if (Launcher.this.mTvBtPhoneName != null) {
+                if (Launcher.getLauncher().mTvBtPhoneName != null) {
                     if (btName2 == null || btName2.equals("")) {
-                        Launcher.this.mTvBtPhoneName.setText(R.string.car_bt_notconnect);
+                        Launcher.getLauncher().mTvBtPhoneName.setText(R.string.car_bt_notconnect);
                     } else {
-                        String btNameend = String.valueOf(Launcher.this.getResources().getString(R.string.car_bt_connected)) + "\n" + btName2;
-                        Launcher.this.mTvBtPhoneName.setText(btNameend);
+                        String btNameend = String.valueOf(Launcher.getLauncher().getResources().getString(R.string.car_bt_connected)) + "\n" + btName2;
+                        Launcher.getLauncher().mTvBtPhoneName.setText(btNameend);
                     }
                 }
             }
@@ -1860,16 +1860,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (intent.getAction() != null) {
                 switch (intent.getAction()) {
                     case "android.intent.action.SCREEN_OFF":
-                        Launcher.this.mUserPresent = false;
-                        Launcher.this.mDragLayer.clearAllResizeFrames();
-                        Launcher.this.updateRunning();
-                        if (Launcher.this.mAppsCustomizeTabHost != null && Launcher.this.mPendingAddInfo.container == -1) {
-                            Launcher.this.showWorkspace(true);
+                        Launcher.getLauncher().mUserPresent = false;
+                        Launcher.getLauncher().mDragLayer.clearAllResizeFrames();
+                        Launcher.getLauncher().updateRunning();
+                        if (Launcher.getLauncher().mAppsCustomizeTabHost != null && Launcher.getLauncher().mPendingAddInfo.container == -1) {
+                            Launcher.getLauncher().showWorkspace(true);
                         }
                         break;  
                     case Intent.ACTION_USER_PRESENT:
-                        Launcher.this.mUserPresent = true;
-                        Launcher.this.updateRunning();
+                        Launcher.getLauncher().mUserPresent = true;
+                        Launcher.getLauncher().updateRunning();
                         break;                     
                     case WakeDetectionService.ACTION_WAKE_REFRESH:
                         repairLayoutAfterWake(intent.getStringExtra("phase"));
@@ -1902,7 +1902,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 } else {
                                     helpers.setWasInRecents(true);
                                 }
-                                LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);
+                                LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.getLauncher().refreshMusic, true);
                                 
                                 if (mWorkspace != null && mWorkspace.isInOverviewMode()) {
                                     showHotseat(true, true);
@@ -1919,7 +1919,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 helpers.setPipStarted(false);
                                 helpers.setInAllApps(false);
                                 helpers.setInWidgets(false);
-                                LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);
+                                LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.getLauncher().refreshMusic, true);
                             }                        
                         }
                         break; 
@@ -2001,14 +2001,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         if (mPipWatchdogRetries >= PIP_WATCHDOG_MAX_RETRIES) {
-            Log.e(TAG, "pipWatchdog(" + source + "): PiP nadal nie wystartowal po "
-                    + mPipWatchdogRetries + " probach - rezygnuje");
-            mPipWatchdogRetries = 0;
-            return;
+        Log.e(TAG, "pipWatchdog(" + source + "): PiP still did not start after "
+                + mPipWatchdogRetries + " attempts - giving up");
+        mPipWatchdogRetries = 0;
+        return;
         }
 
         mPipWatchdogRetries++;
-        Log.w(TAG, "pipWatchdog(" + source + "): PiP nie wystartowal, wymuszam (proba "
+        Log.w(TAG, "pipWatchdog(" + source + "): PiP did not start, forcing it (attempt "
                 + mPipWatchdogRetries + ")");
         onResumePip = false;
         onBackPip = false;
@@ -2525,7 +2525,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     availableWidth = parent.getMeasuredWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
                 }
                 if (availableWidth <= 0) {
-                    availableWidth = (int) (mLauncher.screenWidth * (widgetBar ? 0.4395f : 0.8795f));
+                    availableWidth = (int) (mLauncher.getLauncher().screenWidth * (widgetBar ? 0.4395f : 0.8795f));
                 }
 
                 int totalItemsWidth = itemWidth * itemCount;
@@ -2584,8 +2584,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         public void handleMessage(Message msg) {
             if (msg.what == 1) {
                 int i = 0;
-                for (View key : Launcher.this.mWidgetsToAdvance.keySet()) {
-                    final View v = key.findViewById(((AppWidgetProviderInfo) Launcher.this.mWidgetsToAdvance.get(key)).autoAdvanceViewId);
+                for (View key : Launcher.getLauncher().mWidgetsToAdvance.keySet()) {
+                    final View v = key.findViewById(((AppWidgetProviderInfo) Launcher.getLauncher().mWidgetsToAdvance.get(key)).autoAdvanceViewId);
                     int delay = i * 250;
                     if (v instanceof Advanceable) {
                         postDelayed(new Runnable() { 
@@ -2597,7 +2597,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     }
                     i++;
                 }
-                Launcher.this.sendAdvanceMessage(20000L);
+                Launcher.getLauncher().sendAdvanceMessage(20000L);
             }
         }
     };
@@ -2605,8 +2605,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Runnable mBindPackagesUpdatedRunnable = new Runnable() { 
         @Override
         public void run() {
-            Launcher.this.bindPackagesUpdated(Launcher.this.mWidgetsAndShortcuts);
-            Launcher.this.mWidgetsAndShortcuts = null;
+            Launcher.getLauncher().bindPackagesUpdated(Launcher.getLauncher().mWidgetsAndShortcuts);
+            Launcher.getLauncher().mWidgetsAndShortcuts = null;
         }
     };
 
@@ -2953,14 +2953,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             public void handleOnBackPressed() {
                 Log.d(TAG, "onBackPressed----->");
                 if (isAllAppsVisible()) {
-                    if (Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Applications || Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Widgets) {
+                    if (Launcher.getLauncher().mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Applications || Launcher.getLauncher().mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Widgets) {
                         helpers.setInAllApps(false);
                         onBackPip = true;
                         showWorkspace(true);
                         initPip("showWorkspace", null, false);
                     } else {
                         setButtonVisible(true);
-                        Launcher.this.mAllAppsButton.setVisibility(android.view.View.VISIBLE);
+                        Launcher.getLauncher().mAllAppsButton.setVisibility(android.view.View.VISIBLE);
                         showOverviewMode(true);
                     }
                 } else if (mWorkspace.isInOverviewMode()) {
@@ -2981,16 +2981,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (ResValue.getInstance().clickapp_cling > 0) {
                     Cling cling = (Cling) findViewById(ResValue.getInstance().clickapp_cling);
                     cling.setVisibility(android.view.View.GONE);
-                    Launcher.this.stopVoice();
-                    if (Launcher.this.mWaitingForResume != null) {
-                        Launcher.this.mWaitingForResume.setStayPressed(false);
+                    Launcher.getLauncher().stopVoice();
+                    if (Launcher.getLauncher().mWaitingForResume != null) {
+                        Launcher.getLauncher().mWaitingForResume.setStayPressed(false);
                     }
-                    if (Launcher.this.mAppsCustomizeContent != null) {
-                        Launcher.this.mAppsCustomizeContent.resetDrawableState();
+                    if (Launcher.getLauncher().mAppsCustomizeContent != null) {
+                        Launcher.getLauncher().mAppsCustomizeContent.resetDrawableState();
                     }
                 }
-                if (Launcher.this.firstLayout != null) {
-                    Launcher.this.firstLayout.setVisibility(android.view.View.VISIBLE);
+                if (Launcher.getLauncher().firstLayout != null) {
+                    Launcher.getLauncher().firstLayout.setVisibility(android.view.View.VISIBLE);
                 }
             }
         });        
@@ -3075,7 +3075,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         fytData = mPrefs.getBoolean("fyt_data", true); 
         preOnResumeTime = System.currentTimeMillis();
         if (helpers.shouldAllAppsBeVisible()) {
-            Launcher.mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
+            mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
             helpers.setAllAppsShouldBeVisible(false);
         }
         handleView();
@@ -3475,7 +3475,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         // --- Re-register UI elements ---
-        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.this.refreshMusic, true);
+        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.getLauncher().refreshMusic, true);
 
         if (isServiceRunning(FabOverlayService.class)) {
             Intent serviceIntent = new Intent(LauncherApplication.sApp, FabOverlayService.class);
@@ -3989,6 +3989,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mAppsCustomizeContent.surrender();
             }
         }
+        if (mAppsCustomizeTabHost != null) {
+            mAppsCustomizeTabHost.setOnTabChangedListener(null);
+            mAppsCustomizeTabHost = null;
+        }
         app.setLauncher(null);
         try {
             mAppWidgetHost.stopListening();
@@ -4035,7 +4039,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      * Removes every listener owned by this Activity from RemoteTools' Callback lists.
      *
      * removeRefreshLisenter() leaves one entry behind (channel 7 / refreshMain), which keeps
-     * this$0 alive and leaks the whole Launcher. This is a belt-and-braces sweep: it walks the
+     * this$0 alive and leaks the whole Launcher.getLauncher(). This is a belt-and-braces sweep: it walks the
      * RemoteTools instance looking for Callback objects and drops any Lisenter whose target is
      * one of our listeners. Call it from onDestroy(), AFTER the regular removeRefreshLisenter()
      * calls, so the normal path stays in charge and this only mops up what it missed.
@@ -4204,7 +4208,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         handler.postDelayed(new Runnable() { 
             @Override
             public void run() {
-                String widgetPkgName = Launcher.this.getWidgetPackageName(appWidgetId);
+                String widgetPkgName = Launcher.getLauncher().getWidgetPackageName(appWidgetId);
                 
                 ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
                 List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
@@ -4224,7 +4228,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
                                 String appTitle = appInfo.loadLabel(pm).toString();
                                 AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                                Launcher.this.refreshLeftCycle(bean);
+                                Launcher.getLauncher().refreshLeftCycle(bean);
                                 cleanWidgetBar();
                             } catch (PackageManager.NameNotFoundException e) {
                                 throw new RuntimeException(e);
@@ -4451,40 +4455,40 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     @Override
                     public void onWeatherChanged(WeatherDescription weather) {
                         if (weather != null) {
-                            if (Launcher.this.weatherImg != null) {
-                                Launcher.this.weatherImg.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
+                            if (Launcher.getLauncher().weatherImg != null) {
+                                Launcher.getLauncher().weatherImg.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
                             }
                             String range = weather.getTemDescription().replaceAll("\\.\\d", "");
                             String temp = weather.getCurTem().replaceAll("\\.\\d", "");
-                            if (Launcher.this.weatherCity != null) {
-                                Launcher.this.weatherCity.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
+                            if (Launcher.getLauncher().weatherCity != null) {
+                                Launcher.getLauncher().weatherCity.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
                             }
-                            if (Launcher.this.weatherWeather != null) {
-                                Launcher.this.weatherWeather.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
+                            if (Launcher.getLauncher().weatherWeather != null) {
+                                Launcher.getLauncher().weatherWeather.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
                             }
-                            if (Launcher.this.weatherTemp != null) {
-                                Launcher.this.weatherTemp.setText(new StringBuilder(String.valueOf(temp)).toString());
+                            if (Launcher.getLauncher().weatherTemp != null) {
+                                Launcher.getLauncher().weatherTemp.setText(new StringBuilder(String.valueOf(temp)).toString());
                             }
-                            if (Launcher.this.weatherTempRange != null) {
-                                Launcher.this.weatherTempRange.setText(new StringBuilder(String.valueOf(range)).toString());
+                            if (Launcher.getLauncher().weatherTempRange != null) {
+                                Launcher.getLauncher().weatherTempRange.setText(new StringBuilder(String.valueOf(range)).toString());
                             }
-                            if (Launcher.this.weatherImg1 != null) {
-                                Launcher.this.weatherImg1.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
+                            if (Launcher.getLauncher().weatherImg1 != null) {
+                                Launcher.getLauncher().weatherImg1.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
                             }
-                            if (Launcher.this.weatherCity1 != null) {
-                                Launcher.this.weatherCity1.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
+                            if (Launcher.getLauncher().weatherCity1 != null) {
+                                Launcher.getLauncher().weatherCity1.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
                             }
-                            if (Launcher.this.weatherWeather1 != null) {
-                                Launcher.this.weatherWeather1.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
+                            if (Launcher.getLauncher().weatherWeather1 != null) {
+                                Launcher.getLauncher().weatherWeather1.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
                             }
-                            if (Launcher.this.weatherTemp1 != null) {
-                                Launcher.this.weatherTemp1.setText(new StringBuilder(String.valueOf(temp)).toString());
+                            if (Launcher.getLauncher().weatherTemp1 != null) {
+                                Launcher.getLauncher().weatherTemp1.setText(new StringBuilder(String.valueOf(temp)).toString());
                             }
-                            if (Launcher.this.weatherTempRange1 != null) {
-                                Launcher.this.weatherTempRange1.setText(new StringBuilder(String.valueOf(range)).toString());
+                            if (Launcher.getLauncher().weatherTempRange1 != null) {
+                                Launcher.getLauncher().weatherTempRange1.setText(new StringBuilder(String.valueOf(range)).toString());
                             }
-                            if (Launcher.this.weatherWind != null) {
-                                Launcher.this.weatherWind.setText(new StringBuilder(String.valueOf(weather.getWind())).toString());
+                            if (Launcher.getLauncher().weatherWind != null) {
+                                Launcher.getLauncher().weatherWind.setText(new StringBuilder(String.valueOf(weather.getWind())).toString());
                             }
                         }
                     }
@@ -4556,7 +4560,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 @Override
                 protected LocaleConfiguration doInBackground(Void[] unused) {
                     LocaleConfiguration localeConfiguration = new LocaleConfiguration();
-                    readConfiguration(Launcher.this, localeConfiguration);
+                    readConfiguration(Launcher.getLauncher(), localeConfiguration);
                     return localeConfiguration;
                 }
 
@@ -4603,7 +4607,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             new Thread("WriteLocaleConfiguration") {
                 @Override
                 public void run() {
-                    writeConfiguration(Launcher.this, localeConfiguration);
+                    writeConfiguration(Launcher.getLauncher(), localeConfiguration);
                 }
             }.start();
         }
@@ -5312,7 +5316,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         settingsButton = findViewById(ResValue.getInstance().settings_button);
         if (settingsButton != null) {
             settingsButton.setOnClickListener(arg0 -> {
-                onClickSettingsButton(arg0); //Launcher.this.startSettings();
+                onClickSettingsButton(arg0); //Launcher.getLauncher().startSettings();
             });
             settingsButton.setOnTouchListener(getHapticFeedbackTouchListener());
         }
@@ -5384,8 +5388,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         ImageView firstClickApp = (ImageView) findViewById(ResValue.getInstance().first_app);
         if (firstClickApp != null) {
             firstClickApp.setOnClickListener(arg0 -> {
-                if (Launcher.this.firstLayout != null) {
-                    Launcher.this.firstLayout.setVisibility(View.GONE);
+                if (Launcher.getLauncher().firstLayout != null) {
+                    Launcher.getLauncher().firstLayout.setVisibility(View.GONE);
                 }
             });
         }
@@ -5607,14 +5611,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (tvMusicName != null) {
             if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
                 if (fytData) { // from metadata
-                    if (!(Launcher.this.tvMusicName.getText().toString()).equals(MusicService.music_name)) {
+                    if (!(Launcher.getLauncher().tvMusicName.getText().toString()).equals(MusicService.music_name)) {
                         tvMusicName.setText(MusicService.music_name);                        
                     }
                 } else { // from file title
                     File file = new File(MusicService.music_path);
                     String filename = file.getName();
                     musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
+                    if (!(Launcher.getLauncher().tvMusicName.getText().toString()).equals(musictitle)) {
                         tvMusicName.setText(musictitle);                        
                     }
                 }
@@ -5627,14 +5631,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (tvMusicNameTwo != null) {
             if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
                 if (fytData) { // from metadata
-                    if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(MusicService.music_name)) {
+                    if (!(Launcher.getLauncher().tvMusicNameTwo.getText().toString()).equals(MusicService.music_name)) {
                         tvMusicNameTwo.setText(MusicService.music_name);                        
                     }
                 } else { // from file title
                     File file = new File(MusicService.music_path);
                     String filename = file.getName();
                     musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
+                    if (!(Launcher.getLauncher().tvMusicNameTwo.getText().toString()).equals(musictitle)) {
                         tvMusicNameTwo.setText(musictitle);                        
                     }
                 }
@@ -6987,19 +6991,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (fromUser) {
                 boolean handled = false;
-                if ("mediaController".equals(Launcher.this.mediaSource)) {
+                if ("mediaController".equals(Launcher.getLauncher().mediaSource)) {
                     handled = MediaTransportController.seekToProgress(
-                            Launcher.this,
-                            Launcher.this.getPreferredMediaControllerPackage(),
+                            Launcher.getLauncher(),
+                            Launcher.getLauncher().getPreferredMediaControllerPackage(),
                             progress,
                             seekBar.getMax()
                     );
                 }
-                if (!handled && Launcher.this.mPlayer != null) {
-                    Launcher.this.mPlayer.seekTo(progress);
+                if (!handled && Launcher.getLauncher().mPlayer != null) {
+                    Launcher.getLauncher().mPlayer.seekTo(progress);
                 }
-                if (Launcher.this.musicSeekBar != null) {
-                    Launcher.this.musicSeekBar.setProgress(progress);
+                if (Launcher.getLauncher().musicSeekBar != null) {
+                    Launcher.getLauncher().musicSeekBar.setProgress(progress);
                 }
             }
         }
@@ -7254,28 +7258,28 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         if (!temporarilyDisablePlayPauseButton) {
             if ("fyt".equals(mediaSource)) {
-                if (Launcher.this.mPlayPauseButton != null) {
+                if (Launcher.getLauncher().mPlayPauseButton != null) {
                     if (MusicService.state.booleanValue()) {
-                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                        Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                         setWidgetButtonsTint(mPlayPauseButton);
                     } else {
-                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                        Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                         setWidgetButtonsTint(mPlayPauseButton);
                     }
                 }
-                if (Launcher.this.mPlayPauseButtonTwo != null && barView) {
+                if (Launcher.getLauncher().mPlayPauseButtonTwo != null && barView) {
                     if (MusicService.state.booleanValue()) {
-                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                        Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                         setBarButtonsTint(mPlayPauseButtonTwo);
                     } else {
-                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                        Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                         setBarButtonsTint(mPlayPauseButtonTwo);
                     }
                 } 
                 Intent intent = new Intent();
                 intent.setAction("com.syu.music.playpause");
                 intent.setPackage("com.syu.music");
-                Launcher.this.startService(intent);
+                Launcher.getLauncher().startService(intent);
             } else if ("mediaController".equals(mediaSource)) {
                 boolean activeControllerAppRunning = false;
                 MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
@@ -7291,22 +7295,22 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         if (playbackState == PlaybackState.STATE_PLAYING) {
                             handler.postDelayed(() -> {
                                 if (playbackState == PlaybackState.STATE_PLAYING) {
-                                    if (Launcher.this.mPlayPauseButton != null) {
-                                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                                    if (Launcher.getLauncher().mPlayPauseButton != null) {
+                                        Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                                         setWidgetButtonsTint(mPlayPauseButton);
                                     }
-                                    if (Launcher.this.mPlayPauseButtonTwo != null && barView) {
-                                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                                    if (Launcher.getLauncher().mPlayPauseButtonTwo != null && barView) {
+                                        Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                                         setBarButtonsTint(mPlayPauseButtonTwo);
                                     } 
                                     controller.getTransportControls().pause();  
                                 } else {
-                                    if (Launcher.this.mPlayPauseButton != null) {
-                                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                                    if (Launcher.getLauncher().mPlayPauseButton != null) {
+                                        Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                                         setWidgetButtonsTint(mPlayPauseButton);
                                     }
-                                    if (Launcher.this.mPlayPauseButtonTwo != null && barView) {
-                                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                                    if (Launcher.getLauncher().mPlayPauseButtonTwo != null && barView) {
+                                        Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                                         setBarButtonsTint(mPlayPauseButtonTwo);
                                     }   
                                     controller.getTransportControls().play();
@@ -7314,12 +7318,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             }, 350);
 
                         } else {
-                            if (Launcher.this.mPlayPauseButton != null) {
-                                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                            if (Launcher.getLauncher().mPlayPauseButton != null) {
+                                Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                                 setWidgetButtonsTint(mPlayPauseButton);
                             }
-                            if (Launcher.this.mPlayPauseButtonTwo != null && barView) {
-                                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
+                            if (Launcher.getLauncher().mPlayPauseButtonTwo != null && barView) {
+                                Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                                 setBarButtonsTint(mPlayPauseButtonTwo);
                             }   
 
@@ -7337,7 +7341,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
                         String appTitle = appInfo.loadLabel(pm).toString();
                         AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                        Launcher.this.refreshLeftCycle(bean);
+                        Launcher.getLauncher().refreshLeftCycle(bean);
                         cleanWidgetBar();
                     } catch (PackageManager.NameNotFoundException e) {
                         throw new RuntimeException(e);
@@ -7398,36 +7402,36 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void bindRadioWidgetOnclickListener() {
         if (mRadioPrevButton != null) {
             mRadioPrevButton.setOnClickListener(v -> {
-                if (CarStates.mAppID == 1 && Launcher.this.tools != null) {
-                    Launcher.this.tools.sendInt(1, 1, 0);
+                if (CarStates.mAppID == 1 && Launcher.getLauncher().tools != null) {
+                    Launcher.getLauncher().tools.sendInt(1, 1, 0);
                 }
             });
         }
         if (mRadioBandButton != null) {
             mRadioBandButton.setOnClickListener(v -> {
-                if (CarStates.mAppID == 1 && Launcher.this.tools != null) {
+                if (CarStates.mAppID == 1 && Launcher.getLauncher().tools != null) {
                     Log.d(TAG, "---------------------->>> mRadioBandButton");
-                    Launcher.this.tools.sendInt(1, 11, -1);
+                    Launcher.getLauncher().tools.sendInt(1, 11, -1);
                 }
             });
         }
         if (mRadioPauseButton != null) {
             mRadioPauseButton.setOnClickListener(v -> {
-                if (Launcher.this.tools != null) {
+                if (Launcher.getLauncher().tools != null) {
                     if (CarStates.mAppID == 1) {
-                        Launcher.this.tools.sendInt(0, 0, 0);
-                        Launcher.this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_pause_icon);
+                        Launcher.getLauncher().tools.sendInt(0, 0, 0);
+                        Launcher.getLauncher().mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_pause_icon);
                     } else {
-                        Launcher.this.tools.sendInt(0, 0, 1);
-                        Launcher.this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_playpause_icon);
+                        Launcher.getLauncher().tools.sendInt(0, 0, 1);
+                        Launcher.getLauncher().mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_playpause_icon);
                     }
                 }
             });
         }
         if (mRadioNextButton != null) {
             mRadioNextButton.setOnClickListener(v -> {
-                if (CarStates.mAppID == 1 && Launcher.this.tools != null) {
-                    Launcher.this.tools.sendInt(1, 0, 0);
+                if (CarStates.mAppID == 1 && Launcher.getLauncher().tools != null) {
+                    Launcher.getLauncher().tools.sendInt(1, 0, 0);
                 }
             });
         }
@@ -7436,29 +7440,29 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void bindOnclickListener() {
         if (kuwomusic_playpause != null) {
             kuwomusic_playpause.setOnClickListener(v -> {
-                if (Launcher.kwAPi != null) {
-                    Launcher.this.needStartKuwo();
-                    if (Launcher.this.mKwPlayState) {
-                        Launcher.kwAPi.setPlayState(Launcher.mLauncher, PlayState.STATE_PAUSE);
+                if (Launcher.getLauncher().kwAPi != null) {
+                    Launcher.getLauncher().needStartKuwo();
+                    if (Launcher.getLauncher().mKwPlayState) {
+                        Launcher.getLauncher().kwAPi.setPlayState(Launcher.getLauncher().mLauncher, PlayState.STATE_PAUSE);
                     } else {
-                        Launcher.kwAPi.setPlayState(Launcher.mLauncher, PlayState.STATE_PLAY);
+                        Launcher.getLauncher().kwAPi.setPlayState(Launcher.getLauncher().mLauncher, PlayState.STATE_PLAY);
                     }
                 }
             });
         }
         if (kuwomusic_prev != null) {
             kuwomusic_prev.setOnClickListener(v -> {
-                if (Launcher.kwAPi != null) {
-                    Launcher.this.needStartKuwo();
-                    Launcher.kwAPi.setPlayState(Launcher.this.getApplicationContext(), PlayState.STATE_PRE);
+                if (Launcher.getLauncher().kwAPi != null) {
+                    Launcher.getLauncher().needStartKuwo();
+                    Launcher.getLauncher().kwAPi.setPlayState(Launcher.getLauncher().getApplicationContext(), PlayState.STATE_PRE);
                 }
             });
         }
         if (kuwomusic_next != null) {
             kuwomusic_next.setOnClickListener(v -> {
-                if (Launcher.kwAPi != null) {
-                    Launcher.this.needStartKuwo();
-                    Launcher.kwAPi.setPlayState(Launcher.this.getApplicationContext(), PlayState.STATE_NEXT);
+                if (Launcher.getLauncher().kwAPi != null) {
+                    Launcher.getLauncher().needStartKuwo();
+                    Launcher.getLauncher().kwAPi.setPlayState(Launcher.getLauncher().getApplicationContext(), PlayState.STATE_NEXT);
                 }
             });
         }
@@ -7467,7 +7471,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetPrev");
                 intent.setPackage("com.syu.bt");
-                ServiceIntentGate.startIfAvailable(Launcher.this, intent, "btav prev");
+                ServiceIntentGate.startIfAvailable(Launcher.getLauncher(), intent, "btav prev");
             });
         }
         if (mBtavNextButton != null) {
@@ -7475,7 +7479,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetNext");
                 intent.setPackage("com.syu.bt");
-                ServiceIntentGate.startIfAvailable(Launcher.this, intent, "btav next");
+                ServiceIntentGate.startIfAvailable(Launcher.getLauncher(), intent, "btav next");
             });
         }
         if (mBtavPlayPauseButton != null) {
@@ -7483,45 +7487,45 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetPlayPause");
                 intent.setPackage("com.syu.bt");
-                ServiceIntentGate.startIfAvailable(Launcher.this, intent, "btav playpause");
+                ServiceIntentGate.startIfAvailable(Launcher.getLauncher(), intent, "btav playpause");
             });
         }
         if (mBtavIcon != null) {
             mBtavIcon.setOnClickListener(v -> {
                 Intent intent = new Intent();
                 intent.setComponent(new ComponentName("com.syu.bt", "com.syu.bt.act.ActBtAvStart"));
-                Launcher.this.startActivity(intent);
+                Launcher.getLauncher().startActivity(intent);
             });
         }
         if (mRadioIcon != null) {
-            mRadioIcon.setOnClickListener(v -> Launcher.this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.radio"), "bt"));
+            mRadioIcon.setOnClickListener(v -> Launcher.getLauncher().startActivitySafely(v, FytPackage.getIntent(Launcher.getLauncher().mLauncher, "com.syu.radio"), "bt"));
         }
         if (mMusicIcon != null) {
-            mMusicIcon.setOnClickListener(v -> Launcher.this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.music"), "bt"));
+            mMusicIcon.setOnClickListener(v -> Launcher.getLauncher().startActivitySafely(v, FytPackage.getIntent(Launcher.getLauncher().mLauncher, "com.syu.music"), "bt"));
         }
         if (mNaviView != null) {
             mNaviView.setOnClickListener(v -> {
                 Intent launchIntent = new Intent();
                 launchIntent.setComponent(new ComponentName(FytPackage.GaodeACTION, "com.autonavi.auto.remote.fill.UsbFillActivity"));
-                Launcher.this.startActivitySafely(v, launchIntent, "bt");
+                Launcher.getLauncher().startActivitySafely(v, launchIntent, "bt");
             });
         }
         if (video_playpause != null) {
             video_playpause.setOnClickListener(v -> {
-                if (Launcher.this.mVideoPlayState != null) {
-                    if (Launcher.this.mVideoPlayState.equals("true")) {
-                        CarStates.getCar(Launcher.this.getApplicationContext()).mTools.sendInt(0, 20, 2);
+                if (Launcher.getLauncher().mVideoPlayState != null) {
+                    if (Launcher.getLauncher().mVideoPlayState.equals("true")) {
+                        CarStates.getCar(Launcher.getLauncher().getApplicationContext()).mTools.sendInt(0, 20, 2);
                     } else {
-                        CarStates.getCar(Launcher.this.getApplicationContext()).mTools.sendInt(0, 20, 1);
+                        CarStates.getCar(Launcher.getLauncher().getApplicationContext()).mTools.sendInt(0, 20, 1);
                     }
                 }
             });
         }
         if (video_prev != null) {
-            video_prev.setOnClickListener(v -> CarStates.getCar(Launcher.this.getApplicationContext()).mTools.sendInt(0, 20, 10));
+            video_prev.setOnClickListener(v -> CarStates.getCar(Launcher.getLauncher().getApplicationContext()).mTools.sendInt(0, 20, 10));
         }
         if (video_next != null) {
-            video_next.setOnClickListener(v -> CarStates.getCar(Launcher.this.getApplicationContext()).mTools.sendInt(0, 20, 11));
+            video_next.setOnClickListener(v -> CarStates.getCar(Launcher.getLauncher().getApplicationContext()).mTools.sendInt(0, 20, 11));
         }
     }
 
@@ -8164,13 +8168,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     public void onDraw() {
                         if (!mStarted) {
                             mStarted = true;
-                            Launcher.mWorkspace.postDelayed(Launcher.this.mBuildLayersRunnable, 500L);
+                            Launcher.getLauncher().mWorkspace.postDelayed(Launcher.getLauncher().mBuildLayersRunnable, 500L);
                             //final ViewTreeObserver.OnDrawListener listener = this;
-                            Launcher.mWorkspace.post(new Runnable() { 
+                            Launcher.getLauncher().mWorkspace.post(new Runnable() { 
                                 @Override
                                 public void run() {
-                                    if (Launcher.mWorkspace != null && Launcher.mWorkspace.getViewTreeObserver() != null) {
-                                        Launcher.mWorkspace.getViewTreeObserver().removeOnDrawListener(onDrawListener);
+                                    if (Launcher.getLauncher().mWorkspace != null && Launcher.getLauncher().mWorkspace.getViewTreeObserver() != null) {
+                                        Launcher.getLauncher().mWorkspace.getViewTreeObserver().removeOnDrawListener(onDrawListener);
                                     }
                                 }
                             });
@@ -8592,7 +8596,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         folderInfo.title = getText(R.string.folder_name);
 
         // Update the model
-        LauncherModel.addItemToDatabase(Launcher.this, folderInfo, container, screenId, cellX, cellY,
+        LauncherModel.addItemToDatabase(Launcher.getLauncher(), folderInfo, container, screenId, cellX, cellY,
                 false);
         sFolders.put(folderInfo.id, folderInfo);
 
@@ -9159,7 +9163,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void onClickAllAppsButton() {
-        Launcher.this.showAllApps(true, AppsCustomizePagedView.ContentType.Applications, true);
+        Launcher.getLauncher().showAllApps(true, AppsCustomizePagedView.ContentType.Applications, true);
     }
 
     public void onClickShowBarButton() {
@@ -9300,7 +9304,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     @Override
                     public void run() {
                         LogPreview.show("easyconnACTION");
-                        Launcher.this.success = Launcher.this.start(v, intent, tag);
+                        Launcher.getLauncher().success = Launcher.getLauncher().start(v, intent, tag);
                     }
                 }, 500L);
                 SystemProperties.set("service.adbec.enable", "1");
@@ -9316,7 +9320,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     @Override
                     public void run() {
                         LogPreview.show("carlifeACTION");
-                        Launcher.this.success = Launcher.this.start(v, intent, tag);
+                        Launcher.getLauncher().success = Launcher.getLauncher().start(v, intent, tag);
                     }
                 }, 500L);
                 SystemProperties.set("sys.bdcl.enable", "1");
@@ -9330,28 +9334,28 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         } else {
             if (findViewById(ResValue.getInstance().clickapp) != null) {
                 findViewById(ResValue.getInstance().clickapp).setOnClickListener(arg0 -> {
-                    Cling cling = (Cling) Launcher.this.findViewById(ResValue.getInstance().clickapp_cling);
+                    Cling cling = (Cling) Launcher.getLauncher().findViewById(ResValue.getInstance().clickapp_cling);
                     Runnable cb = () -> {
                     };
-                    Launcher.this.dismissClingApp(cling, cb, intent, 200, true);
-                    Launcher.this.success = Launcher.this.start(v, intent, tag);
-                    Launcher.this.stopVoice();
+                    Launcher.getLauncher().dismissClingApp(cling, cb, intent, 200, true);
+                    Launcher.getLauncher().success = Launcher.getLauncher().start(v, intent, tag);
+                    Launcher.getLauncher().stopVoice();
                 });
             }
             findViewById(ResValue.getInstance().clickapp_cancel).setOnClickListener(arg0 -> {
-                Cling cling = (Cling) Launcher.this.findViewById(ResValue.getInstance().clickapp_cling);
+                Cling cling = (Cling) Launcher.getLauncher().findViewById(ResValue.getInstance().clickapp_cling);
                 Runnable cb = new Runnable() {
                     @Override
                     public void run() {
                     }
                 };
-                Launcher.this.dismissClingApp(cling, cb, intent, 200, true);
-                Launcher.this.stopVoice();
-                if (Launcher.this.mWaitingForResume != null) {
-                    Launcher.this.mWaitingForResume.setStayPressed(false);
+                Launcher.getLauncher().dismissClingApp(cling, cb, intent, 200, true);
+                Launcher.getLauncher().stopVoice();
+                if (Launcher.getLauncher().mWaitingForResume != null) {
+                    Launcher.getLauncher().mWaitingForResume.setStayPressed(false);
                 }
-                if (Launcher.this.mAppsCustomizeContent != null) {
-                    Launcher.this.mAppsCustomizeContent.resetDrawableState();
+                if (Launcher.getLauncher().mAppsCustomizeContent != null) {
+                    Launcher.getLauncher().mAppsCustomizeContent.resetDrawableState();
                 }
             });
             if (intent.getComponent().getPackageName().equals("com.syu.music")) {
@@ -9557,7 +9561,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 public void onAnimationEnd(Animator animation) {
                     if (cl != null) {
                         cl.clearFolderLeaveBehind();
-                        Launcher.this.mDragLayer.removeView(Launcher.this.mFolderIconImageView);
+                        Launcher.getLauncher().mDragLayer.removeView(Launcher.getLauncher().mFolderIconImageView);
                         fi.setVisibility(android.view.View.VISIBLE);
                     }
                 }
@@ -9814,8 +9818,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         throw new RuntimeException("animation is null");
                     }
                     float t = ((Float) animation.getAnimatedValue()).floatValue();
-                    Launcher.this.dispatchOnLauncherTransitionStep(fromView, t);
-                    Launcher.this.dispatchOnLauncherTransitionStep(toView, t);
+                    Launcher.getLauncher().dispatchOnLauncherTransitionStep(fromView, t);
+                    Launcher.getLauncher().dispatchOnLauncherTransitionStep(toView, t);
                 }
             });
             mStateAnimation = LauncherAnimUtils.createAnimatorSet();
@@ -9831,10 +9835,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    Launcher.this.dispatchOnLauncherTransitionEnd(fromView, animated, false);
-                    Launcher.this.dispatchOnLauncherTransitionEnd(toView, animated, false);
-                    if (Launcher.this.mSearchDropTargetBar != null) {
-                        Launcher.this.mSearchDropTargetBar.hideSearchBar(false);
+                    Launcher.getLauncher().dispatchOnLauncherTransitionEnd(fromView, animated, false);
+                    Launcher.getLauncher().dispatchOnLauncherTransitionEnd(toView, animated, false);
+                    if (Launcher.getLauncher().mSearchDropTargetBar != null) {
+                        Launcher.getLauncher().mSearchDropTargetBar.hideSearchBar(false);
                     }
                 }
             });
@@ -9851,11 +9855,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             final Runnable startAnimRunnable = new Runnable() { 
                 @Override
                 public void run() {
-                    if (Launcher.this.mStateAnimation == stateAnimation) {
-                        Launcher.this.setPivotsForZoom(toView, scale);
-                        Launcher.this.dispatchOnLauncherTransitionStart(fromView, animated, false);
-                        Launcher.this.dispatchOnLauncherTransitionStart(toView, animated, false);
-                        LauncherAnimUtils.startAnimationAfterNextDraw(Launcher.this.mStateAnimation, toView);
+                    if (Launcher.getLauncher().mStateAnimation == stateAnimation) {
+                        Launcher.getLauncher().setPivotsForZoom(toView, scale);
+                        Launcher.getLauncher().dispatchOnLauncherTransitionStart(fromView, animated, false);
+                        Launcher.getLauncher().dispatchOnLauncherTransitionStart(toView, animated, false);
+                        LauncherAnimUtils.startAnimationAfterNextDraw(Launcher.getLauncher().mStateAnimation, toView);
                     }
                 }
             };
@@ -9932,8 +9936,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         throw new RuntimeException("animation is null");
                     }
                     float t = ((Float) animation.getAnimatedValue()).floatValue();
-                    Launcher.this.dispatchOnLauncherTransitionStep(fromView, t);
-                    Launcher.this.dispatchOnLauncherTransitionStep(workspace, t);
+                    Launcher.getLauncher().dispatchOnLauncherTransitionStep(fromView, t);
+                    Launcher.getLauncher().dispatchOnLauncherTransitionStep(workspace, t);
                 }
             });
             dispatchOnLauncherTransitionPrepare(fromView, animated, true);
@@ -9963,11 +9967,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             final AnimatorSet stateAnimation = mStateAnimation;
             final Runnable startAnimRunnable = () -> {
-                if (Launcher.this.mStateAnimation == stateAnimation) {
-                    Launcher.this.setPivotsForZoom(workspace, scale);
-                    Launcher.this.dispatchOnLauncherTransitionStart(fromView, animated, true);
-                    Launcher.this.dispatchOnLauncherTransitionStart(workspace, animated, true);
-                    LauncherAnimUtils.startAnimationAfterNextDraw(Launcher.this.mStateAnimation, workspace);
+                if (Launcher.getLauncher().mStateAnimation == stateAnimation) {
+                    Launcher.getLauncher().setPivotsForZoom(workspace, scale);
+                    Launcher.getLauncher().dispatchOnLauncherTransitionStart(fromView, animated, true);
+                    Launcher.getLauncher().dispatchOnLauncherTransitionStart(workspace, animated, true);
+                    LauncherAnimUtils.startAnimationAfterNextDraw(Launcher.getLauncher().mStateAnimation, workspace);
                 }
             };
             if (delayAnim) {
@@ -10122,12 +10126,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 @Override
                 public void run() {
                     if (successfulDrop) {
-                        Launcher.this.mAppsCustomizeTabHost.setVisibility(android.view.View.GONE);
-                        Launcher.this.showWorkspace(true, onCompleteRunnable);
-                        Launcher.this.showHotseat(true, true);
+                        Launcher.getLauncher().mAppsCustomizeTabHost.setVisibility(android.view.View.GONE);
+                        Launcher.getLauncher().showWorkspace(true, onCompleteRunnable);
+                        Launcher.getLauncher().showHotseat(true, true);
                         return;
                     }
-                    Launcher.this.exitSpringLoadedDragMode();
+                    Launcher.getLauncher().exitSpringLoadedDragMode();
                 }
             }, extendedDelay ? EXIT_SPRINGLOADED_MODE_LONG_TIMEOUT : 300);
         }
@@ -10417,7 +10421,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Intent i = new Intent();
             i.setAction("android.intent.action.MAIN");
             i.addCategory("android.intent.category.HOME");
-            if (Launcher.this.getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(Launcher.this.getPackageName()) && !helpers.settingsOpenedBoolean()) {
+            if (Launcher.getLauncher().getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName.equals(Launcher.getLauncher().getPackageName()) && !helpers.settingsOpenedBoolean()) {
                 if (colsePipAction.equals(intent.getAction())) {
                     WindowUtil.removePip();
                     return;
@@ -10429,7 +10433,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     return;
                 }
             }
-            Launcher.this.closeSystemDialogs();
+            Launcher.getLauncher().closeSystemDialogs();
         }
     }
 
@@ -10440,7 +10444,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         @Override
         public void onChange(boolean selfChange) {
-            Launcher.this.onAppWidgetReset();
+            Launcher.getLauncher().onAppWidgetReset();
         }
     }
 
@@ -10547,7 +10551,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Runnable r = new Runnable() { 
             @Override
             public void run() {
-                Launcher.this.bindAppsAdded(newScreens, addNotAnimated, addAnimated, addedApps);
+                Launcher.getLauncher().bindAppsAdded(newScreens, addNotAnimated, addAnimated, addedApps);
             }
         };
         if (!waitUntilResume(r)) {
@@ -10575,7 +10579,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Runnable r = new Runnable() { 
             @Override
             public void run() {
-                Launcher.this.bindItems(shortcuts, start, end, forceAnimateIcons);
+                Launcher.getLauncher().bindItems(shortcuts, start, end, forceAnimateIcons);
             }
         };
         JLog.getInstance().e("Launcher bindItems");
@@ -10640,8 +10644,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     mWorkspace.postDelayed(new Runnable() { 
                         @Override
                         public void run() {
-                            Launcher.mWorkspace.snapToPage(newScreenIndex);
-                            Launcher.mWorkspace.postDelayed(startBounceAnimRunnable, Launcher.NEW_APPS_ANIMATION_DELAY);
+                            Launcher.getLauncher().mWorkspace.snapToPage(newScreenIndex);
+                            Launcher.getLauncher().mWorkspace.postDelayed(startBounceAnimRunnable, Launcher.getLauncher().NEW_APPS_ANIMATION_DELAY);
                         }
                     }, NEW_APPS_PAGE_MOVE_DELAY);
                 } else {
@@ -10657,7 +10661,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Runnable r = new Runnable() { 
             @Override
             public void run() {
-                Launcher.this.bindFolders(folders);
+                Launcher.getLauncher().bindFolders(folders);
             }
         };
         if (!waitUntilResume(r)) {
@@ -10728,7 +10732,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Runnable r = new Runnable() { 
             @Override
             public void run() {
-                Launcher.this.finishBindingItems(upgradePath);
+                Launcher.getLauncher().finishBindingItems(upgradePath);
             }
         };
         if (!waitUntilResume(r)) {
@@ -10756,7 +10760,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.post(new Runnable() { 
                 @Override
                 public void run() {
-                    Launcher.this.onFinishBindingItems();
+                    Launcher.getLauncher().onFinishBindingItems();
                 }
             });
             scheduleHomeLayoutWatchdog("finishBindingItems", !isAllAppsVisible());
@@ -10839,7 +10843,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Runnable r = new Runnable() { 
             @Override
             public void run() {
-                Launcher.this.bindComponentsRemoved(packageNames, appInfos, packageRemoved);
+                Launcher.getLauncher().bindComponentsRemoved(packageNames, appInfos, packageRemoved);
             }
         };
         if (!waitUntilResume(r)) {
@@ -10920,7 +10924,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mHandler.postDelayed(new Runnable() { 
                     @Override
                     public void run() {
-                        Launcher.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                        Launcher.getLauncher().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                     }
                 }, 500L);
             }
@@ -11221,7 +11225,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         new Thread() { 
             @Override
             public void run() {
-                Launcher.this.setDefaultWallpaper(name);
+                Launcher.getLauncher().setDefaultWallpaper(name);
             }
         }.start();
     }
@@ -11257,7 +11261,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Runnable cb = new Runnable() { 
             @Override
             public void run() {
-                Launcher.this.showFirstRunWorkspaceCling();
+                Launcher.getLauncher().showFirstRunWorkspaceCling();
             }
         };
         dismissCling(cling, cb, "cling_gel.first_run.dismissed", 200, false);
@@ -11271,7 +11275,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             cb = new Runnable() { 
                 @Override
                 public void run() {
-                    Launcher.mWorkspace.enterOverviewMode();
+                    Launcher.getLauncher().mWorkspace.enterOverviewMode();
                 }
             };
         }
