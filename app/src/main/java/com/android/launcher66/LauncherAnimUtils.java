@@ -8,13 +8,21 @@ import android.animation.ValueAnimator;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Iterator;
 
 public class LauncherAnimUtils {
-    private static ViewTreeObserver.OnDrawListener onDrawListener;
-    static HashSet<Animator> sAnimators = new HashSet<>();
-    static Animator.AnimatorListener sEndAnimListener = new Animator.AnimatorListener() { 
+
+    // UWAGA: nie przywracaj pola typu:
+    //     private static ViewTreeObserver.OnDrawListener onDrawListener;
+    // Anonimowa klasa OnDrawListener trzyma przechwycony View przez syntetyczne pole val$view,
+    // a View trzyma mContext == Activity. Statyczne pole = referencja żyjąca tak długo jak
+    // proces => wyciek całego Launchera przy każdym obrocie/odtworzeniu Activity.
+
+    static final HashSet<Animator> sAnimators = new HashSet<>();
+
+    static final Animator.AnimatorListener sEndAnimListener = new Animator.AnimatorListener() {
         @Override
         public void onAnimationStart(Animator animation) {
             LauncherAnimUtils.sAnimators.add(animation);
@@ -36,32 +44,90 @@ public class LauncherAnimUtils {
     };
 
     public static void cancelOnDestroyActivity(Animator a) {
-        a.addListener(sEndAnimListener);
+        if (a != null) {
+            a.addListener(sEndAnimListener);
+        }
     }
 
     public static void startAnimationAfterNextDraw(final Animator animator, final View view) {
-        onDrawListener = new ViewTreeObserver.OnDrawListener() { 
+        if (animator == null || view == null) {
+            return;
+        }
+
+        final ViewTreeObserver registeredOn = view.getViewTreeObserver();
+        if (registeredOn == null || !registeredOn.isAlive()) {
+            return;
+        }
+
+        // View trzymany słabo: jeśli Activity zginie przed kolejnym rysowaniem,
+        // nic tutaj nie przedłuża mu życia.
+        final WeakReference<View> viewRef = new WeakReference<>(view);
+
+        // Jednoelementowa tablica pozwala anonimowej klasie wyrejestrować samą siebie
+        // z zagnieżdżonego Runnable (zamiast statycznego pola, które było źródłem wycieku).
+        final ViewTreeObserver.OnDrawListener[] self = new ViewTreeObserver.OnDrawListener[1];
+
+        self[0] = new ViewTreeObserver.OnDrawListener() {
             private boolean mStarted = false;
 
             @Override
             public void onDraw() {
-                if (!this.mStarted) {
-                    this.mStarted = true;
-                    if (animator.getDuration() != 0) {
-                        animator.start();
-                        View view2 = view;
-                        final View view3 = view;
-                        view2.post(new Runnable() { 
-                            @Override
-                            public void run() {
-                                view3.getViewTreeObserver().removeOnDrawListener(onDrawListener);
-                            }
-                        });
-                    }
+                if (this.mStarted) {
+                    return;
+                }
+                this.mStarted = true;
+
+                final View target = viewRef.get();
+                final ViewTreeObserver.OnDrawListener listener = self[0];
+                self[0] = null;
+
+                // Wyrejestrowanie BEZWARUNKOWE. Stary kod robił to tylko gdy
+                // getDuration() != 0, więc anulowana (0 ms) animacja zostawiała
+                // listener podpięty na zawsze. removeOnDrawListener() nie może być
+                // wołane w trakcie dispatchu onDraw(), stąd post().
+                if (target != null) {
+                    target.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            detach(target, registeredOn, listener);
+                        }
+                    });
+                } else {
+                    detach(null, registeredOn, listener);
+                }
+
+                // getDuration() == 0 jest umownym sygnałem "animacja anulowana".
+                if (target != null && animator.getDuration() != 0) {
+                    animator.start();
                 }
             }
         };
-        view.getViewTreeObserver().addOnDrawListener(onDrawListener);
+
+        registeredOn.addOnDrawListener(self[0]);
+    }
+
+    /**
+     * Zdejmuje listener z aktualnego obserwatora View (po attach/detach ViewTreeObserver
+     * jest podmieniany przez merge()), a w razie potrzeby z tego, na którym rejestrowaliśmy.
+     */
+    private static void detach(View view, ViewTreeObserver registeredOn,
+                               ViewTreeObserver.OnDrawListener listener) {
+        if (listener == null) {
+            return;
+        }
+        ViewTreeObserver current = (view != null) ? view.getViewTreeObserver() : null;
+        if (current != null && current.isAlive()) {
+            try {
+                current.removeOnDrawListener(listener);
+            } catch (IllegalStateException ignored) {
+            }
+        }
+        if (registeredOn != null && registeredOn != current && registeredOn.isAlive()) {
+            try {
+                registeredOn.removeOnDrawListener(listener);
+            } catch (IllegalStateException ignored) {
+            }
+        }
     }
 
     public static void onDestroyActivity() {
@@ -75,6 +141,9 @@ public class LauncherAnimUtils {
                 sAnimators.remove(a);
             }
         }
+        // cancel() powinien zdjąć animator przez sEndAnimListener, ale jeśli któryś
+        // nie wyśle callbacku, statyczny set trzymałby jego target View => Activity.
+        sAnimators.clear();
     }
 
     public static AnimatorSet createAnimatorSet() {

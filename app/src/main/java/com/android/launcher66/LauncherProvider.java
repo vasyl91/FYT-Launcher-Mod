@@ -671,7 +671,7 @@ public class LauncherProvider extends ContentProvider {
                 throw new RuntimeException("Error: max screen id was not initialized");
             }
             this.mMaxScreenId++;
-            ArrayList<Long> workspaceScreens = Launcher.getModel().sBgWorkspaceScreens;
+            ArrayList<Long> workspaceScreens = LauncherModel.sBgWorkspaceScreens;
             if (workspaceScreens != null && workspaceScreens.contains(mMaxScreenId)) {
                 Long maxScreen = Math.abs(Collections.max(workspaceScreens));
                 if (maxScreen == 302) {

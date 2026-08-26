@@ -112,6 +112,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.async.AsyncTask;
+import com.android.launcher66.settings.AppListPipDialogFragment;
+import com.android.launcher66.settings.AppListStatsDialogFragment;
 import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.FabOverlayService;
@@ -264,8 +266,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private KWAPI kwAPi;
     public TextView mAllAppView;
     public static Launcher mLauncher;
-    public static LauncherModel mModel;
-    public static Workspace mWorkspace;
+    public LauncherModel mModel;
+    public Workspace mWorkspace;
     public boolean sNightMode;
     public View wallpaperButton;
     public View widgetButton;
@@ -1883,7 +1885,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 mHomeFromAllAppsPending = isAllAppsVisible()
                                         || (mAppsCustomizeTabHost != null
                                         && mAppsCustomizeTabHost.getVisibility() == View.VISIBLE);
-                                AppListDialogFragment.dismissListDialog();
+                                AppListDialogFragment.dismissListDialog(getSupportFragmentManager());
+                                AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
+                                AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
                                 if (isOnMainWorkspaceScreen()) {
                                     mHomeFromAllAppsPending = false;
                                     mHomeWorkspaceRefreshHandled = refreshWorkspaceAfterHome();
@@ -3850,7 +3854,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override 
     protected void onPause() {
-        AppListDialogFragment.dismissListDialog();
+        AppListDialogFragment.dismissListDialog(getSupportFragmentManager());
+        AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
+        AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
         super.onPause();
         allowPip = false;
         cleanWidgetBar();
@@ -3972,6 +3978,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         WindowHostAvReaper.releaseAll();
         clearBarWidgetReferences();
         mWorkspace.removeCallbacks(mBuildLayersRunnable);
+        removePendingOnDrawListener();
         LauncherAppState app = LauncherAppState.getInstance();
         if (isChangingConfigurations()) {
             // Check if the loader should be stopped (using ViewModel logic)
@@ -4681,7 +4688,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return mDragLayer;
     }
 
-    public static boolean isDraggingEnabled() {
+    public boolean isDraggingEnabled() {
         return !mModel.isLoadingWorkspace();
     }
 
@@ -6205,130 +6212,196 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }, 1000L);
     }
 
+    // =====================================================================================
+    // BOTTOM BAR - single source of truth for row -> bean mapping
+    // =====================================================================================
+
+    /**
+     * Visibility rule for one bottom-bar slot.
+     *
+     * IMPORTANT: {@code slot} is {@link AppMultiple#index} - the logical slot of the row -
+     * NOT the position of the row inside the query result and NOT the adapter position.
+     * The visible list is compacted, so those three numbers do not match once widgetBar
+     * hides some slots.
+     */
+    private boolean isBottomSlotVisible(int slot, boolean currentUserLayout, boolean currentWidgetBar) {
+        if (!(currentUserLayout && currentWidgetBar)) {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                // portrait -> visible slots: 1, 2, 3 4, 5, 6, 7
+                return !(slot == 0);
+            } else return true; // landscape -> all slots visible
+        }
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // landscape + widget -> visible slots: 1, 4, 5, 6, 7
+            return !(slot == 0 || slot == 2 || slot == 3);
+        }
+        // portrait + widget -> visible slots: 1, 5, 6, 7
+        return !(slot == 0 || slot == 2 || slot == 3 || slot == 4);
+    }
+
+    private List<AppMultiple> queryBottomAppRows() {
+        try {
+            return LitePal.order("\"index\" asc").find(AppMultiple.class);
+        } catch (Exception e) {
+            Log.e(TAG, "Database error while reading AppMultiple: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * The ONLY place where AppMultiple rows are turned into AppListBeans.
+     * Every bean carries the rowId and slot of the row it came from, so neither the
+     * adapter nor the picker dialog ever has to reverse-engineer a database index from
+     * a list position.
+     */
+    private List<AppListBean> buildBottomAppBeans(List<AppMultiple> rows,
+                                                  Map<String, AppInfo> appInfoLookup,
+                                                  Map<String, Boolean> installCache,
+                                                  boolean currentUserLayout,
+                                                  boolean currentWidgetBar) {
+        List<AppListBean> beans = new ArrayList<AppListBean>();
+        if (rows == null || rows.isEmpty()) {
+            return beans;
+        }
+
+        for (AppMultiple row : rows) {
+            if (row == null || !isBottomSlotVisible(row.index, currentUserLayout, currentWidgetBar)) {
+                continue;
+            }
+
+            AppListBean bean;
+            if (FytPackage.AppAction.equals(row.packageName)) {
+                Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_apps);
+                bean = new AppListBean(Utils.getNameToStr("car_app"), bmp, row.packageName, row.className);
+
+            } else if (FytPackage.AddAction.equals(row.packageName)
+                    || !isPackageInstalledCached(installCache, row.packageName)) {
+                // empty slot, or a slot whose package is gone -> "+" placeholder,
+                // but keep the stored package/class so the regression guard below
+                // still counts it the same way the old code did.
+                Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
+                bean = new AppListBean(row.name, bmp, row.packageName, row.className);
+
+            } else {
+                AppInfo allApp = findAppInfo(appInfoLookup, row.packageName, row.className);
+                if (allApp != null) {
+                    bean = new AppListBean(allApp.title.toString(), allApp.iconBitmap,
+                            row.packageName, row.className);
+                } else {
+                    // Installed but not in AllAppsList (transient during a package update) -
+                    // load straight from PackageManager so the icon does not disappear.
+                    Bitmap icon = loadAppIconFromPackageManager(row.packageName, row.className);
+                    bean = new AppListBean(row.name, icon, row.packageName, row.className);
+                }
+            }
+
+            bean.rowId = row.rowId();
+            bean.slot = row.index;
+            beans.add(bean);
+        }
+        return beans;
+    }
+
+    /** Installed, real (non-placeholder) rows that SHOULD be visible in the current layout. */
+    private int countInstalledBottomRows(List<AppMultiple> rows,
+                                         Map<String, Boolean> installCache,
+                                         boolean currentUserLayout,
+                                         boolean currentWidgetBar) {
+        if (rows == null) {
+            return 0;
+        }
+        int installed = 0;
+        for (AppMultiple row : rows) {
+            if (row == null || !isBottomSlotVisible(row.index, currentUserLayout, currentWidgetBar)) {
+                continue;
+            }
+            if (!FytPackage.AddAction.equals(row.packageName)
+                    && !FytPackage.AppAction.equals(row.packageName)
+                    && isPackageInstalledCached(installCache, row.packageName)) {
+                installed++;
+            }
+        }
+        return installed;
+    }
+
+    private int countRealBeans(List<AppListBean> beans) {
+        if (beans == null) {
+            return 0;
+        }
+        int real = 0;
+        for (AppListBean bean : beans) {
+            if (bean == null) {
+                continue;
+            }
+            if (!FytPackage.AddAction.equals(bean.packageName)
+                    && !FytPackage.AppAction.equals(bean.packageName)) {
+                real++;
+            }
+        }
+        return real;
+    }
+
     private void initializeAppList() {
         Log.d(TAG, "initializeAppList");
-        
-        List<AppMultiple> appData = null;
-        try {
-            appData = LitePal.order("\"index\" asc").find(AppMultiple.class);
-        } catch (Exception e) {
-            Log.e(TAG, "Database error in initializeAppList: " + e.getMessage());
-        }
-        
-        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
+
+        List<AppMultiple> appData = queryBottomAppRows();
+
+        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
 
         long sourceSignature = calculateAppRowsSignature(appData, userLayout, widgetBar);
-        if (sourceSignature == mLastAppListSourceSignature
-                && mAppListAdapter != null
-                && mAppListAdapter.getItemCount() > 0
-                && mAppListData != null
-                && !mAppListData.isEmpty()) {
+        if (sourceSignature == mLastAppListSourceSignature && hasCurrentAppListData()) {
             Log.d(TAG, "initializeAppList: unchanged, skipping rebuild");
             finishAppListInitialization();
             return;
         }
 
         boolean hasExistingAppListData = hasCurrentAppListData();
-        List<AppListBean> nextAppListData = new ArrayList<AppListBean>();
 
-        Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
-        Map<String, Boolean> installCache = new HashMap<>();
-        
-        if (appData != null && !appData.isEmpty()) {
-            for (int i2 = 0; i2 < appData.size(); i2++) {
-                AppMultiple multiple2 = appData.get(i2);
-                
-                // Skip apps that shouldn't be shown when widgetBar is true
-                if (userLayout && widgetBar) {
-                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        if (i2 == 0 || i2 == 2 || i2 == 3) {
-                            continue;
-                        }
-                    } else {
-                        if (i2 == 0 || i2 == 2 || i2 == 3 || i2 == 4) {
-                            continue;
-                        }
-                    }
-                }
-                
-                if (multiple2.packageName.equals(FytPackage.AppAction)) {
-                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_apps);
-                    AppListBean ab2 = new AppListBean(Utils.getNameToStr("car_app"), bmp, multiple2.packageName, multiple2.className);
-                    nextAppListData.add(ab2);
-                } else if (multiple2.packageName.equals(FytPackage.AddAction)
-                        || !isPackageInstalledCached(installCache, multiple2.packageName)) {
-                    Bitmap bmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
-                    AppListBean ab3 = new AppListBean(multiple2.name, bmp2, multiple2.packageName, multiple2.className);
-                    nextAppListData.add(ab3);
-                } else {
-                    AppInfo allApp2 = findAppInfo(appInfoLookup, multiple2.packageName, multiple2.className);
-                    if (allApp2 != null) {
-                        AppListBean ab4 = new AppListBean(allApp2.title.toString(), allApp2.iconBitmap, multiple2.packageName, multiple2.className);
-                        nextAppListData.add(ab4);
-                        continue;
-                    }
-                    
-                    // If not found in AllAppsList but package is installed, load from package manager
-                    if (isPackageInstalledCached(installCache, multiple2.packageName)) {
-                        Bitmap icon = loadAppIconFromPackageManager(multiple2.packageName, multiple2.className);
-                        AppListBean ab = new AppListBean(multiple2.name, icon, multiple2.packageName, multiple2.className);
-                        nextAppListData.add(ab);
-                    } else {
-                        // Not installed and not found
-                        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
-                        AppListBean ab = new AppListBean(multiple2.name, bmp, multiple2.packageName, multiple2.className);
-                        nextAppListData.add(ab);
-                    }
-                }
-            }
-        } else {
+        if (appData == null || appData.isEmpty()) {
             if (hasExistingAppListData) {
                 Log.w(TAG, "initializeAppList: empty app rows during refresh, keeping current app list");
                 scheduleAppListInitializationRetry("emptyAppRows");
                 finishAppListInitialization();
                 return;
             }
+
             Log.w(TAG, "Creating default app entries (appData or AllAppsList not ready)");
-            mAppListData = nextAppListData;
-            createDefaultAppEntries(); 
-            nextAppListData = mAppListData;
+            mAppListData = new ArrayList<AppListBean>();
+            createDefaultAppEntries();
+
+            // Read the freshly inserted rows back instead of trusting the beans that
+            // createDefaultAppEntries() built by hand: only the query gives us real
+            // rowIds, and it also fixes the old bug where the widgetBar branch always
+            // produced the 5-slot landscape list even in portrait.
+            appData = queryBottomAppRows();
+            if (appData == null || appData.isEmpty()) {
+                Log.e(TAG, "initializeAppList: defaults written but cannot be read back");
+                finishAppListInitialization();
+                return;
+            }
+            sourceSignature = calculateAppRowsSignature(appData, userLayout, widgetBar);
+            hasExistingAppListData = false;
         }
-        
+
+        Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
+        Map<String, Boolean> installCache = new HashMap<>();
+
+        List<AppListBean> nextAppListData =
+                buildBottomAppBeans(appData, appInfoLookup, installCache, userLayout, widgetBar);
+
         // Regression guard: if the new list has fewer real-app entries than the DB rows
-        // that are actually installed, it means AllAppsList.data was transiently incomplete
+        // that are actually installed, AllAppsList.data was transiently incomplete
         // (e.g. during a package update). Keep the current list to avoid wiping the bar.
         boolean safeToUpdate = true;
-        if (appData != null && !appData.isEmpty() && hasExistingAppListData) {
-            int installedDbCount = 0;
-            for (int i2 = 0; i2 < appData.size(); i2++) {
-                AppMultiple m = appData.get(i2);
-                if (userLayout && widgetBar) {
-                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        if (i2 == 0 || i2 == 2 || i2 == 3) {
-                            continue;
-                        }
-                    } else {
-                        if (i2 == 0 || i2 == 2 || i2 == 3 || i2 == 4) {
-                            continue;
-                        }
-                    }
-                }
-
-                if (!m.packageName.equals(FytPackage.AddAction) && !m.packageName.equals(FytPackage.AppAction)
-                        && isPackageInstalledCached(installCache, m.packageName)) {
-                    installedDbCount++;
-                }
-            }
-            int newRealCount = 0;
-            for (AppListBean b : nextAppListData) {
-                if (!b.packageName.equals(FytPackage.AddAction) && !b.packageName.equals(FytPackage.AppAction)) {
-                    newRealCount++;
-                }
-            }
+        if (hasExistingAppListData) {
+            int installedDbCount =
+                    countInstalledBottomRows(appData, installCache, userLayout, widgetBar);
+            int newRealCount = countRealBeans(nextAppListData);
             if (newRealCount < installedDbCount) {
-                Log.w(TAG, "initializeAppList: new list (" + newRealCount + " real apps) is fewer than installed DB entries ("
-                        + installedDbCount + ") — AllAppsList may be incomplete, keeping current list");
+                Log.w(TAG, "initializeAppList: new list (" + newRealCount
+                        + " real apps) is fewer than installed DB entries (" + installedDbCount
+                        + ") - AllAppsList may be incomplete, keeping current list");
                 safeToUpdate = false;
             }
         }
@@ -6396,137 +6469,50 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void refreshCycle(List<AppMultiple> data) {
-        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
+        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+
         long sourceSignature = calculateAppRowsSignature(data, userLayout, widgetBar);
-        if (sourceSignature == mLastAppListSourceSignature
-                && mAppListAdapter != null
-                && mAppListAdapter.getItemCount() > 0
-                && mAppListData != null
-                && !mAppListData.isEmpty()) {
+        if (sourceSignature == mLastAppListSourceSignature && hasCurrentAppListData()) {
             Log.d(TAG, "refreshCycle: unchanged, skipping adapter rebuild");
             return;
         }
 
         boolean hasExistingAppListData = hasCurrentAppListData();
-        List<AppListBean> nextAppListData = new ArrayList<>();
+
+        if (data == null || data.isEmpty()) {
+            // Never blank the bar on an empty read - either keep what is on screen or
+            // let initializeAppList() create the defaults.
+            if (hasExistingAppListData) {
+                Log.w(TAG, "refreshCycle: empty app rows during refresh, keeping current list");
+                scheduleAppListInitializationRetry("refreshCycleEmptyRows");
+            } else {
+                scheduleAppListInitializationRetry("refreshCycleNoRows");
+            }
+            return;
+        }
 
         Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
         Map<String, Boolean> installCache = new HashMap<>();
 
-        if (data != null && !data.isEmpty()) {
-            for (int i = 0; i < data.size(); i++) {
-                AppMultiple multiple = data.get(i);
+        List<AppListBean> nextAppListData =
+                buildBottomAppBeans(data, appInfoLookup, installCache, userLayout, widgetBar);
 
-                // Skip apps that shouldn't be shown when widgetBar is true
-                if (userLayout && widgetBar) {
-                    // Only show 2nd, 5th, 6th, 7th and 8th apps (indices 1, 4, 5, 6, 7)
-                    // Skip 1st, 3rd, and 4th apps (indices 0, 2, 3 + 4 for portrait)
-                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        if (i == 0 || i == 2 || i == 3) {
-                            continue;
-                        }
-                    } else {
-                        if (i == 0 || i == 2 || i == 3 || i == 4) {
-                            continue;
-                        }
-                    }
-                }
-
-                if (multiple.packageName.equals(FytPackage.AppAction)) {
-                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_apps);
-                    AppListBean ab = new AppListBean(
-                            Utils.getNameToStr("car_app"),
-                            bmp,
-                            multiple.packageName,
-                            multiple.className
-                    );
-                    nextAppListData.add(ab);
-
-                } else if (multiple.packageName.equals(FytPackage.AddAction)) {
-                    Bitmap bmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
-                    AppListBean ab2 = new AppListBean(
-                            multiple.name != null ? multiple.name : "",
-                            bmp2,
-                            FytPackage.AddAction,
-                            ""
-                    );
-                    nextAppListData.add(ab2);
-
-                } else {
-                    AppInfo allApp = findAppInfo(appInfoLookup, multiple.packageName, multiple.className);
-                    if (allApp != null) {
-                        AppListBean ab3 = new AppListBean(
-                                allApp.title.toString(),
-                                allApp.iconBitmap,
-                                multiple.packageName,
-                                multiple.className
-                        );
-                        nextAppListData.add(ab3);
-                        continue;
-                    }
-                    // Fallback: if not found in AllAppsList but package IS installed,
-                    // load the icon directly from PackageManager so the app doesn't disappear.
-                    if (isPackageInstalledCached(installCache, multiple.packageName)) {
-                        Bitmap icon = loadAppIconFromPackageManager(multiple.packageName, multiple.className);
-                        AppListBean ab = new AppListBean(multiple.name, icon, multiple.packageName, multiple.className);
-                        nextAppListData.add(ab);
-                    } else {
-                        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
-                        AppListBean ab = new AppListBean(multiple.name, bmp, multiple.packageName, multiple.className);
-                        nextAppListData.add(ab);
-                    }
-                }
-            }
-        } else if (hasExistingAppListData) {
-            Log.w(TAG, "refreshCycle: empty app rows during refresh, keeping current list");
-            scheduleAppListInitializationRetry("refreshCycleEmptyRows");
-            return;
-        }
-        // Regression guard: only update adapter if the new list has at least as many
-        // real apps as there are installed entries in the DB.  This prevents the bar
-        // from going blank when AllAppsList.data is transiently incomplete (e.g. a
-        // PACKAGE_CHANGED/update event causes a momentary remove-then-re-add cycle).
+        // Same regression guard as initializeAppList(): only swap the list in when it is
+        // at least as complete as the database says it should be.
         boolean safeToUpdate = true;
-        if (data != null && !data.isEmpty() && hasExistingAppListData) {
-            int installedDbCount = 0;
-            for (int i = 0; i < data.size(); i++) {
-                AppMultiple m = data.get(i);
-
-                // Mirror the widgetBar slot-skipping above: rows that are intentionally
-                // hidden when widgetBar is on must not be counted as "missing" real
-                // apps, otherwise this guard permanently (and incorrectly) rejects a
-                // valid, correctly-filtered list every time userLayout && widgetBar
-                // is active.
-                if (userLayout && widgetBar) {
-                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        if (i == 0 || i == 2 || i == 3) {
-                            continue;
-                        }
-                    } else {
-                        if (i == 0 || i == 2 || i == 3 || i == 4) {
-                            continue;
-                        }
-                    }
-                }
-
-                if (!m.packageName.equals(FytPackage.AddAction) && !m.packageName.equals(FytPackage.AppAction)
-                        && isPackageInstalledCached(installCache, m.packageName)) {
-                    installedDbCount++;
-                }
-            }
-            int newRealCount = 0;
-            for (AppListBean b : nextAppListData) {
-                if (!b.packageName.equals(FytPackage.AddAction) && !b.packageName.equals(FytPackage.AppAction)) {
-                    newRealCount++;
-                }
-            }
+        if (hasExistingAppListData) {
+            int installedDbCount =
+                    countInstalledBottomRows(data, installCache, userLayout, widgetBar);
+            int newRealCount = countRealBeans(nextAppListData);
             if (newRealCount < installedDbCount) {
-                Log.w(TAG, "refreshCycle: new list (" + newRealCount + " real apps) fewer than installed DB entries ("
-                        + installedDbCount + ") — keeping current list to avoid blank bar");
+                Log.w(TAG, "refreshCycle: new list (" + newRealCount
+                        + " real apps) fewer than installed DB entries (" + installedDbCount
+                        + ") - keeping current list to avoid blank bar");
                 safeToUpdate = false;
             }
         }
+
         if (safeToUpdate && mAppListAdapter != null) {
             mAppListData = nextAppListData;
             mAppListAdapter.notifyDataSetChanged(mAppListData);
@@ -6646,28 +6632,38 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (added == MAX_LEFT) break;
             if (!isPackageInstalledCached(installCache, row.packageName)) continue;
 
+            AppListBean bean = null;
+
             AppInfo app = findAppInfo(appInfoLookup, row.packageName, row.className);
             if (app != null) {
-                nextLeftAppListData.add(new AppListBean(
+                bean = new AppListBean(
                         app.title != null ? app.title.toString() : "",
                         app.iconBitmap,
                         row.packageName,
                         row.className
-                ));
-                added++;
+                );
+            } else {
+                Bitmap icon = loadLeftBarIconStrict(row.packageName, row.className);
+                if (icon != null) {
+                    bean = new AppListBean(
+                            row.name != null ? row.name : "",
+                            icon,
+                            row.packageName,
+                            row.className
+                    );
+                }
+            }
+
+            if (bean == null) {
                 continue;
             }
 
-            Bitmap icon = loadLeftBarIconStrict(row.packageName, row.className);
-            if (icon != null) {
-                nextLeftAppListData.add(new AppListBean(
-                        row.name != null ? row.name : "",
-                        icon,
-                        row.packageName,
-                        row.className
-                ));
-                added++;
-            }
+            // Same rule as the bottom bar: the bean remembers which physical row it came
+            // from. The visible left list is compacted (rows whose package is gone are
+            // skipped), so the adapter position is NOT the row position.
+            bean.rowId = row.rowId();
+            nextLeftAppListData.add(bean);
+            added++;
         }
         if (mLeftAppListAdapter != null) {
             mLeftAppListData = nextLeftAppListData;
@@ -6724,6 +6720,106 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         mLastLeftAppListSourceSignature = Long.MIN_VALUE;
         Log.d(TAG, "pruneLeftBarRows: left bar compacted after uninstall of " + packageNames);
+        return true;
+    }
+
+    /**
+     * Immediately turns every bottom-bar tile whose package was just uninstalled into the
+     * "+" placeholder, instead of waiting for the delayed triggerAppData() rebuild.
+     *
+     * The AppMultiple row itself is deliberately NOT touched: the slot must survive an
+     * uninstall, it just becomes empty. That is also why the row signature does not
+     * change on its own and why the signature has to be invalidated by hand here.
+     *
+     * @return true if anything visible changed
+     */
+    private boolean pruneBottomBarBeans(ArrayList<String> packageNames) {
+        if (packageNames == null || packageNames.isEmpty()
+                || mAppListData == null || mAppListData.isEmpty()) {
+            return false;
+        }
+
+        List<AppListBean> next = new ArrayList<AppListBean>(mAppListData.size());
+        boolean changed = false;
+        Bitmap addIcon = null;
+
+        for (AppListBean bean : mAppListData) {
+            if (bean == null) {
+                continue;
+            }
+            if (bean.packageName == null || !packageNames.contains(bean.packageName)) {
+                next.add(bean);
+                continue;
+            }
+
+            if (addIcon == null) {
+                addIcon = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
+            }
+
+            AppListBean placeholder = new AppListBean("", addIcon, FytPackage.AddAction, "");
+            placeholder.rowId = bean.rowId;
+            placeholder.slot = bean.slot;
+            next.add(placeholder);
+            changed = true;
+
+            if (bean.rowId > 0L) {
+                ContentValues v = new ContentValues();
+                v.put("name", "");
+                v.put("packageName", FytPackage.AddAction);
+                v.put("className", "");
+                try {
+                    LitePal.update(AppMultiple.class, v, bean.rowId);
+                } catch (Exception e) {
+                    Log.e(TAG, "pruneBottomBarBeans: failed to clear row " + bean.rowId, e);
+                }
+            } else {
+                Log.w(TAG, "pruneBottomBarBeans: bean for " + bean.packageName
+                        + " has no rowId, slot cleared in memory only");
+            }
+        }
+
+        if (!changed) {
+            return false;
+        }
+
+        mAppListData = next;
+        if (mAppListAdapter != null) {
+            mAppListAdapter.notifyDataSetChanged(mAppListData);
+        }
+        mLastAppListSourceSignature = Long.MIN_VALUE;
+        Log.d(TAG, "pruneBottomBarBeans: slots emptied after uninstall of " + packageNames);
+        return true;
+    }
+
+    /** In-memory counterpart of pruneLeftBarRows(): drops the tiles right away. */
+    private boolean pruneLeftBarBeans(ArrayList<String> packageNames) {
+        if (packageNames == null || packageNames.isEmpty()
+                || mLeftAppListData == null || mLeftAppListData.isEmpty()) {
+            return false;
+        }
+
+        List<AppListBean> next = new ArrayList<AppListBean>(mLeftAppListData.size());
+        boolean changed = false;
+        for (AppListBean bean : mLeftAppListData) {
+            if (bean == null) {
+                continue;
+            }
+            if (bean.packageName != null && packageNames.contains(bean.packageName)) {
+                changed = true;
+                continue;
+            }
+            next.add(bean);
+        }
+
+        if (!changed) {
+            return false;
+        }
+
+        mLeftAppListData = next;
+        if (mLeftAppListAdapter != null) {
+            mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
+        }
+        mLastLeftAppListSourceSignature = Long.MIN_VALUE;
         return true;
     }
 
@@ -8158,33 +8254,73 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mVisible = visibility == 0;
         updateRunning();
         if (mVisible) {
-            mAppsCustomizeTabHost.onWindowVisible();
-            if (!mWorkspaceLoading) {
-                ViewTreeObserver observer = mWorkspace.getViewTreeObserver();
+            if (mAppsCustomizeTabHost != null) {
+                mAppsCustomizeTabHost.onWindowVisible();
+            }
+            if (!mWorkspaceLoading && mWorkspace != null) {
+                // Trzymamy konkretny Workspace tej instancji Activity zamiast
+                // Launcher.getLauncher() - po odtworzeniu Activity statyczne mLauncher
+                // wskazuje juz na nowa instancje, a stary listener nigdy nie byl zdejmowany.
+                final Workspace workspace = mWorkspace;
+                final Runnable buildLayers = mBuildLayersRunnable;
+                removePendingOnDrawListener();
+                ViewTreeObserver observer = workspace.getViewTreeObserver();
+                if (observer == null || !observer.isAlive()) {
+                    clearTypedText();
+                    return;
+                }
                 onDrawListener = new ViewTreeObserver.OnDrawListener() {
                     private boolean mStarted = false;
 
                     @Override
                     public void onDraw() {
-                        if (!mStarted) {
-                            mStarted = true;
-                            Launcher.getLauncher().mWorkspace.postDelayed(Launcher.getLauncher().mBuildLayersRunnable, 500L);
-                            //final ViewTreeObserver.OnDrawListener listener = this;
-                            Launcher.getLauncher().mWorkspace.post(new Runnable() { 
-                                @Override
-                                public void run() {
-                                    if (Launcher.getLauncher().mWorkspace != null && Launcher.getLauncher().mWorkspace.getViewTreeObserver() != null) {
-                                        Launcher.getLauncher().mWorkspace.getViewTreeObserver().removeOnDrawListener(onDrawListener);
+                        if (mStarted) {
+                            return;
+                        }
+                        mStarted = true;
+                        final ViewTreeObserver.OnDrawListener listener = this;
+                        workspace.postDelayed(buildLayers, 500L);
+                        workspace.post(new Runnable() { 
+                            @Override
+                            public void run() {
+                                ViewTreeObserver vto = workspace.getViewTreeObserver();
+                                if (vto != null && vto.isAlive()) {
+                                    try {
+                                        vto.removeOnDrawListener(listener);
+                                    } catch (IllegalStateException ignored) {
                                     }
                                 }
-                            });
-                        }
+                                if (onDrawListener == listener) {
+                                    onDrawListener = null;
+                                }
+                            }
+                        });
                     }
                 };
                 observer.addOnDrawListener(onDrawListener);
             }
             clearTypedText();
         }
+    }
+
+    /**
+     * Zdejmuje ewentualny zawieszony OnDrawListener z ViewTreeObservera Workspace'a.
+     * Wolane przy ponownej rejestracji i z onDestroy().
+     */
+    private void removePendingOnDrawListener() {
+        if (onDrawListener == null) {
+            return;
+        }
+        if (mWorkspace != null) {
+            ViewTreeObserver vto = mWorkspace.getViewTreeObserver();
+            if (vto != null && vto.isAlive()) {
+                try {
+                    vto.removeOnDrawListener(onDrawListener);
+                } catch (IllegalStateException ignored) {
+                }
+            }
+        }
+        onDrawListener = null;
     }
 
     
@@ -8244,7 +8380,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return mAppWidgetHost;
     }
 
-    public static LauncherModel getModel() {
+    public LauncherModel getModel() {
         return mModel;
     }
 
@@ -9718,7 +9854,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return null;
     }
 
-    public static Workspace getWorkspace() {
+    public Workspace getWorkspace() {
         return mWorkspace;
     }
 
@@ -10840,7 +10976,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void bindComponentsRemoved(final ArrayList<String> packageNames, final ArrayList<AppInfo> appInfos, final boolean packageRemoved) {
         FytPackage.invalidatePackageCache();
         clearAppIconBitmapCache();
-        Runnable r = new Runnable() { 
+        Runnable r = new Runnable() {
             @Override
             public void run() {
                 Launcher.getLauncher().bindComponentsRemoved(packageNames, appInfos, packageRemoved);
@@ -10856,14 +10992,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (!AppsCustomizePagedView.DISABLE_ALL_APPS && mAppsCustomizeContent != null) {
                 mAppsCustomizeContent.removeApps(appInfos);
             }
-            // Only refresh the bottom bar if the affected package is actually shown there.
-            // For update-triggered transient removals (packageRemoved=false) we skip the refresh
-            // to avoid wiping the bar while AllAppsList.data is momentarily incomplete.
+            // For update-triggered transient removals (packageRemoved=false) we skip all of
+            // this to avoid wiping the bars while AllAppsList.data is momentarily incomplete.
             if (packageRemoved) {
-                // Drop + compact the left-bar rows first, otherwise the stale row survives in the
-                // DB and comes back (as a placeholder) on the next rebuild.
-                boolean leftBarChanged = pruneLeftBarRows(packageNames);
-                if (leftBarChanged || isPackageInBottomBar(packageNames)) {
+                // 1. On-screen first, synchronously, so the tiles react in this frame
+                //    instead of waiting for the delayed triggerAppData() rebuild.
+                boolean bottomBarChanged = pruneBottomBarBeans(packageNames);
+                boolean leftBeansChanged = pruneLeftBarBeans(packageNames);
+
+                // 2. Then the database: drop + compact the left-bar rows, otherwise the
+                //    stale row survives and comes back (as a placeholder) on the next
+                //    rebuild. Bottom-bar rows are intentionally kept - the slot stays.
+                boolean leftRowsChanged = pruneLeftBarRows(packageNames);
+
+                if (bottomBarChanged || leftBeansChanged || leftRowsChanged) {
+                    mLastAppListSourceSignature = Long.MIN_VALUE;
                     mLastLeftAppListSourceSignature = Long.MIN_VALUE;
                     triggerAppData();
                 }

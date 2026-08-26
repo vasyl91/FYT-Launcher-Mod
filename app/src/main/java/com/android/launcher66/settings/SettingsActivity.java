@@ -279,6 +279,8 @@ public class SettingsActivity extends AppCompatActivity {
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
                 String reason = intent.getStringExtra(Keys.SYSTEM_DIALOG_REASON_KEY);
                 if (Keys.SYSTEM_DIALOG_REASON_HOME_KEY.equals(reason)) {
+                    AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
+                    AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
                     stopWatch();
                     Log.i("Home Receiver", "home clicked"); 
                     helpers.setBackFromCreator(false);
@@ -289,7 +291,9 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                     helpers.checkAndResetIfOverlappingOnScreen(-1);
                     new VersionChecker().cancelDownload();
-                    setBrightness();
+                    if (sharedPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
+                        setBrightness();
+                    }
 
                     long updateOnce = SystemClock.uptimeMillis();
                     Log.d(TAG, "Saving pending updateOnce=" + updateOnce);
@@ -382,6 +386,8 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
+        AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
         System.gc();
     }
 

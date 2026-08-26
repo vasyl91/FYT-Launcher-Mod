@@ -3,6 +3,7 @@ package com.android.recycler;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -10,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,76 +29,79 @@ import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SettingsActivity;
 import com.syu.util.WindowUtil;
 
-import java.lang.ref.WeakReference;
+import org.litepal.LitePal;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implements AppListDialogFragment.ItemClickDataListener
-{
-    private int lastClickIndex;
-    private View mAddAppView;
-    private List<AppListBean> mData;
-    private WeakReference<AppListDialogFragment> mDialogRef; 
-    private Launcher mLauncher;
-    private int mMaxCount;
-    private boolean showAddAppView;
-    private Helpers helpers = new Helpers();
+public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
+        implements AppListDialogFragment.ItemClickDataListener {
+
+    private static final String TAG = "AppListAdapter";
     private static final String RECYCLER_APP = "recycler.app";
     private static final String RECYCLER_APP_MAP = "recycler.app.map";
-    private SharedPreferences mPrefs;
-    private int orientation;
-    private Bitmap mSettingsIconBitmap;
-    private long mDataSignature;
     private static final int APP_PICKER_STATE_RETRY_LIMIT = 4;
     private static final long APP_PICKER_STATE_RETRY_MS = 150L;
 
+    private List<AppListBean> mData;
+    private final Launcher mLauncher;
+    private final Helpers helpers = new Helpers();
+    private SharedPreferences mPrefs;
+    private Bitmap mSettingsIconBitmap;
+    private long mDataSignature;
+
+    // Recycler width as a fraction of the screen, mirroring the values that
+    // Workspace.forceOriginalSizesLayoutOne/Two() force onto the views.
+    private static final float RECYCLER_W_WIDGET_PORTRAIT  = 0.4385f;
+    private static final float RECYCLER_W_WIDGET_LANDSCAPE = 0.4395f;
+    private static final float RECYCLER_W_PLAIN            = 0.8795f;
+
+    // Recycler height as a fraction of its own width (portrait only; landscape fills the bar).
+    private static final float RECYCLER_H_WIDGET_PORTRAIT = 0.295f;
+    private static final float RECYCLER_H_PLAIN_PORTRAIT  = 0.142f;
+
+    /** Share of the tile taken by the icon; the rest is breathing room. */
+    private static final float ICON_FILL = 0.80f;
+
+    /**
+     * Slot the picker was opened for. Set BEFORE the dialog is shown and consumed exactly
+     * once in {@link #onClickData}, so no stale target can survive between two openings.
+     */
+    private int mPendingPosition = RecyclerView.NO_POSITION;
+    private long mPendingRowId = -1L;
+
     public AppListAdapter(Launcher mLauncher, List<AppListBean> mData) {
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(mLauncher);
-        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
-        orientation = mLauncher.getResources().getConfiguration().orientation;
-        if (userLayout && widgetBar) { 
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                this.mMaxCount = 5;
-            } else {
-                this.mMaxCount = 4;
-            }
-            
-        }else {
-            this.mMaxCount = 8;
-        }
+        this.mPrefs = PreferenceManager.getDefaultSharedPreferences(mLauncher);
         this.mData = mData;
         this.mLauncher = mLauncher;
         this.mDataSignature = calculateDataSignature(mData);
         setHasStableIds(true);
     }
 
-    private AppListDialogFragment getDialog() {
-        AppListDialogFragment dialog = mDialogRef != null ? mDialogRef.get() : null;
-        if (dialog == null) {
-            dialog = new AppListDialogFragment();
-            dialog.setItemClickDataListener(this);
-            mDialogRef = new WeakReference<>(dialog);
-        }
-        return dialog;
-    }
-
-    public void clearDialogReference() {
-        if (mDialogRef != null) {
-            mDialogRef.clear();
-            mDialogRef = null;
-        }
-    }
+    // =====================================================================================
+    // APP PICKER
+    // =====================================================================================
 
     private void showAppPickerDialog(int position) {
         showAppPickerDialog(position, 0);
     }
 
     private void showAppPickerDialog(int position, int attempt) {
-        if (position == RecyclerView.NO_POSITION) {
+        if (position == RecyclerView.NO_POSITION || mData == null || position >= mData.size()) {
             return;
         }
+
+        AppListBean target = mData.get(position);
+        if (target == null) {
+            return;
+        }
+
+        // Remember the target FIRST. Every early return below used to leave the previous
+        // click's slot in place, which is what made selections land on the wrong app.
+        mPendingPosition = position;
+        mPendingRowId = target.rowId;
+
         FragmentManager fragmentManager = mLauncher.getSupportFragmentManager();
         if (fragmentManager.isStateSaved()) {
             View decor = mLauncher.getWindow() == null ? null : mLauncher.getWindow().getDecorView();
@@ -105,16 +110,78 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                         () -> showAppPickerDialog(position, attempt + 1),
                         APP_PICKER_STATE_RETRY_MS
                 );
+            } else {
+                mPendingPosition = RecyclerView.NO_POSITION;
+                mPendingRowId = -1L;
             }
             return;
         }
-        AppListDialogFragment dialog = getDialog();
-        if (dialog.isAdded()) {
+
+        if (AppListDialogFragment.isListDialogShowing(fragmentManager)) {
             return;
         }
+
+        // ALWAYS a fresh instance. Re-showing a dismissed DialogFragment keeps it strongly
+        // reachable after onDestroy() (LeakCanary reports it as retained) and its
+        // mItemClickDataListener has already been nulled in onDestroyView(), so the second
+        // selection would silently do nothing.
+        AppListDialogFragment dialog = AppListDialogFragment.newInstance(target.rowId);
+        dialog.setItemClickDataListener(this);
         dialog.show(fragmentManager, AppListDialogFragment.TAG);
-        lastClickIndex = position;
     }
+
+    @Override
+    public void onClickData(AppInfo appInfo, long rowId) {
+        final int position = mPendingPosition;
+        final long targetRowId = rowId > 0L ? rowId : mPendingRowId;
+
+        // Consume the target: one dialog opening assigns exactly one slot.
+        mPendingPosition = RecyclerView.NO_POSITION;
+        mPendingRowId = -1L;
+
+        if (appInfo == null || mData == null
+                || position == RecyclerView.NO_POSITION || position >= mData.size()) {
+            Log.w(TAG, "onClickData: no valid target slot, ignoring selection");
+            return;
+        }
+
+        AppListBean previous = mData.get(position);
+        AppListBean bean = new AppListBean(
+                appInfo.title == null ? "" : appInfo.title.toString(),
+                appInfo.iconBitmap,
+                appInfo.getPackageName(),
+                appInfo.getClassName()
+        );
+        bean.rowId = targetRowId;
+        bean.slot = previous == null ? -1 : previous.slot;
+
+        mData.set(position, bean);
+        mDataSignature = calculateDataSignature(mData);
+        notifyItemChanged(position);
+
+        if (targetRowId <= 0L) {
+            Log.w(TAG, "onClickData: bean has no rowId, cannot persist slot " + position);
+            return;
+        }
+
+        // Update by primary key. The old code used saveOrUpdate("index = ?", ...): "index"
+        // is a SQLite reserved keyword and must be quoted, AppMultiple.index is not
+        // guaranteed unique, and LitePal skips fields left at their default value when it
+        // builds an UPDATE - so a slot could never be cleared back to "".
+        ContentValues values = new ContentValues();
+        values.put("name", bean.name == null ? "" : bean.name);
+        values.put("packageName", bean.packageName == null ? "" : bean.packageName);
+        values.put("className", bean.className == null ? "" : bean.className);
+        try {
+            LitePal.update(AppMultiple.class, values, targetRowId);
+        } catch (Exception e) {
+            Log.e(TAG, "onClickData: failed to persist slot rowId=" + targetRowId, e);
+        }
+    }
+
+    // =====================================================================================
+    // ADAPTER
+    // =====================================================================================
 
     public void notifyDataSetChanged(final List<AppListBean> list) {
         this.mLauncher.runOnUiThread(() -> {
@@ -144,26 +211,35 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
 
     @Override
     public int getItemCount() {
-        this.showAddAppView = (this.mData.size() > this.mMaxCount);
-        return this.mData.size();
+        return this.mData == null ? 0 : this.mData.size();
     }
 
     @Override
     public long getItemId(int position) {
-        if (position < 0 || position >= this.mData.size()) {
+        if (mData == null || position < 0 || position >= this.mData.size()) {
             return RecyclerView.NO_ID;
         }
         return this.mData.get(position).stableId(position);
     }
 
     @Override
+    public AppListHolder onCreateViewHolder(final ViewGroup viewGroup, final int viewType) {
+        return new AppListHolder(
+                LayoutInflater.from(this.mLauncher).inflate(R.layout.item_app_list, viewGroup, false));
+    }
+
+    @Override
     public void onBindViewHolder(final AppListHolder appListHolder, int position) {
         final AppListBean appListBean = this.mData.get(position);
-        if (appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
+
+        applyTileMetrics(appListHolder);
+
+        if ("com.android.launcher66.settings.SettingsActivity".equals(appListBean.className)) {
             appListHolder.mAppIcon.setImageBitmap(getSettingsIconBitmap());
         } else {
             appListHolder.mAppIcon.setImageBitmap(appListBean.icon);
         }
+
         appListHolder.itemView.setOnClickListener(view -> {
             if (!isComponentAvailable(appListBean.packageName, appListBean.className)) {
                 if (!TextUtils.isEmpty(appListBean.packageName) || !TextUtils.isEmpty(appListBean.className)) {
@@ -177,42 +253,35 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                 showAppPickerDialog(appListHolder.getBindingAdapterPosition());
                 return;
             }
+
             final String packageName = appListBean.packageName;
-            switch (packageName.hashCode()) {
-                case -1958346218: {
-                    if (!packageName.equals("com.google.android.googlequicksearchbox")) {
-                        break;
-                    }
-                }
-                case 877333343: {
-                    if (packageName.equals("net.easyconn")) {
-                        WindowUtil.removePip();
-                    }
-                    break;
-                }
-                case 1489048446: {
-                    if (packageName.equals("com.nng.igo.primong.igoworld")) {
-                        WindowUtil.removePip();
-                    }
-                    break;
-                }
+            if ("net.easyconn".equals(packageName)
+                    || "com.nng.igo.primong.igoworld".equals(packageName)
+                    || "com.google.android.googlequicksearchbox".equals(packageName)) {
+                WindowUtil.removePip();
             }
+
             if (TextUtils.isEmpty(appListBean.packageName) || TextUtils.isEmpty(appListBean.className)) {
                 showAppPickerDialog(appListHolder.getBindingAdapterPosition());
-            } else if (appListBean.packageName.equals("com.android.launcher66") && !appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
+
+            } else if ("com.android.launcher66".equals(appListBean.packageName)
+                    && !"com.android.launcher66.settings.SettingsActivity".equals(appListBean.className)) {
                 AppListAdapter.this.mLauncher.onClickAllAppsButton();
-            } else if (appListBean.className.equals("com.android.launcher66.settings.SettingsActivity")) {
+
+            } else if ("com.android.launcher66.settings.SettingsActivity".equals(appListBean.className)) {
                 AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
                 Intent settingsIntent = new Intent(AppListAdapter.this.mLauncher, SettingsActivity.class);
                 settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 AppListAdapter.this.mLauncher.startActivity(settingsIntent);
                 onClickIcon(appListBean);
+
             } else if (appListBean.className.contains("com.syu.radio")) {
                 AppListAdapter.this.mLauncher.stopMusic();
                 final Intent intent = new Intent();
                 intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
                 AppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
                 onClickIcon(appListBean);
+
             } else {
                 final Intent intent = new Intent();
                 intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
@@ -220,6 +289,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
                 onClickIcon(appListBean);
             }
         });
+
         appListHolder.itemView.setOnLongClickListener(view -> {
             showAppPickerDialog(appListHolder.getBindingAdapterPosition());
             return true;
@@ -231,9 +301,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
         helpers.setInOverviewMode(false);
         helpers.setListOpen(false);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
-        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);        
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         AppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
-        if (userLayout)  {  
+        if (userLayout) {
             helpers.setForegroundAppOpened(true);
             helpers.setInAllApps(false);
             helpers.setInWidgets(false);
@@ -244,68 +314,22 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
             }
             boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
             if (userStats) {
-                SharedPreferences statsPrefs = AppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+                SharedPreferences statsPrefs =
+                        AppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
                 Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
                 if (apps.contains(appListBean.packageName)) {
-                    Intent intentAppMap = new Intent(RECYCLER_APP_MAP);
-                    AppListAdapter.this.mLauncher.sendBroadcast(intentAppMap);
+                    AppListAdapter.this.mLauncher.sendBroadcast(new Intent(RECYCLER_APP_MAP));
                 } else {
-                    Intent intentApp = new Intent(RECYCLER_APP);
-                    AppListAdapter.this.mLauncher.sendBroadcast(intentApp);
+                    AppListAdapter.this.mLauncher.sendBroadcast(new Intent(RECYCLER_APP));
                 }
             }
-        } 
-        AppListAdapter.this.mLauncher.cleanWidgetBar();    
-    }
-
-    @Override
-    public void onClickData(final AppInfo appInfo) {
-        final AppListBean appListBean = new AppListBean(appInfo.title.toString(), appInfo.iconBitmap, appInfo.getPackageName(), appInfo.getClassName());
-        this.mData.remove(this.lastClickIndex);
-        this.mData.add(this.lastClickIndex, appListBean);
-        notifyDataSetChanged();
-        
-        // Convert adapter position to database index when widgetBar is true
-        int dbIndex = lastClickIndex;
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
-        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
-        
-        if (userLayout && widgetBar) {
-            // Map adapter positions to database indices
-            // Adapter shows: 2nd(1), 5th(4), 6th(5), 7th(6), 8th(7)
-            // Database indices: 0, 1, 2, 3, 4, 5, 6, 7
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                switch (lastClickIndex) {
-                    case 0: dbIndex = 1; break;  // 2nd app
-                    case 1: dbIndex = 4; break;  // 5th app
-                    case 2: dbIndex = 5; break;  // 6th app
-                    case 3: dbIndex = 6; break;  // 7th app
-                    case 4: dbIndex = 7; break;  // 8th app
-                    default: dbIndex = lastClickIndex; break;
-                }
-            } else {
-                switch (lastClickIndex) {
-                    case 0: dbIndex = 1; break;  // 2nd app
-                    case 2: dbIndex = 5; break;  // 6th app
-                    case 3: dbIndex = 6; break;  // 7th app
-                    case 4: dbIndex = 7; break;  // 8th app
-                    default: dbIndex = lastClickIndex; break;
-                }
-            }
-
         }
-        
-        new AppMultiple(dbIndex, appListBean.name, appListBean.packageName, appListBean.className)
-            .saveOrUpdate("index = ?", String.valueOf(dbIndex));
+        AppListAdapter.this.mLauncher.cleanWidgetBar();
     }
 
-    public AppListHolder onCreateViewHolder(final ViewGroup viewGroup, final int n) {
-        return new AppListHolder(LayoutInflater.from(this.mLauncher).inflate(R.layout.item_app_list, viewGroup, false));
-    }
-    
     public Bitmap drawableToBitmap(Drawable drawable) {
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
@@ -314,7 +338,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
 
     private Bitmap getSettingsIconBitmap() {
         if (mSettingsIconBitmap == null) {
-            mSettingsIconBitmap = drawableToBitmap(ContextCompat.getDrawable(AppListAdapter.this.mLauncher, R.drawable.icon_settings));
+            mSettingsIconBitmap = drawableToBitmap(
+                    ContextCompat.getDrawable(AppListAdapter.this.mLauncher, R.drawable.icon_settings));
         }
         return mSettingsIconBitmap;
     }
@@ -332,6 +357,79 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder> implemen
             return mLauncher.getPackageManager().resolveActivity(intent, 0) != null;
         } catch (Exception e) {
             return false;
+        }
+    }    
+
+    /**
+     * Divides the recycler width evenly between the tiles instead of letting each tile keep
+     * its intrinsic width and hoping they fit.
+     *
+     * In portrait + widgetBar the recycler is only ~0.4385 of the screen, which is not
+     * enough for four natural-width tiles: the fourth used to be clipped in the inline bar
+     * and was squeezed in by NEGATIVE item offsets in the overlay bar. Sizing the tiles to
+     * available/itemCount makes all four fit properly, identically in both bars - they
+     * share this adapter, so both pick up the same metrics.
+     *
+     * Orientation is read on every bind, so a rotation no longer leaves stale sizes behind.
+     */
+    private void applyTileMetrics(AppListHolder holder) {
+        int itemCount = getItemCount();
+        if (itemCount <= 0) {
+            return;
+        }
+
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this.mLauncher);
+        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+        boolean portrait = mLauncher.getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_PORTRAIT;
+        boolean widgetMode = userLayout && widgetBar;
+
+        float widthFraction;
+        if (widgetMode) {
+            widthFraction = portrait ? RECYCLER_W_WIDGET_PORTRAIT : RECYCLER_W_WIDGET_LANDSCAPE;
+        } else {
+            widthFraction = RECYCLER_W_PLAIN;
+        }
+
+        int recyclerWidth = (int) (Launcher.screenWidth * widthFraction);
+        if (recyclerWidth <= 0) {
+            return;
+        }
+
+        int tileWidth = recyclerWidth / itemCount;
+        if (tileWidth <= 0) {
+            return;
+        }
+
+        // Height limit, so the icon never grows taller than the bar itself.
+        int recyclerHeight;
+        if (portrait) {
+            recyclerHeight = (int) (recyclerWidth * (widgetMode
+                    ? RECYCLER_H_WIDGET_PORTRAIT
+                    : RECYCLER_H_PLAIN_PORTRAIT));
+        } else {
+            recyclerHeight = tileWidth;
+        }
+
+        int iconSize = (int) (Math.min(tileWidth, recyclerHeight) * ICON_FILL);
+        if (iconSize <= 0) {
+            return;
+        }
+
+        ViewGroup.LayoutParams itemParams = holder.itemView.getLayoutParams();
+        if (itemParams != null && itemParams.width != tileWidth) {
+            itemParams.width = tileWidth;
+            holder.itemView.setLayoutParams(itemParams);
+        }
+
+        if (holder.mAppIcon != null) {
+            ViewGroup.LayoutParams iconParams = holder.mAppIcon.getLayoutParams();
+            if (iconParams != null && (iconParams.width != iconSize || iconParams.height != iconSize)) {
+                iconParams.width = iconSize;
+                iconParams.height = iconSize;
+                holder.mAppIcon.setLayoutParams(iconParams);
+            }
         }
     }
 }

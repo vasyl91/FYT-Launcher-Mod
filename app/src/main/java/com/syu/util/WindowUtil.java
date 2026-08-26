@@ -154,10 +154,12 @@ public class WindowUtil {
     /** Launcher.getWorkspace() is static; returns null before onCreate finishes or after onDestroy. */
     private static Workspace workspace() {
         try {
-            return Launcher.getWorkspace();
+            Launcher l = Launcher.getLauncher();
+            if (l != null) return l.getWorkspace();
         } catch (Throwable t) {
             return null;
         }
+        return null;
     }
 
     /** Whether anything is still actually on the screen (not just the pipsAdded flag). */

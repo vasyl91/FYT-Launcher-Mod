@@ -48,6 +48,8 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
     private AppCompatButton mPositionButton;        
     private View mImeMaskOverlay;
     private View mBoundItemView;
+    private ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutListener;
+    private View mGlobalLayoutHost;
     private WidgetPageManager mPageManager;
 
     private final int orientation;
@@ -163,22 +165,36 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
 
     private void scheduleRuntimeSizing() {
         if (mBoundItemView == null) return;
-        
-        // Always apply fallback sizing immediately so buttons are visible
+
         applySizing(resolveRowHeightFallback());
         expandMainSwitchHitArea();
 
-        if (mBoundItemView != null) {
-            mBoundItemView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override public void onGlobalLayout() {
-                    if (mBoundItemView.getHeight() > 0) {
-                        applySizing(resolveRowHeightFallback());
-                        expandMainSwitchHitArea();
-                        mBoundItemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                }
-            });
+        removeGlobalLayoutListener();
+
+        final View host = mBoundItemView;
+        if (host == null) return;
+
+        mGlobalLayoutHost = host;
+        mGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+                if (host.getHeight() <= 0) return;
+                applySizing(resolveRowHeightFallback());
+                expandMainSwitchHitArea();
+                removeGlobalLayoutListener();
+            }
+        };
+        host.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
+    }
+
+    private void removeGlobalLayoutListener() {
+        if (mGlobalLayoutHost != null && mGlobalLayoutListener != null) {
+            ViewTreeObserver vto = mGlobalLayoutHost.getViewTreeObserver();
+            if (vto.isAlive()) {
+                vto.removeOnGlobalLayoutListener(mGlobalLayoutListener);
+            }
         }
+        mGlobalLayoutListener = null;
+        mGlobalLayoutHost = null;
     }
 
     private int resolveRowHeightFallback() {
@@ -557,4 +573,24 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
             return ""; // block change
         }
     }
+
+    @Override
+    public void onDetached() {
+        removeGlobalLayoutListener();
+        removeImeMaskOverlay();
+        if (mBoundItemView != null) {
+            mBoundItemView.setTouchDelegate(null);
+        }
+        if (mTouchDelegateGroup != null) {
+            mTouchDelegateGroup.clear();
+            mTouchDelegateGroup = null;
+        }
+        if (mPageManager != null) {
+            mPageManager.setOnPreferencesUpdatedListener(null);
+            mPageManager = null;
+        }
+        mBoundItemView = null;
+        super.onDetached();
+    }
+
 }

@@ -65,6 +65,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
     private static final String TAG = "CanbusService";
     private AccessibilityManager accessibilityManager;
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
     private AccessibilityManager.AccessibilityStateChangeListener accessibilityListener;
     private SharedPreferences prefs;
     private Helpers helpers = new Helpers();
@@ -156,6 +158,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "Service destroyed");
+        removeLocationUpdates();
         unregisterAccessibilityEventListener();
         mPropertyChangeClass.deleteObserver(Keys.ALLAPPS, this);
         mPropertyChangeClass.deleteObserver(Keys.FUELSTATS, this);
@@ -270,14 +273,14 @@ public class CanbusService extends Service implements PropertyChangeListener {
                                 if (reason.equals(Keys.SYSTEM_DIALOG_REASON_HOME_KEY)) {
                                     final boolean alreadyOnHome = Launcher.getLauncher().mHasFocus;
 
-                                    if (Launcher.mWorkspace == null) {
+                                    if (Launcher.getLauncher().mWorkspace == null) {
                                         // Can be cases where mWorkspace is null, this prevents a NPE
                                         return;
                                     }
-                                    Folder openFolder = Launcher.getWorkspace().getOpenFolder();
+                                    Folder openFolder = Launcher.getLauncher().getWorkspace().getOpenFolder();
                                     // In all these cases, only animate if we're already on home
-                                    Launcher.mWorkspace.exitWidgetResizeMode();
-                                    if (alreadyOnHome && Launcher.getLauncher().mState == Launcher.State.WORKSPACE && !Launcher.mWorkspace.isTouchActive() &&
+                                    Launcher.getLauncher().mWorkspace.exitWidgetResizeMode();
+                                    if (alreadyOnHome && Launcher.getLauncher().mState == Launcher.State.WORKSPACE && !Launcher.getLauncher().mWorkspace.isTouchActive() &&
                                             openFolder == null) {
                                         curForegroundApp = "com.android.launcher66";
                                         mPropertyChangeClass.setString(Keys.FUELSTATS, curForegroundApp);
@@ -830,7 +833,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
      * This is an attemp to ROUGHLY estimate the fuel consumption to provide some insight even though it undoubtedly is an inaccurate calculation.
      * */    
     private void requestLocationUpdates() {
-        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        removeLocationUpdates();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         LocationRequest locationRequest = new LocationRequest.Builder(1000)  // Initial interval
                 .setMinUpdateIntervalMillis(500)  
@@ -840,7 +844,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && 
             ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             
-            fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+            locationCallback = new LocationCallback() {
 
                 @Override
                 public void onLocationResult(@NonNull LocationResult locationResult) {
@@ -889,7 +893,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
                         }
                     }
                 }
-            }, Looper.getMainLooper());
+            };
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         } else {            
             ActivityCompat.requestPermissions(
                     Launcher.getLauncher(),
@@ -900,6 +905,14 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     0
             );
         }
+    }
+
+    private void removeLocationUpdates() {
+        if (fusedLocationClient != null && locationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
+        }
+        locationCallback = null;
+        fusedLocationClient = null;
     }
 
     private static final double FUEL_DENSITY = 0.74; // kg/L (tune per fuel/vehicle)

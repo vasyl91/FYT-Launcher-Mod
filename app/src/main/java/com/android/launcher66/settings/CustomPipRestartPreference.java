@@ -37,6 +37,8 @@ public class CustomPipRestartPreference extends Preference {
     private final Context mContext;
     private SharedPreferences sharedPrefs;
     private View mBoundItemView;
+    private ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutListener;
+    private View mGlobalLayoutHost;
     private List<AppCompatButton> mRestartButtons;
     private AppCompatButton mRestartFirstButton;
     private AppCompatButton mRestartSecondButton;
@@ -127,16 +129,32 @@ public class CustomPipRestartPreference extends Preference {
 
     private void scheduleRuntimeSizing() {
         applySizing(resolveRowHeightFallback());
-        if (mBoundItemView != null) {
-            mBoundItemView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override public void onGlobalLayout() {
-                    if (mBoundItemView.getHeight() > 0) {
-                        applySizing(resolveRowHeightFallback());
-                        mBoundItemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                }
-            });
+
+        removeGlobalLayoutListener();
+
+        final View host = mBoundItemView;
+        if (host == null) return;
+
+        mGlobalLayoutHost = host;
+        mGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+                if (host.getHeight() <= 0) return;
+                applySizing(resolveRowHeightFallback());
+                removeGlobalLayoutListener();
+            }
+        };
+        host.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
+    }
+
+    private void removeGlobalLayoutListener() {
+        if (mGlobalLayoutHost != null && mGlobalLayoutListener != null) {
+            ViewTreeObserver vto = mGlobalLayoutHost.getViewTreeObserver();
+            if (vto.isAlive()) {
+                vto.removeOnGlobalLayoutListener(mGlobalLayoutListener);
+            }
         }
+        mGlobalLayoutListener = null;
+        mGlobalLayoutHost = null;
     }
 
     private int resolveRowHeightFallback() {
@@ -340,4 +358,12 @@ public class CustomPipRestartPreference extends Preference {
             }
         }
     }
+
+    @Override
+    public void onDetached() {
+        removeGlobalLayoutListener();
+        mBoundItemView = null;
+        super.onDetached();
+    }
+
 }

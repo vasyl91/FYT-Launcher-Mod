@@ -412,7 +412,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 return true;
             });
             pipDualPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
-            pipDualPref.setOnMainSwitchClickListener(newValue -> restartPip.refreshButtons());
+            pipDualPref.setOnMainSwitchClickListener(newValue -> { if (restartPip != null) restartPip.refreshButtons(); });
         }
         if (pipFirstPref != null) {
             pipFirstPref.setScreenValuePrefKey(Keys.PIP_FIRST_SCREEN);
@@ -431,7 +431,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 return true;
             });
             pipFirstPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
-            pipFirstPref.setOnMainSwitchClickListener(newValue -> restartPip.refreshButtons());
+            pipFirstPref.setOnMainSwitchClickListener(newValue -> { if (restartPip != null) restartPip.refreshButtons(); });
         }
         if (pipSecondPref != null) {
             pipSecondPref.setScreenValuePrefKey(Keys.PIP_SECOND_SCREEN);
@@ -448,7 +448,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 return true;
             });
             pipSecondPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
-            pipSecondPref.setOnMainSwitchClickListener(newValue -> restartPip.refreshButtons());
+            pipSecondPref.setOnMainSwitchClickListener(newValue -> { if (restartPip != null) restartPip.refreshButtons(); });
         }
         if (pipThirdPref != null) {
             pipThirdPref.setScreenValuePrefKey(Keys.PIP_THIRD_SCREEN);
@@ -458,7 +458,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             pipThirdPref.setOnModeSwitchChangeListener(isPip -> enforceSinglePiP(pipThirdPref, isPip));
             pipThirdPref.setOnPreferenceChangeListener((p, v) -> true);
             pipThirdPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
-            pipThirdPref.setOnMainSwitchClickListener(newValue -> restartPip.refreshButtons());
+            pipThirdPref.setOnMainSwitchClickListener(newValue -> { if (restartPip != null) restartPip.refreshButtons(); });
         }
         if (pipFourthPref != null) {
             pipFourthPref.setScreenValuePrefKey(Keys.PIP_FOURTH_SCREEN);
@@ -468,7 +468,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             pipFourthPref.setOnModeSwitchChangeListener(isPip -> enforceSinglePiP(pipFourthPref, isPip));
             pipFourthPref.setOnPreferenceChangeListener((p, v) -> true);
             pipFourthPref.setOnPreferenceValuesChangedListener(this::refreshAllWidgetPreferences);
-            pipFourthPref.setOnMainSwitchClickListener(newValue -> restartPip.refreshButtons());
+            pipFourthPref.setOnMainSwitchClickListener(newValue -> { if (restartPip != null) restartPip.refreshButtons(); });
         }
         if (restartPip != null) {
             restartPip.setOnPreferenceClickListener(this);
@@ -1038,7 +1038,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        clearPreferenceListeners(getPreferenceScreen()); 
+        recyclerView = null;
         handler.removeCallbacksAndMessages(null);
         mHandler.removeCallbacksAndMessages(null);
         loggerTickHandler.removeCallbacksAndMessages(null);
@@ -1053,6 +1053,37 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (sharedPrefs != null) {
             sharedPrefs.unregisterOnSharedPreferenceChangeListener(pipPkgListener);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        clearPreferenceListeners(getPreferenceScreen());
+        clearPreferenceRefs();
+        super.onDestroy();
+    }
+
+    private void clearPreferenceRefs() {
+        pipDualPref = null;
+        pipFirstPref = null;
+        pipSecondPref = null;
+        pipThirdPref = null;
+        pipFourthPref = null;
+        restartPip = null;
+        fabPreference = null;
+        leftFabPreference = null;
+        rightFabPreference = null;
+        extendedDivider = null;
+        coverSplash = null;
+        swipeDetector = null;
+        userDate = null;
+        userMusic = null;
+        userRadio = null;
+        userStats = null;
+        statsScreen = null;
+        statsCodes = null;
+        autoHidePreference = null;
+        autoHideSeekBar = null;
+        imm = null;
     }
 
     private void refreshAllWidgetPreferences() {
@@ -1089,6 +1120,29 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         for (int i = 0; i < group.getPreferenceCount(); i++) {
             Preference p = group.getPreference(i);
             p.setOnPreferenceClickListener(null);
+            p.setOnPreferenceChangeListener(null);
+            if (p instanceof CustomDualPipPreference) {
+                CustomDualPipPreference dp = (CustomDualPipPreference) p;
+                dp.setOnPositionClickListener(null);
+                dp.setOnPreferenceValuesChangedListener(null);
+                dp.setOnMainSwitchClickListener(null);
+            } else if (p instanceof CustomPipSwitchPreference) {
+                CustomPipSwitchPreference sp = (CustomPipSwitchPreference) p;
+                sp.setOnPositionClickListener(null);
+                sp.setOnPreferenceValuesChangedListener(null);
+                sp.setOnMainSwitchClickListener(null);
+                sp.setOnModeSwitchChangeListener(null);
+            } else if (p instanceof CustomWidgetSwitchPreference) {
+                CustomWidgetSwitchPreference wp = (CustomWidgetSwitchPreference) p;
+                wp.setOnPositionClickListener(null);
+                wp.setOnPreferenceValuesChangedListener(null);
+            } else if (p instanceof CustomWidgetPreference) {
+                CustomWidgetPreference wp = (CustomWidgetPreference) p;
+                wp.setOnPositionClickListener(null);
+                wp.setOnPreferenceValuesChangedListener(null);
+            } else if (p instanceof AutoHideSeekBarPreference) {
+                ((AutoHideSeekBarPreference) p).setOnSeekBarProgressChangeListener(null);
+            }
 
             if (p instanceof PreferenceGroup) {
                 clearPreferenceListeners((PreferenceGroup) p);

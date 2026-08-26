@@ -25,7 +25,7 @@ public class StatusBarSwipeDetector extends Service {
     public void onCreate() {
         super.onCreate();
 
-        mWorkspace = Launcher.getWorkspace();
+        mWorkspace = Launcher.getLauncher().getWorkspace();
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 

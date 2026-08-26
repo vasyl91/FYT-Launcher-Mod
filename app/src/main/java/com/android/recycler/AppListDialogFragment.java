@@ -15,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.activity.ComponentDialog;
@@ -23,7 +22,12 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewTreeLifecycleOwner;
+import androidx.lifecycle.ViewTreeViewModelStoreOwner;
 import androidx.preference.PreferenceManager;
+import androidx.savedstate.ViewTreeSavedStateRegistryOwner;
 
 import com.android.launcher66.AllAppsList;
 import com.android.launcher66.AppInfo;
@@ -33,32 +37,57 @@ import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.syu.util.WindowUtil;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class AppListDialogFragment extends DialogFragment implements AdapterView.OnItemClickListener {
     public static final String TAG = "AppListDialogFragment";
 
-    /**
-     * Reference to the currently visible dialog so it can be closed from the outside
-     * (e.g. from the HOME button handler in Launcher). Weak because the field is static
-     * and a fragment holds the activity Context - a strong reference would leak.
-     */
-    private static WeakReference<AppListDialogFragment> sInstance;
+    /** AppMultiple.rowId() of the bottom-bar slot this picker was opened for. */
+    private static final String ARG_TARGET_ROW_ID = "target_row_id";
 
     ImageView currentAppIcon;
     TextView currentAppName;
     AppSelectAdapter mAdapter;
     ArrayList<AppInfo> mData;
     GridView mGridView;
+
+    private View mRootView;
     private ItemClickDataListener mItemClickDataListener;
     private final Helpers helpers = new Helpers();
 
     /** Guards against clearing the state twice. */
     private boolean mListStateCleared;
 
+    private OnBackPressedCallback mBackPressedCallback;
+
     public interface ItemClickDataListener {
-        void onClickData(AppInfo appInfo);
+        /**
+         * @param appInfo the app the user picked
+         * @param rowId   AppMultiple row the picker was opened for, or -1 if unknown.
+         *                Passing it back makes the target explicit instead of relying on
+         *                a field in the adapter that can go stale between two openings.
+         */
+        void onClickData(AppInfo appInfo, long rowId);
+    }
+
+    /**
+     * ALWAYS create the dialog through this factory - never reuse an instance that has
+     * already been dismissed. A dismissed DialogFragment that is shown again becomes
+     * strongly reachable after its onDestroy(), which is exactly what LeakCanary reports
+     * as "two watch keys on one instance / mLifecycleRegistry.state is INITIALIZED", and
+     * its listener has already been nulled in onDestroyView().
+     */
+    public static AppListDialogFragment newInstance(long targetRowId) {
+        AppListDialogFragment fragment = new AppListDialogFragment();
+        Bundle args = new Bundle();
+        args.putLong(ARG_TARGET_ROW_ID, targetRowId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private long getTargetRowId() {
+        return getArguments() == null ? -1L : getArguments().getLong(ARG_TARGET_ROW_ID, -1L);
     }
 
     // =====================================================================================
@@ -66,20 +95,19 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
     // =====================================================================================
 
     /** @return true if a dialog was open and got dismissed */
-    public static boolean dismissListDialog() {
-        AppListDialogFragment f = (sInstance != null) ? sInstance.get() : null;
-        sInstance = null;
-        if (f != null && f.isAdded() && !f.isRemoving()) {
+    public static boolean dismissListDialog(FragmentManager fm) {
+        Fragment f = fm.findFragmentByTag(TAG);
+        if (f instanceof AppListDialogFragment && f.isAdded() && !f.isRemoving()) {
             try {
                 // AllowStateLoss: the HOME broadcast can arrive after onSaveInstanceState
-                f.dismissAllowingStateLoss();
+                ((AppListDialogFragment) f).dismissAllowingStateLoss();
                 return true;
             } catch (Throwable t) {
                 Log.w(TAG, "dismissListDialog() failed", t);
             }
         }
-        // No dialog around - clean up only if the flag was actually left dangling,
-        // otherwise every onPause would fire another LIST_CLOSE broadcast.
+
+        // No dialog around - clean up only if the flag was actually left dangling
         if (new Helpers().isListOpen()) {
             clearListFlags();
         }
@@ -87,9 +115,9 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
     }
 
     /** Whether the list dialog is currently on screen. */
-    public static boolean isListDialogShowing() {
-        AppListDialogFragment f = (sInstance != null) ? sInstance.get() : null;
-        return f != null && f.isAdded() && !f.isRemoving();
+    public static boolean isListDialogShowing(FragmentManager fm) {
+        Fragment f = fm.findFragmentByTag(TAG);
+        return f instanceof AppListDialogFragment && f.isAdded() && !f.isRemoving();
     }
 
     /**
@@ -117,16 +145,15 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
     // =====================================================================================
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         WindowUtil.removePinnedPip();
 
         mListStateCleared = false;
-        sInstance = new WeakReference<>(this);
 
         helpers.setListOpen(true);
         helpers.setInOverviewMode(false);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
         boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
         boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
         if (userLayout && userStats) {
@@ -134,38 +161,56 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
             helpers.setInAllApps(false);
             helpers.setInWidgets(false);
             helpers.setInRecent(false);
-            Intent intentOpen = new Intent(Keys.LIST_OPEN);
-            LauncherApplication.sApp.sendBroadcast(intentOpen);
+            LauncherApplication.sApp.sendBroadcast(new Intent(Keys.LIST_OPEN));
         }
 
-        View view = inflater.inflate(R.layout.dialog_fragment_applist, container);
-        this.mData = AllAppsList.data;
-        this.currentAppIcon = (ImageView) view.findViewById(R.id.current_app_icon);
-        this.currentAppName = (TextView) view.findViewById(R.id.current_app_name);
-        this.mGridView = (GridView) view.findViewById(R.id.gridview);
+        // attachToRoot MUST be false: DialogFragment adds the returned view itself.
+        View view = inflater.inflate(R.layout.dialog_fragment_applist, container, false);
+        mRootView = view;
+
+        // Snapshot instead of aliasing the global list. AllAppsList.data is rebuilt on
+        // package add/remove/update; if that happened between binding and the tap, the
+        // clicked position resolved to a DIFFERENT app than the one on screen.
+        this.mData = AllAppsList.data == null
+                ? new ArrayList<AppInfo>()
+                : new ArrayList<AppInfo>(AllAppsList.data);
+
+        this.currentAppIcon = view.findViewById(R.id.current_app_icon);
+        this.currentAppName = view.findViewById(R.id.current_app_name);
+        this.mGridView = view.findViewById(R.id.gridview);
         this.mAdapter = new AppSelectAdapter(this.mData);
-        this.mGridView.setAdapter((ListAdapter) this.mAdapter);
+        this.mGridView.setAdapter(this.mAdapter);
         this.mGridView.setOnItemClickListener(this);
 
         // Background tap: dismiss only. Flags and broadcast come from onDismiss().
         view.setOnClickListener(v -> dismiss());
 
-        getDialog().getWindow().requestFeature(1);
+        assert getDialog() != null;
+        Objects.requireNonNull(getDialog().getWindow()).requestFeature(Window.FEATURE_NO_TITLE);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        assert getDialog() != null;
+        Objects.requireNonNull(getDialog().getWindow()).setBackgroundDrawable(new ColorDrawable(0));
         getDialog().getWindow().setLayout(-1, -1);
         getDialog().setCanceledOnTouchOutside(true);
     }
 
     @Override
-    public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (mData == null || position < 0 || position >= mData.size()) {
+            dismiss();
+            return;
+        }
         if (this.mItemClickDataListener != null) {
-            this.mItemClickDataListener.onClickData(this.mData.get(position));
+            this.mItemClickDataListener.onClickData(this.mData.get(position), getTargetRowId());
+        } else {
+            // Happens when the system recreated the fragment (process death, config
+            // change) - there is nobody left to receive the selection.
+            Log.w(TAG, "onItemClick: no listener attached, selection dropped");
         }
         dismiss();
     }
@@ -174,14 +219,13 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         ComponentDialog dialog = (ComponentDialog) super.onCreateDialog(savedInstanceState);
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+        mBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // Dismiss only. Flags and broadcast come from onDismiss().
                 AppListDialogFragment.this.dismiss();
             }
         };
-        dialog.getOnBackPressedDispatcher().addCallback(this, callback);
+        dialog.getOnBackPressedDispatcher().addCallback(this, mBackPressedCallback);
 
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
@@ -197,9 +241,6 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
     public void onDismiss(@NonNull DialogInterface dialog) {
         if (!mListStateCleared) {
             mListStateCleared = true;
-            if (sInstance != null && sInstance.get() == this) {
-                sInstance = null;
-            }
             clearListFlags();
         }
         super.onDismiss(dialog);
@@ -207,22 +248,58 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        if (mBackPressedCallback != null) {
+            mBackPressedCallback.remove();
+            mBackPressedCallback = null;
+        }
+
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            dialog.setOnCancelListener(null);
+            dialog.setOnDismissListener(null);
+
+            if (dialog.getWindow() != null) {
+                View decorView = dialog.getWindow().getDecorView();
+                ViewTreeLifecycleOwner.set(decorView, null);
+                ViewTreeViewModelStoreOwner.set(decorView, null);
+                ViewTreeSavedStateRegistryOwner.set(decorView, null);
+                decorView.setTag(androidx.fragment.R.id.fragment_container_view_tag, null);
+            }
+        }
+
+        View view = mRootView != null ? mRootView : getView();
+        if (view != null) {
+            // THE leak edge from the LeakCanary report:
+            //   ConstraintLayout.mListenerInfo.mOnClickListener
+            //     -> AppListDialogFragment$$ExternalSyntheticLambda0.f$0
+            //       -> AppListDialogFragment
+            // The dialog's ViewRootImpl outlives dismiss() by a couple of seconds
+            // (pending framework message), and without this the fragment goes with it.
+            view.setOnClickListener(null);
+            view.setOnLongClickListener(null);
+            view.setTag(androidx.fragment.R.id.fragment_container_view_tag, null);
+            ViewTreeLifecycleOwner.set(view, null);
+            ViewTreeViewModelStoreOwner.set(view, null);
+            ViewTreeSavedStateRegistryOwner.set(view, null);
+        }
+
         if (mGridView != null) {
+            mGridView.setOnItemClickListener(null);
             mGridView.setAdapter(null);
         }
+
+        super.onDestroyView();
+
+        mItemClickDataListener = null;
+        mGridView = null;
+        mRootView = null;
         currentAppIcon = null;
         currentAppName = null;
-        mGridView = null;
         mAdapter = null;
+        mData = null;
 
-        // Safety net: if the view is destroyed without onDismiss()
-        // (e.g. activity killed), the flag still must not survive.
         if (!mListStateCleared) {
             mListStateCleared = true;
-            if (sInstance != null && sInstance.get() == this) {
-                sInstance = null;
-            }
             clearListFlags();
         }
 
@@ -231,11 +308,7 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
 
     // =====================================================================================
 
-    public void clearReferences() {
-
-    }
-
-    class AppSelectAdapter extends BaseAdapter {
+    static class AppSelectAdapter extends BaseAdapter {
         ArrayList<AppInfo> mData;
 
         public AppSelectAdapter(ArrayList<AppInfo> data) {
@@ -244,20 +317,17 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
 
         @Override
         public int getCount() {
-            if (this.mData != null) {
-                return this.mData.size();
-            }
-            return 0;
+            return this.mData == null ? 0 : this.mData.size();
         }
 
         @Override
-        public Object getItem(int arg0) {
-            return this.mData.get(arg0);
+        public Object getItem(int position) {
+            return this.mData.get(position);
         }
 
         @Override
-        public long getItemId(int arg0) {
-            return arg0;
+        public long getItemId(int position) {
+            return position;
         }
 
         @Override
@@ -265,10 +335,11 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
             ViewHolder viewHolder;
             AppInfo data = this.mData.get(position);
             if (convertView == null) {
-                convertView = LayoutInflater.from(LauncherApplication.sApp).inflate(R.layout.item_app_select, (ViewGroup) null);
-                viewHolder = AppListDialogFragment.this.new ViewHolder();
-                viewHolder.appIcon = (ImageView) convertView.findViewById(R.id.app_icon);
-                viewHolder.appName = (TextView) convertView.findViewById(R.id.app_name);
+                convertView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_app_select, parent, false);
+                viewHolder = new ViewHolder();
+                viewHolder.appIcon = convertView.findViewById(R.id.app_icon);
+                viewHolder.appName = convertView.findViewById(R.id.app_name);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -279,7 +350,7 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
         }
     }
 
-    class ViewHolder {
+    static class ViewHolder {
         ImageView appIcon;
         TextView appName;
 
