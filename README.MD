@@ -1,47 +1,47 @@
-# Reverse engineered launcher for FYT 7862/8581 with launcher creator, night mode and fuel statistics.
+# Reverse-engineered launcher for FYT 7862/8581 with a launcher creator, night mode and fuel statistics.
 
-**Launcher Mod has been tested on Android 10 with 2000x1200 resolution as this is the only device I own.**
+**Launcher Mod has been tested on Android 10 with a 2000x1200 resolution, as this is the only FYT device I own.**
 
-It should get along with all resolutions on Android 8 up to 16 provided that you install it as a privileged/system app. Android 12+ might not allow (depending on the FYT brand) to install the app with `android:sharedUserId="android.uid.system"` without root access or the proper platform keystore. This is a fundamental security restriction that cannot be bypassed. In such case you can use the non-privileged phone version (keep in mind that multiple PiP feature won't work wtihout system privileges, standard PiP should be up and running - only on FYT devices) - this version was tested on phone with Android 15.
+It should work with all resolutions on Android 8 through 16, provided you install it as a privileged/system app. Depending on the FYT brand, Android 12+ might not allow you to install the app with `android:sharedUserId="android.uid.system"` without root access or the proper platform keystore. This is a fundamental security restriction that cannot be bypassed. In that case, you can use the non-privileged phone version (keep in mind that the multiple-PiP feature won't work without system privileges — standard PiP should still work, but only on FYT devices) — this version was tested on a phone running Android 16.
 
-IMPORTANT: Note that some of the FYT devices do not support the pinned PiP on the main screen. You can still use the launcher however you'll have to turn off the PiP in the launcher's settings (otherwise Google Maps will pop up every time you'll try to open the home page - if it happens, wipe the launcher's data or reinstall it).
+IMPORTANT: Note that some FYT devices do not support pinned PiP on the main screen. You can still use the launcher, but you'll have to turn off PiP in the launcher's settings (otherwise Google Maps will pop up every time you try to open the home page — if this happens, wipe the launcher's data or reinstall it).
 
 [XDA Forums thread](https://xdaforums.com/t/reverse-engineered-launcher-for-fyt-7862-8581.4702542/)
 
 List of modifications:
-- Up to four PiPs on the single screen or on multiple screens depending on user's choice.
-- ConstraintLayout which should adapt the launcher to any given resolution and orientation.
-- Universal music widget (requires Notification Listener permission) that works with most of the music players (including the stock one).
-- Enabled widgets (upscaled for better interaction), shortcuts and folders on the main screen. Reworked screen's grid. Extra screens as well.
-- Launcher creator allowing to adjust launcher's layout to user preferences. All elements of the layout but the bottom bar might be turned off. User can also specify which screen should be the main screen.
+- Up to four PiPs on a single screen or across multiple screens, depending on user preference.
+- ConstraintLayout that adapts the launcher to any given resolution and orientation.
+- Universal music widget with a favorite button (requires Notification Listener permission) that works with most music players (including the stock one).
+- Enabled widgets (upscaled for better interaction), shortcuts, and folders on the main screen. Reworked screen grid. Extra screens as well.
+- Launcher creator allowing the launcher's layout to be adjusted to user preferences. All layout elements except the bottom bar can be turned off. Users can also specify which screen should be the main screen.
 - Bottom bar with optional widgets.
-- Auto hide bottom bar option.
+- Auto-hide bottom bar option.
 - Skins for widgets and bottom bar.
-- Optional floating buttons allowing to quickly switch the apps between PiPs.
-- Optional transparent overlay square on the status bar that detects swipes and allows to scroll between pages. This might be useful when PiP view occupies most of the visible screen (only for privileged/system app).
-- Live fuel stats (requires Accessibility Service permission) with possibility to display them on the main screen and in the chosen apps with position on the screen specified by user.
-- Night Mode that determines sunrise and sunset depending on the location (also allows user to manually correct the sunset and sunrise times, set the wallpaper and the brightness for the day/night mode).
+- Optional floating buttons for quickly switching apps between PiPs.
+- Optional transparent overlay square on the status bar that detects swipes and allows scrolling between pages. This can be useful when the PiP view occupies most of the visible screen (privileged/system app only).
+- Live fuel stats (requires Accessibility Service permission), with the option to display them on the main screen and in chosen apps, at a screen position specified by the user.
+- Night Mode that determines sunrise and sunset based on location (also allows the user to manually adjust sunrise/sunset times, and set the wallpaper and brightness for day/night mode).
 - Settings fragment with useful tweaks.
-- New icon for the launcher and its settings with settings' icon in the app drawer.
-- "Update" feature allowing user to perform easy updates in the launcher's settings.
-- Replaced part of deprecated code with the new one.
+- New icon for the launcher and its settings, with a settings icon in the app drawer.
+- "Update" feature allowing users to easily update the launcher from its settings.
+- Replaced some deprecated code with newer implementations.
 
 
 **Installation:**
 
-For the first installation download `installer.zip`, unpack it in a FAT32 formatted USB pendrive, then connect pendrive to your unit's USB port and wait, installation should start after few seconds. Once installed you can dirty install updates (also through the built-in updater) or debug versions without using the USB pendrive again.
+For the first installation, download `installer.zip`, unpack it onto a FAT32-formatted USB flash drive, then connect the drive to your unit's USB port and wait — installation should start after a few seconds. Once installed, you can dirty-install updates (also via the built-in updater) or debug versions without using the USB drive again.
 
-If installation doesn't start automatically please check other USB ports. If it doesn't start regardless the USB port, then it means that either your device is not a FYT device or indeed it is a FYT device but operates on Android 12 or higher (some brands do not allow to install apps with scripts on the USB pendrive).
+If installation doesn't start automatically, please try other USB ports. If it still doesn't start regardless of the USB port, it means either your device is not an FYT device, or it is an FYT device but runs Android 12 or higher (some brands don't allow installing apps via scripts from a USB drive).
 
-Following this method is important because it installs the launcher as a privileged/system app what is crucial it to have it working properly. 
+Following this method is important because it installs the launcher as a privileged/system app, which is essential for it to work properly. 
 
 **Google Maps bug**
 
-Most of the FYT ROMs offer two ways of displaying apps on the launcher's screen. The most common one is a "pinned Picture-in-Picture mode" with all it's consequences for the app's UI behavior which in Google Maps case switches the layout to minimal. This method doesn't provide essential entry points to maintain "full screen UI" for apps that support the PiP mode.
-The only reliable way I have found to prevent Google Maps from switching its UI to minimal requires installed root, LSPosed and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/tag/v1.0.1). It successfully forces the app to maintain its full UI inside FYT's Picture in Picture (remember to select Google Maps in the LSPosed "Enable module" section).
-Check this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always do the full backup (AllAppUpdate.bin, config.txt etc.) before flashing anything!
+Most FYT ROMs offer two ways of displaying apps on the launcher's screen. The most common one is "pinned Picture-in-Picture mode," with all its consequences for the app's UI behavior — in Google Maps' case, this switches the layout to minimal. This method doesn't provide the entry points needed to maintain a "full screen UI" for apps that support PiP mode.
+The only reliable way I've found to prevent Google Maps from switching to its minimal UI requires root, LSPosed, and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/latest). It successfully forces the app to keep its full UI inside FYT's Picture-in-Picture mode (remember to select Google Maps in the LSPosed "Enable module" section).
+Check out this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always make a full backup (AllAppUpdate.bin, config.txt, etc.) before flashing anything!
 
-Second method related to the modified android ActivityView class allows to display apps as they are in a windowed mode. This does not affect the layout and does not require root. Multiple PiP feature uses this method.
+The second method, related to the modified Android ActivityView class, displays apps in windowed mode as they normally appear. This doesn't affect the layout and doesn't require root. The multiple-PiP feature uses this method.
 
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
@@ -101,29 +101,29 @@ Second method related to the modified android ActivityView class allows to displ
 
 ## Fuel statistics
 
-To have it working you have to find the canbus codes. Without them enabled widget will show 0 by default. Yo can do it with the help of the canbus logging tool (check the guide in the launcher's settings) or look for them manually in the source code as described below.
+To get it working, you have to find the CAN bus codes. Without them, the enabled widget will show 0 by default. You can do this with the help of the CAN bus logging tool (check the guide in the launcher's settings) or look for the codes manually in the source code as described below.
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_stats.gif)
 
 <details>
 
-1. Go to the Settings > Layout creator and check what does the summary say under the Fuel statistics:
+1. Go to Settings > Layout creator and check what the summary says under Fuel statistics:
 
 [<img src="./images/s4.png" width="50%">](./images/s4.png)
 
-2. It should contain the name of the class that canbus runs as default, in my case it is : [`com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/RZC_BZ408IndexActi.java). Start with that class and inspect its subclasses if needed.
+2. It should contain the name of the class that the CAN bus runs by default — in my case, it's [`com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/RZC_BZ408IndexActi.java). Start with that class and inspect its subclasses if needed.
 
-3. Keep in mind that the following instruction is an example based on my case, just a hint how to do it. Moreover some units or canbusses don't provide such functionality. If your canbus app doesn't display current fuel consumption and/or cruising range then it means that you can't use this widget.
+3. Keep in mind that the following instructions are just an example based on my case, meant as a hint of how to do it. Also, some units or CAN buses don't provide this functionality — if your CAN bus app doesn't display current fuel consumption and/or cruising range, then you can't use this widget.
 
-4. In gereral codes that you are looking for should be in the java file located in the same folder that the class from the step 1 is (in my case biaozhi408). Open that folder in for example Sublime and search fo `L/100KM`. If you find it proceed to the step 7. If not, follow the next steps.
+4. In general, the codes you're looking for should be in the Java file located in the same folder as the class from step 1 (in my case, biaozhi408). Open that folder in, for example, Sublime, and search for `L/100KM`. If you find it, proceed to step 7. If not, follow the next steps.
 
-5. Open the class from the step 2. and look for the method that opens the next activity that finally contains what you need, there might be few of them to check. `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java` contains `onClickListener` with an intent:
+5. Open the class from step 2 and look for the method that opens the next activity, which eventually contains what you need — there might be a few to check. `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java` contains an `onClickListener` with an intent:
 
 ```
                     Intent intent = new Intent();
                     intent.setClass(RZC_BZ408IndexActi.this, RZC_BZ408OilMileIndexActi.class);
 ```
-That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexActi.java` and you should keep looking there.
+That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexActi.java`; keep looking there.
 
 6. In [`RZC_BZ408OilMileIndexActi.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/RZC_BZ408OilMileIndexActi.java) you will find three tabs:
 
@@ -132,9 +132,9 @@ That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexAct
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPage2").setIndicator("tabPage2").setContent(new Intent(this, (Class<?>) RZC_BZ408OilMilePage2Acti.class)));
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPage3").setIndicator("tabPage3").setContent(new Intent(this, (Class<?>) RZC_BZ408OilMilePage3Acti.class)));
 ```
-`RZC_BZ408OilMilePage1Acti.class` represents the window in fyt canbus app that contains fuel statistics.
+`RZC_BZ408OilMilePage1Acti.class` represents the window in the FYT CAN bus app that contains the fuel statistics.
 
-7. Finally proceed to [`com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/RZC_BZ408OilMilePage1Acti.java) and you will find there the functions similar to these (I left only the crucial parts):
+7. Finally, proceed to [`com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/RZC_BZ408OilMilePage1Acti.java), where you'll find functions similar to these (I left only the crucial parts):
 
 ```
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
@@ -184,48 +184,48 @@ That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexAct
     }
 ```
 
-8. The codes that you are looking for are inside `DataCanbus.DATA[102]`, `DataCanbus.DATA[103]`, and `DataCanbus.PROXY.cmd(70, new int[]{51}, null, null);`. The launcher setting should be updated as below:
+8. The codes you're looking for are inside `DataCanbus.DATA[102]`, `DataCanbus.DATA[103]`, and `DataCanbus.PROXY.cmd(70, new int[]{51}, null, null);`. The launcher setting should be updated as follows:
 
     `Fuel: 102, Range: 103, cmdInt: 70, cmdArr: 51`
 
- If you have some problems with identifying these codes please look for the file in the containing folder that holds general code list for particular car (It might NOT be available for every car! In my case it is [`com.syu.carinfo.rzc.biaozhi408.Const_RZC4_PSA_ALL_DATA.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/Const_RZC4_PSA_ALL_DATA.java)).
+ If you have trouble identifying these codes, look in the containing folder for a file that holds the general code list for that particular car (it might NOT be available for every car! In my case, it's [`com.syu.carinfo.rzc.biaozhi408.Const_RZC4_PSA_ALL_DATA.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/Const_RZC4_PSA_ALL_DATA.java)).
 
-9. If the widget still shows `0.0 L/100Km` and `0 Km` or the readings are bizzare and inadequate, then it means that your device probably uses different codes than provided in this library. To get these codes you will have to unpack the canbus app installed on your head unit. 
+9. If the widget still shows `0.0 L/100Km` and `0 Km`, or the readings are bizarre and inaccurate, your device probably uses different codes than the ones provided in this library. To get these codes, you'll have to unpack the CAN bus app installed on your head unit. 
 
-10. To extract the apk file please instal on your device [Apk Analyzer](https://play.google.com/store/apps/details?id=sk.styk.martin.apkanalyzer&hl=en&pli=1). Open it and type `com.syu.canbus` in the search bar. Open the result and in the next window press the three dots in the bottom right corner, then press `Export APK`. Move exported `com.syu.canbus.apk` to your PC.
+10. To extract the APK file, install [Apk Analyzer](https://play.google.com/store/apps/details?id=sk.styk.martin.apkanalyzer&hl=en&pli=1) on your device. Open it and type `com.syu.canbus` in the search bar. Open the result, and in the next window press the three dots in the bottom-right corner, then press `Export APK`. Move the exported `com.syu.canbus.apk` to your PC.
 
-11. To unpack the extracted apk please use [APKRepatcher](https://github.com/vasyl91/APKRepatcher/releases/tag/Update2024) tool. Download it and inside APKRepatcher folder hold the Shift key, then right-click an empty area and open Command Prompt from the context menu. Paste in Command Prompt `java -jar APKRepatcher.jar` and press Enter. (Install java on your PC if needed, google it).
+11. To unpack the extracted APK, use the [APKRepatcher](https://github.com/vasyl91/APKRepatcher/releases/tag/Update2024) tool. Download it, then inside the APKRepatcher folder hold Shift, right-click an empty area, and open Command Prompt from the context menu. In Command Prompt, paste `java -jar APKRepatcher.jar` and press Enter. (Install Java on your PC if needed — just google it.)
 
-12. In the APKRepatcher go to File > Open APK, select your `com.syu.canbus.apk` and wait till it finishes. Then go to the directory `APKRepatcher\Projects\com.syu.canbus.apk\javaCode\classes.dex\sources\com\syu` and repeat the step 2.
+12. In APKRepatcher, go to File > Open APK, select your `com.syu.canbus.apk`, and wait until it finishes. Then go to the directory `APKRepatcher\Projects\com.syu.canbus.apk\javaCode\classes.dex\sources\com\syu` and repeat step 2.
 
 
-In my case the canbus stops sending the fuel consumption when the speed drops below 40km/h so I added function that attempts to ROUGHLY estimate the fuel consumption to provide some insight even though it undoubtedly is an inaccurate calculation. To use that you will need to find one additional code which represents RPM - `U_ENGINE_SPEED = 148;` found in [`Const_RZC4_PSA_ALL_DATA.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/Const_RZC4_PSA_ALL_DATA.java)) mentioned earlier and provide car details in app settings.
+In my case, the CAN bus stops sending fuel consumption data when the speed drops below 40 km/h, so I added a function that attempts to ROUGHLY estimate fuel consumption, to provide some insight even though it's admittedly an inaccurate calculation. To use this, you'll need to find one additional code representing RPM — `U_ENGINE_SPEED = 148;` — found in [`Const_RZC4_PSA_ALL_DATA.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/Const_RZC4_PSA_ALL_DATA.java) mentioned earlier, and provide your car's details in the app settings.
 
 </details>
 
 ## Debugging
 
 1. Download and install the latest debug version. 
-2. Use the built-in logcat tool (see the launcher's settings) or get the logs using other software i.e. [Logcat Reader](https://play.google.com/store/apps/details?id=com.dp.logcatapp&hl=en&pli=1).
-3. Open the new issue, provide information of your Android version and screen resolution, describe the error (step by step instruction for reproducing the error) and attach the logs.
+2. Use the built-in logcat tool (see the launcher's settings) or get the logs using other software, e.g. [Logcat Reader](https://play.google.com/store/apps/details?id=com.dp.logcatapp&hl=en&pli=1).
+3. Open a new issue, provide your Android version and screen resolution, describe the error (with step-by-step instructions for reproducing it), and attach the logs.
 
-I can not guarantee fixing all errors.
+I cannot guarantee that I'll fix every error.
 
 
 ## Generating app in Android Studio
 
 1. Clone the repository. 
-2. Tampering with `android.jar` is deprecated since build 1.1.8.
+2. Tampering with `android.jar` has been deprecated since build 1.1.8.
 
 <details>
 
-for builds up to 1.1.6 - replace `android.jar` in `C:\Users\<UserName>\AppData\Local\Android\Sdk\platforms\android-36` with the file from this [release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android.jar).
+for builds up to 1.1.6 — replace `android.jar` in `C:\Users\<UserName>\AppData\Local\Android\Sdk\platforms\android-36` with the file from this [release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android.jar).
 
-for build 1.1.7 use `android.jar` from this [repository](https://github.com/Reginer/aosp-android-jar) - check `targetSdk` inside `app/build.gradle.kts` and choose android version you want to work with.
+for build 1.1.7 — use `android.jar` from this [repository](https://github.com/Reginer/aosp-android-jar); check `targetSdk` inside `app/build.gradle.kts` and choose the Android version you want to work with.
 
 </details>
 
-3. For non-privileged devices change the beginning of the `AndroidManifest.xml` with:
+3. For non-privileged devices, change the beginning of `AndroidManifest.xml` to:
 
 <details>
 
@@ -271,56 +271,56 @@ for build 1.1.7 use `android.jar` from this [repository](https://github.com/Regi
 </details>
 
 4. Open the repository and rebuild the project.
-5. To generate the app use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose exisiting android key alias with password `android`. 
+5. To generate the app, use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose the existing `android` key alias with password `android`. 
 
-To debug the app on FYT device, connect it with your PC. For android 11 and above try to connect with Wi-Fi, USB might be problematic. If you don't have much choice then try to use the 4pin USB cable - in my case this one works fine. 
-If you need the drivers please use [this ones](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/android-34-modded-jar/Unisoc+SPD+Driver.rar). 
-Go to Developer options, click on the three dots in the top right corner and select the second option from the popup (both are in chineese).
+To debug the app on an FYT device, connect it to your PC. For Android 11 and above, try connecting via Wi-Fi — USB can be problematic. If you don't have much choice, try a 4-pin USB cable — in my case, this one works fine. 
+If you need drivers, use [this one](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/android-34-modded-jar/Unisoc+SPD+Driver.rar). 
+Go to Developer options, click the three dots in the top-right corner, and select the second option from the popup (both are in Chinese).
 
 [<img src="./images/3.png" width="50%">](./images/3.png)[<img src="./images/3.1.png" width="50%">](./images/3.1.png)
 
 Remember to enable USB debugging.
 
-If you keep getting `unauthorized` while running `adb devices` and your device doesn't display the popup to confirm the connection then it means that you'll have to add adb keys manually.
-That's tricky and unfortunately requires root both on your FYT device and on your phone. If you haven't given up, follow the steps below:
+If you keep getting `unauthorized` while running `adb devices`, and your device doesn't show the popup to confirm the connection, you'll have to add the adb keys manually.
+That's tricky and unfortunately requires root on both your FYT device and your phone. If you haven't given up, follow the steps below:
 1. Connect your phone to your PC and confirm the connection. 
-2. Go to `/data/misc/adb/` on your phone and copy it's content (should contain `adb_keys`).
-3. Paste that file in the same directory on your FYT unit.
-4. Install Termux terminal on your FYT unit, open it and run the following commands `chmod 0640 /data/misc/adb/`, `chown system:shell /data/misc/adb/`, `chcon u:object_r:adb_keys_file:s0 /data/misc/adb/` (don't worry if you get some errors with the last one).
+2. Go to `/data/misc/adb/` on your phone and copy its contents (should contain `adb_keys`).
+3. Paste that file into the same directory on your FYT unit.
+4. Install the Termux terminal on your FYT unit, open it, and run the following commands: `chmod 0640 /data/misc/adb/`, `chown system:shell /data/misc/adb/`, `chcon u:object_r:adb_keys_file:s0 /data/misc/adb/` (don't worry if you get errors with the last one).
 
 
 ## Modifying android.jar (Deprecated since 1.1.7)
 
 <details>
 
-1. Download already modified [android.jar](https://github.com/Reginer/aosp-android-jar) for the android version you want to work on.
+1. Download the already-modified [android.jar](https://github.com/Reginer/aosp-android-jar) for the Android version you want to work on.
 2. Download and run [Recaf](https://github.com/Col-E/Recaf).
-3. Open `android.jar` in `Recaf`.
-4. Open and decompile `IActivityManager.class` located in `android/app` using i.e. FernFlower decompiler.
+3. Open `android.jar` in Recaf.
+4. Open and decompile `IActivityManager.class`, located in `android/app`, using, e.g., the FernFlower decompiler.
 
 [<img src="./images/IActivityManagerRecaf.png" width="50%">](./images/IActivityManagerRecaf.png)
 
-5. Copy the content of this file (omit the two first lines: `// Decompiled with: DecompilerName` `// Class Version: X`) and use it to create java file. Add `void setPinnedStackVisible(boolean bool);` to this file.
+5. Copy the contents of this file (omitting the first two lines: `// Decompiled with: DecompilerName` and `// Class Version: X`) and use it to create a Java file. Add `void setPinnedStackVisible(boolean bool);` to this file.
 
 [<img src="./images/IActivityManagerJava.png" width="50%">](./images/IActivityManagerJava.png)
 
 6. Download and run [Eclipse](https://eclipseide.org/).
-7. In Eclipse create new Java Project `File` > `New` > `Java Project`.
+7. In Eclipse, create a new Java project: `File` > `New` > `Java Project`.
 
 [<img src="./images/IActivityManagerEclipse1.png" width="50%">](./images/IActivityManagerEclipse1.png)
 
-8. Remove the content of this project and paste there already predefined [project's](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android_jar_eclipse.rar) files.
+8. Remove the project's content and paste in the already predefined [project files](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android_jar_eclipse.rar).
 
 [<img src="./images/IActivityManagerEclipse2.png" width="50%">](./images/IActivityManagerEclipse2.png)
 
-9. In Eclipse refresh your project using `F5` or `Right click` on your project and `Refresh`.
-10. Then `Project` > `Properties` > `Java Build Path` > `Libraries` > `Add External JARs...` > choose `android.jar` from the step 1. and press `Apply and Close`. Check if `Build automatically` is checked in the `Project` tab (should be checked by default). Refresh your project again (ignore the errors displayed at the bottom of the window).
-11.  Go to `C:\Users\<your_user-name>\eclipse-workspace\androidJar\target\classes\android\app` and copy `IActivityManager.class`
-12. Download [android_jar_mod.rar](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android_jar_mod.rar) and paste `IActivityManager.class` to `android_jar_mod\android\app`. Also paste `android.jar` from step 1. to `android_jar_mod\`
+9. In Eclipse, refresh your project using `F5`, or right-click your project and select `Refresh`.
+10. Then go to `Project` > `Properties` > `Java Build Path` > `Libraries` > `Add External JARs...`, choose `android.jar` from step 1, and press `Apply and Close`. Check that `Build automatically` is checked under the `Project` menu (it should be checked by default). Refresh your project again (ignore the errors shown at the bottom of the window).
+11. Go to `C:\Users\<your_user-name>\eclipse-workspace\androidJar\target\classes\android\app` and copy `IActivityManager.class`.
+12. Download [android_jar_mod.rar](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android_jar_mod.rar) and paste `IActivityManager.class` into `android_jar_mod\android\app`. Also paste `android.jar` from step 1 into `android_jar_mod\`.
 
 [<img src="./images/IActivityManagerJar.png" width="50%">](./images/IActivityManagerJar.png)
 
-13. Press Shift + right click in the directory `android_jar_mod\`  and open `PowerShell` from the context menu. Then use in the `PowerShell` the commands provided in the `commands.txt` file (run every command one after another).
-14. Finally you can use prepared `android.jar` from `android_jar_mod\` directory to run your project as described in `Generating app in Android Studio` caption.
+13. Shift + right-click in the `android_jar_mod\` directory and open `PowerShell` from the context menu. Then run the commands provided in the `commands.txt` file in PowerShell (run each command one after another).
+14. Finally, you can use the prepared `android.jar` from the `android_jar_mod\` directory to run your project, as described in the `Generating app in Android Studio` section.
 
 </details>
