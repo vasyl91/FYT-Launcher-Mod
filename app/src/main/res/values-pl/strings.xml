@@ -164,23 +164,14 @@
     <string name="youtube_revanced_kids_off">Filmy z wartością madeForKids=true, nieprawidłowo odzwierciedlają stan polubienia z powodu błędu w YouTube API - filmy polubione w YouTube są wyświetlane w widżecie jako niepolubione. Przycisk Ulubione zostanie wyłączony, aby uniknąć nieporozumień</string>
     <string name="copy_patch_url">Kliknij, aby skopiować link do patcha „Expose like status in MediaSession” dla Revanced Manager</string>
     <string name="url_copied">Link został skopiowany do schowka</string>
-    <string name="oauth_status_gmscore">ReVanced GmsCore: %1$s</string>
-    <string name="oauth_status_youtube">YouTube ReVanced: %1$s (wymaga patcha „Expose like status in MediaSession”)</string>
-    <string name="oauth_installed">zainstalowany</string>
-    <string name="oauth_not_installed">niezainstalowany</string>
-    <string name="oauth_status_not_connected">Niepołączono</string>
-    <string name="oauth_status_connected">Połączono jako %1$s</string>
-    <string name="oauth_missing_gmscore">Zainstaluj ReVanced GmsCore</string>
-    <string name="oauth_missing_youtube">Zainstaluj YouTube ReVanced z patchem „Expose like status in MediaSession”</string>
-    <string name="oauth_logged_in">Zalogowano jako %1$s</string>
-    <string name="oauth_already_logged_in">Już zalogowano jako %1$s, dotknij dwukrotnie, aby się wylogować</string>
-    <string name="oauth_unknown_account">nieznane konto</string>
-    <string name="oauth_logout_title">Wyloguj</string>
-    <string name="oauth_logout_message">Wylogować z konta %1$s?</string>
-    <string name="oauth_yes">Tak</string>
-    <string name="oauth_no">Nie</string>
-    <string name="oauth_logged_out">Wylogowano</string>
-    <string name="oauth_cancelled">Anulowano autoryzację</string>
+    <string name="fyt_rating_installed">fYT Rating: zainstalowane</string>
+    <string name="fyt_rating_not_installed">fYT Rating: niezainstalowane, kliknij dwukrotnie aby przejść do strony pobierania</string>
+    <string name="fyt_rating_state_unavailable">Zainstaluj fYT Rating, aby odczytać status polubienia</string>
+    <string name="fyt_rating_state_not_logged_in">Nie zalogowano - otwórz fYT Rating i zaloguj się</string>
+    <string name="fyt_rating_state_not_allowed">Zalogowano, ale ten launcher nie jest jeszcze dozwolony - zezwól na niego w fYT Rating</string>
+    <string name="fyt_rating_state_ready">Użytkownik zalogowany, aplikacja gotowa</string>
+    <string name="fyt_rating_missing">fYT Rating nie jest zainstalowane</string>
+    <string name="fyt_rating_opening">Otwieranie fYT Rating…</string>
 
     <string name="instantaneous_consumption">\u0020Spalanie:</string>
     <string name="driving_mileage">\u0020Zasięg:</string>

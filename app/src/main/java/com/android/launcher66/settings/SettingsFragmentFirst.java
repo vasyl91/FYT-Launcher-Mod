@@ -114,6 +114,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private boolean tickRunnableBool = false;   
     private boolean countDownTimerBool = false;  
     private Preference settingsSecondFragment;
+    private Preference oauthForYoutubeRevanced;
     private Preference youtubeRevancedKids;
     private Preference allAppsTextSize; 
     private EditText allAppsTextSizeEditText;
@@ -208,8 +209,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (view instanceof RecyclerView) {
             return (RecyclerView) view;
         }
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
+        if (view instanceof ViewGroup viewGroup) {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 RecyclerView found = findRecyclerView(viewGroup.getChildAt(i));
                 if (found != null) {
@@ -221,8 +221,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     private void scaleAllViews(View view, float scale) {
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
+        if (view instanceof ViewGroup viewGroup) {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 View child = viewGroup.getChildAt(i);
                 scaleAllViews(child, scale);
@@ -230,8 +229,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         
         // Scale text
-        if (view instanceof TextView) {
-            TextView textView = (TextView) view;
+        if (view instanceof TextView textView) {
             float currentSizePx = textView.getTextSize();
             textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, currentSizePx * scale);
         }
@@ -267,7 +265,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                     helpers.setFirstPreferenceWindow(true);
                 } else {
                     helpers.setFirstPreferenceWindow(true);
-                    setBrightness();
+                    if (sharedPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
+                        setBrightness();
+                    }
                 }                
                 long updateOnce = SystemClock.uptimeMillis();
                 Log.d(TAG, "Saving pending updateOnce=" + updateOnce);
@@ -299,7 +299,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         settingsSecondFragment = findPreference(Keys.CREATOR_FIRST);
 
         Preference favoriteCache = findPreference(Keys.FAVORITE_CACHE);
-        Preference oauthForYoutubeRevanced = findPreference(Keys.OAUTH_FOR_YOUTUBE_REVANCED);
+        oauthForYoutubeRevanced = findPreference(Keys.OAUTH_FOR_YOUTUBE_REVANCED);
         youtubeRevancedKids = findPreference(Keys.YOUTUBE_REVANCED_KIDS);
         Preference copyPatchUrl = findPreference(Keys.COPY_PATCH_URL);
         Preference fytData = findPreference(Keys.FYT_DATA);
@@ -377,8 +377,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (oauthForYoutubeRevanced != null && youtubeRevancedKids != null) {
             oauthForYoutubeRevanced.setOnPreferenceClickListener(this);
-            youtubeRevancedKids.setOnPreferenceClickListener(this);
-            RevancedOAuth.syncPreference(requireContext(), oauthForYoutubeRevanced, youtubeRevancedKids);            
+            youtubeRevancedKids.setOnPreferenceClickListener(this);       
         }
         if (copyPatchUrl != null) {
             copyPatchUrl.setOnPreferenceClickListener(this);
@@ -484,6 +483,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (oauthForYoutubeRevanced != null && youtubeRevancedKids != null) {
+            FytRating.syncPreference(requireContext(), oauthForYoutubeRevanced, youtubeRevancedKids);
+        }
+    }
+
     private void nightMode() {
         if (nightNonNull()) {
             nightMode.setOnPreferenceClickListener(this);
@@ -531,8 +538,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }         
     }
 
+    @NonNull
     @Override
-    protected RecyclerView.Adapter onCreateAdapter(PreferenceScreen preferenceScreen) {
+    protected RecyclerView.Adapter onCreateAdapter(@NonNull PreferenceScreen preferenceScreen) {
         customAdapter = new CustomPreferenceColorAdapter(this);
         if (settingsSecondFragment != null) {
             if (userLayoutBool) {
@@ -572,7 +580,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
                 break;
             case Keys.OAUTH_FOR_YOUTUBE_REVANCED:
-                RevancedOAuth.handlePreferenceClick(requireActivity(), preference, youtubeRevancedKids);
+                FytRating.handlePreferenceClick(requireActivity());
                 break;
             case Keys.YOUTUBE_REVANCED_KIDS:
                 MediaFavoriteController.refreshWidget(requireContext());
@@ -611,8 +619,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 negativeButton.setLayoutParams(params);
 
                 ViewGroup.LayoutParams editAllAppsTextParams = allAppsTextSizeEditText.getLayoutParams();
-                if (editAllAppsTextParams instanceof ViewGroup.MarginLayoutParams) {
-                    ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) editAllAppsTextParams;
+                if (editAllAppsTextParams instanceof ViewGroup.MarginLayoutParams marginParams) {
                     marginParams.setMargins(padding, padding, padding, padding);
                     allAppsTextSizeEditText.setLayoutParams(marginParams);
                 }
@@ -629,8 +636,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 negativeButtonW.setLayoutParams(params);
 
                 ViewGroup.LayoutParams editWorkspaceTextParams = workspaceTextSizeEditText.getLayoutParams();
-                if (editWorkspaceTextParams instanceof ViewGroup.MarginLayoutParams) {
-                    ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) editWorkspaceTextParams;
+                if (editWorkspaceTextParams instanceof ViewGroup.MarginLayoutParams marginParams) {
                     marginParams.setMargins(padding, padding, padding, padding);
                     workspaceTextSizeEditText.setLayoutParams(marginParams);
                 }
@@ -737,8 +743,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 negativeButtonL.setLayoutParams(params);
 
                 ViewGroup.LayoutParams editLogcatTextParams = logcatServiceTimeoutEditText.getLayoutParams();
-                if (editLogcatTextParams instanceof ViewGroup.MarginLayoutParams) {
-                    ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) editLogcatTextParams;
+                if (editLogcatTextParams instanceof ViewGroup.MarginLayoutParams marginParams) {
                     marginParams.setMargins(padding, padding, padding, padding);
                     logcatServiceTimeoutEditText.setLayoutParams(marginParams);
                 }
@@ -768,27 +773,13 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     private void refreshRecyclerMultiple() {       
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 300);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 500);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 700);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 900);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 1200);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 1400);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            refreshRecycler();
-        }, 1600);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 300);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 500);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 700);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 900);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1200);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1400);
+        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1600);
     }
 
     private void refreshRecycler() {
@@ -960,25 +951,19 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
     
     private void brightnessSeekBar(BrightnessSeekBarPreference seekPreference) {
-        seekPreference.setOnSeekBarProgressChangeListener(new BrightnessSeekBarPreference.OnSeekBarProgressChangeListener() {
-            @Override
-            public void onProgressChanged(int progress) {
-                //
-            }
+        seekPreference.setOnSeekBarProgressChangeListener(progress -> {
+            //
         });
     }
     
     private void correctionSeekBar(CorrectionSeekBarPreference seekPreference) {
-        seekPreference.setOnSeekBarProgressChangeListener(new CorrectionSeekBarPreference.OnSeekBarProgressChangeListener() {
-            @Override
-            public void onProgressChanged(int progress) {
-                handler.post(updateSummary);
-                helpers.setCorrectionChanged(true);
-            }
+        seekPreference.setOnSeekBarProgressChangeListener(progress -> {
+            handler.post(updateSummary);
+            helpers.setCorrectionChanged(true);
         });
     }
 
-    private Runnable updateSummary = new Runnable() { 
+    private final Runnable updateSummary = new Runnable() {
         @Override
         public void run() {
             if (nightMode instanceof TwoStatePreference) {
@@ -1071,15 +1056,11 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        switch (evt.getPropertyName()) {
-            case Keys.DOWNLOAD_PERCENTAGE:
-                int progress = (int) evt.getNewValue(); 
-                if (progressDialog != null) {
-                    progressDialog.updateProgress(progress);
-                }
-                break;
-            default:
-                break;
+        if (evt.getPropertyName().equals(Keys.DOWNLOAD_PERCENTAGE)) {
+            int progress = (int) evt.getNewValue();
+            if (progressDialog != null) {
+                progressDialog.updateProgress(progress);
+            }
         } 
     }
 
@@ -1109,9 +1090,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
     private void progrssDialogShow() {
         progressDialog = new ProgressDialog();        
-        progressDialog.setOnCancelListener(() -> {
-            versionChecker.cancelDownload();
-        });
+        progressDialog.setOnCancelListener(() -> versionChecker.cancelDownload());
         progressDialog.show(this.requireContext(), latestAppVersion);
     }
 
@@ -1351,6 +1330,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         private void saveWallpaper(String name) {
             requireActivity().runOnUiThread(() -> showLoading(name));
             Drawable mWallpaper = mWallpaperManager.getDrawable();
+            assert mWallpaper != null;
             Bitmap mBitmap = drawableToBitmap(mWallpaper);
             File mFile = new File(LauncherApplication.sApp.getFilesDir(), "wallpaper_img"); // dir: /data/user/0/com.android.launcher66/files/wallpaper_img
             Log.i("dir", String.valueOf(LauncherApplication.sApp.getFilesDir()));
@@ -1390,6 +1370,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
         public void saveBitmapHash(String name) {
             Drawable mWallpaper = mWallpaperManager.getDrawable();
+            assert mWallpaper != null;
             Bitmap currentWallpaperBitmap = drawableToBitmap(mWallpaper);
 
             Bitmap normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);

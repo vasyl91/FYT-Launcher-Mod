@@ -24,7 +24,7 @@ import android.util.Log;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.settings.Keys;
-import com.android.launcher66.settings.RevancedOAuth;
+import com.android.launcher66.settings.FytRating;
 import com.syu.widget.DateMusicProvider;
 import com.syu.widget.Widget;
 
@@ -57,7 +57,7 @@ public final class MediaFavoriteController {
 
     /** True once the user has granted access to the YouTube Data API. */
     private static boolean isLoggedOAuth() {
-        return RevancedOAuth.isLoggedIn(LauncherApplication.sApp);
+        return FytRating.isLoggedIn(LauncherApplication.sApp);
     }
 
     private static final boolean isMediaDebug = false;
@@ -633,10 +633,10 @@ public final class MediaFavoriteController {
                 .post(() -> Widget.widgetUpdate(appContext, DateMusicProvider.class)));
 
         YouTubeRevancedLikeState.setKidsChecker(
-                videoId -> RevancedOAuth.isMadeForKids(appContext, videoId));
+                videoId -> FytRating.isMadeForKids(appContext, videoId));
 
         YouTubeRevancedLikeState.setFetcher(videoId -> {
-            String rating = RevancedOAuth.fetchRating(appContext, videoId);
+            String rating = FytRating.fetchRating(appContext, videoId);
             if ("like".equals(rating)) {
                 return FAVORITE_STATE_FAVORITED;
             }
@@ -1473,7 +1473,7 @@ public final class MediaFavoriteController {
 
             Context appContext = context.getApplicationContext();
             EXECUTOR.execute(() -> {
-                boolean applied = RevancedOAuth.setRating(appContext, videoId, like);
+                boolean applied = FytRating.setRating(appContext, videoId, like);
                 if (applied && onApplied != null) {
                     onApplied.run();
                 }
