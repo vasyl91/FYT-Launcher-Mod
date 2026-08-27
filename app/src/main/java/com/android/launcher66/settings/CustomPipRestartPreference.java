@@ -13,7 +13,6 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -37,8 +36,7 @@ public class CustomPipRestartPreference extends Preference {
     private final Context mContext;
     private SharedPreferences sharedPrefs;
     private View mBoundItemView;
-    private ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutListener;
-    private View mGlobalLayoutHost;
+    private LayoutSizingWatcher mLayoutWatcher;
     private List<AppCompatButton> mRestartButtons;
     private AppCompatButton mRestartFirstButton;
     private AppCompatButton mRestartSecondButton;
@@ -135,26 +133,18 @@ public class CustomPipRestartPreference extends Preference {
         final View host = mBoundItemView;
         if (host == null) return;
 
-        mGlobalLayoutHost = host;
-        mGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override public void onGlobalLayout() {
-                if (host.getHeight() <= 0) return;
-                applySizing(resolveRowHeightFallback());
-                removeGlobalLayoutListener();
-            }
-        };
-        host.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
+        mLayoutWatcher = LayoutSizingWatcher.watch(host, h -> {
+            if (h.getHeight() <= 0) return false;
+            applySizing(resolveRowHeightFallback());
+            return true;
+        });
     }
 
     private void removeGlobalLayoutListener() {
-        if (mGlobalLayoutHost != null && mGlobalLayoutListener != null) {
-            ViewTreeObserver vto = mGlobalLayoutHost.getViewTreeObserver();
-            if (vto.isAlive()) {
-                vto.removeOnGlobalLayoutListener(mGlobalLayoutListener);
-            }
+        if (mLayoutWatcher != null) {
+            mLayoutWatcher.cancel();
+            mLayoutWatcher = null;
         }
-        mGlobalLayoutListener = null;
-        mGlobalLayoutHost = null;
     }
 
     private int resolveRowHeightFallback() {

@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,22 @@ public class CustomSwitchPreference extends SwitchPreferenceCompat {
 
     private SwitchCompat switchWidget;
     private final Handler handler = new Handler(Looper.getMainLooper());
+
+    private final Runnable setCheckedRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (switchWidget != null) {
+                switchWidget.setChecked(switchWidget.isChecked());
+            }
+        }
+    };
+
+    private final CompoundButton.OnCheckedChangeListener mCheckedChangeListener =
+            (buttonView, isChecked) -> {
+                if (callChangeListener(isChecked)) {
+                    handler.post(setCheckedRunnable);
+                }
+            };
 
     public CustomSwitchPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -39,27 +56,22 @@ public class CustomSwitchPreference extends SwitchPreferenceCompat {
             );
         }
 
+        // Drop the reference to the previously bound (possibly recycled) widget.
+        detachSwitchWidget();
+
         switchWidget = (SwitchCompat) holder.findViewById(R.id.switchWidget);
         if (switchWidget != null) {
+            // Clear first: the row view is recycled, so it may still carry the listener of a
+            // different preference and setChecked() below would fire it with the wrong state.
+            switchWidget.setOnCheckedChangeListener(null);
             switchWidget.setChecked(isChecked());
 
             switchWidget.setFocusable(false);
             switchWidget.setClickable(false);
 
-            switchWidget.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (callChangeListener(isChecked)) {
-                    handler.post(setCheckedRunnable);
-                }
-            });
+            switchWidget.setOnCheckedChangeListener(mCheckedChangeListener);
         }
     }
-
-    private Runnable setCheckedRunnable = new Runnable() { 
-        @Override
-        public void run() {
-            switchWidget.setChecked(switchWidget.isChecked());
-        }
-    };
 
     @Override
     protected void onClick() {
@@ -67,5 +79,19 @@ public class CustomSwitchPreference extends SwitchPreferenceCompat {
         if (switchWidget != null) {
             switchWidget.setChecked(!switchWidget.isChecked());
         }
+    }
+
+    private void detachSwitchWidget() {
+        if (switchWidget != null) {
+            switchWidget.setOnCheckedChangeListener(null);
+            switchWidget = null;
+        }
+    }
+
+    @Override
+    public void onDetached() {
+        handler.removeCallbacksAndMessages(null);
+        detachSwitchWidget();
+        super.onDetached();
     }
 }

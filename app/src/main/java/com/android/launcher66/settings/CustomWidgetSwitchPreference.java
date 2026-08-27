@@ -20,7 +20,6 @@ import android.view.Gravity;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -48,8 +47,7 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
     private AppCompatButton mPositionButton;        
     private View mImeMaskOverlay;
     private View mBoundItemView;
-    private ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutListener;
-    private View mGlobalLayoutHost;
+    private LayoutSizingWatcher mLayoutWatcher;
     private WidgetPageManager mPageManager;
 
     private final int orientation;
@@ -174,27 +172,19 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
         final View host = mBoundItemView;
         if (host == null) return;
 
-        mGlobalLayoutHost = host;
-        mGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override public void onGlobalLayout() {
-                if (host.getHeight() <= 0) return;
-                applySizing(resolveRowHeightFallback());
-                expandMainSwitchHitArea();
-                removeGlobalLayoutListener();
-            }
-        };
-        host.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
+        mLayoutWatcher = LayoutSizingWatcher.watch(host, h -> {
+            if (h.getHeight() <= 0) return false;
+            applySizing(resolveRowHeightFallback());
+            expandMainSwitchHitArea();
+            return true;
+        });
     }
 
     private void removeGlobalLayoutListener() {
-        if (mGlobalLayoutHost != null && mGlobalLayoutListener != null) {
-            ViewTreeObserver vto = mGlobalLayoutHost.getViewTreeObserver();
-            if (vto.isAlive()) {
-                vto.removeOnGlobalLayoutListener(mGlobalLayoutListener);
-            }
+        if (mLayoutWatcher != null) {
+            mLayoutWatcher.cancel();
+            mLayoutWatcher = null;
         }
-        mGlobalLayoutListener = null;
-        mGlobalLayoutHost = null;
     }
 
     private int resolveRowHeightFallback() {
