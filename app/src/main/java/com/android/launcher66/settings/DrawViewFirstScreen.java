@@ -962,68 +962,64 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
         RectF cand = null;
 
-        switch (v.getId()) {
-            case R.id.top_up: {
-                cand = new RectF(r.left, r.top - STEP, r.right, r.bottom);
-                if (cand.top < margin) cand = null;
-                break;
-            }
-            case R.id.top_down: {
-                cand = new RectF(r.left, r.top + STEP, r.right, r.bottom);
-                if (cand.height() < cfg.minHeight) cand = null;
-                break;
-            }
-            case R.id.bottom_up: {
-                float newBottom = Math.max(r.top + cfg.minHeight, r.bottom - STEP);
-                cand = new RectF(r.left, r.top, r.right, newBottom);
-                break;
-            }
-            case R.id.bottom_down: {
-                cand = new RectF(r.left, r.top, r.right, r.bottom + STEP);
-                if (cand.bottom > (maxBorderY - margin)) cand = null;
-                break;
-            }
-            case R.id.left_to_left: {
-                cand = new RectF(r.left - STEP, r.top, r.right, r.bottom);
-                if (cand.left < minBorderX) cand = null;
-                break;
-            }
-            case R.id.left_to_right: {
-                float newLeft = Math.min(r.right - cfg.minWidth, r.left + STEP);
-                cand = new RectF(newLeft, r.top, r.right, r.bottom);
-                break;
-            }
-            case R.id.right_to_left: {
-                float newRight = Math.max(r.left + cfg.minWidth, r.right - STEP);
-                cand = new RectF(r.left, r.top, newRight, r.bottom);
-                break;
-            }
-            case R.id.right_to_right: {
-                cand = new RectF(r.left, r.top, r.right + STEP, r.bottom);
-                if (cand.right > (maxBorderX - margin)) cand = null;
-                break;
-            }
-            case R.id.confirm_layout: {
-                if (hasAnyIntersection()) {
-                    displayDialog();
+        // switch (v.getId()) zamienione na if/else: od AGP 9 identyfikatory zasobów
+        // nie są stałymi kompilacji, więc nie mogą być etykietami case.
+        final int viewId = v.getId();
+
+        if (viewId == R.id.top_up) {
+            cand = new RectF(r.left, r.top - STEP, r.right, r.bottom);
+            if (cand.top < margin) cand = null;
+
+        } else if (viewId == R.id.top_down) {
+            cand = new RectF(r.left, r.top + STEP, r.right, r.bottom);
+            if (cand.height() < cfg.minHeight) cand = null;
+
+        } else if (viewId == R.id.bottom_up) {
+            float newBottom = Math.max(r.top + cfg.minHeight, r.bottom - STEP);
+            cand = new RectF(r.left, r.top, r.right, newBottom);
+
+        } else if (viewId == R.id.bottom_down) {
+            cand = new RectF(r.left, r.top, r.right, r.bottom + STEP);
+            if (cand.bottom > (maxBorderY - margin)) cand = null;
+
+        } else if (viewId == R.id.left_to_left) {
+            cand = new RectF(r.left - STEP, r.top, r.right, r.bottom);
+            if (cand.left < minBorderX) cand = null;
+
+        } else if (viewId == R.id.left_to_right) {
+            float newLeft = Math.min(r.right - cfg.minWidth, r.left + STEP);
+            cand = new RectF(newLeft, r.top, r.right, r.bottom);
+
+        } else if (viewId == R.id.right_to_left) {
+            float newRight = Math.max(r.left + cfg.minWidth, r.right - STEP);
+            cand = new RectF(r.left, r.top, newRight, r.bottom);
+
+        } else if (viewId == R.id.right_to_right) {
+            cand = new RectF(r.left, r.top, r.right + STEP, r.bottom);
+            if (cand.right > (maxBorderX - margin)) cand = null;
+
+        } else if (viewId == R.id.confirm_layout) {
+            if (hasAnyIntersection()) {
+                displayDialog();
+            } else {
+                savePrefs();
+                String message = getSafeContext().getString(R.string.layout_set);
+                if (mInflater != null && mRootView != null) {
+                    View toastLayout = mInflater.inflate(R.layout.toast, mRootView.findViewById(R.id.toast_layout));
+                    TextView text = toastLayout.findViewById(R.id.toast_text);
+                    text.setText(message);
+                    text.setTextSize(30);
+                    Toast toast = Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.setView(toastLayout);
+                    toast.show();
                 } else {
-                    savePrefs();
-                    String message = getSafeContext().getString(R.string.layout_set);
-                    if (mInflater != null && mRootView != null) {
-                        View toastLayout = mInflater.inflate(R.layout.toast, mRootView.findViewById(R.id.toast_layout));
-                        TextView text = toastLayout.findViewById(R.id.toast_text);
-                        text.setText(message);
-                        text.setTextSize(30);
-                        Toast toast = Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER, 0, 0);
-                        toast.setView(toastLayout);
-                        toast.show();
-                    } else {
-                        Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG).show();
-                    }
+                    Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG).show();
                 }
-                return;
             }
+            // Zachowane z oryginału: confirm_layout kończy metodę, nie przechodzi
+            // do bloku aplikującego przesunięcie poniżej.
+            return;
         }
 
         // Apply the movement if valid and doesn't collide

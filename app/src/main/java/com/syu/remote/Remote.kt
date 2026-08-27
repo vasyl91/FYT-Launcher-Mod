@@ -62,8 +62,8 @@ class Remote private constructor(
     private val CONN_DELAY_TIME_MIN = HttpURLConnection.HTTP_INTERNAL_ERROR
     private val mModules = SparseArray<Module>()
     private var autoConn = true
-    private lateinit var looper: Looper
-    private lateinit var mHandler: Handler
+    private var looper: Looper
+    private var mHandler: Handler
     private var mToolkit: IRemoteToolkit? = null
     private val commandJob: Job = Job()
     private val commandScope = CoroutineScope(Dispatchers.IO + commandJob)

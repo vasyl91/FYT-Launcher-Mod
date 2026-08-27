@@ -916,70 +916,63 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
         RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
         if (r.isEmpty()) return;
 
-        switch (v.getId()) {
-            case R.id.top_up: {
-                RectF cand = new RectF(r.left, r.top - STEP, r.right, r.bottom);
-                if (cand.top >= margin) { candToPoints(ids, cand); saveAndRedraw(); }
-                break;
-            }
-            case R.id.top_down: {
-                RectF cand = new RectF(r.left, r.top + STEP, r.right, r.bottom);
-                if (cand.height() >= cfg.minHeight) { candToPoints(ids, cand); saveAndRedraw(); }
-                break;
-            }
-            case R.id.bottom_up: {
-                float newBottom = Math.max(r.top + cfg.minHeight, r.bottom - STEP);
-                RectF cand = new RectF(r.left, r.top, r.right, newBottom);
-                candToPoints(ids, cand); saveAndRedraw();
-                break;
-            }
-            case R.id.bottom_down: {
-                RectF cand = new RectF(r.left, r.top, r.right, r.bottom + STEP);
-                if (cand.bottom <= (maxBorderY - margin)) { candToPoints(ids, cand); saveAndRedraw(); }
-                break;
-            }
-            case R.id.left_to_left: {
-                RectF cand = new RectF(r.left - STEP, r.top, r.right, r.bottom);
-                if (cand.left >= (minBorderX)) { candToPoints(ids, cand); saveAndRedraw(); }
-                break;
-            }
-            case R.id.left_to_right: {
-                float newLeft = Math.min(r.right - cfg.minWidth, r.left + STEP);
-                RectF cand = new RectF(newLeft, r.top, r.right, r.bottom);
-                candToPoints(ids, cand); saveAndRedraw();
-                break;
-            }
-            case R.id.right_to_left: {
-                float newRight = Math.max(r.left + cfg.minWidth, r.right - STEP);
-                RectF cand = new RectF(r.left, r.top, newRight, r.bottom);
-                candToPoints(ids, cand); saveAndRedraw();
-                break;
-            }
-            case R.id.right_to_right: {
-                RectF cand = new RectF(r.left, r.top, r.right + STEP, r.bottom);
-                if (cand.right <= (maxBorderX - margin)) { candToPoints(ids, cand); saveAndRedraw(); }
-                break;
-            }
-            case R.id.confirm_layout: {
-                if (hasAnyIntersection()) {
-                    displayDialog();
+        // switch (v.getId()) zamienione na if/else: od AGP 9 identyfikatory zasobów
+        // nie są stałymi kompilacji, więc nie mogą być etykietami case.
+        final int viewId = v.getId();
+
+        if (viewId == R.id.top_up) {
+            RectF cand = new RectF(r.left, r.top - STEP, r.right, r.bottom);
+            if (cand.top >= margin) { candToPoints(ids, cand); saveAndRedraw(); }
+
+        } else if (viewId == R.id.top_down) {
+            RectF cand = new RectF(r.left, r.top + STEP, r.right, r.bottom);
+            if (cand.height() >= cfg.minHeight) { candToPoints(ids, cand); saveAndRedraw(); }
+
+        } else if (viewId == R.id.bottom_up) {
+            float newBottom = Math.max(r.top + cfg.minHeight, r.bottom - STEP);
+            RectF cand = new RectF(r.left, r.top, r.right, newBottom);
+            candToPoints(ids, cand); saveAndRedraw();
+
+        } else if (viewId == R.id.bottom_down) {
+            RectF cand = new RectF(r.left, r.top, r.right, r.bottom + STEP);
+            if (cand.bottom <= (maxBorderY - margin)) { candToPoints(ids, cand); saveAndRedraw(); }
+
+        } else if (viewId == R.id.left_to_left) {
+            RectF cand = new RectF(r.left - STEP, r.top, r.right, r.bottom);
+            if (cand.left >= (minBorderX)) { candToPoints(ids, cand); saveAndRedraw(); }
+
+        } else if (viewId == R.id.left_to_right) {
+            float newLeft = Math.min(r.right - cfg.minWidth, r.left + STEP);
+            RectF cand = new RectF(newLeft, r.top, r.right, r.bottom);
+            candToPoints(ids, cand); saveAndRedraw();
+
+        } else if (viewId == R.id.right_to_left) {
+            float newRight = Math.max(r.left + cfg.minWidth, r.right - STEP);
+            RectF cand = new RectF(r.left, r.top, newRight, r.bottom);
+            candToPoints(ids, cand); saveAndRedraw();
+
+        } else if (viewId == R.id.right_to_right) {
+            RectF cand = new RectF(r.left, r.top, r.right + STEP, r.bottom);
+            if (cand.right <= (maxBorderX - margin)) { candToPoints(ids, cand); saveAndRedraw(); }
+
+        } else if (viewId == R.id.confirm_layout) {
+            if (hasAnyIntersection()) {
+                displayDialog();
+            } else {
+                savePrefs();
+                String message = getSafeContext().getString(R.string.layout_set);
+                if (mInflater != null && mRootView != null) {
+                    View toastLayout = mInflater.inflate(R.layout.toast, mRootView.findViewById(R.id.toast_layout));
+                    TextView text = toastLayout.findViewById(R.id.toast_text);
+                    text.setText(message);
+                    text.setTextSize(30);
+                    Toast toast = Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.setView(toastLayout);
+                    toast.show();
                 } else {
-                    savePrefs();
-                    String message = getSafeContext().getString(R.string.layout_set);
-                    if (mInflater != null && mRootView != null) {
-                        View toastLayout = mInflater.inflate(R.layout.toast, mRootView.findViewById(R.id.toast_layout));
-                        TextView text = toastLayout.findViewById(R.id.toast_text);
-                        text.setText(message);
-                        text.setTextSize(30);
-                        Toast toast = Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER, 0, 0);
-                        toast.setView(toastLayout);
-                        toast.show();
-                    } else {
-                        Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG).show();
-                    }
+                    Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG).show();
                 }
-                break;
             }
         }
     }

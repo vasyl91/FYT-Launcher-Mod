@@ -14,3 +14,13 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# --- Signing ---
+keystore.properties
+*.jks
+*.keystore
+
+# --- Build ---
+app/build/
+/app/release/
+/app/profile/
