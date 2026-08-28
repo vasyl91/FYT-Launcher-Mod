@@ -58,8 +58,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-//import leakcanary.LeakCanary;
-
 public class LauncherApplication extends Application {
     public static String bHideUniCar;
     public static Boolean frontview_endble;
@@ -124,11 +122,7 @@ public class LauncherApplication extends Application {
                 new Intent(this, WakeDetectionService.class),
                 "wake detection"
         ), 1000);
-        /*LeakCanary.Config cfg = LeakCanary.getConfig()
-            .newBuilder()
-            .retainedVisibleThreshold(10)
-            .build();
-        LeakCanary.setConfig(cfg);*/
+        LeakCanaryInit.init();
         Log.d("LauncherApplication", "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms");
     }
 
