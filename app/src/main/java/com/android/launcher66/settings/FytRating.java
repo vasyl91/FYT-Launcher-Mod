@@ -23,7 +23,7 @@ import androidx.preference.Preference;
 import com.android.launcher66.R;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -77,7 +77,8 @@ public final class FytRating {
     private static final String RELEASES_URL = "https://github.com/vasyl91/fYT-Rating/releases/latest";
     private static final long DOUBLE_CLICK_TIMEOUT_MS = 500L;
     private static long lastMissingClickAtMs;
-    private static Toast missingToast;
+    private static Toast missingToast; 
+    private static final AtomicInteger REQUEST_COUNTER = new AtomicInteger(0);
 
     private FytRating() {
     }
@@ -185,6 +186,9 @@ public final class FytRating {
         AtomicReference<Bundle> answer = new AtomicReference<>();
         CountDownLatch latch = new CountDownLatch(1);
 
+        int uniqueId = REQUEST_COUNTER.incrementAndGet();
+        String uniqueAction = ACTION_RESULT + "_" + uniqueId;
+
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context ignored, Intent intent) {
@@ -193,22 +197,27 @@ public final class FytRating {
             }
         };
 
+        PendingIntent callbackIntent = null;
+        PendingIntent identityIntent = null;
+
         try {
-            registerResultReceiver(appContext, receiver);
+            IntentFilter filter = new IntentFilter(uniqueAction);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                appContext.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);
+            } else {
+                appContext.registerReceiver(receiver, filter);
+            }
 
             request.setPackage(BRIDGE_PACKAGE);
-            // Reaches the bridge even if it has never been opened since boot.
             request.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-            // One PendingIntent does both jobs: it carries the reply back, and
-            // its creator - recorded by the system, impossible to fake - tells
-            // the bridge who is asking.
-            PendingIntent callbackIntent = PendingIntent.getBroadcast(
-                    appContext, 0,
-                    new Intent(ACTION_RESULT).setPackage(appContext.getPackageName()),
+
+            callbackIntent = PendingIntent.getBroadcast(
+                    appContext, uniqueId,
+                    new Intent(uniqueAction).setPackage(appContext.getPackageName()),
                     PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
-            PendingIntent identityIntent = PendingIntent.getBroadcast(
-                    appContext, 1, 
+            identityIntent = PendingIntent.getBroadcast(
+                    appContext, uniqueId + 1000000, 
                     new Intent(),
                     PendingIntent.FLAG_IMMUTABLE);
 
@@ -217,9 +226,8 @@ public final class FytRating {
 
             appContext.sendBroadcast(request);
 
-            if (!latch.await(timeoutMs, TimeUnit.MILLISECONDS)) {
-                Log.w(TAG, "No reply to " + request.getAction() + " within "
-                        + timeoutMs + " ms");
+            if (!latch.await(timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS)) {
+                Log.w(TAG, "No reply to " + request.getAction() + " within " + timeoutMs + " ms");
                 return null;
             }
             return answer.get();
@@ -234,6 +242,12 @@ public final class FytRating {
                 appContext.unregisterReceiver(receiver);
             } catch (Exception ignored) {
                 // Already gone.
+            }
+            if (callbackIntent != null) {
+                callbackIntent.cancel();
+            }
+            if (identityIntent != null) {
+                identityIntent.cancel();
             }
         }
     }
