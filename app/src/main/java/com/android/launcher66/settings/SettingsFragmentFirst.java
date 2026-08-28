@@ -154,6 +154,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private InputMethodManager imm;
     private RecyclerView recyclerView;
 
+    private final LogcatWorker.StateListener logcatStateListener = (success, message) -> {
+        if (!isAdded() || logcatRun == null) return;
+        removeTickRunnable();
+        cancelCountDownTimer();
+        logcatRun.setEnabled(true);
+        logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
+    }; 
+
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -427,16 +435,17 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (logcatRun != null) {
             logcatRun.setVisible(isDebug);
-            logcatRun.setOnPreferenceClickListener(this);     
-            if (helpers.logcatRunBoolean()) {
-                int delay = helpers.returnCountDownLogcat() * 1000;
+            logcatRun.setOnPreferenceClickListener(this);
+            LogcatWorker.get().setStateListener(logcatStateListener);
+            int delay = (int) LogcatWorker.get().getRemainingMillis();
+            if (LogcatWorker.get().isActive() && delay > 0) {
                 setCountDownTimer(delay);
                 setTickRunnable(delay);
             } else {
                 logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
                 helpers.setCountDownLogcat(0);
             }
-        } 
+        }
         if (logcatServiceTimeout != null) {
             logcatServiceTimeout.setVisible(isDebug);
             logcatServiceTimeout.setOnPreferenceClickListener(this);
@@ -726,11 +735,13 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 }
                 break;
             case Keys.LOGCAT_SERVICE_RUN:
-                if (!helpers.logcatRunBoolean()) {
-                    int logcatTimeout = Integer.parseInt(sharedPrefs.getString(Keys.LOGCAT_SERVICE_TIMEOUT, "30")) * 1000;
+                if (!LogcatWorker.get().isActive()) {
                     startLogcatRun();
-                    setCountDownTimer(logcatTimeout);
-                    setTickRunnable(logcatTimeout);
+                    int logcatTimeout = (int) LogcatWorker.get().getRemainingMillis();
+                    if (logcatTimeout > 0) {
+                        setCountDownTimer(logcatTimeout);
+                        setTickRunnable(logcatTimeout);
+                    }
                 } else {
                     stopLogcatRun();
                 }
@@ -805,6 +816,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         progressDialogDismiss();
         removeTickRunnable();
         cancelCountDownTimer();
+        LogcatWorker.get().clearStateListener(logcatStateListener);
         dismissDialogs();
         mPropertyChangeClass.deleteObserver(Keys.DOWNLOAD_PERCENTAGE, this);
         
@@ -831,6 +843,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     public void setCountDownTimer(int delay) {
+        cancelCountDownTimer();
         countDownTimerBool = true;
         final Context appContext = requireContext().getApplicationContext();
 
@@ -868,9 +881,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     public void cancelCountDownTimer() {
-        if (countDownTimerBool) {
-            countDownTimerBool = false;
+        countDownTimerBool = false;
+        if (countDownTimer != null) {
             countDownTimer.cancel();
+            countDownTimer = null;
         }
     }
 
@@ -899,7 +913,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     };
 
     public void startLogcatRun() {
-        LogcatWorker.get().start(requireContext());
+        LogcatWorker.get().start(requireContext(), LogcatWorker.Mode.FROM_NOW);
     }
 
     public void stopLogcatRun() {
