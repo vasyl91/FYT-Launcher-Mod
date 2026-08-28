@@ -1,6 +1,5 @@
 package com.android.launcher66.settings;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -10,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -249,18 +247,6 @@ public final class FytRating {
             if (identityIntent != null) {
                 identityIntent.cancel();
             }
-        }
-    }
-
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    private static void registerResultReceiver(Context context, BroadcastReceiver receiver) {
-        IntentFilter filter = new IntentFilter(ACTION_RESULT);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // The reply is delivered through a PendingIntent created here, so
-            // it arrives from this application and needs no export.
-            context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
-        } else {
-            context.registerReceiver(receiver, filter);
         }
     }
 
