@@ -21,6 +21,7 @@ import androidx.preference.Preference;
 import com.android.launcher66.R;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -62,8 +63,24 @@ public final class FytRating {
     /** Where the replies come back. Unique to the launcher. */
     private static final String ACTION_RESULT = "com.android.launcher66.action.RATING_RESULT";
 
-    private static final long RATING_TIMEOUT_MS = 6000L;
-    private static final long STATUS_TIMEOUT_MS = 2500L;
+    // The bridge may have to be woken from a frozen or killed process and then
+    // talks to the YouTube Data API before it can answer. Both budgets must sit
+    // above the bridge's own HTTP timeouts, or a slow but successful lookup is
+    // indistinguishable from a dead bridge.
+    private static final long RATING_TIMEOUT_MS = 12000L;
+    private static final long STATUS_TIMEOUT_MS = 8000L;
+
+    /** How long a status answer is trusted before it is fetched again. */
+    private static final long STATUS_MAX_AGE_MS = 60000L;
+
+    /** Retry interval while the bridge has never answered a status request. */
+    private static final long STATUS_RETRY_DELAY_MS = 10000L;
+
+    /** How long a rating reply is reused to answer the made-for-kids question. */
+    private static final long LAST_REPLY_MAX_AGE_MS = 15000L;
+
+    private static final String ERROR_NOT_ALLOWED = "not_allowed";
+    private static final String ERROR_NOT_SIGNED_IN = "not_signed_in";
 
     /**
      * Last known state of the bridge, so the settings screen and the widget can
@@ -71,6 +88,19 @@ public final class FytRating {
      */
     private static volatile boolean signedIn;
     private static volatile boolean allowed;
+
+    /** False until the bridge has answered a status request at least once. */
+    private static volatile boolean statusKnown;
+    private static volatile long statusCheckedAtMs;
+    private static final AtomicBoolean STATUS_REFRESH_RUNNING = new AtomicBoolean(false);
+
+    /**
+     * The error carried by the last rating reply, kept so the made-for-kids
+     * question can be answered without a second round trip to the bridge.
+     */
+    private static volatile String lastReplyVideoId;
+    private static volatile String lastReplyError;
+    private static volatile long lastReplyAtMs;
 
     private static final String RELEASES_URL = "https://github.com/vasyl91/fYT-Rating/releases/latest";
     private static final long DOUBLE_CLICK_TIMEOUT_MS = 500L;
@@ -96,10 +126,45 @@ public final class FytRating {
      * True when the bridge is installed, signed in, and has granted this
      * launcher access - everything needed for a rating to be resolved.
      *
-     * Answers from the cached state; call {@link #refreshStatus} to update it.
+     * Answers from the cached state and starts a background refresh when that
+     * state is stale, so a wrong answer can no longer survive until somebody
+     * happens to open the settings screen.
      */
     public static boolean isLoggedIn(Context context) {
-        return isInstalled(context) && signedIn && allowed;
+        if (!isInstalled(context)) {
+            return false;
+        }
+        ensureFreshStatus(context);
+        return statusKnown && signedIn && allowed;
+    }
+
+    /**
+     * Starts a background status refresh when the cached answer is missing or
+     * stale. Returns immediately; callers read the cached values.
+     */
+    private static void ensureFreshStatus(Context context) {
+        long maxAge = statusKnown ? STATUS_MAX_AGE_MS : STATUS_RETRY_DELAY_MS;
+        if (statusCheckedAtMs != 0L
+                && SystemClock.elapsedRealtime() - statusCheckedAtMs < maxAge) {
+            return;
+        }
+        if (!STATUS_REFRESH_RUNNING.compareAndSet(false, true)) {
+            return;
+        }
+
+        Context appContext = context.getApplicationContext();
+        new Thread(() -> {
+            try {
+                refreshStatus(appContext);
+            } finally {
+                STATUS_REFRESH_RUNNING.set(false);
+            }
+        }, "fyt-rating-status").start();
+    }
+
+    /** True once the bridge has answered a status request at least once. */
+    public static boolean isStatusKnown() {
+        return statusKnown;
     }
 
     public static boolean isSignedIn() {
@@ -110,26 +175,37 @@ public final class FytRating {
         return allowed;
     }
 
-    /** Blocking. Asks the bridge for its state and caches the answer. */
+    /**
+     * Blocking. Asks the bridge for its state and caches the answer.
+     *
+     * Silence is no longer treated as a refusal. An unanswered request means
+     * the bridge was busy, frozen or being started; latching "not allowed" onto
+     * it used to disable rating support until the settings screen was reopened.
+     */
     public static boolean refreshStatus(Context context) {
         if (!isInstalled(context)) {
             signedIn = false;
             allowed = false;
+            statusKnown = true;
+            statusCheckedAtMs = SystemClock.elapsedRealtime();
             return false;
         }
 
         Intent request = new Intent(ACTION_GET_STATUS);
         Bundle result = exchange(context, request, STATUS_TIMEOUT_MS);
+        statusCheckedAtMs = SystemClock.elapsedRealtime();
 
         if (result == null) {
-            // Silence means the bridge did not answer: most often it has never
-            // been opened, and Android keeps such an application stopped.
-            signedIn = false;
-            allowed = false;
-        } else {
-            signedIn = result.getBoolean(EXTRA_SIGNED_IN, false);
-            allowed = result.getBoolean(EXTRA_ALLOWED, false);
+            Log.w(TAG, "No status reply; keeping the previous state"
+                    + " (known=" + statusKnown
+                    + " signedIn=" + signedIn
+                    + " allowed=" + allowed + ")");
+            return statusKnown && signedIn && allowed;
         }
+
+        signedIn = result.getBoolean(EXTRA_SIGNED_IN, false);
+        allowed = result.getBoolean(EXTRA_ALLOWED, false);
+        statusKnown = true;
         return signedIn && allowed;
     }
 
@@ -145,16 +221,88 @@ public final class FytRating {
         request.putExtra(EXTRA_VIDEO_ID, videoId);
 
         Bundle result = exchange(context, request, RATING_TIMEOUT_MS);
-        return result == null ? null : result.getString(EXTRA_RATING);
+        if (result == null) {
+            // Silence says nothing about the video, so the remembered reply is
+            // dropped rather than reused by the made-for-kids question.
+            forgetLastReply(videoId);
+            return null;
+        }
+
+        String error = result.getString(EXTRA_ERROR);
+        rememberLastReply(videoId, error);
+        noteReplyError(error);
+
+        return result.getString(EXTRA_RATING);
     }
 
-    /** Blocking. True when the bridge reported the video as made for kids. */
+    /**
+     * Blocking. True when the bridge reported the video as made for kids.
+     *
+     * Answered from the reply to the rating request whenever there is a recent
+     * one for the same video, so the common path costs one round trip instead
+     * of two - halving both the latency and the chance of a timeout.
+     */
     public static boolean isMadeForKids(Context context, String videoId) {
+        String remembered = cachedErrorFor(videoId);
+        if (remembered != null) {
+            return ERROR_MADE_FOR_KIDS.equals(remembered);
+        }
+
         Intent request = new Intent(ACTION_GET_RATING);
         request.putExtra(EXTRA_VIDEO_ID, videoId);
 
         Bundle result = exchange(context, request, RATING_TIMEOUT_MS);
-        return result != null && ERROR_MADE_FOR_KIDS.equals(result.getString(EXTRA_ERROR));
+        if (result == null) {
+            forgetLastReply(videoId);
+            return false;
+        }
+
+        String error = result.getString(EXTRA_ERROR);
+        rememberLastReply(videoId, error);
+        noteReplyError(error);
+        return ERROR_MADE_FOR_KIDS.equals(error);
+    }
+
+    /**
+     * Folds an explicit refusal into the cached status.
+     *
+     * Worth doing because it is the one thing a timeout can never tell us: the
+     * bridge saying "no" is information, the bridge saying nothing is not.
+     */
+    private static void noteReplyError(String error) {
+        if (ERROR_NOT_ALLOWED.equals(error)) {
+            allowed = false;
+        } else if (ERROR_NOT_SIGNED_IN.equals(error)) {
+            signedIn = false;
+        } else {
+            return;
+        }
+        statusKnown = true;
+        statusCheckedAtMs = SystemClock.elapsedRealtime();
+    }
+
+    private static void rememberLastReply(String videoId, String error) {
+        lastReplyError = error == null ? "" : error;
+        lastReplyVideoId = videoId;
+        lastReplyAtMs = SystemClock.elapsedRealtime();
+    }
+
+    private static void forgetLastReply(String videoId) {
+        if (videoId != null && videoId.equals(lastReplyVideoId)) {
+            lastReplyVideoId = null;
+        }
+    }
+
+    /** @return the recorded error ("" for none), or null when there is nothing to reuse */
+    private static String cachedErrorFor(String videoId) {
+        String rememberedId = lastReplyVideoId;
+        if (rememberedId == null || videoId == null || !rememberedId.equals(videoId)) {
+            return null;
+        }
+        if (SystemClock.elapsedRealtime() - lastReplyAtMs > LAST_REPLY_MAX_AGE_MS) {
+            return null;
+        }
+        return lastReplyError;
     }
 
     /** Blocking. True when the account was updated. */
@@ -164,7 +312,18 @@ public final class FytRating {
         request.putExtra(EXTRA_RATING, like ? RATING_LIKE : RATING_NONE);
 
         Bundle result = exchange(context, request, RATING_TIMEOUT_MS);
-        return result != null && result.getString(EXTRA_ERROR) == null;
+        if (result == null) {
+            forgetLastReply(videoId);
+            return false;
+        }
+
+        String error = result.getString(EXTRA_ERROR);
+        noteReplyError(error);
+
+        // The rating has just changed, so the remembered reply describes a
+        // state that no longer holds.
+        forgetLastReply(videoId);
+        return error == null;
     }
 
     // ------------------------------------------------------------ plumbing

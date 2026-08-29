@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
@@ -95,6 +96,15 @@ public final class MediaFavoriteController {
     public static boolean toggleFavoriteCurrent(Context context, String preferredPackage) {
         MediaController controller = getTargetController(context, preferredPackage);
         if (controller == null) {
+            return false;
+        }
+
+        // The session picker no longer applies this rule, because doing so kept
+        // the status from ever being resolved. The write path is where it
+        // belongs: nothing may be sent for a video whose rating the launcher is
+        // not allowed to touch or has not confirmed yet.
+        if (isFavoriteTemporarilyDisabledPackage(controller.getPackageName())) {
+            Log.d(TAG, "Favorite disabled for " + controller.getPackageName());
             return false;
         }
 
@@ -259,7 +269,7 @@ public final class MediaFavoriteController {
         }
 
         if (isExternalPackage(preferredPackage)) {
-            if (isFavoriteTemporarilyDisabledPackage(preferredPackage)) {
+            if (isUnsupportedFavoritePackage(preferredPackage)) {
                 return null;
             }
             for (MediaController controller : controllers) {
@@ -274,7 +284,7 @@ public final class MediaFavoriteController {
             if (controller == null || !isExternalPackage(controller.getPackageName())) {
                 continue;
             }
-            if (isFavoriteTemporarilyDisabledPackage(controller.getPackageName())) {
+            if (isUnsupportedFavoritePackage(controller.getPackageName())) {
                 continue;
             }
             PlaybackState state = safePlaybackState(controller);
@@ -290,6 +300,35 @@ public final class MediaFavoriteController {
             }
         }
         return fallback;
+    }
+
+    /**
+     * Whether a player can never be a rating target, whatever its current state.
+     *
+     * Deliberately narrower than {@link #isFavoriteTemporarilyDisabledPackage}.
+     * The two rules left out of it - "status not resolved yet" and "made for
+     * kids" - describe the button, not the session, and both are decided by
+     * state that only {@link #getCurrentFavoriteState} can produce. Applying
+     * them here hid the ReVanced session from the picker, which stopped
+     * requestRefresh from ever running: an unresolved status could then never
+     * resolve, and the button stayed grey until the launcher was restarted.
+     */
+    private static boolean isUnsupportedFavoritePackage(String packageName) {
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        }
+
+        if (mPrefs.getBoolean(Keys.FAVORITE_CACHE, false)) {
+            // YouTube enabled in settings: ReVanced needs the linked account.
+            return !isLoggedOAuth() && YOUTUBE_REVANCED_PACKAGE.equals(packageName);
+        }
+
+        // YouTube disabled in settings.
+        if (isLoggedOAuth()) {
+            return YOUTUBE_PACKAGE.equals(packageName);
+        }
+        return YOUTUBE_PACKAGE.equals(packageName)
+                || YOUTUBE_REVANCED_PACKAGE.equals(packageName);
     }
 
     private static boolean isExternalPackage(String packageName) {
@@ -1359,6 +1398,16 @@ public final class MediaFavoriteController {
         private static volatile Runnable onUpdated;
         private static volatile boolean fetchInFlight;
 
+        /**
+         * Backoff after a lookup that produced nothing usable, so a single
+         * timeout cannot leave the status unresolved for good.
+         */
+        private static final long RETRY_BASE_DELAY_MS = 3000L;
+        private static final long RETRY_MAX_DELAY_MS = 60000L;
+        private static volatile String retryVideoId;
+        private static volatile long retryNotBeforeMs;
+        private static volatile int consecutiveFailures;
+
         private YouTubeRevancedLikeState() {
         }
 
@@ -1459,6 +1508,9 @@ public final class MediaFavoriteController {
             currentVideoId = null;
             currentState = MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
             fetchedVideoId = null;
+            retryVideoId = null;
+            retryNotBeforeMs = 0L;
+            consecutiveFailures = 0;
         }
 
         /**
@@ -1497,6 +1549,12 @@ public final class MediaFavoriteController {
          * Asks the Data API for the status of the given video. Does nothing until
          * a fetcher is installed, and never queues more than one request at a time
          * so the widget refresh loop cannot flood the API.
+         *
+         * A lookup that produces nothing usable now schedules another attempt
+         * instead of simply giving up. Previously one unanswered request left
+         * the status unresolved, and an unresolved status used to remove the
+         * session from the picker - so this method was never reached again and
+         * the button stayed grey for the rest of the launcher's life.
          */
         public static void requestRefresh(String videoId) {
             Fetcher currentFetcher = fetcher;
@@ -1510,44 +1568,90 @@ public final class MediaFavoriteController {
                 if (fetchInFlight || videoId.equals(fetchedVideoId)) {
                     return;
                 }
+                if (videoId.equals(retryVideoId)
+                        && SystemClock.elapsedRealtime() < retryNotBeforeMs) {
+                    // A previous attempt for this video came back empty; wait
+                    // out the backoff rather than hammering the bridge.
+                    return;
+                }
                 fetchInFlight = true;
-                fetchedVideoId = videoId;
             }
 
             EXECUTOR.execute(() -> {
+                boolean resolved = false;
                 try {
+                    // The rating is asked for first so the kids question can be
+                    // answered from that same reply, which halves the number of
+                    // round trips through the bridge.
+                    int state = currentFetcher.fetchRating(videoId);
+
                     KidsChecker checker = kidsChecker;
                     if (checker != null) {
                         Boolean madeForKids = checker.isMadeForKids(videoId);
                         if (Boolean.TRUE.equals(madeForKids)) {
                             madeForKidsVideoId = videoId;
+                            resolved = true;
                         } else if (videoId.equals(madeForKidsVideoId)) {
                             madeForKidsVideoId = null;
                         }
                     }
 
-                    int state = currentFetcher.fetchRating(videoId);
-                    if (state == MediaFavoriteController.FAVORITE_STATE_UNKNOWN) {
-                        // Nothing usable came back; allow another attempt later
-                        // instead of leaving this video marked as handled.
-                        fetchedVideoId = null;
-                    } else {
+                    if (state != MediaFavoriteController.FAVORITE_STATE_UNKNOWN) {
                         setState(videoId, state);
-
-                        Runnable callback = onUpdated;
-                        if (callback != null) {
-                            callback.run();
-                        }
+                        resolved = true;
                     }
                 } catch (Exception e) {
                     Log.w(TAG, "Failed to fetch rating for " + videoId, e);
-                    fetchedVideoId = null;
                 } finally {
+                    long retryInMs = 0L;
                     synchronized (YouTubeRevancedLikeState.class) {
+                        if (resolved) {
+                            fetchedVideoId = videoId;
+                            retryVideoId = null;
+                            retryNotBeforeMs = 0L;
+                            consecutiveFailures = 0;
+                        } else {
+                            if (!videoId.equals(retryVideoId)) {
+                                consecutiveFailures = 0;
+                            }
+                            retryVideoId = videoId;
+                            consecutiveFailures++;
+                            int shift = Math.min(consecutiveFailures - 1, 4);
+                            retryInMs = Math.min(
+                                    RETRY_MAX_DELAY_MS, RETRY_BASE_DELAY_MS * (1L << shift));
+                            retryNotBeforeMs = SystemClock.elapsedRealtime() + retryInMs;
+                            fetchedVideoId = null;
+                            Log.w(TAG, "Rating for " + videoId + " unresolved, attempt "
+                                    + consecutiveFailures
+                                    + ", retrying in " + retryInMs + " ms");
+                        }
                         fetchInFlight = false;
+                    }
+
+                    if (retryInMs > 0L) {
+                        scheduleRetry(retryInMs);
+                    }
+
+                    Runnable callback = onUpdated;
+                    if (callback != null) {
+                        callback.run();
                     }
                 }
             });
+        }
+
+        /**
+         * Redraws the widget once the backoff has passed. The redraw is what
+         * calls getCurrentFavoriteState again, which is what issues the next
+         * request - so recovery does not depend on anything else ticking.
+         */
+        private static void scheduleRetry(long delayMs) {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                Runnable callback = onUpdated;
+                if (callback != null) {
+                    callback.run();
+                }
+            }, delayMs + 250L);
         }
     }
 }
