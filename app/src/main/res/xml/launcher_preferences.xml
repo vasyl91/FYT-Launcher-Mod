@@ -202,6 +202,10 @@
             android:key="logcat_service"
             android:defaultValue="false"
             android:title="@string/logcat_service" />
+        <SwitchPreferenceCompat
+            android:key="logcat_service_wake"
+            android:defaultValue="false"
+            android:title="@string/logcat_service_wake" />
         <Preference
             android:key="logcat_service_run"
             android:title="@string/logcat_service_run"/>

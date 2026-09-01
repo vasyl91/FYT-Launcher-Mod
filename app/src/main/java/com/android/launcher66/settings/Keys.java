@@ -20,7 +20,6 @@ public final class Keys {
     public static final String LIST_CLOSE = "list_close";
     public static final String OVERVIEW_MODE_OPEN = "overview_mode_open";
     public static final String OVERVIEW_MODE_CLOSE = "overview_mode_close";
-    public static final String START_ADDING_CUSTOM_ELEMETNS = "start_adding_custom_elements";
     public static final String NIGHT_MODE = "night_mode"; 
 
     public static final String DOWNLOAD_PERCENTAGE = "download_percentage";
@@ -49,6 +48,7 @@ public final class Keys {
     public static final String SUNSET_CORRECTION = "sunset_correction";
     public static final String RESET_NIGHT_MODE = "reset_night_mode";
     public static final String LOGCAT_SERVICE = "logcat_service";
+    public static final String LOGCAT_SERVICE_WAKE = "logcat_service_wake";
     public static final String LOGCAT_SERVICE_RUN = "logcat_service_run";
     public static final String LOGCAT_SERVICE_TIMEOUT = "logcat_service_timeout";
     public static final String APP_VERSION_UPDATE = "app_version_update";
@@ -140,16 +140,6 @@ public final class Keys {
     public static final String EXTENDED_DIVIDER = "extended_divider";
     public static final String COVER_SPLASH = "cover_splash";
     public static final String SWIPE_DETECTOR = "swipe_detector";
-
-    public static final String MUSIC_SCREEN_ID = "music_screen_id";
-    public static final String RADIO_SCREEN_ID = "radio_screen_id";
-    public static final String DATE_SCREEN_ID = "date_screen_id";
-    public static final String STATS_SCREEN_ID = "stats_screen_id";
-    public static final String PIP_DUAL_SCREEN_ID = "pip_dual_screen_id";
-    public static final String PIP_FIRST_SCREEN_ID = "pip_first_screen_id";
-    public static final String PIP_SECOND_SCREEN_ID = "pip_second_screen_id";
-    public static final String PIP_THIRD_SCREEN_ID = "pip_third_screen_id";
-    public static final String PIP_FOURTH_SCREEN_ID = "pip_fourth_screen_id";
 
     public static final String RECYCLER_APP = "recycler_app";
     public static final String RECYCLER_APP_MAP = "recycler_app_map";

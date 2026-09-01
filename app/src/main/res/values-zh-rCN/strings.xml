@@ -423,7 +423,10 @@
     <string name="reset_night_mode">恢复夜间模式默认值</string>
     <string name="init_default_app_error">请在设备设置中选择导航/前置应用。</string>
     <string name="logcat_service">开机启动日志服务</string>
-    <string name="logcat_service_summary"><![CDATA[应用启动时将开始记录日志。重置设备或应用，然后在 <b>Download/Launcher66_Logs</b> 中查看日志]]></string>
+    <string name="logcat_service_summary"><![CDATA[应用启动时，Logcat 将开始记录日志。重启设备或应用，然后在 <b>Download/Launcher66_Logs</b> 中查看日志。]]></string>
+    <string name="logcat_service_wake">设备唤醒时启动 Logcat 服务</string>
+    <string name="logcat_service_wake_summary"><![CDATA[启动器唤醒时，Logcat 将开始记录日志。关闭 ACC，然后重新打开 ACC，并在 <b>Download/Launcher66_Logs</b> 中查看日志。]]></string>
+    <string name="logcat_service_wake_summary_phone"><![CDATA[启动器唤醒时，Logcat 将开始记录日志。关闭屏幕，然后重新打开屏幕，并在 <b>Download/Launcher66_Logs</b> 中查看日志。]]></string>
     <string name="logcat_service_run">日志服务</string>
     <string name="logcat_service_run_summary">点击开始记录</string>
     <string name="logcat_service_run_working">正在工作... %1$s 点击此处取消</string>

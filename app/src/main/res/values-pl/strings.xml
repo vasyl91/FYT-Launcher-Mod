@@ -281,7 +281,10 @@
     <string name="reset_night_mode">Przywróć wartośc domyślne dla trybu nocnego</string>
     <string name="init_default_app_error">Ustaw domyślną nawigację w ustawieniach urządzenia.</string>
     <string name="logcat_service">Logcat podczas startu</string>
-    <string name="logcat_service_summary"><![CDATA[Logcat zaczyna zapis podczas startu aplikacji. Uruchom ponownie urzadzenie lub aplikację i sprawdź logi zapisane w <b>Download/Launcher66_Logs</b>]]></string>
+    <string name="logcat_service_summary"><![CDATA[Logcat rozpocznie rejestrowanie po uruchomieniu aplikacji. Uruchom ponownie urządzenie lub aplikację i sprawdź logi w <b>Download/Launcher66_Logs</b>.]]></string>
+    <string name="logcat_service_wake">Usługa Logcat po wybudzeniu urządzenia</string>
+    <string name="logcat_service_wake_summary"><![CDATA[Logcat rozpocznie rejestrowanie po wybudzeniu launchera. Wyłącz silnik, następnie włącz go i sprawdź logi w <b>Download/Launcher66_Logs</b>.]]></string>
+    <string name="logcat_service_wake_summary_phone"><![CDATA[Logcat rozpocznie rejestrowanie po wybudzeniu launchera. Wyłącz ekran, a następnie włącz go i sprawdź logi w <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_run">Logcat</string>
     <string name="logcat_service_run_summary">Naciśnij, aby zacząć zapis</string>
     <string name="logcat_service_run_working">Trwa zapisywanie... %1$s Naciśnij tutaj aby zatrzymać</string>

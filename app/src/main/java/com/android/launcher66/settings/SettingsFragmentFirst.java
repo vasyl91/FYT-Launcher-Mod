@@ -110,9 +110,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private boolean defaultWallpapersBool;
     private boolean wallpaperSet = false;
     private boolean brightnessBool;  
-    private boolean logcatServiceBool;  
-    private boolean tickRunnableBool = false;   
-    private boolean countDownTimerBool = false;  
+    private boolean logcatServiceBool;
+    private boolean logcatServiceWakeBool;
+    private boolean tickRunnableBool = false;
     private Preference settingsSecondFragment;
     private Preference oauthForYoutubeRevanced;
     private Preference youtubeRevancedKids;
@@ -143,6 +143,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private Dialog loadingDialog;
     private AlertDialog alertUpdateDialog;
     private Preference logcatService;
+    private Preference logcatServiceWake;
     private Preference logcatRun;
     private Preference logcatServiceTimeout;
     private AlertDialog alertLogcatServiceTimeoutDialog;
@@ -351,6 +352,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
         PreferenceCategory logcatCategory = findPreference("logcat_category");
         logcatService = findPreference(Keys.LOGCAT_SERVICE);
+        logcatServiceWake = findPreference(Keys.LOGCAT_SERVICE_WAKE);
         logcatRun = findPreference(Keys.LOGCAT_SERVICE_RUN);
         logcatServiceTimeout = findPreference(Keys.LOGCAT_SERVICE_TIMEOUT);
         String logcatServiceTimeoutStr = sharedPrefs.getString(Keys.LOGCAT_SERVICE_TIMEOUT, "30");
@@ -431,6 +433,19 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
             } else {
                 logcatService.setSummary(null);
+            }
+        }
+        if (logcatServiceWake != null) {
+            logcatServiceWake.setVisible(isDebug);
+            logcatServiceWake.setOnPreferenceClickListener(this);
+            logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, false);
+            if (logcatServiceWakeBool && isDebug) {
+                String summaryText = getString(LauncherApplication.isFytDevice()
+                        ? R.string.logcat_service_wake_summary
+                        : R.string.logcat_service_wake_summary_phone);
+                logcatServiceWake.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                logcatServiceWake.setSummary(null);
             }
         }
         if (logcatRun != null) {
@@ -734,6 +749,17 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                     logcatService.setSummary(null);
                 }
                 break;
+            case Keys.LOGCAT_SERVICE_WAKE:
+                logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, false);
+                if (logcatServiceWakeBool) {
+                    String summaryText = getString(LauncherApplication.isFytDevice()
+                            ? R.string.logcat_service_wake_summary
+                            : R.string.logcat_service_wake_summary_phone);
+                    logcatServiceWake.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
+                } else {
+                    logcatServiceWake.setSummary(null);
+                }
+                break;
             case Keys.LOGCAT_SERVICE_RUN:
                 if (!LogcatWorker.get().isActive()) {
                     startLogcatRun();
@@ -844,7 +870,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
     public void setCountDownTimer(int delay) {
         cancelCountDownTimer();
-        countDownTimerBool = true;
         final Context appContext = requireContext().getApplicationContext();
 
         countDownTimer = new CountDownTimer(delay, 1000) {
@@ -881,7 +906,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     public void cancelCountDownTimer() {
-        countDownTimerBool = false;
         if (countDownTimer != null) {
             countDownTimer.cancel();
             countDownTimer = null;
@@ -953,7 +977,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
     private void logcatServiceTimeoutEditText() {
         logcatServiceTimeoutEditText = new EditText(this.getContext());
-        logcatServiceTimeoutEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        logcatServiceTimeoutEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         logcatServiceTimeoutEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         logcatServiceTimeoutEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
