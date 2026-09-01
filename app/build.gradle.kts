@@ -33,6 +33,16 @@ android {
         }
     }
 
+    flavorDimensions += "device"
+    productFlavors {
+        create("phone") {
+            dimension = "device"
+        }
+        create("fyt") {
+            dimension = "device"
+        }
+    }
+
     buildFeatures {
         buildConfig = true
         compose = true
@@ -115,6 +125,19 @@ android {
     lint {
         // lintConfig = file("lint.xml")
         checkReleaseBuilds = false
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        val flavor = variant.flavorName ?: ""
+        val buildType = variant.buildType ?: ""
+
+        variant.outputs.forEach { output ->
+            if (output is com.android.build.api.variant.impl.VariantOutputImpl) {
+                output.outputFileName = "${flavor}_${buildType}_${output.versionName.get()}.apk"
+            }
+        }
     }
 }
 
