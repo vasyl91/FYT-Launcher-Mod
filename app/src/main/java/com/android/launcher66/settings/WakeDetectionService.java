@@ -19,6 +19,7 @@ import androidx.preference.PreferenceManager;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.android.launcher66.BuildConfig;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.ServiceIntentGate;
@@ -133,9 +134,9 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     Log.i(TAG, "Ignoring duplicate display-on event after " + (now - lastDisplayOnHandledMs) + " ms");
                     return;
                 }
+                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
                 lastDisplayOnHandledMs = now;
                 Log.e(TAG, "Device awakened from sleep");
-                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
                 if (mPrefs.getBoolean(Keys.LAUNCHER_HOME, true)) {
                     handler.postDelayed(this::pressHomeButton, 500);
                 }
@@ -161,8 +162,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                         resetPip = true;
                     }
                 }
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                if (prefs.getBoolean(Keys.NIGHT_MODE, false)) {
+                if (mPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
                     handler.postDelayed(() -> {
                         Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
                         ServiceIntentGate.startIfAvailable(LauncherApplication.sApp, nightModeServiceIntent, "wake night mode");
