@@ -5,27 +5,22 @@
 
     <permission
         android:name="com.android.launcher66.permission.PRELOAD_WORKSPACE"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        tools:replace="android:permissionGroup" />
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS" />
 
     <permission
         android:name="com.android.launcher.permission.INSTALL_SHORTCUT"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        tools:replace="android:permissionGroup" />
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS" />
 
     <permission
         android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        tools:replace="android:permissionGroup" />
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS" />
 
     <permission
         android:name="com.android.launcher66.permission.READ_SETTINGS"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        tools:replace="android:permissionGroup" />
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS" />
 
     <permission
         android:name="com.android.launcher66.permission.WRITE_SETTINGS"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        tools:replace="android:permissionGroup" />
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS" />
 
 </manifest>
