@@ -1,13 +1,16 @@
 package com.android.launcher66.settings;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +23,8 @@ import androidx.preference.Preference;
 
 import com.android.launcher66.R;
 
+import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -76,6 +81,18 @@ public final class FytRating {
     /** Retry interval while the bridge has never answered a status request. */
     private static final long STATUS_RETRY_DELAY_MS = 10000L;
 
+    /**
+     * How often a refusal is put to the question.
+     *
+     * A negative answer is checked far more eagerly than a positive one. Being
+     * wrongly told no costs the user a button that does nothing; being wrongly
+     * told yes costs one refused request and a line in the log. The two are not
+     * worth the same wait.
+     */
+    private static final long NEGATIVE_STATUS_RECHECK_MS = 5000L;
+
+    private static final String ERROR_BAD_REQUEST = "bad_request";
+
     /** How long a rating reply is reused to answer the made-for-kids question. */
     private static final long LAST_REPLY_MAX_AGE_MS = 15000L;
 
@@ -93,6 +110,10 @@ public final class FytRating {
     private static volatile boolean statusKnown;
     private static volatile long statusCheckedAtMs;
     private static final AtomicBoolean STATUS_REFRESH_RUNNING = new AtomicBoolean(false);
+    private static volatile long statusRefreshStartedAtMs;
+
+    /** A refresh still marked as running after this long never finished. */
+    private static final long STATUS_REFRESH_STUCK_AFTER_MS = 60000L;
 
     /**
      * The error carried by the last rating reply, kept so the made-for-kids
@@ -101,6 +122,45 @@ public final class FytRating {
     private static volatile String lastReplyVideoId;
     private static volatile String lastReplyError;
     private static volatile long lastReplyAtMs;
+
+    /**
+     * How many unanswered exchanges in a row are taken as proof that what the
+     * launcher remembers about the bridge is no longer true.
+     */
+    private static final int MAX_CONSECUTIVE_FAILURES = 3;
+    private static final AtomicInteger CONSECUTIVE_FAILURES = new AtomicInteger(0);
+
+    /** The bridge's receiver, resolved once and dropped whenever it stops answering. */
+    private static volatile ComponentName bridgeReceiver;
+
+    /** Restarting another application's process is a blunt instrument; rationed accordingly. */
+    private static final long REVIVE_MIN_INTERVAL_MS = 900000L;
+    private static volatile long lastReviveAtMs;
+
+    /** The bridge's invisible activity, started only to bring its process up. */
+    private static final String WAKE_ACTIVITY = BRIDGE_PACKAGE + ".WakeActivity";
+
+    /** Starting an activity is cheap but not free; once in this window is plenty. */
+    private static final long WAKE_MIN_INTERVAL_MS = 300000L;
+
+    /** How long the woken process is given before it is asked anything. */
+    private static final long WAKE_SETTLE_MS = 1500L;
+
+    private static volatile long lastWakeAtMs;
+
+    /**
+     * Whether the installed bridge has a wake activity, and when that was last
+     * established.
+     *
+     * Looked up again rather than remembered for good: the bridge is a separate
+     * application and can be updated underneath a running launcher. A single
+     * "not there" recorded at startup would otherwise keep waking switched off
+     * until the launcher itself was restarted - which is the very thing all of
+     * this exists to avoid.
+     */
+    private static volatile boolean wakeActivityPresent = true;
+    private static volatile long wakeActivityCheckedAtMs;
+    private static final long WAKE_ACTIVITY_RECHECK_MS = 600000L;
 
     private static final String RELEASES_URL = "https://github.com/vasyl91/fYT-Rating/releases/latest";
     private static final long DOUBLE_CLICK_TIMEOUT_MS = 500L;
@@ -143,23 +203,43 @@ public final class FytRating {
      * stale. Returns immediately; callers read the cached values.
      */
     private static void ensureFreshStatus(Context context) {
-        long maxAge = statusKnown ? STATUS_MAX_AGE_MS : STATUS_RETRY_DELAY_MS;
+        long maxAge;
+        if (!statusKnown) {
+            maxAge = STATUS_RETRY_DELAY_MS;
+        } else if (signedIn && allowed) {
+            maxAge = STATUS_MAX_AGE_MS;
+        } else {
+            maxAge = NEGATIVE_STATUS_RECHECK_MS;
+        }
         if (statusCheckedAtMs != 0L
                 && SystemClock.elapsedRealtime() - statusCheckedAtMs < maxAge) {
             return;
         }
         if (!STATUS_REFRESH_RUNNING.compareAndSet(false, true)) {
-            return;
+            // A flag that never gets cleared is exactly the kind of latch that
+            // used to need a force stop, so it is given a deadline of its own.
+            if (SystemClock.elapsedRealtime() - statusRefreshStartedAtMs
+                    < STATUS_REFRESH_STUCK_AFTER_MS) {
+                return;
+            }
+            Log.w(TAG, "Previous status refresh never finished; starting another");
         }
+        statusRefreshStartedAtMs = SystemClock.elapsedRealtime();
 
         Context appContext = context.getApplicationContext();
-        new Thread(() -> {
-            try {
-                refreshStatus(appContext);
-            } finally {
-                STATUS_REFRESH_RUNNING.set(false);
-            }
-        }, "fyt-rating-status").start();
+        try {
+            new Thread(() -> {
+                try {
+                    refreshStatus(appContext);
+                } finally {
+                    STATUS_REFRESH_RUNNING.set(false);
+                }
+            }, "fyt-rating-status").start();
+        } catch (Throwable t) {
+            // The thread never ran, so nothing will clear the flag for us.
+            STATUS_REFRESH_RUNNING.set(false);
+            Log.w(TAG, "Could not start the status refresh", t);
+        }
     }
 
     /** True once the bridge has answered a status request at least once. */
@@ -196,6 +276,16 @@ public final class FytRating {
         statusCheckedAtMs = SystemClock.elapsedRealtime();
 
         if (result == null) {
+            if (statusKnown && !(signedIn && allowed)) {
+                // Silence confirms nothing, and a refusal that cannot be
+                // confirmed must not go on acting like one. A positive answer
+                // is kept through silence, because losing it needlessly
+                // disables a button that was working.
+                Log.w(TAG, "A refusal went unconfirmed; back to unknown");
+                statusKnown = false;
+                return false;
+            }
+
             Log.w(TAG, "No status reply; keeping the previous state"
                     + " (known=" + statusKnown
                     + " signedIn=" + signedIn
@@ -264,18 +354,28 @@ public final class FytRating {
     }
 
     /**
-     * Folds an explicit refusal into the cached status.
+     * Reads the permission state out of any answered rating request.
      *
-     * Worth doing because it is the one thing a timeout can never tell us: the
-     * bridge saying "no" is information, the bridge saying nothing is not.
+     * This is the fast path back from a wrong refusal, and it is free: the
+     * bridge checks the caller against the allow list before it looks at
+     * anything else, so what it answers with says exactly where the request
+     * got to. Waiting for a separate status round trip to discover the same
+     * thing would only add delay.
      */
     private static void noteReplyError(String error) {
         if (ERROR_NOT_ALLOWED.equals(error)) {
             allowed = false;
-        } else if (ERROR_NOT_SIGNED_IN.equals(error)) {
-            signedIn = false;
-        } else {
+        } else if (ERROR_BAD_REQUEST.equals(error)) {
+            // Refused before the allow list was ever consulted; says nothing.
             return;
+        } else {
+            // Every other outcome is produced past the allow check, so reaching
+            // it proves the caller is accepted.
+            if (!allowed) {
+                Log.w(TAG, "The bridge answered after all; the refusal was stale");
+            }
+            allowed = true;
+            signedIn = !ERROR_NOT_SIGNED_IN.equals(error);
         }
         statusKnown = true;
         statusCheckedAtMs = SystemClock.elapsedRealtime();
@@ -329,6 +429,181 @@ public final class FytRating {
     // ------------------------------------------------------------ plumbing
 
     /**
+     * Throws away everything the launcher remembers about the bridge.
+     *
+     * All of it is process-wide state that used to survive until the launcher
+     * was force stopped: a component resolved hours ago, a status cached from a
+     * reply that never came, request codes the system may still hold a
+     * PendingIntent under. Rebuilding them is exactly what a restart did, and
+     * there is no reason it has to cost a restart.
+     */
+    public static void resetTransport() {
+        Log.w(TAG, "Bridge unreachable " + CONSECUTIVE_FAILURES.get()
+                + " times in a row; rebuilding the transport");
+
+        bridgeReceiver = null;
+        statusKnown = false;
+        statusCheckedAtMs = 0L;
+        lastReplyVideoId = null;
+        CONSECUTIVE_FAILURES.set(0);
+        STATUS_REFRESH_RUNNING.set(false);
+        statusRefreshStartedAtMs = 0L;
+
+        // The bridge may have been replaced by a build that does have one.
+        wakeActivityCheckedAtMs = 0L;
+
+        // Fresh request codes, so FLAG_UPDATE_CURRENT cannot hand back a
+        // PendingIntent the system kept from an exchange that timed out.
+        REQUEST_COUNTER.addAndGet(64);
+    }
+
+    /**
+     * Last resort: restarts the bridge's process.
+     *
+     * When everything the launcher caches has been rebuilt and the bridge still
+     * says nothing, what is stale is on the other side. A process the system
+     * has parked - in the restricted standby bucket, frozen, or stopped by the
+     * ROM's own power manager - stops receiving broadcasts, and no amount of
+     * retrying from here changes that. Stopping it clears the parked state, and
+     * the next explicit request starts it again from nothing.
+     *
+     * This is what revoking and re-granting access did by hand. Not the list:
+     * the entry was never the problem. Opening the bridge was, because it put
+     * the process back into a state where it could hear a broadcast at all.
+     *
+     * Needs the launcher's system privileges, and does nothing without them.
+     *
+     * @return true when the process was stopped
+     */
+    public static boolean revive(Context context) {
+        if (context == null || !isInstalled(context)) {
+            return false;
+        }
+
+        long now = SystemClock.elapsedRealtime();
+        if (lastReviveAtMs != 0L && now - lastReviveAtMs < REVIVE_MIN_INTERVAL_MS) {
+            return false;
+        }
+
+        if (isBridgeInForeground(context)) {
+            // The user is looking at it. Whatever is wrong can wait.
+            Log.d(TAG, "Bridge is in the foreground; leaving it alone");
+            return false;
+        }
+
+        lastReviveAtMs = now;
+
+        try {
+            ActivityManager activityManager =
+                    (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            if (activityManager == null) {
+                return false;
+            }
+
+            Method forceStop = activityManager.getClass()
+                    .getDeclaredMethod("forceStopPackage", String.class);
+            forceStop.invoke(activityManager, BRIDGE_PACKAGE);
+
+            Log.w(TAG, "Bridge process stopped; the next request will start it again");
+
+            // Everything remembered describes the process that has just gone.
+            resetTransport();
+            return true;
+        } catch (ReflectiveOperationException e) {
+            Log.w(TAG, "No privilege to restart the bridge", e);
+            return false;
+        } catch (Exception e) {
+            Log.w(TAG, "Could not restart the bridge", e);
+            return false;
+        }
+    }
+
+    private static boolean isBridgeInForeground(Context context) {
+        try {
+            ActivityManager activityManager =
+                    (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            if (activityManager == null) {
+                return false;
+            }
+
+            List<ActivityManager.RunningAppProcessInfo> processes =
+                    activityManager.getRunningAppProcesses();
+            if (processes == null) {
+                return false;
+            }
+
+            for (ActivityManager.RunningAppProcessInfo process : processes) {
+                if (process == null
+                        || process.pkgList == null
+                        || process.importance
+                                > ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
+                    continue;
+                }
+                for (String packageName : process.pkgList) {
+                    if (BRIDGE_PACKAGE.equals(packageName)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Could not read the bridge's process state", e);
+        }
+        return false;
+    }
+
+    private static void noteExchangeSucceeded() {
+        CONSECUTIVE_FAILURES.set(0);
+    }
+
+    private static void noteExchangeFailed() {
+        if (CONSECUTIVE_FAILURES.incrementAndGet() >= MAX_CONSECUTIVE_FAILURES) {
+            resetTransport();
+        }
+    }
+
+    /**
+     * The bridge receiver as a component, so requests can be addressed to it
+     * explicitly.
+     *
+     * setPackage alone leaves the broadcast implicit, and head unit ROMs are
+     * inconsistent about waking a cached or long idle application for one. An
+     * explicit component is delivered. It is resolved rather than hard coded so
+     * the launcher keeps working if the bridge ever moves the class.
+     *
+     * @return null when it cannot be resolved, in which case setPackage stands
+     */
+    private static ComponentName resolveBridgeReceiver(Context context, String action) {
+        ComponentName cached = bridgeReceiver;
+        if (cached != null) {
+            return cached;
+        }
+        if (action == null) {
+            return null;
+        }
+
+        try {
+            Intent probe = new Intent(action).setPackage(BRIDGE_PACKAGE);
+            List<ResolveInfo> matches =
+                    context.getPackageManager().queryBroadcastReceivers(probe, 0);
+            if (matches == null || matches.isEmpty()) {
+                return null;
+            }
+            ResolveInfo match = matches.get(0);
+            if (match.activityInfo == null) {
+                return null;
+            }
+            ComponentName resolved =
+                    new ComponentName(match.activityInfo.packageName, match.activityInfo.name);
+            bridgeReceiver = resolved;
+            Log.d(TAG, "Bridge receiver resolved to " + resolved.flattenToShortString());
+            return resolved;
+        } catch (Exception e) {
+            Log.w(TAG, "Could not resolve the bridge receiver", e);
+            return null;
+        }
+    }
+
+    /**
      * Sends a request and waits for the reply.
      *
      * A PendingIntent carries the launcher's identity: the system records its
@@ -366,6 +641,10 @@ public final class FytRating {
             }
 
             request.setPackage(BRIDGE_PACKAGE);
+            ComponentName componentName = resolveBridgeReceiver(appContext, request.getAction());
+            if (componentName != null) {
+                request.setComponent(componentName);
+            }
             request.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 
             callbackIntent = PendingIntent.getBroadcast(
@@ -385,14 +664,17 @@ public final class FytRating {
 
             if (!latch.await(timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS)) {
                 Log.w(TAG, "No reply to " + request.getAction() + " within " + timeoutMs + " ms");
+                noteExchangeFailed();
                 return null;
             }
+            noteExchangeSucceeded();
             return answer.get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return null;
         } catch (Exception e) {
             Log.w(TAG, "Request failed", e);
+            noteExchangeFailed();
             return null;
         } finally {
             try {
@@ -406,6 +688,152 @@ public final class FytRating {
             if (identityIntent != null) {
                 identityIntent.cancel();
             }
+        }
+    }
+
+    // -------------------------------------------------------------- waking
+
+    /**
+     * Brings the bridge's process up when it looks like it is not there.
+     *
+     * Meant to be called from the launcher's onResume. A package that has not
+     * run since the device started receives no broadcasts, and on these head
+     * units nothing puts it back into a reachable state on its own - which is
+     * why the first request after a restart was always lost and why opening the
+     * application by hand was the only cure.
+     *
+     * Starting an activity is the one thing a client can do that clears that
+     * state, and the activity it starts draws nothing. Doing it from onResume
+     * is also what makes it allowed: the launcher is visible at that moment, so
+     * the background activity start restrictions do not apply.
+     *
+     * Costs one comparison when the bridge is already answering.
+     */
+    public static void wakeIfNeeded(Context context) {
+        if (context == null || !isInstalled(context) || !hasWakeActivity(context)) {
+            return;
+        }
+
+        long now = SystemClock.elapsedRealtime();
+        if (lastWakeAtMs != 0L && now - lastWakeAtMs < WAKE_MIN_INTERVAL_MS) {
+            return;
+        }
+
+        // Answering and present: leave it alone.
+        if (statusKnown && signedIn && allowed && isBridgeRunning(context)) {
+            return;
+        }
+
+        wake(context);
+    }
+
+    /**
+     * Starts the bridge's wake activity whatever the current state.
+     *
+     * @return true when the activity was started
+     */
+    public static boolean wake(Context context) {
+        if (context == null || !isInstalled(context) || !hasWakeActivity(context)) {
+            return false;
+        }
+
+        lastWakeAtMs = SystemClock.elapsedRealtime();
+        Context appContext = context.getApplicationContext();
+
+        try {
+            Intent wake = new Intent()
+                    .setComponent(new ComponentName(BRIDGE_PACKAGE, WAKE_ACTIVITY))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_NO_ANIMATION
+                            | Intent.FLAG_ACTIVITY_NO_USER_ACTION
+                            | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                            | Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            context.startActivity(wake);
+            Log.d(TAG, "Wake activity started");
+
+            // Whatever was cached described a process that was not answering,
+            // so it is asked again once the new one has had a moment to settle.
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                statusCheckedAtMs = 0L;
+                ensureFreshStatus(appContext);
+            }, WAKE_SETTLE_MS);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            // An older build of the bridge. Nothing is broken by this; the
+            // ordinary broadcast path still works whenever the process is up.
+            wakeActivityPresent = false;
+            wakeActivityCheckedAtMs = SystemClock.elapsedRealtime();
+            Log.d(TAG, "The installed bridge has no wake activity");
+            return false;
+        } catch (Exception e) {
+            Log.w(TAG, "Could not start the wake activity", e);
+            return false;
+        }
+    }
+
+    /**
+     * Whether the installed bridge exposes a wake activity, re-checked every so
+     * often so that installing a newer bridge takes effect on its own.
+     */
+    private static boolean hasWakeActivity(Context context) {
+        long now = SystemClock.elapsedRealtime();
+        if (wakeActivityCheckedAtMs != 0L
+                && now - wakeActivityCheckedAtMs < WAKE_ACTIVITY_RECHECK_MS) {
+            return wakeActivityPresent;
+        }
+        wakeActivityCheckedAtMs = now;
+
+        try {
+            Intent probe = new Intent()
+                    .setComponent(new ComponentName(BRIDGE_PACKAGE, WAKE_ACTIVITY));
+            wakeActivityPresent = context.getPackageManager().resolveActivity(probe, 0) != null;
+        } catch (Exception e) {
+            wakeActivityPresent = false;
+        }
+
+        Log.d(TAG, wakeActivityPresent
+                ? "Bridge wake activity available"
+                : "The installed bridge has no wake activity");
+        return wakeActivityPresent;
+    }
+
+    /**
+     * @return true when a process of the bridge exists, and also when that
+     *         cannot be determined - an unprivileged caller only ever sees its
+     *         own processes here, and absence is then not evidence
+     */
+    private static boolean isBridgeRunning(Context context) {
+        try {
+            ActivityManager activityManager =
+                    (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            if (activityManager == null) {
+                return true;
+            }
+
+            List<ActivityManager.RunningAppProcessInfo> processes =
+                    activityManager.getRunningAppProcesses();
+            if (processes == null || processes.isEmpty()) {
+                return true;
+            }
+
+            boolean sawOthers = false;
+            for (ActivityManager.RunningAppProcessInfo process : processes) {
+                if (process == null || process.pkgList == null) {
+                    continue;
+                }
+                for (String packageName : process.pkgList) {
+                    if (BRIDGE_PACKAGE.equals(packageName)) {
+                        return true;
+                    }
+                    if (!context.getPackageName().equals(packageName)) {
+                        sawOthers = true;
+                    }
+                }
+            }
+            return !sawOthers;
+        } catch (Exception e) {
+            Log.w(TAG, "Could not read the bridge's process state", e);
+            return true;
         }
     }
 

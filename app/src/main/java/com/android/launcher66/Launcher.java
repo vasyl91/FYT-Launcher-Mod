@@ -117,6 +117,7 @@ import com.android.launcher66.settings.AppListStatsDialogFragment;
 import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.FabOverlayService;
+import com.android.launcher66.settings.FytRating;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.MainViewModel;
@@ -3049,6 +3050,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onResume() {
         super.onResume();
+        FytRating.wakeIfNeeded(this);
         allowPip = true;
         onWorkspacePip = false;
         boolean homeButtonResume = mHomeButtonPressed;

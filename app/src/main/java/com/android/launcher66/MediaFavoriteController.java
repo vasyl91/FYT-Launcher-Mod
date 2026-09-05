@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
@@ -26,6 +27,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.FytRating;
+import com.fyt.car.MusicService;
 import com.syu.widget.DateMusicProvider;
 import com.syu.widget.Widget;
 
@@ -36,6 +38,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,6 +51,7 @@ public final class MediaFavoriteController {
     private static final String TAG = "MediaFavorite";
     private static final String PREFS_NAME = "media_favorite_state";
     private static final String PREF_PREFIX = "favorite:";
+    private static final String STOCK_MUSIC_PACKAGE = "com.syu.music";
     private static final String SPOTIFY_PACKAGE = "com.spotify.music";
     private static final String APPLE_MUSIC_PACKAGE = "com.apple.android.music";
     private static final String YOUTUBE_MUSIC_PACKAGE = "com.google.android.apps.youtube.music";
@@ -94,6 +98,14 @@ public final class MediaFavoriteController {
     }
 
     public static boolean toggleFavoriteCurrent(Context context, String preferredPackage) {
+        // The check further down reads the resolved controller's package, which
+        // is never the stock player, so a press would otherwise be sent to an
+        // unrelated background session.
+        if (isStockMusicSource(preferredPackage)) {
+            Log.d(TAG, "Press ignored: the stock player is the active source");
+            return false;
+        }
+
         MediaController controller = getTargetController(context, preferredPackage);
         if (controller == null) {
             return false;
@@ -104,7 +116,13 @@ public final class MediaFavoriteController {
         // belongs: nothing may be sent for a video whose rating the launcher is
         // not allowed to touch or has not confirmed yet.
         if (isFavoriteTemporarilyDisabledPackage(controller.getPackageName())) {
-            Log.d(TAG, "Favorite disabled for " + controller.getPackageName());
+            // Logged loudly: from the outside this is indistinguishable from a
+            // button that simply does nothing.
+            Log.w(TAG, "Press ignored for " + controller.getPackageName()
+                    + "; statusKnown=" + FytRating.isStatusKnown()
+                    + " signedIn=" + FytRating.isSignedIn()
+                    + " allowed=" + FytRating.isAllowed()
+                    + " | " + YouTubeRevancedLikeState.describe());
             return false;
         }
 
@@ -157,11 +175,21 @@ public final class MediaFavoriteController {
             Log.d(DEBUG_TAG, "getCurrentFavoriteState called");
         }
 
+        // Answered before the picker runs. Falling through would resolve some
+        // other player's session - whatever happens to be paused in the
+        // background - and paint its state onto a track it has nothing to do
+        // with. Returning early also keeps the ReVanced stall watchdog out of
+        // this, which has no business firing while the stock player is on.
+        if (isStockMusicSource(preferredPackage)) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
+
         MediaController controller = getTargetController(context, preferredPackage);
         if (controller == null) {
             if (isMediaDebug) {
                 Log.d(DEBUG_TAG, "getCurrentFavoriteState: no controller");
             }
+            noteRevancedUnreachable(context, preferredPackage);
             return FAVORITE_STATE_UNKNOWN;
         }
 
@@ -188,7 +216,10 @@ public final class MediaFavoriteController {
 
             ensureRatingFetcher(context);
             YouTubeRevancedLikeState.requestRefresh(videoId);
-            return YouTubeRevancedLikeState.getState(videoId);
+
+            int resolved = YouTubeRevancedLikeState.getState(videoId);
+            noteYouTubeState(videoId, resolved);
+            return resolved;
         }
 
         int currentState = toPublicState(getFavoriteState(controller, actions));
@@ -201,6 +232,13 @@ public final class MediaFavoriteController {
     }
 
     public static boolean isFavoriteTemporarilyDisabledPackage(String packageName) {
+        // The stock player exposes no rating of any kind, so there is nothing
+        // the button could act on while it is the source. Checked first,
+        // because every rule below is about a media session and it has none.
+        if (isStockMusicSource(packageName)) {
+            return true;
+        }
+
         // Videos made for kids expose no rating at all: YouTube reports "none"
         // however they were rated. The button is disabled for them, the same
         // way it is for a player whose state cannot be read.
@@ -222,6 +260,7 @@ public final class MediaFavoriteController {
                 && YouTubeRevancedLikeState.hasFetcher()
                 && !YouTubeRevancedLikeState.isCurrentMadeForKids()
                 && !YouTubeRevancedLikeState.isCurrentStateResolved()) {
+            pokeRevanced();
             return true;
         }
 
@@ -229,6 +268,15 @@ public final class MediaFavoriteController {
             mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
         }
         if (mPrefs.getBoolean(Keys.FAVORITE_CACHE, false)) {
+            // A resolved status means the bridge answered a rating request for
+            // this very video moments ago. That is direct evidence about the
+            // permission, and it outranks the cached flag below - which is what
+            // goes stale. Without this, a wrong refusal kept the button dead
+            // even while the lookups behind it were succeeding.
+            if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)
+                    && YouTubeRevancedLikeState.isCurrentStateResolved()) {
+                return false;
+            }
             if (isLoggedOAuth()) {
                 // YouTube ENABLED in settings and user granted permission to OAuth to get like state for YouTube Revanced
                 return false;
@@ -252,15 +300,52 @@ public final class MediaFavoriteController {
             return null;
         }
 
+        // An unbound listener is the quiet failure: the permission is still
+        // granted, so nothing throws, but no session is ever reported again.
+        if (NotificationListener.getInstance() == null) {
+            noteListenerMissing(context);
+        } else {
+            listenerMissingSinceMs = 0L;
+        }
+
         List<MediaController> controllers;
         try {
             controllers = sessionManager.getActiveSessions(new ComponentName(context, NotificationListener.class));
         } catch (SecurityException e) {
-            Log.w(TAG, "Notification listener access is not enabled", e);
+            Log.w(TAG, "Notification listener access lost, asking for a rebind", e);
+            requestListenerRebind(context);
             return null;
         }
 
         return pickTargetController(controllers, preferredPackage);
+    }
+
+    /**
+     * Asks the system to reconnect {@link NotificationListener}.
+     *
+     * A listener the system has unbound stays unbound for the life of the
+     * process, and every media session then disappears at once - which is why
+     * force stopping the launcher used to be the only cure. Throttled, since
+     * the system ignores repeated requests anyway.
+     */
+    private static void requestListenerRebind(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return;
+        }
+
+        long now = SystemClock.elapsedRealtime();
+        if (now - listenerRebindAtMs < LISTENER_REBIND_INTERVAL_MS) {
+            return;
+        }
+        listenerRebindAtMs = now;
+
+        try {
+            Log.w(TAG, "Requesting a NotificationListener rebind");
+            NotificationListenerService.requestRebind(
+                    new ComponentName(context.getApplicationContext(), NotificationListener.class));
+        } catch (Exception e) {
+            Log.w(TAG, "Rebind request refused", e);
+        }
     }
 
     private static MediaController pickTargetController(List<MediaController> controllers, String preferredPackage) {
@@ -319,8 +404,25 @@ public final class MediaFavoriteController {
         }
 
         if (mPrefs.getBoolean(Keys.FAVORITE_CACHE, false)) {
-            // YouTube enabled in settings: ReVanced needs the linked account.
-            return !isLoggedOAuth() && YOUTUBE_REVANCED_PACKAGE.equals(packageName);
+            // YouTube enabled in settings: the ReVanced session is kept
+            // whatever the bridge currently says about permissions.
+            //
+            // Hiding it used to be conditional on a cached "not allowed", and
+            // that removed three things at once: the click, the state read and
+            // the watchdog. Since the cached answer is itself the thing most
+            // likely to be stale, a single wrong "no" left a button that could
+            // not be pressed, could not be refreshed, and could not report that
+            // anything was wrong - curable only by restarting the launcher,
+            // which is exactly what cleared the cached answer.
+            //
+            // Nothing is lost by keeping it. An account that really is missing
+            // leaves the status unresolved, the button unlit, and a press
+            // refused with a reason in the log.
+            //
+            // Still asked, because it is what starts a stale status being
+            // rechecked in the background.
+            isLoggedOAuth();
+            return false;
         }
 
         // YouTube disabled in settings.
@@ -331,11 +433,350 @@ public final class MediaFavoriteController {
                 || YOUTUBE_REVANCED_PACKAGE.equals(packageName);
     }
 
+    /** Not more than one rebind request per minute; the system coalesces them anyway. */
+    private static final long LISTENER_REBIND_INTERVAL_MS = 60000L;
+    private static volatile long listenerRebindAtMs;
+
+    /** How long the listener is given to bind before its absence means anything. */
+    private static final long LISTENER_GRACE_MS = 45000L;
+    private static volatile long listenerMissingSinceMs;
+
+    /**
+     * Notices a listener that is not there, and waits before concluding
+     * anything from it.
+     *
+     * The service binds asynchronously some time after the process starts, so
+     * on a cold launcher it is legitimately absent for a while. Asking for a
+     * rebind then is at best noise and at worst a request sent into the middle
+     * of a bind that was already happening.
+     */
+    private static void noteListenerMissing(Context context) {
+        long now = SystemClock.elapsedRealtime();
+
+        if (listenerMissingSinceMs == 0L) {
+            listenerMissingSinceMs = now;
+            return;
+        }
+        if (now - listenerMissingSinceMs < LISTENER_GRACE_MS) {
+            return;
+        }
+        requestListenerRebind(context);
+    }
+
+    /** How long the ReVanced status may stay unresolved before it counts as a stall. */
+    private static final long YOUTUBE_STALL_LIMIT_MS = 90000L;
+
+    /** Not more than one recovery attempt in this window. */
+    private static final long YOUTUBE_RECOVERY_INTERVAL_MS = 300000L;
+
+    private static volatile String stallVideoId;
+    private static volatile long stallSinceMs;
+    private static volatile long lastRecoveryAtMs;
+    private static volatile int recoveryAttempts;
+
+    /** Stands in for a video id when the session was rejected before one could be read. */
+    private static final String REVANCED_STALL_KEY = "revanced-session";
+
+    private static final long REVANCED_DIAGNOSTIC_INTERVAL_MS = 30000L;
+    private static volatile long lastRevancedDiagnosticAtMs;
+
+    /**
+     * Everything the ReVanced button's state depends on, in one line.
+     *
+     * The grey button has had several different causes and they are impossible
+     * to tell apart from the outside, because each one stops the code before it
+     * reaches whatever would have reported the next one. So this is emitted
+     * from the earliest point that can still see anything, and names the whole
+     * chain at once: which sessions exist, which rules rejected them, what the
+     * bridge last said, and where the lookup stopped.
+     *
+     * Rate limited, and only ever emitted while the state is unresolved.
+     */
+    private static void dumpRevancedDiagnostics(
+            Context context, String preferredPackage, String reason) {
+        long now = SystemClock.elapsedRealtime();
+        if (lastRevancedDiagnosticAtMs != 0L
+                && now - lastRevancedDiagnosticAtMs < REVANCED_DIAGNOSTIC_INTERVAL_MS) {
+            return;
+        }
+        lastRevancedDiagnosticAtMs = now;
+
+        StringBuilder sessions = new StringBuilder();
+        boolean revancedPresent = false;
+
+        try {
+            MediaSessionManager sessionManager =
+                    (MediaSessionManager) context.getSystemService(Context.MEDIA_SESSION_SERVICE);
+            List<MediaController> controllers = sessionManager == null ? null
+                    : sessionManager.getActiveSessions(
+                            new ComponentName(context, NotificationListener.class));
+
+            if (controllers == null || controllers.isEmpty()) {
+                sessions.append("none");
+            } else {
+                for (MediaController controller : controllers) {
+                    if (controller == null) {
+                        continue;
+                    }
+                    PlaybackState state = safePlaybackState(controller);
+                    sessions.append(controller.getPackageName())
+                            .append(':')
+                            .append(state == null ? "no-state" : state.getState())
+                            .append(' ');
+                    if (YOUTUBE_REVANCED_PACKAGE.equals(controller.getPackageName())) {
+                        revancedPresent = true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            sessions.append("unreadable: ").append(e);
+        }
+
+        Log.w(TAG, "ReVanced " + reason
+                + "; preferred=" + preferredPackage
+                + " revancedSession=" + revancedPresent
+                + " listener=" + (NotificationListener.getInstance() != null)
+                + " sessions=[" + sessions.toString().trim() + "]"
+                + " unsupported=" + isUnsupportedFavoritePackage(YOUTUBE_REVANCED_PACKAGE)
+                + " disabled=" + isFavoriteTemporarilyDisabledPackage(YOUTUBE_REVANCED_PACKAGE)
+                + " statusKnown=" + FytRating.isStatusKnown()
+                + " signedIn=" + FytRating.isSignedIn()
+                + " allowed=" + FytRating.isAllowed()
+                + " | " + YouTubeRevancedLikeState.describe());
+    }
+
+    /**
+     * Keeps the watchdog running when the ReVanced session has been rejected.
+     *
+     * The stall check used to sit past the controller lookup, which meant it
+     * stopped running in the one situation it exists for. A refused or unknown
+     * permission hides the session; hiding the session means nothing reaches
+     * the point where a stall would be noticed; and so the launcher settled
+     * into a grey button that only a restart cleared. The check belongs before
+     * that, not after it.
+     *
+     * The session is looked up again here with no permission rule applied,
+     * purely to answer whether ReVanced is playing at all - there is nothing to
+     * recover if it is not.
+     */
+    private static void noteRevancedUnreachable(Context context, String preferredPackage) {
+        if (!hasRevancedSession(context, preferredPackage)) {
+            // Nothing to recover - but worth saying so. A session that was
+            // there a moment ago and is now gone, while the widget still shows
+            // the video, is itself the failure and used to be invisible.
+            if (stallSinceMs != 0L) {
+                dumpRevancedDiagnostics(context, preferredPackage, "session no longer visible");
+            }
+            stallVideoId = null;
+            stallSinceMs = 0L;
+            return;
+        }
+
+        dumpRevancedDiagnostics(context, preferredPackage, "session rejected by the picker");
+        noteYouTubeState(REVANCED_STALL_KEY, FAVORITE_STATE_UNKNOWN);
+    }
+
+    /** Whether ReVanced holds a session right now, permission rules aside. */
+    private static boolean hasRevancedSession(Context context, String preferredPackage) {
+        return YOUTUBE_REVANCED_PACKAGE.equals(preferredPackage)
+                || findRevancedController(context) != null;
+    }
+
+    /**
+     * The ReVanced session as the system reports it, with none of the favorite
+     * rules applied. Deliberately separate from the picker: this answers "is it
+     * there", not "may it be used".
+     */
+    private static MediaController findRevancedController(Context context) {
+        if (context == null) {
+            return null;
+        }
+
+        try {
+            MediaSessionManager sessionManager =
+                    (MediaSessionManager) context.getSystemService(Context.MEDIA_SESSION_SERVICE);
+            if (sessionManager == null) {
+                return null;
+            }
+
+            List<MediaController> controllers = sessionManager.getActiveSessions(
+                    new ComponentName(context, NotificationListener.class));
+            if (controllers == null) {
+                return null;
+            }
+
+            for (MediaController controller : controllers) {
+                if (controller != null
+                        && YOUTUBE_REVANCED_PACKAGE.equals(controller.getPackageName())) {
+                    return controller;
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Could not look for a ReVanced session", e);
+        }
+        return null;
+    }
+
+    private static final AtomicBoolean POKING = new AtomicBoolean(false);
+
+    /**
+     * Keeps the lookup running when nothing else is asking for it.
+     *
+     * A disabled button is drawn without reading its state, so once the rule
+     * above starts returning true the launcher stops calling
+     * getCurrentFavoriteState - and that was the only place requestRefresh was
+     * ever reached from. The rule then feeds itself: unresolved disables the
+     * button, and the disabled button keeps it unresolved. Transport and
+     * metadata keep working throughout, because they go through a different
+     * picker entirely, which is what made this look like a bridge problem.
+     *
+     * Driving the lookup from here breaks that. It costs almost nothing:
+     * requestRefresh refuses anything already answered, already in flight, or
+     * still inside its backoff.
+     */
+    private static void pokeRevanced() {
+        if (!POKING.compareAndSet(false, true)) {
+            // Reached again through the diagnostics, which ask this same rule.
+            return;
+        }
+
+        try {
+            Context context = LauncherApplication.sApp;
+            MediaController controller = findRevancedController(context);
+            if (controller == null) {
+                return;
+            }
+
+            String videoId = findVideoId(controller);
+            if (videoId == null || videoId.isEmpty()) {
+                return;
+            }
+
+            ensureRatingFetcher(context);
+            YouTubeRevancedLikeState.requestRefresh(videoId);
+
+            // Also the only way the stall watchdog hears about any of this now.
+            noteYouTubeState(videoId, YouTubeRevancedLikeState.getState(videoId));
+        } catch (Exception e) {
+            Log.w(TAG, "Could not refresh the ReVanced status", e);
+        } finally {
+            POKING.set(false);
+        }
+    }
+
+    /**
+     * Watches the one path no other player uses.
+     *
+     * Every other application's favorite state is read straight off its media
+     * session. ReVanced is the only one whose state depends on a round trip to
+     * another application, which is why it alone could sit grey for hours while
+     * everything else kept working, and why only killing the launcher helped:
+     * the state that had gone wrong lived in this process and nothing ever
+     * questioned it.
+     *
+     * So it is questioned here. A status still unresolved long after any
+     * ordinary retry should have settled it means something cached is wrong,
+     * and everything the launcher believes about the bridge is thrown away -
+     * which is what a force stop did, minus the force stop.
+     */
+    private static void noteYouTubeState(String videoId, int state) {
+        if (videoId == null || videoId.isEmpty()) {
+            return;
+        }
+
+        long now = SystemClock.elapsedRealtime();
+
+        if (state != FAVORITE_STATE_UNKNOWN) {
+            stallVideoId = null;
+            stallSinceMs = 0L;
+            recoveryAttempts = 0;
+            return;
+        }
+
+        if (!videoId.equals(stallVideoId)) {
+            stallVideoId = videoId;
+            stallSinceMs = now;
+            return;
+        }
+
+        dumpRevancedDiagnostics(LauncherApplication.sApp, videoId, "state unresolved");
+        if (now - stallSinceMs < YOUTUBE_STALL_LIMIT_MS) {
+            return;
+        }
+        if (now - lastRecoveryAtMs < YOUTUBE_RECOVERY_INTERVAL_MS) {
+            return;
+        }
+        lastRecoveryAtMs = now;
+        recoveryAttempts++;
+
+        // Everything needed to tell afterwards which piece had gone stale.
+        Log.w(TAG, "Like status for " + videoId + " unresolved for "
+                + (now - stallSinceMs) + " ms"
+                + "; attempt=" + recoveryAttempts
+                + " statusKnown=" + FytRating.isStatusKnown()
+                + " signedIn=" + FytRating.isSignedIn()
+                + " allowed=" + FytRating.isAllowed()
+                + " fetcher=" + YouTubeRevancedLikeState.hasFetcher()
+                + " inFlight=" + YouTubeRevancedLikeState.isFetchInFlight()
+                + " - rebuilding");
+
+        if (FytRating.isStatusKnown() && !FytRating.isAllowed()) {
+            // The bridge answered, and the answer was no. Restarting either side
+            // cannot change that, so the ladder below is skipped: the grant is
+            // gone and only the user can put it back.
+            Log.w(TAG, "The bridge refuses this launcher; access has to be granted"
+                    + " again in fYT Rating");
+            FytRating.resetTransport();
+            stallSinceMs = now;
+            return;
+        }
+
+        FytRating.resetTransport();
+        YouTubeRevancedLikeState.forceRetry();
+
+        if (recoveryAttempts == 2) {
+            // Rebuilding this side changed nothing, so what is missing is on
+            // the other side of the boundary: most likely a process that is not
+            // there at all. Starting it is invisible and costs nothing.
+            FytRating.wake(LauncherApplication.sApp);
+        } else if (recoveryAttempts >= 3) {
+            // It is there and still says nothing, so it is not a missing
+            // process but a wedged one. Send it away and let the system build a
+            // fresh one for the next request.
+            FytRating.revive(LauncherApplication.sApp);
+        }
+
+        stallSinceMs = now;
+    }
+
     private static boolean isExternalPackage(String packageName) {
         return packageName != null
                 && !packageName.isEmpty()
                 && !"null".equals(packageName)
-                && !"com.syu.music".equals(packageName);
+                && !STOCK_MUSIC_PACKAGE.equals(packageName);
+    }
+
+    /**
+     * Whether the stock player currently owns the widget.
+     *
+     * It publishes no media session, so it can never be recognised by a
+     * package name coming from the session list. The launcher reports it by
+     * passing no preferred package at all, and the two pieces of state below
+     * are what tell that apart from an external player the caller simply did
+     * not name.
+     */
+    public static boolean isStockMusicSource(String packageName) {
+        if (STOCK_MUSIC_PACKAGE.equals(packageName)) {
+            return true;
+        }
+        if (isExternalPackage(packageName)) {
+            return false;
+        }
+        // The snapshot is cleared the moment the stock player takes the widget
+        // over, and stays cleared while it holds it - including when paused,
+        // which MusicService.state alone does not cover.
+        return Boolean.TRUE.equals(MusicService.state)
+                || MediaWidgetState.getExternalSnapshot() == null;
     }
 
     private static boolean isKnownFavoritePackage(String packageName) {
@@ -1379,7 +1820,18 @@ public final class MediaFavoriteController {
             int fetchRating(String videoId) throws Exception;
         }
 
-        private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+        /**
+         * Replaceable on purpose. A lookup that never returns used to block
+         * every later one behind it for the life of the process; when that is
+         * detected the executor is abandoned and a fresh one takes over.
+         */
+        private static volatile ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        /** A lookup still running after this long is treated as lost. */
+        private static final long FETCH_STUCK_AFTER_MS = 120000L;
+        private static volatile long fetchStartedAtMs;
+        private static volatile String inFlightVideoId;
+        private static volatile long fetchSequence;
 
         private static volatile String currentVideoId;
         private static volatile int currentState = MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
@@ -1513,6 +1965,49 @@ public final class MediaFavoriteController {
             consecutiveFailures = 0;
         }
 
+        /** True while a lookup is outstanding. Exposed for logging only. */
+        public static boolean isFetchInFlight() {
+            return fetchInFlight;
+        }
+
+        /** Every field the resolved state depends on, for one diagnostic line. */
+        public static String describe() {
+            synchronized (YouTubeRevancedLikeState.class) {
+                long wait = retryNotBeforeMs - SystemClock.elapsedRealtime();
+                return "current=" + currentVideoId
+                        + " state=" + currentState
+                        + " lastQueried=" + lastQueriedVideoId
+                        + " fetched=" + fetchedVideoId
+                        + " kids=" + madeForKidsVideoId
+                        + " inFlight=" + fetchInFlight
+                        + " inFlightFor=" + inFlightVideoId
+                        + " retryFor=" + retryVideoId
+                        + " retryIn=" + (wait > 0L ? wait : 0L)
+                        + " failures=" + consecutiveFailures
+                        + " fetcher=" + (fetcher != null);
+            }
+        }
+
+        /**
+         * Drops the backoff and any lookup believed to be stuck, so the next
+         * read starts a request from scratch.
+         *
+         * The escape hatch for a status that has stopped moving on its own. It
+         * deliberately does not clear the state already known for the current
+         * video: the point is to ask again, not to blank a working button.
+         */
+        public static void forceRetry() {
+            synchronized (YouTubeRevancedLikeState.class) {
+                retryVideoId = null;
+                retryNotBeforeMs = 0L;
+                consecutiveFailures = 0;
+                fetchedVideoId = null;
+                if (fetchInFlight) {
+                    recycleExecutor();
+                }
+            }
+        }
+
         /**
          * @param onApplied run on the executor thread once the account has been
          *                  updated, so the caller can mirror the change locally
@@ -1524,7 +2019,7 @@ public final class MediaFavoriteController {
             }
 
             Context appContext = context.getApplicationContext();
-            EXECUTOR.execute(() -> {
+            executor.execute(() -> {
                 boolean applied = FytRating.setRating(appContext, videoId, like);
                 if (applied && onApplied != null) {
                     onApplied.run();
@@ -1562,11 +2057,24 @@ public final class MediaFavoriteController {
                 return;
             }
 
+            final long fetchToken;
+            final ExecutorService runOn;
             synchronized (YouTubeRevancedLikeState.class) {
                 // Asked once per video. Without this the widget refresh loop
                 // would fire a request several times per second.
-                if (fetchInFlight || videoId.equals(fetchedVideoId)) {
+                if (videoId.equals(fetchedVideoId)) {
                     return;
+                }
+                if (fetchInFlight) {
+                    if (SystemClock.elapsedRealtime() - fetchStartedAtMs < FETCH_STUCK_AFTER_MS) {
+                        return;
+                    }
+                    // The previous lookup never came back. Its thread cannot be
+                    // recovered, but the queue behind it must not stay blocked
+                    // for the rest of the process's life.
+                    Log.w(TAG, "Lookup for " + inFlightVideoId
+                            + " never finished; abandoning the executor");
+                    recycleExecutor();
                 }
                 if (videoId.equals(retryVideoId)
                         && SystemClock.elapsedRealtime() < retryNotBeforeMs) {
@@ -1574,37 +2082,54 @@ public final class MediaFavoriteController {
                     // out the backoff rather than hammering the bridge.
                     return;
                 }
+
                 fetchInFlight = true;
+                fetchStartedAtMs = SystemClock.elapsedRealtime();
+                inFlightVideoId = videoId;
+                fetchToken = ++fetchSequence;
+                runOn = executor;
             }
 
-            EXECUTOR.execute(() -> {
-                boolean resolved = false;
+            runOn.execute(() -> {
+                int state = MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+                Boolean madeForKids = null;
                 try {
                     // The rating is asked for first so the kids question can be
                     // answered from that same reply, which halves the number of
                     // round trips through the bridge.
-                    int state = currentFetcher.fetchRating(videoId);
+                    state = currentFetcher.fetchRating(videoId);
 
                     KidsChecker checker = kidsChecker;
                     if (checker != null) {
-                        Boolean madeForKids = checker.isMadeForKids(videoId);
-                        if (Boolean.TRUE.equals(madeForKids)) {
-                            madeForKidsVideoId = videoId;
-                            resolved = true;
-                        } else if (videoId.equals(madeForKidsVideoId)) {
-                            madeForKidsVideoId = null;
-                        }
-                    }
-
-                    if (state != MediaFavoriteController.FAVORITE_STATE_UNKNOWN) {
-                        setState(videoId, state);
-                        resolved = true;
+                        madeForKids = checker.isMadeForKids(videoId);
                     }
                 } catch (Exception e) {
                     Log.w(TAG, "Failed to fetch rating for " + videoId, e);
-                } finally {
-                    long retryInMs = 0L;
-                    synchronized (YouTubeRevancedLikeState.class) {
+                }
+
+                boolean current;
+                long retryInMs = 0L;
+                synchronized (YouTubeRevancedLikeState.class) {
+                    // A result from a lookup that was given up on must not touch
+                    // anything: the state it describes has already been replaced.
+                    current = fetchToken == fetchSequence;
+                    if (!current) {
+                        Log.w(TAG, "Late result for " + videoId + " discarded");
+                    } else {
+                        boolean resolved = false;
+
+                        if (Boolean.TRUE.equals(madeForKids)) {
+                            madeForKidsVideoId = videoId;
+                            resolved = true;
+                        } else if (madeForKids != null && videoId.equals(madeForKidsVideoId)) {
+                            madeForKidsVideoId = null;
+                        }
+
+                        if (state != MediaFavoriteController.FAVORITE_STATE_UNKNOWN) {
+                            setState(videoId, state);
+                            resolved = true;
+                        }
+
                         if (resolved) {
                             fetchedVideoId = videoId;
                             retryVideoId = null;
@@ -1625,19 +2150,45 @@ public final class MediaFavoriteController {
                                     + consecutiveFailures
                                     + ", retrying in " + retryInMs + " ms");
                         }
+
                         fetchInFlight = false;
-                    }
-
-                    if (retryInMs > 0L) {
-                        scheduleRetry(retryInMs);
-                    }
-
-                    Runnable callback = onUpdated;
-                    if (callback != null) {
-                        callback.run();
+                        inFlightVideoId = null;
                     }
                 }
+
+                if (!current) {
+                    return;
+                }
+                if (retryInMs > 0L) {
+                    scheduleRetry(retryInMs);
+                }
+
+                Runnable callback = onUpdated;
+                if (callback != null) {
+                    callback.run();
+                }
             });
+        }
+
+        /**
+         * Abandons the executor a lookup is stuck on and installs a new one.
+         *
+         * Called with the class monitor held. The old executor is interrupted
+         * rather than waited for: a thread blocked in a broadcast round trip may
+         * never return, and the point is to stop depending on it.
+         */
+        private static void recycleExecutor() {
+            ExecutorService lost = executor;
+            executor = Executors.newSingleThreadExecutor();
+            fetchInFlight = false;
+            inFlightVideoId = null;
+            fetchedVideoId = null;
+            fetchSequence++;
+            try {
+                lost.shutdownNow();
+            } catch (Exception e) {
+                Log.w(TAG, "Could not shut the stalled executor down", e);
+            }
         }
 
         /**
