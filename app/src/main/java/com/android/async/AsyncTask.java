@@ -49,14 +49,34 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
         futureTask = new FutureTask<>(() -> {
             try {
                 OUTPUT output = doInBackground(params);
+
+                // FutureTask.cancel(true) only stops a task that has not started yet;
+                // a running doInBackground() blocked on I/O ignores the interrupt.
+                // Without this check onPostExecute() ran despite cancel(), and the
+                // callback held its (already destroyed) Fragment until the request ended.
+                if (cancelled.get()) {
+                    mStatus = Status.FINISHED;
+                    dispatchCancelled();
+                    return output;
+                }
+
                 AsyncWorker.getInstance().getHandler().post(() -> {
-                    onPostExecute(output);
+                    if (!cancelled.get()) {
+                        onPostExecute(output);
+                    }
                     mStatus = Status.FINISHED;
                 });
                 return output;
             } catch (Exception e) {
+                if (cancelled.get()) {
+                    mStatus = Status.FINISHED;
+                    dispatchCancelled();
+                    throw e;
+                }
                 AsyncWorker.getInstance().getHandler().post(() -> {
-                    onBackgroundError(e);
+                    if (!cancelled.get()) {
+                        onBackgroundError(e);
+                    }
                     mStatus = Status.FINISHED;
                 });
                 throw e;
@@ -87,10 +107,17 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
 
     @SafeVarargs
     public final void publishProgress(final PROGRESS... progress) {
+        if (cancelled.get()) {
+            return;
+        }
         AsyncWorker.getInstance().getHandler().post(() -> {
+            if (cancelled.get()) {
+                return;
+            }
             onProgress(progress);
-            if (onProgressListener != null) {
-                onProgressListener.onProgress(progress);
+            OnProgressListener<PROGRESS> listener = onProgressListener;
+            if (listener != null) {
+                listener.onProgress(progress);
             }
         });
     }
@@ -98,25 +125,43 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
     protected abstract  void onProgress(final PROGRESS[] progress);
 
     public void cancel() {
-        cancelled.set(true);
-        futureTask.cancel(true);
+        cancel(true);
     }
 
-    public void cancel(boolean bool) {
-        cancelled.set(bool);
-        futureTask.cancel(bool);
+    public void cancel(boolean mayInterruptIfRunning) {
+        // cancel(boolean) used to do cancelled.set(bool), so cancel(false) *cleared* the
+        // flag instead of setting it. Cancelling always sets true; the argument only
+        // controls whether the worker thread is interrupted.
+        boolean wasCancelled = cancelled.getAndSet(true);
+        FutureTask<OUTPUT> task = futureTask;
+        if (task != null) {
+            // Guards against an NPE when cancel() beats executeOnExecutor().
+            task.cancel(mayInterruptIfRunning);
+        }
+        if (!wasCancelled) {
+            dispatchCancelled();
+        }
+        // Listeners can hold an Activity/Fragment and are useless once cancelled, while
+        // the task itself may stay blocked on I/O for a long time yet.
+        onProgressListener = null;
     }
 
     public boolean isCancelled() {
         return cancelled.get();
     }
 
-    protected void onCancelled() {
+    private void dispatchCancelled() {
         AsyncWorker.getInstance().getHandler().post(() -> {
-            if (onCancelledListener != null) {
-                onCancelledListener.onCancelled();
+            OnCancelledListener listener = onCancelledListener;
+            onCancelledListener = null;
+            if (listener != null) {
+                listener.onCancelled();
             }
         });
+    }
+
+    protected void onCancelled() {
+        dispatchCancelled();
     }
 
     protected void onPreExecute() {}
@@ -128,7 +173,7 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
     protected abstract void onBackgroundError(Exception e);
 
     // Updated listener interface
-    private OnProgressListener<PROGRESS> onProgressListener;
+    private volatile OnProgressListener<PROGRESS> onProgressListener;
     public interface OnProgressListener<PROGRESS> {
         void onProgress(PROGRESS[] progress);
     }
@@ -137,7 +182,7 @@ public abstract class AsyncTask<INPUT, PROGRESS, OUTPUT> {
         this.onProgressListener = onProgressListener;
     }
 
-    private OnCancelledListener onCancelledListener;
+    private volatile OnCancelledListener onCancelledListener;
     public interface OnCancelledListener {
         void onCancelled();
     }

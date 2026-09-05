@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import share.ResValue;
 
@@ -38,24 +40,87 @@ public class DayNightMode extends JobService {
     private final Helpers helpers = new Helpers();
     private static final Object LOCK = new Object();
 
+    /**
+     * Worker thread for a single job run. onStartJob() used to create a HandlerThread and
+     * never quit it, so every job run left a live thread with its own Looper behind for
+     * the lifetime of the process.
+     */
+    private HandlerThread mWorkerThread;
+
+    /** Current wallpaper task, cancelled from onStopJob(). */
+    private final AtomicReference<SetWallpaperTask> mCurrentTask = new AtomicReference<>();
+
     @Override
     public boolean onStartJob(final JobParameters params) {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        HandlerThread handlerThread = new HandlerThread("SomeOtherThread");
+
+        final HandlerThread handlerThread = new HandlerThread("DayNightMode-worker");
         handlerThread.start();
+        mWorkerThread = handlerThread;
 
         Handler handler = new Handler(handlerThread.getLooper());
         handler.post(() -> {
-            Log.i("JOB", "Started!!!");
-            setWallpapers();
-            boolean brightnessBool = mPrefs.getBoolean("brightness", false);
-            if (brightnessBool) {
-                setBrightness();
+            try {
+                Log.i(TAG, "Job started");
+                setWallpapers();
+                boolean brightnessBool = mPrefs.getBoolean("brightness", false);
+                if (brightnessBool) {
+                    setBrightness();
+                }
+            } catch (Throwable t) {
+                Log.e(TAG, "Job failed", t);
+            } finally {
+                jobFinished(params, false);
+                handlerThread.quitSafely();
             }
-            jobFinished(params, false);
         });
 
         return true;
+    }
+
+    @Override
+    public boolean onStopJob(final JobParameters params) {
+        Log.d(TAG, "onStopJob() was called");
+        cancelCurrentTask();
+        quitWorkerThread();
+        return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        // The JobService goes away after jobFinished() while SetWallpaperTask may still
+        // be running, which is what the heap dump showed:
+        //   Thread 'pool-4-thread-2' -> DayNightMode$SetWallpaperTask
+        //     -> SetWallpaperTask.this$0 -> DayNightMode (destroyed JobService)
+        cancelCurrentTask();
+        quitWorkerThread();
+        super.onDestroy();
+    }
+
+    private void cancelCurrentTask() {
+        SetWallpaperTask task = mCurrentTask.getAndSet(null);
+        if (task != null && !task.isCancelled()) {
+            task.cancel(true);
+        }
+    }
+
+    private void quitWorkerThread() {
+        HandlerThread thread = mWorkerThread;
+        mWorkerThread = null;
+        if (thread != null) {
+            thread.quitSafely();
+        }
+    }
+
+    private void startTask(String dayTime, Bitmap bitmap) {
+        if (bitmap == null) {
+            Log.w(TAG, "startTask(" + dayTime + "): no bitmap, skipping");
+            return;
+        }
+        cancelCurrentTask();
+        SetWallpaperTask task = new SetWallpaperTask(getApplicationContext(), mPrefs, dayTime);
+        mCurrentTask.set(task);
+        task.execute(bitmap);
     }
 
     private void setWallpapers() {
@@ -64,17 +129,17 @@ public class DayNightMode extends JobService {
         if (mFile.exists() && !defaultWallpapers) {
             if (allowSetDayWallpaper()) {
                 File image = new File(mFile, "Day.webp");
-                if (isFileValid(image)) {
-                    Bitmap bitmap = decodeBitmapSafely(image);
-                    new SetWallpaperTask("Day").execute(bitmap);
+                Bitmap bitmap = isFileValid(image) ? decodeBitmapSafely(image) : null;
+                if (bitmap != null) {
+                    startTask("Day", bitmap);
                 } else {
                     setDefaultWallpapers();
                 }
             } else if (allowSetNightWallpaper()) {
                 File image = new File(mFile, "Night.webp");
-                if (isFileValid(image)) {
-                    Bitmap bitmap = decodeBitmapSafely(image);
-                    new SetWallpaperTask("Night").execute(bitmap);
+                Bitmap bitmap = isFileValid(image) ? decodeBitmapSafely(image) : null;
+                if (bitmap != null) {
+                    startTask("Night", bitmap);
                 } else {
                     setDefaultWallpapers();
                 }
@@ -87,10 +152,10 @@ public class DayNightMode extends JobService {
     private void setDefaultWallpapers() {
         if (allowSetDayWallpaper()) {
             Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg)));
-            new SetWallpaperTask("Day").execute(bitmapDrawable);
+            startTask("Day", bitmapDrawable);
         } else if (allowSetNightWallpaper()) {
             Bitmap bitmapDrawable = drawableToBitmap(Objects.requireNonNull(ContextCompat.getDrawable(getApplicationContext(), ResValue.getInstance().def_bg_n)));
-            new SetWallpaperTask("Night").execute(bitmapDrawable);
+            startTask("Night", bitmapDrawable);
         }   
     }
 
@@ -125,12 +190,6 @@ public class DayNightMode extends JobService {
         }
     }
 
-    @Override
-    public boolean onStopJob(final JobParameters params) {
-        Log.d("JOB", "onStopJob() was called");
-        return true;
-    }
-
     private void setBrightness() {
         final int dayBrightness = mPrefs.getInt("day_seek_bar", 70);
         final int nightBrightness = mPrefs.getInt("night_seek_bar", 0);
@@ -154,29 +213,51 @@ public class DayNightMode extends JobService {
             } catch (Exception e) {
                 Log.e(TAG, "Error setting brightness", e);
             }
-        }).start();
+        }, "DayNightMode-brightness").start();
     }
 
-    public Bitmap drawableToBitmap(Drawable drawable) {
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        int width = Math.max(1, drawable.getIntrinsicWidth());
+        int height = Math.max(1, drawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
     }
-    
-    private class SetWallpaperTask extends AsyncTask<Bitmap, Void, Boolean> {
-        private WallpaperManager mWallpaperManager;
-        private final String dayTime;
 
-        public SetWallpaperTask(String name) {
+    /**
+     * Static on purpose: as an inner class it carried a synthetic this$0 == DayNightMode
+     * and so kept the whole JobService alive while the task sat in
+     * WallpaperManager.setBitmap() on a pool thread. It now takes only what it needs.
+     */
+    private static class SetWallpaperTask extends AsyncTask<Bitmap, Void, Boolean> {
+
+        private final Context appContext;
+        private final SharedPreferences prefs;
+        private final String dayTime;
+        private WallpaperManager mWallpaperManager;
+
+        SetWallpaperTask(Context appContext, SharedPreferences prefs, String name) {
+            this.appContext = appContext.getApplicationContext();
+            this.prefs = prefs;
             this.dayTime = name;
         }
 
         @Override
         protected Boolean doInBackground(Bitmap[] newWallpaperBitmap) throws IOException {
-            mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+            if (newWallpaperBitmap == null || newWallpaperBitmap.length == 0
+                    || newWallpaperBitmap[0] == null) {
+                return false;
+            }
+            if (isCancelled()) {
+                return false;
+            }
+            mWallpaperManager = WallpaperManager.getInstance(appContext);
             mWallpaperManager.setBitmap(newWallpaperBitmap[0]);
+            if (isCancelled()) {
+                return false;
+            }
             saveBitmapHash(dayTime);
             return true;
         }
@@ -186,17 +267,21 @@ public class DayNightMode extends JobService {
             //
         }
 
-        public void saveBitmapHash(String name) {
-            Drawable mWallpaper = mWallpaperManager.getDrawable();
-            Bitmap currentWallpaperBitmap = drawableToBitmap(mWallpaper);
-
-            Bitmap normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);
-            
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            normalizedBitmap.compress(getWebPFormat(), 100, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream.toByteArray();
-
+        private void saveBitmapHash(String name) {
+            Bitmap currentWallpaperBitmap = null;
+            Bitmap normalizedBitmap = null;
             try {
+                Drawable mWallpaper = mWallpaperManager.getDrawable();
+                if (mWallpaper == null) {
+                    return;
+                }
+                currentWallpaperBitmap = drawableToBitmap(mWallpaper);
+                normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);
+
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                normalizedBitmap.compress(getWebPFormat(), 100, byteArrayOutputStream);
+                byte[] byteArray = byteArrayOutputStream.toByteArray();
+
                 MessageDigest digest = MessageDigest.getInstance("MD5");
                 byte[] hashBytes = digest.digest(byteArray);
 
@@ -206,11 +291,25 @@ public class DayNightMode extends JobService {
                     if (hex.length() == 1) hexString.append('0');
                     hexString.append(hex);
                 }
-                SharedPreferences.Editor editor = mPrefs.edit();
+                SharedPreferences.Editor editor = prefs.edit();
                 editor.putString(name + "_hash", hexString.toString());
                 editor.apply();
             } catch (NoSuchAlgorithmException e) {
                 Log.e(TAG, "Hash error: " + e.getMessage());
+            } catch (OutOfMemoryError e) {
+                Log.e(TAG, "Hash error: out of memory copying the wallpaper", e);
+            } finally {
+                // Two full-screen ARGB_8888 copies run to tens of MB on this device
+                // (heap dump metadata: 3 large bitmaps, 50.3 MB). Without recycle() they
+                // wait for the GC along with the WEBP byte array.
+                recycleQuietly(normalizedBitmap);
+                recycleQuietly(currentWallpaperBitmap);
+            }
+        }
+
+        private static void recycleQuietly(Bitmap bitmap) {
+            if (bitmap != null && !bitmap.isRecycled()) {
+                bitmap.recycle();
             }
         }
 
@@ -223,7 +322,7 @@ public class DayNightMode extends JobService {
             }
         }
 
-        public Bitmap normalizeBitmap(Bitmap bitmap) {
+        private Bitmap normalizeBitmap(Bitmap bitmap) {
             Bitmap normalizedBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(normalizedBitmap);
             canvas.drawBitmap(bitmap, 0, 0, null);

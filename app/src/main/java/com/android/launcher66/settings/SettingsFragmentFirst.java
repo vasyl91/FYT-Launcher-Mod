@@ -814,14 +814,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         return false;
     }
 
-    private void refreshRecyclerMultiple() {       
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 300);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 500);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 700);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 900);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1200);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1400);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1600);
+    private void refreshRecyclerMultiple() {
+        // Each new Handler(...) was invisible to mHandler.removeCallbacksAndMessages(null)
+        // in onDestroyView(), so this::refreshRecycler kept the fragment alive for another
+        // 1.6 s after the screen closed. A shared handler can actually be cancelled.
+        long[] delays = {300, 500, 700, 900, 1200, 1400, 1600};
+        for (long delay : delays) {
+            mHandler.postDelayed(this::refreshRecycler, delay);
+        }
     }
 
     private void refreshRecycler() {
@@ -840,9 +840,12 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         handler.removeCallbacksAndMessages(null);
         mHandler.removeCallbacksAndMessages(null);
         if (versionChecker != null) {
-            versionChecker.cancelCheck();
-            versionChecker.cancelDownload();
-            versionChecker.cancelInstall();
+            // cancelAll() clears the callback references before trying to stop the tasks.
+            // Those references (VersionChecker$1.val$callback -> SettingsFragmentFirst$2
+            // -> this$0) held this fragment on the 'pool-4-thread-1' stack for as long as
+            // the HTTP request ran.
+            versionChecker.cancelAll();
+            versionChecker = null;
         }
         progressDialogDismiss();
         removeTickRunnable();
@@ -1126,7 +1129,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
             @Override
             public void onDownloadError(String error) {
-                new Handler(Looper.getMainLooper()).post(() -> showErrorToast(error));
+                mHandler.post(() -> showErrorToast(error));
             }
         });  
     }

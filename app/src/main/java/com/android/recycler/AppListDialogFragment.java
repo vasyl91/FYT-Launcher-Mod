@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewTreeLifecycleOwner;
 import androidx.lifecycle.ViewTreeViewModelStoreOwner;
 import androidx.preference.PreferenceManager;
@@ -37,6 +38,7 @@ import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.syu.util.WindowUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -60,6 +62,32 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
     private boolean mListStateCleared;
 
     private OnBackPressedCallback mBackPressedCallback;
+
+    /**
+     * The instance is single-use: set once it closes, and any further show() is refused.
+     *
+     * In the heap dumps one instance carried two ObjectWatcher keys (watchDurationMillis
+     * 6065 and 3724) and mLifecycleRegistry = RESUMED despite having received
+     * Fragment#onDestroy() - the signature of a dismissed fragment being shown again,
+     * which orphans the first showing's window tag for the life of the Activity.
+     */
+    private boolean mConsumed;
+
+    /** Activity window decor, kept so tags can be cleared once getActivity() is null. */
+    private WeakReference<View> mHostDecorRef;
+
+    /**
+     * The DIALOG window's decor, captured as soon as it exists.
+     *
+     * DialogFragment.setupViewTreeOwners() puts three keyed tags on that view
+     * (view_tree_lifecycle_owner, view_tree_view_model_store_owner,
+     * view_tree_saved_state_registry_owner), all pointing at this fragment - the
+     * three-object SparseArray from the LeakCanary report.
+     *
+     * Cleaning up via getDialog() is not enough: on some close paths mDialog is already
+     * null by the time onDestroyView() runs and the tags survive. Hence our own weak ref.
+     */
+    private WeakReference<View> mDialogDecorRef;
 
     public interface ItemClickDataListener {
         /**
@@ -88,6 +116,80 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
 
     private long getTargetRowId() {
         return getArguments() == null ? -1L : getArguments().getLong(ARG_TARGET_ROW_ID, -1L);
+    }
+
+    /**
+     * The only correct way to open the list: always a fresh instance, with any previous
+     * one removed from the FragmentManager so a dismissed fragment is never recycled.
+     *
+     * @return the new instance, or null if it could not be shown
+     */
+    public static AppListDialogFragment showListDialog(FragmentManager fm, long targetRowId,
+                                                       ItemClickDataListener listener) {
+        if (fm == null || fm.isDestroyed() || fm.isStateSaved()) {
+            Log.w(TAG, "showListDialog: FragmentManager unavailable (destroyed/stateSaved)");
+            return null;
+        }
+
+        Fragment prev = fm.findFragmentByTag(TAG);
+        if (prev != null) {
+            if (prev instanceof AppListDialogFragment) {
+                try {
+                    ((AppListDialogFragment) prev).dismissAllowingStateLoss();
+                } catch (Throwable t) {
+                    Log.w(TAG, "showListDialog: failed to dismiss the previous instance", t);
+                }
+            }
+            try {
+                fm.beginTransaction().remove(prev).commitAllowingStateLoss();
+                fm.executePendingTransactions();
+            } catch (Throwable t) {
+                Log.w(TAG, "showListDialog: failed to remove the previous instance", t);
+            }
+        }
+
+        AppListDialogFragment fragment = newInstance(targetRowId);
+        fragment.setItemClickDataListener(listener);
+        try {
+            fragment.show(fm, TAG);
+        } catch (Throwable t) {
+            Log.w(TAG, "showListDialog: show() failed", t);
+            return null;
+        }
+        return fragment;
+    }
+
+    @Override
+    public void show(@NonNull FragmentManager manager, @Nullable String tag) {
+        if (!claimForShow()) {
+            return;
+        }
+        super.show(manager, tag);
+    }
+
+    @Override
+    public void showNow(@NonNull FragmentManager manager, @Nullable String tag) {
+        if (!claimForShow()) {
+            return;
+        }
+        super.showNow(manager, tag);
+    }
+
+    @Override
+    public int show(@NonNull FragmentTransaction transaction, @Nullable String tag) {
+        if (!claimForShow()) {
+            return -1;
+        }
+        return super.show(transaction, tag);
+    }
+
+    private boolean claimForShow() {
+        if (mConsumed) {
+            Log.w(TAG, "show(): this instance was already dismissed, skipping. "
+                    + "Use AppListDialogFragment.showListDialog() or newInstance().");
+            return false;
+        }
+        return true;
     }
 
     // =====================================================================================
@@ -164,6 +266,10 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
             LauncherApplication.sApp.sendBroadcast(new Intent(Keys.LIST_OPEN));
         }
 
+        if (getActivity() != null && getActivity().getWindow() != null) {
+            mHostDecorRef = new WeakReference<View>(getActivity().getWindow().getDecorView());
+        }
+
         // attachToRoot MUST be false: DialogFragment adds the returned view itself.
         View view = inflater.inflate(R.layout.dialog_fragment_applist, container, false);
         mRootView = view;
@@ -197,6 +303,21 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
         Objects.requireNonNull(getDialog().getWindow()).setBackgroundDrawable(new ColorDrawable(0));
         getDialog().getWindow().setLayout(-1, -1);
         getDialog().setCanceledOnTouchOutside(true);
+        rememberDialogDecor();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // setupViewTreeOwners() runs in onStart(), so capture the decor here as well.
+        rememberDialogDecor();
+    }
+
+    private void rememberDialogDecor() {
+        Dialog dialog = getDialog();
+        if (dialog != null && dialog.getWindow() != null) {
+            mDialogDecorRef = new WeakReference<View>(dialog.getWindow().getDecorView());
+        }
     }
 
     @Override
@@ -239,6 +360,7 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
      */
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
+        mConsumed = true;
         if (!mListStateCleared) {
             mListStateCleared = true;
             clearListFlags();
@@ -303,7 +425,77 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
             clearListFlags();
         }
 
+        detachFromWindowTags();
+
         WindowUtil.openPinnedPip();
+    }
+
+    @Override
+    public void onDestroy() {
+        mConsumed = true;
+        mItemClickDataListener = null;
+        detachFromWindowTags();
+        mHostDecorRef = null;
+        super.onDestroy();
+    }
+
+    /**
+     * Detaches this fragment from the windows' keyed tags. From the LeakCanary report:
+     *   InputMethodManager.sInstance -> mNextServedView -> DecorView (live Activity)
+     *     -> View.mKeyedTags -> SparseArray -> Object[0] -> AppListDialogFragment
+     * The DecorView outlives the dialog, so an orphaned tag holds the dismissed fragment
+     * indefinitely. Only tags that actually point at THIS fragment are cleared.
+     */
+    private void detachFromWindowTags() {
+        View hostDecor = mHostDecorRef != null ? mHostDecorRef.get() : null;
+        if (hostDecor == null && getActivity() != null && getActivity().getWindow() != null) {
+            hostDecor = getActivity().getWindow().getDecorView();
+        }
+        clearOwnerTags(hostDecor);
+
+        View dialogDecor = mDialogDecorRef != null ? mDialogDecorRef.get() : null;
+        if (dialogDecor == null) {
+            Dialog dialog = getDialog();
+            if (dialog != null && dialog.getWindow() != null) {
+                dialogDecor = dialog.getWindow().getDecorView();
+            }
+        }
+        clearOwnerTags(dialogDecor);
+
+        clearOwnerTags(mRootView);
+
+        if (mDialogDecorRef != null) {
+            mDialogDecorRef.clear();
+            mDialogDecorRef = null;
+        }
+    }
+
+    /** Clears every tag on the view that could point back at this fragment. */
+    private void clearOwnerTags(View view) {
+        if (view == null) {
+            return;
+        }
+        clearFragmentTag(view);
+        try {
+            ViewTreeLifecycleOwner.set(view, null);
+            ViewTreeViewModelStoreOwner.set(view, null);
+            ViewTreeSavedStateRegistryOwner.set(view, null);
+        } catch (Throwable t) {
+            Log.w(TAG, "clearOwnerTags failed", t);
+        }
+    }
+
+    private void clearFragmentTag(View view) {
+        if (view == null) {
+            return;
+        }
+        try {
+            if (view.getTag(androidx.fragment.R.id.fragment_container_view_tag) == this) {
+                view.setTag(androidx.fragment.R.id.fragment_container_view_tag, null);
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "clearFragmentTag failed", t);
+        }
     }
 
     // =====================================================================================

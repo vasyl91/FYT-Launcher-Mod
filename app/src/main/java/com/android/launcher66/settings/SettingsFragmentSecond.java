@@ -2117,9 +2117,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Log.i("PipPositioner", "Adjust: " + pipScreenKey + " screen: " + selectedScreen);
         helpers.checkAndResetIfOverlappingOnScreen(-1);
         if (selectedScreen == 0) {
-            requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorFirstScreen()).commit();
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, new CreatorFirstScreen()).commit();
         } else {
-            requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new CreatorOtherScreens(selectedScreen)).commit();
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, CreatorOtherScreens.newInstance(selectedScreen))
+                    .commit();
         }
     }
 }

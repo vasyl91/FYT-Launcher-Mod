@@ -169,22 +169,25 @@ public class CreatorFirstScreen extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        
-        // Clear all listeners and references
+
+        // Cleared in finally, not inside the try: when removeAllViews() threw, layout and
+        // canvas stayed attached to the fragment, and mContext == SettingsActivity with them.
         try {
             if (layout != null) {
                 layout.setOnClickListener(null);
                 layout.setOnTouchListener(null);
                 layout.removeAllViews();
-                layout = null;
             }
             if (canvas != null) {
                 canvas.setOnClickListener(null);
                 canvas.setOnTouchListener(null);
                 canvas.clearAnimation();
-                canvas = null;
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        } finally {
+            layout = null;
+            canvas = null;
+        }
     }
 
     @Override

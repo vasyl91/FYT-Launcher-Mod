@@ -44,15 +44,33 @@ public class CreatorOtherScreens extends Fragment {
     public static boolean radio = false;
     public static boolean stats = false; 
 
-    public CreatorOtherScreens(int selectedScreen) {
+    private static final String ARG_SELECTED_SCREEN = "selected_screen";
+
+    /**
+     * A Fragment must have a public no-arg constructor. CreatorOtherScreens(int) made
+     * FragmentManager throw InstantiationException on state restore (rotation, theme
+     * change, return after process death), because there is no way to pass that argument.
+     * The screen number travels in the arguments Bundle, which the system saves itself.
+     */
+    public CreatorOtherScreens() {
         super();
-        this.mSelectedScreen = selectedScreen;
+    }
+
+    public static CreatorOtherScreens newInstance(int selectedScreen) {
+        CreatorOtherScreens fragment = new CreatorOtherScreens();
+        Bundle args = new Bundle();
+        args.putInt(ARG_SELECTED_SCREEN, selectedScreen);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         helpers = new Helpers();
+        if (getArguments() != null) {
+            mSelectedScreen = getArguments().getInt(ARG_SELECTED_SCREEN, 0);
+        }
     }
 
     @Override
@@ -167,22 +185,25 @@ public class CreatorOtherScreens extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        
-        // Clear all listeners and references
+
+        // Cleared in finally, not inside the try: when removeAllViews() threw, layout and
+        // canvas stayed attached to the fragment, and mContext == SettingsActivity with them.
         try {
             if (layout != null) {
                 layout.setOnClickListener(null);
                 layout.setOnTouchListener(null);
                 layout.removeAllViews();
-                layout = null;
             }
             if (canvas != null) {
                 canvas.setOnClickListener(null);
                 canvas.setOnTouchListener(null);
                 canvas.clearAnimation();
-                canvas = null;
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        } finally {
+            layout = null;
+            canvas = null;
+        }
     }
 
     @Override

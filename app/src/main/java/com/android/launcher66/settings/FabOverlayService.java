@@ -37,6 +37,9 @@ public class FabOverlayService extends Service {
     
     private static final String TAG = "FabOverlayService";
     private WindowManager windowManager;
+    /** Shared handler for delayed work, cancelled in onDestroy(). */
+    private final Handler overlayHandler = new Handler(Looper.getMainLooper());
+    private boolean isReceiverRegistered = false;
     private FloatingActionButton fabSwitchPips;
     private FloatingActionButton leftFabSwitchPips;
     private FloatingActionButton rightFabSwitchPips;
@@ -137,6 +140,7 @@ public class FabOverlayService extends Service {
         } else {
             registerReceiver(fabReceiver, filter);
         }
+        isReceiverRegistered = true;
     }
 
     private boolean isFloatingButton() {
@@ -359,7 +363,7 @@ public class FabOverlayService extends Service {
     }
 
     private void unblockButtonAfterSwap() {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> blockButton = false, 3000);
+        overlayHandler.postDelayed(() -> blockButton = false, 3000);
     }
 
     // LEFT
@@ -787,7 +791,7 @@ public class FabOverlayService extends Service {
                         case Keys.BLOCK_FLOATING_BUTTON:
                             // This is called inside startMapPip() to let the view settle before switching PiPs will be possible again
                             blockButton = true;
-                            new Handler(Looper.getMainLooper()).postDelayed(() -> blockButton = false, 5000);
+                            overlayHandler.postDelayed(() -> blockButton = false, 5000);
                             break;
                         default:
                             break;
@@ -832,16 +836,49 @@ public class FabOverlayService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(fabReceiver);
-        // Remove the overlay view when service is destroyed
-        if (fabSwitchPips != null) {
-            windowManager.removeView(fabSwitchPips);
+
+        overlayHandler.removeCallbacksAndMessages(null);
+
+        // unregisterReceiver() throws IllegalArgumentException when registration failed.
+        // It used to be the first call in onDestroy(), so that exception aborted the
+        // method and no overlay was removed at all, leaving type 2038 windows in the
+        // WindowManager together with their ViewRootImpl.
+        if (isReceiverRegistered) {
+            try {
+                unregisterReceiver(fabReceiver);
+            } catch (IllegalArgumentException e) {
+                Log.w(TAG, "Receiver was not registered: " + e.getMessage());
+            }
+            isReceiverRegistered = false;
         }
-        if (leftFabSwitchPips != null) {
-            windowManager.removeView(leftFabSwitchPips);
+
+        // One at a time: if setupOverlay() failed before addView() the field is non-null
+        // but the view was never attached, and removeView() would throw and take the
+        // removal of the other two down with it.
+        removeOverlay(fabSwitchPips);
+        removeOverlay(leftFabSwitchPips);
+        removeOverlay(rightFabSwitchPips);
+        fabSwitchPips = null;
+        leftFabSwitchPips = null;
+        rightFabSwitchPips = null;
+        params = null;
+        leftFabParams = null;
+        rightFabParams = null;
+        windowManager = null;
+    }
+
+    private void removeOverlay(View view) {
+        if (view == null || windowManager == null) {
+            return;
         }
-        if (rightFabSwitchPips != null) {
-            windowManager.removeView(rightFabSwitchPips);
+        try {
+            if (view.isAttachedToWindow()) {
+                // removeView() is asynchronous, so the ViewRootImpl would survive one
+                // more message-loop pass after the service is already gone.
+                windowManager.removeViewImmediate(view);
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "removeOverlay failed", t);
         }
     }
 }

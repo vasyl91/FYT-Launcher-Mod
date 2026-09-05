@@ -540,6 +540,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final Map<String, Bitmap> mAppIconBitmapCache = new HashMap<>();
     private boolean isRecreateActive = false;
     private boolean mHomeButtonPressed = false;
+    /** Blocks LauncherNotify re-registration once onDestroy() has run. */
+    private volatile boolean mNotifyRefreshersReleased = false;
     private boolean mHomeWorkspaceRefreshHandled = false;
     private boolean mHomeFromAllAppsPending = false;
     private boolean mFastHomeResumePending = false;
@@ -1906,7 +1908,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 } else {
                                     helpers.setWasInRecents(true);
                                 }
-                                LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.getLauncher().refreshMusic, true);
+                                registerMusicRefresher();
                                 
                                 if (mWorkspace != null && mWorkspace.isInOverviewMode()) {
                                     showHotseat(true, true);
@@ -1923,7 +1925,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 helpers.setPipStarted(false);
                                 helpers.setInAllApps(false);
                                 helpers.setInWidgets(false);
-                                LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.getLauncher().refreshMusic, true);
+                                registerMusicRefresher();
                             }                        
                         }
                         break; 
@@ -3321,13 +3323,62 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mHandler.postDelayed(mFastHomeDeferredPipRunnable, FAST_HOME_PIP_DEFER_MS);
     }
 
-    private void registerResumeRefreshersAndNotify() {
+    /**
+     * The LauncherNotify.NOTIFIER_* channels are static, so every entry lives as long as
+     * the process and keeps this$0 == Launcher alive. Only a live Activity may register:
+     * after onDestroy() the flag blocks late callbacks (broadcasts, postDelayed) that
+     * would otherwise resurrect the leak.
+     */
+    private void registerNotifyRefreshers() {
+        if (!canRegisterNotifyRefreshers()) {
+            return;
+        }
         LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(refreshMusic, true);
         LauncherNotify.NOTIFIER_VIDEO.addUiRefresher(refreshVideo, true);
         LauncherNotify.NOTIFIER_BTAV.addUiRefresher(refreshBtav, true);
         LauncherNotify.NOTIFIER_DVR.addUiRefresher(refreshDvr, true);
         LauncherNotify.NOTIFIER_NAVIVIEW.addUiRefresher(refreshNaviView, false);
         LauncherNotify.NOTIFIER_NAVISTATE.addUiRefresher(refreshNaviState, false);
+    }
+
+    /** Unregisters this instance from every LauncherNotify channel. */
+    private void unregisterNotifyRefreshers() {
+        LauncherNotify.NOTIFIER_MUSIC.removeUiRefresher(refreshMusic);
+        LauncherNotify.NOTIFIER_VIDEO.removeUiRefresher(refreshVideo);
+        LauncherNotify.NOTIFIER_BTAV.removeUiRefresher(refreshBtav);
+        LauncherNotify.NOTIFIER_DVR.removeUiRefresher(refreshDvr);
+        LauncherNotify.NOTIFIER_NAVIVIEW.removeUiRefresher(refreshNaviView);
+        LauncherNotify.NOTIFIER_NAVISTATE.removeUiRefresher(refreshNaviState);
+    }
+
+    /**
+     * Music channel only, called from the broadcast receiver after HOME/RECENTS.
+     *
+     * Was going through the static mLauncher, so after an Activity restart the old
+     * instance's receiver registered the new instance's refresher, or hit an NPE once
+     * mLauncher had been cleared. Uses this instance's own field now.
+     */
+    private void registerMusicRefresher() {
+        if (!canRegisterNotifyRefreshers()) {
+            return;
+        }
+        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(refreshMusic, true);
+    }
+
+    private boolean canRegisterNotifyRefreshers() {
+        if (mNotifyRefreshersReleased) {
+            Log.d(TAG, "registerNotifyRefreshers: skipped, Activity already destroyed");
+            return false;
+        }
+        if (isFinishing() || isDestroyed()) {
+            Log.d(TAG, "registerNotifyRefreshers: skipped, isFinishing/isDestroyed");
+            return false;
+        }
+        return true;
+    }
+
+    private void registerResumeRefreshersAndNotify() {
+        registerNotifyRefreshers();
 
         tools = CarStates.getCar(app).getTools();
 
@@ -3479,7 +3530,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         // --- Re-register UI elements ---
-        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(Launcher.getLauncher().refreshMusic, true);
+        registerMusicRefresher();
 
         if (isServiceRunning(FabOverlayService.class)) {
             Intent serviceIntent = new Intent(LauncherApplication.sApp, FabOverlayService.class);
@@ -3873,12 +3924,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mPaused = true;
         mDragController.cancelDrag();
         mDragController.resetLastGestureUpTime();
-        LauncherNotify.NOTIFIER_MUSIC.removeUiRefresher(refreshMusic);
-        LauncherNotify.NOTIFIER_VIDEO.removeUiRefresher(refreshVideo);
-        LauncherNotify.NOTIFIER_BTAV.removeUiRefresher(refreshBtav);
-        LauncherNotify.NOTIFIER_DVR.removeUiRefresher(refreshDvr);
-        LauncherNotify.NOTIFIER_NAVIVIEW.removeUiRefresher(refreshNaviView);
-        LauncherNotify.NOTIFIER_NAVISTATE.removeUiRefresher(refreshNaviState);
+        unregisterNotifyRefreshers();
         clearGaoDeData();
         if (mWorkspace.getCustomContentCallbacks() != null) {
             mWorkspace.getCustomContentCallbacks().onHide();
@@ -3933,6 +3979,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "---->>> onDestroy");
+        // Unconditional, and before any field is cleared. onPause() returns early on
+        // (mHomeButtonPressed && isOnMainWorkspaceScreen()), so leaving via HOME from the
+        // main screen never unregistered the refreshers and the static NOTIFIER_* kept
+        // Launcher$11 -> the whole Launcher alive (8.9 MB in the heap dump).
+        mNotifyRefreshersReleased = true;
+        unregisterNotifyRefreshers();
+        LauncherNotify.releaseAllFor(this);
+
         Log.d("onDestroy", "removePip");
         WindowUtil.removePip();
         if (mWindowHost != null) {

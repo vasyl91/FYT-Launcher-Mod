@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
@@ -71,6 +72,15 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
     private int mPendingPosition = RecyclerView.NO_POSITION;
     private long mPendingRowId = -1L;
 
+    /**
+     * Pending retry of the picker, used when the FragmentManager had saved its state.
+     * Held explicitly because decor.postDelayed() ties the lambda to the Activity's view:
+     * without cancellation the adapter, and through mLauncher the whole Activity, survives
+     * for up to 4 x 150 ms after destruction.
+     */
+    private Runnable mPickerRetryRunnable;
+    private View mPickerRetryHost;
+
     public AppListAdapter(Launcher mLauncher, List<AppListBean> mData) {
         this.mPrefs = PreferenceManager.getDefaultSharedPreferences(mLauncher);
         this.mData = mData;
@@ -102,32 +112,78 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
         mPendingPosition = position;
         mPendingRowId = target.rowId;
 
+        if (mLauncher.isFinishing() || mLauncher.isDestroyed()) {
+            cancelPickerRetry();
+            mPendingPosition = RecyclerView.NO_POSITION;
+            mPendingRowId = -1L;
+            return;
+        }
+
         FragmentManager fragmentManager = mLauncher.getSupportFragmentManager();
         if (fragmentManager.isStateSaved()) {
             View decor = mLauncher.getWindow() == null ? null : mLauncher.getWindow().getDecorView();
             if (decor != null && attempt < APP_PICKER_STATE_RETRY_LIMIT) {
-                decor.postDelayed(
-                        () -> showAppPickerDialog(position, attempt + 1),
-                        APP_PICKER_STATE_RETRY_MS
-                );
+                schedulePickerRetry(decor, position, attempt + 1);
             } else {
+                cancelPickerRetry();
                 mPendingPosition = RecyclerView.NO_POSITION;
                 mPendingRowId = -1L;
             }
             return;
         }
 
+        cancelPickerRetry();
+
         if (AppListDialogFragment.isListDialogShowing(fragmentManager)) {
             return;
         }
 
-        // ALWAYS a fresh instance. Re-showing a dismissed DialogFragment keeps it strongly
-        // reachable after onDestroy() (LeakCanary reports it as retained) and its
-        // mItemClickDataListener has already been nulled in onDestroyView(), so the second
-        // selection would silently do nothing.
-        AppListDialogFragment dialog = AppListDialogFragment.newInstance(target.rowId);
-        dialog.setItemClickDataListener(this);
-        dialog.show(fragmentManager, AppListDialogFragment.TAG);
+        // showListDialog() always builds a fresh instance and removes any previous one
+        // under the same tag, flushing pending transactions on the way.
+        //
+        // newInstance() + show() was not enough because show() commits asynchronously:
+        // two quick taps (or a tap plus a long-click on a tile) both passed
+        // isListDialogShowing() before the first transaction ran, and two instances ended
+        // up added under the same tag. findFragmentByTag() only sees one of them, so
+        // dismissListDialog() closed one while the other stayed added with its window and
+        // ViewTree tags - and that one is what shows up as retained.
+        AppListDialogFragment.showListDialog(fragmentManager, target.rowId, this);
+    }
+
+    private void schedulePickerRetry(View decor, final int position, final int attempt) {
+        cancelPickerRetry();
+        mPickerRetryHost = decor;
+        mPickerRetryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mPickerRetryRunnable = null;
+                mPickerRetryHost = null;
+                if (mLauncher.isFinishing() || mLauncher.isDestroyed()) {
+                    return;
+                }
+                showAppPickerDialog(position, attempt);
+            }
+        };
+        decor.postDelayed(mPickerRetryRunnable, APP_PICKER_STATE_RETRY_MS);
+    }
+
+    private void cancelPickerRetry() {
+        if (mPickerRetryRunnable != null && mPickerRetryHost != null) {
+            mPickerRetryHost.removeCallbacks(mPickerRetryRunnable);
+        }
+        mPickerRetryRunnable = null;
+        mPickerRetryHost = null;
+    }
+
+    /**
+     * Called by RecyclerView on setAdapter(null), e.g. from Workspace.onWorkspaceDestroy().
+     * Last chance to drop delayed work that still holds the Activity.
+     */
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        cancelPickerRetry();
+        mSettingsIconBitmap = null;
+        super.onDetachedFromRecyclerView(recyclerView);
     }
 
     @Override

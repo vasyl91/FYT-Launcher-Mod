@@ -2,6 +2,7 @@ package com.android.launcher66.settings;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.core.content.FileProvider;
 
@@ -15,6 +16,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicReference;
 
 import ru.solrudev.ackpine.DisposableSubscriptionContainer;
 import ru.solrudev.ackpine.installer.PackageInstaller;
@@ -23,10 +25,36 @@ import ru.solrudev.ackpine.session.Failure;
 import ru.solrudev.ackpine.session.Session;
 
 public class VersionChecker {
+
+    private static final String TAG = "VersionChecker";
+    private static final String GITHUB_RELEASES_URL = "https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest";
+
     private AsyncTask<Void, Void, String> checkTask;
     private AsyncTask<Void, Integer, File> downloadTask;
-    private static final String GITHUB_RELEASES_URL = "https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest";
     private DisposableSubscriptionContainer installSubscriptions;
+
+    /**
+     * Callbacks behind a reference that can be cleared. This is the leak from the
+     * LeakCanary report:
+     *   Thread 'pool-4-thread-1'
+     *     -> VersionChecker$1 (anonymous AsyncTask, Java Local on the thread's stack)
+     *       -> VersionChecker$1.val$callback
+     *         -> SettingsFragmentFirst$2
+     *           -> SettingsFragmentFirst$2.this$0  == SettingsFragmentFirst
+     *
+     * The callback used to be captured directly in the synthetic val$callback field, so
+     * while doInBackground() sat on HttpURLConnection (up to 10 s connect + 10 s read,
+     * and an interrupt does not break that) the destroyed fragment stayed reachable from
+     * the pool thread's stack, with no way for cancelCheck() to break the chain.
+     *
+     * The task now only sees an AtomicReference, which cancelCheck() clears immediately.
+     */
+    private final AtomicReference<VersionCheckCallback> checkCallbackRef = new AtomicReference<>();
+    private final AtomicReference<DownloadCallback> downloadCallbackRef = new AtomicReference<>();
+
+    /** Open connections, closed on cancel so the pool thread is released. */
+    private final AtomicReference<HttpURLConnection> checkConnectionRef = new AtomicReference<>();
+    private final AtomicReference<HttpURLConnection> downloadConnectionRef = new AtomicReference<>();
 
     public interface VersionCheckCallback {
         void onUpdateAvailable(String latestVersion);
@@ -41,7 +69,13 @@ public class VersionChecker {
         void onDownloadError(String error);
     }
 
-    public void checkForUpdate(String currentVersion, VersionCheckCallback callback) {
+    // =====================================================================================
+    // VERSION CHECK
+    // =====================================================================================
+
+    public void checkForUpdate(final String currentVersion, VersionCheckCallback callback) {
+        checkCallbackRef.set(callback);
+
         checkTask = new AsyncTask<Void, Void, String>() {
             private Exception exception;
 
@@ -52,28 +86,29 @@ public class VersionChecker {
 
             @Override
             protected String doInBackground(Void... params) {
+                HttpURLConnection connection = null;
                 try {
                     URL url = new URL(GITHUB_RELEASES_URL);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setInstanceFollowRedirects(false); 
+                    connection = (HttpURLConnection) url.openConnection();
+                    checkConnectionRef.set(connection);
+                    connection.setInstanceFollowRedirects(false);
                     connection.setRequestMethod("GET");
                     connection.setRequestProperty("User-Agent", "Update-Checker/1.0");
                     connection.setConnectTimeout(10000);
                     connection.setReadTimeout(10000);
 
                     int responseCode = connection.getResponseCode();
-                    
+
                     // Handle redirect manually to ensure we get the final URL
-                    if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || 
+                    if (responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
                         responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
                         String location = connection.getHeaderField("Location");
-                        connection.disconnect();
-                        
+
                         // Check if the redirect location contains a valid tag
                         if (location == null || !location.contains("/tag/")) {
                             throw new IOException("Invalid redirect location");
                         }
-                        
+
                         // Extract version from redirect URL
                         String[] parts = location.split("/tag/v?");
                         if (parts.length < 2) {
@@ -86,35 +121,50 @@ public class VersionChecker {
                 } catch (IOException e) {
                     exception = e;
                     return null;
+                } finally {
+                    // disconnect() used to run only on the redirect path; any other
+                    // response left the connection sitting in the keep-alive pool.
+                    checkConnectionRef.compareAndSet(connection, null);
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
                 }
             }
 
             @Override
             protected void onPostExecute(String latestVersion) {
+                VersionCheckCallback cb = checkCallbackRef.get();
+                if (cb == null) {
+                    return;
+                }
+
                 if (exception != null) {
-                    callback.onError("Error checking version: " + exception.getMessage());
+                    cb.onError("Error checking version: " + exception.getMessage());
                     return;
                 }
 
                 if (latestVersion == null) {
-                    callback.onError("Failed to get version information");
+                    cb.onError("Failed to get version information");
                     return;
                 }
 
                 try {
                     if (isNewerVersion(currentVersion, latestVersion)) {
-                        callback.onUpdateAvailable(latestVersion);
+                        cb.onUpdateAvailable(latestVersion);
                     } else {
-                        callback.onUpToDate();
+                        cb.onUpToDate();
                     }
                 } catch (NumberFormatException e) {
-                    callback.onError("Invalid version format: " + latestVersion);
+                    cb.onError("Invalid version format: " + latestVersion);
                 }
             }
 
             @Override
             protected void onBackgroundError(Exception e) {
-                callback.onError("Error checking version: " + e.getMessage());
+                VersionCheckCallback cb = checkCallbackRef.get();
+                if (cb != null) {
+                    cb.onError("Error checking version: " + e.getMessage());
+                }
             }
 
             private boolean isNewerVersion(String current, String latest) {
@@ -137,33 +187,45 @@ public class VersionChecker {
     }
 
     public void cancelCheck() {
+        // Order matters: drop the callback reference (and with it the Fragment) first,
+        // then try to stop the task itself.
+        checkCallbackRef.set(null);
+        closeQuietly(checkConnectionRef.getAndSet(null));
         if (checkTask != null && !checkTask.isCancelled()) {
-            checkTask.cancel(true); 
+            checkTask.cancel(true);
         }
+        checkTask = null;
     }
 
-    public void cancelInstall() {
-        if (installSubscriptions != null) {
-            installSubscriptions.dispose();
-            installSubscriptions = null;
-        }
-    }
+    // =====================================================================================
+    // DOWNLOAD + INSTALL
+    // =====================================================================================
 
-    public void downloadAndInstallApk(Context context, String latestVersion, DownloadCallback callback) {
+    public void downloadAndInstallApk(final Context context, final String latestVersion,
+                                      DownloadCallback callback) {
+        // The task outlives the caller, so never hold on to an Activity context.
+        final Context appContext = context.getApplicationContext();
+        downloadCallbackRef.set(callback);
+
         downloadTask = new AsyncTask<Void, Integer, File>() {
             private Exception exception;
             private String downloadUrl;
 
             @Override
             protected void onPreExecute() {
-                downloadUrl = GITHUB_RELEASES_URL.replace("/releases/latest", "/releases/download/v" + latestVersion + "/update" + latestVersion + ".apk");
+                downloadUrl = GITHUB_RELEASES_URL.replace("/releases/latest",
+                        "/releases/download/v" + latestVersion + "/update" + latestVersion + ".apk");
             }
 
             @Override
             protected File doInBackground(Void... params) {
+                HttpURLConnection connection = null;
+                InputStream input = null;
+                FileOutputStream output = null;
                 try {
                     URL url = new URL(downloadUrl);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection = (HttpURLConnection) url.openConnection();
+                    downloadConnectionRef.set(connection);
                     connection.setRequestMethod("GET");
                     connection.setRequestProperty("User-Agent", "Update-Checker/1.0");
                     connection.setConnectTimeout(10000);
@@ -175,99 +237,171 @@ public class VersionChecker {
                         throw new IOException("Server returned HTTP " + responseCode);
                     }
 
-                    callback.onDownloadStarted("update" + latestVersion);
+                    DownloadCallback started = downloadCallbackRef.get();
+                    if (started != null) {
+                        started.onDownloadStarted("update" + latestVersion);
+                    }
 
-                    InputStream input = connection.getInputStream();
-                    File outputFile = new File(context.getExternalFilesDir(null), "update" + latestVersion + ".apk");
-                    FileOutputStream output = new FileOutputStream(outputFile);
+                    input = connection.getInputStream();
+                    File outputFile = new File(appContext.getExternalFilesDir(null),
+                            "update" + latestVersion + ".apk");
+                    output = new FileOutputStream(outputFile);
 
                     byte[] buffer = new byte[4096];
                     int bytesRead;
                     long total = 0;
                     while ((bytesRead = input.read(buffer)) != -1) {
+                        // The download loop never checked for cancellation, so the file
+                        // kept streaming after the settings screen was closed.
+                        if (isCancelled()) {
+                            return null;
+                        }
                         total += bytesRead;
-                        publishProgress(Integer.valueOf(""+(int)((total*100)/lenghtOfFile)));
+                        if (lenghtOfFile > 0) {
+                            publishProgress((int) ((total * 100) / lenghtOfFile));
+                        }
                         output.write(buffer, 0, bytesRead);
                     }
 
-                    output.close();
-                    input.close();
                     return outputFile;
                 } catch (IOException e) {
                     exception = e;
                     return null;
+                } finally {
+                    closeQuietly(output);
+                    closeQuietly(input);
+                    downloadConnectionRef.compareAndSet(connection, null);
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
                 }
             }
 
             @Override
-            protected void onProgress(Integer... values) {
-                callback.onDownloadProgress(values[0]);
+            protected void onProgress(Integer[] values) {
+                DownloadCallback cb = downloadCallbackRef.get();
+                if (cb != null && values != null && values.length > 0) {
+                    cb.onDownloadProgress(values[0]);
+                }
             }
 
             @Override
             protected void onPostExecute(File apkFile) {
+                DownloadCallback cb = downloadCallbackRef.get();
+                if (cb == null) {
+                    return;
+                }
                 if (exception != null) {
-                    callback.onDownloadError("Download failed: " + exception.getMessage());
+                    cb.onDownloadError("Download failed: " + exception.getMessage());
+                    return;
+                }
+                if (apkFile == null) {
                     return;
                 }
 
-                installApk(context, apkFile);
-                callback.onDownloadComplete();
+                installApk(appContext, apkFile);
+                cb.onDownloadComplete();
             }
 
             @Override
             protected void onBackgroundError(Exception e) {
-                callback.onDownloadError("Background error: " + e.getMessage());
-            }
-
-            private void installApk(Context context, File apkFile) {
-                try (RandomAccessFile raf = new RandomAccessFile(apkFile, "r")) {
-                    if (raf.readInt() != 0x504B0304) { // ZIP magic number
-                        callback.onDownloadError("Invalid APK file (corrupted download)");
-                        apkFile.delete();
-                        return;
-                    }
-                } catch (IOException e) {
-                    callback.onDownloadError("APK validation failed: " + e.getMessage());
-                    return;
-                }
-
-                if (!apkFile.exists()) {
-                    callback.onDownloadError("File does not exist!");
-                    return;
-                }
-                if (apkFile.length() <= 0) {
-                    callback.onDownloadError("File is empty or too small!");
-                    return;
-                }
-
-               try {
-                    Uri apkUri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", apkFile);
-                    var packageInstaller = PackageInstaller.getInstance(context);
-                    installSubscriptions = new DisposableSubscriptionContainer(); // Initialize
-                    var parameters = new InstallParameters.Builder(apkUri).build();
-                    var session = packageInstaller.createSession(parameters);
-                    Session.TerminalStateListener.bind(session, installSubscriptions)
-                            .addOnCancelListener(sessionId -> System.out.println("Cancelled"))
-                            .addOnSuccessListener(sessionId -> System.out.println("Success"))
-                            .addOnFailureListener((sessionId, failure) -> {
-                                if (failure instanceof Failure.Exceptional f) {
-                                    callback.onDownloadError("Installation failed: " + f.getException());
-                                } else {
-                                    callback.onDownloadError("Installation failed: " + failure.getMessage());
-                                }
-                            });
-                } catch (Exception e) {
-                    callback.onDownloadError("Installation failed: " + e.getMessage());
-                    apkFile.delete(); // Clean up invalid file
+                DownloadCallback cb = downloadCallbackRef.get();
+                if (cb != null) {
+                    cb.onDownloadError("Background error: " + e.getMessage());
                 }
             }
         }.execute();
     }
 
+    private void installApk(Context context, File apkFile) {
+        DownloadCallback cb = downloadCallbackRef.get();
+
+        try (RandomAccessFile raf = new RandomAccessFile(apkFile, "r")) {
+            if (raf.readInt() != 0x504B0304) { // ZIP magic number
+                if (cb != null) cb.onDownloadError("Invalid APK file (corrupted download)");
+                apkFile.delete();
+                return;
+            }
+        } catch (IOException e) {
+            if (cb != null) cb.onDownloadError("APK validation failed: " + e.getMessage());
+            return;
+        }
+
+        if (!apkFile.exists()) {
+            if (cb != null) cb.onDownloadError("File does not exist!");
+            return;
+        }
+        if (apkFile.length() <= 0) {
+            if (cb != null) cb.onDownloadError("File is empty or too small!");
+            return;
+        }
+
+        try {
+            Uri apkUri = FileProvider.getUriForFile(context,
+                    context.getPackageName() + ".fileprovider", apkFile);
+            var packageInstaller = PackageInstaller.getInstance(context);
+            cancelInstall(); // do not orphan a previous subscription container
+            installSubscriptions = new DisposableSubscriptionContainer();
+            var parameters = new InstallParameters.Builder(apkUri).build();
+            var session = packageInstaller.createSession(parameters);
+            Session.TerminalStateListener.bind(session, installSubscriptions)
+                    .addOnCancelListener(sessionId -> Log.i(TAG, "Install cancelled"))
+                    .addOnSuccessListener(sessionId -> Log.i(TAG, "Install success"))
+                    .addOnFailureListener((sessionId, failure) -> {
+                        DownloadCallback current = downloadCallbackRef.get();
+                        if (current == null) {
+                            return;
+                        }
+                        if (failure instanceof Failure.Exceptional f) {
+                            current.onDownloadError("Installation failed: " + f.getException());
+                        } else {
+                            current.onDownloadError("Installation failed: " + failure.getMessage());
+                        }
+                    });
+        } catch (Exception e) {
+            if (cb != null) cb.onDownloadError("Installation failed: " + e.getMessage());
+            apkFile.delete(); // Clean up invalid file
+        }
+    }
+
     public void cancelDownload() {
+        downloadCallbackRef.set(null);
+        closeQuietly(downloadConnectionRef.getAndSet(null));
         if (downloadTask != null && !downloadTask.isCancelled()) {
-            downloadTask.cancel(true); 
+            downloadTask.cancel(true);
+        }
+        downloadTask = null;
+    }
+
+    public void cancelInstall() {
+        if (installSubscriptions != null) {
+            installSubscriptions.dispose();
+            installSubscriptions = null;
+        }
+    }
+
+    /** One call to clean everything up, for onDestroyView(). */
+    public void cancelAll() {
+        cancelCheck();
+        cancelDownload();
+        cancelInstall();
+    }
+
+    private static void closeQuietly(HttpURLConnection connection) {
+        if (connection != null) {
+            try {
+                connection.disconnect();
+            } catch (Throwable ignored) {
+            }
+        }
+    }
+
+    private static void closeQuietly(java.io.Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (Throwable ignored) {
+            }
         }
     }
 }
