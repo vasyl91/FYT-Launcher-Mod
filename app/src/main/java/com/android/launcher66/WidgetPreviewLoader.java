@@ -475,13 +475,13 @@ public class WidgetPreviewLoader {
                 mWidgetSpacingLayout.estimateCellHeight(spanY));
     }
 
-public Bitmap generateWidgetPreview(ComponentName provider, int previewImage,
+    public Bitmap generateWidgetPreview(ComponentName provider, int previewImage,
             int iconId, int cellHSpan, int cellVSpan, int maxPreviewWidth, int maxPreviewHeight,
             Bitmap preview, int[] preScaledWidthOut) {
         // Load the preview image if possible
         String packageName = provider.getPackageName();
-        if (maxPreviewWidth < 0) maxPreviewWidth = Integer.MAX_VALUE;
-        if (maxPreviewHeight < 0) maxPreviewHeight = Integer.MAX_VALUE;
+        if (maxPreviewWidth <= 0) maxPreviewWidth = Integer.MAX_VALUE;
+        if (maxPreviewHeight <= 0) maxPreviewHeight = Integer.MAX_VALUE;
 
         Drawable drawable = null;
         if (previewImage != 0) {
@@ -577,6 +577,9 @@ public Bitmap generateWidgetPreview(ComponentName provider, int previewImage,
             previewWidth = (int) (scale * previewWidth);
             previewHeight = (int) (scale * previewHeight);
         }
+
+        previewWidth = Math.max(1, previewWidth);
+        previewHeight = Math.max(1, previewHeight);
 
         // If a bitmap is passed in, we use it; otherwise, we create a bitmap of the right size
         if (preview == null) {
