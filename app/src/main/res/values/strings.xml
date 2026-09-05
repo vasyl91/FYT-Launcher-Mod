@@ -427,6 +427,9 @@
     <string name="logcat_service_wake">Logcat service when the device wakes</string>
     <string name="logcat_service_wake_summary"><![CDATA[Logcat will start logging when the launcher wakes. Turn ACC off, then turn it on and check the logs in <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake_summary_phone"><![CDATA[Logcat will start logging when the launcher wakes. Turn the screen off, then turn it on and check the logs in <b>Download/Launcher66_Logs</b>.]]></string>
+    <string name="logcat_full">Log scope</string>
+    <string name="logcat_full_on">Log everything</string>
+    <string name="logcat_full_off">Log only for launcher</string>
     <string name="logcat_service_run">Logcat service</string>
     <string name="logcat_service_run_summary">Press to start logging</string>
     <string name="logcat_service_run_working">Working... %1$s Press here to cancel</string>

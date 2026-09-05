@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
 import java.io.BufferedReader;
@@ -81,6 +82,7 @@ public final class LogcatWorker {
 
     private HandlerThread thread;
     private Handler handler;
+    private SharedPreferences prefs;
 
     private volatile boolean running;
     private volatile long deadlineMs;
@@ -137,9 +139,9 @@ public final class LogcatWorker {
             mode = requestedMode;
             captureSinceMs = (requestedMode == Mode.FROM_NOW) ? System.currentTimeMillis() : 0L;
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+            prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
             timeoutSeconds = parseIntSafe(prefs.getString(Keys.LOGCAT_SERVICE_TIMEOUT,
-                    String.valueOf(DEFAULT_TIMEOUT_SECONDS)), DEFAULT_TIMEOUT_SECONDS);
+                    String.valueOf(DEFAULT_TIMEOUT_SECONDS)));
             if (timeoutSeconds <= 0) timeoutSeconds = DEFAULT_TIMEOUT_SECONDS;
 
             appContext = ctx;
@@ -210,8 +212,16 @@ public final class LogcatWorker {
                     + ", android=" + Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ") =====");
             fileWriter.flush();
 
+            if (prefs == null) {
+                prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+            }
+            boolean fullLog = false;
+            if (LauncherApplication.hasSystemPrivileges()) {
+                fullLog = prefs.getBoolean(Keys.LOGCAT_FULL, false);
+            }
+
             // "--pid" exists since Android 7.0; when it is not available we filter by hand.
-            boolean usePidFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+            boolean usePidFlag = !fullLog;
             // "-T <time>" makes logcat skip everything older than the given timestamp. If the
             // build does not understand it we drop back to comparing timestamps ourselves.
             boolean useSinceFlag = true;
@@ -226,7 +236,7 @@ public final class LogcatWorker {
                         + " (pidFlag=" + usePidFlag + ", sinceFlag=" + sinceFlagThisRun + ") -----");
                 fileWriter.flush();
 
-                proc = startLogcat(myPid, usePidFlag, sinceFlagThisRun ? sinceMs : 0L, lineFormat);
+                proc = startLogcat(myPid, usePidFlag, sinceFlagThisRun ? sinceMs : 0L, lineFormat, fullLog);
                 logcatProcess = proc;
 
                 reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
@@ -236,9 +246,9 @@ public final class LogcatWorker {
                 try {
                     while (running && (line = reader.readLine()) != null) {
                         if (System.currentTimeMillis() >= deadlineMs) break;
-                        if (!usePidFlag && !lineHasPid(line, myPid)) continue;
+                        if (!fullLog && !usePidFlag && !lineHasPid(line, myPid)) continue;
                         if (!sinceFlagThisRun && sinceMs > 0L && isOlderThan(lineFormat, line, sinceMs)) continue;
-                        if (!shouldWriteAppLine(line)) continue;
+                        if (!fullLog && !shouldWriteAppLine(line)) continue;
 
                         fileWriter.write(line);
                         fileWriter.write('\n');
@@ -336,15 +346,20 @@ public final class LogcatWorker {
         }
     }
 
-    private Process startLogcat(int pid, boolean usePidFlag, long sinceMs, SimpleDateFormat fmt)
+    private Process startLogcat(int pid, boolean usePidFlag, long sinceMs, SimpleDateFormat fmt, boolean fullLog)
             throws Exception {
         List<String> cmd = new ArrayList<>();
         cmd.add("logcat");
-        cmd.add("-b");
-        cmd.add(STREAM_BUFFER);
+        if (fullLog) {
+            cmd.add("-b");
+            cmd.add("all");
+        } else {
+            cmd.add("-b");
+            cmd.add(STREAM_BUFFER);
+        }
         cmd.add("-v");
         cmd.add("threadtime");
-        if (usePidFlag) {
+        if (!fullLog && usePidFlag) {
             cmd.add("--pid=" + pid);
         }
         if (sinceMs > 0L) {
@@ -483,16 +498,12 @@ public final class LogcatWorker {
         Process p = logcatProcess;
         if (p == null) return;
         try { p.destroy(); } catch (Throwable ignored) {}
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            try { p.destroyForcibly(); } catch (Throwable ignored) {}
-        }
+        try { p.destroyForcibly(); } catch (Throwable ignored) {}
     }
 
     private static int destroyAndWait(Process proc) {
         try { proc.destroy(); } catch (Throwable ignored) {}
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            try { proc.destroyForcibly(); } catch (Throwable ignored) {}
-        }
+        try { proc.destroyForcibly(); } catch (Throwable ignored) {}
         try { return proc.waitFor(); } catch (Throwable ignored) { return -1; }
     }
 
@@ -541,8 +552,7 @@ public final class LogcatWorker {
         if (line.contains("ResourcesManager")) return false;
         if (line.contains("OpenGLRenderer")) return false;
         if (line.contains("StrictMode")) return false;
-        if (line.contains("Unisoc_Location")) return false;
-        return true;
+        return !line.contains("Unisoc_Location");
     }
 
     private static boolean lineHasPid(String threadtimeLine, int pid) {
@@ -560,11 +570,11 @@ public final class LogcatWorker {
         try { if (c != null) c.close(); } catch (Throwable ignored) {}
     }
 
-    private static int parseIntSafe(String s, int fallback) {
+    private static int parseIntSafe(String s) {
         try {
             return Integer.parseInt(s.trim());
         } catch (Throwable ignored) {
-            return fallback;
+            return LogcatWorker.DEFAULT_TIMEOUT_SECONDS;
         }
     }
 }

@@ -285,6 +285,9 @@
     <string name="logcat_service_wake">Logcat po wybudzeniu urządzenia</string>
     <string name="logcat_service_wake_summary"><![CDATA[Logcat rozpocznie rejestrowanie po wybudzeniu launchera. Wyłącz silnik, następnie włącz go i sprawdź logi w <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake_summary_phone"><![CDATA[Logcat rozpocznie rejestrowanie po wybudzeniu launchera. Wyłącz ekran, a następnie włącz go i sprawdź logi w <b>Download/Launcher66_Logs</b>.]]></string>
+    <string name="logcat_full">Zakres logowania</string>
+    <string name="logcat_full_on">Loguj wszystko</string>
+    <string name="logcat_full_off">Loguj tylko dla launchera</string>
     <string name="logcat_service_run">Logcat</string>
     <string name="logcat_service_run_summary">Naciśnij, aby zacząć zapis</string>
     <string name="logcat_service_run_working">Trwa zapisywanie... %1$s Naciśnij tutaj aby zatrzymać</string>

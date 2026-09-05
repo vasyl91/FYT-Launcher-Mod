@@ -427,6 +427,9 @@
     <string name="logcat_service_wake">设备唤醒时启动 Logcat 服务</string>
     <string name="logcat_service_wake_summary"><![CDATA[启动器唤醒时，Logcat 将开始记录日志。关闭 ACC，然后重新打开 ACC，并在 <b>Download/Launcher66_Logs</b> 中查看日志。]]></string>
     <string name="logcat_service_wake_summary_phone"><![CDATA[启动器唤醒时，Logcat 将开始记录日志。关闭屏幕，然后重新打开屏幕，并在 <b>Download/Launcher66_Logs</b> 中查看日志。]]></string>
+    <string name="logcat_full">日志范围</string>
+    <string name="logcat_full_on">记录所有日志</string>
+    <string name="logcat_full_off">仅记录启动器日志</string>
     <string name="logcat_service_run">日志服务</string>
     <string name="logcat_service_run_summary">点击开始记录</string>
     <string name="logcat_service_run_working">正在工作... %1$s 点击此处取消</string>
