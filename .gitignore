@@ -9,6 +9,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+/decompiled_FYT_framework/framework.jar
 
 # --- Build ---
 app/build/
