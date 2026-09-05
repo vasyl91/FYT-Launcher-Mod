@@ -1214,46 +1214,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     ((AnimationDrawable) Launcher.getLauncher().ivMusicScore2.getDrawable()).start();
                 }
 
-                if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
-                    saveTitleToPreferences(musictitle);
-                    if (Launcher.getLauncher().tvMusicName != null) {
-                        if (!(Launcher.getLauncher().tvMusicName.getText().toString()).equals(musictitle)) {
-                            Launcher.getLauncher().tvMusicName.setText(musictitle); 
-                        } else {
-                            if (!mediaSource.equals(helpers.returnMediaSourcePre())) {
-                                helpers.setMediaSourcePre(mediaSource);
-                                Launcher.getLauncher().tvMusicName.setText("\u0020" + musictitle + "\u0020"); 
-                            }                       
-                        }
-                        Launcher.getLauncher().tvMusicName.setSelected(true);
-                    }
-                    if (Launcher.getLauncher().tvMusicNameTwo != null) {
-                        if (!(Launcher.getLauncher().tvMusicNameTwo.getText().toString()).equals(musictitle)) {
-                            Launcher.getLauncher().tvMusicNameTwo.setText(musictitle); 
-                        } else {
-                            if (!mediaSource.equals(helpers.returnMediaSourcePre())) {
-                                helpers.setMediaSourcePre(mediaSource);
-                                Launcher.getLauncher().tvMusicNameTwo.setText("\u0020" + musictitle + "\u0020"); 
-                            }                           
-                        }
-                        Launcher.getLauncher().tvMusicNameTwo.setSelected(true);  
-                    }
-                }
-                if (artist != null && !artist.isEmpty()) {
-                    saveArtistToPreferences(artist);
-                    if (Launcher.getLauncher().tvAritst != null) {
-                        if (!(Launcher.getLauncher().tvAritst.getText().toString()).equals(artist)) {
-                            Launcher.getLauncher().tvAritst.setText(artist);                         
-                        }
-                        Launcher.getLauncher().tvAritst.setSelected(true); 
-                    }  
-                    if (Launcher.getLauncher().tvAritstTwo != null) {
-                        if (!(Launcher.getLauncher().tvAritstTwo.getText().toString()).equals(artist)) {
-                            Launcher.getLauncher().tvAritstTwo.setText(artist);                         
-                        }
-                        Launcher.getLauncher().tvAritstTwo.setSelected(true); 
-                    }                  
-                }
+                applyMusicTitle(musictitle);
+                applyMusicArtist(artist);
                 if (album != null && !album.isEmpty() && !album.trim().isEmpty() && Launcher.getLauncher().tvAlbum != null) {
                     Launcher.getLauncher().tvAlbum.setText(album);
                 }
@@ -1442,9 +1404,32 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }, delay);
     }
 
+    /**
+     * Whether anything is playing right now, decided from whichever source
+     * currently owns the widget.
+     *
+     * MusicService.state cannot answer this on its own: it is only ever set
+     * from intents sent by com.syu.music, so once that package is force
+     * stopped the last value it published stays behind. isMusicActive() is no
+     * better on its own either, since it still reports true for a moment after
+     * a pause.
+     */
+    private boolean isMediaPlayingNow() {
+        if ("mediaController".equals(mediaSource)) {
+            MediaWidgetState.Snapshot snapshot = MediaWidgetState.getExternalSnapshot();
+            if (snapshot != null) {
+                return snapshot.playing;
+            }
+            return "true".equals(state);
+        }
+        return MusicService.state.booleanValue()
+                || (mAudioManager != null && mAudioManager.isMusicActive());
+    }
+
     public void setPlayPauseIcon() {
+        boolean playing = isMediaPlayingNow();
         if (Launcher.getLauncher().mPlayPauseButton != null && !temporarilyDisablePlayPauseButton) {
-            if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
+            if (playing) {
                 Launcher.getLauncher().mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                 setWidgetButtonsTint(mPlayPauseButton);
             } else {
@@ -1453,7 +1438,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         }
         if (Launcher.getLauncher().mPlayPauseButtonTwo != null && !temporarilyDisablePlayPauseButton) {
-            if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
+            if (playing) {
                 Launcher.getLauncher().mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                 setBarButtonsTint(mPlayPauseButtonTwo);
             } else {
@@ -1501,47 +1486,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         }
 
-        String musictitle = mPrefs.getString(MUSIC_TITLE_PREF, null);
-        if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
-            if (Launcher.getLauncher().tvMusicName != null) {
-                if (!(Launcher.getLauncher().tvMusicName.getText().toString()).equals(musictitle)) {
-                    Launcher.getLauncher().tvMusicName.setText(musictitle); 
-                } else {
-                    if (!mediaSource.equals(helpers.returnMediaSourcePre())) {
-                        helpers.setMediaSourcePre(mediaSource);
-                        Launcher.getLauncher().tvMusicName.setText("\u0020" + musictitle + "\u0020"); 
-                    }                       
-                }
-                Launcher.getLauncher().tvMusicName.setSelected(true);
-            }
-            if (Launcher.getLauncher().tvMusicNameTwo != null) {
-                if (!(Launcher.getLauncher().tvMusicNameTwo.getText().toString()).equals(musictitle)) {
-                    Launcher.getLauncher().tvMusicNameTwo.setText(musictitle); 
-                } else {
-                    if (!mediaSource.equals(helpers.returnMediaSourcePre())) {
-                        helpers.setMediaSourcePre(mediaSource);
-                        Launcher.getLauncher().tvMusicNameTwo.setText("\u0020" + musictitle + "\u0020"); 
-                    }                           
-                }
-                Launcher.getLauncher().tvMusicNameTwo.setSelected(true);  
-            }
-        }
-
-        String artist = mPrefs.getString(ARTIST_PREF, null);
-        if (artist != null && !artist.isEmpty()) {
-            if (Launcher.getLauncher().tvAritst != null) {
-                if (!(Launcher.getLauncher().tvAritst.getText().toString()).equals(artist)) {
-                    Launcher.getLauncher().tvAritst.setText(artist);                         
-                }
-                Launcher.getLauncher().tvAritst.setSelected(true); 
-            }  
-            if (Launcher.getLauncher().tvAritstTwo != null) {
-                if (!(Launcher.getLauncher().tvAritstTwo.getText().toString()).equals(artist)) {
-                    Launcher.getLauncher().tvAritstTwo.setText(artist);                         
-                }
-                Launcher.getLauncher().tvAritstTwo.setSelected(true); 
-            }                  
-        }
+        // seeded so the first live update is not written back as a change
+        lastMusictitle = normalizeMediaText(mPrefs.getString(MUSIC_TITLE_PREF, null));
+        lastArtist = normalizeMediaText(mPrefs.getString(ARTIST_PREF, null));
+        showMusicTitle(lastMusictitle);
+        showMusicArtist(lastArtist);
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (Launcher.getLauncher().mPlayPauseButton != null) {
@@ -1564,24 +1513,84 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }    
     }
 
+    /**
+     * Null, blank, literal "null" and "Unknown" all mean the track supplied no
+     * value, and have to be stored as such - skipping the write is what leaves
+     * the previous track's title or artist behind.
+     */
+    private static String normalizeMediaText(String value) {
+        if (value == null) {
+            return "";
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed) || "Unknown".equalsIgnoreCase(trimmed)) {
+            return "";
+        }
+        return trimmed;
+    }
+
+    private void applyMusicTitle(String rawTitle) {
+        String title = normalizeMediaText(rawTitle);
+        saveTitleToPreferences(title);
+        showMusicTitle(title);
+    }
+
+    private void applyMusicArtist(String rawArtist) {
+        String artist = normalizeMediaText(rawArtist);
+        saveArtistToPreferences(artist);
+        showMusicArtist(artist);
+    }
+
+    private void showMusicTitle(String title) {
+        TextView[] views = { Launcher.getLauncher().tvMusicName, Launcher.getLauncher().tvMusicNameTwo };
+        for (TextView view : views) {
+            if (view == null) {
+                continue;
+            }
+            if (title.isEmpty()) {
+                view.setText(R.string.music_name);
+            } else if (!view.getText().toString().equals(title)) {
+                view.setText(title);
+            } else if (mediaSource != null && !mediaSource.equals(helpers.returnMediaSourcePre())) {
+                // restarts the marquee when the source changed but the text did not
+                helpers.setMediaSourcePre(mediaSource);
+                view.setText("\u0020" + title + "\u0020");
+            }
+            view.setSelected(true);
+        }
+    }
+
+    private void showMusicArtist(String artist) {
+        TextView[] views = { Launcher.getLauncher().tvAritst, Launcher.getLauncher().tvAritstTwo };
+        for (TextView view : views) {
+            if (view == null) {
+                continue;
+            }
+            if (artist.isEmpty()) {
+                view.setText(R.string.music_author);
+            } else if (!view.getText().toString().equals(artist)) {
+                view.setText(artist);
+            }
+            view.setSelected(true);
+        }
+    }
+
     private void saveTitleToPreferences(String currentTitle) {
-        if (currentTitle.equals(lastMusictitle)) {
+        String title = normalizeMediaText(currentTitle);
+        if (title.equals(lastMusictitle)) {
             return;
         }
-
-        SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putString(MUSIC_TITLE_PREF, currentTitle);
-        editor.apply();        
+        lastMusictitle = title;
+        mPrefs.edit().putString(MUSIC_TITLE_PREF, title).apply();
     }
 
     private void saveArtistToPreferences(String currentArtist) {
-        if (currentArtist.equals(lastArtist)) {
+        String artist = normalizeMediaText(currentArtist);
+        if (artist.equals(lastArtist)) {
             return;
         }
-
-        SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putString(ARTIST_PREF, currentArtist);
-        editor.apply();        
+        lastArtist = artist;
+        mPrefs.edit().putString(ARTIST_PREF, artist).apply();
     }
 
     private void saveBitmapToPreferences(Bitmap bitmap, String currentPath) {
