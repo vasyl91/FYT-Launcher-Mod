@@ -28,7 +28,7 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
     public ShortcutAndWidgetContainer(Context context) {
         super(context);
         mContext = context;
-        mLauncher = Launcher.getLauncher();
+        mLauncher = (Launcher) context;
         this.mTmpCellXY = new int[2];
         this.mInvertIfRtl = false;
         this.mWallpaperManager = WallpaperManager.getInstance(context);

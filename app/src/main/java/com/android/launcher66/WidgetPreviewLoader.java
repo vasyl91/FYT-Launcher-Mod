@@ -475,11 +475,77 @@ public class WidgetPreviewLoader {
                 mWidgetSpacingLayout.estimateCellHeight(spanY));
     }
 
+    /** The upscale used to make the previews in the widget tray look bigger. */
+    private float trayUpscaleFactor() {
+        return Math.max(0.1f, widgetScaleFactor - 0.25f);
+    }
+
+    /**
+     * How big the drawn preview really is inside the tray bitmap, i.e. what the user sees
+     * before starting the drag. The tray bitmap itself is much bigger than the content
+     * (the preview is centred in it), so the bitmap size is not a usable reference.
+     */
+    public int[] previewSizeInTray(int spanX, int spanY) {
+        int width = mPreviewBitmapWidth;
+        int height = mPreviewBitmapHeight;
+        if (mWidgetSpacingLayout != null) {
+            int cellWidth = maxWidthForWidgetPreview(spanX);
+            int cellHeight = maxHeightForWidgetPreview(spanY);
+            if (cellWidth > 0) width = cellWidth;
+            if (cellHeight > 0) height = cellHeight;
+        }
+        float factor = trayUpscaleFactor();
+        width = (int) (width * factor);
+        height = (int) (height * factor);
+        if (mPreviewBitmapWidth > 0) width = Math.min(width, mPreviewBitmapWidth);
+        if (mPreviewBitmapHeight > 0) height = Math.min(height, mPreviewBitmapHeight);
+        return new int[] { Math.max(1, width), Math.max(1, height) };
+    }
+
+    /**
+     * How wide the preview really is inside the (fixed size) tray bitmap, i.e. what the
+     * user sees before starting the drag. Takes the tray upscale and the clipping to the
+     * tray bitmap into account.
+     */
+    public int previewWidthInTray(int preScaledWidth, int spanX) {
+        int width = Math.min(preScaledWidth, maxWidthForWidgetPreview(spanX));
+        width = (int) (width * trayUpscaleFactor());
+        if (mPreviewBitmapWidth > 0) {
+            width = Math.min(width, mPreviewBitmapWidth);
+        }
+        return Math.max(1, width);
+    }
+
+    /** Multiplies a dimension by a factor without overflowing or dropping below 1. */
+    private static int scaleDimension(int value, float factor) {
+        if (value == Integer.MAX_VALUE) {
+            return value;   // "no limit" stays "no limit"
+        }
+        long scaled = (long) (value * (double) factor);
+        return (int) Math.max(1L, Math.min(scaled, (long) Integer.MAX_VALUE));
+    }
+
     public Bitmap generateWidgetPreview(ComponentName provider, int previewImage,
             int iconId, int cellHSpan, int cellVSpan, int maxPreviewWidth, int maxPreviewHeight,
             Bitmap preview, int[] preScaledWidthOut) {
+        // Previews in the widget tray keep the enlarged look by default.
+        return generateWidgetPreview(provider, previewImage, iconId, cellHSpan, cellVSpan,
+                maxPreviewWidth, maxPreviewHeight, preview, preScaledWidthOut, true);
+    }
+
+    /**
+     * @param upscalePreview whether the tray upscale (widgetScaleFactor) should be applied.
+     *        Pass false for the drag image - it has to match the space the widget will
+     *        really occupy on the workspace.
+     */
+    public Bitmap generateWidgetPreview(ComponentName provider, int previewImage,
+            int iconId, int cellHSpan, int cellVSpan, int maxPreviewWidth, int maxPreviewHeight,
+            Bitmap preview, int[] preScaledWidthOut, boolean upscalePreview) {
         // Load the preview image if possible
         String packageName = provider.getPackageName();
+        // A non-positive limit means "no limit". Only negative values used to be
+        // handled here, so a 0 coming from the caller (e.g. an unmeasured workspace)
+        // produced scale == 0 and, a few lines below, a 0x0 bitmap.
         if (maxPreviewWidth <= 0) maxPreviewWidth = Integer.MAX_VALUE;
         if (maxPreviewHeight <= 0) maxPreviewHeight = Integer.MAX_VALUE;
 
@@ -492,11 +558,22 @@ public class WidgetPreviewLoader {
             }
         }
 
+        // Some drawables (ColorDrawable, StateListDrawable without a fixed size, ...)
+        // report an intrinsic size of -1. Such a preview is unusable here and used to
+        // propagate negative dimensions all the way to Bitmap.createBitmap(), so fall
+        // back to the generated preview instead.
+        if (drawable != null
+                && (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0)) {
+            Log.w(TAG, "Widget preview drawable has no intrinsic size for provider: "
+                    + provider + " - using the default preview instead");
+            drawable = null;
+        }
+
         int previewWidth;
         int previewHeight;
         Bitmap defaultPreview = null;
         boolean widgetPreviewExists = (drawable != null);
-        
+
         if (widgetPreviewExists) {
             previewWidth = drawable.getIntrinsicWidth();
             previewHeight = drawable.getIntrinsicHeight();
@@ -505,11 +582,16 @@ public class WidgetPreviewLoader {
             if (cellHSpan < 1) cellHSpan = 1;
             if (cellVSpan < 1) cellVSpan = 1;
 
-            BitmapDrawable previewDrawable = (BitmapDrawable) ContextCompat.getDrawable(mContext, R.drawable.widget_tile);
-            final int previewDrawableWidth = previewDrawable
-                    .getIntrinsicWidth();
-            final int previewDrawableHeight = previewDrawable
-                    .getIntrinsicHeight();
+            BitmapDrawable previewDrawable = (BitmapDrawable) ContextCompat.getDrawable(
+                    mContext, R.drawable.widget_tile);
+            // The tile may be missing or report no intrinsic size - never let that
+            // reach Bitmap.createBitmap() as a 0 or negative dimension.
+            final int previewDrawableWidth =
+                    (previewDrawable != null && previewDrawable.getIntrinsicWidth() > 0)
+                            ? previewDrawable.getIntrinsicWidth() : Math.max(1, mAppIconSize);
+            final int previewDrawableHeight =
+                    (previewDrawable != null && previewDrawable.getIntrinsicHeight() > 0)
+                            ? previewDrawable.getIntrinsicHeight() : Math.max(1, mAppIconSize);
             previewWidth = previewDrawableWidth * cellHSpan;
             previewHeight = previewDrawableHeight * cellVSpan;
 
@@ -517,10 +599,12 @@ public class WidgetPreviewLoader {
                     Config.ARGB_8888);
             final Canvas c = mCachedAppWidgetPreviewCanvas.get();
             c.setBitmap(defaultPreview);
-            previewDrawable.setBounds(0, 0, previewWidth, previewHeight);
-            previewDrawable.setTileModeXY(Shader.TileMode.REPEAT,
-                    Shader.TileMode.REPEAT);
-            previewDrawable.draw(c);
+            if (previewDrawable != null) {
+                previewDrawable.setBounds(0, 0, previewWidth, previewHeight);
+                previewDrawable.setTileModeXY(Shader.TileMode.REPEAT,
+                        Shader.TileMode.REPEAT);
+                previewDrawable.draw(c);
+            }
             c.setBitmap(null);
 
             // Draw the icon in the top left corner
@@ -555,14 +639,18 @@ public class WidgetPreviewLoader {
             preScaledWidthOut[0] = previewWidth;
         }
 
-        // Apply upscale factor to max dimensions as well
-        final float upscaleFactor = widgetScaleFactor - 0.25f;
-        maxPreviewWidth = (int) (maxPreviewWidth * upscaleFactor);
-        maxPreviewHeight = (int) (maxPreviewHeight * upscaleFactor);
-        
-        // Apply upscale factor to preview dimensions
-        previewWidth = (int) (previewWidth * upscaleFactor);
-        previewHeight = (int) (previewHeight * upscaleFactor);
+        // The enlarged previews are a customisation of this launcher: in the tray the
+        // preview is deliberately drawn bigger than the cell it lives in, so the limits
+        // are grown by the same factor. That must NOT happen for the drag image - there
+        // the limit is the widget's real footprint on the workspace, and upscaling it
+        // made the dragged bitmap ~50% too big.
+        final float upscaleFactor = upscalePreview ? trayUpscaleFactor() : 1f;
+        if (upscaleFactor != 1f) {
+            maxPreviewWidth = scaleDimension(maxPreviewWidth, upscaleFactor);
+            maxPreviewHeight = scaleDimension(maxPreviewHeight, upscaleFactor);
+            previewWidth = scaleDimension(previewWidth, upscaleFactor);
+            previewHeight = scaleDimension(previewHeight, upscaleFactor);
+        }
 
         // Scale down to fit within max dimensions if necessary
         float scale = 1f;
@@ -578,8 +666,21 @@ public class WidgetPreviewLoader {
             previewHeight = (int) (scale * previewHeight);
         }
 
+        // Truncation of the float scale (and extreme aspect ratios) can turn a
+        // dimension into 0. Bitmap.createBitmap() requires both to be > 0 - this is
+        // the line that used to throw IllegalArgumentException.
         previewWidth = Math.max(1, previewWidth);
         previewHeight = Math.max(1, previewHeight);
+
+        Log.d("WidgetDragDbg", "generateWidgetPreview " + provider
+                + " upscale=" + upscalePreview
+                + " src=" + originalWidth + "x" + originalHeight
+                + " limit=" + (maxPreviewWidth == Integer.MAX_VALUE ? "none" : maxPreviewWidth)
+                + "x" + (maxPreviewHeight == Integer.MAX_VALUE ? "none" : maxPreviewHeight)
+                + " result=" + previewWidth + "x" + previewHeight
+                + " passedInBitmap=" + (preview == null ? "null"
+                        : preview.getWidth() + "x" + preview.getHeight())
+                + " trayBitmap=" + mPreviewBitmapWidth + "x" + mPreviewBitmapHeight);
 
         // If a bitmap is passed in, we use it; otherwise, we create a bitmap of the right size
         if (preview == null) {
@@ -592,8 +693,8 @@ public class WidgetPreviewLoader {
         if (widgetPreviewExists) {
             renderDrawableToBitmap(drawable, preview, x, 0, previewWidth,
                     previewHeight);
-        } else {
-            // Scale the defaultPreview to match the upscaled dimensions            
+        } else if (defaultPreview != null) {
+            // Scale the defaultPreview to match the upscaled dimensions
             Bitmap scaledDefaultPreview = Bitmap.createScaledBitmap(defaultPreview, 
                     previewWidth, previewHeight, true);
             

@@ -336,7 +336,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 }
             }
             
-            if (Launcher.getLauncher().mAppsCustomizeTabHost != null) {
+            Launcher launcher = Launcher.getLauncher();
+            if (launcher != null && launcher.mAppsCustomizeTabHost != null) {
                 if (helpers.userWasInRecents() && !getCurrentActivityName().equals("com.android.launcher66")) {
                     helpers.setInRecent(false);
                     helpers.setInAllApps(false);
@@ -344,7 +345,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     helpers.setWasInRecents(true);
                     mPropertyChangeClass.setBoolean(Keys.ALLAPPS, false);
                 } else {
-                    mPropertyChangeClass.setBoolean(Keys.ALLAPPS, helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility()));
+                    mPropertyChangeClass.setBoolean(Keys.ALLAPPS, helpers.allAppsVisibility(launcher.mAppsCustomizeTabHost.getVisibility()));
                 }
             }  
             mPropertyChangeClass.setString(Keys.FUELSTATS, curForegroundApp);
@@ -407,10 +408,14 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private void addStatsViewMainScreen() {
         userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
         new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            Launcher launcher = Launcher.getLauncher();
+            if (launcher == null || launcher.mAppsCustomizeTabHost == null) {
+                return;
+            }
             if (userLayout 
                 && prefs.getBoolean("main_screen_stats", true)
                 && helpers.hasPipStarted()
-                && !helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())) {
+                && !helpers.allAppsVisibility(launcher.mAppsCustomizeTabHost.getVisibility())) {
 
                 addStatsView(false);
             }

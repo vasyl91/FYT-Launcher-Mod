@@ -357,19 +357,18 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
     @Override
     public boolean onLongClick(View v) {
+        if (mLauncher == null || mLauncher.getWorkspace() == null) {
+            return true;
+        }
         if (!(v instanceof CellLayout) || mLauncher.getWorkspace().isInOverviewMode()) {
             return true;
         }
         if (mLauncher.getWorkspace().enterOverviewMode()) {
-            if (mLauncher.getLauncher() != null) {
-                mLauncher.getLauncher().hideHotseat(true);
-            }
+            mLauncher.hideHotseat(true);
             mLauncher.getWorkspace().performHapticFeedback(0, 1);
             return true;
         }
-        if (mLauncher.getLauncher() != null) {
-            mLauncher.getLauncher().showHotseat(true);
-        }
+        mLauncher.showHotseat(true);
         return false;
     }
 

@@ -340,6 +340,9 @@ public class Workspace extends SmoothPagedView
     private final Runnable mBindPages = new Runnable() {
         @Override
         public void run() {
+            if (mLauncher == null || mLauncher.getModel() == null) {
+                return;
+            }
             mLauncher.getModel().bindRemainingSynchronousPages();
         }
     };
@@ -893,7 +896,7 @@ public class Workspace extends SmoothPagedView
                 toggleBottomBar();              
             }
         } else {
-            workspaceView = Launcher.getLauncher().getLayoutInflater().inflate(R.layout.custom_layout_one, workspaceLayout, false);
+            workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one, workspaceLayout, false);
             customScreen[0].addView(workspaceView);
 
             TextView naviTextSize = workspaceView.findViewById(R.id.tv_map);
@@ -908,9 +911,9 @@ public class Workspace extends SmoothPagedView
             artistTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeArtist);
 
             View mUserMusicWidget = workspaceView.findViewById(R.id.rl_music);
-            Launcher.getLauncher().initMusicWidgetView(mUserMusicWidget);
-            Launcher.getLauncher().bindMusicWidgetOnclickListener(mUserMusicWidget);
-            Launcher.getLauncher().preSetMusicWidgets();
+            this.mLauncher.initMusicWidgetView(mUserMusicWidget);
+            this.mLauncher.bindMusicWidgetOnclickListener(mUserMusicWidget);
+            this.mLauncher.preSetMusicWidgets();
         }
 
         for (int i = 0; i < LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count); i++) {
@@ -1202,7 +1205,7 @@ public class Workspace extends SmoothPagedView
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             bottomBarHeight = (int) (screenWidth * 0.142);
         } else {
-            bottomBarHeight = (int) ((screenHeight - Launcher.getLauncher().getStatusBarHeight()) * 0.1638);
+            bottomBarHeight = (int) ((screenHeight - (mLauncher != null ? mLauncher.getStatusBarHeight() : 0)) * 0.1638);
         }
         Log.d("BottomBar", "Before: width=" + bottomBarBg.getWidth() + ", height=" + bottomBarBg.getHeight());
         ValueAnimator widthAnim = ValueAnimator.ofInt(bottomBarBg.getWidth(), collapsedWidth);
@@ -1243,7 +1246,7 @@ public class Workspace extends SmoothPagedView
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 bottomBarHeight = (int) (screenWidth * 0.142);
             } else {
-                bottomBarHeight = (int) ((screenHeight - Launcher.getLauncher().getStatusBarHeight()) * 0.1638);
+                bottomBarHeight = (int) ((screenHeight - (mLauncher != null ? mLauncher.getStatusBarHeight() : 0)) * 0.1638);
             }
 
             // Create overlay window parameters
@@ -1762,9 +1765,8 @@ public class Workspace extends SmoothPagedView
         if (mLauncher != null) {
             mLauncher.clearBarWidgetReferences();
             mLauncher.removeCustomView(Config.WS_Music_Two);
+            mLauncher.cleanWidgetBar();
         }
-
-        Launcher.getLauncher().cleanWidgetBar();
         
         // Clear widget references that might point to overlay views
         clearWidgetReferences();
@@ -2414,7 +2416,10 @@ public class Workspace extends SmoothPagedView
         }
 
         mainHandler.postDelayed(() -> {
-            if (!helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())) {
+            if (mLauncher == null || mLauncher.mAppsCustomizeTabHost == null) {
+                return;
+            }
+            if (!helpers.allAppsVisibility(mLauncher.mAppsCustomizeTabHost.getVisibility())) {
                 Log.d("stripEmptyScreens", "startMapPip");
                 WindowUtil.startMapPip(false);
             }
@@ -2713,12 +2718,15 @@ public class Workspace extends SmoothPagedView
         backPressed = false;
 
         mainHandler.postDelayed(()-> {
+            if (mLauncher == null || mLauncher.mAppsCustomizeTabHost == null) {
+                return;
+            }
             if (!pipInitialized
                 && !helpers.isInOverviewMode() 
                 && !helpers.openedFromOverviewBoolean() 
                 && getChildCount() > 1 
                 && !mDragController.isDragging()
-                && !helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())) {
+                && !helpers.allAppsVisibility(mLauncher.mAppsCustomizeTabHost.getVisibility())) {
                 
                 Log.d("onPageEndMoving", "openPinnedPip()");
                 WindowUtil.openPinnedPip();
@@ -5568,7 +5576,7 @@ public class Workspace extends SmoothPagedView
     }
 
     public Bitmap createWidgetBitmap(ItemInfo widgetInfo, View layout) {
-        int[] unScaledSize = mLauncher.getWorkspace().estimateItemSize(widgetInfo.spanX,
+        int[] unScaledSize = estimateItemSize(widgetInfo.spanX,
                 widgetInfo.spanY, false);
         int visibility = layout.getVisibility();
         layout.setVisibility(VISIBLE);

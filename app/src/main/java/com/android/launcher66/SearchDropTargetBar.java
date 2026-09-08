@@ -24,6 +24,7 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
     private boolean mIsSearchBarHidden;
     private Drawable mPreviousBackground;
     private View mQSBSearchBar;
+    private Launcher mLauncher;
     private ObjectAnimator mQSBSearchBarAnim;
 
     public SearchDropTargetBar(Context context, AttributeSet attrs) {
@@ -36,6 +37,7 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
     }
 
     public void setup(Launcher launcher, DragController dragController) {
+        this.mLauncher = launcher;
         dragController.addDragListener(this);
         dragController.addDragListener(this.mDeleteDropTarget);
         dragController.addDropTarget(this.mDeleteDropTarget);
@@ -97,7 +99,7 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
     }
 
     public void showSearchBar(boolean animated) {
-        if (this.mQSBSearchBar == null && this.mIsSearchBarHidden) {
+        if (this.mQSBSearchBar != null && this.mIsSearchBarHidden) {
             if (animated) {
                 prepareStartAnimation(this.mQSBSearchBar);
                 this.mQSBSearchBarAnim.reverse();
@@ -142,8 +144,8 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
     public void onDragStart(DragSource source, Object info, int dragAction) {
         prepareStartAnimation(this.mDropTargetBar);
         this.mDropTargetBarAnim.start();
-        if (DeleteDropTarget.willAcceptDrop(info) && Launcher.getLauncher().mAllAppsButton != null) {
-            Launcher.getLauncher().mAllAppsButton.setVisibility(View.GONE);
+        if (DeleteDropTarget.willAcceptDrop(info) && this.mLauncher != null && this.mLauncher.mAllAppsButton != null) {
+            this.mLauncher.mAllAppsButton.setVisibility(View.GONE);
         }
         if (this.mQSBSearchBar != null) {
             prepareStartAnimation(this.mQSBSearchBar);
@@ -160,8 +162,8 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
         if (!this.mDeferOnDragEnd) {
             prepareStartAnimation(this.mDropTargetBar);
             this.mDropTargetBarAnim.reverse();
-            if (Launcher.getLauncher().mAllAppsButton != null) {
-                Launcher.getLauncher().mAllAppsButton.setVisibility(View.VISIBLE);
+            if (this.mLauncher != null && this.mLauncher.mAllAppsButton != null) {
+                this.mLauncher.mAllAppsButton.setVisibility(View.VISIBLE);
             }
             if (!this.mIsSearchBarHidden && this.mQSBSearchBar != null) {
                 prepareStartAnimation(this.mQSBSearchBar);

@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -564,7 +565,9 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 SharedPreferences statsPrefs = AppsCustomizePagedView.this.getContext().getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
                 Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
                 if (apps.contains(appInfo.getPackageName())) {
-                    Launcher.getLauncher().mAppsCustomizeTabHost.setVisibility(View.GONE);
+                    if (mLauncher.mAppsCustomizeTabHost != null) {
+                        mLauncher.mAppsCustomizeTabHost.setVisibility(View.GONE);
+                    }
                     helpers.setAllAppsShouldBeVisible(true);
                     helpers.setForegroundAppOpened(true);
                     Intent intent = new Intent(Keys.STATS_APP_FOREGROUND);
@@ -646,6 +649,9 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mBindWidgetRunnable = new Runnable() {
             @Override
             public void run() {
+                if (mLauncher == null || mLauncher.getAppWidgetHost() == null) {
+                    return;
+                }
                 mWidgetLoadingId = mLauncher.getAppWidgetHost().allocateAppWidgetId();
                 // Options will be null for platforms with JB or lower, so this serves as an
                 // SDK level check.
@@ -668,6 +674,10 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             @Override
             public void run() {
                 if (mWidgetCleanupState != WIDGET_BOUND) {
+                    return;
+                }
+                if (mLauncher == null || mLauncher.getAppWidgetHost() == null
+                        || mLauncher.getWorkspace() == null || mLauncher.getDragLayer() == null) {
                     return;
                 }
                 AppWidgetHostView hostView = mLauncher.
@@ -715,7 +725,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 removeCallbacks(mInflateWidgetRunnable);
             } else if (mWidgetCleanupState == WIDGET_BOUND) {
                  // Delete the widget id which was allocated
-                if (mWidgetLoadingId != -1) {
+                if (mWidgetLoadingId != -1 && mLauncher != null && mLauncher.getAppWidgetHost() != null) {
                     mLauncher.getAppWidgetHost().deleteAppWidgetId(mWidgetLoadingId);
                 }
 
@@ -723,13 +733,15 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 removeCallbacks(mInflateWidgetRunnable);
             } else if (mWidgetCleanupState == WIDGET_INFLATED) {
                 // Delete the widget id which was allocated
-                if (mWidgetLoadingId != -1) {
+                if (mWidgetLoadingId != -1 && mLauncher != null && mLauncher.getAppWidgetHost() != null) {
                     mLauncher.getAppWidgetHost().deleteAppWidgetId(mWidgetLoadingId);
                 }
 
                 // The widget was inflated and added to the DragLayer -- remove it.
                 AppWidgetHostView widget = info.boundWidget;
-                mLauncher.getDragLayer().removeView(widget);
+                if (mLauncher != null && mLauncher.getDragLayer() != null) {
+                    mLauncher.getDragLayer().removeView(widget);
+                }
             }
         }
         mWidgetCleanupState = WIDGET_NO_CLEANUP_REQUIRED;
@@ -745,8 +757,42 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
+    /** Temporary diagnostics for the oversized widget drag image. */
+    static final String DBG_TAG = "WidgetDragDbg";
+
+    /**
+     * How much bigger than the preview in the widget tray the drag image may get.
+     * This is the knob to turn if the dragged widget feels too small or too big.
+     */
+    private static final float DRAG_PREVIEW_SCALE = 1.25f;
+
+    /**
+     * Rough size of a spanX x spanY item on the spring loaded workspace. Used when
+     * Workspace.estimateItemSize() cannot tell us (it returns 0x0 while the workspace
+     * has not been laid out, which is exactly what happens when the widget tray is open).
+     */
+    private int[] estimateWorkspaceItemSize(int spanX, int spanY) {
+        int width = Integer.MAX_VALUE;
+        int height = Integer.MAX_VALUE;
+        try {
+            DeviceProfile grid =
+                    LauncherAppState.getInstance().getDynamicGrid().getDeviceProfile();
+            int columns = Math.max(1, (int) grid.numColumns);
+            int rows = Math.max(1, (int) grid.numRows);
+            DisplayMetrics dm = getResources().getDisplayMetrics();
+            // The workspace is shrunk while something is being dragged onto it.
+            final float springLoadedShrink = 0.7f;
+            width = (int) (dm.widthPixels * springLoadedShrink * Math.max(1, spanX) / columns);
+            height = (int) (dm.heightPixels * springLoadedShrink * Math.max(1, spanY) / rows);
+        } catch (Exception e) {
+            Log.w(TAG, "Could not estimate the workspace item size", e);
+        }
+        return new int[] { Math.max(1, width), Math.max(1, height) };
+    }
+
     private boolean beginDraggingWidget(View v) {
         mDraggingWidget = true;
+        Log.d(DBG_TAG, "---- beginDraggingWidget BUILD_MARKER=fix3 ----");
         // Get the widget preview as the drag representation
         ImageView image = (ImageView) v.findViewById(R.id.widget_preview);
         PendingAddItemInfo createItemInfo = (PendingAddItemInfo) v.getTag();
@@ -768,6 +814,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             // This can happen in some weird cases involving multi-touch. We can't start dragging
             // the widget if this is null, so we break out.
             if (mCreateWidgetInfo == null) {
+                mDraggingWidget = false;
                 return false;
             }
 
@@ -778,21 +825,49 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             int[] size = mLauncher.getWorkspace().estimateItemSize(spanX, spanY,
                     true);
 
-            FastBitmapDrawable previewDrawable = (FastBitmapDrawable) image.getDrawable();
-            float minScale = 1.25f;
-            int maxWidth, maxHeight;
-            maxWidth = Math.min((int) (previewDrawable.getIntrinsicWidth() * minScale), size[0]);
-            maxHeight = Math.min((int) (previewDrawable.getIntrinsicHeight() * minScale), size[1]);
+            Drawable previewDrawable = image.getDrawable();
+
+            // The tray bitmap (previewDrawable) is far bigger than the preview drawn
+            // inside it - the image is centred and the rest is empty. Basing the limit on
+            // the bitmap therefore allowed a drag image several times bigger than what the
+            // user sees in the tray, so use the size of the drawn content instead.
+            int[] trayContent = mWidgetPreviewLoader.previewSizeInTray(spanX, spanY);
+            int maxWidth = (int) (trayContent[0] * DRAG_PREVIEW_SCALE);
+            int maxHeight = (int) (trayContent[1] * DRAG_PREVIEW_SCALE);
+
+            // Second limit: the room the widget will really take on the workspace.
+            int[] workspaceSize = (size != null && size.length >= 2 && size[0] > 0 && size[1] > 0)
+                    ? size : estimateWorkspaceItemSize(spanX, spanY);
+            maxWidth = Math.max(1, Math.min(maxWidth, workspaceSize[0]));
+            maxHeight = Math.max(1, Math.min(maxHeight, workspaceSize[1]));
+
+            Log.d(DBG_TAG, "span=" + spanX + "x" + spanY
+                    + " estimateItemSize=" + (size == null ? "null"
+                            : (size.length >= 2 ? size[0] + "x" + size[1] : "len" + size.length))
+                    + " workspaceSize=" + workspaceSize[0] + "x" + workspaceSize[1]
+                    + " trayBitmap=" + previewDrawable.getIntrinsicWidth() + "x"
+                    + previewDrawable.getIntrinsicHeight()
+                    + " trayContent=" + trayContent[0] + "x" + trayContent[1]
+                    + " -> maxWidth=" + maxWidth + " maxHeight=" + maxHeight);
 
             int[] previewSizeBeforeScale = new int[1];
 
+            // The last argument disables the tray upscale: the drag image has to match
+            // the space the widget will really take on the workspace.
             preview = mWidgetPreviewLoader.generateWidgetPreview(createWidgetInfo.componentName,
                     createWidgetInfo.previewImage, createWidgetInfo.icon, spanX, spanY,
-                    maxWidth, maxHeight, null, previewSizeBeforeScale);
+                    maxWidth, maxHeight, null, previewSizeBeforeScale, false);
 
-            // Compare the size of the drag preview to the preview in the AppsCustomize tray
-            int previewWidthInAppsCustomize = Math.min(previewSizeBeforeScale[0],
-                    mWidgetPreviewLoader.maxWidthForWidgetPreview(spanX));
+            if (preview == null || preview.getWidth() <= 0 || preview.getHeight() <= 0) {
+                // Nothing sensible to drag - abort instead of crashing further down.
+                mDraggingWidget = false;
+                return false;
+            }
+
+            // Compare the size of the drag preview to the preview in the AppsCustomize
+            // tray - the tray one is drawn upscaled, so ask the loader for its real width.
+            int previewWidthInAppsCustomize = mWidgetPreviewLoader.previewWidthInTray(
+                    previewSizeBeforeScale[0], spanX);
             scale = previewWidthInAppsCustomize / (float) preview.getWidth();
 
             // The bitmap in the AppsCustomize tray is always the the same size, so there
@@ -805,13 +880,18 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         } else {
             PendingAddShortcutInfo createShortcutInfo = (PendingAddShortcutInfo) v.getTag();
             Drawable icon = mIconCache.getFullResIcon(createShortcutInfo.shortcutActivityInfo);
-            preview = Bitmap.createBitmap(icon.getIntrinsicWidth(),
-                    icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            // Same guard as for widgets: an icon without an intrinsic size reports -1.
+            int iconWidth = icon.getIntrinsicWidth() > 0
+                    ? icon.getIntrinsicWidth() : Math.max(1, mLauncher.getResources()
+                            .getDimensionPixelSize(android.R.dimen.app_icon_size));
+            int iconHeight = icon.getIntrinsicHeight() > 0
+                    ? icon.getIntrinsicHeight() : iconWidth;
+            preview = Bitmap.createBitmap(iconWidth, iconHeight, Bitmap.Config.ARGB_8888);
 
             mCanvas.setBitmap(preview);
             mCanvas.save();
             WidgetPreviewLoader.renderDrawableToBitmap(icon, preview, 0, 0,
-                    icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
+                    iconWidth, iconHeight);
             mCanvas.restore();
             mCanvas.setBitmap(null);
             createItemInfo.spanX = createItemInfo.spanY = 1;
@@ -824,6 +904,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         // Save the preview for the outline generation, then dim the preview
         outline = Bitmap.createScaledBitmap(preview, preview.getWidth(), preview.getHeight(),
                 false);
+
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        Log.d(DBG_TAG, "FINAL dragBitmap=" + preview.getWidth() + "x" + preview.getHeight()
+                + " startScale=" + scale
+                + " screen=" + dm.widthPixels + "x" + dm.heightPixels
+                + " padding=" + previewPadding);
 
         // Start the drag
         mLauncher.lockScreenOrientation();
@@ -853,6 +939,9 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             @Override
             public void run() {
                 // We don't enter spring-loaded mode if the drag has been cancelled
+                if (mLauncher == null || mLauncher.getDragController() == null) {
+                    return;
+                }
                 if (mLauncher.getDragController().isDragging()) {
                     // Reset the alpha on the dragged icon before we drag
                     resetDrawableState();

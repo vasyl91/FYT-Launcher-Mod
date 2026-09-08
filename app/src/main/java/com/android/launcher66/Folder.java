@@ -290,7 +290,8 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 && !helpers.isWallpaperWindow() 
                 && !helpers.isInOverviewMode()
                 && !mDragController.isDragging()
-                && !helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())
+                && mLauncher != null && mLauncher.mAppsCustomizeTabHost != null
+                && !helpers.allAppsVisibility(mLauncher.mAppsCustomizeTabHost.getVisibility())
                 || (!helpers.userWasInRecents() && helpers.isListOpen())) {
 
                     Log.d("closeFolder()", "startMapPip");

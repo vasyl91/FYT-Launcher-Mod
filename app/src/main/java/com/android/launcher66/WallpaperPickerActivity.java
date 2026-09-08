@@ -532,7 +532,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
     }
 
     public boolean enableRotation() {
-        return super.enableRotation() || Launcher.getLauncher().sForceEnableRotation;
+        return super.enableRotation() || Launcher.sForceEnableRotation;
     }
 
     protected Bitmap getThumbnailOfLastPhoto() {

@@ -1149,7 +1149,8 @@ public class WindowUtil {
             && !helpers.isInOverviewMode()
             && !helpers.isFirstPreferenceWindow()
             && !helpers.isWallpaperWindow()
-            && !helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())
+            && launcher.mAppsCustomizeTabHost != null
+            && !helpers.allAppsVisibility(launcher.mAppsCustomizeTabHost.getVisibility())
             || (!helpers.userWasInRecents() && helpers.isListOpen())) {
 
             if (prefs == null) {
@@ -1211,7 +1212,8 @@ public class WindowUtil {
 
         SystemProperties.set("persist.syu.launcher.haspip", "true");
 
-        if (currentScreen == pipScreen && !helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())) {
+        if (currentScreen == pipScreen && launcher.mAppsCustomizeTabHost != null
+                && !helpers.allAppsVisibility(launcher.mAppsCustomizeTabHost.getVisibility())) {
             String currentPackage = SystemProperties.get("persist.launcher.packagename", "");
             if (!packageName.equals(currentPackage) || checkIfMapSizeChanged(pipKey)) {
                 // save previous values

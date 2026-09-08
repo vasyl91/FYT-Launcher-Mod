@@ -919,7 +919,10 @@ public class LauncherModel extends BroadcastReceiver {
                     }
                 }
 
-                Launcher.getLauncher().triggerAppData();
+                Launcher modelLauncher = Launcher.getLauncher();
+                if (modelLauncher != null) {
+                    modelLauncher.triggerAppData();
+                }
             }
         };
         runOnWorkerThread(r);
@@ -2485,7 +2488,10 @@ public class LauncherModel extends BroadcastReceiver {
                     Log.d(TAG, "bound all " + list.size() + " apps from cache in "
                             + (SystemClock.uptimeMillis()-t) + "ms");
                 }
-                Launcher.getLauncher().triggerAppData();
+                Launcher modelLauncher = Launcher.getLauncher();
+                if (modelLauncher != null) {
+                    modelLauncher.triggerAppData();
+                }
             };
             boolean isRunningOnMainThread = !(sWorkerThread.getThreadId() == Process.myTid());
             if (isRunningOnMainThread) {
@@ -2559,7 +2565,10 @@ public class LauncherModel extends BroadcastReceiver {
                     } else {
                         Log.i(TAG, "not binding apps: no Launcher activity");
                     }
-                    Launcher.getLauncher().triggerAppData();
+                    Launcher modelLauncher = Launcher.getLauncher();
+                    if (modelLauncher != null) {
+                        modelLauncher.triggerAppData();
+                    }
                 }
             });
 

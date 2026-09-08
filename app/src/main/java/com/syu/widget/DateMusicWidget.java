@@ -70,7 +70,9 @@ public class DateMusicWidget extends Widget {
 
     @Override
     void updateViews(RemoteViews views) {
-        if (Launcher.getLauncher().mainState == 8) {
+        Launcher launcher = Launcher.getLauncher();
+        boolean nightMode = launcher != null && launcher.sNightMode;
+        if (launcher != null && launcher.mainState == 8) {
             if (MusicService.state.booleanValue()) {
                 int i = ResValue.getInstance().widget_music_score;
                 int i2 = ResValue.getInstance().music_score_0;
@@ -128,12 +130,12 @@ public class DateMusicWidget extends Widget {
             views.setTextViewText(ResValue.getInstance().music_art, this.mContext.getResources().getString(R.string.music_author));
         }  
         if (MusicService.state.booleanValue()) {
-            if (Launcher.getLauncher().sNightMode) {
+            if (nightMode) {
                 views.setImageViewResource(ResValue.getInstance().musicbutton_playpause, ResValue.getInstance().music_playpause_icon_n);
             } else {
                 views.setImageViewResource(ResValue.getInstance().musicbutton_playpause, ResValue.getInstance().music_playpause_icon);
             }
-        } else if (Launcher.getLauncher().sNightMode) {
+        } else if (nightMode) {
             views.setImageViewResource(ResValue.getInstance().musicbutton_playpause, ResValue.getInstance().music_pause_icon_n);
         } else {
             views.setImageViewResource(ResValue.getInstance().musicbutton_playpause, ResValue.getInstance().music_pause_icon);
@@ -206,17 +208,19 @@ public class DateMusicWidget extends Widget {
             views.setImageViewResource(ResValue.getInstance().ivwidget_album_bg, ResValue.getInstance().musicwidget_album_def);
         }
 
+        Launcher launcher = Launcher.getLauncher();
+        boolean nightMode = launcher != null && launcher.sNightMode;
         if (snapshot.playing) {
             views.setImageViewResource(
                     ResValue.getInstance().musicbutton_playpause,
-                    Launcher.getLauncher().sNightMode
+                    nightMode
                             ? ResValue.getInstance().music_playpause_icon_n
                             : ResValue.getInstance().music_playpause_icon
             );
         } else {
             views.setImageViewResource(
                     ResValue.getInstance().musicbutton_playpause,
-                    Launcher.getLauncher().sNightMode
+                    nightMode
                             ? ResValue.getInstance().music_pause_icon_n
                             : ResValue.getInstance().music_pause_icon
             );
