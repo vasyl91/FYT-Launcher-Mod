@@ -36,7 +36,7 @@ final class LeakCanaryInit {
 
         LeakCanary.setConfig(
                 LeakCanary.getConfig().newBuilder()
-                        .retainedVisibleThreshold(1)
+                        .retainedVisibleThreshold(5)
                         .referenceMatchers(matchers)
                         .build()
         );
