@@ -132,8 +132,45 @@ public class WindowHost {
                     || fourth.isAwaitingBounds()
                     || dual.isAwaitingBounds();
         } catch (Throwable t) {
-            return true;  
+            return true;
         }
+    }
+
+    /** True once every visible pane has produced a frame. Plain field reads, no binder. */
+    public boolean areAllPanesRendering() {
+        try {
+            return first.hasRenderedContent()
+                    && second.hasRenderedContent()
+                    && third.hasRenderedContent()
+                    && fourth.hasRenderedContent()
+                    && dual.hasRenderedContent();
+        } catch (Throwable t) {
+            return true;   // on doubt, stop suppressing rather than hold the window open
+        }
+    }
+    
+    /** Whether every visible panel is showing a working application (rather than cropped or black content). */
+    public boolean isContentHealthy() {
+        try {
+            return first.isContentHealthy()
+                    && second.isContentHealthy()
+                    && third.isContentHealthy()
+                    && fourth.isContentHealthy()
+                    && dual.isContentHealthy();
+        } catch (Throwable t) {
+            return true;   // Never perform a cold reset based on an uncertain reading.
+        }
+    }
+
+    /** Restarts the app in every pane that isContentHealthy() rejects. @return true if any. */
+    public boolean repairUnhealthyPanes() {
+        boolean any = false;
+        try { any |= first.repairIfUnhealthy(); }  catch (Throwable ignore) {}
+        try { any |= second.repairIfUnhealthy(); } catch (Throwable ignore) {}
+        try { any |= third.repairIfUnhealthy(); }  catch (Throwable ignore) {}
+        try { any |= fourth.repairIfUnhealthy(); } catch (Throwable ignore) {}
+        try { any |= dual.repairIfUnhealthy(); }   catch (Throwable ignore) {}
+        return any;
     }
 
     /** Waits until all host windows are detached (or times out ~120ms), then runs action. */

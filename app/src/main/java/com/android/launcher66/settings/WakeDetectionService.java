@@ -69,6 +69,9 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
      */
     private int pipEnsureGeneration = 0;
 
+    /** At most one repair pass per wake -- a repair loop would be worse than the symptom. */
+    private boolean repairUsed = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -135,7 +138,13 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     return;
                 }
                 mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+                boolean logcatBoolean = mPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, true);
+                boolean isDebug = BuildConfig.DEBUG;
+                if (logcatBoolean && isDebug) {
+                    LogcatWorker.get().start(LauncherApplication.sApp);
+                }
                 lastDisplayOnHandledMs = now;
+                repairUsed = false;
                 Log.e(TAG, "Device awakened from sleep");
                 if (mPrefs.getBoolean(Keys.LAUNCHER_HOME, true)) {
                     handler.postDelayed(this::pressHomeButton, 500);
@@ -150,15 +159,18 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     long currentTime = System.currentTimeMillis();
                     long diff = currentTime - lastSleepTimestamp;
 
-                    // 15 minutes = 10 * 60 * 1000 ms
-                    if (diff > 15 * 60 * 1000) {
-                        Log.e(TAG, "Sleep duration exceeded 15 minutes: " + diff + " ms");
-                        WindowUtil.removePip();
+                    // 10 minutes = 10 * 60 * 1000 ms
+                    if (diff > 10 * 60 * 1000) {
+                        Log.e(TAG, "Sleep duration exceeded 10 minutes: " + diff + " ms");
                         getSharedPreferences("HelpersPrefs", 0).edit().clear().apply();
-                        resetPip();
-                        // resetPip() force-stops the PiP apps; the ensure loop's first attempt is
-                        // 2500 ms out, which is enough for those kills to land before we relaunch.
-                        restartPip();
+
+                        pipEnsureGeneration++;
+                        final int coldGen = pipEnsureGeneration;
+                        WindowUtil.coldResetPipStack(() -> {
+                            if (coldGen != pipEnsureGeneration) return;
+                            WindowUtil.openPip(false);
+                            restartPip();
+                        });
                         resetPip = true;
                     }
                 }
@@ -298,7 +310,28 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
             if (generation != pipEnsureGeneration) return;   // superseded by a newer wake / sleep
             if (!isPipExpected()) return;
 
-            if (isPipHealthy()) {
+            if (isPipUp()) {
+                // The panes are on screen -- but "on screen" is not the same as "working". A pane
+                // whose embedded task ended up on the wrong display, or whose VirtualDisplay never
+                // took the new size, renders clipped/partly black and ignores touch. openPip()
+                // cannot fix that (the pane is visible, so it gets debounced); only a cold reset can.
+                if (!isPipContentHealthy()) {
+                    if (repairUsed) {
+                        Log.w(TAG, "PiP ensure: still unhealthy after a repair, leaving it alone");
+                        return;
+                    }
+                    repairUsed = true;
+
+                    WindowHost host = WindowUtil.getActiveWindowHost();
+                    boolean repaired = host != null && host.repairUnhealthyPanes();
+                    Log.w(TAG, "PiP ensure: unhealthy pane(s) detected, repair started=" + repaired);
+
+                    // restartPaneApp() re-attaches and relaunches on its own, so nothing else to
+                    // do here; the next attempt confirms the result.
+                    schedulePipEnsureAttempt(generation, attempt + 1);
+                    return;
+                }
+
                 if (attempt > 0) Log.i(TAG, "PiP ensure: healthy after " + attempt + " retries");
                 return;
             }
@@ -337,7 +370,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
      * bounds. Pinned panes are excluded on purpose: openMultiplePips() does not route those through
      * WindowHost at all, so their visibility says nothing.
      */
-    private boolean isPipHealthy() {
+    private boolean isPipUp() {
         try {
             WindowHost host = WindowUtil.getActiveWindowHost();
             if (host == null) return false;
@@ -360,13 +393,37 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 if (secondPip && !host.isSecondVisible()) return false;
             }
             if (thirdPip && !thirdPinned && !host.isThirdVisible()) return false;
-            return !fourthPip || fourthPinned || host.isFourthVisible();
+            if (fourthPip && !fourthPinned && !host.isFourthVisible()) return false;
+
+            return true;
         } catch (Throwable t) {
-            Log.w(TAG, "isPipHealthy check failed", t);
+            Log.w(TAG, "isPipUp check failed", t);
             return false;
         }
     }
 
+    /**
+     * Whether every visible pane actually shows a working app: its VirtualDisplay still hosts a
+     * task, and that display has the size the pane expects. Both are needed -- a pane can be
+     * perfectly visible while the app inside it renders at a stale size (clipped, partly black,
+     * unresponsive), which is exactly what happens when a task is relocated between displays.
+     */
+    private boolean isPipContentHealthy() {
+        try {
+            WindowHost host = WindowUtil.getActiveWindowHost();
+            if (host == null) return true;   // nothing to judge
+            return host.isContentHealthy();
+        } catch (Throwable t) {
+            Log.w(TAG, "isPipContentHealthy check failed", t);
+            return true;                     // never cold-reset on an inconclusive reading
+        }
+    }
+
+    /**
+     * Superseded by WindowUtil.coldResetPipStack() on the long-sleep path -- force-stopping on its
+     * own leaves the task records (and therefore the stale configuration) intact. Kept because it
+     * is public API of this service.
+     */
     public void resetPip() {  
         if (mPrefs == null) {
             mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);

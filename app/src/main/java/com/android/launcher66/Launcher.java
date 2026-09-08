@@ -858,7 +858,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
             if (updateCode == 0) {
                 if (ints != null && ints.length > 0) {
-                    if (Launcher.getLauncher().mRadioPauseButton != null) {
                         if (ints[0] == 1) {
                             Launcher.getLauncher().mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_playpause_icon);
                         } else {
@@ -3576,6 +3575,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private boolean initPip(String whereInitiated, View view, boolean forceOpen) {
+        // Reopening the panes makes the players hosted there announce playback
         long now = SystemClock.uptimeMillis();
         if (!forceOpen && (mPipInitPending || now - mLastPipInitMs < PIP_INIT_THROTTLE_MS)) {
             Log.d(whereInitiated, "startMapPip coalesced");
@@ -3964,6 +3964,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onStop() {
         super.onStop();
         Log.d(TAG, "---->>> onStop");
+        NotificationListener mediaListener = NotificationListener.getInstance();
         Log.d("onStop", "removePip");
         WindowUtil.removePip();
         isfirstlayout = true;

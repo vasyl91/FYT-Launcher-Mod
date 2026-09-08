@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
@@ -388,6 +389,27 @@ public class WindowHostActivityView {
         }
     }
 
+    /**
+     * The actual size of this ActivityView's VirtualDisplay (not the size that WE
+     * most recently pushed to it).
+     * A mismatch with the panel size means that the embedded application is rendering
+     * at the wrong resolution -- which is exactly the symptom of "cropped / partially black".
+     */
+    static Point getVirtualDisplaySize(Object av) {
+        try {
+            Object vd = getVirtualDisplay(av);
+            if (vd == null) return null;
+            Object display = vd.getClass().getMethod("getDisplay").invoke(vd);
+            if (!(display instanceof android.view.Display)) return null;
+
+            Point p = new Point();
+            ((android.view.Display) display).getSize(p);
+            return (p.x > 0 && p.y > 0) ? p : null;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
     private static void invokeQuietly(Object target, String method) {
         if (target == null) return;
         try {
@@ -459,7 +481,7 @@ public class WindowHostActivityView {
     /** Surface-valid + VirtualDisplay-present polling, used when setCallback() cannot be wired. */
     private static void startReadinessPolling(Object av, Callback cb) {
         {
-            final int MAX_MS = 800;       // total max wait
+            final int MAX_MS = 5000;       // total max wait
             final int POLL_MS = 25;       // poll step
             final int STABLE_MS = 160;    // require continuous stable window
             final Handler h = new Handler(Looper.getMainLooper());
@@ -515,6 +537,9 @@ public class WindowHostActivityView {
                     if (elapsed < MAX_MS) {
                         h.postDelayed(this, POLL_MS);
                     } else {
+                        Log.w(TAG, "readiness polling timed out after " + elapsed
+                                + "ms (surfaceValid=" + ok
+                                + ", displayId=" + getVirtualDisplayId(av) + ")");
                         try {
                             SurfaceView s2 = findSurfaceView(avView);
                             if (s2 != null) s2.getHolder().removeCallback(holderCb);

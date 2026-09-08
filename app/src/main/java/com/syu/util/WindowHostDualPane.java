@@ -74,6 +74,12 @@ public class WindowHostDualPane {
     private static final int  START_WAIT_STEP_MS    = 4;
 
     private static final int  GEOMETRY_RETRIES      = 30;
+
+    /** How many times to wait for the ActivityView's VirtualDisplay to appear. */
+    private static final int  VD_ENFORCE_RETRIES  = 25;
+    /** Delay between those attempts, in ms (25 x 120 ms = 3 s, covers a slow cold start). */
+    private static final long VD_ENFORCE_RETRY_MS = 120L;
+
     private static final int  EXTRA_SETTLE_RETRIES  = 20;
     private static final int  TAP_REGION_RETRIES    = 4;
     private static final long POST_LAYOUT_FALLBACK_MS = 250L;
@@ -289,6 +295,11 @@ public class WindowHostDualPane {
         return visible.get() && (leftStartDeferredForBounds || rightStartDeferredForBounds);
     }
 
+    /** True when this pane shows nothing, or both apps have already drawn a frame. */
+    public boolean hasRenderedContent() {
+        return !visible.get() || (leftFirstFrame.get() && rightFirstFrame.get());
+    }
+
     /** Last-resort launch when the releasing bounds update never arrives. */
     private void armDeferredStartWatchdog(final Side side, final String pkg, final int expectedGen) {
         postMainDelayed(() -> {
@@ -363,6 +374,69 @@ public class WindowHostDualPane {
             final Side s = side;
             postMainDelayed(() -> uncoverAfterHandoff(s), 120);
         }
+    }
+
+    /** Allowed VirtualDisplay size mismatch relative to the panel, in px. */
+    private static final int VD_SIZE_TOLERANCE_PX = 16;
+
+    /** See WindowHostSinglePane.isContentHealthy() -- same logic for both halves. */
+    public boolean isContentHealthy() {
+        try {
+            if (!visible.get()) return true;
+            for (Side side : Side.values()) {
+                if (!isSideHealthy(side)) return false;
+            }
+            return true;
+        } catch (Throwable t) {
+            Log.w(TAG, "isContentHealthy failed", t);
+            return true;
+        }
+    }
+
+    /**
+     * Restarts the app in whichever half is broken. The healthy half is left alone.
+     * @return true when at least one repair was started
+     */
+    public boolean repairIfUnhealthy() {
+        if (!visible.get()) return false;
+
+        boolean repaired = false;
+        for (Side side : Side.values()) {
+            String pkg = pkgOf(side);
+            if (pkg == null || isSideHealthy(side)) continue;
+
+            Log.w(TAG, side + ": repairing unhealthy pane (" + pkg + ")");
+            restartPaneApp(side, pkg, gen);
+            repaired = true;
+        }
+        return repaired;
+    }
+
+    private boolean isSideHealthy(Side side) {
+        Object paneAV = avOf(side);
+        if (paneAV == null || !attachedOf(side)) return false;
+
+        int displayId = WindowHostActivityView.getVirtualDisplayId(paneAV);
+        if (displayId < 0) return false;
+
+        Boolean hasTask = WindowHostAvReaper.hasTaskOnDisplay(displayId);
+        if (Boolean.FALSE.equals(hasTask)) {
+            Log.w(TAG, side + ": unhealthy - no task on displayId=" + displayId);
+            return false;
+        }
+
+        android.graphics.Point size = WindowHostActivityView.getVirtualDisplaySize(paneAV);
+        int tw = targetPaneWidth(side);
+        int th = targetPaneHeight(side);
+        if (size == null || tw <= 1 || th <= 1) return true;
+
+        if (Math.abs(size.x - tw) > VD_SIZE_TOLERANCE_PX
+                || Math.abs(size.y - th) > VD_SIZE_TOLERANCE_PX) {
+            Log.w(TAG, side + ": unhealthy - display " + size.x + "x" + size.y
+                    + " but pane is " + tw + "x" + th);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -965,6 +1039,12 @@ public class WindowHostDualPane {
             return;
         }
 
+        // Growing pane: size the embedded display first, otherwise the newly exposed strip has
+        // no content for a frame or two. The post-layout pass below is then a no-op (size cache).
+        if (isPaneGrowing(paneAV, targetW, targetH)) {
+            enforcePaneVirtualDisplay(paneAV, targetW, targetH);
+        }
+
         applyChildSize(v, targetW, targetH);
 
         postAfterLayout(paneHost, () -> {
@@ -979,6 +1059,12 @@ public class WindowHostDualPane {
             enforcePaneVirtualDisplay(paneAV, w, h);
             refreshTapRegionSafely(paneAV, TAP_REGION_RETRIES);
         });
+    }
+
+    /** True when the pane is about to get bigger than the display currently backing it. */
+    private boolean isPaneGrowing(Object paneAV, int w, int h) {
+        int[] last = vdSizeCache.get(paneAV);
+        return last == null || w > last[0] || h > last[1];
     }
 
     private void applyChildSize(View v, int w, int h) {
@@ -1023,15 +1109,46 @@ public class WindowHostDualPane {
     }
 
     private void enforcePaneVirtualDisplay(Object paneAV, int paneW, int paneH) {
+        enforcePaneVirtualDisplay(paneAV, paneW, paneH, VD_ENFORCE_RETRIES);
+    }
+
+    /** See WindowHostSinglePane.enforcePaneVirtualDisplay() for why the retry is needed. */
+    private void enforcePaneVirtualDisplay(Object paneAV, int paneW, int paneH, int retriesLeft) {
         if (paneAV == null || paneW <= 1 || paneH <= 1) return;
 
-        View view = WindowHostActivityView.asView(paneAV);
+        final View view = WindowHostActivityView.asView(paneAV);
         if (view == null) return;
+
+        if (WindowHostActivityView.getVirtualDisplay(paneAV) == null) {
+            final Side side = sideOf(paneAV);
+            if (side == null || retriesLeft <= 0) {
+                Log.w(TAG, "virtual display never appeared, pane geometry not enforced");
+                return;
+            }
+            postMainDelayed(() -> {
+                if (avOf(side) != paneAV || !attachedOf(side)) return;
+                int w = targetPaneWidth(side);
+                int h = targetPaneHeight(side);
+                if (w > 1 && h > 1) enforcePaneVirtualDisplay(paneAV, w, h, retriesLeft - 1);
+            }, VD_ENFORCE_RETRY_MS);
+            return;
+        }
 
         int density = resolveDensityDpi(view);
         if (!resizeVirtualDisplay(paneAV, paneW, paneH, density)) return;
 
         kickSurfaceRedraw(view, paneW, paneH);
+
+        // The display just changed resolution, so the touchable area moved with it.
+        refreshTapRegionSafely(paneAV, TAP_REGION_RETRIES);
+    }
+
+    /** Which half this ActivityView currently belongs to, or null if it belongs to neither. */
+    private Side sideOf(Object paneAV) {
+        if (paneAV == null) return null;
+        if (paneAV == leftAV) return Side.LEFT;
+        if (paneAV == rightAV) return Side.RIGHT;
+        return null;
     }
 
     /** @return true when the VirtualDisplay was actually resized (i.e. the size really changed). */
@@ -1233,8 +1350,17 @@ public class WindowHostDualPane {
             // the claim already done in setPaneWidths().
             claimPanePosition(side, (side == Side.LEFT) ? 0 : targetPaneWidth(Side.LEFT), 0);
 
+            // Same rule as above: the display must already be the right size when the surface
+            // comes back, or the drag ends on a black frame.
+            int restoreW = targetPaneWidth(side);
+            int restoreH = targetPaneHeight(side);
+            if (restoreW > 1 && restoreH > 1) {
+                enforcePaneVirtualDisplay(paneAV, restoreW, restoreH);
+            }
+
             View v = WindowHostActivityView.asView(paneAV);
             if (v != null) v.setVisibility(View.VISIBLE);
+
             if (pkg != null) WindowHostSplash.attach(paneHost, pkg);   // keep it on top of the AV
 
             if (pkg != null) {

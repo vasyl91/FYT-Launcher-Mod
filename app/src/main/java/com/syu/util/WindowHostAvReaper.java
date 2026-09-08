@@ -127,6 +127,15 @@ public final class WindowHostAvReaper {
         });
     }
 
+    /**
+     * @return TRUE if any task is alive on this display, FALSE if it is empty,
+     *         null if this cannot be determined on this ROM.
+     */
+    public static Boolean hasTaskOnDisplay(int displayId) {
+        Boolean empty = isDisplayEmpty(displayId);
+        return (empty == null) ? null : !empty;
+    }
+
     // =====================================================================================
     // Internals
     // =====================================================================================

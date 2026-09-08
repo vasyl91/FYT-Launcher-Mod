@@ -27,6 +27,7 @@ import androidx.preference.PreferenceManager;
 import com.android.launcher66.CellLayout;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.NotificationListener;
 import com.android.launcher66.R;
 import com.android.launcher66.Workspace;
 import com.android.launcher66.settings.Helpers;
@@ -36,8 +37,13 @@ import com.fyt.thread.ThreadManager;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -67,6 +73,8 @@ public class WindowUtil {
     public static boolean secondPipPinned = false;
     public static boolean thirdPipPinned = false;
     public static boolean fourthPipPinned = false;
+
+    private static final int PANES_SETTLED_POLLS = 24; 
 
     public static void initDefaultApp() {
         if (!LauncherApplication.isFytDevice()) return;
@@ -179,12 +187,12 @@ public class WindowUtil {
 
     public static boolean isPipOnScreen() {
         try {
-            if (panesStillOnScreen()) return true;      // realna widoczność okien
+            if (panesStillOnScreen()) return true;     
             if (helpers != null && helpers.pipsAdded()) return true;
         } catch (Throwable ignore) { }
         return false;
     }
- 
+
     /**
      * @return true if this openPip() call is a duplicate of the previous one and should be skipped.
      *         As a side effect, stores the current signature and timestamp.
@@ -192,19 +200,26 @@ public class WindowUtil {
     private static boolean shouldDebounceOpenPip(boolean show) {
         final String sig = currentPipSignature(show);
         final long now = SystemClock.uptimeMillis();
+
         boolean awaitingBounds = true;
         try {
             final WindowHost h = host();
             awaitingBounds = h != null && h.isAnyPaneAwaitingBounds();
         } catch (Throwable ignore) { }
 
-        boolean duplicate = sig != null
+        boolean sameLayout = sig != null
                 && sig.equals(lastOpenPipSignature)
                 && (now - lastOpenPipAtMs) < OPEN_PIP_DEBOUNCE_MS
-                && panesStillOnScreen()
-                && !awaitingBounds;
+                && panesStillOnScreen();
 
-        if (duplicate) return true;
+        if (sameLayout) {
+            if (!awaitingBounds) return true;
+            Log.i(TAG, "openPip(): panes up but awaiting bounds - pumping bounds instead of rebuilding");
+            forcePipBoundsUpdate = true;
+            final Launcher l = Launcher.getLauncher();
+            if (l != null) l.handler.post(() -> pumpPipBoundsUntilReady(32));
+            return true;
+        }
 
         lastOpenPipSignature = sig;
         lastOpenPipAtMs = now;
@@ -396,6 +411,287 @@ public class WindowUtil {
     }
     
     // =====================================================================================
+    // LAUNCH ORDER AND MCU SOUND CHANNEL BUG
+    // =====================================================================================
+
+    /** 
+     * com.syu.ms polls getRunningTasks(1) every 500ms and hands the MCU sound channel to "channel 10" 
+     * the moment it sees a recognised media app become the focused activity - not when that app plays. 
+     * That switch cannot be stopped on the launcher level so all we can do is to predict when
+     * it fires, try to fool it (by keeping the launcher on top) and deal with the aftermath. 
+     */
+
+    private static int pendingReasserts = 0;
+    private static Runnable reassertTask;
+
+    /** Gap between pane openings, so a slow starter cannot overtake a later one. */
+    private static final long PANE_LAUNCH_STAGGER_MS = 250L;
+
+    /** How many times, and how often, the launcher is pushed back to the front afterward. */
+    private static final int LAUNCHER_TOP_REASSERTS = 250;
+    private static final long LAUNCHER_TOP_REASSERT_MS = 1L;
+
+    /** player_app.txt from com.syu.ms assets contains the list below. These apps steal the audio focus
+     *  from com.syu.music/radio whenever com.syu.ms detects them as top app in getRunningTasks */
+    private static final Set<String> DEFAULT_SOURCE_STEALERS = new HashSet<>(Arrays.asList(
+        "com.kugou.playerHD",
+        "com.ifeng.video",
+        "com.omusicpad",
+        "com.qiyi.video",
+        "com.tencent.qqmusic",
+        "com.tencent.qqlivehd",
+        "com.youku.pad",
+        "com.youku.phone",
+        "com.duomi.android",
+        "com.tudou.xoom.android",
+        "cn.kuwo.player",
+        "com.kugou.android",
+        "com.kugou.android.tv",
+        "org.videolan.vlc.betav7neon",
+        "com.generalplus.GaGaPlayer",
+        "cn.kuwo.kwmusichd",
+        "com.sds.android.ttpod",
+        "cn.kuwo.kwmusiccar",
+        "com.kuwo.kwmusiccar",
+        "cn.kuwo.player",
+        "com.txznet.music",
+        "com.maxmpz.audioplayer",
+        "com.maxmpz.audioplayer.player.PlayerService",
+        "com.jinpai.android.CarCoach",
+        "com.edog.car",
+        "com.mxtech.videoplayer.ad",
+        "com.jetappfactory.jetaudioplus",
+        "com.jetappfactory.jetaudio",
+        "com.zjinnova.zbox",
+        "com.elinkway.tvlive2",
+        "com.storm.localplayer",
+        "com.elinkway.tvlive2",
+        "com.netease.cloudmusic",
+        "com.syu.dvr",
+        "com.didi365.miudrive.navi",
+        "com.hongfans.rearview",
+        "com.incarmedia",
+        "com.mediacast.co.il.radioin2",
+        "com.cyberserve.android.reco99fm",
+        "com.tencent.qqmusiccar",
+        "com.google.android.youtube",
+        "com.google.android.youtube",
+        "ru.yandex.music",
+        "com.google.android.apps.youtube.music",
+        "com.vkontakte.android",
+        "io.stellio.player",
+        "com.spotify.music",
+        "com.google.android.music",
+        "com.amazon.mp3",
+        "com.zjinnova.zlink",
+        "cn.manstep.phonemirrorBox",
+        "com.incarmedia",
+        "mbinc12.mb32b",
+        "com.kugou.android.auto",
+        "com.tencent.wecarflow",
+        "com.xjcheng.simlosslessplay",
+        "com.hiby.music",
+        "com.syu.onlineradio",
+        "com.djbox.product",
+        "com.xingle",
+        "com.ctappstudio.ytfind",
+        "com.thunder.carplay",
+        "com.qiyi.video.pad",
+        "com.tencent.qqlivepad",
+        "cn.kuwo.tingshucar",
+        "com.ximalaya.ting.android.car",
+        "com.disney.disneyplus",
+        "com.netflix.mediaclient"
+    ));
+
+    private static final String KEY_SOURCE_STEALERS = "pip_source_stealing_packages";
+
+    private static Set<String> sourceStealers() {
+        try {
+            if (prefs == null) {
+                prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+            }
+            String raw = prefs.getString(KEY_SOURCE_STEALERS, null);
+            if (raw == null || raw.trim().isEmpty()) return DEFAULT_SOURCE_STEALERS;
+
+            Set<String> out = new HashSet<>();
+            for (String part : raw.split(",")) {
+                String pkg = part.trim();
+                if (!pkg.isEmpty()) out.add(pkg);
+            }
+            return out.isEmpty() ? DEFAULT_SOURCE_STEALERS : out;
+        } catch (Throwable t) {
+            return DEFAULT_SOURCE_STEALERS;
+        }
+    }
+
+    /** True when launching this package makes the ROM take the sound channel. */
+    static boolean isSourceStealer(String pkg) {
+        return pkg != null && !pkg.isEmpty() && sourceStealers().contains(pkg);
+    }
+
+    private static boolean anySourceStealer(String... pkgs) {
+        if (pkgs == null) return false;
+        for (String pkg : pkgs) {
+            if (isSourceStealer(pkg)) return true;
+        }
+        return false;
+    }
+
+    /** One pane opening, so the whole set can be ordered before anything is shown. */
+    private record PaneLaunch(String label, Runnable action, boolean stealer) {
+        private PaneLaunch(String label, Runnable action, String... stealer) {
+            this(label, action, anySourceStealer(stealer));
+        }
+    }
+
+    /**
+     * Runs the pane openings with every source-stealing package first. The sort is stable, so
+     * panes that do not steal keep their configured order relative to each other.
+     */
+    private static void runOrdered(List<PaneLaunch> launches) {
+        if (launches.isEmpty()) return;
+
+        launches.sort((a, b) -> Boolean.compare(!a.stealer, !b.stealer));
+
+        StringBuilder order = new StringBuilder();
+        for (PaneLaunch l : launches) {
+            if (order.length() > 0) order.append(" -> ");
+            order.append(l.label);
+            if (l.stealer) order.append("*");
+        }
+        Log.i(TAG, "pane launch order: " + order);
+
+        runStaggered(launches, 0);
+    }
+
+    /**
+     * Runs the openings one every PANE_LAUNCH_STAGGER_MS instead of back to back.
+     *
+     * Four cold starts fired inside ~340 ms compete for the main thread, and a slow one can end up
+     * resuming AFTER the panes that were launched later -- which defeats the ordering above, since
+     * what the ROM reacts to is the last activity to gain focus.
+     */
+    private static void runStaggered(List<PaneLaunch> launches, int index) {
+        if (index >= launches.size()) return;
+
+        PaneLaunch l = launches.get(index);
+        try {
+            l.action.run();
+        } catch (Throwable t) {
+            Log.w(TAG, l.label + ": open failed", t);
+        }
+        
+        if (l.stealer) {
+            Log.i(TAG, "reassertLauncherTop() started for stealer");
+            reassertLauncherTop(LAUNCHER_TOP_REASSERTS);
+        }
+
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        launcher.handler.postDelayed(() -> runStaggered(launches, index + 1), PANE_LAUNCH_STAGGER_MS);
+    }
+
+    /**
+     * Brings the launcher back to the front after the panes are up to avoid app stealing audio focus
+     * being detected by com.syu.ms - not foolproof, but reduces chance to stop stock players
+     */
+    private static void reassertLauncherTop(int times) {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+
+        pendingReasserts = times;
+
+        if (reassertTask == null) {
+            reassertTask = new Runnable() {
+                @Override
+                public void run() {
+                    if (pendingReasserts <= 0) return;
+
+                    Launcher launcher = Launcher.getLauncher();
+                    if (launcher == null) return;
+
+                    try {
+                        if (!launcher.hasWindowFocus()) {
+                                ActivityManager am = (ActivityManager) launcher.getSystemService(Context.ACTIVITY_SERVICE);
+                                List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
+                                boolean stealerOnTop = tasks != null && !tasks.isEmpty()
+                                        && tasks.get(0).topActivity != null
+                                        && DEFAULT_SOURCE_STEALERS.contains(tasks.get(0).topActivity.getPackageName());
+
+                                if (stealerOnTop) {
+                                    am.moveTaskToFront(launcher.getTaskId(), 0);
+                                    launcher.handler.removeCallbacks(reassertTask);
+                                    pendingReasserts = 0;
+                                    Log.i(TAG, "reassertLauncherTop moved launcher to top");
+                                    return;
+                                }
+                        }
+                    } catch (Throwable t) {
+                        Log.w(TAG, "reassertLauncherTop failed, giving up", t);
+                        return; 
+                    }
+
+                    pendingReasserts--;
+                    if (pendingReasserts > 0) {
+                        launcher.handler.postDelayed(reassertTask, LAUNCHER_TOP_REASSERT_MS);
+                    }
+                }
+            };
+        }
+        launcher.handler.removeCallbacks(reassertTask);
+        launcher.handler.post(reassertTask);
+    }
+
+    /**
+     * Reparents a swapped pair with the source-stealing side going first, for the same reason
+     * the launch order matters: the steal has to land while the rebuild window is still open.
+     */
+    private static void reparentPairOrdered(ViewGroup hostA, View viewA, String pkgA,
+                                            ViewGroup hostB, View viewB, String pkgB) {
+        boolean bGoesFirst = !isSourceStealer(pkgA) && isSourceStealer(pkgB);
+        if (bGoesFirst) {
+            if (hostB != null) reparentHostChild(hostB, viewB);
+            if (hostA != null) reparentHostChild(hostA, viewA);
+        } else {
+            if (hostA != null) reparentHostChild(hostA, viewA);
+            if (hostB != null) reparentHostChild(hostB, viewB);
+        }
+    }
+
+    /** Tells NotificationListener the moment the panes are genuinely up. */
+    private static void notifyPanesSettled(int attemptsLeft) {
+        try {
+            WindowHost h = host();
+            if (h == null || h.areAllPanesRendering() || attemptsLeft <= 0) {
+                NotificationListener.onPaneRebuildSettled();
+                // Construction is over -- from here the panes belong to the user.
+                return;
+            }
+            Launcher l = Launcher.getLauncher();
+            if (l == null) {
+                NotificationListener.onPaneRebuildSettled();
+                return;
+            }
+            l.handler.postDelayed(() -> notifyPanesSettled(attemptsLeft - 1), 250);
+        } catch (Throwable t) {
+            NotificationListener.onPaneRebuildSettled();
+        }
+    }
+
+    /**
+     * Reopening the panes makes the players hosted there announce playback on
+     * their own. That is the launcher restarting them, not the user picking a
+     * new source, so the media listener has to be told before it happens.
+     */
+    private static void suppressMediaSourceSwitch() {
+        NotificationListener listener = NotificationListener.getInstance();
+        if (listener != null) {
+            listener.suppressAutoSourceSwitch();
+        }
+    }
+
+    // =====================================================================================
     // WINDOWED PIPS
     // =====================================================================================
 
@@ -404,6 +700,12 @@ public class WindowUtil {
 
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
+        
+        Workspace workspace = workspace();
+        if (workspace == null) return;
+
+        suppressMediaSourceSwitch();
+        launcher.handler.postDelayed(() -> notifyPanesSettled(PANES_SETTLED_POLLS), 250);
 
         final WindowHost previousHost = host();
         if (previousHost != null) {
@@ -411,9 +713,6 @@ public class WindowUtil {
                 previousHost.dismiss();
             } catch (Throwable ignore) {}
         }
-        
-        Workspace workspace = workspace();
-        if (workspace == null) return;
 
         dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
         firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
@@ -427,78 +726,73 @@ public class WindowUtil {
 
         firstPkg = prefs.getString(Keys.PIP_FIRST_PACKAGE, "");
         secondPkg = prefs.getString(Keys.PIP_SECOND_PACKAGE, "");
-        
+        final String thirdPkg = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
+        final String fourthPkg = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
+
+        // Collect the openings first, then run them with the source-stealing packages leading --
+        // see the LAUNCH ORDER section. Nothing is shown while the list is being built.
+        final List<PaneLaunch> launches = new ArrayList<>();
+        final String fFirstPkg = firstPkg;
+        final String fSecondPkg = secondPkg;
+
         if (dualPip && !host.isDualVisible() && !firstPipPinned && !secondPipPinned 
             && Helpers.isPackageInstalled(firstPkg) && Helpers.isPackageInstalled(secondPkg)) {    
-            try {
+            launches.add(new PaneLaunch("dual", () -> {
                 Rect rDual = getInitialPipBounds(workspace, "dual");
                 if (rDual != null) {
-                    host.showDual(firstPkg, secondPkg, rDual);
-                    Log.i(TAG, "dual: show " + firstPkg + " and " + secondPkg);
+                    host.showDual(fFirstPkg, fSecondPkg, rDual);
+                    Log.i(TAG, "dual: show " + fFirstPkg + " and " + fSecondPkg);
                 }
-            } catch (Throwable t) {
-                Log.w(TAG, "dual: open failed", t);
-            }
+            }, firstPkg, secondPkg));
         } else {
-            if (firstPip && !host.isFirstVisible() && Helpers.isPackageInstalled(firstPkg)) {
-                if (!firstPipPinned) {
-                    try {
-                        Rect rFirst = getInitialPipBounds(workspace, "first");
-                        if (rFirst != null) {
-                            host.showFirst(firstPkg, rFirst);
-                            Log.i(TAG, "first: show " + firstPkg);
-                        }
-                    } catch (Throwable t) {
-                        Log.w(TAG, "first: open failed", t);
+            if (firstPip && !firstPipPinned && !host.isFirstVisible()
+                    && Helpers.isPackageInstalled(firstPkg)) {
+                launches.add(new PaneLaunch("first", () -> {
+                    Rect rFirst = getInitialPipBounds(workspace, "first");
+                    if (rFirst != null) {
+                        host.showFirst(fFirstPkg, rFirst);
+                        Log.i(TAG, "first: show " + fFirstPkg);
                     }
-                }
+                }, firstPkg));
             }
-            
-            if (secondPip && !host.isSecondVisible() && Helpers.isPackageInstalled(secondPkg)) {
-                if (!secondPipPinned) {
-                    try {
-                        Rect rSecond = getInitialPipBounds(workspace, "second");
-                        if (rSecond != null) {
-                            host.showSecond(secondPkg, rSecond);
-                            Log.i(TAG, "second: show " + secondPkg);
-                        }
-                    } catch (Throwable t) {
-                        Log.w(TAG, "second: open failed", t);
+
+            if (secondPip && !secondPipPinned && !host.isSecondVisible()
+                    && Helpers.isPackageInstalled(secondPkg)) {
+                launches.add(new PaneLaunch("second", () -> {
+                    Rect rSecond = getInitialPipBounds(workspace, "second");
+                    if (rSecond != null) {
+                        host.showSecond(fSecondPkg, rSecond);
+                        Log.i(TAG, "second: show " + fSecondPkg);
                     }
-                }
+                }, secondPkg));
             }
         }
-        
-        final String thirdPkg = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
-        if (thirdPip && !host.isThirdVisible() && Helpers.isPackageInstalled(thirdPkg)) {
-            if (!thirdPipPinned) {
-                try {
-                    Rect rThird = getInitialPipBounds(workspace, "third");
-                    if (rThird != null) {
-                        host.showThird(thirdPkg, rThird);
-                        Log.i(TAG, "third: show " + thirdPkg);
-                    }
-                } catch (Throwable t) {
-                    Log.w(TAG, "third: open failed", t);
+
+        if (thirdPip && !thirdPipPinned && !host.isThirdVisible()
+                && Helpers.isPackageInstalled(thirdPkg)) {
+            launches.add(new PaneLaunch("third", () -> {
+                Rect rThird = getInitialPipBounds(workspace, "third");
+                if (rThird != null) {
+                    host.showThird(thirdPkg, rThird);
+                    Log.i(TAG, "third: show " + thirdPkg);
                 }
-            }
+            }, thirdPkg));
         }
-        
-        final String fourthPkg = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
-        if (fourthPip && !host.isFourthVisible() && Helpers.isPackageInstalled(fourthPkg)) {
-            if (!fourthPipPinned) {
-                try {
-                    Rect rFourth = getInitialPipBounds(workspace, "fourth");
-                    if (rFourth != null) {
-                        host.showFourth(fourthPkg, rFourth);
-                        Log.i(TAG, "fourth: show " + fourthPkg);
-                    }
-                } catch (Throwable t) {
-                    Log.w(TAG, "fourth: open failed", t);
+
+        if (fourthPip && !fourthPipPinned && !host.isFourthVisible()
+                && Helpers.isPackageInstalled(fourthPkg)) {
+            launches.add(new PaneLaunch("fourth", () -> {
+                Rect rFourth = getInitialPipBounds(workspace, "fourth");
+                if (rFourth != null) {
+                    host.showFourth(fourthPkg, rFourth);
+                    Log.i(TAG, "fourth: show " + fourthPkg);
                 }
-            }
+            }, fourthPkg));
         }
-        launcher.handler.postDelayed(() -> pumpPipBoundsUntilReady(16), 100);
+
+        runOrdered(launches);
+
+        launcher.handler.postDelayed(() -> pumpPipBoundsUntilReady(32), 100);
 
         // The previous host's ActivityViews still hold the embedded tasks. Retire them: they are
         // released only once the freshly created panes have taken those tasks over, which is what
@@ -679,6 +973,8 @@ public class WindowUtil {
     public static void restartMultiplePips() {
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
+        suppressMediaSourceSwitch();
+        launcher.handler.postDelayed(() -> notifyPanesSettled(PANES_SETTLED_POLLS), 250);
         final WindowHost host = host();
         if (host != null) {
             launcher.handler.post(() -> {
@@ -688,6 +984,149 @@ public class WindowUtil {
         }
     }
 
+    /**
+     * Cold, orderly reset of the entire PiP stack. Used where we are discarding the
+     * application state anyway, so the reaper's caution (do not release a display
+     * with a live task) is unnecessary here -- and actually harmful, because the
+     * surviving task carries stale configuration.
+     *
+     * The order is important and every step is confirmed:
+     *   1. dismiss panels and wait until the windows actually disappear,
+     *   2. host.cleanup() -> release ActivityView -> destroy VirtualDisplay together with its tasks,
+     *   3. release everything the reaper parked during previous cycles,
+     *   4. force-stop processes -- ONLY now, when there is no live display left,
+     *   5. remove remaining task records (force-stop does not always clear them),
+     *   6. wait until this is completed,
+     *   7. onDone (usually openPip).
+     */
+    public static void coldResetPipStack(final Runnable onDone) {
+        final Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) {
+            if (onDone != null) onDone.run();
+            return;
+        }
+        if (prefs == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        }
+
+        final List<String> pkgs = pipPackages();
+        Log.i(TAG, "coldResetPipStack: start, packages=" + pkgs);
+
+        launcher.handler.post(() -> {
+            try { removePip(); } catch (Throwable ignore) {}
+
+            final WindowHost oldHost = host();
+
+            final Runnable afterDismiss = () -> {
+                try { if (oldHost != null) oldHost.cleanup(); } catch (Throwable ignore) {}
+                setHost(null);
+
+                try { WindowHostAvReaper.releaseAll(); } catch (Throwable ignore) {}
+
+                lastPipBounds.clear();
+                forcePipBoundsUpdate = true;
+                lastOpenPipSignature = null;
+                lastOpenPipAtMs = 0L;
+
+                ThreadManager.getLongPool().execute(() -> {
+                    for (String pkg : pkgs) {
+                        forceStopPackageNow(pkg);
+                        removeTasksForPackage(pkg);
+                    }
+
+                    boolean clear = false;
+                    for (int i = 0; i < 12; i++) {
+                        clear = isPipStackClear(pkgs);
+                        if (clear) break;
+                        try {
+                            Thread.sleep(150);
+                        } catch (InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
+                    }
+
+                    Log.i(TAG, "coldResetPipStack: done (clear=" + clear + ")");
+                    if (onDone != null) launcher.handler.post(onDone);
+                });
+            };
+
+            if (oldHost != null) oldHost.awaitHandoff(500, afterDismiss);
+            else afterDismiss.run();
+        });
+    }
+
+    /** Packages that are actually present in the panels (dual uses FIRST and SECOND). */
+    private static List<String> pipPackages() {
+        List<String> out = new ArrayList<>();
+        try {
+            boolean dual = prefs.getBoolean(Keys.PIP_DUAL, false);
+            addPipPackage(out, (dual || prefs.getBoolean(Keys.PIP_FIRST, false)),  Keys.PIP_FIRST_PACKAGE);
+            addPipPackage(out, (dual || prefs.getBoolean(Keys.PIP_SECOND, false)), Keys.PIP_SECOND_PACKAGE);
+            addPipPackage(out, prefs.getBoolean(Keys.PIP_THIRD, false),  Keys.PIP_THIRD_PACKAGE);
+            addPipPackage(out, prefs.getBoolean(Keys.PIP_FOURTH, false), Keys.PIP_FOURTH_PACKAGE);
+        } catch (Throwable t) {
+            Log.w(TAG, "pipPackages failed", t);
+        }
+        return out;
+    }
+
+    private static void addPipPackage(List<String> out, boolean enabled, String key) {
+        if (!enabled) return;
+        String pkg = prefs.getString(key, "");
+        if (pkg != null && !pkg.isEmpty() && !out.contains(pkg)) out.add(pkg);
+    }
+
+    private static void forceStopPackageNow(String pkg) {
+        if (pkg == null || pkg.isEmpty()) return;
+        try {
+            ActivityManager am = (ActivityManager) LauncherApplication.sApp
+                    .getSystemService(Context.ACTIVITY_SERVICE);
+            Method m = am.getClass().getDeclaredMethod("forceStopPackage", String.class);
+            m.setAccessible(true);
+            m.invoke(am, pkg);
+            Log.i(TAG, "coldResetPipStack: force-stopped " + pkg);
+        } catch (Throwable t) {
+            Log.w(TAG, "coldResetPipStack: force-stop failed for " + pkg, t);
+        }
+    }
+
+    /**
+     * Removes the task records for the package. These, rather than the process itself,
+     * carry the old configuration: as long as the task exists, the next launch may
+     * simply MOVE it to the new display instead of creating it from scratch.
+     */
+    private static void removeTasksForPackage(String pkg) {
+        if (pkg == null || pkg.isEmpty()) return;
+        try {
+            Method getService = ActivityManager.class.getMethod("getService");
+            Object am = getService.invoke(null);
+            if (am == null) return;
+
+            Method removeTask = am.getClass().getMethod("removeTask", int.class);
+            removeTask.setAccessible(true);
+
+            for (int i = 0; i < 4; i++) {
+                int taskId = WindowHostActivityView.getTaskIdForPackage(LauncherApplication.sApp, pkg);
+                if (taskId < 0) return;
+                removeTask.invoke(am, taskId);
+                Log.i(TAG, "coldResetPipStack: removed task " + taskId + " of " + pkg);
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "coldResetPipStack: removeTask failed for " + pkg, t);
+        }
+    }
+
+    /** Checks whether none of the packages has a live process or task record anymore. Called from a background thread. */
+    private static boolean isPipStackClear(List<String> pkgs) {
+        for (String pkg : pkgs) {
+            if (WindowHostActivityView.isProcessAlive(LauncherApplication.sApp, pkg)) return false;
+            if (WindowHostActivityView.getTaskIdForPackage(LauncherApplication.sApp, pkg) >= 0) return false;
+        }
+        return true;
+    }
+
+
     // =====================================================================================
     // PINNED PIP
     // =====================================================================================
@@ -696,6 +1135,10 @@ public class WindowUtil {
         if (!LauncherApplication.isFytDevice()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
+        suppressMediaSourceSwitch();
+        // Without this the rebuild window here only expires on its 2.5 s timer, and a user
+        // pressing play inside it is discarded as "pane rebuild, not a source switch".
+        launcher.handler.postDelayed(() -> notifyPanesSettled(PANES_SETTLED_POLLS), 250);
         if (helpers == null) {
             helpers = new Helpers();
         }
@@ -951,7 +1394,6 @@ public class WindowUtil {
             int covers = coverForRightAndFourthSwap() + coverForLeftAndThirdSwap();
 
             if (covers <= 0) {
-                // Nie ma czego zaslaniac -- stara sciezka.
                 swapRightAndFourth();
                 new Handler(Looper.getMainLooper()).postDelayed(WindowUtil::swapLeftAndThird, 100);
                 return;
@@ -960,7 +1402,6 @@ public class WindowUtil {
             WindowHostSplash.beginSyncedReveal(covers, 4000L);
 
             final Handler main = new Handler(Looper.getMainLooper());
-            // Zapas na narysowanie zaslon, ZANIM watek glowny zostanie zablokowany przez swap.
             main.postDelayed(() -> {
                 try {
                     swapRightAndFourth();
@@ -1142,6 +1583,9 @@ public class WindowUtil {
                             final Object thirdRef = third;
                             final ViewGroup dualLeftHostFinal = dualLeftHost;
                             final ViewGroup thirdHostFinal = thirdHost;
+                            // The views trade places, so each host now holds the other package.
+                            final String pkgNowInDualLeft = oldThirdPkg;
+                            final String pkgNowInThird = oldDualLeftPkg;
 
                             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                                 try {
@@ -1150,8 +1594,10 @@ public class WindowUtil {
                                     View newViewForDualLeft = asView(newDualLeftAV);
                                     View newViewForThird = asView(newThirdAv);
 
-                                    if (dualLeftHostFinal != null) reparentHostChild(dualLeftHostFinal, newViewForDualLeft);
-                                    if (thirdHostFinal != null)    reparentHostChild(thirdHostFinal, newViewForThird);
+                                    // After the swap dual.left holds what used to be in third,
+                                    // and vice versa -- so the packages travel with the views.
+                                    reparentPairOrdered(dualLeftHostFinal, newViewForDualLeft, pkgNowInDualLeft,
+                                                        thirdHostFinal, newViewForThird, pkgNowInThird);
 
                                     // Force the dual pane to recompute correct per-pane geometry
                                     // (portrait-safe/supersample vs plain match-parent) for the
@@ -1267,6 +1713,8 @@ public class WindowUtil {
 
                             final Object firstRef = first;
                             final Object thirdRef = third;
+                            final String pkgNowInFirst = thirdPkgOld;
+                            final String pkgNowInThird = firstPkgOld;
                             final ViewGroup firstHostFinal = firstHost;
                             final ViewGroup thirdHostFinal = thirdHost;
 
@@ -1277,8 +1725,8 @@ public class WindowUtil {
                                     View newViewForFirst = asView(newFirstAv);
                                     View newViewForThird = asView(newThirdAv);
 
-                                    if (firstHostFinal != null) reparentHostChild(firstHostFinal, newViewForFirst);
-                                    if (thirdHostFinal != null) reparentHostChild(thirdHostFinal, newViewForThird);
+                                    reparentPairOrdered(firstHostFinal, newViewForFirst, pkgNowInFirst,
+                                                        thirdHostFinal, newViewForThird, pkgNowInThird);
 
                                     resyncAfterSwap(firstRef, thirdRef);
                                 } catch (Throwable t) {
@@ -1422,6 +1870,8 @@ public class WindowUtil {
 
                             final Object dualRef = dual;
                             final Object fourthRef = fourth;
+                            final String pkgNowInDualRight = oldFourthPkg;
+                            final String pkgNowInFourth = oldDualRightPkg;
                             final ViewGroup dualRightHostFinal = dualRightHost;
                             final ViewGroup fourthHostFinal = fourthHost;
                             new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -1431,8 +1881,8 @@ public class WindowUtil {
                                     View newViewForDualRight = asView(newDualRightAV);
                                     View newViewForFourth = asView(newFourthAv);
 
-                                    if (dualRightHostFinal != null) reparentHostChild(dualRightHostFinal, newViewForDualRight);
-                                    if (fourthHostFinal != null)   reparentHostChild(fourthHostFinal, newViewForFourth);
+                                    reparentPairOrdered(dualRightHostFinal, newViewForDualRight, pkgNowInDualRight,
+                                                        fourthHostFinal, newViewForFourth, pkgNowInFourth);
 
                                     resyncAfterSwap(dualRef, fourthRef);
                                 } catch (Throwable t) {
@@ -1542,6 +1992,8 @@ public class WindowUtil {
 
                             final Object secondRef = second;
                             final Object fourthRef = fourth;
+                            final String pkgNowInSecond = fourthPkgOld;
+                            final String pkgNowInFourth = secondPkgOld;
                             final ViewGroup secondHostFinal = secondHost;
                             final ViewGroup fourthHostFinal = fourthHost;
                             new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -1551,8 +2003,8 @@ public class WindowUtil {
                                     View newViewForSecond = asView(newSecondAv);
                                     View newViewForFourth = asView(newFourthAv);
 
-                                    if (secondHostFinal != null) reparentHostChild(secondHostFinal, newViewForSecond);
-                                    if (fourthHostFinal != null) reparentHostChild(fourthHostFinal, newViewForFourth);
+                                    reparentPairOrdered(secondHostFinal, newViewForSecond, pkgNowInSecond,
+                                                        fourthHostFinal, newViewForFourth, pkgNowInFourth);
 
                                     resyncAfterSwap(secondRef, fourthRef);
                                 } catch (Throwable t) {
