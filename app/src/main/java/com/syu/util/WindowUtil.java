@@ -583,7 +583,7 @@ public class WindowUtil {
         }
         
         if (l.stealer) {
-            Log.i(TAG, "reassertLauncherTop() started for stealer");
+            Log.i(TAG, "reassertLauncherTop() started for stealer in windowed PiP");
             reassertLauncherTop(LAUNCHER_TOP_REASSERTS);
         }
 
@@ -1215,6 +1215,10 @@ public class WindowUtil {
         if (currentScreen == pipScreen && launcher.mAppsCustomizeTabHost != null
                 && !helpers.allAppsVisibility(launcher.mAppsCustomizeTabHost.getVisibility())) {
             String currentPackage = SystemProperties.get("persist.launcher.packagename", "");
+            if (DEFAULT_SOURCE_STEALERS.contains(packageName)) {
+                Log.i(TAG, "reassertLauncherTop() started for stealer in pinned PiP");
+                reassertLauncherTop(LAUNCHER_TOP_REASSERTS);
+            }
             if (!packageName.equals(currentPackage) || checkIfMapSizeChanged(pipKey)) {
                 // save previous values
                 editor.putInt("prevPinnedPipTopLeftX", prefs.getInt(pipKey + "TopLeftX", 107));  
