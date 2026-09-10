@@ -305,6 +305,8 @@
     <string name="youtube_revanced_kids_off">由于 YouTube API 的错误，madeForKids=true 的视频无法正确反映点赞状态 - 在 YouTube 中已点赞的视频会在小组件中显示为未点赞。为避免造成混淆，收藏按钮将被禁用。</string>
     <string name="copy_patch_url">点击以复制适用于 ReVanced Manager 的“Expose like status in MediaSession”补丁链接</string>
     <string name="url_copied">链接已复制到剪贴板</string>
+    <string name="fyt_rating_revanced_installed">YouTube ReVanced：已安装</string>
+    <string name="fyt_rating_revanced_not_installed">YouTube ReVanced：未安装，请下载 ReVanced Manager 以安装该应用</string>
     <string name="fyt_rating_installed">fYT Rating：已安装</string>
     <string name="fyt_rating_not_installed">fYT Rating：未安装，双击前往下载页面</string>
     <string name="fyt_rating_state_unavailable">请安装 fYT Rating 以读取点赞状态</string>

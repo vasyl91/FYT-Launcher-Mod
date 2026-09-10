@@ -612,6 +612,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 FytRating.handlePreferenceClick(requireActivity());
                 break;
             case Keys.YOUTUBE_REVANCED_KIDS:
+            case Keys.FAVORITE_CACHE:
+                // Both decide whether the favorite button is drawn greyed out,
+                // so the widget is redrawn straight away rather than at
+                // whatever it would have ticked next.
                 MediaFavoriteController.refreshWidget(requireContext());
                 break;
             case Keys.COPY_PATCH_URL:

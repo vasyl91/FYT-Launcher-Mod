@@ -305,6 +305,8 @@
     <string name="youtube_revanced_kids_off">Videos that return madeForKids=true never correctly reflect the like state due to a YouTube API bug - videos liked on YouTube appear as not liked in the widget. The Favorite button will be disabled to prevent confusion.</string>
     <string name="copy_patch_url">Tap to copy the URL of the „Expose like status in MediaSession” patch for ReVanced Manager</string>
     <string name="url_copied">URL copied to clipboard</string>
+    <string name="fyt_rating_revanced_installed">YouTube ReVanced: installed</string>
+    <string name="fyt_rating_revanced_not_installed">YouTube ReVanced: not installed, download the ReVanced Manager to install the app</string>
     <string name="fyt_rating_installed">fYT Rating: installed</string>
     <string name="fyt_rating_not_installed">fYT Rating: not installed, double-click to go to the download page</string>
     <string name="fyt_rating_state_unavailable">Install fYT Rating to read the like status</string>

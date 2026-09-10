@@ -164,6 +164,8 @@
     <string name="youtube_revanced_kids_off">Filmy z wartością madeForKids=true, nieprawidłowo odzwierciedlają stan polubienia z powodu błędu w YouTube API - filmy polubione w YouTube są wyświetlane w widżecie jako niepolubione. Przycisk Ulubione zostanie wyłączony, aby uniknąć nieporozumień</string>
     <string name="copy_patch_url">Kliknij, aby skopiować link do patcha „Expose like status in MediaSession” dla Revanced Manager</string>
     <string name="url_copied">Link został skopiowany do schowka</string>
+    <string name="fyt_rating_revanced_installed">YouTube ReVanced: zainstalowany</string>
+    <string name="fyt_rating_revanced_not_installed">YouTube ReVanced: niezainstalowany, pobierz ReVanced Manager, aby zainstalować aplikację</string>
     <string name="fyt_rating_installed">fYT Rating: zainstalowane</string>
     <string name="fyt_rating_not_installed">fYT Rating: niezainstalowane, kliknij dwukrotnie aby przejść do strony pobierania</string>
     <string name="fyt_rating_state_unavailable">Zainstaluj fYT Rating, aby odczytać status polubienia</string>

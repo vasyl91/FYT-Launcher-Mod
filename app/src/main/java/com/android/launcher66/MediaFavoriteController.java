@@ -60,9 +60,34 @@ public final class MediaFavoriteController {
     private static final String YOUTUBE_MUSIC_REVANCED_PACKAGE = "app.revanced.android.apps.youtube.music";
     private static final ExecutorService FAVORITE_CACHE_EXECUTOR = Executors.newSingleThreadExecutor();
 
-    /** True once the user has granted access to the YouTube Data API. */
+    /**
+     * How long the answer below is reused before the bridge state is consulted
+     * again. It only changes when the user signs in or grants access, so half a
+     * second of lag is nothing; what it saves is a package manager round trip
+     * per call, several times per draw.
+     */
+    private static final long OAUTH_ANSWER_MAX_AGE_MS = 500L;
+    private static volatile boolean oauthAnswer;
+    private static volatile long oauthAnswerAtMs;
+
+    /**
+     * True once the user has granted access to the YouTube Data API.
+     *
+     * Asked from the rules that decide whether the button is greyed out, which
+     * run on the main thread on every draw and several times over, so the
+     * answer is held for a moment rather than looked up again each time.
+     * FytRating still hears from this often enough to keep refreshing its own
+     * state in the background.
+     */
     private static boolean isLoggedOAuth() {
-        return FytRating.isLoggedIn(LauncherApplication.sApp);
+        long now = SystemClock.elapsedRealtime();
+        if (oauthAnswerAtMs != 0L && now - oauthAnswerAtMs < OAUTH_ANSWER_MAX_AGE_MS) {
+            return oauthAnswer;
+        }
+        boolean answer = FytRating.isLoggedIn(LauncherApplication.sApp);
+        oauthAnswer = answer;
+        oauthAnswerAtMs = now;
+        return answer;
     }
 
     private static final boolean isMediaDebug = false;
@@ -88,6 +113,16 @@ public final class MediaFavoriteController {
             "com.android.launcher66.LIKE_STATUS";
 
     private static volatile long lastSeenLikeEventSeq = 0L;
+
+    /**
+     * The video the last usable like status was published for.
+     *
+     * Kept so the first publication for a video can be told apart from the
+     * ones after it, which is the only thing that distinguishes what YouTube
+     * loaded the video with from what the user then did to it.
+     */
+    private static volatile String lastLikeStatusVideoId;
+
     private static boolean ratingFetcherReported = false;
 
     private MediaFavoriteController() {
@@ -129,12 +164,17 @@ public final class MediaFavoriteController {
         int stateBefore = getCurrentFavoriteState(context, preferredPackage);
         int expected = getExpectedStateAfterToggle(stateBefore);
 
+        // The Data API is the only write that reaches the account, so it is
+        // used on its own here. Sending the rating over the media session as
+        // well would make YouTube fire its own request, which lands after
+        // ours and stores the rating where the API cannot see it.
+        //
+        // The cache being usable means the opposite is true: no account can be
+        // reached right now, so there is nothing to write to and the session
+        // rating plus the cache is all this press can amount to.
         if (isYouTubePackage(controller.getPackageName())
-                && YouTubeRevancedLikeState.hasFetcher()) {
-            // The Data API is the only write that reaches the account, so it is
-            // used on its own here. Sending the rating over the media session as
-            // well would make YouTube fire its own request, which lands after
-            // ours and stores the rating where the API cannot see it.
+                && YouTubeRevancedLikeState.hasFetcher()
+                && !isFavoriteCacheUsable(YOUTUBE_REVANCED_PACKAGE)) {
             String videoId = findVideoId(controller);
             if (videoId == null || videoId.isEmpty()) {
                 return false;
@@ -161,8 +201,12 @@ public final class MediaFavoriteController {
         if (sent) {
             if (isYouTubePackage(controller.getPackageName())) {
                 // No account connected: the session rating is all there is, and
-                // it only updates YouTube's own interface.
-                YouTubeRevancedLikeState.setState(findVideoId(controller), expected);
+                // it only updates YouTube's own interface. The status is kept
+                // here and, when the switch allows it, written to the cache -
+                // the only copy that survives the track changing.
+                String videoId = findVideoId(controller);
+                YouTubeRevancedLikeState.setState(videoId, expected);
+                cacheYouTubeFavoriteState(context, videoId, expected);
             } else {
                 cachePublicFavoriteState(context, controller, expected);
             }
@@ -207,15 +251,62 @@ public final class MediaFavoriteController {
         if (isYouTubePackage(controller.getPackageName())) {
             String videoId = findVideoId(controller);
 
+            // The session is already in hand here, so this is where the id the
+            // greying rule reads comes from; it costs nothing extra.
+            noteRevancedVideoId(videoId);
+
+            // Read before anything else has a chance to fill the status in.
+            // What the launcher recorded itself is worth more than the status
+            // YouTube publishes as a video loads, which is a statement about a
+            // video it has only just opened.
+            if (isFavoriteCacheUsable(YOUTUBE_REVANCED_PACKAGE)
+                    && YouTubeRevancedLikeState.getResolvedState(videoId)
+                            == FAVORITE_STATE_UNKNOWN) {
+                int cached = getCachedYouTubeFavoriteState(context, videoId);
+                if (cached != FAVORITE_STATE_UNKNOWN) {
+                    YouTubeRevancedLikeState.setState(videoId, cached);
+                }
+            }
+
             // The published USER_RATING is never consulted here. A rating sent
             // by the launcher takes a different path inside YouTube than a tap
             // in its own UI, so that value stays stale until the next track and
             // would undo what the user just did. The status is tracked for the
             // current video only and starts over whenever playback moves on.
-            applyInAppLikeEvent(controller, videoId);
+            applyInAppLikeEvent(context, controller, videoId);
 
             ensureRatingFetcher(context);
             YouTubeRevancedLikeState.requestRefresh(videoId);
+
+            // Made for kids while the switch keeps those unrated: the button is
+            // greyed out and nothing below - neither a resolved status nor the
+            // cache - may put a state back on it.
+            if (isKidsRatingBlocked(videoId)) {
+                // A deliberate refusal is not a stall. Left to the watchdog it
+                // would read as a bridge that had stopped answering, and every
+                // few minutes it would start rebuilding one that is fine.
+                clearStallState();
+                return FAVORITE_STATE_UNKNOWN;
+            }
+
+            // Nothing here can produce a status: no account to ask, and the
+            // cache switched off. Reported as unknown so the state the widget
+            // draws says the same thing the disabled button does - including
+            // for a status left in memory from before the switch was turned
+            // off, which would otherwise keep showing on a dead button until
+            // the track changed.
+            if (isRevancedFavoriteDisabled(videoId) && !isLoggedOAuth()) {
+                clearStallState();
+                return FAVORITE_STATE_UNKNOWN;
+            }
+
+            // Kept only where the switch allows it.
+            if (isFavoriteCacheUsable(YOUTUBE_REVANCED_PACKAGE)) {
+                int known = YouTubeRevancedLikeState.getResolvedState(videoId);
+                if (known != FAVORITE_STATE_UNKNOWN) {
+                    cacheYouTubeFavoriteState(context, videoId, known);
+                }
+            }
 
             int resolved = YouTubeRevancedLikeState.getState(videoId);
             noteYouTubeState(videoId, resolved);
@@ -231,6 +322,19 @@ public final class MediaFavoriteController {
         return getCachedPublicFavoriteState(context, controller);
     }
 
+    /**
+     * Whether the favorite button has to be drawn greyed out and refuse presses.
+     *
+     * The rules are ordered, and the first one that applies decides. Both
+     * preferences are read here and in {@link #isRevancedFavoriteDisabled},
+     * which the read path shares so the two cannot drift apart:
+     *
+     *   - Keys.YOUTUBE_REVANCED_KIDS off greys the button on a video the bridge
+     *     reported as made for kids, and nothing further down may undo that.
+     *   - Keys.FAVORITE_CACHE decides ReVanced only where there is no account
+     *     to ask, and stock YouTube always, since neither has a rating the
+     *     launcher can read off the session.
+     */
     public static boolean isFavoriteTemporarilyDisabledPackage(String packageName) {
         // The stock player exposes no rating of any kind, so there is nothing
         // the button could act on while it is the source. Checked first,
@@ -239,58 +343,153 @@ public final class MediaFavoriteController {
             return true;
         }
 
-        // Videos made for kids expose no rating at all: YouTube reports "none"
-        // however they were rated. The button is disabled for them, the same
-        // way it is for a player whose state cannot be read.
-        if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)
-                && YouTubeRevancedLikeState.isCurrentMadeForKids()
-                && !isKidsRatingAllowed()) {
-            return true;
+        if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)) {
+            // Read off the session rather than taken from the last state
+            // lookup. The id that lookup leaves behind belongs to whichever
+            // video was asked about last, so on this path - which the widget
+            // reaches without having read a state first, and always does right
+            // after a track change - it was routinely the previous video. The
+            // made for kids flag was then compared against the wrong id, came
+            // back false, and the button was drawn enabled on a video the
+            // switch was supposed to grey out.
+            return isRevancedFavoriteDisabled(currentRevancedVideoId());
         }
 
-        // With an account connected the status arrives a moment after the track
-        // starts. Until then the button is disabled: an enabled one would send
-        // a rating derived from a state nobody has confirmed yet.
-        //
-        // Videos made for kids are the exception. Their status never resolves,
-        // because YouTube reports no rating for them at all, so this rule would
-        // keep the button disabled for good and override the preference that is
-        // supposed to control exactly that.
-        if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)
-                && YouTubeRevancedLikeState.hasFetcher()
-                && !YouTubeRevancedLikeState.isCurrentMadeForKids()
-                && !YouTubeRevancedLikeState.isCurrentStateResolved()) {
+        if (YOUTUBE_PACKAGE.equals(packageName)) {
+            // Stock YouTube publishes nothing the launcher can read a rating
+            // from and there is no patch to ask, so its status only ever comes
+            // out of the cache.
+            return !isFavoriteCacheEnabled();
+        }
+
+        return false;
+    }
+
+    /**
+     * The same rule for a video already in hand.
+     *
+     * Kept apart so the read path can ask it about the video it is holding,
+     * without another session lookup and without the two drifting: the state
+     * the widget draws from and the rule that greys the button have to agree,
+     * or the button ends up lit with nothing behind it.
+     */
+    private static boolean isRevancedFavoriteDisabled(String videoId) {
+        boolean madeForKids = YouTubeRevancedLikeState.isMadeForKids(videoId);
+
+        // Videos made for kids expose no rating at all: YouTube reports "none"
+        // however they were rated. Whether that greys the button or shows them
+        // as unrated is the switch's decision, and it is taken before anything
+        // else so no later rule can override it.
+        if (madeForKids && !isKidsRatingAllowed()) {
             pokeRevanced();
             return true;
         }
 
-        if (mPrefs == null) {
-            mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-        }
-        if (mPrefs.getBoolean(Keys.FAVORITE_CACHE, false)) {
-            // A resolved status means the bridge answered a rating request for
-            // this very video moments ago. That is direct evidence about the
-            // permission, and it outranks the cached flag below - which is what
-            // goes stale. Without this, a wrong refusal kept the button dead
-            // even while the lookups behind it were succeeding.
-            if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)
-                    && YouTubeRevancedLikeState.isCurrentStateResolved()) {
+        if (isLoggedOAuth()) {
+            // The account is the only truth about a like, and the status
+            // arrives a moment after the track starts. Until it does the button
+            // is disabled: an enabled one would send a rating derived from a
+            // state nobody has confirmed yet. This is meant to be visible - a
+            // greyed out button is how the launcher says it has not heard back
+            // from the bridge yet - so nothing here should stand in for the
+            // answer to make it light up sooner.
+            //
+            // Videos made for kids are the exception, and the switch has just
+            // said they are wanted. Their status never resolves, so this rule
+            // would hold the button grey for good and take the decision back
+            // off the switch that had made it.
+            if (madeForKids || YouTubeRevancedLikeState.isStateResolved(videoId)) {
                 return false;
             }
-            if (isLoggedOAuth()) {
-                // YouTube ENABLED in settings and user granted permission to OAuth to get like state for YouTube Revanced
-                return false;
-            } else {
-                // YouTube ENABLED in settings, not logged in OAuth
-                return YOUTUBE_REVANCED_PACKAGE.equals(packageName);
-            }
-        } else if (isLoggedOAuth()) {
-            // YouTube DISABLED in settings and user granted permission to OAuth to get like state for YouTube Revanced
-            return YOUTUBE_PACKAGE.equals(packageName);
-        } else {
-            // YouTube DISABLED in settings, not logged in OAuth
-            return YOUTUBE_PACKAGE.equals(packageName) || YOUTUBE_REVANCED_PACKAGE.equals(packageName);
+            pokeRevanced();
+            return true;
         }
+
+        // A status resolved for this very video means the bridge answered a
+        // request for it moments ago. That is direct evidence, and it outranks
+        // the permission flag - which is what goes stale. Without this, one
+        // wrong refusal kept the button dead even while the lookups behind it
+        // were succeeding.
+        if (YouTubeRevancedLikeState.hasFetcher()
+                && YouTubeRevancedLikeState.isStateResolved(videoId)) {
+            return false;
+        }
+
+        // fYT Rating missing, signed out or not granted access: the cache is
+        // the only place a status could come from, so the switch decides
+        // whether the button does anything at all.
+        return !isFavoriteCacheEnabled();
+    }
+
+    /**
+     * Whether the switch keeps this video unrated.
+     *
+     * Only ever true for a video the bridge reported as made for kids, so an
+     * off switch has no effect on anything else.
+     */
+    private static boolean isKidsRatingBlocked(String videoId) {
+        return YouTubeRevancedLikeState.isMadeForKids(videoId) && !isKidsRatingAllowed();
+    }
+
+    /** How long a resolved video id is reused before the session is asked again. */
+    private static final long REVANCED_VIDEO_ID_MAX_AGE_MS = 1000L;
+    private static volatile String revancedVideoId;
+    private static volatile long revancedVideoIdAtMs;
+
+    /** Records a video id resolved by a caller that had the session in hand. */
+    private static void noteRevancedVideoId(String videoId) {
+        if (videoId == null || videoId.isEmpty()) {
+            return;
+        }
+        revancedVideoId = videoId;
+        revancedVideoIdAtMs = SystemClock.elapsedRealtime();
+    }
+
+    /**
+     * The video ReVanced is playing right now.
+     *
+     * Answered from what the read path last resolved, which is a moment old at
+     * worst: the widget reads the state on every draw and on every metadata
+     * change, and that is where the id comes from.
+     *
+     * Reading it here from the session instead would put two binder round trips
+     * - the session list, and the queue behind findVideoId, which reaches into
+     * the YouTube process - on a rule the widget asks several times per draw,
+     * on the main thread. That is not a cost this rule can carry.
+     *
+     * Falls back to the id of the last state lookup when the session cannot be
+     * read at all, which is the one case where there is nothing better to go on.
+     */
+    private static String currentRevancedVideoId() {
+        long now = SystemClock.elapsedRealtime();
+        if (revancedVideoIdAtMs != 0L
+                && now - revancedVideoIdAtMs < REVANCED_VIDEO_ID_MAX_AGE_MS) {
+            String remembered = revancedVideoId;
+            return remembered != null
+                    ? remembered
+                    : YouTubeRevancedLikeState.getLastQueriedVideoId();
+        }
+
+        String videoId = null;
+        try {
+            MediaController controller = findRevancedController(LauncherApplication.sApp);
+            if (controller != null) {
+                videoId = findVideoId(controller);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Could not read the video id from the ReVanced session", e);
+        }
+
+        if (videoId != null && !videoId.isEmpty()) {
+            noteRevancedVideoId(videoId);
+            return videoId;
+        }
+
+        // Remembered as well, so a session that cannot answer is not asked
+        // again on the next draw either.
+        revancedVideoId = null;
+        revancedVideoIdAtMs = now;
+        return YouTubeRevancedLikeState.getLastQueriedVideoId();
     }
 
     private static MediaController getTargetController(Context context, String preferredPackage) {
@@ -399,13 +598,10 @@ public final class MediaFavoriteController {
      * resolve, and the button stayed grey until the launcher was restarted.
      */
     private static boolean isUnsupportedFavoritePackage(String packageName) {
-        if (mPrefs == null) {
-            mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-        }
-
-        if (mPrefs.getBoolean(Keys.FAVORITE_CACHE, false)) {
-            // YouTube enabled in settings: the ReVanced session is kept
-            // whatever the bridge currently says about permissions.
+        if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)) {
+            // The session is kept whenever anything could ever produce a status
+            // for it - an account or the cache - and whatever the bridge
+            // currently says about permissions.
             //
             // Hiding it used to be conditional on a cached "not allowed", and
             // that removed three things at once: the click, the state read and
@@ -415,22 +611,19 @@ public final class MediaFavoriteController {
             // anything was wrong - curable only by restarting the launcher,
             // which is exactly what cleared the cached answer.
             //
-            // Nothing is lost by keeping it. An account that really is missing
-            // leaves the status unresolved, the button unlit, and a press
-            // refused with a reason in the log.
-            //
-            // Still asked, because it is what starts a stale status being
-            // rechecked in the background.
-            isLoggedOAuth();
-            return false;
+            // Asked first and unconditionally, because it is what starts a
+            // stale status being rechecked in the background.
+            boolean account = isLoggedOAuth();
+            return !account && !isFavoriteCacheEnabled();
         }
 
-        // YouTube disabled in settings.
-        if (isLoggedOAuth()) {
-            return YOUTUBE_PACKAGE.equals(packageName);
+        if (YOUTUBE_PACKAGE.equals(packageName)) {
+            // Nothing to read a rating from and no patch to ask, so with the
+            // cache off there is no status for it anywhere.
+            return !isFavoriteCacheEnabled();
         }
-        return YOUTUBE_PACKAGE.equals(packageName)
-                || YOUTUBE_REVANCED_PACKAGE.equals(packageName);
+
+        return false;
     }
 
     /** Not more than one rebind request per minute; the system coalesces them anyway. */
@@ -532,7 +725,7 @@ public final class MediaFavoriteController {
             sessions.append("unreadable: ").append(e);
         }
 
-        Log.w(TAG, "ReVanced " + reason
+        String line = "ReVanced " + reason
                 + "; preferred=" + preferredPackage
                 + " revancedSession=" + revancedPresent
                 + " listener=" + (NotificationListener.getInstance() != null)
@@ -542,7 +735,16 @@ public final class MediaFavoriteController {
                 + " statusKnown=" + FytRating.isStatusKnown()
                 + " signedIn=" + FytRating.isSignedIn()
                 + " allowed=" + FytRating.isAllowed()
-                + " | " + YouTubeRevancedLikeState.describe());
+                + " | " + YouTubeRevancedLikeState.describe();
+
+        // A lookup still running is the ordinary case after a track change and
+        // reads as a fault at warning level. What deserves one is a status that
+        // is unresolved with nothing on its way to resolve it.
+        if (YouTubeRevancedLikeState.isFetchInFlight()) {
+            Log.d(TAG, line);
+        } else {
+            Log.w(TAG, line);
+        }
     }
 
     /**
@@ -651,6 +853,7 @@ public final class MediaFavoriteController {
             if (videoId == null || videoId.isEmpty()) {
                 return;
             }
+            noteRevancedVideoId(videoId);
 
             ensureRatingFetcher(context);
             YouTubeRevancedLikeState.requestRefresh(videoId);
@@ -687,9 +890,7 @@ public final class MediaFavoriteController {
         long now = SystemClock.elapsedRealtime();
 
         if (state != FAVORITE_STATE_UNKNOWN) {
-            stallVideoId = null;
-            stallSinceMs = 0L;
-            recoveryAttempts = 0;
+            clearStallState();
             return;
         }
 
@@ -747,6 +948,20 @@ public final class MediaFavoriteController {
         }
 
         stallSinceMs = now;
+    }
+
+    /**
+     * Forgets a stall in progress.
+     *
+     * Also used where the status is deliberately left unresolved - a video made
+     * for kids while the switch keeps those unrated - so the watchdog cannot
+     * read a settled refusal as a bridge that has stopped answering and start
+     * rebuilding a perfectly healthy one every few minutes.
+     */
+    private static void clearStallState() {
+        stallVideoId = null;
+        stallSinceMs = 0L;
+        recoveryAttempts = 0;
     }
 
     private static boolean isExternalPackage(String packageName) {
@@ -1026,6 +1241,29 @@ public final class MediaFavoriteController {
      * dimension keys the same way. Routing the key through a parameter stops
      * the annotation check from firing on a constant it cannot accept.
      */
+    /**
+     * What the extension's like status number means.
+     *
+     * Written out because these numbers are not the launcher's own: 0 here is
+     * "not rated", while 0 in a state is "unknown". Two scales sharing digits
+     * in the same log is a way to read it wrong.
+     */
+    private static String describeLikeStatus(long status) {
+        if (status == -1L) {
+            return "cleared";
+        }
+        if (status == 0L) {
+            return "none";
+        }
+        if (status == 1L) {
+            return "like";
+        }
+        if (status == 2L) {
+            return "dislike";
+        }
+        return "unrecognised";
+    }
+
     private static String describePublicState(int state) {
         return switch (state) {
             case FAVORITE_STATE_FAVORITED -> "FAVORITED";
@@ -1042,7 +1280,8 @@ public final class MediaFavoriteController {
         }
     }
 
-    private static void applyInAppLikeEvent(MediaController controller, String videoId) {
+    private static void applyInAppLikeEvent(
+            Context context, MediaController controller, String videoId) {
         if (videoId == null || videoId.isEmpty()) {
             return;
         }
@@ -1070,20 +1309,54 @@ public final class MediaFavoriteController {
         // -1 = cleared, 0 = none, 1 = like, 2 = dislike, as published by the
         // extension. A cleared status accompanies a track change rather than a
         // user action, so nothing is decided from it: the real status is looked
-        // up instead, and until it arrives the button stays disabled.
+        // up instead, and until it arrives the button stays disabled. It is
+        // also not the publication the baseline below is waiting for.
         long status = readCustomLong(metadata, KEY_LIKE_STATUS);
         if (status < 0L) {
             Log.d(TAG, "Like status cleared for " + videoId + ", waiting for the API");
             return;
         }
 
+        boolean firstForVideo = !videoId.equals(lastLikeStatusVideoId);
+        lastLikeStatusVideoId = videoId;
+
         int state = status == 1L ? FAVORITE_STATE_FAVORITED : FAVORITE_STATE_NOT_FAVORITED;
 
+        // The first status published for a video is the one YouTube loaded it
+        // with, and it arrives with a bumped sequence exactly like a tap does -
+        // there is nothing in it that says which of the two it was.
+        //
+        // Where it says "liked" that does not matter: nothing else invents a
+        // like, so it can only be true. Anything else cannot be acted on. A
+        // video whose rating YouTube has not resolved yet publishes the same 0
+        // as one the user has genuinely never rated, and taking that at face
+        // value overwrites the like the Data API is in the middle of
+        // confirming - which is how a liked video came to be shown as unrated a
+        // second after it started playing, and how that same 0 then reached the
+        // cache.
+        //
+        // Nothing stands in for it in the meantime. A status the bridge has not
+        // confirmed leaves the button greyed out, deliberately, and a guess put
+        // there to fill the gap would take that decision away.
+        if (firstForVideo && state != FAVORITE_STATE_FAVORITED) {
+            Log.d(TAG, "First like status for " + videoId + " is "
+                    + describeLikeStatus(status)
+                    + " (event #" + seq + "); kept as a baseline, not applied,"
+                    + " the lookup decides");
+            return;
+        }
+
         Log.d(TAG, "In-app like event #" + seq
-                + ": status=" + status
+                + ": status=" + describeLikeStatus(status)
                 + " -> " + describePublicState(state)
-                + " for " + videoId);
+                + " for " + videoId
+                + (firstForVideo ? " (first published for it)" : ""));
         YouTubeRevancedLikeState.setState(videoId, state);
+
+        // A like made inside YouTube is a status like any other, so it is kept
+        // wherever the current one is kept. Without an account that is the
+        // cache, and only while the switch is on.
+        cacheYouTubeFavoriteState(context, videoId, state);
     }
 
     /**
@@ -1135,10 +1408,43 @@ public final class MediaFavoriteController {
      * user pick the other behaviour.
      */
     private static boolean isKidsRatingAllowed() {
+        return preference(Keys.YOUTUBE_REVANCED_KIDS);
+    }
+
+    /**
+     * Whether the launcher may keep a like status of its own.
+     *
+     * The switch alone. Whether the cache is the right place for a given
+     * player is {@link #isFavoriteCacheUsable}.
+     */
+    private static boolean isFavoriteCacheEnabled() {
+        return preference(Keys.FAVORITE_CACHE);
+    }
+
+    /**
+     * Whether the cache may be read or written for this player.
+     *
+     * ReVanced is the exception. Once fYT Rating is installed, signed in and
+     * has granted access, the account is the only truth about a like: it can
+     * be changed from any other device, and a value kept here could only ever
+     * contradict it. The switch is then ignored and the cache stays off for
+     * that package, whatever it is set to.
+     */
+    private static boolean isFavoriteCacheUsable(String packageName) {
+        if (!isFavoriteCacheEnabled()) {
+            return false;
+        }
+        if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)) {
+            return !isLoggedOAuth();
+        }
+        return true;
+    }
+
+    private static boolean preference(String key) {
         if (mPrefs == null) {
             mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
         }
-        return mPrefs.getBoolean(Keys.YOUTUBE_REVANCED_KIDS, false);
+        return mPrefs.getBoolean(key, false);
     }
 
     public static void refreshWidget(Context context) {
@@ -1225,10 +1531,18 @@ public final class MediaFavoriteController {
     }
 
     private static int getCachedPublicFavoriteState(Context context, MediaController controller) {
-        // YouTube is tracked per playing video by YouTubeRevancedLikeState and must not
-        // fall back to this store: a status kept across tracks would be a guess,
-        // since a like made before playback started is invisible to the launcher.
-        if (controller != null && isYouTubePackage(controller.getPackageName())) {
+        if (controller == null || context == null) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
+
+        // ReVanced is keyed by the video being played rather than by the track
+        // metadata, so it has a store of its own; see
+        // getCachedYouTubeFavoriteState.
+        if (isYouTubePackage(controller.getPackageName())) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
+
+        if (!isFavoriteCacheUsable(controller.getPackageName())) {
             return FAVORITE_STATE_UNKNOWN;
         }
 
@@ -1241,7 +1555,15 @@ public final class MediaFavoriteController {
     }
 
     private static void cachePublicFavoriteState(Context context, MediaController controller, int state) {
-        if (controller != null && isYouTubePackage(controller.getPackageName())) {
+        if (controller == null || context == null) {
+            return;
+        }
+
+        if (isYouTubePackage(controller.getPackageName())) {
+            return;
+        }
+
+        if (!isFavoriteCacheUsable(controller.getPackageName())) {
             return;
         }
 
@@ -1250,6 +1572,44 @@ public final class MediaFavoriteController {
             return;
         }
 
+        writeFavoriteCache(context, key, state);
+    }
+
+    /**
+     * The like status kept for a single ReVanced video.
+     *
+     * Keyed by the video id rather than by the track metadata, because that is
+     * the one thing about a YouTube video that is stable and unambiguous.
+     * Guarded by {@link #isFavoriteCacheUsable}, so it answers nothing while
+     * the switch is off or an account is available.
+     */
+    private static int getCachedYouTubeFavoriteState(Context context, String videoId) {
+        String key = getVideoCacheKey(videoId);
+        if (context == null || key == null
+                || !isFavoriteCacheUsable(YOUTUBE_REVANCED_PACKAGE)) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getInt(key, FAVORITE_STATE_UNKNOWN);
+    }
+
+    private static void cacheYouTubeFavoriteState(Context context, String videoId, int state) {
+        String key = getVideoCacheKey(videoId);
+        if (context == null || key == null
+                || !isFavoriteCacheUsable(YOUTUBE_REVANCED_PACKAGE)) {
+            return;
+        }
+        writeFavoriteCache(context, key, state);
+    }
+
+    private static String getVideoCacheKey(String videoId) {
+        if (videoId == null || videoId.isEmpty()) {
+            return null;
+        }
+        return PREF_PREFIX + YOUTUBE_REVANCED_PACKAGE + ":video:" + videoId;
+    }
+
+    private static void writeFavoriteCache(Context context, String key, int state) {
         Context appContext = context.getApplicationContext();
         FAVORITE_CACHE_EXECUTOR.execute(() -> {
             if (state == FAVORITE_STATE_UNKNOWN) {
@@ -1827,14 +2187,28 @@ public final class MediaFavoriteController {
          */
         private static volatile ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        /** A lookup still running after this long is treated as lost. */
-        private static final long FETCH_STUCK_AFTER_MS = 120000L;
+        /**
+         * A lookup still running after this long is treated as lost.
+         *
+         * The budget it needs is bounded: two exchanges with the bridge, twelve
+         * seconds each, plus whatever a rating the user sent is still waiting
+         * on ahead of it in the queue. A minute covers all of that and gets the
+         * next attempt away well before the stall watchdog gives up on the
+         * bridge entirely - which two minutes did not.
+         */
+        private static final long FETCH_STUCK_AFTER_MS = 60000L;
         private static volatile long fetchStartedAtMs;
         private static volatile String inFlightVideoId;
         private static volatile long fetchSequence;
 
         private static volatile String currentVideoId;
         private static volatile int currentState = MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+
+        /**
+         * Bumped on every status change, so a lookup coming back can tell
+         * whether the answer it is holding has been overtaken while it ran.
+         */
+        private static volatile long stateSequence;
 
         private static volatile Fetcher fetcher;
         private static volatile KidsChecker kidsChecker;
@@ -1899,20 +2273,57 @@ public final class MediaFavoriteController {
                 return unknownState();
             }
 
-            if (!videoId.equals(currentVideoId)) {
-                return unknownState();
+            // Videos made for kids never report a rating, so claiming anything
+            // about them would be a guess.
+            //
+            // Asked about the video passed in, not about whatever was looked at
+            // last, and asked before anything else: a status that arrived from
+            // somewhere else - the cache, or a like made inside YouTube - must
+            // not put a state back on a button the switch has greyed out.
+            if (isMadeForKids(videoId)) {
+                if (!isKidsRatingAllowed()) {
+                    // UNKNOWN greys the button out, which is what stock YouTube
+                    // does when it cannot rate.
+                    return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+                }
+
+                // The other behaviour the switch offers: shown as not liked
+                // rather than greyed out. Waiting for a status would come to
+                // the same thing as greying it out, because none is ever
+                // coming - so only one the launcher put there itself counts.
+                int known = getResolvedState(videoId);
+                return known == MediaFavoriteController.FAVORITE_STATE_UNKNOWN
+                        ? MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED
+                        : known;
             }
 
-            // Videos made for kids never report a rating, so claiming anything
-            // about them would be a guess. Reporting UNKNOWN greys the button
-            // out, which is what stock YouTube does when it cannot rate.
-            if (isCurrentMadeForKids() && !isKidsRatingAllowed()) {
-                return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+            if (!videoId.equals(currentVideoId)) {
+                return unknownState();
             }
 
             return currentState == MediaFavoriteController.FAVORITE_STATE_UNKNOWN
                     ? unknownState()
                     : currentState;
+        }
+
+        /**
+         * The status held for a video, with none of the substitutions
+         * {@link #getState} makes. UNKNOWN here means nothing is known, which
+         * is what the cache needs to hear before it offers an answer.
+         */
+        public static int getResolvedState(String videoId) {
+            if (videoId == null || videoId.isEmpty()) {
+                return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+            }
+            if (!videoId.equals(currentVideoId)) {
+                return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+            }
+            return currentState;
+        }
+
+        /** The video the last state read asked about. */
+        public static String getLastQueriedVideoId() {
+            return lastQueriedVideoId;
         }
 
         /**
@@ -1924,6 +2335,20 @@ public final class MediaFavoriteController {
          * broken - so it reads as not favorited and stays usable.
          */
         private static int unknownState() {
+            // UNKNOWN with a fetcher installed is deliberate and is not a gap
+            // to be filled: until the bridge has answered for this video the
+            // button is greyed out, rather than showing a status nothing
+            // stands behind. Only where no answer is coming at all does it
+            // read as something else.
+            //
+            // With the cache carrying the status there is no answer on its way
+            // either, whatever the fetcher was left installed by: a video the
+            // cache has never seen reads as not favorited, and the first press
+            // is what puts a status in there.
+            if (MediaFavoriteController.isFavoriteCacheUsable(
+                    MediaFavoriteController.YOUTUBE_REVANCED_PACKAGE)) {
+                return MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED;
+            }
             return hasFetcher()
                     ? MediaFavoriteController.FAVORITE_STATE_UNKNOWN
                     : MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED;
@@ -1936,6 +2361,7 @@ public final class MediaFavoriteController {
             }
             currentVideoId = videoId;
             currentState = state;
+            stateSequence++;
         }
 
         /**
@@ -1943,15 +2369,30 @@ public final class MediaFavoriteController {
          * either by a lookup or by an action the user took.
          */
         public static boolean isCurrentStateResolved() {
-            String videoId = lastQueriedVideoId;
-            return videoId != null
-                    && videoId.equals(currentVideoId)
-                    && currentState != MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+            return isStateResolved(lastQueriedVideoId);
+        }
+
+        /** True once the status of this video is settled, whichever fed it. */
+        public static boolean isStateResolved(String videoId) {
+            return getResolvedState(videoId)
+                    != MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
         }
 
         public static boolean isCurrentMadeForKids() {
+            return isMadeForKids(lastQueriedVideoId);
+        }
+
+        /**
+         * Whether this video is the one known to be made for kids.
+         *
+         * Asked about an explicit id, because the caller that matters most -
+         * the rule that greys the button - runs on paths where no state has
+         * been read yet, and the id left behind by the last read belongs to
+         * whatever was playing before.
+         */
+        public static boolean isMadeForKids(String videoId) {
             String kidsId = madeForKidsVideoId;
-            return kidsId != null && kidsId.equals(lastQueriedVideoId);
+            return kidsId != null && videoId != null && kidsId.equals(videoId);
         }
 
         /** Forgets everything, e.g. when playback moves to another video. */
@@ -2058,6 +2499,7 @@ public final class MediaFavoriteController {
             }
 
             final long fetchToken;
+            final long stateToken;
             final ExecutorService runOn;
             synchronized (YouTubeRevancedLikeState.class) {
                 // Asked once per video. Without this the widget refresh loop
@@ -2087,6 +2529,7 @@ public final class MediaFavoriteController {
                 fetchStartedAtMs = SystemClock.elapsedRealtime();
                 inFlightVideoId = videoId;
                 fetchToken = ++fetchSequence;
+                stateToken = stateSequence;
                 runOn = executor;
             }
 
@@ -2116,6 +2559,14 @@ public final class MediaFavoriteController {
                     if (!current) {
                         Log.w(TAG, "Late result for " + videoId + " discarded");
                     } else {
+                        // The one place the bridge's own answer is visible.
+                        // madeForKids=false on a video that is one means the
+                        // bridge did not report it, and no switch here can act
+                        // on something it was never told.
+                        Log.d(TAG, "Lookup for " + videoId + " answered: rating="
+                                + MediaFavoriteController.describePublicState(state)
+                                + " madeForKids=" + madeForKids);
+
                         boolean resolved = false;
 
                         if (Boolean.TRUE.equals(madeForKids)) {
@@ -2126,7 +2577,18 @@ public final class MediaFavoriteController {
                         }
 
                         if (state != MediaFavoriteController.FAVORITE_STATE_UNKNOWN) {
-                            setState(videoId, state);
+                            // A status that arrived while this lookup was in
+                            // flight describes the video later than the lookup
+                            // does - a like made inside YouTube, or one the
+                            // launcher sent itself. The answer still counts as
+                            // resolved, it just does not get to undo it.
+                            if (stateSequence != stateToken
+                                    && videoId.equals(currentVideoId)) {
+                                Log.d(TAG, "Lookup answered " + state + " for " + videoId
+                                        + " but the status had already moved on; keeping it");
+                            } else {
+                                setState(videoId, state);
+                            }
                             resolved = true;
                         }
 
