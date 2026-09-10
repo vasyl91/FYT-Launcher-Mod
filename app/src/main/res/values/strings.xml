@@ -328,6 +328,7 @@
     <string name="stats_window">Fuel statistics</string>
     <string name="stats_codes">Statistics codes</string>
     <string name="stats_window_summary"><![CDATA[Use canbus reader or look for the necessary canbus codes in the class <b>%1$s</b> and its subclasses (please refer to README.MD)]]></string>
+    <string name="stats_window_summary_vehicle_not_exist">Original vehicle equipment does not exist. Try using the CAN bus reader, however, it might not find the codes.</string>
     <string name="stats_codes_summary">Press this preference to set the canbus codes. \nFuel: %1$s, Range: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Additional statistics data <b>(optional)</b></string>
     <string name="extra_stats_codes_summary">Press this preference to set additional car info for approximate fuel consumption. \nRPM canbus code: %1$s, Horsepower: %2$s, Vehicle mass: %3$s</string>

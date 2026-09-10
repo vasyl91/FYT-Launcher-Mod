@@ -328,6 +328,7 @@
     <string name="stats_window">油耗统计</string>
     <string name="stats_codes">统计代码</string>
     <string name="stats_window_summary"><![CDATA[使用 CAN 总线读取器，或在类 <b>%1$s</b> 及其子类中查找所需的 CAN 总线代码（请参阅 README.MD）]]></string>
+    <string name="stats_window_summary_vehicle_not_exist">未检测到原车设备。请尝试使用 CAN 总线读取器，但可能无法找到相关代码。</string>
     <string name="stats_codes_summary">点击此选项设置 CAN 总线代码。\n油耗: %1$s, 续航: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">附加统计数据<b>（可选）</b></string>
     <string name="extra_stats_codes_summary">点击此选项设置用于估算油耗的附加车辆信息。\nRPM CAN 代码: %1$s, 马力: %2$s, 车重: %3$s</string>

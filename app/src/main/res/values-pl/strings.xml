@@ -186,6 +186,7 @@
     <string name="stats_window">Statystyki paliwa</string>
     <string name="stats_codes">Kody canbus</string>
     <string name="stats_window_summary"><![CDATA[Aby znaleźć niezbędne kody użyj skanera canbus lub przeszukaj klasę <b>%1$s</b> i jej subklasy (zapoznaj się z README.MD)]]></string>
+    <string name="stats_window_summary_vehicle_not_exist">Brak odpowiednich plików dla tego samochodu. Spróbuj użyć czytnika CAN bus, jednak może on nie znaleźć kodów.</string>
     <string name="stats_codes_summary">Naciśnij i wprowadź kody dla modułu canbus \nFuel: %1$s, Range: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Dodatkowe dane <b>(opcjonalne)</b></string>
     <string name="extra_stats_codes_summary">Naciśnij i wprowadź dodatkowe dane dla przybliżonych obliczeń spalania paliwa \nRPM kod canbus: %1$s, Konie mechaniczne: %2$s, Masa pojazdu: %3$s</string>

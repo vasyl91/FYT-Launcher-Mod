@@ -5557,7 +5557,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
         if (cls != null) {
             editor.putString("canbus_class", String.valueOf(cls));     
         } else {
-        	editor.putString("canbus_class", LauncherApplication.sApp.getString(R.string.vehicle_not_exist));    
+        	editor.putString("canbus_class", "vehicle_not_exist");    
         }
         editor.apply();
     }
