@@ -155,7 +155,7 @@
     <string name="dismiss">Odrzuć</string>
 
     <string name="music_widget_category">Music Widget</string>
-    <string name="use_favorite_cache">Używaj pamięci podręcznej ulubionych dla zwykłego YouTube</string>
+    <string name="use_favorite_cache">Używaj pamięci podręcznej ulubionych dla YouTube</string>
     <string name="use_favorite_cache_on">Przycisk Ulubione będzie włączony, ale informacje o stanie polubienia będą przechowywane tylko w launcherze - Music Widget nie będzie wiedzieć, czy film został polubiony lub \"odlubiony\" w innym miejscu</string>
     <string name="use_favorite_cache_off">Przycisk Ulubione będzie wyłączony</string>
     <string name="oauth_for_youtube_revanced">Włącz autoryzację Google dla YouTube ReVanced, aby uzyskać informacje o stanie polubienia</string>

@@ -296,7 +296,7 @@
     <string name="dismiss">Dismiss</string>
 
     <string name="music_widget_category">Music Widget</string>
-    <string name="use_favorite_cache">Use favorite cache for regular YouTube</string>
+    <string name="use_favorite_cache">Use favorite cache for YouTube</string>
     <string name="use_favorite_cache_on">The Favorite button will be enabled, but like state information will be stored only in the launcher - Music Widget won\'t know whether you liked or disliked a video elsewhere</string>
     <string name="use_favorite_cache_off">The Favorite button will be disabled</string>
     <string name="oauth_for_youtube_revanced">Enable Google Authorization for YouTube ReVanced to retrieve the like status</string>

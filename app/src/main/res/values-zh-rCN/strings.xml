@@ -296,7 +296,7 @@
     <string name="dismiss">关闭</string>
 
     <string name="music_widget_category">音乐小组件</string>
-    <string name="use_favorite_cache">为普通 YouTube 使用收藏缓存</string>
+    <string name="use_favorite_cache">为 YouTube 使用收藏缓存</string>
     <string name="use_favorite_cache_on">收藏按钮将启用，但点赞状态信息只会存储在启动器中 - Music Widget 无法知道你是否在其他地方点赞或点踩了视频</string>
     <string name="use_favorite_cache_off">收藏按钮将被禁用</string>
     <string name="oauth_for_youtube_revanced">为 YouTube ReVanced 启用 Google 授权以获取点赞状态</string>
