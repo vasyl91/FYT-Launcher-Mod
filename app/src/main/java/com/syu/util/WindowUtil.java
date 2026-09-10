@@ -584,7 +584,7 @@ public class WindowUtil {
         
         if (l.stealer) {
             Log.i(TAG, "reassertLauncherTop() started for stealer in windowed PiP");
-            reassertLauncherTop(LAUNCHER_TOP_REASSERTS);
+            reassertLauncherTop();
         }
 
         Launcher launcher = Launcher.getLauncher();
@@ -596,46 +596,43 @@ public class WindowUtil {
      * Brings the launcher back to the front after the panes are up to avoid app stealing audio focus
      * being detected by com.syu.ms - not foolproof, but reduces chance to stop stock players
      */
-    private static void reassertLauncherTop(int times) {
+    private static void reassertLauncherTop() {
         Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
 
-        pendingReasserts = times;
+        pendingReasserts = LAUNCHER_TOP_REASSERTS;
 
         if (reassertTask == null) {
-            reassertTask = new Runnable() {
-                @Override
-                public void run() {
-                    if (pendingReasserts <= 0) return;
+            reassertTask = () -> {
+                if (pendingReasserts <= 0) return;
 
-                    Launcher launcher = Launcher.getLauncher();
-                    if (launcher == null) return;
+                Launcher runnableLauncher = Launcher.getLauncher();
+                if (runnableLauncher == null) return;
 
-                    try {
-                        if (!launcher.hasWindowFocus()) {
-                                ActivityManager am = (ActivityManager) launcher.getSystemService(Context.ACTIVITY_SERVICE);
-                                List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
-                                boolean stealerOnTop = tasks != null && !tasks.isEmpty()
-                                        && tasks.get(0).topActivity != null
-                                        && DEFAULT_SOURCE_STEALERS.contains(tasks.get(0).topActivity.getPackageName());
+                try {
+                    if (!runnableLauncher.hasWindowFocus()) {
+                            ActivityManager am = (ActivityManager) runnableLauncher.getSystemService(Context.ACTIVITY_SERVICE);
+                            List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
+                            boolean stealerOnTop = tasks != null && !tasks.isEmpty()
+                                    && tasks.get(0).topActivity != null
+                                    && DEFAULT_SOURCE_STEALERS.contains(tasks.get(0).topActivity.getPackageName());
 
-                                if (stealerOnTop) {
-                                    am.moveTaskToFront(launcher.getTaskId(), 0);
-                                    launcher.handler.removeCallbacks(reassertTask);
-                                    pendingReasserts = 0;
-                                    Log.i(TAG, "reassertLauncherTop moved launcher to top");
-                                    return;
-                                }
-                        }
-                    } catch (Throwable t) {
-                        Log.w(TAG, "reassertLauncherTop failed, giving up", t);
-                        return; 
+                            if (stealerOnTop) {
+                                am.moveTaskToFront(runnableLauncher.getTaskId(), 0);
+                                runnableLauncher.handler.removeCallbacks(reassertTask);
+                                pendingReasserts = 0;
+                                Log.i(TAG, "reassertLauncherTop moved launcher to top");
+                                return;
+                            }
                     }
+                } catch (Throwable t) {
+                    Log.w(TAG, "reassertLauncherTop failed, giving up", t);
+                    return;
+                }
 
-                    pendingReasserts--;
-                    if (pendingReasserts > 0) {
-                        launcher.handler.postDelayed(reassertTask, LAUNCHER_TOP_REASSERT_MS);
-                    }
+                pendingReasserts--;
+                if (pendingReasserts > 0) {
+                    runnableLauncher.handler.postDelayed(reassertTask, LAUNCHER_TOP_REASSERT_MS);
                 }
             };
         }
@@ -1217,7 +1214,7 @@ public class WindowUtil {
             String currentPackage = SystemProperties.get("persist.launcher.packagename", "");
             if (DEFAULT_SOURCE_STEALERS.contains(packageName)) {
                 Log.i(TAG, "reassertLauncherTop() started for stealer in pinned PiP");
-                reassertLauncherTop(LAUNCHER_TOP_REASSERTS);
+                reassertLauncherTop();
             }
             if (!packageName.equals(currentPackage) || checkIfMapSizeChanged(pipKey)) {
                 // save previous values
