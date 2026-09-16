@@ -37,6 +37,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
     private static final float FLING_TO_DELETE_FRICTION = 0.035f;
     private static final int MODE_FLING_DELETE_TO_TRASH = 0;
     private static final int MODE_FLING_DELETE_ALONG_VECTOR = 1;
+    private static final int REMOVE_TARGET_SELECTOR_SCALE = 2;
 
     private final int mFlingDeleteMode = MODE_FLING_DELETE_ALONG_VECTOR;
 
@@ -614,7 +615,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
 
         if (mOverlayView == null) {
             mOverlayView = new ImageView(getContext());
-            mOverlayView.setScaleType(ImageView.ScaleType.CENTER);
+            mOverlayView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             mOverlayView.setImageDrawable(mCurrentDrawable);
 
             int windowType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
@@ -695,12 +696,14 @@ public class DeleteDropTarget extends ButtonDropTarget {
         int viewLeft = loc[0];
         int viewTop = loc[1];
 
-        int drawableWidth = mCurrentDrawable != null ? mCurrentDrawable.getIntrinsicWidth() : mOverlayView.getMeasuredWidth();
-        int drawableHeight = mCurrentDrawable != null ? mCurrentDrawable.getIntrinsicHeight() : mOverlayView.getMeasuredHeight();
+        int drawableWidth = (mCurrentDrawable != null ? mCurrentDrawable.getIntrinsicWidth() : mOverlayView.getMeasuredWidth()) * REMOVE_TARGET_SELECTOR_SCALE;
+        int drawableHeight = (mCurrentDrawable != null ? mCurrentDrawable.getIntrinsicHeight() : mOverlayView.getMeasuredHeight()) * REMOVE_TARGET_SELECTOR_SCALE;
 
         int x = viewLeft + (getWidth() - drawableWidth) / 2;
-        int y = viewTop + (drawableHeight / 2);
+        int y = viewTop + (drawableHeight / 5);
 
+        mOverlayParams.width = drawableWidth;
+        mOverlayParams.height = drawableHeight;
         mOverlayParams.x = x;
         mOverlayParams.y = y;
     }
@@ -759,12 +762,12 @@ public class DeleteDropTarget extends ButtonDropTarget {
 
         @Override
         public int getIntrinsicWidth() {
-            return mDelegate != null ? mDelegate.getIntrinsicWidth() : -1;
+            return mDelegate != null ? (mDelegate.getIntrinsicWidth() * REMOVE_TARGET_SELECTOR_SCALE) : -1;
         }
 
         @Override
         public int getIntrinsicHeight() {
-            return mDelegate != null ? mDelegate.getIntrinsicHeight() : -1;
+            return mDelegate != null ? (mDelegate.getIntrinsicHeight() * REMOVE_TARGET_SELECTOR_SCALE) : -1;
         }
 
         @Override
