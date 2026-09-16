@@ -85,6 +85,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
     private static final long INITIAL_DELAY_MS = 0;
     private boolean mOnlyGetTimes;
     public static final int JOB_ID = 123;
+    private static final long MIN_JOB_LATENCY_MS = 30000;
 
     /*
      * One shared thread for all instances. Previously, each instance created its own
@@ -333,17 +334,37 @@ public class SunTask extends AsyncTask<String, Void, String> {
         int drawableId = name.equals("Day") ? ResValue.getInstance().def_bg : ResValue.getInstance().def_bg_n;
         String signature = String.valueOf(drawableId);
 
-        if (alreadyApplied(name, SOURCE_DEFAULT, signature)) {
-            Log.d(TAG, "Default wallpaper already set: " + name);
-            return;
-        }
+        /*
+         * Check, set and record as one step, under the same lock as the file path.
+         * This used to run unlocked on the AsyncTask thread, so two SunTasks (e.g. one started by
+         * the DayNightMode job and one by NightModeService after a wake) could both see "not applied"
+         * and both call setResource(). Every call rebinds the system wallpaper, which shows as a short
+         * black frame even when the image is the same.
+         */
+        synchronized (LOCK) {
+            // A cancelled task has been replaced by a newer one (or the screen went off) - leave it to that one.
+            if (isCancelled()) {
+                Log.d(TAG, "Task cancelled, not setting default wallpaper: " + name);
+                return;
+            }
 
-        try {
-            int wallpaperId = mWallpaperManager.setResource(drawableId, WallpaperManager.FLAG_SYSTEM);
-            rememberApplied(name, SOURCE_DEFAULT, signature, wallpaperId);
-            Log.d(TAG, "Default wallpaper set: " + name + " (id=" + drawableId + ")");
-        } catch (IOException e) {
-            Log.e(TAG, "Failed setting the default wallpaper: " + e.getMessage());
+            if (alreadyApplied(name, SOURCE_DEFAULT, signature)) {
+                Log.d(TAG, "Default wallpaper already set: " + name);
+                return;
+            }
+
+            try {
+                int wallpaperId = mWallpaperManager.setResource(drawableId, WallpaperManager.FLAG_SYSTEM);
+                if (wallpaperId == 0) {
+                    // 0 means the call failed. Recording it would make every later check fail as well.
+                    Log.e(TAG, "setResource returned 0 for " + name + ", not recording it");
+                    return;
+                }
+                rememberApplied(name, SOURCE_DEFAULT, signature, wallpaperId);
+                Log.d(TAG, "Default wallpaper set: " + name + " (wallpaperId=" + wallpaperId + ", res=" + drawableId + ")");
+            } catch (IOException e) {
+                Log.e(TAG, "Failed setting the default wallpaper: " + e.getMessage());
+            }
         }
     }
 
@@ -351,6 +372,9 @@ public class SunTask extends AsyncTask<String, Void, String> {
      * Skip the update only when EVERYTHING matches: time of day, source,
      * image signature, and the system wallpaper ID. The last condition detects
      * a wallpaper change made outside the launcher and forces the wallpaper to be set again.
+     * This also means every day/night wallpaper write in the app has to go through this class
+     * (rememberApplied()). A write that bypasses it (DayNightMode used to do that) changes the ID,
+     * and the next check sets the very same image again.
      */
     private boolean alreadyApplied(String state, String source, String signature) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
@@ -545,15 +569,32 @@ public class SunTask extends AsyncTask<String, Void, String> {
                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH);
     }
 
+    /** Cancels the pending sunrise/sunset job (only ours, not cancelAll()). */
+    public static void cancelScheduledJob(Context context) {
+        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        if (jobScheduler != null) {
+            jobScheduler.cancel(JOB_ID);
+        }
+    }
+
     private void scheduleJob(Context context, long time) {
         final JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        
+        if (jobScheduler == null) {
+            Log.w("JOB", "JobScheduler unavailable, next sunrise/sunset job not scheduled");
+            return;
+        }
+
         final ComponentName name = new ComponentName(context, DayNightMode.class);
 
-        final int result = jobScheduler.schedule(getJobInfo(name, time));
+        // DayNightMode starts a SunTask, which schedules the next job. dayOrNight() leaves timeToJob
+        // at 0 when the current second is exactly the sunset, and a zero latency would turn that into
+        // an immediate job -> SunTask -> job loop. A short floor only delays the switch by seconds.
+        final long latency = Math.max(time, MIN_JOB_LATENCY_MS);
+
+        final int result = jobScheduler.schedule(getJobInfo(name, latency));
 
         if (result == JobScheduler.RESULT_SUCCESS) {
-            Log.d("JOB", "Scheduled job successfully!");
+            Log.d("JOB", "Scheduled job successfully! (in " + latency + " ms)");
         }
 
     }

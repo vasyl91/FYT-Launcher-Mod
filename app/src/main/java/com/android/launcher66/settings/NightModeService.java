@@ -3,7 +3,6 @@ package com.android.launcher66.settings;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Service;
-import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -113,14 +112,10 @@ public class NightModeService extends Service {
         public void onReceive(Context context, Intent intent) {
             try {
                 if (intent.getAction() != null) {
-                    switch (intent.getAction()) {
-                        case Keys.RECREATE:
-                            Log.i(TAG, "Recreate broadcast received");
-                            removeNightRunnables(false);
-                            nightMode();
-                            break;
-                        default:
-                            break;
+                    if (intent.getAction().equals(Keys.RECREATE)) {
+                        Log.i(TAG, "Recreate broadcast received");
+                        removeNightRunnables(false);
+                        nightMode();
                     }
                 }
             } catch (Exception e) {
@@ -173,23 +168,24 @@ public class NightModeService extends Service {
         public void run() {
             if (hasTimeChanged()) {
                 timeChanged = true;
-                checkWallpapers("checkTimeRunnable");
+                // Forced: the throttle is meant for duplicate service starts. A clock correction a few
+                // seconds after the wake refresh is new information, and skipping it would leave the
+                // wallpaper that was chosen with the wrong time. Setting the same one twice is prevented
+                // by SunTask's own check, so an extra run is harmless.
+                checkWallpapers("checkTimeRunnable", true);
             }
             checkTimeHandler.postDelayed(this, 3000);
         }
     };
 
     // runs once when the service starts or whenever the view has been Keys.RECREATEd by the user
-    private final Runnable nightModeRunnable = new Runnable() {
-        @Override
-        public void run() {
-            // Release the flag so that the next RECREATE can schedule another run.
-            isNightModeRunning = false;
-            if (!timeChanged) { // it is pointless to run it if the change of the system time was detected on the first start
-                checkWallpapers("nightModeRunnable");
-            }
-            timeChanged = false;
+    private final Runnable nightModeRunnable = () -> {
+        // Release the flag so that the next RECREATE can schedule another run.
+        isNightModeRunning = false;
+        if (!timeChanged) { // it is pointless to run it if the change of the system time was detected on the first start
+            checkWallpapers("nightModeRunnable");
         }
+        timeChanged = false;
     };
 
     private boolean hasTimeChanged() {
@@ -202,15 +198,21 @@ public class NightModeService extends Service {
         }
 
         Duration duration = Duration.between(lastCheckedDateTime, currentDateTime);
-        long minutes = duration.toMinutes();
+        // abs(): a clock stepped back across sunrise/sunset needs a refresh just as much as one stepped forward.
+        long minutes = Math.abs(duration.toMinutes());
         lastCheckedDateTime = currentDateTime;
         return minutes >= 1;
     }
 
     private void checkWallpapers(String reason) {
+        checkWallpapers(reason, false);
+    }
+
+    /** @param force skip the MIN_REFRESH_INTERVAL_MS throttle (used when the clock has changed). */
+    private void checkWallpapers(String reason, boolean force) {
         synchronized (TASK_LOCK) {
             long now = SystemClock.elapsedRealtime();
-            if (lastWallpaperCheckMs != 0 && now - lastWallpaperCheckMs < MIN_REFRESH_INTERVAL_MS) {
+            if (!force && lastWallpaperCheckMs != 0 && now - lastWallpaperCheckMs < MIN_REFRESH_INTERVAL_MS) {
                 Log.d(TAG, "checkWallpapers(" + reason + ") skipped - ran "
                         + (now - lastWallpaperCheckMs) + " ms ago");
                 return;
@@ -223,26 +225,27 @@ public class NightModeService extends Service {
             ActivityCompat.checkSelfPermission(LauncherApplication.sApp, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(LauncherApplication.sApp);
-            OnSuccessListener<Location> listener = new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-                    double lat;
-                    double longt;
-                    if (location != null) {
-                        SharedPreferences.Editor editor = mPrefs.edit();
-                        lat = location.getLatitude();
-                        longt = location.getLongitude();
-                        editor.putString("latiude", String.valueOf(lat));
-                        editor.putString("longitude", String.valueOf(longt));
-                        editor.apply();
-                    } else {
-                        // in case the head unit has lost both GPS and internet connection on boot
-                        lat = Double.parseDouble(mPrefs.getString("latiude", "52.408165"));
-                        longt = Double.parseDouble(mPrefs.getString("longitude", "16.932490"));
-                    }
-                    startSunTask(lat, longt);
+            OnSuccessListener<Location> listener = location -> {
+                SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+                double lat;
+                double longt;
+                if (location != null) {
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    lat = location.getLatitude();
+                    longt = location.getLongitude();
+                    editor.putString("latiude", String.valueOf(lat));
+                    editor.putString("longitude", String.valueOf(longt));
+                    editor.apply();
+                } else {
+                    // in case the head unit has lost both GPS and internet connection on boot
+                    String latStr = mPrefs.getString("latiude", null);
+                    String lngStr = mPrefs.getString("longitude", null);
+                    if (latStr != null && lngStr != null) {
+                        lat = Double.parseDouble(latStr);
+                        longt = Double.parseDouble(lngStr);
+                    } else return;
                 }
+                startSunTask(LauncherApplication.sApp, lat, longt, reason);
             };
 
 
@@ -271,19 +274,46 @@ public class NightModeService extends Service {
         }
     }
 
-    private void startSunTask(double lat, double longt) {
+    /**
+     * Day/night refresh for the last saved location, without asking the location provider.
+     * Used by DayNightMode at sunrise/sunset, so the job goes through the same SunTask (and the same
+     * "already applied" check) as every other refresh instead of setting the wallpaper on its own.
+     *
+     * @return false when there is no usable saved location
+     */
+    public static boolean startSunTaskForSavedLocation(Context context, String reason) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        String latStr = prefs.getString("latiude", null);
+        String lngStr = prefs.getString("longitude", null);
+        if (latStr == null || lngStr == null) {
+            return false;
+        }
+        try {
+            startSunTask(context, Double.parseDouble(latStr), Double.parseDouble(lngStr), reason);
+            return true;
+        } catch (NumberFormatException e) {
+            Log.w(TAG, "Invalid saved location: " + latStr + ", " + lngStr);
+            return false;
+        }
+    }
+
+    /*
+     * Static so that DayNightMode can use it without a running service instance. There is only one
+     * SunTask at a time for the whole process, whoever started it.
+     */
+    private static void startSunTask(Context context, double lat, double longt, String reason) {
+        Context appContext = context.getApplicationContext();
         synchronized (TASK_LOCK) {
             // Always kill the previous task — otherwise two SunTasks race to update the wallpaper.
             cancelSunTask();
 
-            JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            if (jobScheduler != null) {
-                jobScheduler.cancel(SunTask.JOB_ID); // Only our job, not cancelAll().
-            }
+            // The new task schedules the next sunrise/sunset job itself.
+            SunTask.cancelScheduledJob(appContext);
 
             String urlString = "https://api.sunrise-sunset.org/json?lat=" + lat + "&lng=" + longt
                     + "&date=today" + "&tzid=" + ZoneId.systemDefault();
-            currentSunTask = new SunTask(LauncherApplication.sApp, lat, longt, false);
+            Log.d(TAG, "Starting SunTask (" + reason + ")");
+            currentSunTask = new SunTask(appContext, lat, longt, false);
             currentSunTask.execute(urlString);
         }
     }
