@@ -27,6 +27,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.FytRating;
+import com.android.launcher66.settings.SpotifyRating;
 import com.fyt.car.MusicService;
 import com.syu.widget.DateMusicProvider;
 import com.syu.widget.Widget;
@@ -174,7 +175,7 @@ public final class MediaFavoriteController {
         // rating plus the cache is all this press can amount to.
         if (isYouTubePackage(controller.getPackageName())
                 && YouTubeRevancedLikeState.hasFetcher()
-                && !isFavoriteCacheUsable(YOUTUBE_REVANCED_PACKAGE)) {
+                && !isFavoriteCacheUsable(controller.getPackageName())) {
             String videoId = findVideoId(controller);
             if (videoId == null || videoId.isEmpty()) {
                 return false;
@@ -195,6 +196,39 @@ public final class MediaFavoriteController {
                             controller, expected == FAVORITE_STATE_FAVORITED)
             );
             return true;
+        }
+
+        if (isSpotifyPackage(controller.getPackageName())) {
+            String libraryUri = findSpotifyLibraryUri(controller);
+            noteSpotifyLibraryUri(libraryUri);
+
+            if (isSpotifyLinked() && libraryUri != null) {
+                // The session rating is deliberately not sent alongside.
+                // Spotify answers its own favorite action by calling the very
+                // endpoint we just called, so the two writes would cancel out
+                // - the second toggling back what the first one set.
+                SpotifyRating.applyRating(
+                        context,
+                        libraryUri,
+                        expected == FAVORITE_STATE_FAVORITED,
+                        () -> refreshWidget(context));
+                return true;
+            }
+
+            // Nothing is sent to the session instead, and this is the whole
+            // reason the branch is written this way.
+            //
+            // Spotify answers a session rating by toggling the like. A press
+            // that falls through from here therefore un-likes the song the
+            // user was trying to like - silently, and irreversibly as far as
+            // the widget is concerned, because the same press then reports
+            // success. Refusing is the only safe outcome, and the line below
+            // names which precondition failed rather than leaving it to be
+            // guessed at.
+            Log.w(TAG, "Spotify press refused: uri=" + libraryUri
+                    + " linked=" + isSpotifyLinked()
+                    + " | " + SpotifyRating.describe());
+            return false;
         }
 
         boolean sent = toggleFavorite(context, controller, toPrivateState(stateBefore));
@@ -313,6 +347,32 @@ public final class MediaFavoriteController {
             return resolved;
         }
 
+        if (isSpotifyPackage(controller.getPackageName())) {
+            String libraryUri = findSpotifyLibraryUri(controller);
+
+            // Recorded on every read, including a null, because the greying
+            // rule reads it back and has to know a lookup ran at all.
+            noteSpotifyLibraryUri(libraryUri);
+
+            if (isSpotifyLinked() && libraryUri != null) {
+                ensureSpotifyUpdater(context);
+
+                // Never blocks: answers from the last lookup and refreshes
+                // behind itself, the contract YouTubeRevancedLikeState offers
+                // for ReVanced. UNKNOWN here means "not resolved yet", which
+                // the widget draws as a plain outline.
+                int spotifyState = SpotifyRating.getState(context, libraryUri);
+                if (spotifyState != FAVORITE_STATE_UNKNOWN) {
+                    cachePublicFavoriteState(context, controller, spotifyState);
+                    return spotifyState;
+                }
+                return getCachedPublicFavoriteState(context, controller);
+            }
+
+            // No account, or nothing in the catalogue to ask about: fall
+            // through to the session, which is what this did before.
+        }
+
         int currentState = toPublicState(getFavoriteState(controller, actions));
         if (currentState != FAVORITE_STATE_UNKNOWN) {
             cachePublicFavoriteState(context, controller, currentState);
@@ -343,7 +403,7 @@ public final class MediaFavoriteController {
             return true;
         }
 
-        if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)) {
+        if (isYouTubePackage(packageName)) {
             // Read off the session rather than taken from the last state
             // lookup. The id that lookup leaves behind belongs to whichever
             // video was asked about last, so on this path - which the widget
@@ -360,6 +420,24 @@ public final class MediaFavoriteController {
             // from and there is no patch to ask, so its status only ever comes
             // out of the cache.
             return !isFavoriteCacheEnabled();
+        }
+
+        if (SPOTIFY_PACKAGE.equals(packageName)) {
+            if (!isSpotifyLinked()) {
+                // No account: back to whatever the session exposes, which is
+                // the behaviour that was there before any of this.
+                return false;
+            }
+
+            // Greyed only on a lookup that ran recently and positively found
+            // nothing in the catalogue - an advert, or a local file. Podcast
+            // episodes and audiobooks are saveable and stay lit.
+            //
+            // Not knowing is not a refusal, and the two are not worth the same
+            // here: a button wrongly greyed does nothing and explains nothing,
+            // while one wrongly lit costs a single refused press and a line in
+            // the log.
+            return isSpotifyUriFresh() && spotifyLibraryUri == null;
         }
 
         return false;
@@ -492,6 +570,69 @@ public final class MediaFavoriteController {
         return YouTubeRevancedLikeState.getLastQueriedVideoId();
     }
 
+    /**
+     * The Spotify URI the read path last resolved - a track, a podcast episode
+     * or an audiobook chapter, whatever is playing.
+     *
+     * Two pieces of state rather than one, because the greying rule has to
+     * tell "nothing in the catalogue is playing" apart from "no lookup has run
+     * lately". Collapsing both into a null uri greys the button on ordinary
+     * tracks: the rule is reached on draws where no state lookup has run, so
+     * the uri is routinely absent for reasons that say nothing about what is
+     * playing.
+     */
+    private static final long SPOTIFY_URI_MAX_AGE_MS = 2000L;
+    private static volatile String spotifyLibraryUri;
+    private static volatile long spotifyUriAtMs;
+
+    /** Installed once, so a lookup landing off-tick still redraws the widget. */
+    private static volatile boolean spotifyUpdaterInstalled;
+
+    private static void noteSpotifyLibraryUri(String libraryUri) {
+        spotifyLibraryUri = libraryUri;
+        spotifyUriAtMs = SystemClock.elapsedRealtime();
+    }
+
+    /** Whether a state lookup ran recently enough for its uri to be believed. */
+    private static boolean isSpotifyUriFresh() {
+        return spotifyUriAtMs != 0L
+                && SystemClock.elapsedRealtime() - spotifyUriAtMs
+                        < SPOTIFY_URI_MAX_AGE_MS;
+    }
+
+    private static boolean isSpotifyPackage(String packageName) {
+        return SPOTIFY_PACKAGE.equals(packageName);
+    }
+
+    /**
+     * Whether the Web API can answer for Spotify right now.
+     *
+     * Both halves matter. A refresh token on file is not the same as a grant
+     * the server still honours, and SpotifyRating expires its own refusal
+     * rather than latching it, so asking again here costs nothing.
+     */
+    private static boolean isSpotifyLinked() {
+        return SpotifyRating.isLoggedIn(LauncherApplication.sApp)
+                && !SpotifyRating.isAuthBroken();
+    }
+
+    /**
+     * Connects the Spotify state holder to the widget. Cheap and idempotent,
+     * so it can be called from the read path.
+     */
+    private static void ensureSpotifyUpdater(Context context) {
+        if (spotifyUpdaterInstalled) {
+            return;
+        }
+        spotifyUpdaterInstalled = true;
+
+        Log.d(TAG, "Installing the Spotify widget updater");
+
+        Context appContext = context.getApplicationContext();
+        // SpotifyRating already posts this to the main thread.
+        SpotifyRating.setOnUpdated(() -> Widget.widgetUpdate(appContext, DateMusicProvider.class));
+    }
+
     private static MediaController getTargetController(Context context, String preferredPackage) {
         MediaSessionManager sessionManager =
                 (MediaSessionManager) context.getSystemService(Context.MEDIA_SESSION_SERVICE);
@@ -598,7 +739,7 @@ public final class MediaFavoriteController {
      * resolve, and the button stayed grey until the launcher was restarted.
      */
     private static boolean isUnsupportedFavoritePackage(String packageName) {
-        if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)) {
+        if (isYouTubePackage(packageName)) {
             // The session is kept whenever anything could ever produce a status
             // for it - an account or the cache - and whatever the bridge
             // currently says about permissions.
@@ -716,7 +857,7 @@ public final class MediaFavoriteController {
                             .append(':')
                             .append(state == null ? "no-state" : state.getState())
                             .append(' ');
-                    if (YOUTUBE_REVANCED_PACKAGE.equals(controller.getPackageName())) {
+                    if (isYouTubePackage(controller.getPackageName())) {
                         revancedPresent = true;
                     }
                 }
@@ -780,7 +921,7 @@ public final class MediaFavoriteController {
 
     /** Whether ReVanced holds a session right now, permission rules aside. */
     private static boolean hasRevancedSession(Context context, String preferredPackage) {
-        return YOUTUBE_REVANCED_PACKAGE.equals(preferredPackage)
+        return isYouTubePackage(preferredPackage)
                 || findRevancedController(context) != null;
     }
 
@@ -808,8 +949,7 @@ public final class MediaFavoriteController {
             }
 
             for (MediaController controller : controllers) {
-                if (controller != null
-                        && YOUTUBE_REVANCED_PACKAGE.equals(controller.getPackageName())) {
+                if (controller != null && isYouTubePackage(controller.getPackageName())) {
                     return controller;
                 }
             }
@@ -994,6 +1134,17 @@ public final class MediaFavoriteController {
                 || MediaWidgetState.getExternalSnapshot() == null;
     }
 
+    /**
+     * Players whose session is worth keeping even when it advertises no rating
+     * capability at this instant.
+     *
+     * For Spotify the entry no longer means the session exposes an action to
+     * send. It means the launcher has another way to rate what is playing -
+     * the Web API - and needs the session only for the track id. Dropping it
+     * from here would hide the session from the picker, and the read path
+     * would then never run: the same failure isUnsupportedFavoritePackage
+     * describes for ReVanced, reached by a different route.
+     */
     private static boolean isKnownFavoritePackage(String packageName) {
         return SPOTIFY_PACKAGE.equals(packageName)
                 || APPLE_MUSIC_PACKAGE.equals(packageName)
@@ -1434,8 +1585,15 @@ public final class MediaFavoriteController {
         if (!isFavoriteCacheEnabled()) {
             return false;
         }
-        if (YOUTUBE_REVANCED_PACKAGE.equals(packageName)) {
+        if (isYouTubePackage(packageName)) {
             return !isLoggedOAuth();
+        }
+        if (SPOTIFY_PACKAGE.equals(packageName)) {
+            // The same rule for the same reason: a track can be liked from a
+            // phone, so once the account can be asked, a value kept here could
+            // only ever contradict it. Without an account the session is all
+            // there is, and the cache is what makes it survive a track change.
+            return !isSpotifyLinked();
         }
         return true;
     }
@@ -1463,7 +1621,8 @@ public final class MediaFavoriteController {
      * rating is sent over the media session.
      */
     private static boolean isYouTubePackage(String packageName) {
-        return YOUTUBE_REVANCED_PACKAGE.equals(packageName);
+        return YOUTUBE_REVANCED_PACKAGE.equals(packageName)
+                || YOUTUBE_MUSIC_REVANCED_PACKAGE.equals(packageName);
     }
 
     private static FavoriteState ratingToFavoriteState(Rating rating) {
@@ -2023,74 +2182,126 @@ public final class MediaFavoriteController {
         return !key.endsWith("_PX") && !key.endsWith("_NUMBER");
     }
 
-    private static String findVideoId(MediaController controller) {
-        List<String> candidates = new ArrayList<>();
+    /**
+     * The Spotify URI for whatever a session is playing.
+     *
+     * Read off the session rather than asked of the API. Spotify publishes the
+     * URI as the media id, which is free, immediate and not rate limited;
+     * /me/player/currently-playing would cost a request per track change out
+     * of the user's own quota, and would answer about the account rather than
+     * about this device.
+     *
+     * Tracks, podcast episodes and audiobook chapters all arrive here the same
+     * way and are all saveable, so no kind is filtered out: the library
+     * endpoint knows what to do with each, and the one that does not fit -
+     * a chapter - is resolved to its audiobook by SpotifyRating.
+     *
+     * @return null for anything with nothing in the catalogue behind it: an
+     *         advert, or a local file
+     */
+    private static String findSpotifyLibraryUri(MediaController controller) {
+        if (controller == null) {
+            return null;
+        }
 
-        MediaMetadata md = controller.getMetadata();
-        if (md != null) {
-            // Fast path: the ReVanced patch publishes the video id here.
-            try {
-                String mediaId = md.getString(MediaMetadata.METADATA_KEY_MEDIA_ID);
-                if (mediaId != null && BARE_VIDEO_ID.matcher(mediaId).matches()) {
+        MediaMetadata metadata;
+        try {
+            metadata = controller.getMetadata();
+        } catch (Exception e) {
+            Log.w(TAG, "Could not read the Spotify metadata", e);
+            return null;
+        }
+        if (metadata == null) {
+            return null;
+        }
+
+        String mediaId = null;
+        try {
+            mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID);
+            String libraryUri = SpotifyRating.extractLibraryUri(mediaId);
+            if (libraryUri != null) {
+                return libraryUri;
+            }
+        } catch (Throwable ignored) {
+        }
+
+        // Older builds put it on the description instead.
+        try {
+            MediaDescription description = metadata.getDescription();
+            String libraryUri = SpotifyRating.extractLibraryUri(description.getMediaId());
+            if (libraryUri != null) {
+                return libraryUri;
+            }
+            if (mediaId == null) {
+                mediaId = description.getMediaId();
+            }
+        } catch (Throwable ignored) {
+        }
+
+        // Reported once per distinct value, because a build that publishes
+        // something unexpected here would otherwise look identical to an
+        // advert: both end up as a null uri, and only one of them is a bug.
+        if (mediaId != null && !mediaId.equals(lastUnusableSpotifyMediaId)) {
+            lastUnusableSpotifyMediaId = mediaId;
+            Log.d(TAG, "No Spotify library uri in the session media id: " + mediaId);
+        }
+
+        return null;
+    }
+
+    /** The last media id nothing could be read out of; see findSpotifyLibraryUri. */
+    private static volatile String lastUnusableSpotifyMediaId;
+
+    private static String findVideoId(MediaController controller) {
+        if (controller == null) {
+            return null;
+        }
+
+        MediaMetadata metadata = controller.getMetadata();
+        if (metadata != null) {
+            String mediaId = metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID);
+            if (mediaId != null) {
+                Matcher m = BARE_VIDEO_ID.matcher(mediaId);
+                if (m.matches()) {
                     return mediaId;
                 }
-            } catch (Throwable ignored) {
-            }
-
-            // Fallback: scan the remaining text keys. Non-text keys are skipped
-            // because getString() on them floods logcat with Bundle warnings.
-            for (String key : md.keySet()) {
-                if (!isTextMetadataKey(key)) {
-                    continue;
+                m = VIDEO_ID_IN_URL.matcher(mediaId);
+                if (m.find()) {
+                    return m.group(1);
                 }
-                try {
-                    String s = md.getString(key);
-                    if (s != null && !s.isEmpty()) {
-                        candidates.add(s);
-                    }
-                } catch (Throwable ignored) {
-                }
-            }
-            MediaDescription d = md.getDescription();
-            if (d.getMediaId() != null) {
-                candidates.add(d.getMediaId());
-            }
-            if (d.getIconUri() != null) {
-                candidates.add(d.getIconUri().toString());
-            }
-            try {
-                if (d.getMediaUri() != null) {
-                    candidates.add(d.getMediaUri().toString());
-                }
-            } catch (Throwable ignored) {
             }
         }
 
-        try {
-            List<MediaSession.QueueItem> queue = controller.getQueue();
-            if (queue != null) {
-                for (MediaSession.QueueItem q : queue) {
-                    MediaDescription qd = q.getDescription();
+        PlaybackState playbackState = controller.getPlaybackState();
+        List<MediaSession.QueueItem> queue = controller.getQueue();
+
+        if (playbackState != null && queue != null) {
+            long activeItemId = playbackState.getActiveQueueItemId();
+
+            for (MediaSession.QueueItem item : queue) {
+                if (item.getQueueId() == activeItemId) {
+                    
+                    MediaDescription qd = item.getDescription();
+                    List<String> candidates = new ArrayList<>();
+
                     if (qd.getMediaId() != null) {
                         candidates.add(qd.getMediaId());
                     }
                     if (qd.getIconUri() != null) {
                         candidates.add(qd.getIconUri().toString());
                     }
+                    for (String s : candidates) {
+                        Matcher m = VIDEO_ID_IN_URL.matcher(s);
+                        if (m.find()) {
+                            return m.group(1);
+                        }
+                        m = BARE_VIDEO_ID.matcher(s);
+                        if (m.matches()) {
+                            return s;
+                        }
+                    }
+                    break;
                 }
-            }
-        } catch (Throwable ignored) {
-        }
-
-        for (String s : candidates) {
-            Matcher m = VIDEO_ID_IN_URL.matcher(s);
-            if (m.find()) {
-                return m.group(1);
-            }
-        }
-        for (String s : candidates) {
-            if (BARE_VIDEO_ID.matcher(s).matches()) {
-                return s;
             }
         }
         return null;

@@ -296,6 +296,9 @@
     <string name="dismiss">关闭</string>
 
     <string name="music_widget_category">音乐小组件</string>
+    <string name="youtube_category">YouTube</string>
+    <string name="spotify_category">Spotify</string>
+    <string name="music_misc_category">其他</string>
     <string name="use_favorite_cache">为 YouTube 使用收藏缓存</string>
     <string name="use_favorite_cache_on">收藏按钮将启用，但点赞状态信息只会存储在启动器中 - Music Widget 无法知道你是否在其他地方点赞或点踩了视频</string>
     <string name="use_favorite_cache_off">收藏按钮将被禁用</string>
@@ -304,9 +307,8 @@
     <string name="youtube_revanced_kids_on">收藏按钮将启用，但在 YouTube 中已点赞的视频可能会在小组件中显示为未点赞。</string>
     <string name="youtube_revanced_kids_off">由于 YouTube API 的错误，madeForKids=true 的视频无法正确反映点赞状态 - 在 YouTube 中已点赞的视频会在小组件中显示为未点赞。为避免造成混淆，收藏按钮将被禁用。</string>
     <string name="copy_patch_url">点击以复制适用于 ReVanced Manager 的“Expose like status in MediaSession”补丁链接</string>
+    <string name="copy_patch_url_smmary">使用此补丁用于 YouTube。YT Music ReVanced 无需此补丁即可运行。</string>
     <string name="url_copied">链接已复制到剪贴板</string>
-    <string name="fyt_rating_revanced_installed">YouTube ReVanced：已安装</string>
-    <string name="fyt_rating_revanced_not_installed">YouTube ReVanced：未安装，请下载 ReVanced Manager 以安装该应用</string>
     <string name="fyt_rating_installed">fYT Rating：已安装</string>
     <string name="fyt_rating_not_installed">fYT Rating：未安装，双击前往下载页面</string>
     <string name="fyt_rating_state_unavailable">请安装 fYT Rating 以读取点赞状态</string>
@@ -315,6 +317,27 @@
     <string name="fyt_rating_state_ready">用户已登录，应用已就绪</string>
     <string name="fyt_rating_missing">未安装 fYT Rating</string>
     <string name="fyt_rating_opening">正在打开 fYT Rating…</string>
+
+    <string name="spotify_client_id">Spotify 客户端 ID</string>
+    <string name="spotify_client_id_summary">未设置</string>
+    <string name="spotify_client_id_dialog">在 developer.spotify.com 创建应用，将 launcher66://spotify-callback 添加为重定向 URI，然后将客户端 ID 粘贴到此处。</string>
+    <string name="spotify_copy_uri">点击以复制重定向 URI</string>
+    <string name="uri_copied">URI 已复制到剪贴板</string>
+    <string name="spotify_instruction">developer.spotify.com 上的应用配置说明</string>
+    <string name="spotify_client_id_missing">请先填写 Spotify 客户端 ID</string>
+    <string name="oauth_for_spotify">Spotify 登录</string>
+    <string name="spotify_logout">退出 Spotify</string>
+    <string name="spotify_logout_summary">移除此设备上存储的令牌</string>
+    <string name="spotify_logged_out">已退出 Spotify</string>
+    <string name="spotify_opening_browser">正在打开浏览器…</string>
+    <string name="spotify_no_browser">未安装浏览器；登录需要使用浏览器</string>
+    <string name="spotify_logged_in">已登录 Spotify</string>
+    <string name="spotify_login_failed">Spotify 登录失败</string>
+    <string name="spotify_login_error">Spotify：%1$s</string>
+    <string name="spotify_state_no_client_id">缺少客户端 ID</string>
+    <string name="spotify_state_not_logged_in">未登录</string>
+    <string name="spotify_state_expired">访问权限已过期，请重新登录</string>
+    <string name="spotify_state_ready">已登录</string>
 
     <string name="instantaneous_consumption">\u0020油耗：</string>
     <string name="driving_mileage">\u0020续航里程：</string>

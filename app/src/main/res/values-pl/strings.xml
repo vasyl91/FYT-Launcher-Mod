@@ -155,6 +155,9 @@
     <string name="dismiss">Odrzuć</string>
 
     <string name="music_widget_category">Music Widget</string>
+    <string name="youtube_category">YouTube</string>
+    <string name="spotify_category">Spotify</string>
+    <string name="music_misc_category">Pozostałe</string>
     <string name="use_favorite_cache">Używaj pamięci podręcznej ulubionych dla YouTube</string>
     <string name="use_favorite_cache_on">Przycisk Ulubione będzie włączony, ale informacje o stanie polubienia będą przechowywane tylko w launcherze - Music Widget nie będzie wiedzieć, czy film został polubiony lub \"odlubiony\" w innym miejscu</string>
     <string name="use_favorite_cache_off">Przycisk Ulubione będzie wyłączony</string>
@@ -163,9 +166,8 @@
     <string name="youtube_revanced_kids_on">Przycisk Ulubione będzie włączony, ale filmy polubione w YouTube mogą być wyświetlane w widżecie jako niepolubione.</string>
     <string name="youtube_revanced_kids_off">Filmy z wartością madeForKids=true, nieprawidłowo odzwierciedlają stan polubienia z powodu błędu w YouTube API - filmy polubione w YouTube są wyświetlane w widżecie jako niepolubione. Przycisk Ulubione zostanie wyłączony, aby uniknąć nieporozumień</string>
     <string name="copy_patch_url">Kliknij, aby skopiować link do patcha „Expose like status in MediaSession” dla Revanced Manager</string>
+    <string name="copy_patch_url_smmary">Użyj tej łatki dla YouTube. YT Music ReVanced działa bez niej.</string>
     <string name="url_copied">Link został skopiowany do schowka</string>
-    <string name="fyt_rating_revanced_installed">YouTube ReVanced: zainstalowany</string>
-    <string name="fyt_rating_revanced_not_installed">YouTube ReVanced: niezainstalowany, pobierz ReVanced Manager, aby zainstalować aplikację</string>
     <string name="fyt_rating_installed">fYT Rating: zainstalowane</string>
     <string name="fyt_rating_not_installed">fYT Rating: niezainstalowane, kliknij dwukrotnie aby przejść do strony pobierania</string>
     <string name="fyt_rating_state_unavailable">Zainstaluj fYT Rating, aby odczytać status polubienia</string>
@@ -174,6 +176,27 @@
     <string name="fyt_rating_state_ready">Użytkownik zalogowany, aplikacja gotowa</string>
     <string name="fyt_rating_missing">fYT Rating nie jest zainstalowane</string>
     <string name="fyt_rating_opening">Otwieranie fYT Rating…</string>
+
+    <string name="spotify_client_id">Identyfikator klienta Spotify</string>
+    <string name="spotify_client_id_summary">Nie ustawiono</string>
+    <string name="spotify_client_id_dialog">Utwórz aplikację na stronie developer.spotify.com, dodaj launcher66://spotify-callback jako URI przekierowania, a następnie wklej tutaj identyfikator klienta.</string>
+    <string name="spotify_copy_uri">Dotknij, aby skopiować URI przekierowania</string>
+    <string name="uri_copied">URI zostało skopiowane do schowka</string>
+    <string name="spotify_instruction">Instrukcja konfiguracji aplikacji na stronie developer.spotify.com</string>
+    <string name="spotify_client_id_missing">Najpierw wprowadź identyfikator klienta Spotify</string>
+    <string name="oauth_for_spotify">Logowanie do Spotify</string>
+    <string name="spotify_logout">Wyloguj ze Spotify</string>
+    <string name="spotify_logout_summary">Usuwa tokeny zapisane na tym urządzeniu</string>
+    <string name="spotify_logged_out">Wylogowano ze Spotify</string>
+    <string name="spotify_opening_browser">Otwieranie przeglądarki…</string>
+    <string name="spotify_no_browser">Brak zainstalowanej przeglądarki; jest ona potrzebna do logowania</string>
+    <string name="spotify_logged_in">Zalogowano do Spotify</string>
+    <string name="spotify_login_failed">Logowanie do Spotify nie powiodło się</string>
+    <string name="spotify_login_error">Spotify: %1$s</string>
+    <string name="spotify_state_no_client_id">Brak identyfikatora klienta</string>
+    <string name="spotify_state_not_logged_in">Nie zalogowano</string>
+    <string name="spotify_state_expired">Dostęp wygasł, zaloguj się ponownie</string>
+    <string name="spotify_state_ready">Zalogowano</string>
 
     <string name="instantaneous_consumption">\u0020Spalanie:</string>
     <string name="driving_mileage">\u0020Zasięg:</string>

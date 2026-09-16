@@ -4,12 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?attr/listPreferredItemHeightSmall"
-    android:orientation="vertical" > 
+    android:orientation="vertical"
+    android:layout_marginEnd="16dp" >
 
     <!-- Title TextView -->
     <TextView
         android:id="@android:id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItem"
         android:textColor="?android:attr/textColorPrimary"
@@ -19,7 +20,7 @@
     <!-- Summary TextView -->
     <TextView
         android:id="@android:id/summary"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItemSecondary"
         android:textColor="?android:attr/textColorSecondary"

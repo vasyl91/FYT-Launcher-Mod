@@ -161,6 +161,25 @@
         </activity>
 
         <activity
+            android:name="com.android.launcher66.settings.SpotifyAuthCallbackActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="launcher66"
+                    android:host="spotify-callback" />
+            </intent-filter>
+        </activity>        
+
+        <activity
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:name="com.syu.canbus.NullActi"

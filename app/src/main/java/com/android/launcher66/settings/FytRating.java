@@ -47,7 +47,6 @@ public final class FytRating {
     private static final String TAG = "FytRating";
 
     public static final String BRIDGE_PACKAGE = "vasyl.fytrating";
-    public static final String REVANCED_PACKAGE = "app.revanced.android.youtube";
 
     private static final String ACTION_GET_RATING = "vasyl.fytrating.action.GET_RATING";
     private static final String ACTION_SET_RATING = "vasyl.fytrating.action.SET_RATING";
@@ -177,15 +176,6 @@ public final class FytRating {
     public static boolean isInstalled(Context context) {
         try {
             context.getPackageManager().getPackageInfo(BRIDGE_PACKAGE, 0);
-            return true;
-        } catch (PackageManager.NameNotFoundException e) {
-            return false;
-        }
-    }
-
-    public static boolean isRevancedInstalled(Context context) {
-        try {
-            context.getPackageManager().getPackageInfo(REVANCED_PACKAGE, 0);
             return true;
         } catch (PackageManager.NameNotFoundException e) {
             return false;
@@ -921,14 +911,10 @@ public final class FytRating {
 
     private static void applyState(
             Context context, Preference oauthPreference, Preference kidsPreference) {
-        boolean revancedInstalled = isRevancedInstalled(context);
         boolean installed = isInstalled(context);
-        boolean ready = revancedInstalled && installed && signedIn && allowed;
+        boolean ready = installed && signedIn && allowed;
 
         if (oauthPreference != null) {         
-            String revancedInstalledLine = context.getString(installed
-                    ? R.string.fyt_rating_revanced_installed
-                    : R.string.fyt_rating_revanced_not_installed);
             String installedLine = context.getString(installed
                     ? R.string.fyt_rating_installed
                     : R.string.fyt_rating_not_installed);
@@ -945,7 +931,7 @@ public final class FytRating {
             }
 
             oauthPreference.setSummary(
-                    revancedInstalledLine + "\n" + installedLine + "\n" + context.getString(stateLine));
+                    installedLine + "\n" + context.getString(stateLine));
         }
 
         if (kidsPreference != null) {

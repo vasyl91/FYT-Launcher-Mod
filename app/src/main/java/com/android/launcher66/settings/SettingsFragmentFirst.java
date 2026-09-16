@@ -116,6 +116,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private Preference settingsSecondFragment;
     private Preference oauthForYoutubeRevanced;
     private Preference youtubeRevancedKids;
+    private AlertDialog alertClientIdDialog;
+    private EditText clientIdEditText;
+    private Preference clientIdPreference;
+    private Preference oauthForSpotify;
     private Preference allAppsTextSize; 
     private EditText allAppsTextSizeEditText;
     private AlertDialog alertAllAppsTextSizeDialog;
@@ -313,6 +317,13 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference copyPatchUrl = findPreference(Keys.COPY_PATCH_URL);
         Preference fytData = findPreference(Keys.FYT_DATA);
 
+        clientIdPreference = findPreference(Keys.SPOTIFY_CLIENT_ID);
+        dialogClientIdEditText();
+        oauthForSpotify = findPreference(Keys.OAUTH_FOR_SPOTIFY);
+        Preference spotifyLogout = findPreference(Keys.SPOTIFY_LOGOUT);
+        Preference spotifyUri = findPreference(Keys.SPOTIFY_COPY_URI);
+        Preference spotifyInstruction = findPreference(Keys.SPOTIFY_INSTRUCTION);
+
         Preference deviceSettings = findPreference(Keys.DEVICE_SETTINGS);
         Preference notificationPreference = findPreference(Keys.NOTIFICATION_SETTINGS);
         Preference accessibilityPreference = findPreference(Keys.ACCESSIBILITY_SETTINGS);
@@ -392,6 +403,21 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (copyPatchUrl != null) {
             copyPatchUrl.setOnPreferenceClickListener(this);
+        }
+        if (clientIdPreference != null) {
+            clientIdPreference.setOnPreferenceClickListener(this);
+        }
+        if (oauthForSpotify != null) {
+            oauthForSpotify.setOnPreferenceClickListener(this);
+        }
+        if (spotifyLogout != null) {
+            spotifyLogout.setOnPreferenceClickListener(this);
+        }
+        if (spotifyUri != null) {
+            spotifyUri.setOnPreferenceClickListener(this);
+        }
+        if (spotifyInstruction != null) {
+            spotifyInstruction.setOnPreferenceClickListener(this);
         }
         if (fytData != null) {
             fytData.setOnPreferenceClickListener(this);
@@ -518,6 +544,11 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (oauthForYoutubeRevanced != null && youtubeRevancedKids != null) {
             FytRating.syncPreference(requireContext(), oauthForYoutubeRevanced, youtubeRevancedKids);
         }
+        // The browser is a task of its own, so coming back from the Spotify
+        // sign-in lands here and nowhere else. Everything drawn is read from
+        // SharedPreferences, so unlike the call above there is nothing to wait
+        // for and no background refresh to start.
+        SpotifyRating.syncPreference(requireContext(), clientIdPreference, oauthForSpotify);
     }
 
     private void nightMode() {
@@ -625,6 +656,55 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                     clipboard.setPrimaryClip(clip);
                     Toast.makeText(LauncherApplication.sApp, R.string.url_copied, Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case Keys.SPOTIFY_CLIENT_ID:
+                alertClientIdDialog = displayClientIdDialog().create();
+
+                alertClientIdDialog.setOnShowListener(dialog -> {
+                    Button negativeButtonClientId = alertClientIdDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    negativeButtonClientId.setLayoutParams(params);
+
+                    ViewGroup.LayoutParams editClientIdTextParams = clientIdEditText.getLayoutParams();
+                    if (editClientIdTextParams instanceof ViewGroup.MarginLayoutParams clientIdParams) {
+                        clientIdParams.setMargins(padding, padding, padding, padding);
+                        clientIdEditText.setLayoutParams(clientIdParams);
+                    }
+
+                    clientIdEditText.requestFocus();
+                    imm.showSoftInput(clientIdEditText, InputMethodManager.SHOW_IMPLICIT);
+                    clientIdEditText.setSelection(clientIdEditText.getText().length());
+                });
+
+                alertClientIdDialog.show();
+                break;                
+            case Keys.OAUTH_FOR_SPOTIFY:
+                // The missing Client ID check lives in SpotifyRating, not
+                // here. startLogin has to repeat it anyway - it is public and
+                // reachable from elsewhere - and two copies of one rule are
+                // two copies that can drift.
+                SpotifyRating.handlePreferenceClick(requireContext());
+                break;
+            case Keys.SPOTIFY_LOGOUT:
+                SpotifyRating.logout(requireContext());
+                SpotifyRating.syncPreference(requireContext(), clientIdPreference, oauthForSpotify);
+                // The favorite button is drawn from the Spotify account while
+                // one is linked, so it has to be redrawn now that none is.
+                MediaFavoriteController.refreshWidget(requireContext());
+                Toast.makeText(
+                        LauncherApplication.sApp,
+                        R.string.spotify_logged_out,
+                        Toast.LENGTH_SHORT).show();
+                break;            
+            case Keys.SPOTIFY_COPY_URI:
+                ClipboardManager clipboardUri = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clipUri = ClipData.newPlainText("Spotify callback URI", "launcher66://spotify-callback");
+                if (clipboardUri != null) {
+                    clipboardUri.setPrimaryClip(clipUri);
+                    Toast.makeText(LauncherApplication.sApp, R.string.uri_copied, Toast.LENGTH_SHORT).show();
+                }
+                break;            
+            case Keys.SPOTIFY_INSTRUCTION:
+                requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SpotifyGuide()).commit();
                 break;
             case Keys.DEVICE_SETTINGS:
                 Intent intentSettings = new Intent(Settings.ACTION_SETTINGS);
@@ -865,6 +945,13 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
         recyclerView = null;
         rootView = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        clearPreferenceListeners(getPreferenceScreen());
+        imm = null;
+        super.onDestroy();
     }
 
     private void clearPreferenceListeners(PreferenceGroup group) {
@@ -1154,6 +1241,58 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Toast.makeText(LauncherApplication.sApp, error, Toast.LENGTH_LONG).show();
     }
 
+    private AlertDialog.Builder displayClientIdDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        builder.setTitle(R.string.spotify_client_id);
+        builder.setMessage(R.string.spotify_client_id_dialog);
+        if (clientIdEditText.getParent() != null) {
+            ((ViewGroup) clientIdEditText.getParent()).removeView(clientIdEditText);
+        }
+        builder.setView(clientIdEditText);
+        clientIdEditText.setText(clientIdPreference.getSharedPreferences().getString(Keys.SPOTIFY_CLIENT_ID, ""));
+        clientIdEditText.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveClientId());
+        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
+        return builder;
+    }
+
+    private void dialogClientIdEditText() {
+        clientIdEditText = new EditText(this.getContext());
+        clientIdEditText.setInputType(InputType.TYPE_CLASS_TEXT);
+        clientIdEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        clientIdEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                saveClientId();
+                alertClientIdDialog.dismiss();
+            }
+            return false;
+        });
+    }
+
+    private void saveClientId() {
+        String newValue = clientIdEditText.getText().toString();
+        String oldValue = clientIdPreference.getSharedPreferences()
+                .getString(Keys.SPOTIFY_CLIENT_ID, "");
+
+        if (newValue.equals(oldValue)) {
+            return;
+        }
+
+        SpotifyRating.logout(requireContext());
+
+        clientIdPreference.getSharedPreferences()
+                .edit()
+                .putString(Keys.SPOTIFY_CLIENT_ID, newValue)
+                .apply();
+
+        handler.post(() -> {
+            if (isAdded()) {
+                SpotifyRating.syncPreference(
+                        requireContext(), clientIdPreference, oauthForSpotify);
+            }
+        });
+    }
+
     private AlertDialog.Builder displayDownloadConfirmationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setTitle(getString(R.string.confirmation_dialog, latestAppVersion));
@@ -1205,6 +1344,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     private void dismissDialogs() {
+        if (alertClientIdDialog != null && alertClientIdDialog.isShowing()) {
+            alertClientIdDialog.dismiss();
+            alertClientIdDialog = null;
+        } 
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
             loadingDialog = null;

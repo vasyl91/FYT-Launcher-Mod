@@ -296,6 +296,9 @@
     <string name="dismiss">Dismiss</string>
 
     <string name="music_widget_category">Music Widget</string>
+    <string name="youtube_category">YouTube</string>
+    <string name="spotify_category">Spotify</string>
+    <string name="music_misc_category">Other</string>
     <string name="use_favorite_cache">Use favorite cache for YouTube</string>
     <string name="use_favorite_cache_on">The Favorite button will be enabled, but like state information will be stored only in the launcher - Music Widget won\'t know whether you liked or disliked a video elsewhere</string>
     <string name="use_favorite_cache_off">The Favorite button will be disabled</string>
@@ -304,9 +307,8 @@
     <string name="youtube_revanced_kids_on">The Favorite button will be enabled but videos liked on YouTube might appear as not liked in the widget.</string>
     <string name="youtube_revanced_kids_off">Videos that return madeForKids=true never correctly reflect the like state due to a YouTube API bug - videos liked on YouTube appear as not liked in the widget. The Favorite button will be disabled to prevent confusion.</string>
     <string name="copy_patch_url">Tap to copy the URL of the „Expose like status in MediaSession” patch for ReVanced Manager</string>
+    <string name="copy_patch_url_smmary">Use this patch for YouTube. YT Music ReVanced works without it.</string>
     <string name="url_copied">URL copied to clipboard</string>
-    <string name="fyt_rating_revanced_installed">YouTube ReVanced: installed</string>
-    <string name="fyt_rating_revanced_not_installed">YouTube ReVanced: not installed, download the ReVanced Manager to install the app</string>
     <string name="fyt_rating_installed">fYT Rating: installed</string>
     <string name="fyt_rating_not_installed">fYT Rating: not installed, double-click to go to the download page</string>
     <string name="fyt_rating_state_unavailable">Install fYT Rating to read the like status</string>
@@ -315,6 +317,28 @@
     <string name="fyt_rating_state_ready">User logged in, app ready</string>
     <string name="fyt_rating_missing">fYT Rating is not installed</string>
     <string name="fyt_rating_opening">Opening fYT Rating…</string>
+
+    <string name="spotify_client_id">Spotify Client ID</string>
+    <string name="spotify_client_id_summary">Not set</string>
+    <string name="spotify_client_id_dialog">Create an app at developer.spotify.com, add launcher66://spotify-callback as a Redirect URI, then paste the Client ID here.</string>
+    <string name="spotify_copy_uri">Tap to copy the Redirect URI</string>  
+    <string name="uri_copied">URI copied to clipboard</string>
+    <string name="spotify_instruction">Instruction for app configuration at developer.spotify.com</string>
+    <string name="spotify_client_id_missing">Fill in the Spotify Client ID first</string>
+    <string name="oauth_for_spotify">Spotify sign-in</string>
+    <string name="spotify_logout">Sign out of Spotify</string>
+    <string name="spotify_logout_summary">Removes the tokens stored on this device</string>
+    <string name="spotify_logged_out">Signed out of Spotify</string>
+    <string name="spotify_opening_browser">Opening the browser…</string>
+    <string name="spotify_no_browser">No browser installed; one is needed for the sign-in</string>
+    <string name="spotify_logged_in">Signed in to Spotify</string>
+    <string name="spotify_login_failed">Spotify sign-in failed</string>
+    <string name="spotify_login_error">Spotify: %1$s</string>
+    <string name="spotify_state_no_client_id">No Client ID</string>
+    <string name="spotify_state_not_logged_in">Not signed in</string>
+    <string name="spotify_state_expired">Access expired, sign in again</string>
+    <string name="spotify_state_ready">Signed in</string>
+    <string name="spotify_dev_site">https://developer.spotify.com/</string>
 
     <string name="instantaneous_consumption">\u0020Fuel consum.:</string>
     <string name="driving_mileage">\u0020Cruising Range:</string>

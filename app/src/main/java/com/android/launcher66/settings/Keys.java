@@ -21,15 +21,26 @@ public final class Keys {
     public static final String OVERVIEW_MODE_OPEN = "overview_mode_open";
     public static final String OVERVIEW_MODE_CLOSE = "overview_mode_close";
     public static final String NIGHT_MODE = "night_mode"; 
-
     public static final String DOWNLOAD_PERCENTAGE = "download_percentage";
     public static final String STATUSBAR = "transparent_statusbar";
     public static final String CREATOR_FIRST = "launcher_creator_first";
+
     public static final String FAVORITE_CACHE = "favorite_cache";
     public static final String OAUTH_FOR_YOUTUBE_REVANCED = "oauth_for_youtube_revanced";
     public static final String YOUTUBE_REVANCED_KIDS = "youtube_revanced_kids";
     public static final String COPY_PATCH_URL = "copy_patch_url";
+    public static final String SPOTIFY_CLIENT_ID = "spotify_client_id";
+    public static final String OAUTH_FOR_SPOTIFY = "oauth_for_spotify";
+    public static final String SPOTIFY_LOGOUT = "spotify_logout";
+    public static final String SPOTIFY_ACCESS_TOKEN = "spotify_access_token";
+    public static final String SPOTIFY_REFRESH_TOKEN = "spotify_refresh_token";
+    public static final String SPOTIFY_TOKEN_EXPIRY = "spotify_token_expiry";
+    public static final String SPOTIFY_CODE_VERIFIER = "spotify_code_verifier";
+    public static final String SPOTIFY_AUTH_STATE = "spotify_auth_state";
+    public static final String SPOTIFY_COPY_URI = "spotify_copy_uri";
+    public static final String SPOTIFY_INSTRUCTION = "spotify_instruction";
     public static final String FYT_DATA = "fyt_data"; 
+
     public static final String DEVICE_SETTINGS = "device_settings";
     public static final String NOTIFICATION_SETTINGS = "notification_settings";
     public static final String ACCESSIBILITY_SETTINGS = "accessibility_settings";

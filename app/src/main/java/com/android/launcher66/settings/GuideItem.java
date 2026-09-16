@@ -43,3 +43,15 @@ class DescriptionItem implements GuideItem {
         return description;
     }
 }
+
+class SpotifyItem implements GuideItem {
+    private final int imageResId;
+
+    public SpotifyItem(int imageResId) {
+        this.imageResId = imageResId;
+    }
+
+    public int getImageResId() {
+        return imageResId;
+    }
+}
