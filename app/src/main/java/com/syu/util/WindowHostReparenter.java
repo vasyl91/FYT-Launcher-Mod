@@ -49,12 +49,17 @@ public class WindowHostReparenter {
                 return false;
             }
 
-            // 2) Wait for inner target SurfaceControls to appear AND be stable
-            final int halfTimeout = Math.max(50, timeoutMs / 2);
+            // 2) Wait for inner target SurfaceControls to appear AND be stable.
+            //
+            // Both views are polled in ONE loop. Run back to back, each wait spent its own full
+            // SURFACE_STABLE_WINDOW_MS even though the two surfaces settle at the same time, so a
+            // swap blocked for ~358 ms instead of ~180 -- and this runs on the main thread, which
+            // is where the launcher's own "Davey! duration=763ms" right after a swap came from.
             long startWait = System.currentTimeMillis();
-            Object targetA = waitForInnerSurfaceControlStable(avA, halfTimeout);
-            Object targetB = waitForInnerSurfaceControlStable(avB, halfTimeout);
+            Object[] targets = waitForInnerSurfaceControlsStable(avA, avB, timeoutMs);
             long waited = System.currentTimeMillis() - startWait;
+            Object targetA = targets[0];
+            Object targetB = targets[1];
 
             if (targetA == null || targetB == null) {
                 Log.w(TAG, "swap: targets not ready (tA=" + (targetA != null) + " tB=" + (targetB != null)
@@ -111,6 +116,61 @@ public class WindowHostReparenter {
     }
 
     // Wait for an inner surface control to be available AND stable for SURFACE_STABLE_WINDOW_MS
+    /**
+     * Waits until BOTH views have an inner SurfaceControl that has stayed valid for
+     * SURFACE_STABLE_WINDOW_MS, polling them in the same iteration.
+     *
+     * @return {targetA, targetB}; either entry may be null when that view never became stable.
+     */
+    private static Object[] waitForInnerSurfaceControlsStable(View avA, View avB, int timeoutMs) {
+        final long deadline = System.currentTimeMillis() + Math.max(50, timeoutMs);
+        final long[] stableSince = { -1L, -1L };
+        final Object[] lastFound = { null, null };
+        final boolean[] done = { false, false };
+
+        while (System.currentTimeMillis() < deadline) {
+            for (int i = 0; i < 2; i++) {
+                if (done[i]) continue;
+                View v = (i == 0) ? avA : avB;
+
+                Object sc = tryGetInnerSurfaceControl(v);
+                boolean valid = isSurfaceValid(v);
+
+                if (sc != null && valid) {
+                    if (stableSince[i] < 0) stableSince[i] = System.currentTimeMillis();
+                    lastFound[i] = sc;
+                    if (System.currentTimeMillis() - stableSince[i] >= SURFACE_STABLE_WINDOW_MS) {
+                        done[i] = true;
+                    }
+                } else {
+                    stableSince[i] = -1L;
+                    lastFound[i] = sc;
+                }
+            }
+
+            if (done[0] && done[1]) break;
+
+            // Shorter step than the old 25 ms: the stability window is detected on the tick it
+            // actually elapses instead of up to a quantum late, on both views at once.
+            try { Thread.sleep(8); }
+            catch (InterruptedException ie) { Thread.currentThread().interrupt(); break; }
+        }
+        return new Object[]{ lastFound[0], lastFound[1] };
+    }
+
+    private static boolean isSurfaceValid(View avView) {
+        try {
+            SurfaceView sv = findSurfaceView(avView);
+            if (sv == null) return false;
+            SurfaceHolder holder = sv.getHolder();
+            if (holder == null) return false;
+            android.view.Surface s = holder.getSurface();
+            return s != null && s.isValid();
+        } catch (Throwable ignore) {
+            return false;
+        }
+    }
+
     private static Object waitForInnerSurfaceControlStable(View avView, int timeoutMs) {
         long deadline = System.currentTimeMillis() + timeoutMs;
         long stableSince = -1;

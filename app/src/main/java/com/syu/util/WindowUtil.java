@@ -42,9 +42,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class WindowUtil {
@@ -75,6 +80,205 @@ public class WindowUtil {
     public static boolean fourthPipPinned = false;
 
     private static final int PANES_SETTLED_POLLS = 24; 
+
+    /**
+     * Whether a configured PiP package is installed.
+     *
+     * Helpers.isPackageInstalled() is a PackageManager query, and openMultiplePips() runs it once
+     * per configured pane on the main thread immediately before the panes are built. The answer
+     * only changes on install / uninstall, which the receiver below covers.
+     */
+    private static final Map<String, Boolean> sPackageInstalled = new ConcurrentHashMap<>();
+
+    public static boolean isPipPackageInstalled(String pkg) {
+        if (pkg == null || pkg.isEmpty()) return false;
+        Boolean cached = sPackageInstalled.get(pkg);
+        if (cached != null) return cached;
+        boolean installed = Helpers.isPackageInstalled(pkg);
+        sPackageInstalled.put(pkg, installed);
+        return installed;
+    }
+
+    /** Call from the launcher's PACKAGE_ADDED / PACKAGE_REMOVED / PACKAGE_REPLACED receiver. */
+    public static void invalidatePackageCaches(String pkg) {
+        if (pkg == null) {
+            sPackageInstalled.clear();
+        } else {
+            sPackageInstalled.remove(pkg);
+            WindowHostSplash.invalidateIcon(pkg);
+            WindowHostActivityView.invalidateLaunchCache(pkg);
+        }
+    }
+
+    /**
+     * Pane openings dispatched by runStaggered() but not yet started.
+     *
+     * WindowHost.areAllPanesRendering() reports a pane that has not been shown yet as "done",
+     * because hasRenderedContent() answers true whenever the pane is not visible. Without this
+     * counter the rebuild window closed while the last pane was still queued -- in the capture
+     * "Panes settled" landed 80 ms before the fourth pane was even created, which released the
+     * MCU channel arbitration into the middle of the launch sequence.
+     */
+    private static volatile int pendingPaneLaunches = 0;
+
+    /**
+     * True from the moment a rebuild is committed until its last pane has been dispatched.
+     *
+     * Used by WakeDetectionService so its ensure loop does not judge the panes, or reopen them,
+     * while a rebuild is on its way.
+     */
+    public static boolean isPipRebuildInProgress() {
+        final boolean hostAlive = host() != null;
+        final boolean healthy = pipPanesLookHealthy();
+        synchronized (OPEN_PIP_LOCK) {
+            return rebuildInProgressLocked(openPipClock(), hostAlive, healthy);
+        }
+    }
+
+    /**
+     * Whether a rebuild is still under way. Call with OPEN_PIP_LOCK held.
+     *
+     * Covers the whole span, not just the dispatch: committed but not yet started, panes still
+     * being queued by runStaggered(), and panes queued but not yet launched. The last case matters
+     * because pipPanesLookHealthy() is false for a pane that has not called startActivity yet --
+     * exactly the state a normal rebuild passes through. Bounded by OPEN_PIP_INFLIGHT_TIMEOUT_MS so
+     * a rebuild that never finishes cannot block every later trigger.
+     */
+    private static boolean rebuildInProgressLocked(long now, boolean hostAlive, boolean panesHealthy) {
+        if (openPipInFlight && now - openPipInFlightSinceMs < OPEN_PIP_INFLIGHT_TIMEOUT_MS) return true;
+        if (now - lastRebuildStartedAtMs >= OPEN_PIP_INFLIGHT_TIMEOUT_MS) return false;
+        if (pendingPaneLaunches > 0) return true;
+
+        // No host means the panes are gone, not that they are being built. The launcher activity
+        // can be recreated in the middle of a rebuild -- a display-scale change right after a wake
+        // does exactly that -- and the panes built against the old instance die with it. Reporting
+        // "in progress" there locked the recovery out for the whole timeout while the ensure loop
+        // burned through its attempts, and PiP never came back.
+        if (!hostAlive) return false;
+
+        return !panesHealthy;
+    }
+
+    // -------------------------------------------------------------------------------------
+    // Placeholder geometry cache
+    //
+    // openPip() runs from onWorkspaceShown(), which fires before the PiP placeholders have been
+    // added to the CellLayouts. getPipPlaceholderPosition() then returns null, getInitialPipBounds()
+    // falls back to the offscreen rect, and every pane sets startDeferredForBounds -- so the apps
+    // are not launched until the workspace finishes laying out. Measured on the head unit that was
+    // 1.19 s between "dual: show" and the first startActivity, and it also meant each
+    // VirtualDisplay was created at the fallback size (600x600) and resized to its real size
+    // afterwards, handing every embedded app a configuration change right after it started.
+    //
+    // The placeholder geometry is stable between runs, so it is remembered and used until the live
+    // layout can answer. The signature covers everything that would invalidate it.
+    // -------------------------------------------------------------------------------------
+    private static final String KEY_PLACEHOLDER_CACHE = "pip_placeholder_";
+    /**
+     * What savePlaceholderPosition() last wrote, per pane.
+     *
+     * updatePipPosition() runs for all five pane types on every scroll frame. Without this guard
+     * each of those frames rebuilt a signature string from half a dozen preference reads and
+     * compared it against a stored string -- 300 of them a second at 60 fps, for data that only
+     * changes when the user edits the layout.
+     */
+    private static final Map<String, int[]> lastSavedBasePos = new HashMap<>();
+
+    /** The preference prefix CellLayout.addPipPlaceholder() reads this pane's geometry from. */
+    private static String pipPreferenceKey(String pipType) {
+        if (pipType == null) return "";
+        switch (pipType) {
+            case "dual":   return Keys.PIP_DUAL_KEY;
+            case "first":  return Keys.PIP_FIRST_KEY;
+            case "second": return Keys.PIP_SECOND_KEY;
+            case "third":  return Keys.PIP_THIRD_KEY;
+            case "fourth": return Keys.PIP_FOURTH_KEY;
+            default:       return "";
+        }
+    }
+
+    /**
+     * Identifies the layout the cached geometry belongs to.
+     *
+     * It has to cover everything that changes the placeholder, not just the screen: the four corner
+     * preferences the creator writes, the page the pane lives on, and the layout margin. With only
+     * the display metrics in here, a pane resized in settings still matched its old cache entry, so
+     * it launched at the previous size and was corrected about a second later -- handing the
+     * embedded app a configuration change immediately after start, and leaving dual at the stale
+     * size altogether.
+     */
+    private static String placeholderSignature(String pipType) {
+        try {
+            DisplayMetrics dm = LauncherApplication.sApp.getResources().getDisplayMetrics();
+            StringBuilder sb = new StringBuilder();
+            sb.append(dm.widthPixels).append('x').append(dm.heightPixels)
+              .append('@').append(dm.densityDpi);
+
+            if (prefs != null) {
+                String pipKey = pipPreferenceKey(pipType);
+                if (!pipKey.isEmpty()) {
+                    sb.append('|').append(prefs.getInt(pipKey + "TopLeftX", Integer.MIN_VALUE))
+                      .append(',').append(prefs.getInt(pipKey + "TopRightX", Integer.MIN_VALUE))
+                      .append(',').append(prefs.getInt(pipKey + "TopLeftY", Integer.MIN_VALUE))
+                      .append(',').append(prefs.getInt(pipKey + "BottomLeftY", Integer.MIN_VALUE));
+                }
+                sb.append('|').append(prefs.getString("layout_margin", "10"));
+                sb.append('|').append(prefs.getBoolean(Keys.LEFT_BAR, false));
+            }
+            return sb.toString();
+        } catch (Throwable t) {
+            return "unknown";
+        }
+    }
+
+    private static void savePlaceholderPosition(String pipType, int homeScreen, int[] basePos, int pageWidth) {
+        if (prefs == null || basePos == null || basePos.length < 4 || pageWidth <= 0) return;
+
+        // Cheap reject first: nothing below is worth doing while only the scroll offset moves.
+        int[] prev = lastSavedBasePos.get(pipType);
+        if (prev != null && prev.length == 6
+                && prev[0] == homeScreen && prev[1] == pageWidth
+                && prev[2] == basePos[0] && prev[3] == basePos[1]
+                && prev[4] == basePos[2] && prev[5] == basePos[3]) {
+            return;
+        }
+        lastSavedBasePos.put(pipType,
+                new int[]{ homeScreen, pageWidth, basePos[0], basePos[1], basePos[2], basePos[3] });
+
+        try {
+            String value = placeholderSignature(pipType) + "|" + homeScreen + "," + pageWidth + ","
+                    + basePos[0] + "," + basePos[1] + "," + basePos[2] + "," + basePos[3];
+            if (value.equals(prefs.getString(KEY_PLACEHOLDER_CACHE + pipType, null))) return;
+            prefs.edit().putString(KEY_PLACEHOLDER_CACHE + pipType, value).apply();
+        } catch (Throwable ignore) {}
+    }
+
+    /** @return {x, y, w, h, pageWidth} from the last laid-out run, or null when unusable. */
+    private static int[] loadPlaceholderPosition(String pipType, int expectedHomeScreen) {
+        if (prefs == null) return null;
+        try {
+            String value = prefs.getString(KEY_PLACEHOLDER_CACHE + pipType, null);
+            if (value == null) return null;
+
+            // The signature itself contains '|', so split off exactly the trailing payload.
+            int bar = value.lastIndexOf('|');
+            if (bar <= 0) return null;
+            if (!placeholderSignature(pipType).equals(value.substring(0, bar))) return null;
+
+            String[] parts = value.substring(bar + 1).split(",");
+            if (parts.length != 6) return null;
+            if (Integer.parseInt(parts[0]) != expectedHomeScreen) return null;
+
+            int pageWidth = Integer.parseInt(parts[1]);
+            int w = Integer.parseInt(parts[4]);
+            int h = Integer.parseInt(parts[5]);
+            if (pageWidth <= 0 || w <= 0 || h <= 0) return null;
+
+            return new int[]{ Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), w, h, pageWidth };
+        } catch (Throwable t) {
+            return null;
+        }
+    }
 
     public static void initDefaultApp() {
         if (!LauncherApplication.isFytDevice()) return;
@@ -119,9 +323,53 @@ public class WindowUtil {
     }
 
     /** Window in which a repeated call to openPip() with the same configuration is skipped. */
+    /** Kept only for the log line below; the skip decision no longer depends on elapsed time. */
     private static final long OPEN_PIP_DEBOUNCE_MS = 4000L;
     private static volatile long lastOpenPipAtMs = 0L;
     private static volatile String lastOpenPipSignature = null;
+
+    /**
+     * Serialises the decision to rebuild.
+     *
+     * openPip() runs on the worker pool, and after a wake two triggers land there at the same
+     * moment -- Launcher.onResume() and WakeDetectionService's ensure loop. shouldDebounceOpenPip()
+     * was a plain check-then-act, so both read the old timestamp, both passed, and each went on to
+     * build its own WindowHost. setHost() then kept only the second one and the first one's windows
+     * were orphaned on screen: black panes with a divider that no longer follow the workspace
+     * scroll, while the live panes travel over them. Everything downstream -- duplicated "show"
+     * lines, "null receiver" from startActivity, a pane stuck on its splash -- followed from that.
+     */
+    private static final Object OPEN_PIP_LOCK = new Object();
+    /** Set once a rebuild is committed, cleared when openMultiplePips() actually starts. */
+    private static boolean openPipInFlight = false;
+    private static long openPipInFlightSinceMs = 0L;
+
+    /**
+     * Clock for every openPip guard.
+     *
+     * SystemClock.uptimeMillis() does not advance while the SoC is suspended, so after the unit had
+     * been asleep for a while every timestamp below still looked like it was taken moments ago.
+     * With the panes left over from before the sleep, shouldDebounceOpenPip() then decided nothing
+     * had changed and PiP never came back -- which is why short sleeps (no suspend, clock keeps
+     * running) worked and long ones did not.
+     */
+    private static long openPipClock() {
+        return SystemClock.elapsedRealtime();
+    }
+    /**
+     * Upper bound on how long a rebuild may be considered "in progress".
+     *
+     * Only a backstop against a rebuild that never finishes -- a pane that genuinely fails is
+     * recovered by the health check and the ensure loop, not by this. 3000 ms turned out to be
+     * shorter than a real rebuild on a congested main thread: after a wake, "third: show" to
+     * "dual: show" alone took 1956 ms, the window expired mid-rebuild, and the ensure loop's
+     * openPip() dismissed panes that were still coming up. Every pane then went into the
+     * black-screen restart loop -- four grey rectangles and nothing else.
+     */
+    private static final long OPEN_PIP_INFLIGHT_TIMEOUT_MS = 8000L;
+    /** Second line of defence, inside openMultiplePips() itself. */
+    private static long lastRebuildStartedAtMs = 0L;
+    private static final long REBUILD_GUARD_MS = 1200L;
 
     /**
      * Signature of what openPip() is about to display: panel flags + packages + show mode.
@@ -199,37 +447,110 @@ public class WindowUtil {
      */
     private static boolean shouldDebounceOpenPip(boolean show) {
         final String sig = currentPipSignature(show);
-        final long now = SystemClock.uptimeMillis();
+        final long now = openPipClock();
 
         boolean awaitingBounds = true;
         try {
             final WindowHost h = host();
             awaitingBounds = h != null && h.isAnyPaneAwaitingBounds();
         } catch (Throwable ignore) { }
+        final boolean panesHealthy = pipPanesLookHealthy();
+        final boolean hostAlive = host() != null;
 
-        boolean sameLayout = sig != null
-                && sig.equals(lastOpenPipSignature)
-                && (now - lastOpenPipAtMs) < OPEN_PIP_DEBOUNCE_MS
-                && panesStillOnScreen();
+        synchronized (OPEN_PIP_LOCK) {
+            // A rebuild that is already running must never be interrupted.
+            //
+            // openPipInFlight alone was not enough: it is cleared the moment openMultiplePips()
+            // starts, while runStaggered() still has panes to open and the ones already shown have
+            // not launched yet. pipPanesLookHealthy() is false in exactly that state, so sameLayout
+            // below went false and a second trigger sailed through to dismiss(). In the capture that
+            // landed 9 ms after "third: show com.spotify.music": the dismiss bumped the pane's
+            // generation, its pending start died on the generation check, and because runStaggered()
+            // had already moved past it nothing ever showed that pane again -- the single pane
+            // stayed empty while dual and fourth came up normally.
+            if (rebuildInProgressLocked(now, hostAlive, panesHealthy)) {
+                Log.i(TAG, "openPip(): rebuild in progress (pending=" + pendingPaneLaunches
+                        + ", " + (now - lastRebuildStartedAtMs) + " ms in), skipping this trigger");
+                return true;
+            }
 
-        if (sameLayout) {
-            if (!awaitingBounds) return true;
-            Log.i(TAG, "openPip(): panes up but awaiting bounds - pumping bounds instead of rebuilding");
-            forcePipBoundsUpdate = true;
-            final Launcher l = Launcher.getLauncher();
-            if (l != null) l.handler.post(() -> pumpPipBoundsUntilReady(32));
-            return true;
+            // No time window here on purpose.
+            //
+            // Identical layout + panes actually on screen means there is nothing to rebuild, no
+            // matter how long ago the last open was. The 4 s window used to let a late second
+            // trigger through: Launcher.onResume() opens the panes, then initializeAppList() calls
+            // startMapPip() again once the app list finally arrives -- 6.5 s later in the capture --
+            // and the panes were torn down and built a second time in front of the user.
+            // invalidateOpenPipDebounce() is what forces a genuine re-evaluation after a wake.
+            boolean sameLayout = sig != null
+                    && sig.equals(lastOpenPipSignature)
+                    && panesStillOnScreen()
+                    && panesHealthy;
+
+            if (sameLayout) {
+                if (!awaitingBounds) {
+                    Log.i(TAG, "openPip(): identical layout already up (" + (now - lastOpenPipAtMs)
+                            + " ms since last open), skipping rebuild");
+                    return true;
+                }
+                Log.i(TAG, "openPip(): panes up but awaiting bounds - pumping bounds instead of rebuilding");
+                forcePipBoundsUpdate = true;
+                final Launcher l = Launcher.getLauncher();
+                if (l != null) l.handler.post(() -> pumpPipBoundsUntilReady(32));
+                return true;
+            }
+
+            lastOpenPipSignature = sig;
+            lastOpenPipAtMs = now;
+            openPipInFlight = true;
+            openPipInFlightSinceMs = now;
+            return false;
         }
+    }
 
-        lastOpenPipSignature = sig;
-        lastOpenPipAtMs = now;
-        return false;
+    /**
+     * A cheap sanity check so a broken set of panes is never mistaken for a good one.
+     * Without it, dropping the debounce window would make a half-dead layout permanent.
+     */
+    private static boolean pipPanesLookHealthy() {
+        try {
+            WindowHost h = host();
+            return h != null && h.areAllPanesRendering();
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /**
+     * Forces the next openPip() to rebuild rather than trusting what is on screen.
+     * Call on wake: the panes left over from before a suspend look fine but their displays are not.
+     */
+    public static void invalidateOpenPipDebounce() {
+        synchronized (OPEN_PIP_LOCK) {
+            lastOpenPipSignature = null;
+            lastOpenPipAtMs = 0L;
+            openPipInFlight = false;
+            lastRebuildStartedAtMs = 0L;
+        }
+        Log.i(TAG, "openPip debounce invalidated");
+    }
+
+    /** Releases the in-flight claim taken by shouldDebounceOpenPip(). */
+    private static void clearOpenPipInFlight() {
+        synchronized (OPEN_PIP_LOCK) {
+            openPipInFlight = false;
+        }
     }
 
     public static void openPip(boolean show) {
         if (!LauncherApplication.isFytDevice()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
+
+        // openPip() runs on a worker thread and openMultiplePips() follows ~170 ms later on the
+        // main thread, so this is the last free moment to resolve icons and launch intents.
+        prewarmConfiguredPipPackages(launcher);
+
         if (launcher.allowPip) {
             try {
                 if (helpers == null) {
@@ -327,18 +648,28 @@ public class WindowUtil {
                             }, delayMillis);
                             launcher.handler.postDelayed(WindowUtil::openMultiplePips, delayMillis + 100);
                             launcher.handler.postDelayed(launcher::showOverlayFab, delayMillis + 150);
+                        } else {
+                            clearOpenPipInFlight();
                         }
-                    } 
+                    } else {
+                        clearOpenPipInFlight();
+                    }
 
                     delayMillis = 0;
                     helpers.setPipsAdded(true);
                     helpers.setFirstPreferenceWindow(false);
                     helpers.setWallpaperWindow(false);
                     helpers.setWasInRecents(false);
+                } else {
+                    // Nothing was scheduled, so nothing will clear the claim.
+                    clearOpenPipInFlight();
                 }
             } catch (ActivityNotFoundException e) {
                 Log.e(TAG, "openPip() failed: " + e);
+                clearOpenPipInFlight();
             }
+        } else {
+            clearOpenPipInFlight();
         }
     }
 
@@ -355,7 +686,13 @@ public class WindowUtil {
         if (helpers == null) {
             helpers = new Helpers();
         }
-        pipRetryPending = false;  
+        pipRetryPending = false;
+        // Whatever was being built is gone with these panes.
+        synchronized (OPEN_PIP_LOCK) {
+            openPipInFlight = false;
+            lastRebuildStartedAtMs = 0L;
+            pendingPaneLaunches = 0;
+        }
         if (helpers.pipsAdded()) {
             Log.d(TAG, "removePip..");
             launcher.handler.postDelayed(() -> {
@@ -421,15 +758,33 @@ public class WindowUtil {
      * it fires, try to fool it (by keeping the launcher on top) and deal with the aftermath. 
      */
 
-    private static int pendingReasserts = 0;
+    private static volatile int pendingReasserts = 0;
     private static Runnable reassertTask;
 
-    /** Gap between pane openings, so a slow starter cannot overtake a later one. */
+    /** Gap after a source-stealing pane, so a slow starter cannot overtake a later one. */
     private static final long PANE_LAUNCH_STAGGER_MS = 250L;
+    /** Gap after a pane that does not touch the MCU sound channel; ordering does not matter there. */
+    private static final long PANE_LAUNCH_QUIET_STAGGER_MS = 90L;
 
-    /** How many times, and how often, the launcher is pushed back to the front afterward. */
-    private static final int LAUNCHER_TOP_REASSERTS = 250;
-    private static final long LAUNCHER_TOP_REASSERT_MS = 1L;
+    /**
+     * How long, and how often, the launcher is pushed back to the front afterward.
+     *
+     * This runs off the main thread. getRunningTasks() is a binder call into the same
+     * ActivityTaskManager lock the four pending activity starts need, so hammering it every 1 ms
+     * from the launcher's main thread - 250 times - would contend with exactly the work it is
+     * waiting on. 32 ms x 40 covers the same ~1.3 s window at 3% of the call volume.
+     */
+    private static final int LAUNCHER_TOP_REASSERTS = 40;
+    private static final long LAUNCHER_TOP_REASSERT_MS = 32L;
+
+    private static final ScheduledExecutorService REASSERT_EXEC =
+            Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread t = new Thread(r, "PipReassertTop");
+                t.setDaemon(true);
+                return t;
+            });
+    /** Bumped on every call, so a still-queued run from a previous rebuild drops out. */
+    private static volatile int reassertGeneration = 0;
 
     /** player_app.txt from com.syu.ms assets contains the list below. These apps steal the audio focus
      *  from com.syu.music/radio whenever com.syu.ms detects them as top app in getRunningTasks */
@@ -550,6 +905,7 @@ public class WindowUtil {
      * panes that do not steal keep their configured order relative to each other.
      */
     private static void runOrdered(List<PaneLaunch> launches) {
+        pendingPaneLaunches = launches.size();
         if (launches.isEmpty()) return;
 
         launches.sort((a, b) -> Boolean.compare(!a.stealer, !b.stealer));
@@ -573,13 +929,18 @@ public class WindowUtil {
      * what the ROM reacts to is the last activity to gain focus.
      */
     private static void runStaggered(List<PaneLaunch> launches, int index) {
-        if (index >= launches.size()) return;
+        if (index >= launches.size()) {
+            pendingPaneLaunches = 0;
+            return;
+        }
 
         PaneLaunch l = launches.get(index);
         try {
             l.action.run();
         } catch (Throwable t) {
             Log.w(TAG, l.label + ": open failed", t);
+        } finally {
+            if (pendingPaneLaunches > 0) pendingPaneLaunches--;
         }
         
         if (l.stealer) {
@@ -588,8 +949,15 @@ public class WindowUtil {
         }
 
         Launcher launcher = Launcher.getLauncher();
-        if (launcher == null) return;
-        launcher.handler.postDelayed(() -> runStaggered(launches, index + 1), PANE_LAUNCH_STAGGER_MS);
+        if (launcher == null) {
+            pendingPaneLaunches = 0;
+            return;
+        }
+        // The full gap only exists so a source-stealing app cannot be overtaken by a later one.
+        // Two panes that do not touch the sound channel have no such ordering requirement, so they
+        // only need enough separation to keep four window additions off the same frame.
+        long gap = l.stealer ? PANE_LAUNCH_STAGGER_MS : PANE_LAUNCH_QUIET_STAGGER_MS;
+        launcher.handler.postDelayed(() -> runStaggered(launches, index + 1), gap);
     }
 
     /**
@@ -597,47 +965,54 @@ public class WindowUtil {
      * being detected by com.syu.ms - not foolproof, but reduces chance to stop stock players
      */
     private static void reassertLauncherTop() {
-        Launcher launcher = Launcher.getLauncher();
+        final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
 
-        pendingReasserts = LAUNCHER_TOP_REASSERTS;
+        // Captured on the main thread; everything below runs on REASSERT_EXEC.
+        final int launcherTaskId = launcher.getTaskId();
+        final ActivityManager am =
+                (ActivityManager) launcher.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        if (am == null) return;
 
-        if (reassertTask == null) {
-            reassertTask = () -> {
+        final int myGeneration;
+        synchronized (WindowUtil.class) {
+            reassertGeneration++;
+            myGeneration = reassertGeneration;
+            pendingReasserts = LAUNCHER_TOP_REASSERTS;
+        }
+
+        // Self-rescheduling rather than scheduleWithFixedDelay: the task decides when it is done,
+        // so there is no future left ticking after the window closes.
+        reassertTask = new Runnable() {
+            @Override public void run() {
+                if (reassertGeneration != myGeneration) return;
                 if (pendingReasserts <= 0) return;
-
-                Launcher runnableLauncher = Launcher.getLauncher();
-                if (runnableLauncher == null) return;
+                if (Launcher.getLauncher() == null) { pendingReasserts = 0; return; }
 
                 try {
-                    if (!runnableLauncher.hasWindowFocus()) {
-                            ActivityManager am = (ActivityManager) runnableLauncher.getSystemService(Context.ACTIVITY_SERVICE);
-                            List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
-                            boolean stealerOnTop = tasks != null && !tasks.isEmpty()
-                                    && tasks.get(0).topActivity != null
-                                    && DEFAULT_SOURCE_STEALERS.contains(tasks.get(0).topActivity.getPackageName());
+                    List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
+                    boolean stealerOnTop = tasks != null && !tasks.isEmpty()
+                            && tasks.get(0).topActivity != null
+                            && DEFAULT_SOURCE_STEALERS.contains(tasks.get(0).topActivity.getPackageName());
 
-                            if (stealerOnTop) {
-                                am.moveTaskToFront(runnableLauncher.getTaskId(), 0);
-                                runnableLauncher.handler.removeCallbacks(reassertTask);
-                                pendingReasserts = 0;
-                                Log.i(TAG, "reassertLauncherTop moved launcher to top");
-                                return;
-                            }
+                    if (stealerOnTop) {
+                        am.moveTaskToFront(launcherTaskId, 0);
+                        pendingReasserts = 0;
+                        Log.i(TAG, "reassertLauncherTop moved launcher to top");
+                        return;
                     }
                 } catch (Throwable t) {
                     Log.w(TAG, "reassertLauncherTop failed, giving up", t);
+                    pendingReasserts = 0;
                     return;
                 }
 
-                pendingReasserts--;
-                if (pendingReasserts > 0) {
-                    runnableLauncher.handler.postDelayed(reassertTask, LAUNCHER_TOP_REASSERT_MS);
+                if (--pendingReasserts > 0) {
+                    REASSERT_EXEC.schedule(this, LAUNCHER_TOP_REASSERT_MS, TimeUnit.MILLISECONDS);
                 }
-            };
-        }
-        launcher.handler.removeCallbacks(reassertTask);
-        launcher.handler.post(reassertTask);
+            }
+        };
+        REASSERT_EXEC.execute(reassertTask);
     }
 
     /**
@@ -659,6 +1034,16 @@ public class WindowUtil {
     /** Tells NotificationListener the moment the panes are genuinely up. */
     private static void notifyPanesSettled(int attemptsLeft) {
         try {
+            // A pane that has not been shown yet reports hasRenderedContent() == true, so the
+            // rendering check alone declares the rebuild finished while launches are still queued.
+            if (pendingPaneLaunches > 0 && attemptsLeft > 0) {
+                Launcher pending = Launcher.getLauncher();
+                if (pending != null) {
+                    pending.handler.postDelayed(() -> notifyPanesSettled(attemptsLeft - 1), 250);
+                    return;
+                }
+            }
+
             WindowHost h = host();
             if (h == null || h.areAllPanesRendering() || attemptsLeft <= 0) {
                 NotificationListener.onPaneRebuildSettled();
@@ -692,8 +1077,60 @@ public class WindowUtil {
     // WINDOWED PIPS
     // =====================================================================================
 
+    /**
+     * Loads the icons and launch intents for the configured PiP packages ahead of the rebuild.
+     * Safe to call repeatedly -- both caches skip what they already hold.
+     */
+    public static void prewarmPipPackages(Context ctx, String... packages) {
+        if (ctx == null) return;
+        Set<String> wanted = new LinkedHashSet<>();
+        for (String pkg : packages) {
+            if (pkg != null && !pkg.isEmpty()) wanted.add(pkg);
+        }
+        if (wanted.isEmpty()) return;
+        WindowHostSplash.prewarm(ctx, wanted);
+        WindowHostActivityView.prewarmLaunchIntents(ctx, wanted);
+    }
+
+    /** Prewarms straight from the saved PiP configuration; call this once from Launcher.onCreate. */
+    public static void prewarmConfiguredPipPackages(Context ctx) {
+        if (ctx == null) return;
+        try {
+            if (prefs == null) {
+                prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+            }
+            prewarmPipPackages(ctx,
+                    prefs.getString(Keys.PIP_FIRST_PACKAGE, ""),
+                    prefs.getString(Keys.PIP_SECOND_PACKAGE, ""),
+                    prefs.getString(Keys.PIP_THIRD_PACKAGE, ""),
+                    prefs.getString(Keys.PIP_FOURTH_PACKAGE, ""));
+        } catch (Throwable t) {
+            Log.w(TAG, "prewarmConfiguredPipPackages failed", t);
+        }
+    }
+
     public static void openMultiplePips() {
         if (!LauncherApplication.isFytDevice()) return;
+
+        // Second line of defence. Even with the in-flight claim, two runnables could already be
+        // queued on the main handler; building a second WindowHost orphans the first one's windows.
+        synchronized (OPEN_PIP_LOCK) {
+            final long nowMs = openPipClock();
+            boolean staggerStillRunning = pendingPaneLaunches > 0
+                    && nowMs - lastRebuildStartedAtMs < OPEN_PIP_INFLIGHT_TIMEOUT_MS;
+            if (nowMs - lastRebuildStartedAtMs < REBUILD_GUARD_MS || staggerStillRunning) {
+                Log.w(TAG, "openMultiplePips(): a rebuild is already running ("
+                        + (nowMs - lastRebuildStartedAtMs) + " ms ago, pending="
+                        + pendingPaneLaunches + "), skipping duplicate");
+                openPipInFlight = false;
+                return;
+            }
+            lastRebuildStartedAtMs = nowMs;
+            openPipInFlight = false;
+        }
+        // Fresh panes: force the next scroll update through even if the offset has not moved.
+        lastScrollOffset = Integer.MIN_VALUE;
+        lastSavedBasePos.clear();
 
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
@@ -726,6 +1163,11 @@ public class WindowUtil {
         final String thirdPkg = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
         final String fourthPkg = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
 
+        // Everything the launch path would otherwise ask PackageManager for on the main thread:
+        // the splash icon, its plate colour and the launch intent. Warmed on a background thread
+        // so the panes below never block on a binder round-trip.
+        prewarmPipPackages(launcher, firstPkg, secondPkg, thirdPkg, fourthPkg);
+
         // Collect the openings first, then run them with the source-stealing packages leading --
         // see the LAUNCH ORDER section. Nothing is shown while the list is being built.
         final List<PaneLaunch> launches = new ArrayList<>();
@@ -733,7 +1175,7 @@ public class WindowUtil {
         final String fSecondPkg = secondPkg;
 
         if (dualPip && !host.isDualVisible() && !firstPipPinned && !secondPipPinned 
-            && Helpers.isPackageInstalled(firstPkg) && Helpers.isPackageInstalled(secondPkg)) {    
+            && isPipPackageInstalled(firstPkg) && isPipPackageInstalled(secondPkg)) {    
             launches.add(new PaneLaunch("dual", () -> {
                 Rect rDual = getInitialPipBounds(workspace, "dual");
                 if (rDual != null) {
@@ -743,7 +1185,7 @@ public class WindowUtil {
             }, firstPkg, secondPkg));
         } else {
             if (firstPip && !firstPipPinned && !host.isFirstVisible()
-                    && Helpers.isPackageInstalled(firstPkg)) {
+                    && isPipPackageInstalled(firstPkg)) {
                 launches.add(new PaneLaunch("first", () -> {
                     Rect rFirst = getInitialPipBounds(workspace, "first");
                     if (rFirst != null) {
@@ -754,7 +1196,7 @@ public class WindowUtil {
             }
 
             if (secondPip && !secondPipPinned && !host.isSecondVisible()
-                    && Helpers.isPackageInstalled(secondPkg)) {
+                    && isPipPackageInstalled(secondPkg)) {
                 launches.add(new PaneLaunch("second", () -> {
                     Rect rSecond = getInitialPipBounds(workspace, "second");
                     if (rSecond != null) {
@@ -766,7 +1208,7 @@ public class WindowUtil {
         }
 
         if (thirdPip && !thirdPipPinned && !host.isThirdVisible()
-                && Helpers.isPackageInstalled(thirdPkg)) {
+                && isPipPackageInstalled(thirdPkg)) {
             launches.add(new PaneLaunch("third", () -> {
                 Rect rThird = getInitialPipBounds(workspace, "third");
                 if (rThird != null) {
@@ -777,7 +1219,7 @@ public class WindowUtil {
         }
 
         if (fourthPip && !fourthPipPinned && !host.isFourthVisible()
-                && Helpers.isPackageInstalled(fourthPkg)) {
+                && isPipPackageInstalled(fourthPkg)) {
             launches.add(new PaneLaunch("fourth", () -> {
                 Rect rFourth = getInitialPipBounds(workspace, "fourth");
                 if (rFourth != null) {
@@ -851,20 +1293,45 @@ public class WindowUtil {
             }
 
             CellLayout pipHomeCellLayout = (CellLayout) workspace.getChildAt(pipHomeScreen);
-            if (pipHomeCellLayout == null) return fallback;
-
-            int[] basePos = pipHomeCellLayout.getPipPlaceholderPosition(pipType);
-            if (basePos == null) return fallback;
 
             int pageWidth = workspace.getViewportWidth();
+            int[] basePos = (pipHomeCellLayout != null)
+                    ? pipHomeCellLayout.getPipPlaceholderPosition(pipType)
+                    : null;
+
+            if (basePos != null && pageWidth > 0) {
+                savePlaceholderPosition(pipType, pipHomeScreen, basePos, pageWidth);
+            } else {
+                // CellLayout.getPipPlaceholderPosition() now derives the geometry from preferences
+                // when the placeholder view has not been added yet, so this only runs when the page
+                // itself is missing. The remembered geometry is the last resort; it is pixel data
+                // from an earlier run, so it can be slightly stale and is only better than the
+                // offscreen fallback, which would defer the whole pane.
+                int[] cached = loadPlaceholderPosition(pipType, pipHomeScreen);
+                if (cached == null) return fallback;
+                basePos = cached;
+                if (pageWidth <= 0) pageWidth = cached[4];
+                Log.i(TAG, "getInitialPipBounds(" + pipType + "): page not ready, using cached placeholder geometry");
+            }
+
             int pageCount = workspace.getChildCount();
             int maxScroll = Math.max(0, (pageCount - 1) * pageWidth);
             int currentScroll = Math.max(0, Math.min(workspace.mUnboundedScrollX, maxScroll));
             int pipAbsoluteX = (pipHomeScreen * pageWidth) + basePos[0];
             int pipScreenX = pipAbsoluteX - currentScroll;
 
-            return new Rect(pipScreenX, basePos[1],
+            Rect bounds = new Rect(pipScreenX, basePos[1],
                     pipScreenX + basePos[2], basePos[1] + basePos[3]);
+
+            // Record what the pane is actually being built with.
+            //
+            // updatePipPosition() skips the correction when the rect it computes equals
+            // lastPipBounds, and that entry survives a rebuild. If the geometry changed in settings
+            // while the launcher was running, lastPipBounds already held the NEW rect while the pane
+            // was built from the cached OLD one -- the two matched, the correction was skipped, and
+            // the pane stayed at the previous size indefinitely. That is what left dual unresized.
+            lastPipBounds.put(pipType, new Rect(bounds));
+            return bounds;
         } catch (Throwable t) {
             Log.w(TAG, "getInitialPipBounds failed for " + pipType, t);
             return fallback;
@@ -886,18 +1353,27 @@ public class WindowUtil {
                 prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
             }
 
+            // Nothing moved since the last frame, so there is nothing to push to any pane.
+            // A fling delivers the same offset repeatedly once it settles, and every one of those
+            // frames used to walk all five pane types and their window updates.
+            if (!forcePipBoundsUpdate && scrollOffset == lastScrollOffset) return;
+            lastScrollOffset = scrollOffset;
+
             // Update positions for currently visible PiPs without dismissing them
-            updatePipPosition(host, workspace, "dual", scrollOffset);
-            updatePipPosition(host, workspace, "first", scrollOffset);
-            updatePipPosition(host, workspace, "second", scrollOffset);
-            updatePipPosition(host, workspace, "third", scrollOffset);
-            updatePipPosition(host, workspace, "fourth", scrollOffset);
+            if (dualPip)   updatePipPosition(host, workspace, "dual", scrollOffset);
+            if (firstPip)  updatePipPosition(host, workspace, "first", scrollOffset);
+            if (secondPip) updatePipPosition(host, workspace, "second", scrollOffset);
+            if (thirdPip)  updatePipPosition(host, workspace, "third", scrollOffset);
+            if (fourthPip) updatePipPosition(host, workspace, "fourth", scrollOffset);
 
             forcePipBoundsUpdate = false;
         } catch (Exception e) {
             Log.e(TAG, "Error updating PiP positions during scroll", e);
         }
     }
+
+    /** Last offset actually pushed to the panes; see updatePipPositionsForScroll(). */
+    private static int lastScrollOffset = Integer.MIN_VALUE;
 
     private static void updatePipPosition(WindowHost host, Workspace workspace,
                                           String pipType, int scrollOffset) {
@@ -911,6 +1387,7 @@ public class WindowUtil {
         if (basePos == null) return;
 
         int pageWidth = workspace.getViewportWidth();
+        savePlaceholderPosition(pipType, pipHomeScreen, basePos, pageWidth);
 
         int pageCount = workspace.getChildCount();
         int maxScroll = Math.max(0, (pageCount - 1) * pageWidth);
@@ -1024,6 +1501,10 @@ public class WindowUtil {
                 forcePipBoundsUpdate = true;
                 lastOpenPipSignature = null;
                 lastOpenPipAtMs = 0L;
+                synchronized (OPEN_PIP_LOCK) {
+                    openPipInFlight = false;
+                    lastRebuildStartedAtMs = 0L;
+                }
 
                 ThreadManager.getLongPool().execute(() -> {
                     for (String pkg : pkgs) {
@@ -1160,21 +1641,21 @@ public class WindowUtil {
             secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
             thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
             fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
-            if (firstPip && firstPipPinned && Helpers.isPackageInstalled(firstPkg)) {
+            if (firstPip && firstPipPinned && isPipPackageInstalled(firstPkg)) {
                 openAsPinnedPip(firstPkg, Keys.PIP_FIRST_KEY, Keys.PIP_FIRST_SCREEN);
             }
             
-            if (secondPip && secondPipPinned && Helpers.isPackageInstalled(secondPkg)) {
+            if (secondPip && secondPipPinned && isPipPackageInstalled(secondPkg)) {
                 openAsPinnedPip(secondPkg, Keys.PIP_SECOND_KEY, Keys.PIP_SECOND_SCREEN);
             }
             
             final String thirdPkg = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
-            if (thirdPip && thirdPipPinned && Helpers.isPackageInstalled(thirdPkg)) {
+            if (thirdPip && thirdPipPinned && isPipPackageInstalled(thirdPkg)) {
                 openAsPinnedPip(thirdPkg, Keys.PIP_THIRD_KEY, Keys.PIP_THIRD_SCREEN);
             }
             
             final String fourthPkg = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
-            if (fourthPip && fourthPipPinned && Helpers.isPackageInstalled(fourthPkg)) {
+            if (fourthPip && fourthPipPinned && isPipPackageInstalled(fourthPkg)) {
                 openAsPinnedPip(fourthPkg, Keys.PIP_FOURTH_KEY, Keys.PIP_FOURTH_SCREEN);
             }            
         }
@@ -2216,6 +2697,10 @@ public class WindowUtil {
                 final Handler mainH = new Handler(Looper.getMainLooper());
                 final long[] firstOkAt = { -1L };
                 final long MIN_STABLE_WINDOW_MS = 120L;
+                // 40 ms steps meant the 120 ms window was only ever detected on the fourth tick,
+                // i.e. four reparent binder calls per pane -- sixteen for a four-pane swap. A finer
+                // step confirms on the tick the window actually elapses.
+                final long REPARENT_POLL_MS = 16L;
 
                 final Runnable waiter = new Runnable() {
                     @Override public void run() {
@@ -2242,7 +2727,18 @@ public class WindowUtil {
                             }
 
                             if (SystemClock.uptimeMillis() < deadline) {
-                                mainH.postDelayed(this, 40);
+                                // Every tick is a reparent binder call, so once the first one has
+                                // succeeded there is nothing to learn from repeating it on a short
+                                // grid -- the stability window is a wait, not a measurement. Sleep
+                                // straight to the end of the window and confirm once. A four-pane
+                                // swap went from twenty of these calls to eight.
+                                long step = REPARENT_POLL_MS;
+                                if (ok && firstOkAt[0] > 0) {
+                                    long remaining = MIN_STABLE_WINDOW_MS
+                                            - (SystemClock.uptimeMillis() - firstOkAt[0]);
+                                    if (remaining > step) step = remaining;
+                                }
+                                mainH.postDelayed(this, step);
                             } else {
                                 Log.w(TAG, "reparentHostChild: native reparent did not confirm within timeout; attaching anyway");
                                 attachNow();

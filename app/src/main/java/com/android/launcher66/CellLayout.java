@@ -4795,7 +4795,93 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         if (isViewAttachedToThisCellLayout(placeholder) && mUserWidgetCells.containsKey(placeholder)) {
             return mUserWidgetCells.get(placeholder);
         }
-        return null;
+        // The placeholder view is added late in the layout pass, while WindowUtil needs the geometry
+        // as soon as the panes are built. Everything the attached view would report comes straight
+        // from preferences, so compute it instead of making the caller guess.
+        return computePipPlaceholderPosition(pipType);
+    }
+
+    /**
+     * The geometry the placeholder for this pane would have, derived from preferences alone.
+     *
+     * Same inputs and same arithmetic as addPipPlaceholder(): the four corner preferences, the
+     * layout margin, the left-bar offset and the status bar height. No measured cell metrics are
+     * involved, which is why this is exact even before the CellLayout has laid anything out.
+     *
+     * @return {x, y, width, height} or null when this page does not host the pane.
+     */
+    public int[] computePipPlaceholderPosition(String pipType) {
+        try {
+            if (!(getContext() instanceof Launcher)) return null;
+            if (prefs == null) {
+                prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            }
+
+            String pipKey = getPipPreferenceKey(pipType);
+            if (pipKey == null || pipKey.isEmpty()) return null;
+
+            // Same gates addPipPlaceholder() runs behind: a disabled pane has no placeholder, and
+            // answering for one would hand WindowUtil geometry for something that is not shown.
+            if (!prefs.getBoolean(Keys.USER_LAYOUT, false)) return null;
+            if (!isPipTypeEnabled(pipType)) return null;
+
+            Workspace workspace = ((Launcher) getContext()).getWorkspace();
+            if (workspace == null) return null;
+            int currentScreen = workspace.indexOfChild(this);
+            if (currentScreen < 0) return null;
+
+            String screenKey = getPipScreenKey(pipType);
+            if (screenKey == null || screenKey.isEmpty()) return null;
+            if (prefs.getInt(screenKey, 1) - 1 != currentScreen) return null;
+
+            int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
+            int leftBarWidth = mLauncher.calculatedLeftBarWidth;
+            int pipMinWidth = mLauncher.calculatedPipMinWidth;
+            int pipMinHeight = mLauncher.calculatedPipMinHeight;
+
+            int topLeftX, topRightX;
+            if (isLeftBarOffsetActive(currentScreen)) {
+                topLeftX = prefs.getInt(pipKey + "TopLeftX", margin) + leftBarWidth;
+                topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth) + leftBarWidth;
+            } else {
+                topLeftX = prefs.getInt(pipKey + "TopLeftX", margin);
+                topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth);
+            }
+
+            int topLeftY = prefs.getInt(pipKey + "TopLeftY", margin);
+            int bottomLeftY = prefs.getInt(pipKey + "BottomLeftY", margin + pipMinHeight);
+
+            int width = topRightX - topLeftX;
+            int height = bottomLeftY - topLeftY;
+            if (width <= 0 || height <= 0) return null;
+
+            return new int[]{ topLeftX, topLeftY + mLauncher.getStatusBarHeight(), width, height };
+        } catch (Throwable t) {
+            Log.w(TAG, "computePipPlaceholderPosition failed for " + pipType, t);
+            return null;
+        }
+    }
+
+    private boolean isPipTypeEnabled(String pipType) {
+        switch (pipType) {
+            case "dual":   return prefs.getBoolean(Keys.PIP_DUAL, false);
+            case "first":  return prefs.getBoolean(Keys.PIP_FIRST, false);
+            case "second": return prefs.getBoolean(Keys.PIP_SECOND, false);
+            case "third":  return prefs.getBoolean(Keys.PIP_THIRD, false);
+            case "fourth": return prefs.getBoolean(Keys.PIP_FOURTH, false);
+            default:       return false;
+        }
+    }
+
+    private String getPipScreenKey(String pipType) {
+        switch (pipType) {
+            case "dual":   return Keys.PIP_DUAL_SCREEN;
+            case "first":  return Keys.PIP_FIRST_SCREEN;
+            case "second": return Keys.PIP_SECOND_SCREEN;
+            case "third":  return Keys.PIP_THIRD_SCREEN;
+            case "fourth": return Keys.PIP_FOURTH_SCREEN;
+            default:       return "";
+        }
     }
 
     // For CanbusService

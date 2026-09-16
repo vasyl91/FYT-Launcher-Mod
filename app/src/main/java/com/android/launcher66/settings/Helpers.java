@@ -28,11 +28,11 @@ public class Helpers {
     private static final String TAG = "Helpers";
     private static SharedPreferences mPrefs;
     // These prefs are reseted on each onCreate or on recreateView in Launcher.java
-    private final SharedPreferences sharedPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
-    private final SharedPreferences.Editor editor = sharedPrefs.edit();
+    private static final SharedPreferences sharedPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
+    private static final SharedPreferences.Editor editor = sharedPrefs.edit();
     // These prefs remain
-    private final SharedPreferences sharedPrefsSus = LauncherApplication.sApp.getSharedPreferences("HelpersPrefsSus", Context.MODE_PRIVATE);
-    private final SharedPreferences.Editor editorSus = sharedPrefsSus.edit();
+    private static final SharedPreferences sharedPrefsSus = LauncherApplication.sApp.getSharedPreferences("HelpersPrefsSus", Context.MODE_PRIVATE);
+    private static final SharedPreferences.Editor editorSus = sharedPrefsSus.edit();
 
     private boolean day = false;
     public boolean isDay() {

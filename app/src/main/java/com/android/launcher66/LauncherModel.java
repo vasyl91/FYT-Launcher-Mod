@@ -105,6 +105,19 @@ public class LauncherModel extends BroadcastReceiver {
     // pages as this delays the rotation process.  Instead, we wait for a callback from the first
     // draw (in Workspace) to initiate the binding of the remaining side pages.  Any time we start
     // a normal load, we also clear this set of Runnables.
+    /**
+     * How long loadAllApps() may be held back waiting for the main looper to go idle.
+     *
+     * The original rule -- never start step 2 until the workspace has settled -- assumed a launcher
+     * whose main thread has nothing else to do. Here it spends ten seconds building PiP panes, and
+     * the idle never comes: measured waits of 6.8, 11.4 and 11.2 seconds, during which the app list
+     * does not exist, so the recycler has no adapter, the layout health checks keep failing and
+     * initAppData() cannot run. Everything loadAllApps() does that is expensive -- the
+     * PackageManager query, the label sort, the icon bitmaps -- happens on this worker thread;
+     * only bindAllApplications() touches the main thread, and that is a few milliseconds.
+     */
+    private static final long MAX_IDLE_WAIT_MS = 2500L;
+
     static final ArrayList<Runnable> mDeferredBindRunnables = new ArrayList<Runnable>();
 
     private WeakReference<Callbacks> mCallbacks;
@@ -1362,7 +1375,7 @@ public class LauncherModel extends BroadcastReceiver {
             // This way we don't start loading all apps until the workspace has settled
             // down.
             synchronized (LoaderTask.this) {
-                final long workspaceWaitTime = DEBUG_LOADERS ? SystemClock.uptimeMillis() : 0;
+                final long workspaceWaitTime = SystemClock.uptimeMillis();
 
                 mHandler.postIdle(new Runnable() {
                         public void run() {
@@ -1376,7 +1389,12 @@ public class LauncherModel extends BroadcastReceiver {
                         }
                     });
 
+                boolean timedOut = false;
                 while (!mStopped && !mLoadAndBindStepFinished && !mFlushingWorkerThread) {
+                    if (SystemClock.uptimeMillis() - workspaceWaitTime >= MAX_IDLE_WAIT_MS) {
+                        timedOut = true;
+                        break;
+                    }
                     try {
                         // Just in case mFlushingWorkerThread changes but we aren't woken up,
                         // wait no longer than 1sec at a time
@@ -1384,6 +1402,12 @@ public class LauncherModel extends BroadcastReceiver {
                     } catch (InterruptedException ex) {
                         // Ignore
                     }
+                }
+
+                if (timedOut) {
+                    Log.w(TAG, "waitForIdle: main thread still busy after "
+                            + (SystemClock.uptimeMillis() - workspaceWaitTime)
+                            + "ms, loading all apps anyway");
                 }
                 if (DEBUG_LOADERS) {
                     Log.d(TAG, "waited "
@@ -1463,6 +1487,22 @@ public class LauncherModel extends BroadcastReceiver {
                     }
                 }
                 waitForIdle();
+
+                // Back to DEFAULT before step 2.
+                //
+                // The demotion above was written for a waitForIdle() that really did wait for the
+                // main thread to go quiet, so whatever ran afterwards had the CPU to itself. With
+                // the timeout it now returns while the launcher is still building its panes, and
+                // step 2 runs alongside them -- at nice +10, and on ROMs that also move background
+                // threads to the little cores. Building 63 icons took 1.7 s on an idle device and
+                // 6.8 s here. Nothing is on screen until this finishes, which is the situation the
+                // original "staring at a blank home is not cool" comment was about.
+                synchronized (mLock) {
+                    if (mIsLaunching) {
+                        if (DEBUG_LOADERS) Log.d(TAG, "Setting thread priority to DEFAULT for step 2");
+                        android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+                    }
+                }
 
                 // second step
                 if (DEBUG_LOADERS) Log.d(TAG, "step 2: loading all apps");

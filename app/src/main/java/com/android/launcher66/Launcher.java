@@ -251,6 +251,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final int MAX_HOME_LAYOUT_HEALTH_RETRIES = 8;
     private static final long HOME_LAYOUT_HEALTH_FIRST_RETRY_MS = 900L;
     private static final long HOME_LAYOUT_HEALTH_RETRY_MS = 300L;
+    /** Cheap re-checks while the model is still binding; see isHomeLayoutInitPending(). */
+    private static final long HOME_LAYOUT_INIT_WAIT_MS = 400L;
+    /** Total time the recovery loop may spend waiting cheaply before it insists on a repair pass. */
+    private static final long HOME_RECOVERY_INIT_WAIT_MAX_MS = 25000L;
+    private long mHomeRecoveryInitWaitUntil = 0L;
     private static final long HOME_LAYOUT_WATCHDOG_DELAY_MS = 350L;
     private static final long CUSTOM_ELEMENTS_SETUP_DEBOUNCE_MS = 150L;
     private static final long WORKSPACE_NULL_LOADER_THROTTLE_MS = 1200L;
@@ -491,6 +496,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean mAttached = false;
     private long mAutoAdvanceTimeLeft = -1;
     private HashMap<View, AppWidgetProviderInfo> mWidgetsToAdvance = new HashMap<>();
+
+    /**
+     * Host views already inflated, keyed by widget id.
+     *
+     * Not stored on LauncherAppWidgetInfo, because bindWorkspace() begins with
+     * unbindWorkspaceItemsOnMainThread(), which calls item.unbind() and nulls item.hostView on
+     * every widget -- so the item cannot remember anything across a load. This cache is owned by
+     * the activity and is dropped in startBinding(), i.e. exactly when removeAllWorkspaceScreens()
+     * makes the views invalid.
+     */
+    private final android.util.SparseArray<AppWidgetHostView> mBoundWidgetViews =
+            new android.util.SparseArray<>();
     private final ArrayList<Integer> mSynchronouslyBoundPages = new ArrayList<>();
     private Rect mRectForFolderAnimation = new Rect();
     private HideFromAccessibilityHelper mHideFromAccessibilityHelper = new HideFromAccessibilityHelper();
@@ -516,6 +533,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final long APP_DATA_DELAY = 1500;
     private static final long APP_DATA_FAST_DELAY = 120;
     private static final int MAX_INIT_RETRIES = 10;
+    /** Last resort if bindAllApplications() never arrives; see initAppData(). */
+    private static final long ALL_APPS_BIND_BACKSTOP_MS = 6000L;
+    /** Bounded re-checks, so a genuinely stuck loader still ends in a usable home. */
+    private static final int MAX_ALL_APPS_BACKSTOP_CHECKS = 10;
+    private boolean mAwaitingAllAppsBind = false;
+    private int mAllAppsBackstopChecks = 0;
     private int mInitRetryCount = 0;
     private boolean mIsInitializingAppData = false;
     public boolean onResumePip = false;
@@ -561,6 +584,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Runnable mFastHomeDeferredPipRunnable;
     private Runnable mPipWatchdogRunnable;
     private int mPipWatchdogRetries = 0;
+    /**
+     * Widget bar repair after a wake. Scheduled both from the WAKE_REFRESH broadcast and directly
+     * from WakeDetectionService, because the dynamic receiver is unregistered in onStop() and the
+     * broadcast is lost whenever the launcher is still stopped when it is sent. If the launcher
+     * cannot act yet (paused), the pending flag makes onResume() finish the job.
+     */
+    private static final long WIDGET_BAR_WAKE_REFRESH_DELAY_MS = 700L;
+    private Runnable mWidgetBarWakeRefreshRunnable;
+    private boolean mWidgetBarWakeRefreshPending = false;
     private long mLastAppListSourceSignature = Long.MIN_VALUE;
     private long mLastLeftAppListSourceSignature = Long.MIN_VALUE;
     private boolean widgetBar = false;
@@ -2083,6 +2115,32 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         runWakeHomeRecoveryPass("wake:" + wakePhase + ":now");
         scheduleWakeLayoutRepair(250L, wakePhase);
         scheduleWakeHomeRecoveryRetry("wake:" + wakePhase, 0, HOME_LAYOUT_HEALTH_FIRST_RETRY_MS);
+        scheduleWidgetBarWakeRefresh("wake:" + wakePhase);
+    }
+
+    /**
+     * Direct entry point for WakeDetectionService. Does not depend on the dynamic receiver,
+     * which is unregistered while the launcher is stopped.
+     */
+    public void onDeviceWake(String source) {
+        scheduleWidgetBarWakeRefresh(source == null ? "wakeService" : source);
+    }
+
+    private void scheduleWidgetBarWakeRefresh(String source) {
+        mWidgetBarWakeRefreshPending = true;
+        if (mWidgetBarWakeRefreshRunnable != null) {
+            mHandler.removeCallbacks(mWidgetBarWakeRefreshRunnable);
+        }
+        mWidgetBarWakeRefreshRunnable = () -> {
+            mWidgetBarWakeRefreshRunnable = null;
+            if (mPaused || mWorkspace == null || isAppsCustomizeVisibleOrOpening()) {
+                // Keep the pending flag - onResume() schedules the refresh again.
+                return;
+            }
+            mWidgetBarWakeRefreshPending = false;
+            mWorkspace.refreshWidgetBarAfterWake(source);
+        };
+        mHandler.postDelayed(mWidgetBarWakeRefreshRunnable, WIDGET_BAR_WAKE_REFRESH_DELAY_MS);
     }
 
     private void scheduleWakeLayoutRepair(long delayMs, String phase) {
@@ -2137,8 +2195,27 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mHandler.removeCallbacks(mWakeHomeRecoveryRunnable);
             mWakeHomeRecoveryRunnable = null;
         }
+        mHomeRecoveryInitWaitUntil = SystemClock.uptimeMillis() + HOME_RECOVERY_INIT_WAIT_MAX_MS;
         runWakeHomeRecoveryPass(source + ":now");
         scheduleWakeHomeRecoveryRetry(source, 0, HOME_LAYOUT_HEALTH_FIRST_RETRY_MS);
+    }
+
+    /**
+     * True while the layout cannot be judged yet because app data has not been attached.
+     *
+     * isRecyclerViewHealthy() reports "recycler has no adapter" until initAppData() runs, and that
+     * only happens once the model has finished binding. Nothing runWakeHomeRecoveryPass() does can
+     * attach an adapter, so retrying against it burned eight full repair passes -- measured as
+     * 3.5 s of continuous main-thread layout work, overlapping the PiP rebuild.
+     */
+    private boolean isHomeLayoutInitPending() {
+        if (mWorkspaceLoading) return true;
+        if (AllAppsList.data == null || AllAppsList.data.isEmpty()) return true;
+        if (mWorkspace == null || mPrefs == null) return false;
+        if (mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) return false;
+
+        RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
+        return recycler != null && recycler.getAdapter() == null;
     }
 
     private void scheduleWakeHomeRecoveryRetry(String source, int attempt, long delayMs) {
@@ -2155,6 +2232,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mWakeHomeRecoveryPending = true;
         mWakeHomeRecoveryRunnable = () -> {
             mWakeHomeRecoveryRunnable = null;
+
+            // Wait it out cheaply rather than running a repair pass that cannot help, and do not
+            // spend a retry attempt on it.
+            if (isHomeLayoutInitPending() && SystemClock.uptimeMillis() < mHomeRecoveryInitWaitUntil) {
+                mWakeHomeRecoveryPending = true;
+                scheduleWakeHomeRecoveryRetry(source, attempt, HOME_LAYOUT_INIT_WAIT_MS);
+                return;
+            }
+
             boolean healthy = runWakeHomeRecoveryPass(source + ":retry" + attempt);
             if (!healthy) {
                 scheduleWakeHomeRecoveryRetry(source, attempt + 1, HOME_LAYOUT_HEALTH_RETRY_MS);
@@ -2365,7 +2451,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void scheduleHomeLayoutWatchdog(String source, boolean forceWorkspace) {
-        scheduleHomeLayoutWatchdog(source, forceWorkspace, HOME_LAYOUT_WATCHDOG_DELAY_MS);
+        // While the model is still binding the watchdog can only report what it cannot fix, so
+        // give it enough delay to land after initAppData() instead of racing it.
+        long delay = isHomeLayoutInitPending()
+                ? HOME_LAYOUT_WATCHDOG_DELAY_MS + HOME_LAYOUT_INIT_WAIT_MS
+                : HOME_LAYOUT_WATCHDOG_DELAY_MS;
+        scheduleHomeLayoutWatchdog(source, forceWorkspace, delay);
     }
 
     private void scheduleHomeLayoutWatchdog(String source, boolean forceWorkspace, long delayMs) {
@@ -2711,6 +2802,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         helpers = new Helpers();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);  
 
+        // Resolves the PiP packages' icons and launch intents on a worker thread, so the first
+        // pane rebuild does not block the main thread on PackageManager.
+        WindowUtil.prewarmConfiguredPipPackages(this);
+
         calculateLayoutDimensions();       
 
         if (mPrefs.getBoolean("transparent_statusbar", false)) {
@@ -3015,13 +3110,30 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         });        
     }
 
+    /** Whether the dynamic receivers should be registered right now (set by onStart/onStop). */
+    private boolean mReceiversWanted = false;
+    /** Whether they actually are registered, so unregisterReceiver() is never a guess. */
+    private boolean mReceiversRegistered = false;
+
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "---->>> onStart");
+        mReceiversWanted = true;
         bg.execute(() -> {
-            runOnUiThread(() -> {                
+            runOnUiThread(() -> {
+                // Registration is posted, so onStop() can land before it runs. Without this check
+                // a fast onStart/onStop pair -- which the ROM produces four times in under a second
+                // around ACC off -- registered the receivers after onStop had already unregistered
+                // them, leaving them live with no matching unregister.
+                if (!mReceiversWanted) {
+                    Log.d("Launcher", "onStart: registration superseded by onStop, skipping");
+                    return;
+                }
+                if (mReceiversRegistered) {
+                    return;
+                }
                 Log.d("Launcher", "onStart: registering dynamic receiver");
                 IntentFilter filter = new IntentFilter();
                 filter.addAction("android.intent.action.SCREEN_OFF");
@@ -3041,6 +3153,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     registerReceiver(mReceiver, filter);
                     registerReceiver(mCloseSystemDialogsReceiver, filterCloseSystemDialogs);
                 }
+                mReceiversRegistered = true;
             });
         });
         boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
@@ -3111,6 +3224,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         setWorkspaceBackground(mState == State.WORKSPACE);
         mPaused = false;
         sPausedFromUserAction = false;
+        if (mWidgetBarWakeRefreshPending) {
+            scheduleWidgetBarWakeRefresh("onResume");
+        }
+        final Workspace resumedWorkspace = mWorkspace;
+        if (resumedWorkspace != null) {
+            // Cheap check: refits only bar texts that were never fitted or whose parent changed.
+            resumedWorkspace.post(() -> resumedWorkspace.verifyWidgetBarText("onResume"));
+        }
         if (mRestoring || mOnResumeNeedsLoad) {
             requestWorkspaceLoader("onResumeNeedsLoad", false);
             mRestoring = false;
@@ -3560,7 +3681,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }, 250);
 
         mHandler.postDelayed(() -> {
-            getSharedPreferences("HelpersPrefs", 0).edit().clear().commit();
+            // apply(), not commit(): nothing below reads these back synchronously, and commit()
+            // blocks the main thread on the disk write.
+            getSharedPreferences("HelpersPrefs", 0).edit().clear().apply();
         }, 350);
 
         triggerAppData();
@@ -3991,12 +4114,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mPlayer.release();
             mPlayer = null;
         }
-        Log.d("Launcher", "onStop: unregistering dynamic receiver");
-        try {
-            unregisterReceiver(mReceiver);
-            unregisterReceiver(mCloseSystemDialogsReceiver);
-        } catch (Exception e) {
-            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+        mReceiversWanted = false;
+        if (mReceiversRegistered) {
+            Log.d("Launcher", "onStop: unregistering dynamic receiver");
+            mReceiversRegistered = false;
+            try {
+                unregisterReceiver(mReceiver);
+                unregisterReceiver(mCloseSystemDialogsReceiver);
+            } catch (Exception e) {
+                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+            }
         }
         cancelWeatherCallbacks();
     }
@@ -4587,10 +4714,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
                 this.weatherManager.addOnWeatherChangedListener(mWeatherChangedListener);
                 mWeatherListenerOwner = this.weatherManager;
-            } else {
-                WeatherDescription weather = this.weatherManager.getThisWeather();
-                if (weather != null) {
+            }
+            // Always push the last known weather - also right after registering, so freshly
+            // bound bar views do not stay empty until the next network update arrives.
+            WeatherDescription weather = this.weatherManager.getThisWeather();
+            if (weather != null) {
+                try {
                     mWeatherChangedListener.onWeatherChanged(weather);
+                } catch (Exception e) {
+                    // WeatherManager guards its own listener calls the same way.
+                    Log.w(TAG, "showWeatherInfo: pushing cached weather failed", e);
                 }
             }
         }
@@ -5342,6 +5475,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void initBarWeatherView(View barWeatherView) {
+        if (barWeatherView == null) {
+            return;
+        }
         weatherImg1 = (ImageView) barWeatherView.findViewById(ResValue.getInstance().weather_imge1);
         weatherCity1 = (TextView) barWeatherView.findViewById(ResValue.getInstance().weather_city1);
         weatherWeather1 = (TextView) barWeatherView.findViewById(ResValue.getInstance().weather_weather1);
@@ -5646,6 +5782,36 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
+    /**
+     * Re-points the widget bar references at the views that are actually on screen and pushes
+     * the current data into them. Used by Workspace.refreshWidgetBarAfterWake().
+     *
+     * initMusicBarView() resets the favorite button to "unknown", so the real state is read
+     * back afterwards instead of leaving the heart empty until the next track change.
+     */
+    public void rebindBarWidgetsAfterWake(View musicBarView, View barWeatherView) {
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+        if (musicBarView != null) {
+            initMusicBarView(musicBarView);
+        }
+        if (barWeatherView != null) {
+            initBarWeatherView(barWeatherView);
+        }
+        try {
+            preSetMusicWidgets();
+            updateFavoriteButtonState();
+        } catch (Exception e) {
+            Log.w(TAG, "rebindBarWidgetsAfterWake: music state refresh failed", e);
+        }
+        if (weatherManager == null) {
+            updateWeather();        // creates the manager and shows what it already has
+        } else {
+            showWeatherInfo();      // pushes the cached weather into the rebound views
+        }
+    }
+
     public void clearBarWidgetReferences() {
         // Music bar
         mPlayPauseButtonTwo = null;
@@ -5834,6 +6000,30 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return APP_DATA_DELAY;
     }
 
+    /** Fires only if the app list never arrives, so a broken load still leaves a usable home. */
+    private final Runnable mAllAppsBindBackstop = new Runnable() {
+        @Override
+        public void run() {
+            if (!mAwaitingAllAppsBind) return;
+
+            // The loader's step 2 only begins once the main looper goes idle, and on this hardware
+            // that has been measured at over eleven seconds after the workspace bind. Giving up on
+            // a flat timer installed an empty app list that was replaced a second later, so the
+            // fallback now only applies when the model itself says it is finished.
+            if (mModel != null && !mModel.isAllAppsLoaded()
+                    && mAllAppsBackstopChecks++ < MAX_ALL_APPS_BACKSTOP_CHECKS) {
+                mHandler.postDelayed(this, ALL_APPS_BIND_BACKSTOP_MS);
+                return;
+            }
+
+            Log.w(TAG, "bindAllApplications() never arrived, initializing with defaults");
+            mAwaitingAllAppsBind = false;
+            mAllAppsBackstopChecks = 0;
+            mInitRetryCount = 0;
+            forceInitializeWithDefaults();
+        }
+    };
+
     public void initAppData() {
         // Prevent re-entrant calls — but schedule a deferred retry so the refresh is not lost
         if (mIsInitializingAppData) {
@@ -5846,6 +6036,24 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return;
         }
         
+        // The app list is delivered by bindAllApplications(), and the model only starts loading it
+        // once the main looper goes idle. Polling for it on a 1 s timer kept the looper busy, so the
+        // poll was delaying the very thing it was waiting for -- measured as 6.8 s of
+        // "waited ... for previous step to finish binding", ten wasted attempts, and a
+        // forceInitializeWithDefaults() pass that was immediately redone.
+        if (LauncherApplication.isFytDevice() && (AllAppsList.data == null || AllAppsList.data.isEmpty())) {
+            if (!mAwaitingAllAppsBind) {
+                mAwaitingAllAppsBind = true;
+                Log.i(TAG, "initAppData(): app list not bound yet, waiting for bindAllApplications()");
+            }
+            mHandler.removeCallbacks(mAllAppsBindBackstop);
+            mHandler.postDelayed(mAllAppsBindBackstop, ALL_APPS_BIND_BACKSTOP_MS);
+            return;
+        }
+        mAwaitingAllAppsBind = false;
+        mAllAppsBackstopChecks = 0;
+        mHandler.removeCallbacks(mAllAppsBindBackstop);
+
         mIsInitializingAppData = true;
         mInitRetryCount++;
         Log.i(TAG, "initAppData() started (attempt " + mInitRetryCount + ")");
@@ -5919,6 +6127,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mInitRetryCount = 0;
     }
 
+    /** The database only has to prove itself once; see checkDependenciesReady(). */
+    private static volatile boolean sDatabaseProbeOk = false;
+
     private boolean checkDependenciesReady() {
         // Check if AllAppsList is populated
         if (AllAppsList.data == null || AllAppsList.data.isEmpty()) {
@@ -5926,13 +6137,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return false;
         }
         
-        // Check if database is accessible
-        try {
-            List<AppMultiple> testQuery = LitePal.limit(1).find(AppMultiple.class);
-            // Query succeeded, database is ready
-        } catch (Exception e) {
-            Log.w(TAG, "Database not ready: " + e.getMessage());
-            return false;
+        // Check if database is accessible.
+        // This is a real SQLite query on the main thread, and initAppData() can run it several
+        // times a second while retrying -- measured at ~60 ms of blocked main thread per burst.
+        // A database that has opened once does not become unavailable again, so probe once.
+        if (!sDatabaseProbeOk) {
+            try {
+                LitePal.limit(1).find(AppMultiple.class);
+                sDatabaseProbeOk = true;
+            } catch (Exception e) {
+                Log.w(TAG, "Database not ready: " + e.getMessage());
+                return false;
+            }
         }
         
         // Check if PackageManager is ready
@@ -8305,7 +8521,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             tvAritstTwo = null;
             weatherImg1 = null;
             weatherCity1 = null;
-            weatherTemp = null;
+            // Was "weatherTemp = null": that cleared the hotseat weather widget's temperature on
+            // every onPause() and left the bar field pointing at the removed overlay view.
+            weatherTemp1 = null;
             weatherWeather1 = null;
             cleanupViewRecursively(prevLayoutTwo);
             cleanupViewRecursively(playPauseLayoutTwo);
@@ -8454,6 +8672,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void removeAppWidget(LauncherAppWidgetInfo launcherInfo) {
         removeWidgetToAutoAdvance(launcherInfo.hostView);
+        mBoundWidgetViews.remove(launcherInfo.appWidgetId);
         launcherInfo.hostView = null;
     }
 
@@ -10722,6 +10941,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mWorkspace.clearDropTargets();
         mWorkspace.removeAllWorkspaceScreens();
         mWidgetsToAdvance.clear();
+        // mBoundWidgetViews deliberately survives this.
+        //
+        // removeAllWorkspaceScreens() detaches the host views, it does not destroy them -- they stay
+        // owned by mAppWidgetHost, and the reuse branch in bindAppWidget() re-parents a detached
+        // view. Clearing here made every rebind pass start from scratch, which is why the capture
+        // shows 70 inflations for 8 widgets and not a single reuse. Entries are dropped when a
+        // widget is genuinely removed (removeAppWidget) or the activity is destroyed.
     }
 
     @Override
@@ -10907,6 +11133,59 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      *
      * Implementation of the method from LauncherModel.Callbacks.
      */
+    /**
+     * True only when the view sits at the item's cell inside a CellLayout that is still a child of
+     * the live workspace. A screen detached by removeAllWorkspaceScreens() does not count, however
+     * well the cell coordinates match.
+     */
+    private boolean isLiveWidgetPlacement(AppWidgetHostView view, LauncherAppWidgetInfo item) {
+        if (view == null || mWorkspace == null) return false;
+
+        ViewParent p = view.getParent();
+        if (!(p instanceof ViewGroup)) return false;
+        ViewParent gp = p.getParent();
+        if (!(gp instanceof CellLayout)) return false;
+        CellLayout cl = (CellLayout) gp;
+
+        // Widgets live on workspace screens; a CellLayout that is no longer a child of the
+        // workspace is an orphan left behind by removeAllWorkspaceScreens().
+        if (mWorkspace.indexOfChild(cl) < 0) return false;
+
+        if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP
+                && mWorkspace.getIdForScreen(cl) != item.screenId) {
+            return false;
+        }
+
+        if (!(view.getLayoutParams() instanceof CellLayout.LayoutParams)) return false;
+        CellLayout.LayoutParams lp = (CellLayout.LayoutParams) view.getLayoutParams();
+        return lp.cellX == item.cellX && lp.cellY == item.cellY
+                && lp.cellHSpan == item.spanX && lp.cellVSpan == item.spanY;
+    }
+
+    /** The host view already on screen for this widget id, or null. Covers workspace and hotseat. */
+    private AppWidgetHostView findAttachedWidgetHostView(int appWidgetId) {
+        if (appWidgetId == LauncherAppWidgetInfo.NO_ID) return null;
+        AppWidgetHostView found = findWidgetHostViewIn(mWorkspace, appWidgetId);
+        if (found == null && mHotseat != null) found = findWidgetHostViewIn(mHotseat, appWidgetId);
+        return found;
+    }
+
+    private AppWidgetHostView findWidgetHostViewIn(ViewGroup root, int appWidgetId) {
+        if (root == null) return null;
+        for (int i = 0; i < root.getChildCount(); i++) {
+            View child = root.getChildAt(i);
+            if (child instanceof AppWidgetHostView) {
+                if (((AppWidgetHostView) child).getAppWidgetId() == appWidgetId) {
+                    return (AppWidgetHostView) child;
+                }
+            } else if (child instanceof ViewGroup) {
+                AppWidgetHostView nested = findWidgetHostViewIn((ViewGroup) child, appWidgetId);
+                if (nested != null) return nested;
+            }
+        }
+        return null;
+    }
+
     public void bindAppWidget(final LauncherAppWidgetInfo item) {
         Runnable r = new Runnable() {
             public void run() {
@@ -10936,7 +11215,69 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Log.d(TAG, "bindAppWidget: id=" + item.appWidgetId + " belongs to component " + appWidgetInfo.provider);
         }
 
+        // Reuse the host view if this widget already has one.
+        //
+        // mAppWidgetHost.createView() inflates the provider's RemoteViews across a process boundary
+        // -- 150 to 1700 ms of main thread each on this hardware. bindAppWidget() is called again
+        // for widgets that are already bound, and the old code created a second host view every
+        // time. One wake capture bound six widgets twenty-four times: ~3.5 s of main thread,
+        // immediately before the PiP panes were built.
+        //
+        // Order matters. mBoundWidgetViews is the only source that survives a rebind cycle:
+        // bindWorkspace() hands out fresh LauncherAppWidgetInfo objects, so item.hostView is null,
+        // and startBinding() detaches every screen, so the hierarchy search finds nothing. The other
+        // two are kept as fallbacks for a view that exists but never made it into the cache.
+        AppWidgetHostView existing = mBoundWidgetViews.get(appWidgetId);
+        if (existing == null || existing.getAppWidgetId() != appWidgetId) {
+            existing = item.hostView;
+        }
+        if (existing == null || existing.getAppWidgetId() != appWidgetId) {
+            existing = findAttachedWidgetHostView(appWidgetId);
+        }
+        if (existing != null) {
+            mBoundWidgetViews.put(appWidgetId, existing);
+            item.hostView = existing;
+            item.hostView.setTag(item);
+            item.onBindAppWidget(this);
+
+            // "Already in the right place" has to mean the LIVE workspace, not just matching cell
+            // coordinates.
+            //
+            // startBinding() calls removeAllWorkspaceScreens(), which detaches the CellLayouts but
+            // leaves each widget parented to its old, now-orphaned screen. Comparing only cellX/cellY
+            // therefore said "same place" and skipped the re-attach, so after a rebind the widgets
+            // were never added to the new screens -- and a screen holding nothing but widgets came
+            // out empty and was dropped by stripEmptyScreens(). That is the screen that disappeared
+            // on the way back from Settings and only returned after a restart.
+            boolean samePlace = isLiveWidgetPlacement(existing, item);
+
+            if (!samePlace) {
+                // Re-parent the view we already have instead of inflating it again.
+                ViewParent oldParent = existing.getParent();
+                if (oldParent instanceof ViewGroup) ((ViewGroup) oldParent).removeView(existing);
+                removeWidgetToAutoAdvance(existing);
+                workspace.addInScreen(existing, item.container, item.screenId, item.cellX,
+                        item.cellY, item.spanX, item.spanY, false);
+                addWidgetToAutoAdvanceIfNeeded(existing, appWidgetInfo);
+                workspace.requestLayout();
+            }
+
+            if (DEBUG_WIDGETS) {
+                Log.d(TAG, "bound widget id=" + item.appWidgetId + " reused existing host view"
+                        + (samePlace ? "" : " (re-parented)"));
+            }
+            return;
+        }
+
+        if (DEBUG_WIDGETS) {
+            Log.d(TAG, "bindAppWidget: id=" + appWidgetId + " no reusable host view"
+                    + " (cache=" + (mBoundWidgetViews.get(appWidgetId) != null)
+                    + ", item.hostView=" + (item.hostView != null)
+                    + "), inflating");
+        }
+
         item.hostView = mAppWidgetHost.createView(LauncherApplication.sApp, appWidgetId, appWidgetInfo);
+        mBoundWidgetViews.put(appWidgetId, item.hostView);
 
         item.hostView.setTag(item);
         item.onBindAppWidget(this);
@@ -11031,6 +11372,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void bindAllApplications(ArrayList<AppInfo> apps) {
         Log.d(TAG, "bindAllApplications");
+        if (mAwaitingAllAppsBind) {
+            mAwaitingAllAppsBind = false;
+            mAllAppsBackstopChecks = 0;
+            mHandler.removeCallbacks(mAllAppsBindBackstop);
+            triggerAppData();
+        }
         if (AppsCustomizePagedView.DISABLE_ALL_APPS) {
             if (mIntentsOnWorkspaceFromUpgradePath != null) {
                 mIntentsOnWorkspaceFromUpgradePath = null;

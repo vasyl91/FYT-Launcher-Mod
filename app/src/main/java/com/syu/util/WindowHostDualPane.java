@@ -71,7 +71,11 @@ public class WindowHostDualPane {
     private static final int  MAX_RESTART_ATTEMPTS          = 2;
 
     private static final int  START_WAIT_TIMEOUT_MS = 600;
-    private static final int  START_WAIT_STEP_MS    = 4;
+    /**
+     * Readiness is reported from the ActivityView's surfaceCreated() now, so this loop normally
+     * resolves on its first tick. A 4 ms step meant 150 posts per second per pane for nothing.
+     */
+    private static final int  START_WAIT_STEP_MS    = 16;
 
     private static final int  GEOMETRY_RETRIES      = 30;
 
@@ -89,6 +93,11 @@ public class WindowHostDualPane {
      */
     private static final long DEFERRED_START_WATCHDOG_MS = 2500L;
     /**
+     * How long a side may be "still launching" before the health check is allowed to judge it.
+     * Must outlast the deferred-bounds watchdog plus the start ladder.
+     */
+    private static final long LAUNCH_GRACE_MS = 6000L;
+    /**
      * A swap does NOT wait for an app to start -- the app is already running and its display
      * already reports a visible task, so the readiness query answers "yes" instantly. What we are
      * actually waiting for is our own SurfaceControl re-parent to be composited on the new host,
@@ -96,8 +105,15 @@ public class WindowHostDualPane {
      */
     private static final long SWAP_SPLASH_MIN_MS = 900L;
     private static final long SWAP_SPLASH_MAX_MS = 3000L;
+    /**
+     * Longest extra a handoff cover may stay up while the embedded app re-lays out at a new pane
+     * size. Applied in proportion to the size change; see extraSettleForResize().
+     */
+    private static final long SWAP_RESIZE_SETTLE_MAX_MS = 600L;
+    /** Package arriving in each half, captured when that half's handoff cover went up. */
+    private final java.util.EnumMap<Side, String> handoffIncomingPkg = new java.util.EnumMap<>(Side.class);
     /** Cold start: the app has to actually draw, and a heavy one (Maps) needs well over a second. */
-    private static final long COLD_SPLASH_MIN_MS = 600L;
+    private static final long COLD_SPLASH_MIN_MS = 250L;
     private static final long COLD_SPLASH_MAX_MS = 3500L;
     /** Divider drag: the surface only has to come back, so this one really is a couple of frames. */
     private static final long DRAG_SPLASH_MIN_MS = 200L;
@@ -133,6 +149,11 @@ public class WindowHostDualPane {
     private final AtomicBoolean leftReady       = new AtomicBoolean(false);
     private final AtomicBoolean rightReady      = new AtomicBoolean(false);
     private final AtomicBoolean leftFirstFrame  = new AtomicBoolean(false);
+    /** Set once this side's app has actually been handed to startActivity. */
+    private final AtomicBoolean leftAppStarted  = new AtomicBoolean(false);
+    private final AtomicBoolean rightAppStarted = new AtomicBoolean(false);
+    /** When show() last armed the launches, on the wall clock. See launchStillInFlight(). */
+    private volatile long showStartedAtMs = 0L;
     private final AtomicBoolean rightFirstFrame = new AtomicBoolean(false);
     private final AtomicBoolean visible         = new AtomicBoolean(false);
     private final AtomicBoolean surfacesHidden  = new AtomicBoolean(false);
@@ -193,6 +214,7 @@ public class WindowHostDualPane {
     private int taskOf(Side s)           { return s == Side.LEFT ? leftTask : rightTask; }
     private AtomicBoolean readyOf(Side s)      { return s == Side.LEFT ? leftReady : rightReady; }
     private AtomicBoolean firstFrameOf(Side s) { return s == Side.LEFT ? leftFirstFrame : rightFirstFrame; }
+    private AtomicBoolean appStartedOf(Side s) { return s == Side.LEFT ? leftAppStarted : rightAppStarted; }
     private AtomicBoolean blackOf(Side s)      { return s == Side.LEFT ? leftBlackScreenDetected : rightBlackScreenDetected; }
 
     // =====================================================================================
@@ -225,6 +247,10 @@ public class WindowHostDualPane {
 
         postNextFrame(() -> {
             if (gen != myGen) return;
+            if (act.isDestroyed() || act.isFinishing()) {
+                Log.w(TAG, "activity destroyed before show() ran, aborting");
+                return;
+            }
 
             boolean haveL = (leftTask > 0) && lPkg.equals(leftPkg);
             boolean haveR = (rightTask > 0) && rPkg.equals(rightPkg);
@@ -240,6 +266,9 @@ public class WindowHostDualPane {
 
             leftFirstFrame.set(false);
             rightFirstFrame.set(false);
+            leftAppStarted.set(haveL);
+            rightAppStarted.set(haveR);
+            showStartedAtMs = SystemClock.elapsedRealtime();
             visible.set(true);
 
             // dismissAsync() switches the drag off and nothing used to switch it back on. The pane
@@ -275,8 +304,19 @@ public class WindowHostDualPane {
 
     public void updateBounds(Rect b) {
         boolean boundsChanged = !hasPendingBounds || !pendingBounds.equals(b);
+        // See WindowHostSinglePane.updateBounds(): a workspace scroll only moves the pane, and the
+        // window position is already pushed by setPendingBoundsFast(). Re-splitting for an unchanged
+        // size costs both halves a re-measure and a VirtualDisplay resize on every scroll frame.
+        boolean sizeChanged = !hasPendingBounds
+                || pendingBounds.width() != b.width()
+                || pendingBounds.height() != b.height();
+
         setPendingBoundsFast(b);
-        if (boundsChanged) applySplit(true);
+        if (boundsChanged && sizeChanged) {
+            applySplit(true);
+        } else if (boundsChanged) {
+            syncTapRegionsOnly();
+        }
 
         for (Side s : Side.values()) {
             if (!isStartDeferred(s)) continue;
@@ -295,9 +335,18 @@ public class WindowHostDualPane {
         return visible.get() && (leftStartDeferredForBounds || rightStartDeferredForBounds);
     }
 
-    /** True when this pane shows nothing, or both apps have already drawn a frame. */
+    /**
+     * True when this pane shows nothing, or both apps have been launched and both surfaces are up.
+     *
+     * The firstFrame flags come from our own SurfaceViews, so they go true as soon as the panes are
+     * sized -- long before either app exists. Judging the rebuild on them alone made "Panes settled"
+     * fire ~900 ms before the first startActivity.
+     */
     public boolean hasRenderedContent() {
-        return !visible.get() || (leftFirstFrame.get() && rightFirstFrame.get());
+        if (!visible.get()) return true;
+        if (leftStartDeferredForBounds || rightStartDeferredForBounds) return false;
+        return leftFirstFrame.get() && rightFirstFrame.get()
+                && leftAppStarted.get() && rightAppStarted.get();
     }
 
     /** Last-resort launch when the releasing bounds update never arrives. */
@@ -379,10 +428,30 @@ public class WindowHostDualPane {
     /** Allowed VirtualDisplay size mismatch relative to the panel, in px. */
     private static final int VD_SIZE_TOLERANCE_PX = 16;
 
+    /** Refreshes only the embedded displays' on-screen location after a pure move. */
+    private void syncTapRegionsOnly() {
+        for (Side side : Side.values()) {
+            final Side s = side;
+            final FrameLayout paneHost = hostOf(s);
+            final Object paneAV = avOf(s);
+            if (paneHost == null || paneAV == null) continue;
+            postAfterLayout(paneHost, () -> {
+                if (hostOf(s) != paneHost || avOf(s) != paneAV) return;
+                try {
+                    WindowHostActivityView.syncGeometryWithoutIme(paneAV);
+                } catch (Throwable ignore) {}
+            });
+        }
+    }
+
     /** See WindowHostSinglePane.isContentHealthy() -- same logic for both halves. */
     public boolean isContentHealthy() {
         try {
             if (!visible.get()) return true;
+            // A side that has not launched yet has no task; see the note in WindowHostSinglePane.
+            for (Side side : Side.values()) {
+                if (launchStillInFlight(side)) return true;
+            }
             for (Side side : Side.values()) {
                 if (!isSideHealthy(side)) return false;
             }
@@ -391,6 +460,13 @@ public class WindowHostDualPane {
             Log.w(TAG, "isContentHealthy failed", t);
             return true;
         }
+    }
+
+    /** Bounded grace window while a side is legitimately still bringing its app up. */
+    private boolean launchStillInFlight(Side side) {
+        if (appStartedOf(side).get()) return false;
+        if (showStartedAtMs == 0L) return false;
+        return (SystemClock.elapsedRealtime() - showStartedAtMs) < LAUNCH_GRACE_MS;
     }
 
     /**
@@ -413,6 +489,7 @@ public class WindowHostDualPane {
     }
 
     private boolean isSideHealthy(Side side) {
+        if (launchStillInFlight(side)) return true;
         Object paneAV = avOf(side);
         if (paneAV == null || !attachedOf(side)) return false;
 
@@ -487,6 +564,14 @@ public class WindowHostDualPane {
             lp.topMargin = 0;
 
             WindowHostSplash.attach(root, handoffKey(side), pkg, lp, keepIcon);
+
+            // Only the PRE-SWAP cover carries usable information; see WindowHostSinglePane. The
+            // refresh that resyncGeometryAfterSurfaceSwap() raises with a null package must leave
+            // the recorded values alone.
+            if (incomingPkg != null && !incomingPkg.isEmpty()) {
+                handoffIncomingPkg.put(side, incomingPkg);
+                WindowHostActivityView.noteSizeBeforeHandoff(pkgOf(side), w, h);
+            }
         }
 
         freezeDivider();
@@ -505,8 +590,19 @@ public class WindowHostDualPane {
             final Object paneAV = avOf(side);
             if (paneAV == null) continue;
 
+            String arrivingPkg = handoffIncomingPkg.get(side);
+            if (arrivingPkg == null) arrivingPkg = pkgOf(side);
+            handoffIncomingPkg.remove(side);
+
+            long extra = WindowHostActivityView.extraSettleForResize(
+                    WindowHostActivityView.takeSizeBeforeHandoff(arrivingPkg),
+                    targetPaneWidth(side), targetPaneHeight(side), SWAP_RESIZE_SETTLE_MAX_MS);
+            if (extra > 0) {
+                Log.i(TAG, side + ": handoff cover held " + extra + " ms longer for the resize");
+            }
+
             WindowHostSplash.dismissWhenReady(rootRef, handoffKey(side), paneAV,
-                    SWAP_SPLASH_MIN_MS, SWAP_SPLASH_MAX_MS, () -> {
+                    SWAP_SPLASH_MIN_MS + extra, SWAP_SPLASH_MAX_MS + extra, () -> {
                 if (gen != myGen) return;
                 refreshTapRegionSafely(paneAV, TAP_REGION_RETRIES);
                 thawDivider();
@@ -559,6 +655,12 @@ public class WindowHostDualPane {
     // =====================================================================================
 
     private void ensureWindow(Activity act, WindowManager wm, IBinder token) {
+        // See WindowHostSinglePane.ensureWindow(): show() schedules this a frame later, and a
+        // window added to an activity that died in between is leaked with nobody to remove it.
+        if (act == null || act.isDestroyed() || act.isFinishing()) {
+            Log.w(TAG, "activity gone before the window was added, skipping");
+            return;
+        }
         if (added && root != null && lp != null) return;
         if (root != null) {
             try { if (root.isAttachedToWindow()) wm.removeViewImmediate(root); } catch (Throwable ignore) {}
@@ -1428,11 +1530,11 @@ public class WindowHostDualPane {
 
     private void startNow(Side side, String pkg, int expectedGen) {
         if (gen != expectedGen || pkg == null) return;
-        if (taskOf(side) > 0 && pkg.equals(pkgOf(side))) return;
+        if (taskOf(side) > 0 && pkg.equals(pkgOf(side))) { appStartedOf(side).set(true); return; }
 
         postMainDelayed(() -> {
             if (gen != expectedGen) return;
-            if (taskOf(side) > 0 && pkg.equals(pkgOf(side))) return;
+            if (taskOf(side) > 0 && pkg.equals(pkgOf(side))) { appStartedOf(side).set(true); return; }
 
             final Object paneAV = avOf(side);
             if (paneAV == null) return;
@@ -1447,6 +1549,7 @@ public class WindowHostDualPane {
             try {
                 boolean ok = WindowHostActivityView.startActivitySmartWithProcessCheck(paneAV, activity, pkg, bounds);
                 if (ok) {
+                    appStartedOf(side).set(true);
                     Log.i(TAG, side + ": start ok for " + pkg);
                     return;
                 }
@@ -1459,6 +1562,7 @@ public class WindowHostDualPane {
 
                     Object opts = WindowHostActivityView.makeOptionsWithBounds(bounds);
                     boolean retryOk = WindowHostActivityView.startActivitySmart(paneAV, activity, fallback, opts);
+                    if (retryOk) appStartedOf(side).set(true);
                     Log.i(TAG, side + (retryOk ? ": fallback succeeded" : ": fallback failed"));
                     if (!retryOk) {
                         postMainDelayed(() -> {
@@ -1472,7 +1576,9 @@ public class WindowHostDualPane {
                     if (gen == expectedGen) attemptMinimalLaunch(side, pkg, bounds);
                 }, 300);
             }
-        }, 80);
+        // startWhenReady() already waited for a valid surface and a live VirtualDisplay, so this
+        // only needs to let the current traversal finish rather than a flat 80 ms.
+        }, 16);
     }
 
     private void attemptMinimalLaunch(Side side, String pkg, Rect bounds) {
@@ -1489,6 +1595,7 @@ public class WindowHostDualPane {
             minimal.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ActivityOptions opts = (ActivityOptions) WindowHostActivityView.makeOptionsWithBounds(bounds);
             boolean success = WindowHostActivityView.startActivitySmart(paneAV, activity, minimal, opts);
+            if (success) appStartedOf(side).set(true);
             Log.i(TAG, side + ": minimal launch " + (success ? "succeeded" : "failed"));
         } catch (Exception e) {
             Log.e(TAG, side + ": minimal launch exception", e);
@@ -1507,6 +1614,13 @@ public class WindowHostDualPane {
 
             if (surfacesHidden.get()) {
                 postMainDelayed(() -> checkForBlackScreenAndRestart(side, pkg, expectedGen), 300);
+                return;
+            }
+
+            // See WindowHostSinglePane: a side whose app is still being handed to startActivity has
+            // no frame yet by definition, and restarting it fights the launch already on its way.
+            if (launchStillInFlight(side)) {
+                if (side == Side.LEFT) leftBlackConfirmCount = 0; else rightBlackConfirmCount = 0;
                 return;
             }
 

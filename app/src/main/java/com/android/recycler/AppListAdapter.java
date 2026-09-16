@@ -60,7 +60,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
 
     // Recycler height as a fraction of its own width (portrait only; landscape fills the bar).
     private static final float RECYCLER_H_WIDGET_PORTRAIT = 0.295f;
-    private static final float RECYCLER_H_PLAIN_PORTRAIT  = 0.142f;
+
+    // Visible slots in widget-bar mode. Must match Launcher.isBottomSlotVisible().
+    private static final int WIDGET_SLOTS_PORTRAIT  = 4;   // slots 1, 5, 6, 7
+    private static final int WIDGET_SLOTS_LANDSCAPE = 5;   // slots 1, 4, 5, 6, 7
 
     /** Share of the tile taken by the icon; the rest is breathing room. */
     private static final float ICON_FILL = 0.80f;
@@ -426,6 +429,12 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
      * available/itemCount makes all four fit properly, identically in both bars - they
      * share this adapter, so both pick up the same metrics.
      *
+     * The ICON size, however, is always taken from the widget-bar metrics. It used to follow
+     * the tile width, and in landscape the "height limit" was the tile width itself, i.e. no
+     * limit at all: the plain bar (0.8795 of the screen over 8 slots) drew icons ~25% larger
+     * than the widget bar (0.4395 over 5), and they grew without bound whenever fewer items
+     * were bound. Now the plain bar only gets wider tiles (spacing), not bigger icons.
+     *
      * Orientation is read on every bind, so a rotation no longer leaves stale sizes behind.
      */
     private void applyTileMetrics(AppListHolder holder) {
@@ -458,17 +467,18 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
             return;
         }
 
-        // Height limit, so the icon never grows taller than the bar itself.
-        int recyclerHeight;
-        if (portrait) {
-            recyclerHeight = (int) (recyclerWidth * (widgetMode
-                    ? RECYCLER_H_WIDGET_PORTRAIT
-                    : RECYCLER_H_PLAIN_PORTRAIT));
-        } else {
-            recyclerHeight = tileWidth;
-        }
+        // Icon size is the widget-bar icon size in BOTH modes (see the method comment).
+        int widgetRecyclerWidth = (int) (Launcher.screenWidth
+                * (portrait ? RECYCLER_W_WIDGET_PORTRAIT : RECYCLER_W_WIDGET_LANDSCAPE));
+        int widgetTileWidth = widgetRecyclerWidth
+                / (portrait ? WIDGET_SLOTS_PORTRAIT : WIDGET_SLOTS_LANDSCAPE);
+        int widgetRecyclerHeight = portrait
+                ? (int) (widgetRecyclerWidth * RECYCLER_H_WIDGET_PORTRAIT)
+                : widgetTileWidth;
 
-        int iconSize = (int) (Math.min(tileWidth, recyclerHeight) * ICON_FILL);
+        int iconSize = (int) (Math.min(widgetTileWidth, widgetRecyclerHeight) * ICON_FILL);
+        // With more tiles than the widget bar has, an icon must still fit inside its tile.
+        iconSize = Math.min(iconSize, (int) (tileWidth * ICON_FILL));
         if (iconSize <= 0) {
             return;
         }

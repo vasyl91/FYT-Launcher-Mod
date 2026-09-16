@@ -41,6 +41,8 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
 private const val ACTIVE_SESSION_POLL_MS = 250L
@@ -106,6 +108,17 @@ private const val STOCK_TO_THIRD_PARTY_RESUME_WINDOW_MS = 4000L
 
 /** The 250 ms session poll is far too slow to hide a channel steal. */
 private const val PANE_WATCH_INTERVAL_MS = 40L
+
+/**
+ * How long an answer from getActiveSessions() is reused.
+ *
+ * That call is a binder round-trip into MediaSessionService, and a single steal asks for it from
+ * isPaneChannelSteal(), scheduleIdleStealRecovery(), restoreStockChannel() and the verification
+ * post in restoreChannelNow(). With the pane watchdog ticking every 40 ms that added up to dozens
+ * of binder calls on the main thread inside the launch window. The cache is dropped explicitly
+ * whenever a playback state actually changes, so the staleness never outlives a real transition.
+ */
+private const val EXTERNAL_PLAYING_TTL_MS = 120L
 
 /** MCU audio channel identifiers - the same value space as
  * CarStates.mAppID, RemoteTools.getInt(0, 0, 0, x) and RemoteTools.sendInt(0, 0, x).
@@ -212,6 +225,52 @@ class NotificationListener : NotificationListenerService() {
     private var lastExternalPlayToken: MediaSession.Token? = null
     @Volatile
     private var lastExternalPlayAtMs: Long = 0L
+
+    /** Cached answer of isAnyExternalSessionPlaying(); see EXTERNAL_PLAYING_TTL_MS. */
+    @Volatile
+    private var externalPlayingCachedAt: Long = 0L
+    @Volatile
+    private var externalPlayingCached: Boolean = false
+
+    /**
+     * Tag reading for the stock player.
+     *
+     * "titlesInternal" carries the playback position, so it arrives on every tick. The old code
+     * ran File.exists() plus a full MediaMetadataRetriever pass on the main thread for each of
+     * them -- 30-45 ms a time, landing in the middle of a pane rebuild. The file only changes when
+     * the track does, so the result is cached and the read itself moved off the main thread.
+     */
+    @Volatile
+    private var metaExec: ExecutorService? = null
+
+    /** Recreated after a disconnect, since cleanupResources() shuts the old one down. */
+    private fun metaExecutor(): ExecutorService {
+        var e = metaExec
+        if (e == null || e.isShutdown) {
+            e = Executors.newSingleThreadExecutor { r ->
+                Thread(r, "FytMetaReader").apply {
+                    priority = Thread.MIN_PRIORITY
+                    isDaemon = true
+                }
+            }
+            metaExec = e
+        }
+        return e
+    }
+
+    private class FytMeta(
+        val path: String,
+        val title: String?,
+        val artist: String?,
+        val album: String,
+        val duration: Long?,
+        val pathName: String?
+    )
+
+    @Volatile
+    private var lastFytMeta: FytMeta? = null
+    @Volatile
+    private var fytMetaInFlight: String? = null
 
     var musicState: String? = ""
     var musicNamePrev: String = ""
@@ -384,6 +443,13 @@ class NotificationListener : NotificationListenerService() {
         lastArtBytes = null
         MediaWidgetState.clearExternal()
 
+        lastFytMeta = null
+        fytMetaInFlight = null
+        externalPlayingCachedAt = 0L
+        externalPlayingCached = false
+        try { metaExec?.shutdownNow() } catch (e: Exception) { /* already down */ }
+        metaExec = null
+
         mediaSessionManager = null
         settings = null
     }
@@ -428,73 +494,120 @@ class NotificationListener : NotificationListenerService() {
                 fytMusicPath = bundle.getString("play_path") ?: ""
                 fytSource = bundle.getString("source") ?: ""
                 fytCurMinutes = bundle.getLong("play_cur", 0L)
-                
-                val file = File(fytMusicPath)
-                if (!file.exists() || fytMusicPath.isEmpty()) return
-                
-                val retriever = MediaMetadataRetriever()
-                try {
-                    try {
-                        FileInputStream(file).use { fis ->
-                            retriever.setDataSource(fis.fd, 0, file.length())
-                        }
-                    } catch (e: IllegalArgumentException) {
-                        e.printStackTrace()
-                        retriever.setDataSource(fytMusicPath)
-                    }
-                    
-                    // Extract metadata with null safety
-                    musicName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-                    authorName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-                    fytAlbum = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM) ?: ""
-                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                        ?.let { fytTotalMinutes = it.toLong() }
-                    
-                    // Use safe calls for musicName - convert null to empty string
-                    val currentMusicName = musicName ?: ""
-                    if (musicNamePrev != currentMusicName) {
-                        musicNamePrev = currentMusicName
-                        prevCurFyt = 0
-                    }
-                    
-                    val filename = file.name
-                    if (filename.isNotEmpty() && filename.contains(".")) {
-                        pathName = filename.substring(0, filename.lastIndexOf("."))
-                    }
 
-                    // The stock player has an audio channel, so MediaSession gives way -
-                    // once, rather than on every playback position tick.
-                    if (fytState) {
-                        takeSourceForMcu(MusicService.MUSIC_PKG)
-                    }
-                    
-                    // Safe validation of musicName
-                    val isValidMusicName = currentMusicName.isNotEmpty() && 
-                                          !currentMusicName.contains("Unknown", ignoreCase = true) && 
-                                          !currentMusicName.contains("null", ignoreCase = true)
-                    
-                    if (isValidMusicName) {
-                        fytSet = false
-                    }
-                    
-                    if (fytState && !fytSet && helpers.isFytMusicAllowed() && isValidMusicName) {
-                        handlerControllerTime?.removeCallbacks(updateControllerTime)  
-                        helpers.updateControllerTimeBool(false)
-                        fytSet = true
-                        setStatus(1)
-                        handlerFytTime?.post(updateFytTime)             
-                    }
-                    
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                } finally {
-                    try {
-                        retriever.release()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                if (fytMusicPath.isEmpty()) return
+
+                // Same track as last time: nothing to read, apply what we already have.
+                val cached = lastFytMeta
+                if (cached != null && cached.path == fytMusicPath) {
+                    applyFytMeta(cached)
+                    return
                 }
+                requestFytMeta(fytMusicPath)
             }
+        }
+    }
+
+    /** Schedules one background tag read per distinct path. */
+    private fun requestFytMeta(path: String) {
+        if (destroyed.get() || isCleanedUp) return
+        if (fytMetaInFlight == path) return
+        fytMetaInFlight = path
+
+        metaExecutor().execute {
+            val meta = readFytMeta(path)
+            mainHandler.post {
+                if (fytMetaInFlight == path) fytMetaInFlight = null
+                if (destroyed.get() || isCleanedUp) return@post
+                if (meta == null) return@post
+                lastFytMeta = meta
+                // The player may have moved on while we were reading.
+                if (fytMusicPath != path) return@post
+                applyFytMeta(meta)
+            }
+        }
+    }
+
+    /**
+     * Runs on metaExec. MediaMetadataRetriever is used rather than the bundle contents because the
+     * stock player does not handle characters outside its own encoding (ö, ó, ü, ß, ñ) and sends
+     * Chinese glyphs instead.
+     */
+    private fun readFytMeta(path: String): FytMeta? {
+        val file = File(path)
+        if (!file.exists()) return null
+
+        val retriever = MediaMetadataRetriever()
+        return try {
+            try {
+                FileInputStream(file).use { fis ->
+                    retriever.setDataSource(fis.fd, 0, file.length())
+                }
+            } catch (e: IllegalArgumentException) {
+                retriever.setDataSource(path)
+            }
+
+            val filename = file.name
+            val base = if (filename.isNotEmpty() && filename.contains(".")) {
+                filename.substring(0, filename.lastIndexOf("."))
+            } else {
+                null
+            }
+
+            FytMeta(
+                path = path,
+                title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
+                artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),
+                album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM) ?: "",
+                duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull(),
+                pathName = base
+            )
+        } catch (e: Exception) {
+            Log.w("NotificationListener", "Tag read failed for $path: ${e.message}")
+            null
+        } finally {
+            try {
+                retriever.release()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /** Main thread. Everything the old inline block did once the tags were available. */
+    private fun applyFytMeta(m: FytMeta) {
+        musicName = m.title
+        authorName = m.artist
+        fytAlbum = m.album
+        m.duration?.let { fytTotalMinutes = it }
+        m.pathName?.let { pathName = it }
+
+        val currentMusicName = musicName ?: ""
+        if (musicNamePrev != currentMusicName) {
+            musicNamePrev = currentMusicName
+            prevCurFyt = 0
+        }
+
+        // The stock player has an audio channel, so MediaSession gives way -
+        // once, rather than on every playback position tick.
+        if (fytState) {
+            takeSourceForMcu(MusicService.MUSIC_PKG)
+        }
+
+        val isValidMusicName = currentMusicName.isNotEmpty() &&
+                !currentMusicName.contains("Unknown", ignoreCase = true) &&
+                !currentMusicName.contains("null", ignoreCase = true)
+
+        if (isValidMusicName) {
+            fytSet = false
+        }
+
+        if (fytState && !fytSet && helpers.isFytMusicAllowed() && isValidMusicName) {
+            handlerControllerTime?.removeCallbacks(updateControllerTime)
+            helpers.updateControllerTimeBool(false)
+            fytSet = true
+            setStatus(1)
+            handlerFytTime?.post(updateFytTime)
         }
     }
 
@@ -809,12 +922,23 @@ class NotificationListener : NotificationListenerService() {
 
 
     private fun isAnyExternalSessionPlaying(): Boolean {
+        val now = SystemClock.elapsedRealtime()
+        if (now - externalPlayingCachedAt < EXTERNAL_PLAYING_TTL_MS) return externalPlayingCached
+
         val sessions = try {
             mediaSessionManager?.getActiveSessions(componentName)
         } catch (e: SecurityException) {
             null
-        } ?: return false
-        return sessions.any { isRealExternalPlayback(it) }
+        }
+        val playing = sessions?.any { isRealExternalPlayback(it) } ?: false
+        externalPlayingCached = playing
+        externalPlayingCachedAt = now
+        return playing
+    }
+
+    /** Forces the next isAnyExternalSessionPlaying() to ask MediaSessionService again. */
+    private fun invalidateExternalPlayingCache() {
+        externalPlayingCachedAt = 0L
     }
 
     private fun isRealExternalPlayback(controller: MediaController?): Boolean {
@@ -989,6 +1113,8 @@ class NotificationListener : NotificationListenerService() {
             super.onPlaybackStateChanged(state)
             service.currentState = state?.state
             service.prevMinutes = 0
+            // A real transition just happened, so the cached session answer is stale by definition.
+            service.invalidateExternalPlayingCache()
             if (service.currentState == PlaybackState.STATE_PAUSED
                 || service.currentState == PlaybackState.STATE_STOPPED
                 || service.currentState == PlaybackState.STATE_BUFFERING) {
@@ -1326,6 +1452,7 @@ class NotificationListener : NotificationListenerService() {
         override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
             val service = serviceRef.get() ?: return
             if (service.destroyed.get() || service.isCleanedUp) return
+            service.invalidateExternalPlayingCache()
             if (!controllers.isNullOrEmpty()) {
                 // keep the PLAYING bookkeeping in sync so a later play is seen as a new transition
                 val liveTokens = controllers.map { it.sessionToken }.toSet()

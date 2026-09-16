@@ -24,10 +24,14 @@ import com.android.launcher66.settings.Keys;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Cosmetic launch cover for an embedded app.
@@ -37,22 +41,25 @@ public final class WindowHostSplash {
     private static final String TAG = "WindowHostSplash";
 
     /** How often the pane's display is polled for visible content. */
-    private static final long POLL_MS = 80L;
+    private static final long POLL_MS = 50L;
     /**
      * ActivityTaskManager reports a stack VISIBLE as soon as the activity is resumed -- which is
      * still ~200 ms before its first frame is composited. Dismissing on the bare visible flag therefore
      * uncovers a black pane for a moment. Two things guard against that: the flag has to hold for
      * STABLE_POLLS consecutive polls, and we still sit on it for SETTLE_MS afterwards.
+     *
+     * With POLL_MS at 50 the two stable polls already cover 100 ms of that gap, so the settle only
+     * has to cover the rest.
      */
-    private static final long SETTLE_MS = 500L;
+    private static final long SETTLE_MS = 280L;
     private static final int  STABLE_POLLS = 2;
     /** getAllStackInfos() is a binder round-trip; one snapshot serves every pane. */
-    private static final long SNAPSHOT_TTL_MS = 80L;
+    private static final long SNAPSHOT_TTL_MS = 50L;
     /**
      * Fade-out duration.
      * A slower fade also blurs whatever residual flash is left underneath.
      */
-    private static final long FADE_MS = 260L;
+    private static final long FADE_MS = 180L;
 
     private static final String TAG_KEY = "WindowHostSplash#cover";
 
@@ -72,7 +79,134 @@ public final class WindowHostSplash {
     private static java.util.HashSet<Integer> snapshot = null;
     private static final Map<String, Integer> colorCache = new HashMap<>();
 
+    /**
+     * Icon cache.
+     *
+     * getApplicationIcon() is a PackageManager binder round-trip that also parses the target's
+     * resources. Measured on the head unit it blocked the launcher's main thread for 100-400 ms
+     * per package, once per pane, right inside the launch window -- which is where the stagger
+     * between pane openings went from 250 ms to 550 ms. The icon of a configured PiP package
+     * never changes while the launcher runs, so it is fetched once and reused.
+     *
+     * ConstantState rather than the Drawable itself: a Drawable carries mutable bounds and a
+     * callback, so handing the same instance to several ImageViews makes them fight over it.
+     */
+    private static final Map<String, Drawable.ConstantState> iconStateCache = new ConcurrentHashMap<>();
+    /** Packages whose icon lookup failed, so a missing package is not re-queried on every attach. */
+    private static final java.util.Set<String> iconMisses =
+            java.util.Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+
+    private static final ExecutorService PREWARM_EXEC = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "SplashPrewarm");
+        t.setPriority(Thread.MIN_PRIORITY);
+        t.setDaemon(true);
+        return t;
+    });
+
+    /** Resolved once: SharedPreferences and Helpers used to be built on every repaint(). */
+    private static volatile SharedPreferences sPrefs;
+    private static volatile Helpers sHelpers;
+
     private WindowHostSplash() { }
+
+    // =====================================================================================
+    // Icon cache
+    // =====================================================================================
+
+    /**
+     * Loads the icons and plate colours for the given packages off the main thread.
+     *
+     * Call this before the panes are built. Everything repaint() needs is then already in the
+     * cache and the cover goes up without a single binder call on the main thread.
+     */
+    public static void prewarm(final Context ctx, final Collection<String> packages) {
+        if (ctx == null || packages == null || packages.isEmpty()) return;
+        final Context app = ctx.getApplicationContext();
+        final java.util.ArrayList<String> todo = new java.util.ArrayList<>();
+        for (String pkg : packages) {
+            if (pkg == null || pkg.isEmpty()) continue;
+            if (iconStateCache.containsKey(pkg) || iconMisses.contains(pkg)) continue;
+            todo.add(pkg);
+        }
+        if (todo.isEmpty()) return;
+
+        PREWARM_EXEC.execute(() -> {
+            for (String pkg : todo) {
+                Drawable icon = loadIconUncached(app, pkg);
+                if (icon == null) continue;
+                // Compute the plate colour here too -- it rasterises the icon, which is cheap but
+                // not free, and doing it now keeps repaint() to pure view work.
+                synchronized (colorCache) {
+                    if (!colorCache.containsKey(pkg)) {
+                        colorCache.put(pkg, backgroundFor(pkg, icon));
+                    }
+                }
+            }
+        });
+    }
+
+    /** Cached icon for a package, loading it synchronously only if the prewarm has not run. */
+    private static Drawable iconFor(Context ctx, String pkg) {
+        if (pkg == null || pkg.isEmpty()) return null;
+
+        Drawable.ConstantState state = iconStateCache.get(pkg);
+        if (state != null) {
+            try {
+                return state.newDrawable(ctx.getResources());
+            } catch (Throwable ignore) {
+                // Fall through and reload.
+            }
+        }
+        if (iconMisses.contains(pkg)) return null;
+
+        Drawable loaded = loadIconUncached(ctx, pkg);
+        if (loaded == null) return null;
+        Drawable.ConstantState cached = iconStateCache.get(pkg);
+        if (cached != null) {
+            try { return cached.newDrawable(ctx.getResources()); } catch (Throwable ignore) { }
+        }
+        return loaded;
+    }
+
+    /** The one place that talks to PackageManager; stores the result in the cache. */
+    private static Drawable loadIconUncached(Context ctx, String pkg) {
+        try {
+            Drawable icon = ctx.getPackageManager().getApplicationIcon(pkg);
+            if (icon == null) { iconMisses.add(pkg); return null; }
+            Drawable.ConstantState state = icon.getConstantState();
+            if (state != null) iconStateCache.put(pkg, state);
+            return icon;
+        } catch (Throwable t) {
+            iconMisses.add(pkg);
+            return null;
+        }
+    }
+
+    /** Drops the cached icon for a package, e.g. after it was updated or uninstalled. */
+    public static void invalidateIcon(String pkg) {
+        if (pkg == null) return;
+        iconStateCache.remove(pkg);
+        iconMisses.remove(pkg);
+        synchronized (colorCache) { colorCache.remove(pkg); }
+    }
+
+    private static SharedPreferences prefs(Context ctx) {
+        SharedPreferences p = sPrefs;
+        if (p == null) {
+            p = PreferenceManager.getDefaultSharedPreferences(ctx.getApplicationContext());
+            sPrefs = p;
+        }
+        return p;
+    }
+
+    private static Helpers helpers() {
+        Helpers h = sHelpers;
+        if (h == null) {
+            h = new Helpers();
+            sHelpers = h;
+        }
+        return h;
+    }
 
     // =====================================================================================
     // Synchronised reveal
@@ -90,6 +224,8 @@ public final class WindowHostSplash {
     private static final class RevealGroup {
         final int expected;
         final java.util.ArrayList<Runnable> fades = new java.util.ArrayList<>();
+        /** When beginSyncedReveal() armed this group, for the timing log in fireGroup(). */
+        final long startedAtMs = SystemClock.uptimeMillis();
         boolean fired;
         RevealGroup(int expected) { this.expected = Math.max(1, expected); }
     }
@@ -110,7 +246,11 @@ public final class WindowHostSplash {
     public static void cancelSyncedReveal() {
         RevealGroup g = sGroup;
         sGroup = null;
-        if (g != null) g.fades.clear();
+        if (g != null) {
+            Log.i(TAG, "syncedReveal: cancelled with " + g.fades.size() + "/" + g.expected
+                    + " members after " + (SystemClock.uptimeMillis() - g.startedAtMs) + " ms");
+            g.fades.clear();
+        }
     }
 
     /** Fades now, or parks the fade in the active group when this cover is part of one. */
@@ -133,6 +273,9 @@ public final class WindowHostSplash {
         if (g == null || g.fired) { runQuietly(fade); return; }
 
         g.fades.add(fade);   // null == member released its slot with nothing to fade
+        Log.i(TAG, "syncedReveal: member " + g.fades.size() + "/" + g.expected
+                + " ready after " + (SystemClock.uptimeMillis() - g.startedAtMs) + " ms"
+                + (fade == null ? " (released slot, nothing to fade)" : ""));
         if (g.fades.size() >= g.expected) fireGroup(g);
     }
 
@@ -140,6 +283,14 @@ public final class WindowHostSplash {
         if (g == null || g.fired) return;
         g.fired = true;
         if (sGroup == g) sGroup = null;
+
+        // The single point where a synchronised reveal actually uncovers the panes, whether the
+        // last member arrived or the backstop fired. The fade itself still takes FADE_MS after this.
+        boolean allReady = g.fades.size() >= g.expected;
+        Log.i(TAG, "syncedReveal: uncovering " + g.fades.size() + "/" + g.expected
+                + " covers after " + (SystemClock.uptimeMillis() - g.startedAtMs) + " ms"
+                + (allReady ? " (all members ready)" : " (TIMEOUT backstop)")
+                + ", fade " + FADE_MS + " ms");
 
         for (Runnable r : g.fades) runQuietly(r);
         g.fades.clear();
@@ -333,19 +484,14 @@ public final class WindowHostSplash {
         cover.removeAllViews();
         coverPackage.put(cover, pkg);
 
-        Drawable icon = null;
-        try {
-            if (pkg != null && !pkg.isEmpty()) {
-                icon = ctx.getPackageManager().getApplicationIcon(pkg);
-            }
-        } catch (Throwable ignore) { }
+        // Cached: see iconStateCache. This used to be a getApplicationIcon() binder call on the
+        // main thread, once per pane, in the middle of the launch sequence.
+        Drawable icon = iconFor(ctx, pkg);
 
-        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        if (mPrefs.getBoolean(Keys.COVER_SPLASH, true)) {
+        if (prefs(ctx).getBoolean(Keys.COVER_SPLASH, true)) {
             cover.setBackgroundColor(backgroundFor(pkg, icon));
         } else {
-            Helpers helpers = new Helpers();
-            int bgColor = helpers.isDay()
+            int bgColor = helpers().isDay()
                 ? Color.rgb(247, 247, 247)
                 : Color.rgb(169, 169, 169);    
             cover.setBackgroundColor(bgColor);        
@@ -482,8 +628,11 @@ public final class WindowHostSplash {
         if (icon == null) return fallback;
 
         if (pkg != null) {
-            Integer cached = colorCache.get(pkg);
-            if (cached != null) return cached;
+            // Synchronised: prewarm() fills this from a background thread.
+            synchronized (colorCache) {
+                Integer cached = colorCache.get(pkg);
+                if (cached != null) return cached;
+            }
         }
 
         int color = fallback;
@@ -510,7 +659,9 @@ public final class WindowHostSplash {
             if (bmp != null && bmp != src) bmp.recycle();
         }
 
-        if (pkg != null) colorCache.put(pkg, color);
+        if (pkg != null) {
+            synchronized (colorCache) { colorCache.put(pkg, color); }
+        }
         return color;
     }
 

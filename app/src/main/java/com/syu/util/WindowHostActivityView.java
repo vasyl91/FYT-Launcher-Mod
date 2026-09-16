@@ -25,9 +25,15 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -38,8 +44,99 @@ public class WindowHostActivityView {
 
     private static Class<?> sActivityView, sStateCb;
 
+    /**
+     * The content size each ActivityView had in the pane it is leaving, recorded when that pane
+     * puts its handoff cover up.
+     *
+     * A swap moves the view between panes, so the destination pane reads back the size the view
+     * came from and can tell how much the embedded app has to re-layout. Weak keys: an entry for a
+     * view that is released instead of swapped must not keep it alive.
+     */
+    private static final Map<String, int[]> sSizeBeforeHandoff = new ConcurrentHashMap<>();
+
+    /**
+     * Keyed by PACKAGE, not by ActivityView.
+     *
+     * swapActivityViewSurfaces() exchanges the inner surfaces while both ActivityView objects stay
+     * in their own panes, so a view's own before/after size is always identical and keying on it
+     * measured nothing. What actually moves is the app: the pane that now shows package X needs the
+     * size of the pane X came from, and that is what the partner pane recorded here.
+     */
+    static void noteSizeBeforeHandoff(String pkg, int w, int h) {
+        if (pkg == null || pkg.isEmpty() || w <= 0 || h <= 0) return;
+        sSizeBeforeHandoff.put(pkg, new int[]{ w, h });
+    }
+
+    /** @return {w, h} the package occupied before the handoff, or null. Consumed on read. */
+    static int[] takeSizeBeforeHandoff(String pkg) {
+        if (pkg == null || pkg.isEmpty()) return null;
+        return sSizeBeforeHandoff.remove(pkg);
+    }
+
+    /**
+     * Extra time a handoff cover should stay up, given how much the pane size changed.
+     *
+     * The cover comes down as soon as OUR reparent is composited, which is roughly a second before
+     * the embedded app has finished re-laying out at the new size -- measured at ~2 s of visible
+     * stutter after the reveal when a pane went from 663x717 to 1450x997. Scaled by area ratio, so
+     * a swap between similarly sized panes pays nothing and only a real resize is covered.
+     *
+     * @return 0 when the sizes are close, up to maxExtraMs at twice the area or more.
+     */
+    static long extraSettleForResize(int[] oldSize, int newW, int newH, long maxExtraMs) {
+        if (oldSize == null || oldSize.length < 2) return 0L;
+        long oldArea = (long) oldSize[0] * oldSize[1];
+        long newArea = (long) newW * newH;
+        if (oldArea <= 0 || newArea <= 0) return 0L;
+
+        double ratio = (double) Math.max(oldArea, newArea) / (double) Math.min(oldArea, newArea);
+        final double IGNORE_BELOW = 1.15;   // same pane in practice
+        final double FULL_AT      = 2.00;   // twice the area or more
+        if (ratio <= IGNORE_BELOW) return 0L;
+
+        double t = Math.min(1.0, (ratio - IGNORE_BELOW) / (FULL_AT - IGNORE_BELOW));
+        return Math.round(t * maxExtraMs);
+    }
+
     /** ActivityViews that already had the IME crash guard installed (see installImeCrashGuard). */
     private static final WeakHashMap<Object, Boolean> sImeGuarded = new WeakHashMap<>();
+
+    // -------------------------------------------------------------------------------------
+    // Reflection cache
+    //
+    // syncGeometryWithoutIme() runs on every layout pass of every pane. Resolving the same
+    // members again each time - and pushDisplayContentLocation() calling getMethods(), which
+    // allocates the whole method array - is pure main-thread cost during a rebuild.
+    // -------------------------------------------------------------------------------------
+    private static Constructor<?> sAvConstructor;
+    private static Object[] sAvConstructorArgs;
+    private static Field sFieldLocationInWindow;
+    private static Method sMethodUpdateTapExclude;
+    private static Method sMethodGetWindow;
+    private static Method sMethodUpdateDisplayContentLocation;
+    private static Object sWindowSession;
+    private static boolean sSessionLookupFailed;
+
+    /**
+     * Launch intents, resolved once per package.
+     *
+     * getLaunchIntentForPackage() is a PackageManager query, and the launch path used to run it
+     * twice per pane: once in startActivitySmartWithProcessCheck() and again inside
+     * createCompatibleIntent(). Stored as templates - every caller gets a fresh copy, because
+     * applyStatePreservingFlags() mutates the Intent.
+     */
+    private static final Map<String, Intent> sLaunchIntents = new ConcurrentHashMap<>();
+    private static final Set<String> sLaunchIntentMisses =
+            Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    /** PendingIntent per package; the intent we build for a package is always identical. */
+    private static final Map<String, PendingIntent> sPendingIntents = new ConcurrentHashMap<>();
+
+    private static final ExecutorService PREWARM_EXEC = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "AvLaunchPrewarm");
+        t.setPriority(Thread.MIN_PRIORITY);
+        t.setDaemon(true);
+        return t;
+    });
 
     // =====================================================================================
     // 1. Class loading / instantiation
@@ -85,19 +182,36 @@ public class WindowHostActivityView {
 
     private static Object newInstanceRaw(Context ctx) {
         try {
+            // Resolved once. The sweep below used to run on every pane creation.
+            if (sAvConstructor != null) {
+                Object[] args = sAvConstructorArgs.clone();
+                args[0] = ctx;
+                return sAvConstructor.newInstance(args);
+            }
+
             try {
                 Constructor<?> c = sActivityView.getDeclaredConstructor(Context.class, boolean.class);
                 c.setAccessible(true);
-                return c.newInstance(ctx, Boolean.TRUE);
+                Object av = c.newInstance(ctx, Boolean.TRUE);
+                sAvConstructor = c;
+                sAvConstructorArgs = new Object[]{ ctx, Boolean.TRUE };
+                return av;
             } catch (Throwable ignore) {}
+
             for (Constructor<?> c : sActivityView.getDeclaredConstructors()) {
                 try {
                     Class<?>[] p = c.getParameterTypes();
                     c.setAccessible(true);
-                    if (p.length == 1 && p[0] == Context.class) return c.newInstance(ctx);
-                    if (p.length == 2 && p[0] == Context.class && p[1] == android.util.AttributeSet.class) return c.newInstance(ctx, null);
-                    if (p.length == 3 && p[0] == Context.class && p[1] == android.util.AttributeSet.class && p[2] == int.class) return c.newInstance(ctx, null, 0);
-                    if (p.length == 4 && p[0] == Context.class && p[1] == android.util.AttributeSet.class && p[2] == int.class && p[3] == int.class) return c.newInstance(ctx, null, 0, 0);
+                    Object[] args = null;
+                    if (p.length == 1 && p[0] == Context.class) args = new Object[]{ ctx };
+                    else if (p.length == 2 && p[0] == Context.class && p[1] == android.util.AttributeSet.class) args = new Object[]{ ctx, null };
+                    else if (p.length == 3 && p[0] == Context.class && p[1] == android.util.AttributeSet.class && p[2] == int.class) args = new Object[]{ ctx, null, 0 };
+                    else if (p.length == 4 && p[0] == Context.class && p[1] == android.util.AttributeSet.class && p[2] == int.class && p[3] == int.class) args = new Object[]{ ctx, null, 0, 0 };
+                    if (args == null) continue;
+                    Object av = c.newInstance(args);
+                    sAvConstructor = c;
+                    sAvConstructorArgs = args;
+                    return av;
                 } catch (Throwable ignore) {}
             }
             throw new IllegalStateException("No compatible ActivityView constructor");
@@ -268,9 +382,13 @@ public class WindowHostActivityView {
             int displayId = getVirtualDisplayId(av);
             if (displayId < 0) return false;
 
-            Field fLoc = findField(av.getClass(), "mLocationInWindow");
-            if (fLoc == null) return false;
-            fLoc.setAccessible(true);
+            Field fLoc = sFieldLocationInWindow;
+            if (fLoc == null) {
+                fLoc = findField(av.getClass(), "mLocationInWindow");
+                if (fLoc == null) return false;
+                fLoc.setAccessible(true);
+                sFieldLocationInWindow = fLoc;
+            }
             Object locObj = fLoc.get(av);
             if (!(locObj instanceof int[]) || ((int[]) locObj).length < 2) return false;
             int[] loc = (int[]) locObj;
@@ -291,9 +409,13 @@ public class WindowHostActivityView {
             // has to happen early; the region is refreshed again post-layout by the panes
             // (applyPaneGeometry -> refreshTapRegionSafely).
             if (v.isLaidOut() && v.getWidth() > 0 && v.getHeight() > 0) {
-                Method tap = findMethod(av.getClass(), "updateTapExcludeRegion", int.class, int.class);
-                if (tap == null) return false;
-                tap.setAccessible(true);
+                Method tap = sMethodUpdateTapExclude;
+                if (tap == null) {
+                    tap = findMethod(av.getClass(), "updateTapExcludeRegion", int.class, int.class);
+                    if (tap == null) return false;
+                    tap.setAccessible(true);
+                    sMethodUpdateTapExclude = tap;
+                }
                 tap.invoke(av, now[0], now[1]);
             }
             return true;
@@ -325,29 +447,51 @@ public class WindowHostActivityView {
         return out;
     }
 
+    /**
+     * Everything here is resolved once. The previous version ran Class.forName() plus a full
+     * getMethods() sweep of the window session on every geometry sync, i.e. several times per
+     * pane per layout pass.
+     */
     private static boolean pushDisplayContentLocation(View v, int x, int y, int displayId) {
         try {
-            Method getWindow = findMethod(View.class, "getWindow");
-            if (getWindow == null) return false;
-            getWindow.setAccessible(true);
+            if (sSessionLookupFailed) return false;
+
+            Method getWindow = sMethodGetWindow;
+            if (getWindow == null) {
+                getWindow = findMethod(View.class, "getWindow");
+                if (getWindow == null) { sSessionLookupFailed = true; return false; }
+                getWindow.setAccessible(true);
+                sMethodGetWindow = getWindow;
+            }
             Object window = getWindow.invoke(v);
             if (window == null) return false;
 
-            Class<?> wmg = Class.forName("android.view.WindowManagerGlobal");
-            Method getSession = wmg.getMethod("getWindowSession");
-            Object session = getSession.invoke(null);
-            if (session == null) return false;
-
-            for (Method m : session.getClass().getMethods()) {
-                if (!"updateDisplayContentLocation".equals(m.getName())) continue;
-                Class<?>[] p = m.getParameterTypes();
-                if (p.length != 4) continue;
-                if (!p[0].isInstance(window)) continue;
-                m.setAccessible(true);
-                m.invoke(session, window, x, y, displayId);
-                return true;
+            Object session = sWindowSession;
+            if (session == null) {
+                Class<?> wmg = Class.forName("android.view.WindowManagerGlobal");
+                Method getSession = wmg.getMethod("getWindowSession");
+                session = getSession.invoke(null);
+                if (session == null) return false;
+                sWindowSession = session;
             }
-            return false;
+
+            Method push = sMethodUpdateDisplayContentLocation;
+            if (push == null) {
+                for (Method m : session.getClass().getMethods()) {
+                    if (!"updateDisplayContentLocation".equals(m.getName())) continue;
+                    Class<?>[] p = m.getParameterTypes();
+                    if (p.length != 4) continue;
+                    if (!p[0].isInstance(window)) continue;
+                    m.setAccessible(true);
+                    push = m;
+                    break;
+                }
+                if (push == null) { sSessionLookupFailed = true; return false; }
+                sMethodUpdateDisplayContentLocation = push;
+            }
+
+            push.invoke(session, window, x, y, displayId);
+            return true;
         } catch (Throwable t) {
             return false;
         }
@@ -438,10 +582,19 @@ public class WindowHostActivityView {
         default void onTaskCreated(int taskId) {}
     }
 
+    /**
+     * Wires up readiness reporting for an ActivityView.
+     *
+     * ActivityView$StateCallback is an abstract CLASS, not an interface, so it cannot be
+     * implemented with java.lang.reflect.Proxy and cannot be instantiated either. On this ROM the
+     * setCallback() path therefore never worked and every ActivityView silently fell back to
+     * polling -- which also means onTaskCreated() never arrived and the taskId stayed at -1.
+     * The Proxy branch is kept for ROMs that declare the callback as an interface; everything else
+     * uses startReadinessWatch(), which is event-driven rather than timed.
+     */
     static void trySetCallback(Object av, Callback cb) {
         if (sStateCb == null) {
-            // No StateCallback class at all -> polling is the only option.
-            startReadinessPolling(av, cb);
+            startReadinessWatch(av, cb);
             return;
         }
 
@@ -467,87 +620,93 @@ public class WindowHostActivityView {
             }
 
             if (impl == null) {
-                startReadinessPolling(av, cb);
+                startReadinessWatch(av, cb);
                 return;
             }
 
             setCb.invoke(av, impl);
         } catch (Throwable t) {
-            Log.i(TAG, "ActivityView.setCallback failed/absent, using polling fallback", t);
-            startReadinessPolling(av, cb);
+            Log.i(TAG, "ActivityView.setCallback failed/absent, using surface watch", t);
+            startReadinessWatch(av, cb);
         }
     }
 
-    /** Surface-valid + VirtualDisplay-present polling, used when setCallback() cannot be wired. */
-    private static void startReadinessPolling(Object av, Callback cb) {
-        {
-            final int MAX_MS = 5000;       // total max wait
-            final int POLL_MS = 25;       // poll step
-            final int STABLE_MS = 160;    // require continuous stable window
-            final Handler h = new Handler(Looper.getMainLooper());
-            final long start = SystemClock.uptimeMillis();
-            final View avView = asView(av);
+    /**
+     * Reports readiness the moment the ActivityView's surface exists and its VirtualDisplay has
+     * been created.
+     *
+     * ActivityView creates the VirtualDisplay synchronously inside its own surfaceCreated(), and
+     * this callback is registered after it, so by the time we are called the display is already
+     * there -- no stability window is needed. The previous version polled every 25 ms and demanded
+     * 160 ms of continuous stability, which added a quarter of a second per pane before the app
+     * was even asked to start, and more than that whenever the main thread was busy.
+     *
+     * The timed loop is kept only as a backstop for the case where the surface already existed
+     * before we registered, or a ROM does not deliver surfaceCreated() to late callbacks.
+     */
+    private static void startReadinessWatch(final Object av, final Callback cb) {
+        final int MAX_MS = 5000;
+        final int BACKSTOP_POLL_MS = 50;
 
-            final SurfaceView sv = findSurfaceView(avView);
-            final SurfaceHolder.Callback2 holderCb = new SurfaceHolder.Callback2() {
-                @Override public void surfaceCreated(SurfaceHolder holder) { }
-                @Override public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) { }
-                @Override public void surfaceDestroyed(SurfaceHolder holder) {
-                    try { cb.onDestroyed(); } catch (Throwable ignore) {}
-                }
-                @Override public void surfaceRedrawNeeded(SurfaceHolder holder) { }
-            };
-            if (sv != null) {
-                try { sv.getHolder().addCallback(holderCb); } catch (Throwable ignore) {}
+        final Handler h = new Handler(Looper.getMainLooper());
+        final long start = SystemClock.uptimeMillis();
+        final View avView = asView(av);
+        final AtomicBoolean readyFired = new AtomicBoolean(false);
+
+        final Runnable signalIfReady = new Runnable() {
+            @Override public void run() {
+                if (readyFired.get()) return;
+                if (!isSurfaceBackedAndDisplayed(avView, av)) return;
+                if (!readyFired.compareAndSet(false, true)) return;
+                try { cb.onReady(); } catch (Throwable ignore) {}
             }
+        };
 
-            final long[] lastGoodStart = new long[]{ -1L };
-
-            final Runnable poll = new Runnable() {
-                @Override public void run() {
-                    long now = SystemClock.uptimeMillis();
-                    long elapsed = now - start;
-                    boolean ok = false;
-                    SurfaceView s = null;
-                    try {
-                        s = findSurfaceView(avView);
-                        if (s != null) {
-                            try {
-                                SurfaceHolder holder = s.getHolder();
-                                if (holder != null) {
-                                    android.view.Surface surface = holder.getSurface();
-                                    if (surface != null && surface.isValid()) ok = true;
-                                }
-                            } catch (Throwable ignore) { ok = false; }
-                        }
-                        if (ok && getVirtualDisplayId(av) < 0) ok = false;
-                    } catch (Throwable ignore) { ok = false; }
-
-                    if (ok) {
-                        if (lastGoodStart[0] < 0) lastGoodStart[0] = now;
-                        if (now - lastGoodStart[0] >= STABLE_MS) {
-                            try { if (s != null) s.getHolder().removeCallback(holderCb); } catch (Throwable ignore) {}
-                            try { cb.onReady(); } catch (Throwable ignore) {}
-                            return;
-                        }
-                    } else {
-                        lastGoodStart[0] = -1L;
+        SurfaceView sv = findSurfaceView(avView);
+        if (sv != null) {
+            try {
+                sv.getHolder().addCallback(new SurfaceHolder.Callback2() {
+                    @Override public void surfaceCreated(SurfaceHolder holder) {
+                        signalIfReady.run();
                     }
-
-                    if (elapsed < MAX_MS) {
-                        h.postDelayed(this, POLL_MS);
-                    } else {
-                        Log.w(TAG, "readiness polling timed out after " + elapsed
-                                + "ms (surfaceValid=" + ok
-                                + ", displayId=" + getVirtualDisplayId(av) + ")");
-                        try {
-                            SurfaceView s2 = findSurfaceView(avView);
-                            if (s2 != null) s2.getHolder().removeCallback(holderCb);
-                        } catch (Throwable ignore) {}
+                    @Override public void surfaceChanged(SurfaceHolder holder, int f, int w, int hh) {
+                        signalIfReady.run();
                     }
+                    @Override public void surfaceDestroyed(SurfaceHolder holder) {
+                        readyFired.set(false);
+                        try { cb.onDestroyed(); } catch (Throwable ignore) {}
+                    }
+                    @Override public void surfaceRedrawNeeded(SurfaceHolder holder) { }
+                });
+            } catch (Throwable ignore) {}
+        }
+
+        final Runnable backstop = new Runnable() {
+            @Override public void run() {
+                if (readyFired.get()) return;
+                signalIfReady.run();
+                if (readyFired.get()) return;
+                if (SystemClock.uptimeMillis() - start < MAX_MS) {
+                    h.postDelayed(this, BACKSTOP_POLL_MS);
+                } else {
+                    Log.w(TAG, "readiness watch timed out (displayId=" + getVirtualDisplayId(av) + ")");
                 }
-            };
-            h.post(poll);
+            }
+        };
+        h.post(backstop);
+    }
+
+    private static boolean isSurfaceBackedAndDisplayed(View avView, Object av) {
+        try {
+            if (getVirtualDisplayId(av) < 0) return false;
+            SurfaceView s = findSurfaceView(avView);
+            if (s == null) return false;
+            SurfaceHolder holder = s.getHolder();
+            if (holder == null) return false;
+            android.view.Surface surface = holder.getSurface();
+            return surface != null && surface.isValid();
+        } catch (Throwable ignore) {
+            return false;
         }
     }
 
@@ -641,18 +800,59 @@ public class WindowHostActivityView {
     // 5. Activity launching
     // =====================================================================================
 
-    static Intent getLaunchIntentForPackage(Context ctx, String pkg) {
+    /**
+     * Resolves the launch intents for the given packages off the main thread.
+     * Call before the panes are built so the launch path does no PackageManager work at all.
+     */
+    static void prewarmLaunchIntents(final Context ctx, final Collection<String> packages) {
+        if (ctx == null || packages == null || packages.isEmpty()) return;
+        final Context app = ctx.getApplicationContext();
+        final java.util.ArrayList<String> todo = new java.util.ArrayList<>();
+        for (String pkg : packages) {
+            if (pkg == null || pkg.isEmpty()) continue;
+            if (sLaunchIntents.containsKey(pkg) || sLaunchIntentMisses.contains(pkg)) continue;
+            todo.add(pkg);
+        }
+        if (todo.isEmpty()) return;
+        PREWARM_EXEC.execute(() -> {
+            for (String pkg : todo) resolveLaunchTemplate(app, pkg);
+        });
+    }
+
+    /** Cached, unflagged launch intent template for a package. */
+    private static Intent resolveLaunchTemplate(Context ctx, String pkg) {
+        if (pkg == null || pkg.isEmpty()) return null;
+        Intent cached = sLaunchIntents.get(pkg);
+        if (cached != null) return cached;
+        if (sLaunchIntentMisses.contains(pkg)) return null;
         try {
             PackageManager pm = ctx.getPackageManager();
             Intent i = pm.getLaunchIntentForPackage(pkg);
-            if (i == null) return null;
-            applyStatePreservingFlags(i);
-            i.addFlags(Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS);
+            if (i == null) { sLaunchIntentMisses.add(pkg); return null; }
+            sLaunchIntents.put(pkg, i);
             return i;
         } catch (Throwable t) {
             Log.w(TAG, "getLaunchIntentForPackage failed for " + pkg, t);
+            sLaunchIntentMisses.add(pkg);
             return null;
         }
+    }
+
+    /** Drops every cached launch artefact for a package (update / uninstall / start failure). */
+    static void invalidateLaunchCache(String pkg) {
+        if (pkg == null) return;
+        sLaunchIntents.remove(pkg);
+        sLaunchIntentMisses.remove(pkg);
+        sPendingIntents.remove(pkg);
+    }
+
+    static Intent getLaunchIntentForPackage(Context ctx, String pkg) {
+        Intent template = resolveLaunchTemplate(ctx, pkg);
+        if (template == null) return null;
+        Intent i = new Intent(template);
+        applyStatePreservingFlags(i);
+        i.addFlags(Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS);
+        return i;
     }
 
     private static void applyStatePreservingFlags(Intent i) {
@@ -666,28 +866,32 @@ public class WindowHostActivityView {
         i.addFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
     }
 
+    /**
+     * The template lookup is cached, so this no longer repeats the PackageManager query that
+     * startActivitySmartWithProcessCheck() has already made for the same package.
+     */
     private static Intent createCompatibleIntent(Context ctx, Intent original) {
-        Intent intent;
+        Intent intent = null;
         if (original.getComponent() != null) {
-            String pkg = original.getComponent().getPackageName();
-            intent = ctx.getPackageManager().getLaunchIntentForPackage(pkg);
-            if (intent == null) {
-                intent = new Intent(original);
-            } else if (original.getExtras() != null) {
-                intent.putExtras(original.getExtras());
+            Intent template = resolveLaunchTemplate(ctx, original.getComponent().getPackageName());
+            if (template != null) {
+                intent = new Intent(template);
+                if (original.getExtras() != null) intent.putExtras(original.getExtras());
             }
-        } else {
-            intent = new Intent(original);
         }
+        if (intent == null) intent = new Intent(original);
         applyStatePreservingFlags(intent);
         return intent;
     }
 
     static boolean startActivitySmart(Object av, Context ctx, Intent intent, Object opts) {
         Intent compatIntent = createCompatibleIntent(ctx, intent);
+        final String targetPkg = compatIntent.getComponent() != null
+                ? compatIntent.getComponent().getPackageName()
+                : compatIntent.getPackage();
 
         PendingIntent pi = null;
-        try { pi = buildPendingIntent(ctx, compatIntent); } catch (Throwable ignore) {}
+        try { pi = obtainPendingIntent(ctx, targetPkg, compatIntent); } catch (Throwable ignore) {}
 
         Object bundle = null;
         if (opts instanceof ActivityOptions) {
@@ -736,6 +940,9 @@ public class WindowHostActivityView {
         }
         Log.e(TAG, "startActivity failed for intent=" + compatIntent + " opts=" + (opts != null)
                 + (lastException != null ? " lastError=" + lastException.getMessage() : ""));
+        // A stale template or a cancelled PendingIntent would fail every attempt above; drop both
+        // so the retry path resolves them again.
+        invalidateLaunchCache(targetPkg);
         return false;
     }
 
@@ -771,6 +978,19 @@ public class WindowHostActivityView {
         Class<?>[] p = m.getParameterTypes();
         for (int i = 0; i < p.length; i++) { if (i > 0) sb.append(','); sb.append(p[i].getSimpleName()); }
         return sb.append(')').toString();
+    }
+
+    /**
+     * PendingIntent.getActivity() is a binder call to ActivityManager, and the intent we build for
+     * a given package is byte-for-byte the same on every launch, so it is resolved once.
+     */
+    private static PendingIntent obtainPendingIntent(Context ctx, String pkg, Intent intent) {
+        if (pkg == null || pkg.isEmpty()) return buildPendingIntent(ctx, intent);
+        PendingIntent cached = sPendingIntents.get(pkg);
+        if (cached != null) return cached;
+        PendingIntent pi = buildPendingIntent(ctx, intent);
+        if (pi != null) sPendingIntents.put(pkg, pi);
+        return pi;
     }
 
     private static PendingIntent buildPendingIntent(Context ctx, Intent intent) {

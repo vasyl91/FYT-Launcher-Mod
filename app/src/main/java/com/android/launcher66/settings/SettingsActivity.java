@@ -335,8 +335,12 @@ public class SettingsActivity extends AppCompatActivity {
                 editor.putString("longitude", String.valueOf(longt));
                 editor.apply();
             } else {
-                lat = Double.parseDouble(mPrefs.getString("latiude", "52.408165"));
-                longt = Double.parseDouble(mPrefs.getString("longitude", "16.932490"));
+                String latStr = mPrefs.getString("latiude", null);
+                String lngStr = mPrefs.getString("longitude", null);
+                if (latStr != null && lngStr != null) {
+                    lat = Double.parseDouble(latStr);
+                    longt = Double.parseDouble(lngStr);   
+                } else return;
             }
             String urlString = "https://api.sunrise-sunset.org/json?lat=" + lat + "&lng=" + longt + 
                 "&date=today" + "&tzid=" + String.valueOf(ZoneId.systemDefault());

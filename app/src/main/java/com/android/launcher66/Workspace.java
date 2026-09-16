@@ -41,6 +41,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -336,6 +337,44 @@ public class Workspace extends SmoothPagedView
     private TextView dateText;
     private TextView weekText;
     private int orientation;
+
+    /**
+     * Bar text fitting.
+     *
+     * The bar TextViews are declared with textSize="0sp" in XML, so they are visible ONLY after
+     * adjustTextSize() has measured them. That used to happen exactly once, in a single post():
+     * when the page was rebuilt while the window was stopped or still resizing after a wake,
+     * the parent measured 0 (or a few px), the text stayed at 0sp (or ~1sp with a tiny
+     * maxHeight), and nothing ever measured it again - only a full reload from the settings did.
+     *
+     * Each fitted TextView now keeps a layout listener on its parent and is refitted whenever
+     * the parent gets a real size, a minimum size is enforced, and transient layouts are skipped.
+     */
+    private static final float BAR_TEXT_MIN_SP = 8f;
+    private static final float BAR_TEXT_MAX_SP = 300f;
+    /** A parent lower than this fraction of the bar height is a transient layout - do not fit from it. */
+    private static final float BAR_TEXT_MIN_PARENT_FRACTION = 0.25f;
+    /** Safety net against a layout feedback loop: at most this many refits per window. */
+    private static final int BAR_TEXT_MAX_REFITS_PER_WINDOW = 8;
+    private static final long BAR_TEXT_REFIT_WINDOW_MS = 2000L;
+
+    private static final class BarTextFit {
+        final View parent;
+        final float targetSize;
+        View.OnLayoutChangeListener listener;
+        /** Parent height the current text size was computed from; -1 = not fitted yet. */
+        int fittedParentHeight = -1;
+        long refitWindowStartMs = 0L;
+        int refitsInWindow = 0;
+        boolean refitLimitLogged = false;
+
+        BarTextFit(View parent, float targetSize) {
+            this.parent = parent;
+            this.targetSize = targetSize;
+        }
+    }
+
+    private final Map<TextView, BarTextFit> mBarTextFits = new HashMap<>();
 
     private final Runnable mBindPages = new Runnable() {
         @Override
@@ -1015,71 +1054,250 @@ public class Workspace extends SmoothPagedView
         }
     }
 
-    private void adjustTextSize(View view, float targetSize) {
-        view.post(() -> {
-            if (!(view instanceof TextView textView)) return;
+    /**
+     * Fits a bar TextView to its parent.
+     *
+     * Unlike the old single-shot version this keeps working after the first call: a layout
+     * listener on the parent refits the text as soon as the parent gets a real size (for
+     * example when the window finishes laying out after a wake), so a measurement taken from
+     * a stopped or half-resized window can no longer leave the text at 0sp for good.
+     */
+    private void adjustTextSize(TextView textView, float targetSize) {
+        if (textView == null || !(textView.getParent() instanceof View)) {
+            return;
+        }
 
-            View parent = (View) textView.getParent();
-            if (parent == null) return;
-
-            int parentHeight = parent.getHeight();
-            if (parentHeight <= 0) return;
-
-            // Count TextViews in parent
-            int textViewCount = 0;
-            if (parent instanceof ViewGroup vg) {
-                for (int i = 0; i < vg.getChildCount(); i++) {
-                    if (vg.getChildAt(i) instanceof TextView) {
-                        textViewCount++;
-                    }
-                }
+        BarTextFit fit = mBarTextFits.get(textView);
+        if (fit == null || fit.parent != textView.getParent()) {
+            if (fit != null && fit.listener != null) {
+                fit.parent.removeOnLayoutChangeListener(fit.listener);
             }
-            if (textViewCount == 0) return;
-
-            // Real height constraint per TextView (in px)
-            int targetHeight = (int) (((float) parentHeight / textViewCount) * targetSize);
-
-            // Reserve space for TextView paddings so our measurement is the true text area
-            int verticalPadding = textView.getCompoundPaddingTop() + textView.getCompoundPaddingBottom();
-            int availableHeightForText = Math.max(0, targetHeight - verticalPadding);
-
-            textView.setMaxHeight(targetHeight);
-
-            float minSize = 1f;
-            float maxSize = 300f;
-            float bestSize = minSize;
-
-            TextPaint paint = new TextPaint(textView.getPaint());
-
-            // Use textView's resources for display metrics (safer than getResources())
-            DisplayMetrics dm = textView.getResources().getDisplayMetrics();
-
-            while (maxSize - minSize > 0.5f) {
-                float testSize = (minSize + maxSize) / 2f;
-                paint.setTextSize(
-                    TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_SP,
-                        testSize,
-                        dm
-                    )
-                );
-
-                Paint.FontMetrics fm = paint.getFontMetrics();
-                // Use full font bounds (bottom - top) to include descenders/extra glyph bounds
-                float textHeight = fm.bottom - fm.top;
-
-                if (textHeight <= availableHeightForText) {
-                    bestSize = testSize;
-                    minSize = testSize;
-                } else {
-                    maxSize = testSize;
+            final BarTextFit created = new BarTextFit((View) textView.getParent(), targetSize);
+            created.listener = (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                if (mBarTextFits.get(textView) != created) {
+                    return;
                 }
-            }
+                if (shouldRefitBarText(created, bottom - top)) {
+                    textView.post(() -> fitBarText(textView, created));
+                }
+            };
+            created.parent.addOnLayoutChangeListener(created.listener);
+            mBarTextFits.put(textView, created);
+            fit = created;
+        }
 
-            // Make sure TextView reserves font padding for descent/ascents
-            textView.setIncludeFontPadding(true);
+        final BarTextFit target = fit;
+        textView.post(() -> fitBarText(textView, target));
+    }
+
+    /**
+     * Decides whether a parent layout change should trigger a refit.
+     *
+     * Growth always does (that is the recovery after a transient layout). Shrinking only does
+     * when the parent height does not depend on its content - otherwise our own smaller text
+     * could shrink the parent and start a feedback loop. A rate limit is the last safety net.
+     */
+    private boolean shouldRefitBarText(BarTextFit fit, int newParentHeight) {
+        if (newParentHeight <= 0) {
+            return false;
+        }
+        boolean needed;
+        if (fit.fittedParentHeight < 0) {
+            needed = true;
+        } else if (newParentHeight > fit.fittedParentHeight + 2) {
+            needed = true;
+        } else if (newParentHeight < fit.fittedParentHeight - 2) {
+            ViewGroup.LayoutParams lp = fit.parent.getLayoutParams();
+            needed = lp == null || lp.height != ViewGroup.LayoutParams.WRAP_CONTENT;
+        } else {
+            needed = false;
+        }
+        if (!needed) {
+            return false;
+        }
+
+        long now = SystemClock.uptimeMillis();
+        if (now - fit.refitWindowStartMs > BAR_TEXT_REFIT_WINDOW_MS) {
+            fit.refitWindowStartMs = now;
+            fit.refitsInWindow = 0;
+            fit.refitLimitLogged = false;
+        }
+        if (fit.refitsInWindow >= BAR_TEXT_MAX_REFITS_PER_WINDOW) {
+            if (!fit.refitLimitLogged) {   // once per window, not on every blocked layout
+                fit.refitLimitLogged = true;
+                Log.w(TAG, "Bar text refit limit reached (" + BAR_TEXT_MAX_REFITS_PER_WINDOW + " in "
+                        + BAR_TEXT_REFIT_WINDOW_MS + " ms), pausing refits");
+            }
+            return false;
+        }
+        fit.refitsInWindow++;
+        return true;
+    }
+
+    private void fitBarText(TextView textView, BarTextFit fit) {
+        if (textView == null || fit == null || mBarTextFits.get(textView) != fit) {
+            return; // references were cleared or replaced in the meantime
+        }
+        if (!(fit.parent instanceof ViewGroup) || !fit.parent.isLaidOut()) {
+            return; // the parent layout listener calls us again once it is laid out
+        }
+
+        ViewGroup parent = (ViewGroup) fit.parent;
+        int parentHeight = parent.getHeight();
+        if (parentHeight <= 0) {
+            return;
+        }
+
+        int expectedBarHeight = getExpectedBottomBarHeight();
+        if (expectedBarHeight > 0 && parentHeight < expectedBarHeight * BAR_TEXT_MIN_PARENT_FRACTION) {
+            Log.w(TAG, "Bar text fit skipped: parent " + parentHeight + "px, bar " + expectedBarHeight
+                    + "px - transient layout, waiting for a real one");
+            return;
+        }
+
+        // Count TextViews in parent
+        int textViewCount = 0;
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            if (parent.getChildAt(i) instanceof TextView) {
+                textViewCount++;
+            }
+        }
+        if (textViewCount == 0) {
+            return;
+        }
+
+        // Real height constraint per TextView (in px)
+        int targetHeight = (int) (((float) parentHeight / textViewCount) * fit.targetSize);
+
+        // Reserve space for TextView paddings so our measurement is the true text area
+        int verticalPadding = textView.getCompoundPaddingTop() + textView.getCompoundPaddingBottom();
+        int availableHeightForText = Math.max(0, targetHeight - verticalPadding);
+
+        // Use textView's resources for display metrics (safer than getResources())
+        DisplayMetrics dm = textView.getResources().getDisplayMetrics();
+        TextPaint paint = new TextPaint(textView.getPaint());
+
+        // The lower bound doubles as a floor: the text can never end up invisible again.
+        float minSize = BAR_TEXT_MIN_SP;
+        float maxSize = BAR_TEXT_MAX_SP;
+        float bestSize = BAR_TEXT_MIN_SP;
+        while (maxSize - minSize > 0.5f) {
+            float testSize = (minSize + maxSize) / 2f;
+            paint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, testSize, dm));
+
+            Paint.FontMetrics fm = paint.getFontMetrics();
+            // Use full font bounds (bottom - top) to include descenders/extra glyph bounds
+            float textHeight = fm.bottom - fm.top;
+
+            if (textHeight <= availableHeightForText) {
+                bestSize = testSize;
+                minSize = testSize;
+            } else {
+                maxSize = testSize;
+            }
+        }
+
+        float bestPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, bestSize, dm);
+        paint.setTextSize(bestPx);
+        Paint.FontMetrics bestMetrics = paint.getFontMetrics();
+        int neededHeight = (int) Math.ceil(bestMetrics.bottom - bestMetrics.top) + verticalPadding;
+
+        // Make sure TextView reserves font padding for descent/ascents
+        textView.setIncludeFontPadding(true);
+        // Never clamp below what the chosen size needs - a tiny maxHeight hid the text as well.
+        textView.setMaxHeight(Math.max(targetHeight, neededHeight));
+        if (Math.abs(textView.getTextSize() - bestPx) > 0.5f) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, bestSize);
-        });
+        }
+        fit.fittedParentHeight = parentHeight;
+    }
+
+    /** Same bar height formula as hideNormalBottomBar() / showOverlayBottomBar(). */
+    private int getExpectedBottomBarHeight() {
+        int screenWidth = Launcher.screenWidth;
+        int screenHeight = Launcher.screenHeight;
+        if (screenWidth <= 0 || screenHeight <= 0) {
+            return 0;
+        }
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            return (int) (screenWidth * 0.142);
+        }
+        return (int) ((screenHeight - (mLauncher != null ? mLauncher.getStatusBarHeight() : 0)) * 0.1638);
+    }
+
+    private void clearBarTextFits() {
+        for (BarTextFit fit : mBarTextFits.values()) {
+            if (fit.listener != null) {
+                fit.parent.removeOnLayoutChangeListener(fit.listener);
+            }
+        }
+        mBarTextFits.clear();
+    }
+
+    /**
+     * Checks the fitted bar texts and refits any that are unfitted or whose parent size has
+     * changed since. Cheap - nothing is measured for texts that are already correct - so it is
+     * safe to call on every return to the home screen.
+     */
+    public void verifyWidgetBarText(String source) {
+        if (mBarTextFits.isEmpty()) {
+            return;
+        }
+        int scheduled = 0;
+        for (Map.Entry<TextView, BarTextFit> entry : mBarTextFits.entrySet()) {
+            final TextView textView = entry.getKey();
+            final BarTextFit fit = entry.getValue();
+            int parentHeight = fit.parent.getHeight();
+            if (fit.fittedParentHeight < 0 || Math.abs(parentHeight - fit.fittedParentHeight) > 2) {
+                fit.fittedParentHeight = -1;
+                textView.post(() -> fitBarText(textView, fit));
+                scheduled++;
+            }
+        }
+        if (scheduled > 0) {
+            Log.d(TAG, "Bar text verification (" + source + "): refitting " + scheduled + " view(s)");
+        }
+    }
+
+    /**
+     * Wake repair for the widget bar: rebinds the Launcher's references to the views that are
+     * actually on screen, forces a fresh text fit and pushes the current music and weather data.
+     */
+    public void refreshWidgetBarAfterWake(String source) {
+        if (mLauncher == null || workspaceView == null) {
+            return;
+        }
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        }
+        if (!widgetBar
+                || !mPrefs.getBoolean(Keys.USER_LAYOUT, false)
+                || !mPrefs.getBoolean(Keys.WIDGET_BAR, false)) {
+            return;
+        }
+        // With auto-hide the texts live in the overlay window; setupOverlayWidgetBar() owns them.
+        if (isOverlayShowing || mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
+            return;
+        }
+
+        View musicWidget = workspaceView.findViewById(R.id.rl_music_two);
+        View weatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
+        if (musicWidget != null) {
+            mBarMusicWidget = musicWidget;
+        }
+        if (weatherWidget != null) {
+            mBarWeatherWidget = weatherWidget;
+        }
+
+        for (BarTextFit fit : mBarTextFits.values()) {
+            fit.fittedParentHeight = -1;   // force a full refit
+            fit.refitsInWindow = 0;
+            fit.refitLimitLogged = false;
+        }
+        setWidgetBarTextView(workspaceView);
+
+        mLauncher.rebindBarWidgetsAfterWake(musicWidget, weatherWidget);
+        Log.d(TAG, "Widget bar refreshed after wake: " + source);
     }
 
     private static int getResId(String resName) {
@@ -1942,6 +2160,9 @@ public class Workspace extends SmoothPagedView
     }
 
     public void clearWidgetReferences() {
+        // Layout listeners hold the bar TextViews - drop them together with the references.
+        clearBarTextFits();
+
         // Clear instance references
         mBarMusicWidget = null;
         mBarWeatherWidget = null; 
@@ -2605,7 +2826,32 @@ public class Workspace extends SmoothPagedView
         return super.onInterceptTouchEvent(ev);
     }
 
+    /**
+     * Re-inflates every widget after an orientation change.
+     *
+     * Upstream guards each view with LauncherAppWidgetHostView.isReinflateRequired(), which only
+     * answers true when the orientation differs from the one the view was inflated in. That guard
+     * is missing here, so this ran in full on EVERY onResume: removeAppWidget() + removeView() +
+     * bindAppWidget() for all eight widgets, 150-450 ms of main thread each, landing right before
+     * the PiP panes are built. It is also what emptied the host-view cache between resumes.
+     *
+     * A head unit does not rotate, so with the orientation check this becomes a no-op.
+     */
+    private int mLastReinflateOrientation = android.content.res.Configuration.ORIENTATION_UNDEFINED;
+
     protected void reinflateWidgetsIfNecessary() {
+        final int orientation = getResources().getConfiguration().orientation;
+        if (mLastReinflateOrientation == android.content.res.Configuration.ORIENTATION_UNDEFINED) {
+            // First call after construction: the widgets were just inflated in this orientation.
+            mLastReinflateOrientation = orientation;
+            return;
+        }
+        if (orientation == mLastReinflateOrientation) {
+            return;
+        }
+        Log.i(TAG, "reinflateWidgetsIfNecessary: orientation changed, re-inflating widgets");
+        mLastReinflateOrientation = orientation;
+
         final int clCount = getChildCount();
         for (int i = 0; i < clCount; i++) {
             CellLayout cl = (CellLayout) getChildAt(i);
@@ -4128,7 +4374,8 @@ public class Workspace extends SmoothPagedView
         }
         mDragInfo = cellInfo;
         child.setVisibility(INVISIBLE);
-        CellLayout layout = (CellLayout) child.getParent().getParent();
+        CellLayout layout = cellLayoutOf(child);
+        if (layout == null) return;
         layout.prepareChildForDrag(child);
         child.clearFocus();
         child.setPressed(false);
@@ -4521,6 +4768,20 @@ public class Workspace extends SmoothPagedView
         return false;
     }
 
+    /**
+     * The CellLayout that owns a child, or null when the child has been detached.
+     *
+     * A drag can outlive its page: stripEmptyScreens() or a rebind during the gesture detaches the
+     * view, and the drop then dereferences a null parent.
+     */
+    private static CellLayout cellLayoutOf(View child) {
+        if (child == null) return null;
+        ViewParent p = child.getParent();
+        if (p == null) return null;
+        ViewParent gp = p.getParent();
+        return (gp instanceof CellLayout) ? (CellLayout) gp : null;
+    }
+
     public void onDrop(final DragObject d) {      
         Log.i(TAG, "Screen order onDrop(): " + mScreenOrder);
         mDragViewVisualCenter = getDragViewVisualCenter(d.x, d.y, d.xOffset, d.yOffset, d.dragView,
@@ -4694,12 +4955,20 @@ public class Workspace extends SmoothPagedView
                     CellLayout.LayoutParams lp = (CellLayout.LayoutParams) cell.getLayoutParams();
                     mTargetCell[0] = lp.cellX;
                     mTargetCell[1] = lp.cellY;
-                    CellLayout layout = (CellLayout) cell.getParent().getParent();
-                    layout.markCellsAsOccupiedForView(cell);
+                    CellLayout layout = cellLayoutOf(cell);
+                    if (layout != null) layout.markCellsAsOccupiedForView(cell);
                 }
             }
 
-            final CellLayout parent = (CellLayout) cell.getParent().getParent();
+            final CellLayout parent = cellLayoutOf(cell);
+            if (parent == null) {
+                // Detached mid-gesture: there is nothing left to animate into place, and reading
+                // through a null parent is what threw in onDrop().
+                Log.w(TAG, "onDrop(): dropped view is no longer attached, skipping animation");
+                if (d != null && d.dragView != null) d.deferDragViewCleanupPostAnimation = false;
+                mDragInfo = null;
+                return;
+            }
             final Runnable finalResizeRunnable = resizeRunnable;
             // Prepare it to be animated into its new position
             // This must be called after the view has been re-parented

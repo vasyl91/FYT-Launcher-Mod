@@ -61,6 +61,23 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
      * Total budget here is ~13 s, which comfortably covers a slow cold resume.
      */
     private static final long[] PIP_ENSURE_DELAYS_MS = { 2500L, 1500L, 2000L, 3000L, 4000L };
+    /**
+     * Cheap re-checks while the launcher is in no state to open PiP.
+     *
+     * After a long sleep the launcher may still be starting, or get pushed straight back to onStop
+     * by whatever the ROM brings up on wake. openPip() then returns without doing anything -- it
+     * never even reaches its own log line -- so every one of the five attempts above was spent on a
+     * launcher that could not act on them. In one capture all five burned between 15.1 s and 25.7 s,
+     * "gave up after 5 attempts" followed, and the panes only came back at 32.6 s when
+     * onWorkspaceShown() happened to fire. Those 21 seconds are exactly the window in which another
+     * app can end up fullscreen with nothing to put it back into a pane.
+     */
+    private static final int MAX_PIP_ENSURE_LAUNCHER_WAITS = 20;
+    private static final long PIP_ENSURE_LAUNCHER_WAIT_MS = 700L;
+    private int pipEnsureLauncherWaits = 0;
+    /** Same idea for a rebuild that is under way; bounded so a dead rebuild cannot stall us. */
+    private static final int MAX_PIP_ENSURE_REBUILD_WAITS = 12;
+    private int pipEnsureRebuildWaits = 0;
 
     /**
      * Bumped whenever a new wake starts an ensure loop, or the screen goes off. Any attempt from
@@ -71,6 +88,16 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
 
     /** At most one repair pass per wake -- a repair loop would be worse than the symptom. */
     private boolean repairUsed = false;
+
+    /**
+     * Bumped on every handled wake and on every sleep. Delayed widget bar work checks it, so
+     * nothing queued by one wake runs after the device has gone back to sleep. Kept separate
+     * from pipEnsureGeneration, which restartPip() bumps again within the same wake.
+     */
+    private int wakeGeneration = 0;
+    private static final long WIDGET_BAR_WAKE_FIRST_MS = 2000L;
+    /** A long sleep ends in a cold PiP reset, and the layout settles well after the first pass. */
+    private static final long WIDGET_BAR_WAKE_SECOND_MS = 6000L;
 
     @Override
     public void onCreate() {
@@ -131,7 +158,12 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
             Helpers helpers = new Helpers();
             if (val.contains("true")) {
                 helpers.setDisplayStateBoolean(true);
-                long now = SystemClock.uptimeMillis();
+                // elapsedRealtime, not uptimeMillis: the latter stops while the SoC is suspended,
+                // so after a real sleep "now" was still within DISPLAY_ON_DEBOUNCE_MS of the
+                // previous wake and this returned before doing anything at all -- no cold reset, no
+                // PiP ensure, and no "Device awakened from sleep" in the log, because the logcat
+                // capture is started further down in this same block.
+                long now = SystemClock.elapsedRealtime();
                 if (lastDisplayOnHandledMs > 0L
                         && now - lastDisplayOnHandledMs < DISPLAY_ON_DEBOUNCE_MS) {
                     Log.i(TAG, "Ignoring duplicate display-on event after " + (now - lastDisplayOnHandledMs) + " ms");
@@ -145,7 +177,15 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 }
                 lastDisplayOnHandledMs = now;
                 repairUsed = false;
+                final int wakeGen = ++wakeGeneration;
                 Log.e(TAG, "Device awakened from sleep");
+
+                // The panes from before the suspend are still in the view hierarchy and report
+                // themselves as visible, but their VirtualDisplays did not survive. Without this
+                // the debounce sees "same layout, panes on screen" and skips the rebuild entirely,
+                // which is why PiP came back after a short sleep but not after a long one.
+                WindowUtil.invalidateOpenPipDebounce();
+
                 if (mPrefs.getBoolean(Keys.LAUNCHER_HOME, true)) {
                     handler.postDelayed(this::pressHomeButton, 500);
                 }
@@ -159,6 +199,16 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     long currentTime = System.currentTimeMillis();
                     long diff = currentTime - lastSleepTimestamp;
 
+                    // The wall clock is corrected shortly after a wake -- one capture shows it
+                    // stepping back 12 seconds mid-log after a 34 hour sleep -- so this difference
+                    // can come out negative or absurdly large. Treat anything that cannot be a real
+                    // interval as "long sleep", which is the safe side: a cold reset costs a rebuild,
+                    // a missed one leaves stale VirtualDisplays behind.
+                    if (diff < 0) {
+                        Log.w(TAG, "Sleep duration negative (" + diff + " ms), clock stepped; treating as long sleep");
+                        diff = Long.MAX_VALUE;
+                    }
+
                     // 10 minutes = 10 * 60 * 1000 ms
                     if (diff > 10 * 60 * 1000) {
                         Log.e(TAG, "Sleep duration exceeded 10 minutes: " + diff + " ms");
@@ -168,7 +218,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                         final int coldGen = pipEnsureGeneration;
                         WindowUtil.coldResetPipStack(() -> {
                             if (coldGen != pipEnsureGeneration) return;
-                            WindowUtil.openPip(false);
+                            WindowUtil.startMapPip(false);
                             restartPip();
                         });
                         resetPip = true;
@@ -191,12 +241,23 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
 
                 boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
                 if (widgetBar) {
+                    // Called directly, not only through ACTION_WAKE_REFRESH: the launcher's
+                    // receiver is unregistered while it is stopped, so the broadcast can be lost.
                     handler.postDelayed(() -> {
+                        if (wakeGen != wakeGeneration) return;   // device went back to sleep
                         Launcher launcher = Launcher.getLauncher();
                         if (launcher != null) {
                             launcher.updateWeather();
+                            launcher.onDeviceWake("wakeService+" + WIDGET_BAR_WAKE_FIRST_MS);
                         }
-                    }, 2000);
+                    }, WIDGET_BAR_WAKE_FIRST_MS);
+                    handler.postDelayed(() -> {
+                        if (wakeGen != wakeGeneration) return;
+                        Launcher launcher = Launcher.getLauncher();
+                        if (launcher != null) {
+                            launcher.onDeviceWake("wakeService+" + WIDGET_BAR_WAKE_SECOND_MS);
+                        }
+                    }, WIDGET_BAR_WAKE_SECOND_MS);
                 }
             } else if (val.contains("false")) {
                 lastDisplayOnHandledMs = 0L;
@@ -205,6 +266,8 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 // Kill any ensure loop still in flight. Without this a wake followed quickly by a
                 // sleep leaves a queued openPip() that fires with the screen already off.
                 pipEnsureGeneration++;
+                // Same for the delayed widget bar refresh.
+                wakeGeneration++;
 
                 WindowUtil.removePip();
 
@@ -214,8 +277,16 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
 
                 helpers.setDisplayStateBoolean(false);
 
+                // Always, not only when the (cached) check below says NightModeService is running:
+                // the DayNightMode job starts its SunTask without the service.
+                NightModeService.cancelSunTask();
+                // A sunrise/sunset job left pending over the sleep fires late, right after the next
+                // wake, next to the refresh NightModeService does on every wake anyway. That is how an
+                // already correct wallpaper got set a second time (day -> black -> day). The wake
+                // refresh schedules the next job, so nothing is lost by dropping it here.
+                SunTask.cancelScheduledJob(LauncherApplication.sApp);
+
                 if (isServiceRunning(NightModeService.class)) {
-                    NightModeService.cancelSunTask();
                     handler.postDelayed(() -> {
                         Intent nightModeIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
                         LauncherApplication.sApp.stopService(nightModeIntent);  
@@ -223,7 +294,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 }     
             }    
         } 
-    } 
+    }
 
     private boolean isServiceRunning(Class<? extends Service> serviceClass) {
         String serviceName = serviceClass.getName();
@@ -297,18 +368,45 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
      */
     public void restartPip() {
         final int generation = ++pipEnsureGeneration;
+        pipEnsureLauncherWaits = 0;
+        pipEnsureRebuildWaits = 0;
         schedulePipEnsureAttempt(generation, 0);
     }
 
+    /** Whether openPip() would currently be able to do anything at all. */
+    private boolean launcherCanOpenPip() {
+        try {
+            Launcher l = Launcher.getLauncher();
+            return l != null && l.allowPip;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     private void schedulePipEnsureAttempt(final int generation, final int attempt) {
+        schedulePipEnsureAttempt(generation, attempt, -1L);
+    }
+
+    private void schedulePipEnsureAttempt(final int generation, final int attempt, final long delayOverrideMs) {
         if (attempt >= PIP_ENSURE_DELAYS_MS.length) {
             Log.w(TAG, "PiP ensure: gave up after " + attempt + " attempts");
             return;
         }
+        final long delay = delayOverrideMs >= 0 ? delayOverrideMs : PIP_ENSURE_DELAYS_MS[attempt];
 
         handler.postDelayed(() -> {
             if (generation != pipEnsureGeneration) return;   // superseded by a newer wake / sleep
             if (!isPipExpected()) return;
+
+            // Do not spend an attempt on a launcher that cannot act on it.
+            if (!launcherCanOpenPip() && pipEnsureLauncherWaits < MAX_PIP_ENSURE_LAUNCHER_WAITS) {
+                pipEnsureLauncherWaits++;
+                Log.i(TAG, "PiP ensure: launcher not ready to open PiP, waiting ("
+                        + pipEnsureLauncherWaits + "/" + MAX_PIP_ENSURE_LAUNCHER_WAITS
+                        + ", attempt " + attempt + " not consumed)");
+                schedulePipEnsureAttempt(generation, attempt, PIP_ENSURE_LAUNCHER_WAIT_MS);
+                return;
+            }
 
             if (isPipUp()) {
                 // The panes are on screen -- but "on screen" is not the same as "working". A pane
@@ -336,15 +434,32 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 return;
             }
 
+            if (WindowUtil.isPipRebuildInProgress()
+                    && pipEnsureRebuildWaits < MAX_PIP_ENSURE_REBUILD_WAITS) {
+                // openMultiplePips() has not finished, so "not up" means "not finished".
+                // Reopening here would throw away the rebuild that is already running -- but this
+                // must not spend an attempt either, or the loop exhausts itself waiting and there
+                // is nothing left to recover with if that rebuild turns out to be dead.
+                pipEnsureRebuildWaits++;
+                Log.i(TAG, "PiP ensure: rebuild still in flight, re-checking ("
+                        + pipEnsureRebuildWaits + "/" + MAX_PIP_ENSURE_REBUILD_WAITS
+                        + ", attempt " + attempt + " not consumed)");
+                schedulePipEnsureAttempt(generation, attempt, PIP_ENSURE_LAUNCHER_WAIT_MS);
+                return;
+            }
+
             if (Launcher.getLauncher() == null) {
                 Log.i(TAG, "PiP ensure: launcher not available yet (attempt " + attempt + ")");
             } else {
                 Log.i(TAG, "PiP ensure: PiP not up, calling openPip (attempt " + attempt + ")");
-                WindowUtil.openPip(false);
+                // startMapPip() hands this to the worker pool. openPip() itself queries the top
+                // activity and dismisses panes, which must not happen on the main thread while the
+                // panes are being built.
+                WindowUtil.startMapPip(false);
             }
 
             schedulePipEnsureAttempt(generation, attempt + 1);
-        }, PIP_ENSURE_DELAYS_MS[attempt]);
+        }, delay);
     }
 
     /** Is PiP supposed to be on screen at all? */

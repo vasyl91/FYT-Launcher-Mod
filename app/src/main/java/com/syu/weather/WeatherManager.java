@@ -793,14 +793,18 @@ public class WeatherManager {
             if (mPrefs == null) {
                 mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
             }    
-            double lat = Double.parseDouble(mPrefs.getString("latiude", "52.408165"));
-            double longt = Double.parseDouble(mPrefs.getString("longitude", "16.932490"));
-            Log.w(TAG, "No location available, using fallback location to update weather");
-            getWeather(
-                lat, 
-                longt, 
-                tmpCity != null ? tmpCity : cityName
-            );
+            String latStr = mPrefs.getString("latiude", null);
+            String lngStr = mPrefs.getString("longitude", null);
+            if (latStr != null && lngStr != null) {
+                Log.w(TAG, "No location available, using fallback location to update weather");
+                double lat = Double.parseDouble(latStr);
+                double longt = Double.parseDouble(lngStr);
+                getWeather(
+                        lat,
+                        longt,
+                        tmpCity != null ? tmpCity : cityName
+                );
+            }
         }
     }
 
