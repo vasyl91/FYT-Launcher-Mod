@@ -114,6 +114,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.async.AsyncTask;
 import com.android.launcher66.settings.AppListPipDialogFragment;
 import com.android.launcher66.settings.AppListStatsDialogFragment;
+import com.android.launcher66.settings.BottomBarDimensions;
 import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.FabOverlayService;
@@ -2528,6 +2529,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
         if (recycler != null) {
             mRecyclerView = recycler;
+            ensureResizableBottomBar("restore:" + source);
             boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
             if (mAppListAdapter != null && recycler.getAdapter() != mAppListAdapter) {
                 recycler.setAdapter(mAppListAdapter);
@@ -2599,6 +2601,25 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             recyclerView.removeItemDecorationAt(i);
         }
         recyclerView.setTag(null);
+    }
+
+    /**
+     * Makes sure mRecyclerView and the other views of the inline bottom bar carry the dynamic bar
+     * height instead of their XML layout_constraintDimensionRatio / layout_constraintHeight_percent.
+     *
+     * Workspace owns the per-view rules (it inflates the bar and also sizes the auto-hide overlay
+     * from the same height); this only re-applies them whenever the recycler is (re)bound. The
+     * call is idempotent and requests a layout only when a value changed. With
+     * Keys.RESIZABLE_BOTTOM_BAR off it does nothing and the XML stays in charge.
+     */
+    private boolean ensureResizableBottomBar(String source) {
+        if (mWorkspace == null || mPrefs == null || !BottomBarDimensions.isResizable(mPrefs)) {
+            return false;
+        }
+        // When something changed, Workspace also invalidates the recycler's item decorations, and
+        // every caller rebinds or refreshes the recycler right after - no extra
+        // refreshRecyclerDecorationsAfterLayout() (and its listeners) needed here.
+        return mWorkspace.applyResizableBottomBar(source);
     }
 
     private void installBottomRecyclerDecorations(RecyclerView recyclerView) {
@@ -2887,6 +2908,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             orientationDimension = screenHeight;
+            // Only feeds calculatedLeftBarWidth (the collapsed auto-hide button width), not the bar
+            // itself: left as is. The left bar's HEIGHT follows the bar through its XML constraint
+            // (rl_left_bar -> top of iv_list_bg); the bar height is getBottomBarHeight().
             int bottombarHeight = (int) (screenHeight * 0.142f);
             calculatedLeftBarWidth = calculateDimension(orientationDimension - bottombarHeight , 7.1);
             orientedWidth = screenWidth;
@@ -3385,13 +3409,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         isRecreateActive = true;
         boolean currentUserLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         boolean displayPip = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);
+        // Before the PiPs are restarted: a bar that got taller in the settings now covers widgets
+        // and PiPs, and this moves them out of it. Restarting first would re-create the PiP windows
+        // at the old positions and the corrected ones would only appear after the next restart.
+        helpers.checkAndResetIfOverlappingOnScreen(-1);
         if (currentUserLayout && displayPip && !atomicOnCreate.get()
                 && (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator())) {
             Log.i("Recreate page", "user layout");
             WindowUtil.restartMultiplePips();
             WindowUtil.restartPinnedPipApp();
         }
-        helpers.checkAndResetIfOverlappingOnScreen(-1);
 
         if (mPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
             Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
@@ -4486,6 +4513,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
               result = getResources().getDimensionPixelSize(resourceId);
           } 
           return result;
+    }
+
+    /**
+     * Current bottom bar height in px - the same value Workspace uses for the regular bar and the
+     * auto-hide overlay. Shortest-edge rule (portrait: screen width, landscape: screen height minus
+     * the status bar); the user multiplier when Keys.RESIZABLE_BOTTOM_BAR is on, the hardcoded
+     * 0.142 / 0.1638 otherwise. Computed on demand, so a changed preference applies immediately.
+     */
+    public int getBottomBarHeight() {
+        SharedPreferences prefs = mPrefs != null ? mPrefs : PreferenceManager.getDefaultSharedPreferences(this);
+        boolean portrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        int statusBarHeight = portrait ? 0 : getStatusBarHeight();
+        return BottomBarDimensions.computeBarHeight(prefs, portrait, screenWidth, screenHeight, statusBarHeight);
     }
 
     public void pipOverview() {
@@ -6216,6 +6256,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             recyclerView.setItemAnimator(null);
         }
 
+        // Dynamic bar height instead of the XML ratio/percent (no-op unless the feature is on).
+        ensureResizableBottomBar("setupRecyclerView");
+
         installBottomRecyclerDecorations(recyclerView);
 
         Log.d(TAG, "RecyclerView setup complete - Adapter: " + (mAppListAdapter != null) +
@@ -6753,6 +6796,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         // Refresh main recycler view
         mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
+        if (mRecyclerView != null) {
+            // Re-apply the dynamic bar height first so the rebind below sizes the icons against it.
+            // (Workspace skips this if the bar was inflated for another orientation.)
+            ensureResizableBottomBar("configuration");
+        }
         if (mRecyclerView != null && mAppListAdapter != null) {
             mAppListAdapter.notifyDataSetChanged();
         }

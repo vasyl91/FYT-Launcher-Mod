@@ -76,6 +76,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.launcher66.FolderIcon.FolderRingAnimator;
 import com.android.launcher66.Launcher.CustomContentCallbacks;
 import com.android.launcher66.LauncherSettings.Favorites;
+import com.android.launcher66.settings.BottomBarDimensions;
 import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
@@ -930,6 +931,11 @@ public class Workspace extends SmoothPagedView
                 bottomBarBg.setImageResource(getResId(selectedBackground));
             }
 
+            // Resizable bottom bar (no-op when Keys.RESIZABLE_BOTTOM_BAR is off). Has to run before
+            // toggleBottomBar(): hideNormalBottomBar() collapses iv_list_bg, and the XML size of
+            // every bar view must be captured before anything overrides it.
+            applyResizableBottomBar("createUserPage");
+
             autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
             if (autoHideBottomBar) {
                 toggleBottomBar();              
@@ -979,6 +985,9 @@ public class Workspace extends SmoothPagedView
             } else {
                 absoluteLayout = this.findViewById(R.id.user_layout);
             }  
+            // The widgets are positioned inside this box and the bar sits at its bottom edge, so
+            // its size is the coordinate space Helpers has to test overlaps in.
+            publishBarRootSize(absoluteLayout != null ? absoluteLayout : workspaceView);
         }
         int startPage = Integer.parseInt(mPrefs.getString(Keys.START_PAGE, "1"));
         if (getChildCount() >= startPage) {
@@ -1212,17 +1221,161 @@ public class Workspace extends SmoothPagedView
         fit.fittedParentHeight = parentHeight;
     }
 
-    /** Same bar height formula as hideNormalBottomBar() / showOverlayBottomBar(). */
+    /**
+     * Same bar height as hideNormalBottomBar() / showOverlayBottomBar(). Must follow the resizable
+     * height: fitBarText() treats a parent below a quarter of this value as a transient layout and
+     * skips it, so a stale (larger) value would leave the texts of a shrunken bar unfitted.
+     */
     private int getExpectedBottomBarHeight() {
         int screenWidth = Launcher.screenWidth;
         int screenHeight = Launcher.screenHeight;
         if (screenWidth <= 0 || screenHeight <= 0) {
             return 0;
         }
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            return (int) (screenWidth * 0.142);
+        return getBottomBarHeight(screenWidth, screenHeight);
+    }
+
+    /**
+     * Keeps BottomBarDimensions' copy of the bar root's size current, so the overlap checks in
+     * Helpers use the bar that is really on screen instead of deriving it from the screen size
+     * (which is larger by the system bars). Re-published on every layout, so a rotation or an
+     * inset change updates it as well.
+     */
+    private void publishBarRootSize(final View barRoot) {
+        if (barRoot == null) {
+            return;
         }
-        return (int) ((screenHeight - (mLauncher != null ? mLauncher.getStatusBarHeight() : 0)) * 0.1638);
+        BottomBarDimensions.publishBarRootSize(barRoot.getWidth(), barRoot.getHeight());
+        barRoot.addOnLayoutChangeListener((view, left, top, right, bottom,
+                                           oldLeft, oldTop, oldRight, oldBottom) ->
+                BottomBarDimensions.publishBarRootSize(right - left, bottom - top));
+    }
+
+    /**
+     * Height of the bottom bar for the current orientation, shared by the regular bar (inline in
+     * workspaceView) and the auto-hide overlay.
+     *
+     * Shortest-edge rule, exactly as originally implemented: portrait uses the screen width,
+     * landscape the screen height minus the status bar. Keys.RESIZABLE_BOTTOM_BAR switches the
+     * multiplier from the hardcoded 0.142 / 0.1638 to the user value.
+     */
+    private int getBottomBarHeight(int screenWidth, int screenHeight) {
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        }
+        boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
+        boolean resizableBottomBar = mPrefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
+        if (!resizableBottomBar) {
+            // Fallback: the original formula, unchanged.
+            if (portrait) {
+                return (int) (screenWidth * 0.142);
+            }
+            return (int) ((screenHeight - (mLauncher != null ? mLauncher.getStatusBarHeight() : 0)) * 0.1638);
+        }
+        int statusBarHeight = portrait ? 0 : (mLauncher != null ? mLauncher.getStatusBarHeight() : 0);
+        return BottomBarDimensions.computeBarHeight(mPrefs, portrait, screenWidth, screenHeight, statusBarHeight);
+    }
+
+    /**
+     * bottomBarHeight relative to the bar the hardcoded multipliers would give. Exactly 1f when
+     * Keys.RESIZABLE_BOTTOM_BAR is off or still at its default value.
+     */
+    private float getBottomBarScale(int screenWidth, int screenHeight, int bottomBarHeight) {
+        boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
+        int statusBarHeight = portrait ? 0 : (mLauncher != null ? mLauncher.getStatusBarHeight() : 0);
+        int legacyHeight = BottomBarDimensions.computeLegacyBarHeight(portrait, screenWidth, screenHeight, statusBarHeight);
+        return legacyHeight > 0 ? (float) bottomBarHeight / legacyHeight : 1f;
+    }
+
+    /**
+     * Resizable bottom bar for the regular (inline) bar of the user layout.
+     *
+     * Keys.RESIZABLE_BOTTOM_BAR off: no-op, custom_layout_*_user*.xml keeps sizing the bar
+     * (layout_constraintHeight_percent in landscape, layout_constraintDimensionRatio in portrait).
+     *
+     * On: every view living in the bar gets an exact pixel height derived from
+     * getBottomBarHeight(), after the XML ratio / percent that would fight it is cleared:
+     *  - iv_list_bg: the bar height itself;
+     *  - recycler_view, rl_music_two, bar_widget_date, bar_widget_weather: their XML height scaled
+     *    by bar / XML bar, so each keeps its share of the bar (landscape: the full bar; portrait:
+     *    the "H,0.295"-style ratios of their own width);
+     *  - rl_allapps, show_bar: the visible (fitCenter) icon scales, the box width stays.
+     * Widths are never changed: the horizontal budget of the bar, AppListAdapter's tile maths and
+     * the collapsed width set by hideNormalBottomBar() all stay valid.
+     *
+     * Left bar: rl_left_bar is constrained to the top of iv_list_bg in the XML, so its height
+     * follows automatically and needs no update here.
+     *
+     * Idempotent (each view's XML spec is captured once), so Launcher can call it on every
+     * recycler rebind; it only requests a layout when a value actually changes.
+     *
+     * @return true if any LayoutParams changed.
+     */
+    public boolean applyResizableBottomBar(String source) {
+        final View barRoot = workspaceView;
+        if (barRoot == null || mLauncher == null) {
+            return false;
+        }
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        }
+        boolean resizableBottomBar = mPrefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
+        if (!resizableBottomBar || !mPrefs.getBoolean(Keys.USER_LAYOUT, false)) {
+            return false;
+        }
+
+        ImageView barBackground = barRoot.findViewById(R.id.iv_list_bg);
+        BottomBarDimensions.XmlSizeSpec barSpec = BottomBarDimensions.getXmlSpec(barBackground);
+        if (barSpec == null) {
+            return false;
+        }
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (barSpec.orientation != currentOrientation || orientation != currentOrientation) {
+            // Inflated for the other orientation; createUserPage() rebuilds it, don't mix the two.
+            Log.w(TAG, "Resizable bottom bar skipped (" + source + "): bar inflated for another orientation");
+            return false;
+        }
+
+        int screenWidth = Launcher.screenWidth;
+        int screenHeight = Launcher.screenHeight;
+        if (screenWidth <= 0 || screenHeight <= 0) {
+            return false;
+        }
+        // Parent of the bar views as the legacy maths sees it (see getBottomBarHeight()).
+        int rootWidth = screenWidth;
+        int rootHeight = screenHeight - mLauncher.getStatusBarHeight();
+
+        int barHeight = getBottomBarHeight(screenWidth, screenHeight);
+        float xmlBarHeight = barSpec.resolveHeight(rootWidth, rootHeight);
+        if (barHeight <= 0 || !(xmlBarHeight > 0f)) {
+            return false;
+        }
+        float factor = barHeight / xmlBarHeight;
+
+        RecyclerView recycler = barRoot.findViewById(R.id.recycler_view);
+
+        boolean changed = BottomBarDimensions.applyExactHeight(barBackground, barHeight);
+        changed |= BottomBarDimensions.applyScaledHeight(recycler, factor, rootWidth, rootHeight, barHeight);
+        changed |= BottomBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.rl_music_two),
+                factor, rootWidth, rootHeight, barHeight);
+        // Only present in the landscape widget bar; findViewById() returns null otherwise.
+        changed |= BottomBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.bar_widget_date),
+                factor, rootWidth, rootHeight, barHeight);
+        changed |= BottomBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.bar_widget_weather),
+                factor, rootWidth, rootHeight, barHeight);
+        changed |= BottomBarDimensions.applyScaledIconHeight(barRoot.findViewById(R.id.rl_allapps),
+                factor, rootWidth, rootHeight, barHeight);
+        changed |= BottomBarDimensions.applyScaledIconHeight(barRoot.findViewById(R.id.show_bar),
+                factor, rootWidth, rootHeight, barHeight);
+
+        if (changed) {
+            Log.d(TAG, "Resizable bottom bar applied (" + source + "): " + barHeight
+                    + "px, x" + factor + " of the XML bar");
+            if (recycler != null) {
+                recycler.invalidateItemDecorations();
+            }
+        }
+        return changed;
     }
 
     private void clearBarTextFits() {
@@ -1419,12 +1572,9 @@ public class Workspace extends SmoothPagedView
 
         final int screenWidth = Launcher.screenWidth;
         final int screenHeight = Launcher.screenHeight;
-        int bottomBarHeight;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            bottomBarHeight = (int) (screenWidth * 0.142);
-        } else {
-            bottomBarHeight = (int) ((screenHeight - (mLauncher != null ? mLauncher.getStatusBarHeight() : 0)) * 0.1638);
-        }
+        // Resizable when Keys.RESIZABLE_BOTTOM_BAR is on, the original formula otherwise. With the
+        // feature on, applyResizableBottomBar() has already cleared the XML ratio of iv_list_bg.
+        final int bottomBarHeight = getBottomBarHeight(screenWidth, screenHeight);
         Log.d("BottomBar", "Before: width=" + bottomBarBg.getWidth() + ", height=" + bottomBarBg.getHeight());
         ValueAnimator widthAnim = ValueAnimator.ofInt(bottomBarBg.getWidth(), collapsedWidth);
         widthAnim.addUpdateListener(animator -> {
@@ -1457,15 +1607,11 @@ public class Workspace extends SmoothPagedView
             }
             overlayWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
-            // Calculate dimensions
+            // Calculate dimensions - same height as the regular bar (resizable when enabled). The
+            // window, the inset listener and forceOriginalSizes() below all derive from it.
             int screenWidth = Launcher.screenWidth;
             int screenHeight = Launcher.screenHeight;
-            int bottomBarHeight;
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                bottomBarHeight = (int) (screenWidth * 0.142);
-            } else {
-                bottomBarHeight = (int) ((screenHeight - (mLauncher != null ? mLauncher.getStatusBarHeight() : 0)) * 0.1638);
-            }
+            final int bottomBarHeight = getBottomBarHeight(screenWidth, screenHeight);
 
             // Create overlay window parameters
             overlayWindowParams = new WindowManager.LayoutParams(
@@ -1606,14 +1752,22 @@ public class Workspace extends SmoothPagedView
     }
 
     private void forceOriginalSizes(int screenWidth, int bottomBarHeight) {
+        // Auto-hide overlay. bottomBarHeight is already the resizable height (showOverlayBottomBar);
+        // barScale carries it into the one size the XML derives from a view's own width - the
+        // portrait recycler - and is exactly 1f when Keys.RESIZABLE_BOTTOM_BAR is off.
+        boolean resizableBottomBar = mPrefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
+        float barScale = resizableBottomBar
+                ? getBottomBarScale(screenWidth, Launcher.screenHeight, bottomBarHeight)
+                : 1f;
         if (widgetBar) {
-            forceOriginalSizesLayoutTwo(screenWidth, bottomBarHeight);
+            forceOriginalSizesLayoutTwo(screenWidth, bottomBarHeight, resizableBottomBar, barScale);
         } else {
-            forceOriginalSizesLayoutOne(screenWidth, bottomBarHeight);
+            forceOriginalSizesLayoutOne(screenWidth, bottomBarHeight, resizableBottomBar, barScale);
         }
     }
 
-    private void forceOriginalSizesLayoutOne(int screenWidth, int bottomBarHeight) {    
+    private void forceOriginalSizesLayoutOne(int screenWidth, int bottomBarHeight,
+                                             boolean resizableBottomBar, float barScale) {
         int allAppsWidth, allAppsHeight;
         int recyclerWidth, recyclerHeight;
         int showBarWidth, showBarHeight;
@@ -1624,6 +1778,11 @@ public class Workspace extends SmoothPagedView
             
             recyclerWidth = (int) (screenWidth * 0.8795);
             recyclerHeight = (int) (recyclerWidth * 0.142);
+            if (resizableBottomBar) {
+                // XML "H,0.142" is a share of the recycler's own width and would ignore the bar
+                // height - keep that share of the (resized) bar instead.
+                recyclerHeight = Math.min(bottomBarHeight, (int) (recyclerWidth * 0.142 * barScale));
+            }
             
             showBarWidth = (int) (screenWidth * 0.06);
             showBarHeight = (int) (bottomBarHeight * 0.67);
@@ -1648,6 +1807,10 @@ public class Workspace extends SmoothPagedView
         ViewGroup.LayoutParams bgParams = overlayBg.getLayoutParams();
         bgParams.width = screenWidth;
         bgParams.height = bottomBarHeight;
+        if (resizableBottomBar && bgParams instanceof ConstraintLayout.LayoutParams bgConstraintParams) {
+            // Exact height wins: drop the XML "H,0.142" ratio / 0.1638 height percent.
+            BottomBarDimensions.clearConflictingHeightRules(bgConstraintParams);
+        }
         overlayBg.setLayoutParams(bgParams);
         
         // Force all apps button size
@@ -1658,6 +1821,9 @@ public class Workspace extends SmoothPagedView
             constraintParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            if (resizableBottomBar) {
+                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            }
             overlayAllApps.setLayoutParams(constraintParams);
         }
         
@@ -1670,6 +1836,9 @@ public class Workspace extends SmoothPagedView
             constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            if (resizableBottomBar) {
+                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            }
             overlayRecycler.setLayoutParams(constraintParams);
         }
         
@@ -1682,11 +1851,15 @@ public class Workspace extends SmoothPagedView
             constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            if (resizableBottomBar) {
+                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            }
             overlayShowBar.setLayoutParams(constraintParams);
         }
     }
 
-    private void forceOriginalSizesLayoutTwo(int screenWidth, int bottomBarHeight) {
+    private void forceOriginalSizesLayoutTwo(int screenWidth, int bottomBarHeight,
+                                             boolean resizableBottomBar, float barScale) {
         int allAppsWidth, allAppsHeight;
         int recyclerWidth, recyclerHeight;
         int showBarWidth, showBarHeight;
@@ -1698,6 +1871,11 @@ public class Workspace extends SmoothPagedView
             
             recyclerWidth = (int) (screenWidth * 0.4385);
             recyclerHeight = (int) (recyclerWidth * 0.295);
+            if (resizableBottomBar) {
+                // XML "H,0.295" is a share of the recycler's own width and would ignore the bar
+                // height - keep that share of the (resized) bar instead.
+                recyclerHeight = Math.min(bottomBarHeight, (int) (recyclerWidth * 0.295 * barScale));
+            }
             
             showBarWidth = (int) (screenWidth * 0.06);
             showBarHeight = (int) (bottomBarHeight * 0.67);
@@ -1732,6 +1910,10 @@ public class Workspace extends SmoothPagedView
         ViewGroup.LayoutParams bgParams = overlayBg.getLayoutParams();
         bgParams.width = screenWidth;
         bgParams.height = bottomBarHeight;
+        if (resizableBottomBar && bgParams instanceof ConstraintLayout.LayoutParams bgConstraintParams) {
+            // Exact height wins: drop the XML "H,0.142" ratio / 0.1638 height percent.
+            BottomBarDimensions.clearConflictingHeightRules(bgConstraintParams);
+        }
         overlayBg.setLayoutParams(bgParams);
         
         // Force all apps button size
@@ -1742,6 +1924,9 @@ public class Workspace extends SmoothPagedView
             constraintParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            if (resizableBottomBar) {
+                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            }
             overlayAllApps.setLayoutParams(constraintParams);
         }
         
@@ -1754,6 +1939,9 @@ public class Workspace extends SmoothPagedView
             constraintParams.endToStart = R.id.rl_music_two;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            if (resizableBottomBar) {
+                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            }
             overlayRecycler.setLayoutParams(constraintParams);
         }
         
@@ -1767,6 +1955,9 @@ public class Workspace extends SmoothPagedView
                 constraintParams.endToStart = R.id.bar_widget_date;
                 constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+                if (resizableBottomBar) {
+                    BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+                }
                 musicWidget.setLayoutParams(constraintParams);
             }
         }
@@ -1783,6 +1974,9 @@ public class Workspace extends SmoothPagedView
                     constraintParams.endToStart = R.id.bar_widget_weather;
                     constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                     constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+                    if (resizableBottomBar) {
+                        BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+                    }
                     dateWidget.setLayoutParams(constraintParams);
                 }
             }
@@ -1798,6 +1992,9 @@ public class Workspace extends SmoothPagedView
                 constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+                if (resizableBottomBar) {
+                    BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+                }
                 weatherWidget.setLayoutParams(constraintParams);
             }
         }
@@ -1811,6 +2008,9 @@ public class Workspace extends SmoothPagedView
             constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            if (resizableBottomBar) {
+                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            }
             overlayShowBar.setLayoutParams(constraintParams);
         }
     }

@@ -520,6 +520,11 @@
     <string name="white_color">White</string>
     <string name="auto_hide_bottom_bar">Auto hide bottom bar</string>
     <string name="auto_hide_timeout">Timeout: %1$ss</string>
+    <string name="resizable_bottom_bar">Resizable bottom bar</string>
+    <string name="resizable_bottom_bar_summary">Height: %1$s of the screen\'s shorter edge (%2$s)</string>
+    <string name="bottom_bar_height_portrait">portrait</string>
+    <string name="bottom_bar_height_landscape">landscape</string>
+    <string name="bottom_bar_height_seekbar">Bottom bar height</string>
     <string name="widget_bar">Widget bottom bar</string>
 
     <string name="weather_not_available">N/A</string>

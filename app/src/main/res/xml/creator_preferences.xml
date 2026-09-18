@@ -114,6 +114,16 @@
         <com.android.launcher66.settings.AutoHideSeekBarPreference
             android:key="auto_hide_timeout"
             android:defaultValue="5" /> 
+        <SwitchPreferenceCompat
+            android:key="resizable_bottom_bar"
+            android:defaultValue="false"
+            android:title="@string/resizable_bottom_bar"
+            android:summaryOn="@string/resizable_bottom_bar_summary" />
+        <!-- Stores its value under bottom_bar_height_port / bottom_bar_height_land
+             (per orientation), never under its own key. -->
+        <com.android.launcher66.settings.BottomBarHeightSeekBarPreference
+            android:key="bottom_bar_height"
+            android:persistent="false" />
         <Preference
             android:key="choose_bar_background"
             android:title="@string/bar_background_preference"/>  

@@ -352,6 +352,18 @@
     <string name="double_tap">Strona: %1$s \nKliknij dwukrotnie gdziekolwiek, \naby zablokować/odblokować dolny pasek</string>
     <string name="screen_first">Strona: 1</string>
     <string name="adjust_widget">Dostosuj widget</string>
+    <string name="restart_pip">Restart PiP</string>
+    <string name="restart_pip_summary">Zrestartuj aplikację</string>
+    <string name="fab_overlay_button">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy PiP: <b>lewy dual/pierwszy &lt;-&gt; trzeci</b> oraz <b>prawy dual/drugi &lt;-&gt; czwarty</b></string>
+    <string name="fab_overlay_button_left">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy PiP: <b>lewy dual/pierwszy &lt;-&gt; trzeci</b></string>
+    <string name="fab_overlay_button_right">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy PiP: <b>prawy dual/drugi &lt;-&gt; czwarty</b></string>
+    <string name="fab_overlay_summary">Aby wyświetlić przycisk ustaw aplikacje dla wszystkich PiP, używaj wyłącznie trybu `Window`.</string>
+    <string name="extended_divider">Rozszerz strefę dotyku w środkowej części dividera</string>
+    <string name="cover_splash">Kolor splasha PiP</string>
+    <string name="cover_splash_icon">Średnia z nieprzezroczystych pikseli ikon aplikacji</string>
+    <string name="cover_splash_night_mode">Biały i szary w zależności od trybu nocnego</string>
+    <string name="swipe_detector">Wykrywanie przesunięcia dla paska stanu</string>
+    <string name="swipe_detector_summary">Środkowo-dolna część paska stanu będzie wykrywać przesunięcia palcem i tym samym pozwoli na przechodzenie pomiędzy ekranami. Funkcja może być przydatna w momencie gdy widok PiP zakrywa większość widocznego ekranu.</string>
 
     <string name="widgets_background_preference">Wybierz tło dla widgetów</string>
     <string name="widgets_background_dialog_title">Wybierz tło dla widgetów:</string>  
@@ -365,19 +377,12 @@
     <string name="white_color">Biały</string>
     <string name="auto_hide_bottom_bar">Automatycznie ukrywaj pasek dolny</string>
     <string name="auto_hide_timeout">Timeout: %1$ss</string>
+    <string name="resizable_bottom_bar">Regulowany pasek dolny</string>
+    <string name="resizable_bottom_bar_summary">Wysokość: %1$s krótszej krawędzi ekranu (%2$s)</string>
+    <string name="bottom_bar_height_portrait">pionowo</string>
+    <string name="bottom_bar_height_landscape">poziomo</string>
+    <string name="bottom_bar_height_seekbar">Wysokość dolnego paska</string>
     <string name="widget_bar">Pasek dolny z widgetami</string>
-    <string name="restart_pip">Restart PiP</string>
-    <string name="restart_pip_summary">Zrestartuj aplikację</string>
-    <string name="fab_overlay_button">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy PiP: <b>lewy dual/pierwszy &lt;-&gt; trzeci</b> oraz <b>prawy dual/drugi &lt;-&gt; czwarty</b></string>
-    <string name="fab_overlay_button_left">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy PiP: <b>lewy dual/pierwszy &lt;-&gt; trzeci</b></string>
-    <string name="fab_overlay_button_right">Wyświetl pływający przycisk, który przełącza aplikacje pomiędzy PiP: <b>prawy dual/drugi &lt;-&gt; czwarty</b></string>
-    <string name="fab_overlay_summary">Aby wyświetlić przycisk ustaw aplikacje dla wszystkich PiP, używaj wyłącznie trybu `Window`.</string>
-    <string name="extended_divider">Rozszerz strefę dotyku w środkowej części dividera</string>
-    <string name="cover_splash">Kolor splasha PiP</string>
-    <string name="cover_splash_icon">Średnia z nieprzezroczystych pikseli ikon aplikacji</string>
-    <string name="cover_splash_night_mode">Biały i szary w zależności od trybu nocnego</string>
-    <string name="swipe_detector">Wykrywanie przesunięcia dla paska stanu</string>
-    <string name="swipe_detector_summary">Środkowo-dolna część paska stanu będzie wykrywać przesunięcia palcem i tym samym pozwoli na przechodzenie pomiędzy ekranami. Funkcja może być przydatna w momencie gdy widok PiP zakrywa większość widocznego ekranu.</string>
 
     <string name="weather_not_available">N/A</string>
     <string name="clear_sky">Bezchmurne niebo</string>

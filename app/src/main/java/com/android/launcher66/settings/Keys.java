@@ -119,6 +119,10 @@ public final class Keys {
     public static final String LAYOUT_MARGIN = "layout_margin";
     public static final String AUTO_HIDE_BOTTOM_BAR = "auto_hide_bottom_bar";
     public static final String AUTO_HIDE_TIMEOUT = "auto_hide_timeout";
+    public static final String RESIZABLE_BOTTOM_BAR = "resizable_bottom_bar";
+    public static final String BOTTOM_BAR_HEIGHT = "bottom_bar_height"; 
+    public static final String BOTTOM_BAR_HEIGHT_PORT = "bottom_bar_height_port";
+    public static final String BOTTOM_BAR_HEIGHT_LAND = "bottom_bar_height_land";
 
     public static final String PIP_DUAL = "pip_dual";
     public static final String PIP_FIRST = "pip_first";

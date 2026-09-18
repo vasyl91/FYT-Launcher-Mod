@@ -519,6 +519,11 @@
     <string name="white_color">白色</string>
     <string name="auto_hide_bottom_bar">自动隐藏底部栏</string>
     <string name="auto_hide_timeout">超时: %1$s秒</string>
+    <string name="resizable_bottom_bar">可调整大小的底部栏</string>
+    <string name="resizable_bottom_bar_summary">高度：屏幕较短边的 %1$s（%2$s）</string>
+    <string name="bottom_bar_height_portrait">竖屏</string>
+    <string name="bottom_bar_height_landscape">横屏</string>
+    <string name="bottom_bar_height_seekbar">底部栏高度</string>
     <string name="widget_bar">小部件底部栏</string>
 
     <string name="weather_not_available">N/A</string>

@@ -95,6 +95,11 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     // Bounds
     private int minBorderX, minBorderY, maxBorderX, maxBorderY;
 
+    // Auto-hide bar bounds, reused on every touch move (no per-event allocations)
+    private final RectF mAutoHideBarBounds = new RectF();
+    private final int[] mAutoHideBarLocation = new int[2];
+    private final int[] mCanvasLocation = new int[2];
+
     private static boolean firstPip = false;
     private static boolean secondPip = false;
     private static boolean thirdPip = false;
@@ -384,6 +389,85 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     }
 
     private void ensurePoint(int id, Point p) { point[id] = p; }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        // This canvas is exactly the space the bottom bar leaves free. A bar made taller in the
+        // settings shrinks it, and rectangles saved earlier then reach underneath it: the bar
+        // cannot move out of the way, they can.
+        fitRectanglesIntoCanvas();
+    }
+
+    /**
+     * Pulls every rectangle back inside the canvas after its size changed, keeping each one where
+     * the user put it as far as possible: moved up just enough, and only made smaller when it no
+     * longer fits. Everything that moves is saved, so the launcher shows the same layout.
+     *
+     * Skipped while the bar auto-hides: the workspace then uses the full height and only the
+     * collapsed button is out of bounds, which clampAwayFromAutoHideBar() already handles.
+     */
+    private void fitRectanglesIntoCanvas() {
+        if (getWidth() <= 0 || getHeight() <= 0 || sharedPrefs == null) {
+            return;
+        }
+        if (sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
+            return;
+        }
+        if (!moveRectanglesInsideCanvas()) {
+            return;
+        }
+        savePrefs();
+        // Moving a rectangle up can push it into its neighbour, which is what Helpers resets.
+        if (helpers != null && helpers.checkAndResetIfOverlappingOnScreen(-1)) {
+            for (RectangleConfig cfg : rectangleConfigs) {
+                if (cfg.enabled) {
+                    initRectangle(cfg);
+                }
+            }
+            if (moveRectanglesInsideCanvas()) {
+                // Keep the positions Helpers picked inside this canvas as well.
+                savePrefs();
+            }
+        }
+        invalidate();
+    }
+
+    /** @return true if any rectangle had to be moved or shrunk. */
+    private boolean moveRectanglesInsideCanvas() {
+        boolean changed = false;
+        for (RectangleConfig cfg : rectangleConfigs) {
+            if (!cfg.enabled) continue;
+
+            Integer[] ids = rectangleBallIds.get(cfg.key);
+            if (ids == null) continue;
+
+            RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
+            if (r.isEmpty()) continue;
+
+            RectF fitted = fitIntoCanvas(r, cfg);
+            if (fitted.equals(r)) continue;
+
+            point[ids[0]].x = (int) fitted.left;  point[ids[0]].y = (int) fitted.top;
+            point[ids[1]].x = (int) fitted.right; point[ids[1]].y = (int) fitted.top;
+            point[ids[2]].x = (int) fitted.right; point[ids[2]].y = (int) fitted.bottom;
+            point[ids[3]].x = (int) fitted.left;  point[ids[3]].y = (int) fitted.bottom;
+            changed = true;
+            Log.i("Creator", "Rectangle " + cfg.key + " did not fit above the bar: " + r + " -> " + fitted);
+        }
+        return changed;
+    }
+
+    /** The same rectangle moved (and if needed shrunk, never below its minimum) into the canvas. */
+    private RectF fitIntoCanvas(RectF r, RectangleConfig cfg) {
+        float maxRight = getWidth() - margin;
+        float maxBottom = getHeight() - margin;
+        float width = Math.min(r.width(), Math.max(cfg.minWidth, maxRight - margin));
+        float height = Math.min(r.height(), Math.max(cfg.minHeight, maxBottom - margin));
+        float left = Math.min(Math.max(r.left, margin), Math.max(margin, maxRight - width));
+        float top = Math.min(Math.max(r.top, margin), Math.max(margin, maxBottom - height));
+        return new RectF(left, top, left + width, top + height);
+    }
 
     private void ensureBall(int id, Point p) {
         int resId = 0;
@@ -1033,33 +1117,62 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         }
     }
 
-    private boolean collidesWithAutoHideBar(float left, float top, float right, float bottom) {
+    /**
+     * Bounds of the creator's auto-hide bar in this view's coordinates, grown by {@link #margin}.
+     *
+     * Always read from the live view, so the collision logic sees whatever height the bar really
+     * has: the exact pixel height CreatorFirstScreen applies for Keys.RESIZABLE_BOTTOM_BAR, or the
+     * XML size (height percent / dimension ratio) when the feature is off. No hardcoded offsets.
+     *
+     * If a new exact height is applied but not laid out yet, the pending LayoutParams height is
+     * used, anchored at the bar's bottom edge (the bar is bottom-aligned in every creator layout).
+     *
+     * @return false if there is no laid-out auto-hide bar to keep away from.
+     */
+    private boolean resolveAutoHideBarBounds(RectF out) {
         if (mRootView == null) return false;
-        
+
         View creatorBarAutoHide = mRootView.findViewById(R.id.creator_bar_auto_hide);
-        if (creatorBarAutoHide == null) {
+        // GONE: the bounds are stale (a GONE child is not laid out); not laid out: nothing yet.
+        if (creatorBarAutoHide == null
+                || creatorBarAutoHide.getVisibility() == View.GONE
+                || !creatorBarAutoHide.isLaidOut()) {
             return false;
         }
-        
-        // Get auto-hide bar position and dimensions
-        int[] location = new int[2];
-        creatorBarAutoHide.getLocationOnScreen(location);
-        int[] viewLocation = new int[2];
-        getLocationOnScreen(viewLocation);
-        
-        float barLeft = location[0] - viewLocation[0];
-        float barTop = location[1] - viewLocation[1];
-        float barRight = barLeft + creatorBarAutoHide.getWidth();
-        float barBottom = barTop + creatorBarAutoHide.getHeight();
-        
+
+        int barWidth = creatorBarAutoHide.getWidth();
+        int barHeight = creatorBarAutoHide.getHeight();
+        if (creatorBarAutoHide.isLayoutRequested()) {
+            ViewGroup.LayoutParams params = creatorBarAutoHide.getLayoutParams();
+            if (params != null && params.height > 0) {
+                barHeight = params.height;
+            }
+        }
+        if (barWidth <= 0 || barHeight <= 0) {
+            return false;
+        }
+
+        // Both views live in the same window, so window coordinates are enough.
+        creatorBarAutoHide.getLocationInWindow(mAutoHideBarLocation);
+        getLocationInWindow(mCanvasLocation);
+
+        float barLeft = mAutoHideBarLocation[0] - mCanvasLocation[0];
+        float barBottom = mAutoHideBarLocation[1] - mCanvasLocation[1] + creatorBarAutoHide.getHeight();
+        float barTop = barBottom - barHeight;
+        float barRight = barLeft + barWidth;
+
         // Add margins around the auto-hide bar
-        barLeft -= margin;
-        barTop -= margin;
-        barRight += margin;
-        barBottom += margin;
-        
+        out.set(barLeft - margin, barTop - margin, barRight + margin, barBottom + margin);
+        return true;
+    }
+
+    private boolean collidesWithAutoHideBar(float left, float top, float right, float bottom) {
+        RectF bar = mAutoHideBarBounds;
+        if (!resolveAutoHideBarBounds(bar)) {
+            return false;
+        }
         // Check if rectangles overlap
-        return !(right <= barLeft || left >= barRight || bottom <= barTop || top >= barBottom);
+        return !(right <= bar.left || left >= bar.right || bottom <= bar.top || top >= bar.bottom);
     }
 
     private boolean collidesWithAutoHideBar(RectF rect) {
@@ -1067,33 +1180,19 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     }
 
     private RectF clampAwayFromAutoHideBar(RectF rect) {
-        if (mRootView == null) return rect;
-        
-        View creatorBarAutoHide = mRootView.findViewById(R.id.creator_bar_auto_hide);
-        if (creatorBarAutoHide == null) {
-            return rect;
-        }
-        
-        // Get auto-hide bar position and dimensions
-        int[] location = new int[2];
-        creatorBarAutoHide.getLocationOnScreen(location);
-        int[] viewLocation = new int[2];
-        getLocationOnScreen(viewLocation);
-        
-        float barLeft = location[0] - viewLocation[0] - margin;
-        float barTop = location[1] - viewLocation[1] - margin;
-        float barRight = barLeft + creatorBarAutoHide.getWidth() + (2 * margin);
-        float barBottom = barTop + creatorBarAutoHide.getHeight() + (2 * margin);
-        
         RectF result = new RectF(rect);
-        
+        RectF bar = mAutoHideBarBounds;
+        if (!resolveAutoHideBarBounds(bar)) {
+            return result;
+        }
+
         // Check if rectangles overlap
-        if (!(rect.right <= barLeft || rect.left >= barRight || rect.bottom <= barTop || rect.top >= barBottom)) {
+        if (!(rect.right <= bar.left || rect.left >= bar.right || rect.bottom <= bar.top || rect.top >= bar.bottom)) {
             // They overlap - find the smallest displacement to separate them
-            float pushLeft = barLeft - rect.right;    // negative = move rect left
-            float pushRight = barRight - rect.left;   // positive = move rect right
-            float pushUp = barTop - rect.bottom;      // negative = move rect up
-            float pushDown = barBottom - rect.top;    // positive = move rect down
+            float pushLeft = bar.left - rect.right;    // negative = move rect left
+            float pushRight = bar.right - rect.left;   // positive = move rect right
+            float pushUp = bar.top - rect.bottom;      // negative = move rect up
+            float pushDown = bar.bottom - rect.top;    // positive = move rect down
             
             // Find the smallest absolute displacement
             float minDisplacement = Float.MAX_VALUE;

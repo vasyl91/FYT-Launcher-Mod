@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -92,6 +93,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private int padding;
     private boolean pipBool = true;
     private boolean autoHideBool = false;
+    private boolean resizableBarBool = false;
     private boolean dualPipGuard = false;
     private boolean userStatsBool = false;
     private boolean backgroundBool = false;
@@ -106,6 +108,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private AlertDialog alertStartPageDialog;
     private SwitchPreferenceCompat autoHidePreference;
     private AutoHideSeekBarPreference autoHideSeekBar;
+    private SwitchPreferenceCompat resizableBarPreference;
+    private BottomBarHeightSeekBarPreference barHeightSeekBar;
     private Preference margin;
     private EditText marginEditText;
     private SwitchPreferenceCompat userStats;
@@ -379,6 +383,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         autoHidePreference = findPreference(Keys.AUTO_HIDE_BOTTOM_BAR);
         autoHideSeekBar = findPreference(Keys.AUTO_HIDE_TIMEOUT);
+        resizableBarPreference = findPreference(Keys.RESIZABLE_BOTTOM_BAR);
+        barHeightSeekBar = findPreference(Keys.BOTTOM_BAR_HEIGHT);
 
         Preference leftBar = findPreference(Keys.LEFT_BAR);
         Preference widgetBar = findPreference(Keys.WIDGET_BAR);
@@ -548,6 +554,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             autoHideSeekBar.setVisible(autoHideBool);
             autoHideSeekBarProgress(autoHideSeekBar);
         }
+        resizableBarBool = sharedPrefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
+        if (resizableBarPreference != null) {
+            resizableBarPreference.setOnPreferenceClickListener(this);
+            // Formatted right away (there is no list yet), even while the switch is off: summaryOn
+            // still holds the raw "%1$s" format and would flash when the switch is turned on.
+            updateBarHeightSummary.run();
+            if (!resizableBarBool) {
+                resizableBarPreference.setSummary(null);
+            }
+        }
+        if (barHeightSeekBar != null) {
+            barHeightSeekBar.setVisible(resizableBarBool);
+            barHeightSeekBarProgress(barHeightSeekBar);
+        }
         if (leftBar != null) {
             leftBar.setOnPreferenceClickListener(this);
         }
@@ -715,6 +735,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     autoHidePreference.setSummary(null);    
                 }                
                 autoHideSeekBar.setVisible(autoHideBool);
+                helpers.setBarSettingsChanged(true);
+                break;
+            case Keys.RESIZABLE_BOTTOM_BAR:
+                // Click listeners run after the switch persisted its new state.
+                resizableBarBool = sharedPrefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
+                if (resizableBarBool) {
+                    handler.post(updateBarHeightSummary);
+                } else {
+                    preference.setSummary(null);
+                }
+                if (barHeightSeekBar != null) {
+                    barHeightSeekBar.setVisible(resizableBarBool);
+                }
+                // On or off, the launcher has to rebuild the bar (dynamic height <-> XML height).
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.LEFT_BAR:
@@ -1036,6 +1070,18 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Only reached when the activity handles the change itself (no recreation). The bar height
+        // is stored per orientation, so show the value of the new one.
+        if (barHeightSeekBar != null) {
+            barHeightSeekBar.refresh();
+        }
+        // Also while the switch is off, so its summary is current when it is turned on.
+        handler.post(updateBarHeightSummary);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         recyclerView = null;
@@ -1083,6 +1129,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         statsCodes = null;
         autoHidePreference = null;
         autoHideSeekBar = null;
+        resizableBarPreference = null;
+        barHeightSeekBar = null;
         imm = null;
     }
 
@@ -1236,6 +1284,38 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             int progress = sharedPrefs.getInt(Keys.AUTO_HIDE_TIMEOUT, 3);
             String autoHideStr = getString(R.string.auto_hide_timeout, String.valueOf(progress));
             return autoHideStr;
+        }
+    };
+
+    private void barHeightSeekBarProgress(BottomBarHeightSeekBarPreference heightPreference) {
+        // Called by the preference only when the user really moves the slider to a new value
+        // (never when the row is bound); the value is then stored under Keys.BOTTOM_BAR_HEIGHT_PORT
+        // or Keys.BOTTOM_BAR_HEIGHT_LAND, whichever matches the current orientation.
+        heightPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+            helpers.setBarSettingsChanged(true);
+            handler.post(updateBarHeightSummary);
+            return true;
+        });
+    }
+
+    private final Runnable updateBarHeightSummary = new Runnable() {
+        @Override
+        public void run() {
+            if (resizableBarPreference != null && isAdded()) {
+                resizableBarPreference.setSummaryOn(barHeightSummary());
+            }
+        }
+
+        private String barHeightSummary() {
+            // Straight from the preferences, for the current orientation - the same value the
+            // launcher will use.
+            boolean portrait = BottomBarDimensions.isPortrait(requireContext());
+            float multiplier = BottomBarDimensions.getConfiguredMultiplier(sharedPrefs, portrait);
+            return getString(R.string.resizable_bottom_bar_summary,
+                    BottomBarHeightSeekBarPreference.formatPercent(multiplier),
+                    getString(portrait
+                            ? R.string.bottom_bar_height_portrait
+                            : R.string.bottom_bar_height_landscape));
         }
     };
 

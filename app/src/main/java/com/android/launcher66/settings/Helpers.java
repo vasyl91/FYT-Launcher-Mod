@@ -551,37 +551,31 @@ public class Helpers {
         
         // Only create bottom bar rect if we're checking screen 0 (or all screens)
         if (screenToCompare == -1 || screenToCompare == 0) {
-            int screenWidth = Launcher.screenWidth;
-            int screenHeight = Launcher.screenHeight;
-            int bottomBarHeight;
+            BarGeometry bar = getBarGeometry(mPrefs, orientation);
             int bottomBarWidth;
             
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                bottomBarHeight = (int) (screenWidth * 0.142);
-            } else {
-                bottomBarHeight = (int) (screenHeight * 0.1638);
-            }
-            
-            float bottomBarTop = screenHeight - bottomBarHeight;
+            float bottomBarTop = bar.barTop;
             
             if (!leftBar) {
                 // Bottom bar at bottom of screen
                 if (!autoHideBottomBar) {
                     // Full width bottom bar
-                    bottomBarRect = new RectF(0, bottomBarTop, screenWidth, screenHeight);
+                    bottomBarRect = new RectF(0, bottomBarTop, bar.rootWidth, bar.rootHeight);
                 } else {
-                    // Only first cell when auto-hide is enabled
-                    bottomBarWidth = (int) (screenWidth * 0.071f); // 7.1% of screen width
-                    bottomBarRect = new RectF(0, bottomBarTop, bottomBarWidth, screenHeight);
+                    // Only the collapsed button when auto-hide is enabled
+                    bottomBarWidth = bar.collapsedWidth;
+                    bottomBarRect = new RectF(0, bottomBarTop, bottomBarWidth, bar.rootHeight);
                 }
             } else {
                 // Left bar configuration
                 if (!autoHideBottomBar) {
                     // Full width bottom bar
-                    bottomBarRect = new RectF(0, bottomBarTop, screenWidth, screenHeight);
+                    bottomBarRect = new RectF(0, bottomBarTop, bar.rootWidth, bar.rootHeight);
                 }
                 // When leftBar && autoHideBottomBar, no bottom bar area to reserve
             }
+            Log.d(TAG, "Bottom bar area " + bar + (leftBar ? ", left bar" : "")
+                    + (autoHideBottomBar ? ", auto-hide" : "") + " -> " + bottomBarRect);
         }
         
         // Calculate right border exclusion area for left bar mode
@@ -725,17 +719,10 @@ public class Helpers {
         boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
         boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
         int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
-        int screenWidth = Launcher.screenWidth;
-        int screenHeight = Launcher.screenHeight;
-        int bottomBarHeight;
-        
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            bottomBarHeight = (int) (screenWidth * 0.142);
-        } else {
-            bottomBarHeight = (int) (screenHeight * 0.1638);
-        }
-        
-        float bottomBarTop = screenHeight - bottomBarHeight;
+        // Must be the same geometry checkAndResetIfOverlappingOnScreen() tested against, otherwise
+        // a reset could place a rectangle inside the (resized) bar and be reset again on every
+        // resume.
+        float bottomBarTop = getBarGeometry(mPrefs, orientation).barTop;
         
         // Base position for first PIP - ensure it doesn't overlap with bottom bar
         int baseX = margin;
@@ -1029,6 +1016,79 @@ public class Helpers {
         }
         
         editorReset.apply();
+    }
+
+    /**
+     * The bottom bar as it is really drawn, in the coordinate space the widget and PiP positions
+     * are stored in: the box that holds them (user_layout / user_layout_left) with the bar at its
+     * bottom edge. Workspace publishes that box's size; until it has been laid out, the screen
+     * minus the status bar is used, which is the base the bar height is computed from anyway.
+     *
+     * Deriving this from the screen height (as before) put the rectangle a system bar too low, so
+     * widgets that a taller bar had swallowed did not count as overlapping and were never reset.
+     */
+    private static final class BarGeometry {
+        final int rootWidth;
+        final int rootHeight;
+        final int barHeight;
+        final int collapsedWidth;
+        final float barTop;
+
+        BarGeometry(int rootWidth, int rootHeight, int barHeight, int collapsedWidth) {
+            this.rootWidth = rootWidth;
+            this.rootHeight = rootHeight;
+            this.barHeight = barHeight;
+            this.collapsedWidth = collapsedWidth;
+            this.barTop = rootHeight - barHeight;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return rootWidth + "x" + rootHeight + ", bar " + barHeight + "px from y=" + barTop;
+        }
+    }
+
+    private static BarGeometry getBarGeometry(SharedPreferences prefs, int orientation) {
+        int statusBarHeight = BottomBarDimensions.getStatusBarHeight(
+                LauncherApplication.sApp.getResources());
+        int rootWidth = BottomBarDimensions.getBarRootWidth(Launcher.screenWidth);
+        int rootHeight = BottomBarDimensions.getBarRootHeight(Launcher.screenHeight, statusBarHeight);
+        int barHeight = getBottomBarHeight(prefs, orientation, rootWidth, rootHeight);
+        return new BarGeometry(rootWidth, rootHeight, barHeight,
+                getCollapsedBarWidth(orientation, rootWidth));
+    }
+
+    /**
+     * Bottom bar height used by the overlap checks: the same value Workspace gives the bar, taken
+     * from the box the bar lives in (portrait: its width, landscape: its height - the shortest edge
+     * rule as before).
+     *
+     * Keys.RESIZABLE_BOTTOM_BAR off -> the hardcoded 0.142 / 0.1638.
+     * Keys.RESIZABLE_BOTTOM_BAR on  -> the user multiplier (BottomBarDimensions sanitises it).
+     */
+    private static int getBottomBarHeight(SharedPreferences prefs, int orientation,
+                                          int rootWidth, int rootHeight) {
+        boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
+        boolean resizableBottomBar = prefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
+        if (!resizableBottomBar) {
+            if (portrait) {
+                return (int) (rootWidth * 0.142);
+            }
+            return (int) (rootHeight * 0.1638);
+        }
+        return BottomBarDimensions.computeBarHeight(prefs, portrait, rootWidth, rootHeight, 0);
+    }
+
+    /**
+     * Width of the collapsed auto-hide button, as Workspace.hideNormalBottomBar() draws it: the
+     * left bar width in portrait, 7.1 % of the width in landscape.
+     */
+    private static int getCollapsedBarWidth(int orientation, int rootWidth) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT && Launcher.calculatedLeftBarWidth > 0) {
+            return Launcher.calculatedLeftBarWidth;
+        }
+        return (int) (rootWidth * 0.071f); // 7.1% of screen width
     }
 
     private boolean compareScreensForReset(String pipScreenKey, int screenToCompare, SharedPreferences mPrefs) {

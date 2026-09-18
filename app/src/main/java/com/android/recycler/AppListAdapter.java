@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.launcher66.AppInfo;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
+import com.android.launcher66.settings.BottomBarDimensions;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SettingsActivity;
@@ -477,6 +478,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
                 : widgetTileWidth;
 
         int iconSize = (int) (Math.min(widgetTileWidth, widgetRecyclerHeight) * ICON_FILL);
+        // Resizable bottom bar (user layouts only - the other layouts keep their XML bar): the
+        // icon follows the bar height proportionally, so it keeps exactly the icon/bar ratio of the
+        // legacy layout (a lowered bar would otherwise clip it). Nothing changes while
+        // Keys.RESIZABLE_BOTTOM_BAR is off or at its default value; the tile width is untouched.
+        if (userLayout && BottomBarDimensions.isResizable(mPrefs)) {
+            iconSize = (int) (iconSize * BottomBarDimensions.getHeightScale(mPrefs, portrait));
+        }
         // With more tiles than the widget bar has, an icon must still fit inside its tile.
         iconSize = Math.min(iconSize, (int) (tileWidth * ICON_FILL));
         if (iconSize <= 0) {
