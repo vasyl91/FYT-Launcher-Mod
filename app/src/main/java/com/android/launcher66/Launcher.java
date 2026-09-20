@@ -3416,7 +3416,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (currentUserLayout && displayPip && !atomicOnCreate.get()
                 && (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator())) {
             Log.i("Recreate page", "user layout");
-            WindowUtil.restartMultiplePips();
             WindowUtil.restartPinnedPipApp();
         }
 

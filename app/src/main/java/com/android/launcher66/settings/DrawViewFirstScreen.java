@@ -95,6 +95,13 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     // Bounds
     private int minBorderX, minBorderY, maxBorderX, maxBorderY;
 
+    /** Colour the canvas is filled with; the creator paints the space around it to match. */
+    public static final int CANVAS_BACKGROUND_COLOR = Color.parseColor("#8c8b8b");
+
+    // The launcher area this canvas stands for (its own coordinate space); 0 = unknown
+    private int workspaceWidth;
+    private int workspaceHeight;
+
     // Auto-hide bar bounds, reused on every touch move (no per-event allocations)
     private final RectF mAutoHideBarBounds = new RectF();
     private final int[] mAutoHideBarLocation = new int[2];
@@ -390,6 +397,51 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
     private void ensurePoint(int id, Point p) { point[id] = p; }
 
+    /**
+     * Makes this canvas stand for the launcher area the rectangles live in - the box the bar sits
+     * in, minus the bar - so its coordinates are the ones that get saved, 1:1 with the launcher.
+     *
+     * The settings window can be smaller than that area (system bars), so the view keeps the area
+     * as its measured size and scales itself down to whatever room the creator has: the preview
+     * stays true to the launcher instead of quietly becoming a different, smaller space.
+     */
+    public void setWorkspaceArea(int width, int height) {
+        if (width <= 0 || height <= 0 || (width == workspaceWidth && height == workspaceHeight)) {
+            return;
+        }
+        workspaceWidth = width;
+        workspaceHeight = height;
+        requestLayout();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (workspaceWidth <= 0 || workspaceHeight <= 0) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            return;
+        }
+        int availableWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int availableHeight = MeasureSpec.getSize(heightMeasureSpec);
+        float scale = 1f;
+        if (availableWidth > 0 && availableHeight > 0) {
+            scale = Math.min(availableWidth / (float) workspaceWidth,
+                    availableHeight / (float) workspaceHeight);
+        }
+        if (!(scale > 0f) || Float.isInfinite(scale)) {
+            scale = 1f;
+        }
+        // Scaled from the top left corner, so view coordinates stay launcher coordinates; touch
+        // events are mapped back by the framework.
+        setPivotX(0f);
+        setPivotY(0f);
+        setScaleX(scale);
+        setScaleY(scale);
+        // Centre what is left over horizontally and keep the preview sitting on the bar.
+        setTranslationX(Math.max(0f, (availableWidth - workspaceWidth * scale) / 2f));
+        setTranslationY(Math.max(0f, availableHeight - workspaceHeight * scale));
+        setMeasuredDimension(workspaceWidth, workspaceHeight);
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -492,7 +544,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
         // Background
         Paint bg = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bg.setColor(Color.parseColor("#8c8b8b"));
+        bg.setColor(CANVAS_BACKGROUND_COLOR);
         bg.setStyle(Paint.Style.FILL);
         canvas.drawPaint(bg);
 
@@ -1152,14 +1204,18 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             return false;
         }
 
-        // Both views live in the same window, so window coordinates are enough.
+        // Both views live in the same window, so window coordinates are enough - but this canvas
+        // may be scaled (see onMeasure), and its own coordinates are the unscaled ones.
         creatorBarAutoHide.getLocationInWindow(mAutoHideBarLocation);
         getLocationInWindow(mCanvasLocation);
+        float scaleX = getScaleX() > 0f ? getScaleX() : 1f;
+        float scaleY = getScaleY() > 0f ? getScaleY() : 1f;
 
-        float barLeft = mAutoHideBarLocation[0] - mCanvasLocation[0];
-        float barBottom = mAutoHideBarLocation[1] - mCanvasLocation[1] + creatorBarAutoHide.getHeight();
-        float barTop = barBottom - barHeight;
-        float barRight = barLeft + barWidth;
+        float barLeft = (mAutoHideBarLocation[0] - mCanvasLocation[0]) / scaleX;
+        float barBottom = (mAutoHideBarLocation[1] - mCanvasLocation[1]
+                + creatorBarAutoHide.getHeight()) / scaleY;
+        float barTop = barBottom - barHeight / scaleY;
+        float barRight = barLeft + barWidth / scaleX;
 
         // Add margins around the auto-hide bar
         out.set(barLeft - margin, barTop - margin, barRight + margin, barBottom + margin);
