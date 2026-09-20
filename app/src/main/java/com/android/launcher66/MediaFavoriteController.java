@@ -25,6 +25,7 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.settings.AppListCacheDialogFragment;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.FytRating;
 import com.android.launcher66.settings.SpotifyRating;
@@ -33,6 +34,9 @@ import com.syu.widget.DateMusicProvider;
 import com.syu.widget.Widget;
 
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -137,9 +141,12 @@ public final class MediaFavoriteController {
         // The check further down reads the resolved controller's package, which
         // is never the stock player, so a press would otherwise be sent to an
         // unrelated background session.
+        //
+        // Handled here instead, and only ever in the launcher's own cache:
+        // the stock player has no session to send anything to. See
+        // toggleStockFavorite.
         if (isStockMusicSource(preferredPackage)) {
-            Log.d(TAG, "Press ignored: the stock player is the active source");
-            return false;
+            return toggleStockFavorite(context);
         }
 
         MediaController controller = getTargetController(context, preferredPackage);
@@ -158,6 +165,7 @@ public final class MediaFavoriteController {
                     + "; statusKnown=" + FytRating.isStatusKnown()
                     + " signedIn=" + FytRating.isSignedIn()
                     + " allowed=" + FytRating.isAllowed()
+                    + " " + describeFavoriteCache(controller.getPackageName())
                     + " | " + YouTubeRevancedLikeState.describe());
             return false;
         }
@@ -170,8 +178,9 @@ public final class MediaFavoriteController {
         // well would make YouTube fire its own request, which lands after
         // ours and stores the rating where the API cannot see it.
         //
-        // The cache being usable means the opposite is true: no account can be
-        // reached right now, so there is nothing to write to and the session
+        // The cache being usable means the opposite is true: the player is on
+        // the cache list and no account is signed in - isFavoriteCacheUsable
+        // refuses otherwise - so there is nothing to write to and the session
         // rating plus the cache is all this press can amount to.
         if (isYouTubePackage(controller.getPackageName())
                 && YouTubeRevancedLikeState.hasFetcher()
@@ -236,11 +245,12 @@ public final class MediaFavoriteController {
             if (isYouTubePackage(controller.getPackageName())) {
                 // No account connected: the session rating is all there is, and
                 // it only updates YouTube's own interface. The status is kept
-                // here and, when the switch allows it, written to the cache -
-                // the only copy that survives the track changing.
+                // here and, when this build is on the cache list, written to
+                // the cache - the only copy that survives the track changing.
                 String videoId = findVideoId(controller);
                 YouTubeRevancedLikeState.setState(videoId, expected);
-                cacheYouTubeFavoriteState(context, videoId, expected);
+                cacheYouTubeFavoriteState(
+                        context, controller.getPackageName(), videoId, expected);
             } else {
                 cachePublicFavoriteState(context, controller, expected);
             }
@@ -258,8 +268,11 @@ public final class MediaFavoriteController {
         // background - and paint its state onto a track it has nothing to do
         // with. Returning early also keeps the ReVanced stall watchdog out of
         // this, which has no business firing while the stock player is on.
+        //
+        // What it answers comes from the cache alone, and only with
+        // com.syu.music on the cache list - see getStockFavoriteState.
         if (isStockMusicSource(preferredPackage)) {
-            return FAVORITE_STATE_UNKNOWN;
+            return getStockFavoriteState(context);
         }
 
         MediaController controller = getTargetController(context, preferredPackage);
@@ -283,22 +296,28 @@ public final class MediaFavoriteController {
                 ? new FavoriteActions()
                 : findFavoriteActions(state.getCustomActions());
         if (isYouTubePackage(controller.getPackageName())) {
+            String packageName = controller.getPackageName();
             String videoId = findVideoId(controller);
 
             // The session is already in hand here, so this is where the id the
-            // greying rule reads comes from; it costs nothing extra.
-            noteRevancedVideoId(videoId);
+            // greying rule reads comes from; it costs nothing extra. The build
+            // goes with it: the cache list is per player, and the rules asked
+            // about a video rather than a session need to know which one it is.
+            noteRevancedVideoId(packageName, videoId);
 
             // Read before anything else has a chance to fill the status in.
             // What the launcher recorded itself is worth more than the status
             // YouTube publishes as a video loads, which is a statement about a
             // video it has only just opened.
-            if (isFavoriteCacheUsable(YOUTUBE_REVANCED_PACKAGE)
+            if (isFavoriteCacheUsable(packageName)
                     && YouTubeRevancedLikeState.getResolvedState(videoId)
                             == FAVORITE_STATE_UNKNOWN) {
-                int cached = getCachedYouTubeFavoriteState(context, videoId);
+                int cached = getCachedYouTubeFavoriteState(context, packageName, videoId);
                 if (cached != FAVORITE_STATE_UNKNOWN) {
-                    YouTubeRevancedLikeState.setState(videoId, cached);
+                    // Marked as coming from the cache, so it stops counting the
+                    // moment the cache stops being usable - an account signed
+                    // in while this video is still playing included.
+                    YouTubeRevancedLikeState.setCachedState(videoId, cached);
                 }
             }
 
@@ -323,22 +342,28 @@ public final class MediaFavoriteController {
                 return FAVORITE_STATE_UNKNOWN;
             }
 
-            // Nothing here can produce a status: no account to ask, and the
-            // cache switched off. Reported as unknown so the state the widget
-            // draws says the same thing the disabled button does - including
-            // for a status left in memory from before the switch was turned
-            // off, which would otherwise keep showing on a dead button until
-            // the track changed.
-            if (isRevancedFavoriteDisabled(videoId) && !isLoggedOAuth()) {
+            // Nothing here can produce a status: no account to ask, and this
+            // build not on the cache list. Reported as unknown so the state the
+            // widget draws says the same thing the disabled button does -
+            // including for a status left in memory from before the build was
+            // taken off the list, which would otherwise keep showing on a dead
+            // button until the track changed.
+            //
+            // "No account" is the wide question here, isFytAccountPresent():
+            // while fYT Rating is only momentarily unsure of an account it had
+            // confirmed, an answer is on its way, and the stall watchdog has to
+            // keep counting instead of being cleared on every draw.
+            if (isRevancedFavoriteDisabled(packageName, videoId) && !isFytAccountPresent()) {
                 clearStallState();
                 return FAVORITE_STATE_UNKNOWN;
             }
 
-            // Kept only where the switch allows it.
-            if (isFavoriteCacheUsable(YOUTUBE_REVANCED_PACKAGE)) {
+            // Kept only for a build on the cache list, and never while an
+            // account is signed in.
+            if (isFavoriteCacheUsable(packageName)) {
                 int known = YouTubeRevancedLikeState.getResolvedState(videoId);
                 if (known != FAVORITE_STATE_UNKNOWN) {
-                    cacheYouTubeFavoriteState(context, videoId, known);
+                    cacheYouTubeFavoriteState(context, packageName, videoId, known);
                 }
             }
 
@@ -386,21 +411,25 @@ public final class MediaFavoriteController {
      * Whether the favorite button has to be drawn greyed out and refuse presses.
      *
      * The rules are ordered, and the first one that applies decides. Both
-     * preferences are read here and in {@link #isRevancedFavoriteDisabled},
+     * settings are read here and in {@link #isRevancedFavoriteDisabled},
      * which the read path shares so the two cannot drift apart:
      *
      *   - Keys.YOUTUBE_REVANCED_KIDS off greys the button on a video the bridge
      *     reported as made for kids, and nothing further down may undo that.
-     *   - Keys.FAVORITE_CACHE decides ReVanced only where there is no account
-     *     to ask, and stock YouTube always, since neither has a rating the
-     *     launcher can read off the session.
+     *   - The per-app cache list (AppListCacheDialogFragment) decides ReVanced
+     *     only where there is no account to ask, and stock YouTube and the
+     *     stock player (com.syu.music) always, since none of them has a rating
+     *     the launcher can read off a session. A signed-in account outranks
+     *     the list; see isFavoriteCacheUsable.
      */
     public static boolean isFavoriteTemporarilyDisabledPackage(String packageName) {
-        // The stock player exposes no rating of any kind, so there is nothing
-        // the button could act on while it is the source. Checked first,
-        // because every rule below is about a media session and it has none.
+        // The stock player exposes no rating of any kind, so the only thing the
+        // button can act on is the launcher's own cache: greyed out and refusing
+        // presses unless com.syu.music is on the cache list and its track can be
+        // identified. Checked first, because every rule below is about a media
+        // session and it has none.
         if (isStockMusicSource(packageName)) {
-            return true;
+            return !isStockFavoriteAvailable();
         }
 
         if (isYouTubePackage(packageName)) {
@@ -412,14 +441,15 @@ public final class MediaFavoriteController {
             // made for kids flag was then compared against the wrong id, came
             // back false, and the button was drawn enabled on a video the
             // switch was supposed to grey out.
-            return isRevancedFavoriteDisabled(currentRevancedVideoId());
+            return isRevancedFavoriteDisabled(packageName, currentRevancedVideoId());
         }
 
         if (YOUTUBE_PACKAGE.equals(packageName)) {
             // Stock YouTube publishes nothing the launcher can read a rating
             // from and there is no patch to ask, so its status only ever comes
-            // out of the cache.
-            return !isFavoriteCacheEnabled();
+            // out of the cache - and only once the user has put it on the
+            // list. No account can take it over, so the list alone decides.
+            return !isFavoriteCacheUsable(packageName);
         }
 
         if (SPOTIFY_PACKAGE.equals(packageName)) {
@@ -451,7 +481,7 @@ public final class MediaFavoriteController {
      * the widget draws from and the rule that greys the button have to agree,
      * or the button ends up lit with nothing behind it.
      */
-    private static boolean isRevancedFavoriteDisabled(String videoId) {
+    private static boolean isRevancedFavoriteDisabled(String packageName, String videoId) {
         boolean madeForKids = YouTubeRevancedLikeState.isMadeForKids(videoId);
 
         // Videos made for kids expose no rating at all: YouTube reports "none"
@@ -488,15 +518,30 @@ public final class MediaFavoriteController {
         // the permission flag - which is what goes stale. Without this, one
         // wrong refusal kept the button dead even while the lookups behind it
         // were succeeding.
+        //
+        // A status seeded from the cache counts here only while the cache is
+        // still usable for this build; see YouTubeRevancedLikeState.setCachedState.
         if (YouTubeRevancedLikeState.hasFetcher()
                 && YouTubeRevancedLikeState.isStateResolved(videoId)) {
             return false;
         }
 
         // fYT Rating missing, signed out or not granted access: the cache is
-        // the only place a status could come from, so the switch decides
+        // the only place a status could come from, so the cache list decides
         // whether the button does anything at all.
-        return !isFavoriteCacheEnabled();
+        if (isFavoriteCacheUsable(packageName)) {
+            return false;
+        }
+
+        // Shut - and not always for want of a tick on the list. The cache also
+        // stays shut while fYT Rating holds an account it is only momentarily
+        // unsure of (see isFytAccountPresent). An answer is on its way then,
+        // exactly as in the signed-in branch above, so the lookup is kept
+        // running the same way instead of waiting on a button nobody can press.
+        if (isFytAccountPresent()) {
+            pokeRevanced();
+        }
+        return true;
     }
 
     /**
@@ -514,13 +559,36 @@ public final class MediaFavoriteController {
     private static volatile String revancedVideoId;
     private static volatile long revancedVideoIdAtMs;
 
+    /**
+     * The ReVanced build the id above was read from.
+     *
+     * Needed since the cache list is per player: the rules asked about a video
+     * rather than a session - the greying rule and the like state holder's
+     * fallback - have to know whose list entry applies. Not aged like the id,
+     * because it only changes when the user moves between the two builds.
+     */
+    private static volatile String revancedPackage;
+
     /** Records a video id resolved by a caller that had the session in hand. */
-    private static void noteRevancedVideoId(String videoId) {
+    private static void noteRevancedVideoId(String packageName, String videoId) {
+        if (isYouTubePackage(packageName)) {
+            revancedPackage = packageName;
+        }
         if (videoId == null || videoId.isEmpty()) {
             return;
         }
         revancedVideoId = videoId;
         revancedVideoIdAtMs = SystemClock.elapsedRealtime();
+    }
+
+    /**
+     * The ReVanced build playing right now, as last seen with its session in
+     * hand. Falls back to the YouTube build, which is what every rule assumed
+     * before the cache became per player.
+     */
+    private static String currentRevancedPackage() {
+        String known = revancedPackage;
+        return known != null ? known : YOUTUBE_REVANCED_PACKAGE;
     }
 
     /**
@@ -549,9 +617,11 @@ public final class MediaFavoriteController {
         }
 
         String videoId = null;
+        String packageName = null;
         try {
             MediaController controller = findRevancedController(LauncherApplication.sApp);
             if (controller != null) {
+                packageName = controller.getPackageName();
                 videoId = findVideoId(controller);
             }
         } catch (Exception e) {
@@ -559,7 +629,7 @@ public final class MediaFavoriteController {
         }
 
         if (videoId != null && !videoId.isEmpty()) {
-            noteRevancedVideoId(videoId);
+            noteRevancedVideoId(packageName, videoId);
             return videoId;
         }
 
@@ -753,15 +823,22 @@ public final class MediaFavoriteController {
             // which is exactly what cleared the cached answer.
             //
             // Asked first and unconditionally, because it is what starts a
-            // stale status being rechecked in the background.
-            boolean account = isLoggedOAuth();
-            return !account && !isFavoriteCacheEnabled();
+            // stale status being rechecked in the background -
+            // isFytAccountPresent() opens with isLoggedOAuth() for exactly that
+            // reason. It is the wide question on purpose: it also keeps the
+            // session through the moments fYT Rating is only unsure of an
+            // account it had confirmed, when hiding it would take the click,
+            // the state read and the watchdog away all over again.
+            if (isFytAccountPresent()) {
+                return false;
+            }
+            return !isFavoriteCacheUsable(packageName);
         }
 
         if (YOUTUBE_PACKAGE.equals(packageName)) {
-            // Nothing to read a rating from and no patch to ask, so with the
-            // cache off there is no status for it anywhere.
-            return !isFavoriteCacheEnabled();
+            // Nothing to read a rating from and no patch to ask, so without it
+            // on the cache list there is no status for it anywhere.
+            return !isFavoriteCacheUsable(packageName);
         }
 
         return false;
@@ -837,6 +914,7 @@ public final class MediaFavoriteController {
 
         StringBuilder sessions = new StringBuilder();
         boolean revancedPresent = false;
+        String revancedSessionPackage = null;
 
         try {
             MediaSessionManager sessionManager =
@@ -859,6 +937,9 @@ public final class MediaFavoriteController {
                             .append(' ');
                     if (isYouTubePackage(controller.getPackageName())) {
                         revancedPresent = true;
+                        if (revancedSessionPackage == null) {
+                            revancedSessionPackage = controller.getPackageName();
+                        }
                     }
                 }
             }
@@ -866,13 +947,21 @@ public final class MediaFavoriteController {
             sessions.append("unreadable: ").append(e);
         }
 
+        // The rules are asked about the build that is actually there: the
+        // cache list is per player, so the two builds can answer differently.
+        String diagnosed = isYouTubePackage(preferredPackage) ? preferredPackage
+                : revancedSessionPackage != null ? revancedSessionPackage
+                : currentRevancedPackage();
+
         String line = "ReVanced " + reason
                 + "; preferred=" + preferredPackage
                 + " revancedSession=" + revancedPresent
                 + " listener=" + (NotificationListener.getInstance() != null)
                 + " sessions=[" + sessions.toString().trim() + "]"
-                + " unsupported=" + isUnsupportedFavoritePackage(YOUTUBE_REVANCED_PACKAGE)
-                + " disabled=" + isFavoriteTemporarilyDisabledPackage(YOUTUBE_REVANCED_PACKAGE)
+                + " diagnosed=" + diagnosed
+                + " unsupported=" + isUnsupportedFavoritePackage(diagnosed)
+                + " disabled=" + isFavoriteTemporarilyDisabledPackage(diagnosed)
+                + " " + describeFavoriteCache(diagnosed)
                 + " statusKnown=" + FytRating.isStatusKnown()
                 + " signedIn=" + FytRating.isSignedIn()
                 + " allowed=" + FytRating.isAllowed()
@@ -993,7 +1082,7 @@ public final class MediaFavoriteController {
             if (videoId == null || videoId.isEmpty()) {
                 return;
             }
-            noteRevancedVideoId(videoId);
+            noteRevancedVideoId(controller.getPackageName(), videoId);
 
             ensureRatingFetcher(context);
             YouTubeRevancedLikeState.requestRefresh(videoId);
@@ -1132,6 +1221,225 @@ public final class MediaFavoriteController {
         // which MusicService.state alone does not cover.
         return Boolean.TRUE.equals(MusicService.state)
                 || MediaWidgetState.getExternalSnapshot() == null;
+    }
+
+    // =====================================================================================
+    // Stock player (com.syu.music): the launcher's cache is all there is
+    // =====================================================================================
+
+    /**
+     * Whether the favorite button can do anything for the stock player.
+     *
+     * Only through the cache, and the cache is opt-in: with com.syu.music off the
+     * list the button stays greyed out and refuses presses, as it always did. On
+     * the list it works whenever the track can be identified. Asks exactly what
+     * getStockFavoriteState asks, so the drawn state and the greyed button agree.
+     */
+    private static boolean isStockFavoriteAvailable() {
+        return isFavoriteCacheUsable(STOCK_MUSIC_PACKAGE) && currentStockTrackKey() != null;
+    }
+
+    /** The state kept for the stock player's track; unknown whenever unavailable. */
+    private static int getStockFavoriteState(Context context) {
+        if (context == null || !isFavoriteCacheUsable(STOCK_MUSIC_PACKAGE)) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
+        String key = currentStockTrackKey();
+        return key == null ? FAVORITE_STATE_UNKNOWN : readStockFavoriteState(context, key);
+    }
+
+    /**
+     * A press while the stock player is the source: flips the kept state, and
+     * nothing else - there is no player to tell.
+     */
+    private static boolean toggleStockFavorite(Context context) {
+        if (context == null || !isFavoriteCacheUsable(STOCK_MUSIC_PACKAGE)) {
+            Log.d(TAG, "Press ignored: the stock player is not on the cache list");
+            return false;
+        }
+        String key = currentStockTrackKey();
+        if (key == null) {
+            Log.d(TAG, "Press ignored: the stock track is not identified yet");
+            return false;
+        }
+
+        int expected = getExpectedStateAfterToggle(readStockFavoriteState(context, key));
+
+        // Written here rather than through writeFavoriteCache. The cache is the
+        // only copy of this state and the redraw after the press reads it at once:
+        // apply() updates the in-memory map before it returns, while the executor
+        // would leave that redraw a moment in which it still sees the old state.
+        //
+        // Un-favoriting removes the entry, since a missing one already reads as
+        // not favorited; the file only ever holds the tracks that are liked.
+        SharedPreferences.Editor editor = context.getApplicationContext()
+                .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit();
+        if (expected == FAVORITE_STATE_FAVORITED) {
+            editor.putInt(key, expected);
+        } else {
+            editor.remove(key);
+        }
+        editor.apply();
+
+        refreshWidget(context);
+        return true;
+    }
+
+    /**
+     * Nothing kept means never liked. No other source could know better, so it
+     * reads as not favorited and the button stays usable - the first press is what
+     * puts a state in the cache, as for ReVanced without an account.
+     */
+    private static int readStockFavoriteState(Context context, String key) {
+        int stored = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getInt(key, FAVORITE_STATE_UNKNOWN);
+        return stored == FAVORITE_STATE_UNKNOWN ? FAVORITE_STATE_NOT_FAVORITED : stored;
+    }
+
+    /** How long a new stock track identity has to hold before it is trusted. */
+    private static final long STOCK_KEY_SETTLE_MS = 1500L;
+
+    /** The identity last seen, its key, and when it first appeared - swapped as one. */
+    private static final class StockKey {
+        final String identity;
+        final String key;
+        final long firstSeenAtMs;
+
+        StockKey(String identity, String key, long firstSeenAtMs) {
+            this.identity = identity;
+            this.key = key;
+            this.firstSeenAtMs = firstSeenAtMs;
+        }
+    }
+
+    private static volatile StockKey stockKey;
+
+    /**
+     * The cache key of the stock player's current track, or null while it cannot
+     * be trusted yet.
+     *
+     * A new identity counts only once it has held for STOCK_KEY_SETTLE_MS. The
+     * player reports a track change as a run of updates, and the first of them may
+     * still carry a field of the previous track, or no duration yet; a press landing
+     * in that moment would be stored under a key that is gone a second later. The
+     * button greys for the moment instead, the way it does for ReVanced while a
+     * lookup is on its way. Keep the window above the player's update interval.
+     */
+    private static String currentStockTrackKey() {
+        String identity = currentStockIdentity();
+        if (identity == null) {
+            return null;
+        }
+
+        long now = SystemClock.elapsedRealtime();
+        StockKey known = stockKey;
+        if (known == null || !identity.equals(known.identity)) {
+            stockKey = new StockKey(identity, stockCacheKey(identity), now);
+            // Settling needs one more redraw, and a paused player sends nothing
+            // that would cause one, so it is booked here - once per new identity.
+            new Handler(Looper.getMainLooper()).postDelayed(
+                    () -> refreshWidget(LauncherApplication.sApp), STOCK_KEY_SETTLE_MS + 50L);
+            return null;
+        }
+        return now - known.firstSeenAtMs < STOCK_KEY_SETTLE_MS ? null : known.key;
+    }
+
+    /**
+     * What identifies the stock player's track, before hashing; null while the
+     * player has not reported enough to tell.
+     *
+     * com.syu.music publishes no media session and no id, so the identity is put
+     * together from what it reports to MusicService:
+     *
+     *   - title, artist and duration while the title is a real tag;
+     *   - file name and duration otherwise. Only the name: the directory in front
+     *     of it is the mount point, which changes from one boot or USB port to the
+     *     next, while the name stays.
+     *
+     * Read from MusicService rather than NotificationListener: its fields are
+     * written synchronously by every update the player sends - paused and
+     * untagged tracks included, which MusicService never forwards to the
+     * listener - and they do not vanish with a listener the system has unbound.
+     *
+     * The stock player mangles letters outside its own encoding (see
+     * NotificationListener.readFytMeta), so the title may be garbage: the same
+     * garbage every time for the same file, which is all an identity needs.
+     */
+    private static String currentStockIdentity() {
+        // In whatever unit the player reports it; only equality matters here.
+        long duration = MusicService.TOTALMINUTES;
+        if (duration <= 0L) {
+            return null;
+        }
+
+        StringBuilder identity = new StringBuilder(128);
+        String title = MusicService.music_name;
+        if (isRealStockTitle(title)) {
+            identity.append("tag");
+            appendIdentityPart(identity, normalize(title));
+            appendIdentityPart(identity, normalize(MusicService.author_name));
+        } else {
+            String fileName = fileNameOf(MusicService.music_path);
+            if (fileName == null) {
+                return null;
+            }
+            identity.append("file");
+            appendIdentityPart(identity, normalize(fileName));
+        }
+        identity.append('|').append(duration);
+        return identity.toString();
+    }
+
+    /** The test NotificationListener applies before it trusts a stock title. */
+    private static boolean isRealStockTitle(String title) {
+        if (isEmpty(title)) {
+            return false;
+        }
+        String lower = title.toLowerCase(Locale.US);
+        return !lower.contains("unknown") && !lower.contains("null");
+    }
+
+    /** The last path segment: the part of a stock path that survives a remount. */
+    private static String fileNameOf(String path) {
+        if (isEmpty(path)) {
+            return null;
+        }
+        String trimmed = path.trim();
+        String name = trimmed.substring(trimmed.lastIndexOf('/') + 1);
+        return name.isEmpty() ? null : name;
+    }
+
+    /** Length-prefixed, so no title or artist can run into the next part. */
+    private static void appendIdentityPart(StringBuilder out, String part) {
+        out.append('|').append(part.length()).append(':').append(part);
+    }
+
+    /**
+     * The identity hashed into a cache key.
+     *
+     * Never the raw text: a mangled title can hold characters that are not valid
+     * in the XML file SharedPreferences writes, and a single one of them would
+     * make the whole file unreadable - every kept favorite with it. A hash also
+     * keeps the key short, whatever the title.
+     */
+    private static String stockCacheKey(String identity) {
+        try {
+            byte[] hash = MessageDigest.getInstance("SHA-256")
+                    .digest(identity.getBytes(StandardCharsets.UTF_8));
+            StringBuilder key = new StringBuilder(PREF_PREFIX.length()
+                    + STOCK_MUSIC_PACKAGE.length() + 1 + hash.length * 2);
+            key.append(PREF_PREFIX).append(STOCK_MUSIC_PACKAGE).append(':');
+            for (byte b : hash) {
+                key.append(Character.forDigit((b >> 4) & 0xF, 16))
+                        .append(Character.forDigit(b & 0xF, 16));
+            }
+            return key.toString();
+        } catch (NoSuchAlgorithmException e) {
+            // Every Android runtime has SHA-256; without it there is no key to trust.
+            Log.w(TAG, "No SHA-256; the stock player's favorite stays unavailable", e);
+            return null;
+        }
     }
 
     /**
@@ -1506,8 +1814,8 @@ public final class MediaFavoriteController {
 
         // A like made inside YouTube is a status like any other, so it is kept
         // wherever the current one is kept. Without an account that is the
-        // cache, and only while the switch is on.
-        cacheYouTubeFavoriteState(context, videoId, state);
+        // cache, and only for a build on the cache list.
+        cacheYouTubeFavoriteState(context, controller.getPackageName(), videoId, state);
     }
 
     /**
@@ -1563,39 +1871,138 @@ public final class MediaFavoriteController {
     }
 
     /**
-     * Whether the launcher may keep a like status of its own.
+     * Whether the user put this player on the cache list in
+     * {@link AppListCacheDialogFragment}.
      *
-     * The switch alone. Whether the cache is the right place for a given
-     * player is {@link #isFavoriteCacheUsable}.
+     * The opt-in alone, and what replaced the old global switch: nothing is
+     * cached for a player that is not on the list. Whether the cache may be
+     * used right now is {@link #isFavoriteCacheUsable}, which puts the account
+     * block on top of this.
      */
-    private static boolean isFavoriteCacheEnabled() {
-        return preference(Keys.FAVORITE_CACHE);
+    private static boolean isFavoriteCacheSelected(String packageName) {
+        return AppListCacheDialogFragment.isPackageSelected(packageName);
     }
 
     /**
      * Whether the cache may be read or written for this player.
      *
-     * ReVanced is the exception. Once fYT Rating is installed, signed in and
-     * has granted access, the account is the only truth about a like: it can
-     * be changed from any other device, and a value kept here could only ever
-     * contradict it. The switch is then ignored and the cache stays off for
-     * that package, whatever it is set to.
+     * Two conditions, and the second outranks the first:
+     *
+     *   1. The player is on the cache list. Nothing is kept for a player the
+     *      user did not pick.
+     *   2. No account owns its like status, see
+     *      {@link #isFavoriteCacheBlockedByAccount}. Once fYT Rating (both
+     *      ReVanced builds) or SpotifyRating (Spotify) holds an account, the
+     *      account is the only truth about a like - it can be changed from any
+     *      other device, and a value kept here could only ever contradict it.
+     *      A player ticked before the account was connected stays ticked, and
+     *      is ignored for as long as the account is there.
+     *
+     * Answered afresh on every call and never remembered, so a sign-in shuts
+     * the cache on the very next read or write, whatever the list still holds.
+     * What the cache already put in memory is dropped by the same question;
+     * see YouTubeRevancedLikeState.setCachedState.
      */
     private static boolean isFavoriteCacheUsable(String packageName) {
-        if (!isFavoriteCacheEnabled()) {
+        if (!isFavoriteCacheSelected(packageName)) {
             return false;
         }
+        return !isFavoriteCacheBlockedByAccount(packageName);
+    }
+
+    /**
+     * The hard block: true while a signed-in account owns the like status of
+     * this player, so the cache stays shut whatever the list says.
+     *
+     * Public because AppListCacheDialogFragment hides the same players by the
+     * same rule. One predicate for both means the list can never offer a player
+     * the controller would refuse.
+     */
+    public static boolean isFavoriteCacheBlockedByAccount(String packageName) {
         if (isYouTubePackage(packageName)) {
-            return !isLoggedOAuth();
+            return isFytAccountPresent();
         }
-        if (SPOTIFY_PACKAGE.equals(packageName)) {
-            // The same rule for the same reason: a track can be liked from a
-            // phone, so once the account can be asked, a value kept here could
-            // only ever contradict it. Without an account the session is all
-            // there is, and the cache is what makes it survive a track change.
-            return !isSpotifyLinked();
+        if (isSpotifyPackage(packageName)) {
+            return isSpotifyAccountPresent();
         }
-        return true;
+        return false;
+    }
+
+    /**
+     * Whether fYT Rating holds an account for the ReVanced builds.
+     *
+     * {@link #isLoggedOAuth} is asked first and unconditionally - it is what
+     * keeps FytRating refreshing a stale answer in the background - and it
+     * decides whenever it says yes. Its no is not taken at face value, because
+     * it also says no in two situations that have nothing to do with signing
+     * out:
+     *
+     *   - it is held for OAUTH_ANSWER_MAX_AGE_MS, so a sign-in that has just
+     *     been reported is not in it yet;
+     *   - FytRating.resetTransport() - run after three unanswered exchanges, on
+     *     every stall recovery and by revive() - drops statusKnown but keeps the
+     *     last answer, and isLoggedIn() stays false until the bridge speaks
+     *     again, which takes a while with a bridge that is struggling.
+     *
+     * Either way the cache would open, briefly or for as long as the bridge
+     * stays silent, on an account that is still signed in. So the last answer
+     * the bridge actually gave is consulted too: signed in and allowed means
+     * the account is there until the bridge says otherwise - the same rule
+     * FytRating applies itself when it keeps a positive answer through silence.
+     *
+     * The two flags are volatile reads and cost nothing. Only the installed
+     * check behind them reaches the package manager, and it is rationed like
+     * isLoggedOAuth(): an uninstalled bridge keeps its last answer for good,
+     * and without the check the block would outlive the app it stands for.
+     */
+    private static boolean isFytAccountPresent() {
+        if (isLoggedOAuth()) {
+            return true;
+        }
+        if (!FytRating.isSignedIn() || !FytRating.isAllowed()) {
+            return false;
+        }
+        return isFytInstalled();
+    }
+
+    private static volatile boolean fytInstalledAnswer;
+    private static volatile long fytInstalledAnswerAtMs;
+
+    /** FytRating.isInstalled, held for OAUTH_ANSWER_MAX_AGE_MS like isLoggedOAuth(). */
+    private static boolean isFytInstalled() {
+        long now = SystemClock.elapsedRealtime();
+        if (fytInstalledAnswerAtMs != 0L
+                && now - fytInstalledAnswerAtMs < OAUTH_ANSWER_MAX_AGE_MS) {
+            return fytInstalledAnswer;
+        }
+        boolean answer = FytRating.isInstalled(LauncherApplication.sApp);
+        fytInstalledAnswer = answer;
+        fytInstalledAnswerAtMs = now;
+        return answer;
+    }
+
+    /**
+     * Whether a Spotify account is signed in.
+     *
+     * Deliberately wider than {@link #isSpotifyLinked}, which also turns false
+     * while SpotifyRating holds a recent refusal (isAuthBroken). A 401 or 403
+     * from the Web API marks the grant broken for two minutes but leaves the
+     * refresh token on file: the user is still signed in, and a block built on
+     * isSpotifyLinked() would open the cache for exactly those two minutes.
+     * The refresh token is the grant, so while it is there the cache stays
+     * shut. A grant the server rejects outright is cleared by SpotifyRating
+     * itself, and that is a real sign-out.
+     *
+     * isSpotifyLinked() implies this, so every case it covers stays covered.
+     */
+    private static boolean isSpotifyAccountPresent() {
+        return SpotifyRating.isLoggedIn(LauncherApplication.sApp);
+    }
+
+    /** The cache inputs for one player, for the lines that explain a dead button. */
+    private static String describeFavoriteCache(String packageName) {
+        return "cacheListed=" + isFavoriteCacheSelected(packageName)
+                + " cacheBlocked=" + isFavoriteCacheBlockedByAccount(packageName);
     }
 
     private static boolean preference(String key) {
@@ -1612,17 +2019,19 @@ public final class MediaFavoriteController {
     }
 
     /**
-     * True only for the patched YouTube build.
+     * True only for the patched YouTube build and YT Music.
      *
-     * The whole Data API path depends on the media id the ReVanced patch
-     * publishes, so it applies to that build alone. Stock YouTube, YouTube
-     * Music and every other player keep the original behaviour: their state
-     * comes from the metadata and the custom actions they expose, and the
-     * rating is sent over the media session.
+     * The entire Data API path relies on the mediaId, which stock YouTube does not publish. 
+     * The ReVanced patch for YouTube exposes the mediaId, allowing this path to apply to that build. 
+     * YT Music (both stock and ReVanced) publishes the mediaId by default; however, due to 
+     * ad interruptions, non-premium users might occasionally fail to retrieve it.
+     * All other players fall back to the default behaviour: their state is derived from 
+     * standard metadata and exposed custom actions, with ratings handled directly via the media session.
      */
     private static boolean isYouTubePackage(String packageName) {
         return YOUTUBE_REVANCED_PACKAGE.equals(packageName)
-                || YOUTUBE_MUSIC_REVANCED_PACKAGE.equals(packageName);
+                || YOUTUBE_MUSIC_REVANCED_PACKAGE.equals(packageName)
+                || YOUTUBE_MUSIC_PACKAGE;
     }
 
     private static FavoriteState ratingToFavoriteState(Rating rating) {
@@ -1739,28 +2148,35 @@ public final class MediaFavoriteController {
      *
      * Keyed by the video id rather than by the track metadata, because that is
      * the one thing about a YouTube video that is stable and unambiguous.
-     * Guarded by {@link #isFavoriteCacheUsable}, so it answers nothing while
-     * the switch is off or an account is available.
+     * Guarded by {@link #isFavoriteCacheUsable} for the build asking, so it
+     * answers nothing for a build that is not on the cache list, and nothing
+     * at all while an account is signed in.
      */
-    private static int getCachedYouTubeFavoriteState(Context context, String videoId) {
+    private static int getCachedYouTubeFavoriteState(
+            Context context, String packageName, String videoId) {
         String key = getVideoCacheKey(videoId);
-        if (context == null || key == null
-                || !isFavoriteCacheUsable(YOUTUBE_REVANCED_PACKAGE)) {
+        if (context == null || key == null || !isFavoriteCacheUsable(packageName)) {
             return FAVORITE_STATE_UNKNOWN;
         }
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .getInt(key, FAVORITE_STATE_UNKNOWN);
     }
 
-    private static void cacheYouTubeFavoriteState(Context context, String videoId, int state) {
+    private static void cacheYouTubeFavoriteState(
+            Context context, String packageName, String videoId, int state) {
         String key = getVideoCacheKey(videoId);
-        if (context == null || key == null
-                || !isFavoriteCacheUsable(YOUTUBE_REVANCED_PACKAGE)) {
+        if (context == null || key == null || !isFavoriteCacheUsable(packageName)) {
             return;
         }
         writeFavoriteCache(context, key, state);
     }
 
+    /**
+     * One store for both ReVanced builds, as before: a like belongs to the
+     * account's video, not to the app it was made in. Which build may use the
+     * store is decided per package by the guards above, not by the key - and
+     * leaving the key alone keeps every status cached so far.
+     */
     private static String getVideoCacheKey(String videoId) {
         if (videoId == null || videoId.isEmpty()) {
             return null;
@@ -2416,6 +2832,23 @@ public final class MediaFavoriteController {
         private static volatile int currentState = MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
 
         /**
+         * True while the status above was read out of the launcher's cache,
+         * rather than resolved by a lookup or produced by something the user did.
+         *
+         * Such a status is worth exactly what the cache is worth at the moment
+         * it is asked about. Once the cache stops being usable for the playing
+         * build - an account signed in, or the build taken off the list - it
+         * stops counting as resolved. Otherwise it would stay on screen and keep
+         * the button lit until the track changed, and a lookup that failed would
+         * leave it there for good.
+         *
+         * Written together with the two fields above under the class monitor,
+         * and read with them the same way, so a status is never paired with the
+         * wrong origin.
+         */
+        private static volatile boolean currentStateFromCache;
+
+        /**
          * Bumped on every status change, so a lookup coming back can tell
          * whether the answer it is holding has been overtaken while it ran.
          */
@@ -2508,13 +2941,12 @@ public final class MediaFavoriteController {
                         : known;
             }
 
-            if (!videoId.equals(currentVideoId)) {
-                return unknownState();
-            }
-
-            return currentState == MediaFavoriteController.FAVORITE_STATE_UNKNOWN
+            // Through getResolvedState, so a status seeded from the cache is
+            // dropped here as well the moment the cache stops being usable.
+            int resolved = getResolvedState(videoId);
+            return resolved == MediaFavoriteController.FAVORITE_STATE_UNKNOWN
                     ? unknownState()
-                    : currentState;
+                    : resolved;
         }
 
         /**
@@ -2526,10 +2958,27 @@ public final class MediaFavoriteController {
             if (videoId == null || videoId.isEmpty()) {
                 return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
             }
-            if (!videoId.equals(currentVideoId)) {
+            int state;
+            boolean fromCache;
+            synchronized (YouTubeRevancedLikeState.class) {
+                if (!videoId.equals(currentVideoId)) {
+                    return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+                }
+                state = currentState;
+                fromCache = currentStateFromCache;
+            }
+            // A status the cache supplied is only as good as the cache is right
+            // now: the moment an account signs in or the build leaves the list,
+            // it is nothing again, whatever it said. Asked outside the monitor,
+            // because the answer may reach the package manager and the lookup
+            // thread must never wait on that.
+            if (fromCache
+                    && state != MediaFavoriteController.FAVORITE_STATE_UNKNOWN
+                    && !MediaFavoriteController.isFavoriteCacheUsable(
+                            MediaFavoriteController.currentRevancedPackage())) {
                 return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
             }
-            return currentState;
+            return state;
         }
 
         /** The video the last state read asked about. */
@@ -2556,8 +3005,10 @@ public final class MediaFavoriteController {
             // either, whatever the fetcher was left installed by: a video the
             // cache has never seen reads as not favorited, and the first press
             // is what puts a status in there.
+            //
+            // Asked for the build that is playing: the cache list is per player.
             if (MediaFavoriteController.isFavoriteCacheUsable(
-                    MediaFavoriteController.YOUTUBE_REVANCED_PACKAGE)) {
+                    MediaFavoriteController.currentRevancedPackage())) {
                 return MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED;
             }
             return hasFetcher()
@@ -2570,9 +3021,35 @@ public final class MediaFavoriteController {
             if (videoId == null || videoId.isEmpty()) {
                 return;
             }
-            currentVideoId = videoId;
-            currentState = state;
-            stateSequence++;
+            synchronized (YouTubeRevancedLikeState.class) {
+                currentVideoId = videoId;
+                currentState = state;
+                currentStateFromCache = false;
+                stateSequence++;
+            }
+        }
+
+        /**
+         * Seeds the status of a video from the launcher's cache.
+         *
+         * Not a setState. A value out of the cache is the weakest statement
+         * there is about a like, so it is marked as such - it counts only while
+         * the cache is usable, see currentStateFromCache - and it does not bump
+         * stateSequence. A lookup already in flight therefore still replaces
+         * it. Bumping made the account's answer look older than the cache's:
+         * the answer was discarded as overtaken, and the cached value stayed on
+         * the button as if confirmed, for the rest of the video.
+         */
+        private static void setCachedState(String videoId, int state) {
+            if (videoId == null || videoId.isEmpty()
+                    || state == MediaFavoriteController.FAVORITE_STATE_UNKNOWN) {
+                return;
+            }
+            synchronized (YouTubeRevancedLikeState.class) {
+                currentVideoId = videoId;
+                currentState = state;
+                currentStateFromCache = true;
+            }
         }
 
         /**
@@ -2611,6 +3088,7 @@ public final class MediaFavoriteController {
             madeForKidsVideoId = null;
             currentVideoId = null;
             currentState = MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+            currentStateFromCache = false;
             fetchedVideoId = null;
             retryVideoId = null;
             retryNotBeforeMs = 0L;
@@ -2628,6 +3106,7 @@ public final class MediaFavoriteController {
                 long wait = retryNotBeforeMs - SystemClock.elapsedRealtime();
                 return "current=" + currentVideoId
                         + " state=" + currentState
+                        + " fromCache=" + currentStateFromCache
                         + " lastQueried=" + lastQueriedVideoId
                         + " fetched=" + fetchedVideoId
                         + " kids=" + madeForKidsVideoId

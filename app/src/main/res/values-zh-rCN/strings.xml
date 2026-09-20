@@ -299,9 +299,8 @@
     <string name="youtube_category">YouTube</string>
     <string name="spotify_category">Spotify</string>
     <string name="music_misc_category">其他</string>
-    <string name="use_favorite_cache">为 YouTube 使用收藏缓存</string>
-    <string name="use_favorite_cache_on">收藏按钮将启用，但点赞状态信息只会存储在启动器中 - Music Widget 无法知道你是否在其他地方点赞或点踩了视频</string>
-    <string name="use_favorite_cache_off">收藏按钮将被禁用</string>
+    <string name="favorite_cache">选择要使用收藏缓存的音乐应用</string>
+    <string name="favorite_cache_summary">某些应用不会向其他应用提供点赞或不喜欢状态。选中的应用将使用内置缓存系统，但点赞或不喜欢状态信息只会存储在启动器中。Music Widget 无法知道你是否在其他应用中点赞或不喜欢了某个视频。</string>
     <string name="oauth_for_youtube_revanced">为 YouTube ReVanced 启用 Google 授权以获取点赞状态</string>
     <string name="youtube_revanced_kids">适用于 madeForKids=true 的 YouTube ReVanced 视频的收藏按钮</string>
     <string name="youtube_revanced_kids_on">收藏按钮将启用，但在 YouTube 中已点赞的视频可能会在小组件中显示为未点赞。</string>

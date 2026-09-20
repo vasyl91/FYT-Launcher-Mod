@@ -299,9 +299,8 @@
     <string name="youtube_category">YouTube</string>
     <string name="spotify_category">Spotify</string>
     <string name="music_misc_category">Other</string>
-    <string name="use_favorite_cache">Use favorite cache for YouTube</string>
-    <string name="use_favorite_cache_on">The Favorite button will be enabled, but like state information will be stored only in the launcher - Music Widget won\'t know whether you liked or disliked a video elsewhere</string>
-    <string name="use_favorite_cache_off">The Favorite button will be disabled</string>
+    <string name="favorite_cache">Select the music apps you want to use the favorite cache with</string>
+    <string name="favorite_cache_summary">Some apps don\'t provide like/dislike status to external apps. Selected apps will use the built-in cache system, but like/dislike status information will be stored only in the launcher. Music Widget won\'t know whether you liked or disliked a video elsewhere.</string>
     <string name="oauth_for_youtube_revanced">Enable Google Authorization for YouTube ReVanced to retrieve the like status</string>
     <string name="youtube_revanced_kids">Favorite button for YouTube ReVanced videos with madeForKids=true</string>
     <string name="youtube_revanced_kids_on">The Favorite button will be enabled but videos liked on YouTube might appear as not liked in the widget.</string>

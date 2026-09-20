@@ -80,6 +80,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
@@ -120,6 +121,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private EditText clientIdEditText;
     private Preference clientIdPreference;
     private Preference oauthForSpotify;
+    private WeakReference<AppListCacheDialogFragment> appListCacheDialog;
     private Preference allAppsTextSize; 
     private EditText allAppsTextSizeEditText;
     private AlertDialog alertAllAppsTextSizeDialog;
@@ -643,10 +645,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 FytRating.handlePreferenceClick(requireActivity());
                 break;
             case Keys.YOUTUBE_REVANCED_KIDS:
-            case Keys.FAVORITE_CACHE:
-                // Both decide whether the favorite button is drawn greyed out,
-                // so the widget is redrawn straight away rather than at
-                // whatever it would have ticked next.
                 MediaFavoriteController.refreshWidget(requireContext());
                 break;
             case Keys.COPY_PATCH_URL:
@@ -705,6 +703,17 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 break;            
             case Keys.SPOTIFY_INSTRUCTION:
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SpotifyGuide()).commit();
+                break;
+            case Keys.FAVORITE_CACHE:
+                AppListCacheDialogFragment previous =
+                        (appListCacheDialog != null) ? appListCacheDialog.get() : null;
+                if (previous != null && previous.isShowing()) {
+                    previous.dismiss();
+                }
+                AppListCacheDialogFragment dialog = new AppListCacheDialogFragment();
+                appListCacheDialog = new WeakReference<>(dialog);
+                dialog.show(requireActivity().getSupportFragmentManager(),
+                        AppListCacheDialogFragment.TAG);
                 break;
             case Keys.DEVICE_SETTINGS:
                 Intent intentSettings = new Intent(Settings.ACTION_SETTINGS);
@@ -1344,6 +1353,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     private void dismissDialogs() {
+        if (appListCacheDialog != null) {
+            AppListCacheDialogFragment cacheDialog = appListCacheDialog.get();
+            if (cacheDialog != null && cacheDialog.isAdded()) {
+                cacheDialog.dismissAllowingStateLoss();
+                getParentFragmentManager().executePendingTransactions();
+            }
+            appListCacheDialog = null;
+        }
         if (alertClientIdDialog != null && alertClientIdDialog.isShowing()) {
             alertClientIdDialog.dismiss();
             alertClientIdDialog = null;

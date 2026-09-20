@@ -34,13 +34,6 @@
             app:title="@string/youtube_category"
             style="@style/PreferenceCategoryStyle" >
 
-            <com.android.launcher66.settings.CustomSwitchPreference
-                android:key="favorite_cache"
-                android:defaultValue="false"
-                android:title="@string/use_favorite_cache"
-                android:summaryOn="@string/use_favorite_cache_on"
-                android:summaryOff="@string/use_favorite_cache_off"
-                app:layout="@layout/nested_preference_category_switch" />
             <com.android.launcher66.settings.CustomPreference
                 android:key="oauth_for_youtube_revanced"
                 android:title="@string/oauth_for_youtube_revanced"
@@ -99,7 +92,13 @@
             app:key="music_misc_category"
             app:title="@string/music_misc_category"
             style="@style/PreferenceCategoryStyle" >  
-                      
+
+            <com.android.launcher66.settings.CustomPreference
+                android:key="favorite_cache"
+                android:title="@string/favorite_cache"
+                android:summary="@string/favorite_cache_summary"
+                android:maxLines="5"
+                app:layout="@layout/nested_preference_category_content" />                 
             <com.android.launcher66.settings.CustomSwitchPreference
                 android:key="fyt_data"
                 android:defaultValue="false"
