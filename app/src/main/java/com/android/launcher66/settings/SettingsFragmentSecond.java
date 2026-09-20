@@ -1216,24 +1216,24 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 dialog.dismissAllowingStateLoss();
                 getParentFragmentManager().executePendingTransactions();
             }
+            colorPicker = null;
         }
-        colorPicker = null;
         if (bgColorPicker != null) {
             ColorPicker bgDialog = bgColorPicker.get();
             if (bgDialog != null && bgDialog.isAdded()) {
                 bgDialog.dismissAllowingStateLoss();
                 getParentFragmentManager().executePendingTransactions();
             }
+            bgColorPicker = null;
         }
-        bgColorPicker = null;
         if (appListStatsDialog != null) {
             AppListStatsDialogFragment statsDialog = appListStatsDialog.get();
             if (statsDialog != null && statsDialog.isAdded()) {
                 statsDialog.dismissAllowingStateLoss();
                 getParentFragmentManager().executePendingTransactions();
             }
+            appListStatsDialog = null;
         }
-        appListStatsDialog = null;
         Fragment pipPicker = requireActivity()
                 .getSupportFragmentManager()
                 .findFragmentByTag(AppListPipDialogFragment.TAG);

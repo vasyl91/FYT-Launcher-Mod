@@ -57,8 +57,6 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
     /** #FC6B03 with alpha 90 baked in - avoids the getBackground().setAlpha() NPE path. */
     private static final int COLOR_SELECTED = Color.argb(90, 0xFC, 0x6B, 0x03);
 
-    private static WeakReference<AppListPipDialogFragment> sInstance;
-
     ImageView currentAppIcon;
     TextView currentAppName;
     AppSelectAdapter mAdapter;
@@ -150,8 +148,6 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mViewDestroyed = false;
-
-        sInstance = new WeakReference<>(this);
 
         pipKey = (getArguments() != null) ? getArguments().getString(ARG_PIP_KEY, "") : "";
         // Application context on purpose: the prefs object outlives single callbacks and
@@ -328,14 +324,6 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
     }
 
     @Override
-    public void onDismiss(@NonNull DialogInterface dialog) {
-        if (sInstance != null && sInstance.get() == this) {
-            sInstance = null;
-        }
-        super.onDismiss(dialog);
-    }
-
-    @Override
     public void onDestroyView() {
         // First thing: the filter task and any pending callback must bail out immediately.
         mViewDestroyed = true;
@@ -391,10 +379,6 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
         mData = null;
         // Public API - the caller has no hook to clear it, so release it here
         mItemClickDataListener = null;
-
-        if (sInstance != null && sInstance.get() == this) {
-            sInstance = null;
-        }
     }
 
     // =====================================================================================

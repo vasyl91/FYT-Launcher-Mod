@@ -53,8 +53,6 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
     /** #FC6B03 with alpha 90 baked in - avoids the getBackground().setAlpha() NPE path. */
     private static final int COLOR_SELECTED = Color.argb(90, 0xFC, 0x6B, 0x03);
 
-    private static WeakReference<AppListStatsDialogFragment> sInstance;
-
     ImageView currentAppIcon;
     TextView currentAppName;
     AppSelectAdapter mAdapter;
@@ -112,8 +110,6 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mViewDestroyed = false;
-
-        sInstance = new WeakReference<>(this);
 
         // Application context on purpose: the prefs object outlives single callbacks and
         // getActivity() can already be null by the time toggleSelection() runs.
@@ -195,14 +191,6 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
     }
 
     @Override
-    public void onDismiss(@NonNull DialogInterface dialog) {
-        if (sInstance != null && sInstance.get() == this) {
-            sInstance = null;
-        }
-        super.onDismiss(dialog);
-    }
-
-    @Override
     public void onDestroyView() {
         // First thing: any callback still in flight must bail out immediately.
         mViewDestroyed = true;
@@ -256,10 +244,6 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
         mGridView = null;
         mRootView = null;
         mData = null;
-
-        if (sInstance != null && sInstance.get() == this) {
-            sInstance = null;
-        }
     }
 
     // =====================================================================================
