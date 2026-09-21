@@ -2031,7 +2031,7 @@ public final class MediaFavoriteController {
     private static boolean isYouTubePackage(String packageName) {
         return YOUTUBE_REVANCED_PACKAGE.equals(packageName)
                 || YOUTUBE_MUSIC_REVANCED_PACKAGE.equals(packageName)
-                || YOUTUBE_MUSIC_PACKAGE;
+                || YOUTUBE_MUSIC_PACKAGE.equals(packageName);
     }
 
     private static FavoriteState ratingToFavoriteState(Rating rating) {
