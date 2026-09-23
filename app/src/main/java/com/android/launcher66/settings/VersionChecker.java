@@ -28,6 +28,8 @@ public class VersionChecker {
 
     private static final String TAG = "VersionChecker";
     private static final String GITHUB_RELEASES_URL = "https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest";
+    private static final String UPDATE_FILE_PREFIX = "update";
+    private static final String UPDATE_FILE_SUFFIX = ".apk";
 
     private AsyncTask<Void, Void, String> checkTask;
     private AsyncTask<Void, Integer, File> downloadTask;
@@ -244,7 +246,7 @@ public class VersionChecker {
 
                     input = connection.getInputStream();
                     File outputFile = new File(appContext.getExternalFilesDir(null),
-                            "update" + latestVersion + ".apk");
+                            UPDATE_FILE_PREFIX + latestVersion + UPDATE_FILE_SUFFIX);
                     output = new FileOutputStream(outputFile);
 
                     byte[] buffer = new byte[4096];
@@ -346,7 +348,13 @@ public class VersionChecker {
             var session = packageInstaller.createSession(parameters);
             Session.TerminalStateListener.bind(session, installSubscriptions)
                     .addOnCancelListener(sessionId -> Log.i(TAG, "Install cancelled"))
-                    .addOnSuccessListener(sessionId -> Log.i(TAG, "Install success"))
+                    .addOnSuccessListener(sessionId -> {
+                        Log.i(TAG, "Install success");
+                        // Usually not reached: replacing the launcher package kills this process
+                        // right after the commit. deleteInstalledUpdates() on the next start
+                        // covers that case; this only helps when the process survives.
+                        deleteQuietly(apkFile);
+                    })
                     .addOnFailureListener((sessionId, failure) -> {
                         DownloadCallback current = downloadCallbackRef.get();
                         if (current == null) {
@@ -385,6 +393,70 @@ public class VersionChecker {
         cancelCheck();
         cancelDownload();
         cancelInstall();
+    }
+
+    // =====================================================================================
+    // CLEANUP OF DOWNLOADED UPDATES
+    // =====================================================================================
+
+    /**
+     * Deletes downloaded update APKs that are already installed, i.e. whose version (taken from
+     * the file name "update<version>.apk") is not newer than the running version.
+     *
+     * Call once per process start, e.g. from LauncherApplication.onCreate() in the main process.
+     * A successful update kills and restarts the launcher, so the next start is the reliable
+     * moment to remove the file. Downloads of a newer version (e.g. a failed install) are kept.
+     * Runs on a background thread.
+     */
+    public static void deleteInstalledUpdates(Context context) {
+        final Context appContext = context.getApplicationContext();
+        final String currentVersion = BuildConfig.VERSION_NAME;
+        new Thread(() -> {
+            File dir = appContext.getExternalFilesDir(null);
+            File[] files = dir != null ? dir.listFiles() : null;
+            if (files == null) {
+                return;
+            }
+            for (File file : files) {
+                String name = file.getName();
+                if (!file.isFile() || !name.startsWith(UPDATE_FILE_PREFIX) || !name.endsWith(UPDATE_FILE_SUFFIX)) {
+                    continue;
+                }
+                String fileVersion = name.substring(UPDATE_FILE_PREFIX.length(),
+                        name.length() - UPDATE_FILE_SUFFIX.length());
+                boolean installed;
+                try {
+                    installed = compareVersions(fileVersion, currentVersion) <= 0;
+                } catch (NumberFormatException e) {
+                    installed = true; // unparsable name - not useful for anything, remove it
+                }
+                if (installed) {
+                    Log.i(TAG, "Deleting installed update file " + name);
+                    deleteQuietly(file);
+                }
+            }
+        }, "UpdateFileCleanup").start();
+    }
+
+    /** Numeric comparison of dotted versions ("1.2.10" > "1.2.9"). Negative if a < b. */
+    private static int compareVersions(String a, String b) {
+        String[] pa = a.split("\\.");
+        String[] pb = b.split("\\.");
+        int max = Math.max(pa.length, pb.length);
+        for (int i = 0; i < max; i++) {
+            int na = i < pa.length ? Integer.parseInt(pa[i]) : 0;
+            int nb = i < pb.length ? Integer.parseInt(pb[i]) : 0;
+            if (na != nb) {
+                return Integer.compare(na, nb);
+            }
+        }
+        return 0;
+    }
+
+    private static void deleteQuietly(File file) {
+        if (file != null && file.exists() && !file.delete()) {
+            Log.w(TAG, "Could not delete " + file);
+        }
     }
 
     private static void closeQuietly(HttpURLConnection connection) {

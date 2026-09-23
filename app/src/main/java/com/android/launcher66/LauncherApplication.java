@@ -33,6 +33,7 @@ import androidx.preference.PreferenceManager;
 import com.android.launcher66.perf.BaselineProfileCompiler;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.LogcatWorker;
+import com.android.launcher66.settings.VersionChecker;
 import com.android.launcher66.settings.WakeDetectionService;
 import com.fyt.skin.SkinManager;
 import com.fyt.skin.util.FileUtil;
@@ -125,6 +126,7 @@ public class LauncherApplication extends Application {
         ), 1000);
         LeakCanaryInit.init();
         BaselineProfileCompiler.scheduleIfNeeded(this);
+        VersionChecker.deleteInstalledUpdates(this);
         Log.d("LauncherApplication", "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms");
     }
 
