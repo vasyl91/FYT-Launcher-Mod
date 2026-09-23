@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.perf.BaselineProfileCompiler;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.LogcatWorker;
 import com.android.launcher66.settings.WakeDetectionService;
@@ -123,6 +124,7 @@ public class LauncherApplication extends Application {
                 "wake detection"
         ), 1000);
         LeakCanaryInit.init();
+        BaselineProfileCompiler.scheduleIfNeeded(this);
         Log.d("LauncherApplication", "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms");
     }
 

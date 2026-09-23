@@ -277,23 +277,8 @@
     <string name="wallpaper_picker_launcher">应用内壁纸选择器</string> 
     <string name="all_apps_textSize_str">设置应用列表图标文字大小（最大50）</string>  
     <string name="workspace_textSize_str">设置主屏幕图标文字大小（最大50）</string>     
-    <string name="launcher_home">设备唤醒时主屏幕始终置顶</string>    
-    <string name="device_settings">设备设置</string> 
-    <string name="layout_category">布局</string>
-    <string name="misc_category">其他</string>
-    <string name="widgets_category">小部件</string>
-    <string name="stats_category">油耗统计</string>
-    <string name="layout_set">布局已设置！按 Home 键查看效果。</string>
-    <string name="stats_pos_set">应用内窗口位置已保存！</string>
-    <string name="creator_map">导航</string>    
-    <string name="creator_date">日期</string>
-    <string name="creator_music">音乐</string>
-    <string name="creator_radio">收音机</string>
-    <string name="stats_name">应用内统计</string>
-    <string name="overlapping">小部件重叠了！</string>
-    <string name="wont_save">当前布局将不会被保存。继续将重置布局。</string>
-    <string name="proceed_and_reset">继续并重置</string>
-    <string name="dismiss">关闭</string>
+    <string name="launcher_home">设备唤醒时主屏幕始终置顶</string>
+    <string name="baseline_profile_summary">基准配置文件摘要</string>
 
     <string name="music_widget_category">音乐小组件</string>
     <string name="youtube_category">YouTube</string>
@@ -337,6 +322,23 @@
     <string name="spotify_state_not_logged_in">未登录</string>
     <string name="spotify_state_expired">访问权限已过期，请重新登录</string>
     <string name="spotify_state_ready">已登录</string>
+    
+    <string name="device_settings">设备设置</string> 
+    <string name="layout_category">布局</string>
+    <string name="misc_category">其他</string>
+    <string name="widgets_category">小部件</string>
+    <string name="stats_category">油耗统计</string>
+    <string name="layout_set">布局已设置！按 Home 键查看效果。</string>
+    <string name="stats_pos_set">应用内窗口位置已保存！</string>
+    <string name="creator_map">导航</string>    
+    <string name="creator_date">日期</string>
+    <string name="creator_music">音乐</string>
+    <string name="creator_radio">收音机</string>
+    <string name="stats_name">应用内统计</string>
+    <string name="overlapping">小部件重叠了！</string>
+    <string name="wont_save">当前布局将不会被保存。继续将重置布局。</string>
+    <string name="proceed_and_reset">继续并重置</string>
+    <string name="dismiss">关闭</string>
 
     <string name="instantaneous_consumption">\u0020油耗：</string>
     <string name="driving_mileage">\u0020续航里程：</string>

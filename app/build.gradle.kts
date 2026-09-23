@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dependency.analysis)
+    alias(libs.plugins.baselineprofile)
 }
 val keystoreProperties = Properties().apply {
     val file = rootProject.file("keystore.properties")
@@ -23,8 +24,11 @@ android {
         applicationId = "com.android.launcher66"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.2.1"
+        val appVersionName = "1.2.1"
+        versionName = appVersionName
+        // x.y.z -> x0y0z; every release gets a higher versionCode automatically
+        versionCode = appVersionName.split(".").map(String::toInt)
+            .let { (major, minor, patch) -> major * 10_000 + minor * 100 + patch }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -83,13 +87,6 @@ android {
             enableAndroidTestCoverage = true
             buildConfigField("boolean", "IS_DEBUG_FEATURES_ENABLED", "true")
         }
-
-        create("profile") {
-            initWith(getByName("release"))
-            isProfileable = true
-            signingConfig = signingConfigs.getByName("debug")
-            matchingFallbacks += listOf("release")
-        }
     }
 
     compileOptions {
@@ -129,6 +126,13 @@ android {
 }
 
 androidComponents {
+    beforeVariants { v ->
+        val isPhone = v.productFlavors.any { it.second == "phone" }
+        val bt = v.buildType
+        if (bt == "nonMinifiedProfile" || bt == "benchmarkProfile" ||
+            (isPhone && (bt == "nonMinifiedRelease" || bt == "benchmarkRelease"))
+        ) v.enable = false
+    }
     onVariants { variant ->
         val flavor = variant.flavorName ?: ""
         val buildType = variant.buildType ?: ""
@@ -138,6 +142,18 @@ androidComponents {
                 output.outputFileName = "${flavor}_${buildType}_${output.versionName.get()}.apk"
             }
         }
+    }
+}
+
+baselineProfile {
+    // Do not generate the profile on every assembleRelease (it would require a connected device).
+    automaticGenerationDuringBuild = false
+    // Save the result in src/ (commit it to the repo).
+    saveInSrc = true
+    // Startup profile -> R8 arranges startup classes in the primary DEX file.
+    dexLayoutOptimization = true
+    warnings {
+        disabledVariants = false
     }
 }
 
@@ -198,6 +214,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.okhttp)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.profileinstaller)
     runtimeOnly(libs.androidx.startup.runtime)
 
     // ─── Room ───
@@ -205,6 +222,9 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     ksp(libs.glide.ksp)
+
+    // ─── Baseline Profile ───
+    "baselineProfile"(project(":baselineprofile"))
 
     // ─── Debug ───
     debugImplementation(libs.leakcanary.android)

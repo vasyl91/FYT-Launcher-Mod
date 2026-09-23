@@ -70,6 +70,7 @@ import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.MediaFavoriteController;
 import com.android.launcher66.R;
 import com.android.launcher66.WallpaperPickerActivity;
+import com.android.launcher66.perf.BaselineProfileCompiler;
 import com.fyt.skin.SkinAttribute;
 import com.fyt.skin.SkinUtils;
 
@@ -338,11 +339,12 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         allAppsTextSize.setSummary(allAppsTextSizeStr);
         dialogAllAppsTextSizeEditText();
 
-
         workspaceTextSize = findPreference(Keys.WORKSPACE_TEXT_SIZE);
         String workspaceTextSizeStr = sharedPrefs.getString(Keys.WORKSPACE_TEXT_SIZE, "28");
         workspaceTextSize.setSummary(workspaceTextSizeStr);
         dialogWorkspaceTextSizeEditText();
+
+        Preference baselineProfileSummary = findPreference("baseline_profile_summary");
 
         nightMode = findPreference(Keys.NIGHT_MODE);
         wallpapersCategory = findPreference("wallpapers_category");
@@ -447,6 +449,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (launcherHome != null) {
             launcherHome.setOnPreferenceClickListener(this);
+        }
+        if (baselineProfileSummary != null) {
+            String baselineSummary = BaselineProfileCompiler.statusText(LauncherApplication.sApp);
+            baselineProfileSummary.setSummary(baselineSummary);
         }
         nightMode();
         if (logcatCategory != null) {

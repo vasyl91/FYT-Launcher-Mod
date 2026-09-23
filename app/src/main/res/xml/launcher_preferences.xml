@@ -145,6 +145,9 @@
             android:key="launcher_home"
             android:defaultValue="true"
             android:title="@string/launcher_home" />
+        <Preference
+            android:key="baseline_profile_summary"
+            android:title="@string/baseline_profile_summary" />
 
     </PreferenceCategory>
 

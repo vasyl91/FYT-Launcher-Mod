@@ -277,23 +277,8 @@
     <string name="wallpaper_picker_launcher">In-app wallpaper picker</string> 
     <string name="all_apps_textSize_str">Set all apps icon text size (max. 50)</string>  
     <string name="workspace_textSize_str">Set main screen icon text size (max. 50)</string>     
-    <string name="launcher_home">Home screen always on top while device wakes up</string>    
-    <string name="device_settings">Device settings</string> 
-    <string name="layout_category">Layout</string>
-    <string name="misc_category">Miscellaneous</string>
-    <string name="widgets_category">Widgets</string>
-    <string name="stats_category">Fuel statistics</string>
-    <string name="layout_set">Layout has been set! Press Home button to see the result.</string>
-    <string name="stats_pos_set">In-app window location saved!</string>
-    <string name="creator_map">Navi</string>    
-    <string name="creator_date">Date</string>
-    <string name="creator_music">Music</string>
-    <string name="creator_radio">Radio</string>
-    <string name="stats_name">In-app stats</string>
-    <string name="overlapping">Widgets are overlapping!</string>
-    <string name="wont_save">Current layout will not be saved. Proceeding will reset the layout.</string>
-    <string name="proceed_and_reset">Proceed and reset</string>
-    <string name="dismiss">Dismiss</string>
+    <string name="launcher_home">Home screen always on top while device wakes up</string>
+    <string name="baseline_profile_summary">Baseline profile summary</string>
 
     <string name="music_widget_category">Music Widget</string>
     <string name="youtube_category">YouTube</string>
@@ -338,6 +323,23 @@
     <string name="spotify_state_expired">Access expired, sign in again</string>
     <string name="spotify_state_ready">Signed in</string>
     <string name="spotify_dev_site">https://developer.spotify.com/</string>
+    
+    <string name="device_settings">Device settings</string> 
+    <string name="layout_category">Layout</string>
+    <string name="misc_category">Miscellaneous</string>
+    <string name="widgets_category">Widgets</string>
+    <string name="stats_category">Fuel statistics</string>
+    <string name="layout_set">Layout has been set! Press Home button to see the result.</string>
+    <string name="stats_pos_set">In-app window location saved!</string>
+    <string name="creator_map">Navi</string>    
+    <string name="creator_date">Date</string>
+    <string name="creator_music">Music</string>
+    <string name="creator_radio">Radio</string>
+    <string name="stats_name">In-app stats</string>
+    <string name="overlapping">Widgets are overlapping!</string>
+    <string name="wont_save">Current layout will not be saved. Proceeding will reset the layout.</string>
+    <string name="proceed_and_reset">Proceed and reset</string>
+    <string name="dismiss">Dismiss</string>
 
     <string name="instantaneous_consumption">\u0020Fuel consum.:</string>
     <string name="driving_mileage">\u0020Cruising Range:</string>
