@@ -60,6 +60,8 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
      * Delays between successive "is PiP actually up?" checks after a wake, in ms.
      * Total budget here is ~13 s, which comfortably covers a slow cold resume.
      */
+    /** How long after a wake the launcher keeps pushing back a PiP app restored fullscreen. */
+    private static final long WAKE_REASSERT_WINDOW_MS = 5000L;
     private static final long[] PIP_ENSURE_DELAYS_MS = { 2500L, 1500L, 2000L, 3000L, 4000L };
     /**
      * Cheap re-checks while the launcher is in no state to open PiP.
@@ -187,23 +189,22 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 WindowUtil.invalidateOpenPipDebounce();
 
                 if (mPrefs.getBoolean(Keys.LAUNCHER_HOME, true)) {
+                    // Starts now and off the main thread: com.syu.ms relaunches the last top app
+                    // within a few hundred ms of the wake, and a PiP app restored fullscreen keeps
+                    // the launcher paused -- and the panes unbuilt -- until something pushes it back.
+                    WindowUtil.reassertHomeOverPipAppsAfterWake(WAKE_REASSERT_WINDOW_MS);
                     handler.postDelayed(this::pressHomeButton, 500);
                 }
                 handler.postDelayed(this::dismissAppListDialog, 500);
                 handler.postDelayed(() -> sendWakeRefresh("early"), 900);
                 handler.postDelayed(() -> sendWakeRefresh("late"), 1800);
                 long lastSleepTimestamp = mPrefs.getLong("sleep_timestamp", -1L);
-                boolean resetPip = false;
 
                 if (lastSleepTimestamp > 0) {
                     long currentTime = System.currentTimeMillis();
                     long diff = currentTime - lastSleepTimestamp;
 
-                    // The wall clock is corrected shortly after a wake -- one capture shows it
-                    // stepping back 12 seconds mid-log after a 34 hour sleep -- so this difference
-                    // can come out negative or absurdly large. Treat anything that cannot be a real
-                    // interval as "long sleep", which is the safe side: a cold reset costs a rebuild,
-                    // a missed one leaves stale VirtualDisplays behind.
+                    // The wall clock is corrected shortly after a wake
                     if (diff < 0) {
                         Log.w(TAG, "Sleep duration negative (" + diff + " ms), clock stepped; treating as long sleep");
                         diff = Long.MAX_VALUE;
@@ -213,15 +214,6 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     if (diff > 10 * 60 * 1000) {
                         Log.e(TAG, "Sleep duration exceeded 10 minutes: " + diff + " ms");
                         getSharedPreferences("HelpersPrefs", 0).edit().clear().apply();
-
-                        pipEnsureGeneration++;
-                        final int coldGen = pipEnsureGeneration;
-                        WindowUtil.coldResetPipStack(() -> {
-                            if (coldGen != pipEnsureGeneration) return;
-                            WindowUtil.startMapPip(false);
-                            restartPip();
-                        });
-                        resetPip = true;
                     }
                 }
                 if (mPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
@@ -232,9 +224,9 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 }
 
                 boolean userMap = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);
-                if (!resetPip && userMap) {
+                if (userMap) {
                     restartPip();
-                } else if (!userMap) {
+                } else {
                     // PiP disabled in settings -- make sure nothing from an earlier wake reopens it.
                     pipEnsureGeneration++;
                 }
@@ -330,10 +322,37 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
         }
     }
 
+    /**
+     * Brings the launcher to the front after a wake.
+     *
+     * The HOME intent below is NOT harmless when the launcher is already running. With setClass()
+     * plus FLAG_ACTIVITY_NEW_TASK the system answered START_SUCCESS and built a second
+     * ActivityRecord instead of reusing the existing one -- the launcher was destroyed and
+     * recreated a couple of seconds into the wake. The pane rebuild that had already started was
+     * torn down with it, and everything had to be done again on the new instance, which is the
+     * ~3.5 s of wasted work before the apps in the panes even began to load.
+     *
+     * When the launcher is alive, moving its task to the front does the same job without a relaunch.
+     */
     public void pressHomeButton() {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher != null && !launcher.isDestroyed() && !launcher.isFinishing()) {
+            try {
+                ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+                if (am != null) {
+                    am.moveTaskToFront(launcher.getTaskId(), 0);
+                    Log.i(TAG, "pressHomeButton: launcher already alive, moved its task to front");
+                    return;
+                }
+            } catch (Throwable t) {
+                Log.w(TAG, "pressHomeButton: moveTaskToFront failed, falling back to HOME intent", t);
+            }
+        }
+
         Intent homeIntent = new Intent(Intent.ACTION_MAIN);
         homeIntent.addCategory(Intent.CATEGORY_HOME);
-        homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // RESET_TASK_IF_NEEDED so an existing home task is reused rather than replaced.
+        homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         homeIntent.setClass(this, Launcher.class);
         startActivity(homeIntent);
     }
@@ -415,7 +434,16 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 // cannot fix that (the pane is visible, so it gets debounced); only a cold reset can.
                 if (!isPipContentHealthy()) {
                     if (repairUsed) {
-                        Log.w(TAG, "PiP ensure: still unhealthy after a repair, leaving it alone");
+                        // The per-pane repair did not take, so the displays themselves are the
+                        // problem. This is the only place that still needs the full teardown.
+                        Log.w(TAG, "PiP ensure: still unhealthy after a repair, cold-resetting the stack");
+                        pipEnsureGeneration++;
+                        final int coldGen = pipEnsureGeneration;
+                        WindowUtil.coldResetPipStack(() -> {
+                            if (coldGen != pipEnsureGeneration) return;
+                            WindowUtil.startMapPip(false);
+                            restartPip();
+                        });
                         return;
                     }
                     repairUsed = true;

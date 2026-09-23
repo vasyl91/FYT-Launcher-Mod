@@ -293,6 +293,8 @@ public class WindowHostSinglePane {
 
     void dismissAsync() {
         final int myGen = ++gen;
+        // Anything still queued for this pane belongs to the cycle being dismissed.
+        paneHandler.removeCallbacksAndMessages(null);
         visible.set(false);
         parkInvisible();
         postMain(() -> hardRemoveWindow(false, myGen));
@@ -314,6 +316,8 @@ public class WindowHostSinglePane {
         hasPendingBounds = false; pendingBounds.setEmpty();
         startDeferredForBounds = false;
         resetVdCache();
+        // Last: nothing queued may outlive the pane and pin its activity.
+        paneHandler.removeCallbacksAndMessages(null);
     }
 
     /** Called by WindowUtil after a native surface swap moved an ActivityView in or out. */
@@ -802,6 +806,9 @@ public class WindowHostSinglePane {
      */
     private void applyPaneGeometry(int retriesLeft) {
         if (host == null || av == null || !childAttached) return;
+        // The reparent-guard branch below re-arms itself with a fresh retry budget, so it has to
+        // notice when the activity is gone rather than rely on someone tearing the pane down.
+        if (activity == null || activity.isDestroyed()) return;
 
         final View v = WindowHostActivityView.asView(av);
         if (v == null) return;
@@ -1084,6 +1091,8 @@ public class WindowHostSinglePane {
 
     private void startNow(String pkg, int expectedGen) {
         if (gen != expectedGen) return;
+        // The surface-not-ready branch retries every 50 ms with no limit of its own.
+        if (activity == null || activity.isDestroyed()) return;
         if (taskId > 0 && pkg.equals(currentPkg)) { appStarted.set(true); return; }
 
         final Runnable doStart = () -> {
@@ -1346,10 +1355,19 @@ public class WindowHostSinglePane {
         }, POST_LAYOUT_FALLBACK_MS);
     }
 
-    private void postMain(Runnable r) { new Handler(Looper.getMainLooper()).post(r); }
+    /**
+     * Every delayed callback this pane posts goes through here, so the whole lot can be dropped
+     * when the pane dies. With a fresh Handler per post there was no handle to cancel them, and a
+     * retry loop still queued on a dismissed pane kept the pane -- and through its activity field
+     * the destroyed Launcher, 10.3 MB -- alive until it happened to stop. That is the
+     * WindowHostSinglePane$$ExternalSyntheticLambda3 LeakCanary kept finding on the main queue.
+     */
+    private final Handler paneHandler = new Handler(Looper.getMainLooper());
+
+    private void postMain(Runnable r) { paneHandler.post(r); }
 
     private void postMainDelayed(Runnable r, long delayMs) {
-        new Handler(Looper.getMainLooper()).postDelayed(r, delayMs);
+        paneHandler.postDelayed(r, delayMs);
     }
 
     private static void disableTouchRecursively(View v) {

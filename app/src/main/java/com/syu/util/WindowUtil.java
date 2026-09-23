@@ -69,6 +69,19 @@ public class WindowUtil {
     private static final Handler retryHandler = new Handler(Looper.getMainLooper());
     private static boolean pipRetryPending = false;
 
+    /**
+     * Short, bounded retries for a trigger that lands while the launcher is momentarily paused.
+     *
+     * During a wake the launcher resumes and pauses several times within a second while the ROM
+     * brings its own activities up (three onResume and two onPause in 1.2 s in the capture).
+     * onPause clears allowPip, and a startMapPip() landing in one of those gaps used to return
+     * without a trace; nothing retried it until the launcher's pipWatchdog fired 1.2 s after the
+     * LAST resume. That cost about two seconds per wake before any pane app was even started.
+     */
+    private static final int  MAX_ALLOW_PIP_RETRIES = 8;
+    private static final long ALLOW_PIP_RETRY_MS = 200L;
+    private static int allowPipRetries = 0;
+
     public static boolean dualPip = false;
     public static boolean firstPip = false;
     public static boolean secondPip = false;
@@ -469,8 +482,10 @@ public class WindowUtil {
             // had already moved past it nothing ever showed that pane again -- the single pane
             // stayed empty while dual and fourth came up normally.
             if (rebuildInProgressLocked(now, hostAlive, panesHealthy)) {
-                Log.i(TAG, "openPip(): rebuild in progress (pending=" + pendingPaneLaunches
-                        + ", " + (now - lastRebuildStartedAtMs) + " ms in), skipping this trigger");
+                String why = (openPipInFlight && now - openPipInFlightSinceMs < OPEN_PIP_INFLIGHT_TIMEOUT_MS)
+                        ? "claimed " + (now - openPipInFlightSinceMs) + " ms ago by another trigger"
+                        : "started " + (now - lastRebuildStartedAtMs) + " ms ago, pending=" + pendingPaneLaunches;
+                Log.i(TAG, "openPip(): rebuild in progress (" + why + "), skipping this trigger");
                 return true;
             }
 
@@ -532,6 +547,8 @@ public class WindowUtil {
             openPipInFlight = false;
             lastRebuildStartedAtMs = 0L;
         }
+        // Every wake gets a fresh budget for the paused-launcher retries.
+        allowPipRetries = 0;
         Log.i(TAG, "openPip debounce invalidated");
     }
 
@@ -552,6 +569,7 @@ public class WindowUtil {
         prewarmConfiguredPipPackages(launcher);
 
         if (launcher.allowPip) {
+            allowPipRetries = 0;
             try {
                 if (helpers == null) {
                     helpers = new Helpers();
@@ -670,6 +688,18 @@ public class WindowUtil {
             }
         } else {
             clearOpenPipInFlight();
+            // Paused right now -- most likely one of the brief pause/resume flips of a wake.
+            // Try again shortly instead of waiting for the watchdog.
+            if (!pipRetryPending && allowPipRetries < MAX_ALLOW_PIP_RETRIES) {
+                allowPipRetries++;
+                pipRetryPending = true;
+                Log.i(TAG, "openPip(): launcher paused, retrying in " + ALLOW_PIP_RETRY_MS
+                        + " ms (" + allowPipRetries + "/" + MAX_ALLOW_PIP_RETRIES + ")");
+                retryHandler.postDelayed(() -> {
+                    pipRetryPending = false;
+                    WindowUtil.startMapPip(show);
+                }, ALLOW_PIP_RETRY_MS);
+            }
         }
     }
 
@@ -1014,6 +1044,78 @@ public class WindowUtil {
         };
         REASSERT_EXEC.execute(reassertTask);
     }
+
+    /**
+     * Pushes the launcher back over any PiP app that comes up fullscreen right after a wake.
+     *
+     * com.syu.ms remembers the top app when the MCU goes off and relaunches it on wake with a
+     * plain MAIN/LAUNCHER intent -- which, for an app that lives in a pane, means fullscreen on
+     * the default display. In one long-sleep capture it relaunched YouTube 91 ms after the cold
+     * reset had force-stopped it; the launcher was paused behind it, and pressHomeButton() --
+     * posted 500 ms after the wake on a main thread that then stalled for two seconds -- only
+     * brought it back at +2.2 s. The panes cannot be built while the launcher is paused, so every
+     * app in them started that much later. Earlier this same restore is what left Maps fullscreen.
+     *
+     * Runs on REASSERT_EXEC, so a congested main thread cannot delay it, and only acts on the
+     * configured PiP packages: anything else on top (a bridge activity, a fullscreen app the user
+     * had open) is left for pressHomeButton() and the user's LAUNCHER_HOME preference to decide.
+     */
+    public static void reassertHomeOverPipAppsAfterWake(long windowMs) {
+        final Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        final ActivityManager am =
+                (ActivityManager) launcher.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        if (am == null) return;
+
+        if (prefs == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        }
+        final Set<String> pipPkgs = new HashSet<>();
+        for (String k : new String[]{ Keys.PIP_FIRST_PACKAGE, Keys.PIP_SECOND_PACKAGE,
+                                      Keys.PIP_THIRD_PACKAGE, Keys.PIP_FOURTH_PACKAGE }) {
+            String pkg = prefs.getString(k, "");
+            if (pkg != null && !pkg.isEmpty()) pipPkgs.add(pkg);
+        }
+        if (pipPkgs.isEmpty()) return;
+
+        final int launcherTaskId = launcher.getTaskId();
+        final long deadline = SystemClock.elapsedRealtime() + windowMs;
+        final int myGeneration;
+        synchronized (WindowUtil.class) {
+            myGeneration = ++wakeReassertGeneration;
+        }
+
+        REASSERT_EXEC.execute(new Runnable() {
+            @Override public void run() {
+                if (wakeReassertGeneration != myGeneration) return;
+                if (SystemClock.elapsedRealtime() > deadline) return;
+                try {
+                    // A PiP app restored fullscreen necessarily pauses the launcher. While the
+                    // launcher is resumed, any PiP package reported on top is one of our own panes
+                    // on its VirtualDisplay, and there is nothing to push back.
+                    Launcher current = Launcher.getLauncher();
+                    boolean launcherInFront = current != null && current.allowPip;
+
+                    List<ActivityManager.RunningTaskInfo> tasks =
+                            launcherInFront ? null : am.getRunningTasks(1);
+                    if (tasks != null && !tasks.isEmpty() && tasks.get(0).topActivity != null) {
+                        String top = tasks.get(0).topActivity.getPackageName();
+                        if (pipPkgs.contains(top)) {
+                            am.moveTaskToFront(launcherTaskId, 0);
+                            Log.i(TAG, "wake reassert: " + top + " came up fullscreen, launcher moved back on top");
+                        }
+                    }
+                } catch (Throwable t) {
+                    Log.w(TAG, "wake reassert failed, stopping", t);
+                    return;
+                }
+                REASSERT_EXEC.schedule(this, WAKE_REASSERT_POLL_MS, TimeUnit.MILLISECONDS);
+            }
+        });
+    }
+
+    private static final long WAKE_REASSERT_POLL_MS = 120L;
+    private static volatile int wakeReassertGeneration = 0;
 
     /**
      * Reparents a swapped pair with the source-stealing side going first, for the same reason
@@ -1507,15 +1609,35 @@ public class WindowUtil {
                 }
 
                 ThreadManager.getLongPool().execute(() -> {
+                    // Tasks first, processes only if that is not enough.
+                    //
+                    // Steps 1-3 already destroyed every VirtualDisplay together with the tasks on
+                    // it, so the stale configuration the force-stop was there to clear is gone
+                    // before we get here. Killing the processes on top of that made every PiP app
+                    // cold-start twice: com.syu.ms relaunches the remembered top app within ~100 ms
+                    // of the kill, fullscreen and cold, and the pane then starts it a second time.
+                    // Four simultaneous cold starts are also what keeps the system busy enough that
+                    // the launcher needs another 1.5 s to be resumed, which is time the panes wait.
                     for (String pkg : pkgs) {
-                        forceStopPackageNow(pkg);
                         removeTasksForPackage(pkg);
                     }
 
                     boolean clear = false;
+                    boolean forced = false;
                     for (int i = 0; i < 12; i++) {
-                        clear = isPipStackClear(pkgs);
+                        clear = arePipTasksClear(pkgs);
                         if (clear) break;
+
+                        // Something is holding on to a task; fall back to the old behaviour for it.
+                        if (!forced && i >= 2) {
+                            forced = true;
+                            Log.i(TAG, "coldResetPipStack: tasks still present, force-stopping");
+                            for (String pkg : pkgs) {
+                                forceStopPackageNow(pkg);
+                                removeTasksForPackage(pkg);
+                            }
+                        }
+
                         try {
                             Thread.sleep(150);
                         } catch (InterruptedException ie) {
@@ -1524,7 +1646,8 @@ public class WindowUtil {
                         }
                     }
 
-                    Log.i(TAG, "coldResetPipStack: done (clear=" + clear + ")");
+                    Log.i(TAG, "coldResetPipStack: done (clear=" + clear
+                            + ", forceStopped=" + forced + ")");
                     if (onDone != null) launcher.handler.post(onDone);
                 });
             };
@@ -1596,6 +1719,20 @@ public class WindowUtil {
     }
 
     /** Checks whether none of the packages has a live process or task record anymore. Called from a background thread. */
+    /**
+     * Whether no PiP package owns a task any more.
+     *
+     * Deliberately says nothing about the processes: after the change above they are expected to
+     * stay alive, which is the whole point -- an app with no task builds a fresh Activity, with the
+     * fresh configuration, when the pane starts it, and does so warm instead of cold.
+     */
+    private static boolean arePipTasksClear(List<String> pkgs) {
+        for (String pkg : pkgs) {
+            if (WindowHostActivityView.getTaskIdForPackage(LauncherApplication.sApp, pkg) >= 0) return false;
+        }
+        return true;
+    }
+
     private static boolean isPipStackClear(List<String> pkgs) {
         for (String pkg : pkgs) {
             if (WindowHostActivityView.isProcessAlive(LauncherApplication.sApp, pkg)) return false;

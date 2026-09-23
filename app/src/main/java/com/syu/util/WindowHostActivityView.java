@@ -159,7 +159,61 @@ public class WindowHostActivityView {
         ensureLoaded();
         Object av = newInstanceRaw(ctx);
         installImeCrashGuard(av);
+        synchronized (sLiveAvs) { sLiveAvs.add(av); }
         return av;
+    }
+
+    /**
+     * Every ActivityView that has not been released yet.
+     *
+     * An ActivityView registers a TaskStackListener with the system in its constructor, and that
+     * Binder stub is a native global reference until release() unregisters it. So an ActivityView
+     * nobody releases is pinned from native code -- and through View.mContext it pins the Activity
+     * that created it. LeakCanary caught exactly that: TaskStackListenerImpl -> ActivityView
+     * (detached) -> destroyed Launcher, 9.2 MB. Weak keys: this set must never be what keeps one
+     * alive, it only lets releaseAllFor() find the ones everything else lost track of.
+     */
+    private static final Set<Object> sLiveAvs =
+            Collections.newSetFromMap(new WeakHashMap<Object, Boolean>());
+
+    /**
+     * Releases every ActivityView created with this context, wherever it ended up.
+     *
+     * Call from the Activity's onDestroy(). The panes, the reaper and the pending retire all hold
+     * their own references, and there are paths where none of them releases: a host retired with
+     * postDelayed(retireActivityViews, 1200) whose callback is cleared by onDestroy() before it
+     * runs, or a pane dismissed before its view ever got a display. Once the Activity is gone its
+     * window token is gone too, so none of these views can ever show anything again.
+     *
+     * @return how many were released
+     */
+    public static int releaseAllFor(Context ctx) {
+        if (ctx == null) return 0;
+        final java.util.ArrayList<Object> victims = new java.util.ArrayList<>();
+        synchronized (sLiveAvs) {
+            for (Object av : sLiveAvs) {
+                if (av == null) continue;
+                try {
+                    if (unwrapActivity(asView(av).getContext()) == unwrapActivity(ctx)) victims.add(av);
+                } catch (Throwable ignore) {}
+            }
+        }
+        for (Object av : victims) release(av);
+        if (!victims.isEmpty()) {
+            Log.i(TAG, "releaseAllFor: released " + victims.size() + " ActivityView(s) of a destroyed activity");
+        }
+        return victims.size();
+    }
+
+    private static Context unwrapActivity(Context c) {
+        Context cur = c;
+        for (int i = 0; i < 8 && cur instanceof android.content.ContextWrapper; i++) {
+            if (cur instanceof android.app.Activity) return cur;
+            Context base = ((android.content.ContextWrapper) cur).getBaseContext();
+            if (base == null || base == cur) break;
+            cur = base;
+        }
+        return cur;
     }
 
     // identityHashCode gets recycled across GC cycles, which makes cross-cycle log
@@ -194,7 +248,10 @@ public class WindowHostActivityView {
                 c.setAccessible(true);
                 Object av = c.newInstance(ctx, Boolean.TRUE);
                 sAvConstructor = c;
-                sAvConstructorArgs = new Object[]{ ctx, Boolean.TRUE };
+                // Slot 0 is the Context and is filled in per call. Caching it here pinned the
+                // Launcher that created the first pane in a static field for the rest of the
+                // process -- LeakCanary: 9.7 MB retained through sAvConstructorArgs[0].
+                sAvConstructorArgs = new Object[]{ null, Boolean.TRUE };
                 return av;
             } catch (Throwable ignore) {}
 
@@ -210,7 +267,9 @@ public class WindowHostActivityView {
                     if (args == null) continue;
                     Object av = c.newInstance(args);
                     sAvConstructor = c;
-                    sAvConstructorArgs = args;
+                    Object[] template = args.clone();
+                    template[0] = null;   // never keep the Context; see above
+                    sAvConstructorArgs = template;
                     return av;
                 } catch (Throwable ignore) {}
             }
@@ -225,6 +284,12 @@ public class WindowHostActivityView {
     static void release(Object av) {
         if (av == null) return;
         final int id = System.identityHashCode(av);
+        // Idempotent: onDestroy() now sweeps with releaseAllFor() before the reaper's own posted
+        // releaseAll() runs, so the same view can be handed in twice. Every view is created through
+        // newInstance(), so one that is no longer tracked has already been released.
+        synchronized (sLiveAvs) {
+            if (!sLiveAvs.remove(av)) return;
+        }
 
         boolean ok = false;
         try {

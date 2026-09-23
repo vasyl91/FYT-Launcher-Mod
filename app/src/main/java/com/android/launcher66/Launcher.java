@@ -155,6 +155,7 @@ import com.syu.util.Lrc;
 import com.syu.util.Utils;
 import com.syu.util.WeatherUtils;
 import com.syu.util.WindowHost;
+import com.syu.util.WindowHostActivityView;
 import com.syu.util.WindowHostAvReaper;
 import com.syu.util.WindowUtil;
 import com.syu.utils.W3Utils;
@@ -3134,6 +3135,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         });        
     }
 
+    /** How long onStop() waits before removing the panes; see onStop(). */
+    private static final long STOP_REMOVE_PIP_GRACE_MS = 600L;
+    private boolean mStopRemovePipPending = false;
+    private final Runnable mDeferredStopRemovePip = () -> {
+        if (!mStopRemovePipPending) return;
+        mStopRemovePipPending = false;
+        Log.d("onStop", "removePip");
+        WindowUtil.removePip();
+    };
+
     /** Whether the dynamic receivers should be registered right now (set by onStart/onStop). */
     private boolean mReceiversWanted = false;
     /** Whether they actually are registered, so unregisterReceiver() is never a guess. */
@@ -3144,6 +3155,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "---->>> onStart");
+        if (mStopRemovePipPending) {
+            mStopRemovePipPending = false;
+            mHandler.removeCallbacks(mDeferredStopRemovePip);
+            Log.i(TAG, "onStart: brief stop, keeping the PiP panes");
+        }
         mReceiversWanted = true;
         bg.execute(() -> {
             runOnUiThread(() -> {
@@ -4128,8 +4144,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mediaListener != null) {
             mediaListener.endPaneRestart();
         }
-        Log.d("onStop", "removePip");
-        WindowUtil.removePip();
+        // Deferred, and cancelled if onStart() follows quickly.
+        //
+        // During a wake the ROM brings its own activities up and the launcher goes through a full
+        // stop/start within ~80 ms (onStop 55.303, onStart 55.385 in the capture). Removing the
+        // panes on that stop tore down a rebuild that was already half done -- dual had both apps
+        // started -- and onResume then built everything again from scratch, a second or two later.
+        // The pane windows survive a stop: the activity's token stays valid and each ActivityView
+        // only turns its VirtualDisplay off on surfaceDestroyed, so a brief stop costs nothing.
+        // A real departure still removes them, just STOP_REMOVE_PIP_GRACE_MS later.
+        mHandler.removeCallbacks(mDeferredStopRemovePip);
+        mStopRemovePipPending = true;
+        mHandler.postDelayed(mDeferredStopRemovePip, STOP_REMOVE_PIP_GRACE_MS);
         isfirstlayout = true;
         FirstFrameAnimatorHelper.setIsVisible(false);
         if(mPlayer != null) {
@@ -4166,6 +4192,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         unregisterNotifyRefreshers();
         LauncherNotify.releaseAllFor(this);
 
+        // The panes go now; a removal still deferred from onStop() has nothing left to do.
+        mStopRemovePipPending = false;
+        mHandler.removeCallbacks(mDeferredStopRemovePip);
         Log.d("onDestroy", "removePip");
         WindowUtil.removePip();
         if (mWindowHost != null) {
@@ -4209,6 +4238,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             handler.removeCallbacksAndMessages(null);
         }
         WindowHostAvReaper.releaseAll();
+        // Synchronous, and after every other owner has let go: catches the ActivityViews the
+        // panes and the reaper lost track of -- above all the previous host whose delayed
+        // retireActivityViews() was just cleared from the handler -- before they pin this
+        // Activity through their native TaskStackListener registration.
+        WindowHostActivityView.releaseAllFor(this);
         clearBarWidgetReferences();
         mWorkspace.removeCallbacks(mBuildLayersRunnable);
         removePendingOnDrawListener();
