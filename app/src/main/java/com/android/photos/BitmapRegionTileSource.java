@@ -85,28 +85,18 @@ public class BitmapRegionTileSource implements TiledImageRenderer.TileSource {
             Context context, String path, Uri uri, int resId, int previewSize, int rotation) {
         mTileSize = TiledImageRenderer.suggestedTileSize(context);
         mRotation = rotation;
-        try {
-            if (path != null) {
-                mDecoder = BitmapRegionDecoder.newInstance(path, true);
-            } else if (uri != null) {
-                InputStream is = context.getContentResolver().openInputStream(uri);
-                BufferedInputStream bis = new BufferedInputStream(is);
-                mDecoder = BitmapRegionDecoder.newInstance(bis, true);
-            } else {
-                InputStream is = res.openRawResource(resId);
-                BufferedInputStream bis = new BufferedInputStream(is);
-                mDecoder = BitmapRegionDecoder.newInstance(bis, true);
-            }
+        mDecoder = createDecoder(res, context, path, uri, resId);
+        if (mDecoder != null) {
             mWidth = mDecoder.getWidth();
             mHeight = mDecoder.getHeight();
-        } catch (IOException e) {
-            Log.w("BitmapRegionTileSource", "ctor failed", e);
         }
         mOptions = new BitmapFactory.Options();
         mOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
         mOptions.inPreferQualityOverSpeed = true;
         mOptions.inTempStorage = new byte[16 * 1024];
-        if (previewSize != 0) {
+        // Without a decoder the image size is unknown (0), so the preview below would be
+        // decoded at full resolution, for a source that cannot show anything anyway.
+        if (previewSize != 0 && mDecoder != null) {
             previewSize = Math.min(previewSize, MAX_PREVIEW_SIZE);
             // Although this is the same size as the Bitmap that is likely already
             // loaded, the lifecycle is different and interactions are on a different
@@ -124,6 +114,35 @@ public class BitmapRegionTileSource implements TiledImageRenderer.TileSource {
                 }
             }
             /* @} */
+        }
+    }
+
+    /**
+     * Returns null if the image cannot be read. The streams are closed as soon as the decoder
+     * exists, since it keeps its own copy of the data; they used to stay open until GC.
+     */
+    private static BitmapRegionDecoder createDecoder(
+            Resources res, Context context, String path, Uri uri, int resId) {
+        try {
+            if (path != null) {
+                return BitmapRegionDecoder.newInstance(path, true);
+            } else if (uri != null) {
+                try (InputStream is = new BufferedInputStream(
+                        context.getContentResolver().openInputStream(uri))) {
+                    return BitmapRegionDecoder.newInstance(is, true);
+                }
+            } else {
+                // Deliberately not wrapped in a BufferedInputStream: BitmapRegionDecoder reads
+                // an AssetInputStream straight from the native asset instead of pulling the
+                // whole file through Java in 16 KB chunks. This is the path of the built-in
+                // wallpapers, including the default one previewed when the picker opens.
+                try (InputStream is = res.openRawResource(resId)) {
+                    return BitmapRegionDecoder.newInstance(is, true);
+                }
+            }
+        } catch (IOException e) {
+            Log.w(TAG, "ctor failed", e);
+            return null;
         }
     }
 
@@ -220,23 +239,28 @@ public class BitmapRegionTileSource implements TiledImageRenderer.TileSource {
      */
     private Bitmap decodePreview(
             Resources res, Context context, String file, Uri uri, int resId, int targetSize) {
+        // Separate options: mOptions belongs to getTile(), and decodeResource() would also
+        // leave its density fields set there.
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
         float scale = (float) targetSize / Math.max(mWidth, mHeight);
-        mOptions.inSampleSize = BitmapUtils.computeSampleSizeLarger(scale);
-        mOptions.inJustDecodeBounds = false;
+        opts.inSampleSize = BitmapUtils.computeSampleSizeLarger(scale);
+        // A resource in a density bucket would otherwise also be scaled to the screen density
+        // (and possibly scaled back down below): extra work and memory for a mere preview.
+        opts.inScaled = false;
 
         Bitmap result = null;
         if (file != null) {
-            result = BitmapFactory.decodeFile(file, mOptions);
+            result = BitmapFactory.decodeFile(file, opts);
         } else if (uri != null) {
-            try {
-                InputStream is = context.getContentResolver().openInputStream(uri);
-                BufferedInputStream bis = new BufferedInputStream(is);
-                result = BitmapFactory.decodeStream(bis, null, mOptions);
+            try (InputStream is = new BufferedInputStream(
+                    context.getContentResolver().openInputStream(uri))) {
+                result = BitmapFactory.decodeStream(is, null, opts);
             } catch (IOException e) {
-                Log.w("BitmapRegionTileSource", "getting preview failed", e);
+                Log.w(TAG, "getting preview failed", e);
             }
         } else {
-            result = BitmapFactory.decodeResource(res, resId, mOptions);
+            result = BitmapFactory.decodeResource(res, resId, opts);
         }
         if (result == null) {
             return null;

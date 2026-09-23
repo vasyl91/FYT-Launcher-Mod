@@ -128,6 +128,11 @@ public class TiledImageView extends FrameLayout {
         } else {
             mGLSurfaceView.queueEvent(mFreeTextures);
         }
+        // mFreeTextures stops the tile decoder thread too, but only if the GL thread gets to
+        // run it: the view is detached right after onDestroy(), and a GL thread told to exit
+        // before it has taken the event drops it. The leftover thread would then keep this view,
+        // and with it the whole activity, alive for as long as the process lives.
+        mRenderer.image.stopDecoder();
     }
 
     private Runnable mFreeTextures = new Runnable() {
@@ -290,7 +295,12 @@ public class TiledImageView extends FrameLayout {
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
             mCanvas = new GLES20Canvas();
             BasicTexture.invalidateAllTextures();
-            mRenderer.image.setModel(mRenderer.source, mRenderer.rotation);
+            // Under the lock, like in onDrawFrame(): the source is set on the UI thread, and
+            // since previews are loaded asynchronously the first one can arrive while the
+            // surface is being created.
+            synchronized (mLock) {
+                mRenderer.image.setModel(mRenderer.source, mRenderer.rotation);
+            }
         }
 
         @Override

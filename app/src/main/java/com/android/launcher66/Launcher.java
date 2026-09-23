@@ -241,6 +241,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final long PIP_INIT_THROTTLE_MS = 700L;
     private static final long PIP_WATCHDOG_DELAY_MS = 1200L;
     private static final int  PIP_WATCHDOG_MAX_RETRIES = 2;
+    // Loading indicator while the wallpaper picker starts; see showWallpaperPickerIndicator().
+    private static final long WALLPAPER_PICKER_INDICATOR_DELAY_MS = 300L;
+    private static final long WALLPAPER_PICKER_INDICATOR_TIMEOUT_MS = 10000L;
     private static final long WIDGET_UPDATE_THROTTLE_MS = 350L;
     private static final long POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS = 1200L;
     private static final long SERVICE_RUNNING_CACHE_MS = 15000L;
@@ -3206,6 +3209,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onResume() {
         super.onResume();
+        hideWallpaperPickerIndicator();
         FytRating.wakeIfNeeded(this);
         allowPip = true;
         onWorkspacePip = false;
@@ -4140,6 +4144,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onStop() {
         super.onStop();
         Log.d(TAG, "---->>> onStop");
+        // The wallpaper picker (or whatever came up instead) now covers the launcher.
+        hideWallpaperPickerIndicator();
         NotificationListener mediaListener = NotificationListener.getInstance();
         if (mediaListener != null) {
             mediaListener.endPaneRestart();
@@ -4184,6 +4190,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "---->>> onDestroy");
+        hideWallpaperPickerIndicator();
         // Unconditional, and before any field is cleared. onPause() returns early on
         // (mHomeButtonPressed && isOnMainWorkspaceScreen()), so leaving via HOME from the
         // main screen never unregistered the refreshers and the static NOTIFIER_* kept
@@ -5733,6 +5740,67 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
         pickWallpaper.setComponent(getWallpaperPickerComponent());
         startActivity(pickWallpaper);
+        showWallpaperPickerIndicator();
+    }
+
+    // Loading indicator over the home screen while the wallpaper picker starts.
+    private View mWallpaperPickerIndicator;
+    private final Runnable mAddWallpaperPickerIndicator = this::addWallpaperPickerIndicator;
+    private final Runnable mWallpaperPickerIndicatorTimeout = this::hideWallpaperPickerIndicator;
+
+    /**
+     * Gives feedback while the wallpaper picker starts. Until the picker draws its first frame,
+     * which takes seconds when its process has to start cold, the paused home screen stays on
+     * screen without reacting and looks hung. The indicator appears only if the start takes
+     * longer than WALLPAPER_PICKER_INDICATOR_DELAY_MS, and goes away when the picker covers the
+     * launcher (onStop), when the launcher comes back (onResume), or after
+     * WALLPAPER_PICKER_INDICATOR_TIMEOUT_MS at the latest.
+     */
+    private void showWallpaperPickerIndicator() {
+        mHandler.removeCallbacks(mAddWallpaperPickerIndicator);
+        mHandler.removeCallbacks(mWallpaperPickerIndicatorTimeout);
+        mHandler.postDelayed(mAddWallpaperPickerIndicator, WALLPAPER_PICKER_INDICATOR_DELAY_MS);
+        mHandler.postDelayed(mWallpaperPickerIndicatorTimeout,
+                WALLPAPER_PICKER_INDICATOR_TIMEOUT_MS);
+    }
+
+    private void hideWallpaperPickerIndicator() {
+        mHandler.removeCallbacks(mAddWallpaperPickerIndicator);
+        mHandler.removeCallbacks(mWallpaperPickerIndicatorTimeout);
+        removeWallpaperPickerIndicatorView();
+    }
+
+    private void addWallpaperPickerIndicator() {
+        removeWallpaperPickerIndicatorView();
+        ViewGroup content = findViewById(android.R.id.content);
+        if (content == null) {
+            return;
+        }
+        FrameLayout scrim = new FrameLayout(this);
+        scrim.setBackgroundColor(0x99000000);
+        // Swallows touches: the paused home screen would not handle them properly anyway.
+        scrim.setClickable(true);
+        ProgressBar progress = new ProgressBar(this);
+        progress.setIndeterminate(true);
+        scrim.addView(progress, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.CENTER));
+        scrim.setAlpha(0f);
+        content.addView(scrim, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        scrim.animate().alpha(1f).setDuration(150);
+        mWallpaperPickerIndicator = scrim;
+    }
+
+    private void removeWallpaperPickerIndicatorView() {
+        if (mWallpaperPickerIndicator == null) {
+            return;
+        }
+        if (mWallpaperPickerIndicator.getParent() instanceof ViewGroup) {
+            ((ViewGroup) mWallpaperPickerIndicator.getParent())
+                    .removeView(mWallpaperPickerIndicator);
+        }
+        mWallpaperPickerIndicator = null;
     }
 
     protected ComponentName getWallpaperPickerComponent() {
@@ -8359,6 +8427,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         pickWallpaper.setComponent(getWallpaperPickerComponent());
         pickWallpaper.putExtra("live_wallpaper", 1);
         startActivityForResult(pickWallpaper, 10);
+        showWallpaperPickerIndicator();
     }
 
     View createShortcut(ShortcutInfo info) {

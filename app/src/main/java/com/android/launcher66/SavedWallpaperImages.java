@@ -57,15 +57,28 @@ public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
             mThumb = thumb;
         }
         @Override
-        public void onClick(WallpaperPickerActivity a) {
-            String imageFilename = a.getSavedImages().getImageFilename(mDbId);
-            File file = new File(a.getFilesDir(), imageFilename);
-            CropView v = a.getCropView();
-            int rotation = WallpaperCropActivity.getRotationFromExif(file.getAbsolutePath());
-            v.setTileSource(
-                    new BitmapRegionTileSource(a, file.getAbsolutePath(), 1024, rotation), null);
-            v.moveToLeft();
-            v.setTouchEnabled(false);
+        public void onClick(final WallpaperPickerActivity a) {
+            final int dbId = mDbId;
+            // The database lookup, EXIF read and decoding run on the loader thread, like for
+            // the other tiles; they used to block the UI thread on every tap.
+            a.loadTileSourceAsync(
+                    () -> {
+                        String imageFilename = a.getSavedImages().getImageFilename(dbId);
+                        if (imageFilename == null) {
+                            Log.w(TAG, "No saved wallpaper with id " + dbId);
+                            return null;
+                        }
+                        String path = new File(a.getFilesDir(), imageFilename).getAbsolutePath();
+                        int rotation = WallpaperCropActivity.getRotationFromExif(path);
+                        return new BitmapRegionTileSource(a, path, 1024, rotation);
+                    },
+                    source -> {
+                        CropView v = a.getCropView();
+                        v.setTileSource(source, null);
+                        v.moveToLeft();
+                        v.setTouchEnabled(false);
+                    },
+                    null);
         }
         @Override
         public void onSave(WallpaperPickerActivity a) {
@@ -93,6 +106,10 @@ public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
         mLayoutInflater = context.getLayoutInflater();
     }
 
+    /**
+     * Reads the list and decodes the thumbnails. Called on the picker's loader thread; the
+     * adapter is only used on the UI thread after this has returned.
+     */
     public void loadThumbnailsAndImageIdList() {
         mImages = new ArrayList<SavedWallpaperTile>();
         SQLiteDatabase db = mDb.getReadableDatabase();
@@ -106,16 +123,21 @@ public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
                 ImageDb.COLUMN_ID + " DESC",
                 null);
 
-        while (result.moveToNext()) {
-            String filename = result.getString(1);
-            File file = new File(mContext.getFilesDir(), filename);
+        try {
+            while (result.moveToNext()) {
+                String filename = result.getString(1);
+                File file = new File(mContext.getFilesDir(), filename);
 
-            Bitmap thumb = BitmapFactory.decodeFile(file.getAbsolutePath());
-            if (thumb != null) {
-                mImages.add(new SavedWallpaperTile(result.getInt(0), new BitmapDrawable(mContext.getResources(), thumb)));
+                Bitmap thumb = BitmapFactory.decodeFile(file.getAbsolutePath());
+                if (thumb != null) {
+                    mImages.add(new SavedWallpaperTile(result.getInt(0), new BitmapDrawable(mContext.getResources(), thumb)));
+                }
             }
+        } finally {
+            // A failure here is now logged by the picker instead of crashing it, so the
+            // cursor must not leak either way.
+            result.close();
         }
-        result.close();
     }
 
     public int getCount() {
@@ -158,14 +180,16 @@ public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
                 null,
                 null,
                 null);
-        if (result.getCount() > 0) {
-            result.moveToFirst();
-            String thumbFilename = result.getString(0);
-            String imageFilename = result.getString(1);
-            result.close();
-            return new Pair<String, String>(thumbFilename, imageFilename);
-        } else {
+        try {
+            if (result.moveToFirst()) {
+                String thumbFilename = result.getString(0);
+                String imageFilename = result.getString(1);
+                return new Pair<String, String>(thumbFilename, imageFilename);
+            }
             return null;
+        } finally {
+            // Closed on every path: the cursor used to leak when no row matched.
+            result.close();
         }
     }
 
@@ -184,18 +208,26 @@ public class SavedWallpaperImages extends BaseAdapter implements ListAdapter {
     }
 
     public void writeImage(Bitmap thumbnail, byte[] imageBytes) {
+        if (thumbnail == null) {
+            // createThumbnail() returns null when cropping fails. This runs on the crop task's
+            // thread after the wallpaper has been set, so the NPE it used to cause killed the
+            // launcher process. Without a thumbnail the entry would never be listed anyway.
+            Log.e(TAG, "No thumbnail, not saving the wallpaper to the recent list");
+            return;
+        }
         try {
             File imageFile = File.createTempFile("wallpaper", "", mContext.getFilesDir());
-            FileOutputStream imageFileStream =
-                    mContext.openFileOutput(imageFile.getName(), Context.MODE_PRIVATE);
-            imageFileStream.write(imageBytes);
-            imageFileStream.close();
+            // try-with-resources: a failed write used to leave the stream open.
+            try (FileOutputStream imageFileStream =
+                    mContext.openFileOutput(imageFile.getName(), Context.MODE_PRIVATE)) {
+                imageFileStream.write(imageBytes);
+            }
 
             File thumbFile = File.createTempFile("wallpaperthumb", "", mContext.getFilesDir());
-            FileOutputStream thumbFileStream =
-                    mContext.openFileOutput(thumbFile.getName(), Context.MODE_PRIVATE);
-            thumbnail.compress(Bitmap.CompressFormat.JPEG, 95, thumbFileStream);
-            thumbFileStream.close();
+            try (FileOutputStream thumbFileStream =
+                    mContext.openFileOutput(thumbFile.getName(), Context.MODE_PRIVATE)) {
+                thumbnail.compress(Bitmap.CompressFormat.JPEG, 95, thumbFileStream);
+            }
 
             SQLiteDatabase db = mDb.getWritableDatabase();
             ContentValues values = new ContentValues();

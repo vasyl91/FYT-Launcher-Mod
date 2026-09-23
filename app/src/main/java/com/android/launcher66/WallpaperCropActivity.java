@@ -24,11 +24,17 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,6 +52,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 
 public class WallpaperCropActivity extends AppCompatActivity {
     private static final String LOGTAG = "launcher66.CropActivity";
@@ -63,18 +73,174 @@ public class WallpaperCropActivity extends AppCompatActivity {
     public static final int MAX_BMAP_IN_INTENT = 750000;
     private static final float WALLPAPER_SCREENS_SPAN = 2f;
 
+    /** A preview that takes longer than this to decode gets a progress indicator. */
+    private static final long LOADING_INDICATOR_DELAY_MS = 500;
+    private static final float DISABLED_BUTTON_ALPHA = 0.5f;
+
     protected CropView mCropView;
     protected Uri mUri;
 
     protected boolean mIsSettingWallpaper;
 
+    /**
+     * All decoding for previews and thumbnails runs on this one background thread, so the
+     * UI thread never waits for it. Being single-threaded, it runs tasks in submission order,
+     * and results posted from it reach the UI thread in that same order.
+     */
+    private final ExecutorService mLoaderExecutor = Executors.newSingleThreadExecutor(
+            r -> new Thread(r, "WallpaperLoader"));
+    private final Handler mUiHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mShowLoadingIndicator = () -> setLoadingIndicatorVisible(true);
+    private Future<?> mPendingTileLoad;
+    private int mTileLoadGeneration;
+    private boolean mPreviewReady;
+    private View mLoadingIndicator;
+
+    /** Builds a preview. Runs on the loader thread, so it may be slow. */
+    public interface TileSourceFactory {
+        BitmapRegionTileSource create();
+    }
+
+    /** Receives a successfully loaded preview on the UI thread. */
+    public interface OnTileSourceLoadedListener {
+        void onTileSourceLoaded(BitmapRegionTileSource source);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init();
+        // Request the orientation before init(): if it makes the system relaunch the
+        // activity, the setup work has not been done for nothing.
         if (!enableRotation()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+        init();
+    }
+
+    /**
+     * Creates a preview on the loader thread and hands it to {@code onLoaded} on the UI thread.
+     * BitmapRegionTileSource decodes the whole image in its constructor, which used to block
+     * the UI thread for a long time. A newer call, or {@link #cancelPendingTileLoad()},
+     * supersedes a pending load, whose result is then dropped. The "set wallpaper" button
+     * stays disabled until the preview is ready (and after a failure).
+     *
+     * @param onFailed runs on the UI thread if the image cannot be loaded; may be null
+     */
+    public void loadTileSourceAsync(final TileSourceFactory factory,
+            final OnTileSourceLoadedListener onLoaded, final Runnable onFailed) {
+        cancelPendingTileLoad();
+        final int generation = mTileLoadGeneration;
+        setPreviewReady(false);
+        try {
+            mPendingTileLoad = mLoaderExecutor.submit(() -> {
+                BitmapRegionTileSource source = null;
+                try {
+                    source = factory.create();
+                } catch (Throwable t) {
+                    // Caught so that the UI is told either way (OOM, missing permission...).
+                    Log.e(LOGTAG, "Failed to load the wallpaper preview", t);
+                }
+                final BitmapRegionTileSource result = (source != null
+                        && source.getImageWidth() > 0 && source.getImageHeight() > 0)
+                        ? source : null;
+                mUiHandler.post(() -> {
+                    if (generation != mTileLoadGeneration || isDestroyed()) {
+                        return; // superseded by a newer selection, or the activity is gone
+                    }
+                    finishTileLoad();
+                    if (result == null) {
+                        if (onFailed != null) {
+                            onFailed.run();
+                        }
+                        return; // nothing valid to crop, so "set wallpaper" stays disabled
+                    }
+                    onLoaded.onTileSourceLoaded(result);
+                    setPreviewReady(true);
+                });
+            });
+        } catch (RejectedExecutionException e) {
+            return; // the activity is being destroyed
+        }
+        mUiHandler.postDelayed(mShowLoadingIndicator, LOADING_INDICATOR_DELAY_MS);
+    }
+
+    /** Drops the preview that is still being decoded, if any. UI thread only. */
+    protected void cancelPendingTileLoad() {
+        mTileLoadGeneration++;
+        if (mPendingTileLoad != null) {
+            // Not started yet: it will not run. Already running: its result is ignored.
+            mPendingTileLoad.cancel(false);
+        }
+        finishTileLoad();
+    }
+
+    private void finishTileLoad() {
+        mPendingTileLoad = null;
+        mUiHandler.removeCallbacks(mShowLoadingIndicator);
+        setLoadingIndicatorVisible(false);
+    }
+
+    protected boolean isPreviewLoading() {
+        return mPendingTileLoad != null;
+    }
+
+    protected boolean isPreviewReady() {
+        return mPreviewReady;
+    }
+
+    /** Enables the "set wallpaper" button only when the crop view shows a usable preview. */
+    protected void setPreviewReady(boolean ready) {
+        mPreviewReady = ready;
+        final ActionBar actionBar = getSupportActionBar();
+        final View setWallpaperButton = actionBar != null ? actionBar.getCustomView() : null;
+        if (setWallpaperButton != null) {
+            setWallpaperButton.setEnabled(ready);
+            setWallpaperButton.setAlpha(ready ? 1f : DISABLED_BUTTON_ALPHA);
+        }
+    }
+
+    private void setLoadingIndicatorVisible(boolean visible) {
+        if (mLoadingIndicator == null) {
+            if (!visible) {
+                return;
+            }
+            final ViewGroup content = (ViewGroup) findViewById(android.R.id.content);
+            if (content == null) {
+                return;
+            }
+            final ProgressBar progress = new ProgressBar(this);
+            progress.setIndeterminate(true);
+            content.addView(progress, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                    Gravity.CENTER));
+            mLoadingIndicator = progress;
+        }
+        mLoadingIndicator.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /** Runs {@code task} on the loader thread, after everything queued there before it. */
+    protected void runInBackground(final Runnable task) {
+        try {
+            mLoaderExecutor.execute(() -> {
+                try {
+                    task.run();
+                } catch (Throwable t) {
+                    // An uncaught exception here would take down the whole process.
+                    Log.e(LOGTAG, "Background wallpaper task failed", t);
+                }
+            });
+        } catch (RejectedExecutionException e) {
+            // The activity is being destroyed; there is nothing left to load for.
+        }
+    }
+
+    /** Posts {@code r} to the UI thread; it is dropped if the activity is destroyed first. */
+    protected void postToUiIfAlive(final Runnable r) {
+        mUiHandler.post(() -> {
+            if (!isDestroyed()) {
+                r.run();
+            }
+        });
     }
 
     protected void init() {
@@ -109,6 +275,8 @@ public class WallpaperCropActivity extends AppCompatActivity {
         setContentView(R.layout.wallpaper_cropper);
 
         mCropView = (CropView) findViewById(R.id.cropView);
+        // Nothing to pan or zoom until the image has been decoded.
+        mCropView.setTouchEnabled(false);
 
         Intent cropIntent = getIntent();
         final Uri imageUri = cropIntent.getData();
@@ -119,9 +287,6 @@ public class WallpaperCropActivity extends AppCompatActivity {
             return;
         }
 
-        int rotation = getRotationFromExif(this, imageUri);
-        mCropView.setTileSource(new BitmapRegionTileSource(this, imageUri, 1024, rotation), null);
-        mCropView.setTouchEnabled(true);
         // Action bar
         // Show the custom action bar view
         final ActionBar actionBar = getSupportActionBar();
@@ -130,7 +295,7 @@ public class WallpaperCropActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (!mIsSettingWallpaper) {
+                        if (!mIsSettingWallpaper && isPreviewReady()) {
                             mIsSettingWallpaper = true;
                             boolean finishActivityWhenDone = true;
                             cropImageAndSetWallpaper(imageUri, null, finishActivityWhenDone);
@@ -143,6 +308,19 @@ public class WallpaperCropActivity extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);  
         actionBar.setDisplayUseLogoEnabled(false);
         actionBar.setDisplayShowCustomEnabled(true);
+
+        // Decode the image off the UI thread; "set wallpaper" is enabled once it is shown.
+        loadTileSourceAsync(
+                () -> new BitmapRegionTileSource(this, imageUri, 1024,
+                        getRotationFromExif(this, imageUri)),
+                source -> {
+                    mCropView.setTileSource(source, null);
+                    mCropView.setTouchEnabled(true);
+                },
+                () -> {
+                    Log.e(LOGTAG, "Cannot load " + imageUri + ", exiting WallpaperCropActivity");
+                    finish();
+                });
     }
 
     public boolean enableRotation() {
@@ -230,13 +408,15 @@ public class WallpaperCropActivity extends AppCompatActivity {
                     return ExifInterface.getRotationForOrientationValue(orientation.shortValue());
                 }
             } else if (uri != null) {
-                InputStream is = context.getContentResolver().openInputStream(uri);
-                BufferedInputStream bis = new BufferedInputStream(is);
-                ei.readExif(bis);
+                // These streams used to stay open until GC: one leaked descriptor per load.
+                try (InputStream bis = new BufferedInputStream(
+                        context.getContentResolver().openInputStream(uri))) {
+                    ei.readExif(bis);
+                }
             } else {
-                InputStream is = res.openRawResource(resId);
-                BufferedInputStream bis = new BufferedInputStream(is);
-                ei.readExif(bis);
+                try (InputStream bis = new BufferedInputStream(res.openRawResource(resId))) {
+                    ei.readExif(bis);
+                }
             }
             Integer ori = ei.getTagIntValue(ExifInterface.TAG_ORIENTATION);
             if (ori != null) {
@@ -786,6 +966,10 @@ public class WallpaperCropActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        // Drop queued decoding work and pending results; late results are ignored anyway.
+        mTileLoadGeneration++;
+        mUiHandler.removeCallbacksAndMessages(null);
+        mLoaderExecutor.shutdownNow();
         if (mCropView != null) {
            mCropView.destroy();
         }

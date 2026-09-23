@@ -398,6 +398,15 @@ public class TiledImageRenderer {
         while (sTilePool.acquire() != null) {}
     }
 
+    /**
+     * Stops the tile decoder thread without waiting for it: it finishes the tile in progress,
+     * if any, and exits. Unlike freeTextures(), which must run on the GL thread, this may be
+     * called from any thread. Calling it more than once, or before freeTextures(), is harmless.
+     */
+    public void stopDecoder() {
+        mTileDecoder.interrupt();
+    }
+
     public boolean draw(GLCanvas canvas) {
         layoutTiles();
         uploadTiles(canvas);

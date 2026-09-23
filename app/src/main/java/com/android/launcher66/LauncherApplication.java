@@ -90,6 +90,9 @@ public class LauncherApplication extends Application {
     private static WindowManager sWindowManager;
     private static int sScreenSizeId = 0;
     private static final ArrayList<Object> ROOT_VIEW_OBJ = new ArrayList<>();
+    // The wallpaper picker runs in its own process (android:process=":wallpaper_chooser" in the
+    // manifest), which creates this class too; see initWallpaperPickerProcess().
+    private static final String WALLPAPER_PICKER_PROCESS_SUFFIX = ":wallpaper_chooser";
 
     public String getApkPath() {
         return this.apkPath;
@@ -100,6 +103,12 @@ public class LauncherApplication extends Application {
         super.onCreate();
         Log.d("LauncherApplication", "onCreate()");
         long start = SystemClock.elapsedRealtime();
+        if (isWallpaperPickerProcess()) {
+            initWallpaperPickerProcess();
+            Log.d("LauncherApplication", "onCreate() in the wallpaper picker process: "
+                    + (SystemClock.elapsedRealtime() - start) + "ms");
+            return;
+        }
         initData();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean logcatBoolean = prefs.getBoolean(Keys.LOGCAT_SERVICE, true);
@@ -128,6 +137,47 @@ public class LauncherApplication extends Application {
         BaselineProfileCompiler.scheduleIfNeeded(this);
         VersionChecker.deleteInstalledUpdates(this);
         Log.d("LauncherApplication", "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms");
+    }
+
+    /**
+     * True in the wallpaper picker's own process. Application.getProcessName() needs
+     * Android 9, so older releases keep the full setup there, as before.
+     */
+    private static boolean isWallpaperPickerProcess() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            return false;
+        }
+        String processName = Application.getProcessName();
+        return processName != null && processName.endsWith(WALLPAPER_PICKER_PROCESS_SUFFIX);
+    }
+
+    /**
+     * Minimal setup for the wallpaper picker's process. The rest of onCreate() sets up the
+     * launcher itself (CAN bus connections, services, file copies, overlay windows, logcat
+     * capture), none of which the picker uses. In this process it only duplicated the
+     * launcher's own work: about 0.3 s on the main thread during the picker's cold start, plus
+     * CAN bus class loading on a background thread while the picker was starting.
+     * The fields set here are the cheap ones that this class's static helpers read.
+     */
+    private void initWallpaperPickerProcess() {
+        sApp = this;
+        // Kept: cheap, and the skin may style views in this process too.
+        SkinManager.init(this);
+        CrashHandler.getInstance(getApplicationContext());
+        sHandler = new Handler(Looper.getMainLooper());
+        sActivityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        sWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        sResources = getResources();
+        sAssetManager = sResources.getAssets();
+        try {
+            sScreenSizeId = getResources().getIntArray(R.array.screen_size)[0];
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sRootView = new View(this);
+        if (BuildConfig.DEBUG) {
+            enableStrictMode();
+        }
     }
 
     private void enableStrictMode() {

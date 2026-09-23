@@ -47,6 +47,9 @@ public class ThirdPartyWallpaperPickerListAdapter extends BaseAdapter implements
 
     public static class ThirdPartyWallpaperTile extends WallpaperPickerActivity.WallpaperTileInfo {
         private ResolveInfo mResolveInfo;
+        // Loaded together with the list, off the UI thread; see the adapter's constructor.
+        private CharSequence mLabel;
+        private Drawable mIcon;
         public ThirdPartyWallpaperTile(ResolveInfo resolveInfo) {
             mResolveInfo = resolveInfo;
         }
@@ -101,7 +104,13 @@ public class ThirdPartyWallpaperPickerListAdapter extends BaseAdapter implements
                     continue outerLoop;
                 }
             }
-            mThirdPartyWallpaperPickers.add(new ThirdPartyWallpaperTile(info));
+            ThirdPartyWallpaperTile tile = new ThirdPartyWallpaperTile(info);
+            // The picker creates this adapter on its loader thread, so load these here rather
+            // than in getView(), which runs on the UI thread: both read the other app's
+            // resources (loaded on first use) and the icon has to be decoded.
+            tile.mLabel = info.loadLabel(pm);
+            tile.mIcon = info.loadIcon(pm);
+            mThirdPartyWallpaperPickers.add(tile);
         }
     }
 
@@ -128,10 +137,10 @@ public class ThirdPartyWallpaperPickerListAdapter extends BaseAdapter implements
 
         WallpaperPickerActivity.setWallpaperItemPaddingToZero((FrameLayout) view);
 
-        ResolveInfo info = mThirdPartyWallpaperPickers.get(position).mResolveInfo;
+        ThirdPartyWallpaperTile tile = mThirdPartyWallpaperPickers.get(position);
         TextView label = (TextView) view.findViewById(R.id.wallpaper_item_label);
-        label.setText(info.loadLabel(mPackageManager));
-        Drawable icon = info.loadIcon(mPackageManager);
+        label.setText(tile.mLabel);
+        Drawable icon = tile.mIcon;
         icon.setBounds(new Rect(0, 0, mIconSize, mIconSize));
         label.setCompoundDrawables(null, icon, null, null);
         return view;
