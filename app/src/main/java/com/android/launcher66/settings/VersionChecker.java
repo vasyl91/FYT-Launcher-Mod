@@ -224,6 +224,8 @@ public class VersionChecker {
                 HttpURLConnection connection = null;
                 InputStream input = null;
                 FileOutputStream output = null;
+                File outputFile = null;
+                boolean complete = false;
                 try {
                     URL url = new URL(downloadUrl);
                     connection = (HttpURLConnection) url.openConnection();
@@ -245,7 +247,7 @@ public class VersionChecker {
                     }
 
                     input = connection.getInputStream();
-                    File outputFile = new File(appContext.getExternalFilesDir(null),
+                    outputFile = new File(appContext.getExternalFilesDir(null),
                             UPDATE_FILE_PREFIX + latestVersion + UPDATE_FILE_SUFFIX);
                     output = new FileOutputStream(outputFile);
 
@@ -265,6 +267,12 @@ public class VersionChecker {
                         output.write(buffer, 0, bytesRead);
                     }
 
+                    // A dropped connection can end the stream early without an exception.
+                    if (lenghtOfFile > 0 && total != lenghtOfFile) {
+                        throw new IOException("Incomplete download: " + total + " of " + lenghtOfFile + " bytes");
+                    }
+
+                    complete = true;
                     return outputFile;
                 } catch (IOException e) {
                     exception = e;
@@ -272,6 +280,10 @@ public class VersionChecker {
                 } finally {
                     closeQuietly(output);
                     closeQuietly(input);
+                    // Never leave a partial APK behind (cancelled or failed download).
+                    if (!complete) {
+                        deleteQuietly(outputFile);
+                    }
                     downloadConnectionRef.compareAndSet(connection, null);
                     if (connection != null) {
                         connection.disconnect();
@@ -301,8 +313,10 @@ public class VersionChecker {
                     return;
                 }
 
-                installApk(appContext, apkFile);
-                cb.onDownloadComplete();
+                // installApk() reports its own errors; only report completion on success.
+                if (installApk(appContext, apkFile)) {
+                    cb.onDownloadComplete();
+                }
             }
 
             @Override
@@ -315,27 +329,30 @@ public class VersionChecker {
         }.execute();
     }
 
-    private void installApk(Context context, File apkFile) {
+    /** Starts the installation. Returns false if it could not be started (error already reported). */
+    private boolean installApk(Context context, File apkFile) {
         DownloadCallback cb = downloadCallbackRef.get();
+
+        if (!apkFile.exists()) {
+            if (cb != null) cb.onDownloadError("File does not exist!");
+            return false;
+        }
+        if (apkFile.length() <= 0) {
+            if (cb != null) cb.onDownloadError("File is empty or too small!");
+            deleteQuietly(apkFile);
+            return false;
+        }
 
         try (RandomAccessFile raf = new RandomAccessFile(apkFile, "r")) {
             if (raf.readInt() != 0x504B0304) { // ZIP magic number
                 if (cb != null) cb.onDownloadError("Invalid APK file (corrupted download)");
-                apkFile.delete();
-                return;
+                deleteQuietly(apkFile);
+                return false;
             }
         } catch (IOException e) {
             if (cb != null) cb.onDownloadError("APK validation failed: " + e.getMessage());
-            return;
-        }
-
-        if (!apkFile.exists()) {
-            if (cb != null) cb.onDownloadError("File does not exist!");
-            return;
-        }
-        if (apkFile.length() <= 0) {
-            if (cb != null) cb.onDownloadError("File is empty or too small!");
-            return;
+            deleteQuietly(apkFile);
+            return false;
         }
 
         try {
@@ -356,6 +373,8 @@ public class VersionChecker {
                         deleteQuietly(apkFile);
                     })
                     .addOnFailureListener((sessionId, failure) -> {
+                        // The file is not reused (every update is downloaded again).
+                        deleteQuietly(apkFile);
                         DownloadCallback current = downloadCallbackRef.get();
                         if (current == null) {
                             return;
@@ -366,9 +385,11 @@ public class VersionChecker {
                             current.onDownloadError("Installation failed: " + failure.getMessage());
                         }
                     });
+            return true;
         } catch (Exception e) {
             if (cb != null) cb.onDownloadError("Installation failed: " + e.getMessage());
-            apkFile.delete(); // Clean up invalid file
+            deleteQuietly(apkFile); // Clean up invalid file
+            return false;
         }
     }
 
@@ -405,7 +426,8 @@ public class VersionChecker {
      *
      * Call once per process start, e.g. from LauncherApplication.onCreate() in the main process.
      * A successful update kills and restarts the launcher, so the next start is the reliable
-     * moment to remove the file. Downloads of a newer version (e.g. a failed install) are kept.
+     * moment to remove the file. Files of a newer version are kept: an install session that is
+     * still pending (e.g. restored after the process died) may need them.
      * Runs on a background thread.
      */
     public static void deleteInstalledUpdates(Context context) {
