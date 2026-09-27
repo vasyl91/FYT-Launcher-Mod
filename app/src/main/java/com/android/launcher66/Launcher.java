@@ -3206,11 +3206,48 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         FirstFrameAnimatorHelper.setIsVisible(true);
     }
 
+    /**
+     * FytRating.wakeIfNeeded() starts vasyl.fytrating/.WakeActivity. It draws nothing and finishes
+     * in onCreate(), but starting any activity still takes the top: the launcher loses its
+     * top-resumed state and is paused until that activity is gone. Called first thing in onResume()
+     * it did exactly that on every wake -- about 735 ms with the launcher paused, during which
+     * allowPip is false and the panes cannot be built. Nothing about the wake depends on it being
+     * immediate, so it now waits for the PiP rebuild to finish.
+     */
+    private static final long FYT_RATING_WAKE_DELAY_MS = 1500L;
+    private static final long FYT_RATING_WAKE_RECHECK_MS = 400L;
+    private static final int  FYT_RATING_WAKE_MAX_WAITS = 12;
+    private int mFytRatingWakeWaits = 0;
+
+    private final Runnable mFytRatingWake = new Runnable() {
+        @Override
+        public void run() {
+            // Paused again (or gone): the next onResume() reschedules it.
+            if (mPaused || isDestroyed() || isFinishing()) return;
+
+            if (WindowUtil.isPipRebuildInProgress() && mFytRatingWakeWaits < FYT_RATING_WAKE_MAX_WAITS) {
+                mFytRatingWakeWaits++;
+                mHandler.postDelayed(this, FYT_RATING_WAKE_RECHECK_MS);
+                return;
+            }
+            mFytRatingWakeWaits = 0;
+            FytRating.wakeIfNeeded(Launcher.this);
+        }
+    };
+
+    private void scheduleFytRatingWake() {
+        mHandler.removeCallbacks(mFytRatingWake);
+        mFytRatingWakeWaits = 0;
+        mHandler.postDelayed(mFytRatingWake, FYT_RATING_WAKE_DELAY_MS);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         hideWallpaperPickerIndicator();
-        FytRating.wakeIfNeeded(this);
+        // Deferred until the panes are up; see mFytRatingWake.
+        scheduleFytRatingWake();
+        scheduleStatusBarSwipeDetectorSync();
         allowPip = true;
         onWorkspacePip = false;
         boolean homeButtonResume = mHomeButtonPressed;
