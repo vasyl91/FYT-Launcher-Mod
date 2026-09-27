@@ -7,8 +7,6 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -60,8 +58,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
     private final Map<String, Paint> rectanglePaints = new HashMap<>();
     private final Map<String, Integer[]> rectangleBallIds = new HashMap<>();
 
-    // Points & handles
-    private final ArrayList<ColorBall> colorballs = new ArrayList<>();
+    // Points
     private final Point[] point = new Point[400];
     private int nextBallId = 0;
 
@@ -74,15 +71,15 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
     // Sizing / prefs
     private final int margin;
     private final int nameTextSize;
-    private float handleRadiusPx;
     private float coordinatesMargin;
 
     // Interaction
     private String selectedWidgetKey = null;
-    private int activeBallId = -1;
     private String activeRectKey = null;
-    private boolean draggingWholeRect = false;
-    private int lastX = 0, lastY = 0;
+    private final RectangleTouchHelper touchHelper = new RectangleTouchHelper();
+    private static final int NO_POINTER = -1;
+    // The finger that started the drag; other fingers on the canvas are ignored.
+    private int activePointerId = NO_POINTER;
 
     // Bounds
     private int minBorderX, minBorderY, maxBorderX, maxBorderY;
@@ -178,8 +175,6 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         helpers.checkAndResetIfOverlappingOnScreen(-1); 
         helpers.setUserOpenedCreator(true);
         helpers.setBarSettingsChanged(false);
-
-        handleRadiusPx = 20f * getResources().getDisplayMetrics().density;
 
         if (rootView != null) {
             rectangleName = rootView.findViewById(R.id.rectangle_name);
@@ -281,21 +276,9 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         ensurePoint(ids[1], new Point(topRightX, topRightY));
         ensurePoint(ids[2], new Point(bottomRightX, bottomRightY));
         ensurePoint(ids[3], new Point(bottomLeftX, bottomLeftY));
-
-        ensureBall(ids[0], point[ids[0]]);
-        ensureBall(ids[1], point[ids[1]]);
-        ensureBall(ids[2], point[ids[2]]);
-        ensureBall(ids[3], point[ids[3]]);
     }
 
     private void ensurePoint(int id, Point p) { point[id] = p; }
-
-    private void ensureBall(int id, Point p) {
-        int resId = 0;
-        try { resId = R.drawable.gray_circle; } catch (Throwable ignored) {}
-        while (colorballs.size() <= id) colorballs.add(null);
-        colorballs.set(id, new ColorBall(getSafeContext(), resId, p, id));
-    }
 
     private int getMinWidth(String key) {
         for (RectangleConfig c : rectangleConfigs) if (c.key.equals(key)) return c.minWidth;
@@ -338,6 +321,17 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
             if (!config.enabled) continue;
             drawRectangle(canvas, config);
         }
+
+        drawTouchHighlight(canvas);
+    }
+
+    /** Highlights the edge(s) being resized; drawn after all rectangles so none covers it. */
+    private void drawTouchHighlight(Canvas canvas) {
+        String key = touchHelper.getActiveKey();
+        if (key == null || !touchHelper.isResizing()) return;
+        Integer[] ids = rectangleBallIds.get(key);
+        if (ids == null) return;
+        touchHelper.drawHighlight(canvas, this, rectFromBallIds(ids[0], ids[1], ids[2], ids[3]));
     }
 
     private void drawRectangle(Canvas canvas, RectangleConfig config) {
@@ -486,8 +480,8 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        final int X = (int) event.getX();
-        final int Y = (int) event.getY();
+        final float x = event.getX();
+        final float y = event.getY();
 
         if (gestureDetector != null && gestureDetector.onTouchEvent(event)) {
             return true;
@@ -500,105 +494,87 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
 
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN: {
-                // First, check for corner ball hit
-                activeBallId = hitTestBall(X, Y);
-                if (activeBallId >= 0) {
-                    activeRectKey = findRectKeyByBall(activeBallId);
-                    selectedWidgetKey = activeRectKey;
-                    updateSelectedLabel();
-                    draggingWholeRect = false;
-                    lastX = X; lastY = Y;
-                    getParent().requestDisallowInterceptTouchEvent(true);
-                    return true;
+                fillTouchTargets();
+                if (!touchHelper.begin(this, x, y)) {
+                    return false;
                 }
-
-                // Check if inside a rectangle
-                String insideKey = hitTestRect(X, Y);
-                if (insideKey != null) {
-                    // Check for edge hit first
-                    int edgeIdx = hitTestEdge(X, Y, insideKey);
-                    if (edgeIdx >= 0) {
-                        activeRectKey = insideKey;
-                        selectedWidgetKey = activeRectKey;
-                        updateSelectedLabel();
-                        draggingWholeRect = false;
-                        lastX = X; lastY = Y;
-                        getParent().requestDisallowInterceptTouchEvent(true);
-                        invalidate();
-                        return true;
-                    }
-                    
-                    // Otherwise, drag whole rectangle
-                    activeRectKey = insideKey;
-                    selectedWidgetKey = activeRectKey;
-                    updateSelectedLabel();
-                    draggingWholeRect = true;
-                    lastX = X; lastY = Y;
-                    getParent().requestDisallowInterceptTouchEvent(true);
-                    invalidate();
-                    return true;
-                }
-                return false;
+                activePointerId = event.getPointerId(0);
+                activeRectKey = touchHelper.getActiveKey();
+                selectedWidgetKey = activeRectKey;
+                updateSelectedLabel();
+                getParent().requestDisallowInterceptTouchEvent(true);
+                invalidate();
+                return true;
             }
             case MotionEvent.ACTION_MOVE: {
                 if (activeRectKey == null) return false;
-                
-                if (draggingWholeRect) {
-                    Integer[] ids = rectangleBallIds.get(activeRectKey);
-                    if (ids == null) return false;
+                // Only the finger that started the drag moves the rectangle.
+                int pointerIndex = event.findPointerIndex(activePointerId);
+                if (pointerIndex < 0) return true;
+                final float moveX = event.getX(pointerIndex);
+                final float moveY = event.getY(pointerIndex);
+                Integer[] ids = rectangleBallIds.get(activeRectKey);
+                if (ids == null) return false;
+                RectF before = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
+                if (before.isEmpty()) return true;
 
-                    int dx = X - lastX;
-                    int dy = Y - lastY;
-                    if (dx == 0 && dy == 0) return true;
-
-                    // clamp to margins
-                    RectF before = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
-                    if (before.isEmpty()) return true;
-                    RectF after = new RectF(before);
-                    after.offset(dx, dy);
-
-                    float clampedDx = dx;
-                    float clampedDy = dy;
-                    if (after.left < minBorderX) clampedDx += (minBorderX - after.left);
-                    if (after.right > maxBorderX) clampedDx -= (after.right - maxBorderX);
-                    if (after.top < minBorderY) clampedDy += (minBorderY - after.top);
-                    if (after.bottom > maxBorderY) clampedDy -= (after.bottom - maxBorderY);
-
-                    for (int id : ids) {
-                        point[id].x += (int) clampedDx;
-                        point[id].y += (int) clampedDy;
-                    }
-                    lastX = X; lastY = Y;
-                    invalidate();
-                    return true;
+                moveActiveRect(ids, before, moveX, moveY);
+                invalidate();
+                return true;
+            }
+            case MotionEvent.ACTION_POINTER_UP: {
+                // The finger that started the drag was lifted while another one stays down: end
+                // the drag here instead of letting the rectangle jump to the other finger.
+                if (activeRectKey != null
+                        && event.getPointerId(event.getActionIndex()) == activePointerId) {
+                    finishDrag();
                 }
-                return false;
+                return true;
             }
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL: {
-                savePrefs();
-                activeBallId = -1;
-                activeRectKey = null;
-                draggingWholeRect = false;
-                getParent().requestDisallowInterceptTouchEvent(false);
-                invalidate();
+                finishDrag();
                 return true;
             }
         }
         return super.onTouchEvent(event);
     }
 
-    private int hitTestBall(int x, int y) {
-        // Invisible handles but generous hit radius at corner points
-        final float radius = Math.max(handleRadiusPx, 40f * getResources().getDisplayMetrics().density);
-        final float r2 = radius * radius;
-        for (ColorBall b : colorballs) {
-            if (b == null) continue;
-            float dx = x - b.getX();
-            float dy = y - b.getY();
-            if (dx * dx + dy * dy <= r2) return b.getID();
+    /** End of a drag: saves the layout and turns the edge highlight off. */
+    private void finishDrag() {
+        savePrefs();
+        activeRectKey = null;
+        activePointerId = NO_POINTER;
+        touchHelper.end();
+        getParent().requestDisallowInterceptTouchEvent(false);
+        invalidate();
+    }
+
+    /**
+     * Hands the enabled rectangles to the touch helper, in drawing order. The app stats window
+     * is only moved by dragging; its size is set with the arrows and by double tap.
+     */
+    private void fillTouchTargets() {
+        touchHelper.clearTargets();
+        for (RectangleConfig cfg : rectangleConfigs) {
+            if (!cfg.enabled) continue;
+            Integer[] ids = rectangleBallIds.get(cfg.key);
+            if (ids == null) continue;
+            touchHelper.addTarget(cfg.key, rectFromBallIds(ids[0], ids[1], ids[2], ids[3]), false);
         }
-        return -1;
+    }
+
+    /** Moves the grabbed rectangle with the finger, inside the margins. */
+    private void moveActiveRect(Integer[] ids, RectF before, float x, float y) {
+        RectF after = new RectF();
+        touchHelper.move(x, y, before, minBorderX, minBorderY, maxBorderX, maxBorderY, after);
+        int dx = Math.round(after.left - before.left);
+        int dy = Math.round(after.top - before.top);
+        if (dx == 0 && dy == 0) return;
+        for (int id : ids) {
+            point[id].x += dx;
+            point[id].y += dy;
+        }
     }
 
     private String hitTestRect(int x, int y) {
@@ -613,56 +589,11 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         return null;
     }
 
-    private int hitTestEdge(int x, int y, String rectKey) {
-        Integer[] ids = rectangleBallIds.get(rectKey);
-        if (ids == null) return -1;
-        
-        RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
-        if (r.isEmpty()) return -1;
-        
-        // Edge hit detection with generous touch area
-        float edgeTolerance = Math.max(30f * getResources().getDisplayMetrics().density, handleRadiusPx);
-        
-        // Check if inside the rectangle bounds (with tolerance)
-        if (x < r.left - edgeTolerance || x > r.right + edgeTolerance ||
-            y < r.top - edgeTolerance || y > r.bottom + edgeTolerance) {
-            return -1;
-        }
-        
-        // Determine which edge is closest
-        float distToTop = Math.abs(y - r.top);
-        float distToBottom = Math.abs(y - r.bottom);
-        float distToLeft = Math.abs(x - r.left);
-        float distToRight = Math.abs(x - r.right);
-        
-        float minDist = Math.min(Math.min(distToTop, distToBottom), Math.min(distToLeft, distToRight));
-        
-        if (minDist > edgeTolerance) {
-            return -1; // Not close enough to any edge
-        }
-        
-        // Return edge index: 0=top, 1=right, 2=bottom, 3=left
-        if (minDist == distToTop) return 0;
-        if (minDist == distToRight) return 1;
-        if (minDist == distToBottom) return 2;
-        if (minDist == distToLeft) return 3;
-        
-        return -1;
-    }
-
     private RectangleConfig getConfig(String key) {
         for (RectangleConfig c : rectangleConfigs) if (c.key.equals(key)) return c;
         return null;
     }
 
-    private String findRectKeyByBall(int ballId) {
-        for (Map.Entry<String, Integer[]> e : rectangleBallIds.entrySet()) {
-            Integer[] arr = e.getValue();
-            for (int id : arr) if (id == ballId) return e.getKey();
-        }
-        return null;
-    }
-    
     @Override
     public void onClick(View v) {
         if (selectedWidgetKey == null) return;
@@ -677,8 +608,8 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
         if (r.isEmpty()) return;
 
-        // switch (v.getId()) zamienione na if/else: od AGP 9 identyfikatory zasobów
-        // nie są stałymi kompilacji, więc nie mogą być etykietami case.
+        // if/else instead of switch (v.getId()): since AGP 9 resource IDs are not
+        // compile-time constants and cannot be used as case labels.
         final int viewId = v.getId();
 
         if (viewId == R.id.top_up) {
@@ -998,30 +929,6 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         return !(a.right < b.left || b.right < a.left || a.bottom < b.top || b.bottom < a.top);
     }
 
-    public static class ColorBall {
-        private final Bitmap bitmap;
-        private final Point point;
-        private final int id;
-
-        public ColorBall(Context context, int resId, Point point, int id) {
-            this.id = id;
-            this.point = point;
-            Bitmap bmp = null;
-            if (resId != 0) {
-                try { bmp = BitmapFactory.decodeResource(context.getResources(), resId); }
-                catch (Throwable ignored) {}
-            }
-            this.bitmap = bmp;
-        }
-
-        public int getWidthOfBall() { return bitmap == null ? 0 : bitmap.getWidth(); }
-        public int getHeightOfBall() { return bitmap == null ? 0 : bitmap.getHeight(); }
-        public Bitmap getBitmap() { return bitmap; }
-        public int getX() { return point.x; }
-        public int getY() { return point.y; }
-        public int getID() { return id; }
-    }
-    
     // For non FYT devices
     private void scaleView() {
         if (mRootView == null) return;

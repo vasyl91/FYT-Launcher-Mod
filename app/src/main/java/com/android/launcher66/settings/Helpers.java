@@ -498,32 +498,25 @@ public class Helpers {
         }
     }
 
-    /** -1 Check all screens, reset overlapping rectangles on same screen
-     *   0 Check only screen 0, reset overlapping rectangles on that screen
-     *   1 Check only screen 1, reset overlapping rectangles on that screen
-     *   and so on..
-     */
-    public boolean checkAndResetIfOverlappingOnScreen(int screenToCompare) {
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-        
-        // Rectangle configurations with their screen keys
-        String[] rectangleKeys = {"pipDual", "pipFirst", "pipSecond", "pipThird", "pipFourth", "date", "music", "radio"};
-        String[] screenKeys = {Keys.PIP_DUAL_SCREEN, Keys.PIP_FIRST_SCREEN, Keys.PIP_SECOND_SCREEN, 
-                              Keys.PIP_THIRD_SCREEN, Keys.PIP_FOURTH_SCREEN, Keys.DATE_SCREEN, 
-                              Keys.MUSIC_SCREEN, Keys.RADIO_SCREEN};
-        
-        // Check which rectangles are enabled
-        boolean dualPip = mPrefs.getBoolean(Keys.PIP_DUAL, false);
-        boolean firstPip = mPrefs.getBoolean(Keys.PIP_FIRST, false);
-        boolean secondPip = mPrefs.getBoolean(Keys.PIP_SECOND, false);
-        boolean thirdPip = mPrefs.getBoolean(Keys.PIP_THIRD, false);
-        boolean fourthPip = mPrefs.getBoolean(Keys.PIP_FOURTH, false);
-        boolean pip = mPrefs.getBoolean(Keys.DISPLAY_PIP, false);
-        boolean date = mPrefs.getBoolean(Keys.USER_DATE, false);
-        boolean music = mPrefs.getBoolean(Keys.USER_MUSIC, false);
-        boolean radio = mPrefs.getBoolean(Keys.USER_RADIO, false);
-        
-        boolean[] enabledStates = {
+    // Rectangle configurations with their screen keys
+    private static final String[] RECTANGLE_KEYS = {"pipDual", "pipFirst", "pipSecond", "pipThird", "pipFourth", "date", "music", "radio"};
+    private static final String[] SCREEN_KEYS = {Keys.PIP_DUAL_SCREEN, Keys.PIP_FIRST_SCREEN, Keys.PIP_SECOND_SCREEN,
+                                                 Keys.PIP_THIRD_SCREEN, Keys.PIP_FOURTH_SCREEN, Keys.DATE_SCREEN,
+                                                 Keys.MUSIC_SCREEN, Keys.RADIO_SCREEN};
+
+    /** Which of RECTANGLE_KEYS are shown, in the same order. */
+    private static boolean[] getEnabledStates(SharedPreferences prefs) {
+        boolean dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
+        boolean firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
+        boolean secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
+        boolean thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
+        boolean fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
+        boolean pip = prefs.getBoolean(Keys.DISPLAY_PIP, false);
+        boolean date = prefs.getBoolean(Keys.USER_DATE, false);
+        boolean music = prefs.getBoolean(Keys.USER_MUSIC, false);
+        boolean radio = prefs.getBoolean(Keys.USER_RADIO, false);
+
+        return new boolean[] {
             pip && dualPip && !firstPip && !secondPip,  // pipDual
             pip && firstPip && !dualPip,                // pipFirst
             pip && secondPip && !dualPip,               // pipSecond
@@ -533,6 +526,21 @@ public class Helpers {
             music,                                      // music
             radio,                                      // radio
         };
+    }
+
+    /** -1 Check all screens, reset overlapping rectangles on same screen
+     *   0 Check only screen 0, reset overlapping rectangles on that screen
+     *   1 Check only screen 1, reset overlapping rectangles on that screen
+     *   and so on..
+     */
+    public boolean checkAndResetIfOverlappingOnScreen(int screenToCompare) {
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        
+        String[] rectangleKeys = RECTANGLE_KEYS;
+        String[] screenKeys = SCREEN_KEYS;
+        
+        // Check which rectangles are enabled
+        boolean[] enabledStates = getEnabledStates(mPrefs);
         
         // Get screen assignments for each rectangle
         int[] screens = new int[rectangleKeys.length];
@@ -552,28 +560,16 @@ public class Helpers {
         // Only create bottom bar rect if we're checking screen 0 (or all screens)
         if (screenToCompare == -1 || screenToCompare == 0) {
             BarGeometry bar = getBarGeometry(mPrefs, orientation);
-            int bottomBarWidth;
             
             float bottomBarTop = bar.barTop;
             
-            if (!leftBar) {
-                // Bottom bar at bottom of screen
-                if (!autoHideBottomBar) {
-                    // Full width bottom bar
-                    bottomBarRect = new RectF(0, bottomBarTop, bar.rootWidth, bar.rootHeight);
-                } else {
-                    // Only the collapsed button when auto-hide is enabled
-                    bottomBarWidth = bar.collapsedWidth;
-                    bottomBarRect = new RectF(0, bottomBarTop, bottomBarWidth, bar.rootHeight);
-                }
-            } else {
-                // Left bar configuration
-                if (!autoHideBottomBar) {
-                    // Full width bottom bar
-                    bottomBarRect = new RectF(0, bottomBarTop, bar.rootWidth, bar.rootHeight);
-                }
-                // When leftBar && autoHideBottomBar, no bottom bar area to reserve
+            if (!autoHideBottomBar) {
+                // Full width bottom bar, with and without the left bar
+                bottomBarRect = new RectF(0, bottomBarTop, bar.rootWidth, bar.rootHeight);
             }
+            // Auto-hide reserves nothing. With the left bar it never did; without it there is no
+            // collapsed button any more - the bar is revealed through the thin edge handle, which
+            // stays on top of the widgets (Workspace / BottomBarEdgeHandle).
             Log.d(TAG, "Bottom bar area " + bar + (leftBar ? ", left bar" : "")
                     + (autoHideBottomBar ? ", auto-hide" : "") + " -> " + bottomBarRect);
         }
@@ -648,7 +644,7 @@ public class Helpers {
         return foundOverlap;
     }
 
-    private RectF getRectangleBounds(SharedPreferences mPrefs, String key) {
+    private static RectF getRectangleBounds(SharedPreferences mPrefs, String key) {
         int topLeftX = mPrefs.getInt(key + "TopLeftX", 0);
         int topLeftY = mPrefs.getInt(key + "TopLeftY", 0);
         int topRightX = mPrefs.getInt(key + "TopRightX", 0);
@@ -1031,14 +1027,12 @@ public class Helpers {
         final int rootWidth;
         final int rootHeight;
         final int barHeight;
-        final int collapsedWidth;
         final float barTop;
 
-        BarGeometry(int rootWidth, int rootHeight, int barHeight, int collapsedWidth) {
+        BarGeometry(int rootWidth, int rootHeight, int barHeight) {
             this.rootWidth = rootWidth;
             this.rootHeight = rootHeight;
             this.barHeight = barHeight;
-            this.collapsedWidth = collapsedWidth;
             this.barTop = rootHeight - barHeight;
         }
 
@@ -1055,8 +1049,42 @@ public class Helpers {
         int rootWidth = BottomBarDimensions.getBarRootWidth(Launcher.screenWidth);
         int rootHeight = BottomBarDimensions.getBarRootHeight(Launcher.screenHeight, statusBarHeight);
         int barHeight = getBottomBarHeight(prefs, orientation, rootWidth, rootHeight);
-        return new BarGeometry(rootWidth, rootHeight, barHeight,
-                getCollapsedBarWidth(orientation, rootWidth));
+        return new BarGeometry(rootWidth, rootHeight, barHeight);
+    }
+
+    /**
+     * Distance from the left edge of the widget box to the nearest widget, PiP or stats window on
+     * the first screen that reaches into the bottom bar band - the rows the auto-hide edge handle
+     * covers. Workspace keeps the handle's transparent touch margin within it, so the margin never
+     * takes the touches of a widget standing next to the handle.
+     *
+     * @return the distance in pixels, Integer.MAX_VALUE if nothing is in the band.
+     */
+    public static int getBottomBandLeftClearance(SharedPreferences prefs) {
+        int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
+        BarGeometry bar = getBarGeometry(prefs, orientation);
+        boolean[] enabledStates = getEnabledStates(prefs);
+
+        int clearance = Integer.MAX_VALUE;
+        for (int i = 0; i < RECTANGLE_KEYS.length; i++) {
+            if (!enabledStates[i] || prefs.getInt(SCREEN_KEYS[i], 1) - 1 != 0) continue;
+            clearance = Math.min(clearance,
+                    leftEdgeInBand(getRectangleBounds(prefs, RECTANGLE_KEYS[i]), bar));
+        }
+        // The stats window may overlap widgets, so the overlap checks leave it out - but the touch
+        // margin must not cover it either.
+        if (prefs.getBoolean(Keys.USER_STATS, false) && prefs.getInt(Keys.STATS_SCREEN, 1) - 1 == 0) {
+            clearance = Math.min(clearance, leftEdgeInBand(getRectangleBounds(prefs, "stats"), bar));
+        }
+        return clearance;
+    }
+
+    /** Left edge of the rectangle if it reaches into the bar band, Integer.MAX_VALUE otherwise. */
+    private static int leftEdgeInBand(RectF rect, BarGeometry bar) {
+        if (rect.isEmpty() || rect.bottom <= bar.barTop || rect.top >= bar.rootHeight) {
+            return Integer.MAX_VALUE;
+        }
+        return Math.max(0, (int) rect.left);
     }
 
     /**
@@ -1078,17 +1106,6 @@ public class Helpers {
             return (int) (rootHeight * 0.1638);
         }
         return BottomBarDimensions.computeBarHeight(prefs, portrait, rootWidth, rootHeight, 0);
-    }
-
-    /**
-     * Width of the collapsed auto-hide button, as Workspace.hideNormalBottomBar() draws it: the
-     * left bar width in portrait, 7.1 % of the width in landscape.
-     */
-    private static int getCollapsedBarWidth(int orientation, int rootWidth) {
-        if (orientation == Configuration.ORIENTATION_PORTRAIT && Launcher.calculatedLeftBarWidth > 0) {
-            return Launcher.calculatedLeftBarWidth;
-        }
-        return (int) (rootWidth * 0.071f); // 7.1% of screen width
     }
 
     private boolean compareScreensForReset(String pipScreenKey, int screenToCompare, SharedPreferences mPrefs) {
