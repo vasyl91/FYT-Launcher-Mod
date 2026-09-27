@@ -1,9 +1,9 @@
 package com.syu.carinfo.hechi.fordexplorer;
 
+import android.SystemProperties;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.SystemProperties;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;

@@ -1,7 +1,7 @@
 package com.syu.carinfo.dasauto;
 
-import android.os.Bundle;
 import android.SystemProperties;
+import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;

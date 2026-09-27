@@ -1,12 +1,12 @@
 package com.android.launcher66;
 
+import android.SystemProperties;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.SystemProperties;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;

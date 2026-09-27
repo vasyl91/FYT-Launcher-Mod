@@ -1,7 +1,7 @@
 package com.syu.canbus.warn;
 
-import android.content.Context;
 import android.SystemProperties;
+import android.content.Context;
 import android.util.Log;
 
 import com.android.launcher66.LauncherApplication;

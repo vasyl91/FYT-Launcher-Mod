@@ -1,5 +1,6 @@
 package com.android.launcher66;
 
+import android.SystemProperties;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.animation.Animator;
@@ -59,7 +60,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import android.SystemProperties;
 import android.provider.Settings;
 import android.text.Selection;
 import android.text.SpannableString;

@@ -20,11 +20,11 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import com.android.launcher66.R
 import com.google.android.flexbox.FlexboxLayout
-import androidx.core.graphics.toColorInt
 
 class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
     private var colorView: View? = null

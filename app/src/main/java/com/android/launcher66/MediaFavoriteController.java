@@ -26,8 +26,8 @@ import android.util.Log;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.settings.AppListCacheDialogFragment;
-import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.FytRating;
+import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SpotifyRating;
 import com.fyt.car.MusicService;
 import com.syu.widget.DateMusicProvider;

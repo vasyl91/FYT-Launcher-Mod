@@ -1,7 +1,7 @@
 package com.syu.carinfo.rzc.havalh6;
 
-import android.os.Bundle;
 import android.SystemProperties;
+import android.os.Bundle;
 import android.widget.TextView;
 
 import com.syu.canbus.BaseActivity;

@@ -1,9 +1,9 @@
 package com.syu.carinfo.zhtd.bmw;
 
+import android.SystemProperties;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.SystemProperties;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckedTextView;

@@ -1,10 +1,10 @@
 package com.syu.ui.air;
 
+import android.SystemProperties;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Region;
-import android.SystemProperties;
 
 import com.android.launcher66.LauncherApplication;
 import com.syu.module.canbus.DataCanbus;

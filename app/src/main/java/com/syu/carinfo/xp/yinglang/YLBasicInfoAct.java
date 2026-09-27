@@ -1,8 +1,8 @@
 package com.syu.carinfo.xp.yinglang;
 
+import android.SystemProperties;
 import android.app.Activity;
 import android.os.Bundle;
-import android.SystemProperties;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.widget.TextView;

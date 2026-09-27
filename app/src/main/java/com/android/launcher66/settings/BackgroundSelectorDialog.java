@@ -2,8 +2,8 @@ package com.android.launcher66.settings;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.WallpaperManager;
 import android.app.WallpaperColors;
+import android.app.WallpaperManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;

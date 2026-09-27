@@ -1,5 +1,6 @@
 package com.android.launcher66;
 
+import android.SystemProperties;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Service;
@@ -20,7 +21,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
-import android.SystemProperties;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;

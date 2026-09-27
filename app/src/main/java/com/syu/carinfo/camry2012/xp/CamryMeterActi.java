@@ -1,8 +1,8 @@
 package com.syu.carinfo.camry2012.xp;
 
+import android.SystemProperties;
 import android.content.Intent;
 import android.os.Bundle;
-import android.SystemProperties;
 import android.view.View;
 import android.widget.TextView;
 

@@ -10,9 +10,9 @@ import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
+import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
@@ -24,8 +24,8 @@ import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
-
 import android.widget.ImageView;
+
 import androidx.core.content.ContextCompat;
 
 import java.util.List;

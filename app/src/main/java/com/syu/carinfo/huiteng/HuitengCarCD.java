@@ -1,8 +1,8 @@
 package com.syu.carinfo.huiteng;
 
+import android.SystemProperties;
 import android.app.Activity;
 import android.os.Bundle;
-import android.SystemProperties;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;

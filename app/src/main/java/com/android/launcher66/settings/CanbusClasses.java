@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 import com.android.async.AsyncTask;
 import com.android.launcher66.LauncherApplication;
-import com.android.launcher66.R;
 import com.syu.carinfo.accord.ActivityAccord7Index;
 import com.syu.carinfo.accord9.wc.Accord9HIndexAct;
 import com.syu.carinfo.accord9.wc.Accord9LowIndexAct;

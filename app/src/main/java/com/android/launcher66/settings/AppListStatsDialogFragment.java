@@ -3,7 +3,6 @@ package com.android.launcher66.settings;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -35,7 +34,6 @@ import com.android.launcher66.AppInfo;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;

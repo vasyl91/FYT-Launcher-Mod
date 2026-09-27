@@ -1,8 +1,8 @@
 package com.syu.ui.door;
 
+import android.SystemProperties;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
-import android.SystemProperties;
 import android.util.Log;
 import android.view.View;
 import android.widget.PopupWindow;

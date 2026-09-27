@@ -1,8 +1,8 @@
 package com.syu.canbus.warn;
 
+import android.SystemProperties;
 import android.content.Context;
 import android.content.Intent;
-import android.SystemProperties;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;

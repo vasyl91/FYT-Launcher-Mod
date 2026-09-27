@@ -1,9 +1,9 @@
 package com.syu.carinfo.rzc.addcan;
 
+import android.SystemProperties;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.SystemProperties;
 import android.widget.ImageView;
 import android.widget.TextView;
 

@@ -1,7 +1,7 @@
 package com.syu.carinfo.xc.tule;
 
-import android.os.Bundle;
 import android.SystemProperties;
+import android.os.Bundle;
 import android.widget.TextView;
 
 import com.syu.canbus.BaseActivity;

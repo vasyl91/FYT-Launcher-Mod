@@ -1,8 +1,8 @@
 package com.syu.carinfo.klc;
 
+import android.SystemProperties;
 import android.app.Activity;
 import android.os.Bundle;
-import android.SystemProperties;
 import android.view.KeyEvent;
 import android.widget.TextView;
 

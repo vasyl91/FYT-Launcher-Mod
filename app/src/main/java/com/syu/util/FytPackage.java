@@ -1,5 +1,6 @@
 package com.syu.util;
 
+import android.SystemProperties;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +8,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.SystemClock;
-import android.SystemProperties;
 import android.text.TextUtils;
 import android.util.Log;
 

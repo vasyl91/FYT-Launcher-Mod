@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import android.SystemProperties;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.app.usage.UsageStats;
@@ -19,7 +20,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.SystemProperties;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.TypedValue;
