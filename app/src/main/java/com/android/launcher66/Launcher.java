@@ -558,7 +558,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean mPostResumeAppDataRefreshPending = false;
     private boolean mPostResumeAppDataDirty = true;
     private long mLastPostResumeAppDataRefreshMs = 0L;
-    private boolean mStatusBarSwipeDetectorStartPending = false;
+    // Status bar swipe strip (StatusBarSwipeDetector): runs only while the launcher is resumed.
+    // onResume() and onPause() both (re)schedule this one runnable, so the latest state wins.
+    private static final long SWIPE_DETECTOR_SYNC_DELAY_MS = 500L;
+    private final Runnable mSyncStatusBarSwipeDetector = this::syncStatusBarSwipeDetector;
     private boolean mNightModeServiceStartPending = false;
     private boolean mCanbusServiceStartPending = false;
     private boolean mWeatherUpdatePending = false;
@@ -3872,20 +3875,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mPrefs.edit().putBoolean("user_init_layout", currentUserLayout).apply();
         }
 
-        statusBarSwipeDetection = mPrefs.getBoolean(Keys.SWIPE_DETECTOR, false);
-        if (LauncherApplication.hasSystemPrivileges()
-                && statusBarSwipeDetection
-                && !mStatusBarSwipeDetectorStartPending
-                && !isServiceRunning(StatusBarSwipeDetector.class)) {
-            mStatusBarSwipeDetectorStartPending = true;
-            mHandler.postDelayed(() -> {
-                mStatusBarSwipeDetectorStartPending = false;
-                Intent statusBarSwipeDetectorIntent = new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class);
-                if (ServiceIntentGate.startIfAvailable(this, statusBarSwipeDetectorIntent, "status bar swipe detector")) {
-                    setServiceRunningCache(StatusBarSwipeDetector.class, true);
-                }
-            }, 500);
-        }
+        // The status bar swipe strip is started from onResume() (scheduleStatusBarSwipeDetectorSync()):
+        // the two early returns above (home from all apps, fast home) used to skip it here.
 
         if (!mNightModeServiceStartPending
                 && !isServiceRunning(NightModeService.class)
@@ -4169,12 +4160,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             hideOverlayFab();
         }
 
-        if (isServiceRunning(StatusBarSwipeDetector.class)) {
-            mHandler.postDelayed(() -> {
-                stopService(new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class));
-                setServiceRunningCache(StatusBarSwipeDetector.class, false);
-            }, 500);
-        }
+        scheduleStatusBarSwipeDetectorSync();
     }
 
     @Override
@@ -4515,8 +4501,42 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         setServiceRunningCache(CanbusService.class, false);
         stopService(new Intent(LauncherApplication.sApp, FabOverlayService.class));
         setServiceRunningCache(FabOverlayService.class, false);
-        stopService(new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class));
-        setServiceRunningCache(StatusBarSwipeDetector.class, false);
+        mHandler.removeCallbacks(mSyncStatusBarSwipeDetector);
+        // On recreation the new launcher can be created before this one is destroyed; the strip
+        // then belongs to it and must not be stopped here.
+        if (mLauncher == this || mLauncher == null) {
+            stopService(new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class));
+            setServiceRunningCache(StatusBarSwipeDetector.class, false);
+        }
+    }
+
+    private void scheduleStatusBarSwipeDetectorSync() {
+        mHandler.removeCallbacks(mSyncStatusBarSwipeDetector);
+        mHandler.postDelayed(mSyncStatusBarSwipeDetector, SWIPE_DETECTOR_SYNC_DELAY_MS);
+    }
+
+    /**
+     * Brings the status bar swipe strip in line with the launcher: running while the launcher is
+     * resumed and the option is on, stopped otherwise. Scheduled by both onResume() and onPause(),
+     * so a quick pause/resume ends in the right state; the separate delayed start and stop used to
+     * overtake each other. Starting a running service only delivers another onStartCommand() and
+     * stopping a stopped one does nothing, so this does not trust the isServiceRunning() cache,
+     * which could still say "running" while a stop was pending.
+     */
+    private void syncStatusBarSwipeDetector() {
+        if (isDestroyed() || isFinishing()) {
+            return; // stopServicesOnDestroy() takes care of it
+        }
+        statusBarSwipeDetection = mPrefs.getBoolean(Keys.SWIPE_DETECTOR, false);
+        Intent intent = new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class);
+        if (!mPaused && statusBarSwipeDetection && LauncherApplication.hasSystemPrivileges()) {
+            if (ServiceIntentGate.startIfAvailable(this, intent, "status bar swipe detector")) {
+                setServiceRunningCache(StatusBarSwipeDetector.class, true);
+            }
+        } else {
+            stopService(intent);
+            setServiceRunningCache(StatusBarSwipeDetector.class, false);
+        }
     }
 
     // Handle widget click events

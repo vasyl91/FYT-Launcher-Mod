@@ -4,10 +4,11 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
-import android.view.GestureDetector;
+import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -18,17 +19,22 @@ public class StatusBarSwipeDetector extends Service {
 
     private WindowManager windowManager;
     private View overlayView;
-    private GestureDetector gestureDetector;
-    private Workspace mWorkspace;
+    private int touchSlop;
+
+    // State of the current gesture, from its ACTION_DOWN.
+    private Workspace gestureWorkspace;       // the workspace this gesture pages, null if none
+    private boolean barHiddenThisGesture;
+    private float downRawX;
+    private float downRawY;
+    private float lastX; // last position in this window, for a closing ACTION_CANCEL
+    private float lastY;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Launcher launcher = Launcher.getLauncher();
-        mWorkspace = launcher != null ? launcher.getWorkspace() : null;
-
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        touchSlop = ViewConfiguration.get(this).getScaledTouchSlop();
 
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -50,43 +56,61 @@ public class StatusBarSwipeDetector extends Service {
 
         overlayView = new FrameLayout(this);
 
-        // Set up gesture detection
-        gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-            private static final int SWIPE_THRESHOLD = 100;
-            private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                float diffX = e2.getX() - e1.getX();
-
-                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                    if (diffX > 0) {
-                        onSwipeRight();
-                    } else {
-                        onSwipeLeft();
-                    }
-                    return true;
-                }
-                return false;
+        // The strip pages the workspace exactly like a swipe on the workspace itself: every event
+        // goes through the workspace's own paging (Workspace.handleExternalSwipe()), so the pages
+        // follow the finger and snap with the fling velocity on release.
+        overlayView.setOnTouchListener((v, event) -> {
+            final int action = event.getActionMasked();
+            lastX = event.getX();
+            lastY = event.getY();
+            if (action == MotionEvent.ACTION_DOWN) {
+                barHiddenThisGesture = false;
+                downRawX = event.getRawX();
+                downRawY = event.getRawY();
+                gestureWorkspace = currentWorkspace();
+            } else if (action == MotionEvent.ACTION_MOVE && !barHiddenThisGesture
+                    && (Math.abs(event.getRawX() - downRawX) > touchSlop
+                        || Math.abs(event.getRawY() - downRawY) > touchSlop)) {
+                // The finger has started to move: the auto-hide bar goes away right now.
+                hideAutoHideBarOnce();
             }
-        });
 
-        // Add touch listener to detect gestures
-        overlayView.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+            Workspace workspace = gestureWorkspace;
+            if (workspace != null && !workspace.handleExternalSwipe(event)) {
+                gestureWorkspace = null; // cannot page now (e.g. all apps open): ignore the rest
+            }
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                gestureWorkspace = null;
+            }
+            return true;
+        });
 
         // Add the overlay view to the window
         windowManager.addView(overlayView, params);
     }
 
-    private void onSwipeLeft() {
-        if (mWorkspace != null) {
-            mWorkspace.scrollRight();
-        }
+    /**
+     * The Workspace of the current launcher. Looked up for every gesture rather than kept from
+     * onCreate(): this service outlives the activity, and a kept reference would point to the
+     * destroyed Workspace (and keep it in memory) once the launcher has been recreated.
+     */
+    private static Workspace currentWorkspace() {
+        Launcher launcher = Launcher.getLauncher();
+        return launcher != null ? launcher.getWorkspace() : null;
     }
 
-    private void onSwipeRight() {
-        if (mWorkspace != null) {
-            mWorkspace.scrollLeft();
+    /**
+     * Swiping over this strip hides the auto-hide bottom bar. The bar does not notice the swipe by
+     * itself: this window lies above it, and only windows above the touched one get ACTION_OUTSIDE.
+     */
+    private void hideAutoHideBarOnce() {
+        if (barHiddenThisGesture) {
+            return;
+        }
+        barHiddenThisGesture = true;
+        Workspace workspace = currentWorkspace();
+        if (workspace != null) {
+            workspace.hideAutoHideBarIfShown("status bar swipe");
         }
     }
 
@@ -102,6 +126,16 @@ public class StatusBarSwipeDetector extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        // Stopped in the middle of a swipe (the launcher lost the front): the window goes away
+        // without an ACTION_UP, so let the pages settle instead of stopping between two of them.
+        Workspace workspace = gestureWorkspace;
+        gestureWorkspace = null;
+        if (workspace != null) {
+            long now = SystemClock.uptimeMillis();
+            MotionEvent cancel = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, lastX, lastY, 0);
+            workspace.handleExternalSwipe(cancel);
+            cancel.recycle();
+        }
         if (overlayView != null) {
             windowManager.removeView(overlayView);
         }
