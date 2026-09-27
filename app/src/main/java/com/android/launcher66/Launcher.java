@@ -4130,8 +4130,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onPause();
         allowPip = false;
         cleanWidgetBar();
+        if (mWorkspace != null) {
+            // Something else takes the screen - usually an app opened from the bottom or the side
+            // bar: the auto-hide bar goes away now instead of waiting for its timeout. (Already
+            // done above in widget bar mode; with the bar hidden this does nothing.)
+            mWorkspace.hideAutoHideBarIfShown("launcher paused");
+        }
         cancelFastHomeDeferredWork();
         if (mHomeButtonPressed && isOnMainWorkspaceScreen()) return;
+        if (mWorkspace != null) {
+            // The bar edge handle is an overlay window: it must not stay above the next activity.
+            // (Skipped above for a home press on the home screen, where the launcher stays in front.)
+            mWorkspace.setEdgeHandleHostVisible(false);
+        }
         Log.d(TAG, "---->>> onPause");
         mHandler.postDelayed(()-> {
             if (Utils.topApp(FytPackage.hicarAction)
@@ -4167,6 +4178,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onStop() {
         super.onStop();
         Log.d(TAG, "---->>> onStop");
+        if (mWorkspace != null) {
+            // Safety net for the bar edge handle (an overlay window): onPause() leaves it up for a
+            // home press on the home screen, but nothing of the launcher is visible any more now.
+            mWorkspace.setEdgeHandleHostVisible(false);
+        }
         // The wallpaper picker (or whatever came up instead) now covers the launcher.
         hideWallpaperPickerIndicator();
         NotificationListener mediaListener = NotificationListener.getInstance();
@@ -10691,6 +10707,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         // Change the state *after* we've called all the transition code
         mState = State.WORKSPACE;
+        mWorkspace.updateEdgeHandle("showWorkspace");
 
         // Resume the auto-advance of widgets
         mUserPresent = true;
@@ -10707,6 +10724,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mWorkspace.setVisibility(android.view.View.VISIBLE);
         hideAppsCustomizeHelper(Workspace.State.OVERVIEW, false, false, null);
         mState = State.WORKSPACE;
+        mWorkspace.updateEdgeHandle("showOverviewMode");
         onWorkspaceShown(animated);
     }
 
@@ -10752,6 +10770,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             showAppsCustomizeHelper(animated, true, contentType);
             mAppsCustomizeTabHost.requestFocus();
             mState = State.APPS_CUSTOMIZE;
+            mWorkspace.updateEdgeHandle("showAllApps");
             mUserPresent = false;
             updateRunning();
             closeFolder();

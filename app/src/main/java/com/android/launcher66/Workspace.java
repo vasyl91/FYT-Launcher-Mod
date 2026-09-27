@@ -56,9 +56,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.AbsoluteLayout;
@@ -329,6 +331,28 @@ public class Workspace extends SmoothPagedView
     private boolean isOverlayAnimating = false;
     boolean pipInitialized = false;
     private final Object overlayLock = new Object();
+
+    // Auto-hide bar transitions. The overlay slides in and out while whatever stands for the
+    // hidden bar - the collapsed button with the left bar, the edge handle without it - fades the
+    // other way, so no frame shows both of them or neither.
+    private static final long BAR_SHOW_DURATION_MS = 220;
+    private static final long BAR_HIDE_DURATION_MS = 180;
+    private static final long COLLAPSED_BAR_FADE_OUT_MS = 120;
+    private static final long EDGE_HANDLE_FADE_MS = 150;
+    // The edge handle returns only in the second half of the slide-out. It is an overlay window:
+    // when the bar goes away because an app is being launched (Launcher.cleanWidgetBar()), onPause()
+    // hides it again before it can show above the incoming app.
+    private static final long EDGE_HANDLE_RETURN_DELAY_MS = BAR_HIDE_DURATION_MS / 2;
+    private static final float COLLAPSED_BUTTON_ALPHA = 0.5f;
+    /** The overlay bar is shown or sliding in (false again as soon as it starts sliding out). */
+    private boolean mBarRevealed = false;
+    /** The overlay bar is sliding out; it is removed when the animation ends. */
+    private boolean mOverlayHideAnimating = false;
+    /** Auto-hide without the left bar: the edge handle replaces the collapsed button. */
+    private boolean mEdgeHandleMode = false;
+    /** The launcher is resumed; set by Launcher.onPause() and onResume(). */
+    private boolean mEdgeHandleHostVisible = false;
+    private BottomBarEdgeHandle mEdgeHandle;
 
     private TextView titleText;
     private TextView artistText;
@@ -871,6 +895,7 @@ public class Workspace extends SmoothPagedView
         cleanupAllResources();
         cancelPendingAutoHide();
         clearWidgetReferences();
+        mBarRevealed = false;
         helpers.setInAllApps(false);
         helpers.setInWidgets(false);
         helpers.setInOverviewMode(false);
@@ -937,10 +962,14 @@ public class Workspace extends SmoothPagedView
             applyResizableBottomBar("createUserPage");
 
             autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+            // Without the left bar there is no collapsed button: the bar is revealed through the
+            // edge handle (BottomBarEdgeHandle), which updateEdgeHandle() shows and hides.
+            mEdgeHandleMode = autoHideBottomBar && !leftBar;
             if (autoHideBottomBar) {
                 toggleBottomBar();              
             }
         } else {
+            mEdgeHandleMode = false;
             workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one, workspaceLayout, false);
             customScreen[0].addView(workspaceView);
 
@@ -1011,6 +1040,11 @@ public class Workspace extends SmoothPagedView
         }
 
         new CanbusAsyncTask(LauncherApplication.sApp).execute();
+
+        // Re-sizes the handle for the new layout, or releases it if the layout does not use it.
+        // createUserPage() runs within one frame, so the handle kept from the old layout does not
+        // flicker even if something in between hid it.
+        updateEdgeHandle("createUserPage", 0);
 
         invalidate();
     }
@@ -1468,53 +1502,26 @@ public class Workspace extends SmoothPagedView
             if (isOverlayAnimating) {
                 return;
             }
+            if (workspaceView == null || bottomBarAllApps == null) {
+                return;
+            }
 
             showBarIcon = workspaceView.findViewById(R.id.show_bar);
 
             if (bottomBarAllApps.getVisibility() == View.VISIBLE) {
                 // Hide the normal bottom bar
-                final int screenWidth = Launcher.screenWidth;
-                int collapsedWidth;
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    collapsedWidth = (int) (0.071 * screenWidth);
-                } else {
-                    collapsedWidth = Launcher.calculatedLeftBarWidth;
-                }
-                hideNormalBottomBar(collapsedWidth);
+                hideNormalBottomBar(getCollapsedBarWidth());
             } else {
-                // Prevent showing if already showing or animating
-                if (isOverlayShowing || isOverlayAnimating) {
+                // Prevent showing if already showing
+                if (isOverlayShowing) {
                     return;
                 }
                 isOverlayAnimating = true;
 
-                if (showBarIcon != null && showBarIcon.getVisibility() == View.VISIBLE) {
-                    showBarIcon.animate()
-                        .alpha(0f)
-                        .setDuration(0)
-                        .withEndAction(() -> showBarIcon.setVisibility(View.INVISIBLE))
-                        .start();
-                }
-                if (bottomBarBg != null && bottomBarBg.getVisibility() == View.VISIBLE) {
-                    bottomBarBg.animate()
-                        .alpha(0f)
-                        .setDuration(0)
-                        .withEndAction(() -> bottomBarBg.setVisibility(View.INVISIBLE))
-                        .start();
-                }
-
-                if (widgetBar) {
-                    if (workspaceView != null) {
-                        mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
-                        mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
-                        if (mBarMusicWidget != null) mBarMusicWidget.setVisibility(View.INVISIBLE);
-                        if (mBarWeatherWidget != null) mBarWeatherWidget.setVisibility(View.INVISIBLE);
-                        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                            mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
-                            if (mBarDateWidget != null) mBarDateWidget.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                }
+                // The collapsed button (or the edge handle) stays until the overlay has drawn its
+                // first frame; startOverlayShowTransition() fades it out while the bar slides in.
+                // Hiding it here left a gap while the overlay was being built.
+                hideInlineBarWidgets();
                 // Show using overlay
                 showOverlayBottomBar();
             }
@@ -1522,23 +1529,58 @@ public class Workspace extends SmoothPagedView
     }
 
     public void hideBottomBar() {
-        final int screenWidth = Launcher.screenWidth;
-        int collapsedWidth;
+        hideNormalBottomBar(getCollapsedBarWidth());
+        hideOverlayBottomBar();
+    }
+
+    /** Width of the collapsed button (left bar only): 7.1 % of the width in landscape. */
+    private int getCollapsedBarWidth() {
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            collapsedWidth = (int) (0.071 * screenWidth);
-        } else {
-            collapsedWidth = Launcher.calculatedLeftBarWidth;
+            return (int) (0.071 * Launcher.screenWidth);
         }
-        hideNormalBottomBar(collapsedWidth);      
-        hideOverlayBottomBar(); 
+        return Launcher.calculatedLeftBarWidth;
+    }
+
+    private void hideInlineBarWidgets() {
+        if (!widgetBar || workspaceView == null) {
+            return;
+        }
+        mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
+        mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
+        if (mBarMusicWidget != null) mBarMusicWidget.setVisibility(View.INVISIBLE);
+        if (mBarWeatherWidget != null) mBarWeatherWidget.setVisibility(View.INVISIBLE);
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
+            if (mBarDateWidget != null) mBarDateWidget.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void hideNormalBottomBar(int collapsedWidth) {
+        if (workspaceView == null || bottomBarRecycler == null || bottomBarAllApps == null
+                || bottomBarBg == null) {
+            return;
+        }
+        if (showBarIcon == null) {
+            showBarIcon = workspaceView.findViewById(R.id.show_bar);
+        }
+
         bottomBarRecycler.animate()
                 .alpha(0f)
                 .setDuration(0)
                 .withEndAction(() -> bottomBarRecycler.setVisibility(View.INVISIBLE))
                 .start();
+
+        if (mEdgeHandleMode) {
+            // No collapsed button without the left bar: nothing of the inline bar stays on screen,
+            // the edge handle stands for it.
+            bottomBarAllApps.animate().cancel();
+            bottomBarAllApps.setAlpha(0f);
+            bottomBarAllApps.setVisibility(View.INVISIBLE);
+            fadeView(bottomBarBg, 0f, 0);
+            fadeView(showBarIcon, 0f, 0);
+            hideInlineBarWidgets();
+            return;
+        }
 
         bottomBarAllApps.animate()
                 .alpha(0f)
@@ -1557,18 +1599,7 @@ public class Workspace extends SmoothPagedView
                 })
                 .start();
 
-        if (widgetBar) {
-            if (workspaceView != null) {
-                mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
-                mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
-                if (mBarMusicWidget != null) mBarMusicWidget.setVisibility(View.INVISIBLE);
-                if (mBarWeatherWidget != null) mBarWeatherWidget.setVisibility(View.INVISIBLE);
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
-                    if (mBarDateWidget != null) mBarDateWidget.setVisibility(View.INVISIBLE);
-                }
-            }
-        }
+        hideInlineBarWidgets();
 
         final int screenWidth = Launcher.screenWidth;
         final int screenHeight = Launcher.screenHeight;
@@ -1632,6 +1663,9 @@ public class Workspace extends SmoothPagedView
             }
 
             overlayWindowParams.gravity = Gravity.BOTTOM;
+            // No system window animation: the bar slides itself, in step with the collapsed
+            // button / edge handle (startOverlayShowTransition(), hideOverlayBottomBar()).
+            overlayWindowParams.windowAnimations = 0;
 
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
@@ -1669,15 +1703,15 @@ public class Workspace extends SmoothPagedView
 
             // Setup the overlay view
             setupOverlayView(screenWidth, bottomBarHeight);
+            prepareOverlayForShow();
 
             // Add to window manager
             try {
                 overlayWindowManager.addView(overlayBottomBar, overlayWindowParams);
                 isOverlayShowing = true;
-                overlayBottomBar.post(() ->
-                        overlayBottomBar.requestApplyInsets()
-                );
-                showOverlayWithAnimation();
+                final View addedBar = overlayBottomBar;
+                addedBar.post(addedBar::requestApplyInsets);
+                startOverlayShowTransition();
                 setupAutoHideForOverlay();
             } catch (Exception e) {
                 Log.e("OverlayBottomBar", "Failed to add overlay view", e);
@@ -1685,10 +1719,13 @@ public class Workspace extends SmoothPagedView
             } finally {
                 isOverlayAnimating = false;
             }
-            mainHandler.post(() -> {
-                mLauncher.updateWeather();
-                mLauncher.enableRecycler();
-            });
+            final Launcher launcher = mLauncher;
+            if (launcher != null) {
+                mainHandler.post(() -> {
+                    launcher.updateWeather();
+                    launcher.enableRecycler();
+                });
+            }
         }
     }
 
@@ -1721,8 +1758,12 @@ public class Workspace extends SmoothPagedView
         }
         
         overlayAllApps.setOnClickListener(v -> {
+            // All apps first: the launcher state is then no longer WORKSPACE, so the edge handle
+            // does not fade in behind the sliding bar.
+            if (mLauncher != null) {
+                mLauncher.onClickAllAppsButton();
+            }
             hideOverlayBottomBar();
-            mLauncher.onClickAllAppsButton();
         });
 
         overlayBottomBar.setOnTouchListener((v, event) -> {
@@ -2080,102 +2121,364 @@ public class Workspace extends SmoothPagedView
         mOverlayRecycler.post(mOverlayRecycler::invalidateItemDecorations);
     }
 
-    private void showOverlayWithAnimation() {
+    /** Initial state of a freshly built overlay: invisible, all-apps button in place of show_bar. */
+    private void prepareOverlayForShow() {
         if (overlayBottomBar == null) return;
-        
-        // Start with invisible and animate in
+
+        // Nothing may show before startOverlayShowTransition() has moved the bar below the edge.
         overlayBottomBar.setAlpha(0f);
         overlayBottomBar.setVisibility(View.VISIBLE);
-        
-        overlayBottomBar.animate()
-                .alpha(1f)
-                .setDuration(250)
-                .setInterpolator(new AccelerateDecelerateInterpolator())
-                .start();
-                
+
         // Show all apps icon in overlay
         ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
         ImageView overlayShowBar = overlayBottomBar.findViewById(R.id.show_bar);
-        
-        overlayShowBar.setVisibility(View.INVISIBLE);
-        overlayAllApps.setVisibility(View.VISIBLE);
-        overlayAllApps.setAlpha(1f);
-        
-        // Bounce animation for all apps icon
-        ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(overlayAllApps, "scaleX", 1f, 1.1f, 1f);
-        ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(overlayAllApps, "scaleY", 1f, 1.1f, 1f);
-        scaleUpX.setDuration(250);
-        scaleUpY.setDuration(250);
-        scaleUpX.start();
-        scaleUpY.start();
+        if (overlayShowBar != null) {
+            overlayShowBar.setVisibility(View.INVISIBLE);
+        }
+        if (overlayAllApps != null) {
+            overlayAllApps.setVisibility(View.VISIBLE);
+            overlayAllApps.setAlpha(1f);
+        }
+    }
+
+    /**
+     * Slides the freshly added overlay up from the bottom edge and fades the collapsed button (or
+     * the edge handle) out meanwhile. Starts on the overlay's first frame: building the overlay
+     * takes a while, and starting earlier either skipped the beginning of the animation or left a
+     * moment with neither the button nor the bar on screen.
+     */
+    private void startOverlayShowTransition() {
+        final View bar = overlayBottomBar;
+        if (bar == null) return;
+
+        bar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                ViewTreeObserver observer = bar.getViewTreeObserver();
+                if (observer.isAlive()) {
+                    observer.removeOnPreDrawListener(this);
+                }
+                if (bar != overlayBottomBar || mOverlayHideAnimating) {
+                    return true; // replaced, or already on its way out
+                }
+
+                // This frame is drawn below the edge; the slide starts from there.
+                bar.setTranslationY(bar.getHeight());
+                bar.setAlpha(1f);
+                bar.animate()
+                        .translationY(0f)
+                        .setDuration(BAR_SHOW_DURATION_MS)
+                        .setInterpolator(new DecelerateInterpolator(1.5f))
+                        .start();
+
+                // Bounce animation for all apps icon
+                ImageView overlayAllApps = bar.findViewById(R.id.rl_allapps);
+                if (overlayAllApps != null) {
+                    ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(overlayAllApps, "scaleX", 1f, 1.1f, 1f);
+                    ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(overlayAllApps, "scaleY", 1f, 1.1f, 1f);
+                    scaleUpX.setDuration(250);
+                    scaleUpY.setDuration(250);
+                    scaleUpX.start();
+                    scaleUpY.start();
+                }
+
+                mBarRevealed = true;
+                setCollapsedBarShown(false, COLLAPSED_BAR_FADE_OUT_MS);
+                return true;
+            }
+        });
     }
 
     public void hideOverlayBottomBar() {
+        hideOverlayBottomBar(true);
+    }
+
+    /**
+     * Puts the auto-hide bar away at once if it is on screen: an app is being opened (the launcher
+     * is paused) or the user swiped over the status bar strip (StatusBarSwipeDetector). Neither
+     * reaches the bar as ACTION_OUTSIDE - a tap inside the bar is not outside it, and the swipe
+     * strip is a window above the bar, while only windows above the touched one get ACTION_OUTSIDE.
+     * Does nothing without auto-hide or while the bar is hidden: hideOverlayBottomBar() alone would
+     * also disable the inline recycler, i.e. the regular bar.
+     */
+    public void hideAutoHideBarIfShown(String reason) {
         synchronized (overlayLock) {
-            if (isOverlayAnimating) {
+            if (!autoHideBottomBar || !isOverlayShowing || mOverlayHideAnimating) {
                 return;
             }
-            
-            isOverlayAnimating = true;
-            
-            if (overlayBottomBar != null && overlayWindowManager != null) {
-                // Clean up RecyclerView first to break the reference chain
-                cleanupOverlayRecyclerView();
-                
-                // Cancel any pending auto-hide first
-                cancelPendingAutoHide();
-                
-                // Animate out and remove
-                overlayBottomBar.animate()
-                        .alpha(0f)
-                        .setDuration(0)
-                        .setInterpolator(new AccelerateDecelerateInterpolator())
-                        .withEndAction(() -> {
-                            synchronized (overlayLock) {
-                                try {
-                                    overlayWindowManager.removeView(overlayBottomBar);
-                                } catch (Exception e) {
-                                    Log.e("OverlayBottomBar", "Error removing overlay", e);
-                                }
-                                // Clear all overlay references
-                                clearOverlayReferences();
-                                isOverlayShowing = false;
-                                isOverlayAnimating = false;
-                            }
-                        })
-                        .start();
-            } else {
-                // No overlay to hide, just reset state
-                isOverlayShowing = false;
-                isOverlayAnimating = false;
-            }
         }
-        
-        // Also make sure to cancel any pending auto-hide (outside sync for thread safety)
+        Log.d(TAG, "Hiding the auto-hide bar: " + reason);
+        hideOverlayBottomBar();
+    }
+
+    /**
+     * Hides the overlay bar. Animated, it slides down while the collapsed button (or the edge
+     * handle) fades in, and the window is removed when the slide ends; otherwise both happen at
+     * once. A slide-in still running is taken over from where it is.
+     */
+    public void hideOverlayBottomBar(boolean animate) {
+        // Also make sure to cancel any pending auto-hide
         cancelPendingAutoHide();
 
-        if (showBarIcon != null && showBarIcon.getVisibility() == View.INVISIBLE) {
-            showBarIcon.animate()
-                .alpha(0.5f)
-                .setDuration(0)
-                .withEndAction(() -> showBarIcon.setVisibility(View.VISIBLE))
-                .start();
-                if (blackTintBar) {
-                    Helpers.applyColorFilterToImageView(showBarIcon);
-                } else {
-                    Helpers.removeColorFilterFromImageView(showBarIcon);
+        long restoreDurationMs = 0;
+        synchronized (overlayLock) {
+            final View bar = overlayBottomBar;
+            final WindowManager windowManager = overlayWindowManager;
+
+            if (bar == null || windowManager == null) {
+                // No overlay to hide, just reset state
+                if (!mOverlayHideAnimating) {
+                    isOverlayShowing = false;
+                    isOverlayAnimating = false;
                 }
-        }
-        if (bottomBarBg != null && bottomBarBg.getVisibility() == View.INVISIBLE) {
-            bottomBarBg.animate()
-                .alpha(1f)
-                .setDuration(0)
-                .withEndAction(() -> bottomBarBg.setVisibility(View.VISIBLE))
-                .start();
+                mBarRevealed = false;
+            } else if (mOverlayHideAnimating) {
+                // Already sliding out. Only a request to finish at once changes anything; a
+                // cancelled animation does not run its end action.
+                if (animate) {
+                    return;
+                }
+                bar.animate().cancel();
+                finishOverlayHide(bar, windowManager);
+                return;
+            } else if (isOverlayAnimating) {
+                // The overlay is being built right now (toggleBottomBar()).
+                return;
+            } else {
+                isOverlayAnimating = true;
+                mOverlayHideAnimating = true;
+                mBarRevealed = false;
+
+                // Touches pass through while the bar slides out.
+                setOverlayTouchable(false);
+                bar.animate().cancel();
+
+                int distance = bar.getHeight();
+                if (!animate || distance <= 0 || !bar.isAttachedToWindow()) {
+                    finishOverlayHide(bar, windowManager);
+                } else {
+                    restoreDurationMs = BAR_HIDE_DURATION_MS;
+                    bar.animate()
+                            .translationY(distance)
+                            .setDuration(BAR_HIDE_DURATION_MS)
+                            .setInterpolator(new AccelerateInterpolator(1.5f))
+                            .withEndAction(() -> finishOverlayHide(bar, windowManager))
+                            .start();
+                }
+            }
         }
 
-        if (mLauncher != null) {
-            new Handler(Looper.getMainLooper()).post(() -> mLauncher.disableRecycler());
+        // The collapsed button / edge handle fades in while the bar slides out.
+        setCollapsedBarShown(true, restoreDurationMs);
+
+        final Launcher launcher = mLauncher;
+        if (launcher != null) {
+            mainHandler.post(launcher::disableRecycler);
+        }
+    }
+
+    /** End of a hide: detaches the shared adapter and removes the window. */
+    private void finishOverlayHide(View bar, WindowManager windowManager) {
+        synchronized (overlayLock) {
+            if (bar != overlayBottomBar) {
+                // Already cleaned up (cleanupOverlayImmediately()) and possibly replaced: only make
+                // sure the old window is gone, the flags belong to the current overlay.
+                try {
+                    windowManager.removeView(bar);
+                } catch (Exception ignored) {
+                    // Already removed.
+                }
+                return;
+            }
+            // Clean up RecyclerView first to break the reference chain. Done only now: the bar
+            // kept its icons while it was sliding out.
+            cleanupOverlayRecyclerView();
+            try {
+                windowManager.removeView(bar);
+            } catch (Exception e) {
+                Log.e("OverlayBottomBar", "Error removing overlay", e);
+            }
+            // Clear all overlay references. isOverlayAnimating is still set here, which stops the
+            // hideOverlayBottomBar() that Launcher.cleanWidgetBar() calls back into.
+            clearOverlayReferences();
+            isOverlayShowing = false;
+            isOverlayAnimating = false;
+            mOverlayHideAnimating = false;
+        }
+    }
+
+    private void setOverlayTouchable(boolean touchable) {
+        if (overlayBottomBar == null || overlayWindowManager == null || overlayWindowParams == null
+                || !overlayBottomBar.isAttachedToWindow()) {
+            return;
+        }
+        // A copy with the height the window really has. overlayWindowParams is also the root
+        // view's own LayoutParams, whose height the inset listener in showOverlayBottomBar()
+        // rewrites without ever resizing the window; pushing it here would resize the window in
+        // the middle of the slide-out on devices with a bottom inset.
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+        params.copyFrom(overlayWindowParams);
+        int height = overlayBottomBar.getHeight();
+        if (height > 0) {
+            params.height = height;
+        }
+        int flags = touchable
+                ? params.flags & ~WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                : params.flags | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+        if (flags == params.flags) {
+            return;
+        }
+        params.flags = flags;
+        overlayWindowParams.flags = flags;
+        try {
+            overlayWindowManager.updateViewLayout(overlayBottomBar, params);
+        } catch (Exception e) {
+            Log.w("OverlayBottomBar", "Could not update overlay flags", e);
+        }
+    }
+
+    /**
+     * Shows or hides what stands for the hidden bar: the edge handle without the left bar, the
+     * collapsed bar background and its show_bar button with it. Auto-hide only.
+     */
+    private void setCollapsedBarShown(boolean shown, long durationMs) {
+        if (!autoHideBottomBar) {
+            return;
+        }
+        if (mEdgeHandleMode) {
+            updateEdgeHandle(shown ? "bar hidden" : "bar shown", durationMs,
+                    shown && durationMs > 0 ? EDGE_HANDLE_RETURN_DELAY_MS : 0);
+            return;
+        }
+        if (workspaceView == null) {
+            return;
+        }
+        if (showBarIcon == null) {
+            showBarIcon = workspaceView.findViewById(R.id.show_bar);
+        }
+        if (shown && showBarIcon != null) {
+            blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
+            if (blackTintBar) {
+                Helpers.applyColorFilterToImageView(showBarIcon);
+            } else {
+                Helpers.removeColorFilterFromImageView(showBarIcon);
+            }
+        }
+        fadeView(bottomBarBg, shown ? 1f : 0f, durationMs);
+        fadeView(showBarIcon, shown ? COLLAPSED_BUTTON_ALPHA : 0f, durationMs);
+    }
+
+    /** Fades a view to the given alpha; INVISIBLE once it reaches 0. */
+    private static void fadeView(View view, float alpha, long durationMs) {
+        if (view == null) return;
+        view.animate().cancel();
+        if (durationMs <= 0) {
+            view.setAlpha(alpha);
+            view.setVisibility(alpha > 0f ? View.VISIBLE : View.INVISIBLE);
+            return;
+        }
+        if (alpha > 0f) {
+            if (view.getVisibility() != View.VISIBLE) {
+                view.setAlpha(0f);
+                view.setVisibility(View.VISIBLE);
+            }
+            view.animate()
+                    .alpha(alpha)
+                    .setDuration(durationMs)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .start();
+        } else {
+            view.animate()
+                    .alpha(0f)
+                    .setDuration(durationMs)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .withEndAction(() -> view.setVisibility(View.INVISIBLE))
+                    .start();
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Edge handle (auto-hide without the left bar)
+    // ---------------------------------------------------------------------------------------------
+
+    /** Called by Launcher.onResume() / onPause(): the launcher is (no longer) in front. */
+    public void setEdgeHandleHostVisible(boolean visible) {
+        mEdgeHandleHostVisible = visible;
+        // Hidden at once when leaving: the next activity is already coming in on top.
+        updateEdgeHandle(visible ? "resume" : "pause", visible ? EDGE_HANDLE_FADE_MS : 0);
+    }
+
+    /** Re-evaluates whether the edge handle belongs on screen, e.g. after a launcher state change. */
+    public void updateEdgeHandle(String reason) {
+        updateEdgeHandle(reason, EDGE_HANDLE_FADE_MS);
+    }
+
+    private void updateEdgeHandle(String reason, long durationMs) {
+        updateEdgeHandle(reason, durationMs, 0);
+    }
+
+    private void updateEdgeHandle(String reason, long durationMs, long showDelayMs) {
+        if (!mEdgeHandleMode) {
+            releaseEdgeHandle();
+            return;
+        }
+        if (shouldShowEdgeHandle()) {
+            if (mEdgeHandle == null) {
+                mEdgeHandle = new BottomBarEdgeHandle(getContext(), this::onEdgeHandleTriggered);
+            }
+            applyEdgeHandleGeometry();
+            if (mEdgeHandle.show(durationMs, showDelayMs)) {
+                Log.d(TAG, "Edge handle shown (" + reason + ")");
+            }
+        } else if (mEdgeHandle != null && mEdgeHandle.hide(durationMs)) {
+            Log.d(TAG, "Edge handle hidden (" + reason + ")");
+        }
+    }
+
+    /**
+     * Where the collapsed button used to be visible: the launcher in front, its home screen (the
+     * page that holds the bar) at rest, and the bar itself put away.
+     */
+    private boolean shouldShowEdgeHandle() {
+        return mEdgeHandleHostVisible
+                && !mBarRevealed
+                && workspaceView != null
+                && mLauncher != null
+                && mLauncher.mState == Launcher.State.WORKSPACE
+                && mState == State.NORMAL
+                && !isPageMoving()
+                && getCurrentPage() == getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1);
+    }
+
+    private void applyEdgeHandleGeometry() {
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        }
+        int screenWidth = Launcher.screenWidth;
+        int screenHeight = Launcher.screenHeight;
+        int longerEdge = Math.max(screenWidth, screenHeight);
+        int stripWidth = Math.max(1, Math.round(longerEdge * BottomBarEdgeHandle.STRIP_WIDTH_FRACTION));
+        int touchMargin = Math.round(longerEdge * BottomBarEdgeHandle.TOUCH_MARGIN_FRACTION);
+        // The transparent margin stops where a widget next to the strip begins, so it never takes
+        // that widget's touches; the strip itself stays on top of it.
+        int clearance = Helpers.getBottomBandLeftClearance(mPrefs);
+        int touchWidth = stripWidth + Math.max(0, Math.min(touchMargin, clearance - stripWidth));
+        mEdgeHandle.setGeometry(stripWidth, touchWidth,
+                getBottomBarHeight(screenWidth, screenHeight),
+                mPrefs.getBoolean(Keys.BLACK_BAR, false));
+    }
+
+    private void onEdgeHandleTriggered() {
+        if (!mEdgeHandleMode || !shouldShowEdgeHandle()) {
+            return;
+        }
+        toggleBottomBar();
+    }
+
+    private void releaseEdgeHandle() {
+        if (mEdgeHandle != null) {
+            mEdgeHandle.release();
+            mEdgeHandle = null;
         }
     }
 
@@ -2209,16 +2512,26 @@ public class Workspace extends SmoothPagedView
 
     private void cleanupOverlayImmediately() {
         synchronized (overlayLock) {
-            if (overlayBottomBar != null && overlayWindowManager != null) {
-                try {
-                    cleanupOverlayRecyclerView();
-                    overlayWindowManager.removeView(overlayBottomBar);
-                } catch (Exception e) {
-                    Log.e("OverlayBottomBar", "Error in immediate cleanup", e);
+            // Both flags guard against re-entry: clearOverlayReferences() calls
+            // Launcher.cleanWidgetBar(), which calls hideOverlayBottomBar() again.
+            isOverlayAnimating = true;
+            mOverlayHideAnimating = true;
+            if (overlayBottomBar != null) {
+                overlayBottomBar.animate().cancel();
+                if (overlayWindowManager != null) {
+                    try {
+                        cleanupOverlayRecyclerView();
+                        overlayWindowManager.removeView(overlayBottomBar);
+                    } catch (Exception e) {
+                        Log.e("OverlayBottomBar", "Error in immediate cleanup", e);
+                    }
                 }
             }
             clearOverlayReferences();
+            isOverlayShowing = false;
             isOverlayAnimating = false;
+            mOverlayHideAnimating = false;
+            mBarRevealed = false;
         }
         cancelPendingAutoHide();
     }
@@ -2388,9 +2701,11 @@ public class Workspace extends SmoothPagedView
         mIconCache = null;
         mDragController = null;
 
-        hideOverlayBottomBar();
+        hideOverlayBottomBar(false);
         cancelPendingAutoHide();
         clearWidgetReferences();
+        mEdgeHandleMode = false;
+        releaseEdgeHandle();
 
         // Nullify local view references
         absoluteLayout = null;
@@ -3026,6 +3341,126 @@ public class Workspace extends SmoothPagedView
         return super.onInterceptTouchEvent(ev);
     }
 
+    // Status bar swipe strip (StatusBarSwipeDetector): its touches run through this view's own
+    // paging (handleExternalSwipe()), so the pages follow the finger as on the workspace itself.
+    private boolean mExternalSwipeTracking = false;   // a strip gesture is in progress
+    private boolean mExternalSwipeScrolling = false;  // ... and the paging has taken it over
+    private float mExternalSwipeOffsetX;
+    private float mExternalSwipeOffsetY;
+    private final int[] mExternalSwipeLocation = new int[2];
+
+    /**
+     * Runs a touch event of the status bar swipe strip through the workspace's own paging, the way
+     * ViewGroup delivers a touch that started on a page: onInterceptTouchEvent() decides when a
+     * horizontal swipe begins (touch slop, swipe angle), then onTouchEvent() moves the pages with
+     * the finger and snaps them with the fling velocity on release. Nothing inside the pages sees
+     * these events, so no widget under the strip is tapped.
+     *
+     * The strip lies above the pages, in the status bar, and the paging ignores gestures that start
+     * outside of it. The gesture is therefore anchored at the vertical middle of the workspace:
+     * horizontally the finger position is taken 1:1, vertically only its relative movement, which
+     * is all the swipe angle check needs.
+     *
+     * @param event an event of any window; only its raw (screen) position is used
+     * @return false if the workspace cannot be paged now (all apps, overview, an open folder, the
+     *         launcher not in front); the rest of that gesture is then ignored as well
+     */
+    public boolean handleExternalSwipe(MotionEvent event) {
+        final int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN) {
+            mExternalSwipeScrolling = false;
+            mExternalSwipeTracking = canPageFromExternalSwipe();
+            if (!mExternalSwipeTracking) {
+                return false;
+            }
+            getLocationOnScreen(mExternalSwipeLocation);
+            // From the event's window to this view; the same offset holds for every pointer.
+            mExternalSwipeOffsetX = event.getRawX() - event.getX() - mExternalSwipeLocation[0];
+            mExternalSwipeOffsetY = getHeight() / 2f - event.getY();
+        } else if (!mExternalSwipeTracking) {
+            return false;
+        }
+
+        final MotionEvent ev = MotionEvent.obtain(event);
+        ev.offsetLocation(mExternalSwipeOffsetX, mExternalSwipeOffsetY);
+        try {
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    if (onInterceptTouchEvent(ev)) {
+                        // The pages are still settling from the previous swipe: caught, as a touch
+                        // on the workspace catches them.
+                        mExternalSwipeScrolling = true;
+                        onExternalSwipeDownWhileSettling(ev);
+                    }
+                    break;
+
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    if (mExternalSwipeScrolling) {
+                        onTouchEvent(ev); // snaps the pages, with the fling velocity
+                    } else {
+                        // Not a page swipe: end it quietly. As ACTION_UP it would count as a tap on
+                        // the wallpaper (onInterceptTouchEvent()).
+                        ev.setAction(MotionEvent.ACTION_CANCEL);
+                        onInterceptTouchEvent(ev);
+                    }
+                    mExternalSwipeTracking = false;
+                    mExternalSwipeScrolling = false;
+                    break;
+
+                case MotionEvent.ACTION_MOVE:
+                    if (mExternalSwipeScrolling) {
+                        onTouchEvent(ev);
+                    } else if (onInterceptTouchEvent(ev)) {
+                        // A page swipe from here on: the workspace takes the gesture over, as when
+                        // it intercepts a touch that started on a page.
+                        mExternalSwipeScrolling = true;
+                    }
+                    break;
+
+                default:
+                    // Further fingers only matter once the pages are moving (active pointer changes).
+                    if (mExternalSwipeScrolling) {
+                        onTouchEvent(ev);
+                    }
+                    break;
+            }
+        } finally {
+            ev.recycle();
+        }
+        return true;
+    }
+
+    /**
+     * onTouchEvent() for the ACTION_DOWN that catches settling pages (it stops their animation),
+     * without this view's own click and long click: a press on the strip must not open the
+     * overview (Launcher.onLongClick()). Only ACTION_DOWN can start either of them.
+     */
+    private void onExternalSwipeDownWhileSettling(MotionEvent ev) {
+        final boolean clickable = isClickable();
+        final boolean longClickable = isLongClickable();
+        setClickable(false);
+        setLongClickable(false);
+        try {
+            onTouchEvent(ev);
+        } finally {
+            setClickable(clickable);
+            setLongClickable(longClickable);
+        }
+    }
+
+    private boolean canPageFromExternalSwipe() {
+        return mEdgeHandleHostVisible // set while the launcher is in front
+                && mLauncher != null
+                && mLauncher.mState == Launcher.State.WORKSPACE
+                && mState == State.NORMAL
+                && !mIsSwitchingState
+                && getOpenFolder() == null
+                && isAttachedToWindow()
+                && getWidth() > 0
+                && getHeight() > 0;
+    }
+
     /**
      * Re-inflates every widget after an orientation change.
      *
@@ -3151,6 +3586,9 @@ public class Workspace extends SmoothPagedView
                 ((CellLayout) getPageAt(i)).setShortcutAndWidgetAlpha(1f);
             }
         }
+
+        // The collapsed button used to scroll away with its page; the handle steps aside instead.
+        updateEdgeHandle("page moving");
     }
 
     protected void onPageEndMoving() {
@@ -3212,6 +3650,8 @@ public class Workspace extends SmoothPagedView
             triggerStripEmptyScreens("Workspace, onPageEndMoving()", false);
             mStripScreensOnPageStopMoving = false;
         }
+
+        updateEdgeHandle("page settled");
     }
 
     @Override
@@ -3742,6 +4182,8 @@ public class Workspace extends SmoothPagedView
         AccessibilityManager am = (AccessibilityManager)
                 getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
         sAccessibilityEnabled = am.isEnabled();
+
+        setEdgeHandleHostVisible(true);
     }
 
     @Override
@@ -4175,6 +4617,7 @@ public class Workspace extends SmoothPagedView
         mState = state;
         updateInteractionForState();
         updateAccessibilityFlags();
+        updateEdgeHandle("workspace state " + state);
     }
 
     private void updateAccessibilityFlags() {
