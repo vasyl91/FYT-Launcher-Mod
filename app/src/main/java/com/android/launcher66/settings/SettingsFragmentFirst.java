@@ -63,7 +63,6 @@ import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.async.AsyncTask;
-import com.android.launcher66.BuildConfig;
 import com.android.launcher66.DeviceProfile;
 import com.android.launcher66.LauncherAppState;
 import com.android.launcher66.LauncherApplication;
@@ -374,7 +373,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         String logcatServiceTimeoutStr = sharedPrefs.getString(Keys.LOGCAT_SERVICE_TIMEOUT, "30");
         logcatServiceTimeout.setSummary(logcatServiceTimeoutStr);
         logcatServiceTimeoutEditText();
-        boolean isDebug = BuildConfig.DEBUG;
 
         versionChecker = new VersionChecker();
         PreferenceCategory appVersion = findPreference("app_version");
@@ -454,16 +452,11 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             String baselineSummary = BaselineProfileCompiler.statusText(LauncherApplication.sApp);
             baselineProfileSummary.setSummary(baselineSummary);
         }
-        nightMode();
-        if (logcatCategory != null) {
-            logcatCategory.setVisible(isDebug);
-        }
-        
+        nightMode();        
         if (logcatService != null) {
-            logcatService.setVisible(isDebug);
             logcatService.setOnPreferenceClickListener(this);
             logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, false);
-            if (logcatServiceBool && isDebug) {
+            if (logcatServiceBool) {
                 String summaryText = getString(R.string.logcat_service_summary);
                 logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
             } else {
@@ -471,10 +464,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             }
         }
         if (logcatServiceWake != null) {
-            logcatServiceWake.setVisible(isDebug);
             logcatServiceWake.setOnPreferenceClickListener(this);
             logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, false);
-            if (logcatServiceWakeBool && isDebug) {
+            if (logcatServiceWakeBool) {
                 String summaryText = getString(LauncherApplication.isFytDevice()
                         ? R.string.logcat_service_wake_summary
                         : R.string.logcat_service_wake_summary_phone);
@@ -488,7 +480,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             logcatFull.setVisible(LauncherApplication.hasSystemPrivileges());
         }
         if (logcatRun != null) {
-            logcatRun.setVisible(isDebug);
             logcatRun.setOnPreferenceClickListener(this);
             LogcatWorker.get().setStateListener(logcatStateListener);
             int delay = (int) LogcatWorker.get().getRemainingMillis();
@@ -501,7 +492,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             }
         }
         if (logcatServiceTimeout != null) {
-            logcatServiceTimeout.setVisible(isDebug);
             logcatServiceTimeout.setOnPreferenceClickListener(this);
         }
         if (appVersion != null) {

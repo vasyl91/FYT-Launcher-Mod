@@ -112,8 +112,7 @@ public class LauncherApplication extends Application {
         initData();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean logcatBoolean = prefs.getBoolean(Keys.LOGCAT_SERVICE, true);
-        boolean isDebug = BuildConfig.DEBUG;
-        if (logcatBoolean && isDebug) {
+        if (logcatBoolean) {
             LogcatWorker.get().start(this);
         }
         initProperties();
@@ -125,6 +124,7 @@ public class LauncherApplication extends Application {
         initWindow();
         connectService();
         DataPack.init(this);
+        boolean isDebug = BuildConfig.DEBUG;
         if (isDebug) {
             enableStrictMode();
         }

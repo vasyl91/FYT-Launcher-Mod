@@ -19,7 +19,6 @@ import androidx.preference.PreferenceManager;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.android.launcher66.BuildConfig;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.ServiceIntentGate;
@@ -171,10 +170,8 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     Log.i(TAG, "Ignoring duplicate display-on event after " + (now - lastDisplayOnHandledMs) + " ms");
                     return;
                 }
-                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-                boolean logcatBoolean = mPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, true);
-                boolean isDebug = BuildConfig.DEBUG;
-                if (logcatBoolean && isDebug) {
+                boolean logcatBoolean = prefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, true);
+                if (logcatBoolean) {
                     LogcatWorker.get().start(LauncherApplication.sApp);
                 }
                 lastDisplayOnHandledMs = now;
