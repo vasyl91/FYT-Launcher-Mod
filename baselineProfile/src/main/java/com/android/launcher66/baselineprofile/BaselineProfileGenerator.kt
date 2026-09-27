@@ -101,7 +101,7 @@ internal fun MacrobenchmarkScope.closeSystemSettings() {
         ?.substringBefore('/')
         ?.also { systemSettingsPackage = it }
     if (pkg.isNullOrEmpty() || pkg == targetPackage) {
-        Log.w(TAG, "Could not resolve the system Settings package, it is left running")
+        Log.w(TAG, "System Settings package not resolved ($pkg), it is left running")
         return
     }
     device.executeShellCommand("am force-stop $pkg")
@@ -159,8 +159,10 @@ internal fun MacrobenchmarkScope.flushProcessProfile(processName: String) {
         Log.w(TAG, "Profile flush skipped: process $processName is not running")
         return
     }
+    // adbd running as root does not need su (and may not have one).
+    val su = if (device.executeShellCommand("id").contains("uid=0")) "" else "su root "
     pids.forEach { pid ->
-        val out = device.executeShellCommand("su root kill -s SIGUSR1 $pid").trim()
+        val out = device.executeShellCommand("${su}kill -s SIGUSR1 $pid").trim()
         Log.i(TAG, "Profile flush requested for $processName (pid $pid)${if (out.isNotEmpty()) ": $out" else ""}")
     }
     SystemClock.sleep(PROFILE_FLUSH_WAIT_MS)

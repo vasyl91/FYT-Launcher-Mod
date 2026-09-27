@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dependency.analysis)
-    alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.baselineprofile)            // Baseline Profile consumer side
 }
 val keystoreProperties = Properties().apply {
     val file = rootProject.file("keystore.properties")
@@ -24,9 +24,11 @@ android {
         applicationId = "com.android.launcher66"
         minSdk = 26
         targetSdk = 36
+
         val appVersionName = "1.2.1"
         versionName = appVersionName
-        // x.y.z -> x0y0z; every release gets a higher versionCode automatically
+        // 1.2.1 -> 10201; every release gets a higher versionCode automatically.
+        // A higher versionCode in /oem/priv-app makes the system drop an older /data/app update.
         versionCode = appVersionName.split(".").map(String::toInt)
             .let { (major, minor, patch) -> major * 10_000 + minor * 100 + patch }
 
@@ -44,6 +46,8 @@ android {
         }
         create("fyt") {
             dimension = "device"
+            // Android Studio selects this flavor by default (with release -> fytRelease).
+            isDefault = true
         }
     }
 
@@ -69,6 +73,8 @@ android {
 
     buildTypes {
         release {
+            // Default build type in Android Studio's Build Variants (with fyt -> fytRelease).
+            isDefault = true
             signingConfig = signingConfigs.getByName("release")
             isCrunchPngs = true
             isMinifyEnabled = true
@@ -126,13 +132,28 @@ android {
 }
 
 androidComponents {
-    beforeVariants { v ->
-        val isPhone = v.productFlavors.any { it.second == "phone" }
-        val bt = v.buildType
-        if (bt == "nonMinifiedProfile" || bt == "benchmarkProfile" ||
-            (isPhone && (bt == "nonMinifiedRelease" || bt == "benchmarkRelease"))
-        ) v.enable = false
+    // initWith() also copies isDefault, so the Baseline Profile build types (nonMinifiedRelease,
+    // benchmarkRelease) would inherit it from "release" -> AGP reports an ambiguous default build
+    // type and Studio would not pick fytRelease. Keep the flag on "release" only. Runs after the
+    // plugin's finalizeDsl (registered at plugin apply), so those types already exist.
+    finalizeDsl { extension ->
+        extension.buildTypes
+            .filter { it.name != "release" }
+            .forEach { it.isDefault = false }
     }
+
+    // The Baseline Profile plugin adds nonMinified* and benchmark* build types for every
+    // non-debuggable build type. Only the fyt ones are used:
+    // fytNonMinifiedRelease - the generator installs and profiles it on the head unit,
+    // fytBenchmarkRelease   - StartupBenchmark measures startup with the profile.
+    // The generated profile itself is used by fytRelease (saved in src, see baselineProfile {}).
+    beforeVariants { v ->
+        val bt = v.buildType.orEmpty()
+        val addedByPlugin = bt.startsWith("nonMinified") || bt.startsWith("benchmark")
+        val used = v.name == "fytNonMinifiedRelease" || v.name == "fytBenchmarkRelease"
+        if (addedByPlugin && !used) v.enable = false
+    }
+
     onVariants { variant ->
         val flavor = variant.flavorName ?: ""
         val buildType = variant.buildType ?: ""
@@ -145,13 +166,15 @@ androidComponents {
     }
 }
 
+// Baseline Profile consumer configuration
 baselineProfile {
-    // Do not generate the profile on every assembleRelease (it would require a connected device).
+    // Do not generate on every assembleRelease (that would require a connected head unit).
     automaticGenerationDuringBuild = false
-    // Save the result in src/ (commit it to the repo).
+    // Save the result in src/ (committed to the repository).
     saveInSrc = true
-    // Startup profile -> R8 arranges startup classes in the primary DEX file.
+    // Startup profile -> R8 places startup classes in the primary DEX file.
     dexLayoutOptimization = true
+    // The Baseline Profile variants disabled above are intentional.
     warnings {
         disabledVariants = false
     }
@@ -214,8 +237,10 @@ dependencies {
     implementation(libs.material)
     implementation(libs.okhttp)
     implementation(libs.play.services.location)
-    implementation(libs.androidx.profileinstaller)
     runtimeOnly(libs.androidx.startup.runtime)
+    // Installs baseline.prof from the APK into ART (Android 7-13). implementation, not
+    // runtimeOnly: BaselineProfileCompiler uses ProfileVerifier.
+    implementation(libs.androidx.profileinstaller)
 
     // ─── Room ───
     implementation(libs.androidx.room.runtime)

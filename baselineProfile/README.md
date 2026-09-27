@@ -81,7 +81,8 @@ What it does:
    The original is kept as `/sbin/su.orig`.
 4. Makes the launcher the default HOME app (`cmd role add-role-holder android.app.role.HOME`).
 5. Shows the system Settings package (the test force-stops it after every cold start).
-6. Keeps the screen on and disables ADB install verification (no Play Protect dialogs).
+6. Keeps the screen on, disables ADB install verification (no Play Protect dialogs) and
+   enables Perfetto tracing (`persist.traced.enable`, needed by `StartupBenchmark`).
 
 > **Re-run `prepare_device.sh` after every reboot of the unit.** `/sbin` is a tmpfs, so the
 > wrapper disappears on reboot (which is also the safest way to undo it).
@@ -212,6 +213,29 @@ R8 also uses `startup-prof.txt` to place startup classes in the primary DEX
    `clearApplicationProfileData`, which freezes the package and kills the launcher – removed.)
 4. The compiled code is used from the **next start of the launcher process** – in practice the
    next ignition cycle.
+5. **Usage refreshes.** While the launcher runs, ART keeps recording the methods the user's own
+   configuration actually executes (side bar, auto-hidden bottom bar, installed widget types,
+   `ActivityView` widgets, …) in the same profile. `BaselineProfileCompiler` compiles the app
+   again after **3, 14 and 30 days** (each also requires **10 launcher starts** since the
+   previous compilation), 90 s after a start. This merges the recorded usage into the compiled
+   code. The profile is not re-installed from the APK for this (that would overwrite the usage
+   data). After the third refresh nothing more happens until the next APK.
+
+Everything above is automatic: no user interaction, no UI, no launcher restart.
+
+### Why one profile covers all user configurations
+
+A Baseline Profile lists classes and methods, not settings. Colors, bar heights and other
+values run the same code and need nothing. Features that run different code (side bar, bottom
+bar auto-hide, widget types, `ActivityView` widgets) are covered by:
+- generating on a test unit configured to run as much code as possible (side bar on, bottom
+  bar visible, every widget type placed, including `ActivityView` widgets), and
+- the usage refreshes above, which add whatever a particular user's configuration runs.
+
+Code missing from the profile is not broken – it simply runs interpreted / JIT-compiled as it
+did before Baseline Profiles. Keep the test unit configuration unchanged between generations:
+the generator taps fixed screen positions (`APP_DRAWER_*`, `WALLPAPER_TAP_*`,
+`SWIPE_BOTTOM_OFFSET_DP`), which depend on bar layout and height.
 
 This works without root because the launcher runs as UID 1000 with the platform signature, so
 system_server allows it the same operations as `adb shell`. The work runs once per new APK
@@ -243,8 +267,12 @@ Expected after a successful deployment and one restart:
 
 ```
 Deployment: OK (active after the next launcher restart) - <stamp>
-ProfileVerifier: code=…, compiledWithProfile=true, enqueued=false
+Last compilation: 2026-09-23 17:35, usage refreshes: 0/3, starts since: 4
+ProfileVerifier: code=1, compiledWithProfile=true, enqueued=true
 ```
+
+`enqueued=true` is normal: ART has recorded new usage data that the next refresh will compile.
+After a refresh the first line reads `OK - usage refresh 1/3 - <stamp>`.
 
 ---
 
@@ -295,7 +323,15 @@ API – see Troubleshooting.
 
 Results (`timeToInitialDisplayMs`, min/median/max) appear in the Gradle output / Android Studio
 test window and as JSON under `baselineprofile/build/outputs/connected_android_test_additional_output/`.
-Requires the same device preparation as generation (root wrapper, HOME role).
+Requires the same device preparation as generation (`prepare_device.sh`: root wrapper, HOME role,
+Perfetto tracing).
+
+Each iteration puts system Settings on top and kills the launcher in `setupBlock`: Macrobenchmark's
+own COLD-mode kill is not enough for a HOME app, because the system restarts the visible home
+screen immediately and the measured start would be warm.
+
+Afterwards the benchmark build is still installed over the system app – run
+`adb uninstall com.android.launcher66` (section 9).
 
 ---
 
@@ -341,6 +377,7 @@ adb shell "dumpsys package com.android.launcher66 | grep codePath"
 | `Unable to strip … libbenchmarkNative.so` | Native libs of the test APK | Harmless |
 | Wrapper: `su root id` fails after install | CRLF line endings or wrong SELinux label | `prepare_device.sh` strips CR and copies the label of `/sbin/magisk`; check `adb shell "su -c 'ls -lZ /sbin/su'"` |
 | Launcher restarts ~90 s after boot, status stays `Deployment: none` | Old `BaselineProfileCompiler` calling `clearApplicationProfileData` (kills the package) | Use the current version |
+| Status `Usage refresh FAILED (will retry)` | Compilation call failed during a refresh | Harmless – the previous compilation stays active; retried after another 10 starts. Check `adb logcat -s BaselineProfile` |
 | User unit: status `FAILED - attempt 3/3` | Hidden API changed or ProfileInstaller error | Read `adb logcat -s BaselineProfile` on a test unit with the same firmware |
 | `dexopt` shows `quicken` after deployment | Profile not applied yet or compiler failed | Check status text / log; the code is active only after the next launcher restart |
 
@@ -370,3 +407,9 @@ Key decisions in the build setup and why they matter:
   a stale launcher task and breaks the return to the home screen.
 - **Explicit HOME intent with component** for cold starts: the manifest has two `LAUNCHER`
   activities, so the default launch intent could resolve to the settings screen.
+- **`BaselineProfileCompiler` is inactive in `nonMinified*` / `benchmark*` builds** (checked via
+  `BuildConfig.BUILD_TYPE`): the generator and `StartupBenchmark` control compilation themselves,
+  and a background compilation 90 s after start would distort the profile and the measurements.
+- **`versionCode` is derived from `versionName`** (`1.2.1` → `10201`) in `app/build.gradle.kts`,
+  so every release has a higher `versionCode`. A newer APK in `/oem/priv-app` then makes the
+  system drop an older `/data/app` update (in-app updater or a leftover test build) on boot.

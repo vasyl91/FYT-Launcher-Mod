@@ -35,7 +35,13 @@ class StartupBenchmark {
         compilationMode = mode,
         startupMode = StartupMode.COLD,
         iterations = 10,
-        setupBlock = { bringSystemSettingsToFront() },
+        setupBlock = {
+            // COLD mode kills the process before setupBlock, but the launcher is the visible
+            // HOME app, so the system restarts it right away and the measured start would be
+            // warm. Put system Settings on top first, then kill the launcher again.
+            bringSystemSettingsToFront()
+            killProcess()
+        },
     ) {
         startActivityAndWait(homeIntent())
         waitForLauncher()

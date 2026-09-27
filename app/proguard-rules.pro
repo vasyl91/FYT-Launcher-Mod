@@ -41,3 +41,21 @@
 
 # Keep all annotations
 -keepattributes *Annotation*
+
+# Keep original class/method names so logs and stack traces are readable in release.
+# Shrinking and optimization stay enabled; only renaming is turned off.
+-dontobfuscate
+# Keep line numbers and source file names in stack traces.
+-keepattributes SourceFile,LineNumberTable
+
+# FYT/SYU IPC: keep AIDL stubs, proxies and their callers intact.
+# R8 inlining Stub.asInterface() into a caller from another package makes the caller
+# instantiate the package-private Stub.Proxy directly, which ART rejects with IllegalAccessError.
+-keep class com.syu.ipc.** { *; }
+-keep class com.syu.remote.** { *; }
+
+# Safety net for every other AIDL interface in the app and in the jars from libs/.
+-keep class * implements android.os.IInterface { *; }
+
+# Loaded by name via reflection in LauncherAppState (AppFilter class from resources).
+-keep class com.syu.car.CustomFilter { <init>(...); }

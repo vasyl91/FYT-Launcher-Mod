@@ -32,7 +32,7 @@ su_root_works() { sh_dev "timeout 5 su root id" | grep -q "uid=0"; }
 if [ "${1:-}" = "--restore" ]; then
   echo "== Restoring the original su =="
   if sh_dev "su -c 'test -e /sbin/su.orig && echo yes'" | grep -q yes; then
-    sh_dev "su -c 'mv -f /sbin/su.orig /sbin/su'"
+    sh_dev "su -c 'mount -o rw,remount /sbin; mv -f /sbin/su.orig /sbin/su'"
     ok "Original su restored"
   else
     ok "Nothing to restore (wrapper not installed)"
@@ -49,7 +49,7 @@ ok "$(sh_dev getprop ro.product.model) - API $API ($(sh_dev getprop ro.build.typ
 
 echo "== Launcher package =="
 DUMP=$(sh_dev dumpsys package $PKG)
-echo "$DUMP" | grep -q "userId=1000" && ok "userId=1000 (android.uid.system)" || warn "userId is not 1000"
+if echo "$DUMP" | grep -q "userId=1000"; then ok "userId=1000 (android.uid.system)"; else warn "userId is not 1000"; fi
 echo "$DUMP" | grep -E "codePath=" | head -n 2 | sed 's/^ */         /'
 if echo "$DUMP" | grep -q "codePath=/data/app"; then
   warn "An update of the launcher is installed in /data/app (left over from a test run)."
@@ -76,7 +76,11 @@ elif sh_dev "su -c id" | grep -q "uid=0"; then
 
   # Keep the original only once - never move the wrapper over su.orig.
   sh_dev "su -c 'mount -o rw,remount /sbin; test -e /sbin/su.orig || mv /sbin/su /sbin/su.orig; cp /data/local/tmp/su_wrapper.sh /sbin/su; chmod 755 /sbin/su; chcon $LABEL /sbin/su'"
-  su_root_works && ok "Wrapper installed (label $LABEL), \"su root id\" works" || fail "Wrapper installed but \"su root id\" still fails"
+  if su_root_works; then
+    ok "Wrapper installed (label $LABEL), \"su root id\" works"
+  else
+    fail "Wrapper installed but \"su root id\" still fails"
+  fi
   echo "  Accept the root request for \"Shell\" on the head unit screen if it appears (choose: forever)."
 else
   fail "No usable root. Root the test unit with Magisk first (allow root for Shell)."
@@ -85,7 +89,7 @@ fi
 echo "== Launcher as the default HOME app =="
 sh_dev cmd role add-role-holder android.app.role.HOME $PKG >/dev/null
 HOME_ACT=$(sh_dev cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME | tail -n 1)
-echo "$HOME_ACT" | grep -q "^$PKG/" && ok "HOME -> $HOME_ACT" || fail "HOME resolves to: $HOME_ACT"
+if echo "$HOME_ACT" | grep -q "^$PKG/"; then ok "HOME -> $HOME_ACT"; else fail "HOME resolves to: $HOME_ACT"; fi
 
 echo "== System Settings package (the test closes it after each cold start) =="
 ok "$(sh_dev cmd package resolve-activity --brief -a android.settings.SETTINGS | tail -n 1)"
@@ -95,6 +99,8 @@ sh_dev svc power stayon true >/dev/null   # FYT's svc prints debug noise - disca
 ok "Screen stays on"
 sh_dev settings put global verifier_verify_adb_installs 0
 ok "ADB install verification disabled (no Play Protect dialog during APK installs)"
+sh_dev setprop persist.traced.enable 1
+ok "Perfetto tracing enabled (needed by StartupBenchmark)"
 
 echo
 echo "Device ready. Generate the profile from the project root:"
