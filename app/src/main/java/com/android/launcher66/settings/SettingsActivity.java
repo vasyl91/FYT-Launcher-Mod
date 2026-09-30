@@ -13,7 +13,6 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -41,7 +40,6 @@ public class SettingsActivity extends AppCompatActivity {
     // Settings main activity 
     private static WeakReference<SettingsActivity> mSettingsActivity;
     private SharedPreferences sharedPrefs;
-    private SunTask mSunTask;
     private static final String TAG = "SettingsActivity";
     private final Helpers helpers = new Helpers(); 
     private boolean isReceiverRegistered = false;
@@ -146,14 +144,17 @@ public class SettingsActivity extends AppCompatActivity {
         screenHeight = LauncherApplication.getScreenHeight(); 
 
         orientation = getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            isPortrait = true;
+        // Static, so it has to be set both ways: it stayed true after a single portrait start.
+        isPortrait = orientation == Configuration.ORIENTATION_PORTRAIT;
+        if (isPortrait) {
             orientationDimension = screenHeight;
             orientedWidth = screenWidth;
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        } else {
+            // Landscape, and also an undefined orientation, which left both values unset (0 on the
+            // first start), so calculateDimension() below threw.
             orientationDimension = screenWidth;
             orientedWidth = screenHeight;
-        } 
+        }
 
         calculatedStatsWidth = calculateDimension(orientationDimension, 21.75);
         calculatedStatsHeight = calculateDimension(orientationDimension, 5.0);
@@ -291,9 +292,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                     helpers.checkAndResetIfOverlappingOnScreen(-1);
                     new VersionChecker().cancelDownload();
-                    if (sharedPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
-                        setBrightness();
-                    }
+                    // Brightness: SettingsFragmentFirst.onStop() applies it, after a home press too.
 
                     long updateOnce = SystemClock.uptimeMillis();
                     Log.d(TAG, "Saving pending updateOnce=" + updateOnce);
@@ -350,32 +349,6 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    private void setBrightness() {
-        final int dayBrightness = sharedPrefs.getInt("day_seek_bar", 70);
-        final int nightBrightness = sharedPrefs.getInt("night_seek_bar", 0);
-        final boolean isDay = helpers.isDay();
-        final boolean isPolarDay = helpers.isPolarDay();
-        final boolean isPerpetualNight = helpers.isPerpetualNight();
-
-        new Thread(() -> {
-            int brightness = 70;
-            if (isDay || isPolarDay) {
-                brightness = dayBrightness;
-            } else if (!isDay || isPerpetualNight) {
-                brightness = nightBrightness;
-            }
-            try {
-                Settings.System.putInt(
-                    LauncherApplication.sApp.getContentResolver(),
-                    Settings.System.SCREEN_BRIGHTNESS,
-                    brightness
-                );
-            } catch (Exception e) {
-                Log.e(TAG, "Error setting brightness", e);
-            }
-        }).start();
-    }
-
     private void clearSkinReferences() {
         try {
             SkinAttribute skinAttribute = SkinUtils.getSkinAttr();
@@ -410,10 +383,6 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         stopWatch();
-        if (mSunTask != null) {
-            mSunTask.cancel(true);
-            mSunTask = null;
-        }
         helpers.setSettingsOpenedBoolean(false);
         clearSkinReferences();
         mReceiver = null;

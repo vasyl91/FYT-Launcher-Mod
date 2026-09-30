@@ -52,12 +52,22 @@ public class CorrectionSeekBarPreference extends Preference {
         }
         
         SeekBar seekBar = (SeekBar) holder.findViewById(R.id.sun_seekbar);
+        if (seekBar == null) {
+            return;
+        }
+        // The sunrise and the sunset bar share one layout, so a recycled row still has the listener of
+        // the bar it showed before. setProgress() below called that listener and saved this bar's
+        // value under the other bar's key. Detach it first and react to the user only.
+        seekBar.setOnSeekBarChangeListener(null);
         seekBar.setMax(MAX_VALUE - MIN_VALUE); // Adjust range for SeekBar
         seekBar.setProgress(currentValue - MIN_VALUE); // Map value to SeekBar progress
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (!fromUser) {
+                    return;
+                }
                 currentValue = progress + MIN_VALUE; // Map progress back to actual value
                 persistInt(currentValue); // Save the value
                 callChangeListener(currentValue); // Notify listeners

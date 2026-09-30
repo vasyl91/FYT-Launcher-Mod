@@ -110,7 +110,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private boolean nightModeBool;
     private boolean defaultWallpapersBool;
     private boolean wallpaperSet = false;
-    private boolean brightnessBool;  
+    private boolean brightnessBool;
+    /** Something that affects the brightness was changed on this screen; applied in onStop(). */
+    private boolean brightnessDirty = false;
     private boolean logcatServiceBool;
     private boolean logcatServiceWakeBool;
     private boolean tickRunnableBool = false;
@@ -284,13 +286,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 }
                 if (restartLauncher()) {
                     helpers.setBackFromCreator(false);
-                    helpers.setFirstPreferenceWindow(true);
-                } else {
-                    helpers.setFirstPreferenceWindow(true);
-                    if (sharedPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
-                        setBrightness();
-                    }
-                }                
+                }
+                helpers.setFirstPreferenceWindow(true);
+                // The brightness is applied in onStop(), which runs for every way out of this screen.
                 long updateOnce = SystemClock.uptimeMillis();
                 Log.d(TAG, "Saving pending updateOnce=" + updateOnce);
                 mContext.getSharedPreferences("LauncherPrefs", Context.MODE_PRIVATE)
@@ -562,6 +560,18 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         SpotifyRating.syncPreference(requireContext(), clientIdPreference, oauthForSpotify);
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        // Every way out of this screen passes here: back, home, recents, another settings screen.
+        // The brightness used to be set only on back, only when the launcher was not restarted, and
+        // without checking the dynamic brightness switch. DayNightBrightness checks both switches.
+        if (brightnessDirty) {
+            brightnessDirty = false;
+            DayNightBrightness.applyForCurrentState(LauncherApplication.sApp, "settings closed");
+        }
+    }
+
     private void nightMode() {
         if (nightNonNull()) {
             nightMode.setOnPreferenceClickListener(this);
@@ -598,10 +608,12 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             nightSeekBar.setVisible(brightnessBool);
             dayTitle.setVisible(brightnessBool);
             nightTitle.setVisible(brightnessBool);
+            // Before the listeners are set, so that this does not count as a change by the user.
+            storeBrightnessDefault(daySeekBar, Keys.DAY_SEEK_BAR, DayNightBrightness.DEFAULT_DAY);
+            storeBrightnessDefault(nightSeekBar, Keys.NIGHT_SEEK_BAR, DayNightBrightness.DEFAULT_NIGHT);
             brightnessSeekBar(daySeekBar);
-            brightnessSeekBar(nightSeekBar);  
-
-        }   
+            brightnessSeekBar(nightSeekBar);
+        }
         if (resetNightMode != null && resetNightModeCategory != null) {
             resetNightMode.setOnPreferenceClickListener(this);
             resetNightMode.setVisible(nightModeBool);
@@ -788,6 +800,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                         AppListAutostartDialogFragment.TAG);
                 break;
             case Keys.NIGHT_MODE:
+                brightnessDirty = true;
                 nightModeBool = sharedPrefs.getBoolean(Keys.NIGHT_MODE, false);
                 handler.post(updateSummary);
                 correctionCategory.setVisible(nightModeBool);
@@ -837,6 +850,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 new SaveWallpaperTask().execute("Night");
                 break;
             case Keys.BRIGHTNESS_PREF:
+                brightnessDirty = true;
                 brightnessBool = sharedPrefs.getBoolean(Keys.BRIGHTNESS_PREF, false);
                 dayTitle.setVisible(brightnessBool);
                 nightTitle.setVisible(brightnessBool);
@@ -846,11 +860,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             case Keys.RESET_NIGHT_MODE:
                 sunriseCorrectionSeekBar.resetPosition();
                 sunsetCorrectionSeekBar.resetPosition();
-                daySeekBar.resetPosition(255);
-                nightSeekBar.resetPosition(0);
+                daySeekBar.resetPosition(DayNightBrightness.DEFAULT_DAY);
+                nightSeekBar.resetPosition(DayNightBrightness.DEFAULT_NIGHT);
                 handler.post(updateSummary);
                 helpers.setCorrectionChanged(true);
                 helpers.setLayoutTypeChanged(true);
+                // The titles used to stay visible above the hidden seek bars.
+                dayTitle.setVisible(false);
+                nightTitle.setVisible(false);
                 daySeekBar.setVisible(false);
                 nightSeekBar.setVisible(false);
                 saveDayWallpaper.setVisible(false);
@@ -1120,9 +1137,19 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
     
     private void brightnessSeekBar(BrightnessSeekBarPreference seekPreference) {
-        seekPreference.setOnSeekBarProgressChangeListener(progress -> {
-            //
-        });
+        // Applied once, when the user leaves this screen (onStop()), not while the bar is dragged.
+        seekPreference.setOnSeekBarProgressChangeListener(progress -> brightnessDirty = true);
+    }
+
+    /**
+     * BrightnessSeekBarPreference shows 0 for a value that was never saved (it ignores
+     * android:defaultValue), while the brightness code used defaults of its own (70 for the day).
+     * Saving the shared default once makes the bar show the value that is actually applied.
+     */
+    private void storeBrightnessDefault(BrightnessSeekBarPreference seekPreference, String key, int value) {
+        if (!sharedPrefs.contains(key)) {
+            seekPreference.resetPosition(value);
+        }
     }
     
     private void correctionSeekBar(CorrectionSeekBarPreference seekPreference) {
@@ -1175,9 +1202,17 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     
     public static String correctTime(String time, long milliseconds) {
         String[] parts = time.split(":");
-        int hours = Integer.parseInt(parts[0]);
-        int minutes = Integer.parseInt(parts[1]);
-        int seconds = Integer.parseInt(parts[2]);
+        int hours;
+        int minutes;
+        int seconds;
+        try {
+            hours = Integer.parseInt(parts[0]);
+            minutes = Integer.parseInt(parts[1]);
+            seconds = Integer.parseInt(parts[2]);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            // Times not calculated yet (""): this threw on the main thread from updateSummary.
+            return time;
+        }
 
         long totalTimeMillis = TimeUnit.HOURS.toMillis(hours)
                 + TimeUnit.MINUTES.toMillis(minutes)
@@ -1569,32 +1604,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         || helpers.isBackFromCreator() 
         || wallpaperSet 
         || helpers.hasCorrectionChanged();
-    }
-
-    private void setBrightness() {
-        final int dayBrightness = sharedPrefs.getInt(Keys.DAY_SEEK_BAR, 70);
-        final int nightBrightness = sharedPrefs.getInt(Keys.NIGHT_SEEK_BAR, 0);
-        final boolean isDay = helpers.isDay();
-        final boolean isPolarDay = helpers.isPolarDay();
-        final boolean isPerpetualNight = helpers.isPerpetualNight();
-
-        new Thread(() -> {
-            int brightness = 70;
-            if (isDay || isPolarDay) {
-                brightness = dayBrightness;
-            } else if (!isDay || isPerpetualNight) {
-                brightness = nightBrightness;
-            }
-            try {
-                Settings.System.putInt(
-                    LauncherApplication.sApp.getContentResolver(),
-                    Settings.System.SCREEN_BRIGHTNESS,
-                    brightness
-                );
-            } catch (Exception e) {
-                Log.e(TAG, "Error setting brightness", e);
-            }
-        }).start();
     }
 
     public void onClickWallpaperPicker(View v) {

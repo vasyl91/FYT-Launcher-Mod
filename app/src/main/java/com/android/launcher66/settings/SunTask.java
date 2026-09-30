@@ -11,14 +11,12 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
 import com.android.async.AsyncTask;
-import com.android.launcher66.LauncherApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +27,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -71,7 +69,6 @@ public class SunTask extends AsyncTask<String, Void, String> {
     private long millisecondOfDay;
     private long dayLength;
     private static final long midnight = 86400000;
-    private static  final long arcticDayLong = -3600000;
     private long sunriseCorrectionValue;
     private long sunsetCorrectionValue;
     private static final Object LOCK = new Object();
@@ -86,6 +83,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
     private boolean mOnlyGetTimes;
     public static final int JOB_ID = 123;
     private static final long MIN_JOB_LATENCY_MS = 30000;
+    private static final int HTTP_TIMEOUT_MS = 10000;
 
     /*
      * One shared thread for all instances. Previously, each instance created its own
@@ -123,15 +121,14 @@ public class SunTask extends AsyncTask<String, Void, String> {
         if (isCancelled()) return "";
         getTimes(url[0]);
         if (isCancelled()) return "";
-        boolean nightMode = mPrefs.getBoolean("night_mode", false);
+        boolean nightMode = mPrefs.getBoolean(Keys.NIGHT_MODE, false);
         if (nightMode && !mOnlyGetTimes) {
             if (isCancelled()) return "";
             setWallpapers();
             if (isCancelled()) return "";
-            boolean brightnessBool = mPrefs.getBoolean("brightness", false);
-            if (brightnessBool) {
-                setBrightness();
-            }
+            // Same day/night decision as the wallpaper. DayNightBrightness checks the dynamic
+            // brightness switch itself and uses the method that works on this device.
+            DayNightBrightness.apply(mContext, allowSetDayWallpaper(), TAG);
             if (!isCancelled() && notArctic()) {
                 scheduleJob(this.mContext, timeToJob);
             }
@@ -157,7 +154,12 @@ public class SunTask extends AsyncTask<String, Void, String> {
         Log.d(TAG, "SunTask cancelled - pending wallpaper tasks dropped");
     }
     
-    private void getTimes(String url) {        
+    private void getTimes(String url) {
+        // Worked out again on every run. Helpers keeps both flags across restarts and nothing ever
+        // set them back to false, so once set they stayed forever: day/night was no longer
+        // calculated, the day flag went stale and no sunrise/sunset job was scheduled any more.
+        helpers.setPolarDay(false);
+        helpers.setPerpetualNight(false);
         if (isConnectionAvailable(this.mContext)) {
             try {
                 JSONObject sunInfoObject = readJsonFromUrl(url);
@@ -170,19 +172,26 @@ public class SunTask extends AsyncTask<String, Void, String> {
                 dayLength = dayStringToLong(sunInfoObject.getString("day_length"));
                 sunrise = stringToLong(sunInfoObject.getString("sunrise"));
                 sunset = stringToLong(sunInfoObject.getString("sunset"));
-            } catch (IOException | JSONException e) {
+            } catch (IOException | JSONException | RuntimeException e) {
+                // RuntimeException: a time in an unexpected format. It used to end the whole task,
+                // so neither the wallpaper nor the brightness was set and no job was scheduled.
                 Log.e(TAG, "Error getting times from API", e);
                 useFallbackCalculation();
                 return;
             }
-        } else {   
+        } else {
             useFallbackCalculation();
             return;
-        }               
-        if (isPolarDay()) {
-            helpers.setPolarDay(true);
-        } else if (isPerpetualNight()) {
-            helpers.setPerpetualNight(true);
+        }
+        if (Math.abs(sunset - sunrise) <= 1000) {
+            // No sunrise or sunset today (polar day or perpetual night): the API gives the same time,
+            // around midnight, for both. The old check compared them with constants that could never
+            // match (those times parsed in UTC+1, while stringToLong() parses in UTC), so both cases
+            // were treated as a night lasting all day. TwilightCalculator tells them apart from the
+            // position of the sun and sets the flags.
+            Log.i(TAG, "No sunrise/sunset in the API response, using the calculation");
+            useFallbackCalculation();
+            return;
         }
         editor.putString("sunrise", longToHourZone(sunrise));
         editor.putString("sunset", longToHourZone(sunset));
@@ -193,15 +202,11 @@ public class SunTask extends AsyncTask<String, Void, String> {
     }
 
     private void useFallbackCalculation() {
+        // TwilightCalculator sets the polar day / perpetual night flags itself.
         TwilightCalculator sunCalc = new TwilightCalculator(this.mContext, mLatiude, mLongitude);
         if (notArctic()) {
             sunrise = stringToLongCalc(sunCalc.getSunrise());
             sunset = stringToLongCalc(sunCalc.getSunset());
-        }               
-        if (isPolarDay()) {
-            helpers.setPolarDay(true);
-        } else if (isPerpetualNight()) {
-            helpers.setPerpetualNight(true);
         }
         editor.putString("sunrise", longToHourZone(sunrise));
         editor.putString("sunset", longToHourZone(sunset));
@@ -231,17 +236,11 @@ public class SunTask extends AsyncTask<String, Void, String> {
                 Log.i("DAY", "waiting for sunset at " + longToHourZone(sunset) + "; Time to job (in ms): " + timeToJob + " (in hours): " + longToHourZone(timeToJob)
                  + "; Current time: " + longToHourZone(millisecondOfDay) + "; Sunrise at: " + longToHourZone(sunrise) + "; day length (in ms): " + dayLength + " (in hours): " + longToHourZone(dayLength));
             }
-        }        
-    }
-
-    private boolean isPolarDay() {
-        long polarDayLong = -3599000;
-        return dayLength == arcticDayLong && sunrise == polarDayLong && sunset == polarDayLong;
-    }
-
-    private boolean isPerpetualNight() {
-        long perpetualNightLong = -3600000;
-        return dayLength == arcticDayLong && sunrise == perpetualNightLong && sunset == perpetualNightLong;
+        } else {
+            // No sunrise/sunset today (polar day / perpetual night). The stored day flag has to
+            // follow, otherwise the wallpaper and the brightness keep the state from before.
+            helpers.setDay(helpers.isPolarDay());
+        }
     }
 
     private boolean notArctic() {
@@ -414,12 +413,9 @@ public class SunTask extends AsyncTask<String, Void, String> {
         }
     }
 
+    /** Day/night decision shared with the brightness, see DayNightBrightness.isDayState(). */
     private boolean allowSetDayWallpaper() {
-        return helpers.isDay() || helpers.isPolarDay();
-    }
-
-    private boolean allowSetNightWallpaper() {
-        return !helpers.isDay() || helpers.isPerpetualNight();
+        return DayNightBrightness.isDayState(helpers);
     }
 
     private boolean isFileValid(File file) {
@@ -447,32 +443,6 @@ public class SunTask extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void setBrightness() {
-        final int dayBrightness = mPrefs.getInt("day_seek_bar", 70);
-        final int nightBrightness = mPrefs.getInt("night_seek_bar", 0);
-        final boolean isDay = helpers.isDay();
-        final boolean isPolarDay = helpers.isPolarDay();
-        final boolean isPerpetualNight = helpers.isPerpetualNight();
-
-        new Thread(() -> {
-            int brightness = 70;
-            if (isDay || isPolarDay) {
-                brightness = dayBrightness;
-            } else if (!isDay || isPerpetualNight) {
-                brightness = nightBrightness;
-            }
-            try {
-                Settings.System.putInt(
-                    LauncherApplication.sApp.getContentResolver(),
-                    Settings.System.SCREEN_BRIGHTNESS,
-                    brightness
-                );
-            } catch (Exception e) {
-                Log.e(TAG, "Error setting brightness", e);
-            }
-        }).start();
-    }
-    
     private long stringToLong(String timeStr) {
         DateTimeFormatter parser = DateTimeFormatter.ofPattern("h:mm:ss a", Locale.ENGLISH);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TIME_CONST);
@@ -531,23 +501,31 @@ public class SunTask extends AsyncTask<String, Void, String> {
     }
 
     public static JSONObject readJsonFromUrl(String urlQueryString) throws IOException, JSONException {
-        try (InputStream input = new URL(urlQueryString).openStream()) {
-            BufferedReader re = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
-            String text = read(re);
-            return new JSONObject(text).getJSONObject("results");
+        // URL.openStream() has no timeouts, so on a hotspot without internet the task could hang for
+        // a long time, and nothing after it ran: no wallpaper, no brightness, no next job.
+        // (The old reader also appended (char) -1 to the end of the text.)
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(urlQueryString).openConnection();
+            connection.setConnectTimeout(HTTP_TIMEOUT_MS);
+            connection.setReadTimeout(HTTP_TIMEOUT_MS);
+            try (BufferedReader re = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                StringBuilder text = new StringBuilder();
+                String line;
+                while ((line = re.readLine()) != null) {
+                    text.append(line);
+                }
+                return new JSONObject(text.toString()).getJSONObject("results");
+            }
         } catch (IOException ex) {
+            Log.w(TAG, "Sunrise/sunset API not reachable: " + ex.getMessage());
             return null;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
-    }
-
-    public static String read(Reader re) throws IOException {
-        StringBuilder str = new StringBuilder(); 
-        int temp;
-        do {
-            temp = re.read(); 
-            str.append((char) temp);
-        } while (temp != -1);
-        return str.toString();
     }
 
     private boolean isConnectionAvailable(Context context) {

@@ -133,6 +133,10 @@ public class NightModeService extends Service {
 
     private void nightMode() {
         if (!isNightModeRunning) {
+            // Only a clock change detected while this run is pending makes it redundant. A flag left
+            // over from an earlier change (every wake from deep sleep sets it) skipped the next
+            // RECREATE refresh, e.g. the one after the sunrise/sunset correction was changed.
+            timeChanged = false;
             nightModeHandler.postDelayed(nightModeRunnable, 4000); // prevents an error when wallpaper is half loaded half black on boot
             isNightModeRunning = true;
         }
@@ -305,10 +309,13 @@ public class NightModeService extends Service {
         Context appContext = context.getApplicationContext();
         synchronized (TASK_LOCK) {
             // Always kill the previous task — otherwise two SunTasks race to update the wallpaper.
-            cancelSunTask();
+            cancelCurrentTaskLocked();
 
-            // The new task schedules the next sunrise/sunset job itself.
-            SunTask.cancelScheduledJob(appContext);
+            // The pending sunrise/sunset job is left in place: the new task replaces it when it
+            // schedules the next one (same job ID). Cancelling it here left no job at all whenever
+            // the new task was cancelled (service restarted) or failed before scheduling, and the
+            // next sunrise/sunset switch - wallpaper and brightness - did not happen.
+            // WakeDetectionService still drops the job on purpose when the screen goes off.
 
             String urlString = "https://api.sunrise-sunset.org/json?lat=" + lat + "&lng=" + longt
                     + "&date=today" + "&tzid=" + ZoneId.systemDefault();
@@ -318,12 +325,27 @@ public class NightModeService extends Service {
         }
     }
 
+    /**
+     * Cancels the SunTask from outside (service destroyed, screen off). The refresh that started it
+     * may not have finished, so the MIN_REFRESH_INTERVAL_MS throttle is cleared as well: otherwise
+     * the refresh of a service restarted within that interval was skipped, and nothing brought the
+     * wallpaper, the brightness and the next job up to date.
+     */
     public static void cancelSunTask() {
         synchronized (TASK_LOCK) {
-            if (currentSunTask != null) {
-                currentSunTask.cancel(true);
-                currentSunTask = null;
+            if (cancelCurrentTaskLocked()) {
+                lastWallpaperCheckMs = 0;
             }
         }
+    }
+
+    /** @return true if there was a task to cancel. The caller holds TASK_LOCK. */
+    private static boolean cancelCurrentTaskLocked() {
+        if (currentSunTask == null) {
+            return false;
+        }
+        currentSunTask.cancel(true);
+        currentSunTask = null;
+        return true;
     }
 }
