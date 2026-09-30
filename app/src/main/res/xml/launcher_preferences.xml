@@ -148,6 +148,13 @@
         <Preference
             android:key="baseline_profile_summary"
             android:title="@string/baseline_profile_summary" />
+        <Preference
+            android:key="baseline_profile_reset"
+            android:title="@string/baseline_profile_reset" />
+        <Preference
+            android:key="autostart_apps"
+            android:title="@string/autostart_apps"
+            android:summary="@string/autostart_apps_summary" />
 
     </PreferenceCategory>
 

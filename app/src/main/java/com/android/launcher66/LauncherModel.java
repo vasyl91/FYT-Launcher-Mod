@@ -2570,6 +2570,10 @@ public class LauncherModel extends BroadcastReceiver {
             if (apps == null || apps.isEmpty()) {
                 return;
             }
+            // Titles still valid on disk go straight into the label cache, so the sort (and
+            // IconCache after it) only open the APKs of new or updated apps.
+            mIconCache.prefillLabels(apps, mLabelCache);
+
             // Sort the applications by name
             final long sortTime = DEBUG_LOADERS ? SystemClock.uptimeMillis() : 0;
             Collections.sort(apps,
@@ -2586,6 +2590,8 @@ public class LauncherModel extends BroadcastReceiver {
                 mBgAllAppsList.add(new AppInfo(packageManager, app,
                         mIconCache, mLabelCache));
             }
+            // Apps that are gone leave the disk cache as well.
+            mIconCache.retainDiskEntries(apps);
 
             // Huh? Shouldn't this be inside the Runnable below?
             final ArrayList<AppInfo> added = mBgAllAppsList.added;

@@ -104,6 +104,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -188,6 +189,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -346,6 +348,34 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private RecyclerView mRecyclerView;
     private LeftAppListAdapter mLeftAppListAdapter;
     private List<AppListBean> mLeftAppListData;
+    /*
+     * Bar snapshots: the bottom and left bars as they were last shown, drawn at start while the
+     * app list is still loading. See prefetchBarSnapshots().
+     */
+    /** True while setupRecyclerView()/setupLeftRecyclerView() run to show a snapshot. */
+    private boolean mApplyingBarSnapshot;
+    private BarSnapshotStore.Snapshot mBottomBarSnapshot;
+    private List<AppMultiple> mBottomBarSnapshotRows;
+    private BarSnapshotStore.Snapshot mLeftBarSnapshot;
+    private List<LeftAppMultiple> mLeftBarSnapshotRows;
+    private boolean mBottomBarSnapshotSaved;
+    private long mSavedBottomBarSnapshotSignature;
+    private boolean mLeftBarSnapshotSaved;
+    private long mSavedLeftBarSnapshotSignature;
+    /**
+     * Snapshots read but not on screen yet: the bars' recycler views only exist once the workspace
+     * page holding them has been bound (createUserPage), which is later than the read. At 22:27 the
+     * read was done at 19.9 s, the views appeared at 21.4 s.
+     */
+    private BarSnapshotStore.Snapshot mPendingBottomSnapshot;
+    private List<AppMultiple> mPendingBottomSnapshotRows;
+    private BarSnapshotStore.Snapshot mPendingLeftSnapshot;
+    private List<LeftAppMultiple> mPendingLeftSnapshotRows;
+    private int mBarSnapshotAttempts;
+    private long mBarSnapshotReadAtMs;
+    private static final long BAR_SNAPSHOT_RETRY_MS = 50L;
+    private static final int BAR_SNAPSHOT_MAX_ATTEMPTS = 200; // 10 s
+    private final Runnable mApplyPendingBarSnapshots = this::applyPendingBarSnapshots;
     private ImageView mMapbgUnitView;
     private TextView mMiuDrive;
     private View mMusicIcon;
@@ -368,6 +398,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean mPaused;
     private AppWidgetProviderInfo mPendingAddWidgetInfo;    
     private int mPendingAddWidgetId = -1;
+    /**
+     * No longer created. It was never given a data source nor started (only stop/reset/release and
+     * a seekTo() fallback that did nothing on an idle player), yet every onResume() created one and
+     * every onPause()/onStop() released it -- two calls into the audioserver per round, which block
+     * the main thread while the audioserver hangs at boot. The null-checked uses below stay no-ops.
+     */
     private MediaPlayer mPlayer;
     private View mQsbBar;
     private Button mRadioBandButton;
@@ -518,13 +554,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private HideFromAccessibilityHelper mHideFromAccessibilityHelper = new HideFromAccessibilityHelper();
     private SharedPreferences mPrefs;
 	private boolean fytData = true;  
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
-    private static final int OVERLAY_PERMISSION_REQUEST_CODE = 1002;
+    // Request codes of the permission flow, see PermissionStep.
     private static final int REQUEST_CODE_WRITE_SETTINGS = 1003;
     private static final int REQUEST_CODE_STORAGE = 1004;
-    private static final int REQUEST_CODE_LOCATION = 1005;
-    private static final int REQUEST_CODE_OVERLAY = 1006; 
-    private boolean permissionsRequested = false;
+    private static final int REQUEST_CODE_OVERLAY = 1006;
+    private static final int REQUEST_CODE_NOTIFICATION_ACCESS = 1007;
     private FusedLocationProviderClient fusedLocationClient;
     private Helpers helpers = new Helpers();
     private LinearLayout bottomButtons;
@@ -561,6 +595,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     // Status bar swipe strip (StatusBarSwipeDetector): runs only while the launcher is resumed.
     // onResume() and onPause() both (re)schedule this one runnable, so the latest state wins.
     private static final long SWIPE_DETECTOR_SYNC_DELAY_MS = 500L;
+    /**
+     * Longest wait for AudioManager.isMusicActive() on the main thread. The answer normally takes a
+     * few ms; while the audioserver hangs (at boot on this ROM) the last known one is used instead.
+     */
+    private static final long AUDIO_STATE_WAIT_MS = 100L;
+    /** Bumped by every widget list the loader delivers; see the widget sort in onCreate(). */
+    private int mWidgetsListGeneration = 0;
     private final Runnable mSyncStatusBarSwipeDetector = this::syncStatusBarSwipeDetector;
     private boolean mNightModeServiceStartPending = false;
     private boolean mCanbusServiceStartPending = false;
@@ -572,6 +613,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final Map<String, Bitmap> mAppIconBitmapCache = new HashMap<>();
     private boolean isRecreateActive = false;
     private boolean mHomeButtonPressed = false;
+    /**
+     * Startup work the first screen does not need waits until this ROM's boot-time stall is over
+     * (see LauncherApplication.BOOT_STALL_OVER_UPTIME_MS); 0 when the launcher is not booting.
+     */
+    private static long bootStallDelayMs() {
+        return LauncherApplication.bootStallDelayMs();
+    }
+
     /** Blocks LauncherNotify re-registration once onDestroy() has run. */
     private volatile boolean mNotifyRefreshersReleased = false;
     private boolean mHomeWorkspaceRefreshHandled = false;
@@ -1470,8 +1519,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             return "true".equals(state);
         }
+        // Not mAudioManager.isMusicActive() directly: see AudioStateCache.
         return MusicService.state.booleanValue()
-                || (mAudioManager != null && mAudioManager.isMusicActive());
+                || AudioStateCache.isMusicActive(this, AUDIO_STATE_WAIT_MS);
     }
 
     public void setPlayPauseIcon() {
@@ -1533,8 +1583,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         showMusicArtist(lastArtist);
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        // Asked once for both buttons, and never waiting long for the audioserver; see AudioStateCache.
+        final boolean playing = MusicService.state.booleanValue()
+                || AudioStateCache.isMusicActive(this, AUDIO_STATE_WAIT_MS);
         if (this.mPlayPauseButton != null) {
-            if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
+            if (playing) {
                 this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                 setWidgetButtonsTint(mPlayPauseButton);
             } else {
@@ -1543,7 +1596,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         }
         if (this.mPlayPauseButtonTwo != null) {
-            if (MusicService.state.booleanValue() || mAudioManager.isMusicActive()) {
+            if (playing) {
                 this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                 setBarButtonsTint(mPlayPauseButtonTwo);
             } else {
@@ -2842,8 +2895,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
-        checkNotificationPermission();      
-
         fytData = mPrefs.getBoolean("fyt_data", true);   
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
@@ -2872,10 +2923,24 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mSavedState = savedInstanceState;
         restoreState(mSavedState);
 
-        // Update customization drawer _after_ restoring the states
+        // Update customization drawer _after_ restoring the states. Sorting by label loads every
+        // widget's and shortcut's label from its app: two seconds of onCreate() at boot (capture
+        // 23:16), so it runs on its own thread. The result is dropped if the loader has delivered a
+        // newer list in the meantime (bindPackagesUpdated() bumps the generation).
         if (mAppsCustomizeContent != null) {
-            mAppsCustomizeContent.onPackagesUpdated(
-                LauncherModel.getSortedWidgetsAndShortcuts(this));
+            final int generation = mWidgetsListGeneration;
+            Thread widgetSort = new Thread(() -> {
+                final ArrayList<Object> sorted = LauncherModel.getSortedWidgetsAndShortcuts(Launcher.this);
+                runOnUiThread(() -> {
+                    if (isDestroyed() || mAppsCustomizeContent == null
+                            || generation != mWidgetsListGeneration) {
+                        return;
+                    }
+                    mAppsCustomizeContent.onPackagesUpdated(sorted);
+                });
+            }, "LauncherWidgetSort");
+            widgetSort.setPriority(Thread.MIN_PRIORITY);
+            widgetSort.start();
         }
 
         if (!mRestoring) {
@@ -3075,6 +3140,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         
         setupViews();
         grid.layout(this);
+        prefetchBarSnapshots();
 
         mStats = new Stats(this);
 
@@ -3220,6 +3286,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final long FYT_RATING_WAKE_DELAY_MS = 1500L;
     private static final long FYT_RATING_WAKE_RECHECK_MS = 400L;
     private static final int  FYT_RATING_WAKE_MAX_WAITS = 12;
+    /**
+     * At a cold boot the wake waits until this uptime. Right after the boot-time stall the pane
+     * apps are still cold-starting (YouTube's onCreate alone took 8 s, capture 29-09-2026 08:09),
+     * and fYT Rating, woken into that at 45 s, did not answer its status request within 8 s.
+     * Nothing needs it earlier.
+     */
+    private static final long FYT_RATING_BOOT_UPTIME_MS = 90_000L;
     private int mFytRatingWakeWaits = 0;
 
     private final Runnable mFytRatingWake = new Runnable() {
@@ -3228,7 +3301,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // Paused again (or gone): the next onResume() reschedules it.
             if (mPaused || isDestroyed() || isFinishing()) return;
 
-            if (WindowUtil.isPipRebuildInProgress() && mFytRatingWakeWaits < FYT_RATING_WAKE_MAX_WAITS) {
+            // Starting an activity is a call into system_server too: at boot, after the stall and
+            // after the pane apps' cold starts (see FYT_RATING_BOOT_UPTIME_MS).
+            long bootWait = Math.max(bootStallDelayMs(),
+                    FYT_RATING_BOOT_UPTIME_MS - SystemClock.elapsedRealtime());
+            if (bootWait > 0L) {
+                mHandler.postDelayed(this, bootWait);
+                return;
+            }
+            if (arePanesStillComing() && mFytRatingWakeWaits < FYT_RATING_WAKE_MAX_WAITS) {
                 mFytRatingWakeWaits++;
                 mHandler.postDelayed(this, FYT_RATING_WAKE_RECHECK_MS);
                 return;
@@ -3237,6 +3318,25 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             FytRating.wakeIfNeeded(Launcher.this);
         }
     };
+
+    /**
+     * Panes are configured but not up yet. isPipRebuildInProgress() alone missed the gap between
+     * onResume() and the start of the rebuild: at boot the wake fired right there, paused the
+     * launcher, and the rebuild that followed had to retry and dismissed a pane (capture 23:13,
+     * 40.777). Same expectations as WakeDetectionService.isPipExpected().
+     */
+    private boolean arePanesStillComing() {
+        if (WindowUtil.isPipRebuildInProgress()) return true;
+        if (!mPrefs.getBoolean(Keys.DISPLAY_PIP, true)) return false;
+        boolean anyPane = mPrefs.getBoolean(Keys.PIP_DUAL, false)
+                || mPrefs.getBoolean(Keys.PIP_FIRST, false)
+                || mPrefs.getBoolean(Keys.PIP_SECOND, false)
+                || mPrefs.getBoolean(Keys.PIP_THIRD, false)
+                || mPrefs.getBoolean(Keys.PIP_FOURTH, false);
+        if (!anyPane) return false;
+        WindowHost host = WindowUtil.getActiveWindowHost();
+        return host == null || host.isAnyPaneAwaitingBounds();
+    }
 
     private void scheduleFytRatingWake() {
         mHandler.removeCallbacks(mFytRatingWake);
@@ -3638,9 +3738,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mKwArtist.setText(R.string.music_author);
             }
         }
-        if (mPlayer == null && LauncherApplication.isFytDevice()) {
-            mPlayer = new MediaPlayer();
-        }
     }
 
     private boolean shouldProcessUpdateOnce(long updateOnce) {
@@ -3843,6 +3940,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onPostResume();
         helpers.setWidgetDropPip(false);
 
+        // Back in front, whichever path below is taken: the permission flow goes on with its next
+        // step once the resume has settled (see schedulePermissionFlow()).
+        schedulePermissionFlow();
+
         if (mHomeFromAllAppsPending) {
             requestPostResumeAppDataRefresh();
             scheduleWeatherCheckAfterHome();
@@ -3850,9 +3951,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 onBackPip = false;
                 onResumePip = false;
             }, 1500);
-            if (!permissionsRequested) {
-                checkAndRequestPermissions();
-            }
             return;
         }
 
@@ -3864,9 +3962,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 onBackPip = false;
                 onResumePip = false;
             }, 1500);
-            if (!permissionsRequested) {
-                checkAndRequestPermissions();
-            }
             return;
         }
 
@@ -3889,7 +3984,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (ServiceIntentGate.startIfAvailable(this, nightModeServiceIntent, "delayed night mode")) {
                     setServiceRunningCache(NightModeService.class, true);
                 }
-            }, 7000);
+            }, Math.max(7000L, bootStallDelayMs())); // 7 s after a boot resume lands in the stall
         }
 
         if (!mCanbusServiceStartPending && !isServiceRunning(CanbusService.class)) {
@@ -3922,12 +4017,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         // Floating button
         floatingButton = checkIfFloatingButton();
-        if (floatingButton) {
-            if (hasOverlayPermission()) {
-                startFabOverlayService();
-            } else {
-                requestOverlayPermission();
-            }
+        if (!floatingButton) {
+            sOverlayStepArmedForFab = false;
+        } else if (hasOverlayPermission()) {
+            startFabOverlayServiceAfterBootStall();
+        } else if (!sOverlayStepArmedForFab) {
+            // The buttons need the overlay permission. Its screen used to be opened from here on
+            // every resume, on top of whatever the permission flow had just opened, and leaving it
+            // without granting reopened it at once. Now it is a step of the flow like everything
+            // else: asked for the buttons (once more, if it was declined earlier), and not again
+            // until they are switched off and on.
+            sOverlayStepArmedForFab = true;
+            sPermissionStepsHandled.remove(PermissionStep.OVERLAY);
         }
 
         mHandler.postDelayed(()-> {
@@ -3938,11 +4039,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             onBackPip = false;
             onResumePip = false; 
         }, 1500); 
-
-        // Permissions for non-system app (only check once)
-        if (!permissionsRequested) {
-            checkAndRequestPermissions();
-        }
     }
 
     private void requestPostResumeAppDataRefresh() {
@@ -3989,100 +4085,204 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         });
     }
 
-    private void checkAndRequestPermissions() {
-        List<String> permissionsToRequest = new ArrayList<>();
+    // =====================================================================================
+    // PERMISSION FLOW
+    // =====================================================================================
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_MEDIA_IMAGES)
-                    != PackageManager.PERMISSION_GRANTED) {
-                permissionsToRequest.add(android.Manifest.permission.READ_MEDIA_IMAGES);
-            }
-        } else {
-            // For older Android versions, request READ_EXTERNAL_STORAGE if not granted.
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                permissionsToRequest.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
-            }
-        }
+    /**
+     * Everything the launcher asks the user for, in the order it is asked. The runtime permissions
+     * share one system dialog; each of the others has a Settings screen of its own.
+     */
+    private enum PermissionStep { RUNTIME, OVERLAY, NOTIFICATION_ACCESS, WRITE_SETTINGS }
 
-        // Keep your location / other checks as-is if you need them; they were fine.
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            permissionsToRequest.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            permissionsToRequest.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        }
+    /**
+     * Lets the resume settle before a dialog or screen goes over it: the PiP rebuild starts 250 ms
+     * after the resume and staggers its pane launches over about a second after that.
+     */
+    private static final long PERMISSION_FLOW_DELAY_MS = 1500L;
+    /** How often a runtime request cancelled without an answer is asked again. */
+    private static final int MAX_RUNTIME_REQUEST_RETRIES = 2;
 
-        if (!permissionsToRequest.isEmpty()) {
-            permissionsRequested = true;
-            ActivityCompat.requestPermissions(
-                    this,
-                    permissionsToRequest.toArray(new String[0]),
-                    REQUEST_CODE_STORAGE
-            );
-        } else {
-            // All runtime permissions granted, continue with special checks or your flow
-            checkSpecialPermissions();
+    /** Steps asked (or found granted) since the process started; a declined one is not asked again. */
+    private static final EnumSet<PermissionStep> sPermissionStepsHandled = EnumSet.noneOf(PermissionStep.class);
+    private static int sRuntimeRequestRetries = 0;
+    /** The overlay step has been asked for the swap buttons; see onPostResume(). */
+    private static boolean sOverlayStepArmedForFab = false;
+    /** Step whose dialog or Settings screen is open right now; null if none. */
+    private PermissionStep mPermissionStepInFlight = null;
+    private final Runnable mPermissionFlowRunnable = this::runNextPermissionStep;
+
+    /**
+     * Called at the start of every onPostResume(): the launcher is in front again, so whatever the
+     * previous step opened has been closed, and the next step follows once the resume has settled.
+     */
+    private void schedulePermissionFlow() {
+        if (mPermissionStepInFlight != null) {
+            Log.i(TAG, "Permission flow: back from " + mPermissionStepInFlight);
+            mPermissionStepInFlight = null;
         }
+        mHandler.removeCallbacks(mPermissionFlowRunnable);
+        mHandler.postDelayed(mPermissionFlowRunnable, Math.max(PERMISSION_FLOW_DELAY_MS, bootStallDelayMs()));
     }
 
-    private void checkSpecialPermissions() {
-        // Check SYSTEM_ALERT_WINDOW (overlay) permission first
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                Log.i(TAG, "SYSTEM_ALERT_WINDOW permission not granted");
-                permissionsRequested = true;
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, REQUEST_CODE_OVERLAY);
-                return; // Exit here, will continue in onActivityResult
-            }
+    private void runNextPermissionStep() {
+        if (sPermissionStepsHandled.size() == PermissionStep.values().length) {
+            return; // everything asked (or found granted) already
         }
-        
-        // If overlay is granted (or not needed), check WRITE_SETTINGS
-        checkWriteSettingsPermission();
-    }
-
-    private void checkWriteSettingsPermission() {
-        if (!LauncherApplication.hasSystemPrivileges()) {
-            // Check WRITE_SETTINGS permission
-            if (!Settings.System.canWrite(this)) {
-                Log.i(TAG, "WRITE_SETTINGS permission not granted");
-                permissionsRequested = true;
-                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, REQUEST_CODE_WRITE_SETTINGS);
+        // Not in front (any more): the next onPostResume() schedules the flow again.
+        if (mPermissionStepInFlight != null || mPaused || isFinishing() || isDestroyed()) {
+            return;
+        }
+        // Do not pull the user out of a drag, or open a screen over a workspace being rebuilt.
+        if (mWorkspace == null || (mDragController != null && mDragController.isDragging())) {
+            mHandler.removeCallbacks(mPermissionFlowRunnable);
+            mHandler.postDelayed(mPermissionFlowRunnable, PERMISSION_FLOW_DELAY_MS);
+            return;
+        }
+        for (PermissionStep step : PermissionStep.values()) {
+            if (sPermissionStepsHandled.contains(step)) {
+                continue;
+            }
+            sPermissionStepsHandled.add(step);
+            if (isPermissionStepNeeded(step) && startPermissionStep(step)) {
+                mPermissionStepInFlight = step;
+                Log.i(TAG, "Permission flow: asking for " + step);
                 return;
             }
         }
-        permissionsRequested = true;
+    }
+
+    private boolean isPermissionStepNeeded(PermissionStep step) {
+        switch (step) {
+            case RUNTIME:
+                return !getMissingRuntimePermissions().isEmpty();
+            case OVERLAY:
+                return !hasOverlayPermission();
+            case NOTIFICATION_ACCESS:
+                return !hasNotificationAccess();
+            case WRITE_SETTINGS:
+                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                        && !LauncherApplication.hasSystemPrivileges()
+                        && !Settings.System.canWrite(this);
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Opens the dialog or Settings screen of a step, always in the launcher's own task (see the
+     * notification access screen above).
+     *
+     * @return false if there is nothing to ask or the screen does not exist on this ROM; the flow
+     *         then goes on with the next step
+     */
+    private boolean startPermissionStep(PermissionStep step) {
+        try {
+            switch (step) {
+                case RUNTIME: {
+                    List<String> missing = getMissingRuntimePermissions();
+                    if (missing.isEmpty()) {
+                        return false;
+                    }
+                    ActivityCompat.requestPermissions(this, missing.toArray(new String[0]), REQUEST_CODE_STORAGE);
+                    return true;
+                }
+                case OVERLAY:
+                    startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:" + getPackageName())), REQUEST_CODE_OVERLAY);
+                    return true;
+                case NOTIFICATION_ACCESS:
+                    startActivityForResult(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS),
+                            REQUEST_CODE_NOTIFICATION_ACCESS);
+                    return true;
+                case WRITE_SETTINGS:
+                    startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                            Uri.parse("package:" + getPackageName())), REQUEST_CODE_WRITE_SETTINGS);
+                    return true;
+                default:
+                    return false;
+            }
+        } catch (ActivityNotFoundException | SecurityException | IllegalArgumentException e) {
+            Log.w(TAG, "Permission flow: cannot ask for " + step + " on this device", e);
+            return false;
+        }
+    }
+
+    /** Runtime permissions still missing: storage (media images on Android 13+) and location. */
+    private List<String> getMissingRuntimePermissions() {
+        List<String> missing = new ArrayList<>();
+        String storage = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                ? android.Manifest.permission.READ_MEDIA_IMAGES
+                : android.Manifest.permission.READ_EXTERNAL_STORAGE;
+        if (!isPermissionGranted(storage)) {
+            missing.add(storage);
+        }
+        if (!isPermissionGranted(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            // Always together: Android 12+ ignores a request for FINE without COARSE - also when
+            // COARSE is already granted ("approximate") and only precise location is missing,
+            // which the old code asked for alone, so that dialog never showed up.
+            missing.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+            missing.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
+        } else if (!isPermissionGranted(android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            missing.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+        return missing;
+    }
+
+    private boolean isPermissionGranted(String permission) {
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private boolean hasNotificationAccess() {
+        return NotificationManagerCompat.getEnabledListenerPackages(this).contains(getPackageName());
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, 
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        
-        if (requestCode == REQUEST_CODE_STORAGE) {
-            // Check if all permissions were granted
-            boolean allGranted = true;
-            for (int result : grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    allGranted = false;
-                    break;
-                }
+        if (requestCode != REQUEST_CODE_STORAGE) {
+            return;
+        }
+        if (grantResults.length == 0) {
+            // Cancelled without an answer (e.g. the dialog was cleared by a home press while another
+            // app covered it). That is no decision, so it is asked again once the launcher is back
+            // in front. The old code logged it as "all granted" and did not ask again until the
+            // launcher was recreated.
+            if (sRuntimeRequestRetries < MAX_RUNTIME_REQUEST_RETRIES) {
+                sRuntimeRequestRetries++;
+                sPermissionStepsHandled.remove(PermissionStep.RUNTIME);
             }
-            
-            if (allGranted) {
-                Log.i(TAG, "All runtime permissions granted");
-            } else {
-                Log.w(TAG, "Some permissions were denied");
+            Log.w(TAG, "Permission flow: runtime request cancelled without an answer");
+            return;
+        }
+        for (int i = 0; i < permissions.length && i < grantResults.length; i++) {
+            Log.i(TAG, "Permission flow: " + permissions[i]
+                    + (grantResults[i] == PackageManager.PERMISSION_GRANTED ? " granted" : " denied"));
+        }
+        // The next step follows from onPostResume(), once the dialog is gone.
+    }
+
+    private static boolean isPermissionFlowRequest(int requestCode) {
+        return requestCode == REQUEST_CODE_OVERLAY
+                || requestCode == REQUEST_CODE_NOTIFICATION_ACCESS
+                || requestCode == REQUEST_CODE_WRITE_SETTINGS;
+    }
+
+    /** Back from a Settings screen of the permission flow; see onActivityResult(). */
+    private void onPermissionScreenResult(int requestCode) {
+        if (requestCode == REQUEST_CODE_OVERLAY) {
+            boolean granted = hasOverlayPermission();
+            Log.i(TAG, "Permission flow: SYSTEM_ALERT_WINDOW " + (granted ? "granted" : "not granted"));
+            if (!granted && checkIfFloatingButton()) {
+                Toast.makeText(this, "Overlay permission is required", Toast.LENGTH_SHORT).show();
             }
-            
-            // Now check special permissions after runtime permissions
-            checkSpecialPermissions();
+        } else if (requestCode == REQUEST_CODE_NOTIFICATION_ACCESS) {
+            Log.i(TAG, "Permission flow: notification access "
+                    + (hasNotificationAccess() ? "granted" : "not granted"));
+        } else if (requestCode == REQUEST_CODE_WRITE_SETTINGS) {
+            boolean granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.System.canWrite(this);
+            Log.i(TAG, "Permission flow: WRITE_SETTINGS " + (granted ? "granted" : "not granted"));
         }
     }
 
@@ -4101,22 +4301,106 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         } else return false;
     }
 
+    /**
+     * FabOverlayService adds up to three overlay windows on the main thread, and a new window
+     * needs a relayout from system_server on its first traversal. Started 0.4 s after the boot
+     * resume, that relayout waited out the whole boot-time stall and froze the launcher for 12 s
+     * (capture 29-09-2026 08:09: IWindowSession.relayout, with the workspace binding queued
+     * behind it). The buttons control the panes, which only come up after the stall anyway, so
+     * at boot the service starts once the stall is over; otherwise at once, as before.
+     */
+    private void startFabOverlayServiceAfterBootStall() {
+        mHandler.removeCallbacks(mDeferredFabStart);
+        long wait = bootStallDelayMs();
+        if (wait > 0L) {
+            mHandler.postDelayed(mDeferredFabStart, wait);
+            return;
+        }
+        startFabOverlayService();
+    }
+
+    private final Runnable mDeferredFabStart = () -> {
+        // Paused (or gone) by then: the next onResume() starts it.
+        if (mPaused || isDestroyed() || isFinishing()) return;
+        floatingButton = checkIfFloatingButton();
+        if (floatingButton && hasOverlayPermission()) {
+            startFabOverlayService();
+        }
+    };
+
+    /**
+     * Starts FabOverlayService, or brings its buttons back if it is already running - but only
+     * while a PiP is on the screen (see canShowOverlayFab()). Otherwise the buttons are hidden.
+     */
     private void startFabOverlayService() {
+        if (!canShowOverlayFab()) {
+            // E.g. back from an app that showed no window of its own, with the app drawer still
+            // open: there is no pane, and none is coming. WindowUtil calls showOverlayFab() once
+            // it has added the panes again.
+            hideOverlayFab();
+            return;
+        }
         if (!isServiceRunning(FabOverlayService.class)) {
             Intent serviceIntent = new Intent(LauncherApplication.sApp, FabOverlayService.class);
             if (ServiceIntentGate.startIfAvailable(this, serviceIntent, "fab overlay")) {
                 setServiceRunningCache(FabOverlayService.class, true);
             }
         } else {
-            showOverlayFab();
+            sendBroadcast(new Intent(Keys.SHOW_FAB));
         }
     }
-    
-    public void showOverlayFab() {
-        Intent intent = new Intent(Keys.SHOW_FAB);
-        sendBroadcast(intent);
+
+    /**
+     * The swap buttons act on the PiP panes, so they belong on the screen only together with them:
+     * the launcher resumed on the home screen (the app drawer, the widget list and overview mode
+     * all remove the panes), the user layout with PiP enabled (the only case in which WindowUtil
+     * adds panes at all), and the panes actually added (WindowUtil.isPipOnScreen()).
+     * <p>
+     * onPostResume() used to show the buttons on every resume. Starting an app that shows no
+     * window of its own from the app drawer pauses and resumes the launcher with the drawer still
+     * open: onResume() removed the panes again, and onPostResume() still brought the buttons up.
+     * <p>
+     * Main thread only. FabOverlayService asks it as well, when it is created.
+     */
+    public boolean canShowOverlayFab() {
+        if (mPaused || isFinishing() || isDestroyed() || mWorkspace == null || mPrefs == null) {
+            return false;
+        }
+        if (mState != State.WORKSPACE || isAllAppsVisible() || mWorkspace.isInOverviewMode()) {
+            return false;
+        }
+        if (!mPrefs.getBoolean(Keys.USER_LAYOUT, false) || !mPrefs.getBoolean(Keys.DISPLAY_PIP, true)) {
+            return false;
+        }
+        return WindowUtil.isPipOnScreen();
     }
-    
+
+    /**
+     * Shows the PiP swap buttons. WindowUtil calls this once it has added the panes. Ignored while
+     * canShowOverlayFab() sees no PiP on the screen, which also covers a call that is still
+     * pending when the app drawer opens or the launcher is paused.
+     * <p>
+     * Starts FabOverlayService if it is not running yet: onPostResume() no longer starts it while
+     * the panes are still coming up (at boot, or after recreateView() has stopped it).
+     */
+    public void showOverlayFab() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            mHandler.post(this::showOverlayFab);
+            return;
+        }
+        if (!canShowOverlayFab()) {
+            return;
+        }
+        if (isServiceRunning(FabOverlayService.class)) {
+            sendBroadcast(new Intent(Keys.SHOW_FAB));
+            return;
+        }
+        floatingButton = checkIfFloatingButton();
+        if (floatingButton && hasOverlayPermission()) {
+            startFabOverlayServiceAfterBootStall();
+        }
+    }
+
     public void hideOverlayFab() {
         Intent intent = new Intent(Keys.HIDE_FAB);
         sendBroadcast(intent);
@@ -4215,11 +4499,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mReceiversRegistered) {
             Log.d("Launcher", "onStop: unregistering dynamic receiver");
             mReceiversRegistered = false;
+            // One at a time, so a failure on the first does not leave the second registered; and
+            // logged with the exception, since requireNonNull(e.getMessage()) threw for one without
+            // a message.
             try {
                 unregisterReceiver(mReceiver);
+            } catch (Exception e) {
+                Log.e(TAG, "onStop: cannot unregister mReceiver", e);
+            }
+            try {
                 unregisterReceiver(mCloseSystemDialogsReceiver);
             } catch (Exception e) {
-                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+                Log.e(TAG, "onStop: cannot unregister mCloseSystemDialogsReceiver", e);
             }
         }
         cancelWeatherCallbacks();
@@ -4464,16 +4755,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return true;
     }
     
-    private void requestOverlayPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Intent intent = new Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:" + getPackageName())
-            );
-            startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE);
-        }
-    }  
-
     public static boolean isServiceRunning(Class<? extends Service> serviceClass) {
         String serviceName = serviceClass.getName();
         long now = SystemClock.uptimeMillis();
@@ -4517,6 +4798,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         setServiceRunningCache(CanbusService.class, false);
         stopService(new Intent(LauncherApplication.sApp, FabOverlayService.class));
         setServiceRunningCache(FabOverlayService.class, false);
+        mHandler.removeCallbacks(mDeferredFabStart);
+        mHandler.removeCallbacks(mApplyPendingBarSnapshots);
         mHandler.removeCallbacks(mSyncStatusBarSwipeDetector);
         // On recreation the new launcher can be created before this one is destroyed; the strip
         // then belongs to it and must not be stopped here.
@@ -4605,18 +4888,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         }
         return ""; 
-    }
-
-    private void checkNotificationPermission() {
-        // Notifications access permission
-        String notificationListenerString = Settings.Secure.getString(this.getContentResolver(), "enabled_notification_listeners");
-        if (notificationListenerString == null || !notificationListenerString.contains(getPackageName())) {
-            Intent intentNoti = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-            intentNoti.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intentNoti.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-            intentNoti.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-            startActivity(intentNoti);
-        }
     }
 
     public int getStatusBarHeight() { 
@@ -4745,6 +5016,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override
         public void run() {
             if (weatherManager == null) {
+                long wait = bootStallDelayMs();
+                if (wait > 0L) {
+                    weatherHandler.postDelayed(this, wait); // see updateWeather()
+                    return;
+                }
                 weatherManager = WeatherManager.initialize(mLauncher);
             }
             long interval;
@@ -4771,6 +5047,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void updateWeather() {
         if (weatherManager == null) {
+            // WeatherManager.initialize() registers a receiver, a call into system_server: during
+            // the boot-time stall that froze the launcher for twelve seconds (capture 23:13), with
+            // the workspace binding queued behind it. The weather is not needed for the first
+            // screen, so at boot the manager is created once the stall is over.
+            long wait = bootStallDelayMs();
+            if (wait > 0L) {
+                weatherHandler.removeCallbacks(mDeferredWeatherInit);
+                weatherHandler.postDelayed(mDeferredWeatherInit, wait);
+                return;
+            }
             weatherManager = WeatherManager.initialize(this);
         }
         showWeatherInfo();
@@ -4796,9 +5082,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         weatherHandler.postDelayed(mPendingWeatherUpdateRunnable, delay);
     }
 
+    private final Runnable mDeferredWeatherInit = this::updateWeather;
+
     private void runWeatherUpdate() {
         mLastWeatherUpdateMs = SystemClock.uptimeMillis();
         if (weatherManager == null) {
+            if (bootStallDelayMs() > 0L) {
+                updateWeather(); // schedules the deferred init
+                return;
+            }
             weatherManager = WeatherManager.initialize(this);
         }
         if (weatherManager.isNetworkAvailable()) {
@@ -4808,6 +5100,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     private void cancelWeatherCallbacks() {
         weatherHandler.removeCallbacks(periodicWeatherCheck);
+        weatherHandler.removeCallbacks(mDeferredWeatherInit);
         if (mPendingWeatherUpdateRunnable != null) {
             weatherHandler.removeCallbacks(mPendingWeatherUpdateRunnable);
             mPendingWeatherUpdateRunnable = null;
@@ -5117,6 +5410,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (isPermissionFlowRequest(requestCode)) {
+            // Only logged here: the next step starts from onPostResume(), once the launcher is
+            // really back in front. These results used to fall through into the widget and
+            // shortcut handling below as well, which strips empty screens on RESULT_CANCELED -
+            // what a Settings screen returns when it is left with "back".
+            onPermissionScreenResult(requestCode);
+            return;
+        }
         mWaitingForResult = false;
         int pendingAddWidgetId = mPendingAddWidgetId;
         mPendingAddWidgetId = -1;
@@ -5138,30 +5439,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mWorkspace.exitOverviewMode(false);
             }
             return;
-        } else if (requestCode == OVERLAY_PERMISSION_REQUEST_CODE) {
-            floatingButton = checkIfFloatingButton();
-            if (floatingButton) {
-                if (hasOverlayPermission()) {
-                    startFabOverlayService();
-                } else {
-                    Toast.makeText(this, "Overlay permission is required", Toast.LENGTH_SHORT).show();
-                }
-            }
-        } else if (requestCode == REQUEST_CODE_OVERLAY) {
-            if (Settings.canDrawOverlays(this)) {
-                Log.i(TAG, "SYSTEM_ALERT_WINDOW permission granted");
-            } else {
-                Log.w(TAG, "SYSTEM_ALERT_WINDOW permission denied");
-            }
-            // Continue to next permission check
-            checkWriteSettingsPermission();
-            
-        } else if (requestCode == REQUEST_CODE_WRITE_SETTINGS) {
-            if (Settings.System.canWrite(this)) {
-                Log.i(TAG, "WRITE_SETTINGS permission granted");
-            } else {
-                Log.w(TAG, "WRITE_SETTINGS permission denied");
-            }
         }
 
         boolean delayExitSpringLoadedMode = false;
@@ -6045,9 +6322,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void initViews() {
         if (mWorkspace != null) {
-            if (mPlayer == null && LauncherApplication.isFytDevice()) {
-                mPlayer = new MediaPlayer();
-            }
             mTvNavi = mWorkspace.findViewById(ResValue.getInstance().tv_navi);
             mTvSettings = mWorkspace.findViewById(ResValue.getInstance().tv_settings);
             mTvCar = mWorkspace.findViewById(ResValue.getInstance().tv_car);
@@ -6442,7 +6716,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // Initialize app data
         initializeAppList();
 
-        requestCustomElementsSetup("setupRecyclerView");
+        if (!mApplyingBarSnapshot) { // a snapshot is only the bar; the rest waits for the app data
+            requestCustomElementsSetup("setupRecyclerView");
+        }
 
         // One call instead of two — each one adds an OnGlobalLayoutListener + 2 postDelayed
         refreshRecyclerDecorationsAfterLayout(recyclerView);
@@ -6629,6 +6905,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void initializeLeftAppData() {
+        if (mApplyingBarSnapshot) {
+            applyLeftBarSnapshot();
+            return;
+        }
         List<LeftAppMultiple> leftAppData = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
         long sourceSignature = calculateLeftAppRowsSignature(leftAppData);
         if (sourceSignature == mLastLeftAppListSourceSignature
@@ -6647,6 +6927,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return;
         }
         List<AppListBean> nextLeftAppListData = new ArrayList<AppListBean>();
+        BarSnapshotCollector leftSnapshot = new BarSnapshotCollector();
         
         // Ensure adapter exists
         if (mLeftAppListAdapter == null) {
@@ -6679,6 +6960,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         multiple.className
                     );
                     nextLeftAppListData.add(ab);
+                    leftSnapshot.add((long) multiple.id, multiple.packageName, multiple.className,
+                            allApp.title.toString(), allApp.iconBitmap);
                     continue;
                 }
                 
@@ -6694,6 +6977,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         multiple.className
                     );
                     nextLeftAppListData.add(ab);
+                    leftSnapshot.usedFallbackIcon = true;
                 }
             }
         }
@@ -6703,7 +6987,311 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
             mLastLeftAppListSourceSignature = sourceSignature;
             Log.d(TAG, "Left app data initialized with " + mLeftAppListData.size() + " items");
+            saveLeftBarSnapshot(leftAppData, leftSnapshot);
         }
+    }
+
+    // =====================================================================================
+    // BAR SNAPSHOTS - the bars as last shown, drawn at start until the app list is bound
+    // =====================================================================================
+
+    /** Entries of one bar as they are built, with the name and icon each one shows. */
+    private static final class BarSnapshotCollector {
+        final List<BarSnapshotStore.Item> items = new ArrayList<>();
+        /** An icon came from the PackageManager fallback: not the launcher's look, not saved. */
+        boolean usedFallbackIcon;
+
+        void add(long rowDbId, String packageName, String className, String name, Bitmap icon) {
+            items.add(new BarSnapshotStore.Item(rowDbId, packageName, className, name, icon));
+        }
+    }
+
+    /**
+     * Reads the bar snapshots in the background and shows them as soon as they are read.
+     *
+     * Both bars used to stay empty until the whole app list was loaded -- 37.4 s and 45.7 s of
+     * uptime in captures 29-09-2026 20:51 and 21:40, against a first frame at ~23 s. Waiting for
+     * initAppData() would not do either: at 21:40 it ran 13 ms before the main thread got stuck
+     * for 11.8 s in the pane build (createVirtualDisplay during the boot-time freeze), so anything
+     * posted after it would have waited as long. This starts in onCreate(), and each bar is shown
+     * as soon as its view exists (see applyPendingBarSnapshots()). Once the app list is bound,
+     * initAppData() builds the real bars as before and they replace the snapshot (same icons,
+     * unless an app changed meanwhile).
+     */
+    private void prefetchBarSnapshots() {
+        if (!LauncherApplication.isFytDevice()) {
+            return; // other devices build the bars at once (forceInitializeWithDefaults())
+        }
+        final Context appContext = getApplicationContext();
+        final boolean currentUserLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        final boolean currentWidgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+        final boolean currentLeftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
+        final int currentOrientation = orientation;
+        Thread prefetch = new Thread(() -> {
+            List<AppMultiple> bottomRows = null;
+            List<LeftAppMultiple> leftRows = null;
+            BarSnapshotStore.Snapshot bottom = null;
+            BarSnapshotStore.Snapshot left = null;
+            try {
+                bottomRows = queryBottomAppRows();
+                BarSnapshotStore.Snapshot s = BarSnapshotStore.load(appContext, BarSnapshotStore.BOTTOM);
+                if (s != null && bottomRows != null && s.signature == bottomBarSnapshotSignature(
+                        bottomRows, currentUserLayout, currentWidgetBar, currentOrientation)) {
+                    bottom = s;
+                }
+                leftRows = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
+                s = BarSnapshotStore.load(appContext, BarSnapshotStore.LEFT);
+                if (s != null && leftRows != null && s.signature == leftBarSnapshotSignature(
+                        leftRows, currentUserLayout, currentLeftBar)) {
+                    left = s;
+                }
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Bar snapshots not read", e);
+            }
+            Log.d(TAG, "Bar snapshots: bottom " + (bottom != null ? bottom.items.size() + " items" : "none/outdated")
+                    + ", left " + (left != null ? left.items.size() + " items" : "none/outdated"));
+            if (bottom == null && left == null) {
+                return;
+            }
+            final BarSnapshotStore.Snapshot bottomSnapshot = bottom;
+            final List<AppMultiple> bottomSnapshotRows = bottomRows;
+            final BarSnapshotStore.Snapshot leftSnapshot = left;
+            final List<LeftAppMultiple> leftSnapshotRows = leftRows;
+            mHandler.post(() -> {
+                mPendingBottomSnapshot = bottomSnapshot;
+                mPendingBottomSnapshotRows = bottomSnapshotRows;
+                mPendingLeftSnapshot = leftSnapshot;
+                mPendingLeftSnapshotRows = leftSnapshotRows;
+                mBarSnapshotAttempts = 0;
+                mBarSnapshotReadAtMs = SystemClock.uptimeMillis();
+                applyPendingBarSnapshots();
+            });
+        }, "BarSnapshotPrefetch");
+        prefetch.start();
+    }
+
+    /**
+     * Shows the pending snapshots through the usual setup, so the bars look exactly as they will
+     * once the real lists are there. A bar whose view is not there yet is tried again shortly; a
+     * bar that already has data, or an app list that is already bound, ends the wait for good.
+     */
+    private void applyPendingBarSnapshots() {
+        mHandler.removeCallbacks(mApplyPendingBarSnapshots);
+        if (isDestroyed() || isFinishing() || mWorkspace == null
+                || (AllAppsList.data != null && !AllAppsList.data.isEmpty())) {
+            clearPendingBarSnapshots(); // the real bars are on their way
+            return;
+        }
+        if (mPendingBottomSnapshot != null) {
+            RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
+            if (hasCurrentAppListData()) {
+                mPendingBottomSnapshot = null;
+                mPendingBottomSnapshotRows = null;
+            } else if (recycler != null) {
+                if (mAppListAdapter == null) {
+                    mAppListAdapter = new AppListAdapter(this, Collections.emptyList());
+                }
+                mRecyclerView = recycler;
+                mBottomBarSnapshot = mPendingBottomSnapshot;
+                mBottomBarSnapshotRows = mPendingBottomSnapshotRows;
+                mPendingBottomSnapshot = null;
+                mPendingBottomSnapshotRows = null;
+                mApplyingBarSnapshot = true;
+                try {
+                    setupRecyclerView(recycler);
+                } finally {
+                    mApplyingBarSnapshot = false;
+                    mBottomBarSnapshot = null;
+                    mBottomBarSnapshotRows = null;
+                }
+                Log.i(TAG, "Bottom bar shown from snapshot (" + (mAppListData != null ? mAppListData.size() : 0)
+                        + " items), " + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
+            }
+        }
+        // Only once the left recycler exists: setupLeftRecyclerView() would otherwise wait for a
+        // layout pass and then build the bar the normal way, with PackageManager icons.
+        if (mPendingLeftSnapshot != null) {
+            if (hasCurrentLeftAppListData()) {
+                mPendingLeftSnapshot = null;
+                mPendingLeftSnapshotRows = null;
+            } else if (mWorkspace.findViewById(R.id.left_recycler_view) != null) {
+                mLeftBarSnapshot = mPendingLeftSnapshot;
+                mLeftBarSnapshotRows = mPendingLeftSnapshotRows;
+                mPendingLeftSnapshot = null;
+                mPendingLeftSnapshotRows = null;
+                mApplyingBarSnapshot = true;
+                try {
+                    setupLeftRecyclerView();
+                } finally {
+                    mApplyingBarSnapshot = false;
+                    mLeftBarSnapshot = null;
+                    mLeftBarSnapshotRows = null;
+                }
+                Log.i(TAG, "Left bar shown from snapshot (" + (mLeftAppListData != null ? mLeftAppListData.size() : 0)
+                        + " items), " + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
+            }
+        }
+        if (mPendingBottomSnapshot == null && mPendingLeftSnapshot == null) {
+            return;
+        }
+        if (++mBarSnapshotAttempts >= BAR_SNAPSHOT_MAX_ATTEMPTS) {
+            Log.w(TAG, "Bar snapshot views never appeared, snapshot dropped");
+            clearPendingBarSnapshots();
+            return;
+        }
+        mHandler.postDelayed(mApplyPendingBarSnapshots, BAR_SNAPSHOT_RETRY_MS);
+    }
+
+    private void clearPendingBarSnapshots() {
+        mHandler.removeCallbacks(mApplyPendingBarSnapshots);
+        mPendingBottomSnapshot = null;
+        mPendingBottomSnapshotRows = null;
+        mPendingLeftSnapshot = null;
+        mPendingLeftSnapshotRows = null;
+    }
+
+    /**
+     * The bottom bar from its snapshot. Leaves mLastAppListSourceSignature and
+     * finishAppListInitialization() alone: the real list still replaces this one, and nothing that
+     * waits for the app data (PiP) starts early.
+     */
+    private void applyBottomBarSnapshot() {
+        BarSnapshotStore.Snapshot snapshot = mBottomBarSnapshot;
+        List<AppMultiple> rows = mBottomBarSnapshotRows;
+        if (snapshot == null || rows == null || mAppListAdapter == null) {
+            return;
+        }
+        Map<Long, AppMultiple> rowsById = new HashMap<>();
+        for (AppMultiple row : rows) {
+            if (row != null) {
+                rowsById.put((long) row.id, row);
+            }
+        }
+        List<AppListBean> beans = new ArrayList<AppListBean>();
+        for (BarSnapshotStore.Item item : snapshot.items) {
+            AppListBean bean = new AppListBean(item.name, item.icon, item.packageName, item.className);
+            AppMultiple row = rowsById.get(item.rowDbId);
+            if (row != null) {
+                bean.rowId = row.rowId();
+                bean.slot = row.index;
+            }
+            beans.add(bean);
+        }
+        mAppListData = beans;
+        mAppListAdapter.notifyDataSetChanged(mAppListData);
+    }
+
+    /** The left bar from its snapshot; same rules as applyBottomBarSnapshot(). */
+    private void applyLeftBarSnapshot() {
+        BarSnapshotStore.Snapshot snapshot = mLeftBarSnapshot;
+        List<LeftAppMultiple> rows = mLeftBarSnapshotRows;
+        if (snapshot == null || rows == null || mLeftAppListAdapter == null) {
+            return;
+        }
+        Map<Long, LeftAppMultiple> rowsById = new HashMap<>();
+        for (LeftAppMultiple row : rows) {
+            if (row != null) {
+                rowsById.put((long) row.id, row);
+            }
+        }
+        List<AppListBean> beans = new ArrayList<AppListBean>();
+        for (BarSnapshotStore.Item item : snapshot.items) {
+            AppListBean bean = new AppListBean(item.name, item.icon, item.packageName, item.className);
+            LeftAppMultiple row = rowsById.get(item.rowDbId);
+            if (row != null) {
+                bean.rowId = row.rowId();
+            }
+            beans.add(bean);
+        }
+        mLeftAppListData = beans;
+        mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
+    }
+
+    /** Saves the bottom bar as just built, unless it is the same as the last one saved. */
+    private void saveBottomBarSnapshot(List<AppMultiple> rows, boolean currentUserLayout,
+                                       boolean currentWidgetBar, BarSnapshotCollector snapshot) {
+        if (rows == null || snapshot == null || snapshot.usedFallbackIcon
+                || !LauncherApplication.isFytDevice()
+                || AllAppsList.data == null || AllAppsList.data.isEmpty()) {
+            return; // only a bar built from the real app list is worth showing next time
+        }
+        long signature = bottomBarSnapshotSignature(rows, currentUserLayout, currentWidgetBar, orientation);
+        if (mBottomBarSnapshotSaved && signature == mSavedBottomBarSnapshotSignature) {
+            return;
+        }
+        mBottomBarSnapshotSaved = true;
+        mSavedBottomBarSnapshotSignature = signature;
+        BarSnapshotStore.saveAsync(getApplicationContext(), BarSnapshotStore.BOTTOM, signature, snapshot.items);
+    }
+
+    /** Saves the left bar as just built, unless it is the same as the last one saved. */
+    private void saveLeftBarSnapshot(List<LeftAppMultiple> rows, BarSnapshotCollector snapshot) {
+        if (rows == null || snapshot == null || snapshot.usedFallbackIcon
+                || !LauncherApplication.isFytDevice()
+                || AllAppsList.data == null || AllAppsList.data.isEmpty()) {
+            return;
+        }
+        long signature = leftBarSnapshotSignature(rows, mPrefs.getBoolean(Keys.USER_LAYOUT, false),
+                mPrefs.getBoolean(Keys.LEFT_BAR, false));
+        if (mLeftBarSnapshotSaved && signature == mSavedLeftBarSnapshotSignature) {
+            return;
+        }
+        mLeftBarSnapshotSaved = true;
+        mSavedLeftBarSnapshotSignature = signature;
+        BarSnapshotStore.saveAsync(getApplicationContext(), BarSnapshotStore.LEFT, signature, snapshot.items);
+    }
+
+    /**
+     * What the bottom bar is built from, apart from the app list itself (which
+     * calculateAppRowsSignature() includes): its rows and the layout settings. A snapshot is shown
+     * only while this is unchanged. Pure; also used off the main thread.
+     */
+    private long bottomBarSnapshotSignature(List<AppMultiple> rows, boolean currentUserLayout,
+                                            boolean currentWidgetBar, int currentOrientation) {
+        long signature = 7046029254386353131L;
+        signature = (signature * 31L) + (currentUserLayout ? 1L : 0L);
+        signature = (signature * 31L) + (currentWidgetBar ? 1L : 0L);
+        signature = (signature * 31L) + currentOrientation;
+        if (rows == null) {
+            return signature;
+        }
+        signature = (signature * 31L) + rows.size();
+        for (AppMultiple row : rows) {
+            if (row == null) {
+                signature *= 31L;
+                continue;
+            }
+            signature = (signature * 31L) + row.id;
+            signature = (signature * 31L) + row.index;
+            signature = appendStringSignature(signature, row.name);
+            signature = appendStringSignature(signature, row.packageName);
+            signature = appendStringSignature(signature, row.className);
+        }
+        return signature;
+    }
+
+    /** As bottomBarSnapshotSignature(), for the left bar. */
+    private long leftBarSnapshotSignature(List<LeftAppMultiple> rows, boolean currentUserLayout,
+                                          boolean currentLeftBar) {
+        long signature = -3750763034362895579L;
+        signature = (signature * 31L) + (currentUserLayout ? 1L : 0L);
+        signature = (signature * 31L) + (currentLeftBar ? 1L : 0L);
+        if (rows == null) {
+            return signature;
+        }
+        signature = (signature * 31L) + rows.size();
+        for (LeftAppMultiple row : rows) {
+            if (row == null) {
+                signature *= 31L;
+                continue;
+            }
+            signature = (signature * 31L) + row.id;
+            signature = (signature * 31L) + row.index;
+            signature = appendStringSignature(signature, row.name);
+            signature = appendStringSignature(signature, row.packageName);
+            signature = appendStringSignature(signature, row.className);
+        }
+        return signature;
     }
 
     private boolean hasCurrentAppListData() {
@@ -6776,6 +7364,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                                   Map<String, Boolean> installCache,
                                                   boolean currentUserLayout,
                                                   boolean currentWidgetBar) {
+        return buildBottomAppBeans(rows, appInfoLookup, installCache, currentUserLayout,
+                currentWidgetBar, null);
+    }
+
+    /** As above; {@code snapshot}, if given, records each entry as it is shown. */
+    private List<AppListBean> buildBottomAppBeans(List<AppMultiple> rows,
+                                                  Map<String, AppInfo> appInfoLookup,
+                                                  Map<String, Boolean> installCache,
+                                                  boolean currentUserLayout,
+                                                  boolean currentWidgetBar,
+                                                  BarSnapshotCollector snapshot) {
         List<AppListBean> beans = new ArrayList<AppListBean>();
         if (rows == null || rows.isEmpty()) {
             return beans;
@@ -6786,35 +7385,43 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 continue;
             }
 
-            AppListBean bean;
+            String beanName;
+            Bitmap beanIcon;
             if (FytPackage.AppAction.equals(row.packageName)) {
-                Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_apps);
-                bean = new AppListBean(Utils.getNameToStr("car_app"), bmp, row.packageName, row.className);
+                beanIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_apps);
+                beanName = Utils.getNameToStr("car_app");
 
             } else if (FytPackage.AddAction.equals(row.packageName)
                     || !isPackageInstalledCached(installCache, row.packageName)) {
                 // empty slot, or a slot whose package is gone -> "+" placeholder,
                 // but keep the stored package/class so the regression guard below
                 // still counts it the same way the old code did.
-                Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
-                bean = new AppListBean(row.name, bmp, row.packageName, row.className);
+                beanIcon = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
+                beanName = row.name;
 
             } else {
                 AppInfo allApp = findAppInfo(appInfoLookup, row.packageName, row.className);
                 if (allApp != null) {
-                    bean = new AppListBean(allApp.title.toString(), allApp.iconBitmap,
-                            row.packageName, row.className);
+                    beanName = allApp.title.toString();
+                    beanIcon = allApp.iconBitmap;
                 } else {
                     // Installed but not in AllAppsList (transient during a package update) -
                     // load straight from PackageManager so the icon does not disappear.
-                    Bitmap icon = loadAppIconFromPackageManager(row.packageName, row.className);
-                    bean = new AppListBean(row.name, icon, row.packageName, row.className);
+                    beanIcon = loadAppIconFromPackageManager(row.packageName, row.className);
+                    beanName = row.name;
+                    if (snapshot != null) {
+                        snapshot.usedFallbackIcon = true;
+                    }
                 }
             }
 
+            AppListBean bean = new AppListBean(beanName, beanIcon, row.packageName, row.className);
             bean.rowId = row.rowId();
             bean.slot = row.index;
             beans.add(bean);
+            if (snapshot != null) {
+                snapshot.add((long) row.id, row.packageName, row.className, beanName, beanIcon);
+            }
         }
         return beans;
     }
@@ -6859,6 +7466,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void initializeAppList() {
+        if (mApplyingBarSnapshot) {
+            applyBottomBarSnapshot();
+            return;
+        }
         Log.d(TAG, "initializeAppList");
 
         List<AppMultiple> appData = queryBottomAppRows();
@@ -6904,8 +7515,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
         Map<String, Boolean> installCache = new HashMap<>();
 
+        BarSnapshotCollector bottomSnapshot = new BarSnapshotCollector();
         List<AppListBean> nextAppListData =
-                buildBottomAppBeans(appData, appInfoLookup, installCache, userLayout, widgetBar);
+                buildBottomAppBeans(appData, appInfoLookup, installCache, userLayout, widgetBar,
+                        bottomSnapshot);
 
         // Regression guard: if the new list has fewer real-app entries than the DB rows
         // that are actually installed, AllAppsList.data was transiently incomplete
@@ -6927,6 +7540,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mAppListData = nextAppListData;
             mAppListAdapter.notifyDataSetChanged(mAppListData);
             mLastAppListSourceSignature = sourceSignature;
+            saveBottomBarSnapshot(appData, userLayout, widgetBar, bottomSnapshot);
         } else if (!safeToUpdate) {
             scheduleAppListInitializationRetry("incompleteAllAppsList");
         }
@@ -7017,8 +7631,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
         Map<String, Boolean> installCache = new HashMap<>();
 
+        BarSnapshotCollector bottomSnapshot = new BarSnapshotCollector();
         List<AppListBean> nextAppListData =
-                buildBottomAppBeans(data, appInfoLookup, installCache, userLayout, widgetBar);
+                buildBottomAppBeans(data, appInfoLookup, installCache, userLayout, widgetBar,
+                        bottomSnapshot);
 
         // Same regression guard as initializeAppList(): only swap the list in when it is
         // at least as complete as the database says it should be.
@@ -7039,6 +7655,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mAppListData = nextAppListData;
             mAppListAdapter.notifyDataSetChanged(mAppListData);
             mLastAppListSourceSignature = sourceSignature;
+            saveBottomBarSnapshot(data, userLayout, widgetBar, bottomSnapshot);
         } else if (!safeToUpdate) {
             scheduleAppListInitializationRetry("refreshCycleIncompleteAllAppsList");
         }
@@ -7139,6 +7756,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         boolean hasExistingLeftListData = hasCurrentLeftAppListData();
         List<AppListBean> nextLeftAppListData = new ArrayList<>();
+        BarSnapshotCollector leftSnapshot = new BarSnapshotCollector();
 
         Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
         Map<String, Boolean> installCache = new HashMap<>();
@@ -7155,21 +7773,28 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (!isPackageInstalledCached(installCache, row.packageName)) continue;
 
             AppListBean bean = null;
+            String beanName = null;
+            Bitmap beanIcon = null;
 
             AppInfo app = findAppInfo(appInfoLookup, row.packageName, row.className);
             if (app != null) {
+                beanName = app.title != null ? app.title.toString() : "";
+                beanIcon = app.iconBitmap;
                 bean = new AppListBean(
-                        app.title != null ? app.title.toString() : "",
-                        app.iconBitmap,
+                        beanName,
+                        beanIcon,
                         row.packageName,
                         row.className
                 );
             } else {
                 Bitmap icon = loadLeftBarIconStrict(row.packageName, row.className);
                 if (icon != null) {
+                    beanName = row.name != null ? row.name : "";
+                    beanIcon = icon;
+                    leftSnapshot.usedFallbackIcon = true;
                     bean = new AppListBean(
-                            row.name != null ? row.name : "",
-                            icon,
+                            beanName,
+                            beanIcon,
                             row.packageName,
                             row.className
                     );
@@ -7185,12 +7810,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // skipped), so the adapter position is NOT the row position.
             bean.rowId = row.rowId();
             nextLeftAppListData.add(bean);
+            leftSnapshot.add((long) row.id, row.packageName, row.className, beanName, beanIcon);
             added++;
         }
         if (mLeftAppListAdapter != null) {
             mLeftAppListData = nextLeftAppListData;
             mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
             mLastLeftAppListSourceSignature = sourceSignature;
+            saveLeftBarSnapshot(src, leftSnapshot);
         }
     }
 
@@ -10975,8 +11602,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         ImageView searchButton = (ImageView) findViewById(R.id.search_button);
         View voiceButtonContainer = findViewById(R.id.voice_button_container);
         View voiceButton = findViewById(R.id.voice_button);
-        SearchManager searchManager = (SearchManager) getSystemService(android.content.Context.SEARCH_SERVICE);
-        searchManager.getGlobalSearchActivity();
+        // The search bar is always hidden in this launcher. A getGlobalSearchActivity() call stood
+        // here and threw its result away; SearchManager lives in system_server, and at boot that
+        // one call held onCreate() for eleven seconds (capture 23:16).
         if (searchButtonContainer != null) {
             searchButtonContainer.setVisibility(View.GONE);
         }
@@ -11003,16 +11631,20 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected boolean updateVoiceSearchIcon(boolean searchVisible) {
         View voiceButtonContainer = findViewById(R.id.voice_button_container);
         View voiceButton = findViewById(R.id.voice_button);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        ComponentName globalSearchActivity = searchManager.getGlobalSearchActivity();
+        // Only ever shown next to a visible search button, so without one there is nothing to look
+        // up: these were three calls into system_server for an answer that was then ignored.
         ComponentName activityName = null;
-        if (globalSearchActivity != null) {
-            Intent intent = new Intent("android.speech.action.WEB_SEARCH");
-            intent.setPackage(globalSearchActivity.getPackageName());
-            activityName = intent.resolveActivity(getPackageManager());
-        }
-        if (activityName == null) {
-            activityName = new Intent("android.speech.action.WEB_SEARCH").resolveActivity(getPackageManager());
+        if (searchVisible) {
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            ComponentName globalSearchActivity = searchManager.getGlobalSearchActivity();
+            if (globalSearchActivity != null) {
+                Intent intent = new Intent("android.speech.action.WEB_SEARCH");
+                intent.setPackage(globalSearchActivity.getPackageName());
+                activityName = intent.resolveActivity(getPackageManager());
+            }
+            if (activityName == null) {
+                activityName = new Intent("android.speech.action.WEB_SEARCH").resolveActivity(getPackageManager());
+            }
         }
         if (searchVisible && activityName != null) {
             int coi = getCurrentOrientationIndexForGlobalIcons();
@@ -11685,6 +12317,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void bindPackagesUpdated(ArrayList<Object> widgetsAndShortcuts) {
+        mWidgetsListGeneration++;
         if (waitUntilResume(mBindPackagesUpdatedRunnable, true)) {
             mWidgetsAndShortcuts = widgetsAndShortcuts;
         } else if (!AppsCustomizePagedView.DISABLE_ALL_APPS && mAppsCustomizeContent != null) {

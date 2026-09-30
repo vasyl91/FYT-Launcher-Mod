@@ -23,10 +23,18 @@ export MSYS_NO_PATHCONV=1
 ok()   { echo "  [OK]   $*"; }
 warn() { echo "  [WARN] $*"; }
 fail() { echo "  [FAIL] $*"; exit 1; }
-sh_dev() { adb shell "$@" 2>/dev/null | tr -d '\r'; }
+# stdin from /dev/null: nothing on the device may wait for input from this terminal.
+sh_dev() { adb shell "$@" </dev/null 2>/dev/null | tr -d '\r'; }
 
-# Returns 0 if "su root id" answers with uid=0 within 5 s (Magisk without the wrapper hangs).
-su_root_works() { sh_dev "timeout 5 su root id" | grep -q "uid=0"; }
+# Returns 0 if "su root id" answers with uid=0.
+# Magisk's su does not understand this syntax: it opens an interactive root shell that waits for
+# input. The device-side timeout alone is not enough - it kills su, but the root shell it spawned
+# keeps the adb session open. So: stdin from /dev/null on the device (the shell exits at EOF),
+# plus a timeout for the whole adb call on the PC as a last resort.
+su_root_works() {
+  timeout 15 adb shell "timeout 5 su root id </dev/null" </dev/null 2>/dev/null \
+    | tr -d '\r' | grep -q "uid=0"
+}
 
 # ---------------------------------------------------------------------------
 if [ "${1:-}" = "--restore" ]; then

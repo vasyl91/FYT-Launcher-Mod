@@ -136,8 +136,22 @@
     <string name="wallpaper_picker_launcher">Wbudowane tapety</string>   
     <string name="all_apps_textSize_str">Rozmiar tekstu ikon w menu aplikacji (max. 50)</string>  
     <string name="workspace_textSize_str">Rozmiar tekstu ikon na ekranie głównym (max. 50)</string>       
-    <string name="launcher_home">Po wybudzeniu urządzenia zawsze pokazuj ekran główny</string>
-    <string name="baseline_profile_summary">Podsumowanie profilu podstawowego</string>
+    <string name="launcher_home">Po uruchomieniu/wybudzeniu urządzenia zawsze pokazuj ekran główny</string>
+    <string name="baseline_profile_summary">Podsumowanie profilu podstawowego (Baseline Profile)</string>
+    <string name="baseline_profile_reset">Resetuj profil podstawowy</string>
+    <string name="baseline_reset_title">Reset odświeżeń z użycia</string>
+    <string name="baseline_reset_message">Launcher w tle ponownie kompiluje się po 3, 14 i 30 dniach użytkowania, aby funkcje, z których faktycznie korzystasz, uruchamiały się szybciej. Każde odświeżenie wymaga też minimalnej liczby sesji (5, potem 10). Sesja to restart urządzenia albo wybudzenie ze snu co najmniej 3 minuty po poprzedniej sesji. Wykonane odświeżenia: %1$d z %2$d.\n\n• Resetuj harmonogram – zachowuje zebrane dotąd optymalizacje i rozpoczyna harmonogram 3/14/30 dni od nowa.\n\n• Pełny reset – usuwa zebrane dane o użyciu, przywraca domyślny profil dołączony do aplikacji i rozpoczyna harmonogram od nowa.</string>
+    <string name="baseline_reset_schedule_btn">Resetuj harmonogram</string>
+    <string name="baseline_reset_full_btn">Pełny reset…</string>
+    <string name="baseline_reset_full_title">Pełny reset?</string>
+    <string name="baseline_reset_full_message">Wszystkie dane o użyciu zebrane od instalacji zostaną trwale usunięte. Launcher wróci do domyślnego profilu bazowego (Baseline Profile) dołączonego do aplikacji, a harmonogram odświeżeń 3/14/30 dni rozpocznie się od nowa.\n\nLauncher zostanie natychmiast uruchomiony ponownie. Do czasu ponownej kompilacji (około 2 minuty po restarcie) start może być nieco wolniejszy.</string>
+    <string name="baseline_reset_full_confirm_btn">Usuń i uruchom ponownie</string>
+    <string name="baseline_reset_schedule_done">Harmonogram odświeżeń zresetowany. Następne odświeżenie po 3 dniach użytkowania.</string>
+    <string name="baseline_reset_full_started">Zebrane dane usunięte. Ponowna kompilacja z domyślnego profilu trwa w tle.</string>
+    <string name="baseline_reset_failed">Reset nie powiódł się. Spróbuj ponownie później.</string>
+    <string name="baseline_reset_unavailable">Funkcja niedostępna na tym urządzeniu.</string>
+    <string name="autostart_apps">Uruchamiaj przy starcie systemu</string>
+    <string name="autostart_apps_summary">Aplikacje uruchamiane przez systemowy autostart mogą spowalniać uruchamianie launchera. Opcja wbudowana w launcher uruchomi je dopiero po zakończeniu jego zimnego startu. Korzystając z tej listy, pamiętaj, aby odznaczyć te aplikacje w ustawieniach FYT — w przeciwnym razie uruchomią się dwukrotnie.</string>
 
     <string name="music_widget_category">Music Widget</string>
     <string name="youtube_category">YouTube</string>

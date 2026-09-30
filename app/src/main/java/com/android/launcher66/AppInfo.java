@@ -2,6 +2,7 @@ package com.android.launcher66;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -50,19 +51,34 @@ public class AppInfo extends ItemInfo {
         this.componentName = new ComponentName(packageName, info.activityInfo.name);
         this.container = -1L;
         setActivity(this.componentName, Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        try {
-            PackageInfo pi = pm.getPackageInfo(packageName, 0);
-            this.flags = initFlags(pi);
-            this.firstInstallTime = initFirstInstallTime(pi);
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d(TAG, "PackageManager.getApplicationInfo failed for " + packageName);
+        // The flags come with the ResolveInfo, and the install time is kept by the icon cache: one
+        // PackageManager call per app less at every start, and none that can wait on its lock
+        // during the boot-time freeze. Only an app the cache does not know yet is asked.
+        ApplicationInfo appInfo = info.activityInfo.applicationInfo;
+        this.flags = initFlags(appInfo);
+        long cachedInstallTime = iconCache.getCachedFirstInstallTime(this.componentName, appInfo);
+        if (cachedInstallTime >= 0L) {
+            this.firstInstallTime = cachedInstallTime;
+        } else {
+            try {
+                PackageInfo pi = pm.getPackageInfo(packageName, 0);
+                this.flags = initFlags(pi);
+                this.firstInstallTime = initFirstInstallTime(pi);
+                iconCache.putFirstInstallTime(this.componentName, appInfo, this.firstInstallTime);
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.d(TAG, "PackageManager.getApplicationInfo failed for " + packageName);
+            }
         }
         this.iconResid = CustomIcons.getIcon(info.activityInfo);
         iconCache.getTitleAndIcon(this, info, labelCache);
     }
 
     public static int initFlags(PackageInfo pi) {
-        int appFlags = pi.applicationInfo.flags;
+        return initFlags(pi.applicationInfo);
+    }
+
+    static int initFlags(ApplicationInfo ai) {
+        int appFlags = ai.flags;
         if ((appFlags & 1) != 0) {
             return 0;
         }

@@ -14,14 +14,14 @@ import android.util.Log;
 import android.view.Display;
 
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
-
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.ServiceIntentGate;
+import com.android.launcher66.perf.BaselineProfileCompiler;
 import com.android.recycler.AppListDialogFragment;
 import com.syu.util.WindowHost;
 import com.syu.util.WindowUtil;
@@ -91,6 +91,13 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     private boolean repairUsed = false;
 
     /**
+     * At most one cold reset per wake as well. restartPip() starts a fresh ensure loop after the
+     * reset while repairUsed stays set, so without this a pane that stays unhealthy was
+     * cold-reset again every few seconds until the next sleep.
+     */
+    private boolean coldResetUsed = false;
+
+    /**
      * Bumped on every handled wake and on every sleep. Delayed widget bar work checks it, so
      * nothing queued by one wake runs after the device has gone back to sleep. Kept separate
      * from pipEnsureGeneration, which restartPip() bumps again within the same wake.
@@ -103,10 +110,36 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     @Override
     public void onCreate() {
         super.onCreate();
+        // Must be set before any observer or display listener is registered: after the service
+        // is (re)created the very first event can be a screen-off, and that path reads the prefs.
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
         handler = new Handler(Looper.getMainLooper());
+        // Start from the real display state. With the old fixed default (on), a service created
+        // while the screen was off never saw the next wake, because on -> on fires no event.
+        mPropertyChangeClass.initBoolean(isDefaultDisplayOn());
         mPropertyChangeClass.addObserver(DISPLAY_ON, this);
         setupDisplayListener();
+    }
+
+    /**
+     * Never returns null. onCreate() sets the prefs up front; the lazy fallback only covers
+     * public methods called on an instance that has not been through onCreate().
+     */
+    private SharedPreferences getPrefs() {
+        SharedPreferences prefs = mPrefs;
+        if (prefs == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+            mPrefs = prefs;
+        }
+        return prefs;
+    }
+
+    private boolean isDefaultDisplayOn() {
+        Display display = displayManager != null
+                ? displayManager.getDisplay(Display.DEFAULT_DISPLAY) : null;
+        // Unknown state: keep the previous default (on).
+        return display == null || display.getState() == Display.STATE_ON;
     }
 
     private void setupDisplayListener() {
@@ -144,6 +177,13 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
         if (displayManager != null && displayListener != null) {
             displayManager.unregisterDisplayListener(displayListener);
         }
+        // Nothing this instance queued (ensure loop, pressHomeButton, widget bar, night mode)
+        // may run after it is gone.
+        pipEnsureGeneration++;
+        wakeGeneration++;
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
     }
 
     @Nullable
@@ -157,6 +197,9 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
         if (evt.getPropertyName().equals(DISPLAY_ON)) {
             String val = String.valueOf(evt.getNewValue());
             Helpers helpers = new Helpers();
+            // Both branches read the prefs. The screen-off branch used to read mPrefs before
+            // assigning it, which crashed on the first sleep after every (re)start of the service.
+            final SharedPreferences prefs = getPrefs();
             if (val.contains("true")) {
                 helpers.setDisplayStateBoolean(true);
                 // elapsedRealtime, not uptimeMillis: the latter stops while the SoC is suspended,
@@ -176,8 +219,12 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 }
                 lastDisplayOnHandledMs = now;
                 repairUsed = false;
+                coldResetUsed = false;
                 final int wakeGen = ++wakeGeneration;
                 Log.e(TAG, "Device awakened from sleep");
+                // Baseline Profile: a wake is a usage session (ACTION_SCREEN_ON is not delivered
+                // on FYT, so BaselineProfileCompiler cannot detect it on its own).
+                BaselineProfileCompiler.onDeviceWake(LauncherApplication.sApp);
 
                 // The panes from before the suspend are still in the view hierarchy and report
                 // themselves as visible, but their VirtualDisplays did not survive. Without this
@@ -185,17 +232,18 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 // which is why PiP came back after a short sleep but not after a long one.
                 WindowUtil.invalidateOpenPipDebounce();
 
-                if (mPrefs.getBoolean(Keys.LAUNCHER_HOME, true)) {
+                if (prefs.getBoolean(Keys.LAUNCHER_HOME, true)) {
                     // Starts now and off the main thread: com.syu.ms relaunches the last top app
                     // within a few hundred ms of the wake, and a PiP app restored fullscreen keeps
                     // the launcher paused -- and the panes unbuilt -- until something pushes it back.
                     WindowUtil.reassertHomeOverPipAppsAfterWake(WAKE_REASSERT_WINDOW_MS);
-                    handler.postDelayed(this::pressHomeButton, 500);
+                    postForGeneration(wakeGen, this::pressHomeButton, 500);
                 }
-                handler.postDelayed(this::dismissAppListDialog, 500);
-                handler.postDelayed(() -> sendWakeRefresh("early"), 900);
-                handler.postDelayed(() -> sendWakeRefresh("late"), 1800);
-                long lastSleepTimestamp = mPrefs.getLong("sleep_timestamp", -1L);
+                // Everything delayed here belongs to this wake only; see postForGeneration().
+                postForGeneration(wakeGen, this::dismissAppListDialog, 500);
+                postForGeneration(wakeGen, () -> sendWakeRefresh("early"), 900);
+                postForGeneration(wakeGen, () -> sendWakeRefresh("late"), 1800);
+                long lastSleepTimestamp = prefs.getLong("sleep_timestamp", -1L);
 
                 if (lastSleepTimestamp > 0) {
                     long currentTime = System.currentTimeMillis();
@@ -213,14 +261,16 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                         getSharedPreferences("HelpersPrefs", 0).edit().clear().apply();
                     }
                 }
-                if (mPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
-                    handler.postDelayed(() -> {
+                if (prefs.getBoolean(Keys.NIGHT_MODE, false)) {
+                    // A sleep within these 10 s has already stopped the service and cancelled its
+                    // SunTask; it must not be started again behind that sleep's back.
+                    postForGeneration(wakeGen, () -> {
                         Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
                         ServiceIntentGate.startIfAvailable(LauncherApplication.sApp, nightModeServiceIntent, "wake night mode");
                     }, 10000);
                 }
 
-                boolean userMap = mPrefs.getBoolean(Keys.DISPLAY_PIP, true);
+                boolean userMap = prefs.getBoolean(Keys.DISPLAY_PIP, true);
                 if (userMap) {
                     restartPip();
                 } else {
@@ -228,7 +278,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     pipEnsureGeneration++;
                 }
 
-                boolean widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+                boolean widgetBar = prefs.getBoolean(Keys.WIDGET_BAR, false);
                 if (widgetBar) {
                     // Called directly, not only through ACTION_WAKE_REFRESH: the launcher's
                     // receiver is unregistered while it is stopped, so the broadcast can be lost.
@@ -251,18 +301,29 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
             } else if (val.contains("false")) {
                 lastDisplayOnHandledMs = 0L;
                 Log.e(TAG, "ACC turned off, device has been put into sleep mode");
+                // Baseline Profile: a compilation still waiting for its delay would otherwise
+                // fire right into the busy first seconds after the next wake.
+                BaselineProfileCompiler.onDeviceSleep();
 
                 // Kill any ensure loop still in flight. Without this a wake followed quickly by a
                 // sleep leaves a queued openPip() that fires with the screen already off.
                 pipEnsureGeneration++;
-                // Same for the delayed widget bar refresh.
-                wakeGeneration++;
+                // Same for everything else the last wake queued (widget bar, night mode, ...).
+                // Bumped before anything is posted below, so that the next wake cancels it in turn.
+                final int sleepGen = ++wakeGeneration;
+
+                if (prefs.getBoolean(Keys.LAUNCHER_HOME, true)) {
+                    // Move task to front to leave it as the last top app
+                    // FYT often runs full screen the last top app
+                    // Dropped if a wake comes first: if the SoC suspends within these 5 s, the
+                    // rest of the delay only runs out after the next wake (see postForGeneration).
+                    postForGeneration(sleepGen, this::pressHomeButton, 5000);
+                }
 
                 WindowUtil.removePip();
 
-                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
                 long sleepTimestamp = System.currentTimeMillis();
-                mPrefs.edit().putLong("sleep_timestamp", sleepTimestamp).apply();
+                prefs.edit().putLong("sleep_timestamp", sleepTimestamp).apply();
 
                 helpers.setDisplayStateBoolean(false);
 
@@ -376,6 +437,20 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     }
 
     /**
+     * Runs task after delayMs, unless a wake or a sleep has happened since the generation was
+     * taken (both bump wakeGeneration). The handler counts uptimeMillis(), which stops while the
+     * SoC is suspended, so a task posted shortly before a suspend otherwise runs only after the
+     * next wake, in the middle of that wake's own work.
+     */
+    private void postForGeneration(final int generation, final Runnable task, long delayMs) {
+        handler.postDelayed(() -> {
+            if (generation == wakeGeneration) {
+                task.run();
+            }
+        }, delayMs);
+    }
+
+    /**
      * Makes sure PiP really comes back after a wake, instead of firing one openPip() and hoping.
      *
      * Each attempt first asks whether PiP is already healthy; only if it is not does it call
@@ -431,6 +506,12 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 // cannot fix that (the pane is visible, so it gets debounced); only a cold reset can.
                 if (!isPipContentHealthy()) {
                     if (repairUsed) {
+                        if (coldResetUsed) {
+                            // Another reset would only repeat what just did not help.
+                            Log.w(TAG, "PiP ensure: still unhealthy after a cold reset, giving up for this wake");
+                            return;
+                        }
+                        coldResetUsed = true;
                         // The per-pane repair did not take, so the displays themselves are the
                         // problem. This is the only place that still needs the full teardown.
                         Log.w(TAG, "PiP ensure: still unhealthy after a repair, cold-resetting the stack");
@@ -455,7 +536,10 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     return;
                 }
 
-                if (attempt > 0) Log.i(TAG, "PiP ensure: healthy after " + attempt + " retries");
+                // Logged at attempt 0 as well, so that a capture shows how the loop ended.
+                Log.i(TAG, attempt > 0
+                        ? "PiP ensure: healthy after " + attempt + " retries"
+                        : "PiP ensure: healthy");
                 return;
             }
 
@@ -490,16 +574,14 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     /** Is PiP supposed to be on screen at all? */
     private boolean isPipExpected() {
         try {
-            if (mPrefs == null) {
-                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-            }
-            if (!mPrefs.getBoolean(Keys.DISPLAY_PIP, true)) return false;
+            SharedPreferences prefs = getPrefs();
+            if (!prefs.getBoolean(Keys.DISPLAY_PIP, true)) return false;
 
-            return mPrefs.getBoolean(Keys.PIP_DUAL, false)
-                    || mPrefs.getBoolean(Keys.PIP_FIRST, false)
-                    || mPrefs.getBoolean(Keys.PIP_SECOND, false)
-                    || mPrefs.getBoolean(Keys.PIP_THIRD, false)
-                    || mPrefs.getBoolean(Keys.PIP_FOURTH, false);
+            return prefs.getBoolean(Keys.PIP_DUAL, false)
+                    || prefs.getBoolean(Keys.PIP_FIRST, false)
+                    || prefs.getBoolean(Keys.PIP_SECOND, false)
+                    || prefs.getBoolean(Keys.PIP_THIRD, false)
+                    || prefs.getBoolean(Keys.PIP_FOURTH, false);
         } catch (Throwable t) {
             return false;
         }
@@ -518,13 +600,14 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
             // A pane that still has no real bounds has not launched its app yet.
             if (host.isAnyPaneAwaitingBounds()) return false;
 
-            boolean dualPip   = mPrefs.getBoolean(Keys.PIP_DUAL, false);
-            boolean firstPip  = mPrefs.getBoolean(Keys.PIP_FIRST, false);
-            boolean secondPip = mPrefs.getBoolean(Keys.PIP_SECOND, false);
-            boolean thirdPip  = mPrefs.getBoolean(Keys.PIP_THIRD, false);
-            boolean fourthPip = mPrefs.getBoolean(Keys.PIP_FOURTH, false);
-            boolean thirdPinned  = mPrefs.getBoolean(Keys.PIP_THIRD_MODE, false);
-            boolean fourthPinned = mPrefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+            SharedPreferences prefs = getPrefs();
+            boolean dualPip   = prefs.getBoolean(Keys.PIP_DUAL, false);
+            boolean firstPip  = prefs.getBoolean(Keys.PIP_FIRST, false);
+            boolean secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
+            boolean thirdPip  = prefs.getBoolean(Keys.PIP_THIRD, false);
+            boolean fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
+            boolean thirdPinned  = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
+            boolean fourthPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
 
             if (dualPip) {
                 if (!host.isDualVisible()) return false;
@@ -565,34 +648,32 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
      * is public API of this service.
      */
     public void resetPip() {  
-        if (mPrefs == null) {
-            mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-        }
-        boolean firstPip = mPrefs.getBoolean(Keys.PIP_FIRST, false);
-        boolean dualPip = mPrefs.getBoolean(Keys.PIP_DUAL, false);
-        String firstPackage = mPrefs.getString(Keys.PIP_FIRST_PACKAGE, "");
+        SharedPreferences prefs = getPrefs();
+        boolean firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
+        boolean dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
+        String firstPackage = prefs.getString(Keys.PIP_FIRST_PACKAGE, "");
         if ((firstPip || dualPip) && !firstPackage.isEmpty()) {
             restartPipApp(Keys.PIP_FIRST_PACKAGE);
         } 
-        boolean secondPip = mPrefs.getBoolean(Keys.PIP_SECOND, false);
-        String secondPackage = mPrefs.getString(Keys.PIP_SECOND_PACKAGE, "");
+        boolean secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
+        String secondPackage = prefs.getString(Keys.PIP_SECOND_PACKAGE, "");
         if ((secondPip || dualPip) && !secondPackage.isEmpty()) {
             restartPipApp(Keys.PIP_SECOND_PACKAGE);
         }
-        boolean thirdPip = mPrefs.getBoolean(Keys.PIP_THIRD, false);
-        String thirdPackage = mPrefs.getString(Keys.PIP_THIRD_PACKAGE, "");
+        boolean thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
+        String thirdPackage = prefs.getString(Keys.PIP_THIRD_PACKAGE, "");
         if (thirdPip && !thirdPackage.isEmpty()) {
             restartPipApp(Keys.PIP_THIRD_PACKAGE);
         }
-        boolean fourthPip = mPrefs.getBoolean(Keys.PIP_FOURTH, false);
-        String fourthPackage = mPrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
+        boolean fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
+        String fourthPackage = prefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
         if (fourthPip && !fourthPackage.isEmpty()) { 
             restartPipApp(Keys.PIP_FOURTH_PACKAGE);  
         }
     }
 
     public void restartPipApp(String key) {
-        String appPackageName = mPrefs.getString(key, "");
+        String appPackageName = getPrefs().getString(key, "");
         if (!appPackageName.isEmpty()) {
             ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             try {
@@ -608,6 +689,11 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     public static class PropertyChangeClass {
         private boolean pBoolean = true;
         private final PropertyChangeSupport mPropertyChangeSupport = new  PropertyChangeSupport(this);
+
+        /** Sets the starting value without notifying observers. */
+        public void initBoolean(boolean bool) {
+            pBoolean = bool;
+        }
 
         public void setBoolean(String name, boolean bool) {
             boolean old = pBoolean;

@@ -216,10 +216,35 @@ R8 also uses `startup-prof.txt` to place startup classes in the primary DEX
 5. **Usage refreshes.** While the launcher runs, ART keeps recording the methods the user's own
    configuration actually executes (side bar, auto-hidden bottom bar, installed widget types,
    `ActivityView` widgets, …) in the same profile. `BaselineProfileCompiler` compiles the app
-   again after **3, 14 and 30 days** (each also requires **10 launcher starts** since the
-   previous compilation), 90 s after a start. This merges the recorded usage into the compiled
-   code. The profile is not re-installed from the APK for this (that would overwrite the usage
-   data). After the third refresh nothing more happens until the next APK.
+   again when **both** conditions are met since the previous compilation:
+
+   | Refresh | Minimum days | Minimum sessions |
+   |---|---|---|
+   | 1 | 3 | 5 |
+   | 2 | 14 | 10 |
+   | 3 | 30 | 10 |
+
+   A *session* is:
+   - a **device restart** – always counts (detected by `LauncherApplication.isFirstStartAfterColdBoot()`
+     and passed as `scheduleIfNeeded(this, coldBoot)`),
+   - a **wake-up from sleep** (reported by `WakeDetectionService` via
+     `BaselineProfileCompiler.onDeviceWake()`; `ACTION_SCREEN_ON` is not delivered on FYT) or a
+     **launcher restart without a device restart** (crash, killed process) – counts only if at
+     least **3 minutes** passed since the previous counted session. This filters quick display
+     off/on and crash loops.
+
+   Wake-ups count because many FYT units sleep instead of rebooting on ACC off, so the launcher
+   process can run for weeks without restarting. The rule is also shown in the settings summary.
+
+   The session counter is only a gate and stops at the minimum (`5/5`, `10/10`). ART keeps
+   recording the usage of **every** further session, so the refresh at the day limit compiles
+   the data of all sessions since the previous compilation. If the day limit passes with too few
+   sessions, the limit moves forward one day per day until the sessions are reached; the refresh
+   then runs right away (90 s after the session). A compilation still waiting for these 90 s when
+   the unit goes to sleep is postponed to the next wake (`onDeviceSleep()`), so it never runs
+   into the busy first seconds after a wake. The profile is not re-installed from the APK for a
+   refresh (that would overwrite the usage data). After the third refresh nothing more happens
+   until the next APK.
 
 Everything above is automatic: no user interaction, no UI, no launcher restart.
 
@@ -242,7 +267,7 @@ system_server allows it the same operations as `adb shell`. The work runs once p
 (version name + APK file time + size); failures are retried on the next starts, at most 3 times
 per APK.
 
-### Required app integration (already described earlier, listed for completeness)
+### Required app integration
 
 `app/build.gradle.kts`:
 
@@ -251,10 +276,17 @@ implementation(libs.androidx.profileinstaller)   // implementation, not runtimeO
 "baselineProfile"(project(":baselineprofile"))
 ```
 
-`LauncherApplication.onCreate()`:
+`LauncherApplication` – deferred startup work, with the cold-boot flag from `onCreate()`:
 
-```kotlin
-BaselineProfileCompiler.scheduleIfNeeded(this)
+```java
+BaselineProfileCompiler.scheduleIfNeeded(this, coldBootStart);
+```
+
+`WakeDetectionService` – display on after sleep / ACC off:
+
+```java
+BaselineProfileCompiler.onDeviceWake(LauncherApplication.sApp);   // "Device awakened from sleep"
+BaselineProfileCompiler.onDeviceSleep();                          // "ACC turned off ..."
 ```
 
 Optional status for units without a PC – show it e.g. as an "About" entry in the settings:
@@ -266,10 +298,31 @@ summary = BaselineProfileCompiler.statusText(context)
 Expected after a successful deployment and one restart:
 
 ```
-Deployment: OK (active after the next launcher restart) - <stamp>
-Last compilation: 2026-09-23 17:35, usage refreshes: 0/3, starts since: 4
+Deployment: OK - initial compilation - <stamp> (active)
+Last compilation: 2026-09-23 17:35
+Usage refreshes: 0/3 - next: day 1/3, sessions 2/5
+Session = device restart, or a wake-up / launcher restart at least 3 min after the previous session
 ProfileVerifier: code=1, compiledWithProfile=true, enqueued=true
 ```
+
+`(active after the next launcher start)` is shown only in the process that did the compilation;
+after any launcher restart the same compilation is shown as `(active)`.
+
+`next: day 1/3, sessions 2/5` = one day since the last compilation (3 required) and 2 sessions
+(5 required). When the day limit is reached without enough sessions, the second number of `day`
+follows the current day until the sessions are reached.
+
+### Resetting the usage refreshes (launcher settings)
+
+The **Baseline Profile reset** entry in the launcher settings opens a dialog with two options
+(Cancel, tapping outside the dialog or Back does nothing):
+
+- **Reset schedule** – restarts the 3/14/30-day schedule from now. The compiled code and the data
+  collected so far are kept; the next refreshes keep adding to them. No restart.
+- **Full reset…** – asks again (warning about data loss), then deletes all collected profile data
+  (`clearApplicationProfileData`), which **restarts the launcher immediately**. On that start the
+  initial compilation runs from the Baseline Profile in the APK (90 s later), and the schedule
+  starts again.
 
 `enqueued=true` is normal: ART has recorded new usage data that the next refresh will compile.
 After a refresh the first line reads `OK - usage refresh 1/3 - <stamp>`.
@@ -290,7 +343,7 @@ Expected log:
 ```
 I BaselineProfile: ProfileInstaller result=1
 I BaselineProfile: performDexOptMode(speed-profile) = true
-I BaselineProfile: OK (active after the next launcher restart) - …
+I BaselineProfile: OK - initial compilation - …
 ```
 
 The launcher process must **not** end between these lines (no `PROCESS ENDED` in Logcat).
@@ -377,7 +430,10 @@ adb shell "dumpsys package com.android.launcher66 | grep codePath"
 | `Unable to strip … libbenchmarkNative.so` | Native libs of the test APK | Harmless |
 | Wrapper: `su root id` fails after install | CRLF line endings or wrong SELinux label | `prepare_device.sh` strips CR and copies the label of `/sbin/magisk`; check `adb shell "su -c 'ls -lZ /sbin/su'"` |
 | Launcher restarts ~90 s after boot, status stays `Deployment: none` | Old `BaselineProfileCompiler` calling `clearApplicationProfileData` (kills the package) | Use the current version |
-| Status `Usage refresh FAILED (will retry)` | Compilation call failed during a refresh | Harmless – the previous compilation stays active; retried after another 10 starts. Check `adb logcat -s BaselineProfile` |
+| Toast "Reset failed" after a full reset | `clearApplicationProfileData` rejected by the firmware | `adb logcat -s BaselineProfile`; the schedule is reset and the Baseline Profile re-applied, but the collected data stays |
+| `sessions` does not grow after waking the unit | `onDeviceWake()` not called, or less than 3 min since the last counted session | Check `adb logcat -s BaselineProfile WakeDetection`: after "Device awakened from sleep" a line `Session (wake): …` must follow |
+| `sessions` does not grow after a device restart | `scheduleIfNeeded()` called without the cold-boot flag | Use `scheduleIfNeeded(this, coldBootStart)`; logcat shows `Session (device restart): …` about 45 s after boot |
+| Status `Usage refresh FAILED (will retry)` | Compilation call failed during a refresh | Harmless – the previous compilation stays active; retried after another full wait (days and sessions). Check `adb logcat -s BaselineProfile` |
 | User unit: status `FAILED - attempt 3/3` | Hidden API changed or ProfileInstaller error | Read `adb logcat -s BaselineProfile` on a test unit with the same firmware |
 | `dexopt` shows `quicken` after deployment | Profile not applied yet or compiler failed | Check status text / log; the code is active only after the next launcher restart |
 

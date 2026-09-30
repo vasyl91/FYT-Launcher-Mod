@@ -277,8 +277,22 @@
     <string name="wallpaper_picker_launcher">应用内壁纸选择器</string> 
     <string name="all_apps_textSize_str">设置应用列表图标文字大小（最大50）</string>  
     <string name="workspace_textSize_str">设置主屏幕图标文字大小（最大50）</string>     
-    <string name="launcher_home">设备唤醒时主屏幕始终置顶</string>
+    <string name="launcher_home">设备启动或唤醒时始终置顶显示主屏幕</string>
     <string name="baseline_profile_summary">基准配置文件摘要</string>
+    <string name="baseline_profile_reset">重置基准配置文件</string>
+    <string name="baseline_reset_title">重置使用优化</string>
+    <string name="baseline_reset_message">启动器会在使用 3、14 和 30 天后在后台重新编译自身，让您实际使用的功能启动得更快。每次优化还需要达到最少会话次数（先 5 次，之后 10 次）。一次会话指设备重启，或距上次会话至少 3 分钟后从休眠中唤醒。已完成的优化：%1$d / %2$d。\n\n• 重置计划 – 保留目前已收集的优化，并重新开始 3/14/30 天计划。\n\n• 完全重置 – 删除已收集的使用数据，恢复为应用自带的默认配置文件，并重新开始计划。</string>
+    <string name="baseline_reset_schedule_btn">重置计划</string>
+    <string name="baseline_reset_full_btn">完全重置…</string>
+    <string name="baseline_reset_full_title">完全重置？</string>
+    <string name="baseline_reset_full_message">自安装以来收集的所有使用数据将被永久删除。启动器将恢复为应用自带的默认基准配置文件（Baseline Profile），并重新开始 3/14/30 天优化计划。\n\n启动器将立即重启。在重新编译完成之前（重启后约 2 分钟），启动速度可能会稍慢。</string>
+    <string name="baseline_reset_full_confirm_btn">删除并重启</string>
+    <string name="baseline_reset_schedule_done">优化计划已重置。下一次优化将在使用 3 天后进行。</string>
+    <string name="baseline_reset_full_started">已删除收集的数据。正在后台根据默认配置文件重新编译。</string>
+    <string name="baseline_reset_failed">重置失败，请稍后再试。</string>
+    <string name="baseline_reset_unavailable">此设备不支持此功能。</string>
+    <string name="autostart_apps">开机自动启动</string>
+    <string name="autostart_apps_summary">通过系统自动启动功能启动的应用可能会减慢启动器的启动速度。启动器内置的选项会在启动器完成冷启动后再启动这些应用。使用此列表时，请记得在 FYT 设置中取消这些应用的自动启动，否则它们将被启动两次。</string>
 
     <string name="music_widget_category">音乐小组件</string>
     <string name="youtube_category">YouTube</string>

@@ -122,6 +122,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private Preference clientIdPreference;
     private Preference oauthForSpotify;
     private WeakReference<AppListCacheDialogFragment> appListCacheDialog;
+    private WeakReference<AppListAutostartDialogFragment> appListAutostartDialog;
     private Preference allAppsTextSize; 
     private EditText allAppsTextSizeEditText;
     private AlertDialog alertAllAppsTextSizeDialog;
@@ -148,6 +149,12 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private Preference resetNightMode;
     private Dialog loadingDialog;
     private AlertDialog alertUpdateDialog;
+
+    private static final String KEY_BASELINE_PROFILE_SUMMARY = "baseline_profile_summary";
+    private static final String KEY_BASELINE_PROFILE_RESET = "baseline_profile_reset";
+    private Preference baselineProfileSummary;
+    private AlertDialog alertBaselineResetDialog;
+    private AlertDialog alertBaselineFullResetDialog;
     private Preference logcatService;
     private Preference logcatServiceWake;
     private Preference logcatRun;
@@ -343,7 +350,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         workspaceTextSize.setSummary(workspaceTextSizeStr);
         dialogWorkspaceTextSizeEditText();
 
-        Preference baselineProfileSummary = findPreference("baseline_profile_summary");
+        baselineProfileSummary = findPreference(KEY_BASELINE_PROFILE_SUMMARY);
+        Preference baselineProfileReset = findPreference(KEY_BASELINE_PROFILE_RESET);
+        Preference appListAutostart = findPreference(Keys.AUTOSTART_APPS);
 
         nightMode = findPreference(Keys.NIGHT_MODE);
         wallpapersCategory = findPreference("wallpapers_category");
@@ -448,9 +457,13 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (launcherHome != null) {
             launcherHome.setOnPreferenceClickListener(this);
         }
-        if (baselineProfileSummary != null) {
-            String baselineSummary = BaselineProfileCompiler.statusText(LauncherApplication.sApp);
-            baselineProfileSummary.setSummary(baselineSummary);
+        // statusText() blocks (ProfileVerifier), so it is loaded off the main thread.
+        updateBaselineProfileSummary();
+        if (baselineProfileReset != null) {
+            baselineProfileReset.setOnPreferenceClickListener(this);
+        }
+        if (appListAutostart != null) {
+            appListAutostart.setOnPreferenceClickListener(this);
         }
         nightMode();        
         if (logcatService != null) {
@@ -701,14 +714,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SpotifyGuide()).commit();
                 break;
             case Keys.FAVORITE_CACHE:
-                AppListCacheDialogFragment previous =
+                AppListCacheDialogFragment cachePrevious =
                         (appListCacheDialog != null) ? appListCacheDialog.get() : null;
-                if (previous != null && previous.isShowing()) {
-                    previous.dismiss();
+                if (cachePrevious != null && cachePrevious.isShowing()) {
+                    cachePrevious.dismiss();
                 }
-                AppListCacheDialogFragment dialog = new AppListCacheDialogFragment();
-                appListCacheDialog = new WeakReference<>(dialog);
-                dialog.show(requireActivity().getSupportFragmentManager(),
+                AppListCacheDialogFragment cacheDialog = new AppListCacheDialogFragment();
+                appListCacheDialog = new WeakReference<>(cacheDialog);
+                cacheDialog.show(requireActivity().getSupportFragmentManager(),
                         AppListCacheDialogFragment.TAG);
                 break;
             case Keys.DEVICE_SETTINGS:
@@ -762,6 +775,17 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 workspaceTextSizeEditText.requestFocus();
                 imm.showSoftInput(workspaceTextSizeEditText, InputMethodManager.SHOW_IMPLICIT);
                 workspaceTextSizeEditText.setSelection(workspaceTextSizeEditText.getText().length());
+                break;
+            case Keys.AUTOSTART_APPS:
+                AppListAutostartDialogFragment autostartPrevious =
+                        (appListAutostartDialog != null) ? appListAutostartDialog.get() : null;
+                if (autostartPrevious != null && autostartPrevious.isShowing()) {
+                    autostartPrevious.dismiss();
+                }
+                AppListAutostartDialogFragment autostartDialog = new AppListAutostartDialogFragment();
+                appListAutostartDialog = new WeakReference<>(autostartDialog);
+                autostartDialog.show(requireActivity().getSupportFragmentManager(),
+                        AppListAutostartDialogFragment.TAG);
                 break;
             case Keys.NIGHT_MODE:
                 nightModeBool = sharedPrefs.getBoolean(Keys.NIGHT_MODE, false);
@@ -882,6 +906,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 logcatServiceTimeoutEditText.requestFocus();
                 imm.showSoftInput(logcatServiceTimeoutEditText, InputMethodManager.SHOW_IMPLICIT);
                 logcatServiceTimeoutEditText.setSelection(logcatServiceTimeoutEditText.getText().length());
+                break;
+            case KEY_BASELINE_PROFILE_RESET:
+                showBaselineResetDialog();
                 break;
             case Keys.APP_VERSION_UPDATE:
                 alertUpdateDialog = displayDownloadConfirmationDialog().create();
@@ -1348,6 +1375,113 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         return builder;
     }
 
+    // =====================================================================================
+    // BASELINE PROFILE
+    // =====================================================================================
+
+    /** Loads the Baseline Profile status off the main thread and shows it as the summary. */
+    private void updateBaselineProfileSummary() {
+        if (baselineProfileSummary == null) {
+            return;
+        }
+        final Context appContext = requireContext().getApplicationContext();
+        new Thread(() -> {
+            final String text = BaselineProfileCompiler.statusText(appContext);
+            mHandler.post(() -> {
+                if (isAdded() && baselineProfileSummary != null) {
+                    baselineProfileSummary.setSummary(text);
+                }
+            });
+        }, "BaselineProfileStatus").start();
+    }
+
+    /**
+     * First dialog: explains the usage refreshes and offers two resets.
+     * Positive - reset the refresh schedule only (collected data is kept).
+     * Neutral  - full reset to the Baseline Profile (asks again in a second dialog).
+     * Negative / touch outside / back - cancel.
+     */
+    private void showBaselineResetDialog() {
+        if (!BaselineProfileCompiler.isSupported()) {
+            Toast.makeText(LauncherApplication.sApp, R.string.baseline_reset_unavailable, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Context context = requireContext();
+        String message = getString(R.string.baseline_reset_message,
+                BaselineProfileCompiler.refreshesDone(context),
+                BaselineProfileCompiler.refreshesTotal());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        builder.setTitle(R.string.baseline_reset_title);
+        builder.setMessage(message);
+        builder.setCancelable(true);
+        builder.setPositiveButton(R.string.baseline_reset_schedule_btn, (dialog, which) -> {
+            BaselineProfileCompiler.resetUsageRefreshes(LauncherApplication.sApp);
+            Toast.makeText(LauncherApplication.sApp, R.string.baseline_reset_schedule_done, Toast.LENGTH_LONG).show();
+            updateBaselineProfileSummary();
+        });
+        builder.setNeutralButton(R.string.baseline_reset_full_btn, (dialog, which) -> showBaselineFullResetDialog());
+        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
+
+        alertBaselineResetDialog = builder.create();
+        alertBaselineResetDialog.setCanceledOnTouchOutside(true);
+        alertBaselineResetDialog.show();
+        applyNegativeButtonMargin(alertBaselineResetDialog);
+    }
+
+    /** Second dialog: confirms the full reset and warns about losing the collected data. */
+    private void showBaselineFullResetDialog() {
+        if (!isAdded()) {
+            return;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        builder.setTitle(R.string.baseline_reset_full_title);
+        builder.setMessage(R.string.baseline_reset_full_message);
+        builder.setCancelable(true);
+        builder.setPositiveButton(R.string.baseline_reset_full_confirm_btn, (dialog, which) -> runBaselineFullReset());
+        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
+
+        alertBaselineFullResetDialog = builder.create();
+        alertBaselineFullResetDialog.setCanceledOnTouchOutside(true);
+        alertBaselineFullResetDialog.show();
+        applyNegativeButtonMargin(alertBaselineFullResetDialog);
+        Button confirmButton = alertBaselineFullResetDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (confirmButton != null) {
+            confirmButton.setTextColor(Color.RED); // destructive action
+        }
+    }
+
+    private void runBaselineFullReset() {
+        final Context appContext = LauncherApplication.sApp;
+        new Thread(() -> {
+            // Normally never returns: clearing the profiles kills the launcher process, which
+            // then restarts and recompiles from the Baseline Profile in the background.
+            final boolean ok = BaselineProfileCompiler.resetToBaselineProfile(appContext);
+            mHandler.post(() -> {
+                Toast.makeText(appContext,
+                        ok ? R.string.baseline_reset_full_started : R.string.baseline_reset_failed,
+                        Toast.LENGTH_LONG).show();
+                if (isAdded()) {
+                    updateBaselineProfileSummary();
+                }
+            });
+        }, "BaselineProfileReset").start();
+    }
+
+    /** Same Cancel button spacing as the other dialogs of this screen. */
+    private void applyNegativeButtonMargin(AlertDialog dialog) {
+        Button negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+        if (negativeButton == null) {
+            return;
+        }
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        layoutParams.setMargins(0, 0, 80, 0);
+        negativeButton.setLayoutParams(layoutParams);
+    }
+
     private void dismissDialogs() {
         if (appListCacheDialog != null) {
             AppListCacheDialogFragment cacheDialog = appListCacheDialog.get();
@@ -1356,6 +1490,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 getParentFragmentManager().executePendingTransactions();
             }
             appListCacheDialog = null;
+        }
+        if (appListAutostartDialog != null) {
+            AppListAutostartDialogFragment autostartDialog = appListAutostartDialog.get();
+            if (autostartDialog != null && autostartDialog.isAdded()) {
+                autostartDialog.dismissAllowingStateLoss();
+                getParentFragmentManager().executePendingTransactions();
+            }
+            appListAutostartDialog = null;
         }
         if (alertClientIdDialog != null && alertClientIdDialog.isShowing()) {
             alertClientIdDialog.dismiss();
@@ -1381,6 +1523,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             alertUpdateDialog.dismiss();
             alertUpdateDialog = null;
         }
+        if (alertBaselineResetDialog != null && alertBaselineResetDialog.isShowing()) {
+            alertBaselineResetDialog.dismiss();
+        }
+        alertBaselineResetDialog = null;
+        if (alertBaselineFullResetDialog != null && alertBaselineFullResetDialog.isShowing()) {
+            alertBaselineFullResetDialog.dismiss();
+        }
+        alertBaselineFullResetDialog = null;
     }
 
     private void saveAllAppsTextSize() {

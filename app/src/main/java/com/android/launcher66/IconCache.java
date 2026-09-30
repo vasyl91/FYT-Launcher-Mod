@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
@@ -19,8 +20,10 @@ import com.fyt.skin.SkinUtils;
 import com.syu.ipc.data.FinalCanbus;
 import com.syu.util.CustomIcons;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class IconCache {
@@ -31,6 +34,10 @@ public class IconCache {
     private final Bitmap mDefaultIcon;
     private int mIconDpi;
     private final PackageManager mPackageManager;
+    /** Titles and icons kept between process starts; see AppIconDiskCache. */
+    private final AppIconDiskCache mDiskCache;
+    /** Whether mDiskCache knows the size icons are rendered at (see ensureDiskIconSizeLocked()). */
+    private boolean mDiskIconSizeKnown;
 
     private static class CacheEntry {
         public Bitmap icon;
@@ -49,6 +56,7 @@ public class IconCache {
         this.mPackageManager = context.getPackageManager();
         this.mIconDpi = FinalCanbus.CAR_WeiChi2_ChangChengH2;
         this.mDefaultIcon = makeDefaultIcon();
+        this.mDiskCache = AppIconDiskCache.get(context);
     }
 
     public Drawable getFullResDefaultActivityIcon() {
@@ -118,16 +126,21 @@ public class IconCache {
         synchronized (this.mCache) {
             this.mCache.remove(componentName);
         }
+        this.mDiskCache.remove(componentName);
     }
 
     public void flush() {
         synchronized (this.mCache) {
             this.mCache.clear();
         }
+        this.mDiskCache.clear();
     }
 
     public void flushInvalidIcons(DeviceProfile grid) {
         synchronized (this.mCache) {
+            // The icon size may have changed with the grid: measure it again before the disk
+            // cache hands out another icon.
+            this.mDiskIconSizeKnown = false;
             Iterator<Map.Entry<ComponentName, CacheEntry>> it = this.mCache.entrySet().iterator();
             while (it.hasNext()) {
                 CacheEntry e = it.next().getValue();
@@ -193,11 +206,15 @@ public class IconCache {
         if (entry == null) {
             entry = new CacheEntry(null);
             this.mCache.put(componentName, entry);
+            // Title and icon come from the disk cache while the app's APK is unchanged; otherwise
+            // (and the first time) they are read from the APK as before, and then remembered.
+            ApplicationInfo appInfo = info.activityInfo != null ? info.activityInfo.applicationInfo : null;
             ComponentName key = LauncherModel.getComponentNameFromResolveInfo(info);
             if (labelCache != null && labelCache.containsKey(key)) {
                 entry.title = labelCache.get(key).toString();
             } else {
-                entry.title = info.loadLabel(this.mPackageManager).toString();
+                String cachedTitle = this.mDiskCache.getTitle(componentName, appInfo);
+                entry.title = cachedTitle != null ? cachedTitle : info.loadLabel(this.mPackageManager).toString();
                 if (labelCache != null) {
                     labelCache.put(key, entry.title);
                 }
@@ -205,9 +222,76 @@ public class IconCache {
             if (entry.title == null) {
                 entry.title = info.activityInfo.name;
             }
-            entry.icon = Utilities.createIconBitmap(getFullResIcon(info), this.mContext);
+            ensureDiskIconSizeLocked();
+            Bitmap cachedIcon = this.mDiskCache.getIcon(componentName, appInfo);
+            entry.icon = cachedIcon != null ? cachedIcon : Utilities.createIconBitmap(getFullResIcon(info), this.mContext);
+            this.mDiskCache.putTitleAndIcon(componentName, appInfo, entry.title, entry.icon);
         }
         return entry;
+    }
+
+    /**
+     * Tells the disk cache the size icons are rendered at, measured on the default icon, so an icon
+     * of another size (after a grid change) is never taken from disk. Called under mCache.
+     */
+    private void ensureDiskIconSizeLocked() {
+        if (this.mDiskIconSizeKnown) {
+            return;
+        }
+        this.mDiskIconSizeKnown = true;
+        try {
+            Bitmap probe = Utilities.createIconBitmap(getFullResDefaultActivityIcon(), this.mContext);
+            this.mDiskCache.setIconSize(probe.getWidth(), probe.getHeight());
+        } catch (RuntimeException e) {
+            this.mDiskCache.setIconSize(0, 0); // size unknown: no icon from disk
+        }
+    }
+
+    /**
+     * Puts the titles the disk cache still has for these activities into labelCache, keyed as
+     * LauncherModel.ShortcutNameComparator reads it, so sorting the app list does not open every
+     * APK for its label: 1.4-2.4 s at a cold start, 12.6 s during the boot-time freeze.
+     */
+    public void prefillLabels(List<ResolveInfo> infos, HashMap<Object, CharSequence> labelCache) {
+        if (infos == null || labelCache == null) {
+            return;
+        }
+        for (ResolveInfo info : infos) {
+            if (info == null || info.activityInfo == null) {
+                continue;
+            }
+            ComponentName key = LauncherModel.getComponentNameFromResolveInfo(info);
+            if (labelCache.containsKey(key)) {
+                continue;
+            }
+            String title = this.mDiskCache.getTitle(key, info.activityInfo.applicationInfo);
+            if (title != null) {
+                labelCache.put(key, title.trim());
+            }
+        }
+    }
+
+    /** Install time kept for this activity's app, or -1 if the disk cache does not know it. */
+    public long getCachedFirstInstallTime(ComponentName componentName, ApplicationInfo appInfo) {
+        return this.mDiskCache.getFirstInstallTime(componentName, appInfo);
+    }
+
+    public void putFirstInstallTime(ComponentName componentName, ApplicationInfo appInfo, long firstInstallTime) {
+        this.mDiskCache.putFirstInstallTime(componentName, appInfo, firstInstallTime);
+    }
+
+    /** Forgets disk entries of activities that are no longer in the app list. */
+    public void retainDiskEntries(List<ResolveInfo> infos) {
+        if (infos == null) {
+            return;
+        }
+        List<ComponentName> components = new ArrayList<>(infos.size());
+        for (ResolveInfo info : infos) {
+            if (info != null && info.activityInfo != null) {
+                components.add(LauncherModel.getComponentNameFromResolveInfo(info));
+            }
+        }
+        this.mDiskCache.retainOnly(components);
     }
 
     public HashMap<ComponentName, Bitmap> getAllIcons() {

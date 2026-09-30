@@ -277,8 +277,22 @@
     <string name="wallpaper_picker_launcher">In-app wallpaper picker</string> 
     <string name="all_apps_textSize_str">Set all apps icon text size (max. 50)</string>  
     <string name="workspace_textSize_str">Set main screen icon text size (max. 50)</string>     
-    <string name="launcher_home">Home screen always on top while device wakes up</string>
-    <string name="baseline_profile_summary">Baseline profile summary</string>
+    <string name="launcher_home">Home screen always on top while device starts or wakes up</string>
+    <string name="baseline_profile_summary">Baseline Profile summary</string>
+    <string name="baseline_profile_reset">Reset Baseline Profile</string>
+    <string name="baseline_reset_title">Reset usage refreshes</string>
+    <string name="baseline_reset_message">The launcher recompiles itself in the background after 3, 14 and 30 days of use, so the features you actually use start faster. Each refresh also needs a minimum number of sessions (5, then 10). A session is a device restart, or a wake-up from sleep at least 3 minutes after the previous session. Refreshes completed: %1$d of %2$d.\n\n• Reset schedule – keeps the optimizations collected so far and starts the 3/14/30-day schedule again.\n\n• Full reset – deletes the collected usage data, returns to the default profile shipped with the app and starts the schedule again.</string>
+    <string name="baseline_reset_schedule_btn">Reset schedule</string>
+    <string name="baseline_reset_full_btn">Full reset…</string>
+    <string name="baseline_reset_full_title">Full reset?</string>
+    <string name="baseline_reset_full_message">All usage data collected since installation will be permanently deleted. The launcher returns to the default Baseline Profile shipped with the app and the 3/14/30-day refresh schedule starts again.\n\nThe launcher will restart immediately. Until it is recompiled (about 2 minutes after the restart), startup may be slightly slower.</string>
+    <string name="baseline_reset_full_confirm_btn">Delete and restart</string>
+    <string name="baseline_reset_schedule_done">Refresh schedule reset. The next refresh runs after 3 days of use.</string>
+    <string name="baseline_reset_full_started">Collected data deleted. Recompiling from the default profile in the background.</string>
+    <string name="baseline_reset_failed">Reset failed. Try again later.</string>
+    <string name="baseline_reset_unavailable">Not available on this device.</string>
+    <string name="autostart_apps">Start on boot</string>
+    <string name="autostart_apps_summary">Apps launched by the system\'s autostart feature may slow down the launcher\'s startup. The launcher\'s built-in option will launch them only after the launcher has completed its cold start. When using this list, remember to disable these apps in the FYT settings; otherwise, they will be launched twice.</string>
 
     <string name="music_widget_category">Music Widget</string>
     <string name="youtube_category">YouTube</string>

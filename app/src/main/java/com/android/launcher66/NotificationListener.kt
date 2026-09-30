@@ -12,7 +12,6 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
-import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.MediaMetadataRetriever
 import android.media.session.MediaController
@@ -307,6 +306,12 @@ class NotificationListener : NotificationListenerService() {
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onListenerConnected() {    
         super.onListenerConnected() 
+        // Connected again without onListenerDisconnected() in between: start from a clean state,
+        // otherwise the runTask / time loops of the first connection keep running next to the new
+        // ones (each posts itself again), and the session poll runs twice as often.
+        if (!isCleanedUp && handler != null) {
+            cleanupResources()
+        }
         isCleanedUp = false
         instance = this
         contextRef = WeakReference(this)
@@ -327,7 +332,12 @@ class NotificationListener : NotificationListenerService() {
                 Log.e("NotificationListener", "Error registering session listener: ${e.message}")
             }
         }
-        controllers = mediaSessionManager?.getActiveSessions(componentName)
+        controllers = try {
+            mediaSessionManager?.getActiveSessions(componentName)
+        } catch (e: SecurityException) {
+            Log.w("NotificationListener", "getActiveSessions denied: ${e.message}")
+            null
+        }
         mediaController = pickController(controllers)
         mediaController?.let {
             it.registerCallback(callback)
@@ -1048,8 +1058,10 @@ class NotificationListener : NotificationListenerService() {
             // CarStates.mAppID is maintained in the process, so reading it costs nothing
             service.onMcuChannelChanged(CarStates.mAppID)
             val context = service.contextRef.get() ?: return
-            val am = context.getSystemService(AUDIO_SERVICE) as? AudioManager ?: return
-            if (am.isMusicActive) {
+            // Not AudioManager.isMusicActive(): that waits for the audioserver, which hangs at boot
+            // on this ROM, and from here it froze the whole launcher for ~10 s. AudioStateCache
+            // answers with the probe started on the previous tick, so at most one poll late.
+            if (AudioStateCache.isMusicActive(context)) {
                 service.checkActiveSessions()
             }
             service.handler?.postDelayed(this, ACTIVE_SESSION_POLL_MS)
@@ -1062,8 +1074,8 @@ class NotificationListener : NotificationListenerService() {
             val service = serviceRef.get() ?: return
             if (service.destroyed.get()) return
             val context = service.contextRef.get() ?: return
-            val am = context.getSystemService(AUDIO_SERVICE) as? AudioManager ?: return
-            if (am.isMusicActive && service.musicState == "true") {
+            // Same as in RunTaskRunnable: never wait for the audioserver on the main thread.
+            if (AudioStateCache.isMusicActive(context) && service.musicState == "true") {
                 if (service.curMinutes != service.prevMinutes) {
                     service.prevMinutes = service.curMinutes
                     service.setStatus(2)
@@ -1235,7 +1247,8 @@ class NotificationListener : NotificationListenerService() {
         } else if (!fytData) { // from file title
             val file = File(fytMusicPath)
             val filename = file.name
-            songFyt = filename.substring(0, filename.lastIndexOf("."))
+            // substringBeforeLast: a name without a dot made substring(0, -1) throw.
+            songFyt = filename.substringBeforeLast('.')
             artist = null
         }
         activeControllerPackage = ""

@@ -3,8 +3,12 @@ package com.android.launcher66.settings;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,11 +21,27 @@ import com.android.launcher66.Workspace;
 
 public class StatusBarSwipeDetector extends Service {
 
+    private static final String TAG = "StatusBarSwipeDetector";
+
     private WindowManager windowManager;
-    private View overlayView;
     private int touchSlop;
 
-    // State of the current gesture, from its ACTION_DOWN.
+    /*
+     * The strip's window lives on its own thread. Adding a window on this ROM makes the Unisoc
+     * ViewRootImpl constructor ask system_server whether there is a navigation bar, and at boot
+     * system_server stalls for seconds: on the main thread that froze the whole launcher for over
+     * seven seconds (capture of 28-09-2026 20:41: IWindowManager.hasNavigationBar <-
+     * SprdViewRootImpl.<init> <- WindowManager.addView <- StatusBarSwipeDetector.onCreate).
+     * The window thread only owns the window and delivers its touches; each event is handed to the
+     * main thread as a copy, and the gesture is handled there exactly as before.
+     */
+    private HandlerThread windowThread;
+    private Handler windowHandler;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private View overlayView;      // window thread only
+    private boolean destroyed;     // main thread only
+
+    // State of the current gesture, from its ACTION_DOWN. Main thread only.
     private Workspace gestureWorkspace;       // the workspace this gesture pages, null if none
     private boolean barHiddenThisGesture;
     private float downRawX;
@@ -54,39 +74,66 @@ public class StatusBarSwipeDetector extends Service {
         params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL; // Horizontally centered, vertically top-aligned
         params.y = statusBarHeight - params.height; // Positioned at the bottom of the status bar
 
-        overlayView = new FrameLayout(this);
+        windowThread = new HandlerThread("StatusBarSwipeWindow");
+        windowThread.start();
+        windowHandler = new Handler(windowThread.getLooper());
+        windowHandler.post(() -> addOverlay(params));
+    }
 
-        // The strip pages the workspace exactly like a swipe on the workspace itself: every event
-        // goes through the workspace's own paging (Workspace.handleExternalSwipe()), so the pages
-        // follow the finger and snap with the fling velocity on release.
-        overlayView.setOnTouchListener((v, event) -> {
-            final int action = event.getActionMasked();
-            lastX = event.getX();
-            lastY = event.getY();
-            if (action == MotionEvent.ACTION_DOWN) {
-                barHiddenThisGesture = false;
-                downRawX = event.getRawX();
-                downRawY = event.getRawY();
-                gestureWorkspace = currentWorkspace();
-            } else if (action == MotionEvent.ACTION_MOVE && !barHiddenThisGesture
-                    && (Math.abs(event.getRawX() - downRawX) > touchSlop
-                        || Math.abs(event.getRawY() - downRawY) > touchSlop)) {
-                // The finger has started to move: the auto-hide bar goes away right now.
-                hideAutoHideBarOnce();
-            }
-
-            Workspace workspace = gestureWorkspace;
-            if (workspace != null && !workspace.handleExternalSwipe(event)) {
-                gestureWorkspace = null; // cannot page now (e.g. all apps open): ignore the rest
-            }
-            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-                gestureWorkspace = null;
-            }
+    /** Window thread: creates the strip and adds its window. */
+    private void addOverlay(WindowManager.LayoutParams params) {
+        View view = new FrameLayout(this);
+        view.setOnTouchListener((v, event) -> {
+            // A copy, since the original is recycled as soon as this returns.
+            final MotionEvent copy = MotionEvent.obtain(event);
+            mainHandler.post(() -> {
+                try {
+                    onStripTouch(copy);
+                } finally {
+                    copy.recycle();
+                }
+            });
             return true;
         });
+        try {
+            windowManager.addView(view, params);
+            overlayView = view;
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Cannot add the status bar swipe strip", e);
+        }
+    }
 
-        // Add the overlay view to the window
-        windowManager.addView(overlayView, params);
+    /**
+     * Main thread. The strip pages the workspace exactly like a swipe on the workspace itself:
+     * every event goes through the workspace's own paging (Workspace.handleExternalSwipe()), so
+     * the pages follow the finger and snap with the fling velocity on release.
+     */
+    private void onStripTouch(MotionEvent event) {
+        if (destroyed) {
+            return; // stragglers delivered after onDestroy(); the gesture was already cancelled
+        }
+        final int action = event.getActionMasked();
+        lastX = event.getX();
+        lastY = event.getY();
+        if (action == MotionEvent.ACTION_DOWN) {
+            barHiddenThisGesture = false;
+            downRawX = event.getRawX();
+            downRawY = event.getRawY();
+            gestureWorkspace = currentWorkspace();
+        } else if (action == MotionEvent.ACTION_MOVE && !barHiddenThisGesture
+                && (Math.abs(event.getRawX() - downRawX) > touchSlop
+                    || Math.abs(event.getRawY() - downRawY) > touchSlop)) {
+            // The finger has started to move: the auto-hide bar goes away right now.
+            hideAutoHideBarOnce();
+        }
+
+        Workspace workspace = gestureWorkspace;
+        if (workspace != null && !workspace.handleExternalSwipe(event)) {
+            gestureWorkspace = null; // cannot page now (e.g. all apps open): ignore the rest
+        }
+        if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            gestureWorkspace = null;
+        }
     }
 
     /**
@@ -126,6 +173,7 @@ public class StatusBarSwipeDetector extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        destroyed = true;
         // Stopped in the middle of a swipe (the launcher lost the front): the window goes away
         // without an ACTION_UP, so let the pages settle instead of stopping between two of them.
         Workspace workspace = gestureWorkspace;
@@ -136,9 +184,27 @@ public class StatusBarSwipeDetector extends Service {
             workspace.handleExternalSwipe(cancel);
             cancel.recycle();
         }
-        if (overlayView != null) {
-            windowManager.removeView(overlayView);
+        // The window belongs to its thread, so it is removed there -- after the add, which may still
+        // be waiting for system_server. The thread ends itself once the window is gone.
+        if (windowHandler != null) {
+            windowHandler.post(this::removeOverlay);
         }
+    }
+
+    /** Window thread. */
+    private void removeOverlay() {
+        View view = overlayView;
+        overlayView = null;
+        if (view != null) {
+            try {
+                // Immediate: a plain removeView() finishes on a later message of this thread,
+                // and the thread quits right below.
+                windowManager.removeViewImmediate(view);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Cannot remove the status bar swipe strip", e);
+            }
+        }
+        windowThread.quitSafely();
     }
 
     @Override

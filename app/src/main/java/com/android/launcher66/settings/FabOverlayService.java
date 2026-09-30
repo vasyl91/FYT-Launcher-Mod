@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.syu.util.WindowUtil;
@@ -164,9 +165,31 @@ public class FabOverlayService extends Service {
             addOverlay(fab);
         }
 
+        // The buttons belong on the screen only together with the PiP panes. The launcher starts
+        // this service only while they are up, but a START_STICKY restart after the process was
+        // killed comes without it and used to put the buttons over whatever app was in front.
+        // Hidden before their first frame; SHOW_FAB brings them up once the panes are there.
+        if (!isPipShownByLauncher()) {
+            hideFab();
+        }
+
         // Registered even if adding a button failed, so SHOW/HIDE/BLOCK broadcasts never
         // reach a half-initialised service that then crashes.
         registerFabReceiver();
+    }
+
+    /** Same rule the launcher applies before it shows the buttons, see Launcher.canShowOverlayFab(). */
+    private static boolean isPipShownByLauncher() {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) {
+            return false;
+        }
+        try {
+            return launcher.canShowOverlayFab();
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Unable to query the launcher state, keeping the buttons hidden", e);
+            return false;
+        }
     }
 
     @Override
