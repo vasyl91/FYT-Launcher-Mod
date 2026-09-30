@@ -242,7 +242,7 @@ public class AppListCacheDialogFragment extends DialogFragment
         }
 
         // attachToRoot false: DialogFragment adds the returned view itself.
-        View view = inflater.inflate(R.layout.dialog_applist, container, false);
+        View view = inflater.inflate(R.layout.dialog_cachelist, container, false);
         mRootView = view;
 
         mData = buildVisibleApps();
