@@ -4361,7 +4361,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             }
 
             int leftBarWidth = mLauncher.calculatedLeftBarWidth;
-            int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
+            int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
             int dateMinWidth = mLauncher.calculatedDateMinWidth;
             int radioMinHeight = mLauncher.calculatedRadioMinHeight;
             int topLeftX, topRightX, topLeftY, bottomLeftY, width, height;
@@ -4696,7 +4696,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 return;
             }
 
-            int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
+            int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
 
             int leftBarWidth = mLauncher.calculatedLeftBarWidth;
             int pipMinWidth = mLauncher.calculatedPipMinWidth;
@@ -4833,7 +4833,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             if (screenKey == null || screenKey.isEmpty()) return null;
             if (prefs.getInt(screenKey, 1) - 1 != currentScreen) return null;
 
-            int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
+            int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
             int leftBarWidth = mLauncher.calculatedLeftBarWidth;
             int pipMinWidth = mLauncher.calculatedPipMinWidth;
             int pipMinHeight = mLauncher.calculatedPipMinHeight;
@@ -4918,7 +4918,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 return;
             }
 
-            int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
+            int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
 
             int leftBarWidth = mLauncher.calculatedLeftBarWidth;
             int statsWidth = mLauncher.calculatedStatsWidth;

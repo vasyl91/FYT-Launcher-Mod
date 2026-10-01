@@ -97,7 +97,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
         this.mRootView = rootView;
         this.mSelectedScreen = selectedScreen;
         this.sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        this.margin = Integer.parseInt(sharedPrefs.getString("layout_margin", "10"));
+        this.margin = Integer.parseInt(sharedPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
         this.nameTextSize = SettingsActivity.adaptiveNameTextSize;        
         firstPip = sharedPrefs.getBoolean(Keys.PIP_FIRST, false);
         secondPip = sharedPrefs.getBoolean(Keys.PIP_SECOND, false);
@@ -110,7 +110,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
         super(context, attrs);
         this.mContextWeakRef = new WeakReference<>(context);
         this.sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        this.margin = Integer.parseInt(sharedPrefs.getString("layout_margin", "10"));
+        this.margin = Integer.parseInt(sharedPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
         this.nameTextSize = SettingsActivity.adaptiveNameTextSize;     
         firstPip = sharedPrefs.getBoolean(Keys.PIP_FIRST, false);
         secondPip = sharedPrefs.getBoolean(Keys.PIP_SECOND, false);
@@ -123,7 +123,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
         super(context, attrs, defStyle);
         this.mContextWeakRef = new WeakReference<>(context);
         this.sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        this.margin = Integer.parseInt(sharedPrefs.getString("layout_margin", "10"));
+        this.margin = Integer.parseInt(sharedPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
         this.nameTextSize = SettingsActivity.adaptiveNameTextSize;     
         firstPip = sharedPrefs.getBoolean(Keys.PIP_FIRST, false);
         secondPip = sharedPrefs.getBoolean(Keys.PIP_SECOND, false);

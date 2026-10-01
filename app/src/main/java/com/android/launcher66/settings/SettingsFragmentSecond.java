@@ -390,7 +390,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Preference widgetBar = findPreference(Keys.WIDGET_BAR);
 
         margin = findPreference(Keys.LAYOUT_MARGIN);
-        String marginStr = sharedPrefs.getString(Keys.LAYOUT_MARGIN, "10");
+        String marginStr = sharedPrefs.getString(Keys.LAYOUT_MARGIN, "5");
         margin.setSummary(marginStr);
 
         defaultColorR = sharedPrefs.getInt("red", 255);
@@ -1945,7 +1945,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
     private void saveMargin() {
         String valueStr = marginEditText.getText().toString();
-        if (valueStr.isEmpty()) valueStr = "10";
+        if (valueStr.isEmpty()) valueStr = "5";
         margin.setSummary(valueStr);
         editor.putString(Keys.LAYOUT_MARGIN, valueStr);
         editor.apply();

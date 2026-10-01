@@ -576,7 +576,7 @@ public class Helpers {
         
         // Calculate right border exclusion area for left bar mode
         float leftBarWidth = Launcher.screenWidth * 0.071f;
-        int margin = Integer.valueOf(mPrefs.getString("layout_margin", "10"));
+        int margin = Integer.valueOf(mPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
         
         // Check for overlaps between rectangles
         for (int i = 0; i < rectangleKeys.length; i++) {
@@ -677,7 +677,7 @@ public class Helpers {
     private void resetOverlappingRectangles(SharedPreferences mPrefs, String[] rectangleKeys, 
                                           boolean[] needsReset, boolean[] enabledStates, int screenToCompare) {
         SharedPreferences.Editor editorReset = mPrefs.edit();
-        int margin = Integer.valueOf(mPrefs.getString("layout_margin", "10"));
+        int margin = Integer.valueOf(mPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
         if (margin < 0) margin = 10;
         
         // Get dimensions

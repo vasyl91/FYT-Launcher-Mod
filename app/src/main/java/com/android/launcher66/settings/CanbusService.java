@@ -437,7 +437,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             boolean leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
             boolean drawableBg = prefs.getBoolean("bg_drawable", false);
             boolean colorBg = prefs.getBoolean("bg_color", false);
-            int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
+            int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
             int radius;
 
             wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);

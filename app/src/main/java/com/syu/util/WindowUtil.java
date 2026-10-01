@@ -235,7 +235,7 @@ public class WindowUtil {
                       .append(',').append(prefs.getInt(pipKey + "TopLeftY", Integer.MIN_VALUE))
                       .append(',').append(prefs.getInt(pipKey + "BottomLeftY", Integer.MIN_VALUE));
                 }
-                sb.append('|').append(prefs.getString("layout_margin", "10"));
+                sb.append('|').append(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
                 sb.append('|').append(prefs.getBoolean(Keys.LEFT_BAR, false));
             }
             return sb.toString();
@@ -1956,7 +1956,7 @@ public class WindowUtil {
         if (launcher == null) return;
         boolean leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
         int pipScreen = prefs.getInt(screenKey, 1) - 1;
-        int margin = Integer.parseInt(prefs.getString("layout_margin", "10"));
+        int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
         int mapTopLeftX, mapBottomRightX; 
 
         // Get the specific key for the PiP
