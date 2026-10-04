@@ -235,6 +235,20 @@ R8 also uses `startup-prof.txt` to place startup classes in the primary DEX
 
    Wake-ups count because many FYT units sleep instead of rebooting on ACC off, so the launcher
    process can run for weeks without restarting. The rule is also shown in the settings summary.
+   The 3-minute gap is measured in device time (`elapsedRealtime`), not with the wall clock.
+
+   **Days do not depend on the wall clock.** FYT units often boot with the clock years behind and
+   correct it only once online. Days since the last compilation are therefore the larger of:
+   - *device days* – `elapsedRealtime` (includes deep sleep) accumulated across boots; always
+     valid, misses only the time the unit is fully powered off;
+   - *calendar days* – wall clock, but only between two readings that are both valid (not before
+     2026-09-01, `MIN_VALID_WALL_TIME_MS`).
+
+   A compilation made while the clock is wrong is stored without a date; once the clock has been
+   corrected (checked every minute while the launcher runs), its date is filled in – exactly
+   within the same boot, conservatively ("now minus device time") across a reboot. Both measures
+   are lower bounds of the real time, so a wrong clock can neither trigger a refresh too early
+   nor block it.
 
    The session counter is only a gate and stops at the minimum (`5/5`, `10/10`). ART keeps
    recording the usage of **every** further session, so the refresh at the day limit compiles
@@ -302,8 +316,14 @@ Deployment: OK - initial compilation - <stamp> (active)
 Last compilation: 2026-09-23 17:35
 Usage refreshes: 0/3 - next: day 1/3, sessions 2/5
 Session = device restart, or a wake-up / launcher restart at least 3 min after the previous session
+Clock: valid
 ProfileVerifier: code=1, compiledWithProfile=true, enqueued=true
 ```
+
+Right after a boot with a wrong clock the summary shows `Clock: not set yet - days counted from
+device time`, and a compilation made in that state shows
+`Last compilation: 2 h of device time ago (date set once the clock is valid)` until the clock is
+corrected.
 
 `(active after the next launcher start)` is shown only in the process that did the compilation;
 after any launcher restart the same compilation is shown as `(active)`.
@@ -415,6 +435,7 @@ adb shell "dumpsys package com.android.launcher66 | grep codePath"
 
 | Symptom | Cause | Fix |
 |---|---|---|
+| `prepare_device.sh` stops at `== Root for Macrobenchmark ==` | Old script version: the probe `su root id` opened an interactive Magisk root shell that kept the adb session open | Use the current script (stdin from `/dev/null` + 15 s timeout); press Ctrl+C and run it again |
 | Tests stay at `0/N completed` for minutes | Magisk `su` hangs on `su root <cmd>` | Run `prepare_device.sh` (installs the wrapper); check `adb shell "timeout 5 su root id"` |
 | `Starting 0 tests … Process crashed` | Usually leftovers of a previously interrupted (hung) run | `adb shell am force-stop com.android.launcher66.baselineprofile` and run again; if it persists: `adb logcat -b crash -d` |
 | `INSTALL_FAILED_UPDATE_INCOMPATIBLE` / `…SHARED_USER_INCOMPATIBLE` | Release signing key differs from the system APK key | Use the platform key in `keystore.properties` |
@@ -431,6 +452,7 @@ adb shell "dumpsys package com.android.launcher66 | grep codePath"
 | Wrapper: `su root id` fails after install | CRLF line endings or wrong SELinux label | `prepare_device.sh` strips CR and copies the label of `/sbin/magisk`; check `adb shell "su -c 'ls -lZ /sbin/su'"` |
 | Launcher restarts ~90 s after boot, status stays `Deployment: none` | Old `BaselineProfileCompiler` calling `clearApplicationProfileData` (kills the package) | Use the current version |
 | Toast "Reset failed" after a full reset | `clearApplicationProfileData` rejected by the firmware | `adb logcat -s BaselineProfile`; the schedule is reset and the Baseline Profile re-applied, but the collected data stays |
+| `next: day 0/664` or a wrong `Last compilation` date | Old version: days and session gaps were measured with the wall clock, which is years behind after a boot | Current version measures device time and uses the wall clock only when valid; on the first start the old due day is dropped and a compile date saved with the wrong clock is cleared (that wait then restarts from the device time) |
 | `sessions` does not grow after waking the unit | `onDeviceWake()` not called, or less than 3 min since the last counted session | Check `adb logcat -s BaselineProfile WakeDetection`: after "Device awakened from sleep" a line `Session (wake): …` must follow |
 | `sessions` does not grow after a device restart | `scheduleIfNeeded()` called without the cold-boot flag | Use `scheduleIfNeeded(this, coldBootStart)`; logcat shows `Session (device restart): …` about 45 s after boot |
 | Status `Usage refresh FAILED (will retry)` | Compilation call failed during a refresh | Harmless – the previous compilation stays active; retried after another full wait (days and sessions). Check `adb logcat -s BaselineProfile` |

@@ -9,34 +9,37 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class FileUtil {
-    public static void copyFileFromAssets(Context context, String assetsFilePath, String targetFileFullPath) {
-        Log.d("Tag", "copyFileFromAssets ");
-        try {
-            InputStream assestsFileImputStream = context.getAssets().open(assetsFilePath);
-            copyFile(assestsFileImputStream, targetFileFullPath);
+    private static final String TAG = "FileUtil";
+
+    /**
+     * Copies an asset to the given file, overwriting it. Returns whether the whole asset was
+     * written. On failure (storage full, say) the target can be left incomplete, so a caller that
+     * needs a complete file copies to a temporary name and renames it only after true.
+     *
+     * Both streams are closed on every path; they used to stay open after a failed write.
+     */
+    public static boolean copyFileFromAssets(Context context, String assetsFilePath, String targetFileFullPath) {
+        Log.d(TAG, "copyFileFromAssets " + assetsFilePath + " -> " + targetFileFullPath);
+        try (InputStream in = context.getAssets().open(assetsFilePath)) {
+            return copyFile(in, targetFileFullPath);
         } catch (IOException e) {
-            Log.d("Tag", "copyFileFromAssets IOException-" + e.getMessage());
-            e.printStackTrace();
+            Log.w(TAG, "copyFileFromAssets failed for " + assetsFilePath, e);
+            return false;
         }
     }
 
-    private static void copyFile(InputStream in, String targetPath) {
-        try {
-            FileOutputStream fos = new FileOutputStream(new File(targetPath));
-            byte[] buffer = new byte[1024];
-            while (true) {
-                int byteCount = in.read(buffer);
-                if (byteCount != -1) {
-                    fos.write(buffer, 0, byteCount);
-                } else {
-                    fos.flush();
-                    in.close();
-                    fos.close();
-                    return;
-                }
+    private static boolean copyFile(InputStream in, String targetPath) {
+        try (FileOutputStream fos = new FileOutputStream(new File(targetPath))) {
+            byte[] buffer = new byte[8192];
+            int byteCount;
+            while ((byteCount = in.read(buffer)) != -1) {
+                fos.write(buffer, 0, byteCount);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            fos.flush();
+            return true;
+        } catch (IOException e) {
+            Log.w(TAG, "copyFile failed for " + targetPath, e);
+            return false;
         }
     }
 }

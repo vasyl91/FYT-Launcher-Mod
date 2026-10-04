@@ -1,5 +1,8 @@
 package com.android.launcher66;
 
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
+import android.content.OperationApplicationException;
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.appwidget.AppWidgetHost;
@@ -154,6 +157,24 @@ public class LauncherProvider extends ContentProvider {
             sendNotify(uri);
         }
         return count;
+    }
+
+    /**
+     * Applies the whole batch in one transaction, so it is saved completely or not at all.
+     * LauncherModel.updateWorkspaceScreenOrder() relies on this: it replaces the screen table.
+     */
+    @Override
+    public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations)
+            throws OperationApplicationException {
+        SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            ContentProviderResult[] result = super.applyBatch(operations);
+            db.setTransactionSuccessful();
+            return result;
+        } finally {
+            db.endTransaction();
+        }
     }
 
     @Override

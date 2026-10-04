@@ -1139,7 +1139,7 @@ class NotificationListener : NotificationListenerService() {
                 service.handlerControllerTime?.removeCallbacks(service.updateControllerTime)
                 service.helpers.updateControllerTimeBool(false)
                 val intent = Intent("pause.button")
-                service.sendBroadcast(intent)
+                service.sendBroadcastAsync(intent)
                 service.settings?.edit {
                     this.putInt("prevState", service.currentState!!)
                 }
@@ -1519,11 +1519,33 @@ class NotificationListener : NotificationListenerService() {
         endPaneRestart()
     }
 
+    /** sendBroadcast() off the main thread; see the companion's broadcaster. */
+    private fun sendBroadcastAsync(intent: Intent) {
+        val app = applicationContext
+        broadcaster.execute {
+            try {
+                app.sendBroadcast(intent)
+            } catch (e: RuntimeException) {
+                Log.w("NotificationListener", "sendBroadcast(${intent.action}) failed", e)
+            }
+        }
+    }
+
     companion object {
         @Volatile
         @JvmStatic
         var instance: NotificationListener? = null
             private set
+
+        /**
+         * Broadcasts leave from their own thread. sendBroadcast() is a synchronous call into
+         * ActivityManager: sent from the media callback on the main thread, "pause.button" once
+         * held the launcher for 2.6 s while system_server was busy with the pane apps' cold starts
+         * (capture 01-10-2026 23:57). A single thread keeps them in order.
+         */
+        private val broadcaster: ExecutorService = Executors.newSingleThreadExecutor { r ->
+            Thread(r, "NotificationListenerBroadcast").apply { isDaemon = true }
+        }
 
         /** Called by WindowUtil once every pane has produced a frame. */
         @JvmStatic

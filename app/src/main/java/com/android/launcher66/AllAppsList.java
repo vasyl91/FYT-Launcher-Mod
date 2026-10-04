@@ -34,6 +34,28 @@ public class AllAppsList {
         this.mAppFilter = appFilter;
     }
 
+    /**
+     * A copy of data for use on the main thread. LauncherModel changes data on its loader thread,
+     * without a lock, so a copy taken meanwhile can be a moment out of date and contain empty
+     * slots; those are left out. toArray() uses no iterator, so this cannot throw a
+     * ConcurrentModificationException.
+     */
+    public static ArrayList<AppInfo> snapshot() {
+        ArrayList<AppInfo> source = data;
+        ArrayList<AppInfo> copy = new ArrayList<>();
+        if (source == null) {
+            return copy;
+        }
+        Object[] items = source.toArray();
+        copy.ensureCapacity(items.length);
+        for (Object item : items) {
+            if (item instanceof AppInfo) {
+                copy.add((AppInfo) item);
+            }
+        }
+        return copy;
+    }
+
     public void add(AppInfo info) {
         if ((this.mAppFilter == null || this.mAppFilter.shouldShowApp(info.componentName)) && !findActivity(data, info.componentName) && allowSettings(info)) {
             if (Config.CHIP_UIID != 5 || !info.componentName.getPackageName().equals(FytPackage.sysSetAction)) {

@@ -473,6 +473,7 @@
     <string name="logcat_full">Log scope</string>
     <string name="logcat_full_on">Log everything</string>
     <string name="logcat_full_off">Log only for launcher</string>
+    <string name="boot_logcat">Include boot logs</string>
     <string name="logcat_service_run">Logcat service</string>
     <string name="logcat_service_run_summary">Press to start logging</string>
     <string name="logcat_service_run_working">Working... %1$s Press here to cancel</string>

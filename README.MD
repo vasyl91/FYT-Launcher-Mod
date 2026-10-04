@@ -16,16 +16,21 @@ List of modifications:
 - Launcher creator allowing the launcher's layout to be adjusted to user preferences. All layout elements except the bottom bar can be turned off. Users can also specify which screen should be the main screen.
 - Bottom bar with optional widgets.
 - Auto-hide bottom bar option.
+- Resizable bottom bar.
 - Skins for widgets and bottom bar.
 - Optional floating buttons for quickly switching apps between PiPs.
 - Optional transparent overlay square on the status bar that detects swipes and allows scrolling between pages. This can be useful when the PiP view occupies most of the visible screen (privileged/system app only).
 - Live fuel stats (requires Accessibility Service permission), with the option to display them on the main screen and in chosen apps, at a screen position specified by the user.
 - Night Mode that determines sunrise and sunset based on location (also allows the user to manually adjust sunrise/sunset times, and set the wallpaper and brightness for day/night mode).
 - Settings fragment with useful tweaks.
+- Improved cold start (on some devices this [Magisk module](https://github.com/vasyl91/FYT-improved-cold-start/releases/latest) might make it even faster).
+- Baseline profile implementation.
+- Versatile logcat (best performance on privileged/system apps).
 - New icon for the launcher and its settings, with a settings icon in the app drawer.
 - "Update" feature allowing users to easily update the launcher from its settings.
 - Replaced some deprecated code with newer implementations.
 
+---
 
 **Installation:**
 
@@ -34,6 +39,8 @@ For the first installation, download `installer.zip`, unpack it onto a FAT32-for
 If installation doesn't start automatically, please try other USB ports. If it still doesn't start regardless of the USB port, it means either your device is not an FYT device, or it is an FYT device but runs Android 12 or higher (some brands don't allow installing apps via scripts from a USB drive).
 
 Following this method is important because it installs the launcher as a privileged/system app, which is essential for it to work properly. 
+
+---
 
 **Google Maps bug**
 
@@ -47,6 +54,8 @@ The second method, related to the modified Android ActivityView class, displays 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/switch_buttons.gif)
+
+---
 
 **Gallery:**
 
@@ -75,6 +84,8 @@ The second method, related to the modified Android ActivityView class, displays 
 
 </details>
 
+---
+
 **Night mode:**
 
 <details>
@@ -82,6 +93,8 @@ The second method, related to the modified Android ActivityView class, displays 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_night_mode.gif)
 
 </details>
+
+---
 
 **Settings:**
 
@@ -91,6 +104,8 @@ The second method, related to the modified Android ActivityView class, displays 
 
 </details>
 
+---
+
 **In-app stats:**
 
 <details>
@@ -98,6 +113,8 @@ The second method, related to the modified Android ActivityView class, displays 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_inapp_stat.gif)
 
 </details>
+
+---
 
 ## Fuel statistics
 
@@ -203,14 +220,16 @@ In my case, the CAN bus stops sending fuel consumption data when the speed drops
 
 </details>
 
+---
+
 ## Debugging
 
-1. Download and install the latest debug version. 
-2. Use the built-in logcat tool (see the launcher's settings) or get the logs using other software, e.g. [Logcat Reader](https://play.google.com/store/apps/details?id=com.dp.logcatapp&hl=en&pli=1).
-3. Open a new issue, provide your Android version and screen resolution, describe the error (with step-by-step instructions for reproducing it), and attach the logs.
+1. Use the built-in logcat tool (see the launcher's settings) or get the logs using other software, e.g. [Logcat Reader](https://play.google.com/store/apps/details?id=com.dp.logcatapp&hl=en&pli=1). If you want to include LeakCanary and typical debug logs specific to BuildConfig.DEBUG download and install the latest debug version. For anything else the built-in logcat in the release version should be sufficient.
+2. Open a new issue, provide your Android version and describe the error (with step-by-step instructions for reproducing it). Attach the logs.
 
 I cannot guarantee that I'll fix every error.
 
+---
 
 ## Generating app in Android Studio
 
@@ -273,13 +292,18 @@ for build 1.1.7 — use `android.jar` from this [repository](https://github.com/
 4. Open the repository and rebuild the project.
 5. To generate the app, use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose the existing `android` key alias with password `android`. 
 
-To debug the app on an FYT device, connect it to your PC. For Android 11 and above, try connecting via Wi-Fi — USB can be problematic. If you don't have much choice, try a 4-pin USB cable — in my case, this one works fine. 
+To debug the app on an FYT device, connect it to your PC. As USB connection can be problematic, for Android 11 and above use ADB over Wi-Fi. On Android 10 with root access, use this guide - [ADB over Wi-Fi on Android 10 using Magisk]](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/MagiskWiFiADB.MD).
+
+USB configuration:
+
+<details>
+
+If you don't have much choice, try a 4-pin USB cable — in my case, this one works fine. 
 If you need drivers, use [this one](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/android-34-modded-jar/Unisoc+SPD+Driver.rar). 
 Go to Developer options, click the three dots in the top-right corner, and select the second option from the popup (both are in Chinese).
+Remember to enable USB debugging.
 
 [<img src="./images/3.png" width="50%">](./images/3.png)[<img src="./images/3.1.png" width="50%">](./images/3.1.png)
-
-Remember to enable USB debugging.
 
 If you keep getting `unauthorized` while running `adb devices`, and your device doesn't show the popup to confirm the connection, you'll have to add the adb keys manually.
 That's tricky and unfortunately requires root on both your FYT device and your phone. If you haven't given up, follow the steps below:
@@ -288,6 +312,9 @@ That's tricky and unfortunately requires root on both your FYT device and your p
 3. Paste that file into the same directory on your FYT unit.
 4. Install the Termux terminal on your FYT unit, open it, and run the following commands: `chmod 0640 /data/misc/adb/`, `chown system:shell /data/misc/adb/`, `chcon u:object_r:adb_keys_file:s0 /data/misc/adb/` (don't worry if you get errors with the last one).
 
+</details>
+
+---
 
 ## Modifying android.jar (Deprecated since 1.1.7)
 
@@ -324,3 +351,5 @@ That's tricky and unfortunately requires root on both your FYT device and your p
 14. Finally, you can use the prepared `android.jar` from the `android_jar_mod\` directory to run your project, as described in the `Generating app in Android Studio` section.
 
 </details>
+
+---

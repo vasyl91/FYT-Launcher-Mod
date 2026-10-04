@@ -275,6 +275,10 @@
             android:title="@string/logcat_full"
             android:summaryOn="@string/logcat_full_on"
             android:summaryOff="@string/logcat_full_off" />
+        <SwitchPreferenceCompat
+            android:key="boot_logcat"
+            android:defaultValue="false"
+            android:title="@string/boot_logcat" />
         <Preference
             android:key="logcat_service_run"
             android:title="@string/logcat_service_run"/>

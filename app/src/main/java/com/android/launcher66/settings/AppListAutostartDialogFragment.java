@@ -5,6 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -34,27 +35,35 @@ import com.android.launcher66.AllAppsList;
 import com.android.launcher66.AppInfo;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+import com.android.launcher66.UnisocPowerWhitelist;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Picks the apps the launcher starts by itself after a cold boot, once the boot-time stall is
- * over (LauncherApplication.scheduleBootAutostart() reads {@link #getSelectedPackages}).
+ * over (ColdStart.scheduleBootAutostart() reads {@link #getSelectedPackages}).
  *
  * Meant for apps that would otherwise be on FYT's own autostart list. FYT SystemUI starts those
  * about three seconds after BOOT_COMPLETED, right into the boot-time stall, and the launcher then
  * stays frozen for ~11 s inside the framework's activityTopResumedStateLost(). An app belongs on
  * one of the two lists, not on both.
+ *
+ * Once the dialog is closed, the ticked apps are taken off the start black lists of the Unisoc power
+ * manager in one go, and apps that left the list get their previous settings back (see
+ * UnisocPowerWhitelist and {@link #syncPowerSettingsAsync}). Without that the system denies their
+ * background starts after every boot.
  */
 public class AppListAutostartDialogFragment extends DialogFragment
         implements AdapterView.OnItemClickListener {
 
     public static final String TAG = "AppListAutostartDialog";
 
-    /** The store LauncherApplication reads at every cold boot; see {@link #getSelectedPackages}. */
+    /** The store ColdStart reads at every cold boot; see {@link #getSelectedPackages}. */
     public static final String PREFS_NAME = "AppAutostartPrefs";
     /** Comma-separated package names, in start order. */
     public static final String KEY_AUTOSTART_APPS = "boot_autostart_packages";
@@ -65,6 +74,12 @@ public class AppListAutostartDialogFragment extends DialogFragment
     /** Application-context prefs, shared by the dialog and the read side. */
     private static volatile SharedPreferences sPrefs;
 
+    /**
+     * Guards every write of the stored list. The dialog writes on the main thread, while
+     * getInstalledSelectedPackages() prunes it on the boot autostart and power sync threads.
+     */
+    private static final Object STORE_LOCK = new Object();
+
     private AppSelectAdapter mAdapter;
 
     /** What is on screen: a snapshot of AllAppsList.data, one cell per package. */
@@ -73,9 +88,9 @@ public class AppListAutostartDialogFragment extends DialogFragment
     private View mRootView;
 
     /**
-     * Everything the user ticked, in start order. Apps that are not installed any more stay on
-     * it: reinstalling one gives the old choice back, and the boot autostart skips what it
-     * cannot launch.
+     * Everything the user ticked that is still installed, in start order. Uninstalled apps are
+     * removed from it and from the store (see {@link #getInstalledSelectedPackages}), so the
+     * numbers in the grid stay 1..n.
      */
     private final List<String> apps = new ArrayList<>();
 
@@ -84,19 +99,81 @@ public class AppListAutostartDialogFragment extends DialogFragment
 
     private OnBackPressedCallback mBackPressedCallback;
 
+    /**
+     * Runs the power manager sync off the main thread, one at a time: closing and reopening the
+     * dialog quickly must not let two syncs interleave.
+     */
+    private static final ExecutorService POWER_SYNC =
+            Executors.newSingleThreadExecutor(r -> new Thread(r, "AutostartPowerSync"));
+
     /** Always a fresh instance; see AppListStatsDialogFragment.newInstance for why. */
     public static AppListAutostartDialogFragment newInstance() {
         return new AppListAutostartDialogFragment();
     }
 
     // =====================================================================================
-    // READ SIDE - LauncherApplication
+    // READ SIDE - ColdStart and the power sync
     // =====================================================================================
 
-    /** The apps to start after a cold boot, in start order. Never null. */
+    /**
+     * The stored apps, in start order, without checking that they are installed. Never null.
+     * Makes no PackageManager calls, so it is cheap on the main thread.
+     */
     public static List<String> getSelectedPackages(@Nullable Context context) {
         SharedPreferences prefs = prefs(context);
         return prefs == null ? new ArrayList<String>() : parse(prefs.getString(KEY_AUTOSTART_APPS, ""));
+    }
+
+    /**
+     * The stored apps that are still installed, in start order. Never null. Apps uninstalled since
+     * they were ticked are removed from the store as well, so the list and the numbers shown in the
+     * dialog have no gaps. Calls into PackageManager: ColdStart uses it from its boot autostart
+     * thread, not from the main thread during the boot-time stall.
+     */
+    public static List<String> getInstalledSelectedPackages(@Nullable Context context) {
+        Context base = context != null ? context : LauncherApplication.sApp;
+        SharedPreferences prefs = prefs(base);
+        if (base == null || prefs == null) {
+            return new ArrayList<>();
+        }
+        String raw = prefs.getString(KEY_AUTOSTART_APPS, "");
+        List<String> stored = parse(raw);
+        // Outside the lock: these are binder calls, and the main thread writes under it.
+        List<String> installed = installedOnly(base.getPackageManager(), stored);
+        if (installed.size() != stored.size()) {
+            synchronized (STORE_LOCK) {
+                // Only if the list is still the one checked here: a tick the user made meanwhile
+                // must not be overwritten by this older list. The next call prunes it then.
+                if (raw.equals(prefs.getString(KEY_AUTOSTART_APPS, ""))) {
+                    List<String> removed = new ArrayList<>(stored);
+                    removed.removeAll(installed);
+                    prefs.edit().putString(KEY_AUTOSTART_APPS, join(installed)).apply();
+                    Log.i(TAG, "Removed uninstalled apps from the autostart list: " + removed);
+                }
+            }
+        }
+        return installed;
+    }
+
+    /**
+     * packages without the ones that are not installed any more, in the same order. A package
+     * that cannot be checked (the package manager failing) is kept: only a definite "not
+     * installed" may take an app off the user's list.
+     */
+    static List<String> installedOnly(PackageManager pm, List<String> packages) {
+        List<String> installed = new ArrayList<>(packages.size());
+        for (String pkg : packages) {
+            try {
+                pm.getApplicationInfo(pkg, 0);
+                installed.add(pkg);
+            } catch (PackageManager.NameNotFoundException e) {
+                // uninstalled since it was ticked
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Cannot check whether " + pkg + " is installed, kept: " + e);
+                installed.add(pkg);
+            }
+        }
+        return installed;
     }
 
     /** Null only before any context exists; the list is empty until then. */
@@ -110,6 +187,32 @@ public class AppListAutostartDialogFragment extends DialogFragment
             }
         }
         return prefs;
+    }
+
+    /**
+     * Applies the list to the Unisoc power manager in one go, on a background thread: ticked
+     * installed apps are not restricted, apps that left the list (unticked or uninstalled) get
+     * their previous settings back. Does nothing on devices without that power manager.
+     */
+    static void syncPowerSettingsAsync(@Nullable Context context) {
+        final Context app = context != null ? context.getApplicationContext() : LauncherApplication.sApp;
+        if (app == null) {
+            return;
+        }
+        POWER_SYNC.execute(() -> {
+            // An exception escaping this thread would end the whole launcher (CrashHandler).
+            try {
+                UnisocPowerWhitelist power = UnisocPowerWhitelist.create(app);
+                SharedPreferences prefs = prefs(app);
+                if (power == null || prefs == null) {
+                    return;
+                }
+                // Here as well, so the PackageManager calls stay off the main thread.
+                power.sync(prefs, getInstalledSelectedPackages(app));
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Power manager sync failed", e);
+            }
+        });
     }
 
     // =====================================================================================
@@ -188,9 +291,7 @@ public class AppListAutostartDialogFragment extends DialogFragment
      * tap has to resolve to the app that was drawn in that cell.
      */
     static ArrayList<AppInfo> buildVisibleApps(@Nullable String ownPackage) {
-        ArrayList<AppInfo> source = AllAppsList.data == null
-                ? new ArrayList<AppInfo>()
-                : new ArrayList<AppInfo>(AllAppsList.data);
+        ArrayList<AppInfo> source = AllAppsList.snapshot();
         ArrayList<AppInfo> visible = new ArrayList<>(source.size());
         Set<String> seen = new HashSet<>();
         for (AppInfo app : source) {
@@ -213,6 +314,10 @@ public class AppListAutostartDialogFragment extends DialogFragment
         if (mViewDestroyed || mData == null || mAdapter == null) {
             return;
         }
+        // An app uninstalled meanwhile leaves the start order as well, so the numbers stay 1..n.
+        List<String> installed = getInstalledSelectedPackages(getContext());
+        apps.clear();
+        apps.addAll(installed);
         ArrayList<AppInfo> visible = buildVisibleApps(ownPackage());
         mData.clear();
         mData.addAll(visible);
@@ -237,7 +342,7 @@ public class AppListAutostartDialogFragment extends DialogFragment
         mViewDestroyed = false;
 
         apps.clear();
-        apps.addAll(getSelectedPackages(inflater.getContext()));
+        apps.addAll(getInstalledSelectedPackages(inflater.getContext()));
 
         // attachToRoot false: DialogFragment adds the returned view itself.
         View view = inflater.inflate(R.layout.dialog_bootlist, container, false);
@@ -307,6 +412,9 @@ public class AppListAutostartDialogFragment extends DialogFragment
         // First thing: any callback still in flight must bail out immediately.
         mViewDestroyed = true;
 
+        // The dialog is closing: the power manager follows the list now, all of it at once.
+        syncPowerSettingsAsync(getContext());
+
         if (mBackPressedCallback != null) {
             mBackPressedCallback.remove();
             mBackPressedCallback = null;
@@ -363,9 +471,11 @@ public class AppListAutostartDialogFragment extends DialogFragment
         if (prefs == null) {
             return;
         }
-        prefs.edit()
-                .putString(KEY_AUTOSTART_APPS, join(apps))
-                .apply();
+        synchronized (STORE_LOCK) {
+            prefs.edit()
+                    .putString(KEY_AUTOSTART_APPS, join(apps))
+                    .apply();
+        }
     }
 
     public boolean isShowing() {

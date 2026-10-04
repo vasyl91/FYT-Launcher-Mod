@@ -174,9 +174,8 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
         // Snapshot on the main thread. AllAppsList.data is rebuilt on package
         // add/remove/update, so iterating it from doInBackground() could throw
         // ConcurrentModificationException or filter against a half-rebuilt list.
-        ArrayList<AppInfo> snapshot = AllAppsList.data == null
-                ? new ArrayList<AppInfo>()
-                : new ArrayList<AppInfo>(AllAppsList.data);
+        // AllAppsList.snapshot() is the copy all the app lists use.
+        ArrayList<AppInfo> snapshot = AllAppsList.snapshot();
 
         // Start background task to filter apps
         new FilterAppsTask(this, snapshot, pipsPrefs, pipKey).execute();
@@ -277,12 +276,20 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
         // and there is one less anonymous inner class holding the fragment.
     }
 
+    /**
+     * Null when the name cannot be read; the app is then left out, as one uninstalled meanwhile.
+     * Called for every app of the list, so a package manager failure for one of them must not
+     * escape: it ended the whole filter task, and the grid stayed empty.
+     */
     private static String getAppNameFromPackage(String packageName) {
         try {
             PackageManager packageManager = LauncherApplication.sApp.getPackageManager();
             ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
             return packageManager.getApplicationLabel(appInfo).toString();
         } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Cannot read the name of " + packageName + ": " + e);
             return null;
         }
     }

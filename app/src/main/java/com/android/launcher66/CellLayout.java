@@ -1150,6 +1150,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             if (mLauncher == null || mLauncher.getWorkspace() == null) {
                 return;
             }
+            if (deferCustomElementSetupWhileLoading("setup")) {
+                return;
+            }
             prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             if (!prefs.getBoolean(Keys.USER_LAYOUT, false)) {
                 clearDetachedCustomElementRefs();
@@ -1176,6 +1179,10 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             workspace.postDelayed(() -> {
                 mCustomElementSetupPending = false;
                 mCustomElementSetupUrgent = false;
+                // A rebind may have started during the delay.
+                if (deferCustomElementSetupWhileLoading("before adding elements")) {
+                    return;
+                }
                 if (!workspace.isScreenStateReadyForCustomElements()) {
                     retryCustomElementSetup("workspace screen state changed after ensure");
                     return;
@@ -2771,13 +2778,14 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         for (int i = 0; i < childCount; i++) {
             View child = mShortcutsAndWidgets.getChildAt(i);
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
-            ItemInfo info;
-            try {
-                info = (ItemInfo) child.getTag();
-            } catch (Exception e) {
-                Log.e(TAG, "commitTempPlacement error: " + e.getMessage());
-                return;
+            Object tag = child.getTag();
+            if (!(tag instanceof ItemInfo)) {
+                // Not a launcher item (custom element, view tagged with something else): nothing
+                // to commit. This used to return here and drop the rest of the reorder, which was
+                // then never written to the database.
+                continue;
             }
+            ItemInfo info = (ItemInfo) tag;
             // We do a null check here because the item info can be null in the case of the
             // AllApps button in the hotseat.
             if (info != null) {
@@ -3947,6 +3955,10 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             return;
         }
 
+        if (deferCustomElementSetupWhileLoading("page " + pageIndex)) {
+            return;
+        }
+
         // Check if CellLayout is properly initialized
         if (page.mCellWidth <= 0 || page.mCellHeight <= 0 || page.mCountX <= 0 || page.mCountY <= 0) {
             Log.w(TAG, "CellLayout not initialized for page " + pageIndex + ", retrying...");
@@ -5078,204 +5090,280 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     }
 
     /**
+     * While the model rebinds the screens, custom elements must not be placed: the pages are half
+     * built (their icons are still to come), so the conflict handling below and stripEmptyScreens()
+     * would judge them wrongly. Launcher replays the request once finishBindingItems() has run.
+     */
+    private boolean deferCustomElementSetupWhileLoading(String stage) {
+        if (mLauncher == null || !mLauncher.isWorkspaceLoading()) {
+            return false;
+        }
+        Log.i(TAG, "Custom element setup waits for the workspace to load (" + stage + ")");
+        mLauncher.requestCustomElementsSetup("CellLayout: " + stage);
+        return true;
+    }
+
+    /** A child that is a launcher item (icon, folder, widget), as opposed to a custom element. */
+    private boolean isMovableLauncherItem(View child) {
+        return child != null && !isUserWidget(child)
+                && child.getTag() instanceof ItemInfo
+                && child.getLayoutParams() instanceof LayoutParams;
+    }
+
+    /** The bottom bar covers the last row(s) of the first page, unless it hides itself. */
+    private boolean isBarRowExcluded(int pageIndex) {
+        return pageIndex == 0 && !PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+    }
+
+    /** With the auto-hiding bar, only its handle in the first page's bottom-left cell is taken. */
+    private boolean isFirstBottomCellExcluded(int pageIndex) {
+        return pageIndex == 0 && PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+    }
+
+    /** A copy of mOccupied with the cells under the bottom bar marked as taken. */
+    private boolean[][] buildSearchOccupied(boolean excludeBarRows, boolean excludeFirstCell) {
+        boolean[][] occupied = new boolean[mCountX][mCountY];
+        for (int x = 0; x < mCountX; x++) {
+            for (int y = 0; y < mCountY; y++) {
+                occupied[x][y] = mOccupied[x][y];
+            }
+        }
+        if (excludeBarRows) {
+            for (int x = 0; x < mCountX; x++) {
+                for (int y = Math.max(0, mCountY - excludeLastRow); y < mCountY; y++) {
+                    occupied[x][y] = true;
+                }
+            }
+        }
+        if (excludeFirstCell && mCountX > 0 && mCountY > 0) {
+            occupied[0][mCountY - 1] = true;
+        }
+        return occupied;
+    }
+
+    /** First free spanX x spanY area in occupied, scanning rows from the top. */
+    private static boolean findVacantCells(boolean[][] occupied, int countX, int countY,
+            int spanX, int spanY, int[] result) {
+        if (spanX <= 0 || spanY <= 0 || spanX > countX || spanY > countY) {
+            return false;
+        }
+        for (int y = 0; y + spanY <= countY; y++) {
+            for (int x = 0; x + spanX <= countX; x++) {
+                boolean free = true;
+                for (int i = 0; i < spanX && free; i++) {
+                    for (int j = 0; j < spanY; j++) {
+                        if (occupied[x + i][y + j]) {
+                            free = false;
+                            break;
+                        }
+                    }
+                }
+                if (free) {
+                    result[0] = x;
+                    result[1] = y;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** A free area on this page for an item moved here from another page. */
+    private boolean findVacantCellsForItem(int pageIndex, int spanX, int spanY, int[] result) {
+        if (mCountX <= 0 || mCountY <= 0 || mOccupied == null) {
+            return false;
+        }
+        boolean[][] occupied = buildSearchOccupied(isBarRowExcluded(pageIndex),
+                isFirstBottomCellExcluded(pageIndex));
+        return findVacantCells(occupied, mCountX, mCountY, spanX, spanY, result);
+    }
+
+    /**
+     * Moves an item that has no room left on this page to the first other page that has, keeping
+     * its database row (only the screen and the cell change). Pages without custom elements come
+     * first, as nothing will claim their cells later. The user page and the extra empty screen
+     * have no persisted screen id and are skipped.
+     */
+    private boolean moveItemToAnotherPage(Workspace workspace, View view, ItemInfo info) {
+        if (workspace == null || info.container != LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+            return false;
+        }
+        LayoutParams lp = (LayoutParams) view.getLayoutParams();
+        int itemSpanX = Math.max(1, lp.cellHSpan);
+        int itemSpanY = Math.max(1, lp.cellVSpan);
+        int fromPage = workspace.indexOfChild(this);
+        int[] cell = new int[2];
+        for (int pass = 0; pass < 2; pass++) {
+            for (int i = 0; i < workspace.getChildCount(); i++) {
+                View page = workspace.getChildAt(i);
+                if (page == this || !(page instanceof CellLayout)) {
+                    continue;
+                }
+                if (checkIfPageNeedsWidgets(i) != (pass == 1)) {
+                    continue;
+                }
+                CellLayout target = (CellLayout) page;
+                if (!workspace.canResolveScreenId(target)) {
+                    continue;
+                }
+                long screenId = workspace.getIdForScreen(target);
+                if (screenId < 0) {
+                    continue;
+                }
+                if (!target.findVacantCellsForItem(i, itemSpanX, itemSpanY, cell)) {
+                    continue;
+                }
+                removeView(view);
+                if (view instanceof DropTarget && mLauncher.getDragController() != null) {
+                    // Workspace.addInScreen() registers it again.
+                    mLauncher.getDragController().removeDropTarget((DropTarget) view);
+                }
+                LauncherModel.moveItemInDatabase(mLauncher, info,
+                        LauncherSettings.Favorites.CONTAINER_DESKTOP, screenId, cell[0], cell[1]);
+                workspace.addInScreen(view, LauncherSettings.Favorites.CONTAINER_DESKTOP, screenId,
+                        cell[0], cell[1], itemSpanX, itemSpanY);
+                Log.w(TAG, "Moved " + describeItem(info) + " from page " + fromPage + " to page "
+                        + i + ": no room left next to the custom elements");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static String describeItem(ItemInfo info) {
+        CharSequence title = null;
+        if (info instanceof ShortcutInfo) {
+            title = ((ShortcutInfo) info).title;
+        } else if (info instanceof FolderInfo) {
+            title = ((FolderInfo) info).title;
+        }
+        return "'" + title + "' id=" + info.id + " type=" + info.itemType
+                + " screen=" + info.screenId + " cell=" + info.cellX + "," + info.cellY;
+    }
+
+    /**
      * Handle views that conflict with a custom element being placed.
-     * Try to relocate them, or remove them if no space is available.
+     *
+     * Every launcher item in the way is moved: to a free cell of this page if there is one,
+     * otherwise to another page with room. Nothing is deleted here any more. This used to delete
+     * every item it could not fit on this page from the database, and two bugs made that hit
+     * icons that were in nobody's way:
+     * - the bottom bar rows were excluded according to the page the user was LOOKING at
+     *   (shouldExcludeLastRow() -> getCurrentPage() == 0), so with the first page on screen the
+     *   last row of every page with custom elements counted as covered by the bar;
+     * - an item in such a row freed its own cell in the search copy, the search found that very
+     *   cell, the excludeLastRow check then rejected it, and the item was deleted.
+     * On a page whose upper part is taken by a PiP, every icon in the bottom row was lost that way.
+     * If no page has room at all, the view leaves this page but the database row stays, so the
+     * item comes back once there is space again.
      */
     private void handleConflictingViews(int cellX, int cellY, int spanX, int spanY) {
         logCustomLayout("=== handleConflictingViews START ===");
         logCustomLayout("Custom element wants cells [" + cellX + "," + cellY + "] spanning " + spanX + "x" + spanY);
 
+        Workspace workspace = mLauncher != null ? mLauncher.getWorkspace() : null;
+        int pageIndex = workspace != null ? workspace.indexOfChild(this) : -1;
+        if (pageIndex < 0) {
+            // A page detached by a rebind (startBinding() removes every screen). Its views are
+            // stale - their items are bound to the new pages - so nothing is moved from here.
+            Log.i(TAG, "handleConflictingViews: page not attached, skipped");
+            return;
+        }
+
         ArrayList<View> conflictingViews = new ArrayList<>();
         Rect customRect = new Rect(cellX, cellY, cellX + spanX, cellY + spanY);
 
-        // Find all views that intersect with the custom element's area
+        // Find all launcher items that intersect with the custom element's area. Other children
+        // (custom elements, views tagged with something else) belong to the page and stay.
         int count = mShortcutsAndWidgets.getChildCount();
         logCustomLayout("Total children in layout: " + count);
-
         for (int i = 0; i < count; i++) {
             View child = mShortcutsAndWidgets.getChildAt(i);
-
-            // Skip if it's already a custom element
-            if (isUserWidget(child)) {
-                logCustomLayout("Skipping child " + i + " - it's a user widget");
+            if (!isMovableLauncherItem(child)) {
                 continue;
             }
-
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
-
             Rect childRect = new Rect(lp.cellX, lp.cellY,
                                       lp.cellX + lp.cellHSpan,
                                       lp.cellY + lp.cellVSpan);
-
-            logCustomLayout("Child " + i + " at cells [" + lp.cellX + "," + lp.cellY + "] spanning " +
-                  lp.cellHSpan + "x" + lp.cellVSpan);
-
             if (Rect.intersects(customRect, childRect)) {
-                logCustomLayout("  -> CONFLICT DETECTED with child " + i);
+                logCustomLayout("  -> CONFLICT with child " + i + " at [" + lp.cellX + "," + lp.cellY + "]");
                 conflictingViews.add(child);
             }
         }
 
-        logCustomLayout("Found " + conflictingViews.size() + " conflicting views");
-
-        // Determine if we need to exclude the last row or just the first cell
-        int currentPage = -1;
-        if (mLauncher != null && mLauncher.getWorkspace() != null) {
-            currentPage = mLauncher.getWorkspace().indexOfChild(this);
-        }
+        // Items under the bottom bar, which covers the first page only.
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean shouldExcludeLastRow = shouldExcludeLastRow();
-        boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
-
-        if (shouldExcludeLastRow || shouldExcludeFirstCell) {
-            logCustomLayout("Checking for elements in excluded areas");
+        boolean excludeBarRows = isBarRowExcluded(pageIndex);
+        boolean excludeFirstCell = isFirstBottomCellExcluded(pageIndex);
+        if (excludeBarRows || excludeFirstCell) {
             for (int i = 0; i < count; i++) {
                 View child = mShortcutsAndWidgets.getChildAt(i);
-
-                if (isUserWidget(child) || conflictingViews.contains(child)) {
+                if (!isMovableLauncherItem(child) || conflictingViews.contains(child)) {
                     continue;
                 }
-
                 LayoutParams lp = (LayoutParams) child.getLayoutParams();
-
-                if (shouldExcludeLastRow) {
-                    // Exclude entire last row
-                    boolean isInLastRow = (lp.cellY + lp.cellVSpan > mCountY - excludeLastRow);
-                    if (isInLastRow && !conflictingViews.contains(child)) {
-                        conflictingViews.add(child);
-                    }
-                } else if (shouldExcludeFirstCell) {
-                    // Only exclude if it occupies the first cell of the bottom row
-                    boolean occupiesExcludedCell = (lp.cellY == mCountY - 1 && lp.cellX == 0) ||
-                                                  (lp.cellY + lp.cellVSpan > mCountY - 1 &&
-                                                   lp.cellX == 0);
-                    if (occupiesExcludedCell && !conflictingViews.contains(child)) {
-                        conflictingViews.add(child);
-                    }
+                boolean underBar = excludeBarRows
+                        ? lp.cellY + lp.cellVSpan > mCountY - excludeLastRow
+                        : lp.cellX == 0 && lp.cellY + lp.cellVSpan > mCountY - 1;
+                if (underBar) {
+                    conflictingViews.add(child);
                 }
             }
         }
 
-        logCustomLayout("Total views to process (conflicts + last row): " + conflictingViews.size());
-
+        logCustomLayout("Total views to process (conflicts + bar area): " + conflictingViews.size());
         if (conflictingViews.isEmpty()) {
             logCustomLayout("=== handleConflictingViews END (no conflicts) ===");
             return;
         }
 
-        // Create a modified occupied array that respects excludeLastRow
-        boolean[][] searchOccupied = new boolean[mCountX][mCountY];
-        for (int x = 0; x < mCountX; x++) {
-            for (int y = 0; y < mCountY; y++) {
-                searchOccupied[x][y] = mOccupied[x][y];
-            }
-        }
-
-        // Mark the last row as occupied if needed
-        if (shouldExcludeLastRow) {
-            for (int x = 0; x < mCountX; x++) {
-                for (int y = mCountY - excludeLastRow; y < mCountY; y++) {
-                    searchOccupied[x][y] = true;
-                }
-            }
-            logCustomLayout("Marked last " + excludeLastRow + " row(s) as occupied");
-        }
-
-        // Try to relocate each conflicting view
         int relocated = 0;
-        int removed = 0;
+        int movedAway = 0;
+        int keptInDatabase = 0;
+        int[] newLocation = new int[2];
+        for (View view : conflictingViews) {
+            LayoutParams lp = (LayoutParams) view.getLayoutParams();
+            ItemInfo info = (ItemInfo) view.getTag();
 
-        for (View conflictingView : conflictingViews) {
-            LayoutParams lp = (LayoutParams) conflictingView.getLayoutParams();
+            // Free the view's cells, then take the custom element's area again (they overlap).
+            markCellsAsUnoccupiedForView(view);
+            markCellsForView(cellX, cellY, spanX, spanY, mOccupied, true);
 
-            logCustomLayout("Processing conflicting view at [" + lp.cellX + "," + lp.cellY + "]");
-
-            // Temporarily mark the view's current cells as unoccupied in both arrays
-            markCellsAsUnoccupiedForView(conflictingView);
-            markCellsForView(lp.cellX, lp.cellY, lp.cellHSpan, lp.cellVSpan, searchOccupied, false);
-
-            // If we're adding a custom element, mark its area as occupied
-            if (customRect != null) {
-                markCellsForView(cellX, cellY, spanX, spanY, mOccupied, true);
-                markCellsForView(cellX, cellY, spanX, spanY, searchOccupied, true);
-            }
-
-            // Try to find a new location for this view using the modified occupied array
-            int[] newLocation = new int[2];
-            boolean foundSpace = findCellForSpanThatIntersectsIgnoring(newLocation,
-                                                                       lp.cellHSpan,
-                                                                       lp.cellVSpan,
-                                                                       -1, -1,
-                                                                       null,
-                                                                       searchOccupied);
-
-            logCustomLayout("Search result: foundSpace=" + foundSpace +
-                  (foundSpace ? ", location=[" + newLocation[0] + "," + newLocation[1] + "]" : ""));
-
-            if (foundSpace) {
-                // Verify the new location doesn't violate excludeLastRow constraint
-                if (shouldExcludeLastRow &&
-                    (newLocation[1] + lp.cellVSpan > mCountY - excludeLastRow)) {
-                    foundSpace = false;
-                    Log.w(TAG, "Found location violates excludeLastRow constraint");
-                }
-            }
-
-            if (foundSpace) {
-                // Relocate the view
-                logCustomLayout("✓ RELOCATING view from [" + lp.cellX + "," + lp.cellY + "] to [" +
-                      newLocation[0] + "," + newLocation[1] + "]");
-
+            // Built after the view's cells were freed, with the bar cells blocked again. The old
+            // code freed them in its search copy too, so an item in the bar row found its own
+            // cell, which the excludeLastRow check then rejected.
+            boolean[][] searchOccupied = buildSearchOccupied(excludeBarRows, excludeFirstCell);
+            if (findVacantCells(searchOccupied, mCountX, mCountY, lp.cellHSpan, lp.cellVSpan, newLocation)) {
+                logCustomLayout("RELOCATING view from [" + lp.cellX + "," + lp.cellY + "] to ["
+                        + newLocation[0] + "," + newLocation[1] + "]");
                 lp.cellX = newLocation[0];
                 lp.cellY = newLocation[1];
-
-                // Update ItemInfo if available
-                try {
-                    ItemInfo info = (ItemInfo) conflictingView.getTag();
-                    if (info != null) {
-                        info.cellX = newLocation[0];
-                        info.cellY = newLocation[1];
-                        info.requiresDbUpdate = true;
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error updating ItemInfo: " + e.getMessage());
-                }
-
-                // Mark new cells as occupied in both arrays
-                markCellsAsOccupiedForView(conflictingView);
-                markCellsForView(lp.cellX, lp.cellY, lp.cellHSpan, lp.cellVSpan, searchOccupied, true);
-
+                info.cellX = newLocation[0];
+                info.cellY = newLocation[1];
+                info.requiresDbUpdate = true;
+                markCellsAsOccupiedForView(view);
                 relocated++;
+            } else if (moveItemToAnotherPage(workspace, view, info)) {
+                movedAway++;
             } else {
-                // No space available - remove the view
-                Log.w(TAG, "✗ REMOVING view at [" + lp.cellX + "," + lp.cellY + "] - no space available");
-
-                // Remove from database if it has ItemInfo
-                try {
-                    ItemInfo info = (ItemInfo) conflictingView.getTag();
-                    if (info != null) {
-                        LauncherModel.deleteItemFromDatabase(mLauncher, info);
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error removing item from database: " + e.getMessage());
-                }
-
-                // Remove the view
-                removeView(conflictingView);
-                removed++;
+                Log.w(TAG, "No free cells for " + describeItem(info)
+                        + " on any page: not shown, kept in the database");
+                removeView(view);
+                keptInDatabase++;
             }
-
-            // Keep the custom element area occupied for the remaining relocation pass and
-            // for subsequent placement checks.
+            // Removing a view frees its cells, and they overlap the custom element's area.
+            markCellsForView(cellX, cellY, spanX, spanY, mOccupied, true);
         }
 
-        logCustomLayout("Summary: " + relocated + " relocated, " + removed + " removed");
+        logCustomLayout("Summary: " + relocated + " relocated, " + movedAway
+                + " moved to another page, " + keptInDatabase + " kept in the database only");
 
-        // Update database with all changes
-        if (!conflictingViews.isEmpty()) {
+        if (relocated > 0) {
             mShortcutsAndWidgets.requestLayout();
-            Workspace workspace = mLauncher != null ? mLauncher.getWorkspace() : null;
-            if (workspace != null && workspace.canResolveScreenId(this)) {
+            if (workspace.canResolveScreenId(this)) {
                 workspace.updateItemLocationsInDatabase(this);
             } else {
                 Log.w(TAG, "handleConflictingViews: screen id not ready, skipped DB update");

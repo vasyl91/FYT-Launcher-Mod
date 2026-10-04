@@ -375,6 +375,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         logcatService = findPreference(Keys.LOGCAT_SERVICE);
         logcatServiceWake = findPreference(Keys.LOGCAT_SERVICE_WAKE);
         Preference logcatFull = findPreference(Keys.LOGCAT_FULL);
+        Preference logcatBoot = findPreference(Keys.BOOT_LOGCAT);
         logcatRun = findPreference(Keys.LOGCAT_SERVICE_RUN);
         logcatServiceTimeout = findPreference(Keys.LOGCAT_SERVICE_TIMEOUT);
         String logcatServiceTimeoutStr = sharedPrefs.getString(Keys.LOGCAT_SERVICE_TIMEOUT, "30");
@@ -489,6 +490,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (logcatFull != null) {
             logcatFull.setOnPreferenceClickListener(this);
             logcatFull.setVisible(LauncherApplication.hasSystemPrivileges());
+        }
+        if (logcatBoot != null) {
+            logcatBoot.setOnPreferenceClickListener(this);
+            logcatBoot.setVisible(LauncherApplication.hasSystemPrivileges());
         }
         if (logcatRun != null) {
             logcatRun.setOnPreferenceClickListener(this);

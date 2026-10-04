@@ -305,6 +305,8 @@ public class Workspace extends SmoothPagedView
     private final Handler stripHandler = new Handler(Looper.getMainLooper());
     private Runnable stripAction;
     private static final long STRIP_DELAY = 2500;
+    /** A strip requested while the workspace was loading; see stripEmptyScreens(). */
+    private boolean mStripScreensAfterLoad = false;
     private final Helpers helpers = new Helpers();
     public static final long CUSTOM_CONTENT_SCREEN_ID1 = -302;
     private View workspaceView;
@@ -2986,8 +2988,23 @@ public class Workspace extends SmoothPagedView
         }
     }
 
+    /** Called by Launcher.finishBindingItems(): runs a strip that came due during the bind. */
+    public void onWorkspaceLoadFinished() {
+        if (mStripScreensAfterLoad) {
+            mStripScreensAfterLoad = false;
+            triggerStripEmptyScreens("Workspace, after load", false);
+        }
+    }
+
     public void stripEmptyScreens(String sourceClass) {
         Log.i(TAG, "stripEmptyScreens called in: " + sourceClass);
+        if (mLauncher != null && mLauncher.isWorkspaceLoading()) {
+            // During a bind, pages whose items are not bound yet look empty. Stripping them would
+            // drop their screen ids from the database and shift the custom page preferences.
+            mStripScreensAfterLoad = true;
+            Log.i(TAG, "stripEmptyScreens deferred: workspace is loading");
+            return;
+        }
         if (getChildCount() <= 0 || mScreenOrder.isEmpty()) {
             Log.w(TAG, "stripEmptyScreens skipped: workspace screen state not ready");
             return;
@@ -6777,9 +6794,13 @@ public class Workspace extends SmoothPagedView
 
         for (int i = 0; i < count; i++) {
             View v = cl.getShortcutsAndWidgets().getChildAt(i);
+            // Not every child is a launcher item (custom elements, views tagged with an Intent);
+            // a plain cast threw ClassCastException here.
+            if (!(v.getTag() instanceof ItemInfo)) {
+                continue;
+            }
             ItemInfo info = (ItemInfo) v.getTag();
-            // Null check required as the AllApps button doesn't have an item info
-            if (info != null && info.requiresDbUpdate) {
+            if (info.requiresDbUpdate) {
                 info.requiresDbUpdate = false;
                 LauncherModel.modifyItemInDatabase(mLauncher, info, container, screenId, info.cellX,
                         info.cellY, info.spanX, info.spanY);
@@ -6901,8 +6922,8 @@ public class Workspace extends SmoothPagedView
 
         for (int i = 0; i < count; i++) {
             View v = cl.getShortcutsAndWidgets().getChildAt(i);
-            ItemInfo info = (ItemInfo) v.getTag();
-            // Null check required as the AllApps button doesn't have an item info
+            // Null for the AllApps button and for children that are not launcher items
+            ItemInfo info = v.getTag() instanceof ItemInfo ? (ItemInfo) v.getTag() : null;
             if (info != null) {
                 int cellX = info.cellX;
                 int cellY = info.cellY;
@@ -7162,10 +7183,8 @@ public class Workspace extends SmoothPagedView
             int childCount = layout.getChildCount();
             for (int i = 0; i < childCount; ++i) {
                 View view = layout.getChildAt(i);
-                try {
+                if (view.getTag() instanceof ItemInfo) {
                     infos.add((ItemInfo) view.getTag());
-                } catch (Exception e) {
-                    Log.e(TAG, "removeItemsByPackageName error: " + e.getMessage());
                 }
 
             }
@@ -7209,10 +7228,8 @@ public class Workspace extends SmoothPagedView
             final HashMap<ItemInfo, View> children = new HashMap<ItemInfo, View>();
             for (int j = 0; j < layout.getChildCount(); j++) {
                 final View view = layout.getChildAt(j);
-                try {
+                if (view.getTag() instanceof ItemInfo) {
                     children.put((ItemInfo) view.getTag(), view);
-                } catch (Exception e) {
-                    Log.i(TAG, "removeItemsByComponentName error: " + e.getMessage());
                 }
             }
 
@@ -7283,7 +7300,7 @@ public class Workspace extends SmoothPagedView
                 final View view = layout.getChildAt(j);
                 Object tag = view.getTag();
                 try {
-                     if (LauncherModel.isShortcutInfoUpdateable((ItemInfo) tag)) {
+                     if (tag instanceof ShortcutInfo && LauncherModel.isShortcutInfoUpdateable((ItemInfo) tag)) {
                         ShortcutInfo info = (ShortcutInfo) tag;
 
                         final Intent intent = info.intent;
@@ -7420,6 +7437,10 @@ public class Workspace extends SmoothPagedView
      * judging a screen whether it is empty or not.
      */
     public void stripEmptyScreensBaseOnDB() {
+        if (mLauncher != null && mLauncher.isWorkspaceLoading()) {
+            Log.i(TAG, "stripEmptyScreensBaseOnDB skipped: workspace is loading");
+            return;
+        }
         if (isPageMoving()) {
             mStripScreensOnPageStopMoving = true;
             return;

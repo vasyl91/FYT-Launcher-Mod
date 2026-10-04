@@ -123,10 +123,10 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
 
         // Snapshot instead of aliasing the global list. AllAppsList.data is rebuilt on
         // package add/remove/update; if that happened between binding and the tap, the
-        // clicked position resolved to a DIFFERENT app than the one on screen.
-        this.mData = AllAppsList.data == null
-                ? new ArrayList<AppInfo>()
-                : new ArrayList<AppInfo>(AllAppsList.data);
+        // clicked position resolved to a DIFFERENT app than the one on screen. snapshot() also
+        // leaves out the empty slots a copy taken during such a rebuild can contain, which the
+        // adapter and onItemClick() would otherwise hit as null.
+        this.mData = AllAppsList.snapshot();
 
         this.currentAppIcon = view.findViewById(R.id.current_app_icon);
         this.currentAppName = view.findViewById(R.id.current_app_name);

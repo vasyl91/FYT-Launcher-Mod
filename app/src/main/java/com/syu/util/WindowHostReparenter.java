@@ -3,6 +3,7 @@ package com.syu.util;
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -20,6 +21,12 @@ public class WindowHostReparenter {
     // Cooldown per AV instance (ms)
     private static final long SWAP_COOLDOWN_MS = 1000L; // 1 second cooldown
     private static final long SURFACE_STABLE_WINDOW_MS = 160L; // require surface valid for this window
+    /**
+     * Last swap per view, in SystemClock.uptimeMillis() like every time in this class. Not the wall
+     * clock: it steps after boot and wake on this unit (GPS/network time), and a step back used to
+     * stretch the main-thread polling loops below by its full size (an ANR) and to block swaps for
+     * as long as the cooldown compared against the old, later time.
+     */
     private static final WeakHashMap<Object, Long> lastSwapTimestamps = new WeakHashMap<>();
 
     public static boolean swapActivityViewSurfaces(View avA, View avB, int timeoutMs) {
@@ -29,7 +36,7 @@ public class WindowHostReparenter {
         }
 
         // Cooldown: avoid rapid repeated swaps on same AV
-        long now = System.currentTimeMillis();
+        long now = SystemClock.uptimeMillis();
         synchronized (lastSwapTimestamps) {
             Long la = lastSwapTimestamps.get(avA);
             Long lb = lastSwapTimestamps.get(avB);
@@ -55,9 +62,9 @@ public class WindowHostReparenter {
             // SURFACE_STABLE_WINDOW_MS even though the two surfaces settle at the same time, so a
             // swap blocked for ~358 ms instead of ~180 -- and this runs on the main thread, which
             // is where the launcher's own "Davey! duration=763ms" right after a swap came from.
-            long startWait = System.currentTimeMillis();
+            long startWait = SystemClock.uptimeMillis();
             Object[] targets = waitForInnerSurfaceControlsStable(avA, avB, timeoutMs);
-            long waited = System.currentTimeMillis() - startWait;
+            long waited = SystemClock.uptimeMillis() - startWait;
             Object targetA = targets[0];
             Object targetB = targets[1];
 
@@ -102,8 +109,8 @@ public class WindowHostReparenter {
 
             // 5) record swap time for cooldown
             synchronized (lastSwapTimestamps) {
-                lastSwapTimestamps.put(avA, System.currentTimeMillis());
-                lastSwapTimestamps.put(avB, System.currentTimeMillis());
+                lastSwapTimestamps.put(avA, SystemClock.uptimeMillis());
+                lastSwapTimestamps.put(avB, SystemClock.uptimeMillis());
             }
 
             Log.i(TAG, "swapActivityViewSurfaces: success (waited " + waited + "ms)");
@@ -123,12 +130,12 @@ public class WindowHostReparenter {
      * @return {targetA, targetB}; either entry may be null when that view never became stable.
      */
     private static Object[] waitForInnerSurfaceControlsStable(View avA, View avB, int timeoutMs) {
-        final long deadline = System.currentTimeMillis() + Math.max(50, timeoutMs);
+        final long deadline = SystemClock.uptimeMillis() + Math.max(50, timeoutMs);
         final long[] stableSince = { -1L, -1L };
         final Object[] lastFound = { null, null };
         final boolean[] done = { false, false };
 
-        while (System.currentTimeMillis() < deadline) {
+        while (SystemClock.uptimeMillis() < deadline) {
             for (int i = 0; i < 2; i++) {
                 if (done[i]) continue;
                 View v = (i == 0) ? avA : avB;
@@ -137,9 +144,9 @@ public class WindowHostReparenter {
                 boolean valid = isSurfaceValid(v);
 
                 if (sc != null && valid) {
-                    if (stableSince[i] < 0) stableSince[i] = System.currentTimeMillis();
+                    if (stableSince[i] < 0) stableSince[i] = SystemClock.uptimeMillis();
                     lastFound[i] = sc;
-                    if (System.currentTimeMillis() - stableSince[i] >= SURFACE_STABLE_WINDOW_MS) {
+                    if (SystemClock.uptimeMillis() - stableSince[i] >= SURFACE_STABLE_WINDOW_MS) {
                         done[i] = true;
                     }
                 } else {
@@ -172,11 +179,11 @@ public class WindowHostReparenter {
     }
 
     private static Object waitForInnerSurfaceControlStable(View avView, int timeoutMs) {
-        long deadline = System.currentTimeMillis() + timeoutMs;
+        long deadline = SystemClock.uptimeMillis() + timeoutMs;
         long stableSince = -1;
         Object lastFound = null;
 
-        while (System.currentTimeMillis() < deadline) {
+        while (SystemClock.uptimeMillis() < deadline) {
             Object sc = tryGetInnerSurfaceControl(avView);
             // verify holder.surface.isValid when possible
             boolean valid = false;
@@ -192,8 +199,8 @@ public class WindowHostReparenter {
             } catch (Throwable ignore) { }
 
             if (sc != null && valid) {
-                if (stableSince < 0) stableSince = System.currentTimeMillis();
-                long stableFor = System.currentTimeMillis() - stableSince;
+                if (stableSince < 0) stableSince = SystemClock.uptimeMillis();
+                long stableFor = SystemClock.uptimeMillis() - stableSince;
                 lastFound = sc;
                 if (stableFor >= SURFACE_STABLE_WINDOW_MS) {
                     // good: object available and surface stable for required window

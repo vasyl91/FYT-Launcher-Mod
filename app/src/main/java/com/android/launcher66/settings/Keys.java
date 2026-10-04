@@ -61,6 +61,7 @@ public final class Keys {
     public static final String RESET_NIGHT_MODE = "reset_night_mode";
     public static final String LOGCAT_SERVICE = "logcat_service";
     public static final String LOGCAT_FULL = "logcat_full";
+    public static final String BOOT_LOGCAT = "boot_logcat";
     public static final String LOGCAT_SERVICE_WAKE = "logcat_service_wake";
     public static final String LOGCAT_SERVICE_RUN = "logcat_service_run";
     public static final String LOGCAT_SERVICE_TIMEOUT = "logcat_service_timeout";

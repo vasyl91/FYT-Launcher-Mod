@@ -188,12 +188,12 @@ public class AppListCacheDialogFragment extends DialogFragment
      * an account it had confirmed, and Spotify while a refusal is being rechecked.
      *
      * Works on a snapshot: AllAppsList.data is rebuilt on package add, remove and update,
-     * and a tap has to resolve to the app that was drawn in that cell.
+     * and a tap has to resolve to the app that was drawn in that cell. AllAppsList.snapshot()
+     * is the copy all the app lists use; it already leaves out the empty slots a copy taken
+     * during such a rebuild can contain.
      */
     static ArrayList<AppInfo> buildVisibleApps() {
-        ArrayList<AppInfo> source = AllAppsList.data == null
-                ? new ArrayList<AppInfo>()
-                : new ArrayList<AppInfo>(AllAppsList.data);
+        ArrayList<AppInfo> source = AllAppsList.snapshot();
         ArrayList<AppInfo> visible = new ArrayList<>(source.size());
         for (AppInfo app : source) {
             if (app == null) {

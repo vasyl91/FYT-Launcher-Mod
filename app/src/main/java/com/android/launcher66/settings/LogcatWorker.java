@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.SystemProperties;
 import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
@@ -38,6 +39,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -60,6 +62,11 @@ import java.util.concurrent.atomic.AtomicLong;
  *    during a capture neither ends it at once nor stalls it;
  *  - while a capture runs, a main thread that stops responding is reported with its stack, so
  *    the capture shows where the app is stuck (see watchMainThread());
+ *  - with Keys.LOGCAT_FULL and Keys.BOOT_LOGCAT both on, the capture of a cold start (started
+ *    with coldStart = true) holds everything from the start of the boot; logd then gets buffers
+ *    big enough for that (see BOOT_LOG_BUFFER_SIZE), it reads them only once the apps started
+ *    after the boot have settled (see BOOT_DUMP_SETTLE_MS), and other captures still start only
+ *    a minute back;
  *  - the run always ends with a toast (success or failure), so it can never fail silently.
  */
 public final class LogcatWorker {
@@ -112,6 +119,63 @@ public final class LogcatWorker {
     /** While it stays stuck, its stack is logged again this often, at most MAIN_STALL_MAX_REPORTS times. */
     private static final long MAIN_STALL_REPEAT_MS = 5000L;
     private static final int MAIN_STALL_MAX_REPORTS = 3;
+
+    /*
+     * Boot log (Keys.LOGCAT_FULL and Keys.BOOT_LOGCAT both on): the capture started at boot keeps
+     * everything from the start of the boot. A full capture already reads every buffer from its
+     * oldest line, but logd's default buffers only hold the last moment of a boot: in capture
+     * 01-10-2026 20:38 "main" began at 20.6 s of uptime and "system" at 19 s, while "main" took
+     * ~160 KB/s (325 KB/s at peak). So the boot log also gives logd buffers big enough. logd reads
+     * their size when it starts, at boot: a change works from the next boot on.
+     *
+     * FYT sets the sizes itself, 128 KiB, also per buffer, and logd prefers a buffer's own
+     * property (persist.logd.size.main) to the global one: with only persist.logd.size at 8M,
+     * "radio" and "events" got 8 MiB but "main", "system" and "crash" kept 128 KiB (capture
+     * 02-10-2026 00:38). So the per-buffer properties are set as well.
+     */
+    private static final String LOGD_SIZE_PROP = "persist.logd.size";
+    private static final String[] LOGD_SIZE_PROPS = {
+            LOGD_SIZE_PROP,
+            LOGD_SIZE_PROP + ".main",
+            LOGD_SIZE_PROP + ".system",
+            LOGD_SIZE_PROP + ".crash",
+            LOGD_SIZE_PROP + ".radio",
+            LOGD_SIZE_PROP + ".events",
+    };
+    /** The buffers the boot log is about; see anyBufferBelowBootSize(). */
+    private static final String[] BOOT_LOG_BUFFERS = {"main", "system", "crash", "radio", "events"};
+    /** Per buffer: "main" then holds about 50 s of a boot. */
+    private static final String BOOT_LOG_BUFFER_SIZE = "8M";
+    private static final long BOOT_LOG_BUFFER_BYTES = 8L * 1024L * 1024L;
+    /**
+     * Each property's value before the boot log set it ("" = not set), restored when it is off;
+     * this name plus the property's suffix (".main" ...). The global one keeps the plain name.
+     */
+    private static final String PREF_LOGD_SIZE_BEFORE = "logcat_boot_log_logd_size_before";
+    /**
+     * A cold-start capture holds everything since boot only when it starts within this uptime --
+     * later its buffers could no longer reach back to the boot.
+     */
+    private static final long BOOT_CAPTURE_WINDOW_MS = 3L * 60L * 1000L;
+    /**
+     * With the large buffers, any other capture (after a wake, or by hand) begins only this far
+     * back -- about what the default buffers used to hold -- instead of dumping megabytes of the
+     * whole drive first.
+     */
+    private static final long LARGE_BUFFER_LOOKBACK_MS = 60L * 1000L;
+    /*
+     * The boot capture reads the buffers only after the apps started after BOOT_COMPLETED: reading
+     * megabytes from logd, formatting and writing them costs CPU and disk time exactly while dozens
+     * of processes start (~22-40 s of uptime), and the 8 MiB buffers keep the boot meanwhile. It
+     * reads them BOOT_DUMP_SETTLE_MS after sys.boot_completed is seen, not before
+     * BOOT_DUMP_EARLIEST_UPTIME_MS (the launcher's own deferred work runs at 45 s), and at
+     * BOOT_DUMP_LATEST_UPTIME_MS at the latest, completed boot or not. Its time limit counts from
+     * then, so a late boot does not leave it too little time to read everything.
+     */
+    private static final long BOOT_DUMP_SETTLE_MS = 20L * 1000L;
+    private static final long BOOT_DUMP_EARLIEST_UPTIME_MS = 50L * 1000L;
+    private static final long BOOT_DUMP_LATEST_UPTIME_MS = 120L * 1000L;
+    private static final long BOOT_DUMP_POLL_MS = 500L;
 
     private static volatile LogcatWorker sInstance;
 
@@ -194,10 +258,18 @@ public final class LogcatWorker {
 
     /** Keeps the old behaviour: captures whatever the buffer holds, i.e. from application start. */
     public void start(Context context) {
-        start(context, Mode.FROM_APP_START);
+        start(context, Mode.FROM_APP_START, false);
+    }
+
+    public void start(Context context, boolean coldStart) {
+        start(context, Mode.FROM_APP_START, coldStart);
     }
 
     public void start(Context context, Mode captureMode) {
+        start(context, captureMode, false);
+    }
+
+    public void start(Context context, Mode captureMode, boolean coldStart) {
         final Context ctx = context.getApplicationContext();
         final Mode requestedMode = captureMode != null ? captureMode : Mode.FROM_APP_START;
 
@@ -223,7 +295,7 @@ public final class LogcatWorker {
             thread = new HandlerThread("LogcatWorker");
             thread.start();
             handler = new Handler(thread.getLooper());
-            handler.post(() -> runLogging(ctx));
+            handler.post(() -> runLogging(ctx, coldStart));
             watchMainThread();
         }
 
@@ -254,7 +326,7 @@ public final class LogcatWorker {
 
     // ---------------------------------------------------------------- capture
 
-    private void runLogging(Context ctx) {
+    private void runLogging(Context ctx, boolean coldStart) {
         final int myPid = android.os.Process.myPid();
         Log.i(TAG, "runLogging entered pid=" + myPid);
 
@@ -308,16 +380,41 @@ public final class LogcatWorker {
                 prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
             }
             boolean fullLog = false;
+            boolean bootLog = false;
             if (LauncherApplication.hasSystemPrivileges()) {
                 fullLog = prefs.getBoolean(Keys.LOGCAT_FULL, false);
+                // The boot log setting: only with both settings on.
+                bootLog = fullLog && prefs.getBoolean(Keys.BOOT_LOGCAT, false);
             }
+            // On every capture, cold start or not: the buffers follow the setting. Tied to
+            // coldStart, a capture after a wake would give the large buffers back (the next boot
+            // then had small ones again) and dump all 8 MiB of them (see captureStartMs()).
+            syncLogdBufferSize(bootLog);
+            // Everything since boot only in the capture of a cold start.
+            boolean fromBoot = isBootCapture(bootLog, coldStart, mode, SystemClock.elapsedRealtime());
 
             // "--pid" exists since Android 7.0; when it is not available we filter by hand.
             boolean usePidFlag = !fullLog;
             // "-T <time>" makes logcat skip everything older than the given timestamp. If the
             // build does not understand it we drop back to comparing timestamps ourselves.
             boolean useSinceFlag = true;
-            long sinceMs = captureSinceMs;
+            long sinceMs = captureStartMs(bootLog, fromBoot, captureSinceMs, System.currentTimeMillis());
+            if (fromBoot) {
+                writeLine("===== boot log: everything logd still holds since boot ("
+                        + LOGD_SIZE_PROP + "=" + displaySize(currentLogdSize()) + "), read once the"
+                        + " apps started after the boot have settled =====");
+                fileWriter.flush();
+                long completedSeenAt = waitForBootToSettle();
+                if (completedSeenAt < 0L) return; // stopped while waiting; finally reports it
+                writeLine("===== reading at " + SystemClock.elapsedRealtime() / 1000L + " s of uptime ("
+                        + (completedSeenAt > 0L ? "boot completed by " + completedSeenAt / 1000L + " s"
+                                                : "boot not completed") + ") =====");
+                for (String sizeLine : runForOutput("logcat", "-b", "all", "-g")) {
+                    writeLine("===== " + sizeLine.trim() + " =====");
+                }
+                fileWriter.flush();
+                restartDeadline();
+            }
             SimpleDateFormat lineFormat = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
             int restartCount = 0;
 
@@ -435,13 +532,17 @@ public final class LogcatWorker {
             if (proc != null) destroyAndWait(proc);
             logcatProcess = null;
 
-            try {
-                if (fileWriter != null) {
+            if (fileWriter != null) {
+                try {
                     fileWriter.write("===== END, lines=" + linesWritten + " =====\n");
                     fileWriter.flush();
-                    fileWriter.close();
+                } catch (Throwable ignored) {
+                    // the capture written so far is kept
+                } finally {
+                    // A step of its own: a failed END line (storage full) left the file open.
+                    closeQuietly(fileWriter);
                 }
-            } catch (Throwable ignored) {}
+            }
             fileWriter = null;
 
             if (waitingForPublic && logFile != null && logFile.exists()) {
@@ -475,6 +576,216 @@ public final class LogcatWorker {
             if (success && isPublicDir(logFile.getParentFile())) {
                 moveLeftoversInto(ctx, logFile.getParentFile(), logFile);
             }
+        }
+    }
+
+    // ---------------------------------------------------------------- boot log
+
+    /**
+     * Whether this capture keeps the whole buffers, i.e. everything since boot: the capture of a
+     * cold start, from application start, early enough for the buffers to reach back to the boot.
+     */
+    static boolean isBootCapture(boolean bootLog, boolean coldStart, Mode captureMode, long elapsedRealtimeMs) {
+        return bootLog && coldStart && captureMode == Mode.FROM_APP_START
+                && elapsedRealtimeMs < BOOT_CAPTURE_WINDOW_MS;
+    }
+
+    /**
+     * Waits until the boot capture should read the buffers (see BOOT_DUMP_SETTLE_MS). Meanwhile
+     * the capture's time limit is held at its full length: the hard stop and the countdown are
+     * off, and getRemainingMillis() keeps reporting the whole capture. Returns the uptime at which
+     * sys.boot_completed was seen (0 = not by the latest moment), or -1 if the capture was stopped.
+     */
+    private long waitForBootToSettle() {
+        deadlineElapsedMs = SystemClock.elapsedRealtime() + timeoutSeconds * 1000L;
+        mainHandler.post(() -> {
+            mainHandler.removeCallbacks(deadlineRunnable);
+            cancelCountdown();
+            if (running) helpers.setCountDownLogcat(timeoutSeconds);
+        });
+        long completedSeenAt = 0L;
+        while (running) {
+            long now = SystemClock.elapsedRealtime();
+            deadlineElapsedMs = now + timeoutSeconds * 1000L;
+            if (completedSeenAt == 0L && "1".equals(SystemProperties.get("sys.boot_completed", ""))) {
+                completedSeenAt = now;
+            }
+            if (bootDumpDue(now, completedSeenAt)) return completedSeenAt;
+            try {
+                Thread.sleep(BOOT_DUMP_POLL_MS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // shutting down
+                return -1L;
+            }
+        }
+        return -1L;
+    }
+
+    /** Whether the boot capture should read the buffers now (uptimes in ms; 0 = not completed yet). */
+    static boolean bootDumpDue(long nowMs, long completedSeenAtMs) {
+        if (nowMs >= BOOT_DUMP_LATEST_UPTIME_MS) return true;
+        return completedSeenAtMs > 0L
+                && nowMs >= Math.max(completedSeenAtMs + BOOT_DUMP_SETTLE_MS, BOOT_DUMP_EARLIEST_UPTIME_MS);
+    }
+
+    /** The capture's time limit counts from now: the boot capture starts reading only after its wait. */
+    private void restartDeadline() {
+        deadlineElapsedMs = SystemClock.elapsedRealtime() + timeoutSeconds * 1000L;
+        mainHandler.post(() -> {
+            mainHandler.removeCallbacks(deadlineRunnable);
+            if (!running) return;
+            mainHandler.postDelayed(deadlineRunnable, timeoutSeconds * 1000L);
+            startCountdown();
+        });
+    }
+
+    /**
+     * Wall clock of the oldest line wanted, 0 = the whole buffers. With the boot log's large
+     * buffers, a capture other than the boot one that would take the whole buffers starts
+     * LARGE_BUFFER_LOOKBACK_MS back instead; "from now" captures keep their own start.
+     */
+    static long captureStartMs(boolean bootLog, boolean fromBoot, long requestedSinceMs, long nowMs) {
+        if (bootLog && !fromBoot && requestedSinceMs == 0L) {
+            return nowMs - LARGE_BUFFER_LOOKBACK_MS;
+        }
+        return requestedSinceMs;
+    }
+
+    /**
+     * Gives logd the buffers the boot log needs, or gives back the sizes it had before. Runs at
+     * the start of every capture, on the worker thread; any failure only leaves sizes as they were.
+     */
+    private void syncLogdBufferSize(boolean bootLog) {
+        try {
+            if (bootLog) {
+                List<String> changed = new ArrayList<>();
+                boolean failed = false;
+                for (String prop : LOGD_SIZE_PROPS) {
+                    String current = logdProp(prop);
+                    if (BOOT_LOG_BUFFER_SIZE.equals(current)) continue;
+                    String key = beforeKey(prop);
+                    if (!prefs.contains(key)) {
+                        prefs.edit().putString(key, current).apply();
+                    }
+                    if (runQuietly("setprop", prop, BOOT_LOG_BUFFER_SIZE)) {
+                        changed.add(prop + " " + displaySize(current));
+                    } else {
+                        failed = true;
+                    }
+                }
+                // What logd read at its start stays until the next boot: anything still smaller now
+                // is resized at once, for the rest of this session.
+                boolean resized = false;
+                if (!changed.isEmpty() || anyBufferBelowBootSize()) {
+                    resized = runQuietly("logcat", "-b", "all", "-G", BOOT_LOG_BUFFER_SIZE);
+                }
+                if (!changed.isEmpty() || resized || failed) {
+                    Log.i(TAG, "Boot log: logd buffers -> " + BOOT_LOG_BUFFER_SIZE
+                            + (changed.isEmpty() ? "" : " (was: " + changed + ")")
+                            + (resized ? ", resized now" : "") + (failed ? ", setprop failed" : "")
+                            + "; the start of a boot is kept from the next boot on");
+                }
+            } else {
+                List<String> restored = new ArrayList<>();
+                for (String prop : LOGD_SIZE_PROPS) {
+                    String key = beforeKey(prop);
+                    if (!prefs.contains(key)) continue;
+                    String before = prefs.getString(key, "");
+                    // Only if it is still the boot log's size: a size set since by someone else stays.
+                    if (BOOT_LOG_BUFFER_SIZE.equals(logdProp(prop))) {
+                        runQuietly("setprop", prop, before); // "" removes the property
+                        restored.add(prop + " " + displaySize(before));
+                    }
+                    prefs.edit().remove(key).apply();
+                }
+                if (!restored.isEmpty()) {
+                    Log.i(TAG, "Boot log off: logd buffers back to " + restored + " from the next boot on");
+                }
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "logd buffer size not changed", t);
+        }
+    }
+
+    private static String beforeKey(String prop) {
+        return PREF_LOGD_SIZE_BEFORE + prop.substring(LOGD_SIZE_PROP.length());
+    }
+
+    private static String logdProp(String prop) {
+        String value = SystemProperties.get(prop, "");
+        return value != null ? value.trim() : "";
+    }
+
+    /** Whether logd reports any of BOOT_LOG_BUFFERS smaller than BOOT_LOG_BUFFER_SIZE right now. */
+    private static boolean anyBufferBelowBootSize() {
+        for (String line : runForOutput("logcat", "-b", "all", "-g")) {
+            String l = line.trim();
+            for (String buffer : BOOT_LOG_BUFFERS) {
+                if (!l.startsWith(buffer + ":")) continue;
+                long bytes = ringBufferBytes(l);
+                if (bytes >= 0L && bytes < BOOT_LOG_BUFFER_BYTES) return true;
+            }
+        }
+        return false;
+    }
+
+    /** "main: ring buffer is 128 KiB (122 KiB consumed) ..." -> 131072; -1 if not understood. */
+    static long ringBufferBytes(String line) {
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("ring buffer is\\s*(\\d+(?:\\.\\d+)?)\\s*([KMG]?)i?B", java.util.regex.Pattern.CASE_INSENSITIVE)
+                .matcher(line);
+        if (!m.find()) return -1L;
+        double value = Double.parseDouble(m.group(1));
+        switch (m.group(2).toUpperCase(Locale.US)) {
+            case "K": return (long) (value * 1024L);
+            case "M": return (long) (value * 1024L * 1024L);
+            case "G": return (long) (value * 1024L * 1024L * 1024L);
+            default: return (long) value;
+        }
+    }
+
+    private static String currentLogdSize() {
+        String size = SystemProperties.get(LOGD_SIZE_PROP, "");
+        return size != null ? size.trim() : "";
+    }
+
+    private static String displaySize(String size) {
+        return size == null || size.isEmpty() ? "default" : size;
+    }
+
+    /** Runs a short command, 3 s at most; true when it exited with 0. */
+    private static boolean runQuietly(String... cmd) {
+        return runCommand(cmd, null) == 0;
+    }
+
+    /** The output of a short command (3 s at most); empty when it fails. */
+    private static List<String> runForOutput(String... cmd) {
+        List<String> out = new ArrayList<>();
+        if (runCommand(cmd, out) != 0) out.clear();
+        return out;
+    }
+
+    /** Exit code of the command, -1 on any failure or after 3 s; its output goes to output. */
+    private static int runCommand(String[] cmd, List<String> output) {
+        Process proc = null;
+        try {
+            proc = new ProcessBuilder(cmd).redirectErrorStream(true).start();
+            // These commands print a few lines at most, which fit the pipe: waiting first cannot
+            // block on a full pipe, and a command that hangs costs 3 s, not the capture.
+            if (!proc.waitFor(3L, TimeUnit.SECONDS)) return -1;
+            if (output != null) {
+                try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
+                    String line;
+                    while ((line = r.readLine()) != null && output.size() < 50) {
+                        if (!line.trim().isEmpty()) output.add(line);
+                    }
+                }
+            }
+            return proc.exitValue();
+        } catch (Throwable t) {
+            return -1;
+        } finally {
+            if (proc != null) destroyAndWait(proc);
         }
     }
 
@@ -851,24 +1162,41 @@ public final class LogcatWorker {
     // ---------------------------------------------------------------- main thread stalls
 
     /**
-     * While the capture runs, logs the main thread's stack whenever it has not run a posted task
-     * for MAIN_STALL_REPORT_MS, and how long the stall lasted once it has. At boot this ROM's
+     * While the capture runs, logs the main thread's stack whenever a task posted to it has not
+     * run for MAIN_STALL_REPORT_MS, and how long the stall lasted once it has. At boot this ROM's
      * audioserver hangs and is restarted (TimeCheck on IAudioFlinger), and any audio call then
      * blocks for about ten seconds; this shows which call it was.
+     *
+     * A new ping is posted only once the previous one has run. The old loop took a waiting ping
+     * out and posted it again every MAIN_STALL_PING_MS, which sent it to the back of the queue
+     * each time: a main thread that was only busy (a long run of short tasks, as at a launcher
+     * start building its panes) never got to it and was reported as not responding.
+     *
+     * From the moment the ping is late, the thread's stack is sampled every MAIN_STALL_PING_MS.
+     * The report says "blocked" when every sample shows the same place (that stack is the
+     * culprit) and "busy" when they differ (a run of work, which Choreographer's skipped frames
+     * report as well).
      */
     private void watchMainThread() {
         final int generation = ++stallWatchGeneration;
         final Thread mainThread = Looper.getMainLooper().getThread();
         final AtomicLong lastPong = new AtomicLong(SystemClock.uptimeMillis());
-        final Runnable pong = () -> lastPong.set(SystemClock.uptimeMillis());
+        final AtomicBoolean pongPending = new AtomicBoolean(false);
+        final Runnable pong = () -> {
+            lastPong.set(SystemClock.uptimeMillis());
+            pongPending.set(false);
+        };
         Thread watcher = new Thread(() -> {
             long stallStart = 0L;
             long lastReport = 0L;
             int reports = 0;
+            String lastStack = null;
+            int samples = 0;
+            int places = 0;
             while (running && generation == stallWatchGeneration) {
-                // At most one ping queued, however long the main thread is stuck.
-                mainHandler.removeCallbacks(pong);
-                mainHandler.post(pong);
+                if (pongPending.compareAndSet(false, true)) {
+                    mainHandler.post(pong);
+                }
                 try {
                     Thread.sleep(MAIN_STALL_PING_MS);
                 } catch (InterruptedException e) {
@@ -876,7 +1204,21 @@ public final class LogcatWorker {
                 }
                 long now = SystemClock.uptimeMillis();
                 long last = lastPong.get();
-                if (now - last >= MAIN_STALL_REPORT_MS) {
+                long waited = now - last;
+                if (waited >= 2 * MAIN_STALL_PING_MS) {
+                    // The ping is late: note where the thread is.
+                    String stack = formatStack(mainThread.getStackTrace());
+                    samples++;
+                    if (!stack.equals(lastStack)) {
+                        places++;
+                        lastStack = stack;
+                    }
+                } else {
+                    samples = 0;
+                    places = 0;
+                    lastStack = null;
+                }
+                if (waited >= MAIN_STALL_REPORT_MS) {
                     if (stallStart == 0L) {
                         stallStart = last;
                         reports = 0;
@@ -885,8 +1227,11 @@ public final class LogcatWorker {
                     if (reports < MAIN_STALL_MAX_REPORTS && (reports == 0 || now - lastReport >= MAIN_STALL_REPEAT_MS)) {
                         reports++;
                         lastReport = now;
-                        Log.w(TAG, "Main thread not responding for " + (now - last) + " ms, it is at:"
-                                + formatStack(mainThread.getStackTrace()));
+                        String state = places <= 1
+                                ? "blocked in one place (" + samples + " samples)"
+                                : "busy, " + places + " different places in " + samples + " samples";
+                        Log.w(TAG, "Main thread not responding for " + waited + " ms, " + state
+                                + ", it is at:" + lastStack);
                     }
                 } else if (stallStart != 0L) {
                     Log.w(TAG, "Main thread responding again after " + (last - stallStart) + " ms");

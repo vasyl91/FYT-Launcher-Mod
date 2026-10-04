@@ -1000,38 +1000,45 @@ public class LauncherModel extends BroadcastReceiver {
      * a list of screen ids in the order that they should appear.
      */
     void updateWorkspaceScreenOrder(Context context, final ArrayList<Long> screens) {
-        final ArrayList<Long> screensCopy = new ArrayList<Long>(screens);
+        final ArrayList<Long> screensCopy = new ArrayList<Long>();
         final ContentResolver cr = context.getContentResolver();
         final Uri uri = LauncherSettings.WorkspaceScreens.CONTENT_URI;
 
-        // Remove any negative screen ids -- these aren't persisted
-        Iterator<Long> iter = screensCopy.iterator();
-        while (iter.hasNext()) {
-            long id = iter.next();
-            if (id < 0) {
-                iter.remove();
+        // Negative screen ids are not persisted, except that the extra empty screen (-201) gets a
+        // real id here, in its place. The old loop appended that id to the very list it was
+        // iterating over, which threw ConcurrentModificationException.
+        for (Long id : screens) {
+            if (id == null) {
+                continue;
             }
-            if (id == -201) {
-                LauncherProvider lp = LauncherAppState.getLauncherProvider();
-                screensCopy.add(lp.generateNewScreenId());
+            if (id >= 0) {
+                screensCopy.add(id);
+            } else if (id == -201) {
+                screensCopy.add(LauncherAppState.getLauncherProvider().generateNewScreenId());
             }
         }
 
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                // Clear the table
-                cr.delete(uri, null, null);
+                // One batch, which LauncherProvider.applyBatch() runs in a single transaction. The
+                // old delete followed by bulkInsert left the table empty - every page gone - when
+                // the process died in between, e.g. while the launcher was being updated.
+                ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+                ops.add(ContentProviderOperation.newDelete(uri).build());
                 int count = screensCopy.size();
-                ContentValues[] values = new ContentValues[count];
                 for (int i = 0; i < count; i++) {
                     ContentValues v = new ContentValues();
-                    long screenId = screensCopy.get(i);
-                    v.put(LauncherSettings.WorkspaceScreens._ID, screenId);
+                    v.put(LauncherSettings.WorkspaceScreens._ID, screensCopy.get(i));
                     v.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, i);
-                    values[i] = v;
+                    ops.add(ContentProviderOperation.newInsert(uri).withValues(v).build());
                 }
-                cr.bulkInsert(uri, values);
+                try {
+                    cr.applyBatch(LauncherProvider.AUTHORITY, ops);
+                } catch (Exception e) {
+                    Log.e(TAG, "updateWorkspaceScreenOrder: screen order not saved", e);
+                    return;
+                }
 
                 synchronized (sBgLock) {
                     sBgWorkspaceScreens.clear();
@@ -1799,17 +1806,14 @@ public class LauncherModel extends BroadcastReceiver {
                                     intent = Intent.parseUri(trimmedIntent, 0);
                                     ComponentName cn = intent.getComponent();
                                     if (cn != null && !isValidPackageComponent(manager, cn)) {
-                                        if (!mAppsCanBeOnRemoveableStorage) {
-                                            // Log the invalid package, and remove it from the db
-                                            Launcher.addDumpLog(TAG, "Invalid package removed: " + cn, true);
-                                            itemsToRemove.add(id);
-                                        } else {
-                                            // If apps can be on external storage, then we just
-                                            // leave them for the user to remove (maybe add
-                                            // visual treatment to it)
-                                            Launcher.addDumpLog(TAG, "Invalid package found: " + cn, true);
-                                            needRetainScreens.add(c.getLong(screenIndex));
-                                        }
+                                        // Kept in the database, just not shown. "Not valid" also
+                                        // means "not available right now": a package that is
+                                        // disabled for a moment, being updated, or on storage that
+                                        // is not mounted yet at boot. Deleting the row lost the
+                                        // icon for good; a real uninstall deletes it through
+                                        // PackageUpdatedTask (OP_REMOVE).
+                                        Launcher.addDumpLog(TAG, "Invalid package kept (not shown): " + cn, true);
+                                        needRetainScreens.add(c.getLong(screenIndex));
                                         continue;
                                     }
                                 } catch (URISyntaxException e) {
@@ -2751,28 +2755,18 @@ public class LauncherModel extends BroadcastReceiver {
             }
 
             if (!updatedPcksNeedRemoveAllData.isEmpty()) {
-                for (String pn : updatedPcksNeedRemoveAllData) {
-                    Log.d(TAG, "PackageUpdatedTask, remove all data for updated package: " + pn);
-                    ArrayList<ItemInfo> infos = getItemInfoForPackageName(pn);
-                    for (ItemInfo i : infos) {
-                        deleteItemFromDatabase(context, i);
-                    }
-                }
+                // An update left these packages without a launcher activity. This used to delete
+                // EVERY item of the package - icons, shortcuts and widgets - and to take them off
+                // the screen as if it had been uninstalled. Only the app icons depend on a launcher
+                // activity; they are in removedApps and go through the check below like any other
+                // component that went away. Widgets and shortcuts of the package stay.
+                Log.d(TAG, "PackageUpdatedTask, no launcher activity left after update: "
+                        + updatedPcksNeedRemoveAllData);
                 // Remove any queued items from the install queue
                 String spKey = LauncherAppState.getSharedPreferencesKey();
                 SharedPreferences sp =
                         context.getSharedPreferences(spKey, Context.MODE_PRIVATE);
                 InstallShortcutReceiver.removeFromInstallQueue(sp, updatedPcksNeedRemoveAllData);
-
-                mHandler.post(new Runnable() {
-                    public void run() {
-                        Callbacks cb = mCallbacks != null ? mCallbacks.get() : null;
-                        if (callbacks == cb && cb != null) {
-                            callbacks.bindComponentsRemoved(updatedPcksNeedRemoveAllData,
-                                    removedApps, true);
-                        }
-                    }
-                });
             }
 
             // If a package has been removed, or an app has been removed as a result of
@@ -2789,6 +2783,8 @@ public class LauncherModel extends BroadcastReceiver {
                         for (ItemInfo i : infos) {
                             deleteItemFromDatabase(context, i);
                         }
+                        // Rows the loader kept without showing them are not in memory.
+                        deleteHiddenRowsForPackage(context, pn);
                     }
 
                     // Remove any queued items from the install queue
@@ -2796,14 +2792,27 @@ public class LauncherModel extends BroadcastReceiver {
                     SharedPreferences sp =
                             context.getSharedPreferences(spKey, Context.MODE_PRIVATE);
                     InstallShortcutReceiver.removeFromInstallQueue(sp, removedPackageNames);
-                } else {
-                    if (!isBeingShutDown) {
-                        for (AppInfo a : removedApps) {
-                            ArrayList<ItemInfo> infos =
-                                    getItemInfoForComponentName(a.componentName);
-                            for (ItemInfo i : infos) {
-                                deleteItemFromDatabase(context, i);
-                            }
+                } else if (mOp == OP_UNAVAILABLE) {
+                    // The storage holding these apps went away (unmounted, or the unit going to
+                    // sleep). Their icons are only taken off the screen; the rows stay, and the
+                    // reload after EXTERNAL_APPLICATIONS_AVAILABLE shows them again. They used to
+                    // be deleted, losing the icon of every app on that storage.
+                    Log.d(TAG, "PackageUpdatedTask, apps unavailable, icons kept: "
+                            + removedPackageNames);
+                } else if (!isBeingShutDown) {
+                    // Only a component that is really gone takes its icons with it. One that is
+                    // still installed and enabled (between two steps of an update, say) stays.
+                    final PackageManager pm = context.getPackageManager();
+                    for (AppInfo a : removedApps) {
+                        if (isValidPackageComponent(pm, a.componentName)) {
+                            Log.d(TAG, "PackageUpdatedTask, component still valid, icon kept: "
+                                    + a.componentName);
+                            continue;
+                        }
+                        ArrayList<ItemInfo> infos =
+                                getItemInfoForComponentName(a.componentName);
+                        for (ItemInfo i : infos) {
+                            deleteItemFromDatabase(context, i);
                         }
                     }
                 }
@@ -3001,6 +3010,37 @@ public class LauncherModel extends BroadcastReceiver {
             }
         }
         return new ArrayList<ItemInfo>(filtered);
+    }
+
+    /**
+     * Deletes the app and shortcut rows of an uninstalled package that are not loaded in memory:
+     * the loader keeps the rows of packages that are not available without showing them. Their
+     * intent column holds "...;component=<package>/<class>;...".
+     */
+    private void deleteHiddenRowsForPackage(Context context, final String packageName) {
+        final ContentResolver cr = context.getContentResolver();
+        final String pattern = "%;component=" + escapeLikePattern(packageName) + "/%";
+        runOnWorkerThread(new Runnable() {
+            public void run() {
+                try {
+                    int deleted = cr.delete(LauncherSettings.Favorites.CONTENT_URI_NO_NOTIFICATION,
+                            LauncherSettings.Favorites.ITEM_TYPE + " IN ("
+                                    + LauncherSettings.Favorites.ITEM_TYPE_APPLICATION + ","
+                                    + LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT + ") AND "
+                                    + LauncherSettings.Favorites.INTENT + " LIKE ? ESCAPE '\\'",
+                            new String[] { pattern });
+                    if (deleted > 0) {
+                        Log.d(TAG, "Deleted " + deleted + " hidden rows of uninstalled " + packageName);
+                    }
+                } catch (Exception e) {
+                    Log.w(TAG, "Could not delete hidden rows of " + packageName, e);
+                }
+            }
+        });
+    }
+
+    private static String escapeLikePattern(String s) {
+        return s.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
     }
 
     private ArrayList<ItemInfo> getItemInfoForPackageName(final String pn) {

@@ -278,7 +278,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private String musictitle = null;
     private KWAPI kwAPi;
     public TextView mAllAppView;
-    public static Launcher mLauncher;
+    /** The current instance. Also read by ColdStart from its guard thread, hence volatile. */
+    public static volatile Launcher mLauncher;
     public LauncherModel mModel;
     public Workspace mWorkspace;
     public boolean sNightMode;
@@ -615,10 +616,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean mHomeButtonPressed = false;
     /**
      * Startup work the first screen does not need waits until this ROM's boot-time stall is over
-     * (see LauncherApplication.BOOT_STALL_OVER_UPTIME_MS); 0 when the launcher is not booting.
+     * (see ColdStart.BOOT_STALL_OVER_UPTIME_MS); 0 when the launcher is not booting.
      */
     private static long bootStallDelayMs() {
-        return LauncherApplication.bootStallDelayMs();
+        return ColdStart.bootStallDelayMs();
     }
 
     /** Blocks LauncherNotify re-registration once onDestroy() has run. */
@@ -638,6 +639,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Runnable mHomeLayoutWatchdogRunnable;
     private Runnable mFastHomeDeferredResumeRunnable;
     private Runnable mCustomElementsSetupRunnable;
+    /**
+     * A custom elements setup that came due while the model was rebuilding the screens
+     * (startBinding() .. finishBindingItems()). finishBindingItems() replays it; see
+     * requestCustomElementsSetup().
+     */
+    private boolean mCustomElementsSetupAfterBind = false;
+    private boolean mCustomElementsSetupAfterBindUrgent = false;
+    private String mCustomElementsSetupAfterBindSource;
     private Runnable mFastHomeDeferredPipRunnable;
     private Runnable mPipWatchdogRunnable;
     private int mPipWatchdogRetries = 0;
@@ -2415,6 +2424,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (mWorkspace == null || isAppsCustomizeVisibleOrOpening()) {
                 return;
             }
+            if (mWorkspaceLoading) {
+                // The model is rebuilding the screens right now: startBinding() has removed them,
+                // and bindScreens(), bindItems() (in chunks), bindAppWidget() and
+                // finishBindingItems() arrive as separate main thread messages. Adding the custom
+                // elements in between ends in CellLayout.addWidgetsToPagesImmediately() ->
+                // stripEmptyScreens(), and a page whose icons are not bound yet looks empty at
+                // that moment: it can be dropped, together with its screen id in the database,
+                // and the icons on it are then never shown again. The elements could also take
+                // the cells of icons still to come, which bindItems() then skips. So wait.
+                mCustomElementsSetupAfterBind = true;
+                mCustomElementsSetupAfterBindUrgent |= urgent;
+                mCustomElementsSetupAfterBindSource = source;
+                Log.d(TAG, "Custom elements setup deferred until binding finishes: " + source);
+                return;
+            }
             CellLayout setupHost = getCustomElementsSetupHost();
             if (setupHost != null) {
                 setupHost.triggerAddCustomElements(urgent);
@@ -2422,6 +2446,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         };
         mHandler.postDelayed(mCustomElementsSetupRunnable, urgent ? 0L : CUSTOM_ELEMENTS_SETUP_DEBOUNCE_MS);
+    }
+
+    /** Runs the custom elements setup that requestCustomElementsSetup() held back during a bind. */
+    private void replayCustomElementsSetupAfterBind() {
+        if (!mCustomElementsSetupAfterBind) {
+            return;
+        }
+        String source = mCustomElementsSetupAfterBindSource;
+        boolean urgent = mCustomElementsSetupAfterBindUrgent;
+        mCustomElementsSetupAfterBind = false;
+        mCustomElementsSetupAfterBindUrgent = false;
+        mCustomElementsSetupAfterBindSource = null;
+        requestCustomElementsSetup("afterBind:" + source, urgent);
     }
 
     private CellLayout getCustomElementsSetupHost() {
@@ -3089,7 +3126,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 try {
                     oldHost.retireActivityViews();
                 } catch (Throwable t) {
-                    Log.w(TAG, "onCreate: retire poprzedniego hosta nieudany", t);
+                    Log.w(TAG, "onCreate: retiring the previous WindowHost failed", t);
                 }
             }
         }        
@@ -6798,23 +6835,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     private Map<String, AppInfo> buildAppInfoLookup() {
         Map<String, AppInfo> lookup = new HashMap<>();
-        List<AppInfo> source = AllAppsList.data;
-        if (source == null) {
-            return lookup;
-        }
-
-        List<AppInfo> snapshot = new ArrayList<>();
-        try {
-            synchronized (source) {
-                int size = source.size();
-                for (int i = 0; i < size; i++) {
-                    snapshot.add(source.get(i));
-                }
-            }
-        } catch (RuntimeException e) {
-            Log.w(TAG, "AllAppsList changed while building app lookup, skipping this refresh", e);
-            return lookup;
-        }
+        // snapshot(): the loader thread changes AllAppsList.data without a lock (nothing else
+        // synchronizes on it), and the indexed copy used here before threw while an app was
+        // being removed, which skipped the whole refresh and left the lookup empty.
+        List<AppInfo> snapshot = AllAppsList.snapshot();
 
         for (AppInfo app : snapshot) {
             if (app == null || TextUtils.isEmpty(app.getPackageName())) {
@@ -7073,18 +7097,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     /**
      * Shows the pending snapshots through the usual setup, so the bars look exactly as they will
      * once the real lists are there. A bar whose view is not there yet is tried again shortly; a
-     * bar that already has data, or an app list that is already bound, ends the wait for good.
+     * bar that already has data ends the wait for that bar.
      */
     private void applyPendingBarSnapshots() {
         mHandler.removeCallbacks(mApplyPendingBarSnapshots);
-        if (isDestroyed() || isFinishing() || mWorkspace == null
-                || (AllAppsList.data != null && !AllAppsList.data.isEmpty())) {
-            clearPendingBarSnapshots(); // the real bars are on their way
+        if (isDestroyed() || isFinishing() || mWorkspace == null) {
+            clearPendingBarSnapshots();
             return;
         }
         if (mPendingBottomSnapshot != null) {
             RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
             if (hasCurrentAppListData()) {
+                Log.i(TAG, "Bottom bar snapshot not needed: the bar was built first, "
+                        + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
                 mPendingBottomSnapshot = null;
                 mPendingBottomSnapshotRows = null;
             } else if (recycler != null) {
@@ -7112,6 +7137,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // layout pass and then build the bar the normal way, with PackageManager icons.
         if (mPendingLeftSnapshot != null) {
             if (hasCurrentLeftAppListData()) {
+                Log.i(TAG, "Left bar snapshot not needed: the bar was built first, "
+                        + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
                 mPendingLeftSnapshot = null;
                 mPendingLeftSnapshotRows = null;
             } else if (mWorkspace.findViewById(R.id.left_recycler_view) != null) {
@@ -9412,9 +9439,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mAppsCustomizeTabHost.onWindowVisible();
             }
             if (!mWorkspaceLoading && mWorkspace != null) {
-                // Trzymamy konkretny Workspace tej instancji Activity zamiast
-                // Launcher.getLauncher() - po odtworzeniu Activity statyczne mLauncher
-                // wskazuje juz na nowa instancje, a stary listener nigdy nie byl zdejmowany.
+                // The Workspace of this activity instance is held instead of going through
+                // Launcher.getLauncher(): once the activity is recreated, the static mLauncher
+                // already points to the new instance, and the old listener was never removed.
                 final Workspace workspace = mWorkspace;
                 final Runnable buildLayers = mBuildLayersRunnable;
                 removePendingOnDrawListener();
@@ -9458,8 +9485,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     /**
-     * Zdejmuje ewentualny zawieszony OnDrawListener z ViewTreeObservera Workspace'a.
-     * Wolane przy ponownej rejestracji i z onDestroy().
+     * Removes a pending OnDrawListener, if any, from the Workspace's ViewTreeObserver.
+     * Called before a new one is registered and from onDestroy().
      */
     private void removePendingOnDrawListener() {
         if (onDrawListener == null) {
@@ -9482,7 +9509,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mHandler.removeMessages(1);
         Message msg = mHandler.obtainMessage(1);
         mHandler.sendMessageDelayed(msg, delay);
-        mAutoAdvanceSentTime = System.currentTimeMillis();
+        // uptimeMillis(), the clock the handler counts the delay in; the wall clock steps after
+        // boot and wake on this unit, and a step back stopped widget auto-advance for its size.
+        mAutoAdvanceSentTime = SystemClock.uptimeMillis();
     }
 
     
@@ -9495,7 +9524,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 sendAdvanceMessage(delay);
             } else {
                 if (!mWidgetsToAdvance.isEmpty()) {
-                    mAutoAdvanceTimeLeft = Math.max(0L, 20000 - (System.currentTimeMillis() - mAutoAdvanceSentTime));
+                    mAutoAdvanceTimeLeft = Math.max(0L, 20000 - (SystemClock.uptimeMillis() - mAutoAdvanceSentTime));
                 }
                 mHandler.removeMessages(1);
                 mHandler.removeMessages(0);
@@ -9738,6 +9767,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public boolean isWorkspaceLocked() {
         return mWorkspaceLoading || mWaitingForResult;
+    }
+
+    /**
+     * True from startBinding() until finishBindingItems(), and from onCreate() until the first
+     * bind has finished. The screens are incomplete then: nothing may judge them as empty, strip
+     * them or write the screen order to the database.
+     */
+    public boolean isWorkspaceLoading() {
+        return mWorkspaceLoading;
     }
 
     public void resetAddInfo() {
@@ -11795,6 +11833,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void startBinding() {
+        // The screens are torn down here and rebuilt piece by piece until finishBindingItems(),
+        // so the workspace is loading for the whole bind, whoever started it. Only binds started
+        // through requestWorkspaceLoader() used to set this; a rebind from mModel.forceReload()
+        // (recreateView(), on the way back from the settings) or from the model itself ran with
+        // mWorkspaceLoading == false, i.e. with isWorkspaceLocked() false and every guard that
+        // relies on it open, while pages with not yet bound icons looked empty. Upstream Launcher3
+        // does the same here (setWorkspaceLoading(true)). finishBindingItems() clears it.
+        mWorkspaceLoading = true;
         mBindOnResumeCallbacks.clear();
         mWorkspace.clearDropTargets();
         mWorkspace.removeAllWorkspaceScreens();
@@ -11911,8 +11957,22 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             try {
                                 ShortcutInfo info = (ShortcutInfo) item;
                                 View shortcut = createShortcut(info);
-                                if (item.container == -100 && (cl = mWorkspace.getScreenWithId(item.screenId)) != null && cl.isOccupied(item.cellX, item.cellY)) {
-                                    throw new RuntimeException("OCCUPIED");
+                                if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                                    cl = mWorkspace.getScreenWithId(item.screenId);
+                                    if (cl == null) {
+                                        // Its screen id is missing from the screen list. Shown
+                                        // anyway: Workspace.addInScreen() recreates the screen.
+                                        Log.w(TAG, "bindItems: screen " + item.screenId
+                                                + " missing, recreated for "
+                                                + describeItemForLog(item, shortcut));
+                                    } else if (cl.isOccupied(item.cellX, item.cellY)) {
+                                        // Skipped as before (it stays in the database). This used
+                                        // to throw "OCCUPIED" into the catch below and was logged
+                                        // as "Invalid Item Type", which hid it among real errors.
+                                        logItemNotShown(item, shortcut, "cell occupied by "
+                                                + describeCellOccupant(cl, item.cellX, item.cellY));
+                                        break;
+                                    }
                                 }
                                 workspace.addInScreenFromBind(shortcut, item.container, item.screenId, item.cellX, item.cellY, 1, 1);
                                 if (animateIcons) {
@@ -11932,6 +11992,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         case 2:
                             try {
                                 FolderIcon newFolder = FolderIcon.fromXml(R.layout.folder_icon, this, (ViewGroup) workspace.getChildAt(workspace.getCurrentPage()), (FolderInfo) item, mIconCache);
+                                if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP
+                                        && mWorkspace.getScreenWithId(item.screenId) == null) {
+                                    Log.w(TAG, "bindItems: screen " + item.screenId
+                                            + " missing, recreated for "
+                                            + describeItemForLog(item, newFolder));
+                                }
                                 workspace.addInScreenFromBind(newFolder, item.container, item.screenId, item.cellX, item.cellY, 1, 1);
                                 break;
                             } catch (RuntimeException e) {
@@ -11970,6 +12036,67 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             workspace.requestLayout();
         }
+    }
+
+    /** One warning per workspace icon or folder that bindItems() does not put on screen. */
+    private void logItemNotShown(ItemInfo item, View view, String reason) {
+        Log.w(TAG, "bindItems: NOT shown (" + reason + "): " + describeItemForLog(item, view));
+    }
+
+    private static String describeItemForLog(ItemInfo item, View view) {
+        CharSequence label = null;
+        if (view instanceof TextView) {
+            label = ((TextView) view).getText();
+        } else if (item instanceof FolderInfo) {
+            label = ((FolderInfo) item).title;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append('\'').append(label).append("' id=").append(item.id)
+                .append(" type=").append(item.itemType)
+                .append(" screen=").append(item.screenId)
+                .append(" cell=").append(item.cellX).append(',').append(item.cellY);
+        if (item instanceof ShortcutInfo && ((ShortcutInfo) item).intent != null) {
+            ComponentName cn = ((ShortcutInfo) item).intent.getComponent();
+            if (cn != null) {
+                sb.append(' ').append(cn.flattenToShortString());
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * What covers a cell, for the log. Not every CellLayout child is a launcher item: some carry
+     * other tags (an Intent, for one - see "Intent cannot be cast to ItemInfo" logged by
+     * Workspace.updateShortcuts()), so the tag is described by its type instead of being cast.
+     */
+    private static String describeCellOccupant(CellLayout cl, int cellX, int cellY) {
+        ViewGroup children = cl.getShortcutsAndWidgets();
+        for (int i = 0; i < children.getChildCount(); i++) {
+            View child = children.getChildAt(i);
+            if (!(child.getLayoutParams() instanceof CellLayout.LayoutParams)) {
+                continue;
+            }
+            CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
+            if (cellX < lp.cellX || cellX >= lp.cellX + lp.cellHSpan
+                    || cellY < lp.cellY || cellY >= lp.cellY + lp.cellVSpan) {
+                continue;
+            }
+            Object tag = child.getTag();
+            String what;
+            if (tag instanceof ItemInfo) {
+                what = describeItemForLog((ItemInfo) tag, child);
+            } else if (tag instanceof Intent) {
+                Intent intent = (Intent) tag;
+                ComponentName cn = intent.getComponent();
+                what = "Intent " + (cn != null ? cn.flattenToShortString() : intent.getAction());
+            } else if (tag == null) {
+                what = "no tag";
+            } else {
+                what = tag.getClass().getSimpleName() + " " + tag;
+            }
+            return child.getClass().getSimpleName() + " [" + what + "]";
+        }
+        return "no child view there (occupied map out of sync with the views)";
     }
 
     @Override
@@ -12194,6 +12321,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     Launcher.this.onFinishBindingItems();
                 }
             });
+            // Every screen and item is in place now; see requestCustomElementsSetup().
+            replayCustomElementsSetupAfterBind();
+            // And a strip of empty screens that was held back during the bind.
+            mWorkspace.onWorkspaceLoadFinished();
             scheduleHomeLayoutWatchdog("finishBindingItems", !isAllAppsVisible());
         }
     }

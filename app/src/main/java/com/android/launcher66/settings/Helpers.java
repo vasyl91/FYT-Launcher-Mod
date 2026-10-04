@@ -467,15 +467,20 @@ public class Helpers {
     }
 
 
-    private int countDownLogcat = 0;
+    /**
+     * Seconds left of a running logcat capture (LogcatWorker), 0 when none runs. In memory only,
+     * shared by every Helpers instance of the process. LogcatWorker sets it every second, and
+     * stored in HelpersPrefsSus each tick was a write of that file: at a cold boot such a write
+     * took 1-4 s (fsync on a busy storage), and the main thread waited 1-2 s for the queue of
+     * them at its next lifecycle step (QueuedWork). A stored countdown also outlived a capture
+     * the process died in, with its last second left in the file.
+     */
+    private static volatile int sCountDownLogcat = 0;
     public int returnCountDownLogcat() {
-        countDownLogcat = sharedPrefsSus.getInt("countDownLogcat", 0);
-        return countDownLogcat;
+        return sCountDownLogcat;
     }
     public void setCountDownLogcat(int countDownLogcat) {
-        this.countDownLogcat = countDownLogcat;
-        editorSus.putInt("countDownLogcat", countDownLogcat);
-        editorSus.apply();
+        sCountDownLogcat = countDownLogcat;
     }
 
     public boolean allAppsVisibility(int visibility) {
@@ -1124,6 +1129,11 @@ public class Helpers {
         return Math.min(Math.max(1, count), 2);
     }
     
+    /**
+     * Whether the package is installed and enabled. Asked on the main thread (Launcher's side
+     * bars), so a package manager failure must not escape: an app that cannot be checked counts
+     * as installed, as only a definite "not installed" may hide it.
+     */
     public static boolean isPackageInstalled(String packageName) {
         try {
             PackageManager packageManager = LauncherApplication.sApp.getPackageManager();
@@ -1131,6 +1141,10 @@ public class Helpers {
         }
         catch (PackageManager.NameNotFoundException e) {
             return false;
+        }
+        catch (RuntimeException e) {
+            Log.w(TAG, "Cannot check whether " + packageName + " is installed: " + e);
+            return true;
         }
     }
 

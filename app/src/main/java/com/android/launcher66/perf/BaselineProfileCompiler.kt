@@ -10,13 +10,16 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Process
+import android.os.SystemClock
+import android.provider.Settings
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import androidx.profileinstaller.ProfileVerifier
 import com.android.launcher66.BuildConfig
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -61,16 +64,23 @@ import kotlin.coroutines.resume
  *       - a device restart (cold boot, detected by LauncherApplication) - always counts,
  *       - a wake-up from sleep reported by WakeDetectionService ([onDeviceWake];
  *         ACTION_SCREEN_ON is not delivered on FYT) or a launcher process restart without a
- *         device restart - counts if at least [SESSION_MIN_GAP_MS] passed since the previous
- *         counted session (filters quick display off/on and crash restarts).
- *     Wake-ups count because many FYT units sleep instead of rebooting on ACC off, so the
- *     launcher process can live for weeks.
+ *         device restart - counts if at least [SESSION_MIN_GAP_MS] of device time passed since
+ *         the previous counted session (filters quick display off/on and crash restarts).
  *     The session counter is only a gate: it stops at the minimum (5/5, 10/10), while ART keeps
  *     recording every further session, so a refresh at the day limit compiles the data of all
  *     sessions since the previous compilation.
- *     If the day limit passes with too few sessions, the limit moves forward one day per day
- *     until the sessions are reached; the refresh then runs without further delay.
  *     Step a is NOT repeated - it would overwrite the recorded usage data.
+ *
+ * Time keeping - independent of the wall clock:
+ *   FYT units often boot with a clock that is years behind and only correct it once they are
+ *   online. Elapsed time is therefore measured in two ways, and the larger value is used:
+ *   - device time: SystemClock.elapsedRealtime() deltas (includes deep sleep), accumulated across
+ *     boots. Always valid; misses only the time the unit is fully powered off.
+ *   - calendar time: wall clock, but only between two readings that are both "valid"
+ *     ([isWallClockValid]: not earlier than [MIN_VALID_WALL_TIME_MS]). A compilation made while
+ *     the clock was wrong gets its calendar time fixed later, once the clock has been corrected
+ *     (exactly within the same boot, conservatively from the device time across boots).
+ *   Session gaps are measured in device time only.
  *
  * Everything runs in the background without any user interaction and without restarting the
  * launcher; freshly compiled code is used from the next start of the launcher process.
@@ -93,11 +103,27 @@ object BaselineProfileCompiler {
     private const val KEY_ATTEMPT_FOR = "attempt_for"
     private const val KEY_ATTEMPTS = "attempts"
     private const val KEY_LAST_STATUS = "last_status"
-    private const val KEY_LAST_COMPILE_AT = "last_compile_at"
-    private const val KEY_SESSIONS_SINCE_COMPILE = "starts_since_compile" // name kept for existing installs
-    private const val KEY_LAST_SESSION_AT = "last_session_at"
-    private const val KEY_REFRESH_DUE_DAY = "refresh_due_day"
     private const val KEY_REFRESHES = "refreshes"
+    private const val KEY_SESSIONS_SINCE_COMPILE = "starts_since_compile" // name kept for existing installs
+
+    // Last compilation: calendar time if it is known to be correct, otherwise -1 + the device time
+    // reference below, until the clock has been corrected.
+    private const val KEY_LAST_COMPILE_AT = "last_compile_at"
+    private const val KEY_COMPILE_BOOT = "compile_boot"
+    private const val KEY_COMPILE_ELAPSED = "compile_elapsed"
+
+    // Device time since the last compilation (elapsedRealtime deltas, accumulated across boots).
+    private const val KEY_DEVICE_MS_SINCE_COMPILE = "device_ms_since_compile"
+    private const val KEY_CHECKPOINT_BOOT = "checkpoint_boot"
+    private const val KEY_CHECKPOINT_ELAPSED = "checkpoint_elapsed"
+
+    // Last counted session, in device time.
+    private const val KEY_SESSION_BOOT = "session_boot"
+    private const val KEY_SESSION_ELAPSED = "session_elapsed"
+
+    // Keys of older versions (wall-clock based) - removed on first use.
+    private val LEGACY_KEYS = listOf("last_session_at", "refresh_due_day")
+
     private const val MAX_ATTEMPTS = 3
 
     /** Days after the previous compilation at which each usage refresh becomes due. */
@@ -106,12 +132,25 @@ object BaselineProfileCompiler {
     /** Usage sessions since the previous compilation required for each refresh. */
     private val REFRESH_MIN_SESSIONS = intArrayOf(5, 10, 10)
 
-    /** Minimum gap between two counted wake-up / process-restart sessions (device restarts always count). */
+    /** Minimum device time between two counted wake-up / process-restart sessions (device restarts always count). */
     private val SESSION_MIN_GAP_MS = TimeUnit.MINUTES.toMillis(3)
+
+    /**
+     * Wall-clock readings earlier than this are certainly wrong (2026-09-01 00:00 UTC, before this
+     * code existed). FYT units with a lost clock boot years in the past, far below this value.
+     * Can be moved forward in later releases; it only has to stay in the past.
+     */
+    private const val MIN_VALID_WALL_TIME_MS = 1_788_220_800_000L
 
     /** Head unit boot is busy (CAN bus, BT, navigation) - do not compete for CPU. */
     private const val START_DELAY_MS = 90_000L
     private const val INSTALL_TIMEOUT_MS = 30_000L
+
+    /** While the clock is wrong: how often to check whether it has been corrected. */
+    private const val CLOCK_CHECK_INTERVAL_MS = 60_000L
+
+    /** Device time is saved at least this often, so a power cut loses little of it. */
+    private val CHECKPOINT_INTERVAL_MS = TimeUnit.MINUTES.toMillis(15)
 
     private const val ACTION_INSTALL_PROFILE = "androidx.profileinstaller.action.INSTALL_PROFILE"
     private const val RECEIVER = "androidx.profileinstaller.ProfileInstallReceiver"
@@ -137,8 +176,22 @@ object BaselineProfileCompiler {
     private var pendingJob: Job? = null
     private val pendingLock = Any()
 
+    /** Saves device time regularly and notices when the wall clock gets corrected. */
+    private var tickerJob: Job? = null
+
+    /** Application context, kept for the calls that come without one (onDeviceSleep). */
+    @Volatile
+    private var appContext: Context? = null
+
     /** Incremented by every reset; background work started before a reset discards its result. */
     private val generation = AtomicInteger(0)
+
+    /** Time sources: wall clock (may be wrong after boot) and device time. Replaceable in tests. */
+    @VisibleForTesting
+    internal var wallNow: () -> Long = { System.currentTimeMillis() }
+
+    @VisibleForTesting
+    internal var elapsedNow: () -> Long = { SystemClock.elapsedRealtime() }
 
     /** True if this build / device can use the compiler (fyt system build, Android 8-13). */
     @JvmStatic
@@ -155,7 +208,7 @@ object BaselineProfileCompiler {
      * Call from LauncherApplication once per process start. Cheap and safe in every process.
      *
      * @param coldBoot true for the first launcher start after a device restart
-     * (LauncherApplication.isFirstStartAfterColdBoot()); such a start always counts as a session.
+     * (ColdStart.isColdBoot()); such a start always counts as a session.
      */
     @JvmStatic
     @JvmOverloads
@@ -166,14 +219,17 @@ object BaselineProfileCompiler {
             Application.getProcessName() != app.packageName
         ) return
         if (!scheduled.compareAndSet(false, true)) return
+        appContext = app.applicationContext
 
         val prefs = prefs(app)
+        removeLegacyKeys(prefs)
         val stamp = apkStamp(app)
         if (prefs.getString(KEY_DONE_FOR, null) == stamp) {
-            onUsageSession(app, if (coldBoot) "device restart" else "process restart", coldBoot)
+            onUsageSession(app, if (coldBoot) "device restart" else "process restart", countSession = true, countAlways = coldBoot)
         } else {
             scheduleInitialCompilation(app, prefs, stamp, START_DELAY_MS)
         }
+        startTicker(app)
     }
 
     /**
@@ -183,13 +239,14 @@ object BaselineProfileCompiler {
     @JvmStatic
     fun onDeviceWake(context: Context) {
         if (!isSupported()) return
-        val appContext = context.applicationContext
-        val prefs = prefs(appContext)
-        val stamp = apkStamp(appContext)
+        val app = context.applicationContext
+        if (appContext == null) appContext = app
+        val prefs = prefs(app)
+        val stamp = apkStamp(app)
         if (prefs.getString(KEY_DONE_FOR, null) == stamp) {
-            onUsageSession(appContext, "wake", countAlways = false)
+            onUsageSession(app, "wake", countSession = true, countAlways = false)
         } else if (!hasPendingJob()) {
-            scheduleInitialCompilation(appContext, prefs, stamp, START_DELAY_MS)
+            scheduleInitialCompilation(app, prefs, stamp, START_DELAY_MS)
         }
     }
 
@@ -197,6 +254,13 @@ object BaselineProfileCompiler {
     @JvmStatic
     fun onDeviceSleep() {
         if (cancelPendingJob()) Log.i(TAG, "Sleep: pending compilation postponed to the next wake")
+        // Save device time now: if the unit is powered off during the sleep, it is not lost.
+        appContext?.let { ctx ->
+            val prefs = prefs(ctx)
+            val editor = prefs.edit()
+            updateDeviceTime(prefs, editor)
+            editor.apply()
+        }
     }
 
     /** Human-readable status, e.g. for an "About" entry in the launcher settings. Blocking - call off the main thread. */
@@ -204,9 +268,12 @@ object BaselineProfileCompiler {
     @WorkerThread
     fun statusText(context: Context): String {
         val prefs = prefs(context)
+        // Bring device time and a pending compile time up to date for the display.
+        prefs.edit().also { updateDeviceTime(prefs, it) }.apply()
+        prefs.edit().also { resolveCompileTime(prefs, it) }.apply()
+
         val last = prefs.getString(KEY_LAST_STATUS, "none") ?: "none"
-        val lastCompileAt = prefs.getLong(KEY_LAST_COMPILE_AT, -1L)
-        val compiledAt = if (lastCompileAt > 0) formatTime(lastCompileAt) else "never"
+        val clockValid = isWallClockValid(wallNow())
         // Note: ProfileVerifier caches its result per APK, so it may lag until the next restart.
         val verifier = runCatching {
             val s = ProfileVerifier.getCompilationStatusAsync().get()
@@ -223,10 +290,11 @@ object BaselineProfileCompiler {
             else -> "$status (active)"
         }
         return "Deployment: $deployment\n" +
-            "Last compilation: $compiledAt\n" +
+            "Last compilation: ${lastCompilationText(prefs)}\n" +
             "Usage refreshes: ${refreshScheduleText(prefs)}\n" +
             "Session = device restart, or a wake-up / launcher restart at least " +
             "${TimeUnit.MILLISECONDS.toMinutes(SESSION_MIN_GAP_MS)} min after the previous session\n" +
+            "Clock: " + (if (clockValid) "valid" else "not set yet - days counted from device time") + "\n" +
             "ProfileVerifier: $verifier"
     }
 
@@ -252,13 +320,11 @@ object BaselineProfileCompiler {
         generation.incrementAndGet() // a refresh already compiling must not count
         cancelPendingJob()
         val prefs = prefs(context)
-        prefs.edit()
+        val editor = prefs.edit()
             .putInt(KEY_REFRESHES, 0)
-            .putInt(KEY_SESSIONS_SINCE_COMPILE, 0)
-            .putLong(KEY_LAST_COMPILE_AT, System.currentTimeMillis())
-            .remove(KEY_REFRESH_DUE_DAY)
             .putString(KEY_LAST_STATUS, "Usage refresh schedule reset - ${apkStamp(context)}")
-            .apply()
+        startWaitFromNow(editor)
+        editor.apply()
         Log.i(TAG, "Usage refresh schedule reset")
     }
 
@@ -280,34 +346,31 @@ object BaselineProfileCompiler {
         if (!isSupported()) return false
         generation.incrementAndGet()
         cancelPendingJob()
-        val appContext = context.applicationContext
-        val prefs = prefs(appContext)
-        prefs.edit()
+        val app = context.applicationContext
+        val prefs = prefs(app)
+        val editor = prefs.edit()
             .remove(KEY_DONE_FOR)
             .remove(KEY_ATTEMPT_FOR)
             .remove(KEY_ATTEMPTS)
-            .remove(KEY_LAST_COMPILE_AT)
-            .remove(KEY_LAST_SESSION_AT)
-            .remove(KEY_REFRESH_DUE_DAY)
             .putInt(KEY_REFRESHES, 0)
-            .putInt(KEY_SESSIONS_SINCE_COMPILE, 0)
             .putString(KEY_LAST_STATUS, "Reset to the baseline profile - recompiling after the restart")
-            .commit()
+        startWaitFromNow(editor)
+        editor.commit()
 
         return try {
             Log.i(TAG, "Full reset: clearing profiles, the launcher process will be killed")
             val pm = systemPackageManager()
             pm.javaClass.getMethod("clearApplicationProfileData", String::class.java)
-                .invoke(pm, appContext.packageName)
+                .invoke(pm, app.packageName)
             // Still alive (the firmware did not kill the package): compile right away instead.
             Log.w(TAG, "Full reset: process was not killed, compiling now")
-            scheduleInitialCompilation(appContext, prefs, apkStamp(appContext), 0L)
+            scheduleInitialCompilation(app, prefs, apkStamp(app), 0L)
             true
         } catch (t: Throwable) {
             // Profiles not cleared: at least re-apply the Baseline Profile on top of them now,
             // instead of leaving the state "pending" until the next restart.
             Log.e(TAG, "Full reset failed, re-applying the baseline profile only", t)
-            scheduleInitialCompilation(appContext, prefs, apkStamp(appContext), 0L)
+            scheduleInitialCompilation(app, prefs, apkStamp(app), 0L)
             false
         }
     }
@@ -346,11 +409,8 @@ object BaselineProfileCompiler {
 
             val editor = prefs.edit()
             val status = if (ok) {
-                editor.putString(KEY_DONE_FOR, stamp)
-                    .putLong(KEY_LAST_COMPILE_AT, System.currentTimeMillis())
-                    .putInt(KEY_SESSIONS_SINCE_COMPILE, 0)
-                    .putInt(KEY_REFRESHES, 0)
-                    .remove(KEY_REFRESH_DUE_DAY)
+                editor.putString(KEY_DONE_FOR, stamp).putInt(KEY_REFRESHES, 0)
+                startWaitFromNow(editor)
                 compiledInThisProcess = true
                 "OK - initial compilation - $stamp"
             } else {
@@ -375,47 +435,47 @@ object BaselineProfileCompiler {
     // Phase 2: usage refreshes
     // ---------------------------------------------------------------------------------------
 
-    private fun onUsageSession(context: Context, source: String, countAlways: Boolean) {
+    /**
+     * Counts a session (if [countSession]) and starts a refresh when it is due.
+     * Also called without a session when the wall clock got corrected (see [startTicker]).
+     */
+    private fun onUsageSession(context: Context, source: String, countSession: Boolean, countAlways: Boolean) {
         val prefs = prefs(context)
         val stamp = apkStamp(context)
         if (prefs.getString(KEY_DONE_FOR, null) != stamp) return // initial compilation pending
+
+        // Time bookkeeping first (device time, then a compile time waiting for a valid clock).
+        prefs.edit().also { updateDeviceTime(prefs, it) }.apply()
+        prefs.edit().also { resolveCompileTime(prefs, it) }.apply()
+
         val refreshes = prefs.getInt(KEY_REFRESHES, 0)
         if (refreshes >= REFRESH_AFTER_DAYS.size) return
-
-        val now = System.currentTimeMillis()
         val editor = prefs.edit()
 
-        // Count the session: a device restart always, anything else only SESSION_MIN_GAP_MS after
-        // the previous counted session (a clock jump backwards simply counts). The counter is
-        // only a gate and stops at the minimum - ART records every session regardless, so the
-        // refresh at the day limit compiles the usage of all sessions since the last compilation.
+        // Count the session: a device restart always, anything else only SESSION_MIN_GAP_MS of
+        // device time after the previous counted session (or in a different boot). The counter
+        // is only a gate and stops at the minimum - ART records every session regardless.
         val minSessions = REFRESH_MIN_SESSIONS[refreshes]
         var sessions = prefs.getInt(KEY_SESSIONS_SINCE_COMPILE, 0)
-        val sinceLastSession = now - prefs.getLong(KEY_LAST_SESSION_AT, 0L)
-        if (countAlways || sinceLastSession !in 0 until SESSION_MIN_GAP_MS) {
-            if (sessions < minSessions) sessions++
-            editor.putInt(KEY_SESSIONS_SINCE_COMPILE, sessions).putLong(KEY_LAST_SESSION_AT, now)
-        }
-
-        var lastCompileAt = prefs.getLong(KEY_LAST_COMPILE_AT, -1L)
-        if (lastCompileAt < 0 || lastCompileAt > now) {
-            // Missing (compiled by a version without refreshes) or in the future (head units
-            // often boot with a wrong clock and sync it later) - start the wait now.
-            lastCompileAt = now
-            editor.putLong(KEY_LAST_COMPILE_AT, now)
-        }
-        val daysSince = TimeUnit.MILLISECONDS.toDays(now - lastCompileAt)
-        var dueDay = maxOf(REFRESH_AFTER_DAYS[refreshes], prefs.getLong(KEY_REFRESH_DUE_DAY, 0L))
-        if (daysSince >= dueDay && sessions < minSessions) {
-            // Day limit reached without enough usage: move it to today. It advances by one day
-            // per day until the sessions are reached, and the refresh then runs right away.
-            dueDay = daysSince
-            editor.putLong(KEY_REFRESH_DUE_DAY, dueDay)
+        if (countSession) {
+            val boot = bootId()
+            val elapsed = elapsedNow()
+            val sameBoot = prefs.getString(KEY_SESSION_BOOT, null) == boot
+            val gap = elapsed - prefs.getLong(KEY_SESSION_ELAPSED, 0L)
+            if (countAlways || !sameBoot || gap !in 0 until SESSION_MIN_GAP_MS) {
+                if (sessions < minSessions) sessions++
+                editor.putInt(KEY_SESSIONS_SINCE_COMPILE, sessions)
+                    .putString(KEY_SESSION_BOOT, boot)
+                    .putLong(KEY_SESSION_ELAPSED, elapsed)
+            }
         }
         editor.apply()
-        Log.d(TAG, "Session ($source): day $daysSince/$dueDay, sessions $sessions/$minSessions, refresh ${refreshes + 1}")
 
-        if (daysSince >= dueDay && sessions >= minSessions) {
+        val daysSince = daysSinceCompile(prefs)
+        val minDays = REFRESH_AFTER_DAYS[refreshes]
+        Log.d(TAG, "Session ($source): day $daysSince/$minDays, sessions $sessions/$minSessions, refresh ${refreshes + 1}")
+
+        if (daysSince >= minDays && sessions >= minSessions) {
             launchRefresh(context, prefs, stamp, refreshes)
         }
     }
@@ -432,12 +492,10 @@ object BaselineProfileCompiler {
                 .getOrDefault(false)
             if (gen != generation.get()) return@startPendingJob // reset while compiling
 
-            // On failure the counters are reset too, so the next try comes after another
-            // full wait instead of on every session.
+            // On failure the wait starts again too, so the next try comes after another full
+            // wait instead of on every session.
             val editor = prefs.edit()
-                .putLong(KEY_LAST_COMPILE_AT, System.currentTimeMillis())
-                .putInt(KEY_SESSIONS_SINCE_COMPILE, 0)
-                .remove(KEY_REFRESH_DUE_DAY)
+            startWaitFromNow(editor)
             val status = if (ok) {
                 val done = refreshes + 1
                 editor.putInt(KEY_REFRESHES, done)
@@ -451,35 +509,129 @@ object BaselineProfileCompiler {
         }
     }
 
-    private fun hasPendingJob(): Boolean = synchronized(pendingLock) { pendingJob?.isActive == true }
-
-    /** Cancels the job still waiting for its delay. A compilation already running finishes. */
-    private fun cancelPendingJob(): Boolean = synchronized(pendingLock) {
-        val wasActive = pendingJob?.isActive == true
-        pendingJob?.cancel()
-        pendingJob = null
-        wasActive
+    /**
+     * Runs while the launcher process lives: saves device time every [CHECKPOINT_INTERVAL_MS], and
+     * while the wall clock is wrong checks every [CLOCK_CHECK_INTERVAL_MS] whether it has been
+     * corrected - then fixes a pending compile time and re-checks whether a refresh is due.
+     * The delays pause while the unit sleeps.
+     */
+    private fun startTicker(context: Context) {
+        synchronized(pendingLock) {
+            if (tickerJob?.isActive == true) return
+            tickerJob = scope.launch {
+                var clockWasValid = isWallClockValid(wallNow())
+                var sinceCheckpoint = 0L
+                while (true) {
+                    delay(CLOCK_CHECK_INTERVAL_MS)
+                    sinceCheckpoint += CLOCK_CHECK_INTERVAL_MS
+                    val clockValid = isWallClockValid(wallNow())
+                    if (clockValid && !clockWasValid) {
+                        Log.i(TAG, "Wall clock corrected")
+                        // Resolves the compile time and starts a refresh if it is due now.
+                        onUsageSession(context, "clock corrected", countSession = false, countAlways = false)
+                        sinceCheckpoint = 0L
+                    } else if (sinceCheckpoint >= CHECKPOINT_INTERVAL_MS) {
+                        val prefs = prefs(context)
+                        val editor = prefs.edit()
+                        updateDeviceTime(prefs, editor)
+                        editor.apply()
+                        sinceCheckpoint = 0L
+                    }
+                    clockWasValid = clockValid
+                }
+            }
+        }
     }
 
-    /** Starts [block] as the single pending job (replacing a finished one). */
-    private fun startPendingJob(block: suspend () -> Unit) {
-        synchronized(pendingLock) {
-            if (pendingJob?.isActive == true) return
-            pendingJob = scope.launch { block() }
+    // ---------------------------------------------------------------------------------------
+    // Time keeping (independent of the wall clock)
+    // ---------------------------------------------------------------------------------------
+
+    /** A wall-clock reading that can be trusted (not the years-old default of a lost clock). */
+    private fun isWallClockValid(wallMs: Long): Boolean = wallMs >= MIN_VALID_WALL_TIME_MS
+
+    /** Starts the wait for the next refresh from now (after a compilation or a reset). */
+    private fun startWaitFromNow(editor: SharedPreferences.Editor) {
+        val now = wallNow()
+        editor.putLong(KEY_LAST_COMPILE_AT, if (isWallClockValid(now)) now else -1L)
+            .putString(KEY_COMPILE_BOOT, bootId())
+            .putLong(KEY_COMPILE_ELAPSED, elapsedNow())
+            .putLong(KEY_DEVICE_MS_SINCE_COMPILE, 0L)
+            .putString(KEY_CHECKPOINT_BOOT, bootId())
+            .putLong(KEY_CHECKPOINT_ELAPSED, elapsedNow())
+            .putInt(KEY_SESSIONS_SINCE_COMPILE, 0)
+    }
+
+    /** Adds the device time since the last checkpoint (the whole uptime after a reboot). */
+    private fun updateDeviceTime(prefs: SharedPreferences, editor: SharedPreferences.Editor) {
+        val boot = bootId()
+        val elapsed = elapsedNow()
+        var total = prefs.getLong(KEY_DEVICE_MS_SINCE_COMPILE, 0L)
+        total += if (prefs.getString(KEY_CHECKPOINT_BOOT, null) == boot) {
+            (elapsed - prefs.getLong(KEY_CHECKPOINT_ELAPSED, elapsed)).coerceAtLeast(0L)
+        } else {
+            elapsed // new boot: everything since this boot started
         }
+        editor.putLong(KEY_DEVICE_MS_SINCE_COMPILE, total)
+            .putString(KEY_CHECKPOINT_BOOT, boot)
+            .putLong(KEY_CHECKPOINT_ELAPSED, elapsed)
+    }
+
+    /**
+     * The "guard" for a compilation made while the wall clock was wrong: once the clock is valid,
+     * its calendar time is set - exactly if it happened in this boot, otherwise conservatively as
+     * "now minus the device time since it" (the powered-off time is unknown, so it is not added).
+     */
+    private fun resolveCompileTime(prefs: SharedPreferences, editor: SharedPreferences.Editor) {
+        val stored = prefs.getLong(KEY_LAST_COMPILE_AT, -1L)
+        val now = wallNow()
+        if (isWallClockValid(stored) || !isWallClockValid(now)) return
+        val sameBoot = prefs.getString(KEY_COMPILE_BOOT, null) == bootId()
+        val resolved = if (sameBoot) {
+            now - (elapsedNow() - prefs.getLong(KEY_COMPILE_ELAPSED, elapsedNow()))
+        } else {
+            now - prefs.getLong(KEY_DEVICE_MS_SINCE_COMPILE, 0L)
+        }
+        editor.putLong(KEY_LAST_COMPILE_AT, resolved)
+        Log.i(TAG, "Compile time resolved after the clock was corrected: ${formatTime(resolved)}")
+    }
+
+    /**
+     * Days since the last compilation: the larger of calendar days (only if both readings are
+     * valid) and device days. Both are lower bounds of the real time, so neither can make a
+     * refresh come too early, and a wrong clock can never block it.
+     */
+    private fun daysSinceCompile(prefs: SharedPreferences): Long {
+        val deviceDays = TimeUnit.MILLISECONDS.toDays(prefs.getLong(KEY_DEVICE_MS_SINCE_COMPILE, 0L))
+        val compileAt = prefs.getLong(KEY_LAST_COMPILE_AT, -1L)
+        val now = wallNow()
+        val calendarDays = if (isWallClockValid(compileAt) && isWallClockValid(now) && now >= compileAt) {
+            TimeUnit.MILLISECONDS.toDays(now - compileAt)
+        } else {
+            0L
+        }
+        return maxOf(deviceDays, calendarDays)
+    }
+
+    private fun lastCompilationText(prefs: SharedPreferences): String {
+        if (prefs.getString(KEY_DONE_FOR, null) == null) return "never"
+        val compileAt = prefs.getLong(KEY_LAST_COMPILE_AT, -1L)
+        if (isWallClockValid(compileAt)) return formatTime(compileAt)
+        val hours = TimeUnit.MILLISECONDS.toHours(prefs.getLong(KEY_DEVICE_MS_SINCE_COMPILE, 0L))
+        return "${hours} h of device time ago (date set once the clock is valid)"
     }
 
     private fun refreshScheduleText(prefs: SharedPreferences): String {
         val refreshes = prefs.getInt(KEY_REFRESHES, 0)
         val total = REFRESH_AFTER_DAYS.size
         if (refreshes >= total) return "$refreshes/$total - all done"
-        val lastCompileAt = prefs.getLong(KEY_LAST_COMPILE_AT, -1L)
-        val now = System.currentTimeMillis()
-        val daysSince = if (lastCompileAt in 0..now) TimeUnit.MILLISECONDS.toDays(now - lastCompileAt) else 0
-        val dueDay = maxOf(REFRESH_AFTER_DAYS[refreshes], prefs.getLong(KEY_REFRESH_DUE_DAY, 0L))
+        val daysSince = daysSinceCompile(prefs)
         val sessions = prefs.getInt(KEY_SESSIONS_SINCE_COMPILE, 0)
-        return "$refreshes/$total - next: day $daysSince/$dueDay, " +
-            "sessions $sessions/${REFRESH_MIN_SESSIONS[refreshes]}"
+        val minDays = REFRESH_AFTER_DAYS[refreshes]
+        val minSessions = REFRESH_MIN_SESSIONS[refreshes]
+        // Day limit passed but sessions missing: the limit moves along with the current day.
+        val dueDay = if (daysSince >= minDays && sessions < minSessions) daysSince else minDays
+        return "$refreshes/$total - next: day $daysSince/$dueDay, sessions $sessions/$minSessions"
     }
 
     // ---------------------------------------------------------------------------------------
@@ -541,6 +693,28 @@ object BaselineProfileCompiler {
     }
 
     // ---------------------------------------------------------------------------------------
+    // Pending job
+    // ---------------------------------------------------------------------------------------
+
+    private fun hasPendingJob(): Boolean = synchronized(pendingLock) { pendingJob?.isActive == true }
+
+    /** Cancels the job still waiting for its delay. A compilation already running finishes. */
+    private fun cancelPendingJob(): Boolean = synchronized(pendingLock) {
+        val wasActive = pendingJob?.isActive == true
+        pendingJob?.cancel()
+        pendingJob = null
+        wasActive
+    }
+
+    /** Starts [block] as the single pending job (replacing a finished one). */
+    private fun startPendingJob(block: suspend () -> Unit) {
+        synchronized(pendingLock) {
+            if (pendingJob?.isActive == true) return
+            pendingJob = scope.launch { block() }
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------------------------------------
 
@@ -549,6 +723,40 @@ object BaselineProfileCompiler {
 
     private fun attemptsFor(prefs: SharedPreferences, stamp: String): Int =
         if (prefs.getString(KEY_ATTEMPT_FOR, null) == stamp) prefs.getInt(KEY_ATTEMPTS, 0) else 0
+
+    /**
+     * Removes the wall-clock based keys of older versions. A compile time saved while the clock
+     * was wrong is treated as unknown and resolved like a new one.
+     */
+    private fun removeLegacyKeys(prefs: SharedPreferences) {
+        val editor = prefs.edit()
+        var changed = false
+        LEGACY_KEYS.filter { prefs.contains(it) }.forEach { editor.remove(it); changed = true }
+        val compileAt = prefs.getLong(KEY_LAST_COMPILE_AT, -1L)
+        if (compileAt != -1L && !isWallClockValid(compileAt)) {
+            editor.putLong(KEY_LAST_COMPILE_AT, -1L)
+            changed = true
+        }
+        if (changed) editor.apply()
+    }
+
+    /**
+     * Identifies the current boot: kernel boot id, or the boot counter if it cannot be read.
+     * Cached - it cannot change while this process runs.
+     */
+    private fun bootId(): String = cachedBootId ?: run {
+        val id = runCatching { File("/proc/sys/kernel/random/boot_id").readText().trim() }
+            .getOrNull()
+            ?.takeIf { it.isNotEmpty() }
+            ?: appContext?.let { ctx ->
+                runCatching { "count-" + Settings.Global.getInt(ctx.contentResolver, Settings.Global.BOOT_COUNT) }.getOrNull()
+            }
+            ?: "unknown"
+        id.also { if (it != "unknown") cachedBootId = it }
+    }
+
+    @Volatile
+    private var cachedBootId: String? = null
 
     /**
      * Identifies the installed APK: version name + APK file time + size. The file time and size

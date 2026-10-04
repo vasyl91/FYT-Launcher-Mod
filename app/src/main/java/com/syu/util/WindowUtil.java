@@ -4,6 +4,7 @@ import android.SystemProperties;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.CellLayout;
+import com.android.launcher66.DefaultDisplayTask;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.NotificationListener;
@@ -93,6 +95,23 @@ public class WindowUtil {
     public static boolean fourthPipPinned = false;
 
     private static final int PANES_SETTLED_POLLS = 24; 
+
+    /*
+     * Panes open only once the boot has completed (sys.boot_completed), waiting at most
+     * BOOT_PANE_MAX_WAIT_MS. Starting an app in a pane moves the focus to that pane's display,
+     * and Android ends the boot -- the boot animation, BOOT_COMPLETED -- only when an activity of
+     * the focused display becomes idle. When Settings' FallbackHome loses its race with the user
+     * unlock (decided by a few dozen ms, either way), ending the boot falls to the launcher.
+     *
+     * The whole rebuild waits, not just the launches, so the media-source suppression (2.5 s) and
+     * the settle polls (6 s) start when the panes really open. The caller's in-flight claim
+     * (OPEN_PIP_INFLIGHT_TIMEOUT_MS, 8 s) stays valid meanwhile, so no second rebuild starts.
+     */
+    private static final long BOOT_PANE_MAX_WAIT_MS = 6000L;
+    private static final long BOOT_PANE_POLL_MS = 100L;
+    /** An opening is waiting for the boot to complete; removePip() cancels it. */
+    private static volatile boolean paneOpenWaitingForBoot = false;
+    private static long paneOpenWaitSinceMs = 0L; // main thread
 
     /**
      * Whether a configured PiP package is installed.
@@ -722,6 +741,7 @@ public class WindowUtil {
             openPipInFlight = false;
             lastRebuildStartedAtMs = 0L;
             pendingPaneLaunches = 0;
+            paneOpenWaitingForBoot = false; // an opening waiting for the boot is not wanted any more
         }
         if (helpers.pipsAdded()) {
             Log.d(TAG, "removePip..");
@@ -1020,6 +1040,10 @@ public class WindowUtil {
                 if (Launcher.getLauncher() == null) { pendingReasserts = 0; return; }
 
                 try {
+                    // Deliberately getRunningTasks(1) over all displays, the panes' virtual ones
+                    // included, and not DefaultDisplayTask: this is exactly what com.syu.ms looks
+                    // at when it hands over the MCU sound channel, and that view is what has to be
+                    // countered here.
                     List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
                     boolean stealerOnTop = tasks != null && !tasks.isEmpty()
                             && tasks.get(0).topActivity != null
@@ -1096,10 +1120,13 @@ public class WindowUtil {
                     Launcher current = Launcher.getLauncher();
                     boolean launcherInFront = current != null && current.allowPip;
 
-                    List<ActivityManager.RunningTaskInfo> tasks =
-                            launcherInFront ? null : am.getRunningTasks(1);
-                    if (tasks != null && !tasks.isEmpty() && tasks.get(0).topActivity != null) {
-                        String top = tasks.get(0).topActivity.getPackageName();
+                    // While it is paused, only the default display tells: getRunningTasks(1) may
+                    // also report a pane's task there, and pushing back over that could cover
+                    // whatever really is fullscreen (a reversing camera, say).
+                    ComponentName topActivity =
+                            launcherInFront ? null : DefaultDisplayTask.topActivity(am);
+                    if (topActivity != null) {
+                        String top = topActivity.getPackageName();
                         if (pipPkgs.contains(top)) {
                             am.moveTaskToFront(launcherTaskId, 0);
                             Log.i(TAG, "wake reassert: " + top + " came up fullscreen, launcher moved back on top");
@@ -1212,6 +1239,50 @@ public class WindowUtil {
     }
 
     public static void openMultiplePips() {
+        if (!LauncherApplication.isFytDevice()) return;
+        if (waitForBootBeforeOpening()) return;
+        openMultiplePipsNow();
+    }
+
+    /** True if the opening was postponed until the boot has completed; pollBootForPanes() runs it. */
+    private static boolean waitForBootBeforeOpening() {
+        if (bootCompleted()) return false;
+        final Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return false;
+        if (!paneOpenWaitingForBoot) {
+            paneOpenWaitingForBoot = true;
+            paneOpenWaitSinceMs = SystemClock.elapsedRealtime();
+            Log.i(TAG, "openMultiplePips(): boot not completed yet, the panes wait for it (at most "
+                    + BOOT_PANE_MAX_WAIT_MS + " ms)");
+            launcher.handler.postDelayed(WindowUtil::pollBootForPanes, BOOT_PANE_POLL_MS);
+        }
+        return true; // a wait is running, and it opens the panes
+    }
+
+    private static void pollBootForPanes() {
+        if (!paneOpenWaitingForBoot) return; // cancelled by removePip()
+        final long waited = SystemClock.elapsedRealtime() - paneOpenWaitSinceMs;
+        final boolean completed = bootCompleted();
+        if (completed || waited >= BOOT_PANE_MAX_WAIT_MS) {
+            paneOpenWaitingForBoot = false;
+            Log.i(TAG, "panes open after waiting " + waited + " ms"
+                    + (completed ? ", boot completed" : ", boot still not completed: opening anyway"));
+            openMultiplePipsNow();
+            return;
+        }
+        final Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) {
+            paneOpenWaitingForBoot = false;
+            return;
+        }
+        launcher.handler.postDelayed(WindowUtil::pollBootForPanes, BOOT_PANE_POLL_MS);
+    }
+
+    private static boolean bootCompleted() {
+        return "1".equals(SystemProperties.get("sys.boot_completed", ""));
+    }
+
+    private static void openMultiplePipsNow() {
         if (!LauncherApplication.isFytDevice()) return;
 
         // Second line of defence. Even with the in-flight claim, two runnables could already be
@@ -2851,7 +2922,7 @@ public class WindowUtil {
                             }
 
                             if (!ok) {
-                                firstOkAt[0] = -1L; // każdy false zeruje okno stabilności
+                                firstOkAt[0] = -1L; // any false resets the stability window
                             } else if (firstOkAt[0] < 0) {
                                 firstOkAt[0] = SystemClock.uptimeMillis();
                             }
