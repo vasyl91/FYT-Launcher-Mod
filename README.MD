@@ -234,9 +234,10 @@ I cannot guarantee that I'll fix every error.
 ## Generating app in Android Studio
 
 1. Clone the repository. 
-2. Tampering with `android.jar` has been deprecated since build 1.1.8.
 
 <details>
+
+Tampering with `android.jar` has been deprecated since build 1.1.7.
 
 for builds up to 1.1.6 — replace `android.jar` in `C:\Users\<UserName>\AppData\Local\Android\Sdk\platforms\android-36` with the file from this [release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android.jar).
 
@@ -244,53 +245,8 @@ for build 1.1.7 — use `android.jar` from this [repository](https://github.com/
 
 </details>
 
-3. For non-privileged devices, change the beginning of `AndroidManifest.xml` to:
-
-<details>
-
-```
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.INSTALL_PACKAGE" />
-            <data android:mimeType="application/vnd.android.package-archive" />
-        </intent>
-    </queries>
-
-    <permission
-        android:name="com.android.launcher66.permission.PRELOAD_WORKSPACE"
-        android:protectionLevel="privileged|signature" />
-    <permission
-        android:description="@string/permdesc_install_shortcut"
-        android:label="@string/permlab_install_shortcut"
-        android:name="com.android.launcher.permission.INSTALL_SHORTCUT"
-        android:protectionLevel="dangerous"
-        tools:ignore="ReservedSystemPermission" />
-    <permission
-        android:description="@string/permdesc_uninstall_shortcut"
-        android:label="@string/permlab_uninstall_shortcut"
-        android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"
-        android:protectionLevel="dangerous"
-        tools:ignore="ReservedSystemPermission" />
-    <permission
-        android:description="@string/permdesc_read_settings"
-        android:label="@string/permlab_read_settings"
-        android:name="com.android.launcher66.permission.READ_SETTINGS"
-        android:protectionLevel="signature" />
-    <permission
-        android:description="@string/permdesc_write_settings"
-        android:label="@string/permlab_write_settings"
-        android:name="com.android.launcher66.permission.WRITE_SETTINGS"
-        android:protectionLevel="signature" />
-```
-
-</details>
-
-4. Open the repository and rebuild the project.
-5. To generate the app, use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose the existing `android` key alias with password `android`. 
+2. Open the project and choose the build you want to use.
+3. To generate the app, use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose the existing `android` key alias with password `android`. 
 
 To debug the app on an FYT device, connect it to your PC. As USB connection can be problematic, for Android 11 and above use ADB over Wi-Fi. On Android 10 with root access, use this guide - [ADB over Wi-Fi on Android 10 using Magisk]](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/MagiskWiFiADB.MD).
 
