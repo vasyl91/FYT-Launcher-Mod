@@ -5,6 +5,11 @@
     android:layout_width="match_parent"
     android:id="@+id/creator_preferences" >
 
+    <Preference
+        android:key="separator_widgets_stats"
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
+
     <PreferenceCategory
         app:key="widgets_category"
         app:title="@string/widgets_category">
@@ -150,6 +155,11 @@
 
     </PreferenceCategory>
 
+    <Preference
+        android:key="separator_widgets_stats"
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
+
     <PreferenceCategory
         app:key="stats_category"
         app:title="@string/stats_category" >
@@ -203,6 +213,11 @@
             app:summary="@string/stats_resize" />   
 
     </PreferenceCategory>
+
+    <Preference
+        android:key="separator_widgets_stats"
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
 
     <PreferenceCategory
         app:key="canbus_reader"
@@ -266,5 +281,10 @@
             android:clickable="false" />
 
     </PreferenceCategory>
+
+    <Preference
+        android:key="separator_widgets_stats"
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
 
 </PreferenceScreen>

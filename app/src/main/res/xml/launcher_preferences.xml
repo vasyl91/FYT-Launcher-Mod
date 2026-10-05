@@ -4,6 +4,11 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:id="@+id/launcher_preferences" >
+
+    <Preference
+        android:key="separator_widgets_stats"
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
     
     <PreferenceCategory
         app:key="layout_category"
@@ -24,6 +29,11 @@
             android:title="@string/layout_creator" />
 
     </PreferenceCategory>
+
+    <Preference
+        android:key="separator_widgets_stats"
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
     
     <PreferenceCategory
         app:key="music_widget_category"
@@ -112,6 +122,11 @@
 
     </PreferenceCategory>
 
+    <Preference
+        android:key="separator_widgets_stats"
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
+
     <PreferenceCategory
         app:key="misc_category"
         app:title="@string/misc_category">
@@ -146,11 +161,19 @@
             android:defaultValue="true"
             android:title="@string/launcher_home" />
         <Preference
+            android:key="separator_widgets_stats"
+            android:layout="@layout/preference_separator"
+            android:selectable="false" />
+        <Preference
             android:key="baseline_profile_summary"
             android:title="@string/baseline_profile_summary" />
         <Preference
             android:key="baseline_profile_reset"
             android:title="@string/baseline_profile_reset" />
+        <Preference
+            android:key="separator_widgets_stats"
+            android:layout="@layout/preference_separator"
+            android:selectable="false" />
         <Preference
             android:key="autostart_apps"
             android:title="@string/autostart_apps"
@@ -161,6 +184,11 @@
             android:title="@string/autostart_apps_by_boot_completed" />
 
     </PreferenceCategory>
+
+    <Preference
+        android:key="separator_widgets_stats"
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
 
     <PreferenceCategory
         app:key="night_mode_category"
@@ -261,6 +289,11 @@
         
     </PreferenceCategory>    
 
+    <Preference
+        android:key="separator_widgets_stats"
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
+
     <PreferenceCategory
         app:key="logcat_category"
         app:title="@string/logcat_service_run">
@@ -291,7 +324,12 @@
             android:title="@string/logcat_service_timeout"
             android:summary="30" />
 
-    </PreferenceCategory>    
+    </PreferenceCategory>   
+
+    <Preference
+        android:key="separator_widgets_stats"
+        android:layout="@layout/preference_separator"
+        android:selectable="false" /> 
 
     <PreferenceCategory
         app:key="app_version"
@@ -307,5 +345,10 @@
             android:clickable="false" />
             
     </PreferenceCategory>
+
+    <Preference
+        android:key="separator_widgets_stats"
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
 
 </PreferenceScreen>
