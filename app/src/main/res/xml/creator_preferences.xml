@@ -5,11 +5,6 @@
     android:layout_width="match_parent"
     android:id="@+id/creator_preferences" >
 
-    <Preference
-        android:key="separator_widgets_stats"
-        android:layout="@layout/preference_separator"
-        android:selectable="false" />
-
     <PreferenceCategory
         app:key="widgets_category"
         app:title="@string/widgets_category">
@@ -69,14 +64,15 @@
             android:key="extended_divider"
             android:defaultValue="true"
             android:title="@string/extended_divider"
+            android:summary=" "
             app:layout="@layout/nested_preference_category_switch" />
-        <com.android.launcher66.settings.CustomSwitchPreference
+        <com.android.launcher66.settings.CustomNestedNoSwitchPreference
             android:key="cover_splash"
             android:defaultValue="true"
             android:title="@string/cover_splash"
             android:summaryOn="@string/cover_splash_icon"
             android:summaryOff="@string/cover_splash_night_mode"
-            app:layout="@layout/nested_preference_category_switch" />
+            app:layout="@layout/nested_preference_category_no_switch" />
         <com.android.launcher66.settings.CustomSwitchPreference
             android:key="swipe_detector"
             android:defaultValue="false"
@@ -101,12 +97,13 @@
         <Preference
             android:key="choose_widgets_background"
             android:title="@string/widgets_background_preference"/>
-        <SwitchPreferenceCompat
+        <com.android.launcher66.settings.CustomNoSwitchPreference
             android:key="black_widgets"
             android:defaultValue="false"
             android:title="@string/black_widgets"
             android:summaryOn="@string/black_color"
-            android:summaryOff="@string/white_color" />
+            android:summaryOff="@string/white_color"
+            app:layout="@layout/preference_no_switch" />
         <Preference
             android:key="start_page"
             android:title="@string/start_page"
@@ -132,12 +129,13 @@
         <Preference
             android:key="choose_bar_background"
             android:title="@string/bar_background_preference"/>  
-        <SwitchPreferenceCompat
+        <com.android.launcher66.settings.CustomNoSwitchPreference
             android:key="black_bar"
             android:defaultValue="false"
             android:title="@string/black_bar"
             android:summaryOn="@string/black_color"
-            android:summaryOff="@string/white_color" />
+            android:summaryOff="@string/white_color"
+            app:layout="@layout/preference_no_switch" />
         <SwitchPreferenceCompat
             android:key="widget_bar"
             android:defaultValue="false"

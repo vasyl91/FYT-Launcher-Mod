@@ -180,7 +180,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomSwitchPreference leftFabPreference;
     private CustomSwitchPreference rightFabPreference;
     private CustomSwitchPreference extendedDivider;
-    private CustomSwitchPreference coverSplash;
+    private CustomNestedNoSwitchPreference coverSplash;
     private CustomSwitchPreference swipeDetector;
     private CustomWidgetSwitchPreference userDate;
     private CustomWidgetSwitchPreference userMusic;
@@ -375,8 +375,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         Preference widgetsBackground = findPreference(Keys.WIDGETS_BACKGROUND);
         Preference barBackground = findPreference(Keys.BAR_BACKGROUND);
-        SwitchPreferenceCompat widgetsTintBlack = findPreference(Keys.BLACK_WIDGETS);
-        SwitchPreferenceCompat barTintBlack = findPreference(Keys.BLACK_BAR);
+        CustomNoSwitchPreference widgetsTintBlack = findPreference(Keys.BLACK_WIDGETS);
+        CustomNoSwitchPreference barTintBlack = findPreference(Keys.BLACK_BAR);
         startPage = findPreference(Keys.START_PAGE);
         String startPageStr = sharedPrefs.getString(Keys.START_PAGE, "1");
         startPage.setSummary(startPageStr);

@@ -315,7 +315,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         addPreferencesFromResource(R.xml.launcher_preferences);
         padding = SettingsActivity.dialogPadding;
         Preference transparentStatusbar = findPreference(Keys.STATUSBAR);
-        Preference userLayout = findPreference(Keys.USER_LAYOUT);
+        CustomNoSwitchPreference userLayout = findPreference(Keys.USER_LAYOUT);
         settingsSecondFragment = findPreference(Keys.CREATOR_FIRST);
 
         Preference favoriteCache = findPreference(Keys.FAVORITE_CACHE);
@@ -335,7 +335,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference notificationPreference = findPreference(Keys.NOTIFICATION_SETTINGS);
         Preference accessibilityPreference = findPreference(Keys.ACCESSIBILITY_SETTINGS);
         Preference wallpaperPicker = findPreference(Keys.WALLPAPER_PICKER);
-        Preference wallpaperPickerSource = findPreference(Keys.WALLPAPER_PICKER_SOURCE);
+        CustomNoSwitchPreference wallpaperPickerSource = findPreference(Keys.WALLPAPER_PICKER_SOURCE);
         Preference launcherHome = findPreference(Keys.LAUNCHER_HOME);
 
         allAppsTextSize = findPreference(Keys.ALL_APPS_TEXT_SIZE);
@@ -375,7 +375,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         PreferenceCategory logcatCategory = findPreference("logcat_category");
         logcatService = findPreference(Keys.LOGCAT_SERVICE);
         logcatServiceWake = findPreference(Keys.LOGCAT_SERVICE_WAKE);
-        Preference logcatFull = findPreference(Keys.LOGCAT_FULL);
+        CustomNoSwitchPreference logcatFull = findPreference(Keys.LOGCAT_FULL);
         Preference logcatBoot = findPreference(Keys.BOOT_LOGCAT);
         logcatRun = findPreference(Keys.LOGCAT_SERVICE_RUN);
         logcatServiceTimeout = findPreference(Keys.LOGCAT_SERVICE_TIMEOUT);
