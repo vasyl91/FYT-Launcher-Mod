@@ -855,7 +855,13 @@ class NotificationListener : NotificationListenerService() {
             // The session catches up later than the sound itself: YouTube's AudioTrack started
             // (and com.syu.ms switched to 10 for it) 290 ms before its session said PLAYING, so
             // the restore came first and com.syu.music took the sound back from it.
-            if (isThirdPartyAudioStarted()) {
+            // Not around a pane rebuild: there a sounding app is a pane app the launcher started
+            // (Spotify and the like taking the channel as they come up), and the stock source
+            // keeps the channel, as before.
+            val nowCheck = SystemClock.elapsedRealtime()
+            val nearRebuild = nowCheck < paneRestartUntil
+                    || nowCheck - paneRebuildEndedAtMs < POST_REBUILD_FAST_MS
+            if (!nearRebuild && isThirdPartyAudioStarted()) {
                 Log.d("NotificationListener", "Channel 10 taken by a player that is already sounding - leaving it")
                 return@postDelayedIfAlive
             }

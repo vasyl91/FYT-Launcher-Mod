@@ -2708,12 +2708,34 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             });
         }
 
+        // Rebuilding the bars when they are in place only redraws them -- the second rebuild seen
+        // after the settings, run because a custom element was still on its way.
+        if (areAppBarsAttached()) {
+            return;
+        }
         markAppDataDirty();
         if (atomicInitAppData.get()) {
             requestPostResumeAppDataRefresh();
         } else {
             triggerAppData();
         }
+    }
+
+    /** Both app bars of the current page show the adapters, and those have their apps. */
+    private boolean areAppBarsAttached() {
+        if (mWorkspace == null || mAppListAdapter == null || mAppListAdapter.getItemCount() == 0) {
+            return false;
+        }
+        RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
+        if (recycler != null && recycler.getAdapter() != mAppListAdapter) {
+            return false;
+        }
+        RecyclerView leftRecycler = (RecyclerView) mWorkspace.findViewById(R.id.left_recycler_view);
+        if (leftRecycler != null && shouldUseLeftRecycler()
+                && (mLeftAppListAdapter == null || leftRecycler.getAdapter() != mLeftAppListAdapter)) {
+            return false;
+        }
+        return true;
     }
 
     private void restoreBottomRecyclerAfterHome(String source) {
@@ -3918,6 +3940,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return;
         }
 
+        // The rebind below starts by removing every page, the user page included, and bindScreens()
+        // builds that page again. Building it here as well showed the launcher rebuilding twice on
+        // the way back from the settings, the second time with empty app bars.
+        boolean rebindRebuildsUserPage = false;
         try {
             long nowReload = SystemClock.uptimeMillis();
             if (mWorkspaceLoading || nowReload - mLastForceReloadMs < FORCE_RELOAD_THROTTLE_MS) {
@@ -3932,6 +3958,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mWorkspaceLoading = true;
                 armWorkspaceLoadingWatchdog();
                 mModel.forceReload();
+                rebindRebuildsUserPage = LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_custom_page);
             }
         } catch (Exception e) {
             Log.e(TAG, "recreateView: forceReload failed", e);
@@ -3940,9 +3967,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mIsInitializingAppData = false;
 
         try {
-            mWorkspace.createUserPage();
+            if (rebindRebuildsUserPage) {
+                Log.d(TAG, "recreateView: user page left to the rebind");
+            } else {
+                mWorkspace.createUserPage();
+            }
             mAppWidgetHost.startListening();
-            initViews();
+            if (!rebindRebuildsUserPage) {
+                initViews();
+            }
             setupViews();
             bindOnclickListener();
             restoreState(mSavedState);
@@ -11975,6 +12008,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.createUserPage();
             initViews();
             bindOnclickListener();
+            // The new page's app bars are empty, and initAppData() waits for the whole app list,
+            // which a forceReload() loads again from scratch -- 10 s of icons after one return
+            // from the settings. The adapters still hold the current bar apps: put them back now.
+            if (mAppListAdapter != null && mAppListAdapter.getItemCount() > 0) {
+                restoreBottomRecyclerAfterHome("bindScreens");
+            }
         }
         if (!mWorkspace.hasCustomContent() && hasCustomContentToLeft()) {
             mWorkspace.createCustomContentPage();
