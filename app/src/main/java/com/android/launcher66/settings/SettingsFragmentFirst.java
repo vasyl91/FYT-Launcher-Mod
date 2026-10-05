@@ -495,10 +495,20 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (logcatFull != null) {
             logcatFull.setOnPreferenceClickListener(this);
             logcatFull.setVisible(LauncherApplication.hasSystemPrivileges());
+            // The boot log only works together with "log everything" (LogcatWorker), so it is
+            // shown only while that is on.
+            logcatFull.setOnPreferenceChangeListener((preference, newValue) -> {
+                if (logcatBoot != null) {
+                    logcatBoot.setVisible(LauncherApplication.hasSystemPrivileges()
+                            && Boolean.TRUE.equals(newValue));
+                }
+                return true;
+            });
         }
         if (logcatBoot != null) {
             logcatBoot.setOnPreferenceClickListener(this);
-            logcatBoot.setVisible(LauncherApplication.hasSystemPrivileges());
+            logcatBoot.setVisible(LauncherApplication.hasSystemPrivileges()
+                    && logcatFull != null && logcatFull.isChecked());
         }
         if (logcatRun != null) {
             logcatRun.setOnPreferenceClickListener(this);
