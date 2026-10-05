@@ -32,6 +32,7 @@ import android.widget.TextView;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.perf.BaselineProfileCompiler;
+import com.android.launcher66.settings.CrashLogger;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.LogcatWorker;
 import com.android.launcher66.settings.VersionChecker;
@@ -108,6 +109,8 @@ public class LauncherApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate()");
+        // First, so that a crash anywhere below is written to Launcher66_Logs too.
+        CrashLogger.install(this);
         long start = SystemClock.elapsedRealtime();
         if (isWallpaperPickerProcess()) {
             initWallpaperPickerProcess();

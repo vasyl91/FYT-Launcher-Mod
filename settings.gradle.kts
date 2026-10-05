@@ -37,3 +37,7 @@ dependencyResolutionManagement {
 rootProject.name = "FYT Launcher Mod"
 include(":app")
 include(":baselineprofile")
+// The folder is "baselineProfile": the same on Windows, but a case-sensitive file system (Linux, CI)
+// would not find it under the project's name.
+project(":baselineprofile").projectDir = file("baselineProfile")
+include(":hiddenapi-stubs")

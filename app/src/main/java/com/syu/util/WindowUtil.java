@@ -1,5 +1,6 @@
 package com.syu.util;
 
+import com.android.launcher66.SysCalls;
 import android.SystemProperties;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -656,13 +657,13 @@ public class WindowUtil {
                     }
 
                     if (checkIfPinned() && AppPackageName.equals("com.syu.camera360")) {
-                        Launcher.mLauncher.sendBroadcast(new Intent("com.syu.camera360.show"));
+                        SysCalls.sendBroadcast(Launcher.mLauncher, new Intent("com.syu.camera360.show"));
                     }
 
                     boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
                    
                     if (userLayout) {
-                        Launcher.mLauncher.sendBroadcast(new Intent(Keys.BLOCK_FLOATING_BUTTON));
+                        SysCalls.sendBroadcast(Launcher.mLauncher, new Intent(Keys.BLOCK_FLOATING_BUTTON));
                         // Always try to dismiss existing views before adding a new ones
                         // It prevents adding a view twice what results in persistent black rectangle
                         try {
@@ -778,7 +779,7 @@ public class WindowUtil {
             Log.d(TAG, "removePip..");
             launcher.handler.postDelayed(() -> {
                 if (checkIfPinned() && WindowUtil.AppPackageName.equals("com.syu.camera360")) {
-                    LauncherApplication.sApp.sendBroadcast(new Intent("com.syu.camera360.hide"));
+                    SysCalls.sendBroadcast(LauncherApplication.sApp, new Intent("com.syu.camera360.hide"));
                 }
             }, delayMillis);
             if (AppPackageName.equals(FytPackage.GaodeACTION)) {
@@ -800,10 +801,10 @@ public class WindowUtil {
                 if (!helpers.isForegroundAppOpened() && !helpers.isInRecent() && !helpers.isInAllApps()) {
                     helpers.setPipStarted(false);
                     Intent intent = new Intent(Keys.PIP_REMOVED);
-                    LauncherApplication.sApp.sendBroadcast(intent);
+                    SysCalls.sendBroadcast(LauncherApplication.sApp, intent);
                 } else if (helpers.isInOverviewMode()) {
                     Intent intentOverview = new Intent(Keys.OVERVIEW_MODE_OPEN);
-                    LauncherApplication.sApp.sendBroadcast(intentOverview);
+                    SysCalls.sendBroadcast(LauncherApplication.sApp, intentOverview);
                 }
             }
             try {
@@ -2226,7 +2227,7 @@ public class WindowUtil {
             // Block floating button while swapping (preserve existing behavior)
             try {
                 if (Launcher.mLauncher != null) {
-                    Launcher.mLauncher.sendBroadcast(new Intent(Keys.BLOCK_FLOATING_BUTTON));
+                    SysCalls.sendBroadcast(Launcher.mLauncher, new Intent(Keys.BLOCK_FLOATING_BUTTON));
                 }
             } catch (Throwable ignore) {}
 
@@ -2516,7 +2517,7 @@ public class WindowUtil {
             // Block floating button while swapping
             try {
                 if (Launcher.mLauncher != null) {
-                    Launcher.mLauncher.sendBroadcast(new Intent(Keys.BLOCK_FLOATING_BUTTON));
+                    SysCalls.sendBroadcast(Launcher.mLauncher, new Intent(Keys.BLOCK_FLOATING_BUTTON));
                 }
             } catch (Throwable ignore) {}
 

@@ -738,7 +738,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override
         public void run() {
             TimeUpdateReceiver.register(Launcher.mLauncher);
-            Launcher.this.sendBroadcast(new Intent(TimeUpdateReceiver.SHOW_TIME));
+            SysCalls.sendBroadcast(Launcher.this, new Intent(TimeUpdateReceiver.SHOW_TIME));
         }
     };
 
@@ -3525,7 +3525,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // broadcast for CanbusService
         if (mAppsCustomizeTabHost.getVisibility() == View.VISIBLE) {
             Intent intent = new Intent(Keys.ALL_APPS_VISIBLE);
-            sendBroadcast(intent);
+            SysCalls.sendBroadcast(Launcher.this, intent);
         }
         helpers = new Helpers();
         helpers.setOpenedFromOverviewBoolean(false);
@@ -3723,7 +3723,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
             Intent nightModeServiceIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
             if (isServiceRunning(NightModeService.class)) {
-                stopService(nightModeServiceIntent);
+                SysCalls.stopService(Launcher.this, nightModeServiceIntent);
                 setServiceRunningCache(NightModeService.class, false);
             }
             if (ServiceIntentGate.startIfAvailable(this, nightModeServiceIntent, "resume night mode")) {
@@ -3732,7 +3732,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         if (helpers.hasCorrectionChanged()) {
-            sendBroadcast(new Intent(Keys.RECREATE));
+            SysCalls.sendBroadcast(Launcher.this, new Intent(Keys.RECREATE));
             helpers.setCorrectionChanged(false);
         }
 
@@ -3999,7 +3999,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         if (isServiceRunning(FabOverlayService.class)) {
             Intent serviceIntent = new Intent(LauncherApplication.sApp, FabOverlayService.class);
-            stopService(serviceIntent);
+            SysCalls.stopService(Launcher.this, serviceIntent);
             setServiceRunningCache(FabOverlayService.class, false);
         }
 
@@ -4491,7 +4491,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 setServiceRunningCache(FabOverlayService.class, true);
             }
         } else {
-            sendBroadcast(new Intent(Keys.SHOW_FAB));
+            SysCalls.sendBroadcast(Launcher.this, new Intent(Keys.SHOW_FAB));
         }
     }
 
@@ -4537,7 +4537,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return;
         }
         if (isServiceRunning(FabOverlayService.class)) {
-            sendBroadcast(new Intent(Keys.SHOW_FAB));
+            SysCalls.sendBroadcast(Launcher.this, new Intent(Keys.SHOW_FAB));
             return;
         }
         floatingButton = checkIfFloatingButton();
@@ -4548,7 +4548,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void hideOverlayFab() {
         Intent intent = new Intent(Keys.HIDE_FAB);
-        sendBroadcast(intent);
+        SysCalls.sendBroadcast(Launcher.this, intent);
     }
 
     @Override 
@@ -4944,13 +4944,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void stopServicesOnDestroy() {
-        stopService(new Intent(LauncherApplication.sApp, WakeDetectionService.class));
+        SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, WakeDetectionService.class));
         setServiceRunningCache(WakeDetectionService.class, false);
-        stopService(new Intent(LauncherApplication.sApp, NightModeService.class));
+        SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, NightModeService.class));
         setServiceRunningCache(NightModeService.class, false);
-        stopService(new Intent(LauncherApplication.sApp, CanbusService.class));
+        SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, CanbusService.class));
         setServiceRunningCache(CanbusService.class, false);
-        stopService(new Intent(LauncherApplication.sApp, FabOverlayService.class));
+        SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, FabOverlayService.class));
         setServiceRunningCache(FabOverlayService.class, false);
         mHandler.removeCallbacks(mDeferredFabStart);
         mHandler.removeCallbacks(mApplyPendingBarSnapshots);
@@ -4958,7 +4958,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // On recreation the new launcher can be created before this one is destroyed; the strip
         // then belongs to it and must not be stopped here.
         if (mLauncher == this || mLauncher == null) {
-            stopService(new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class));
+            SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class));
             setServiceRunningCache(StatusBarSwipeDetector.class, false);
         }
     }
@@ -4987,7 +4987,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 setServiceRunningCache(StatusBarSwipeDetector.class, true);
             }
         } else {
-            stopService(intent);
+            SysCalls.stopService(Launcher.this, intent);
             setServiceRunningCache(StatusBarSwipeDetector.class, false);
         }
     }
@@ -5078,7 +5078,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             helpers.setInRecent(false);
             helpers.setInOverviewMode(false);
             Intent intentpip = new Intent(Keys.PIP_STARTED);
-            sendBroadcast(intentpip);
+            SysCalls.sendBroadcast(Launcher.this, intentpip);
         }
     }
 
@@ -8638,7 +8638,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.music.playpause");
                 intent.setPackage("com.syu.music");
-                this.startService(intent);
+                SysCalls.startService(this, intent);
             } else if ("mediaController".equals(mediaSource)) {
                 boolean activeControllerAppRunning = false;
                 MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
@@ -10536,7 +10536,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                 setBarButtonsTint(mPlayPauseButtonTwo);
             }
-            sendBroadcast(new Intent("media.play.pause")); 
+            SysCalls.sendBroadcast(Launcher.this, new Intent("media.play.pause")); 
         }
     }
 
@@ -10556,7 +10556,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         intent.putExtra("EXTRA_TAB", 1);
         intent.putExtra("SOURCE_APP", "qingcheji");
         intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-        context.sendBroadcast(intent);
+        SysCalls.sendBroadcast(context, intent);
     }
 
     @Override
@@ -11526,7 +11526,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             helpers.setInOverviewMode(false);
             helpers.setListOpen(false);
             Intent intent = new Intent(Keys.ALL_APPS);
-            sendBroadcast(intent);
+            SysCalls.sendBroadcast(Launcher.this, intent);
             if (resetPageToZero) {
                 mAppsCustomizeTabHost.reset();
             }

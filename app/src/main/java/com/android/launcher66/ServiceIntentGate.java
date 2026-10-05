@@ -26,7 +26,7 @@ public final class ServiceIntentGate {
             return false;
         }
         try {
-            return context.startService(intent) != null;
+            return SysCalls.startService(context, intent) != null;
         } catch (Throwable t) {
             Log.w(TAG, "Failed to start service: " + label + " " + intent, t);
             return false;

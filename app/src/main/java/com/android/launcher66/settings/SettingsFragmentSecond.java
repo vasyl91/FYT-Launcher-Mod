@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import com.android.launcher66.SysCalls;
 import android.Manifest;
 import android.app.AppOpsManager;
 import android.content.Context;
@@ -1423,7 +1424,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
     public void stopCanbusCodeInspector() {
         Intent intent = new Intent(this.requireContext(), CanbusCodeInspector.class);
-        this.requireContext().stopService(intent);
+        SysCalls.stopService(this.requireContext(), intent);
         removeTickRunnable();
         cancelCountDownTimer();
         codeInspector.setSummary(getString(R.string.code_inspector_summary));

@@ -1,5 +1,6 @@
 package com.android.recycler;
 
+import com.android.launcher66.SysCalls;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.ComponentName;
@@ -285,9 +286,9 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder>
                         LeftAppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
                 Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
                 if (apps.contains(appListBean.packageName)) {
-                    LeftAppListAdapter.this.mLauncher.sendBroadcast(new Intent(RECYCLER_APP_MAP));
+                    SysCalls.sendBroadcast(LeftAppListAdapter.this.mLauncher, new Intent(RECYCLER_APP_MAP));
                 } else {
-                    LeftAppListAdapter.this.mLauncher.sendBroadcast(new Intent(RECYCLER_APP));
+                    SysCalls.sendBroadcast(LeftAppListAdapter.this.mLauncher, new Intent(RECYCLER_APP));
                 }
             }
         }

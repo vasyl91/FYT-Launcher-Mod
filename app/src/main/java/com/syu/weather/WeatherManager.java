@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
-import android.location.GnssStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -104,42 +103,6 @@ public class WeatherManager {
     private long mRetryDelayMs = 0L;
     private long mNextAttemptAt = 0L;
 
-    GnssStatus.Callback mListener = new GnssStatus.Callback() {
-        long time;
-
-        @Override 
-        public void onSatelliteStatusChanged(@NonNull GnssStatus status) {
-            if (SystemClock.elapsedRealtime() - this.time > 10000) {
-                this.time = SystemClock.elapsedRealtime();
-                double maxSatellites = status.getSatelliteCount();
-                double usedInFix = 0;
-                for (int i = 0; i < maxSatellites; ++i) {
-                    if (status.usedInFix(i)) {
-                        ++usedInFix;
-                    }
-                }
-            }
-        }
-    };
-    
-    LocationListener mNetListener = new LocationListener() { 
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-        }
-    };
-    
     LocationListener mGpsListener = new LocationListener() { 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -158,17 +121,6 @@ public class WeatherManager {
             if (location != null) {
                 boolean flag = WeatherManager.this.isBetterLocation(location, WeatherManager.this.mCurLocation);
                 if (flag) {
-                    if (WeatherManager.this.minDis == 0) {
-                        WeatherManager.this.stop();
-                        WeatherManager.this.minDis = 2000;
-                        if (WeatherManager.this.mLocationManager.isProviderEnabled("gps") && hasLocationPermission()) {
-                            try {
-                                WeatherManager.this.mLocationManager.requestLocationUpdates("gps", 2L, WeatherManager.this.minDis, WeatherManager.this.mGpsListener);
-                            } catch (SecurityException e) {
-                                Log.e(TAG, "GPS location permission denied", e);
-                            }
-                        }
-                    }
                     WeatherManager.this.updateLocation(location);
                 }
             }
@@ -325,14 +277,6 @@ public class WeatherManager {
             return;
         }
 
-        if (mLocationManager != null) {
-            try {
-                mLocationManager.registerGnssStatusCallback(mListener, null);
-            } catch (SecurityException e) {
-                Log.e(TAG, "GNSS status callback permission denied", e);
-            }
-        }
-        
         if (this.mNetworkCheck != null && this.mNetworkCheck.hasNet && !this.isRunning) {
             // Check permission for fused location
             if (hasLocationPermission()) {
@@ -347,49 +291,56 @@ public class WeatherManager {
                 });
             }
 
-            // Request location updates with permission checks
-            if (this.mLocationManager.isProviderEnabled("gps") && hasLocationPermission()) {
-                try {
-                    this.mLocationManager.requestLocationUpdates("gps", 30000L, (float)this.minDis, this.mGpsListener);
-                } catch (SecurityException e) {
-                    Log.e(TAG, "GPS location updates permission denied", e);
-                }
-            }
-
-            if (this.mLocationManager.isProviderEnabled("network") && hasLocationPermission()) {
-                try {
-                    this.mLocationManager.requestLocationUpdates("network", 30000L, (float)this.minDis, this.mNetListener);
-                } catch (SecurityException e) {
-                    Log.e(TAG, "Network location updates permission denied", e);
-                }
-            }
-
             this.isRunning = true;
+            updateGpsRequest();
+        }
+    }
+
+    /*
+     * GPS only while the launcher shows the weather (sForeground): it used to stay on for the whole
+     * drive, also behind a full-screen app and with the weather off screen, a fix every 30 s for
+     * nothing. A fix from before the launcher came back is still asked for: getLastLocation() in
+     * start() and the first fix after the request. The "network" provider was requested as well,
+     * with a listener that ignored every location -- dropped.
+     */
+    private boolean mGpsRequested = false;
+
+    /** Main thread. Requests or removes the GPS updates to match isRunning and sForeground. */
+    @SuppressLint("MissingPermission")
+    void updateGpsRequest() {
+        if (mLocationManager == null) {
+            return;
+        }
+        boolean wanted = isRunning && sForeground && hasLocationPermission();
+        if (wanted == mGpsRequested) {
+            return;
+        }
+        if (wanted) {
+            try {
+                if (!mLocationManager.isProviderEnabled("gps")) {
+                    return;
+                }
+                mLocationManager.requestLocationUpdates("gps", 30000L, (float) this.minDis,
+                        this.mGpsListener, android.os.Looper.getMainLooper());
+                mGpsRequested = true;
+            } catch (SecurityException e) {
+                Log.e(TAG, "GPS location updates permission denied", e);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "GPS location updates not available: " + e);
+            }
+        } else {
+            try {
+                mLocationManager.removeUpdates(this.mGpsListener);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Removing the GPS updates failed: " + e);
+            }
+            mGpsRequested = false;
         }
     }
 
     void stop() {
-        if (mLocationManager != null) {
-            try {
-                mLocationManager.unregisterGnssStatusCallback(mListener);
-            } catch (Exception e) {
-                Log.e(TAG, "Error unregistering GNSS callback", e);
-            }
-            
-            if (this.mLocationManager != null) {
-                try {
-                    this.mLocationManager.removeUpdates(this.mGpsListener);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error removing GPS updates", e);
-                }
-                try {
-                    this.mLocationManager.removeUpdates(this.mNetListener);
-                } catch (Exception e2) {
-                    Log.e(TAG, "Error removing network updates", e2);
-                }
-            }
-        }
         this.isRunning = false;
+        updateGpsRequest();
     }
 
     /**
@@ -490,6 +441,10 @@ public class WeatherManager {
     /** Shows the weather on screen (called from onPostResume) or not (onStop). */
     public static void setForeground(boolean foreground) {
         sForeground = foreground;
+        WeatherManager manager = instance;
+        if (manager != null) {
+            manager.updateGpsRequest();
+        }
     }
 
     private long nextCheckDelay(long now) {

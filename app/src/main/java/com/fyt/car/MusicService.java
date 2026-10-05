@@ -1,5 +1,6 @@
 package com.fyt.car;
 
+import com.android.launcher66.SysCalls;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -138,7 +139,7 @@ public class MusicService extends Service {
                 return;
             }
             try {
-                app.sendBroadcast(latest);
+                SysCalls.sendBroadcast(app, latest);
             } catch (RuntimeException e) {
                 Log.w(TAG, "sendBroadcast(" + latest.getAction() + ") failed", e);
             }

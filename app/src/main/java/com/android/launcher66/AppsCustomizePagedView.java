@@ -571,7 +571,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                     helpers.setAllAppsShouldBeVisible(true);
                     helpers.setForegroundAppOpened(true);
                     Intent intent = new Intent(Keys.STATS_APP_FOREGROUND);
-                    LauncherApplication.sApp.sendBroadcast(intent);
+                    SysCalls.sendBroadcast(LauncherApplication.sApp, intent);
                 }                    
             }
         } else if (v instanceof PagedViewWidget) {

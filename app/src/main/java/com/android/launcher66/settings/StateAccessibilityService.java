@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import com.android.launcher66.SysCalls;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +28,11 @@ public class StateAccessibilityService extends AccessibilityService {
         int eventType = event.getEventType();
         String packageName = event.getPackageName() != null ? event.getPackageName().toString() : "null";
         if (eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            // The task stack reports the foreground app already (system privileges); a second
+            // source would only contradict it.
+            if (ForegroundAppTracker.isActive()) {
+                return;
+            }
             // A dialog or a fragment of the app already in front: the foreground app is unchanged,
             // and every broadcast is a call into ActivityManager (112 of them in a cold boot capture).
             long now = SystemClock.uptimeMillis();
@@ -39,7 +45,7 @@ public class StateAccessibilityService extends AccessibilityService {
             Bundle extras = new Bundle();
             extras.putString("package_name", packageName);
             intent.putExtras(extras);
-            this.sendBroadcast(intent);
+            SysCalls.sendBroadcast(this, intent);
         }
     }
 

@@ -300,6 +300,8 @@
     <string name="wallpaper_load_fail">Nie załadowano pliku tapety</string>
     <string name="night_mode">Tryb nocny</string>
     <string name="night_mode_summary">Wyliczony wschód: %1$s i zachód: %2$s.</string>
+    <string name="night_mode_lights">Noc według świateł auta</string>
+    <string name="night_mode_lights_summary">Włączone światła oznaczają noc, wyłączone dzień, zamiast wschodu i zachodu słońca. Tylko dla aut, które same włączają światła; przy obowiązku jazdy na światłach w dzień będzie noc przez cały dzień.</string>
     <string name="summary_correction_sunrise">\u0020Skorygowany wschód: %1$s.</string>
     <string name="summary_correction_sunset">\u0020Skorygowany zachód: %1$s.</string>
     <string name="sun_corrections">Korekcja wschodu i zachodu słońca (opcjonalna)</string>

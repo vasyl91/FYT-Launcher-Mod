@@ -1,5 +1,6 @@
 package com.android.recycler;
 
+import com.android.launcher66.SysCalls;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -238,7 +239,7 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
         if (userLayout && userStats) {
             // Mirrors LIST_OPEN from onCreateView - same condition, so LIST_CLOSE is
             // never sent without a preceding LIST_OPEN.
-            LauncherApplication.sApp.sendBroadcast(new Intent(Keys.LIST_CLOSE));
+            SysCalls.sendBroadcast(LauncherApplication.sApp, new Intent(Keys.LIST_CLOSE));
         }
     }
 
@@ -263,7 +264,7 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
             helpers.setInAllApps(false);
             helpers.setInWidgets(false);
             helpers.setInRecent(false);
-            LauncherApplication.sApp.sendBroadcast(new Intent(Keys.LIST_OPEN));
+            SysCalls.sendBroadcast(LauncherApplication.sApp, new Intent(Keys.LIST_OPEN));
         }
 
         if (getActivity() != null && getActivity().getWindow() != null) {

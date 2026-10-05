@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import com.android.launcher66.SysCalls;
 import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
@@ -342,7 +343,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 if (isServiceRunning(NightModeService.class)) {
                     handler.postDelayed(() -> {
                         Intent nightModeIntent = new Intent(LauncherApplication.sApp, NightModeService.class);
-                        LauncherApplication.sApp.stopService(nightModeIntent);  
+                        SysCalls.stopService(LauncherApplication.sApp, nightModeIntent);  
                     }, 100);  // Small delay ensures onCancelled() completes    
                 }     
             }    
@@ -448,14 +449,14 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
             Helpers helpers = new Helpers();
             helpers.setListOpen(false);
             Intent intentClose = new Intent(Keys.LIST_CLOSE);
-            LauncherApplication.sApp.sendBroadcast(intentClose);
+            SysCalls.sendBroadcast(LauncherApplication.sApp, intentClose);
         }
     }
 
     private void sendWakeRefresh(String phase) {
         Intent intent = new Intent(ACTION_WAKE_REFRESH);
         intent.putExtra("phase", phase);
-        LauncherApplication.sApp.sendBroadcast(intent);
+        SysCalls.sendBroadcast(LauncherApplication.sApp, intent);
     }
 
     /**

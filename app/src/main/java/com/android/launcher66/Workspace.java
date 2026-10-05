@@ -1003,7 +1003,7 @@ public class Workspace extends SmoothPagedView
                     if (userLayout) {
                         if (userStats)  {
                             Intent intent = new Intent(Keys.PIP_REMOVED);
-                            LauncherApplication.sApp.sendBroadcast(intent);
+                            SysCalls.sendBroadcast(LauncherApplication.sApp, intent);
                         }  
                     }
                     ((ViewGroup) parent).removeView(customScreen[i]);
@@ -4539,7 +4539,7 @@ public class Workspace extends SmoothPagedView
             helpers.setInWidgets(false);
             helpers.setInRecent(false);
             Intent intentOverviewMode = new Intent(Keys.OVERVIEW_MODE_OPEN);
-            LauncherApplication.sApp.sendBroadcast(intentOverviewMode);
+            SysCalls.sendBroadcast(LauncherApplication.sApp, intentOverviewMode);
         }
         if (mTouchState != TOUCH_STATE_REST) {
             return false;
@@ -4569,7 +4569,7 @@ public class Workspace extends SmoothPagedView
             helpers.setInWidgets(false);
             helpers.setInRecent(false);
             Intent intentOverviewMode = new Intent(Keys.OVERVIEW_MODE_CLOSE);
-            LauncherApplication.sApp.sendBroadcast(intentOverviewMode);
+            SysCalls.sendBroadcast(LauncherApplication.sApp, intentOverviewMode);
         }
 
         mainHandler.postDelayed(()-> {

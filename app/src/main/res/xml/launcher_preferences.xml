@@ -195,6 +195,13 @@
             android:title="@string/night_mode"
             android:summaryOn="@string/night_mode_summary"
             android:maxLines="5" />
+
+        <SwitchPreferenceCompat
+            android:key="night_mode_lights"
+            android:defaultValue="false"
+            android:title="@string/night_mode_lights"
+            android:summary="@string/night_mode_lights_summary"
+            android:maxLines="6" />
         
         <com.android.launcher66.settings.CustomPreferenceCategory
             app:key="correction_category"

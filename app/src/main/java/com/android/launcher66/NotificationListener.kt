@@ -1534,7 +1534,7 @@ class NotificationListener : NotificationListenerService() {
         val app = applicationContext
         broadcaster.execute {
             try {
-                app.sendBroadcast(intent)
+                SysCalls.sendBroadcast(app, intent)
             } catch (e: RuntimeException) {
                 Log.w("NotificationListener", "sendBroadcast(${intent.action}) failed", e)
             }
