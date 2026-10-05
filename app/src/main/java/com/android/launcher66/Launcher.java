@@ -124,6 +124,7 @@ import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.MainViewModel;
 import com.android.launcher66.settings.NightModeService;
+import com.android.launcher66.settings.SessionPrefs;
 import com.android.launcher66.settings.SettingsActivity;
 import com.android.launcher66.settings.StatusBarSwipeDetector;
 import com.android.launcher66.settings.WakeDetectionService;
@@ -2456,6 +2457,20 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return healthy;
     }
 
+    /** Every configured custom element is attached, or on its way, on its page. */
+    private boolean areCustomElementsInPlace() {
+        if (mWorkspace == null) {
+            return false;
+        }
+        for (int i = 0; i < mWorkspace.getChildCount(); i++) {
+            View child = mWorkspace.getChildAt(i);
+            if (child instanceof CellLayout && !((CellLayout) child).hasHealthyCustomElements()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private boolean shouldValidateHotseatForHealth() {
         if (mHotseat == null || mHotseat.getVisibility() != View.VISIBLE || mHotseat.getAlpha() == 0.0f) {
             return false;
@@ -2680,7 +2695,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mWorkspace != null) {
             mWorkspace.post(() -> {
                 if (mWorkspace == null) return;
-                if (currentUserLayout) {
+                // Only when something is missing. Each request ends in addWidgetsToAllExistingPages()
+                // and a stripEmptyScreens() pass ~2 s later, and a wake asked for it five times
+                // (early, late, +250 ms, focus, retry) with every element already in place
+                // ("Stats placeholder already exists", capture 05-10-2026 21:14:30-38).
+                if (currentUserLayout && !areCustomElementsInPlace()) {
                     requestCustomElementsSetup(source);
                 }
                 restoreBottomRecyclerAfterHome(source);
@@ -2993,7 +3012,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             customViewMap = new HashMap<>();
         }
 
-        getSharedPreferences("HelpersPrefs", 0).edit().clear().apply();
+        SessionPrefs.get().edit().clear().apply();
         helpers = new Helpers();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);  
 
@@ -3992,9 +4011,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }, 250);
 
         mHandler.postDelayed(() -> {
-            // apply(), not commit(): nothing below reads these back synchronously, and commit()
-            // blocks the main thread on the disk write.
-            getSharedPreferences("HelpersPrefs", 0).edit().clear().apply();
+            SessionPrefs.get().edit().clear().apply();
         }, 350);
 
         triggerAppData();

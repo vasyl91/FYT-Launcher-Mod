@@ -27,8 +27,9 @@ public class Helpers {
 
     private static final String TAG = "Helpers";
     private static SharedPreferences mPrefs;
-    // These prefs are reseted on each onCreate or on recreateView in Launcher.java
-    private static final SharedPreferences sharedPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
+    // These prefs are reseted on each onCreate or on recreateView in Launcher.java. Session state,
+    // so kept in memory: see SessionPrefs (was the "HelpersPrefs" file, an fsync per flag change).
+    private static final SharedPreferences sharedPrefs = SessionPrefs.get();
     private static final SharedPreferences.Editor editor = sharedPrefs.edit();
     // These prefs remain
     private static final SharedPreferences sharedPrefsSus = LauncherApplication.sApp.getSharedPreferences("HelpersPrefsSus", Context.MODE_PRIVATE);

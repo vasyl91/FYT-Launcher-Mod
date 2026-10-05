@@ -74,7 +74,11 @@ public final class FytRating {
     // above the bridge's own HTTP timeouts, or a slow but successful lookup is
     // indistinguishable from a dead bridge.
     private static final long RATING_TIMEOUT_MS = 12000L;
-    private static final long STATUS_TIMEOUT_MS = 8000L;
+    // The status needs no network, but the request can wait behind the foreground broadcast
+    // queue and the bridge's process start: at boot GMS held that queue for 6 s and the bridge was
+    // started 10.5 s after the request (capture 05-10-2026 21:11:11), after the old 8 s timeout had
+    // already cancelled the reply intent ("The caller went away"). It runs on a background thread.
+    private static final long STATUS_TIMEOUT_MS = 20000L;
 
     /** How long a status answer is trusted before it is fetched again. */
     private static final long STATUS_MAX_AGE_MS = 60000L;
@@ -186,8 +190,12 @@ public final class FytRating {
     private static final int AUTOLAUNCH_ALLOWED = 1;
     private static final int AUTOLAUNCH_UNAVAILABLE = 2;
     private static volatile int autoLaunchState = AUTOLAUNCH_UNKNOWN;
-    /** A status request went unanswered although auto-launch was allowed: back to the activity. */
+    /**
+     * Status requests went unanswered twice in a row although auto-launch was allowed: back to the
+     * activity. Once was not enough proof -- a single request can be stuck in a congested queue.
+     */
     private static volatile boolean broadcastLaunchFailed;
+    private static final AtomicInteger UNANSWERED_AUTOLAUNCH_STATUS = new AtomicInteger(0);
     // android.os.sprdpower.AppPowerSaveConfig: ConfigType.TYPE_AUTOLAUNCH, VALUE_NO_OPTIMIZE.
     private static final int PWCTL_TYPE_AUTOLAUNCH = 4;
     private static final int PWCTL_VALUE_NO_OPTIMIZE = 2;
@@ -312,9 +320,12 @@ public final class FytRating {
         Bundle result = exchange(context, request, STATUS_TIMEOUT_MS);
         statusCheckedAtMs = SystemClock.elapsedRealtime();
 
-        if (result == null && autoLaunchState == AUTOLAUNCH_ALLOWED && !broadcastLaunchFailed) {
+        if (result != null) {
+            UNANSWERED_AUTOLAUNCH_STATUS.set(0);
+        } else if (autoLaunchState == AUTOLAUNCH_ALLOWED && !broadcastLaunchFailed
+                && UNANSWERED_AUTOLAUNCH_STATUS.incrementAndGet() >= 2) {
             broadcastLaunchFailed = true;
-            Log.w(TAG, "No status reply although the bridge may be auto-launched;"
+            Log.w(TAG, "No status reply twice although the bridge may be auto-launched;"
                     + " waking it through its activity from now on");
         }
 

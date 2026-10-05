@@ -98,7 +98,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         // determine class likely containing canbus codes
-        SharedPreferences mPrefs = getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
+        SharedPreferences mPrefs = SessionPrefs.get();
         String can = mPrefs.getString("canbus_class", "empty");
         if (can.equals("empty")) {
             new CanbusClasses().execute();
