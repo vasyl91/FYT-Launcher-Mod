@@ -1148,7 +1148,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
     private void initUserStats() {
         if (userStats != null) {
-            SharedPreferences mPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
+            SharedPreferences mPrefs = SessionPrefs.get();
             String can = mPrefs.getString("canbus_class", "vehicle_not_exist");
             if (!can.equals("vehicle_not_exist")) {
                 userStats.setSummary(Html.fromHtml(

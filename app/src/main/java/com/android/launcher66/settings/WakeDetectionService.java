@@ -259,7 +259,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     // 10 minutes = 10 * 60 * 1000 ms
                     if (diff > 10 * 60 * 1000) {
                         Log.e(TAG, "Sleep duration exceeded 10 minutes: " + diff + " ms");
-                        getSharedPreferences("HelpersPrefs", 0).edit().clear().apply();
+                        SessionPrefs.get().edit().clear().apply();
                     }
                 }
                 if (prefs.getBoolean(Keys.NIGHT_MODE, false)) {

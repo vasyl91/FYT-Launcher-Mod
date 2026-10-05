@@ -6,6 +6,7 @@ import android.app.Service;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -187,20 +188,54 @@ public class CanbusService extends Service implements PropertyChangeListener {
         return binder;
     }
 
+    /*
+     * Whether StateAccessibilityService is switched on is read from the settings, not from
+     * AccessibilityManager.isEnabled(): after a restart the system binds the accessibility services
+     * only ~25 s into the boot, and until then isEnabled() is false for a service the user switched
+     * on long ago. At every cold boot this opened the accessibility settings over the launcher
+     * (capture 05-10-2026 04:45:30), where they stayed until the user went back, ~23 s, with the
+     * PiP panes waiting behind them.
+     */
     private void registerAccessibilityEventListener() {
-        if (accessibilityManager != null && accessibilityManager.isEnabled()) {
-            accessibilityManager.addAccessibilityStateChangeListener(accessibilityListener = enabled -> {
-                if (enabled) {
-                    Log.d(TAG, "Accessibility service enabled");
-                } else {
-                    Log.d(TAG, "Accessibility service disabled");
-                    openAccessibilitySettings();
-                }
-            });
-        } else {
+        if (accessibilityManager == null) {
+            return;
+        }
+        accessibilityManager.addAccessibilityStateChangeListener(accessibilityListener = enabled -> {
+            if (enabled) {
+                Log.d(TAG, "Accessibility service enabled");
+            } else if (!isStateServiceSwitchedOn()) {
+                Log.d(TAG, "Accessibility service disabled");
+                openAccessibilitySettings();
+            }
+        });
+        if (!accessibilityManager.isEnabled() && !isStateServiceSwitchedOn()) {
             Log.d(TAG, "Accessibility service is not enabled");
             openAccessibilitySettings();
         }
+    }
+
+    /** StateAccessibilityService is on in the accessibility settings (bound or not yet). */
+    private boolean isStateServiceSwitchedOn() {
+        try {
+            if (Settings.Secure.getInt(getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED, 0) != 1) {
+                return false;
+            }
+            String enabled = Settings.Secure.getString(getContentResolver(),
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+            if (enabled == null) {
+                return false;
+            }
+            ComponentName ours = new ComponentName(this, StateAccessibilityService.class);
+            for (String entry : enabled.split(":")) {
+                ComponentName component = ComponentName.unflattenFromString(entry);
+                if (ours.equals(component)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Could not read the accessibility settings", e);
+        }
+        return false;
     }
 
     private void openAccessibilitySettings() {

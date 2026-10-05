@@ -5551,7 +5551,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
                 break;
         }
 
-    	SharedPreferences mPrefs = LauncherApplication.sApp.getSharedPreferences("HelpersPrefs", Context.MODE_PRIVATE);
+    	SharedPreferences mPrefs = SessionPrefs.get();
         SharedPreferences.Editor editor = mPrefs.edit();  
         if (cls != null) {
             editor.putString("canbus_class", String.valueOf(cls));     
