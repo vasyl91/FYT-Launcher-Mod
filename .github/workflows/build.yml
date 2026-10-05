@@ -36,8 +36,18 @@ jobs:
       - name: Install the compile SDK
         run: |
           sdk=$(grep -oP 'compileSdk\s*=\s*\K[0-9]+' app/build.gradle.kts)
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-${sdk}"
+          yes 2>/dev/null | sdkmanager --licenses > /dev/null || true
+          # Newer platforms carry a minor version in the package name (android-37.0, android-36.1):
+          # take the exact name if it exists, else the newest android-<sdk>.<n>.
+          pkg=$(sdkmanager --list 2>/dev/null \
+            | grep -oP "^\s*\Kplatforms;android-${sdk}(\.[0-9]+)?(?=\s)" \
+            | sort -uV | awk -v exact="platforms;android-${sdk}" '$0 == exact { e = $0 } { last = $0 } END { print (e != "" ? e : last) }')
+          if [ -z "$pkg" ]; then
+            echo "::warning::No SDK platform package found for compileSdk ${sdk}; leaving it to Gradle"
+            exit 0
+          fi
+          echo "Installing ${pkg}"
+          sdkmanager "${pkg}"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
