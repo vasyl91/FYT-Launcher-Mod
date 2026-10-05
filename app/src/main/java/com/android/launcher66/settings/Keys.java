@@ -50,6 +50,7 @@ public final class Keys {
     public static final String WORKSPACE_TEXT_SIZE = "workspace_textSize";
     public static final String LAUNCHER_HOME = "launcher_home";
     public static final String AUTOSTART_APPS = "autostart_apps";
+    public static final String AUTOSTART_APPS_BY_BOOT_COMPLETED = "autostart_apps_by_boot_completed";
     public static final String DEFAULT_WALLPAPERS = "default_wallpapers";
     public static final String SAVE_DAY_WALLPAPER = "save_day_wallpaper";    
     public static final String SAVE_NIGHT_WALLPAPER = "save_night_wallpaper";

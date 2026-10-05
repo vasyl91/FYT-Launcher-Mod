@@ -293,6 +293,7 @@
     <string name="baseline_reset_unavailable">此设备不支持此功能。</string>
     <string name="autostart_apps">开机自动启动</string>
     <string name="autostart_apps_summary">通过系统自动启动功能启动的应用可能会减慢启动器的启动速度。启动器内置的选项会在启动器完成冷启动后再启动这些应用。使用此列表时，请记得在 FYT 设置中取消这些应用的自动启动，否则它们将被启动两次。</string>
+    <string name="autostart_apps_by_boot_completed">如果已注册 BOOT_COMPLETED 广播，则尝试通过该广播启动所选应用</string>
 
     <string name="music_widget_category">音乐小组件</string>
     <string name="youtube_category">YouTube</string>

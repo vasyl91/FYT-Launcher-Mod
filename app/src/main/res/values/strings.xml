@@ -293,6 +293,7 @@
     <string name="baseline_reset_unavailable">Not available on this device.</string>
     <string name="autostart_apps">Start on boot</string>
     <string name="autostart_apps_summary">Apps launched by the system\'s autostart feature may slow down the launcher\'s startup. The launcher\'s built-in option will launch them only after the launcher has completed its cold start. When using this list, remember to disable these apps in the FYT settings; otherwise, they will be launched twice.</string>
+    <string name="autostart_apps_by_boot_completed">Try to use the BOOT_COMPLETED broadcast if the selected app has it registered</string>
 
     <string name="music_widget_category">Music Widget</string>
     <string name="youtube_category">YouTube</string>

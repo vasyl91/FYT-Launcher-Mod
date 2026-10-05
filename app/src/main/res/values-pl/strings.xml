@@ -152,6 +152,7 @@
     <string name="baseline_reset_unavailable">Funkcja niedostępna na tym urządzeniu.</string>
     <string name="autostart_apps">Uruchamiaj przy starcie systemu</string>
     <string name="autostart_apps_summary">Aplikacje uruchamiane przez systemowy autostart mogą spowalniać uruchamianie launchera. Opcja wbudowana w launcher uruchomi je dopiero po zakończeniu jego zimnego startu. Korzystając z tej listy, pamiętaj, aby odznaczyć te aplikacje w ustawieniach FYT — w przeciwnym razie uruchomią się dwukrotnie.</string>
+    <string name="autostart_apps_by_boot_completed">Spróbuj uruchomić wybraną aplikację za pomocą broadcastu BOOT_COMPLETED, jeśli jest zarejestrowany</string>
 
     <string name="music_widget_category">Music Widget</string>
     <string name="youtube_category">YouTube</string>

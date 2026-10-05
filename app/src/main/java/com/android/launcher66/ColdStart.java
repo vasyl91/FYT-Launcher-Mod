@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -86,6 +87,7 @@ public final class ColdStart {
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     /** Whether this process start is the first one after a device restart; set in start(). */
     private boolean coldBoot;
+    private static boolean bootCompletedAutostart;
 
     private ColdStart(Application app) {
         this.app = app;
@@ -106,6 +108,7 @@ public final class ColdStart {
         startLogcat(app, coldStart.coldBoot, settings);
         if (coldStart.coldBoot) {
             boolean launcherHome = settings.getBoolean(Keys.LAUNCHER_HOME, true);
+            bootCompletedAutostart = settings.getBoolean(Keys.AUTOSTART_APPS_BY_BOOT_COMPLETED, true);
             coldStart.startBootFrontGuard(launcherHome);
             coldStart.scheduleBootAutostart(launcherHome);
         }
@@ -235,6 +238,8 @@ public final class ColdStart {
     /** Wakes Display Media Titles without opening it; the same action for every variant. */
     private static final String DISPLAY_MEDIA_TITLES_WAKE_ACTION = "vasyl.titles.action.WAKE";
 
+    private static final String JAMES_DSP_WAKE_ACTION = "james.dsp.action.AUTOSTART";
+
     /**
      * On the main thread, during the boot-time stall: only whether there is anything to start is
      * checked here, from the stored list without PackageManager calls. The rest runs on its own
@@ -274,26 +279,40 @@ public final class ColdStart {
         List<String> started = new ArrayList<>();
         for (String pkg : packages) {
             try {
-                // Display Media Titles is woken by its broadcast and needs no launch activity.
-                boolean wake = isDisplayMediaTitles(pm, pkg);
-                Intent launch = wake ? null : pm.getLaunchIntentForPackage(pkg);
-                if (!wake && launch == null) {
-                    // Installed without a launch activity: skipped, and no gap spent on it.
-                    Log.w(TAG, "Boot autostart: " + pkg + " has no launch activity");
+                boolean titles = isDisplayMediaTitles(pm, pkg);
+                boolean boot = hasBootCompletedReceiver(pkg);
+                boolean james = pkg.equals("james.dsp");
+                Intent launch = pm.getLaunchIntentForPackage(pkg);
+                if (!titles && !james && !boot && launch == null) {
+                    Log.w(TAG, "Boot autostart: " + pkg
+                            + " has neither BOOT_COMPLETED receiver nor launch activity");
                     continue;
                 }
+
                 if (!started.isEmpty()) {
                     SystemClock.sleep(BOOT_AUTOSTART_GAP_MS);
                 }
-                if (wake) {
+
+                if (titles) {
                     wakeDisplayMediaTitles(pkg);
+                } else if (james) {
+                    wakeJamesDSP(pkg);
+                } else if (boot && bootCompletedAutostart) {
+                    autostartWithIntent(pkg);
                 } else {
                     launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     app.startActivity(launch);
                 }
+
                 started.add(pkg);
-                Log.i(TAG, "Boot autostart: " + (wake ? "woke " + pkg + " by broadcast" : "started " + pkg)
+
+                Log.i(TAG, "Boot autostart: "
+                        + (titles ? "woke " + pkg + " by broadcast"
+                        : james ? "woke " + pkg + " by broadcast"
+                        : boot ? "woke " + pkg + " by BOOT_COMPLETED"
+                        : "started " + pkg)
                         + " (" + started.size() + "/" + packages.size() + ")");
+
             } catch (RuntimeException e) {
                 Log.w(TAG, "Boot autostart of " + pkg + " failed", e);
             }
@@ -329,8 +348,57 @@ public final class ColdStart {
      * FLAG_RECEIVER_FOREGROUND lets the receiver run at foreground priority.
      */
     private void wakeDisplayMediaTitles(String pkg) {
-        app.sendBroadcast(new Intent(DISPLAY_MEDIA_TITLES_WAKE_ACTION)
+        Intent intent;
+        if (LauncherApplication.hasSystemPrivileges()) {
+            intent = new Intent(Intent.ACTION_BOOT_COMPLETED);
+            Log.i(TAG, "Display Media Titles by 'BOOT_COMPLETED' broadcast");
+        } else {
+            intent = new Intent(DISPLAY_MEDIA_TITLES_WAKE_ACTION);
+            Log.i(TAG, "Display Media Titles by 'vasyl.titles.action.WAKE' broadcast");
+        }
+        app.sendBroadcast(intent
                 .setPackage(pkg) // package of the installed variant
+                .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
+    }
+
+    private void wakeJamesDSP(String pkg) {
+        Intent intent;
+        if (LauncherApplication.hasSystemPrivileges()) {
+            intent = new Intent(Intent.ACTION_BOOT_COMPLETED);
+            Log.i(TAG, "JamesDSP by 'BOOT_COMPLETED' broadcast");
+        } else {
+            intent = new Intent(JAMES_DSP_WAKE_ACTION);
+            Log.i(TAG, "JamesDSP by 'james.dsp.action.AUTOSTART' broadcast");
+        }
+        app.sendBroadcast(intent
+                .setPackage(pkg)
+                .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
+    }
+
+    private boolean hasBootCompletedReceiver(String pkg) {
+        if (!LauncherApplication.hasSystemPrivileges()) return false;
+        Intent intent = new Intent(Intent.ACTION_BOOT_COMPLETED);
+        intent.setPackage(pkg);
+
+        List<ResolveInfo> receivers =
+                app.getPackageManager().queryBroadcastReceivers(
+                        intent,
+                        PackageManager.MATCH_ALL
+                );
+
+        for (ResolveInfo info : receivers) {
+            if (info.activityInfo != null
+                    && pkg.equals(info.activityInfo.packageName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void autostartWithIntent(String pkg) {
+        app.sendBroadcast(new Intent(Intent.ACTION_BOOT_COMPLETED)
+                .setPackage(pkg)
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
     }
 

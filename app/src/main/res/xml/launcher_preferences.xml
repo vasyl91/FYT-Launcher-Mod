@@ -155,6 +155,10 @@
             android:key="autostart_apps"
             android:title="@string/autostart_apps"
             android:summary="@string/autostart_apps_summary" />
+        <SwitchPreferenceCompat
+            android:key="autostart_apps_by_boot_completed"
+            android:defaultValue="true"
+            android:title="@string/autostart_apps_by_boot_completed" />
 
     </PreferenceCategory>
 

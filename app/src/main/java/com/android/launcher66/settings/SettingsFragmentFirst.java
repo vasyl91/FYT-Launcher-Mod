@@ -351,6 +351,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         baselineProfileSummary = findPreference(KEY_BASELINE_PROFILE_SUMMARY);
         Preference baselineProfileReset = findPreference(KEY_BASELINE_PROFILE_RESET);
         Preference appListAutostart = findPreference(Keys.AUTOSTART_APPS);
+        Preference bootCompletedAutostart = findPreference(Keys.AUTOSTART_APPS_BY_BOOT_COMPLETED);
 
         nightMode = findPreference(Keys.NIGHT_MODE);
         wallpapersCategory = findPreference("wallpapers_category");
@@ -463,6 +464,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (appListAutostart != null) {
             appListAutostart.setOnPreferenceClickListener(this);
+        }
+        if (bootCompletedAutostart != null) {
+            bootCompletedAutostart.setOnPreferenceClickListener(this);
+            bootCompletedAutostart.setVisible(LauncherApplication.hasSystemPrivileges());
         }
         nightMode();        
         if (logcatService != null) {
