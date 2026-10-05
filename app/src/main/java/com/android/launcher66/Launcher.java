@@ -249,7 +249,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final long WIDGET_UPDATE_THROTTLE_MS = 350L;
     private static final long POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS = 1200L;
     private static final long SERVICE_RUNNING_CACHE_MS = 15000L;
-    private static final long WEATHER_UPDATE_MIN_INTERVAL_MS = 10000L;
     private static final long WEATHER_HOME_DEFER_MS = 1500L;
     private static final long FAST_HOME_RESUME_DEFER_MS = 450L;
     private static final long FAST_HOME_PIP_DEFER_MS = 1000L;
@@ -449,7 +448,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private ArrayList<Object> mWidgetsAndShortcuts;
     public WeatherManager weatherManager;
     private Handler weatherHandler = new Handler(Looper.getMainLooper());
-    private static final long WEATHER_INTERVAL = 2 * 60 * 1000; // 2 minutes.
     private ProgressBar musicProgress;
     private SeekBar musicSeekBar;
     private Button mPlayPauseButton;
@@ -606,9 +604,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final Runnable mSyncStatusBarSwipeDetector = this::syncStatusBarSwipeDetector;
     private boolean mNightModeServiceStartPending = false;
     private boolean mCanbusServiceStartPending = false;
-    private boolean mWeatherUpdatePending = false;
-    private long mLastWeatherUpdateMs = 0L;
-    private Runnable mPendingWeatherUpdateRunnable;
     private WeatherManager.OnWeatherChangedListener mWeatherChangedListener;
     private WeatherManager mWeatherListenerOwner;
     private final Map<String, Bitmap> mAppIconBitmapCache = new HashMap<>();
@@ -2305,6 +2300,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWakeHomeRecoveryRunnable = null;
         }
         mHomeRecoveryInitWaitUntil = SystemClock.uptimeMillis() + HOME_RECOVERY_INIT_WAIT_MAX_MS;
+        if (isHomeLayoutInitPending()) {
+            // The model is still binding (or the custom elements are on their way): a repair
+            // pass now cannot attach anything and only adds layout work to the busiest moment of
+            // a cold start. The retry below waits for the end cheaply and checks then.
+            mWakeHomeRecoveryPending = true;
+            scheduleWakeHomeRecoveryRetry(source, 0, HOME_LAYOUT_INIT_WAIT_MS);
+            return;
+        }
         runWakeHomeRecoveryPass(source + ":now");
         scheduleWakeHomeRecoveryRetry(source, 0, HOME_LAYOUT_HEALTH_FIRST_RETRY_MS);
     }
@@ -2320,11 +2323,35 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean isHomeLayoutInitPending() {
         if (mWorkspaceLoading) return true;
         if (AllAppsList.data == null || AllAppsList.data.isEmpty()) return true;
+        if (isCustomElementsSetupInFlight()) return true;
         if (mWorkspace == null || mPrefs == null) return false;
         if (mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) return false;
 
         RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
         return recycler != null && recycler.getAdapter() == null;
+    }
+
+    /**
+     * A custom elements setup is queued here or in a CellLayout and has not added the elements yet.
+     * A repair pass in that window cannot help (see isHomeLayoutInitPending()); and the urgent
+     * retry the layout check sends used to restart a setup whose add was already queued, so
+     * addWidgetsToAllExistingPages() and stripEmptyScreens() ran two or three times in a row
+     * (CellLayout.triggerAddCustomElements() now ignores it then).
+     */
+    private boolean isCustomElementsSetupInFlight() {
+        if (mCustomElementsSetupRunnable != null || mCustomElementsSetupAfterBind) {
+            return true;
+        }
+        if (mWorkspace == null) {
+            return false;
+        }
+        for (int i = 0; i < mWorkspace.getChildCount(); i++) {
+            View child = mWorkspace.getChildAt(i);
+            if (child instanceof CellLayout && ((CellLayout) child).isCustomElementSetupPending()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void scheduleWakeHomeRecoveryRetry(String source, int attempt, long delayMs) {
@@ -2416,8 +2443,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         }
         if (!customElementsHealthy) {
-            Log.w(TAG, "Custom elements pending during " + source + ", scheduling widget retry");
             healthy = false;
+            if (isCustomElementsSetupInFlight()) {
+                // Not a fault, the setup is on its way. Still hurried along: an urgent request skips
+                // CellLayout's 1.5 s initial delay, and CellLayout ignores it once the add is queued.
+                Log.d(TAG, "Custom elements still being set up during " + source + ", hurrying it");
+            } else {
+                Log.w(TAG, "Custom elements pending during " + source + ", scheduling widget retry");
+            }
             requestCustomElementsHealthRetry(source);
         }
         return healthy;
@@ -2573,6 +2606,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     private void scheduleFocusHomeRecovery(String source) {
         if (mWorkspace == null || isAppsCustomizeVisibleOrOpening()) {
+            return;
+        }
+        if (mWorkspaceLoading) {
+            // Mid-bind the probe can only report the recycler without its adapter (cold start,
+            // return from the settings). finishBindingItems() runs the layout watchdog anyway.
             return;
         }
         if (!shouldRunWakeHomeRecovery() && isLauncherLayoutHealthy(source + ":probe")) {
@@ -3868,6 +3906,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             } else {
                 mLastForceReloadMs = nowReload;
                 Log.d(TAG, "recreateView: forceReload()");
+                // Loading from here, not only from startBinding(): the reload takes a few dozen ms
+                // on the loader thread first, and the layout checks of this same resume used to
+                // judge the freshly created, still empty bar in that gap (as requestWorkspaceLoader()
+                // does; the watchdog covers a bind that never comes).
+                mWorkspaceLoading = true;
+                armWorkspaceLoadingWatchdog();
                 mModel.forceReload();
             }
         } catch (Exception e) {
@@ -4840,6 +4884,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
     
     public static boolean isServiceRunning(Class<? extends Service> serviceClass) {
+        // Services of this process know it themselves: no getRunningServices() round trip (all the
+        // services of the system, on every resume once the cache had expired), and no stale cache
+        // after WakeDetectionService stopped one behind this cache's back.
+        if (serviceClass == NightModeService.class) {
+            return NightModeService.isRunning();
+        }
+        if (serviceClass == CanbusService.class) {
+            return CanbusService.isRunning();
+        }
         String serviceName = serviceClass.getName();
         long now = SystemClock.uptimeMillis();
         synchronized (sServiceRunningCacheLock) {
@@ -5096,100 +5149,69 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    private Runnable periodicWeatherCheck = new Runnable() {
+    /**
+     * Shows what WeatherManager has and lets it fetch whatever is due (5 km driven or 10 min old,
+     * see WeatherManager.refreshIfDue()), then sleeps until the moment the next fetch can become
+     * due by time. The distance is checked in WeatherManager's location callback, so nothing polls.
+     * Runs only while the launcher is in front: scheduled from onPostResume(), cancelled in onStop().
+     */
+    private final Runnable periodicWeatherCheck = new Runnable() {
         @Override
         public void run() {
-            if (weatherManager == null) {
-                long wait = bootStallDelayMs();
-                if (wait > 0L) {
-                    weatherHandler.postDelayed(this, wait); // see updateWeather()
-                    return;
-                }
-                weatherManager = WeatherManager.initialize(mLauncher);
+            if (!ensureWeatherManager(this)) {
+                return;
             }
-            long interval;
-            if (!weatherManager.isNetworkAvailable()
-                || (weatherCity1 != null && (String.valueOf(weatherCity1.getText()).isEmpty() || weatherCity1.getText().toString().contains("N/A")))
-                || (weatherWeather1 != null && (String.valueOf(weatherWeather1.getText()).isEmpty() || weatherWeather1.getText().toString().contains("N/A")))
-                || (weatherTemp1 != null && (String.valueOf(weatherTemp1.getText()).isEmpty() || weatherTemp1.getText().toString().contains("N/A")))) {
-                    // speed up the check interval if there is no connection or any part of the weather data is not properly updated.
-                    interval = 10 * 1000; // 10s
-            } else {
-                interval = WEATHER_INTERVAL;
-            }
-
-            updateWeather();
-            
-            weatherHandler.postDelayed(this, interval);
+            // Pushed first: rebuilt bar views start with placeholder text.
+            showWeatherInfo();
+            long next = weatherManager.refreshIfDue("home");
+            weatherHandler.removeCallbacks(this);
+            weatherHandler.postDelayed(this, next);
         }
     };
 
     private void scheduleWeatherCheckAfterHome() {
+        WeatherManager.setForeground(true);
         weatherHandler.removeCallbacks(periodicWeatherCheck);
         weatherHandler.postDelayed(periodicWeatherCheck, WEATHER_HOME_DEFER_MS);
     }
 
+    /** Shows the cached weather in the (re)bound views and fetches only if something is due. */
     public void updateWeather() {
-        if (weatherManager == null) {
-            // WeatherManager.initialize() registers a receiver, a call into system_server: during
-            // the boot-time stall that froze the launcher for twelve seconds (capture 23:13), with
-            // the workspace binding queued behind it. The weather is not needed for the first
-            // screen, so at boot the manager is created once the stall is over.
-            long wait = bootStallDelayMs();
-            if (wait > 0L) {
-                weatherHandler.removeCallbacks(mDeferredWeatherInit);
-                weatherHandler.postDelayed(mDeferredWeatherInit, wait);
-                return;
-            }
-            weatherManager = WeatherManager.initialize(this);
+        if (!ensureWeatherManager(mDeferredWeatherInit)) {
+            return;
         }
         showWeatherInfo();
-
-        long now = SystemClock.uptimeMillis();
-        long elapsed = now - mLastWeatherUpdateMs;
-        if (!mWeatherUpdatePending && elapsed >= WEATHER_UPDATE_MIN_INTERVAL_MS) {
-            runWeatherUpdate();
-            return;
-        }
-
-        if (mWeatherUpdatePending) {
-            return;
-        }
-
-        mWeatherUpdatePending = true;
-        long delay = Math.max(0L, WEATHER_UPDATE_MIN_INTERVAL_MS - elapsed);
-        mPendingWeatherUpdateRunnable = () -> {
-            mWeatherUpdatePending = false;
-            mPendingWeatherUpdateRunnable = null;
-            runWeatherUpdate();
-        };
-        weatherHandler.postDelayed(mPendingWeatherUpdateRunnable, delay);
+        weatherManager.refreshIfDue("show");
     }
 
     private final Runnable mDeferredWeatherInit = this::updateWeather;
 
-    private void runWeatherUpdate() {
-        mLastWeatherUpdateMs = SystemClock.uptimeMillis();
-        if (weatherManager == null) {
-            if (bootStallDelayMs() > 0L) {
-                updateWeather(); // schedules the deferred init
-                return;
-            }
-            weatherManager = WeatherManager.initialize(this);
+    /**
+     * WeatherManager.initialize() registers a receiver, a call into system_server: during the
+     * boot-time stall that froze the launcher for twelve seconds (capture 23:13), with the
+     * workspace binding queued behind it. The weather is not needed for the first screen, so at
+     * boot the manager is created once the stall is over, and retry runs then.
+     *
+     * @return true when the manager exists
+     */
+    private boolean ensureWeatherManager(Runnable retry) {
+        if (weatherManager != null) {
+            return true;
         }
-        if (weatherManager.isNetworkAvailable()) {
-            weatherManager.updateWeather();
+        long wait = bootStallDelayMs();
+        if (wait > 0L) {
+            weatherHandler.removeCallbacks(retry);
+            weatherHandler.postDelayed(retry, wait);
+            return false;
         }
+        weatherManager = WeatherManager.initialize(this);
+        return true;
     }
 
     private void cancelWeatherCallbacks() {
+        WeatherManager.setForeground(false);
         weatherHandler.removeCallbacks(periodicWeatherCheck);
         weatherHandler.removeCallbacks(mDeferredWeatherInit);
-        if (mPendingWeatherUpdateRunnable != null) {
-            weatherHandler.removeCallbacks(mPendingWeatherUpdateRunnable);
-            mPendingWeatherUpdateRunnable = null;
-        }
-        mWeatherUpdatePending = false;
     }
 
     public void showWeatherInfo() {
@@ -6828,7 +6850,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Log.d(TAG, "Left RecyclerView lookup already pending, skipping duplicate");
                 return;
             }
-            Log.e("Launcher", "Left RecyclerView not found! Waiting for layout...");
+            // Normal while the pages are being (re)created, e.g. recreateView(): the next layout pass has it.
+            Log.d(TAG, "Left RecyclerView not inflated yet, waiting for layout");
             mLeftRecyclerLayoutPending = true;
             if (mWorkspace.getViewTreeObserver().isAlive()) {
                 mWorkspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -9320,11 +9343,34 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 info.minResizeHeight);
     }
 
+    private void deleteAppWidgetIdAsync(final int appWidgetId) {
+        if (appWidgetId == -1) {
+            return;
+        }
+        // Deleting an app widget ID is a void call but writes to disk before returning
+        // to the caller...
+        new Thread("deleteAppWidgetId") {
+            public void run() {
+                if (mAppWidgetHost != null) {
+                    mAppWidgetHost.deleteAppWidgetId(appWidgetId);
+                }
+            }
+        }.start();
+    }
+
     private void completeAddAppWidget(final int appWidgetId, long container, long screenId, AppWidgetHostView hostView, AppWidgetProviderInfo appWidgetInfo) {
         Log.i("WIDGET", "completeAddAppWidget");
         if (appWidgetInfo == null) {
-            Log.e("WIDGET", "AppWidgetProviderInfo is null for ID: " + appWidgetId);
+            // Expected after a configure activity: completeTwoStageWidgetDrop() passes no info.
+            Log.d("WIDGET", "No AppWidgetProviderInfo passed for ID " + appWidgetId + ", looking it up");
             appWidgetInfo = mAppWidgetManager.getAppWidgetInfo(appWidgetId);
+            if (appWidgetInfo == null) {
+                // The provider went away meanwhile (uninstalled or updated during the configure
+                // activity); the span lookups below would throw on it.
+                Log.w("WIDGET", "Widget provider for ID " + appWidgetId + " is gone, dropping the widget");
+                deleteAppWidgetIdAsync(appWidgetId);
+                return;
+            }
         }
 
         // Calculate the grid spans needed to fit this widget
@@ -9359,17 +9405,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         if (!foundCellSpan) {
-            if (appWidgetId != -1) {
-                // Deleting an app widget ID is a void call but writes to disk before returning
-                // to the caller...
-                new Thread("deleteAppWidgetId") {
-                    public void run() {
-                        if (mAppWidgetHost != null) {
-                            mAppWidgetHost.deleteAppWidgetId(appWidgetId);
-                        }
-                    }
-                }.start();
-            }
+            deleteAppWidgetIdAsync(appWidgetId);
             showOutOfSpaceMessage(isHotseatLayout(layout));
             return;
         }
@@ -11502,6 +11538,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     void exitSpringLoadedDragModeDelayed(final boolean successfulDrop, boolean extendedDelay, final Runnable onCompleteRunnable) {
+        if (successfulDrop) {
+            // The tray is not coming back, and the item is on the workspace now. Left set until the
+            // delayed showWorkspace() below, isInWidgets() made every openPip() of the drop
+            // (animateWidgetDrop, onResume after a configure activity) give up, and the panes
+            // came back only through the PiP watchdog, ~1.7 s later.
+            helpers.setInWidgets(false);
+            helpers.setInAllApps(false);
+        }
         if (mState == State.APPS_CUSTOMIZE_SPRING_LOADED) {
             mHandler.postDelayed(new Runnable() { 
                 @Override

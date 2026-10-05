@@ -16,6 +16,7 @@ import android.view.Display;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Launcher;
@@ -237,7 +238,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     // within a few hundred ms of the wake, and a PiP app restored fullscreen keeps
                     // the launcher paused -- and the panes unbuilt -- until something pushes it back.
                     WindowUtil.reassertHomeOverPipAppsAfterWake(WAKE_REASSERT_WINDOW_MS);
-                    postForGeneration(wakeGen, this::pressHomeButton, 500);
+                    postForGeneration(wakeGen, this::pressHomeButtonAfterWake, 500);
                 }
                 // Everything delayed here belongs to this wake only; see postForGeneration().
                 postForGeneration(wakeGen, this::dismissAppListDialog, 500);
@@ -262,6 +263,8 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     }
                 }
                 if (prefs.getBoolean(Keys.NIGHT_MODE, false)) {
+                    // Right away, from the stored times: the full refresh below comes ~14 s later.
+                    DayNightBrightness.applyForSavedTimes(LauncherApplication.sApp, "wake");
                     // A sleep within these 10 s has already stopped the service and cancelled its
                     // SunTask; it must not be started again behind that sleep's back.
                     postForGeneration(wakeGen, () -> {
@@ -347,6 +350,9 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     }
 
     private boolean isServiceRunning(Class<? extends Service> serviceClass) {
+        if (serviceClass == NightModeService.class) {
+            return NightModeService.isRunning();   // see Launcher.isServiceRunning()
+        }
         String serviceName = serviceClass.getName();
         long now = SystemClock.uptimeMillis();
         synchronized (sServiceRunningCacheLock) {
@@ -392,6 +398,22 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
      *
      * When the launcher is alive, moving its task to the front does the same job without a relaunch.
      */
+    /**
+     * pressHomeButton() for the wake. Usually the launcher has resumed with the display already
+     * (capture 05-10-2026: onResume 35 ms before this was even posted), and the move to the front
+     * was a call into system_server in the busiest second of the wake for nothing. An app that
+     * com.syu.ms brings back later is handled by reassertHomeOverPipAppsAfterWake().
+     */
+    private void pressHomeButtonAfterWake() {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher != null && launcher.mHasFocus
+                && launcher.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+            Log.d(TAG, "pressHomeButton: launcher already in front after the wake");
+            return;
+        }
+        pressHomeButton();
+    }
+
     public void pressHomeButton() {
         Launcher launcher = Launcher.getLauncher();
         if (launcher != null && !launcher.isDestroyed() && !launcher.isFinishing()) {

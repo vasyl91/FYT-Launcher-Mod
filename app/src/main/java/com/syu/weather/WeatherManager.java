@@ -18,6 +18,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
@@ -31,10 +32,6 @@ import com.syu.esri.ShapeDB;
 import com.syu.esri.ShapeData;
 import com.syu.esri.ShapeIndex;
 import com.syu.esri.ShapeReader;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -53,9 +50,32 @@ import okhttp3.Response;
 public class WeatherManager {
     private static final String TAG = "WeatherManager";
     public static final String OPEN_WEATHER_APPID = "4a87b2f097e39a2cb9c75916073e75a7";
-    public static final String OPEN_WEATHER_GEO_URL = "https://api.openweathermap.org/geo/1.0/reverse?limit=1&appid=" + OPEN_WEATHER_APPID;
     public static final String OPEN_WEATHER_CURRENT_URL = "https://api.openweathermap.org/data/2.5/weather?appid=" + OPEN_WEATHER_APPID + "&units=metric";
-    
+
+    /**
+     * When the weather is fetched again: once the car is this far from where the last one was
+     * fetched (at 100 km/h about every 3 min), otherwise once it is this old. Nothing polls for it:
+     * the distance is checked in the location callback the GPS delivers anyway, and the age by one
+     * timer the launcher sets to the exact moment it runs out.
+     */
+    private static final float REFRESH_DISTANCE_M = 5000f;
+    private static final long REFRESH_INTERVAL_MS = 10 * 60 * 1000L;
+    /** A failed fetch is retried after 10 s, then 20 s, 40 s ... up to 5 min. */
+    private static final long RETRY_MIN_MS = 10_000L;
+    private static final long RETRY_MAX_MS = 5 * 60 * 1000L;
+    /** The fallback position in the prefs (NightModeService reads it too) is rewritten after this much movement. */
+    private static final float SAVE_DISTANCE_M = 1000f;
+
+    /**
+     * Whether anything shows the weather right now (the launcher between onPostResume and onStop).
+     * Location updates keep coming while it is in the background, but they do not fetch then; the
+     * launcher checks what is due when it comes back.
+     */
+    private static volatile boolean sForeground = false;
+
+    /** One client for every request, so connections (and the TLS session) are reused. */
+    private static volatile OkHttpClient sHttpClient;
+
     private boolean locationPermissionRequested = false;
     private FusedLocationProviderClient fusedLocationClient;
     private SharedPreferences mPrefs;
@@ -73,12 +93,16 @@ public class WeatherManager {
     // Use WeakReference to avoid leaking activity/listener implementers
     public List<WeakReference<OnWeatherChangedListener>> weatherListeners;
     boolean isRunning = false;
-    long lastLocationTime = 0;
     long lastWeatherTime = 0;
-    boolean isFirst = true;
     int minDis = 3;
-    
-    private OkHttpClient okHttpClient;
+
+    // Main thread only: written by getWeather() and the location callbacks, read by refreshIfDue().
+    private double mLastFetchLat = Double.NaN;
+    private double mLastFetchLon = Double.NaN;
+    private double mLastSavedLat = Double.NaN;
+    private double mLastSavedLon = Double.NaN;
+    private long mRetryDelayMs = 0L;
+    private long mNextAttemptAt = 0L;
 
     GnssStatus.Callback mListener = new GnssStatus.Callback() {
         long time;
@@ -134,16 +158,6 @@ public class WeatherManager {
             if (location != null) {
                 boolean flag = WeatherManager.this.isBetterLocation(location, WeatherManager.this.mCurLocation);
                 if (flag) {
-                    WeatherManager.this.mCurLocation = location;
-                    if (mPrefs == null) {
-                        mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-                    }                    
-                    SharedPreferences.Editor editor = mPrefs.edit();
-                    double lat = location.getLatitude();
-                    double longt = location.getLongitude();
-                    editor.putString("latiude", String.valueOf(lat));
-                    editor.putString("longitude", String.valueOf(longt));
-                    editor.apply();
                     if (WeatherManager.this.minDis == 0) {
                         WeatherManager.this.stop();
                         WeatherManager.this.minDis = 2000;
@@ -155,7 +169,7 @@ public class WeatherManager {
                             }
                         }
                     }
-                    WeatherManager.this.updateLocation(WeatherManager.this.mCurLocation);
+                    WeatherManager.this.updateLocation(location);
                 }
             }
         }
@@ -260,13 +274,7 @@ public class WeatherManager {
     WeatherManager(Context context) {
         this.inChina = false;
         this.mContext = context.getApplicationContext();
-        
-        // Initialize OkHttpClient
-        this.okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .build();
-        
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.mContext);
         SharedPreferences preferences = this.mContext.getSharedPreferences(this.mContext.getPackageName(), 0);
         String string = preferences.getString("city", "");
@@ -280,10 +288,10 @@ public class WeatherManager {
             public void onChanged(boolean vaild) {
                 if (vaild) {
                     WeatherManager.this.start();
-                    if (WeatherManager.this.isRunning && WeatherManager.this.mCurLocation != null) {
-                        WeatherManager.this.getWeather(Double.valueOf(WeatherManager.this.mCurLocation.getLatitude()), Double.valueOf(WeatherManager.this.mCurLocation.getLongitude()), "gogogo");
-                        return;
-                    }
+                    // Not a fetch on every reconnect: on the road the mobile data comes and goes.
+                    // A failed attempt is retried at once, though -- the connection it lacked is back.
+                    WeatherManager.this.mNextAttemptAt = 0L;
+                    WeatherManager.this.refreshIfDue("network back");
                     return;
                 }
                 WeatherManager.this.stop();
@@ -326,15 +334,12 @@ public class WeatherManager {
         }
         
         if (this.mNetworkCheck != null && this.mNetworkCheck.hasNet && !this.isRunning) {
-            this.lastLocationTime = this.lastWeatherTime = 0L;
-            
             // Check permission for fused location
             if (hasLocationPermission()) {
                 fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
                     if (location != null) {
                         if (WeatherManager.this.mCurLocation == null) {
                             WeatherManager.this.updateLocation(location);
-                            WeatherManager.this.isFirst = false;
                         }
                     }
                 }).addOnFailureListener(e -> {
@@ -387,71 +392,166 @@ public class WeatherManager {
         this.isRunning = false;
     }
 
+    /**
+     * A new position. Costs a few multiplications per GPS fix; the network is used only when the
+     * car has moved REFRESH_DISTANCE_M since the last fetch (or there is no weather yet).
+     *
+     * This used to send every fix older than two minutes to the reverse geocoding API first, only
+     * to compare the city name -- one request every two minutes while driving, for a name nothing
+     * displays (the bar shows the city from the weather answer itself).
+     */
     public void updateLocation(Location location) {
-        Log.d("hzq", "call updateLocation ** location = " + location);
-        if (location != null) {
-            boolean ischina = this.inChina(location);
-            if (this.inChina != ischina) {
-                this.inChina = ischina;
-                SharedPreferences preferences = this.mContext.getSharedPreferences(this.mContext.getPackageName(), 0);
-                preferences.edit().putBoolean("inChina", this.inChina).commit();
-            }
-
-            final long temptime = SystemClock.elapsedRealtime();
-            if (this.mCurLocation == null || this.mCurWeather == null || !this.mCurWeather.vaild() || temptime - this.lastLocationTime > 120000L) {
-                this.mCurLocation = location;
-                (new AsyncTask<Location, Void, String>() {
-                    @Override
-                    protected String doInBackground(Location[] params) throws Exception {
-                        if (params != null && params.length > 0) {
-                            String city = getCityFromCoordinates(params[0].getLatitude(), params[0].getLongitude());
-                            return checkCity(city);
-                        } else {
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    protected void onProgress(Void[] progress) {
-                        //
-                    }
-
-                    @Override
-                    protected void onPostExecute(String result) {
-                        super.onPostExecute(result);
-                        if (result != null && !result.isEmpty()) {
-                            boolean changed = false;
-                            WeatherManager.this.lastLocationTime = SystemClock.elapsedRealtime();
-                            if (!result.equals(WeatherManager.this.cityName)) {
-                                WeatherManager.this.tmpCity = result;
-                                changed = true;
-                            }
-
-                            try {
-                                if (!changed && !WeatherManager.this.isFirst && WeatherManager.this.mCurWeather != null) {
-                                    if (WeatherManager.this.mCurLocation != null && WeatherManager.this.mCurWeather != null && WeatherManager.this.mCurWeather.vaild()) {
-                                        if (temptime - WeatherManager.this.lastWeatherTime < 3600000L) {
-                                            return;
-                                        }
-
-                                        WeatherManager.this.getWeather(WeatherManager.this.mCurLocation.getLatitude(), WeatherManager.this.mCurLocation.getLongitude(), WeatherManager.this.tmpCity);
-                                    }
-                                } else {
-                                    WeatherManager.this.getWeather(WeatherManager.this.mCurLocation.getLatitude(), WeatherManager.this.mCurLocation.getLongitude(), "gogogo");
-                                }
-                            } catch (Exception var4) {
-                            }
-                        }
-
-                    }
-
-                    @Override
-                    protected void onBackgroundError(Exception e) {
-                        e.printStackTrace();
-                    }
-                }).execute(new Location[]{this.mCurLocation});
-            }
+        if (location == null) {
+            return;
         }
+        boolean ischina = this.inChina(location);
+        if (this.inChina != ischina) {
+            this.inChina = ischina;
+            SharedPreferences preferences = this.mContext.getSharedPreferences(this.mContext.getPackageName(), 0);
+            preferences.edit().putBoolean("inChina", this.inChina).apply();
+        }
+        this.mCurLocation = location;
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
+        saveFallbackLocationIfMoved(lat, lon);
+
+        if (!sForeground || this.isGettingWeather || SystemClock.elapsedRealtime() < mNextAttemptAt) {
+            return;
+        }
+        String reason = null;
+        if (!hasValidWeather()) {
+            reason = "first position";
+        } else if (distanceMeters(mLastFetchLat, mLastFetchLon, lat, lon) >= REFRESH_DISTANCE_M) {
+            reason = "moved " + Math.round(distanceMeters(mLastFetchLat, mLastFetchLon, lat, lon) / 100f) / 10f + " km";
+        }
+        if (reason != null && isNetworkAvailable()) {
+            Log.d(TAG, "Weather refresh: " + reason);
+            getWeather(lat, lon, this.tmpCity);
+        }
+    }
+
+    /**
+     * Called by the launcher whenever it shows the weather (back home, bar rebuilt, wake). Fetches
+     * only when something is due, and tells the caller when to ask again.
+     *
+     * @return ms until the next time-based check is useful
+     */
+    public long refreshIfDue(String source) {
+        if (!sForeground) {
+            // Nothing shows it; the launcher asks again from onPostResume().
+            return REFRESH_INTERVAL_MS;
+        }
+        long now = SystemClock.elapsedRealtime();
+        if (now < mNextAttemptAt) {
+            return mNextAttemptAt - now;
+        }
+        if (this.isGettingWeather) {
+            return RETRY_MIN_MS;
+        }
+
+        double lat;
+        double lon;
+        boolean fallback = false;
+        if (mCurLocation != null) {
+            lat = mCurLocation.getLatitude();
+            lon = mCurLocation.getLongitude();
+        } else {
+            double[] saved = readFallbackLocation();
+            if (saved == null) {
+                // No position at all: the first fix fetches from updateLocation().
+                return REFRESH_INTERVAL_MS;
+            }
+            lat = saved[0];
+            lon = saved[1];
+            fallback = true;
+        }
+
+        String reason = null;
+        if (!hasValidWeather()) {
+            reason = "no weather yet";
+        } else if (now - lastWeatherTime >= REFRESH_INTERVAL_MS) {
+            reason = "older than " + (REFRESH_INTERVAL_MS / 60000L) + " min";
+        } else if (distanceMeters(mLastFetchLat, mLastFetchLon, lat, lon) >= REFRESH_DISTANCE_M) {
+            reason = "moved";
+        }
+        if (reason == null) {
+            return nextCheckDelay(now);
+        }
+        if (!isNetworkAvailable()) {
+            // The network callback asks again once it is back.
+            return REFRESH_INTERVAL_MS;
+        }
+        Log.d(TAG, "Weather refresh (" + source + "): " + reason
+                + (fallback ? ", using the saved position (no fix yet)" : ""));
+        getWeather(lat, lon, this.tmpCity);
+        return RETRY_MIN_MS;
+    }
+
+    /** Shows the weather on screen (called from onPostResume) or not (onStop). */
+    public static void setForeground(boolean foreground) {
+        sForeground = foreground;
+    }
+
+    private long nextCheckDelay(long now) {
+        if (now < mNextAttemptAt) {
+            return mNextAttemptAt - now;
+        }
+        if (!hasValidWeather()) {
+            return RETRY_MIN_MS;
+        }
+        return Math.max(1000L, lastWeatherTime + REFRESH_INTERVAL_MS - now);
+    }
+
+    private boolean hasValidWeather() {
+        return mCurWeather != null && mCurWeather.vaild() && !Double.isNaN(mLastFetchLat);
+    }
+
+    @Nullable
+    private double[] readFallbackLocation() {
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        }
+        String latStr = mPrefs.getString("latiude", null);
+        String lngStr = mPrefs.getString("longitude", null);
+        if (latStr == null || lngStr == null) {
+            return null;
+        }
+        try {
+            return new double[]{Double.parseDouble(latStr), Double.parseDouble(lngStr)};
+        } catch (NumberFormatException e) {
+            Log.w(TAG, "Saved position is not a number: " + latStr + ", " + lngStr);
+            return null;
+        }
+    }
+
+    /**
+     * The saved position is the fallback for the next start and NightModeService's sunrise/sunset
+     * position. It was rewritten on every GPS fix (every 30 s); a kilometre is precise enough for both.
+     */
+    private void saveFallbackLocationIfMoved(double lat, double lon) {
+        if (!Double.isNaN(mLastSavedLat)
+                && distanceMeters(mLastSavedLat, mLastSavedLon, lat, lon) < SAVE_DISTANCE_M) {
+            return;
+        }
+        mLastSavedLat = lat;
+        mLastSavedLon = lon;
+        if (mPrefs == null) {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        }
+        mPrefs.edit()
+                .putString("latiude", String.valueOf(lat))
+                .putString("longitude", String.valueOf(lon))
+                .apply();
+    }
+
+    /** Equirectangular approximation: off by a few metres at most at these ranges. */
+    static float distanceMeters(double lat1, double lon1, double lat2, double lon2) {
+        if (Double.isNaN(lat1) || Double.isNaN(lat2)) {
+            return Float.MAX_VALUE;
+        }
+        double x = Math.toRadians(lon2 - lon1) * Math.cos(Math.toRadians((lat1 + lat2) * 0.5));
+        double y = Math.toRadians(lat2 - lat1);
+        return (float) (Math.sqrt(x * x + y * y) * 6371000.0);
     }
 
     protected boolean isBetterLocation(Location newLocation, Location oldLocation) {
@@ -500,47 +600,6 @@ public class WeatherManager {
         return lon >= 73.33d && lon <= 135.05d && lat >= 3.51d && lat <= 53.33d;
     }
 
-    public String getContentFromUrl(String url) {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try (Response response = okHttpClient.newCall(request).execute()) {
-            int responseCode = response.code();
-            Log.i("hzq", " getContentFromUrl: " + url + "  result responseCode :" + responseCode);
-            
-            if (responseCode != 200) {
-                return null;
-            }
-            
-            if (response.body() != null) {
-                return response.body().string();
-            }
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private String getCityFromCoordinates(double latitude, double longitude) {
-        String url = OPEN_WEATHER_GEO_URL + "&lat=" + latitude + "&lon=" + longitude;
-        String entry = sendGet(url);
-        
-        if (entry != null && !entry.isEmpty()) {
-            try {
-                JSONArray jsonArray = new JSONArray(entry);
-                if (jsonArray.length() > 0) {
-                    JSONObject location = jsonArray.getJSONObject(0);
-                    return location.getString("name");
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error parsing city from coordinates", e);
-            }
-        }
-        return null;
-    }
-
     void getWeather(final Double lat, final Double lon, String city) {
         if (!this.isGettingWeather && lat != null && lon != null) {
             this.isGettingWeather = true;
@@ -567,10 +626,11 @@ public class WeatherManager {
                 public void onPostExecute(WeatherDescription result) {
                     WeatherManager.this.isGettingWeather = false;
                     if (result != null && result.vaild()) {
-                        WeatherManager.this.cityName = WeatherManager.this.tmpCity;
-                        SharedPreferences preferences = WeatherManager.this.mContext.getSharedPreferences(WeatherManager.this.mContext.getPackageName(), 0);
-                        preferences.edit().putString("city", WeatherManager.this.cityName).commit();
                         WeatherManager.this.lastWeatherTime = SystemClock.elapsedRealtime();
+                        WeatherManager.this.mLastFetchLat = lat;
+                        WeatherManager.this.mLastFetchLon = lon;
+                        WeatherManager.this.mRetryDelayMs = 0L;
+                        WeatherManager.this.mNextAttemptAt = 0L;
                         WeatherManager.this.mCurWeather = result;
                         if (WeatherManager.this.weatherListeners != null && WeatherManager.this.weatherListeners.size() > 0) {
                             // collect live listeners while cleaning up cleared refs
@@ -596,6 +656,7 @@ public class WeatherManager {
                         }
                     } else {
                         Log.e(TAG, "Failed to get weather data");
+                        WeatherManager.this.scheduleRetryAfterFailure();
                     }
                 }
 
@@ -603,16 +664,39 @@ public class WeatherManager {
                 protected void onBackgroundError(Exception e) {
                     WeatherManager.this.isGettingWeather = false;
                     Log.e(TAG, "Background error in getWeatherNew", e);
+                    WeatherManager.this.scheduleRetryAfterFailure();
                 }
             }).execute(new String[]{city});
         }
     }
 
+    private void scheduleRetryAfterFailure() {
+        mRetryDelayMs = mRetryDelayMs <= 0L ? RETRY_MIN_MS : Math.min(mRetryDelayMs * 2L, RETRY_MAX_MS);
+        mNextAttemptAt = SystemClock.elapsedRealtime() + mRetryDelayMs;
+        Log.d(TAG, "Weather fetch failed, next attempt in " + (mRetryDelayMs / 1000L) + " s");
+    }
+
+    private static OkHttpClient httpClient() {
+        OkHttpClient client = sHttpClient;
+        if (client == null) {
+            synchronized (WeatherManager.class) {
+                client = sHttpClient;
+                if (client == null) {
+                    client = new OkHttpClient.Builder()
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .build();
+                    sHttpClient = client;
+                }
+            }
+        }
+        return client;
+    }
+
     public static String sendGet(String url) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .build();
+        // A new client per request also meant a new connection pool and dispatcher threads,
+        // and a fresh TLS handshake every time.
+        OkHttpClient client = httpClient();
 
         Request request = new Request.Builder()
                 .url(url)
@@ -638,53 +722,8 @@ public class WeatherManager {
         }
     }
 
-    String checkCity(String city) {
-        if (city == null) {
-            return null;
-        }
-        if (city.length() <= 2) {
-            return city;
-        }
-        if (!city.endsWith("市") && !city.endsWith("州") && !city.endsWith("县")) {
-            return city;
-        }
-        String weatherCity = city.substring(0, city.length() - 1);
-        return weatherCity;
-    }
-
     public WeatherDescription getThisWeather() {
         return this.mCurWeather;
-    }
-
-    public void updateWeather() {
-        if (!isNetworkAvailable()) {
-            Log.w(TAG, "No network available, cannot update weather");
-            return;
-        }
-        
-        if (mCurLocation != null) {
-            getWeather(
-                mCurLocation.getLatitude(), 
-                mCurLocation.getLongitude(), 
-                tmpCity != null ? tmpCity : cityName
-            );
-        } else {
-            if (mPrefs == null) {
-                mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-            }    
-            String latStr = mPrefs.getString("latiude", null);
-            String lngStr = mPrefs.getString("longitude", null);
-            if (latStr != null && lngStr != null) {
-                Log.w(TAG, "No location available, using fallback location to update weather");
-                double lat = Double.parseDouble(latStr);
-                double longt = Double.parseDouble(lngStr);
-                getWeather(
-                        lat,
-                        longt,
-                        tmpCity != null ? tmpCity : cityName
-                );
-            }
-        }
     }
 
     public class mThread_readLocalData extends Thread {

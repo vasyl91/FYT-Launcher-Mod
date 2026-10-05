@@ -23,6 +23,7 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.CellLayout;
@@ -70,6 +71,8 @@ public class WindowUtil {
     private static final long REPARENT_SETTLE_GRACE_MS = 250L;
     private static final Handler retryHandler = new Handler(Looper.getMainLooper());
     private static boolean pipRetryPending = false;
+    /** The queued paused-launcher retry of openPip(), so removePip() can take it back. */
+    private static volatile Runnable pausedPipRetry;
 
     /**
      * Short, bounded retries for a trigger that lands while the launcher is momentarily paused.
@@ -707,6 +710,14 @@ public class WindowUtil {
             }
         } else {
             clearOpenPipInFlight();
+            if (!launcher.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+                // Stopped, not just paused: something else is in front (settings, a widget's
+                // configure activity, another app). Retrying spent all eight attempts against it
+                // for nothing; every way back into the launcher goes through onResume(), which
+                // opens the panes itself.
+                Log.i(TAG, "openPip(): launcher stopped, leaving the panes to its next onResume()");
+                return;
+            }
             // Paused right now -- most likely one of the brief pause/resume flips of a wake.
             // Try again shortly instead of waiting for the watchdog.
             if (!pipRetryPending && allowPipRetries < MAX_ALLOW_PIP_RETRIES) {
@@ -714,10 +725,18 @@ public class WindowUtil {
                 pipRetryPending = true;
                 Log.i(TAG, "openPip(): launcher paused, retrying in " + ALLOW_PIP_RETRY_MS
                         + " ms (" + allowPipRetries + "/" + MAX_ALLOW_PIP_RETRIES + ")");
-                retryHandler.postDelayed(() -> {
-                    pipRetryPending = false;
-                    WindowUtil.startMapPip(show);
-                }, ALLOW_PIP_RETRY_MS);
+                Runnable retry = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (pausedPipRetry == this) {
+                            pausedPipRetry = null;
+                        }
+                        pipRetryPending = false;
+                        WindowUtil.startMapPip(show);
+                    }
+                };
+                pausedPipRetry = retry;
+                retryHandler.postDelayed(retry, ALLOW_PIP_RETRY_MS);
             }
         }
     }
@@ -734,6 +753,13 @@ public class WindowUtil {
         launcher.handler.post(launcher::cancelPipWatchdog);
         if (helpers == null) {
             helpers = new Helpers();
+        }
+        // Clearing the flag alone let the queued retry run anyway -- and, the flag being clear,
+        // queue the next one: removePip() from onStop() did not end the paused-launcher retries.
+        Runnable pendingRetry = pausedPipRetry;
+        if (pendingRetry != null) {
+            pausedPipRetry = null;
+            retryHandler.removeCallbacks(pendingRetry);
         }
         pipRetryPending = false;
         // Whatever was being built is gone with these panes.

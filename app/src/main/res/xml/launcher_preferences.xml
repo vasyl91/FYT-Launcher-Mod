@@ -27,7 +27,6 @@
     </PreferenceCategory>
 
     <Preference
-        android:key="separator_widgets_stats"
         android:layout="@layout/preference_separator"
         android:selectable="false" />
     
@@ -119,7 +118,6 @@
     </PreferenceCategory>
 
     <Preference
-        android:key="separator_widgets_stats"
         android:layout="@layout/preference_separator"
         android:selectable="false" />
 
@@ -159,7 +157,6 @@
             android:title="@string/launcher_home"
             android:summary=" " />
         <Preference
-            android:key="separator_widgets_stats"
             android:layout="@layout/preference_separator"
             android:selectable="false" />
         <Preference
@@ -170,7 +167,6 @@
             android:title="@string/baseline_profile_reset"
             android:summary=" " />
         <Preference
-            android:key="separator_widgets_stats"
             android:layout="@layout/preference_separator"
             android:selectable="false" />
         <Preference
@@ -186,7 +182,6 @@
     </PreferenceCategory>
 
     <Preference
-        android:key="separator_widgets_stats"
         android:layout="@layout/preference_separator"
         android:selectable="false" />
 
@@ -291,7 +286,6 @@
     </PreferenceCategory>    
 
     <Preference
-        android:key="separator_widgets_stats"
         android:layout="@layout/preference_separator"
         android:selectable="false" />
 
@@ -329,7 +323,6 @@
     </PreferenceCategory>   
 
     <Preference
-        android:key="separator_widgets_stats"
         android:layout="@layout/preference_separator"
         android:selectable="false" /> 
 
@@ -349,7 +342,6 @@
     </PreferenceCategory>
 
     <Preference
-        android:key="separator_widgets_stats"
         android:layout="@layout/preference_separator"
         android:selectable="false" />
 

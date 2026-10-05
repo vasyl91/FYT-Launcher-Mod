@@ -36,6 +36,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -84,6 +85,16 @@ public class SunTask extends AsyncTask<String, Void, String> {
     public static final int JOB_ID = 123;
     private static final long MIN_JOB_LATENCY_MS = 30000;
     private static final int HTTP_TIMEOUT_MS = 10000;
+
+    /*
+     * The API answer for one day and one place. Every refresh asked the network again -- each wake,
+     * each return from the settings, each clock correction -- although the times only change with
+     * the date or a move of tens of kilometres: 0.1 deg is ~11 km, under half a minute of sunrise.
+     */
+    private static final String KEY_SUN_CACHE = "sunApiCacheKey";
+    private static final String KEY_SUN_CACHE_SUNRISE = "sunApiSunriseMs";
+    private static final String KEY_SUN_CACHE_SUNSET = "sunApiSunsetMs";
+    private static final String KEY_SUN_CACHE_DAY_LENGTH = "sunApiDayLengthMs";
 
     /*
      * One shared thread for all instances. Previously, each instance created its own
@@ -160,7 +171,13 @@ public class SunTask extends AsyncTask<String, Void, String> {
         // calculated, the day flag went stale and no sunrise/sunset job was scheduled any more.
         helpers.setPolarDay(false);
         helpers.setPerpetualNight(false);
-        if (isConnectionAvailable(this.mContext)) {
+        String cacheKey = sunCacheKey();
+        if (cacheKey.equals(mPrefs.getString(KEY_SUN_CACHE, null))) {
+            sunrise = mPrefs.getLong(KEY_SUN_CACHE_SUNRISE, 0L);
+            sunset = mPrefs.getLong(KEY_SUN_CACHE_SUNSET, 0L);
+            dayLength = mPrefs.getLong(KEY_SUN_CACHE_DAY_LENGTH, 0L);
+            Log.d(TAG, "Sunrise/sunset from today's answer for this area, no request");
+        } else if (isConnectionAvailable(this.mContext)) {
             try {
                 JSONObject sunInfoObject = readJsonFromUrl(url);
                 if (sunInfoObject == null) {
@@ -193,12 +210,22 @@ public class SunTask extends AsyncTask<String, Void, String> {
             useFallbackCalculation();
             return;
         }
+        editor.putString(KEY_SUN_CACHE, cacheKey);
+        editor.putLong(KEY_SUN_CACHE_SUNRISE, sunrise);
+        editor.putLong(KEY_SUN_CACHE_SUNSET, sunset);
+        editor.putLong(KEY_SUN_CACHE_DAY_LENGTH, dayLength);
         editor.putString("sunrise", longToHourZone(sunrise));
         editor.putString("sunset", longToHourZone(sunset));
         editor.apply();
         sunrise = sunrise + sunriseCorrectionValue;
         sunset = sunset + sunsetCorrectionValue;
         dayOrNight();
+    }
+
+    /** Today's date, the position on a 0.1 deg grid and the time zone the API was asked for. */
+    private String sunCacheKey() {
+        return LocalDate.now() + "|" + Math.round(mLatiude * 10.0) + "|"
+                + Math.round(mLongitude * 10.0) + "|" + ZoneId.systemDefault().getId();
     }
 
     private void useFallbackCalculation() {
