@@ -443,6 +443,8 @@
     <string name="wallpaper_load_fail">Couldn\'t load image as wallpaper</string>
     <string name="night_mode">Night mode</string>
     <string name="night_mode_summary">Calculated sunrise: %1$s and sunset: %2$s.</string>
+    <string name="night_mode_lights">Night by car lights</string>
+    <string name="night_mode_lights_summary">Lights on means night, lights off means day, instead of sunrise and sunset. Only for cars that switch their lights on automatically; with daytime running lights required by law it stays night all day.</string>
     <string name="summary_correction_sunrise">\u0020Corrected sunrise: %1$s.</string>
     <string name="summary_correction_sunset">\u0020Corrected sunset: %1$s.</string>
     <string name="sun_corrections">Sunrise and sunset adjustment (optional)</string>

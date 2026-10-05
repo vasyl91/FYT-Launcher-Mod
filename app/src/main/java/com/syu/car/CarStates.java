@@ -2,7 +2,9 @@ package com.syu.car;
 
 import android.content.Context;
 
+import com.android.launcher66.settings.HeadlightNightMode;
 import com.syu.ipc.data.FinalCanbus;
+import com.syu.ipc.data.FinalMain;
 import com.syu.remote.Callback;
 import com.syu.remote.RemoteTools;
 import com.syu.util.JTools;
@@ -63,9 +65,13 @@ public class CarStates {
                     }
                     if (updateCode == 50 && ints != null && ints.length > 0) {
                         CarStates.mAccState = ints[0];
+                        return;
+                    }
+                    if (updateCode == FinalMain.U_LAMPLET && ints != null && ints.length > 0) {
+                        HeadlightNightMode.onLightsReported(mContext, ints[0]);
                     }
                 }
-            }, 0, 28, 39, 50);
+            }, 0, 28, 39, 50, FinalMain.U_LAMPLET);
         }
     }
 

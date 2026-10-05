@@ -442,6 +442,8 @@
     <string name="wallpaper_load_fail">无法将图片设置为壁纸</string>
     <string name="night_mode">夜间模式</string>
     <string name="night_mode_summary">计算得出的日出: %1$s，日落: %2$s。</string>
+    <string name="night_mode_lights">根据车灯切换夜间</string>
+    <string name="night_mode_lights_summary">车灯开启即为夜间，关闭即为白天，代替日出和日落时间。仅适用于自动开关车灯的车辆；若法规要求白天也开灯，将全天保持夜间。</string>
     <string name="summary_correction_sunrise">\u0020修正后的日出: %1$s。</string>
     <string name="summary_correction_sunset">\u0020修正后的日落: %1$s。</string>
     <string name="sun_corrections">日出日落调整（可选）</string>

@@ -71,6 +71,12 @@ public final class DayNightBrightness {
      * so the brightness always matches the wallpaper on the screen.
      */
     public static boolean isDayState(Helpers helpers) {
+        // The car's lights, when the user chose them (HeadlightNightMode); otherwise the sun.
+        Boolean byLights = HeadlightNightMode.dayByLights(
+                PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp));
+        if (byLights != null) {
+            return byLights;
+        }
         if (helpers.isPolarDay()) {
             return true;
         }
@@ -95,6 +101,11 @@ public final class DayNightBrightness {
         Context appContext = context.getApplicationContext();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
         if (!isEnabled(prefs)) {
+            return;
+        }
+        Boolean byLights = HeadlightNightMode.dayByLights(prefs);
+        if (byLights != null) {
+            apply(appContext, byLights, reason + ", lights");
             return;
         }
         Helpers helpers = new Helpers();

@@ -148,7 +148,26 @@ public class WindowHost {
             return true;   // on doubt, stop suppressing rather than hold the window open
         }
     }
-    
+
+    /**
+     * True once the pane with this label ("dual", "first" ... "fourth") has produced a frame, or
+     * is not shown at all. Plain field reads, no binder.
+     */
+    public boolean isPaneRendering(String label) {
+        try {
+            return switch (label) {
+                case "dual" -> dual.hasRenderedContent();
+                case "first" -> first.hasRenderedContent();
+                case "second" -> second.hasRenderedContent();
+                case "third" -> third.hasRenderedContent();
+                case "fourth" -> fourth.hasRenderedContent();
+                default -> true;
+            };
+        } catch (Throwable t) {
+            return true;   // on doubt, do not hold the next pane back
+        }
+    }
+
     /** Whether every visible panel is showing a working application (rather than cropped or black content). */
     public boolean isContentHealthy() {
         try {

@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import com.android.launcher66.SysCalls;
 import android.SystemProperties;
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -170,6 +171,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         Log.d(TAG, "Service destroyed");
         removeLocationUpdates();
         unregisterAccessibilityEventListener();
+        ForegroundAppTracker.stop();
         mPropertyChangeClass.deleteObserver(Keys.ALLAPPS, this);
         mPropertyChangeClass.deleteObserver(Keys.FUELSTATS, this);
         try {
@@ -180,7 +182,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         removeNotify();
         removeView();
         Intent broadcastIntent = new Intent(this, ServiceRestarter.class);
-        sendBroadcast(broadcastIntent);
+        SysCalls.sendBroadcast(CanbusService.this, broadcastIntent);
     }
 
     @Override
@@ -197,6 +199,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
      * PiP panes waiting behind them.
      */
     private void registerAccessibilityEventListener() {
+        // With system privileges the foreground app comes from the task stack, and the
+        // accessibility service (and its settings screen) is not needed at all.
+        if (ForegroundAppTracker.start(this)) {
+            return;
+        }
         if (accessibilityManager == null) {
             return;
         }
@@ -247,7 +254,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
     
     private void unregisterAccessibilityEventListener() {
-        if (accessibilityManager != null) {
+        if (accessibilityManager != null && accessibilityListener != null) {
             accessibilityManager.removeAccessibilityStateChangeListener(accessibilityListener);
         }
     }

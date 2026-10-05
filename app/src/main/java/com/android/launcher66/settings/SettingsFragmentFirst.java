@@ -132,6 +132,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private EditText workspaceTextSizeEditText;
     private AlertDialog alertWorkspaceTextSizeDialog;
     private Preference nightMode;
+    private Preference nightModeLights;
     private PreferenceCategory wallpapersCategory;
     private SwitchPreferenceCompat defaultWallpapers;
     private Preference saveDayWallpaper;
@@ -354,6 +355,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference bootCompletedAutostart = findPreference(Keys.AUTOSTART_APPS_BY_BOOT_COMPLETED);
 
         nightMode = findPreference(Keys.NIGHT_MODE);
+        nightModeLights = findPreference(Keys.NIGHT_MODE_LIGHTS);
         wallpapersCategory = findPreference("wallpapers_category");
         defaultWallpapers = findPreference(Keys.DEFAULT_WALLPAPERS);
         saveDayWallpaper = findPreference(Keys.SAVE_DAY_WALLPAPER);
@@ -441,6 +443,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (accessibilityPreference != null) {
             accessibilityPreference.setOnPreferenceClickListener(this);
+            // Not needed when the foreground app comes from the task stack (system privileges).
+            accessibilityPreference.setVisible(!ForegroundAppTracker.isActive());
         }
         if (wallpaperPicker != null) {
             wallpaperPicker.setOnPreferenceClickListener(this);
@@ -597,6 +601,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             nightMode.setOnPreferenceClickListener(this);
             handler.post(updateSummary);
             nightModeBool = sharedPrefs.getBoolean(Keys.NIGHT_MODE, false);
+            if (nightModeLights != null) {
+                nightModeLights.setOnPreferenceClickListener(this);
+                nightModeLights.setVisible(nightModeBool);
+            }
             correctionCategory.setVisible(nightModeBool);
             sunriseCorrectionSeekBar.setVisible(nightModeBool);
             sunsetCorrectionSeekBar.setVisible(nightModeBool);
@@ -819,10 +827,21 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 autostartDialog.show(requireActivity().getSupportFragmentManager(),
                         AppListAutostartDialogFragment.TAG);
                 break;
+            case Keys.NIGHT_MODE_LIGHTS:
+                // Applied right away; on the way back from the settings NightModeService refreshes anyway.
+                if (sharedPrefs.getBoolean(Keys.NIGHT_MODE_LIGHTS, false)) {
+                    HeadlightNightMode.onSwitchChanged(requireContext());
+                } else {
+                    NightModeService.startSunTaskForSavedLocation(requireContext(), "lights switch off");
+                }
+                break;
             case Keys.NIGHT_MODE:
                 brightnessDirty = true;
                 nightModeBool = sharedPrefs.getBoolean(Keys.NIGHT_MODE, false);
                 handler.post(updateSummary);
+                if (nightModeLights != null) {
+                    nightModeLights.setVisible(nightModeBool);
+                }
                 correctionCategory.setVisible(nightModeBool);
                 sunriseTitleAndSummary.setVisible(nightModeBool);
                 sunsetTitleAndSummary.setVisible(nightModeBool);

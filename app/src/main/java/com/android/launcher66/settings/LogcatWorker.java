@@ -843,7 +843,7 @@ public final class LogcatWorker {
     // ---------------------------------------------------------------- storage
 
     /** Public Downloads/Launcher66_Logs when it can be written right now, otherwise null. */
-    private static File usablePublicDir(Context ctx) {
+    static File usablePublicDir(Context ctx) {
         try {
             if (!mayUsePublicStorage(ctx)) return null;
             if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) return null;
@@ -890,7 +890,7 @@ public final class LogcatWorker {
      * The app-specific external folder, or internal storage when that is not available either
      * (as at boot, before shared storage is mounted). Neither needs a runtime permission.
      */
-    private static File resolveFallbackDir(Context ctx) {
+    static File resolveFallbackDir(Context ctx) {
         File ext = null;
         try {
             ext = ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);

@@ -125,6 +125,12 @@ android {
         }
     }
 
+    testOptions {
+        // JVM unit tests: framework calls in static initializers (Handler, Looper) return defaults
+        // instead of throwing "not mocked".
+        unitTests.isReturnDefaultValues = true
+    }
+
     lint {
         // lintConfig = file("lint.xml")
         checkReleaseBuilds = false
@@ -254,6 +260,11 @@ dependencies {
     // ─── Debug ───
     debugImplementation(libs.leakcanary.android)
 
+    // ─── Hidden framework classes, compile time only (see hiddenapi-stubs/build.gradle.kts) ───
+    compileOnly(project(":hiddenapi-stubs"))
+
     // ─── Tests ───
+    testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
 }

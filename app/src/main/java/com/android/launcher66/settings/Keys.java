@@ -21,6 +21,7 @@ public final class Keys {
     public static final String OVERVIEW_MODE_OPEN = "overview_mode_open";
     public static final String OVERVIEW_MODE_CLOSE = "overview_mode_close";
     public static final String NIGHT_MODE = "night_mode"; 
+    public static final String NIGHT_MODE_LIGHTS = "night_mode_lights";
     public static final String DOWNLOAD_PERCENTAGE = "download_percentage";
     public static final String STATUSBAR = "transparent_statusbar";
     public static final String CREATOR_FIRST = "launcher_creator_first";

@@ -1,5 +1,6 @@
 package com.syu.module.canbus;
 
+import com.android.launcher66.SysCalls;
 import android.content.Intent;
 import android.os.RemoteException;
 
@@ -74,7 +75,7 @@ public class ModuleCallbackCanbusProxy extends IModuleCallback.Stub {
                     try {
                         Intent intent = new Intent("com.syu.canbus.enter.air");
                         intent.setPackage(LauncherApplication.getInstance().getPackageName());
-                        LauncherApplication.getInstance().sendBroadcast(intent);
+                        SysCalls.sendBroadcast(LauncherApplication.getInstance(), intent);
                         break;
                     } catch (Exception e) {
                         return;

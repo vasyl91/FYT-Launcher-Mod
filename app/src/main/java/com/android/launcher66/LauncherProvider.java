@@ -1063,7 +1063,7 @@ public class LauncherProvider extends ContentProvider {
                     intent.setComponent(cn2);
                     intent.putExtras(extras);
                     intent.putExtra("appWidgetId", appWidgetId);
-                    this.mContext.sendBroadcast(intent);
+                    SysCalls.sendBroadcast(this.mContext, intent);
                 }
             } catch (RuntimeException ex) {
                 Log.e(LauncherProvider.TAG, "Problem allocating appWidgetId", ex);

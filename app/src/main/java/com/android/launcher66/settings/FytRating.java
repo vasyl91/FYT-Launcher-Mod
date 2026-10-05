@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import com.android.launcher66.SysCalls;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.PendingIntent;
@@ -717,7 +718,7 @@ public final class FytRating {
             request.putExtra(EXTRA_CALLBACK, callbackIntent);
             request.putExtra(EXTRA_IDENTITY, identityIntent);
 
-            appContext.sendBroadcast(request);
+            SysCalls.sendBroadcast(appContext, request);
 
             if (!latch.await(timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS)) {
                 Log.w(TAG, "No reply to " + request.getAction() + " within " + timeoutMs + " ms");
