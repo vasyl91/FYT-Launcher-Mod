@@ -88,7 +88,8 @@ public class NightModeService extends Service {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Keys.RECREATE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(recreateReceiver, filter, Context.RECEIVER_EXPORTED);
+            // Sent only by our own Launcher, no reason to accept it from other apps.
+            registerReceiver(recreateReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
         } else {
             registerReceiver(recreateReceiver, filter);
         }

@@ -162,7 +162,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
         unregisterAccessibilityEventListener();
         mPropertyChangeClass.deleteObserver(Keys.ALLAPPS, this);
         mPropertyChangeClass.deleteObserver(Keys.FUELSTATS, this);
-        unregisterReceiver(pipReceiver);
+        try {
+            unregisterReceiver(pipReceiver);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "pipReceiver was not registered", e);
+        }
         removeNotify();
         removeView();
         Intent broadcastIntent = new Intent(this, ServiceRestarter.class);
@@ -223,7 +227,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                         case Keys.PIP_STARTED:
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(Keys.FUELSTATS, curForegroundApp);
-                            if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
+                            if (absoluteStats != null && !"main".equals(absoluteStats.getTag())) {
                                 //removeView();  
                                 addStatsViewMainScreen();                          
                             } else {
@@ -245,7 +249,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                         case Keys.LIST_CLOSE:
                             curForegroundApp = "com.android.launcher66";
                             mPropertyChangeClass.setString(Keys.FUELSTATS, curForegroundApp);
-                            if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
+                            if (absoluteStats != null && !"main".equals(absoluteStats.getTag())) {
                                 //removeView();
                                 addStatsViewMainScreen();                                
                             }
@@ -255,7 +259,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             mPropertyChangeClass.setString(Keys.FUELSTATS, curForegroundApp);
                             // needs a while to properly return current page id
                             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                                if (absoluteStats != null && (absoluteStats.getTag() != "main" || absoluteStats.getTag() == null)) {
+                                if (absoluteStats != null && !"main".equals(absoluteStats.getTag())) {
                                     //removeView();
                                     addStatsViewMainScreen();
                                 }
@@ -271,16 +275,17 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             String reason = intent.getStringExtra(Keys.SYSTEM_DIALOG_REASON_KEY);
                             if (reason != null) {
                                 if (reason.equals(Keys.SYSTEM_DIALOG_REASON_HOME_KEY)) {
-                                    final boolean alreadyOnHome = Launcher.getLauncher().mHasFocus;
-
-                                    if (Launcher.getLauncher().mWorkspace == null) {
-                                        // Can be cases where mWorkspace is null, this prevents a NPE
+                                    // One reference: the static can be cleared while this runs.
+                                    final Launcher launcher = Launcher.getLauncher();
+                                    if (launcher == null || launcher.mWorkspace == null) {
+                                        // Launcher not running, or mWorkspace not created yet
                                         return;
                                     }
-                                    Folder openFolder = Launcher.getLauncher().getWorkspace().getOpenFolder();
+                                    final boolean alreadyOnHome = launcher.mHasFocus;
+                                    Folder openFolder = launcher.getWorkspace().getOpenFolder();
                                     // In all these cases, only animate if we're already on home
-                                    Launcher.getLauncher().mWorkspace.exitWidgetResizeMode();
-                                    if (alreadyOnHome && Launcher.getLauncher().mState == Launcher.State.WORKSPACE && !Launcher.getLauncher().mWorkspace.isTouchActive() &&
+                                    launcher.mWorkspace.exitWidgetResizeMode();
+                                    if (alreadyOnHome && launcher.mState == Launcher.State.WORKSPACE && !launcher.mWorkspace.isTouchActive() &&
                                             openFolder == null) {
                                         curForegroundApp = "com.android.launcher66";
                                         mPropertyChangeClass.setString(Keys.FUELSTATS, curForegroundApp);
@@ -293,6 +298,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             break;
                         case Keys.ACCESIBILITY_SERVICE:
                             String packageName = intent.getStringExtra("package_name");
+                            if (packageName == null) {
+                                break;
+                            }
                             if (packageName.equals("com.android.launcher3")) {
                                 helpers.setInRecent(true);
                                 helpers.setInAllApps(false);
@@ -325,11 +333,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
             if (packageName.contains("com.android.launcher66") && !helpers.isForegroundAppOpened()) {
                 curForegroundApp = "com.android.launcher66";
             } 
-            if (packageName.contains(appPackageName) && (helpers.hasPipStarted() || helpers.isInRecent()) && !helpers.isForegroundAppOpened()) {
+            if (!appPackageName.isEmpty() && packageName.contains(appPackageName) && (helpers.hasPipStarted() || helpers.isInRecent()) && !helpers.isForegroundAppOpened()) {
                 curForegroundApp = "com.android.launcher66";
             }
             if (apps.contains(packageName)) {
-                if (packageName.contains(appPackageName) && (helpers.hasPipStarted() || helpers.isInRecent() || helpers.isInOverviewMode()) && !helpers.isForegroundAppOpened()) {
+                if (!appPackageName.isEmpty() && packageName.contains(appPackageName) && (helpers.hasPipStarted() || helpers.isInRecent() || helpers.isInOverviewMode()) && !helpers.isForegroundAppOpened()) {
                     curForegroundApp = "com.android.launcher66";
                 } else if (!helpers.isInOverviewMode() || !helpers.isListOpen() || !helpers.isInRecent()) {
                     curForegroundApp = packageName;
@@ -538,7 +546,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
             if (!mapApp) {
                 try {
                     // compute workspace & page metrics early
-                    workspaceRef = Launcher.getLauncher().getWorkspace();
+                    Launcher mainLauncher = Launcher.getLauncher();
+                    workspaceRef = mainLauncher != null ? mainLauncher.getWorkspace() : null;
                     if (workspaceRef != null) {
                         try {
                             statsPageWidth = workspaceRef.getViewportWidth();

@@ -132,6 +132,10 @@ public class WindowHostSinglePane {
     private boolean hasPendingBounds = false;
     private boolean startDeferredForBounds = false;
 
+    /** Bounds the "surface not ready" retry in startNow(): 100 x 50 ms = 5 s. */
+    private static final int MAX_SURFACE_NOT_READY_RETRIES = 100;
+    private int surfaceNotReadyRetries = 0;
+
     private int restartCount = 0;
     private int blackConfirmCount = 0;
     private final AtomicBoolean blackScreenDetected = new AtomicBoolean(false);
@@ -164,6 +168,7 @@ public class WindowHostSinglePane {
 
         final int myGen = ++gen;
 
+        surfaceNotReadyRetries = 0;
         restartCount = 0;
         blackConfirmCount = 0;
         blackScreenDetected.set(false);
@@ -1105,13 +1110,18 @@ public class WindowHostSinglePane {
                     try {
                         SurfaceHolder holder = sv.getHolder();
                         if (holder == null || holder.getSurface() == null || !holder.getSurface().isValid()) {
-                            Log.w(TAG, name + ": surface not ready yet, deferring start");
+                            if (surfaceNotReadyRetries++ < MAX_SURFACE_NOT_READY_RETRIES) {
+                                Log.w(TAG, name + ": surface not ready yet, deferring start");
+                                postMainDelayed(() -> startNow(pkg, expectedGen), 50);
+                                return;
+                            }
+                            Log.w(TAG, name + ": surface still not ready, starting anyway");
+                        }
+                    } catch (Throwable t) {
+                        if (surfaceNotReadyRetries++ < MAX_SURFACE_NOT_READY_RETRIES) {
                             postMainDelayed(() -> startNow(pkg, expectedGen), 50);
                             return;
                         }
-                    } catch (Throwable t) {
-                        postMainDelayed(() -> startNow(pkg, expectedGen), 50);
-                        return;
                     }
                 }
             }
@@ -1261,6 +1271,7 @@ public class WindowHostSinglePane {
             taskId = -1;
             avReady.set(false);
             firstFrame.set(false);
+            surfaceNotReadyRetries = 0;
             blackScreenDetected.set(false);
 
             if (host != null) {

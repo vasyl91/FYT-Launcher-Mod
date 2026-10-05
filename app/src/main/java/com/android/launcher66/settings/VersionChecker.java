@@ -2,6 +2,8 @@ package com.android.launcher66.settings;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.core.content.FileProvider;
@@ -241,10 +243,15 @@ public class VersionChecker {
                         throw new IOException("Server returned HTTP " + responseCode);
                     }
 
-                    DownloadCallback started = downloadCallbackRef.get();
-                    if (started != null) {
-                        started.onDownloadStarted("update" + latestVersion);
-                    }
+                    // This is a pool thread: the callback touches the UI, and the fragment may have
+                    // been detached (callback cleared) in the meantime, so look it up on the main thread.
+                    final String startedName = "update" + latestVersion;
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        DownloadCallback started = downloadCallbackRef.get();
+                        if (started != null) {
+                            started.onDownloadStarted(startedName);
+                        }
+                    });
 
                     input = connection.getInputStream();
                     outputFile = new File(appContext.getExternalFilesDir(null),

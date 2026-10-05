@@ -563,6 +563,35 @@ public final class WindowHostSplash {
         return snapshot.contains(displayId) ? Boolean.TRUE : Boolean.FALSE;
     }
 
+    /** Resolved once: Android 10 has getAllStackInfos(), Android 11+ renamed it getAllRootTaskInfos(). */
+    private static Method sStackInfosMethod;
+    private static boolean sStackInfosResolved;
+
+    private static Method resolveStackInfosMethod(Object atm) {
+        if (sStackInfosResolved) return sStackInfosMethod;
+        sStackInfosResolved = true;
+        for (String name : new String[]{ "getAllRootTaskInfos", "getAllStackInfos" }) {
+            try {
+                Method m = atm.getClass().getMethod(name);
+                m.setAccessible(true);
+                sStackInfosMethod = m;
+                break;
+            } catch (Throwable ignore) { }
+        }
+        return sStackInfosMethod;
+    }
+
+    /** StackInfo has taskIds, RootTaskInfo (Android 11+) has childTaskIds. */
+    private static int[] taskIdsOf(Object info) {
+        for (String name : new String[]{ "taskIds", "childTaskIds" }) {
+            try {
+                Object value = info.getClass().getField(name).get(info);
+                if (value instanceof int[]) return (int[]) value;
+            } catch (Throwable ignore) { }
+        }
+        return null;
+    }
+
     /** @return ids of displays currently showing a visible, non-empty stack, or null on failure. */
     private static HashSet<Integer> queryVisibleDisplays() {
         try {
@@ -571,8 +600,8 @@ public final class WindowHostSplash {
             Object atm = getService.invoke(null);
             if (atm == null) return null;
 
-            Method getAllStackInfos = atm.getClass().getMethod("getAllStackInfos");
-            getAllStackInfos.setAccessible(true);
+            Method getAllStackInfos = resolveStackInfosMethod(atm);
+            if (getAllStackInfos == null) return null;
             Object result = getAllStackInfos.invoke(atm);
             if (!(result instanceof List)) return null;
 
@@ -580,9 +609,8 @@ public final class WindowHostSplash {
             for (Object stackInfo : (List<?>) result) {
                 if (stackInfo == null) continue;
 
-                Field fTasks = stackInfo.getClass().getField("taskIds");
-                Object taskIds = fTasks.get(stackInfo);
-                if (!(taskIds instanceof int[]) || ((int[]) taskIds).length == 0) continue;
+                int[] taskIds = taskIdsOf(stackInfo);
+                if (taskIds == null || taskIds.length == 0) continue;
 
                 try {
                     Field fVisible = stackInfo.getClass().getField("visible");

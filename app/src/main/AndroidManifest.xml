@@ -532,7 +532,7 @@
         <receiver
             android:name="com.android.launcher66.settings.ServiceRestarter"
             android:enabled="true"
-            android:exported="true">      
+            android:exported="false">      
         </receiver>
 
         <receiver

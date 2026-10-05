@@ -307,6 +307,8 @@ public class Workspace extends SmoothPagedView
     private static final long STRIP_DELAY = 2500;
     /** A strip requested while the workspace was loading; see stripEmptyScreens(). */
     private boolean mStripScreensAfterLoad = false;
+    /** A strip based on the database requested while the workspace was loading. */
+    private boolean mStripScreensBaseOnDBAfterLoad = false;
     private final Helpers helpers = new Helpers();
     public static final long CUSTOM_CONTENT_SCREEN_ID1 = -302;
     private View workspaceView;
@@ -2700,6 +2702,10 @@ public class Workspace extends SmoothPagedView
 
     public void onWorkspaceDestroy() {
         mLauncher = null;
+        // Nothing queued by this workspace may run once its Launcher is gone: the delayed strip and
+        // PiP restarts read mLauncher, which is null from here on.
+        stripHandler.removeCallbacksAndMessages(null);
+        mainHandler.removeCallbacksAndMessages(null);
         mIconCache = null;
         mDragController = null;
 
@@ -2993,6 +2999,10 @@ public class Workspace extends SmoothPagedView
         if (mStripScreensAfterLoad) {
             mStripScreensAfterLoad = false;
             triggerStripEmptyScreens("Workspace, after load", false);
+        }
+        if (mStripScreensBaseOnDBAfterLoad) {
+            mStripScreensBaseOnDBAfterLoad = false;
+            stripEmptyScreensBaseOnDB();
         }
     }
 
@@ -7438,7 +7448,8 @@ public class Workspace extends SmoothPagedView
      */
     public void stripEmptyScreensBaseOnDB() {
         if (mLauncher != null && mLauncher.isWorkspaceLoading()) {
-            Log.i(TAG, "stripEmptyScreensBaseOnDB skipped: workspace is loading");
+            mStripScreensBaseOnDBAfterLoad = true;
+            Log.i(TAG, "stripEmptyScreensBaseOnDB deferred: workspace is loading");
             return;
         }
         if (isPageMoving()) {

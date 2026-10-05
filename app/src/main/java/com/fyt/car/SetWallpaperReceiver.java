@@ -32,6 +32,10 @@ public class SetWallpaperReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("LZP", "onReceive-----------> 13");
+        // The receiver is exported: an intent without an action is possible.
+        if (intent == null || intent.getAction() == null) {
+            return;
+        }
         if (intent.getAction().equals("android.intent.action.WALLPAPER_CHANGED")) {
             if (LauncherApplication.mAppWallPaper) {
                 LauncherApplication.mAppWallPaper = false;
@@ -54,7 +58,7 @@ public class SetWallpaperReceiver extends BroadcastReceiver {
         }
         int a = LauncherApplication.sApp.getResources().getInteger(R.integer.apps_launcher_packagename);
         String launcherpackagename = "com.android.launcher" + a;
-        if (this.name.equals("android.intent.LAUNCHER.LauncherChoose") && this.pak.equals(launcherpackagename)) {
+        if (this.name.equals("android.intent.LAUNCHER.LauncherChoose") && launcherpackagename.equals(this.pak)) {
             LogPreview.show("android.intent.LAUNCHER.LauncherChoose");
             this.handler.postDelayed(this.runnable, 200L);
         }

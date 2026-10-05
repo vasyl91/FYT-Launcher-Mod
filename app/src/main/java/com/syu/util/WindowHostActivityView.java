@@ -45,12 +45,12 @@ public class WindowHostActivityView {
     private static Class<?> sActivityView, sStateCb;
 
     /**
-     * The content size each ActivityView had in the pane it is leaving, recorded when that pane
-     * puts its handoff cover up.
+     * The content size each package had in the pane it is leaving, recorded when that pane puts its
+     * handoff cover up (consumed by the destination pane, see noteSizeBeforeHandoff()).
      *
-     * A swap moves the view between panes, so the destination pane reads back the size the view
-     * came from and can tell how much the embedded app has to re-layout. Weak keys: an entry for a
-     * view that is released instead of swapped must not keep it alive.
+     * A swap moves the app between panes, so the destination pane reads back the size the app came
+     * from and can tell how much it has to re-layout. Keyed by package name, so nothing here holds a
+     * view.
      */
     private static final Map<String, int[]> sSizeBeforeHandoff = new ConcurrentHashMap<>();
 
@@ -108,8 +108,8 @@ public class WindowHostActivityView {
     // members again each time - and pushDisplayContentLocation() calling getMethods(), which
     // allocates the whole method array - is pure main-thread cost during a rebuild.
     // -------------------------------------------------------------------------------------
-    private static Constructor<?> sAvConstructor;
-    private static Object[] sAvConstructorArgs;
+    private static volatile Constructor<?> sAvConstructor;
+    private static volatile Object[] sAvConstructorArgs;
     private static Field sFieldLocationInWindow;
     private static Method sMethodUpdateTapExclude;
     private static Method sMethodGetWindow;
@@ -247,11 +247,11 @@ public class WindowHostActivityView {
                 Constructor<?> c = sActivityView.getDeclaredConstructor(Context.class, boolean.class);
                 c.setAccessible(true);
                 Object av = c.newInstance(ctx, Boolean.TRUE);
-                sAvConstructor = c;
                 // Slot 0 is the Context and is filled in per call. Caching it here pinned the
                 // Launcher that created the first pane in a static field for the rest of the
                 // process -- LeakCanary: 9.7 MB retained through sAvConstructorArgs[0].
                 sAvConstructorArgs = new Object[]{ null, Boolean.TRUE };
+                sAvConstructor = c;
                 return av;
             } catch (Throwable ignore) {}
 
@@ -266,10 +266,10 @@ public class WindowHostActivityView {
                     else if (p.length == 4 && p[0] == Context.class && p[1] == android.util.AttributeSet.class && p[2] == int.class && p[3] == int.class) args = new Object[]{ ctx, null, 0, 0 };
                     if (args == null) continue;
                     Object av = c.newInstance(args);
-                    sAvConstructor = c;
                     Object[] template = args.clone();
                     template[0] = null;   // never keep the Context; see above
                     sAvConstructorArgs = template;
+                    sAvConstructor = c;   // last: readers test this one first
                     return av;
                 } catch (Throwable ignore) {}
             }

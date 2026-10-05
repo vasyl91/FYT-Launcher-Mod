@@ -3158,10 +3158,14 @@ public final class MediaFavoriteController {
                 if (!applied) {
                     // The account was not updated, so the optimistic value is
                     // wrong; drop it and let the next lookup settle the state.
-                    if (videoId.equals(currentVideoId)) {
-                        currentState = MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+                    // Under the same monitor as every other writer of these fields.
+                    synchronized (YouTubeRevancedLikeState.class) {
+                        if (videoId.equals(currentVideoId)) {
+                            currentState = MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+                            currentStateFromCache = false;
+                        }
+                        fetchedVideoId = null;
                     }
-                    fetchedVideoId = null;
                 }
 
                 Runnable callback = onUpdated;
@@ -3331,13 +3335,20 @@ public final class MediaFavoriteController {
          */
         private static void recycleExecutor() {
             ExecutorService lost = executor;
-            executor = Executors.newSingleThreadExecutor();
+            final ExecutorService fresh = Executors.newSingleThreadExecutor();
+            executor = fresh;
             fetchInFlight = false;
             inFlightVideoId = null;
             fetchedVideoId = null;
             fetchSequence++;
             try {
-                lost.shutdownNow();
+                // shutdownNow() hands back what was still queued behind the stuck task. That can
+                // be a rating the user sent, so it is moved to the new executor instead of being
+                // dropped. Queued lookups come along too; their token is stale by now, so they
+                // are discarded as late results.
+                for (Runnable queued : lost.shutdownNow()) {
+                    fresh.execute(queued);
+                }
             } catch (Exception e) {
                 Log.w(TAG, "Could not shut the stalled executor down", e);
             }

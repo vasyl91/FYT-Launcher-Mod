@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.HandlerThread;
 import android.os.SystemClock;
 import android.util.Log;
-import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -45,7 +44,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -58,6 +56,7 @@ public class WeatherManager {
     public static final String OPEN_WEATHER_GEO_URL = "https://api.openweathermap.org/geo/1.0/reverse?limit=1&appid=" + OPEN_WEATHER_APPID;
     public static final String OPEN_WEATHER_CURRENT_URL = "https://api.openweathermap.org/data/2.5/weather?appid=" + OPEN_WEATHER_APPID + "&units=metric";
     
+    private boolean locationPermissionRequested = false;
     private FusedLocationProviderClient fusedLocationClient;
     private SharedPreferences mPrefs;
     public static WeatherManager instance;
@@ -166,10 +165,6 @@ public class WeatherManager {
 
     public interface OnWeatherChangedListener {
         void onWeatherChanged(WeatherDescription weatherDescription);
-    }
-
-    public interface RecentWeatherListener {
-        void onResult(int i, RecentWeather recentWeather);
     }
 
     public boolean isNetworkAvailable() {
@@ -305,14 +300,20 @@ public class WeatherManager {
         }
         if (!hasLocationPermission()) {
             Log.w(TAG, "Location permission not granted, cannot start location updates, asking user for permission");
-            ActivityCompat.requestPermissions(
-                    Launcher.getLauncher(),
-                    new String[]{
-                            android.Manifest.permission.ACCESS_FINE_LOCATION,
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION
-                    },
-                    0
-            );
+            // The launcher can be missing (not created yet / destroyed). Asking once per process is
+            // enough: start() runs on every network change and would re-open the dialog each time.
+            Launcher launcher = Launcher.getLauncher();
+            if (launcher != null && !locationPermissionRequested) {
+                locationPermissionRequested = true;
+                ActivityCompat.requestPermissions(
+                        launcher,
+                        new String[]{
+                                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                                android.Manifest.permission.ACCESS_COARSE_LOCATION
+                        },
+                        0
+                );
+            }
             return;
         }
 
@@ -331,31 +332,9 @@ public class WeatherManager {
             if (hasLocationPermission()) {
                 fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
                     if (location != null) {
-                        Location mLocation = location;
                         if (WeatherManager.this.mCurLocation == null) {
-                            if (mLocation != null) {
-                                WeatherManager.this.updateLocation(mLocation);
-                                WeatherManager.this.isFirst = false;
-                            } else {
-                                (new Thread(() -> {
-                                    boolean flag = true;
-
-                                    while(flag) {
-                                        try {
-                                            Thread.sleep(500L);
-                                        } catch (InterruptedException var3) {
-                                            var3.printStackTrace();
-                                        }
-
-                                        if (WeatherManager.this.mCurLocation != null || mLocation != null) {
-                                            WeatherManager.this.updateLocation(mLocation);
-                                            WeatherManager.this.isFirst = false;
-                                            flag = false;
-                                        }
-                                    }
-
-                                })).start();
-                            }
+                            WeatherManager.this.updateLocation(location);
+                            WeatherManager.this.isFirst = false;
                         }
                     }
                 }).addOnFailureListener(e -> {
@@ -671,106 +650,6 @@ public class WeatherManager {
         }
         String weatherCity = city.substring(0, city.length() - 1);
         return weatherCity;
-    }
-
-    public static class RecentWeather {
-        SparseArray<DailyWeather> mWeathers = new SparseArray<>();
-
-        public DailyWeather getDailyWeatherAt(int day) {
-            if (this.mWeathers == null || this.mWeathers.indexOfKey(day) < 0) {
-                return null;
-            }
-            return this.mWeathers.get(day);
-        }
-
-        public void put(int day, DailyWeather weather) {
-            if (this.mWeathers == null) {
-                this.mWeathers = new SparseArray<>();
-            }
-            this.mWeathers.put(day, weather);
-        }
-
-        public SparseArray<DailyWeather> getAllWeathers() {
-            return this.mWeathers;
-        }
-
-        public boolean isDataEmpty() {
-            return size() <= 0;
-        }
-
-        public int size() {
-            if (this.mWeathers == null) {
-                return 0;
-            }
-            return this.mWeathers.size();
-        }
-    }
-
-    public void requestRecentWeathers(String city, final WeatherManager.RecentWeatherListener listener) {
-        if (city != null && city.length() != 0) {
-            String url = String.format(Locale.US, "http://apk.carsql.com/Weather/WetherMain?name=%s", this.checkCity(city));
-            (new AsyncTask<String, DailyWeather, WeatherManager.RecentWeather>() {
-                int resultCode = -2;
-
-                @Override
-                protected WeatherManager.RecentWeather doInBackground(String[] params) {
-                    WeatherManager.RecentWeather recentWeather = null;
-                    if (params != null && params.length > 0) {
-                        String url = params[0];
-                        recentWeather = new WeatherManager.RecentWeather();
-                        String entry = WeatherManager.sendGet(url);
-                        Log.e("weather", " entry :" + entry);
-                        if (entry != null && entry.length() > 0) {
-                            try {
-                                JSONObject msg = new JSONObject(entry);
-                                if (!msg.has("states") && JSONUtils.getInt(msg, "states", -1) != 1) {
-                                    this.resultCode = -1;
-                                } else {
-                                    JSONArray daysjson = JSONUtils.getJSONArray(msg, "dayjson");
-                                    if (daysjson != null && daysjson.length() > 0) {
-                                        int count = daysjson.length();
-
-                                        for(int index = 0; index < count; ++index) {
-                                            JSONObject obj = daysjson.getJSONObject(index);
-                                            DailyWeather weather = DailyWeather.getDailyWeather(obj);
-                                            if (!weather.isEmpty()) {
-                                                recentWeather.put(index, weather);
-                                            }
-                                        }
-                                    }
-
-                                    if (!recentWeather.isDataEmpty()) {
-                                        this.resultCode = 1;
-                                    }
-                                }
-                            } catch (JSONException var11) {
-                                var11.printStackTrace();
-                            }
-                        }
-                    }
-
-                    return recentWeather;
-                }
-
-                @Override
-                protected void onProgress(DailyWeather[] progress) {
-                    //
-                }
-
-                @Override
-                protected void onPostExecute(WeatherManager.RecentWeather result) {
-                    if (result != null && listener != null) {
-                        listener.onResult(this.resultCode, result);
-                    }
-
-                }
-
-                @Override
-                protected void onBackgroundError(Exception e) {
-                    e.printStackTrace();
-                }
-            }).execute(new String[]{url});
-        }
     }
 
     public WeatherDescription getThisWeather() {

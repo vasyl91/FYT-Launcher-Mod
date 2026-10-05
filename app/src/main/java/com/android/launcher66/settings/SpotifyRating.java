@@ -472,6 +472,19 @@ public final class SpotifyRating {
         String expectedState = preferences.getString(Keys.SPOTIFY_AUTH_STATE, null);
         final String clientId = clientId(appContext);
 
+        // Whatever fires an intent at our scheme must not cancel a sign-in that is waiting for its
+        // own redirect: the pending verifier is dropped only for a redirect that carries our state.
+        if (TextUtils.isEmpty(verifier) || TextUtils.isEmpty(expectedState)) {
+            clearPendingAuth(preferences);
+            fail(callback, "the code verifier is gone; start again");
+            return;
+        }
+        if (!expectedState.equals(state)) {
+            Log.w(TAG, "State mismatch on the Spotify redirect; ignoring it");
+            fail(callback, "state mismatch");
+            return;
+        }
+
         clearPendingAuth(preferences);
 
         if (!TextUtils.isEmpty(error)) {
@@ -481,15 +494,6 @@ public final class SpotifyRating {
         }
         if (TextUtils.isEmpty(code)) {
             fail(callback, "no authorization code");
-            return;
-        }
-        if (TextUtils.isEmpty(verifier)) {
-            fail(callback, "the code verifier is gone; start again");
-            return;
-        }
-        if (!TextUtils.isEmpty(expectedState) && !expectedState.equals(state)) {
-            Log.w(TAG, "State mismatch on the Spotify redirect; ignoring it");
-            fail(callback, "state mismatch");
             return;
         }
         if (TextUtils.isEmpty(clientId)) {

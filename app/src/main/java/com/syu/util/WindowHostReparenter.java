@@ -178,45 +178,6 @@ public class WindowHostReparenter {
         }
     }
 
-    private static Object waitForInnerSurfaceControlStable(View avView, int timeoutMs) {
-        long deadline = SystemClock.uptimeMillis() + timeoutMs;
-        long stableSince = -1;
-        Object lastFound = null;
-
-        while (SystemClock.uptimeMillis() < deadline) {
-            Object sc = tryGetInnerSurfaceControl(avView);
-            // verify holder.surface.isValid when possible
-            boolean valid = false;
-            try {
-                SurfaceView sv = findSurfaceView(avView);
-                if (sv != null) {
-                    SurfaceHolder holder = sv.getHolder();
-                    if (holder != null) {
-                        android.view.Surface s = holder.getSurface();
-                        valid = (s != null && s.isValid());
-                    }
-                }
-            } catch (Throwable ignore) { }
-
-            if (sc != null && valid) {
-                if (stableSince < 0) stableSince = SystemClock.uptimeMillis();
-                long stableFor = SystemClock.uptimeMillis() - stableSince;
-                lastFound = sc;
-                if (stableFor >= SURFACE_STABLE_WINDOW_MS) {
-                    // good: object available and surface stable for required window
-                    return sc;
-                }
-            } else {
-                stableSince = -1;
-                lastFound = sc;
-            }
-            // short backoff
-            try { Thread.sleep(25); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); break; }
-        }
-        // timed out: return what we found last (if any) only if it seems valid; otherwise null
-        return lastFound;
-    }
-
     // Try to return an object appropriate for WindowSession.reparentDisplayContent:
     // prefer a public IBinder token (avView.getWindowToken()), otherwise try getWindow()/mWindow
     // but guard against reflection failures (API 36+ will block some reflective access).
@@ -315,8 +276,6 @@ public class WindowHostReparenter {
                 try {
                     target.invoke(windowSession, token, rootSurfaceControl, displayId);
                     return true;
-                } catch (IllegalArgumentException iae) {
-                    try { target.invoke(windowSession, token, rootSurfaceControl, displayId); return true; } catch (Throwable t) { Log.w(TAG, "invokeReparentDisplayContent invocation failed", t); return false; }
                 } catch (Throwable t) {
                     Log.w(TAG, "invokeReparentDisplayContent invocation failed", t);
                     return false;
@@ -328,8 +287,6 @@ public class WindowHostReparenter {
                 try {
                     target.invoke(windowSession, windowObjOrToken, rootSurfaceControl, displayId);
                     return true;
-                } catch (IllegalArgumentException iae) {
-                    try { target.invoke(windowSession, windowObjOrToken, rootSurfaceControl, displayId); return true; } catch (Throwable t) { Log.w(TAG, "invokeReparentDisplayContent invocation failed", t); return false; }
                 } catch (Throwable t) {
                     Log.w(TAG, "invokeReparentDisplayContent invocation failed", t);
                     return false;
@@ -518,105 +475,69 @@ public class WindowHostReparenter {
             Constructor<?> ctor = txClass.getDeclaredConstructor();
             ctor.setAccessible(true);
             Object tx = ctor.newInstance();
-
-            // find reparent(SurfaceControl, SurfaceControl)
-            Method reparent = null;
             try {
-                reparent = txClass.getMethod("reparent", scClass, scClass);
-            } catch (NoSuchMethodException ns) {
-                // fallback: find any two-arg method named reparent
-                for (Method m : txClass.getMethods()) {
-                    if (m.getName().equals("reparent") && m.getParameterTypes().length == 2) {
-                        reparent = m;
-                        break;
+
+                // find reparent(SurfaceControl, SurfaceControl)
+                Method reparent = null;
+                try {
+                    reparent = txClass.getMethod("reparent", scClass, scClass);
+                } catch (NoSuchMethodException ns) {
+                    // fallback: find any two-arg method named reparent
+                    for (Method m : txClass.getMethods()) {
+                        if (m.getName().equals("reparent") && m.getParameterTypes().length == 2) {
+                            reparent = m;
+                            break;
+                        }
                     }
                 }
-            }
-            if (reparent == null) {
-                Log.w(TAG, "performAtomicSwapTransaction: reparent method not found on Transaction");
-                return false;
-            }
+                if (reparent == null) {
+                    Log.w(TAG, "performAtomicSwapTransaction: reparent method not found on Transaction");
+                    return false;
+                }
 
-            // invoke reparent(rootA, targetB) and reparent(rootB, targetA)
-            try {
-                reparent.invoke(tx, rootA, targetB);
-            } catch (Throwable t) {
-                Log.w(TAG, "performAtomicSwapTransaction: reparent invoke failed for rootA->targetB", t);
-                return false;
-            }
-            try {
-                reparent.invoke(tx, rootB, targetA);
-            } catch (Throwable t) {
-                Log.w(TAG, "performAtomicSwapTransaction: reparent invoke failed for rootB->targetA", t);
-                return false;
-            }
+                // invoke reparent(rootA, targetB) and reparent(rootB, targetA)
+                try {
+                    reparent.invoke(tx, rootA, targetB);
+                } catch (Throwable t) {
+                    Log.w(TAG, "performAtomicSwapTransaction: reparent invoke failed for rootA->targetB", t);
+                    return false;
+                }
+                try {
+                    reparent.invoke(tx, rootB, targetA);
+                } catch (Throwable t) {
+                    Log.w(TAG, "performAtomicSwapTransaction: reparent invoke failed for rootB->targetA", t);
+                    return false;
+                }
 
-            // optionally call show(root) if available
-            try {
-                Method show = txClass.getMethod("show", scClass);
-                try { show.invoke(tx, rootA); } catch (Throwable ignore) {}
-                try { show.invoke(tx, rootB); } catch (Throwable ignore) {}
-            } catch (NoSuchMethodException ignored) {}
+                // optionally call show(root) if available
+                try {
+                    Method show = txClass.getMethod("show", scClass);
+                    try { show.invoke(tx, rootA); } catch (Throwable ignore) {}
+                    try { show.invoke(tx, rootB); } catch (Throwable ignore) {}
+                } catch (NoSuchMethodException ignored) {}
 
-            // apply()
-            try {
-                Method apply = txClass.getMethod("apply");
-                apply.invoke(tx);
-            } catch (Throwable t) {
-                Log.w(TAG, "performAtomicSwapTransaction: apply invoke failed", t);
-                return false;
+                // apply()
+                try {
+                    Method apply = txClass.getMethod("apply");
+                    apply.invoke(tx);
+                } catch (Throwable t) {
+                    Log.w(TAG, "performAtomicSwapTransaction: apply invoke failed", t);
+                    return false;
+                }
+
+                return true;
+            } finally {
+                // Transaction is Closeable; without this the native object waits for the GC.
+                if (tx instanceof AutoCloseable) {
+                    try { ((AutoCloseable) tx).close(); } catch (Throwable ignore) { }
+                }
             }
-
-            return true;
         } catch (ClassNotFoundException cnf) {
             Log.w(TAG, "performAtomicSwapTransaction: SurfaceControl classes not found", cnf);
             return false;
         } catch (Throwable t) {
             Log.w(TAG, "performAtomicSwapTransaction: unexpected error", t);
             return false;
-        }
-    }
-
-    /**
-     * Reparent an ActivityView's native root to its inner SurfaceView if possible.
-     * Best-effort: if we couldn't obtain a SurfaceControl target, do nothing and return false.
-     */
-    public static void reparentActivityViewSurface(View avView) {
-        if (avView == null) return;
-        try {
-            Object rootSurfaceControl = getFieldObject(avView, "mRootSurfaceControl");
-            if (rootSurfaceControl == null) {
-                Log.d(TAG, "reparentActivityViewSurface: no mRootSurfaceControl found, skipping");
-                return;
-            }
-
-            Object targetSurfaceControl = tryGetInnerSurfaceControl(avView);
-            if (targetSurfaceControl == null) {
-                Log.w(TAG, "reparentActivityViewSurface: Unable to obtain target SurfaceControl for inner SurfaceView — skipping");
-                return;
-            }
-
-            boolean ok = performAtomicSwapTransaction(rootSurfaceControl, rootSurfaceControl, targetSurfaceControl, targetSurfaceControl);
-            if (!ok) {
-                Log.w(TAG, "reparentActivityViewSurface: transaction failed or not supported on this platform");
-                return;
-            }
-
-            try {
-                if (!WindowHostActivityView.syncGeometryWithoutIme(avView)) {
-                    Method upd = avView.getClass().getDeclaredMethod("updateLocationAndTapExcludeRegion");
-                    upd.setAccessible(true);
-                    upd.invoke(avView);
-                }
-            } catch (NoSuchMethodException ns) {
-                // ignore
-            } catch (Throwable t) {
-                // This can still throw if the window/display mapping is inconsistent.
-                Log.w(TAG, "updateLocationAndTapExcludeRegion invocation failed (after successful reparent)", t);
-            }
-
-        } catch (Throwable e) {
-            Log.w(TAG, "reparentActivityViewSurface failed", e);
         }
     }
 
@@ -644,18 +565,5 @@ public class WindowHostReparenter {
             }
         }
         return null;
-    }
-
-    private static void invokeIfExists(Object obj, String methodName) {
-        if (obj == null) return;
-        try {
-            Method m = obj.getClass().getDeclaredMethod(methodName);
-            m.setAccessible(true);
-            m.invoke(obj);
-        } catch (NoSuchMethodException ns) {
-            // ignore
-        } catch (Throwable t) {
-            Log.w(TAG, "invokeIfExists failed: " + methodName, t);
-        }
     }
 }

@@ -2241,6 +2241,44 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         requestWorkspaceLoader(source, true);
     }
 
+
+    /**
+     * startBinding() / requestWorkspaceLoader() set mWorkspaceLoading, and only
+     * finishBindingItems() clears it. A bind that is cut off in between (loader stopped, activity
+     * state change) would leave it set for good, and everything that waits for the load to end
+     * - custom elements, empty screen stripping, recreateView()'s reload - would wait with it.
+     */
+    private static final long WORKSPACE_LOADING_WATCHDOG_MS = 30000L;
+    private final Runnable mWorkspaceLoadingWatchdog = this::onWorkspaceLoadingWatchdog;
+
+    /** Every bind step proves the load is alive, so the watchdog only fires after silence. */
+    private void noteWorkspaceBindProgress() {
+        if (mWorkspaceLoading) {
+            armWorkspaceLoadingWatchdog();
+        }
+    }
+
+    private void armWorkspaceLoadingWatchdog() {
+        mHandler.removeCallbacks(mWorkspaceLoadingWatchdog);
+        mHandler.postDelayed(mWorkspaceLoadingWatchdog, WORKSPACE_LOADING_WATCHDOG_MS);
+    }
+
+    private void onWorkspaceLoadingWatchdog() {
+        if (!mWorkspaceLoading || isDestroyed() || isFinishing() || mWorkspace == null) {
+            return;
+        }
+        if (mPaused) {
+            // The bind finishes on resume (waitUntilResume()); nothing is stuck yet.
+            armWorkspaceLoadingWatchdog();
+            return;
+        }
+        Log.w(TAG, "Workspace loading made no progress for " + WORKSPACE_LOADING_WATCHDOG_MS
+                + " ms, the bind never finished: releasing the loading state");
+        mWorkspaceLoading = false;
+        replayCustomElementsSetupAfterBind();
+        mWorkspace.onWorkspaceLoadFinished();
+    }
+
     private void requestWorkspaceLoader(String source, boolean throttle) {
         if (mModel == null) {
             return;
@@ -2252,6 +2290,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         mLastWorkspaceNullLoaderMs = now;
         mWorkspaceLoading = true;
+        armWorkspaceLoadingWatchdog();
         Log.w(TAG, "Starting workspace loader from " + source);
         mModel.startLoader(true, -1);
     }
@@ -3013,6 +3052,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private void calculateLayoutDimensions() {
         screenWidth = LauncherApplication.getScreenWidth(); 
         screenHeight = LauncherApplication.getScreenHeight(); 
+        if (screenWidth <= 0 || screenHeight <= 0) {
+            // calculateDimension() throws for a zero size; the display metrics always have one.
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            screenWidth = metrics.widthPixels;
+            screenHeight = metrics.heightPixels;
+        }
 
         orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -3023,7 +3068,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             int bottombarHeight = (int) (screenHeight * 0.142f);
             calculatedLeftBarWidth = calculateDimension(orientationDimension - bottombarHeight , 7.1);
             orientedWidth = screenWidth;
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        } else {
+            // Landscape, and ORIENTATION_UNDEFINED / SQUARE: those left both values at 0 (first
+            // instance of the process) and calculateDimension() below threw from onCreate().
             orientationDimension = screenWidth;
             calculatedLeftBarWidth = calculateDimension(orientationDimension, 7.1);
             orientedWidth = screenHeight;
@@ -11841,6 +11888,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // relies on it open, while pages with not yet bound icons looked empty. Upstream Launcher3
         // does the same here (setWorkspaceLoading(true)). finishBindingItems() clears it.
         mWorkspaceLoading = true;
+        armWorkspaceLoadingWatchdog();
         mBindOnResumeCallbacks.clear();
         mWorkspace.clearDropTargets();
         mWorkspace.removeAllWorkspaceScreens();
@@ -11856,6 +11904,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void bindScreens(ArrayList<Long> orderedScreenIds) {
+        noteWorkspaceBindProgress();
         bindAddScreens(orderedScreenIds);
         Log.i(TAG, "bindScreens order: " + orderedScreenIds);
         if (orderedScreenIds.size() == 0 && LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_add_extarscreen)) {
@@ -11933,6 +11982,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void bindItems(final ArrayList<ItemInfo> shortcuts, final int start, final int end, final boolean forceAnimateIcons) {
+        noteWorkspaceBindProgress();
         CellLayout cl;
         Log.d(TAG, "bindItems");
         Runnable r = new Runnable() { 
@@ -12101,6 +12151,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void bindFolders(final HashMap<Long, FolderInfo> folders) {
+        noteWorkspaceBindProgress();
         Runnable r = new Runnable() { 
             @Override
             public void run() {
@@ -12172,6 +12223,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void bindAppWidget(final LauncherAppWidgetInfo item) {
+        noteWorkspaceBindProgress();
         Runnable r = new Runnable() {
             public void run() {
                 bindAppWidget(item);
@@ -12310,6 +12362,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             sPendingAddList.clear();
             mWorkspaceLoading = false;
+            mHandler.removeCallbacks(mWorkspaceLoadingWatchdog);
             mLastWorkspaceNullLoaderMs = 0L;
             if (upgradePath) {
                 mWorkspace.getUniqueComponents(true, null);
@@ -12793,7 +12846,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 editor.apply();
                 WallpaperManager mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
                 int resid = getResId(resName);
-                mWallpaperManager.setStream(new BufferedInputStream(getResources().openRawResource(resid)));
+                try (BufferedInputStream wallpaperStream =
+                        new BufferedInputStream(getResources().openRawResource(resid))) {
+                    mWallpaperManager.setStream(wallpaperStream);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
