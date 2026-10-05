@@ -16,6 +16,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Choreographer;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -147,7 +148,7 @@ public class WindowUtil {
     }
 
     /**
-     * Pane openings dispatched by runStaggered() but not yet started.
+     * Pane openings dispatched by runOrdered() but not yet started.
      *
      * WindowHost.areAllPanesRendering() reports a pane that has not been shown yet as "done",
      * because hasRenderedContent() answers true whenever the pane is not visible. Without this
@@ -175,7 +176,7 @@ public class WindowUtil {
      * Whether a rebuild is still under way. Call with OPEN_PIP_LOCK held.
      *
      * Covers the whole span, not just the dispatch: committed but not yet started, panes still
-     * being queued by runStaggered(), and panes queued but not yet launched. The last case matters
+     * being queued by runOrdered(), and panes queued but not yet launched. The last case matters
      * because pipPanesLookHealthy() is false for a pane that has not called startActivity yet --
      * exactly the state a normal rebuild passes through. Bounded by OPEN_PIP_INFLIGHT_TIMEOUT_MS so
      * a rebuild that never finishes cannot block every later trigger.
@@ -497,11 +498,11 @@ public class WindowUtil {
             // A rebuild that is already running must never be interrupted.
             //
             // openPipInFlight alone was not enough: it is cleared the moment openMultiplePips()
-            // starts, while runStaggered() still has panes to open and the ones already shown have
+            // starts, while runOrdered() still has panes to open and the ones already shown have
             // not launched yet. pipPanesLookHealthy() is false in exactly that state, so sameLayout
             // below went false and a second trigger sailed through to dismiss(). In the capture that
             // landed 9 ms after "third: show com.spotify.music": the dismiss bumped the pane's
-            // generation, its pending start died on the generation check, and because runStaggered()
+            // generation, its pending start died on the generation check, and because runOrdered()
             // had already moved past it nothing ever showed that pane again -- the single pane
             // stayed empty while dual and fourth came up normally.
             if (rebuildInProgressLocked(now, hostAlive, panesHealthy)) {
@@ -773,6 +774,7 @@ public class WindowUtil {
             openPipInFlight = false;
             lastRebuildStartedAtMs = 0L;
             pendingPaneLaunches = 0;
+            paneLaunchGeneration++; // the queued panes of this set are not wanted any more
             paneOpenWaitingForBoot = false; // an opening waiting for the boot is not wanted any more
         }
         if (helpers.pipsAdded()) {
@@ -843,10 +845,19 @@ public class WindowUtil {
     private static volatile int pendingReasserts = 0;
     private static Runnable reassertTask;
 
-    /** Gap after a source-stealing pane, so a slow starter cannot overtake a later one. */
+    /** Minimum gap after a source-stealing pane, so a slow starter cannot overtake a later one. */
     private static final long PANE_LAUNCH_STAGGER_MS = 250L;
-    /** Gap after a pane that does not touch the MCU sound channel; ordering does not matter there. */
+    /** Minimum gap after a pane that does not touch the MCU sound channel. */
     private static final long PANE_LAUNCH_QUIET_STAGGER_MS = 90L;
+    /** Longest wait for the previous pane to come up (and the frames to calm down) before the next. */
+    private static final long PANE_LAUNCH_MAX_WAIT_MS = 2000L;
+    private static final long PANE_LAUNCH_POLL_MS = 50L;
+    /** A launcher frame longer than this counts as jank (two 60 Hz frames). */
+    private static final long PANE_LAUNCH_JANK_FRAME_NS = 34_000_000L;
+    /** The next pane starts only after this long without a janky frame. */
+    private static final long PANE_LAUNCH_SMOOTH_NS = 150_000_000L;
+    /** Bumped by every new launch sequence and by removePip(): an older sequence stops. */
+    private static volatile int paneLaunchGeneration = 0;
 
     /**
      * How long, and how often, the launcher is pushed back to the front afterward.
@@ -975,48 +986,93 @@ public class WindowUtil {
         return false;
     }
 
-    /** One pane opening, so the whole set can be ordered before anything is shown. */
-    private record PaneLaunch(String label, Runnable action, boolean stealer) {
+    /**
+     * One pane opening, so the whole set can be ordered before anything is shown. page is the
+     * workspace page the pane lives on (-1 when unknown).
+     */
+    private record PaneLaunch(String label, Runnable action, boolean stealer, int page) {
         private PaneLaunch(String label, Runnable action, String... stealer) {
-            this(label, action, anySourceStealer(stealer));
+            this(label, action, anySourceStealer(stealer), pageOf(label));
         }
     }
 
+    private static int pageOf(String label) {
+        try {
+            String key = getScreenKeyForType(label);
+            if (prefs == null || key.isEmpty()) return -1;
+            return prefs.getInt(key, 1) - 1;
+        } catch (Throwable t) {
+            return -1;
+        }
+    }
+
+    private static int visiblePage() {
+        Workspace workspace = workspace();
+        return workspace != null ? workspace.getCurrentPage() : -1;
+    }
+
     /**
-     * Runs the pane openings with every source-stealing package first. The sort is stable, so
-     * panes that do not steal keep their configured order relative to each other.
+     * Which of the remaining panes goes next: those on the page the user is looking at first,
+     * then every source-stealing package, then the configured order. Asked again before every
+     * pane, so a page scrolled to while the set is still being opened is served next.
+     */
+    private static int nextPaneIndex(List<PaneLaunch> queue, int page) {
+        int best = 0;
+        for (int i = 1; i < queue.size(); i++) {
+            if (paneRank(queue.get(i), page) < paneRank(queue.get(best), page)) best = i;
+        }
+        return best;
+    }
+
+    private static int paneRank(PaneLaunch l, int page) {
+        return (l.page == page ? 0 : 2) + (l.stealer ? 0 : 1);
+    }
+
+    /**
+     * Opens the panes one after another. Each one starts once the previous one is up (its first
+     * frame, WindowHost.isPaneRendering()) and the launcher's frames are smooth again, but not
+     * sooner than the minimum gap and not later than PANE_LAUNCH_MAX_WAIT_MS. The panes of the
+     * page being shown go first; the others follow right after them, without waiting for the
+     * user to scroll there.
      */
     private static void runOrdered(List<PaneLaunch> launches) {
+        final int generation = ++paneLaunchGeneration;
         pendingPaneLaunches = launches.size();
         if (launches.isEmpty()) return;
 
-        launches.sort((a, b) -> Boolean.compare(!a.stealer, !b.stealer));
-
+        List<PaneLaunch> queue = new ArrayList<>(launches);
+        int page = visiblePage();
         StringBuilder order = new StringBuilder();
-        for (PaneLaunch l : launches) {
-            if (order.length() > 0) order.append(" -> ");
-            order.append(l.label);
+        for (PaneLaunch l : queue) {
+            if (order.length() > 0) order.append(", ");
+            order.append(l.label).append("@").append(l.page);
             if (l.stealer) order.append("*");
         }
-        Log.i(TAG, "pane launch order: " + order);
+        Log.i(TAG, "pane launch set: " + order + " (visible page " + page + ")");
 
-        runStaggered(launches, 0);
+        PaneFrameMonitor.start(generation);
+        launchNextPane(queue, generation);
     }
 
-    /**
-     * Runs the openings one every PANE_LAUNCH_STAGGER_MS instead of back to back.
-     *
-     * Four cold starts fired inside ~340 ms compete for the main thread, and a slow one can end up
-     * resuming AFTER the panes that were launched later -- which defeats the ordering above, since
-     * what the ROM reacts to is the last activity to gain focus.
-     */
-    private static void runStaggered(List<PaneLaunch> launches, int index) {
-        if (index >= launches.size()) {
+    private static boolean paneLaunchCancelled(int generation) {
+        if (generation == paneLaunchGeneration && Launcher.getLauncher() != null) return false;
+        if (generation == paneLaunchGeneration) pendingPaneLaunches = 0;
+        PaneFrameMonitor.stop(generation);
+        return true;
+    }
+
+    private static void launchNextPane(List<PaneLaunch> queue, int generation) {
+        if (paneLaunchCancelled(generation)) return;
+        if (queue.isEmpty()) {
             pendingPaneLaunches = 0;
+            PaneFrameMonitor.stop(generation);
             return;
         }
 
-        PaneLaunch l = launches.get(index);
+        int page = visiblePage();
+        PaneLaunch l = queue.remove(nextPaneIndex(queue, page));
+        Log.i(TAG, "pane launch: " + l.label + (l.stealer ? "*" : "") + " (page " + l.page
+                + ", visible " + page + ", " + queue.size() + " left)");
         try {
             l.action.run();
         } catch (Throwable t) {
@@ -1024,22 +1080,126 @@ public class WindowUtil {
         } finally {
             if (pendingPaneLaunches > 0) pendingPaneLaunches--;
         }
-        
+
         if (l.stealer) {
             Log.i(TAG, "reassertLauncherTop() started for stealer in windowed PiP");
             reassertLauncherTop();
         }
 
+        if (queue.isEmpty()) {
+            pendingPaneLaunches = 0;
+            PaneFrameMonitor.stop(generation);
+            return;
+        }
         Launcher launcher = Launcher.getLauncher();
         if (launcher == null) {
             pendingPaneLaunches = 0;
+            PaneFrameMonitor.stop(generation);
             return;
         }
         // The full gap only exists so a source-stealing app cannot be overtaken by a later one.
-        // Two panes that do not touch the sound channel have no such ordering requirement, so they
-        // only need enough separation to keep four window additions off the same frame.
+        // A pane that does not touch the sound channel only needs its window addition kept off
+        // the next one's frame.
         long gap = l.stealer ? PANE_LAUNCH_STAGGER_MS : PANE_LAUNCH_QUIET_STAGGER_MS;
-        launcher.handler.postDelayed(() -> runStaggered(launches, index + 1), gap);
+        long launchedAt = SystemClock.uptimeMillis();
+        launcher.handler.postDelayed(() -> awaitPaneUp(queue, generation, l.label, launchedAt), gap);
+    }
+
+    /**
+     * Holds the next pane until the previous one is up and the launcher draws smoothly again,
+     * so the starts do not pile up on one another -- at most PANE_LAUNCH_MAX_WAIT_MS, a pane that
+     * never comes up must not hold back the rest.
+     */
+    private static void awaitPaneUp(List<PaneLaunch> queue, int generation, String previous, long launchedAt) {
+        if (paneLaunchCancelled(generation)) return;
+        long waited = SystemClock.uptimeMillis() - launchedAt;
+        boolean up;
+        try {
+            WindowHost h = host();
+            up = h == null || h.isPaneRendering(previous);
+        } catch (Throwable t) {
+            up = true;
+        }
+        boolean smooth = PaneFrameMonitor.isSmooth();
+        if ((up && smooth) || waited >= PANE_LAUNCH_MAX_WAIT_MS) {
+            if (!(up && smooth)) {
+                Log.i(TAG, "pane launch: " + previous + " not settled after " + waited
+                        + " ms (up=" + up + ", smooth=" + smooth + "), going on");
+            } else {
+                Log.d(TAG, "pane launch: " + previous + " up after " + waited + " ms");
+            }
+            launchNextPane(queue, generation);
+            return;
+        }
+        Launcher.getLauncher().handler.postDelayed(() -> awaitPaneUp(queue, generation, previous, launchedAt),
+                PANE_LAUNCH_POLL_MS);
+    }
+
+    /**
+     * Watches the launcher's frames while a pane set is being opened: a frame noticeably longer
+     * than a vsync means the main thread or the compositor is still busy with the previous pane.
+     * Main thread only.
+     */
+    private static final class PaneFrameMonitor implements Choreographer.FrameCallback {
+        private static PaneFrameMonitor sCurrent;
+
+        private final int generation;
+        private long lastFrameNs;
+        private long lastJankNs;
+        private boolean running = true;
+
+        private PaneFrameMonitor(int generation) {
+            this.generation = generation;
+        }
+
+        static void start(int generation) {
+            stopCurrent();
+            try {
+                PaneFrameMonitor monitor = new PaneFrameMonitor(generation);
+                // Until a few frames have been seen, the frames count as busy.
+                monitor.lastJankNs = System.nanoTime();
+                Choreographer.getInstance().postFrameCallback(monitor);
+                sCurrent = monitor;
+            } catch (Throwable t) {
+                sCurrent = null;
+            }
+        }
+
+        static void stop(int generation) {
+            if (sCurrent != null && sCurrent.generation == generation) stopCurrent();
+        }
+
+        private static void stopCurrent() {
+            PaneFrameMonitor monitor = sCurrent;
+            sCurrent = null;
+            if (monitor == null) return;
+            monitor.running = false;
+            try {
+                Choreographer.getInstance().removeFrameCallback(monitor);
+            } catch (Throwable ignored) {
+            }
+        }
+
+        /** No monitor (it could not start): only the pane's own state decides. */
+        static boolean isSmooth() {
+            PaneFrameMonitor monitor = sCurrent;
+            return monitor == null || System.nanoTime() - monitor.lastJankNs >= PANE_LAUNCH_SMOOTH_NS;
+        }
+
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            if (!running) return;
+            if (lastFrameNs != 0 && frameTimeNanos - lastFrameNs > PANE_LAUNCH_JANK_FRAME_NS) {
+                lastJankNs = System.nanoTime();
+            }
+            lastFrameNs = frameTimeNanos;
+            try {
+                Choreographer.getInstance().postFrameCallback(this);
+            } catch (Throwable t) {
+                running = false;
+                if (sCurrent == this) sCurrent = null;
+            }
+        }
     }
 
     /**
@@ -1197,10 +1357,12 @@ public class WindowUtil {
         try {
             // A pane that has not been shown yet reports hasRenderedContent() == true, so the
             // rendering check alone declares the rebuild finished while launches are still queued.
+            // Those polls do not use up the attempts: the queue waits up to PANE_LAUNCH_MAX_WAIT_MS
+            // per pane, and always ends (or is cleared by removePip()).
             if (pendingPaneLaunches > 0 && attemptsLeft > 0) {
                 Launcher pending = Launcher.getLauncher();
                 if (pending != null) {
-                    pending.handler.postDelayed(() -> notifyPanesSettled(attemptsLeft - 1), 250);
+                    pending.handler.postDelayed(() -> notifyPanesSettled(attemptsLeft), 250);
                     return;
                 }
             }
