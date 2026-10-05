@@ -359,7 +359,7 @@ class NotificationListener : NotificationListenerService() {
             }
             if (MusicService.state && MusicService.music_name != "" && MusicService.music_name != "Unknown") {
                 postDelayedIfAlive(2000) {
-                    handlerFytTime?.post(updateFytTime)
+                    startFytTimeLoop()
                     setStatus(1)
                 }
             }
@@ -370,7 +370,6 @@ class NotificationListener : NotificationListenerService() {
 
         if (!isReceiverRegistered) {
             val intentFilter = IntentFilter().apply {
-                addAction("titlesInternal")
                 addAction("dumpMediaDebug")
             }
             try {
@@ -498,24 +497,33 @@ class NotificationListener : NotificationListenerService() {
                 MediaDebugDump.dumpAll()
                 return
             }
-            if (intent.action == "titlesInternal") {
-                val bundle = intent.extras ?: return
-                fytState = bundle.getBoolean("play_state", false) 
-                fytMusicPath = bundle.getString("play_path") ?: ""
-                fytSource = bundle.getString("source") ?: ""
-                fytCurMinutes = bundle.getLong("play_cur", 0L)
-
-                if (fytMusicPath.isEmpty()) return
-
-                // Same track as last time: nothing to read, apply what we already have.
-                val cached = lastFytMeta
-                if (cached != null && cached.path == fytMusicPath) {
-                    applyFytMeta(cached)
-                    return
-                }
-                requestFytMeta(fytMusicPath)
-            }
         }
+    }
+
+    /** An update of the stock player, from MusicService (see onFytUpdate()). Main thread. */
+    private fun handleFytUpdate(state: Boolean, path: String, source: String, curMinutes: Long) {
+        if (destroyed.get() || isCleanedUp) return
+        fytState = state
+        fytMusicPath = path
+        fytSource = source
+        fytCurMinutes = curMinutes
+
+        if (fytMusicPath.isEmpty()) return
+
+        // Same track as last time: nothing to read, apply what we already have.
+        val cached = lastFytMeta
+        if (cached != null && cached.path == fytMusicPath) {
+            applyFytMeta(cached)
+            return
+        }
+        requestFytMeta(fytMusicPath)
+    }
+
+    /** Starts the stock player's position loop, replacing a running one instead of adding to it. */
+    private fun startFytTimeLoop() {
+        val h = handlerFytTime ?: return
+        h.removeCallbacks(updateFytTime)
+        h.post(updateFytTime)
     }
 
     /** Schedules one background tag read per distinct path. */
@@ -617,7 +625,9 @@ class NotificationListener : NotificationListenerService() {
             helpers.updateControllerTimeBool(false)
             fytSet = true
             setStatus(1)
-            handlerFytTime?.post(updateFytTime)
+            // Was a plain post(): every new track of the stock player started one more 500 ms
+            // loop next to the ones already running, and only a MediaSession player stopped them.
+            startFytTimeLoop()
         }
     }
 
@@ -1545,6 +1555,17 @@ class NotificationListener : NotificationListenerService() {
          */
         private val broadcaster: ExecutorService = Executors.newSingleThreadExecutor { r ->
             Thread(r, "NotificationListenerBroadcast").apply { isDaemon = true }
+        }
+
+        /**
+         * The stock player's state from MusicService, every second while it plays. Called directly:
+         * both live in this process, and as a "titlesInternal" broadcast each update was a round
+         * trip through ActivityManager (and an exported receiver anyone could feed a path to).
+         */
+        @JvmStatic
+        fun onFytUpdate(state: Boolean, path: String, source: String, curMinutes: Long) {
+            val listener = instance ?: return
+            listener.mainHandler.post { listener.handleFytUpdate(state, path, source, curMinutes) }
         }
 
         /** Called by WindowUtil once every pane has produced a frame. */

@@ -596,6 +596,11 @@ public class WindowUtil {
                 if (helpers == null) {
                     helpers = new Helpers();
                 }
+                // The local reference: this runs on a worker thread, and the static one can be
+                // cleared (launcher destroyed) between the null check above and here.
+                final View tabHost = launcher.mAppsCustomizeTabHost;
+                final boolean allAppsVisible = tabHost != null
+                        && helpers.allAppsVisibility(tabHost.getVisibility());
                 Log.i(TAG, "openPip(): " +  "show: "+ show
                     + " helpers.pipsAdded(): " + helpers.pipsAdded()
                     + " Utils.topApp(): " + Utils.topApp()
@@ -604,7 +609,7 @@ public class WindowUtil {
                     + " helpers.isInAllApps() " + helpers.isInAllApps()
                     + " helpers.isInOverviewMode() " + helpers.isInOverviewMode()
                     + " helpers.isFirstPreferenceWindow() " + helpers.isFirstPreferenceWindow()
-                    + " helpers.allAppsVisibility() " + helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility())
+                    + " helpers.allAppsVisibility() " + allAppsVisible
                     + " helpers.isWallpaperWindow() " + helpers.isWallpaperWindow()
                     + " helpers.isListOpen() " + helpers.isListOpen());
 
@@ -617,7 +622,7 @@ public class WindowUtil {
                                 && !helpers.isInOverviewMode()
                                 && !helpers.isFirstPreferenceWindow()
                                 && !helpers.isWallpaperWindow()
-                                && !helpers.allAppsVisibility(Launcher.getLauncher().mAppsCustomizeTabHost.getVisibility()))
+                                && !allAppsVisible)
                                 || (!helpers.userWasInRecents() && helpers.isListOpen() && !helpers.pipsAdded());
 
                 if (!canOpen) {

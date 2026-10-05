@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.android.launcher66.NotificationListener;
 import com.android.launcher66.settings.Helpers;
 
 import java.util.concurrent.ExecutorService;
@@ -59,7 +60,6 @@ public class MusicService extends Service {
         return t;
     });
     private static final AtomicReference<Intent> sPendingExternal = new AtomicReference<>();
-    private static final AtomicReference<Intent> sPendingInternal = new AtomicReference<>();
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -118,16 +118,9 @@ public class MusicService extends Service {
         post(sPendingExternal, intent);
     }
 
-    // data broadcasted to NotificationListener.kt for the music widget
+    // data for NotificationListener.kt (the music widget); same process, so no broadcast
     public void sendInternalData() {
-        Intent intent = new Intent(TITLES_INTERNAL);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(PLAY_STATE, state);
-        bundle.putString(PLAY_PATH, music_path);
-        bundle.putString(PLAY_SOURCE, SOURCE);
-        bundle.putLong(PLAY_CURMINUTES, CURMINUTES);
-        intent.putExtras(bundle);
-        post(sPendingInternal, intent);
+        NotificationListener.onFytUpdate(state, music_path, SOURCE, CURMINUTES);
     }
 
     /**
