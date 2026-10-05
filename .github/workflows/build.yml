@@ -28,6 +28,10 @@ jobs:
 
       - name: Set up the Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # The default also asks for the long-removed "tools" package, which current
+          # cmdline-tools no longer find, failing the step.
+          packages: "platform-tools"
 
       - name: Install the compile SDK
         run: |
