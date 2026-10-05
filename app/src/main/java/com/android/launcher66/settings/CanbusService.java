@@ -100,10 +100,18 @@ public class CanbusService extends Service implements PropertyChangeListener {
     int statsHeight;
     int statsTopLeftX, statsTopLeftY;
 
+    /** Set for the lifetime of the service; see Launcher.isServiceRunning(). */
+    private static volatile boolean sRunning;
+
+    public static boolean isRunning() {
+        return sRunning;
+    }
+
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     public void onCreate() {
         super.onCreate();
+        sRunning = true;
         Log.d(TAG, "Service created");
         prefs = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());    
         userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
@@ -157,6 +165,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        sRunning = false;
         Log.d(TAG, "Service destroyed");
         removeLocationUpdates();
         unregisterAccessibilityEventListener();

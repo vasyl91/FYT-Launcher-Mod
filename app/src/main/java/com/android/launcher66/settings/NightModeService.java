@@ -26,8 +26,6 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 public class NightModeService extends Service {
@@ -45,13 +43,29 @@ public class NightModeService extends Service {
 
     private final Handler nightModeHandler = new Handler(Looper.getMainLooper());
     private boolean isNightModeRunning = false;
-    private final Handler checkTimeHandler = new Handler(Looper.getMainLooper());
-    private LocalDateTime lastCheckedDateTime;
-    private boolean isCheckTimeRunning = false;
     private boolean timeChanged = false;
+
+    /** A clock step smaller than this is not a correction worth a refresh (NTP nudges, NITZ). */
+    private static final long CLOCK_STEP_THRESHOLD_MS = 60_000L;
+    /** Wall clock minus elapsedRealtime: constant while nobody sets the clock. */
+    private long clockOffsetMs;
+    private boolean isTimeReceiverRegistered = false;
 
     private boolean isReceiverRegistered = false;
     private boolean isStarted = false;
+
+    /** Set for the lifetime of the service; see Launcher.isServiceRunning(). */
+    private static volatile boolean sRunning;
+
+    public static boolean isRunning() {
+        return sRunning;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        sRunning = true;
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -74,8 +88,7 @@ public class NightModeService extends Service {
         }
         isStarted = true;
 
-        lastCheckedDateTime = LocalDateTime.now();
-        checkTime();
+        registerTimeChangeReceiver();
         nightMode();
         return START_STICKY;
     }
@@ -125,12 +138,67 @@ public class NightModeService extends Service {
         }
     };
 
-    private void checkTime() {
-        if (!isCheckTimeRunning) {
-            checkTimeHandler.post(checkTimeRunnable); // check if device has updated the time
-            isCheckTimeRunning = true;
+    /*
+     * The head unit shows a wrong time after it was cut from the power for a longer period; an
+     * internet connection or a manual change then sets the system clock, and checkWallpapers()
+     * has to run again with the correct time. This used to be found by polling the clock every
+     * 3 s for as long as the service ran -- the whole drive. AlarmManagerService broadcasts every
+     * step of the clock as TIME_SET (capture 05-10-2026 19:00:15, the correction from 2024), so
+     * the receiver below gets the same events without the polling.
+     */
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    private void registerTimeChangeReceiver() {
+        if (isTimeReceiverRegistered) {
+            return;
         }
+        clockOffsetMs = System.currentTimeMillis() - SystemClock.elapsedRealtime();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_TIME_CHANGED);
+        filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Not exported: the system still delivers its own broadcasts.
+            registerReceiver(timeChangeReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(timeChangeReceiver, filter);
+        }
+        isTimeReceiverRegistered = true;
     }
+
+    private void unregisterTimeChangeReceiver() {
+        if (!isTimeReceiverRegistered) {
+            return;
+        }
+        try {
+            unregisterReceiver(timeChangeReceiver);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "Time receiver was not registered: " + e.getMessage());
+        }
+        isTimeReceiverRegistered = false;
+    }
+
+    private final BroadcastReceiver timeChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            long offset = System.currentTimeMillis() - SystemClock.elapsedRealtime();
+            long step = offset - clockOffsetMs;
+            clockOffsetMs = offset;
+            // Same rule as the polling had: a step of a minute or more either way (a clock set back
+            // across sunrise/sunset needs a refresh as much as one set forward), or a new time zone.
+            boolean changed = Intent.ACTION_TIMEZONE_CHANGED.equals(action)
+                    || Math.abs(step) >= CLOCK_STEP_THRESHOLD_MS;
+            if (!changed) {
+                return;
+            }
+            Log.i(TAG, "Clock changed (" + action + ", step " + step / 1000L + " s), refreshing");
+            timeChanged = true;
+            // Forced: the throttle is meant for duplicate service starts. A clock correction a few
+            // seconds after the wake refresh is new information, and skipping it would leave the
+            // wallpaper that was chosen with the wrong time. Setting the same one twice is prevented
+            // by SunTask's own check, so an extra run is harmless.
+            checkWallpapers("timeChanged", true);
+        }
+    };
 
     private void nightMode() {
         if (!isNightModeRunning) {
@@ -146,6 +214,7 @@ public class NightModeService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        sRunning = false;
         Log.d(TAG, "Service destroyed");
         isStarted = false;
         unregisterRecreateReceiver();
@@ -154,34 +223,14 @@ public class NightModeService extends Service {
     }
 
     public void removeNightRunnables(boolean time) {
-        if (isCheckTimeRunning && time) {
-            checkTimeHandler.removeCallbacks(checkTimeRunnable);
-            isCheckTimeRunning = false;
+        if (time) {
+            unregisterTimeChangeReceiver();
         }
         if (isNightModeRunning) {
             nightModeHandler.removeCallbacks(nightModeRunnable);
             isNightModeRunning = false;
         }
     }
-
-    /* checks every 3s if there was a change in the system time that was greater than one minute
-    ** this function exists because the head unit displays incorret time whenever it was cut from the power for a longer peroid of time
-    ** having an internet connection or manual change updates the system time and this triggers checkWallpapers() that sets accurate wallpaper
-    */
-    private final Runnable checkTimeRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (hasTimeChanged()) {
-                timeChanged = true;
-                // Forced: the throttle is meant for duplicate service starts. A clock correction a few
-                // seconds after the wake refresh is new information, and skipping it would leave the
-                // wallpaper that was chosen with the wrong time. Setting the same one twice is prevented
-                // by SunTask's own check, so an extra run is harmless.
-                checkWallpapers("checkTimeRunnable", true);
-            }
-            checkTimeHandler.postDelayed(this, 3000);
-        }
-    };
 
     // runs once when the service starts or whenever the view has been Keys.RECREATEd by the user
     private final Runnable nightModeRunnable = () -> {
@@ -192,22 +241,6 @@ public class NightModeService extends Service {
         }
         timeChanged = false;
     };
-
-    private boolean hasTimeChanged() {
-        LocalDateTime currentDateTime = LocalDateTime.now();
-
-        // this should never run because lastCheckedDateTime is supposed to be set on the service start
-        if (lastCheckedDateTime == null) {
-            lastCheckedDateTime = currentDateTime;
-            return false;
-        }
-
-        Duration duration = Duration.between(lastCheckedDateTime, currentDateTime);
-        // abs(): a clock stepped back across sunrise/sunset needs a refresh just as much as one stepped forward.
-        long minutes = Math.abs(duration.toMinutes());
-        lastCheckedDateTime = currentDateTime;
-        return minutes >= 1;
-    }
 
     private void checkWallpapers(String reason) {
         checkWallpapers(reason, false);

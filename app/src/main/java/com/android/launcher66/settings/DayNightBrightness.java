@@ -16,6 +16,9 @@ import com.syu.car.CarStates;
 import com.syu.ipc.data.FinalMain;
 import com.syu.remote.RemoteTools;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
+
 /**
  * The only place that sets the screen brightness of the night mode ("dynamic brightness").
  *
@@ -80,6 +83,46 @@ public final class DayNightBrightness {
     /** Applies the brightness for the day/night state stored by the last SunTask run. */
     public static void applyForCurrentState(Context context, String reason) {
         apply(context, isDayState(new Helpers()), reason);
+    }
+
+    /**
+     * Day or night by the clock and the sunrise/sunset SunTask stored last (with the user's
+     * corrections), without the network or a location fix. For the moment of a wake: SunTask only
+     * runs ~14 s later (NightModeService is restarted 10 s after the wake, then waits 4 s), and a car
+     * parked by day and started after dark kept the day brightness until then.
+     */
+    public static void applyForSavedTimes(Context context, String reason) {
+        Context appContext = context.getApplicationContext();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
+        if (!isEnabled(prefs)) {
+            return;
+        }
+        Helpers helpers = new Helpers();
+        if (helpers.isPolarDay() || helpers.isPerpetualNight()) {
+            apply(appContext, helpers.isPolarDay(), reason);
+            return;
+        }
+        LocalTime sunrise = parseTime(prefs.getString("sunrise", null));
+        LocalTime sunset = parseTime(prefs.getString("sunset", null));
+        if (sunrise == null || sunset == null) {
+            applyForCurrentState(appContext, reason);
+            return;
+        }
+        sunrise = sunrise.plusMinutes(prefs.getInt("sunrise_correction", 0));
+        sunset = sunset.plusMinutes(prefs.getInt("sunset_correction", 0));
+        LocalTime now = LocalTime.now();
+        apply(appContext, !now.isBefore(sunrise) && now.isBefore(sunset), reason);
+    }
+
+    private static LocalTime parseTime(String value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return LocalTime.parse(value);   // "HH:mm:ss", as SunTask.longToHourZone() writes it
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
     /**

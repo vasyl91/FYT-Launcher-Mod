@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -226,6 +227,13 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private Runnable mCustomElementSetupAction;
     private boolean mCustomElementSetupPending = false;
     private boolean mCustomElementSetupUrgent = false;
+    /**
+     * Pages are ensured and addWidgetsToAllExistingPages() is queued (the 500 ms step). The time
+     * keeps a runnable that never ran (workspace detached meanwhile) from blocking setups for good.
+     */
+    private boolean mCustomElementAddScheduled = false;
+    private long mCustomElementAddScheduledAt = 0L;
+    private static final long CUSTOM_ELEMENT_ADD_STALE_MS = 5000L;
 
     public CellLayout(Context context) {
         this(context, null);
@@ -1133,6 +1141,12 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             clearDetachedCustomElementRefs();
             return;
         }
+        if (mCustomElementAddScheduled
+                && SystemClock.uptimeMillis() - mCustomElementAddScheduledAt < CUSTOM_ELEMENT_ADD_STALE_MS) {
+            // The elements are about to be added. Restarting here (an urgent request did) left
+            // the queued add running anyway, so addWidgetsToAllExistingPages() ran twice.
+            return;
+        }
         if (mCustomElementSetupPending) {
             if (!urgent || mCustomElementSetupUrgent) {
                 return;
@@ -1176,9 +1190,12 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             // Step 2: Wait for layout to complete, then add widgets
             mCustomElementSetupPending = true;
             mCustomElementSetupUrgent = urgent;
+            mCustomElementAddScheduled = true;
+            mCustomElementAddScheduledAt = SystemClock.uptimeMillis();
             workspace.postDelayed(() -> {
                 mCustomElementSetupPending = false;
                 mCustomElementSetupUrgent = false;
+                mCustomElementAddScheduled = false;
                 // A rebind may have started during the delay.
                 if (deferCustomElementSetupWhileLoading("before adding elements")) {
                     return;
@@ -1273,6 +1290,12 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         }
         mCustomElementSetupPending = false;
         mCustomElementSetupUrgent = false;
+        mCustomElementAddScheduled = false;
+    }
+
+    /** A setup requested earlier has not run (or finished adding) yet. */
+    public boolean isCustomElementSetupPending() {
+        return mCustomElementSetupPending;
     }
 
     @Override

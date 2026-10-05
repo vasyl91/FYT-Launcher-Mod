@@ -154,7 +154,6 @@
     </PreferenceCategory>
 
     <Preference
-        android:key="separator_widgets_stats"
         android:layout="@layout/preference_separator"
         android:selectable="false" />
 
@@ -213,7 +212,6 @@
     </PreferenceCategory>
 
     <Preference
-        android:key="separator_widgets_stats"
         android:layout="@layout/preference_separator"
         android:selectable="false" />
 
@@ -281,7 +279,6 @@
     </PreferenceCategory>
 
     <Preference
-        android:key="separator_widgets_stats"
         android:layout="@layout/preference_separator"
         android:selectable="false" />
 

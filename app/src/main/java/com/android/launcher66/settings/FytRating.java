@@ -14,6 +14,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
@@ -130,6 +131,14 @@ public final class FytRating {
     private static final int MAX_CONSECUTIVE_FAILURES = 3;
     private static final AtomicInteger CONSECUTIVE_FAILURES = new AtomicInteger(0);
 
+    /**
+     * When the bridge last answered anything, and whether the latest exchange was answered.
+     * statusCheckedAtMs alone does not tell: it is also set after a request that timed out, and a
+     * positive status is deliberately kept through silence.
+     */
+    private static volatile long lastAnswerAtMs;
+    private static volatile boolean lastExchangeAnswered;
+
     /** The bridge's receiver, resolved once and dropped whenever it stops answering. */
     private static volatile ComponentName bridgeReceiver;
 
@@ -161,6 +170,27 @@ public final class FytRating {
     private static volatile boolean wakeActivityPresent = true;
     private static volatile long wakeActivityCheckedAtMs;
     private static final long WAKE_ACTIVITY_RECHECK_MS = 600000L;
+
+    /**
+     * Whether the ROM lets a broadcast start the bridge's process.
+     *
+     * What actually kept the bridge unreachable after a restart is the Unisoc power controller
+     * (capture 05-10-2026 19:01:13): "PowerController.BgClean: in autolaunch black list:
+     * vasyl.fytrating ... send-broadcast denyed". Every third-party app is on that list by default
+     * (persist.sys.pwctl.auto = 1, "optimize"); a process may still be started for an activity,
+     * which is the only reason the wake activity worked -- at the price of pausing the launcher.
+     * Taking the bridge off the list lets the status request itself start it, and the activity
+     * is kept only as a fallback.
+     */
+    private static final int AUTOLAUNCH_UNKNOWN = 0;
+    private static final int AUTOLAUNCH_ALLOWED = 1;
+    private static final int AUTOLAUNCH_UNAVAILABLE = 2;
+    private static volatile int autoLaunchState = AUTOLAUNCH_UNKNOWN;
+    /** A status request went unanswered although auto-launch was allowed: back to the activity. */
+    private static volatile boolean broadcastLaunchFailed;
+    // android.os.sprdpower.AppPowerSaveConfig: ConfigType.TYPE_AUTOLAUNCH, VALUE_NO_OPTIMIZE.
+    private static final int PWCTL_TYPE_AUTOLAUNCH = 4;
+    private static final int PWCTL_VALUE_NO_OPTIMIZE = 2;
 
     private static final String RELEASES_URL = "https://github.com/vasyl91/fYT-Rating/releases/latest";
     private static final long DOUBLE_CLICK_TIMEOUT_MS = 500L;
@@ -271,9 +301,22 @@ public final class FytRating {
             return false;
         }
 
+        allowBroadcastLaunch();
+
         Intent request = new Intent(ACTION_GET_STATUS);
+        // The foreground queue: at boot the background one held this request for 13 s behind 44
+        // others (capture 05-10-2026 19:01:00), well past the 8 s timeout. Only for the status: the
+        // bridge answers it inside onReceive(), while the rating requests run a network call under
+        // goAsync(), which the foreground queue's 10 s receiver timeout could cut short.
+        request.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         Bundle result = exchange(context, request, STATUS_TIMEOUT_MS);
         statusCheckedAtMs = SystemClock.elapsedRealtime();
+
+        if (result == null && autoLaunchState == AUTOLAUNCH_ALLOWED && !broadcastLaunchFailed) {
+            broadcastLaunchFailed = true;
+            Log.w(TAG, "No status reply although the bridge may be auto-launched;"
+                    + " waking it through its activity from now on");
+        }
 
         if (result == null) {
             if (statusKnown && !(signedIn && allowed)) {
@@ -553,9 +596,12 @@ public final class FytRating {
 
     private static void noteExchangeSucceeded() {
         CONSECUTIVE_FAILURES.set(0);
+        lastAnswerAtMs = SystemClock.elapsedRealtime();
+        lastExchangeAnswered = true;
     }
 
     private static void noteExchangeFailed() {
+        lastExchangeAnswered = false;
         if (CONSECUTIVE_FAILURES.incrementAndGet() >= MAX_CONSECUTIVE_FAILURES) {
             resetTransport();
         }
@@ -710,21 +756,81 @@ public final class FytRating {
      * Costs one comparison when the bridge is already answering.
      */
     public static void wakeIfNeeded(Context context) {
-        if (context == null || !isInstalled(context) || !hasWakeActivity(context)) {
+        if (context == null || !isInstalled(context)) {
             return;
         }
 
         long now = SystemClock.elapsedRealtime();
+        // A fresh answer of any kind -- signed in or not, this launcher allowed or not -- proves the
+        // process is up and hears broadcasts, which is all waking is for.
+        if (lastExchangeAnswered && now - lastAnswerAtMs < STATUS_MAX_AGE_MS) {
+            return;
+        }
+
+        if (autoLaunchState != AUTOLAUNCH_UNAVAILABLE && !broadcastLaunchFailed) {
+            // The ROM lets a broadcast start the bridge (or that is being arranged right now, see
+            // allowBroadcastLaunch()): the status request brings it up without an activity, so
+            // without pausing the launcher. Unanswered, it switches the next resume to the activity.
+            ensureFreshStatus(context);
+            return;
+        }
+
+        if (!hasWakeActivity(context)) {
+            return;
+        }
         if (lastWakeAtMs != 0L && now - lastWakeAtMs < WAKE_MIN_INTERVAL_MS) {
             return;
         }
 
-        // Answering and present: leave it alone.
-        if (statusKnown && signedIn && allowed && isBridgeRunning(context)) {
+        // Answered last time and still present: leave it alone. Not only when signed in and
+        // allowed: with either missing, the bridge used to be woken every five minutes although it
+        // was answering all along.
+        if (lastExchangeAnswered && isBridgeRunning(context)) {
             return;
         }
 
         wake(context);
+    }
+
+    /**
+     * Takes the bridge off the Unisoc power controller's auto-launch black list (see
+     * autoLaunchState). Once per process; blocking (two or three binder calls), so it runs on the
+     * status thread. Needs the launcher's system uid, and does nothing on other ROMs.
+     */
+    private static void allowBroadcastLaunch() {
+        if (autoLaunchState != AUTOLAUNCH_UNKNOWN) {
+            return;
+        }
+        try {
+            Class<?> serviceManager = Class.forName("android.os.ServiceManager");
+            IBinder binder = (IBinder) serviceManager
+                    .getMethod("getService", String.class).invoke(null, "power_ex");
+            if (binder == null) {
+                autoLaunchState = AUTOLAUNCH_UNAVAILABLE;
+                Log.d(TAG, "No Unisoc power controller; the bridge is woken through its activity");
+                return;
+            }
+            Object power = Class.forName("android.os.sprdpower.IPowerManagerEx$Stub")
+                    .getMethod("asInterface", IBinder.class).invoke(null, binder);
+            Class<?> iface = Class.forName("android.os.sprdpower.IPowerManagerEx");
+            Method get = iface.getMethod("getAppPowerSaveConfigWithType", String.class, int.class);
+            int before = (Integer) get.invoke(power, BRIDGE_PACKAGE, PWCTL_TYPE_AUTOLAUNCH);
+            int after = before;
+            if (before != PWCTL_VALUE_NO_OPTIMIZE) {
+                iface.getMethod("setAppPowerSaveConfigWithType", String.class, int.class, int.class)
+                        .invoke(power, BRIDGE_PACKAGE, PWCTL_TYPE_AUTOLAUNCH, PWCTL_VALUE_NO_OPTIMIZE);
+                after = (Integer) get.invoke(power, BRIDGE_PACKAGE, PWCTL_TYPE_AUTOLAUNCH);
+            }
+            autoLaunchState = after == PWCTL_VALUE_NO_OPTIMIZE
+                    ? AUTOLAUNCH_ALLOWED : AUTOLAUNCH_UNAVAILABLE;
+            Log.i(TAG, "Bridge auto-launch config: " + before + " -> " + after
+                    + (autoLaunchState == AUTOLAUNCH_ALLOWED
+                            ? " (allowed; no wake activity needed)"
+                            : " (not allowed; the wake activity stays)"));
+        } catch (Throwable t) {
+            autoLaunchState = AUTOLAUNCH_UNAVAILABLE;
+            Log.w(TAG, "Could not allow the bridge to auto-launch: " + t);
+        }
     }
 
     /**
