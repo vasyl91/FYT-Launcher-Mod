@@ -109,6 +109,22 @@ private const val IDLE_STEAL_SETTLE_MS = 150L
  */
 private const val POST_REBUILD_FAST_MS = 3000L
 
+/**
+ * A touch on the launcher or a pane this long before a channel change or a player starting makes
+ * it the user's doing. com.syu.ms takes the channel alike when an app is tapped and when it comes
+ * to the top by itself; only the touch tells the two apart.
+ */
+private const val USER_TOUCH_INTENT_MS = 3000L
+
+/** After a tap, how long a steal waits for the tapped player to start before it is undone. */
+private const val USER_PLAY_SETTLE_MS = 1500L
+
+/**
+ * After the panes are up, how long an app taking the channel or starting to play without a touch
+ * is the pane coming up (Spotify resuming by itself), not a source switch.
+ */
+private const val AUTO_START_WINDOW_MS = 4000L
+
 /** How recently the player must have started for the resume above to apply. */
 private const val STOCK_TO_THIRD_PARTY_RESUME_WINDOW_MS = 4000L
 
@@ -226,6 +242,10 @@ class NotificationListener : NotificationListenerService() {
     private var lastStockSendMs = 0L
     /** When the last pane rebuild window closed; steals just after it are unambiguous. */
     private var paneRebuildEndedAtMs = 0L
+    /** When the panes last came up with the launcher in front, 0 once it went to the background. */
+    private var rebuildSettledAtMs = 0L
+    /** The stock channel that was playing through that rebuild, MCU_CH_ANDROID for none. */
+    private var rebuildStockChannel = MCU_CH_ANDROID
 
     @Volatile
     private var lastExternalPlayToken: MediaSession.Token? = null
@@ -834,7 +854,10 @@ class NotificationListener : NotificationListenerService() {
         val now = SystemClock.elapsedRealtime()
         if (stealSeenAtMs == 0L) stealSeenAtMs = now
 
-        if (now - lastIdleStealRestoreMs < IDLE_STEAL_COOLDOWN_MS) {
+        // An echo of our own restore carries no sound. A player that has started is a new steal:
+        // Spotify resuming by itself 1 s after the restore was left alone here, and the radio
+        // never came back.
+        if (now - lastIdleStealRestoreMs < IDLE_STEAL_COOLDOWN_MS && !isThirdPartyAudioStarted()) {
             Log.d("NotificationListener", "Channel taken again within cooldown - leaving it alone")
             return
         }
@@ -842,12 +865,27 @@ class NotificationListener : NotificationListenerService() {
         idleStealGeneration++
         val gen = idleStealGeneration
 
-        // No ambiguity right after a rebuild, so no settle: that delay is pure added silence.
-        val settle = if (now - paneRebuildEndedAtMs < POST_REBUILD_FAST_MS) 0L else IDLE_STEAL_SETTLE_MS
+        val userTouched = userActedRecently()
+        val autoStart = !userTouched && isInAutoStartWindow()
+        // A tap: give the tapped player time to start. An app that came up by itself right after
+        // the panes: no ambiguity, so no settle, which would only be added silence.
+        val settle = when {
+            userTouched -> USER_PLAY_SETTLE_MS
+            autoStart -> 0L
+            else -> IDLE_STEAL_SETTLE_MS
+        }
 
         postDelayedIfAlive(settle) {
             if (gen != idleStealGeneration) return@postDelayedIfAlive
             if (mcuChannel() != MCU_CH_THIRD_PARTY) return@postDelayedIfAlive
+
+            if (autoStart) {
+                // Not the user: whatever this app plays, the stock source keeps the channel.
+                lastIdleStealRestoreMs = SystemClock.elapsedRealtime()
+                sendStockChannel(stockChannel, "app came up by itself, restoring")
+                pauseSoundingExternalPlayers("came up by itself after the panes")
+                return@postDelayedIfAlive
+            }
 
             // By now the playback signal has caught up with the channel change. Any of these means
             // the switch was legitimate and the channel belongs where it is.
@@ -855,13 +893,7 @@ class NotificationListener : NotificationListenerService() {
             // The session catches up later than the sound itself: YouTube's AudioTrack started
             // (and com.syu.ms switched to 10 for it) 290 ms before its session said PLAYING, so
             // the restore came first and com.syu.music took the sound back from it.
-            // Not around a pane rebuild: there a sounding app is a pane app the launcher started
-            // (Spotify and the like taking the channel as they come up), and the stock source
-            // keeps the channel, as before.
-            val nowCheck = SystemClock.elapsedRealtime()
-            val nearRebuild = nowCheck < paneRestartUntil
-                    || nowCheck - paneRebuildEndedAtMs < POST_REBUILD_FAST_MS
-            if (!nearRebuild && isThirdPartyAudioStarted()) {
+            if (isThirdPartyAudioStarted()) {
                 Log.d("NotificationListener", "Channel 10 taken by a player that is already sounding - leaving it")
                 return@postDelayedIfAlive
             }
@@ -869,9 +901,47 @@ class NotificationListener : NotificationListenerService() {
             if (SystemClock.elapsedRealtime() - handoverAtMs < 1000L) return@postDelayedIfAlive
 
             lastIdleStealRestoreMs = SystemClock.elapsedRealtime()
-            restoreStockChannel(stockChannel, "restoring")
-
+            restoreStockChannel(stockChannel, if (userTouched) "tapped app did not play, restoring" else "restoring")
         }
+    }
+
+    /** The user touched the launcher or a pane just now; see UserTouches. */
+    private fun userActedRecently(): Boolean =
+        com.syu.util.UserTouches.sinceLastTouchMs() < USER_TOUCH_INTENT_MS
+
+    /** The panes have just come up, the launcher still in front, with a stock source playing. */
+    private fun isInAutoStartWindow(): Boolean {
+        val now = SystemClock.elapsedRealtime()
+        if (now < paneRestartUntil && channelToRestore != MCU_CH_ANDROID) return true
+        return rebuildSettledAtMs > 0L && rebuildStockChannel != MCU_CH_ANDROID
+                && now - rebuildSettledAtMs < AUTO_START_WINDOW_MS
+    }
+
+    /** The stock channel to keep through an auto-start, MCU_CH_ANDROID for none. */
+    private fun autoStartStockChannel(): Int =
+        if (channelToRestore != MCU_CH_ANDROID) channelToRestore else rebuildStockChannel
+
+    /** Pauses every app player that plays or is about to; the stock sources are left alone. */
+    private fun pauseSoundingExternalPlayers(reason: String) {
+        val sessions = try {
+            mediaSessionManager?.getActiveSessions(componentName)
+        } catch (e: SecurityException) {
+            null
+        } ?: return
+        for (c in sessions) {
+            val pkg = c.packageName ?: continue
+            if (pkg in ownSourcePackages) continue
+            val state = c.playbackState?.state ?: continue
+            if (state != PlaybackState.STATE_PLAYING && state != PlaybackState.STATE_BUFFERING
+                    && state != PlaybackState.STATE_CONNECTING) continue
+            Log.d("NotificationListener", "Pausing $pkg - $reason")
+            try {
+                c.transportControls.pause()
+            } catch (e: Exception) {
+                Log.w("NotificationListener", "Failed to pause $pkg: ${e.message}")
+            }
+        }
+        invalidateExternalPlayingCache()
     }
 
     private fun restoreStockChannel(stockChannel: Int, reason: String) {
@@ -999,6 +1069,8 @@ class NotificationListener : NotificationListenerService() {
      */
     private fun isPaneChannelSteal(channel: Int): Boolean {
         if (channelToRestore == MCU_CH_ANDROID) return false
+        // A tap on a pane while it comes up is the user choosing it.
+        if (userActedRecently()) return false
         if (channel != MCU_CH_THIRD_PARTY && channel != MCU_CH_ANDROID) return false
         if (SystemClock.elapsedRealtime() >= paneRestartUntil) return false
         if (channelRestores >= MAX_CHANNEL_RESTORES) return false
@@ -1079,6 +1151,13 @@ class NotificationListener : NotificationListenerService() {
      * here on is the user opening a source app, and must not be second guessed.
      */
     fun endPaneRestart() {
+        // The launcher left the screen: from here on an app taking the channel is the user's.
+        rebuildSettledAtMs = 0L
+        rebuildStockChannel = MCU_CH_ANDROID
+        finishPaneRestart()
+    }
+
+    private fun finishPaneRestart() {
         paneRebuildEndedAtMs = SystemClock.elapsedRealtime()
         paneRestartUntil = 0L
         channelToRestore = MCU_CH_ANDROID
@@ -1104,8 +1183,22 @@ class NotificationListener : NotificationListenerService() {
         // A player announcing playback right after the launcher rebuilt its panes is the
         // launcher restarting it, not the user picking a new source. Its playback is left
         // running; onMcuChannelChanged() puts the sound channel back.
-        if (SystemClock.elapsedRealtime() < paneRestartUntil && channelToRestore != MCU_CH_ANDROID) {
+        val userTouched = userActedRecently()
+        if (!userTouched && SystemClock.elapsedRealtime() < paneRestartUntil && channelToRestore != MCU_CH_ANDROID) {
             Log.d("NotificationListener", "Ignoring $pkg - pane rebuild, not a source switch")
+            return
+        }
+
+        // Started by itself right after the panes came up (Spotify resuming once it is on the
+        // screen again), with no touch: the stock source keeps the channel and the app is paused.
+        if (!userTouched && isInAutoStartWindow()) {
+            val stock = autoStartStockChannel()
+            Log.d("NotificationListener", "Ignoring $pkg - started by itself after the panes, keeping channel $stock")
+            pauseSoundingExternalPlayers("started by itself after the panes")
+            if (mcuChannel() != stock) {
+                lastIdleStealRestoreMs = SystemClock.elapsedRealtime()
+                sendStockChannel(stock, "app started by itself, restoring")
+            }
             return
         }
 
@@ -1591,7 +1684,12 @@ class NotificationListener : NotificationListenerService() {
         pendingRestore?.let { handler?.removeCallbacks(it) }
         pendingRestore = null
         restoreChannelNow("Panes settled")
-        endPaneRestart()
+        val stock = channelToRestore
+        finishPaneRestart()
+        // The panes are up, but an app in one of them can still take the channel or start playing
+        // by itself in the next moments; see isInAutoStartWindow().
+        rebuildSettledAtMs = SystemClock.elapsedRealtime()
+        rebuildStockChannel = stock
     }
 
     /** sendBroadcast() off the main thread; see the companion's broadcaster. */
