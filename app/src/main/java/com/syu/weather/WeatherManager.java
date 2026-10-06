@@ -60,6 +60,8 @@ public class WeatherManager {
     private static final float REFRESH_DISTANCE_M = 5000f;
     private static final long REFRESH_INTERVAL_MS = 10 * 60 * 1000L;
     /** A failed fetch is retried after 10 s, then 20 s, 40 s ... up to 5 min. */
+    /** Next look when a fetch is due but there is no network yet. */
+    private static final long NO_NETWORK_RECHECK_MS = 5000L;
     private static final long RETRY_MIN_MS = 10_000L;
     private static final long RETRY_MAX_MS = 5 * 60 * 1000L;
     /** The fallback position in the prefs (NightModeService reads it too) is rewritten after this much movement. */
@@ -429,8 +431,11 @@ public class WeatherManager {
             return nextCheckDelay(now);
         }
         if (!isNetworkAvailable()) {
-            // The network callback asks again once it is back.
-            return REFRESH_INTERVAL_MS;
+            // Soon again, not in 10 min: after a wake the check runs before the Wi-Fi is back, and
+            // the connectivity broadcast need not report the reconnect (capture 06-10 15:19: an
+            // 11 h old weather was kept although the Wi-Fi came up 1.5 s later). Only runs while
+            // the launcher is in front.
+            return NO_NETWORK_RECHECK_MS;
         }
         Log.d(TAG, "Weather refresh (" + source + "): " + reason
                 + (fallback ? ", using the saved position (no fix yet)" : ""));
