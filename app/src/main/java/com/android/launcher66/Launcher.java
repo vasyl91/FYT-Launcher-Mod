@@ -5765,6 +5765,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return mWorkspace.getPaddingTop();
     }
 
+    /** Any touch or key on the launcher; see UserTouches. */
+    @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+        com.syu.util.UserTouches.note(null);
+    }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
