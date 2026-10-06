@@ -538,9 +538,7 @@ public class WindowHostSinglePane {
             try { if (root.isAttachedToWindow()) wm.removeViewImmediate(root); } catch (Throwable ignore) {}
         }
 
-        // Records the user's touches on the pane: NotificationListener tells a tap on a media app
-        // from the app coming up by itself with them.
-        FrameLayout rootView = UserTouches.observingFrame(act, (x, y) -> currentPkg);
+        FrameLayout rootView = new FrameLayout(act);
         rootView.setBackgroundColor(Color.TRANSPARENT);
         rootView.setWillNotDraw(true);
         rootView.setAlpha(1f);

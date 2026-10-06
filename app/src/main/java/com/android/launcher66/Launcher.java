@@ -5769,7 +5769,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        com.syu.util.UserTouches.note(null);
+        com.syu.util.UserTouches.note();
     }
 
     @Override

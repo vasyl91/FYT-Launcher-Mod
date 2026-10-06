@@ -670,15 +670,7 @@ public class WindowHostDualPane {
             try { if (root.isAttachedToWindow()) wm.removeViewImmediate(root); } catch (Throwable ignore) {}
         }
 
-        // Records the user's touches on either side; see UserTouches.
-        FrameLayout rootView = UserTouches.observingFrame(act, (x, y) -> {
-            FrameLayout l = leftHost;
-            if (l != null && x >= l.getLeft() && x < l.getRight()
-                    && y >= l.getTop() && y < l.getBottom()) {
-                return leftPkg;
-            }
-            return rightPkg;
-        });
+        FrameLayout rootView = new FrameLayout(act);
         rootView.setBackgroundColor(Color.TRANSPARENT);
         rootView.setWillNotDraw(true);
         rootView.setClickable(false);
