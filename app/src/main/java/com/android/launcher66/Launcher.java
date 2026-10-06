@@ -211,6 +211,9 @@ import share.ResValue;
 import share.ShareHandler;
 
 public class Launcher extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, LauncherModel.Callbacks, View.OnTouchListener, PropertyChangeListener, LauncherAppWidgetHost.OnWidgetClickListener {
+    /** Weather on the home screen; see that class. */
+    final LauncherWeather mHomeWeather = new LauncherWeather(this);
+
     private ViewTreeObserver.OnDrawListener onDrawListener;
     private static final int MAX_LEFT = 5;
     static final boolean DEBUG_RESUME_TIME = false;
@@ -250,7 +253,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final long WIDGET_UPDATE_THROTTLE_MS = 350L;
     private static final long POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS = 1200L;
     private static final long SERVICE_RUNNING_CACHE_MS = 15000L;
-    private static final long WEATHER_HOME_DEFER_MS = 1500L;
     private static final long FAST_HOME_RESUME_DEFER_MS = 450L;
     private static final long FAST_HOME_PIP_DEFER_MS = 1000L;
     private static final long WAKE_HOME_RECOVERY_WINDOW_MS = 30000L;
@@ -447,8 +449,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private View mWeather;
     private View mWeightWatcher;
     private ArrayList<Object> mWidgetsAndShortcuts;
-    public WeatherManager weatherManager;
-    private Handler weatherHandler = new Handler(Looper.getMainLooper());
     private ProgressBar musicProgress;
     private SeekBar musicSeekBar;
     private Button mPlayPauseButton;
@@ -472,17 +472,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Button video_next;
     private Button video_playpause;
     private Button video_prev;
-    private TextView weatherCity;
+    TextView weatherCity;
     public TextView weatherCity1;
-    private ImageView weatherImg;
+    ImageView weatherImg;
     public ImageView weatherImg1;
-    private TextView weatherTemp;
+    TextView weatherTemp;
     public TextView weatherTemp1;
-    private TextView weatherTempRange;
-    private TextView weatherTempRange1;
-    private TextView weatherWeather;
+    TextView weatherTempRange;
+    TextView weatherTempRange1;
+    TextView weatherWeather;
     public TextView weatherWeather1;
-    private TextView weatherWind;
+    TextView weatherWind;
     static final int APPWIDGET_HOST_ID = LauncherApplication.appWidget_Host_Id;
     private static final Object sLock = new Object();
     private static final Object sServiceRunningCacheLock = new Object();
@@ -605,8 +605,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final Runnable mSyncStatusBarSwipeDetector = this::syncStatusBarSwipeDetector;
     private boolean mNightModeServiceStartPending = false;
     private boolean mCanbusServiceStartPending = false;
-    private WeatherManager.OnWeatherChangedListener mWeatherChangedListener;
-    private WeatherManager mWeatherListenerOwner;
     private final Map<String, Bitmap> mAppIconBitmapCache = new HashMap<>();
     private boolean isRecreateActive = false;
     private boolean mHomeButtonPressed = false;
@@ -614,7 +612,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      * Startup work the first screen does not need waits until this ROM's boot-time stall is over
      * (see ColdStart.BOOT_STALL_OVER_UPTIME_MS); 0 when the launcher is not booting.
      */
-    private static long bootStallDelayMs() {
+    static long bootStallDelayMs() {
         return ColdStart.bootStallDelayMs();
     }
 
@@ -4131,7 +4129,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         if (mHomeFromAllAppsPending) {
             requestPostResumeAppDataRefresh();
-            scheduleWeatherCheckAfterHome();
+            mHomeWeather.scheduleWeatherCheckAfterHome();
             mHandler.postDelayed(() -> {
                 onBackPip = false;
                 onResumePip = false;
@@ -4142,7 +4140,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mFastHomeResumePending) {
             mFastHomeResumePending = false;
             requestPostResumeAppDataRefresh();
-            scheduleWeatherCheckAfterHome();
+            mHomeWeather.scheduleWeatherCheckAfterHome();
             mHandler.postDelayed(() -> {
                 onBackPip = false;
                 onResumePip = false;
@@ -4198,7 +4196,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         requestPostResumeAppDataRefresh();
 
-        scheduleWeatherCheckAfterHome();
+        mHomeWeather.scheduleWeatherCheckAfterHome();
 
         // Floating button
         floatingButton = checkIfFloatingButton();
@@ -4698,7 +4696,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Log.e(TAG, "onStop: cannot unregister mCloseSystemDialogsReceiver", e);
             }
         }
-        cancelWeatherCallbacks();
+        mHomeWeather.cancelWeatherCallbacks();
     }
 
     @Override
@@ -4745,12 +4743,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             kwAPi = null;
         }        
         TimeUpdateReceiver.unregister(this);
-        cancelWeatherCallbacks();
-        if (mWeatherListenerOwner != null && mWeatherChangedListener != null) {
-            mWeatherListenerOwner.removeOnWeatherChangedListener(mWeatherChangedListener);
-            mWeatherChangedListener = null;
-            mWeatherListenerOwner = null;
-        }
+        mHomeWeather.release();
         if (mHandler != null) {
             mHandler.removeMessages(1);
             mHandler.removeMessages(0);
@@ -5206,137 +5199,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    /**
-     * Shows what WeatherManager has and lets it fetch whatever is due (5 km driven or 10 min old,
-     * see WeatherManager.refreshIfDue()), then sleeps until the moment the next fetch can become
-     * due by time. The distance is checked in WeatherManager's location callback, so nothing polls.
-     * Runs only while the launcher is in front: scheduled from onPostResume(), cancelled in onStop().
-     */
-    private final Runnable periodicWeatherCheck = new Runnable() {
-        @Override
-        public void run() {
-            if (!ensureWeatherManager(this)) {
-                return;
-            }
-            // Pushed first: rebuilt bar views start with placeholder text.
-            showWeatherInfo();
-            long next = weatherManager.refreshIfDue("home");
-            weatherHandler.removeCallbacks(this);
-            weatherHandler.postDelayed(this, next);
-        }
-    };
 
-    private void scheduleWeatherCheckAfterHome() {
-        WeatherManager.setForeground(true);
-        weatherHandler.removeCallbacks(periodicWeatherCheck);
-        weatherHandler.postDelayed(periodicWeatherCheck, WEATHER_HOME_DEFER_MS);
-    }
 
-    /** Shows the cached weather in the (re)bound views and fetches only if something is due. */
-    public void updateWeather() {
-        if (!ensureWeatherManager(mDeferredWeatherInit)) {
-            return;
-        }
-        showWeatherInfo();
-        weatherManager.refreshIfDue("show");
-    }
 
-    private final Runnable mDeferredWeatherInit = this::updateWeather;
 
-    /**
-     * WeatherManager.initialize() registers a receiver, a call into system_server: during the
-     * boot-time stall that froze the launcher for twelve seconds (capture 23:13), with the
-     * workspace binding queued behind it. The weather is not needed for the first screen, so at
-     * boot the manager is created once the stall is over, and retry runs then.
-     *
-     * @return true when the manager exists
-     */
-    private boolean ensureWeatherManager(Runnable retry) {
-        if (weatherManager != null) {
-            return true;
-        }
-        long wait = bootStallDelayMs();
-        if (wait > 0L) {
-            weatherHandler.removeCallbacks(retry);
-            weatherHandler.postDelayed(retry, wait);
-            return false;
-        }
-        weatherManager = WeatherManager.initialize(this);
-        return true;
-    }
 
-    private void cancelWeatherCallbacks() {
-        WeatherManager.setForeground(false);
-        weatherHandler.removeCallbacks(periodicWeatherCheck);
-        weatherHandler.removeCallbacks(mDeferredWeatherInit);
-    }
 
-    public void showWeatherInfo() {
-        if (this.weatherManager != null) {
-            if (mWeatherChangedListener == null) {
-                mWeatherChangedListener = new WeatherManager.OnWeatherChangedListener() {
-                    @Override
-                    public void onWeatherChanged(WeatherDescription weather) {
-                        if (weather != null) {
-                            if (Launcher.this.weatherImg != null) {
-                                Launcher.this.weatherImg.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
-                            }
-                            String range = weather.getTemDescription().replaceAll("\\.\\d", "");
-                            String temp = weather.getCurTem().replaceAll("\\.\\d", "");
-                            if (Launcher.this.weatherCity != null) {
-                                Launcher.this.weatherCity.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
-                            }
-                            if (Launcher.this.weatherWeather != null) {
-                                Launcher.this.weatherWeather.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
-                            }
-                            if (Launcher.this.weatherTemp != null) {
-                                Launcher.this.weatherTemp.setText(new StringBuilder(String.valueOf(temp)).toString());
-                            }
-                            if (Launcher.this.weatherTempRange != null) {
-                                Launcher.this.weatherTempRange.setText(new StringBuilder(String.valueOf(range)).toString());
-                            }
-                            if (Launcher.this.weatherImg1 != null) {
-                                Launcher.this.weatherImg1.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
-                            }
-                            if (Launcher.this.weatherCity1 != null) {
-                                Launcher.this.weatherCity1.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
-                            }
-                            if (Launcher.this.weatherWeather1 != null) {
-                                Launcher.this.weatherWeather1.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
-                            }
-                            if (Launcher.this.weatherTemp1 != null) {
-                                Launcher.this.weatherTemp1.setText(new StringBuilder(String.valueOf(temp)).toString());
-                            }
-                            if (Launcher.this.weatherTempRange1 != null) {
-                                Launcher.this.weatherTempRange1.setText(new StringBuilder(String.valueOf(range)).toString());
-                            }
-                            if (Launcher.this.weatherWind != null) {
-                                Launcher.this.weatherWind.setText(new StringBuilder(String.valueOf(weather.getWind())).toString());
-                            }
-                        }
-                    }
-                };
-            }
-            if (mWeatherListenerOwner != this.weatherManager) {
-                if (mWeatherListenerOwner != null) {
-                    mWeatherListenerOwner.removeOnWeatherChangedListener(mWeatherChangedListener);
-                }
-                this.weatherManager.addOnWeatherChangedListener(mWeatherChangedListener);
-                mWeatherListenerOwner = this.weatherManager;
-            }
-            // Always push the last known weather - also right after registering, so freshly
-            // bound bar views do not stay empty until the next network update arrives.
-            WeatherDescription weather = this.weatherManager.getThisWeather();
-            if (weather != null) {
-                try {
-                    mWeatherChangedListener.onWeatherChanged(weather);
-                } catch (Exception e) {
-                    // WeatherManager guards its own listener calls the same way.
-                    Log.w(TAG, "showWeatherInfo: pushing cached weather failed", e);
-                }
-            }
-        }
-    }
 
     @Override
     protected void onUserLeaveHint() {
@@ -6466,10 +6334,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         } catch (Exception e) {
             Log.w(TAG, "rebindBarWidgetsAfterWake: music state refresh failed", e);
         }
-        if (weatherManager == null) {
-            updateWeather();        // creates the manager and shows what it already has
+        if (mHomeWeather.weatherManager == null) {
+            mHomeWeather.updateWeather();        // creates the manager and shows what it already has
         } else {
-            showWeatherInfo();      // pushes the cached weather into the rebound views
+            mHomeWeather.showWeatherInfo();      // pushes the cached weather into the rebound views
         }
     }
 
@@ -13233,5 +13101,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         public boolean canScrollVertically() {
             return getItemCount() > mMaxItems && super.canScrollVertically();
         }
+    }
+
+    public void updateWeather() {
+        mHomeWeather.updateWeather();
+    }
+
+    public void showWeatherInfo() {
+        mHomeWeather.showWeatherInfo();
     }
 }
