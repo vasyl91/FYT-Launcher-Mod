@@ -173,15 +173,15 @@ public class DateRadioWidget extends Widget {
             views.setTextViewText(ResValue.getInstance().music_cur_time, cur);
             views.setTextViewText(ResValue.getInstance().music_total_time, total);
         }
-        if (launcher != null && launcher.radioFreqState > 5000) {
+        if (launcher != null && launcher.getRadioFreqState() > 5000) {
             views.setTextViewText(ResValue.getInstance().tv_band, "FM");
             views.setTextViewText(ResValue.getInstance().tv_unit, "MHz");
-        } else if (launcher != null && launcher.radioFreqState < 5000 && launcher.radioFreqState > 500) {
+        } else if (launcher != null && launcher.getRadioFreqState() < 5000 && launcher.getRadioFreqState() > 500) {
             views.setTextViewText(ResValue.getInstance().tv_band, "AM");
             views.setTextViewText(ResValue.getInstance().tv_unit, "KHz");
         }
         if (launcher != null) {
-            views.setTextViewText(ResValue.getInstance().tv_freq, launcher.radioFreq);
+            views.setTextViewText(ResValue.getInstance().tv_freq, launcher.getRadioFreq());
         }
         if (launcher != null && launcher.btName != null) {
             views.setTextViewText(ResValue.getInstance().btav_name, launcher.btName);

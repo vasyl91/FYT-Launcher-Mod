@@ -14,7 +14,8 @@ import com.syu.weather.WeatherManager;
  */
 final class LauncherWeather {
 
-    private final Launcher mLauncher;
+    // Not final: field initializers below use it in lambdas, which javac rejects for a blank final.
+    private Launcher mLauncher;
 
     LauncherWeather(Launcher launcher) {
         mLauncher = launcher;

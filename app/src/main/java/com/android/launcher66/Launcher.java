@@ -211,6 +211,24 @@ import share.ResValue;
 import share.ShareHandler;
 
 public class Launcher extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, LauncherModel.Callbacks, View.OnTouchListener, PropertyChangeListener, LauncherAppWidgetHost.OnWidgetClickListener {
+    /** Opening the wallpaper picker; see that class. */
+    final LauncherWallpaperPicker mWallpaperPicker = new LauncherWallpaperPicker(this);
+
+    /** The radio widget; see that class. */
+    final LauncherRadioWidget mRadioWidget = new LauncherRadioWidget(this);
+
+    /** The music widget and the music bar; see that class. */
+    final LauncherMusicWidget mMusicWidget = new LauncherMusicWidget(this);
+
+    /** The bottom and left app bars; see that class. */
+    final LauncherAppBars mAppBars = new LauncherAppBars(this);
+
+    /** The PiP swap buttons (FabOverlayService); see that class. */
+    final LauncherFab mFab = new LauncherFab(this);
+
+    /** Asks the user for the permissions, one step per resume; see that class. */
+    final LauncherPermissionFlow mPermissionFlow = new LauncherPermissionFlow(this);
+
     /** Starts the PiP panes from the launcher's side; see that class. */
     final LauncherPipStarter mPipStarter = new LauncherPipStarter(this);
 
@@ -224,7 +242,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     final LauncherWeather mHomeWeather = new LauncherWeather(this);
 
     private ViewTreeObserver.OnDrawListener onDrawListener;
-    static final int MAX_LEFT = 5;
     static final boolean DEBUG_RESUME_TIME = false;
     static final boolean DEBUG_WIDGETS = true;
     static final String DUMP_STATE_PROPERTY = "launcher_dump_state";
@@ -253,11 +270,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final String RUNTIME_STATE_PENDING_ADD_WIDGET_ID = "launcher.add_widget_id";
     static final int SCREEN_COUNT = 5;
     public static final String SHOW_WEIGHT_WATCHER = "debug.show_mem";
-    // Loading indicator while the wallpaper picker starts; see showWallpaperPickerIndicator().
-    private static final long WALLPAPER_PICKER_INDICATOR_DELAY_MS = 300L;
-    private static final long WALLPAPER_PICKER_INDICATOR_TIMEOUT_MS = 10000L;
     private static final long WIDGET_UPDATE_THROTTLE_MS = 350L;
-    private static final long POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS = 1200L;
     private static final long SERVICE_RUNNING_CACHE_MS = 15000L;
     private static final long FAST_HOME_RESUME_DEFER_MS = 450L;
     private static final long FAST_HOME_PIP_DEFER_MS = 1000L;
@@ -268,13 +281,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     static final String TAG = "Launcher";
     private static final String TOOLBAR_ICON_METADATA_NAME = "com.android.launcher.toolbar_icon";
     private static final String TOOLBAR_VOICE_SEARCH_ICON_METADATA_NAME = "com.android.launcher.toolbar_voice_search_icon";
-    private String mediaSource = "fyt";
-    private AudioManager mAudioManager;
-    private String activeController;
-    private String state;
-    private boolean userLayout;
-    private boolean leftBar;
-    private String musictitle = null;
+    String state;
+    boolean userLayout;
+    boolean leftBar;
     private KWAPI kwAPi;
     public TextView mAllAppView;
     /** The current instance. Also read by ColdStart from its guard thread, hence volatile. */
@@ -291,17 +300,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private ProgressBar btavProgress;
     public int carSpeed;
     RelativeLayout firstLayout;
-    private RadioRuler img_freq_point;
-    public ImageView ivALbumBg;
-    public ImageView ivALbumBgTwo;
-    public ImageView ivMusicScore;
-    public ImageView ivMusicScore2;
     private Button kuwomusic_next;
     private Button kuwomusic_playpause;
     private Button kuwomusic_prev;
     View mAllAppsButton;
-    AppListAdapter mAppListAdapter;
-    private List<AppListBean> mAppListData;
     private LauncherAppWidgetHost mAppWidgetHost;
     private AppWidgetManager mAppWidgetManager;
     private AppsCustomizePagedView mAppsCustomizeContent;
@@ -345,46 +347,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private TextView mKwMusicName;
     public boolean mKwPlayState;
     private View mLauncherView;
-    RecyclerView mRecyclerView;
-    LeftAppListAdapter mLeftAppListAdapter;
-    private List<AppListBean> mLeftAppListData;
-    /*
-     * Bar snapshots: the bottom and left bars as they were last shown, drawn at start while the
-     * app list is still loading. See prefetchBarSnapshots().
-     */
-    /** True while setupRecyclerView()/setupLeftRecyclerView() run to show a snapshot. */
-    private boolean mApplyingBarSnapshot;
-    private BarSnapshotStore.Snapshot mBottomBarSnapshot;
-    private List<AppMultiple> mBottomBarSnapshotRows;
-    private BarSnapshotStore.Snapshot mLeftBarSnapshot;
-    private List<LeftAppMultiple> mLeftBarSnapshotRows;
-    private boolean mBottomBarSnapshotSaved;
-    private long mSavedBottomBarSnapshotSignature;
-    private boolean mLeftBarSnapshotSaved;
-    private long mSavedLeftBarSnapshotSignature;
-    /**
-     * Snapshots read but not on screen yet: the bars' recycler views only exist once the workspace
-     * page holding them has been bound (createUserPage), which is later than the read. At 22:27 the
-     * read was done at 19.9 s, the views appeared at 21.4 s.
-     */
-    private BarSnapshotStore.Snapshot mPendingBottomSnapshot;
-    private List<AppMultiple> mPendingBottomSnapshotRows;
-    private BarSnapshotStore.Snapshot mPendingLeftSnapshot;
-    private List<LeftAppMultiple> mPendingLeftSnapshotRows;
-    private int mBarSnapshotAttempts;
-    private long mBarSnapshotReadAtMs;
-    private static final long BAR_SNAPSHOT_RETRY_MS = 50L;
-    private static final int BAR_SNAPSHOT_MAX_ATTEMPTS = 200; // 10 s
-    private final Runnable mApplyPendingBarSnapshots = this::applyPendingBarSnapshots;
-    private ImageView mMapbgUnitView;
+    boolean mBottomBarSnapshotSaved;
+    long mSavedBottomBarSnapshotSignature;
+     private ImageView mMapbgUnitView;
     private TextView mMiuDrive;
     private View mMusicIcon;
-    private Button mMusicNextButton;
-    private Button mMusicNextButtonTwo;
-    private Button mMusicPrevButton;
-    private Button mMusicPrevButtonTwo;
-    private Button mMusicFavoriteButton;
-    private Button mMusicFavoriteButtonTwo;
     private ImageView mNaviMycar;
     private View mNaviRunView;
     private View mNaviView;
@@ -406,11 +373,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      */
     private MediaPlayer mPlayer;
     private View mQsbBar;
-    private Button mRadioBandButton;
-    private View mRadioIcon;
-    private Button mRadioNextButton;
-    private Button mRadioPauseButton;
-    private Button mRadioPrevButton;
+    View mRadioIcon;
     private boolean mRestoring;
     private Bundle mSavedInstanceState;
     private Bundle mSavedState;
@@ -434,10 +397,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private TextView mTvGallery;
     private TextView mTvGuide;
     private TextView mTvMovie;
-    private TextView mTvMusic;
+    TextView mTvMusic;
     private TextView mTvNavi;
     private TextView mTvPerson;
-    private TextView mTvRadio;
+    TextView mTvRadio;
     private TextView mTvSettings;
     private TextView mTvSpeed;
     private String mVideoPlayState;
@@ -446,26 +409,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private View mWeather;
     private View mWeightWatcher;
     private ArrayList<Object> mWidgetsAndShortcuts;
-    private ProgressBar musicProgress;
-    private SeekBar musicSeekBar;
-    private Button mPlayPauseButton;
-    private Button mPlayPauseButtonTwo;
     public View pipViews;
     long preOnResumeTime;
     public boolean showKuwoContent;
     RemoteTools tools;
-    private TextView tvAlbum;
-    private TextView tvAritst;
-    private TextView tvAritstTwo;
-    private TextView tvBand;
     private TextView tvBtavCurTime;
     private TextView tvBtavTotalTime;
-    private TextView tvCurFreq;
-    private TextView tvCurTime;
-    private TextView tvMusicName;
-    private TextView tvMusicNameTwo;
-    private TextView tvTotalTime;
-    private TextView tvUnit;
     private Button video_next;
     private Button video_playpause;
     private Button video_prev;
@@ -502,9 +451,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public static boolean sForceEnableRotation = isPropertyEnabled(FORCE_ENABLE_ROTATION_PROPERTY);
     public int mainState = 0;
     private int count = 0;
-    public String freq = "87.50";
-    public int radioFreqState = 0;
-    public String radioFreq = "87.50";
     public int btTotalTime = 0;
     public int btCurTime = 0;
     public String btName = null;
@@ -550,33 +496,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Rect mRectForFolderAnimation = new Rect();
     private HideFromAccessibilityHelper mHideFromAccessibilityHelper = new HideFromAccessibilityHelper();
     SharedPreferences mPrefs;
-	private boolean fytData = true;  
+	boolean fytData = true;  
     // Request codes of the permission flow, see PermissionStep.
-    private static final int REQUEST_CODE_WRITE_SETTINGS = 1003;
-    private static final int REQUEST_CODE_STORAGE = 1004;
-    private static final int REQUEST_CODE_OVERLAY = 1006;
-    private static final int REQUEST_CODE_NOTIFICATION_ACCESS = 1007;
+    static final int REQUEST_CODE_WRITE_SETTINGS = 1003;
+    static final int REQUEST_CODE_STORAGE = 1004;
+    static final int REQUEST_CODE_OVERLAY = 1006;
+    static final int REQUEST_CODE_NOTIFICATION_ACCESS = 1007;
     private FusedLocationProviderClient fusedLocationClient;
     Helpers helpers = new Helpers();
     LinearLayout bottomButtons;
     LinearLayout bottomButtonsWidgets;
-    private boolean temporarilyDisablePlayPauseButton = false;
     private MainViewModel mViewModel;
     private final AtomicBoolean atomicOnCreate = new AtomicBoolean(false);
-    final AtomicBoolean atomicInitAppData = new AtomicBoolean(false);
-    private Handler appDataHandler = new Handler(Looper.getMainLooper());
-    private Runnable pendingAction;
-    private static final long APP_DATA_DELAY = 1500;
-    private static final long APP_DATA_FAST_DELAY = 120;
-    private static final int MAX_INIT_RETRIES = 10;
-    /** Last resort if bindAllApplications() never arrives; see initAppData(). */
-    private static final long ALL_APPS_BIND_BACKSTOP_MS = 6000L;
-    /** Bounded re-checks, so a genuinely stuck loader still ends in a usable home. */
-    private static final int MAX_ALL_APPS_BACKSTOP_CHECKS = 10;
-    private boolean mAwaitingAllAppsBind = false;
-    private int mAllAppsBackstopChecks = 0;
-    private int mInitRetryCount = 0;
-    private boolean mIsInitializingAppData = false;
     public boolean onResumePip = false;
     public boolean allowPip = false;
     private volatile WindowHost mWindowHost;
@@ -584,23 +515,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     boolean onWorkspacePip = false;
     private boolean mWidgetUpdatePending = false;
     private long mLastWidgetUpdateMs = 0L;
-    private boolean mPostResumeAppDataRefreshPending = false;
-    private boolean mPostResumeAppDataDirty = true;
-    private long mLastPostResumeAppDataRefreshMs = 0L;
     // Status bar swipe strip (StatusBarSwipeDetector): runs only while the launcher is resumed.
     // onResume() and onPause() both (re)schedule this one runnable, so the latest state wins.
     private static final long SWIPE_DETECTOR_SYNC_DELAY_MS = 500L;
-    /**
-     * Longest wait for AudioManager.isMusicActive() on the main thread. The answer normally takes a
-     * few ms; while the audioserver hangs (at boot on this ROM) the last known one is used instead.
-     */
-    private static final long AUDIO_STATE_WAIT_MS = 100L;
     /** Bumped by every widget list the loader delivers; see the widget sort in onCreate(). */
     private int mWidgetsListGeneration = 0;
     private final Runnable mSyncStatusBarSwipeDetector = this::syncStatusBarSwipeDetector;
     private boolean mNightModeServiceStartPending = false;
     private boolean mCanbusServiceStartPending = false;
-    private final Map<String, Bitmap> mAppIconBitmapCache = new HashMap<>();
     private boolean isRecreateActive = false;
     private boolean mHomeButtonPressed = false;
     /**
@@ -619,7 +541,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean mRefreshersRegistered = false;
     private long mLastWorkspaceNullLoaderMs = 0L;
     private long mLastForceReloadMs = 0L;
-    private boolean mLeftRecyclerLayoutPending = false;
     private static final long FORCE_RELOAD_THROTTLE_MS = 1500L;
     private Runnable mFastHomeDeferredResumeRunnable;
     Runnable mCustomElementsSetupRunnable;
@@ -632,31 +553,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean mCustomElementsSetupAfterBindUrgent = false;
     private String mCustomElementsSetupAfterBindSource;
     private Runnable mFastHomeDeferredPipRunnable;
-    private long mLastAppListSourceSignature = Long.MIN_VALUE;
-    private long mLastLeftAppListSourceSignature = Long.MIN_VALUE;
-    private boolean widgetBar = false;
-    private boolean barTint = false;
-    private boolean widgetTint = false;
+    boolean widgetBar = false;
     private DeviceProfile grid;
     private static final AtomicLong LAST_PROCESSED_NONCE = new AtomicLong(-1L);
-    private final Executor bg = Executors.newSingleThreadExecutor();
-    private static final String PREF_LAST_ALBUM_ART = "last_album_art_bitmap";
-    private static final String PREF_LAST_ALBUM_PATH = "last_album_path";
-    private static final String MUSIC_TITLE_PREF = "music_title_pref";
-    private static final String ARTIST_PREF = "artist_pref";
-    private String lastProcessedPath = null;
-    private String lastMusictitle = null;
-    private String lastArtist = null;
-    private ConstraintLayout prevLayout;
-    private ConstraintLayout playPauseLayout;
-    private ConstraintLayout nextLayout;
-    private ConstraintLayout favoriteLayout;
-    private ConstraintLayout prevLayoutTwo ;
-    private ConstraintLayout playPauseLayoutTwo;
-    private ConstraintLayout nextLayoutTwo;
-    private ConstraintLayout favoriteLayoutTwo;
-    private int orientation;
-    private boolean floatingButton = false;
+    final Executor bg = Executors.newSingleThreadExecutor();
+    int orientation;
+    boolean floatingButton = false;
     private boolean statusBarSwipeDetection = false;
 
     public static int calculatedStatsWidth;
@@ -801,7 +703,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override 
         public void onReceive(Context arg0, Intent intent) {
             String action = intent.getAction();
-            if (("fyt".equals(mediaSource) || activeController == null) && "com.fyt.systemui.remove".equals(action)) {
+            if (("fyt".equals(mMusicWidget.mediaSource) || mMusicWidget.activeController == null) && "com.fyt.systemui.remove".equals(action)) {
                 Bundle bundle = intent.getExtras();
                 String packageName = bundle.getString("pkg");
                 if ("com.syu.music".equals(packageName)) {
@@ -816,8 +718,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 } else { // from file title
                                     File file = new File(MusicService.music_path);
                                     String filename = file.getName();
-                                    musictitle = filename.substring(0, filename.lastIndexOf("."));
-                                    strArr[0] = musictitle;
+                                    mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
+                                    strArr[0] = mMusicWidget.musictitle;
                                 }
                                 strArr[1] = MusicService.author_name;
                                 strArr[2] = MusicService.state.toString();
@@ -829,7 +731,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 strArr[2] = MusicService.state.toString();
                                 strArr[4] = "/" + LauncherApplication.sApp.getResources().getString(R.string.music_author);             
                             }
-                            LauncherNotify.NOTIFIER_MUSIC.set(null, new long[2], new float[]{0.0f, 0.0f}, strArr, MusicService.album_cover, mediaSource);
+                            LauncherNotify.NOTIFIER_MUSIC.set(null, new long[2], new float[]{0.0f, 0.0f}, strArr, MusicService.album_cover, mMusicWidget.mediaSource);
                         }
                     }, 1000L);
                 } else if (FytPackage.GaodeACTION.equals(packageName)) {
@@ -933,11 +835,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     if (mediaListener != null) {
                         mediaListener.onMcuChannelChanged(ints[0]);
                     }
-                    if (Launcher.this.mRadioPauseButton != null) {
+                    if (Launcher.this.mRadioWidget.mRadioPauseButton != null) {
                         if (ints[0] == 1) {
-                            Launcher.this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_playpause_icon);
+                            Launcher.this.mRadioWidget.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_playpause_icon);
                         } else {
-                            Launcher.this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_pause_icon);
+                            Launcher.this.mRadioWidget.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_pause_icon);
                         }
                     }
                     if (LauncherApplication.sApp.getResources().getBoolean(R.bool.worksapce_switch_widget)) {
@@ -1144,320 +1046,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     };
     private int[] images = {ResValue.getInstance().num00, ResValue.getInstance().num01, ResValue.getInstance().num02, ResValue.getInstance().num03, ResValue.getInstance().num04, ResValue.getInstance().num05, ResValue.getInstance().num06, ResValue.getInstance().num07, ResValue.getInstance().num08, ResValue.getInstance().num09};
-    String lastpath = null;
-    public IUiRefresher refreshMusic = new IUiRefresher() {
-        @Override
-        public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
-            mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            mediaSource = source; 
-            if (mediaSource == null) {
-                mediaSource = "fyt";
-            }
-            state = null;
-            String artist = null;
-            String album = null;
-            String path = null;
-            if (strs != null && strs.length > 5) {
-                musictitle = strs[0];
-                artist = strs[1];   
-                if ("null".equals(artist)) {
-                    artist = strs[3];
-                }
-                if ("null".equals(artist)) {
-                    artist = "\u0020";
-                }
-                state = strs[2];
-                album = strs[3];
-                path = strs[4];
-                activeController = strs[5];
-            }
-            if (path == null || path.isEmpty()) {
-                // Some apps produce null path - we need a value to properly save a bitmap
-                path = String.valueOf(Arrays.hashCode(byts));
-            }
-            if ("mediaController".equals(mediaSource)) {
-                boolean activeControllerAppRunning = false;
-                MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-                ComponentName component = new ComponentName(Launcher.this, NotificationListener.class);
-                List<MediaController> controllers = msm.getActiveSessions(component);
 
-                for (MediaController controller : controllers) {
-                    if (controller.getPackageName().equals(activeController)) {
-                        activeControllerAppRunning = true;
-                        break;
-                    }
-                }
-                if (!activeControllerAppRunning) {
-                    if (Launcher.this.tvMusicName != null) {
-                        Launcher.this.tvMusicName.setText(R.string.music_name);
-                    }
-                    if (Launcher.this.tvMusicNameTwo != null) {
-                        Launcher.this.tvMusicNameTwo.setText(R.string.music_name);
-                    }
-                    if (Launcher.this.mPlayPauseButton != null) {
-                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        setWidgetButtonsTint(mPlayPauseButton);
-                    }
-                    if (Launcher.this.mPlayPauseButtonTwo != null) {
-                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        setBarButtonsTint(mPlayPauseButtonTwo);
-                    }
-                    if (Launcher.this.tvAritst != null) {
-                        Launcher.this.tvAritst.setText(R.string.music_author);
-                    }
-                    if (Launcher.this.tvAritstTwo != null) {
-                        Launcher.this.tvAritstTwo.setText(R.string.music_author);
-                    }
-                    if (Launcher.this.tvAlbum != null) {
-                        Launcher.this.tvAlbum.setText(R.string.music_album);
-                    }  
-                    if (Launcher.this.tvCurTime != null) {
-                        Launcher.this.tvCurTime.setText("00:00");
-                    }
-                    if (Launcher.this.tvTotalTime != null) {
-                        Launcher.this.tvTotalTime.setText("00:00");
-                    }
-                    if (Launcher.this.musicProgress != null) {
-                        Launcher.this.musicProgress.setProgress(0);
-                    }
-                    if (Launcher.this.musicSeekBar != null) {
-                        Launcher.this.musicSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListenerImp(Launcher.this, null));
-                    }
-                    updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
-                    return;         
-                }
-            }
 
-            updateFavoriteButtonState();
-            setPlayPauseIcon(false);
-
-            if ("true".equals(state)) {
-                Lrc lrc = new Lrc();
-                Id3Info info = lrc.getId3Info(path);
-                byte[] dataPic =  info.dataPic;
-                if (dataPic == null) {
-                    dataPic = byts;
-                }
-                if (dataPic != null && dataPic.length > 0) {
-                    Bitmap bp = BitmapFactory.decodeByteArray(dataPic, 0, dataPic.length);
-                    if (bp != null) {
-                        if (LauncherApplication.sApp.getResources().getBoolean(R.bool.music_bitmap_circular)) {
-                            if (Utils.getNameToBool("isRoundedCorner")) {
-                                bp = Launcher.GetRoundedCornerBitmap(bp);
-                            } else {
-                                bp = Launcher.makeRoundCorner(bp);
-                            }
-                        }
-                        
-                        // Only save if this is a new path
-                        if (!path.equals(lastProcessedPath)) {
-                            saveBitmapToPreferences(bp, path);
-                        }
-                        
-                        Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), bp);
-                        if (Launcher.this.ivALbumBg != null) {
-                            Launcher.this.ivALbumBg.setImageDrawable(drawable);
-                        }
-                        if (Launcher.this.ivALbumBgTwo != null) {
-                            Launcher.this.ivALbumBgTwo.setImageDrawable(drawable);
-                        }
-                    }
-                } else {
-                    Launcher.this.lastpath = null;
-                    lastProcessedPath = null; // Reset when no image data
-                    
-                    // The saved cover only stands in for this same file (read failing this time);
-                    // a track without a cover gets the default, not the previous track's cover.
-                    Bitmap savedBitmap = path != null
-                            && path.equals(mPrefs.getString(PREF_LAST_ALBUM_PATH, ""))
-                            ? getBitmapFromPreferences() : null;
-                    if (savedBitmap != null) {
-                        Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), savedBitmap);
-                        if (Launcher.this.ivALbumBg != null) {
-                            Launcher.this.ivALbumBg.setImageDrawable(drawable);
-                        }
-                        if (Launcher.this.ivALbumBgTwo != null) {
-                            Launcher.this.ivALbumBgTwo.setImageDrawable(drawable);
-                        }
-                    } else {
-                        // Use default if no saved bitmap
-                        if (Launcher.this.ivALbumBg != null) {
-                            Launcher.this.ivALbumBg.setImageResource(ResValue.getInstance().music_album_def);
-                        }
-                        if (Launcher.this.ivALbumBgTwo != null) {
-                            Launcher.this.ivALbumBgTwo.setImageResource(ResValue.getInstance().music_album_def);
-                        }
-                    }
-                }
-                if (Launcher.this.ivMusicScore != null) {
-                    ((AnimationDrawable) Launcher.this.ivMusicScore.getDrawable()).start();
-                }
-                if (Launcher.this.ivMusicScore2 != null) {
-                    ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).start();
-                }
-
-                applyMusicTitle(musictitle);
-                applyMusicArtist(artist);
-                if (album != null && !album.isEmpty() && !album.trim().isEmpty() && Launcher.this.tvAlbum != null) {
-                    Launcher.this.tvAlbum.setText(album);
-                }
-                if (lngs != null && lngs.length > 1) {
-                    long curProgress = lngs[1];
-                    long totalProgress = lngs[0];
-                    if (totalProgress > 0) {
-                        if (curProgress < 0) {
-                            curProgress = 0;
-                        }
-                        int progressPercent = (int) ((1000 * curProgress) / totalProgress);
-                        if (progressPercent < 5) {
-                            if (Launcher.this.musicSeekBar != null) {
-                                Launcher.this.musicSeekBar.setProgress(5);
-                            }
-                            if (Launcher.this.musicProgress != null) {
-                                Launcher.this.musicProgress.setProgress(progressPercent);
-                            }
-                        } else {
-                            if (Launcher.this.musicSeekBar != null) {
-                                Launcher.this.musicSeekBar.setProgress(progressPercent);
-                            }
-                            if (Launcher.this.musicProgress != null) {
-                                Launcher.this.musicProgress.setProgress(progressPercent);
-                            }
-                        }
-                    }
-                    if (curProgress == 0 && totalProgress == 0) {
-                        if (Launcher.this.musicProgress != null) {
-                            Launcher.this.musicProgress.setProgress(0);
-                        }  
-                        if (Launcher.this.tvAritst != null) {
-                            Launcher.this.tvAritst.setText("Live");
-                        }    
-                        if (Launcher.this.tvAritstTwo != null) {
-                            Launcher.this.tvAritstTwo.setText("Live");
-                        }                   
-                    }
-                    String cur = Launcher.this.timeParse(curProgress);
-                    String total = Launcher.this.timeParse(totalProgress);
-                    if (Launcher.this.tvCurTime != null && cur != null) {
-                        Launcher.this.tvCurTime.setText(cur);
-                    }
-                    if (Launcher.this.tvTotalTime != null && total != null) {
-                        Launcher.this.tvTotalTime.setText(total);
-                        return;
-                    }
-                    return;
-                }
-                return;
-            }
-            if (CarStates.mAppID != 8 && ("fyt".equals(mediaSource) || activeController == null)) {
-                if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
-                    if (fytData) { // from metadata
-                        musictitle = MusicService.music_name;
-                    } else { // from file title
-                        File file = new File(MusicService.music_path);
-                        String filename = file.getName();
-                        musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    }
-                    Utils.setTextStr(Launcher.this.tvMusicName, musictitle);
-                    Utils.setTextStr(Launcher.this.tvMusicNameTwo, musictitle); 
-                    if (MusicService.author_name != null && !MusicService.author_name.isEmpty()) {
-                        Utils.setTextStr(Launcher.this.tvAritst, MusicService.author_name);
-                        Utils.setTextStr(Launcher.this.tvAritstTwo, MusicService.author_name);
-                    } else {
-                        Utils.setTextId(Launcher.this.tvAritst, R.string.music_author);
-                        Utils.setTextId(Launcher.this.tvAritstTwo, R.string.music_author);
-                    }                            
-                } else {
-                    Utils.setTextId(Launcher.this.tvMusicName, R.string.music_name);
-                    Utils.setTextId(Launcher.this.tvMusicNameTwo, R.string.music_name); 
-                    Utils.setTextId(Launcher.this.tvAritst, R.string.music_author);
-                    Utils.setTextId(Launcher.this.tvAritstTwo, R.string.music_author);         
-                }
-
-                Utils.setTextStr(Launcher.this.tvCurTime, "00:00");
-                Utils.setTextStr(Launcher.this.tvTotalTime, "00:00");
-                if (Launcher.this.musicSeekBar != null) {
-                    Launcher.this.musicSeekBar.setProgress(0);
-                }
-                if (Launcher.this.musicProgress != null) {
-                    Launcher.this.musicProgress.setProgress(0);
-                }
-                if (Launcher.this.mPlayPauseButton != null) {
-                    Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                    setWidgetButtonsTint(mPlayPauseButton);
-                    return;
-                }
-                if (Launcher.this.mPlayPauseButtonTwo != null) {
-                    Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                    setBarButtonsTint(mPlayPauseButtonTwo);
-                    return;
-                }
-                return;
-            }
-            if (Launcher.this.ivMusicScore != null) {
-                ((AnimationDrawable) Launcher.this.ivMusicScore.getDrawable()).selectDrawable(0);
-                ((AnimationDrawable) Launcher.this.ivMusicScore.getDrawable()).stop();
-            }
-            if (Launcher.this.ivMusicScore2 != null) {
-                ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).selectDrawable(0);
-                ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).stop();
-            }
-            /*if (Launcher.this.mPlayPauseButton != null) {
-                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-            }
-            if (Launcher.this.mPlayPauseButtonTwo != null) {
-                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-            }*/
-            if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
-                if (Launcher.this.tvMusicName != null) {
-                    if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
-                        Launcher.this.tvMusicName.setText(musictitle);                                                  
-                    }
-                    Launcher.this.tvMusicName.setSelected(true);
-                }
-                if (Launcher.this.tvMusicNameTwo != null) {
-                    if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
-                        Launcher.this.tvMusicNameTwo.setText(musictitle);                       
-                    }
-                    Launcher.this.tvMusicNameTwo.setSelected(true); 
-                }
-            }
-            if (artist != null && !artist.isEmpty() && Launcher.this.tvAritst != null) {
-                if (Launcher.this.tvAritst != null) {
-                    if (!(Launcher.this.tvAritst.getText().toString()).equals(artist)) {
-                        Launcher.this.tvAritst.setText(artist);              
-                    }
-                    Launcher.this.tvAritst.setSelected(true);
-                }                   
-            }
-            if (artist != null && !artist.isEmpty() && Launcher.this.tvAritstTwo != null) {
-                if (Launcher.this.tvAritstTwo != null) {
-                    if (!(Launcher.this.tvAritstTwo.getText().toString()).equals(artist)) {
-                        Launcher.this.tvAritstTwo.setText(artist);              
-                    }
-                    Launcher.this.tvAritstTwo.setSelected(true);
-                }                   
-            }
-            requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
-        }
-    };
-
-    // set play/pause icon for stock and other music players
-    public void setPlayPauseIcon(boolean wait) {
-        if (wait) {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    setPlayPauseIcon();
-                    requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
-                }
-            }, 300);
-        } else {
-           setPlayPauseIcon();
-        }
-    }
-
-    private void requestWidgetUpdate(Class<?>... providers) {
+    void requestWidgetUpdate(Class<?>... providers) {
         if (providers != null && providers.length > 0) {
             for (Class<?> provider : providers) {
                 Widget.widgetUpdate(LauncherApplication.sApp, provider);
@@ -1486,324 +1077,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }, delay);
     }
 
-    /**
-     * Whether anything is playing right now, decided from whichever source
-     * currently owns the widget.
-     *
-     * MusicService.state cannot answer this on its own: it is only ever set
-     * from intents sent by com.syu.music, so once that package is force
-     * stopped the last value it published stays behind. isMusicActive() is no
-     * better on its own either, since it still reports true for a moment after
-     * a pause.
-     */
-    private boolean isMediaPlayingNow() {
-        if ("mediaController".equals(mediaSource)) {
-            MediaWidgetState.Snapshot snapshot = MediaWidgetState.getExternalSnapshot();
-            if (snapshot != null) {
-                return snapshot.playing;
-            }
-            return "true".equals(state);
-        }
-        // Not mAudioManager.isMusicActive() directly: see AudioStateCache.
-        return MusicService.state.booleanValue()
-                || AudioStateCache.isMusicActive(this, AUDIO_STATE_WAIT_MS);
-    }
 
-    public void setPlayPauseIcon() {
-        boolean playing = isMediaPlayingNow();
-        if (this.mPlayPauseButton != null && !temporarilyDisablePlayPauseButton) {
-            if (playing) {
-                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
-            } else {
-                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
-            }
-        }
-        if (this.mPlayPauseButtonTwo != null && !temporarilyDisablePlayPauseButton) {
-            if (playing) {
-                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
-            } else {
-                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
-            }
-        }         
-    }
 
-    /**
-     * Checks whether the radio is the current MCU source. The previous process
-     * scanning returned true as long as com.syu.radio was alive — which was almost
-     * always — causing the widget buttons and refreshRadioFreq to react to a state
-     * that had nothing to do with what was actually playing.
-     */
-    private boolean isRadioPlaying() {
-        return CarStates.mAppID == 1;
-    }
 
-    public void preSetMusicWidgets() {
-        Bitmap savedBitmap = getBitmapFromPreferences();
-        if (savedBitmap != null) {
-            Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), savedBitmap);
-            if (this.ivALbumBg != null) {
-                this.ivALbumBg.setImageDrawable(drawable);
-            }
-            if (this.ivALbumBgTwo != null) {
-                this.ivALbumBgTwo.setImageDrawable(drawable);
-            }
-        } else {
-            // Use default if no saved bitmap
-            if (this.ivALbumBg != null) {
-                this.ivALbumBg.setImageResource(ResValue.getInstance().music_album_def);
-            }
-            if (this.ivALbumBgTwo != null) {
-                this.ivALbumBgTwo.setImageResource(ResValue.getInstance().music_album_def);
-            }
-        }
 
-        // seeded so the first live update is not written back as a change
-        lastMusictitle = normalizeMediaText(mPrefs.getString(MUSIC_TITLE_PREF, null));
-        lastArtist = normalizeMediaText(mPrefs.getString(ARTIST_PREF, null));
-        showMusicTitle(lastMusictitle);
-        showMusicArtist(lastArtist);
 
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        // Asked once for both buttons, and never waiting long for the audioserver; see AudioStateCache.
-        final boolean playing = MusicService.state.booleanValue()
-                || AudioStateCache.isMusicActive(this, AUDIO_STATE_WAIT_MS);
-        if (this.mPlayPauseButton != null) {
-            if (playing) {
-                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
-            } else {
-                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
-            }
-        }
-        if (this.mPlayPauseButtonTwo != null) {
-            if (playing) {
-                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
-            } else {
-                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
-            }
-        }    
-    }
 
-    /**
-     * Null, blank, literal "null" and "Unknown" all mean the track supplied no
-     * value, and have to be stored as such - skipping the write is what leaves
-     * the previous track's title or artist behind.
-     */
-    private static String normalizeMediaText(String value) {
-        if (value == null) {
-            return "";
-        }
-        String trimmed = value.trim();
-        if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed) || "Unknown".equalsIgnoreCase(trimmed)) {
-            return "";
-        }
-        return trimmed;
-    }
 
-    private void applyMusicTitle(String rawTitle) {
-        String title = normalizeMediaText(rawTitle);
-        saveTitleToPreferences(title);
-        showMusicTitle(title);
-    }
 
-    private void applyMusicArtist(String rawArtist) {
-        String artist = normalizeMediaText(rawArtist);
-        saveArtistToPreferences(artist);
-        showMusicArtist(artist);
-    }
 
-    private void showMusicTitle(String title) {
-        TextView[] views = { this.tvMusicName, this.tvMusicNameTwo };
-        for (TextView view : views) {
-            if (view == null) {
-                continue;
-            }
-            if (title.isEmpty()) {
-                view.setText(R.string.music_name);
-            } else if (!view.getText().toString().equals(title)) {
-                view.setText(title);
-            } else if (mediaSource != null && !mediaSource.equals(helpers.returnMediaSourcePre())) {
-                // restarts the marquee when the source changed but the text did not
-                helpers.setMediaSourcePre(mediaSource);
-                view.setText("\u0020" + title + "\u0020");
-            }
-            view.setSelected(true);
-        }
-    }
 
-    private void showMusicArtist(String artist) {
-        TextView[] views = { this.tvAritst, this.tvAritstTwo };
-        for (TextView view : views) {
-            if (view == null) {
-                continue;
-            }
-            if (artist.isEmpty()) {
-                view.setText(R.string.music_author);
-            } else if (!view.getText().toString().equals(artist)) {
-                view.setText(artist);
-            }
-            view.setSelected(true);
-        }
-    }
 
-    private void saveTitleToPreferences(String currentTitle) {
-        String title = normalizeMediaText(currentTitle);
-        if (title.equals(lastMusictitle)) {
-            return;
-        }
-        lastMusictitle = title;
-        mPrefs.edit().putString(MUSIC_TITLE_PREF, title).apply();
-    }
 
-    private void saveArtistToPreferences(String currentArtist) {
-        String artist = normalizeMediaText(currentArtist);
-        if (artist.equals(lastArtist)) {
-            return;
-        }
-        lastArtist = artist;
-        mPrefs.edit().putString(ARTIST_PREF, artist).apply();
-    }
 
-    private void saveBitmapToPreferences(Bitmap bitmap, String currentPath) {
-        if (bitmap == null || currentPath == null) return;
-        
-        // Check if this is the same path we just processed
-        if (currentPath.equals(lastProcessedPath)) {
-            return;
-        }
-        
-        new AsyncTask<Object, Void, Void>() {
-            @Override
-            protected void onProgress(Void[] progress) {
-                //
-            }
-
-            @Override
-            protected Void doInBackground(Object... params) {
-                Bitmap bitmapToSave = (Bitmap) params[0];
-                String path = (String) params[1];
-                
-                try {
-                    // Double-check with persisted path
-                    String lastSavedPath = mPrefs.getString(PREF_LAST_ALBUM_PATH, "");
-                    
-                    if (path.equals(lastSavedPath)) {
-                        return null; // Already saved for this path
-                    }
-                    
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    bitmapToSave.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                    
-                    SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putString(PREF_LAST_ALBUM_ART, encodedBitmap);
-                    editor.putString(PREF_LAST_ALBUM_PATH, path);
-                    editor.apply();
-                    
-                    // Update in-memory cache
-                    lastProcessedPath = path;
-                    
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onBackgroundError(Exception e) {
-                Log.e(TAG, "saveBitmapToPreferences: " + e.getMessage());
-            }
-        }.execute(bitmap, currentPath);
-    }
-
-    private Bitmap getBitmapFromPreferences() {
-        try {
-            String encodedBitmap = mPrefs.getString(PREF_LAST_ALBUM_ART, null);
-            
-            if (encodedBitmap != null) {
-                byte[] decodedBytes = Base64.decode(encodedBitmap, Base64.DEFAULT);
-                return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private int radioBand = -1;
-    Callback.OnRefreshLisenter refreshRadioBand = new Callback.OnRefreshLisenter() { 
-        @Override
-        public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
-            if (updateCode == 0 && ints != null && ints.length > 0) {
-                int band = ints[0];
-                Log.d(TAG, "-------->>> FinalRadio.U_BAND" + band);
-                if (band == 65536 || band == 65537 || band == 65538) {
-                    Launcher.this.radioBand = 0;
-                } else if (band == 0 || band == 1) {
-                    Launcher.this.radioBand = 1;
-                }
-            }
-        }
-    };
-    Callback.OnRefreshLisenter refreshRadioFreq = new Callback.OnRefreshLisenter() { 
-        @Override
-        public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
-            if (updateCode == 1 && ints != null && ints.length > 0) {
-                Launcher.this.radioFreqState = ints[0];
-                if (ints[0] > 5000) {
-                    int fmFreq = ints[0];
-                    Launcher.this.freq = Launcher.this.freqToString(fmFreq);
-                    String str = Launcher.this.freqToString(ints[0]);
-                    String freqs = String.valueOf(str.substring(0, str.length() - 2)) + "." + str.substring(str.length() - 2, str.length());
-                    Launcher.this.radioFreq = freqs;
-                    if (Launcher.this.tvCurFreq != null) {
-                        Launcher.this.tvCurFreq.setText(freqs);
-                    }
-                    if (Launcher.this.tvBand != null) {
-                        if (Launcher.this.tvBand.getBackground() != null) {
-                            Launcher.this.tvBand.setBackgroundResource(ResValue.getInstance().fm);
-                        } else {
-                            Launcher.this.tvBand.setText("FM");
-                        }
-                    }
-                    if (Launcher.this.tvUnit != null) {
-                        Launcher.this.tvUnit.setText("MHz");
-                    }
-                    if (Launcher.this.img_freq_point != null) {
-                        Launcher.this.img_freq_point.setTargetMarkAnim(fmFreq, 8750, 10800);
-                    }
-                } else if (ints[0] < 5000 && ints[0] > 500) {
-                    Launcher.this.freq = Launcher.this.freqToString(ints[0]);
-                    Launcher.this.radioFreq = Launcher.this.freq;
-                    if (Launcher.this.tvCurFreq != null) {
-                        Launcher.this.tvCurFreq.setText(Launcher.this.freq);
-                    }
-                    if (Launcher.this.tvBand != null) {
-                        if (Launcher.this.tvBand.getBackground() != null) {
-                            Launcher.this.tvBand.setBackgroundResource(ResValue.getInstance().am);
-                        } else {
-                            Launcher.this.tvBand.setText("AM");
-                        }
-                    }
-                    if (Launcher.this.tvUnit != null) {
-                        Launcher.this.tvUnit.setText("KHz");
-                    }
-                    if (Launcher.this.img_freq_point != null) {
-                        Launcher.this.img_freq_point.setTargetMarkAnim(ints[0], 522, 1620);
-                    }
-                }
-            }
-            requestWidgetUpdate(DateRadioProvider.class);
-        }
-    };
     private IUiRefresher refreshVideo = new IUiRefresher() { 
         @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) { 
@@ -2018,7 +1304,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         }
                         break; 
                     case "pause.button":
-                        setPlayPauseIcon(true);   
+                        mMusicWidget.setPlayPauseIcon(true);   
                         break;          
                 }
             }
@@ -2228,128 +1514,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
 
 
-    boolean shouldUseLeftRecycler() {
-        SharedPreferences prefs = mPrefs != null
-                ? mPrefs
-                : PreferenceManager.getDefaultSharedPreferences(this);
-        boolean currentUserLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
-        boolean currentLeftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
-        return !currentUserLayout || currentLeftBar;
-    }
 
-    void refreshRecyclerDecorationsAfterLayout(RecyclerView recyclerView) {
-        if (recyclerView == null) return;
-        recyclerView.invalidateItemDecorations();
-        recyclerView.requestLayout();
-        recyclerView.post(() -> {
-            recyclerView.invalidateItemDecorations();
-            recyclerView.requestLayout();
-        });
-        recyclerView.postDelayed(() -> {
-            recyclerView.invalidateItemDecorations();
-            recyclerView.requestLayout();
-        }, HomeLayoutRecovery.HOME_LAYOUT_HEALTH_RETRY_MS);
-        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        recyclerView.invalidateItemDecorations();
-                    }
-                });
-    }
 
-    private void clearRecyclerDecorations(RecyclerView recyclerView) {
-        if (recyclerView == null) return;
-        for (int i = recyclerView.getItemDecorationCount() - 1; i >= 0; i--) {
-            recyclerView.removeItemDecorationAt(i);
-        }
-        recyclerView.setTag(null);
-    }
 
-    /**
-     * Makes sure mRecyclerView and the other views of the inline bottom bar carry the dynamic bar
-     * height instead of their XML layout_constraintDimensionRatio / layout_constraintHeight_percent.
-     *
-     * Workspace owns the per-view rules (it inflates the bar and also sizes the auto-hide overlay
-     * from the same height); this only re-applies them whenever the recycler is (re)bound. The
-     * call is idempotent and requests a layout only when a value changed. With
-     * Keys.RESIZABLE_BOTTOM_BAR off it does nothing and the XML stays in charge.
-     */
-    boolean ensureResizableBottomBar(String source) {
-        if (mWorkspace == null || mPrefs == null || !BottomBarDimensions.isResizable(mPrefs)) {
-            return false;
-        }
-        // When something changed, Workspace also invalidates the recycler's item decorations, and
-        // every caller rebinds or refreshes the recycler right after - no extra
-        // refreshRecyclerDecorationsAfterLayout() (and its listeners) needed here.
-        return mWorkspace.applyResizableBottomBar(source);
-    }
 
-    void installBottomRecyclerDecorations(RecyclerView recyclerView) {
-        if (recyclerView == null) return;
-        if (Integer.valueOf(1).equals(recyclerView.getTag()) && recyclerView.getItemDecorationCount() > 0) {
-            return;
-        }
-        clearRecyclerDecorations(recyclerView);
-        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                super.getItemOffsets(outRect, view, parent, state);
 
-                int itemCount = parent.getAdapter() != null ? parent.getAdapter().getItemCount() : 0;
-                if (itemCount == 0) {
-                    outRect.left = 0;
-                    outRect.right = 0;
-                    return;
-                }
 
-                int itemWidth = view.getWidth();
-                if (itemWidth <= 0) {
-                    itemWidth = getFallbackRecyclerItemSize();
-                }
-
-                int availableWidth = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
-                if (availableWidth <= 0) {
-                    availableWidth = parent.getMeasuredWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
-                }
-                if (availableWidth <= 0) {
-                    availableWidth = (int) (mLauncher.screenWidth * (widgetBar ? 0.4395f : 0.8795f));
-                }
-
-                int totalItemsWidth = itemWidth * itemCount;
-                int totalSpacing = Math.max(0, availableWidth - totalItemsWidth);
-                int spacingPerGap = totalSpacing / (itemCount + 1);
-                int adjustedSpacing = Math.max(0, spacingPerGap / 2);
-                outRect.left = adjustedSpacing;
-                outRect.right = adjustedSpacing;
-            }
-        });
-        recyclerView.addItemDecoration(new SimpleDividerDecoration());
-        recyclerView.setTag(1);
-    }
-
-    void installLeftRecyclerDecorations(RecyclerView recyclerView) {
-        if (recyclerView == null) return;
-        if (Integer.valueOf(1).equals(recyclerView.getTag()) && recyclerView.getItemDecorationCount() > 0) {
-            return;
-        }
-        clearRecyclerDecorations(recyclerView);
-        recyclerView.addItemDecoration(new SimpleDividerDecoration());
-        recyclerView.setTag(1);
-    }
-
-    private int getFallbackRecyclerItemSize() {
-        if (app_icon_size > 0) {
-            return app_icon_size;
-        }
-        int baseDimension = Math.max(orientationDimension, Math.max(screenWidth, screenHeight));
-        if (baseDimension <= 0) {
-            DisplayMetrics metrics = getResources().getDisplayMetrics();
-            baseDimension = Math.max(metrics.widthPixels, metrics.heightPixels);
-        }
-        return Math.max(1, calculateDimension(baseDimension, 6.6));
-    }
 
 
     Handler mHandler = new Handler(Looper.getMainLooper()) {
@@ -2736,7 +1906,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         
         setupViews();
         grid.layout(this);
-        prefetchBarSnapshots();
+        mAppBars.prefetchBarSnapshots();
 
         mStats = new Stats(this);
 
@@ -2878,7 +2048,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onResume() {
         super.onResume();
-        hideWallpaperPickerIndicator();
+        mWallpaperPicker.hideWallpaperPickerIndicator();
         // Deferred until the panes are up; see mFytRatingWake.
         mDeviceWake.scheduleFytRatingWake();
         scheduleStatusBarSwipeDetectorSync();
@@ -3013,7 +2183,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         registerResumeRefreshersAndNotify();
         restoreResumeMediaState();
 
-        setPlayPauseIcon(true);
+        mMusicWidget.setPlayPauseIcon(true);
 
         processPendingUpdateOnResume();
 
@@ -3027,7 +2197,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (atomicOnCreate.get()) {
                 atomicOnCreate.set(false);
                 // Proceed without initPip because it starts inside initializeAppList()
-                triggerAppData();
+                mAppBars.triggerAppData();
             } else {
                 if (!onWorkspacePip) {
                     onResumePip = true;
@@ -3071,7 +2241,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             registerResumeRefreshersAndNotify();
             restoreResumeMediaState();
-            setPlayPauseIcon(true);
+            mMusicWidget.setPlayPauseIcon(true);
             if (processPendingUpdate) {
                 processPendingUpdateOnResume();
             }
@@ -3185,7 +2355,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (!canRegisterNotifyRefreshers()) {
             return;
         }
-        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(refreshMusic, true);
+        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(mMusicWidget.refreshMusic, true);
         LauncherNotify.NOTIFIER_VIDEO.addUiRefresher(refreshVideo, true);
         LauncherNotify.NOTIFIER_BTAV.addUiRefresher(refreshBtav, true);
         LauncherNotify.NOTIFIER_DVR.addUiRefresher(refreshDvr, true);
@@ -3195,7 +2365,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     /** Unregisters this instance from every LauncherNotify channel. */
     private void unregisterNotifyRefreshers() {
-        LauncherNotify.NOTIFIER_MUSIC.removeUiRefresher(refreshMusic);
+        LauncherNotify.NOTIFIER_MUSIC.removeUiRefresher(mMusicWidget.refreshMusic);
         LauncherNotify.NOTIFIER_VIDEO.removeUiRefresher(refreshVideo);
         LauncherNotify.NOTIFIER_BTAV.removeUiRefresher(refreshBtav);
         LauncherNotify.NOTIFIER_DVR.removeUiRefresher(refreshDvr);
@@ -3214,7 +2384,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (!canRegisterNotifyRefreshers()) {
             return;
         }
-        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(refreshMusic, true);
+        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(mMusicWidget.refreshMusic, true);
     }
 
     private boolean canRegisterNotifyRefreshers() {
@@ -3236,8 +2406,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         if (!mRefreshersRegistered) {
             mRefreshersRegistered = true;
-            tools.addRefreshLisenter(1, refreshRadioBand, 0);
-            tools.addRefreshLisenter(1, refreshRadioFreq, 1, 2);
+            tools.addRefreshLisenter(1, mRadioWidget.refreshRadioBand, 0);
+            tools.addRefreshLisenter(1, mRadioWidget.refreshRadioFreq, 1, 2);
             tools.addRefreshLisenter(0, refreshMain, 0, 50, 60, 101, 31, 4);
             tools.addRefreshLisenter(4, refreshMain, 2, 3);
             tools.addRefreshLisenter(7, refreshMain, 1000);
@@ -3256,7 +2426,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             firstLayout.setVisibility(View.VISIBLE);
         }
         isfirstlayout = false;
-        lastpath = null;
+        mMusicWidget.lastpath = null;
         if (showKuwoContent && !AppUtil.isInTheTaskbar(getApplicationContext(), FytPackage.KWACTION)) {
             showKuwoContent = false;
             if (kuwomusic_playpause != null) {
@@ -3332,7 +2502,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Log.e(TAG, "recreateView: forceReload failed", e);
         }
 
-        mIsInitializingAppData = false;
+        mAppBars.mIsInitializingAppData = false;
 
         try {
             if (rebindRebuildsUserPage) {
@@ -3415,7 +2585,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             SessionPrefs.get().edit().clear().apply();
         }, 350);
 
-        triggerAppData();
+        mAppBars.triggerAppData();
 
         // --- Post layout stabilization ---
         mHandler.postDelayed(() -> {
@@ -3438,10 +2608,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         // Back in front, whichever path below is taken: the permission flow goes on with its next
         // step once the resume has settled (see schedulePermissionFlow()).
-        schedulePermissionFlow();
+        mPermissionFlow.schedulePermissionFlow();
 
         if (mHomeFromAllAppsPending) {
-            requestPostResumeAppDataRefresh();
+            mAppBars.requestPostResumeAppDataRefresh();
             mHomeWeather.scheduleWeatherCheckAfterHome();
             mHandler.postDelayed(() -> {
                 onBackPip = false;
@@ -3452,7 +2622,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         if (mFastHomeResumePending) {
             mFastHomeResumePending = false;
-            requestPostResumeAppDataRefresh();
+            mAppBars.requestPostResumeAppDataRefresh();
             mHomeWeather.scheduleWeatherCheckAfterHome();
             mHandler.postDelayed(() -> {
                 onBackPip = false;
@@ -3507,24 +2677,24 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.moveToDefaultScreen(true);
         }
 
-        requestPostResumeAppDataRefresh();
+        mAppBars.requestPostResumeAppDataRefresh();
 
         mHomeWeather.scheduleWeatherCheckAfterHome();
 
         // Floating button
-        floatingButton = checkIfFloatingButton();
+        floatingButton = mFab.checkIfFloatingButton();
         if (!floatingButton) {
-            sOverlayStepArmedForFab = false;
+            LauncherFab.sOverlayStepArmedForFab = false;
         } else if (hasOverlayPermission()) {
-            startFabOverlayServiceAfterBootStall();
-        } else if (!sOverlayStepArmedForFab) {
+            mFab.startFabOverlayServiceAfterBootStall();
+        } else if (!LauncherFab.sOverlayStepArmedForFab) {
             // The buttons need the overlay permission. Its screen used to be opened from here on
             // every resume, on top of whatever the permission flow had just opened, and leaving it
             // without granting reopened it at once. Now it is a step of the flow like everything
             // else: asked for the buttons (once more, if it was declined earlier), and not again
             // until they are switched off and on.
-            sOverlayStepArmedForFab = true;
-            sPermissionStepsHandled.remove(PermissionStep.OVERLAY);
+            LauncherFab.sOverlayStepArmedForFab = true;
+            LauncherPermissionFlow.armOverlayStep();
         }
 
         mHandler.postDelayed(()-> {
@@ -3537,370 +2707,35 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }, 1500); 
     }
 
-    void requestPostResumeAppDataRefresh() {
-        if (!atomicInitAppData.get()) {
-            return;
-        }
 
-        if (!mPostResumeAppDataDirty) {
-            return;
-        }
 
-        long now = SystemClock.uptimeMillis();
-        long elapsed = now - mLastPostResumeAppDataRefreshMs;
-        if (!mPostResumeAppDataRefreshPending && elapsed >= POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS) {
-            runPostResumeAppDataRefresh();
-            return;
-        }
 
-        if (mPostResumeAppDataRefreshPending) {
-            return;
-        }
 
-        mPostResumeAppDataRefreshPending = true;
-        long delay = Math.max(0L, POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS - elapsed);
-        mHandler.postDelayed(() -> {
-            mPostResumeAppDataRefreshPending = false;
-            runPostResumeAppDataRefresh();
-        }, delay);
-    }
 
-    private void runPostResumeAppDataRefresh() {
-        if (!mPostResumeAppDataDirty) {
-            return;
-        }
-        mPostResumeAppDataDirty = false;
-        mLastPostResumeAppDataRefreshMs = SystemClock.uptimeMillis();
-        bg.execute(() -> {
-            List<AppMultiple> data = LitePal.order("\"index\" asc").find(AppMultiple.class);
-            List<LeftAppMultiple> left = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
-            runOnUiThread(() -> {
-                refreshCycle(data);
-                refreshLeftBar(left);
-            });
-        });
-    }
 
-    // =====================================================================================
-    // PERMISSION FLOW
-    // =====================================================================================
 
-    /**
-     * Everything the launcher asks the user for, in the order it is asked. The runtime permissions
-     * share one system dialog; each of the others has a Settings screen of its own.
-     */
-    private enum PermissionStep { RUNTIME, OVERLAY, NOTIFICATION_ACCESS, WRITE_SETTINGS }
 
-    /**
-     * Lets the resume settle before a dialog or screen goes over it: the PiP rebuild starts 250 ms
-     * after the resume and staggers its pane launches over about a second after that.
-     */
-    private static final long PERMISSION_FLOW_DELAY_MS = 1500L;
-    /** How often a runtime request cancelled without an answer is asked again. */
-    private static final int MAX_RUNTIME_REQUEST_RETRIES = 2;
 
-    /** Steps asked (or found granted) since the process started; a declined one is not asked again. */
-    private static final EnumSet<PermissionStep> sPermissionStepsHandled = EnumSet.noneOf(PermissionStep.class);
-    private static int sRuntimeRequestRetries = 0;
-    /** The overlay step has been asked for the swap buttons; see onPostResume(). */
-    private static boolean sOverlayStepArmedForFab = false;
-    /** Step whose dialog or Settings screen is open right now; null if none. */
-    private PermissionStep mPermissionStepInFlight = null;
-    private final Runnable mPermissionFlowRunnable = this::runNextPermissionStep;
 
-    /**
-     * Called at the start of every onPostResume(): the launcher is in front again, so whatever the
-     * previous step opened has been closed, and the next step follows once the resume has settled.
-     */
-    private void schedulePermissionFlow() {
-        if (mPermissionStepInFlight != null) {
-            Log.i(TAG, "Permission flow: back from " + mPermissionStepInFlight);
-            mPermissionStepInFlight = null;
-        }
-        mHandler.removeCallbacks(mPermissionFlowRunnable);
-        mHandler.postDelayed(mPermissionFlowRunnable, Math.max(PERMISSION_FLOW_DELAY_MS, bootStallDelayMs()));
-    }
 
-    private void runNextPermissionStep() {
-        if (sPermissionStepsHandled.size() == PermissionStep.values().length) {
-            return; // everything asked (or found granted) already
-        }
-        // Not in front (any more): the next onPostResume() schedules the flow again.
-        if (mPermissionStepInFlight != null || mPaused || isFinishing() || isDestroyed()) {
-            return;
-        }
-        // Do not pull the user out of a drag, or open a screen over a workspace being rebuilt.
-        if (mWorkspace == null || (mDragController != null && mDragController.isDragging())) {
-            mHandler.removeCallbacks(mPermissionFlowRunnable);
-            mHandler.postDelayed(mPermissionFlowRunnable, PERMISSION_FLOW_DELAY_MS);
-            return;
-        }
-        for (PermissionStep step : PermissionStep.values()) {
-            if (sPermissionStepsHandled.contains(step)) {
-                continue;
-            }
-            sPermissionStepsHandled.add(step);
-            if (isPermissionStepNeeded(step) && startPermissionStep(step)) {
-                mPermissionStepInFlight = step;
-                Log.i(TAG, "Permission flow: asking for " + step);
-                return;
-            }
-        }
-    }
-
-    private boolean isPermissionStepNeeded(PermissionStep step) {
-        switch (step) {
-            case RUNTIME:
-                return !getMissingRuntimePermissions().isEmpty();
-            case OVERLAY:
-                return !hasOverlayPermission();
-            case NOTIFICATION_ACCESS:
-                return !hasNotificationAccess();
-            case WRITE_SETTINGS:
-                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                        && !LauncherApplication.hasSystemPrivileges()
-                        && !Settings.System.canWrite(this);
-            default:
-                return false;
-        }
-    }
-
-    /**
-     * Opens the dialog or Settings screen of a step, always in the launcher's own task (see the
-     * notification access screen above).
-     *
-     * @return false if there is nothing to ask or the screen does not exist on this ROM; the flow
-     *         then goes on with the next step
-     */
-    private boolean startPermissionStep(PermissionStep step) {
-        try {
-            switch (step) {
-                case RUNTIME: {
-                    List<String> missing = getMissingRuntimePermissions();
-                    if (missing.isEmpty()) {
-                        return false;
-                    }
-                    ActivityCompat.requestPermissions(this, missing.toArray(new String[0]), REQUEST_CODE_STORAGE);
-                    return true;
-                }
-                case OVERLAY:
-                    startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:" + getPackageName())), REQUEST_CODE_OVERLAY);
-                    return true;
-                case NOTIFICATION_ACCESS:
-                    startActivityForResult(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS),
-                            REQUEST_CODE_NOTIFICATION_ACCESS);
-                    return true;
-                case WRITE_SETTINGS:
-                    startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                            Uri.parse("package:" + getPackageName())), REQUEST_CODE_WRITE_SETTINGS);
-                    return true;
-                default:
-                    return false;
-            }
-        } catch (ActivityNotFoundException | SecurityException | IllegalArgumentException e) {
-            Log.w(TAG, "Permission flow: cannot ask for " + step + " on this device", e);
-            return false;
-        }
-    }
-
-    /** Runtime permissions still missing: storage (media images on Android 13+) and location. */
-    private List<String> getMissingRuntimePermissions() {
-        List<String> missing = new ArrayList<>();
-        String storage = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                ? android.Manifest.permission.READ_MEDIA_IMAGES
-                : android.Manifest.permission.READ_EXTERNAL_STORAGE;
-        if (!isPermissionGranted(storage)) {
-            missing.add(storage);
-        }
-        if (!isPermissionGranted(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Always together: Android 12+ ignores a request for FINE without COARSE - also when
-            // COARSE is already granted ("approximate") and only precise location is missing,
-            // which the old code asked for alone, so that dialog never showed up.
-            missing.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
-            missing.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        } else if (!isPermissionGranted(android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            missing.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        }
-        return missing;
-    }
-
-    private boolean isPermissionGranted(String permission) {
-        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private boolean hasNotificationAccess() {
-        return NotificationManagerCompat.getEnabledListenerPackages(this).contains(getPackageName());
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode != REQUEST_CODE_STORAGE) {
-            return;
-        }
-        if (grantResults.length == 0) {
-            // Cancelled without an answer (e.g. the dialog was cleared by a home press while another
-            // app covered it). That is no decision, so it is asked again once the launcher is back
-            // in front. The old code logged it as "all granted" and did not ask again until the
-            // launcher was recreated.
-            if (sRuntimeRequestRetries < MAX_RUNTIME_REQUEST_RETRIES) {
-                sRuntimeRequestRetries++;
-                sPermissionStepsHandled.remove(PermissionStep.RUNTIME);
-            }
-            Log.w(TAG, "Permission flow: runtime request cancelled without an answer");
-            return;
-        }
-        for (int i = 0; i < permissions.length && i < grantResults.length; i++) {
-            Log.i(TAG, "Permission flow: " + permissions[i]
-                    + (grantResults[i] == PackageManager.PERMISSION_GRANTED ? " granted" : " denied"));
-        }
-        // The next step follows from onPostResume(), once the dialog is gone.
-    }
-
-    private static boolean isPermissionFlowRequest(int requestCode) {
-        return requestCode == REQUEST_CODE_OVERLAY
-                || requestCode == REQUEST_CODE_NOTIFICATION_ACCESS
-                || requestCode == REQUEST_CODE_WRITE_SETTINGS;
-    }
-
-    /** Back from a Settings screen of the permission flow; see onActivityResult(). */
-    private void onPermissionScreenResult(int requestCode) {
-        if (requestCode == REQUEST_CODE_OVERLAY) {
-            boolean granted = hasOverlayPermission();
-            Log.i(TAG, "Permission flow: SYSTEM_ALERT_WINDOW " + (granted ? "granted" : "not granted"));
-            if (!granted && checkIfFloatingButton()) {
-                Toast.makeText(this, "Overlay permission is required", Toast.LENGTH_SHORT).show();
-            }
-        } else if (requestCode == REQUEST_CODE_NOTIFICATION_ACCESS) {
-            Log.i(TAG, "Permission flow: notification access "
-                    + (hasNotificationAccess() ? "granted" : "not granted"));
-        } else if (requestCode == REQUEST_CODE_WRITE_SETTINGS) {
-            boolean granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.System.canWrite(this);
-            Log.i(TAG, "Permission flow: WRITE_SETTINGS " + (granted ? "granted" : "not granted"));
+        if (requestCode == REQUEST_CODE_STORAGE) {
+            mPermissionFlow.onRuntimeRequestResult(permissions, grantResults);
         }
     }
 
-    private boolean checkIfFloatingButton() {
-        boolean floatingBtn = mPrefs.getBoolean(Keys.FAB_OVERLAY_BUTTON, false);
-        boolean floatingBtnLeft = mPrefs.getBoolean(Keys.FAB_OVERLAY_BUTTON_LEFT, false);
-        boolean floatingBtnRight = mPrefs.getBoolean(Keys.FAB_OVERLAY_BUTTON_RIGHT, false);
-        if (!floatingBtn && !floatingBtnLeft && !floatingBtnRight) return false;
-        String firstPkg = mPrefs.getString(Keys.PIP_FIRST_PACKAGE, "");
-        String secondPkg = mPrefs.getString(Keys.PIP_SECOND_PACKAGE, "");
-        String thirdPkg = mPrefs.getString(Keys.PIP_THIRD_PACKAGE, "");
-        String fourthPkg = mPrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
 
-        if (!firstPkg.isEmpty() && !secondPkg.isEmpty() && !thirdPkg.isEmpty() && !fourthPkg.isEmpty()) {
-            return true;
-        } else return false;
-    }
 
-    /**
-     * FabOverlayService adds up to three overlay windows on the main thread, and a new window
-     * needs a relayout from system_server on its first traversal. Started 0.4 s after the boot
-     * resume, that relayout waited out the whole boot-time stall and froze the launcher for 12 s
-     * (capture 29-09-2026 08:09: IWindowSession.relayout, with the workspace binding queued
-     * behind it). The buttons control the panes, which only come up after the stall anyway, so
-     * at boot the service starts once the stall is over; otherwise at once, as before.
-     */
-    private void startFabOverlayServiceAfterBootStall() {
-        mHandler.removeCallbacks(mDeferredFabStart);
-        long wait = bootStallDelayMs();
-        if (wait > 0L) {
-            mHandler.postDelayed(mDeferredFabStart, wait);
-            return;
-        }
-        startFabOverlayService();
-    }
 
-    private final Runnable mDeferredFabStart = () -> {
-        // Paused (or gone) by then: the next onResume() starts it.
-        if (mPaused || isDestroyed() || isFinishing()) return;
-        floatingButton = checkIfFloatingButton();
-        if (floatingButton && hasOverlayPermission()) {
-            startFabOverlayService();
-        }
-    };
 
-    /**
-     * Starts FabOverlayService, or brings its buttons back if it is already running - but only
-     * while a PiP is on the screen (see canShowOverlayFab()). Otherwise the buttons are hidden.
-     */
-    private void startFabOverlayService() {
-        if (!canShowOverlayFab()) {
-            // E.g. back from an app that showed no window of its own, with the app drawer still
-            // open: there is no pane, and none is coming. WindowUtil calls showOverlayFab() once
-            // it has added the panes again.
-            hideOverlayFab();
-            return;
-        }
-        if (!isServiceRunning(FabOverlayService.class)) {
-            Intent serviceIntent = new Intent(LauncherApplication.sApp, FabOverlayService.class);
-            if (ServiceIntentGate.startIfAvailable(this, serviceIntent, "fab overlay")) {
-                setServiceRunningCache(FabOverlayService.class, true);
-            }
-        } else {
-            SysCalls.sendBroadcast(Launcher.this, new Intent(Keys.SHOW_FAB));
-        }
-    }
 
-    /**
-     * The swap buttons act on the PiP panes, so they belong on the screen only together with them:
-     * the launcher resumed on the home screen (the app drawer, the widget list and overview mode
-     * all remove the panes), the user layout with PiP enabled (the only case in which WindowUtil
-     * adds panes at all), and the panes actually added (WindowUtil.isPipOnScreen()).
-     * <p>
-     * onPostResume() used to show the buttons on every resume. Starting an app that shows no
-     * window of its own from the app drawer pauses and resumes the launcher with the drawer still
-     * open: onResume() removed the panes again, and onPostResume() still brought the buttons up.
-     * <p>
-     * Main thread only. FabOverlayService asks it as well, when it is created.
-     */
-    public boolean canShowOverlayFab() {
-        if (mPaused || isFinishing() || isDestroyed() || mWorkspace == null || mPrefs == null) {
-            return false;
-        }
-        if (mState != State.WORKSPACE || isAllAppsVisible() || mWorkspace.isInOverviewMode()) {
-            return false;
-        }
-        if (!mPrefs.getBoolean(Keys.USER_LAYOUT, false) || !mPrefs.getBoolean(Keys.DISPLAY_PIP, true)) {
-            return false;
-        }
-        return WindowUtil.isPipOnScreen();
-    }
 
-    /**
-     * Shows the PiP swap buttons. WindowUtil calls this once it has added the panes. Ignored while
-     * canShowOverlayFab() sees no PiP on the screen, which also covers a call that is still
-     * pending when the app drawer opens or the launcher is paused.
-     * <p>
-     * Starts FabOverlayService if it is not running yet: onPostResume() no longer starts it while
-     * the panes are still coming up (at boot, or after recreateView() has stopped it).
-     */
-    public void showOverlayFab() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            mHandler.post(this::showOverlayFab);
-            return;
-        }
-        if (!canShowOverlayFab()) {
-            return;
-        }
-        if (isServiceRunning(FabOverlayService.class)) {
-            SysCalls.sendBroadcast(Launcher.this, new Intent(Keys.SHOW_FAB));
-            return;
-        }
-        floatingButton = checkIfFloatingButton();
-        if (floatingButton && hasOverlayPermission()) {
-            startFabOverlayServiceAfterBootStall();
-        }
-    }
 
-    public void hideOverlayFab() {
-        Intent intent = new Intent(Keys.HIDE_FAB);
-        SysCalls.sendBroadcast(Launcher.this, intent);
-    }
+
 
     @Override 
     protected void onPause() {
@@ -3948,7 +2783,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mPlayer = null;
         }
         if (isServiceRunning(FabOverlayService.class)) {
-            hideOverlayFab();
+            mFab.hideOverlayFab();
         }
 
         scheduleStatusBarSwipeDetectorSync();
@@ -3964,7 +2799,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.setEdgeHandleHostVisible(false);
         }
         // The wallpaper picker (or whatever came up instead) now covers the launcher.
-        hideWallpaperPickerIndicator();
+        mWallpaperPicker.hideWallpaperPickerIndicator();
         NotificationListener mediaListener = NotificationListener.getInstance();
         if (mediaListener != null) {
             mediaListener.endPaneRestart();
@@ -4016,7 +2851,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "---->>> onDestroy");
-        hideWallpaperPickerIndicator();
+        mWallpaperPicker.hideWallpaperPickerIndicator();
         // Unconditional, and before any field is cleared. onPause() returns early on
         // (mHomeButtonPressed && isOnMainWorkspaceScreen()), so leaving via HOME from the
         // main screen never unregistered the refreshers and the static NOTIFIER_* kept
@@ -4042,8 +2877,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         tools.removeRefreshLisenter(4, refreshMain);
         tools.removeRefreshLisenter(7, refreshMain);
         tools.removeRefreshLisenter(2, refreshBtInfo);
-        tools.removeRefreshLisenter(1, refreshRadioBand);
-        tools.removeRefreshLisenter(1, refreshRadioFreq);
+        tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioBand);
+        tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioFreq);
         purgeMyRefreshListeners();
         mRefreshersRegistered = false;
         unregisterAllReceivers();
@@ -4114,10 +2949,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mWorkspace.onWorkspaceDestroy();
         mDragController = null;
         mWorkspace = null;
-        ivALbumBg = null;
-        ivALbumBgTwo = null;
-        tvMusicNameTwo = null;
-        tvAritstTwo = null;
+        mMusicWidget.ivALbumBg = null;
+        mMusicWidget.ivALbumBgTwo = null;
+        mMusicWidget.tvMusicNameTwo = null;
+        mMusicWidget.tvAritstTwo = null;
         weatherImg1 = null;
         weatherCity1 = null;
         weatherTemp = null;
@@ -4152,8 +2987,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             java.util.Set<Object> mine = java.util.Collections.newSetFromMap(
                     new java.util.IdentityHashMap<Object, Boolean>());
             mine.add(refreshMain);
-            mine.add(refreshRadioBand);
-            mine.add(refreshRadioFreq);
+            mine.add(mRadioWidget.refreshRadioBand);
+            mine.add(mRadioWidget.refreshRadioFreq);
             mine.add(refreshBtInfo);
 
             int removed = 0;
@@ -4239,7 +3074,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mCloseSystemDialogsReceiver = null;
     }      
 
-    private boolean hasOverlayPermission() {
+    boolean hasOverlayPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return Settings.canDrawOverlays(this);
         }
@@ -4281,7 +3116,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return isRunning;
     }
 
-    private static void setServiceRunningCache(Class<? extends Service> serviceClass, boolean isRunning) {
+    static void setServiceRunningCache(Class<? extends Service> serviceClass, boolean isRunning) {
         synchronized (sServiceRunningCacheLock) {
             String serviceName = serviceClass.getName();
             sServiceRunningCache.put(serviceName, isRunning);
@@ -4298,8 +3133,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         setServiceRunningCache(CanbusService.class, false);
         SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, FabOverlayService.class));
         setServiceRunningCache(FabOverlayService.class, false);
-        mHandler.removeCallbacks(mDeferredFabStart);
-        mHandler.removeCallbacks(mApplyPendingBarSnapshots);
+        mHandler.removeCallbacks(mFab.mDeferredFabStart);
+        mHandler.removeCallbacks(mAppBars.mApplyPendingBarSnapshots);
         mHandler.removeCallbacks(mSyncStatusBarSwipeDetector);
         // On recreation the new launcher can be created before this one is destroyed; the strip
         // then belongs to it and must not be stopped here.
@@ -4365,7 +3200,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
                                 String appTitle = appInfo.loadLabel(pm).toString();
                                 AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                                Launcher.this.refreshLeftCycle(bean);
+                                Launcher.this.mAppBars.refreshLeftCycle(bean);
                                 cleanWidgetBar();
                             } catch (PackageManager.NameNotFoundException e) {
                                 throw new RuntimeException(e);
@@ -4754,12 +3589,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (isPermissionFlowRequest(requestCode)) {
+        if (LauncherPermissionFlow.isPermissionFlowRequest(requestCode)) {
             // Only logged here: the next step starts from onPostResume(), once the launcher is
             // really back in front. These results used to fall through into the widget and
             // shortcut handling below as well, which strips empty screens on RESULT_CANCELED -
             // what a Settings screen returns when it is left with "back".
-            onPermissionScreenResult(requestCode);
+            mPermissionFlow.onPermissionScreenResult(requestCode);
             return;
         }
         mWaitingForResult = false;
@@ -5307,7 +4142,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         wallpaperButton = findViewById(ResValue.getInstance().wallpaper_button);
         if (wallpaperButton != null) {
-            wallpaperButton.setOnClickListener(arg0 -> onClickWallpaperPicker(arg0));
+            wallpaperButton.setOnClickListener(arg0 -> mWallpaperPicker.onClickWallpaperPicker(arg0));
             wallpaperButton.setOnTouchListener(getHapticFeedbackTouchListener());
         }
 
@@ -5327,7 +4162,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         wallpaperButtonWidgets = findViewById(ResValue.getInstance().wallpaper_button_widgets);
         if (wallpaperButtonWidgets != null) {
-            wallpaperButtonWidgets.setOnClickListener(arg0 -> onClickWallpaperPicker(arg0));
+            wallpaperButtonWidgets.setOnClickListener(arg0 -> mWallpaperPicker.onClickWallpaperPicker(arg0));
             wallpaperButtonWidgets.setOnTouchListener(getHapticFeedbackTouchListener());
         }
 
@@ -5403,110 +4238,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public void onClickWallpaperPicker(View v) {
-        helpers.setOpenedFromOverviewBoolean(true);
-        if (mWorkspace.isInOverviewMode()) {
-            mWorkspace.exitOverviewMode(true);
-        }
-        WindowUtil.removePip();
-        if (mPrefs.getBoolean("wallpaper_picker_source", false)) {
-            startWallpaperSystem(v);
-        } else {
-            startWallpaperInApp();
-        }
-    }
 
-    protected void startWallpaperSystem(View v) {
-        final Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
 
-        String pickerPackage = "com.android.wallpaper";
-        boolean hasTargetPackage = !TextUtils.isEmpty(pickerPackage);
-        try {
-            if (hasTargetPackage && getPackageManager().getApplicationInfo(pickerPackage, 0).enabled) {
-                intent.setPackage(pickerPackage);
-            }
-        } catch (PackageManager.NameNotFoundException ex) {
-        }
 
-        intent.setSourceBounds(getViewBounds(v));
-        try {
-            helpers.setWallpaperWindow(true);
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "activity_not_found", Toast.LENGTH_SHORT).show();
-        }
-    }
 
-    protected void startWallpaperInApp() {
-        final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
-        pickWallpaper.setComponent(getWallpaperPickerComponent());
-        startActivity(pickWallpaper);
-        showWallpaperPickerIndicator();
-    }
 
-    // Loading indicator over the home screen while the wallpaper picker starts.
-    private View mWallpaperPickerIndicator;
-    private final Runnable mAddWallpaperPickerIndicator = this::addWallpaperPickerIndicator;
-    private final Runnable mWallpaperPickerIndicatorTimeout = this::hideWallpaperPickerIndicator;
 
-    /**
-     * Gives feedback while the wallpaper picker starts. Until the picker draws its first frame,
-     * which takes seconds when its process has to start cold, the paused home screen stays on
-     * screen without reacting and looks hung. The indicator appears only if the start takes
-     * longer than WALLPAPER_PICKER_INDICATOR_DELAY_MS, and goes away when the picker covers the
-     * launcher (onStop), when the launcher comes back (onResume), or after
-     * WALLPAPER_PICKER_INDICATOR_TIMEOUT_MS at the latest.
-     */
-    private void showWallpaperPickerIndicator() {
-        mHandler.removeCallbacks(mAddWallpaperPickerIndicator);
-        mHandler.removeCallbacks(mWallpaperPickerIndicatorTimeout);
-        mHandler.postDelayed(mAddWallpaperPickerIndicator, WALLPAPER_PICKER_INDICATOR_DELAY_MS);
-        mHandler.postDelayed(mWallpaperPickerIndicatorTimeout,
-                WALLPAPER_PICKER_INDICATOR_TIMEOUT_MS);
-    }
 
-    private void hideWallpaperPickerIndicator() {
-        mHandler.removeCallbacks(mAddWallpaperPickerIndicator);
-        mHandler.removeCallbacks(mWallpaperPickerIndicatorTimeout);
-        removeWallpaperPickerIndicatorView();
-    }
 
-    private void addWallpaperPickerIndicator() {
-        removeWallpaperPickerIndicatorView();
-        ViewGroup content = findViewById(android.R.id.content);
-        if (content == null) {
-            return;
-        }
-        FrameLayout scrim = new FrameLayout(this);
-        scrim.setBackgroundColor(0x99000000);
-        // Swallows touches: the paused home screen would not handle them properly anyway.
-        scrim.setClickable(true);
-        ProgressBar progress = new ProgressBar(this);
-        progress.setIndeterminate(true);
-        scrim.addView(progress, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER));
-        scrim.setAlpha(0f);
-        content.addView(scrim, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        scrim.animate().alpha(1f).setDuration(150);
-        mWallpaperPickerIndicator = scrim;
-    }
-
-    private void removeWallpaperPickerIndicatorView() {
-        if (mWallpaperPickerIndicator == null) {
-            return;
-        }
-        if (mWallpaperPickerIndicator.getParent() instanceof ViewGroup) {
-            ((ViewGroup) mWallpaperPickerIndicator.getParent())
-                    .removeView(mWallpaperPickerIndicator);
-        }
-        mWallpaperPickerIndicator = null;
-    }
-
-    protected ComponentName getWallpaperPickerComponent() {
-        return new ComponentName(getPackageName(), WallpaperPickerActivity.class.getName());
-    }
 
     public Rect getViewBounds(View v) {
         int[] pos = new int[2];
@@ -5528,7 +4267,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
             String appTitle = appInfo.loadLabel(pm).toString();
             AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-            refreshLeftCycle(bean);
+            mAppBars.refreshLeftCycle(bean);
             cleanWidgetBar();
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
@@ -5546,83 +4285,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public void initMusicWidgetView(View musicWidgetView) {
-        if (musicWidgetView != null) {
-            mPlayPauseButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_playpause);
-            mMusicPrevButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_prev);
-            mMusicNextButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_next);
-            mMusicFavoriteButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_favorite);
-            setWidgetButtonsTint(mPlayPauseButton);
-            setWidgetButtonsTint(mMusicPrevButton);
-            setWidgetButtonsTint(mMusicNextButton);
-            updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
-            tvMusicName = musicWidgetView.findViewById(ResValue.getInstance().tv_musicName);
-            ivALbumBg = musicWidgetView.findViewById(ResValue.getInstance().iv_album_bg);
-            ivMusicScore = musicWidgetView.findViewById(ResValue.getInstance().music_score);
-            ivMusicScore2 = musicWidgetView.findViewById(ResValue.getInstance().music_score2);
-            tvAritst = musicWidgetView.findViewById(ResValue.getInstance().tv_artist);
-            tvAlbum = musicWidgetView.findViewById(ResValue.getInstance().tv_album);
-            tvCurTime = musicWidgetView.findViewById(ResValue.getInstance().music_cur_time);
-            tvTotalTime = musicWidgetView.findViewById(ResValue.getInstance().music_total_time);
-            mTvMusic = musicWidgetView.findViewById(ResValue.getInstance().tv_music);
-            musicSeekBar = musicWidgetView.findViewById(ResValue.getInstance().music_seekbar);
-            musicProgress = musicWidgetView.findViewById(ResValue.getInstance().music_progress);
-            widgetTint = mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
-            if (widgetTint && musicProgress != null) {
-                musicProgress.getProgressDrawable().setColorFilter(
-                    Color.BLACK, 
-                    PorterDuff.Mode.SRC_IN
-                );
-            } else if (musicProgress != null) {
-                musicProgress.getProgressDrawable().clearColorFilter();
-            }
-            putCustomView(Config.WS_Music, musicWidgetView.findViewById(ResValue.getInstance().rl_music));
-            if (getCustomView(Config.WS_Music) != null) {
-                getCustomView(Config.WS_Music).setOnClickListener(this);
-            }
-        }
-    }
 
-    public void initMusicBarView(View musicBarView) {
-        if (musicBarView != null) {
-            mPlayPauseButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_playpause_two);
-            mMusicPrevButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_prev_two);
-            mMusicNextButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_next_two);
-            mMusicFavoriteButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_favorite_two);
-            setBarButtonsTint(mPlayPauseButtonTwo);
-            setBarButtonsTint(mMusicPrevButtonTwo);
-            setBarButtonsTint(mMusicNextButtonTwo);
-            updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
-            tvMusicNameTwo = musicBarView.findViewById(ResValue.getInstance().tv_musicName_two);
-            ivALbumBgTwo = musicBarView.findViewById(ResValue.getInstance().iv_album_bg_two);
-            tvAritstTwo = musicBarView.findViewById(ResValue.getInstance().tv_artist_two);
-            View musicWidget = musicBarView.findViewById(ResValue.getInstance().rl_music_two);
-            if (musicWidget != null) {
-                musicWidget.setOnClickListener(this);
-            }
-        }
-    }
 
-    public void initRadioWidgetView(View radioWidgetView) {
-        if (radioWidgetView != null) {
-            mRadioPrevButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_prev);
-            mRadioNextButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_next);
-            setWidgetButtonsTint(mRadioPrevButton);
-            setWidgetButtonsTint(mRadioNextButton);
-            mRadioPauseButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_pause);
-            mRadioBandButton = radioWidgetView.findViewById(ResValue.getInstance().radio_btn_band);
-            mRadioIcon = radioWidgetView.findViewById(ResValue.getInstance().mRadioIcon);
-            tvBand = radioWidgetView.findViewById(ResValue.getInstance().tv_band);
-            tvUnit = radioWidgetView.findViewById(ResValue.getInstance().tv_unit);
-            img_freq_point = radioWidgetView.findViewById(ResValue.getInstance().radio_point);
-            tvCurFreq = radioWidgetView.findViewById(ResValue.getInstance().tv_freq);
-            mTvRadio = radioWidgetView.findViewById(ResValue.getInstance().tv_radio);
-            putCustomView(Config.WS_Radio, radioWidgetView.findViewById(ResValue.getInstance().rl_radio));
-            if (getCustomView(Config.WS_Radio) != null) {
-                getCustomView(Config.WS_Radio).setOnClickListener(this);
-            }
-        }
-    }
 
     /**
      * Re-points the widget bar references at the views that are actually on screen and pushes
@@ -5636,14 +4300,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return;
         }
         if (musicBarView != null) {
-            initMusicBarView(musicBarView);
+            mMusicWidget.initMusicBarView(musicBarView);
         }
         if (barWeatherView != null) {
             initBarWeatherView(barWeatherView);
         }
         try {
-            preSetMusicWidgets();
-            updateFavoriteButtonState();
+            mMusicWidget.preSetMusicWidgets();
+            mMusicWidget.updateFavoriteButtonState();
         } catch (Exception e) {
             Log.w(TAG, "rebindBarWidgetsAfterWake: music state refresh failed", e);
         }
@@ -5656,13 +4320,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void clearBarWidgetReferences() {
         // Music bar
-        mPlayPauseButtonTwo = null;
-        mMusicPrevButtonTwo = null;
-        mMusicNextButtonTwo = null;
-        mMusicFavoriteButtonTwo = null;
-        tvMusicNameTwo = null;
-        ivALbumBgTwo = null;
-        tvAritstTwo = null;
+        mMusicWidget.mPlayPauseButtonTwo = null;
+        mMusicWidget.mMusicPrevButtonTwo = null;
+        mMusicWidget.mMusicNextButtonTwo = null;
+        mMusicWidget.mMusicFavoriteButtonTwo = null;
+        mMusicWidget.tvMusicNameTwo = null;
+        mMusicWidget.ivALbumBgTwo = null;
+        mMusicWidget.tvAritstTwo = null;
         
         // Weather bar
         weatherCity1 = null;
@@ -5700,54 +4364,54 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             putCustomView(Config.WS_Allapps, mWorkspace.findViewById(ResValue.getInstance().rl_allapps));
             putCustomView(Config.WS_Showbar, mWorkspace.findViewById(ResValue.getInstance().show_bar));
         }
-        if (tvMusicName != null) {
+        if (mMusicWidget.tvMusicName != null) {
             if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
                 if (fytData) { // from metadata
-                    if (!(this.tvMusicName.getText().toString()).equals(MusicService.music_name)) {
-                        tvMusicName.setText(MusicService.music_name);                        
+                    if (!(mMusicWidget.tvMusicName.getText().toString()).equals(MusicService.music_name)) {
+                        mMusicWidget.tvMusicName.setText(MusicService.music_name);                        
                     }
                 } else { // from file title
                     File file = new File(MusicService.music_path);
                     String filename = file.getName();
-                    musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    if (!(this.tvMusicName.getText().toString()).equals(musictitle)) {
-                        tvMusicName.setText(musictitle);                        
+                    mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
+                    if (!(mMusicWidget.tvMusicName.getText().toString()).equals(mMusicWidget.musictitle)) {
+                        mMusicWidget.tvMusicName.setText(mMusicWidget.musictitle);                        
                     }
                 }
-                tvMusicName.setSelected(true);
+                mMusicWidget.tvMusicName.setSelected(true);
             } else {
-                tvMusicName.setText(R.string.music_name);
-                tvMusicName.setSelected(true);
+                mMusicWidget.tvMusicName.setText(R.string.music_name);
+                mMusicWidget.tvMusicName.setSelected(true);
             }
         }
-        if (tvMusicNameTwo != null) {
+        if (mMusicWidget.tvMusicNameTwo != null) {
             if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
                 if (fytData) { // from metadata
-                    if (!(this.tvMusicNameTwo.getText().toString()).equals(MusicService.music_name)) {
-                        tvMusicNameTwo.setText(MusicService.music_name);                        
+                    if (!(mMusicWidget.tvMusicNameTwo.getText().toString()).equals(MusicService.music_name)) {
+                        mMusicWidget.tvMusicNameTwo.setText(MusicService.music_name);                        
                     }
                 } else { // from file title
                     File file = new File(MusicService.music_path);
                     String filename = file.getName();
-                    musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    if (!(this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
-                        tvMusicNameTwo.setText(musictitle);                        
+                    mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
+                    if (!(mMusicWidget.tvMusicNameTwo.getText().toString()).equals(mMusicWidget.musictitle)) {
+                        mMusicWidget.tvMusicNameTwo.setText(mMusicWidget.musictitle);                        
                     }
                 }
-                tvMusicNameTwo.setSelected(true);
+                mMusicWidget.tvMusicNameTwo.setSelected(true);
             } else {
-                tvMusicNameTwo.setText(R.string.music_name);
-                tvMusicNameTwo.setSelected(true);
+                mMusicWidget.tvMusicNameTwo.setText(R.string.music_name);
+                mMusicWidget.tvMusicNameTwo.setSelected(true);
             }
         }
-        if (tvCurTime != null) {
-            tvCurTime.setText("00:00");
+        if (mMusicWidget.tvCurTime != null) {
+            mMusicWidget.tvCurTime.setText("00:00");
         }
-        if (tvTotalTime != null) {
-            tvTotalTime.setText("00:00");
+        if (mMusicWidget.tvTotalTime != null) {
+            mMusicWidget.tvTotalTime.setText("00:00");
         }
-        if (musicSeekBar != null) {
-            musicSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListenerImp(this, null));
+        if (mMusicWidget.musicSeekBar != null) {
+            mMusicWidget.musicSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListenerImp(this, null));
         }
         /*if (mPlayPauseButton != null) {
             if (MusicService.state.booleanValue()) {
@@ -5756,14 +4420,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }
         }*/
-        if (tvAritst != null) {
-            tvAritst.setText(R.string.music_author);
+        if (mMusicWidget.tvAritst != null) {
+            mMusicWidget.tvAritst.setText(R.string.music_author);
         }
-        if (tvAritstTwo != null) {
-            tvAritstTwo.setText(R.string.music_author);
+        if (mMusicWidget.tvAritstTwo != null) {
+            mMusicWidget.tvAritstTwo.setText(R.string.music_author);
         }
-        if (tvAlbum != null) {
-            tvAlbum.setText(R.string.music_album);
+        if (mMusicWidget.tvAlbum != null) {
+            mMusicWidget.tvAlbum.setText(R.string.music_album);
         }
         if (mBtavView != null) {
             mBtavView.setOnClickListener(this);
@@ -5774,17 +4438,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mBtavAritst != null) {
             mBtavAritst.setText(R.string.music_unknown);
         }
-        if (tvCurFreq != null) {
-            tvCurFreq.setText("87.50");
+        if (mRadioWidget.tvCurFreq != null) {
+            mRadioWidget.tvCurFreq.setText("87.50");
         }
-        if (tvUnit != null) {
-            tvUnit.setText("MHz");
+        if (mRadioWidget.tvUnit != null) {
+            mRadioWidget.tvUnit.setText("MHz");
         }
-        if (tvBand != null) {
-            if (tvBand.getBackground() != null) {
-                tvBand.setBackgroundResource(ResValue.getInstance().fm);
+        if (mRadioWidget.tvBand != null) {
+            if (mRadioWidget.tvBand.getBackground() != null) {
+                mRadioWidget.tvBand.setBackgroundResource(ResValue.getInstance().fm);
             } else {
-                tvBand.setText("FM");
+                mRadioWidget.tvBand.setText("FM");
             }
         }
         if (getCustomView(Config.WS_Bt) != null) {
@@ -5808,1765 +4472,78 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         updateView();
     }
 
-    public void triggerAppData() {
-        markAppDataDirty();
-        if (pendingAction != null) {
-            appDataHandler.removeCallbacks(pendingAction);
-        }
-        
-        pendingAction = new Runnable() {
-            @Override
-            public void run() {
-                initAppData();
-            }
-        };
-        
-        appDataHandler.postDelayed(pendingAction, getAppDataDelayMs());
-    }
-
-    void markAppDataDirty() {
-        mPostResumeAppDataDirty = true;
-    }
-
-    private long getAppDataDelayMs() {
-        if (mWorkspace != null
-                && mWorkspace.isLaidOut()
-                && AllAppsList.data != null
-                && !AllAppsList.data.isEmpty()
-                && mWorkspace.findViewById(R.id.recycler_view) != null) {
-            return APP_DATA_FAST_DELAY;
-        }
-        return APP_DATA_DELAY;
-    }
-
-    /** Fires only if the app list never arrives, so a broken load still leaves a usable home. */
-    private final Runnable mAllAppsBindBackstop = new Runnable() {
-        @Override
-        public void run() {
-            if (!mAwaitingAllAppsBind) return;
-
-            // The loader's step 2 only begins once the main looper goes idle, and on this hardware
-            // that has been measured at over eleven seconds after the workspace bind. Giving up on
-            // a flat timer installed an empty app list that was replaced a second later, so the
-            // fallback now only applies when the model itself says it is finished.
-            if (mModel != null && !mModel.isAllAppsLoaded()
-                    && mAllAppsBackstopChecks++ < MAX_ALL_APPS_BACKSTOP_CHECKS) {
-                mHandler.postDelayed(this, ALL_APPS_BIND_BACKSTOP_MS);
-                return;
-            }
-
-            Log.w(TAG, "bindAllApplications() never arrived, initializing with defaults");
-            mAwaitingAllAppsBind = false;
-            mAllAppsBackstopChecks = 0;
-            mInitRetryCount = 0;
-            forceInitializeWithDefaults();
-        }
-    };
-
-    public void initAppData() {
-        // Prevent re-entrant calls — but schedule a deferred retry so the refresh is not lost
-        if (mIsInitializingAppData) {
-            Log.i(TAG, "initAppData() already in progress, scheduling deferred retry");
-            mHandler.postDelayed(() -> {
-                if (!mIsInitializingAppData) {
-                    initAppData();
-                }
-            }, 3500);
-            return;
-        }
-        
-        // The app list is delivered by bindAllApplications(), and the model only starts loading it
-        // once the main looper goes idle. Polling for it on a 1 s timer kept the looper busy, so the
-        // poll was delaying the very thing it was waiting for -- measured as 6.8 s of
-        // "waited ... for previous step to finish binding", ten wasted attempts, and a
-        // forceInitializeWithDefaults() pass that was immediately redone.
-        if (LauncherApplication.isFytDevice() && (AllAppsList.data == null || AllAppsList.data.isEmpty())) {
-            if (!mAwaitingAllAppsBind) {
-                mAwaitingAllAppsBind = true;
-                Log.i(TAG, "initAppData(): app list not bound yet, waiting for bindAllApplications()");
-            }
-            mHandler.removeCallbacks(mAllAppsBindBackstop);
-            mHandler.postDelayed(mAllAppsBindBackstop, ALL_APPS_BIND_BACKSTOP_MS);
-            return;
-        }
-        mAwaitingAllAppsBind = false;
-        mAllAppsBackstopChecks = 0;
-        mHandler.removeCallbacks(mAllAppsBindBackstop);
-
-        mIsInitializingAppData = true;
-        mInitRetryCount++;
-        Log.i(TAG, "initAppData() started (attempt " + mInitRetryCount + ")");
-        
-        if (LauncherApplication.isFytDevice()) {
-            if (!checkDependenciesReady()) {
-                Log.w(TAG, "Dependencies not ready, will retry...");
-                mIsInitializingAppData = false;
-                
-                if (mInitRetryCount < MAX_INIT_RETRIES) {
-                    mHandler.postDelayed(() -> initAppData(), 1000);
-                } else {
-                    Log.e(TAG, "Max retries reached, initializing with defaults");
-                    mInitRetryCount = 0;
-                    forceInitializeWithDefaults();
-                }
-                return;
-            }            
-        } else {
-            forceInitializeWithDefaults();
-        }
-        
-        // bottom recycler
-        if (mWorkspace == null) {
-            Log.i(TAG, "mWorkspace null on initAppData(), reinitializing workspace");
-            mWorkspace = (Workspace) mDragLayer.findViewById(R.id.workspace);
-        }
-        
-        // Ensure adapter is created before finding RecyclerView
-        if (mAppListAdapter == null) {
-            mAppListAdapter = new AppListAdapter(this, Collections.emptyList());
-        }
-        
-        mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
-        if (mRecyclerView == null) {
-            Log.e(TAG, "RecyclerView not found in workspace! Waiting for layout...");
-            
-            // Reset flag before early return so retry can work
-            mIsInitializingAppData = false;
-            
-            if (mInitRetryCount < MAX_INIT_RETRIES) {
-                // Wait for the workspace to be laid out properly
-                if (mWorkspace.getViewTreeObserver().isAlive()) {
-                    mWorkspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            if (mWorkspace != null) {
-                                mWorkspace.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            }
-                            initAppData();
-                        }
-                    });
-                } else {
-                    mHandler.postDelayed(() -> initAppData(), 1000);
-                }
-            } else {
-                Log.e(TAG, "Max retries reached for RecyclerView, resetting");
-                mInitRetryCount = 0;
-            }
-            return; 
-        }
-        
-        Log.d(TAG, "All dependencies ready, proceeding with setup");
-        setupRecyclerView(mRecyclerView);
-        mHandler.post(() -> {
-            setupLeftRecyclerView();
-            mIsInitializingAppData = false;
-        });
-        
-        // Reset retry count on success
-        mInitRetryCount = 0;
-    }
-
-    /** The database only has to prove itself once; see checkDependenciesReady(). */
-    private static volatile boolean sDatabaseProbeOk = false;
-
-    private boolean checkDependenciesReady() {
-        // Check if AllAppsList is populated
-        if (AllAppsList.data == null || AllAppsList.data.isEmpty()) {
-            Log.w(TAG, "AllAppsList not ready");
-            return false;
-        }
-        
-        // Check if database is accessible.
-        // This is a real SQLite query on the main thread, and initAppData() can run it several
-        // times a second while retrying -- measured at ~60 ms of blocked main thread per burst.
-        // A database that has opened once does not become unavailable again, so probe once.
-        if (!sDatabaseProbeOk) {
-            try {
-                LitePal.limit(1).find(AppMultiple.class);
-                sDatabaseProbeOk = true;
-            } catch (Exception e) {
-                Log.w(TAG, "Database not ready: " + e.getMessage());
-                return false;
-            }
-        }
-        
-        // Check if PackageManager is ready
-        try {
-            PackageManager pm = getPackageManager();
-            if (pm == null) {
-                Log.w(TAG, "PackageManager not ready");
-                return false;
-            }
-        } catch (Exception e) {
-            Log.w(TAG, "PackageManager error: " + e.getMessage());
-            return false;
-        }
-        
-        // Check if workspace is laid out
-        if (mWorkspace == null || !mWorkspace.isLaidOut()) {
-            Log.w(TAG, "Workspace not laid out yet");
-            return false;
-        }
-        
-        return true;
-    }
-
-    private void forceInitializeWithDefaults() {
-        // Last resort: initialize with empty data and let user configure
-        mIsInitializingAppData = true;
-        
-        if (mAppListAdapter == null) {
-            mAppListAdapter = new AppListAdapter(this, Collections.emptyList());
-        }
-        
-        mHandler.postDelayed(() -> {
-            mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
-            if (mRecyclerView != null) {
-                setupRecyclerView(mRecyclerView);
-                setupLeftRecyclerView();
-            }
-            mIsInitializingAppData = false;
-        }, 500);
-    }
-
-    private void setupRecyclerView(RecyclerView recyclerView) {
-        Log.d(TAG, "setupRecyclerView started");
-
-        // Force visibility
-        recyclerView.setVisibility(View.VISIBLE);
-
-        // Do not recreate the LayoutManager if the correct one is already attached —
-        // setLayoutManager() detaches all children and causes a visible flicker.
-        RecyclerView.LayoutManager existingLm = recyclerView.getLayoutManager();
-        boolean lmOk = (existingLm instanceof LinearLayoutManager)
-                && ((LinearLayoutManager) existingLm).getOrientation() == RecyclerView.HORIZONTAL;
-        if (!lmOk) {
-            LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-            layoutManager.setOrientation(RecyclerView.HORIZONTAL);
-            recyclerView.setLayoutManager(layoutManager);
-        }
-
-        // Re-setting the SAME adapter still rebinds all rows.
-        if (recyclerView.getAdapter() != mAppListAdapter) {
-            recyclerView.setAdapter(mAppListAdapter);
-        }
-        // No change/remove/add animations = no flicker when notifyDataSetChanged() is called.
-        if (recyclerView.getItemAnimator() != null) {
-            recyclerView.setItemAnimator(null);
-        }
-
-        // Dynamic bar height instead of the XML ratio/percent (no-op unless the feature is on).
-        ensureResizableBottomBar("setupRecyclerView");
-
-        installBottomRecyclerDecorations(recyclerView);
-
-        Log.d(TAG, "RecyclerView setup complete - Adapter: " + (mAppListAdapter != null) +
-                ", ItemCount: " + (mAppListAdapter != null ? mAppListAdapter.getItemCount() : 0) +
-                ", Visibility: " + recyclerView.getVisibility());
-
-        // Initialize app data
-        initializeAppList();
-
-        if (!mApplyingBarSnapshot) { // a snapshot is only the bar; the rest waits for the app data
-            requestCustomElementsSetup("setupRecyclerView");
-        }
-
-        // One call instead of two — each one adds an OnGlobalLayoutListener + 2 postDelayed
-        refreshRecyclerDecorationsAfterLayout(recyclerView);
-
-        boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-        if (autoHideBottomBar) {
-            disableRecycler();
-        }
-    }
-
-    private void setupLeftRecyclerView() {
-        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
-
-        if (!(userLayout && leftBar || !userLayout)) {
-            return;
-        }
-
-        RecyclerView mLeftRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.left_recycler_view);
-
-        if (mLeftRecyclerView == null) {
-            if (mLeftRecyclerLayoutPending) {
-                Log.d(TAG, "Left RecyclerView lookup already pending, skipping duplicate");
-                return;
-            }
-            // Normal while the pages are being (re)created, e.g. recreateView(): the next layout pass has it.
-            Log.d(TAG, "Left RecyclerView not inflated yet, waiting for layout");
-            mLeftRecyclerLayoutPending = true;
-            if (mWorkspace.getViewTreeObserver().isAlive()) {
-                mWorkspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        if (mWorkspace != null) {
-                            mWorkspace.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        }
-                        mLeftRecyclerLayoutPending = false;
-                        setupLeftRecyclerView();
-                    }
-                });
-            } else {
-                mHandler.postDelayed(() -> {
-                    mLeftRecyclerLayoutPending = false;
-                    setupLeftRecyclerView();
-                }, 500);
-            }
-            return;
-        }
-        mLeftRecyclerLayoutPending = false;
-
-        Log.d(TAG, "Setting up left RecyclerView");
-
-        mLeftRecyclerView.setVisibility(View.VISIBLE);
-
-        // Initialize adapter FIRST, before any layout might occur
-        if (mLeftAppListAdapter == null) {
-            mLeftAppListAdapter = new LeftAppListAdapter(this, Collections.emptyList());
-        }
-
-        if (!(mLeftRecyclerView.getLayoutManager() instanceof EvenVerticalLayoutManager)) {
-            mLeftRecyclerView.setLayoutManager(
-                    new EvenVerticalLayoutManager(getApplicationContext(), MAX_LEFT));
-        }
-
-        if (mLeftRecyclerView.getAdapter() != mLeftAppListAdapter) {
-            mLeftRecyclerView.setAdapter(mLeftAppListAdapter);
-        }
-        if (mLeftRecyclerView.getItemAnimator() != null) {
-            mLeftRecyclerView.setItemAnimator(null);
-        }
-
-        installLeftRecyclerDecorations(mLeftRecyclerView);
-
-        // Initialize left app data
-        initializeLeftAppData();
-
-        mLeftRecyclerView.requestLayout();
-    }
-
-    private Map<String, AppInfo> buildAppInfoLookup() {
-        Map<String, AppInfo> lookup = new HashMap<>();
-        // snapshot(): the loader thread changes AllAppsList.data without a lock (nothing else
-        // synchronizes on it), and the indexed copy used here before threw while an app was
-        // being removed, which skipped the whole refresh and left the lookup empty.
-        List<AppInfo> snapshot = AllAppsList.snapshot();
-
-        for (AppInfo app : snapshot) {
-            if (app == null || TextUtils.isEmpty(app.getPackageName())) {
-                continue;
-            }
-            lookup.put(appLookupKey(app.getPackageName(), app.getClassName()), app);
-        }
-        return lookup;
-    }
-
-    private String appLookupKey(String packageName, String className) {
-        return packageName + "/" + (className == null ? "" : className);
-    }
-
-    private AppInfo findAppInfo(Map<String, AppInfo> lookup, String packageName, String className) {
-        if (lookup == null || TextUtils.isEmpty(packageName)) {
-            return null;
-        }
-        return lookup.get(appLookupKey(packageName, className));
-    }
-
-    private boolean isPackageInstalledCached(Map<String, Boolean> cache, String packageName) {
-        if (TextUtils.isEmpty(packageName)) {
-            return false;
-        }
-        Boolean cached = cache.get(packageName);
-        if (cached != null) {
-            return cached;
-        }
-        boolean installed = helpers.isPackageInstalled(packageName);
-        cache.put(packageName, installed);
-        return installed;
-    }
-
-    private long appendStringSignature(long signature, String value) {
-        return (signature * 31L) + (value == null ? 0L : value.hashCode());
-    }
-
-    private int getAllAppsDataSize() {
-        return AllAppsList.data == null ? 0 : AllAppsList.data.size();
-    }
-
-    private long calculateAppRowsSignature(List<AppMultiple> rows, boolean currentUserLayout, boolean currentWidgetBar) {
-        long signature = 1125899906842597L;
-        signature = (signature * 31L) + (currentUserLayout ? 1L : 0L);
-        signature = (signature * 31L) + (currentWidgetBar ? 1L : 0L);
-        signature = (signature * 31L) + orientation;
-        signature = (signature * 31L) + getAllAppsDataSize();
-        if (rows == null) {
-            return signature;
-        }
-        signature = (signature * 31L) + rows.size();
-        for (AppMultiple row : rows) {
-            if (row == null) {
-                signature *= 31L;
-                continue;
-            }
-            signature = (signature * 31L) + row.id;
-            signature = (signature * 31L) + row.index;
-            signature = appendStringSignature(signature, row.name);
-            signature = appendStringSignature(signature, row.packageName);
-            signature = appendStringSignature(signature, row.className);
-        }
-        return signature;
-    }
-
-    private long calculateLeftAppRowsSignature(List<LeftAppMultiple> rows) {
-        long signature = 1469598103934665603L;
-        signature = (signature * 31L) + (mPrefs.getBoolean(Keys.USER_LAYOUT, false) ? 1L : 0L);
-        signature = (signature * 31L) + (mPrefs.getBoolean(Keys.LEFT_BAR, false) ? 1L : 0L);
-        signature = (signature * 31L) + getAllAppsDataSize();
-        if (rows == null) {
-            return signature;
-        }
-        signature = (signature * 31L) + rows.size();
-        for (LeftAppMultiple row : rows) {
-            if (row == null) {
-                signature *= 31L;
-                continue;
-            }
-            signature = (signature * 31L) + row.id;
-            signature = (signature * 31L) + row.index;
-            signature = appendStringSignature(signature, row.name);
-            signature = appendStringSignature(signature, row.packageName);
-            signature = appendStringSignature(signature, row.className);
-        }
-        return signature;
-    }
-
-    private void initializeLeftAppData() {
-        if (mApplyingBarSnapshot) {
-            applyLeftBarSnapshot();
-            return;
-        }
-        List<LeftAppMultiple> leftAppData = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
-        long sourceSignature = calculateLeftAppRowsSignature(leftAppData);
-        if (sourceSignature == mLastLeftAppListSourceSignature
-                && mLeftAppListAdapter != null
-                && mLeftAppListAdapter.getItemCount() > 0
-                && mLeftAppListData != null
-                && !mLeftAppListData.isEmpty()) {
-            Log.d(TAG, "initializeLeftAppData: unchanged, skipping rebuild");
-            return;
-        }
-
-        boolean hasExistingLeftListData = hasCurrentLeftAppListData();
-        if ((leftAppData == null || leftAppData.isEmpty()) && hasExistingLeftListData) {
-            Log.w(TAG, "initializeLeftAppData: empty rows during refresh, keeping current left app list");
-            scheduleAppListInitializationRetry("initializeLeftEmptyRows");
-            return;
-        }
-        List<AppListBean> nextLeftAppListData = new ArrayList<AppListBean>();
-        BarSnapshotCollector leftSnapshot = new BarSnapshotCollector();
-        
-        // Ensure adapter exists
-        if (mLeftAppListAdapter == null) {
-            mLeftAppListData = nextLeftAppListData;
-            mLeftAppListAdapter = new LeftAppListAdapter(this, mLeftAppListData);
-            
-            RecyclerView mLeftRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.left_recycler_view);
-            if (mLeftRecyclerView != null) {
-                mLeftRecyclerView.setAdapter(mLeftAppListAdapter);
-            }
-        }
-
-        Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
-        Map<String, Boolean> installCache = new HashMap<>();
-        
-        if (leftAppData != null && !leftAppData.isEmpty()) {
-            for (LeftAppMultiple multiple : leftAppData) {
-                if (TextUtils.isEmpty(multiple.packageName)
-                        || TextUtils.isEmpty(multiple.name)
-                        || !isPackageInstalledCached(installCache, multiple.packageName)) {
-                    continue;
-                }
-                
-                AppInfo allApp = findAppInfo(appInfoLookup, multiple.packageName, multiple.className);
-                if (allApp != null) {
-                    AppListBean ab = new AppListBean(
-                        allApp.title.toString(),
-                        allApp.iconBitmap,
-                        multiple.packageName,
-                        multiple.className
-                    );
-                    nextLeftAppListData.add(ab);
-                    leftSnapshot.add((long) multiple.id, multiple.packageName, multiple.className,
-                            allApp.title.toString(), allApp.iconBitmap);
-                    continue;
-                }
-                
-                // If not found in AllAppsList but package is installed, load icon from package manager.
-                // Strict variant: returns null for uninstalled/unresolvable components, so the row is
-                // dropped (and the remaining icons re-flow) instead of showing the "add app" icon.
-                Bitmap icon = loadLeftBarIconStrict(multiple.packageName, multiple.className);
-                if (icon != null) {
-                    AppListBean ab = new AppListBean(
-                        multiple.name,
-                        icon,
-                        multiple.packageName,
-                        multiple.className
-                    );
-                    nextLeftAppListData.add(ab);
-                    leftSnapshot.usedFallbackIcon = true;
-                }
-            }
-        }
-        
-        if (mLeftAppListAdapter != null) {
-            mLeftAppListData = nextLeftAppListData;
-            mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
-            mLastLeftAppListSourceSignature = sourceSignature;
-            Log.d(TAG, "Left app data initialized with " + mLeftAppListData.size() + " items");
-            saveLeftBarSnapshot(leftAppData, leftSnapshot);
-        }
-    }
-
-    // =====================================================================================
-    // BAR SNAPSHOTS - the bars as last shown, drawn at start until the app list is bound
-    // =====================================================================================
-
-    /** Entries of one bar as they are built, with the name and icon each one shows. */
-    private static final class BarSnapshotCollector {
-        final List<BarSnapshotStore.Item> items = new ArrayList<>();
-        /** An icon came from the PackageManager fallback: not the launcher's look, not saved. */
-        boolean usedFallbackIcon;
-
-        void add(long rowDbId, String packageName, String className, String name, Bitmap icon) {
-            items.add(new BarSnapshotStore.Item(rowDbId, packageName, className, name, icon));
-        }
-    }
-
-    /**
-     * Reads the bar snapshots in the background and shows them as soon as they are read.
-     *
-     * Both bars used to stay empty until the whole app list was loaded -- 37.4 s and 45.7 s of
-     * uptime in captures 29-09-2026 20:51 and 21:40, against a first frame at ~23 s. Waiting for
-     * initAppData() would not do either: at 21:40 it ran 13 ms before the main thread got stuck
-     * for 11.8 s in the pane build (createVirtualDisplay during the boot-time freeze), so anything
-     * posted after it would have waited as long. This starts in onCreate(), and each bar is shown
-     * as soon as its view exists (see applyPendingBarSnapshots()). Once the app list is bound,
-     * initAppData() builds the real bars as before and they replace the snapshot (same icons,
-     * unless an app changed meanwhile).
-     */
-    private void prefetchBarSnapshots() {
-        if (!LauncherApplication.isFytDevice()) {
-            return; // other devices build the bars at once (forceInitializeWithDefaults())
-        }
-        final Context appContext = getApplicationContext();
-        final boolean currentUserLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        final boolean currentWidgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
-        final boolean currentLeftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
-        final int currentOrientation = orientation;
-        Thread prefetch = new Thread(() -> {
-            List<AppMultiple> bottomRows = null;
-            List<LeftAppMultiple> leftRows = null;
-            BarSnapshotStore.Snapshot bottom = null;
-            BarSnapshotStore.Snapshot left = null;
-            try {
-                bottomRows = queryBottomAppRows();
-                BarSnapshotStore.Snapshot s = BarSnapshotStore.load(appContext, BarSnapshotStore.BOTTOM);
-                if (s != null && bottomRows != null && s.signature == bottomBarSnapshotSignature(
-                        bottomRows, currentUserLayout, currentWidgetBar, currentOrientation)) {
-                    bottom = s;
-                }
-                leftRows = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
-                s = BarSnapshotStore.load(appContext, BarSnapshotStore.LEFT);
-                if (s != null && leftRows != null && s.signature == leftBarSnapshotSignature(
-                        leftRows, currentUserLayout, currentLeftBar)) {
-                    left = s;
-                }
-            } catch (RuntimeException e) {
-                Log.w(TAG, "Bar snapshots not read", e);
-            }
-            Log.d(TAG, "Bar snapshots: bottom " + (bottom != null ? bottom.items.size() + " items" : "none/outdated")
-                    + ", left " + (left != null ? left.items.size() + " items" : "none/outdated"));
-            if (bottom == null && left == null) {
-                return;
-            }
-            final BarSnapshotStore.Snapshot bottomSnapshot = bottom;
-            final List<AppMultiple> bottomSnapshotRows = bottomRows;
-            final BarSnapshotStore.Snapshot leftSnapshot = left;
-            final List<LeftAppMultiple> leftSnapshotRows = leftRows;
-            mHandler.post(() -> {
-                mPendingBottomSnapshot = bottomSnapshot;
-                mPendingBottomSnapshotRows = bottomSnapshotRows;
-                mPendingLeftSnapshot = leftSnapshot;
-                mPendingLeftSnapshotRows = leftSnapshotRows;
-                mBarSnapshotAttempts = 0;
-                mBarSnapshotReadAtMs = SystemClock.uptimeMillis();
-                applyPendingBarSnapshots();
-            });
-        }, "BarSnapshotPrefetch");
-        prefetch.start();
-    }
-
-    /**
-     * Shows the pending snapshots through the usual setup, so the bars look exactly as they will
-     * once the real lists are there. A bar whose view is not there yet is tried again shortly; a
-     * bar that already has data ends the wait for that bar.
-     */
-    private void applyPendingBarSnapshots() {
-        mHandler.removeCallbacks(mApplyPendingBarSnapshots);
-        if (isDestroyed() || isFinishing() || mWorkspace == null) {
-            clearPendingBarSnapshots();
-            return;
-        }
-        if (mPendingBottomSnapshot != null) {
-            RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
-            if (hasCurrentAppListData()) {
-                Log.i(TAG, "Bottom bar snapshot not needed: the bar was built first, "
-                        + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
-                mPendingBottomSnapshot = null;
-                mPendingBottomSnapshotRows = null;
-            } else if (recycler != null) {
-                if (mAppListAdapter == null) {
-                    mAppListAdapter = new AppListAdapter(this, Collections.emptyList());
-                }
-                mRecyclerView = recycler;
-                mBottomBarSnapshot = mPendingBottomSnapshot;
-                mBottomBarSnapshotRows = mPendingBottomSnapshotRows;
-                mPendingBottomSnapshot = null;
-                mPendingBottomSnapshotRows = null;
-                mApplyingBarSnapshot = true;
-                try {
-                    setupRecyclerView(recycler);
-                } finally {
-                    mApplyingBarSnapshot = false;
-                    mBottomBarSnapshot = null;
-                    mBottomBarSnapshotRows = null;
-                }
-                Log.i(TAG, "Bottom bar shown from snapshot (" + (mAppListData != null ? mAppListData.size() : 0)
-                        + " items), " + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
-            }
-        }
-        // Only once the left recycler exists: setupLeftRecyclerView() would otherwise wait for a
-        // layout pass and then build the bar the normal way, with PackageManager icons.
-        if (mPendingLeftSnapshot != null) {
-            if (hasCurrentLeftAppListData()) {
-                Log.i(TAG, "Left bar snapshot not needed: the bar was built first, "
-                        + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
-                mPendingLeftSnapshot = null;
-                mPendingLeftSnapshotRows = null;
-            } else if (mWorkspace.findViewById(R.id.left_recycler_view) != null) {
-                mLeftBarSnapshot = mPendingLeftSnapshot;
-                mLeftBarSnapshotRows = mPendingLeftSnapshotRows;
-                mPendingLeftSnapshot = null;
-                mPendingLeftSnapshotRows = null;
-                mApplyingBarSnapshot = true;
-                try {
-                    setupLeftRecyclerView();
-                } finally {
-                    mApplyingBarSnapshot = false;
-                    mLeftBarSnapshot = null;
-                    mLeftBarSnapshotRows = null;
-                }
-                Log.i(TAG, "Left bar shown from snapshot (" + (mLeftAppListData != null ? mLeftAppListData.size() : 0)
-                        + " items), " + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
-            }
-        }
-        if (mPendingBottomSnapshot == null && mPendingLeftSnapshot == null) {
-            return;
-        }
-        if (++mBarSnapshotAttempts >= BAR_SNAPSHOT_MAX_ATTEMPTS) {
-            Log.w(TAG, "Bar snapshot views never appeared, snapshot dropped");
-            clearPendingBarSnapshots();
-            return;
-        }
-        mHandler.postDelayed(mApplyPendingBarSnapshots, BAR_SNAPSHOT_RETRY_MS);
-    }
-
-    private void clearPendingBarSnapshots() {
-        mHandler.removeCallbacks(mApplyPendingBarSnapshots);
-        mPendingBottomSnapshot = null;
-        mPendingBottomSnapshotRows = null;
-        mPendingLeftSnapshot = null;
-        mPendingLeftSnapshotRows = null;
-    }
-
-    /**
-     * The bottom bar from its snapshot. Leaves mLastAppListSourceSignature and
-     * finishAppListInitialization() alone: the real list still replaces this one, and nothing that
-     * waits for the app data (PiP) starts early.
-     */
-    private void applyBottomBarSnapshot() {
-        BarSnapshotStore.Snapshot snapshot = mBottomBarSnapshot;
-        List<AppMultiple> rows = mBottomBarSnapshotRows;
-        if (snapshot == null || rows == null || mAppListAdapter == null) {
-            return;
-        }
-        Map<Long, AppMultiple> rowsById = new HashMap<>();
-        for (AppMultiple row : rows) {
-            if (row != null) {
-                rowsById.put((long) row.id, row);
-            }
-        }
-        List<AppListBean> beans = new ArrayList<AppListBean>();
-        for (BarSnapshotStore.Item item : snapshot.items) {
-            AppListBean bean = new AppListBean(item.name, item.icon, item.packageName, item.className);
-            AppMultiple row = rowsById.get(item.rowDbId);
-            if (row != null) {
-                bean.rowId = row.rowId();
-                bean.slot = row.index;
-            }
-            beans.add(bean);
-        }
-        mAppListData = beans;
-        mAppListAdapter.notifyDataSetChanged(mAppListData);
-    }
-
-    /** The left bar from its snapshot; same rules as applyBottomBarSnapshot(). */
-    private void applyLeftBarSnapshot() {
-        BarSnapshotStore.Snapshot snapshot = mLeftBarSnapshot;
-        List<LeftAppMultiple> rows = mLeftBarSnapshotRows;
-        if (snapshot == null || rows == null || mLeftAppListAdapter == null) {
-            return;
-        }
-        Map<Long, LeftAppMultiple> rowsById = new HashMap<>();
-        for (LeftAppMultiple row : rows) {
-            if (row != null) {
-                rowsById.put((long) row.id, row);
-            }
-        }
-        List<AppListBean> beans = new ArrayList<AppListBean>();
-        for (BarSnapshotStore.Item item : snapshot.items) {
-            AppListBean bean = new AppListBean(item.name, item.icon, item.packageName, item.className);
-            LeftAppMultiple row = rowsById.get(item.rowDbId);
-            if (row != null) {
-                bean.rowId = row.rowId();
-            }
-            beans.add(bean);
-        }
-        mLeftAppListData = beans;
-        mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
-    }
-
-    /** Saves the bottom bar as just built, unless it is the same as the last one saved. */
-    private void saveBottomBarSnapshot(List<AppMultiple> rows, boolean currentUserLayout,
-                                       boolean currentWidgetBar, BarSnapshotCollector snapshot) {
-        if (rows == null || snapshot == null || snapshot.usedFallbackIcon
-                || !LauncherApplication.isFytDevice()
-                || AllAppsList.data == null || AllAppsList.data.isEmpty()) {
-            return; // only a bar built from the real app list is worth showing next time
-        }
-        long signature = bottomBarSnapshotSignature(rows, currentUserLayout, currentWidgetBar, orientation);
-        if (mBottomBarSnapshotSaved && signature == mSavedBottomBarSnapshotSignature) {
-            return;
-        }
-        mBottomBarSnapshotSaved = true;
-        mSavedBottomBarSnapshotSignature = signature;
-        BarSnapshotStore.saveAsync(getApplicationContext(), BarSnapshotStore.BOTTOM, signature, snapshot.items);
-    }
-
-    /** Saves the left bar as just built, unless it is the same as the last one saved. */
-    private void saveLeftBarSnapshot(List<LeftAppMultiple> rows, BarSnapshotCollector snapshot) {
-        if (rows == null || snapshot == null || snapshot.usedFallbackIcon
-                || !LauncherApplication.isFytDevice()
-                || AllAppsList.data == null || AllAppsList.data.isEmpty()) {
-            return;
-        }
-        long signature = leftBarSnapshotSignature(rows, mPrefs.getBoolean(Keys.USER_LAYOUT, false),
-                mPrefs.getBoolean(Keys.LEFT_BAR, false));
-        if (mLeftBarSnapshotSaved && signature == mSavedLeftBarSnapshotSignature) {
-            return;
-        }
-        mLeftBarSnapshotSaved = true;
-        mSavedLeftBarSnapshotSignature = signature;
-        BarSnapshotStore.saveAsync(getApplicationContext(), BarSnapshotStore.LEFT, signature, snapshot.items);
-    }
-
-    /**
-     * What the bottom bar is built from, apart from the app list itself (which
-     * calculateAppRowsSignature() includes): its rows and the layout settings. A snapshot is shown
-     * only while this is unchanged. Pure; also used off the main thread.
-     */
-    private long bottomBarSnapshotSignature(List<AppMultiple> rows, boolean currentUserLayout,
-                                            boolean currentWidgetBar, int currentOrientation) {
-        long signature = 7046029254386353131L;
-        signature = (signature * 31L) + (currentUserLayout ? 1L : 0L);
-        signature = (signature * 31L) + (currentWidgetBar ? 1L : 0L);
-        signature = (signature * 31L) + currentOrientation;
-        if (rows == null) {
-            return signature;
-        }
-        signature = (signature * 31L) + rows.size();
-        for (AppMultiple row : rows) {
-            if (row == null) {
-                signature *= 31L;
-                continue;
-            }
-            signature = (signature * 31L) + row.id;
-            signature = (signature * 31L) + row.index;
-            signature = appendStringSignature(signature, row.name);
-            signature = appendStringSignature(signature, row.packageName);
-            signature = appendStringSignature(signature, row.className);
-        }
-        return signature;
-    }
-
-    /** As bottomBarSnapshotSignature(), for the left bar. */
-    private long leftBarSnapshotSignature(List<LeftAppMultiple> rows, boolean currentUserLayout,
-                                          boolean currentLeftBar) {
-        long signature = -3750763034362895579L;
-        signature = (signature * 31L) + (currentUserLayout ? 1L : 0L);
-        signature = (signature * 31L) + (currentLeftBar ? 1L : 0L);
-        if (rows == null) {
-            return signature;
-        }
-        signature = (signature * 31L) + rows.size();
-        for (LeftAppMultiple row : rows) {
-            if (row == null) {
-                signature *= 31L;
-                continue;
-            }
-            signature = (signature * 31L) + row.id;
-            signature = (signature * 31L) + row.index;
-            signature = appendStringSignature(signature, row.name);
-            signature = appendStringSignature(signature, row.packageName);
-            signature = appendStringSignature(signature, row.className);
-        }
-        return signature;
-    }
-
-    private boolean hasCurrentAppListData() {
-        return mAppListAdapter != null
-                && mAppListAdapter.getItemCount() > 0
-                && mAppListData != null
-                && !mAppListData.isEmpty();
-    }
-
-    private boolean hasCurrentLeftAppListData() {
-        return mLeftAppListAdapter != null
-                && mLeftAppListAdapter.getItemCount() > 0
-                && mLeftAppListData != null
-                && !mLeftAppListData.isEmpty();
-    }
-
-    private void scheduleAppListInitializationRetry(String source) {
-        Log.w(TAG, "Scheduling app list initialization retry: " + source);
-        mHandler.postDelayed(() -> {
-            if (!mPaused && !mIsInitializingAppData) {
-                initAppData();
-            }
-        }, 1000L);
-    }
-
-    // =====================================================================================
-    // BOTTOM BAR - single source of truth for row -> bean mapping
-    // =====================================================================================
-
-    /**
-     * Visibility rule for one bottom-bar slot.
-     *
-     * IMPORTANT: {@code slot} is {@link AppMultiple#index} - the logical slot of the row -
-     * NOT the position of the row inside the query result and NOT the adapter position.
-     * The visible list is compacted, so those three numbers do not match once widgetBar
-     * hides some slots.
-     */
-    private boolean isBottomSlotVisible(int slot, boolean currentUserLayout, boolean currentWidgetBar) {
-        if (!(currentUserLayout && currentWidgetBar)) {
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                // portrait -> visible slots: 1, 2, 3 4, 5, 6, 7
-                return !(slot == 0);
-            } else return true; // landscape -> all slots visible
-        }
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // landscape + widget -> visible slots: 1, 4, 5, 6, 7
-            return !(slot == 0 || slot == 2 || slot == 3);
-        }
-        // portrait + widget -> visible slots: 1, 5, 6, 7
-        return !(slot == 0 || slot == 2 || slot == 3 || slot == 4);
-    }
-
-    private List<AppMultiple> queryBottomAppRows() {
-        try {
-            return LitePal.order("\"index\" asc").find(AppMultiple.class);
-        } catch (Exception e) {
-            Log.e(TAG, "Database error while reading AppMultiple: " + e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * The ONLY place where AppMultiple rows are turned into AppListBeans.
-     * Every bean carries the rowId and slot of the row it came from, so neither the
-     * adapter nor the picker dialog ever has to reverse-engineer a database index from
-     * a list position.
-     */
-    private List<AppListBean> buildBottomAppBeans(List<AppMultiple> rows,
-                                                  Map<String, AppInfo> appInfoLookup,
-                                                  Map<String, Boolean> installCache,
-                                                  boolean currentUserLayout,
-                                                  boolean currentWidgetBar) {
-        return buildBottomAppBeans(rows, appInfoLookup, installCache, currentUserLayout,
-                currentWidgetBar, null);
-    }
-
-    /** As above; {@code snapshot}, if given, records each entry as it is shown. */
-    private List<AppListBean> buildBottomAppBeans(List<AppMultiple> rows,
-                                                  Map<String, AppInfo> appInfoLookup,
-                                                  Map<String, Boolean> installCache,
-                                                  boolean currentUserLayout,
-                                                  boolean currentWidgetBar,
-                                                  BarSnapshotCollector snapshot) {
-        List<AppListBean> beans = new ArrayList<AppListBean>();
-        if (rows == null || rows.isEmpty()) {
-            return beans;
-        }
-
-        for (AppMultiple row : rows) {
-            if (row == null || !isBottomSlotVisible(row.index, currentUserLayout, currentWidgetBar)) {
-                continue;
-            }
-
-            String beanName;
-            Bitmap beanIcon;
-            if (FytPackage.AppAction.equals(row.packageName)) {
-                beanIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_apps);
-                beanName = Utils.getNameToStr("car_app");
-
-            } else if (FytPackage.AddAction.equals(row.packageName)
-                    || !isPackageInstalledCached(installCache, row.packageName)) {
-                // empty slot, or a slot whose package is gone -> "+" placeholder,
-                // but keep the stored package/class so the regression guard below
-                // still counts it the same way the old code did.
-                beanIcon = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
-                beanName = row.name;
-
-            } else {
-                AppInfo allApp = findAppInfo(appInfoLookup, row.packageName, row.className);
-                if (allApp != null) {
-                    beanName = allApp.title.toString();
-                    beanIcon = allApp.iconBitmap;
-                } else {
-                    // Installed but not in AllAppsList (transient during a package update) -
-                    // load straight from PackageManager so the icon does not disappear.
-                    beanIcon = loadAppIconFromPackageManager(row.packageName, row.className);
-                    beanName = row.name;
-                    if (snapshot != null) {
-                        snapshot.usedFallbackIcon = true;
-                    }
-                }
-            }
-
-            AppListBean bean = new AppListBean(beanName, beanIcon, row.packageName, row.className);
-            bean.rowId = row.rowId();
-            bean.slot = row.index;
-            beans.add(bean);
-            if (snapshot != null) {
-                snapshot.add((long) row.id, row.packageName, row.className, beanName, beanIcon);
-            }
-        }
-        return beans;
-    }
-
-    /** Installed, real (non-placeholder) rows that SHOULD be visible in the current layout. */
-    private int countInstalledBottomRows(List<AppMultiple> rows,
-                                         Map<String, Boolean> installCache,
-                                         boolean currentUserLayout,
-                                         boolean currentWidgetBar) {
-        if (rows == null) {
-            return 0;
-        }
-        int installed = 0;
-        for (AppMultiple row : rows) {
-            if (row == null || !isBottomSlotVisible(row.index, currentUserLayout, currentWidgetBar)) {
-                continue;
-            }
-            if (!FytPackage.AddAction.equals(row.packageName)
-                    && !FytPackage.AppAction.equals(row.packageName)
-                    && isPackageInstalledCached(installCache, row.packageName)) {
-                installed++;
-            }
-        }
-        return installed;
-    }
-
-    private int countRealBeans(List<AppListBean> beans) {
-        if (beans == null) {
-            return 0;
-        }
-        int real = 0;
-        for (AppListBean bean : beans) {
-            if (bean == null) {
-                continue;
-            }
-            if (!FytPackage.AddAction.equals(bean.packageName)
-                    && !FytPackage.AppAction.equals(bean.packageName)) {
-                real++;
-            }
-        }
-        return real;
-    }
-
-    private void initializeAppList() {
-        if (mApplyingBarSnapshot) {
-            applyBottomBarSnapshot();
-            return;
-        }
-        Log.d(TAG, "initializeAppList");
-
-        List<AppMultiple> appData = queryBottomAppRows();
-
-        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
-
-        long sourceSignature = calculateAppRowsSignature(appData, userLayout, widgetBar);
-        if (sourceSignature == mLastAppListSourceSignature && hasCurrentAppListData()) {
-            Log.d(TAG, "initializeAppList: unchanged, skipping rebuild");
-            finishAppListInitialization();
-            return;
-        }
-
-        boolean hasExistingAppListData = hasCurrentAppListData();
-
-        if (appData == null || appData.isEmpty()) {
-            if (hasExistingAppListData) {
-                Log.w(TAG, "initializeAppList: empty app rows during refresh, keeping current app list");
-                scheduleAppListInitializationRetry("emptyAppRows");
-                finishAppListInitialization();
-                return;
-            }
-
-            Log.w(TAG, "Creating default app entries (appData or AllAppsList not ready)");
-            mAppListData = new ArrayList<AppListBean>();
-            createDefaultAppEntries();
-
-            // Read the freshly inserted rows back instead of trusting the beans that
-            // createDefaultAppEntries() built by hand: only the query gives us real
-            // rowIds, and it also fixes the old bug where the widgetBar branch always
-            // produced the 5-slot landscape list even in portrait.
-            appData = queryBottomAppRows();
-            if (appData == null || appData.isEmpty()) {
-                Log.e(TAG, "initializeAppList: defaults written but cannot be read back");
-                finishAppListInitialization();
-                return;
-            }
-            sourceSignature = calculateAppRowsSignature(appData, userLayout, widgetBar);
-            hasExistingAppListData = false;
-        }
-
-        Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
-        Map<String, Boolean> installCache = new HashMap<>();
-
-        BarSnapshotCollector bottomSnapshot = new BarSnapshotCollector();
-        List<AppListBean> nextAppListData =
-                buildBottomAppBeans(appData, appInfoLookup, installCache, userLayout, widgetBar,
-                        bottomSnapshot);
-
-        // Regression guard: if the new list has fewer real-app entries than the DB rows
-        // that are actually installed, AllAppsList.data was transiently incomplete
-        // (e.g. during a package update). Keep the current list to avoid wiping the bar.
-        boolean safeToUpdate = true;
-        if (hasExistingAppListData) {
-            int installedDbCount =
-                    countInstalledBottomRows(appData, installCache, userLayout, widgetBar);
-            int newRealCount = countRealBeans(nextAppListData);
-            if (newRealCount < installedDbCount) {
-                Log.w(TAG, "initializeAppList: new list (" + newRealCount
-                        + " real apps) is fewer than installed DB entries (" + installedDbCount
-                        + ") - AllAppsList may be incomplete, keeping current list");
-                safeToUpdate = false;
-            }
-        }
-
-        if (mAppListAdapter != null && safeToUpdate) {
-            mAppListData = nextAppListData;
-            mAppListAdapter.notifyDataSetChanged(mAppListData);
-            mLastAppListSourceSignature = sourceSignature;
-            saveBottomBarSnapshot(appData, userLayout, widgetBar, bottomSnapshot);
-        } else if (!safeToUpdate) {
-            scheduleAppListInitializationRetry("incompleteAllAppsList");
-        }
-
-        finishAppListInitialization();
-    }
-
-    private void finishAppListInitialization() {
-        mLastPostResumeAppDataRefreshMs = SystemClock.uptimeMillis();
-        mPostResumeAppDataDirty = false;
-        atomicInitAppData.set(true);
-        if (!onResumePip) {
-            onResumePip = false;
-            userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-            if (userLayout) {
-                mPipStarter.initPip("initializeAppList()", null, false);
-                mHandler.postDelayed(() -> {
-                    Log.d("initializeAppList()", "openPinnedPip()");
-                    WindowUtil.openPinnedPip();
-                }, 1500); 
-            }
-        }
-        mHomeRecovery.scheduleHomeLayoutWatchdog("appListInitialized", !isAllAppsVisible());
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         
         // Refresh decorations when orientation changes
-        markAppDataDirty();
-        requestPostResumeAppDataRefresh();
-        refreshRecyclerViewDecorations();
+        mAppBars.markAppDataDirty();
+        mAppBars.requestPostResumeAppDataRefresh();
+        mAppBars.refreshRecyclerViewDecorations();
         mHomeRecovery.scheduleFocusHomeRecovery("configuration");
         mHomeRecovery.scheduleHomeLayoutWatchdog("configuration", !isAllAppsVisible());
     }
 
-    private void refreshRecyclerViewDecorations() {
-        if (mWorkspace == null) {
-            return;
-        }
-        // Refresh main recycler view
-        mRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
-        if (mRecyclerView != null) {
-            // Re-apply the dynamic bar height first so the rebind below sizes the icons against it.
-            // (Workspace skips this if the bar was inflated for another orientation.)
-            ensureResizableBottomBar("configuration");
-        }
-        if (mRecyclerView != null && mAppListAdapter != null) {
-            mAppListAdapter.notifyDataSetChanged();
-        }
-        
-        // Refresh left recycler view
-        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
-        if (userLayout && leftBar || !userLayout) {
-            RecyclerView mLeftRecyclerView = (RecyclerView) mWorkspace.findViewById(R.id.left_recycler_view);
-            if (mLeftRecyclerView != null && mLeftAppListAdapter != null) {
-                mLeftAppListAdapter.notifyDataSetChanged();
-            }
-        }
-    }
 
-    public void refreshCycle(List<AppMultiple> data) {
-        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
 
-        long sourceSignature = calculateAppRowsSignature(data, userLayout, widgetBar);
-        if (sourceSignature == mLastAppListSourceSignature && hasCurrentAppListData()) {
-            Log.d(TAG, "refreshCycle: unchanged, skipping adapter rebuild");
-            return;
-        }
 
-        boolean hasExistingAppListData = hasCurrentAppListData();
 
-        if (data == null || data.isEmpty()) {
-            // Never blank the bar on an empty read - either keep what is on screen or
-            // let initializeAppList() create the defaults.
-            if (hasExistingAppListData) {
-                Log.w(TAG, "refreshCycle: empty app rows during refresh, keeping current list");
-                scheduleAppListInitializationRetry("refreshCycleEmptyRows");
-            } else {
-                scheduleAppListInitializationRetry("refreshCycleNoRows");
-            }
-            return;
-        }
 
-        Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
-        Map<String, Boolean> installCache = new HashMap<>();
 
-        BarSnapshotCollector bottomSnapshot = new BarSnapshotCollector();
-        List<AppListBean> nextAppListData =
-                buildBottomAppBeans(data, appInfoLookup, installCache, userLayout, widgetBar,
-                        bottomSnapshot);
 
-        // Same regression guard as initializeAppList(): only swap the list in when it is
-        // at least as complete as the database says it should be.
-        boolean safeToUpdate = true;
-        if (hasExistingAppListData) {
-            int installedDbCount =
-                    countInstalledBottomRows(data, installCache, userLayout, widgetBar);
-            int newRealCount = countRealBeans(nextAppListData);
-            if (newRealCount < installedDbCount) {
-                Log.w(TAG, "refreshCycle: new list (" + newRealCount
-                        + " real apps) fewer than installed DB entries (" + installedDbCount
-                        + ") - keeping current list to avoid blank bar");
-                safeToUpdate = false;
-            }
-        }
 
-        if (safeToUpdate && mAppListAdapter != null) {
-            mAppListData = nextAppListData;
-            mAppListAdapter.notifyDataSetChanged(mAppListData);
-            mLastAppListSourceSignature = sourceSignature;
-            saveBottomBarSnapshot(data, userLayout, widgetBar, bottomSnapshot);
-        } else if (!safeToUpdate) {
-            scheduleAppListInitializationRetry("refreshCycleIncompleteAllAppsList");
-        }
-    }
 
-    public void refreshLeftCycle(AppListBean bean) {
-        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
-        if (!(userLayout && leftBar || !userLayout)) return;
-        
-        Log.d(TAG, "--------------->>>   refreshLeftCycle");
-        
-        // Get all physical rows from database
-        List<LeftAppMultiple> physical = LitePal.order("id asc").find(LeftAppMultiple.class);
-        
-        // Ensure we have enough placeholder rows
-        if (physical.size() < MAX_LEFT) {
-            int need = MAX_LEFT - physical.size();
-            for (int i = 0; i < need; i++) {
-                new LeftAppMultiple(0, "", "", "").save();
-            }
-            physical = LitePal.order("id asc").find(LeftAppMultiple.class);
-        }
-        
-        // Create a list of currently installed apps (excluding placeholders)
-        List<LeftAppMultiple> currentInstalled = new ArrayList<>();
-        Map<String, Boolean> installCache = new HashMap<>();
-        for (LeftAppMultiple row : physical) {
-            if (!TextUtils.isEmpty(row.packageName)
-                    && !TextUtils.isEmpty(row.name)
-                    && isPackageInstalledCached(installCache, row.packageName)) {
-                currentInstalled.add(row);
-            }
-        }
-        
-        // Remove the app if it already exists in current list
-        Iterator<LeftAppMultiple> iterator = currentInstalled.iterator();
-        while (iterator.hasNext()) {
-            LeftAppMultiple existing = iterator.next();
-            if (bean.packageName.equals(existing.packageName) && 
-                bean.className.equals(existing.className)) {
-                iterator.remove();
-                break;
-            }
-        }
-        
-        // Create new desired order: new app at position 0, then existing apps
-        List<LeftAppMultiple> desired = new ArrayList<>(MAX_LEFT);
-        desired.add(new LeftAppMultiple(0, bean.name, bean.packageName, bean.className));
-        
-        // Add existing installed apps until we reach MAX_LEFT
-        for (LeftAppMultiple existing : currentInstalled) {
-            if (desired.size() >= MAX_LEFT) break;
-            desired.add(existing);
-        }
-        
-        // Fill remaining slots with empty placeholders if needed
-        while (desired.size() < MAX_LEFT) {
-            desired.add(new LeftAppMultiple(0, "", "", ""));
-        }
-        
-        // Update database with new order
-        for (int i = 0; i < MAX_LEFT; i++) {
-            LeftAppMultiple src = desired.get(i);
-            LeftAppMultiple dst = physical.get(i);
-            
-            ContentValues v = new ContentValues();
-            v.put("name", src.name);
-            v.put("packageName", src.packageName);
-            v.put("className", src.className);
-            LitePal.update(LeftAppMultiple.class, v, dst.id);
-        }
-        
-        // Refresh the display
-        List<LeftAppMultiple> topRows = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
-        refreshLeftBar(topRows);
-    }
 
-    public void refreshLeftBar(@Nullable List<LeftAppMultiple> leftAppData) {
-        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
-        if (!(userLayout && leftBar || !userLayout)) return;
 
-        Log.d(TAG, "--------------->>>   refreshLeftBar");
 
-        final List<LeftAppMultiple> src = (leftAppData != null && !leftAppData.isEmpty())
-                ? leftAppData
-                : LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
-        long sourceSignature = calculateLeftAppRowsSignature(src);
-        if (sourceSignature == mLastLeftAppListSourceSignature
-                && mLeftAppListAdapter != null
-                && mLeftAppListAdapter.getItemCount() > 0
-                && mLeftAppListData != null
-                && !mLeftAppListData.isEmpty()) {
-            Log.d(TAG, "refreshLeftBar: unchanged, skipping adapter rebuild");
-            return;
-        }
 
-        boolean hasExistingLeftListData = hasCurrentLeftAppListData();
-        List<AppListBean> nextLeftAppListData = new ArrayList<>();
-        BarSnapshotCollector leftSnapshot = new BarSnapshotCollector();
 
-        Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();
-        Map<String, Boolean> installCache = new HashMap<>();
 
-        if ((src == null || src.isEmpty()) && hasExistingLeftListData) {
-            Log.w(TAG, "refreshLeftBar: empty rows during refresh, keeping current list");
-            scheduleAppListInitializationRetry("refreshLeftBarEmptyRows");
-            return;
-        }
-
-        int added = 0;
-        for (LeftAppMultiple row : src) {
-            if (added == MAX_LEFT) break;
-            if (!isPackageInstalledCached(installCache, row.packageName)) continue;
-
-            AppListBean bean = null;
-            String beanName = null;
-            Bitmap beanIcon = null;
-
-            AppInfo app = findAppInfo(appInfoLookup, row.packageName, row.className);
-            if (app != null) {
-                beanName = app.title != null ? app.title.toString() : "";
-                beanIcon = app.iconBitmap;
-                bean = new AppListBean(
-                        beanName,
-                        beanIcon,
-                        row.packageName,
-                        row.className
-                );
-            } else {
-                Bitmap icon = loadLeftBarIconStrict(row.packageName, row.className);
-                if (icon != null) {
-                    beanName = row.name != null ? row.name : "";
-                    beanIcon = icon;
-                    leftSnapshot.usedFallbackIcon = true;
-                    bean = new AppListBean(
-                            beanName,
-                            beanIcon,
-                            row.packageName,
-                            row.className
-                    );
-                }
-            }
-
-            if (bean == null) {
-                continue;
-            }
-
-            // Same rule as the bottom bar: the bean remembers which physical row it came
-            // from. The visible left list is compacted (rows whose package is gone are
-            // skipped), so the adapter position is NOT the row position.
-            bean.rowId = row.rowId();
-            nextLeftAppListData.add(bean);
-            leftSnapshot.add((long) row.id, row.packageName, row.className, beanName, beanIcon);
-            added++;
-        }
-        if (mLeftAppListAdapter != null) {
-            mLeftAppListData = nextLeftAppListData;
-            mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
-            mLastLeftAppListSourceSignature = sourceSignature;
-            saveLeftBarSnapshot(src, leftSnapshot);
-        }
-    }
-
-    /**
-     * Clears every left-bar row pointing at one of the just-uninstalled packages and compacts the
-     * remaining rows upwards, mirroring the ordering logic of refreshLeftCycle().
-     * Returns true when the database was actually modified.
-     */
-    private boolean pruneLeftBarRows(ArrayList<String> packageNames) {
-        if (packageNames == null || packageNames.isEmpty()) {
-            return false;
-        }
-        List<LeftAppMultiple> physical = LitePal.order("id asc").find(LeftAppMultiple.class);
-        if (physical == null || physical.isEmpty()) {
-            return false;
-        }
-
-        List<LeftAppMultiple> survivors = new ArrayList<>();
-        boolean removed = false;
-        for (LeftAppMultiple row : physical) {
-            if (row == null || TextUtils.isEmpty(row.packageName)) {
-                continue;
-            }
-            if (packageNames.contains(row.packageName)) {
-                removed = true;
-                continue;
-            }
-            survivors.add(row);
-        }
-        if (!removed) {
-            return false;
-        }
-
-        for (int i = 0; i < physical.size(); i++) {
-            LeftAppMultiple dst = physical.get(i);
-            ContentValues v = new ContentValues();
-            if (i < survivors.size()) {
-                LeftAppMultiple src = survivors.get(i);
-                v.put("name", src.name == null ? "" : src.name);
-                v.put("packageName", src.packageName == null ? "" : src.packageName);
-                v.put("className", src.className == null ? "" : src.className);
-            } else {
-                v.put("name", "");
-                v.put("packageName", "");
-                v.put("className", "");
-            }
-            LitePal.update(LeftAppMultiple.class, v, dst.id);
-        }
-
-        mLastLeftAppListSourceSignature = Long.MIN_VALUE;
-        Log.d(TAG, "pruneLeftBarRows: left bar compacted after uninstall of " + packageNames);
-        return true;
-    }
-
-    /**
-     * Immediately turns every bottom-bar tile whose package was just uninstalled into the
-     * "+" placeholder, instead of waiting for the delayed triggerAppData() rebuild.
-     *
-     * The AppMultiple row itself is deliberately NOT touched: the slot must survive an
-     * uninstall, it just becomes empty. That is also why the row signature does not
-     * change on its own and why the signature has to be invalidated by hand here.
-     *
-     * @return true if anything visible changed
-     */
-    private boolean pruneBottomBarBeans(ArrayList<String> packageNames) {
-        if (packageNames == null || packageNames.isEmpty()
-                || mAppListData == null || mAppListData.isEmpty()) {
-            return false;
-        }
-
-        List<AppListBean> next = new ArrayList<AppListBean>(mAppListData.size());
-        boolean changed = false;
-        Bitmap addIcon = null;
-
-        for (AppListBean bean : mAppListData) {
-            if (bean == null) {
-                continue;
-            }
-            if (bean.packageName == null || !packageNames.contains(bean.packageName)) {
-                next.add(bean);
-                continue;
-            }
-
-            if (addIcon == null) {
-                addIcon = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
-            }
-
-            AppListBean placeholder = new AppListBean("", addIcon, FytPackage.AddAction, "");
-            placeholder.rowId = bean.rowId;
-            placeholder.slot = bean.slot;
-            next.add(placeholder);
-            changed = true;
-
-            if (bean.rowId > 0L) {
-                ContentValues v = new ContentValues();
-                v.put("name", "");
-                v.put("packageName", FytPackage.AddAction);
-                v.put("className", "");
-                try {
-                    LitePal.update(AppMultiple.class, v, bean.rowId);
-                } catch (Exception e) {
-                    Log.e(TAG, "pruneBottomBarBeans: failed to clear row " + bean.rowId, e);
-                }
-            } else {
-                Log.w(TAG, "pruneBottomBarBeans: bean for " + bean.packageName
-                        + " has no rowId, slot cleared in memory only");
-            }
-        }
-
-        if (!changed) {
-            return false;
-        }
-
-        mAppListData = next;
-        if (mAppListAdapter != null) {
-            mAppListAdapter.notifyDataSetChanged(mAppListData);
-        }
-        mLastAppListSourceSignature = Long.MIN_VALUE;
-        Log.d(TAG, "pruneBottomBarBeans: slots emptied after uninstall of " + packageNames);
-        return true;
-    }
-
-    /** In-memory counterpart of pruneLeftBarRows(): drops the tiles right away. */
-    private boolean pruneLeftBarBeans(ArrayList<String> packageNames) {
-        if (packageNames == null || packageNames.isEmpty()
-                || mLeftAppListData == null || mLeftAppListData.isEmpty()) {
-            return false;
-        }
-
-        List<AppListBean> next = new ArrayList<AppListBean>(mLeftAppListData.size());
-        boolean changed = false;
-        for (AppListBean bean : mLeftAppListData) {
-            if (bean == null) {
-                continue;
-            }
-            if (bean.packageName != null && packageNames.contains(bean.packageName)) {
-                changed = true;
-                continue;
-            }
-            next.add(bean);
-        }
-
-        if (!changed) {
-            return false;
-        }
-
-        mLeftAppListData = next;
-        if (mLeftAppListAdapter != null) {
-            mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
-        }
-        mLastLeftAppListSourceSignature = Long.MIN_VALUE;
-        return true;
-    }
-
-    private void createDefaultAppEntries() {
-        String appName1 = Utils.getNameToStr("car_navi");
-        String appName2 = Utils.getNameToStr("car_music");
-        String appName3 = Utils.getNameToStr("car_video");
-        String appName4 = Utils.getNameToStr("car_radio");
-        String appName5 = Utils.getNameToStr("car_bt");
-        String appName6 = Utils.getNameToStr("car_eq");
-        String appName7 = Utils.getNameToStr("car_settings");
-        String appName8 = Utils.getNameToStr("");
-        
-        Bitmap icon1 = loadAppIconFromPackageManager(FytPackage.naviAction, "com.syu.onekeynavi.MainActivity");
-        Bitmap icon2 = loadAppIconFromPackageManager("com.syu.music", "com.syu.app.Activity_All");
-        Bitmap icon3 = loadAppIconFromPackageManager("com.syu.video", "com.syu.video.main.VideoListActivity");
-        Bitmap icon4 = loadAppIconFromPackageManager("com.syu.radio", "com.syu.radio.Launch");
-        Bitmap icon5 = loadAppIconFromPackageManager("com.syu.bt", "com.syu.bt.BtAct");
-        Bitmap icon6 = BitmapFactory.decodeResource(getResources(), R.drawable.icon_settings);
-        Bitmap icon7 = loadAppIconFromPackageManager("com.syu.settings", "com.syu.settings.MainActivity");
-        Bitmap icon8 = BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
-
-        // AppListBean entries for UI
-        AppListBean ab1, ab22, ab32, ab42, ab5, ab6, ab7, ab8;
-        
-        if (helpers.isPackageInstalled(FytPackage.naviAction)) {
-            ab1 = new AppListBean(appName1, icon1, FytPackage.naviAction, "com.syu.onekeynavi.MainActivity");
-            new AppMultiple(0, appName1, FytPackage.naviAction, "com.syu.onekeynavi.MainActivity").save();
-        } else {
-            ab1 = new AppListBean("", BitmapFactory.decodeResource(getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
-            new AppMultiple(0, "", FytPackage.AddAction, "").save();
-        }
-        
-        if (helpers.isPackageInstalled("com.syu.music")) {
-            ab22 = new AppListBean(appName2, icon2, "com.syu.music", "com.syu.app.Activity_All");
-            new AppMultiple(1, appName2, "com.syu.music", "com.syu.app.Activity_All").save();
-        } else {
-            ab22 = new AppListBean("", BitmapFactory.decodeResource(getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
-            new AppMultiple(1, "", FytPackage.AddAction, "").save();
-        }
-        
-        if (helpers.isPackageInstalled("com.syu.video")) {
-            ab32 = new AppListBean(appName3, icon3, "com.syu.video", "com.syu.video.main.VideoListActivity");
-            new AppMultiple(2, appName3, "com.syu.video", "com.syu.video.main.VideoListActivity").save();
-        } else {
-            ab32 = new AppListBean("", BitmapFactory.decodeResource(getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
-            new AppMultiple(2, "", FytPackage.AddAction, "").save();
-        }
-        
-        if (helpers.isPackageInstalled("com.syu.radio")) {
-            ab42 = new AppListBean(appName4, icon4, "com.syu.radio", "com.syu.radio.Launch");
-            new AppMultiple(3, appName4, "com.syu.radio", "com.syu.radio.Launch").save();
-        } else {
-            ab42 = new AppListBean("", BitmapFactory.decodeResource(getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
-            new AppMultiple(3, "", FytPackage.AddAction, "").save();
-        }
-
-        if (helpers.isPackageInstalled("com.syu.bt")) {
-            ab5 = new AppListBean(appName5, icon5, "com.syu.bt", "com.syu.bt.BtAct");
-            new AppMultiple(4, appName5, "com.syu.bt", "com.syu.bt.BtAct").save();
-        } else {
-            ab5 = new AppListBean("", BitmapFactory.decodeResource(getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
-            new AppMultiple(4, "", FytPackage.AddAction, "").save();
-        }
-
-        if (helpers.isPackageInstalled("com.android.launcher66")) {
-            ab6 = new AppListBean(appName6, icon6, "com.android.launcher66", "com.android.launcher66.settings.SettingsActivity");
-            new AppMultiple(5, appName6, "com.android.launcher66", "com.android.launcher66.settings.SettingsActivity").save();
-        } else {
-            ab6 = new AppListBean("", BitmapFactory.decodeResource(getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
-            new AppMultiple(5, "", FytPackage.AddAction, "").save();
-        }
-        
-        ab7 = new AppListBean(appName7, icon7, "com.syu.settings", "com.syu.settings.MainActivity");
-        new AppMultiple(6, appName7, "com.syu.settings", "com.syu.settings.MainActivity").save();
-
-        ab8 = new AppListBean(appName8, icon8, FytPackage.AddAction, "");
-        new AppMultiple(7, appName8, FytPackage.AddAction, "").save();
-        
-        userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
-        widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
-
-        // Add all beans to the list
-        if (userLayout && widgetBar) {
-            mAppListData.add(ab22);
-            mAppListData.add(ab5);
-            mAppListData.add(ab6);
-            mAppListData.add(ab7);
-            mAppListData.add(ab8); 
-        } else {
-            mAppListData.add(ab1);
-            mAppListData.add(ab22);
-            mAppListData.add(ab32);
-            mAppListData.add(ab42);
-            mAppListData.add(ab5);
-            mAppListData.add(ab6);
-            mAppListData.add(ab7);
-            mAppListData.add(ab8);            
-        }
-    }
-
-    public void enableRecycler() {
-        if (mRecyclerView != null) {
-            mRecyclerView.setEnabled(true);
-            mRecyclerView.setClickable(true);
-            mRecyclerView.setLongClickable(true);
-            mRecyclerView.setVisibility(View.VISIBLE);
-            Log.i(TAG, "Recycler enabled");
-        }
-    }
-
-    public void disableRecycler() {
-        if (mRecyclerView != null) {
-            mRecyclerView.setEnabled(false);
-            mRecyclerView.setClickable(false);
-            mRecyclerView.setLongClickable(false);
-            mRecyclerView.setVisibility(View.GONE);
-            Log.i(TAG, "Recycler disabled");
-        }
-    }
-
-    /**
-     * Returns true if any of the given package names is currently configured as a bottom-bar
-     * shortcut (stored in AppMultiple) or left-bar shortcut (LeftAppMultiple).
-     * Used to avoid needlessly re-running initAppData for unrelated package change events.
-     */
-    private boolean isPackageInBottomBar(ArrayList<String> packageNames) {
-        if (packageNames == null || packageNames.isEmpty()) return false;
-        if (mAppListData != null) {
-            for (AppListBean bean : mAppListData) {
-                if (packageNames.contains(bean.packageName)) return true;
-            }
-        }
-        if (mLeftAppListData != null) {
-            for (AppListBean bean : mLeftAppListData) {
-                if (packageNames.contains(bean.packageName)) return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isAppInfoInBottomBar(ArrayList<AppInfo> appInfos) {
-        if (appInfos == null || appInfos.isEmpty()) return false;
-        ArrayList<String> pkgs = new ArrayList<>();
-        for (AppInfo ai : appInfos) pkgs.add(ai.getPackageName());
-        return isPackageInBottomBar(pkgs);
-    }
-
-    private Bitmap loadAppIconFromPackageManager(String packageName, String className) {
-        String cacheKey = appIconCacheKey(packageName, className);
-        Bitmap cached = mAppIconBitmapCache.get(cacheKey);
-        if (cached != null) {
-            return cached;
-        }
-
-        try {
-            PackageManager pm = getPackageManager();
-            ComponentName component = new ComponentName(packageName, className);
-            Drawable drawable = pm.getActivityIcon(component);
-            Bitmap bitmap;
-            if (drawable instanceof BitmapDrawable) {
-                bitmap = ((BitmapDrawable) drawable).getBitmap();
-            } else {
-                int width = Math.max(1, drawable.getIntrinsicWidth());
-                int height = Math.max(1, drawable.getIntrinsicHeight());
-                bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-                drawable.draw(canvas);
-            }
-            if (bitmap != null) {
-                mAppIconBitmapCache.put(cacheKey, bitmap);
-            }
-            return bitmap;
-        } catch (Exception e) {
-            Log.e(TAG, "Error loading icon for " + packageName + ": " + e.getMessage());
-            return BitmapFactory.decodeResource(getResources(), R.drawable.icon_add);
-        }
-    }
-
-    /**
-     * Strict icon loader used ONLY by the left bar. Returns null when the package/component can
-     * no longer be resolved (e.g. it has just been uninstalled) instead of falling back to the
-     * "add app" placeholder icon that the bottom bar legitimately uses.
-     */
-    private Bitmap loadLeftBarIconStrict(String packageName, String className) {
-        if (TextUtils.isEmpty(packageName)) {
-            return null;
-        }
-        PackageManager pm = getPackageManager();
-        try {
-            pm.getApplicationInfo(packageName, 0);
-        } catch (Exception e) {
-            // Package gone -> caller must drop this row completely.
-            return null;
-        }
-
-        String cacheKey = appIconCacheKey(packageName, className);
-        Bitmap cached = mAppIconBitmapCache.get(cacheKey);
-        if (cached != null && !cached.isRecycled()) {
-            return cached;
-        }
-
-        Drawable drawable = null;
-        try {
-            if (!TextUtils.isEmpty(className)) {
-                drawable = pm.getActivityIcon(new ComponentName(packageName, className));
-            }
-        } catch (Exception e) {
-            drawable = null;
-        }
-        if (drawable == null) {
-            // Activity renamed but package still installed -> fall back to its launch component.
-            try {
-                Intent launch = pm.getLaunchIntentForPackage(packageName);
-                if (launch != null && launch.getComponent() != null) {
-                    drawable = pm.getActivityIcon(launch.getComponent());
-                }
-            } catch (Exception e) {
-                drawable = null;
-            }
-        }
-        if (drawable == null) {
-            Log.w(TAG, "loadLeftBarIconStrict: no icon for " + packageName + "/" + className);
-            return null;
-        }
-
-        Bitmap bitmap;
-        if (drawable instanceof BitmapDrawable && ((BitmapDrawable) drawable).getBitmap() != null) {
-            bitmap = ((BitmapDrawable) drawable).getBitmap();
-        } else {
-            int width = Math.max(1, drawable.getIntrinsicWidth());
-            int height = Math.max(1, drawable.getIntrinsicHeight());
-            bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-            drawable.draw(canvas);
-        }
-        if (bitmap != null) {
-            mAppIconBitmapCache.put(cacheKey, bitmap);
-        }
-        return bitmap;
-    }
-
-    private String appIconCacheKey(String packageName, String className) {
-        return String.valueOf(packageName) + "/" + String.valueOf(className);
-    }
-
-    private void clearAppIconBitmapCache() {
-        mAppIconBitmapCache.clear();
-    }
 
     private void initAnim() {
     }
 
-    private class OnSeekBarChangeListenerImp implements SeekBar.OnSeekBarChangeListener {
+    class OnSeekBarChangeListenerImp implements SeekBar.OnSeekBarChangeListener {
         private OnSeekBarChangeListenerImp() {
         }
 
@@ -7578,10 +4555,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (fromUser) {
                 boolean handled = false;
-                if ("mediaController".equals(Launcher.this.mediaSource)) {
+                if ("mediaController".equals(Launcher.this.mMusicWidget.mediaSource)) {
                     handled = MediaTransportController.seekToProgress(
                             Launcher.this,
-                            Launcher.this.getPreferredMediaControllerPackage(),
+                            Launcher.this.mMusicWidget.getPreferredMediaControllerPackage(),
                             progress,
                             seekBar.getMax()
                     );
@@ -7589,8 +4566,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (!handled && Launcher.this.mPlayer != null) {
                     Launcher.this.mPlayer.seekTo(progress);
                 }
-                if (Launcher.this.musicSeekBar != null) {
-                    Launcher.this.musicSeekBar.setProgress(progress);
+                if (Launcher.this.mMusicWidget.musicSeekBar != null) {
+                    Launcher.this.mMusicWidget.musicSeekBar.setProgress(progress);
                 }
             }
         }
@@ -7619,410 +4596,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public void bindMusicWidgetOnclickListener(View musicWidgetView) {
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        prevLayout = musicWidgetView.findViewById(R.id.constraint_layout_prev);
-        playPauseLayout = musicWidgetView.findViewById(R.id.constraint_layout_playpause);
-        nextLayout = musicWidgetView.findViewById(R.id.constraint_layout_next);
-        favoriteLayout = musicWidgetView.findViewById(R.id.constraint_layout_favorite);
-        
-        // Set up previous button
-        View.OnClickListener prevClickListener = v -> onPrevButtonClicked(false);
-        prevLayout.setOnClickListener(prevClickListener);
-        if (mMusicPrevButton != null) {
-            mMusicPrevButton.setOnClickListener(prevClickListener);
-        }
-        
-        // Set up play/pause button
-        View.OnClickListener playPauseClickListener = v -> onPlayPauseButtonClicked(false);
-        playPauseLayout.setOnClickListener(playPauseClickListener);
-        if (mPlayPauseButton != null) {
-            mPlayPauseButton.setOnClickListener(playPauseClickListener);
-        }
-        
-        // Set up next button
-        View.OnClickListener nextClickListener = v -> onNextButtonClicked(false);
-        nextLayout.setOnClickListener(nextClickListener);
-        if (mMusicNextButton != null) {
-            mMusicNextButton.setOnClickListener(nextClickListener);
-        }
 
-        View.OnClickListener favoriteClickListener = v -> onFavoriteButtonClicked(false);
-        if (favoriteLayout != null) {
-            favoriteLayout.setOnClickListener(favoriteClickListener);
-        }
-        if (mMusicFavoriteButton != null) {
-            mMusicFavoriteButton.setOnClickListener(favoriteClickListener);
-        }
-        
-        // Make layouts clickable
-        prevLayout.setClickable(true);
-        playPauseLayout.setClickable(true);
-        nextLayout.setClickable(true);
-        if (favoriteLayout != null) {
-            favoriteLayout.setClickable(true);
-        }
-        
-        prevLayout.setFocusable(true);
-        playPauseLayout.setFocusable(true);
-        nextLayout.setFocusable(true);
-        if (favoriteLayout != null) {
-            favoriteLayout.setFocusable(true);
-        }
-    }
 
-    public void bindMusicBarOnclickListener(View musicBarView) {
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        prevLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_prev_two);
-        playPauseLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_playpause_two);
-        nextLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_next_two);
-        favoriteLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_favorite_two);
-        
-        // Set up previous button
-        View.OnClickListener prevClickListener = v -> onPrevButtonClicked(true);
-        prevLayoutTwo.setOnClickListener(prevClickListener);
-        if (mMusicPrevButtonTwo != null) {
-            mMusicPrevButtonTwo.setOnClickListener(prevClickListener);
-        }
-        
-        // Set up play/pause button
-        View.OnClickListener playPauseClickListener = v -> onPlayPauseButtonClicked(true);
-        playPauseLayoutTwo.setOnClickListener(playPauseClickListener);
-        if (mPlayPauseButtonTwo != null) {
-            mPlayPauseButtonTwo.setOnClickListener(playPauseClickListener);
-        }
-        
-        // Set up next button
-        View.OnClickListener nextClickListener = v -> onNextButtonClicked(true);
-        nextLayoutTwo.setOnClickListener(nextClickListener);
-        if (mMusicNextButtonTwo != null) {
-            mMusicNextButtonTwo.setOnClickListener(nextClickListener);
-        }
 
-        View.OnClickListener favoriteClickListener = v -> onFavoriteButtonClicked(true);
-        if (favoriteLayoutTwo != null) {
-            favoriteLayoutTwo.setOnClickListener(favoriteClickListener);
-        }
-        if (mMusicFavoriteButtonTwo != null) {
-            mMusicFavoriteButtonTwo.setOnClickListener(favoriteClickListener);
-        }
-        
-        // Make LayoutTwos clickable
-        prevLayoutTwo.setClickable(true);
-        playPauseLayoutTwo.setClickable(true);
-        nextLayoutTwo.setClickable(true);
-        if (favoriteLayoutTwo != null) {
-            favoriteLayoutTwo.setClickable(true);
-        }
-        
-        prevLayoutTwo.setFocusable(true);
-        playPauseLayoutTwo.setFocusable(true);
-        nextLayoutTwo.setFocusable(true);
-        if (favoriteLayoutTwo != null) {
-            favoriteLayoutTwo.setFocusable(true);
-        }
-    }
 
-    public void onFavoriteButtonClicked(boolean barView) {
-        if (barView && mWorkspace != null) {
-            mWorkspace.scheduleAutoHide();
-        }
-        String preferredPackage = getPreferredMediaControllerPackage();
-        if (MediaFavoriteController.isFavoriteTemporarilyDisabledPackage(preferredPackage)) {
-            updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN, false);
-            return;
-        }
-        int stateBefore = MediaFavoriteController.getCurrentFavoriteState(this, preferredPackage);
-        boolean sent = MediaFavoriteReceiver.handleFavoriteAction(this, preferredPackage);
-        if (sent) {
-            if (stateBefore == MediaFavoriteController.FAVORITE_STATE_FAVORITED) {
-                updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED);
-            } else if (stateBefore == MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED) {
-                updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_FAVORITED);
-            } else {
-                updateFavoriteButtonState(MediaFavoriteController.getCurrentFavoriteState(this, preferredPackage));
-            }
-            mHandler.postDelayed(this::updateFavoriteButtonState, 700);
-        }
-    }
-
-    private void updateFavoriteButtonState() {
-        String preferredPackage = getPreferredMediaControllerPackage();
-        if (MediaFavoriteController.isFavoriteTemporarilyDisabledPackage(preferredPackage)) {
-            updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN, false);
-            return;
-        }
-        updateFavoriteButtonState(MediaFavoriteController.getCurrentFavoriteState(this, preferredPackage));
-    }
-
-    private void updateFavoriteButtonState(int favoriteState) {
-        updateFavoriteButtonState(favoriteState, true);
-    }
-
-    private void updateFavoriteButtonState(int favoriteState, boolean enabled) {
-        int drawable = favoriteState == MediaFavoriteController.FAVORITE_STATE_FAVORITED
-                ? R.drawable.music_favorite_p
-                : R.drawable.btn_ic_favorite;
-        setFavoriteButtonBackground(mMusicFavoriteButton, drawable, false, enabled);
-        setFavoriteButtonBackground(mMusicFavoriteButtonTwo, drawable, true, enabled);
-    }
-
-    private void setFavoriteButtonBackground(Button button, int drawable, boolean barView, boolean enabled) {
-        if (button == null) {
-            return;
-        }
-        button.setEnabled(enabled);
-        button.setAlpha(enabled ? 1f : 0.45f);
-        button.setBackground(SkinUtils.getDrawable(drawable));
-        if (barView) {
-            setBarButtonsTint(button);
-        } else {
-            setWidgetButtonsTint(button);
-        }
-    }
     
-    private String getPreferredMediaControllerPackage() {
-        if ("mediaController".equals(mediaSource) && activeController != null && !activeController.isEmpty()) {
-            return activeController;
-        }
-        return null;
-    }
 
-    private void refreshLeftCycleForIntent(Intent launchIntent) {
-        if (launchIntent == null || launchIntent.getComponent() == null) {
-            return;
-        }
 
-        try {
-            ComponentName componentName = launchIntent.getComponent();
-            PackageManager pm = getPackageManager();
-            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-            String appTitle = appInfo.loadLabel(pm).toString();
-            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-            refreshLeftCycle(bean);
-            cleanWidgetBar();
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.w(TAG, "Unable to refresh music app cycle", e);
-        }
-    }
 
-    private void openActiveMusicPlayer(View v) {
-        WindowUtil.removePip();
-        Intent launchIntent = MediaTransportController.getActivePlayerLaunchIntent(
-                this,
-                getPreferredMediaControllerPackage()
-        );
-        if (launchIntent == null) {
-            return;
-        }
-        refreshLeftCycleForIntent(launchIntent);
-        startActivitySafely(v, launchIntent, "music");
-    }
 
-    public void onPrevButtonClicked(boolean barView) {
-        if (barView) {
-            mWorkspace.scheduleAutoHide();
-        }
 
-        if (isRadioPlaying() && "mediaController".equals(mediaSource)) {
-            openActiveMusicPlayer(null);
-            return;
-        }
 
-        MediaTransportController.handleAction(
-                this,
-                MediaTransportController.ACTION_PREVIOUS,
-                getPreferredMediaControllerPackage()
-        );
-        requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
-    }
 
-    public void onPlayPauseButtonClicked(boolean barView) {
-        if (barView) {
-            mWorkspace.scheduleAutoHide();
-        }
-        if (!temporarilyDisablePlayPauseButton) {
-            if ("fyt".equals(mediaSource)) {
-                if (this.mPlayPauseButton != null) {
-                    if (MusicService.state.booleanValue()) {
-                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        setWidgetButtonsTint(mPlayPauseButton);
-                    } else {
-                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                        setWidgetButtonsTint(mPlayPauseButton);
-                    }
-                }
-                if (this.mPlayPauseButtonTwo != null && barView) {
-                    if (MusicService.state.booleanValue()) {
-                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        setBarButtonsTint(mPlayPauseButtonTwo);
-                    } else {
-                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                        setBarButtonsTint(mPlayPauseButtonTwo);
-                    }
-                } 
-                Intent intent = new Intent();
-                intent.setAction("com.syu.music.playpause");
-                intent.setPackage("com.syu.music");
-                SysCalls.startService(this, intent);
-            } else if ("mediaController".equals(mediaSource)) {
-                boolean activeControllerAppRunning = false;
-                MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-                ComponentName component = new ComponentName(this, NotificationListener.class);
-                List<MediaController> controllers = msm.getActiveSessions(component);
-                for (MediaController controller : controllers) {
-                    if (controller.getPackageName().equals(activeController)) {
-                        activeControllerAppRunning = true;
 
-                        PlaybackState state = controller.getPlaybackState();
-                        int playbackState = (state != null) ? state.getState() : PlaybackState.STATE_NONE;
-
-                        if (playbackState == PlaybackState.STATE_PLAYING) {
-                            handler.postDelayed(() -> {
-                                if (playbackState == PlaybackState.STATE_PLAYING) {
-                                    if (this.mPlayPauseButton != null) {
-                                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                        setWidgetButtonsTint(mPlayPauseButton);
-                                    }
-                                    if (this.mPlayPauseButtonTwo != null && barView) {
-                                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                        setBarButtonsTint(mPlayPauseButtonTwo);
-                                    } 
-                                    controller.getTransportControls().pause();  
-                                } else {
-                                    if (this.mPlayPauseButton != null) {
-                                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                        setWidgetButtonsTint(mPlayPauseButton);
-                                    }
-                                    if (this.mPlayPauseButtonTwo != null && barView) {
-                                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                        setBarButtonsTint(mPlayPauseButtonTwo);
-                                    }   
-                                    controller.getTransportControls().play();
-                                }
-                            }, 350);
-
-                        } else {
-                            if (this.mPlayPauseButton != null) {
-                                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                setWidgetButtonsTint(mPlayPauseButton);
-                            }
-                            if (this.mPlayPauseButtonTwo != null && barView) {
-                                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                setBarButtonsTint(mPlayPauseButtonTwo);
-                            }   
-
-                            controller.getTransportControls().play();
-                        }
-                        break;
-                    }
-                }
-                if (!activeControllerAppRunning || isRadioPlaying()) {
-                    WindowUtil.removePip();
-                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                    try {
-                        ComponentName componentName = launchIntent.getComponent();
-                        PackageManager pm = getPackageManager();
-                        ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                        String appTitle = appInfo.loadLabel(pm).toString();
-                        AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                        this.refreshLeftCycle(bean);
-                        cleanWidgetBar();
-                    } catch (PackageManager.NameNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    startActivity(launchIntent);
-                }
-            }
-        }
-
-        temporarilyDisablePlayPauseButton = true;
-
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                temporarilyDisablePlayPauseButton = false;
-            }
-        }, 500);
-    }
-
-    public void onNextButtonClicked(boolean barView) {
-        if (barView) {
-            mWorkspace.scheduleAutoHide();
-        }
-
-        if (isRadioPlaying() && "mediaController".equals(mediaSource)) {
-            openActiveMusicPlayer(null);
-            return;
-        }
-
-        MediaTransportController.handleAction(
-                this,
-                MediaTransportController.ACTION_NEXT,
-                getPreferredMediaControllerPackage()
-        );
-        requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
-    }
-
-    private void setBarButtonsTint(Button button) {
-        if (button == null) {
-            return;
-        }
-        barTint = mPrefs.getBoolean(Keys.BLACK_BAR, false);
-        if (barTint) {
-            helpers.applyColorFilterToButton(button);
-        }
-    }
-
-    private void setWidgetButtonsTint(Button button) {
-        if (button == null) {
-            return;
-        }
-        widgetTint = mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
-        if (widgetTint) {
-            helpers.applyColorFilterToButton(button);
-        }
-    }
-
-    public void bindRadioWidgetOnclickListener() {
-        if (mRadioPrevButton != null) {
-            mRadioPrevButton.setOnClickListener(v -> {
-                if (CarStates.mAppID == 1 && this.tools != null) {
-                    this.tools.sendInt(1, 1, 0);
-                }
-            });
-        }
-        if (mRadioBandButton != null) {
-            mRadioBandButton.setOnClickListener(v -> {
-                if (CarStates.mAppID == 1 && this.tools != null) {
-                    Log.d(TAG, "---------------------->>> mRadioBandButton");
-                    this.tools.sendInt(1, 11, -1);
-                }
-            });
-        }
-        if (mRadioPauseButton != null) {
-            mRadioPauseButton.setOnClickListener(v -> {
-                if (this.tools != null) {
-                    if (CarStates.mAppID == 1) {
-                        this.tools.sendInt(0, 0, 0);
-                        this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_pause_icon);
-                    } else {
-                        this.tools.sendInt(0, 0, 1);
-                        this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_playpause_icon);
-                    }
-                }
-            });
-        }
-        if (mRadioNextButton != null) {
-            mRadioNextButton.setOnClickListener(v -> {
-                if (CarStates.mAppID == 1 && this.tools != null) {
-                    this.tools.sendInt(1, 0, 0);
-                }
-            });
-        }
-    }
 
     public void bindOnclickListener() {
         if (kuwomusic_playpause != null) {
@@ -8442,19 +5030,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    private String freqToString(String freq2) {
-        float vals = Float.parseFloat(freq2);
-        float val = vals / 1.0f;
-        BigDecimal bd = new BigDecimal(val);
-        return bd.setScale(0, 4).toString();
-    }
 
     
-    public String freqToString(int freq2) {
-        float val = freq2 / 1.0f;
-        BigDecimal bd = new BigDecimal(val);
-        return bd.setScale(0, 4).toString();
-    }
 
     public String timeChangeParse(long duration) {
         long hour = duration / 3600;
@@ -8466,10 +5043,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     protected void startLiveWallpaper() {
         Intent pickWallpaper = new Intent("android.intent.action.SET_WALLPAPER");
-        pickWallpaper.setComponent(getWallpaperPickerComponent());
+        pickWallpaper.setComponent(mWallpaperPicker.getWallpaperPickerComponent());
         pickWallpaper.putExtra("live_wallpaper", 1);
         startActivityForResult(pickWallpaper, 10);
-        showWallpaperPickerIndicator();
+        mWallpaperPicker.showWallpaperPickerIndicator();
     }
 
     View createShortcut(ShortcutInfo info) {
@@ -8721,31 +5298,31 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mWorkspace.cancelPendingAutoHide();
                 mWorkspace.clearWidgetReferences();
             }
-            ivALbumBgTwo = null;
-            tvMusicNameTwo = null;
-            tvAritstTwo = null;
+            mMusicWidget.ivALbumBgTwo = null;
+            mMusicWidget.tvMusicNameTwo = null;
+            mMusicWidget.tvAritstTwo = null;
             weatherImg1 = null;
             weatherCity1 = null;
             // Was "weatherTemp = null": that cleared the hotseat weather widget's temperature on
             // every onPause() and left the bar field pointing at the removed overlay view.
             weatherTemp1 = null;
             weatherWeather1 = null;
-            cleanupViewRecursively(prevLayoutTwo);
-            cleanupViewRecursively(playPauseLayoutTwo);
-            cleanupViewRecursively(nextLayoutTwo);
-            cleanupViewRecursively(favoriteLayoutTwo);
-            cleanupViewRecursively(mMusicNextButtonTwo);
-            cleanupViewRecursively(mMusicPrevButtonTwo);
-            cleanupViewRecursively(mPlayPauseButtonTwo);
-            cleanupViewRecursively(mMusicFavoriteButtonTwo);
-            prevLayoutTwo = null;
-            playPauseLayoutTwo = null;
-            nextLayoutTwo = null;
-            favoriteLayoutTwo = null;
-            mMusicNextButtonTwo = null;
-            mMusicPrevButtonTwo = null;
-            mPlayPauseButtonTwo = null;
-            mMusicFavoriteButtonTwo = null;
+            cleanupViewRecursively(mMusicWidget.prevLayoutTwo);
+            cleanupViewRecursively(mMusicWidget.playPauseLayoutTwo);
+            cleanupViewRecursively(mMusicWidget.nextLayoutTwo);
+            cleanupViewRecursively(mMusicWidget.favoriteLayoutTwo);
+            cleanupViewRecursively(mMusicWidget.mMusicNextButtonTwo);
+            cleanupViewRecursively(mMusicWidget.mMusicPrevButtonTwo);
+            cleanupViewRecursively(mMusicWidget.mPlayPauseButtonTwo);
+            cleanupViewRecursively(mMusicWidget.mMusicFavoriteButtonTwo);
+            mMusicWidget.prevLayoutTwo = null;
+            mMusicWidget.playPauseLayoutTwo = null;
+            mMusicWidget.nextLayoutTwo = null;
+            mMusicWidget.favoriteLayoutTwo = null;
+            mMusicWidget.mMusicNextButtonTwo = null;
+            mMusicWidget.mMusicPrevButtonTwo = null;
+            mMusicWidget.mPlayPauseButtonTwo = null;
+            mMusicWidget.mMusicFavoriteButtonTwo = null;
             removeCustomView("WS_Music_Two");
         }
     }    
@@ -9405,7 +5982,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
                     String appTitle = appInfo.loadLabel(pm).toString();
                     AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                    refreshLeftCycle(bean);
+                    mAppBars.refreshLeftCycle(bean);
                     if (componentName.getClassName().equals("com.android.launcher66.settings.SettingsActivity")) {
                         Intent settingsIntent = new Intent(this, SettingsActivity.class);
                         settingsIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -9467,7 +6044,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
                             String appTitle = appInfo.loadLabel(pm).toString();
                             AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                            refreshLeftCycle(bean);
+                            mAppBars.refreshLeftCycle(bean);
                             cleanWidgetBar();
                         } catch (PackageManager.NameNotFoundException e) {
                             throw new RuntimeException(e);
@@ -9491,7 +6068,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
                             String appTitle = appInfo.loadLabel(pm).toString();
                             AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                            refreshLeftCycle(bean);
+                            mAppBars.refreshLeftCycle(bean);
                             cleanWidgetBar();
                         } catch (PackageManager.NameNotFoundException e) {
                             throw new RuntimeException(e);
@@ -9503,7 +6080,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.WS_Music) || v == getCustomView(Config.WS_Music_Two) || v == getCustomView(Config.WS_Music3)) {
-                openActiveMusicPlayer(v);
+                mMusicWidget.openActiveMusicPlayer(v);
                 return;
             }
             if (v == getCustomView(Config.WS_Maps)) {
@@ -9755,14 +6332,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void stopMusic() {
-        if ("mediaController".equals(mediaSource)) {
-            if (mPlayPauseButton != null) {
-                mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
+        if ("mediaController".equals(mMusicWidget.mediaSource)) {
+            if (mMusicWidget.mPlayPauseButton != null) {
+                mMusicWidget.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                mMusicWidget.setWidgetButtonsTint(mMusicWidget.mPlayPauseButton);
             }
-            if (mPlayPauseButtonTwo != null) {
-                mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
+            if (mMusicWidget.mPlayPauseButtonTwo != null) {
+                mMusicWidget.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                mMusicWidget.setBarButtonsTint(mMusicWidget.mPlayPauseButtonTwo);
             }
             SysCalls.sendBroadcast(Launcher.this, new Intent("media.play.pause")); 
         }
@@ -11206,7 +7783,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // The new page's app bars are empty, and initAppData() waits for the whole app list,
             // which a forceReload() loads again from scratch -- 10 s of icons after one return
             // from the settings. The adapters still hold the current bar apps: put them back now.
-            if (mAppListAdapter != null && mAppListAdapter.getItemCount() > 0) {
+            if (mAppBars.mAppListAdapter != null && mAppBars.mAppListAdapter.getItemCount() > 0) {
                 mHomeRecovery.restoreBottomRecyclerAfterHome("bindScreens");
             }
         }
@@ -11250,7 +7827,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void bindAppsAdded(final ArrayList<Long> newScreens, final ArrayList<ItemInfo> addNotAnimated, final ArrayList<ItemInfo> addAnimated, final ArrayList<AppInfo> addedApps) {
         Log.d(TAG, "bindAppsAdded");
         FytPackage.invalidatePackageCache();
-        clearAppIconBitmapCache();
+        mAppBars.clearAppIconBitmapCache();
         Runnable r = new Runnable() { 
             @Override
             public void run() {
@@ -11269,8 +7846,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (!AppsCustomizePagedView.DISABLE_ALL_APPS && addedApps != null && mAppsCustomizeContent != null) {
                 mAppsCustomizeContent.addApps(addedApps);
             }
-            if (isAppInfoInBottomBar(addedApps)) {
-                triggerAppData();
+            if (mAppBars.isAppInfoInBottomBar(addedApps)) {
+                mAppBars.triggerAppData();
             }
         }
     }
@@ -11709,11 +8286,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void bindAllApplications(ArrayList<AppInfo> apps) {
         Log.d(TAG, "bindAllApplications");
-        if (mAwaitingAllAppsBind) {
-            mAwaitingAllAppsBind = false;
-            mAllAppsBackstopChecks = 0;
-            mHandler.removeCallbacks(mAllAppsBindBackstop);
-            triggerAppData();
+        if (mAppBars.mAwaitingAllAppsBind) {
+            mAppBars.mAwaitingAllAppsBind = false;
+            mAppBars.mAllAppsBackstopChecks = 0;
+            mHandler.removeCallbacks(mAppBars.mAllAppsBindBackstop);
+            mAppBars.triggerAppData();
         }
         if (AppsCustomizePagedView.DISABLE_ALL_APPS) {
             if (mIntentsOnWorkspaceFromUpgradePath != null) {
@@ -11727,7 +8304,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void bindAppsUpdated(final ArrayList<AppInfo> apps) {
         FytPackage.invalidatePackageCache();
-        clearAppIconBitmapCache();
+        mAppBars.clearAppIconBitmapCache();
         Runnable r = new Runnable() {
             public void run() {
                 bindAppsUpdated(apps);
@@ -11747,15 +8324,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         // Refresh bottom bar icons only if the changed apps are actually shown there
-        if (isAppInfoInBottomBar(apps)) {
-            triggerAppData();
+        if (mAppBars.isAppInfoInBottomBar(apps)) {
+            mAppBars.triggerAppData();
         }
     }
 
     @Override
     public void bindComponentsRemoved(final ArrayList<String> packageNames, final ArrayList<AppInfo> appInfos, final boolean packageRemoved) {
         FytPackage.invalidatePackageCache();
-        clearAppIconBitmapCache();
+        mAppBars.clearAppIconBitmapCache();
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -11777,18 +8354,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (packageRemoved) {
                 // 1. On-screen first, synchronously, so the tiles react in this frame
                 //    instead of waiting for the delayed triggerAppData() rebuild.
-                boolean bottomBarChanged = pruneBottomBarBeans(packageNames);
-                boolean leftBeansChanged = pruneLeftBarBeans(packageNames);
+                boolean bottomBarChanged = mAppBars.pruneBottomBarBeans(packageNames);
+                boolean leftBeansChanged = mAppBars.pruneLeftBarBeans(packageNames);
 
                 // 2. Then the database: drop + compact the left-bar rows, otherwise the
                 //    stale row survives and comes back (as a placeholder) on the next
                 //    rebuild. Bottom-bar rows are intentionally kept - the slot stays.
-                boolean leftRowsChanged = pruneLeftBarRows(packageNames);
+                boolean leftRowsChanged = mAppBars.pruneLeftBarRows(packageNames);
 
                 if (bottomBarChanged || leftBeansChanged || leftRowsChanged) {
-                    mLastAppListSourceSignature = Long.MIN_VALUE;
-                    mLastLeftAppListSourceSignature = Long.MIN_VALUE;
-                    triggerAppData();
+                    mAppBars.mLastAppListSourceSignature = Long.MIN_VALUE;
+                    mAppBars.mLastLeftAppListSourceSignature = Long.MIN_VALUE;
+                    mAppBars.triggerAppData();
                 }
             }
         }
@@ -12274,7 +8851,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public static class EvenVerticalLayoutManager extends LinearLayoutManager {
         static final String LM_TAG = "EvenVerticalLM";
-        private static final String LM_PREFS = "LauncherPrefs";
+        static final String LM_PREFS = "LauncherPrefs";
         private static final String KEY_ITEM_HEIGHT = "left_bar_item_height";
 
         private static int sCachedNaturalItemHeight = -1;
@@ -12430,5 +9007,75 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void cancelPipWatchdog() {
         mPipStarter.cancelPipWatchdog();
+    }
+
+    public boolean canShowOverlayFab() {
+        return mFab.canShowOverlayFab();
+    }
+
+    public void showOverlayFab() {
+        mFab.showOverlayFab();
+    }
+
+    public void hideOverlayFab() {
+        mFab.hideOverlayFab();
+    }
+
+    public void triggerAppData() {
+        mAppBars.triggerAppData();
+    }
+
+    public void enableRecycler() {
+        mAppBars.enableRecycler();
+    }
+
+    public void disableRecycler() {
+        mAppBars.disableRecycler();
+    }
+
+    public void refreshLeftCycle(AppListBean bean) {
+        mAppBars.refreshLeftCycle(bean);
+    }
+
+    public void initMusicWidgetView(View musicWidgetView) {
+        mMusicWidget.initMusicWidgetView(musicWidgetView);
+    }
+
+    public void initMusicBarView(View musicBarView) {
+        mMusicWidget.initMusicBarView(musicBarView);
+    }
+
+    public void bindMusicWidgetOnclickListener(View musicWidgetView) {
+        mMusicWidget.bindMusicWidgetOnclickListener(musicWidgetView);
+    }
+
+    public void bindMusicBarOnclickListener(View musicBarView) {
+        mMusicWidget.bindMusicBarOnclickListener(musicBarView);
+    }
+
+    public void preSetMusicWidgets() {
+        mMusicWidget.preSetMusicWidgets();
+    }
+
+    public void initRadioWidgetView(View radioWidgetView) {
+        mRadioWidget.initRadioWidgetView(radioWidgetView);
+    }
+
+    public void bindRadioWidgetOnclickListener() {
+        mRadioWidget.bindRadioWidgetOnclickListener();
+    }
+
+    public void onClickWallpaperPicker(View v) {
+        mWallpaperPicker.onClickWallpaperPicker(v);
+    }
+
+    /** Last radio frequency reported by the MCU, for the radio app widget. */
+    public int getRadioFreqState() {
+        return mRadioWidget.radioFreqState;
+    }
+
+    /** The same frequency as shown text ("87.50"). */
+    public String getRadioFreq() {
+        return mRadioWidget.radioFreq;
     }
 }
