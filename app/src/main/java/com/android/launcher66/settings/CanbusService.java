@@ -579,7 +579,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     statsTopLeftX, // temporary; we'll overwrite below with safeLayoutX
                     statsTopLeftY,
                     WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                    // Display only: every touch (taps, swipes, long presses) goes through to the
+                    // app or home screen underneath, which the stats would otherwise block.
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                            | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                            | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                     PixelFormat.TRANSLUCENT
             );
             statsLayoutParams.gravity = Gravity.TOP | Gravity.START;
