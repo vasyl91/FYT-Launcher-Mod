@@ -1073,6 +1073,10 @@ public class WindowUtil {
         PaneLaunch l = queue.remove(nextPaneIndex(queue, page));
         Log.i(TAG, "pane launch: " + l.label + (l.stealer ? "*" : "") + " (page " + l.page
                 + ", visible " + page + ", " + queue.size() + " left)");
+        // A pane can start later than the media listener's fixed rebuild window now (it waits for
+        // the previous one, and the visible page goes first), so each start extends that window:
+        // a source-stealing app coming up is still the launcher's doing, not a source switch.
+        suppressMediaSourceSwitch();
         try {
             l.action.run();
         } catch (Throwable t) {

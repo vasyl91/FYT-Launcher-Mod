@@ -12,6 +12,9 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.AudioPlaybackConfiguration
 import android.media.MediaMetadata
 import android.media.MediaMetadataRetriever
 import android.media.session.MediaController
@@ -21,6 +24,7 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.Process
 import android.os.SystemClock
 import android.service.notification.NotificationListenerService
 import android.util.Log
@@ -62,6 +66,9 @@ private const val HANDOVER_SETTLE_MS = 1500L
 private const val STOCK_SEND_MIN_INTERVAL_MS = 400L
 
 private const val RESUME_ONCE_DELAY_MS = 1200L
+
+/** AudioPlaybackConfiguration.PLAYER_STATE_STARTED (hidden). */
+private const val PLAYER_STATE_STARTED = 2
 
 /**
  * Recovery for a channel steal.
@@ -845,6 +852,19 @@ class NotificationListener : NotificationListenerService() {
             // By now the playback signal has caught up with the channel change. Any of these means
             // the switch was legitimate and the channel belongs where it is.
             if (isAnyExternalSessionPlaying()) return@postDelayedIfAlive
+            // The session catches up later than the sound itself: YouTube's AudioTrack started
+            // (and com.syu.ms switched to 10 for it) 290 ms before its session said PLAYING, so
+            // the restore came first and com.syu.music took the sound back from it.
+            // Not around a pane rebuild: there a sounding app is a pane app the launcher started
+            // (Spotify and the like taking the channel as they come up), and the stock source
+            // keeps the channel, as before.
+            val nowCheck = SystemClock.elapsedRealtime()
+            val nearRebuild = nowCheck < paneRestartUntil
+                    || nowCheck - paneRebuildEndedAtMs < POST_REBUILD_FAST_MS
+            if (!nearRebuild && isThirdPartyAudioStarted()) {
+                Log.d("NotificationListener", "Channel 10 taken by a player that is already sounding - leaving it")
+                return@postDelayedIfAlive
+            }
             if (SystemClock.elapsedRealtime() - lastExternalPlayAtMs < 1000L) return@postDelayedIfAlive
             if (SystemClock.elapsedRealtime() - handoverAtMs < 1000L) return@postDelayedIfAlive
 
@@ -885,16 +905,22 @@ class NotificationListener : NotificationListenerService() {
     }
 
     private fun scheduleResumeAfterSourceSwitch() {
+        // The player that caused this switch, fixed now. Resolved at check time instead, it was
+        // whichever player announced itself last: Spotify, woken for a moment by the focus the
+        // radio gave back, was "resumed" over the YouTube the user had just started.
+        val token = lastExternalPlayToken ?: return
+        val playAt = lastExternalPlayAtMs
         postDelayedIfAlive(RESUME_ONCE_DELAY_MS) {
             if (mcuChannel() != MCU_CH_THIRD_PARTY) return@postDelayedIfAlive
-
-            val token = lastExternalPlayToken ?: return@postDelayedIfAlive
-            if (SystemClock.elapsedRealtime() - lastExternalPlayAtMs > STOCK_TO_THIRD_PARTY_RESUME_WINDOW_MS) {
+            if (lastExternalPlayToken != token) return@postDelayedIfAlive
+            if (SystemClock.elapsedRealtime() - playAt > STOCK_TO_THIRD_PARTY_RESUME_WINDOW_MS) {
                 return@postDelayedIfAlive
             }
+            // Something is playing on 10 already, so nothing was left paused by the switch.
+            invalidateExternalPlayingCache()
+            if (isAnyExternalSessionPlaying()) return@postDelayedIfAlive
 
-            val c = mediaController ?: return@postDelayedIfAlive
-            if (c.sessionToken != token) return@postDelayedIfAlive
+            val c = controllerFor(token) ?: return@postDelayedIfAlive
             if (c.packageName in ownSourcePackages) return@postDelayedIfAlive
             if (c.playbackState?.state == PlaybackState.STATE_PLAYING) return@postDelayedIfAlive
 
@@ -904,6 +930,45 @@ class NotificationListener : NotificationListenerService() {
             } catch (e: Exception) {
                 Log.w("NotificationListener", "Failed to resume ${c.packageName}: ${e.message}")
             }
+        }
+    }
+
+    private fun controllerFor(token: MediaSession.Token): MediaController? {
+        mediaController?.let { if (it.sessionToken == token) return it }
+        return try {
+            mediaSessionManager?.getActiveSessions(componentName)?.firstOrNull { it.sessionToken == token }
+        } catch (e: SecurityException) {
+            null
+        }
+    }
+
+    /**
+     * Whether an app (not a system one: com.syu.music runs as uid 1000) has a media player
+     * actually started -- what com.syu.ms itself reacts to ("audio status pkg: ..., status: 1"),
+     * and some 250 ms before the app's session reports PLAYING. The player state and uid are
+     * hidden getters; without them (no system privileges) this answers false and only the
+     * sessions count, as before.
+     */
+    private fun isThirdPartyAudioStarted(): Boolean {
+        val context = contextRef.get() ?: return false
+        return try {
+            val am = context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return false
+            val configs = am.activePlaybackConfigurations
+            if (configs.isEmpty()) return false
+            val stateGetter = AudioPlaybackConfiguration::class.java.getMethod("getPlayerState")
+            val uidGetter = AudioPlaybackConfiguration::class.java.getMethod("getClientUid")
+            configs.any { config ->
+                val state = stateGetter.invoke(config) as Int
+                val uid = uidGetter.invoke(config) as Int
+                val usage = config.audioAttributes.usage
+                state == PLAYER_STATE_STARTED
+                        && uid >= Process.FIRST_APPLICATION_UID
+                        && (usage == AudioAttributes.USAGE_MEDIA
+                            || usage == AudioAttributes.USAGE_GAME
+                            || usage == AudioAttributes.USAGE_UNKNOWN)
+            }
+        } catch (t: Throwable) {
+            false
         }
     }
 

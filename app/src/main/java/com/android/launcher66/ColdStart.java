@@ -356,7 +356,7 @@ public final class ColdStart {
             intent = new Intent(DISPLAY_MEDIA_TITLES_WAKE_ACTION);
             Log.i(TAG, "Display Media Titles by 'vasyl.titles.action.WAKE' broadcast");
         }
-        app.sendBroadcast(intent
+        SysCalls.sendBroadcast(app, intent
                 .setPackage(pkg) // package of the installed variant
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
     }
@@ -370,7 +370,7 @@ public final class ColdStart {
             intent = new Intent(JAMES_DSP_WAKE_ACTION);
             Log.i(TAG, "JamesDSP by 'james.dsp.action.AUTOSTART' broadcast");
         }
-        app.sendBroadcast(intent
+        SysCalls.sendBroadcast(app, intent
                 .setPackage(pkg)
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
     }
@@ -397,7 +397,7 @@ public final class ColdStart {
     }
 
     private void autostartWithIntent(String pkg) {
-        app.sendBroadcast(new Intent(Intent.ACTION_BOOT_COMPLETED)
+        SysCalls.sendBroadcast(app, new Intent(Intent.ACTION_BOOT_COMPLETED)
                 .setPackage(pkg)
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
     }
