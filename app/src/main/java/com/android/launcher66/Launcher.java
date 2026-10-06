@@ -211,8 +211,20 @@ import share.ResValue;
 import share.ShareHandler;
 
 public class Launcher extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, LauncherModel.Callbacks, View.OnTouchListener, PropertyChangeListener, LauncherAppWidgetHost.OnWidgetClickListener {
+    /** Starts the PiP panes from the launcher's side; see that class. */
+    final LauncherPipStarter mPipStarter = new LauncherPipStarter(this);
+
+    /** What the launcher does when the device wakes; see that class. */
+    final LauncherWake mDeviceWake = new LauncherWake(this);
+
+    /** Repairs the home screen layout after home, focus and wake; see that class. */
+    final HomeLayoutRecovery mHomeRecovery = new HomeLayoutRecovery(this);
+
+    /** Weather on the home screen; see that class. */
+    final LauncherWeather mHomeWeather = new LauncherWeather(this);
+
     private ViewTreeObserver.OnDrawListener onDrawListener;
-    private static final int MAX_LEFT = 5;
+    static final int MAX_LEFT = 5;
     static final boolean DEBUG_RESUME_TIME = false;
     static final boolean DEBUG_WIDGETS = true;
     static final String DUMP_STATE_PROPERTY = "launcher_dump_state";
@@ -241,29 +253,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final String RUNTIME_STATE_PENDING_ADD_WIDGET_ID = "launcher.add_widget_id";
     static final int SCREEN_COUNT = 5;
     public static final String SHOW_WEIGHT_WATCHER = "debug.show_mem";
-    private static final long PIP_INIT_THROTTLE_MS = 700L;
-    private static final long PIP_WATCHDOG_DELAY_MS = 1200L;
-    private static final int  PIP_WATCHDOG_MAX_RETRIES = 2;
     // Loading indicator while the wallpaper picker starts; see showWallpaperPickerIndicator().
     private static final long WALLPAPER_PICKER_INDICATOR_DELAY_MS = 300L;
     private static final long WALLPAPER_PICKER_INDICATOR_TIMEOUT_MS = 10000L;
     private static final long WIDGET_UPDATE_THROTTLE_MS = 350L;
     private static final long POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS = 1200L;
     private static final long SERVICE_RUNNING_CACHE_MS = 15000L;
-    private static final long WEATHER_HOME_DEFER_MS = 1500L;
     private static final long FAST_HOME_RESUME_DEFER_MS = 450L;
     private static final long FAST_HOME_PIP_DEFER_MS = 1000L;
-    private static final long WAKE_HOME_RECOVERY_WINDOW_MS = 30000L;
-    private static final long FOCUS_HOME_RECOVERY_THROTTLE_MS = 1200L;
-    private static final int MAX_HOME_LAYOUT_HEALTH_RETRIES = 8;
-    private static final long HOME_LAYOUT_HEALTH_FIRST_RETRY_MS = 900L;
-    private static final long HOME_LAYOUT_HEALTH_RETRY_MS = 300L;
-    /** Cheap re-checks while the model is still binding; see isHomeLayoutInitPending(). */
-    private static final long HOME_LAYOUT_INIT_WAIT_MS = 400L;
     /** Total time the recovery loop may spend waiting cheaply before it insists on a repair pass. */
-    private static final long HOME_RECOVERY_INIT_WAIT_MAX_MS = 25000L;
-    private long mHomeRecoveryInitWaitUntil = 0L;
-    private static final long HOME_LAYOUT_WATCHDOG_DELAY_MS = 350L;
+    static final long HOME_RECOVERY_INIT_WAIT_MAX_MS = 25000L;
     private static final long CUSTOM_ELEMENTS_SETUP_DEBOUNCE_MS = 150L;
     private static final long WORKSPACE_NULL_LOADER_THROTTLE_MS = 1200L;
     static final String TAG = "Launcher";
@@ -301,7 +300,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Button kuwomusic_playpause;
     private Button kuwomusic_prev;
     View mAllAppsButton;
-    private AppListAdapter mAppListAdapter;
+    AppListAdapter mAppListAdapter;
     private List<AppListBean> mAppListData;
     private LauncherAppWidgetHost mAppWidgetHost;
     private AppWidgetManager mAppWidgetManager;
@@ -330,7 +329,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private TextView mCurRoadNameView;
     private TextView mCurSpeedView;
     public DragController mDragController;
-    private DragLayer mDragLayer;
+    DragLayer mDragLayer;
     private ImageView mDynamicTrailView;
     private Bitmap mFolderIconBitmap;
     private Canvas mFolderIconCanvas;
@@ -346,8 +345,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private TextView mKwMusicName;
     public boolean mKwPlayState;
     private View mLauncherView;
-    private RecyclerView mRecyclerView;
-    private LeftAppListAdapter mLeftAppListAdapter;
+    RecyclerView mRecyclerView;
+    LeftAppListAdapter mLeftAppListAdapter;
     private List<AppListBean> mLeftAppListData;
     /*
      * Bar snapshots: the bottom and left bars as they were last shown, drawn at start while the
@@ -396,7 +395,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private View mPageMusic;
     private View mPageRadio;
     private View mPageTime;
-    private boolean mPaused;
+    boolean mPaused;
     private AppWidgetProviderInfo mPendingAddWidgetInfo;    
     private int mPendingAddWidgetId = -1;
     /**
@@ -447,8 +446,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private View mWeather;
     private View mWeightWatcher;
     private ArrayList<Object> mWidgetsAndShortcuts;
-    public WeatherManager weatherManager;
-    private Handler weatherHandler = new Handler(Looper.getMainLooper());
     private ProgressBar musicProgress;
     private SeekBar musicSeekBar;
     private Button mPlayPauseButton;
@@ -472,17 +469,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Button video_next;
     private Button video_playpause;
     private Button video_prev;
-    private TextView weatherCity;
+    TextView weatherCity;
     public TextView weatherCity1;
-    private ImageView weatherImg;
+    ImageView weatherImg;
     public ImageView weatherImg1;
-    private TextView weatherTemp;
+    TextView weatherTemp;
     public TextView weatherTemp1;
-    private TextView weatherTempRange;
-    private TextView weatherTempRange1;
-    private TextView weatherWeather;
+    TextView weatherTempRange;
+    TextView weatherTempRange1;
+    TextView weatherWeather;
     public TextView weatherWeather1;
-    private TextView weatherWind;
+    TextView weatherWind;
     static final int APPWIDGET_HOST_ID = LauncherApplication.appWidget_Host_Id;
     private static final Object sLock = new Object();
     private static final Object sServiceRunningCacheLock = new Object();
@@ -527,7 +524,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean mAutoAdvanceRunning = false;
     private State mOnResumeState = State.NONE;
     private SpannableStringBuilder mDefaultKeySsb = null;
-    private boolean mWorkspaceLoading = true;
+    boolean mWorkspaceLoading = true;
     private boolean closePop = LauncherApplication.sApp.getResources().getBoolean(R.bool.close_popwindow);
     private ArrayList<Runnable> mBindOnResumeCallbacks = new ArrayList<>();
     private ArrayList<Runnable> mOnResumeCallbacks = new ArrayList<>();
@@ -552,7 +549,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final ArrayList<Integer> mSynchronouslyBoundPages = new ArrayList<>();
     private Rect mRectForFolderAnimation = new Rect();
     private HideFromAccessibilityHelper mHideFromAccessibilityHelper = new HideFromAccessibilityHelper();
-    private SharedPreferences mPrefs;
+    SharedPreferences mPrefs;
 	private boolean fytData = true;  
     // Request codes of the permission flow, see PermissionStep.
     private static final int REQUEST_CODE_WRITE_SETTINGS = 1003;
@@ -560,13 +557,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final int REQUEST_CODE_OVERLAY = 1006;
     private static final int REQUEST_CODE_NOTIFICATION_ACCESS = 1007;
     private FusedLocationProviderClient fusedLocationClient;
-    private Helpers helpers = new Helpers();
-    private LinearLayout bottomButtons;
-    private LinearLayout bottomButtonsWidgets;
+    Helpers helpers = new Helpers();
+    LinearLayout bottomButtons;
+    LinearLayout bottomButtonsWidgets;
     private boolean temporarilyDisablePlayPauseButton = false;
     private MainViewModel mViewModel;
     private final AtomicBoolean atomicOnCreate = new AtomicBoolean(false);
-    private final AtomicBoolean atomicInitAppData = new AtomicBoolean(false);
+    final AtomicBoolean atomicInitAppData = new AtomicBoolean(false);
     private Handler appDataHandler = new Handler(Looper.getMainLooper());
     private Runnable pendingAction;
     private static final long APP_DATA_DELAY = 1500;
@@ -583,10 +580,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public boolean onResumePip = false;
     public boolean allowPip = false;
     private volatile WindowHost mWindowHost;
-    private boolean onBackPip = false;
-    private boolean onWorkspacePip = false;
-    private boolean mPipInitPending = false;
-    private long mLastPipInitMs = 0L;
+    boolean onBackPip = false;
+    boolean onWorkspacePip = false;
     private boolean mWidgetUpdatePending = false;
     private long mLastWidgetUpdateMs = 0L;
     private boolean mPostResumeAppDataRefreshPending = false;
@@ -605,8 +600,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final Runnable mSyncStatusBarSwipeDetector = this::syncStatusBarSwipeDetector;
     private boolean mNightModeServiceStartPending = false;
     private boolean mCanbusServiceStartPending = false;
-    private WeatherManager.OnWeatherChangedListener mWeatherChangedListener;
-    private WeatherManager mWeatherListenerOwner;
     private final Map<String, Bitmap> mAppIconBitmapCache = new HashMap<>();
     private boolean isRecreateActive = false;
     private boolean mHomeButtonPressed = false;
@@ -614,7 +607,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      * Startup work the first screen does not need waits until this ROM's boot-time stall is over
      * (see ColdStart.BOOT_STALL_OVER_UPTIME_MS); 0 when the launcher is not booting.
      */
-    private static long bootStallDelayMs() {
+    static long bootStallDelayMs() {
         return ColdStart.bootStallDelayMs();
     }
 
@@ -623,38 +616,22 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private boolean mHomeWorkspaceRefreshHandled = false;
     private boolean mHomeFromAllAppsPending = false;
     private boolean mFastHomeResumePending = false;
-    private boolean mWakeHomeRecoveryPending = false;
     private boolean mRefreshersRegistered = false;
-    private long mLastWakeRefreshMs = 0L;
-    private long mLastFocusHomeRecoveryMs = 0L;
     private long mLastWorkspaceNullLoaderMs = 0L;
     private long mLastForceReloadMs = 0L;
     private boolean mLeftRecyclerLayoutPending = false;
     private static final long FORCE_RELOAD_THROTTLE_MS = 1500L;
-    private Runnable mWakeHomeRecoveryRunnable;
-    private Runnable mHomeLayoutWatchdogRunnable;
     private Runnable mFastHomeDeferredResumeRunnable;
-    private Runnable mCustomElementsSetupRunnable;
+    Runnable mCustomElementsSetupRunnable;
     /**
      * A custom elements setup that came due while the model was rebuilding the screens
      * (startBinding() .. finishBindingItems()). finishBindingItems() replays it; see
      * requestCustomElementsSetup().
      */
-    private boolean mCustomElementsSetupAfterBind = false;
+    boolean mCustomElementsSetupAfterBind = false;
     private boolean mCustomElementsSetupAfterBindUrgent = false;
     private String mCustomElementsSetupAfterBindSource;
     private Runnable mFastHomeDeferredPipRunnable;
-    private Runnable mPipWatchdogRunnable;
-    private int mPipWatchdogRetries = 0;
-    /**
-     * Widget bar repair after a wake. Scheduled both from the WAKE_REFRESH broadcast and directly
-     * from WakeDetectionService, because the dynamic receiver is unregistered in onStop() and the
-     * broadcast is lost whenever the launcher is still stopped when it is sent. If the launcher
-     * cannot act yet (paused), the pending flag makes onResume() finish the job.
-     */
-    private static final long WIDGET_BAR_WAKE_REFRESH_DELAY_MS = 700L;
-    private Runnable mWidgetBarWakeRefreshRunnable;
-    private boolean mWidgetBarWakeRefreshPending = false;
     private long mLastAppListSourceSignature = Long.MIN_VALUE;
     private long mLastLeftAppListSourceSignature = Long.MIN_VALUE;
     private boolean widgetBar = false;
@@ -1987,7 +1964,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         Launcher.this.updateRunning();
                         break;                     
                     case WakeDetectionService.ACTION_WAKE_REFRESH:
-                        repairLayoutAfterWake(intent.getStringExtra("phase"));
+                        mHomeRecovery.repairLayoutAfterWake(intent.getStringExtra("phase"));
                         break;
                     case Intent.ACTION_CLOSE_SYSTEM_DIALOGS:
                         String reason = intent.getStringExtra(Keys.SYSTEM_DIALOG_REASON_KEY);
@@ -2003,8 +1980,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
                                 if (isOnMainWorkspaceScreen()) {
                                     mHomeFromAllAppsPending = false;
-                                    mHomeWorkspaceRefreshHandled = refreshWorkspaceAfterHome();
-                                    scheduleHomeLayoutWatchdog("homeBroadcastMain", true);
+                                    mHomeWorkspaceRefreshHandled = mHomeRecovery.refreshWorkspaceAfterHome();
+                                    mHomeRecovery.scheduleHomeLayoutWatchdog("homeBroadcastMain", true);
                                     return;
                                 }
                                 // Only run the complex logic if we're not already on main workspace
@@ -2027,8 +2004,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                     updateWallpaperVisibility(true);
                                     helpers.setInOverviewMode(false);
                                 }
-                                mHomeWorkspaceRefreshHandled = refreshWorkspaceAfterHome();
-                                scheduleHomeLayoutWatchdog("homeBroadcast", true);
+                                mHomeWorkspaceRefreshHandled = mHomeRecovery.refreshWorkspaceAfterHome();
+                                mHomeRecovery.scheduleHomeLayoutWatchdog("homeBroadcast", true);
                                 if (mHomeFromAllAppsPending && mHomeWorkspaceRefreshHandled) {
                                     mOnResumeState = State.NONE;
                                 }
@@ -2071,7 +2048,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    private boolean isAppsCustomizeVisibleOrOpening() {
+    boolean isAppsCustomizeVisibleOrOpening() {
         return mState == State.APPS_CUSTOMIZE
                 || mState == State.APPS_CUSTOMIZE_SPRING_LOADED
                 || isAllAppsVisible()
@@ -2079,164 +2056,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 && mAppsCustomizeTabHost.getVisibility() == View.VISIBLE);
     }
 
-    private void cancelHomeLayoutWatchdog() {
-        if (mHomeLayoutWatchdogRunnable != null) {
-            mHandler.removeCallbacks(mHomeLayoutWatchdogRunnable);
-            mHomeLayoutWatchdogRunnable = null;
-        }
-    }
 
-    private void schedulePipWatchdog(String source) {
-        cancelPipWatchdog();
-        if (!mPrefs.getBoolean(Keys.USER_LAYOUT, false)) return;
-        if (!mPrefs.getBoolean(Keys.DISPLAY_PIP, true)) return;
 
-        mPipWatchdogRunnable = () -> {
-            mPipWatchdogRunnable = null;
-            runPipWatchdog(source);
-        };
-        mHandler.postDelayed(mPipWatchdogRunnable, PIP_WATCHDOG_DELAY_MS);
-    }
 
-    public void cancelPipWatchdog() {
-        if (mPipWatchdogRunnable != null) {
-            mHandler.removeCallbacks(mPipWatchdogRunnable);
-            mPipWatchdogRunnable = null;
-        }
-    }
 
-    private void runPipWatchdog(String source) {
-        if (mPaused || mWorkspace == null) return;
-        if (isAllAppsVisible()) return;
-        if (mState != State.WORKSPACE) return;
-        if (helpers.isInOverviewMode() || helpers.isInAllApps() || helpers.isInWidgets()) return;
-        if (mDragController != null && mDragController.isDragging()) return;
 
-        if (WindowUtil.isPipOnScreen()) {
-            mPipWatchdogRetries = 0;
-            return;
-        }
 
-        if (mPipWatchdogRetries >= PIP_WATCHDOG_MAX_RETRIES) {
-        Log.e(TAG, "pipWatchdog(" + source + "): PiP still did not start after "
-                + mPipWatchdogRetries + " attempts - giving up");
-        mPipWatchdogRetries = 0;
-        return;
-        }
 
-        mPipWatchdogRetries++;
-        Log.w(TAG, "pipWatchdog(" + source + "): PiP did not start, forcing it (attempt "
-                + mPipWatchdogRetries + ")");
-        onResumePip = false;
-        onBackPip = false;
-        onWorkspacePip = false;
-        initPip("pipWatchdog", null, true);          
 
-        mPipWatchdogRunnable = () -> {
-            mPipWatchdogRunnable = null;
-            runPipWatchdog(source + "+retry");
-        };
-        mHandler.postDelayed(mPipWatchdogRunnable, PIP_WATCHDOG_DELAY_MS);
-    }
 
-    private void cancelWakeHomeRecovery(String source) {
-        boolean hadPendingRecovery = mWakeHomeRecoveryPending || mWakeHomeRecoveryRunnable != null;
-        if (mWakeHomeRecoveryRunnable != null) {
-            mHandler.removeCallbacks(mWakeHomeRecoveryRunnable);
-            mWakeHomeRecoveryRunnable = null;
-        }
-        mWakeHomeRecoveryPending = false;
-        if (hadPendingRecovery) {
-            Log.d(TAG, "Wake home recovery cancelled: " + source);
-        }
-    }
 
-    private boolean refreshWorkspaceAfterHome() {
-        if (mWorkspace == null) {
-            return false;
-        }
 
-        if (mState != State.WORKSPACE) {
-            showWorkspace(false, null);
-        } else if (mWorkspace.isInOverviewMode()) {
-            mWorkspace.exitOverviewMode(false);
-            helpers.setInOverviewMode(false);
-        }
-
-        mWorkspace.setVisibility(View.VISIBLE);
-        mWorkspace.requestLayout();
-        mWorkspace.invalidate();
-
-        if (mAppsCustomizeTabHost != null) {
-            mAppsCustomizeTabHost.setVisibility(View.GONE);
-        }
-        showHotseat(false, true);
-        updateWallpaperVisibility(true);
-        forceWorkspaceLayoutPass();
-        return true;
-    }
-
-    private void repairLayoutAfterWake(String phase) {
-        String wakePhase = phase == null ? "unknown" : phase;
-        mWakeHomeRecoveryPending = true;
-        mLastWakeRefreshMs = SystemClock.uptimeMillis();
-        Log.d(TAG, "Wake layout repair: " + wakePhase);
-        runWakeHomeRecoveryPass("wake:" + wakePhase + ":now");
-        scheduleWakeLayoutRepair(250L, wakePhase);
-        scheduleWakeHomeRecoveryRetry("wake:" + wakePhase, 0, HOME_LAYOUT_HEALTH_FIRST_RETRY_MS);
-        scheduleWidgetBarWakeRefresh("wake:" + wakePhase);
-    }
-
-    /**
-     * Direct entry point for WakeDetectionService. Does not depend on the dynamic receiver,
-     * which is unregistered while the launcher is stopped.
-     */
-    public void onDeviceWake(String source) {
-        scheduleWidgetBarWakeRefresh(source == null ? "wakeService" : source);
-    }
-
-    private void scheduleWidgetBarWakeRefresh(String source) {
-        mWidgetBarWakeRefreshPending = true;
-        if (mWidgetBarWakeRefreshRunnable != null) {
-            mHandler.removeCallbacks(mWidgetBarWakeRefreshRunnable);
-        }
-        mWidgetBarWakeRefreshRunnable = () -> {
-            mWidgetBarWakeRefreshRunnable = null;
-            if (mPaused || mWorkspace == null || isAppsCustomizeVisibleOrOpening()) {
-                // Keep the pending flag - onResume() schedules the refresh again.
-                return;
-            }
-            mWidgetBarWakeRefreshPending = false;
-            mWorkspace.refreshWidgetBarAfterWake(source);
-        };
-        mHandler.postDelayed(mWidgetBarWakeRefreshRunnable, WIDGET_BAR_WAKE_REFRESH_DELAY_MS);
-    }
-
-    private void scheduleWakeLayoutRepair(long delayMs, String phase) {
-        Runnable repair = () -> {
-            if (mPaused || mWorkspace == null) {
-                mWakeHomeRecoveryPending = true;
-                return;
-            }
-            Log.d(TAG, "Wake layout repair pass: " + phase + " +" + delayMs + "ms");
-            boolean healthy = runWakeHomeRecoveryPass("wakeLayout:" + phase + "+" + delayMs);
-            if (!healthy) {
-                scheduleWakeHomeRecoveryRetry("wakeLayout:" + phase + "+" + delayMs, 0,
-                        HOME_LAYOUT_HEALTH_RETRY_MS);
-            }
-        };
-        mHandler.postDelayed(repair, delayMs);
-    }
-
-    private boolean shouldRunWakeHomeRecovery() {
-        if (mWakeHomeRecoveryPending) {
-            return true;
-        }
-        return mLastWakeRefreshMs > 0L
-                && SystemClock.uptimeMillis() - mLastWakeRefreshMs <= WAKE_HOME_RECOVERY_WINDOW_MS;
-    }
-
-    private void requestWorkspaceReloadFromRecovery(String source) {
+    void requestWorkspaceReloadFromRecovery(String source) {
         requestWorkspaceLoader(source, true);
     }
 
@@ -2294,198 +2125,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mModel.startLoader(true, -1);
     }
 
-    private void scheduleWakeHomeRecovery(String source) {
-        if (mWorkspace == null) {
-            mWakeHomeRecoveryPending = true;
-            return;
-        }
-        if (mWakeHomeRecoveryRunnable != null) {
-            mHandler.removeCallbacks(mWakeHomeRecoveryRunnable);
-            mWakeHomeRecoveryRunnable = null;
-        }
-        mHomeRecoveryInitWaitUntil = SystemClock.uptimeMillis() + HOME_RECOVERY_INIT_WAIT_MAX_MS;
-        if (isHomeLayoutInitPending()) {
-            // The model is still binding (or the custom elements are on their way): a repair
-            // pass now cannot attach anything and only adds layout work to the busiest moment of
-            // a cold start. The retry below waits for the end cheaply and checks then.
-            mWakeHomeRecoveryPending = true;
-            scheduleWakeHomeRecoveryRetry(source, 0, HOME_LAYOUT_INIT_WAIT_MS);
-            return;
-        }
-        runWakeHomeRecoveryPass(source + ":now");
-        scheduleWakeHomeRecoveryRetry(source, 0, HOME_LAYOUT_HEALTH_FIRST_RETRY_MS);
-    }
 
-    /**
-     * True while the layout cannot be judged yet because app data has not been attached.
-     *
-     * isRecyclerViewHealthy() reports "recycler has no adapter" until initAppData() runs, and that
-     * only happens once the model has finished binding. Nothing runWakeHomeRecoveryPass() does can
-     * attach an adapter, so retrying against it burned eight full repair passes -- measured as
-     * 3.5 s of continuous main-thread layout work, overlapping the PiP rebuild.
-     */
-    private boolean isHomeLayoutInitPending() {
-        if (mWorkspaceLoading) return true;
-        if (AllAppsList.data == null || AllAppsList.data.isEmpty()) return true;
-        if (isCustomElementsSetupInFlight()) return true;
-        if (mWorkspace == null || mPrefs == null) return false;
-        if (mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) return false;
 
-        RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
-        return recycler != null && recycler.getAdapter() == null;
-    }
 
-    /**
-     * A custom elements setup is queued here or in a CellLayout and has not added the elements yet.
-     * A repair pass in that window cannot help (see isHomeLayoutInitPending()); and the urgent
-     * retry the layout check sends used to restart a setup whose add was already queued, so
-     * addWidgetsToAllExistingPages() and stripEmptyScreens() ran two or three times in a row
-     * (CellLayout.triggerAddCustomElements() now ignores it then).
-     */
-    private boolean isCustomElementsSetupInFlight() {
-        if (mCustomElementsSetupRunnable != null || mCustomElementsSetupAfterBind) {
-            return true;
-        }
-        if (mWorkspace == null) {
-            return false;
-        }
-        for (int i = 0; i < mWorkspace.getChildCount(); i++) {
-            View child = mWorkspace.getChildAt(i);
-            if (child instanceof CellLayout && ((CellLayout) child).isCustomElementSetupPending()) {
-                return true;
-            }
-        }
-        return false;
-    }
 
-    private void scheduleWakeHomeRecoveryRetry(String source, int attempt, long delayMs) {
-        if (attempt >= MAX_HOME_LAYOUT_HEALTH_RETRIES) {
-            mWakeHomeRecoveryPending = !isLauncherLayoutHealthy(source + ":max");
-            if (mWakeHomeRecoveryPending) {
-                Log.w(TAG, "Wake home recovery stopped with unhealthy layout: " + source);
-            }
-            return;
-        }
-        if (mWakeHomeRecoveryRunnable != null) {
-            mHandler.removeCallbacks(mWakeHomeRecoveryRunnable);
-        }
-        mWakeHomeRecoveryPending = true;
-        mWakeHomeRecoveryRunnable = () -> {
-            mWakeHomeRecoveryRunnable = null;
 
-            // Wait it out cheaply rather than running a repair pass that cannot help, and do not
-            // spend a retry attempt on it.
-            if (isHomeLayoutInitPending() && SystemClock.uptimeMillis() < mHomeRecoveryInitWaitUntil) {
-                mWakeHomeRecoveryPending = true;
-                scheduleWakeHomeRecoveryRetry(source, attempt, HOME_LAYOUT_INIT_WAIT_MS);
-                return;
-            }
 
-            boolean healthy = runWakeHomeRecoveryPass(source + ":retry" + attempt);
-            if (!healthy) {
-                scheduleWakeHomeRecoveryRetry(source, attempt + 1, HOME_LAYOUT_HEALTH_RETRY_MS);
-            }
-        };
-        mHandler.postDelayed(mWakeHomeRecoveryRunnable, delayMs);
-    }
 
-    private boolean runWakeHomeRecoveryPass(String source) {
-        if (mPaused || mWorkspace == null) {
-            mWakeHomeRecoveryPending = true;
-            return false;
-        }
-        if (isAppsCustomizeVisibleOrOpening()) {
-            cancelWakeHomeRecovery("overlay:" + source);
-            return true;
-        }
-        refreshWorkspaceAfterHome();
-        repairWorkspaceChromeAfterHome(source);
-        forceWorkspaceLayoutPass();
-        WindowUtil.updatePipPositionsForScroll(mWorkspace.mUnboundedScrollX);
-        boolean healthy = isLauncherLayoutHealthy(source);
-        mWakeHomeRecoveryPending = !healthy;
-        if (!healthy) {
-            Log.w(TAG, "Wake home recovery layout still unhealthy: " + source);
-        }
-        return healthy;
-    }
 
-    private boolean isLauncherLayoutHealthy(String source) {
-        if (mWorkspace == null) {
-            return false;
-        }
-
-        boolean healthy = true;
-        View decor = getWindow() != null ? getWindow().getDecorView() : null;
-        healthy &= isRootViewSizeHealthy(decor, "decor", source);
-        healthy &= isRootViewSizeHealthy(mWorkspace, "workspace", source);
-        if (mDragLayer != null) {
-            healthy &= isRootViewSizeHealthy(mDragLayer, "dragLayer", source);
-        }
-        if (shouldValidateHotseatForHealth()) {
-            healthy &= isMeasuredViewHealthy(mHotseat, "hotseat", source);
-        }
-        if (mWorkspace.getVisibility() != View.VISIBLE) {
-            Log.w(TAG, "Layout unhealthy: workspace hidden during " + source);
-            healthy = false;
-        }
-
-        RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
-        if (recycler != null && !mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
-            healthy &= isRecyclerViewHealthy(recycler, false, source);
-        }
-        RecyclerView leftRecycler = (RecyclerView) mWorkspace.findViewById(R.id.left_recycler_view);
-        if (leftRecycler != null && shouldUseLeftRecycler()) {
-            healthy &= isRecyclerViewHealthy(leftRecycler, true, source);
-        }
-
-        boolean customElementsHealthy = true;
-        for (int i = 0; i < mWorkspace.getChildCount(); i++) {
-            View child = mWorkspace.getChildAt(i);
-            if (child instanceof CellLayout) {
-                customElementsHealthy &= ((CellLayout) child).hasHealthyCustomElements();
-            }
-        }
-        if (!customElementsHealthy) {
-            healthy = false;
-            if (isCustomElementsSetupInFlight()) {
-                // Not a fault, the setup is on its way. Still hurried along: an urgent request skips
-                // CellLayout's 1.5 s initial delay, and CellLayout ignores it once the add is queued.
-                Log.d(TAG, "Custom elements still being set up during " + source + ", hurrying it");
-            } else {
-                Log.w(TAG, "Custom elements pending during " + source + ", scheduling widget retry");
-            }
-            requestCustomElementsHealthRetry(source);
-        }
-        return healthy;
-    }
-
-    /** Every configured custom element is attached, or on its way, on its page. */
-    private boolean areCustomElementsInPlace() {
-        if (mWorkspace == null) {
-            return false;
-        }
-        for (int i = 0; i < mWorkspace.getChildCount(); i++) {
-            View child = mWorkspace.getChildAt(i);
-            if (child instanceof CellLayout && !((CellLayout) child).hasHealthyCustomElements()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean shouldValidateHotseatForHealth() {
-        if (mHotseat == null || mHotseat.getVisibility() != View.VISIBLE || mHotseat.getAlpha() == 0.0f) {
-            return false;
-        }
-        ViewGroup.LayoutParams layoutParams = mHotseat.getLayoutParams();
-        if (layoutParams != null && (layoutParams.width == 0 || layoutParams.height == 0)) {
-            return false;
-        }
-        return true;
-    }
-
-    private void requestCustomElementsHealthRetry(String source) {
+    void requestCustomElementsHealthRetry(String source) {
         requestCustomElementsSetup(source, true);
     }
 
@@ -2493,7 +2141,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         requestCustomElementsSetup(source, false);
     }
 
-    private void requestCustomElementsSetup(String source, boolean urgent) {
+    void requestCustomElementsSetup(String source, boolean urgent) {
         if (mWorkspace == null) {
             return;
         }
@@ -2570,219 +2218,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return null;
     }
 
-    private boolean isRootViewSizeHealthy(View view, String label, String source) {
-        if (!isMeasuredViewHealthy(view, label, source)) {
-            return false;
-        }
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int displayWidth = Math.max(screenWidth, metrics.widthPixels);
-        int displayHeight = Math.max(screenHeight, metrics.heightPixels);
-        int minWidth = Math.max(320, displayWidth / 2);
-        int minHeight = Math.max(240, displayHeight / 2);
-        if (view.getWidth() < minWidth || view.getHeight() < minHeight) {
-            Log.w(TAG, "Layout unhealthy: " + label + " too small "
-                    + view.getWidth() + "x" + view.getHeight() + " during " + source);
-            return false;
-        }
-        return true;
-    }
 
-    private boolean isMeasuredViewHealthy(View view, String label, String source) {
-        if (view == null) {
-            Log.w(TAG, "Layout unhealthy: missing " + label + " during " + source);
-            return false;
-        }
-        if (view.getWidth() <= 0 || view.getHeight() <= 0) {
-            Log.w(TAG, "Layout unhealthy: " + label + " has zero size during " + source);
-            return false;
-        }
-        return true;
-    }
 
-    private boolean isRecyclerViewHealthy(RecyclerView recycler, boolean vertical, String source) {
-        if (!isMeasuredViewHealthy(recycler, vertical ? "leftRecycler" : "bottomRecycler", source)) {
-            return false;
-        }
-        if (recycler.getAdapter() == null) {
-            Log.w(TAG, "Layout unhealthy: recycler has no adapter during " + source);
-            return false;
-        }
-        if (recycler.getLayoutManager() == null) {
-            Log.w(TAG, "Layout unhealthy: recycler has no layout manager during " + source);
-            return false;
-        }
-        if (recycler.getAdapter().getItemCount() > 0 && recycler.getChildCount() > 0) {
-            View child = recycler.getChildAt(0);
-            int childSize = vertical ? child.getHeight() : child.getWidth();
-            if (childSize <= 0) {
-                Log.w(TAG, "Layout unhealthy: recycler child has zero size during " + source);
-                return false;
-            }
-        }
-        return true;
-    }
 
-    private void scheduleFocusHomeRecovery(String source) {
-        if (mWorkspace == null || isAppsCustomizeVisibleOrOpening()) {
-            return;
-        }
-        if (mWorkspaceLoading) {
-            // Mid-bind the probe can only report the recycler without its adapter (cold start,
-            // return from the settings). finishBindingItems() runs the layout watchdog anyway.
-            return;
-        }
-        if (!shouldRunWakeHomeRecovery() && isLauncherLayoutHealthy(source + ":probe")) {
-            return;
-        }
-        long now = SystemClock.uptimeMillis();
-        if (now - mLastFocusHomeRecoveryMs < FOCUS_HOME_RECOVERY_THROTTLE_MS) {
-            return;
-        }
-        mLastFocusHomeRecoveryMs = now;
-        mWakeHomeRecoveryPending = true;
-        scheduleWakeHomeRecovery(source);
-    }
 
-    private void scheduleHomeLayoutWatchdog(String source, boolean forceWorkspace) {
-        // While the model is still binding the watchdog can only report what it cannot fix, so
-        // give it enough delay to land after initAppData() instead of racing it.
-        long delay = isHomeLayoutInitPending()
-                ? HOME_LAYOUT_WATCHDOG_DELAY_MS + HOME_LAYOUT_INIT_WAIT_MS
-                : HOME_LAYOUT_WATCHDOG_DELAY_MS;
-        scheduleHomeLayoutWatchdog(source, forceWorkspace, delay);
-    }
 
-    private void scheduleHomeLayoutWatchdog(String source, boolean forceWorkspace, long delayMs) {
-        if (mHomeLayoutWatchdogRunnable != null) {
-            mHandler.removeCallbacks(mHomeLayoutWatchdogRunnable);
-            mHomeLayoutWatchdogRunnable = null;
-        }
-        mHomeLayoutWatchdogRunnable = () -> {
-            mHomeLayoutWatchdogRunnable = null;
-            runHomeLayoutWatchdog(source, forceWorkspace);
-        };
-        mHandler.postDelayed(mHomeLayoutWatchdogRunnable, Math.max(0L, delayMs));
-    }
 
-    private void runHomeLayoutWatchdog(String source, boolean forceWorkspace) {
-        if (mPaused) {
-            if (forceWorkspace) {
-                mWakeHomeRecoveryPending = true;
-            }
-            return;
-        }
-        if (mWorkspace == null) {
-            mWakeHomeRecoveryPending = true;
-            requestWorkspaceReloadFromRecovery("watchdog:" + source);
-            return;
-        }
-        if (isAppsCustomizeVisibleOrOpening()) {
-            return;
-        }
-        if (forceWorkspace) {
-            refreshWorkspaceAfterHome();
-        }
-        if (!isLauncherLayoutHealthy(source + ":watchdog")) {
-            mWakeHomeRecoveryPending = true;
-            scheduleWakeHomeRecovery("watchdog:" + source);
-        }
-    }
 
-    private void repairWorkspaceChromeAfterHome(String source) {
-        boolean currentUserLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        if (bottomButtons != null && bottomButtonsWidgets != null) {
-            bottomButtons.setVisibility(currentUserLayout ? View.GONE : View.VISIBLE);
-            bottomButtonsWidgets.setVisibility(currentUserLayout ? View.VISIBLE : View.GONE);
-        }
 
-        if (mWorkspace != null) {
-            mWorkspace.post(() -> {
-                if (mWorkspace == null) return;
-                // Only when something is missing. Each request ends in addWidgetsToAllExistingPages()
-                // and a stripEmptyScreens() pass ~2 s later, and a wake asked for it five times
-                // (early, late, +250 ms, focus, retry) with every element already in place
-                // ("Stats placeholder already exists", capture 05-10-2026 21:14:30-38).
-                if (currentUserLayout && !areCustomElementsInPlace()) {
-                    requestCustomElementsSetup(source);
-                }
-                restoreBottomRecyclerAfterHome(source);
-                mWorkspace.requestLayout();
-                mWorkspace.invalidate();
-            });
-        }
 
-        // Rebuilding the bars when they are in place only redraws them -- the second rebuild seen
-        // after the settings, run because a custom element was still on its way.
-        if (areAppBarsAttached()) {
-            return;
-        }
-        markAppDataDirty();
-        if (atomicInitAppData.get()) {
-            requestPostResumeAppDataRefresh();
-        } else {
-            triggerAppData();
-        }
-    }
 
-    /** Both app bars of the current page show the adapters, and those have their apps. */
-    private boolean areAppBarsAttached() {
-        if (mWorkspace == null || mAppListAdapter == null || mAppListAdapter.getItemCount() == 0) {
-            return false;
-        }
-        RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
-        if (recycler != null && recycler.getAdapter() != mAppListAdapter) {
-            return false;
-        }
-        RecyclerView leftRecycler = (RecyclerView) mWorkspace.findViewById(R.id.left_recycler_view);
-        if (leftRecycler != null && shouldUseLeftRecycler()
-                && (mLeftAppListAdapter == null || leftRecycler.getAdapter() != mLeftAppListAdapter)) {
-            return false;
-        }
-        return true;
-    }
-
-    private void restoreBottomRecyclerAfterHome(String source) {
-        if (mWorkspace == null) return;
-
-        RecyclerView recycler = (RecyclerView) mWorkspace.findViewById(R.id.recycler_view);
-        if (recycler != null) {
-            mRecyclerView = recycler;
-            ensureResizableBottomBar("restore:" + source);
-            boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-            if (mAppListAdapter != null && recycler.getAdapter() != mAppListAdapter) {
-                recycler.setAdapter(mAppListAdapter);
-            }
-            if (recycler.getLayoutManager() == null) {
-                recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), RecyclerView.HORIZONTAL, false));
-            }
-            installBottomRecyclerDecorations(recycler);
-            recycler.clearAnimation();
-            if (!autoHideBottomBar) {
-                recycler.setVisibility(View.VISIBLE);
-            }
-            recycler.setEnabled(true);
-            recycler.setClickable(true);
-            recycler.setLongClickable(true);
-            refreshRecyclerDecorationsAfterLayout(recycler);
-        }
-
-        RecyclerView leftRecycler = (RecyclerView) mWorkspace.findViewById(R.id.left_recycler_view);
-        if (leftRecycler != null && shouldUseLeftRecycler()) {
-            if (mLeftAppListAdapter != null && leftRecycler.getAdapter() != mLeftAppListAdapter) {
-                leftRecycler.setAdapter(mLeftAppListAdapter);
-            }
-            if (!(leftRecycler.getLayoutManager() instanceof EvenVerticalLayoutManager)) {
-                leftRecycler.setLayoutManager(
-                        new EvenVerticalLayoutManager(getApplicationContext(), MAX_LEFT));
-            }
-            installLeftRecyclerDecorations(leftRecycler);
-            leftRecycler.clearAnimation();
-            leftRecycler.setVisibility(View.VISIBLE);
-        }
-        Log.d(TAG, "Wake home recycler restore: " + source);
-    }
-
-    private boolean shouldUseLeftRecycler() {
+    boolean shouldUseLeftRecycler() {
         SharedPreferences prefs = mPrefs != null
                 ? mPrefs
                 : PreferenceManager.getDefaultSharedPreferences(this);
@@ -2791,7 +2237,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return !currentUserLayout || currentLeftBar;
     }
 
-    private void refreshRecyclerDecorationsAfterLayout(RecyclerView recyclerView) {
+    void refreshRecyclerDecorationsAfterLayout(RecyclerView recyclerView) {
         if (recyclerView == null) return;
         recyclerView.invalidateItemDecorations();
         recyclerView.requestLayout();
@@ -2802,7 +2248,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         recyclerView.postDelayed(() -> {
             recyclerView.invalidateItemDecorations();
             recyclerView.requestLayout();
-        }, HOME_LAYOUT_HEALTH_RETRY_MS);
+        }, HomeLayoutRecovery.HOME_LAYOUT_HEALTH_RETRY_MS);
         recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -2830,7 +2276,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      * call is idempotent and requests a layout only when a value changed. With
      * Keys.RESIZABLE_BOTTOM_BAR off it does nothing and the XML stays in charge.
      */
-    private boolean ensureResizableBottomBar(String source) {
+    boolean ensureResizableBottomBar(String source) {
         if (mWorkspace == null || mPrefs == null || !BottomBarDimensions.isResizable(mPrefs)) {
             return false;
         }
@@ -2840,7 +2286,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return mWorkspace.applyResizableBottomBar(source);
     }
 
-    private void installBottomRecyclerDecorations(RecyclerView recyclerView) {
+    void installBottomRecyclerDecorations(RecyclerView recyclerView) {
         if (recyclerView == null) return;
         if (Integer.valueOf(1).equals(recyclerView.getTag()) && recyclerView.getItemDecorationCount() > 0) {
             return;
@@ -2883,7 +2329,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         recyclerView.setTag(1);
     }
 
-    private void installLeftRecyclerDecorations(RecyclerView recyclerView) {
+    void installLeftRecyclerDecorations(RecyclerView recyclerView) {
         if (recyclerView == null) return;
         if (Integer.valueOf(1).equals(recyclerView.getTag()) && recyclerView.getItemDecorationCount() > 0) {
             return;
@@ -2905,24 +2351,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return Math.max(1, calculateDimension(baseDimension, 6.6));
     }
 
-    private void forceWorkspaceLayoutPass() {
-        if (mDragLayer != null) {
-            mDragLayer.clearAnimation();
-            mDragLayer.requestLayout();
-            mDragLayer.invalidate();
-        }
-        if (mWorkspace != null) {
-            mWorkspace.clearAnimation();
-            mWorkspace.requestLayout();
-            mWorkspace.invalidate();
-        }
-        if (mHotseat != null) {
-            mHotseat.clearAnimation();
-            mHotseat.refreshLayoutAfterWake();
-        }
-    }
 
-    private Handler mHandler = new Handler(Looper.getMainLooper()) {
+    Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == 1) {
@@ -3330,7 +2760,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         helpers.setInAllApps(false);
                         onBackPip = true;
                         showWorkspace(true);
-                        initPip("showWorkspace", null, false);
+                        mPipStarter.initPip("showWorkspace", null, false);
                     } else {
                         setButtonVisible(true);
                         if (Launcher.this.mAllAppsButton != null) {
@@ -3441,85 +2871,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         FirstFrameAnimatorHelper.setIsVisible(true);
     }
 
-    /**
-     * FytRating.wakeIfNeeded() starts vasyl.fytrating/.WakeActivity. It draws nothing and finishes
-     * in onCreate(), but starting any activity still takes the top: the launcher loses its
-     * top-resumed state and is paused until that activity is gone. Called first thing in onResume()
-     * it did exactly that on every wake -- about 735 ms with the launcher paused, during which
-     * allowPip is false and the panes cannot be built. Nothing about the wake depends on it being
-     * immediate, so it now waits for the PiP rebuild to finish.
-     */
-    private static final long FYT_RATING_WAKE_DELAY_MS = 1500L;
-    private static final long FYT_RATING_WAKE_RECHECK_MS = 400L;
-    private static final int  FYT_RATING_WAKE_MAX_WAITS = 12;
-    /**
-     * At a cold boot the wake waits until this uptime. Right after the boot-time stall the pane
-     * apps are still cold-starting (YouTube's onCreate alone took 8 s, capture 29-09-2026 08:09),
-     * and fYT Rating, woken into that at 45 s, did not answer its status request within 8 s.
-     * Nothing needs it earlier.
-     */
-    private static final long FYT_RATING_BOOT_UPTIME_MS = 90_000L;
-    private int mFytRatingWakeWaits = 0;
 
-    private final Runnable mFytRatingWake = new Runnable() {
-        @Override
-        public void run() {
-            // Paused again (or gone): the next onResume() reschedules it.
-            if (mPaused || isDestroyed() || isFinishing()) return;
 
-            // When the bridge is woken by the status broadcast alone, nothing is paused and the
-            // waits below only delayed it: YouTube's like state came 80 s into a cold boot
-            // (capture 06-10 03:28). Only the boot stall is still waited out.
-            boolean byBroadcast = FytRating.wakesByBroadcast();
-            // Starting an activity is a call into system_server too: at boot, after the stall and
-            // after the pane apps' cold starts (see FYT_RATING_BOOT_UPTIME_MS).
-            long bootWait = byBroadcast ? bootStallDelayMs() : Math.max(bootStallDelayMs(),
-                    FYT_RATING_BOOT_UPTIME_MS - SystemClock.elapsedRealtime());
-            if (bootWait > 0L) {
-                mHandler.postDelayed(this, bootWait);
-                return;
-            }
-            if (!byBroadcast && arePanesStillComing() && mFytRatingWakeWaits < FYT_RATING_WAKE_MAX_WAITS) {
-                mFytRatingWakeWaits++;
-                mHandler.postDelayed(this, FYT_RATING_WAKE_RECHECK_MS);
-                return;
-            }
-            mFytRatingWakeWaits = 0;
-            FytRating.wakeIfNeeded(Launcher.this);
-        }
-    };
 
-    /**
-     * Panes are configured but not up yet. isPipRebuildInProgress() alone missed the gap between
-     * onResume() and the start of the rebuild: at boot the wake fired right there, paused the
-     * launcher, and the rebuild that followed had to retry and dismissed a pane (capture 23:13,
-     * 40.777). Same expectations as WakeDetectionService.isPipExpected().
-     */
-    private boolean arePanesStillComing() {
-        if (WindowUtil.isPipRebuildInProgress()) return true;
-        if (!mPrefs.getBoolean(Keys.DISPLAY_PIP, true)) return false;
-        boolean anyPane = mPrefs.getBoolean(Keys.PIP_DUAL, false)
-                || mPrefs.getBoolean(Keys.PIP_FIRST, false)
-                || mPrefs.getBoolean(Keys.PIP_SECOND, false)
-                || mPrefs.getBoolean(Keys.PIP_THIRD, false)
-                || mPrefs.getBoolean(Keys.PIP_FOURTH, false);
-        if (!anyPane) return false;
-        WindowHost host = WindowUtil.getActiveWindowHost();
-        return host == null || host.isAnyPaneAwaitingBounds();
-    }
-
-    private void scheduleFytRatingWake() {
-        mHandler.removeCallbacks(mFytRatingWake);
-        mFytRatingWakeWaits = 0;
-        mHandler.postDelayed(mFytRatingWake, FYT_RATING_WAKE_DELAY_MS);
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
         hideWallpaperPickerIndicator();
         // Deferred until the panes are up; see mFytRatingWake.
-        scheduleFytRatingWake();
+        mDeviceWake.scheduleFytRatingWake();
         scheduleStatusBarSwipeDetectorSync();
         allowPip = true;
         onWorkspacePip = false;
@@ -3532,18 +2893,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 && (homeRefreshAlreadyHandled || mState == State.WORKSPACE)
                 && !mRestoring
                 && !mOnResumeNeedsLoad;
-        boolean wakeHomeRecovery = homeButtonResume && shouldRunWakeHomeRecovery();
+        boolean wakeHomeRecovery = homeButtonResume && mHomeRecovery.shouldRunWakeHomeRecovery();
         mHomeButtonPressed = false;
         mHomeWorkspaceRefreshHandled = false;
         if (homeButtonResume && !homeRefreshAlreadyHandled) {
             Log.d(TAG, "Home button resume - forcing workspace refresh");
-            mHomeWorkspaceRefreshHandled = refreshWorkspaceAfterHome();
+            mHomeWorkspaceRefreshHandled = mHomeRecovery.refreshWorkspaceAfterHome();
             fastHomeFromAllApps = mHomeFromAllAppsPending && mHomeWorkspaceRefreshHandled;
             fastHomeFromApp = !fastHomeFromAllApps
                     && mHomeWorkspaceRefreshHandled
                     && !mRestoring
                     && !mOnResumeNeedsLoad;
-            wakeHomeRecovery = shouldRunWakeHomeRecovery();
+            wakeHomeRecovery = mHomeRecovery.shouldRunWakeHomeRecovery();
         }
         if (fastHomeFromAllApps) {
             mOnResumeState = State.NONE;
@@ -3578,8 +2939,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         setWorkspaceBackground(mState == State.WORKSPACE);
         mPaused = false;
         sPausedFromUserAction = false;
-        if (mWidgetBarWakeRefreshPending) {
-            scheduleWidgetBarWakeRefresh("onResume");
+        if (mDeviceWake.mWidgetBarWakeRefreshPending) {
+            mDeviceWake.scheduleWidgetBarWakeRefresh("onResume");
         }
         final Workspace resumedWorkspace = mWorkspace;
         if (resumedWorkspace != null) {
@@ -3619,7 +2980,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (fastHomeFromAllApps || fastHomeFromApp) {
             mFastHomeResumePending = true;
             if (wakeHomeRecovery) {
-                scheduleWakeHomeRecovery("fastHome");
+                mHomeRecovery.scheduleWakeHomeRecovery("fastHome");
             }
             InstallShortcutReceiver.disableAndFlushInstallQueue(this);
             if (mWorkspace != null) {
@@ -3627,7 +2988,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mWorkspace.onResume();
             }
             scheduleFastHomeDeferredResumeWork(true);
-            scheduleHomeLayoutWatchdog("fastHomeResume", true);
+            mHomeRecovery.scheduleHomeLayoutWatchdog("fastHomeResume", true);
             return;
         }
         if (mAppsCustomizeContent != null) {
@@ -3640,7 +3001,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.reinflateWidgetsIfNecessary();
         } else {
             Log.e(TAG, "Workspace is null in onResume");
-            mWakeHomeRecoveryPending = true;
+            mHomeRecovery.mWakeHomeRecoveryPending = true;
             requestWorkspaceReloadFromRecovery("onResume");
             return;
         }
@@ -3657,7 +3018,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         processPendingUpdateOnResume();
 
         if (wakeHomeRecovery) {
-            scheduleWakeHomeRecovery("normalHome");
+            mHomeRecovery.scheduleWakeHomeRecovery("normalHome");
         }
 
         if (isAllAppsVisible()) {
@@ -3671,15 +3032,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (!onWorkspacePip) {
                     onResumePip = true;
                     if (!isRecreateActive || !helpers.onWidgetDropPipBool()) {
-                        initPip("onResume", null, false);
+                        mPipStarter.initPip("onResume", null, false);
                     }
                 }
                 onWorkspacePip = false;
                 onBackPip = false;
             }
         }
-        scheduleHomeLayoutWatchdog("onResume", !isAllAppsVisible());
-        schedulePipWatchdog("onResume");
+        mHomeRecovery.scheduleHomeLayoutWatchdog("onResume", !isAllAppsVisible());
+        mPipStarter.schedulePipWatchdog("onResume");
     }
 
     private void scheduleFastHomeDeferredResumeWork(boolean processPendingUpdate) {
@@ -3714,7 +3075,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (processPendingUpdate) {
                 processPendingUpdateOnResume();
             }
-            scheduleHomeLayoutWatchdog("fastHomeDeferred", true);
+            mHomeRecovery.scheduleHomeLayoutWatchdog("fastHomeDeferred", true);
             scheduleFastHomeDeferredPip();
             mHomeFromAllAppsPending = false;
             mFastHomeResumePending = false;
@@ -3808,8 +3169,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             onResumePip = false;
             onBackPip = false;
-            initPip("fastHomeFromAllApps", null, false);
-            schedulePipWatchdog("fastHomeFromAllApps");
+            mPipStarter.initPip("fastHomeFromAllApps", null, false);
+            mPipStarter.schedulePipWatchdog("fastHomeFromAllApps");
         };
         mHandler.postDelayed(mFastHomeDeferredPipRunnable, FAST_HOME_PIP_DEFER_MS);
     }
@@ -4066,59 +3427,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Log.w(TAG, "recreateView: post layout refresh failed", e);
             }
         }, 200);
-        scheduleHomeLayoutWatchdog("recreateView", true);
+        mHomeRecovery.scheduleHomeLayoutWatchdog("recreateView", true);
     }
 
-    private boolean initPip(String whereInitiated, View view, boolean forceOpen) {
-        // Reopening the panes makes the players hosted there announce playback
-        // on their own; that must not be taken for the user switching source.
-        // Set before the throttle below, so coalesced calls still extend it.
-        NotificationListener mediaListener = NotificationListener.getInstance();
-        if (mediaListener != null) {
-            mediaListener.suppressAutoSourceSwitch();
-        }
-
-        long now = SystemClock.uptimeMillis();
-        if (!forceOpen && (mPipInitPending || now - mLastPipInitMs < PIP_INIT_THROTTLE_MS)) {
-            Log.d(whereInitiated, "startMapPip coalesced");
-            return false;
-        }
-        mPipInitPending = true;
-
-        // mWorkspace.getCurrentPage() is determined with slight delay
-        mHandler.postDelayed(()-> {
-            mPipInitPending = false;
-            boolean shouldStartPip = (helpers.displayStateBoolean()
-                    && !helpers.isFirstPreferenceWindow()
-                    && !helpers.isWallpaperWindow()
-                    && !helpers.isInOverviewMode()
-                    && !mDragController.isDragging()
-                    && !helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility()))
-                    || (!helpers.userWasInRecents() && helpers.isListOpen() && !helpers.pipsAdded())
-                    || forceOpen;
-
-            if (shouldStartPip) {
-                Log.d(whereInitiated, "startMapPip");
-                mLastPipInitMs = SystemClock.uptimeMillis();
-                WindowUtil.startMapPip(forceOpen);
-            } else {
-                Log.w(whereInitiated, "startMapPip SKIPPED"
-                        + " display=" + helpers.displayStateBoolean()
-                        + " prefWin=" + helpers.isFirstPreferenceWindow()
-                        + " wallpaper=" + helpers.isWallpaperWindow()
-                        + " overview=" + helpers.isInOverviewMode()
-                        + " dragging=" + mDragController.isDragging()
-                        + " allApps=" + helpers.allAppsVisibility(mAppsCustomizeTabHost.getVisibility())
-                        + " wasInRecents=" + helpers.userWasInRecents()
-                        + " listOpen=" + helpers.isListOpen());
-            }
-            helpers.setFirstPreferenceWindow(false);
-            helpers.setWallpaperWindow(false);
-            helpers.setWasInRecents(false);
-        }, 250);
-
-        return true;
-    }
 
     @Override
     protected void onPostResume() {
@@ -4131,7 +3442,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         if (mHomeFromAllAppsPending) {
             requestPostResumeAppDataRefresh();
-            scheduleWeatherCheckAfterHome();
+            mHomeWeather.scheduleWeatherCheckAfterHome();
             mHandler.postDelayed(() -> {
                 onBackPip = false;
                 onResumePip = false;
@@ -4142,7 +3453,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mFastHomeResumePending) {
             mFastHomeResumePending = false;
             requestPostResumeAppDataRefresh();
-            scheduleWeatherCheckAfterHome();
+            mHomeWeather.scheduleWeatherCheckAfterHome();
             mHandler.postDelayed(() -> {
                 onBackPip = false;
                 onResumePip = false;
@@ -4184,7 +3495,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         if (mWorkspace == null) {
             // Can be cases where mWorkspace is null, this prevents a NPE
-            mWakeHomeRecoveryPending = true;
+            mHomeRecovery.mWakeHomeRecoveryPending = true;
             requestWorkspaceReloadFromRecovery("closeSystemDialogs");
             return;
         }
@@ -4198,7 +3509,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         requestPostResumeAppDataRefresh();
 
-        scheduleWeatherCheckAfterHome();
+        mHomeWeather.scheduleWeatherCheckAfterHome();
 
         // Floating button
         floatingButton = checkIfFloatingButton();
@@ -4226,7 +3537,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }, 1500); 
     }
 
-    private void requestPostResumeAppDataRefresh() {
+    void requestPostResumeAppDataRefresh() {
         if (!atomicInitAppData.get()) {
             return;
         }
@@ -4698,7 +4009,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Log.e(TAG, "onStop: cannot unregister mCloseSystemDialogsReceiver", e);
             }
         }
-        cancelWeatherCallbacks();
+        mHomeWeather.cancelWeatherCallbacks();
     }
 
     @Override
@@ -4745,12 +4056,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             kwAPi = null;
         }        
         TimeUpdateReceiver.unregister(this);
-        cancelWeatherCallbacks();
-        if (mWeatherListenerOwner != null && mWeatherChangedListener != null) {
-            mWeatherListenerOwner.removeOnWeatherChangedListener(mWeatherChangedListener);
-            mWeatherChangedListener = null;
-            mWeatherListenerOwner = null;
-        }
+        mHomeWeather.release();
         if (mHandler != null) {
             mHandler.removeMessages(1);
             mHandler.removeMessages(0);
@@ -5206,137 +4512,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    /**
-     * Shows what WeatherManager has and lets it fetch whatever is due (5 km driven or 10 min old,
-     * see WeatherManager.refreshIfDue()), then sleeps until the moment the next fetch can become
-     * due by time. The distance is checked in WeatherManager's location callback, so nothing polls.
-     * Runs only while the launcher is in front: scheduled from onPostResume(), cancelled in onStop().
-     */
-    private final Runnable periodicWeatherCheck = new Runnable() {
-        @Override
-        public void run() {
-            if (!ensureWeatherManager(this)) {
-                return;
-            }
-            // Pushed first: rebuilt bar views start with placeholder text.
-            showWeatherInfo();
-            long next = weatherManager.refreshIfDue("home");
-            weatherHandler.removeCallbacks(this);
-            weatherHandler.postDelayed(this, next);
-        }
-    };
 
-    private void scheduleWeatherCheckAfterHome() {
-        WeatherManager.setForeground(true);
-        weatherHandler.removeCallbacks(periodicWeatherCheck);
-        weatherHandler.postDelayed(periodicWeatherCheck, WEATHER_HOME_DEFER_MS);
-    }
 
-    /** Shows the cached weather in the (re)bound views and fetches only if something is due. */
-    public void updateWeather() {
-        if (!ensureWeatherManager(mDeferredWeatherInit)) {
-            return;
-        }
-        showWeatherInfo();
-        weatherManager.refreshIfDue("show");
-    }
 
-    private final Runnable mDeferredWeatherInit = this::updateWeather;
 
-    /**
-     * WeatherManager.initialize() registers a receiver, a call into system_server: during the
-     * boot-time stall that froze the launcher for twelve seconds (capture 23:13), with the
-     * workspace binding queued behind it. The weather is not needed for the first screen, so at
-     * boot the manager is created once the stall is over, and retry runs then.
-     *
-     * @return true when the manager exists
-     */
-    private boolean ensureWeatherManager(Runnable retry) {
-        if (weatherManager != null) {
-            return true;
-        }
-        long wait = bootStallDelayMs();
-        if (wait > 0L) {
-            weatherHandler.removeCallbacks(retry);
-            weatherHandler.postDelayed(retry, wait);
-            return false;
-        }
-        weatherManager = WeatherManager.initialize(this);
-        return true;
-    }
 
-    private void cancelWeatherCallbacks() {
-        WeatherManager.setForeground(false);
-        weatherHandler.removeCallbacks(periodicWeatherCheck);
-        weatherHandler.removeCallbacks(mDeferredWeatherInit);
-    }
 
-    public void showWeatherInfo() {
-        if (this.weatherManager != null) {
-            if (mWeatherChangedListener == null) {
-                mWeatherChangedListener = new WeatherManager.OnWeatherChangedListener() {
-                    @Override
-                    public void onWeatherChanged(WeatherDescription weather) {
-                        if (weather != null) {
-                            if (Launcher.this.weatherImg != null) {
-                                Launcher.this.weatherImg.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
-                            }
-                            String range = weather.getTemDescription().replaceAll("\\.\\d", "");
-                            String temp = weather.getCurTem().replaceAll("\\.\\d", "");
-                            if (Launcher.this.weatherCity != null) {
-                                Launcher.this.weatherCity.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
-                            }
-                            if (Launcher.this.weatherWeather != null) {
-                                Launcher.this.weatherWeather.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
-                            }
-                            if (Launcher.this.weatherTemp != null) {
-                                Launcher.this.weatherTemp.setText(new StringBuilder(String.valueOf(temp)).toString());
-                            }
-                            if (Launcher.this.weatherTempRange != null) {
-                                Launcher.this.weatherTempRange.setText(new StringBuilder(String.valueOf(range)).toString());
-                            }
-                            if (Launcher.this.weatherImg1 != null) {
-                                Launcher.this.weatherImg1.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
-                            }
-                            if (Launcher.this.weatherCity1 != null) {
-                                Launcher.this.weatherCity1.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());
-                            }
-                            if (Launcher.this.weatherWeather1 != null) {
-                                Launcher.this.weatherWeather1.setText(new StringBuilder(WeatherUtils.translateDescription(String.valueOf(weather.getWeather()))).toString());
-                            }
-                            if (Launcher.this.weatherTemp1 != null) {
-                                Launcher.this.weatherTemp1.setText(new StringBuilder(String.valueOf(temp)).toString());
-                            }
-                            if (Launcher.this.weatherTempRange1 != null) {
-                                Launcher.this.weatherTempRange1.setText(new StringBuilder(String.valueOf(range)).toString());
-                            }
-                            if (Launcher.this.weatherWind != null) {
-                                Launcher.this.weatherWind.setText(new StringBuilder(String.valueOf(weather.getWind())).toString());
-                            }
-                        }
-                    }
-                };
-            }
-            if (mWeatherListenerOwner != this.weatherManager) {
-                if (mWeatherListenerOwner != null) {
-                    mWeatherListenerOwner.removeOnWeatherChangedListener(mWeatherChangedListener);
-                }
-                this.weatherManager.addOnWeatherChangedListener(mWeatherChangedListener);
-                mWeatherListenerOwner = this.weatherManager;
-            }
-            // Always push the last known weather - also right after registering, so freshly
-            // bound bar views do not stay empty until the next network update arrives.
-            WeatherDescription weather = this.weatherManager.getThisWeather();
-            if (weather != null) {
-                try {
-                    mWeatherChangedListener.onWeatherChanged(weather);
-                } catch (Exception e) {
-                    // WeatherManager guards its own listener calls the same way.
-                    Log.w(TAG, "showWeatherInfo: pushing cached weather failed", e);
-                }
-            }
-        }
-    }
 
     @Override
     protected void onUserLeaveHint() {
@@ -5784,7 +4965,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onWindowFocusChanged(hasFocus);
         mHasFocus = hasFocus;
         if (hasFocus) {
-            scheduleFocusHomeRecovery("focus");
+            mHomeRecovery.scheduleFocusHomeRecovery("focus");
         }
     }
 
@@ -6466,10 +5647,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         } catch (Exception e) {
             Log.w(TAG, "rebindBarWidgetsAfterWake: music state refresh failed", e);
         }
-        if (weatherManager == null) {
-            updateWeather();        // creates the manager and shows what it already has
+        if (mHomeWeather.weatherManager == null) {
+            mHomeWeather.updateWeather();        // creates the manager and shows what it already has
         } else {
-            showWeatherInfo();      // pushes the cached weather into the rebound views
+            mHomeWeather.showWeatherInfo();      // pushes the cached weather into the rebound views
         }
     }
 
@@ -6643,7 +5824,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         appDataHandler.postDelayed(pendingAction, getAppDataDelayMs());
     }
 
-    private void markAppDataDirty() {
+    void markAppDataDirty() {
         mPostResumeAppDataDirty = true;
     }
 
@@ -7717,14 +6898,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             onResumePip = false;
             userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
             if (userLayout) {
-                initPip("initializeAppList()", null, false);
+                mPipStarter.initPip("initializeAppList()", null, false);
                 mHandler.postDelayed(() -> {
                     Log.d("initializeAppList()", "openPinnedPip()");
                     WindowUtil.openPinnedPip();
                 }, 1500); 
             }
         }
-        scheduleHomeLayoutWatchdog("appListInitialized", !isAllAppsVisible());
+        mHomeRecovery.scheduleHomeLayoutWatchdog("appListInitialized", !isAllAppsVisible());
     }
 
     @Override
@@ -7735,8 +6916,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         markAppDataDirty();
         requestPostResumeAppDataRefresh();
         refreshRecyclerViewDecorations();
-        scheduleFocusHomeRecovery("configuration");
-        scheduleHomeLayoutWatchdog("configuration", !isAllAppsVisible());
+        mHomeRecovery.scheduleFocusHomeRecovery("configuration");
+        mHomeRecovery.scheduleHomeLayoutWatchdog("configuration", !isAllAppsVisible());
     }
 
     private void refreshRecyclerViewDecorations() {
@@ -9739,8 +8920,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (mAppsCustomizeTabHost != null) {
                     mAppsCustomizeTabHost.setVisibility(View.GONE);
                 }
-                refreshWorkspaceAfterHome();
-                scheduleHomeLayoutWatchdog("newIntentFast", true);
+                mHomeRecovery.refreshWorkspaceAfterHome();
+                mHomeRecovery.scheduleHomeLayoutWatchdog("newIntentFast", true);
                 return;
             }
 
@@ -9750,7 +8931,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
             if (mWorkspace == null) {
                 // Can be cases where mWorkspace is null, this prevents a NPE
-                mWakeHomeRecoveryPending = true;
+                mHomeRecovery.mWakeHomeRecoveryPending = true;
                 requestWorkspaceReloadFromRecovery("newIntent");
                 return;
             }
@@ -9769,10 +8950,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // otherwise, just wait until onResume to set the state back to Workspace
             if (alreadyOnHome) {
                 showWorkspace(true);
-                if (shouldRunWakeHomeRecovery()) {
-                    scheduleWakeHomeRecovery("newIntent");
+                if (mHomeRecovery.shouldRunWakeHomeRecovery()) {
+                    mHomeRecovery.scheduleWakeHomeRecovery("newIntent");
                 }
-                scheduleHomeLayoutWatchdog("newIntent", true);
+                mHomeRecovery.scheduleHomeLayoutWatchdog("newIntent", true);
             } else {
                 mOnResumeState = State.WORKSPACE;
             }
@@ -11546,14 +10727,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         if (((!onResumePip || onBackPip) && !isRecreateActive) || helpers.isInWidgets()) {
             helpers.setInWidgets(false);
-            onWorkspacePip = initPip("onWorkspaceShown()", null, false);
-            schedulePipWatchdog("onWorkspaceShown");
+            onWorkspacePip = mPipStarter.initPip("onWorkspaceShown()", null, false);
+            mPipStarter.schedulePipWatchdog("onWorkspaceShown");
         }
     }
 
     void showAllApps(boolean animated, AppsCustomizePagedView.ContentType contentType, boolean resetPageToZero) {
-        cancelHomeLayoutWatchdog();
-        cancelWakeHomeRecovery("showAllApps:" + contentType);
+        mHomeRecovery.cancelHomeLayoutWatchdog();
+        mHomeRecovery.cancelWakeHomeRecovery("showAllApps:" + contentType);
         if (mState == State.WORKSPACE) {
             Log.d("showAllApps", String.valueOf(contentType) + ": removePip");
             WindowUtil.removePip(0);
@@ -11628,7 +10809,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         if (!onResumePip) {
             helpers.setInAllApps(false);
-            initPip("exitSpringLoadedDragModeDelayed()", null, false);
+            mPipStarter.initPip("exitSpringLoadedDragModeDelayed()", null, false);
         }
     }
 
@@ -11926,7 +11107,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     return;
                 } else {
                     if (!camera360Action.equals(intent.getAction()) && "com.lsec.pipdie".equals(intent.getAction()) && CarStates.mAccState == 1) {
-                        initPip("CloseSystemDialogs", null, false);
+                        mPipStarter.initPip("CloseSystemDialogs", null, false);
                         return;
                     }
                     return;
@@ -12026,7 +11207,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // which a forceReload() loads again from scratch -- 10 s of icons after one return
             // from the settings. The adapters still hold the current bar apps: put them back now.
             if (mAppListAdapter != null && mAppListAdapter.getItemCount() > 0) {
-                restoreBottomRecyclerAfterHome("bindScreens");
+                mHomeRecovery.restoreBottomRecyclerAfterHome("bindScreens");
             }
         }
         if (!mWorkspace.hasCustomContent() && hasCustomContentToLeft()) {
@@ -12492,7 +11673,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             replayCustomElementsSetupAfterBind();
             // And a strip of empty screens that was held back during the bind.
             mWorkspace.onWorkspaceLoadFinished();
-            scheduleHomeLayoutWatchdog("finishBindingItems", !isAllAppsVisible());
+            mHomeRecovery.scheduleHomeLayoutWatchdog("finishBindingItems", !isAllAppsVisible());
         }
     }
 
@@ -13092,7 +12273,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public static class EvenVerticalLayoutManager extends LinearLayoutManager {
-        private static final String LM_TAG = "EvenVerticalLM";
+        static final String LM_TAG = "EvenVerticalLM";
         private static final String LM_PREFS = "LauncherPrefs";
         private static final String KEY_ITEM_HEIGHT = "left_bar_item_height";
 
@@ -13233,5 +12414,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         public boolean canScrollVertically() {
             return getItemCount() > mMaxItems && super.canScrollVertically();
         }
+    }
+
+    public void updateWeather() {
+        mHomeWeather.updateWeather();
+    }
+
+    public void showWeatherInfo() {
+        mHomeWeather.showWeatherInfo();
+    }
+
+    public void onDeviceWake(String source) {
+        mDeviceWake.onDeviceWake(source);
+    }
+
+    public void cancelPipWatchdog() {
+        mPipStarter.cancelPipWatchdog();
     }
 }
