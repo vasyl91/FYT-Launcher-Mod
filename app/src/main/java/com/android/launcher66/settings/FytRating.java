@@ -102,6 +102,11 @@ public final class FytRating {
     /** How long a rating reply is reused to answer the made-for-kids question. */
     private static final long LAST_REPLY_MAX_AGE_MS = 15000L;
 
+    /** How long after a boot the background broadcast queue is expected to be jammed. */
+    private static final long BOOT_CONGESTION_MS = 300000L;
+    /** The last rating request got no reply; the next one skips the background queue. */
+    private static volatile boolean lastRatingUnanswered;
+
     private static final String ERROR_NOT_ALLOWED = "not_allowed";
     private static final String ERROR_NOT_SIGNED_IN = "not_signed_in";
 
@@ -364,8 +369,10 @@ public final class FytRating {
     public static String fetchRating(Context context, String videoId) {
         Intent request = new Intent(ACTION_GET_RATING);
         request.putExtra(EXTRA_VIDEO_ID, videoId);
+        useForegroundQueueIfCongested(request);
 
         Bundle result = exchange(context, request, RATING_TIMEOUT_MS);
+        noteRatingAnswered(result != null);
         if (result == null) {
             // Silence says nothing about the video, so the remembered reply is
             // dropped rather than reused by the made-for-kids question.
@@ -395,8 +402,10 @@ public final class FytRating {
 
         Intent request = new Intent(ACTION_GET_RATING);
         request.putExtra(EXTRA_VIDEO_ID, videoId);
+        useForegroundQueueIfCongested(request);
 
         Bundle result = exchange(context, request, RATING_TIMEOUT_MS);
+        noteRatingAnswered(result != null);
         if (result == null) {
             forgetLastReply(videoId);
             return false;
@@ -436,6 +445,25 @@ public final class FytRating {
         statusCheckedAtMs = SystemClock.elapsedRealtime();
     }
 
+    /**
+     * The rating requests normally go through the background broadcast queue: the bridge answers
+     * them with a network call under goAsync(), and the foreground queue's 10 s receiver timeout
+     * would turn a slow network into an ANR of the bridge. But in the first minutes after a boot
+     * that queue is jammed -- 64 broadcasts ahead of a GET_RATING in the 06-10 03:28 capture, which
+     * timed out twice, so YouTube showed its like state only 43 s after it started, while the
+     * bridge itself answers in 0.2-0.7 s. Then, and after a request went unanswered, the
+     * foreground queue is used.
+     */
+    private static void useForegroundQueueIfCongested(Intent request) {
+        if (SystemClock.elapsedRealtime() < BOOT_CONGESTION_MS || lastRatingUnanswered) {
+            request.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        }
+    }
+
+    private static void noteRatingAnswered(boolean answered) {
+        lastRatingUnanswered = !answered;
+    }
+
     private static void rememberLastReply(String videoId, String error) {
         lastReplyError = error == null ? "" : error;
         lastReplyVideoId = videoId;
@@ -465,8 +493,10 @@ public final class FytRating {
         Intent request = new Intent(ACTION_SET_RATING);
         request.putExtra(EXTRA_VIDEO_ID, videoId);
         request.putExtra(EXTRA_RATING, like ? RATING_LIKE : RATING_NONE);
+        useForegroundQueueIfCongested(request);
 
         Bundle result = exchange(context, request, RATING_TIMEOUT_MS);
+        noteRatingAnswered(result != null);
         if (result == null) {
             forgetLastReply(videoId);
             return false;
@@ -767,6 +797,14 @@ public final class FytRating {
      *
      * Costs one comparison when the bridge is already answering.
      */
+    /**
+     * The bridge is brought up by the status broadcast alone (the ROM lets broadcasts start it, or
+     * that is being arranged), not by starting its activity -- which would pause the launcher.
+     */
+    public static boolean wakesByBroadcast() {
+        return autoLaunchState != AUTOLAUNCH_UNAVAILABLE && !broadcastLaunchFailed;
+    }
+
     public static void wakeIfNeeded(Context context) {
         if (context == null || !isInstalled(context)) {
             return;
@@ -779,7 +817,7 @@ public final class FytRating {
             return;
         }
 
-        if (autoLaunchState != AUTOLAUNCH_UNAVAILABLE && !broadcastLaunchFailed) {
+        if (wakesByBroadcast()) {
             // The ROM lets a broadcast start the bridge (or that is being arranged right now, see
             // allowBroadcastLaunch()): the status request brings it up without an activity, so
             // without pausing the launcher. Unanswered, it switches the next resume to the activity.
