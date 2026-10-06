@@ -974,7 +974,7 @@ final class LauncherMusicWidget {
             mLauncher.mWorkspace.scheduleAutoHide();
         }
 
-        if (mLauncher.isRadioPlaying() && "mediaController".equals(mediaSource)) {
+        if (mLauncher.mRadioWidget.isRadioPlaying() && "mediaController".equals(mediaSource)) {
             openActiveMusicPlayer(null);
             return;
         }
@@ -1067,7 +1067,7 @@ final class LauncherMusicWidget {
                         break;
                     }
                 }
-                if (!activeControllerAppRunning || mLauncher.isRadioPlaying()) {
+                if (!activeControllerAppRunning || mLauncher.mRadioWidget.isRadioPlaying()) {
                     WindowUtil.removePip();
                     Intent launchIntent = mLauncher.getPackageManager().getLaunchIntentForPackage(activeController);
                     try {
@@ -1101,7 +1101,7 @@ final class LauncherMusicWidget {
             mLauncher.mWorkspace.scheduleAutoHide();
         }
 
-        if (mLauncher.isRadioPlaying() && "mediaController".equals(mediaSource)) {
+        if (mLauncher.mRadioWidget.isRadioPlaying() && "mediaController".equals(mediaSource)) {
             openActiveMusicPlayer(null);
             return;
         }

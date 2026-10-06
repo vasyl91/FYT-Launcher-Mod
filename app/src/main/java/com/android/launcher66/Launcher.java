@@ -211,6 +211,12 @@ import share.ResValue;
 import share.ShareHandler;
 
 public class Launcher extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, LauncherModel.Callbacks, View.OnTouchListener, PropertyChangeListener, LauncherAppWidgetHost.OnWidgetClickListener {
+    /** Opening the wallpaper picker; see that class. */
+    final LauncherWallpaperPicker mWallpaperPicker = new LauncherWallpaperPicker(this);
+
+    /** The radio widget; see that class. */
+    final LauncherRadioWidget mRadioWidget = new LauncherRadioWidget(this);
+
     /** The music widget and the music bar; see that class. */
     final LauncherMusicWidget mMusicWidget = new LauncherMusicWidget(this);
 
@@ -264,9 +270,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final String RUNTIME_STATE_PENDING_ADD_WIDGET_ID = "launcher.add_widget_id";
     static final int SCREEN_COUNT = 5;
     public static final String SHOW_WEIGHT_WATCHER = "debug.show_mem";
-    // Loading indicator while the wallpaper picker starts; see showWallpaperPickerIndicator().
-    private static final long WALLPAPER_PICKER_INDICATOR_DELAY_MS = 300L;
-    private static final long WALLPAPER_PICKER_INDICATOR_TIMEOUT_MS = 10000L;
     private static final long WIDGET_UPDATE_THROTTLE_MS = 350L;
     private static final long SERVICE_RUNNING_CACHE_MS = 15000L;
     private static final long FAST_HOME_RESUME_DEFER_MS = 450L;
@@ -297,7 +300,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private ProgressBar btavProgress;
     public int carSpeed;
     RelativeLayout firstLayout;
-    private RadioRuler img_freq_point;
     private Button kuwomusic_next;
     private Button kuwomusic_playpause;
     private Button kuwomusic_prev;
@@ -371,11 +373,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      */
     private MediaPlayer mPlayer;
     private View mQsbBar;
-    private Button mRadioBandButton;
-    private View mRadioIcon;
-    private Button mRadioNextButton;
-    private Button mRadioPauseButton;
-    private Button mRadioPrevButton;
+    View mRadioIcon;
     private boolean mRestoring;
     private Bundle mSavedInstanceState;
     private Bundle mSavedState;
@@ -402,7 +400,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     TextView mTvMusic;
     private TextView mTvNavi;
     private TextView mTvPerson;
-    private TextView mTvRadio;
+    TextView mTvRadio;
     private TextView mTvSettings;
     private TextView mTvSpeed;
     private String mVideoPlayState;
@@ -415,11 +413,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     long preOnResumeTime;
     public boolean showKuwoContent;
     RemoteTools tools;
-    private TextView tvBand;
     private TextView tvBtavCurTime;
     private TextView tvBtavTotalTime;
-    private TextView tvCurFreq;
-    private TextView tvUnit;
     private Button video_next;
     private Button video_playpause;
     private Button video_prev;
@@ -456,9 +451,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public static boolean sForceEnableRotation = isPropertyEnabled(FORCE_ENABLE_ROTATION_PROPERTY);
     public int mainState = 0;
     private int count = 0;
-    public String freq = "87.50";
-    public int radioFreqState = 0;
-    public String radioFreq = "87.50";
     public int btTotalTime = 0;
     public int btCurTime = 0;
     public String btName = null;
@@ -843,11 +835,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     if (mediaListener != null) {
                         mediaListener.onMcuChannelChanged(ints[0]);
                     }
-                    if (Launcher.this.mRadioPauseButton != null) {
+                    if (Launcher.this.mRadioWidget.mRadioPauseButton != null) {
                         if (ints[0] == 1) {
-                            Launcher.this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_playpause_icon);
+                            Launcher.this.mRadioWidget.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_playpause_icon);
                         } else {
-                            Launcher.this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_pause_icon);
+                            Launcher.this.mRadioWidget.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_pause_icon);
                         }
                     }
                     if (LauncherApplication.sApp.getResources().getBoolean(R.bool.worksapce_switch_widget)) {
@@ -1087,15 +1079,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
 
 
-    /**
-     * Checks whether the radio is the current MCU source. The previous process
-     * scanning returned true as long as com.syu.radio was alive — which was almost
-     * always — causing the widget buttons and refreshRadioFreq to react to a state
-     * that had nothing to do with what was actually playing.
-     */
-    boolean isRadioPlaying() {
-        return CarStates.mAppID == 1;
-    }
 
 
 
@@ -1107,72 +1090,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
 
 
-    private int radioBand = -1;
-    Callback.OnRefreshLisenter refreshRadioBand = new Callback.OnRefreshLisenter() { 
-        @Override
-        public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
-            if (updateCode == 0 && ints != null && ints.length > 0) {
-                int band = ints[0];
-                Log.d(TAG, "-------->>> FinalRadio.U_BAND" + band);
-                if (band == 65536 || band == 65537 || band == 65538) {
-                    Launcher.this.radioBand = 0;
-                } else if (band == 0 || band == 1) {
-                    Launcher.this.radioBand = 1;
-                }
-            }
-        }
-    };
-    Callback.OnRefreshLisenter refreshRadioFreq = new Callback.OnRefreshLisenter() { 
-        @Override
-        public void onRefresh(int updateCode, int[] ints, float[] flts, String[] strs) {
-            if (updateCode == 1 && ints != null && ints.length > 0) {
-                Launcher.this.radioFreqState = ints[0];
-                if (ints[0] > 5000) {
-                    int fmFreq = ints[0];
-                    Launcher.this.freq = Launcher.this.freqToString(fmFreq);
-                    String str = Launcher.this.freqToString(ints[0]);
-                    String freqs = String.valueOf(str.substring(0, str.length() - 2)) + "." + str.substring(str.length() - 2, str.length());
-                    Launcher.this.radioFreq = freqs;
-                    if (Launcher.this.tvCurFreq != null) {
-                        Launcher.this.tvCurFreq.setText(freqs);
-                    }
-                    if (Launcher.this.tvBand != null) {
-                        if (Launcher.this.tvBand.getBackground() != null) {
-                            Launcher.this.tvBand.setBackgroundResource(ResValue.getInstance().fm);
-                        } else {
-                            Launcher.this.tvBand.setText("FM");
-                        }
-                    }
-                    if (Launcher.this.tvUnit != null) {
-                        Launcher.this.tvUnit.setText("MHz");
-                    }
-                    if (Launcher.this.img_freq_point != null) {
-                        Launcher.this.img_freq_point.setTargetMarkAnim(fmFreq, 8750, 10800);
-                    }
-                } else if (ints[0] < 5000 && ints[0] > 500) {
-                    Launcher.this.freq = Launcher.this.freqToString(ints[0]);
-                    Launcher.this.radioFreq = Launcher.this.freq;
-                    if (Launcher.this.tvCurFreq != null) {
-                        Launcher.this.tvCurFreq.setText(Launcher.this.freq);
-                    }
-                    if (Launcher.this.tvBand != null) {
-                        if (Launcher.this.tvBand.getBackground() != null) {
-                            Launcher.this.tvBand.setBackgroundResource(ResValue.getInstance().am);
-                        } else {
-                            Launcher.this.tvBand.setText("AM");
-                        }
-                    }
-                    if (Launcher.this.tvUnit != null) {
-                        Launcher.this.tvUnit.setText("KHz");
-                    }
-                    if (Launcher.this.img_freq_point != null) {
-                        Launcher.this.img_freq_point.setTargetMarkAnim(ints[0], 522, 1620);
-                    }
-                }
-            }
-            requestWidgetUpdate(DateRadioProvider.class);
-        }
-    };
     private IUiRefresher refreshVideo = new IUiRefresher() { 
         @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) { 
@@ -2131,7 +2048,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onResume() {
         super.onResume();
-        hideWallpaperPickerIndicator();
+        mWallpaperPicker.hideWallpaperPickerIndicator();
         // Deferred until the panes are up; see mFytRatingWake.
         mDeviceWake.scheduleFytRatingWake();
         scheduleStatusBarSwipeDetectorSync();
@@ -2489,8 +2406,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         if (!mRefreshersRegistered) {
             mRefreshersRegistered = true;
-            tools.addRefreshLisenter(1, refreshRadioBand, 0);
-            tools.addRefreshLisenter(1, refreshRadioFreq, 1, 2);
+            tools.addRefreshLisenter(1, mRadioWidget.refreshRadioBand, 0);
+            tools.addRefreshLisenter(1, mRadioWidget.refreshRadioFreq, 1, 2);
             tools.addRefreshLisenter(0, refreshMain, 0, 50, 60, 101, 31, 4);
             tools.addRefreshLisenter(4, refreshMain, 2, 3);
             tools.addRefreshLisenter(7, refreshMain, 1000);
@@ -2882,7 +2799,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.setEdgeHandleHostVisible(false);
         }
         // The wallpaper picker (or whatever came up instead) now covers the launcher.
-        hideWallpaperPickerIndicator();
+        mWallpaperPicker.hideWallpaperPickerIndicator();
         NotificationListener mediaListener = NotificationListener.getInstance();
         if (mediaListener != null) {
             mediaListener.endPaneRestart();
@@ -2934,7 +2851,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "---->>> onDestroy");
-        hideWallpaperPickerIndicator();
+        mWallpaperPicker.hideWallpaperPickerIndicator();
         // Unconditional, and before any field is cleared. onPause() returns early on
         // (mHomeButtonPressed && isOnMainWorkspaceScreen()), so leaving via HOME from the
         // main screen never unregistered the refreshers and the static NOTIFIER_* kept
@@ -2960,8 +2877,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         tools.removeRefreshLisenter(4, refreshMain);
         tools.removeRefreshLisenter(7, refreshMain);
         tools.removeRefreshLisenter(2, refreshBtInfo);
-        tools.removeRefreshLisenter(1, refreshRadioBand);
-        tools.removeRefreshLisenter(1, refreshRadioFreq);
+        tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioBand);
+        tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioFreq);
         purgeMyRefreshListeners();
         mRefreshersRegistered = false;
         unregisterAllReceivers();
@@ -3070,8 +2987,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             java.util.Set<Object> mine = java.util.Collections.newSetFromMap(
                     new java.util.IdentityHashMap<Object, Boolean>());
             mine.add(refreshMain);
-            mine.add(refreshRadioBand);
-            mine.add(refreshRadioFreq);
+            mine.add(mRadioWidget.refreshRadioBand);
+            mine.add(mRadioWidget.refreshRadioFreq);
             mine.add(refreshBtInfo);
 
             int removed = 0;
@@ -4225,7 +4142,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         wallpaperButton = findViewById(ResValue.getInstance().wallpaper_button);
         if (wallpaperButton != null) {
-            wallpaperButton.setOnClickListener(arg0 -> onClickWallpaperPicker(arg0));
+            wallpaperButton.setOnClickListener(arg0 -> mWallpaperPicker.onClickWallpaperPicker(arg0));
             wallpaperButton.setOnTouchListener(getHapticFeedbackTouchListener());
         }
 
@@ -4245,7 +4162,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         wallpaperButtonWidgets = findViewById(ResValue.getInstance().wallpaper_button_widgets);
         if (wallpaperButtonWidgets != null) {
-            wallpaperButtonWidgets.setOnClickListener(arg0 -> onClickWallpaperPicker(arg0));
+            wallpaperButtonWidgets.setOnClickListener(arg0 -> mWallpaperPicker.onClickWallpaperPicker(arg0));
             wallpaperButtonWidgets.setOnTouchListener(getHapticFeedbackTouchListener());
         }
 
@@ -4321,110 +4238,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public void onClickWallpaperPicker(View v) {
-        helpers.setOpenedFromOverviewBoolean(true);
-        if (mWorkspace.isInOverviewMode()) {
-            mWorkspace.exitOverviewMode(true);
-        }
-        WindowUtil.removePip();
-        if (mPrefs.getBoolean("wallpaper_picker_source", false)) {
-            startWallpaperSystem(v);
-        } else {
-            startWallpaperInApp();
-        }
-    }
 
-    protected void startWallpaperSystem(View v) {
-        final Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
 
-        String pickerPackage = "com.android.wallpaper";
-        boolean hasTargetPackage = !TextUtils.isEmpty(pickerPackage);
-        try {
-            if (hasTargetPackage && getPackageManager().getApplicationInfo(pickerPackage, 0).enabled) {
-                intent.setPackage(pickerPackage);
-            }
-        } catch (PackageManager.NameNotFoundException ex) {
-        }
 
-        intent.setSourceBounds(getViewBounds(v));
-        try {
-            helpers.setWallpaperWindow(true);
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "activity_not_found", Toast.LENGTH_SHORT).show();
-        }
-    }
 
-    protected void startWallpaperInApp() {
-        final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
-        pickWallpaper.setComponent(getWallpaperPickerComponent());
-        startActivity(pickWallpaper);
-        showWallpaperPickerIndicator();
-    }
 
-    // Loading indicator over the home screen while the wallpaper picker starts.
-    private View mWallpaperPickerIndicator;
-    private final Runnable mAddWallpaperPickerIndicator = this::addWallpaperPickerIndicator;
-    private final Runnable mWallpaperPickerIndicatorTimeout = this::hideWallpaperPickerIndicator;
 
-    /**
-     * Gives feedback while the wallpaper picker starts. Until the picker draws its first frame,
-     * which takes seconds when its process has to start cold, the paused home screen stays on
-     * screen without reacting and looks hung. The indicator appears only if the start takes
-     * longer than WALLPAPER_PICKER_INDICATOR_DELAY_MS, and goes away when the picker covers the
-     * launcher (onStop), when the launcher comes back (onResume), or after
-     * WALLPAPER_PICKER_INDICATOR_TIMEOUT_MS at the latest.
-     */
-    private void showWallpaperPickerIndicator() {
-        mHandler.removeCallbacks(mAddWallpaperPickerIndicator);
-        mHandler.removeCallbacks(mWallpaperPickerIndicatorTimeout);
-        mHandler.postDelayed(mAddWallpaperPickerIndicator, WALLPAPER_PICKER_INDICATOR_DELAY_MS);
-        mHandler.postDelayed(mWallpaperPickerIndicatorTimeout,
-                WALLPAPER_PICKER_INDICATOR_TIMEOUT_MS);
-    }
 
-    private void hideWallpaperPickerIndicator() {
-        mHandler.removeCallbacks(mAddWallpaperPickerIndicator);
-        mHandler.removeCallbacks(mWallpaperPickerIndicatorTimeout);
-        removeWallpaperPickerIndicatorView();
-    }
 
-    private void addWallpaperPickerIndicator() {
-        removeWallpaperPickerIndicatorView();
-        ViewGroup content = findViewById(android.R.id.content);
-        if (content == null) {
-            return;
-        }
-        FrameLayout scrim = new FrameLayout(this);
-        scrim.setBackgroundColor(0x99000000);
-        // Swallows touches: the paused home screen would not handle them properly anyway.
-        scrim.setClickable(true);
-        ProgressBar progress = new ProgressBar(this);
-        progress.setIndeterminate(true);
-        scrim.addView(progress, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER));
-        scrim.setAlpha(0f);
-        content.addView(scrim, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        scrim.animate().alpha(1f).setDuration(150);
-        mWallpaperPickerIndicator = scrim;
-    }
-
-    private void removeWallpaperPickerIndicatorView() {
-        if (mWallpaperPickerIndicator == null) {
-            return;
-        }
-        if (mWallpaperPickerIndicator.getParent() instanceof ViewGroup) {
-            ((ViewGroup) mWallpaperPickerIndicator.getParent())
-                    .removeView(mWallpaperPickerIndicator);
-        }
-        mWallpaperPickerIndicator = null;
-    }
-
-    protected ComponentName getWallpaperPickerComponent() {
-        return new ComponentName(getPackageName(), WallpaperPickerActivity.class.getName());
-    }
 
     public Rect getViewBounds(View v) {
         int[] pos = new int[2];
@@ -4466,26 +4287,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
 
 
-    public void initRadioWidgetView(View radioWidgetView) {
-        if (radioWidgetView != null) {
-            mRadioPrevButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_prev);
-            mRadioNextButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_next);
-            mMusicWidget.setWidgetButtonsTint(mRadioPrevButton);
-            mMusicWidget.setWidgetButtonsTint(mRadioNextButton);
-            mRadioPauseButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_pause);
-            mRadioBandButton = radioWidgetView.findViewById(ResValue.getInstance().radio_btn_band);
-            mRadioIcon = radioWidgetView.findViewById(ResValue.getInstance().mRadioIcon);
-            tvBand = radioWidgetView.findViewById(ResValue.getInstance().tv_band);
-            tvUnit = radioWidgetView.findViewById(ResValue.getInstance().tv_unit);
-            img_freq_point = radioWidgetView.findViewById(ResValue.getInstance().radio_point);
-            tvCurFreq = radioWidgetView.findViewById(ResValue.getInstance().tv_freq);
-            mTvRadio = radioWidgetView.findViewById(ResValue.getInstance().tv_radio);
-            putCustomView(Config.WS_Radio, radioWidgetView.findViewById(ResValue.getInstance().rl_radio));
-            if (getCustomView(Config.WS_Radio) != null) {
-                getCustomView(Config.WS_Radio).setOnClickListener(this);
-            }
-        }
-    }
 
     /**
      * Re-points the widget bar references at the views that are actually on screen and pushes
@@ -4637,17 +4438,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (mBtavAritst != null) {
             mBtavAritst.setText(R.string.music_unknown);
         }
-        if (tvCurFreq != null) {
-            tvCurFreq.setText("87.50");
+        if (mRadioWidget.tvCurFreq != null) {
+            mRadioWidget.tvCurFreq.setText("87.50");
         }
-        if (tvUnit != null) {
-            tvUnit.setText("MHz");
+        if (mRadioWidget.tvUnit != null) {
+            mRadioWidget.tvUnit.setText("MHz");
         }
-        if (tvBand != null) {
-            if (tvBand.getBackground() != null) {
-                tvBand.setBackgroundResource(ResValue.getInstance().fm);
+        if (mRadioWidget.tvBand != null) {
+            if (mRadioWidget.tvBand.getBackground() != null) {
+                mRadioWidget.tvBand.setBackgroundResource(ResValue.getInstance().fm);
             } else {
-                tvBand.setText("FM");
+                mRadioWidget.tvBand.setText("FM");
             }
         }
         if (getCustomView(Config.WS_Bt) != null) {
@@ -4810,43 +4611,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
 
 
-    public void bindRadioWidgetOnclickListener() {
-        if (mRadioPrevButton != null) {
-            mRadioPrevButton.setOnClickListener(v -> {
-                if (CarStates.mAppID == 1 && this.tools != null) {
-                    this.tools.sendInt(1, 1, 0);
-                }
-            });
-        }
-        if (mRadioBandButton != null) {
-            mRadioBandButton.setOnClickListener(v -> {
-                if (CarStates.mAppID == 1 && this.tools != null) {
-                    Log.d(TAG, "---------------------->>> mRadioBandButton");
-                    this.tools.sendInt(1, 11, -1);
-                }
-            });
-        }
-        if (mRadioPauseButton != null) {
-            mRadioPauseButton.setOnClickListener(v -> {
-                if (this.tools != null) {
-                    if (CarStates.mAppID == 1) {
-                        this.tools.sendInt(0, 0, 0);
-                        this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_pause_icon);
-                    } else {
-                        this.tools.sendInt(0, 0, 1);
-                        this.mRadioPauseButton.setBackgroundResource(ResValue.getInstance().radio_playpause_icon);
-                    }
-                }
-            });
-        }
-        if (mRadioNextButton != null) {
-            mRadioNextButton.setOnClickListener(v -> {
-                if (CarStates.mAppID == 1 && this.tools != null) {
-                    this.tools.sendInt(1, 0, 0);
-                }
-            });
-        }
-    }
 
     public void bindOnclickListener() {
         if (kuwomusic_playpause != null) {
@@ -5266,19 +5030,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    private String freqToString(String freq2) {
-        float vals = Float.parseFloat(freq2);
-        float val = vals / 1.0f;
-        BigDecimal bd = new BigDecimal(val);
-        return bd.setScale(0, 4).toString();
-    }
 
     
-    public String freqToString(int freq2) {
-        float val = freq2 / 1.0f;
-        BigDecimal bd = new BigDecimal(val);
-        return bd.setScale(0, 4).toString();
-    }
 
     public String timeChangeParse(long duration) {
         long hour = duration / 3600;
@@ -5290,10 +5043,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     protected void startLiveWallpaper() {
         Intent pickWallpaper = new Intent("android.intent.action.SET_WALLPAPER");
-        pickWallpaper.setComponent(getWallpaperPickerComponent());
+        pickWallpaper.setComponent(mWallpaperPicker.getWallpaperPickerComponent());
         pickWallpaper.putExtra("live_wallpaper", 1);
         startActivityForResult(pickWallpaper, 10);
-        showWallpaperPickerIndicator();
+        mWallpaperPicker.showWallpaperPickerIndicator();
     }
 
     View createShortcut(ShortcutInfo info) {
@@ -9302,5 +9055,27 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void preSetMusicWidgets() {
         mMusicWidget.preSetMusicWidgets();
+    }
+
+    public void initRadioWidgetView(View radioWidgetView) {
+        mRadioWidget.initRadioWidgetView(radioWidgetView);
+    }
+
+    public void bindRadioWidgetOnclickListener() {
+        mRadioWidget.bindRadioWidgetOnclickListener();
+    }
+
+    public void onClickWallpaperPicker(View v) {
+        mWallpaperPicker.onClickWallpaperPicker(v);
+    }
+
+    /** Last radio frequency reported by the MCU, for the radio app widget. */
+    public int getRadioFreqState() {
+        return mRadioWidget.radioFreqState;
+    }
+
+    /** The same frequency as shown text ("87.50"). */
+    public String getRadioFreq() {
+        return mRadioWidget.radioFreq;
     }
 }
