@@ -250,7 +250,7 @@ for build 1.1.7 — use `android.jar` from this [repository](https://github.com/
 2. Open the project and choose the build you want to use.
 3. To generate the app, use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose the existing `android` key alias with password `android`. 
 
-To debug the app on an FYT device, connect it to your PC. As USB connection can be problematic, for Android 11 and above use ADB over Wi-Fi. On Android 10 with root access, use this guide - [ADB over Wi-Fi on Android 10 using Magisk]](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/MagiskWiFiADB.MD).
+To debug the app on an FYT device, connect it to your PC. As USB connection can be problematic, for Android 11 and above use ADB over Wi-Fi. On Android 10 with root access, use this guide - [ADB over Wi-Fi on Android 10 using Magisk](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/MagiskWiFiADB.MD).
 
 USB configuration:
 
