@@ -112,9 +112,11 @@ private const val POST_REBUILD_FAST_MS = 3000L
 /**
  * A touch on the launcher or a pane this long before a channel change or a player starting makes
  * it the user's doing. com.syu.ms takes the channel alike when an app is tapped and when it comes
- * to the top by itself; only the touch tells the two apart.
+ * to the top by itself; only the touch tells the two apart. Generous on purpose: under load a
+ * tapped Spotify started playing 3.2 s after the tap (capture 06-10 17:07:52), and a tap wrongly
+ * taken for "by itself" pauses the user's player, which is worse than missing an auto-start.
  */
-private const val USER_TOUCH_INTENT_MS = 3000L
+private const val USER_TOUCH_INTENT_MS = 6000L
 
 /** After a tap, how long a steal waits for the tapped player to start before it is undone. */
 private const val USER_PLAY_SETTLE_MS = 1500L
@@ -1058,6 +1060,13 @@ class NotificationListener : NotificationListenerService() {
         val target = channelToRestore
         if (target == MCU_CH_ANDROID) return
         if (mcuChannel() == target) return
+        // The user tapped a player while the panes were still coming up: the channel is theirs.
+        // Without this the end of the rebuild took it back from a Spotify tapped 1 s earlier
+        // (capture 06-10 17:07:49).
+        if (userActedRecently()) {
+            Log.d("NotificationListener", "Not restoring $target ($reason) - the user just tapped something")
+            return
+        }
 
         channelRestores++
         restoreStockChannel(target, reason)

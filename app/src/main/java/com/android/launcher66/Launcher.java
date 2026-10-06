@@ -3163,15 +3163,36 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         statusBarSwipeDetection = mPrefs.getBoolean(Keys.SWIPE_DETECTOR, false);
         Intent intent = new Intent(LauncherApplication.sApp, StatusBarSwipeDetector.class);
+        Context app = LauncherApplication.sApp;
+        // The start or stop itself is a binder call into the activity manager, which waits for its
+        // lock: on a pause while the panes were being started it held the main thread for 2 s
+        // (capture 06-10 17:07), and the sound channel restore queued behind it came 2.9 s late.
+        // One serial thread keeps the starts and stops in the order they were decided.
         if (!mPaused && statusBarSwipeDetection && LauncherApplication.hasSystemPrivileges()) {
-            if (ServiceIntentGate.startIfAvailable(this, intent, "status bar swipe detector")) {
-                setServiceRunningCache(StatusBarSwipeDetector.class, true);
-            }
+            setServiceRunningCache(StatusBarSwipeDetector.class, true);
+            SWIPE_DETECTOR_EXEC.execute(() -> {
+                if (!ServiceIntentGate.startIfAvailable(app, intent, "status bar swipe detector")) {
+                    setServiceRunningCache(StatusBarSwipeDetector.class, false);
+                }
+            });
         } else {
-            SysCalls.stopService(Launcher.this, intent);
             setServiceRunningCache(StatusBarSwipeDetector.class, false);
+            SWIPE_DETECTOR_EXEC.execute(() -> {
+                try {
+                    SysCalls.stopService(app, intent);
+                } catch (Throwable t) {
+                    Log.w(TAG, "Could not stop the status bar swipe detector: " + t);
+                }
+            });
         }
     }
+
+    /** Starts and stops StatusBarSwipeDetector off the main thread, in order; see above. */
+    private static final Executor SWIPE_DETECTOR_EXEC = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "SwipeDetectorSync");
+        t.setDaemon(true);
+        return t;
+    });
 
     // Handle widget click events
     @Override
