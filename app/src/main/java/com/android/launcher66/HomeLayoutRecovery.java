@@ -271,7 +271,7 @@ final class HomeLayoutRecovery {
             healthy &= isRecyclerViewHealthy(recycler, false, source);
         }
         RecyclerView leftRecycler = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.left_recycler_view);
-        if (leftRecycler != null && mLauncher.shouldUseLeftRecycler()) {
+        if (leftRecycler != null && mLauncher.mAppBars.shouldUseLeftRecycler()) {
             healthy &= isRecyclerViewHealthy(leftRecycler, true, source);
         }
 
@@ -467,26 +467,26 @@ final class HomeLayoutRecovery {
         if (areAppBarsAttached()) {
             return;
         }
-        mLauncher.markAppDataDirty();
-        if (mLauncher.atomicInitAppData.get()) {
-            mLauncher.requestPostResumeAppDataRefresh();
+        mLauncher.mAppBars.markAppDataDirty();
+        if (mLauncher.mAppBars.atomicInitAppData.get()) {
+            mLauncher.mAppBars.requestPostResumeAppDataRefresh();
         } else {
-            mLauncher.triggerAppData();
+            mLauncher.mAppBars.triggerAppData();
         }
     }
 
     /** Both app bars of the current page show the adapters, and those have their apps. */
     boolean areAppBarsAttached() {
-        if (mLauncher.mWorkspace == null || mLauncher.mAppListAdapter == null || mLauncher.mAppListAdapter.getItemCount() == 0) {
+        if (mLauncher.mWorkspace == null || mLauncher.mAppBars.mAppListAdapter == null || mLauncher.mAppBars.mAppListAdapter.getItemCount() == 0) {
             return false;
         }
         RecyclerView recycler = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.recycler_view);
-        if (recycler != null && recycler.getAdapter() != mLauncher.mAppListAdapter) {
+        if (recycler != null && recycler.getAdapter() != mLauncher.mAppBars.mAppListAdapter) {
             return false;
         }
         RecyclerView leftRecycler = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.left_recycler_view);
-        if (leftRecycler != null && mLauncher.shouldUseLeftRecycler()
-                && (mLauncher.mLeftAppListAdapter == null || leftRecycler.getAdapter() != mLauncher.mLeftAppListAdapter)) {
+        if (leftRecycler != null && mLauncher.mAppBars.shouldUseLeftRecycler()
+                && (mLauncher.mAppBars.mLeftAppListAdapter == null || leftRecycler.getAdapter() != mLauncher.mAppBars.mLeftAppListAdapter)) {
             return false;
         }
         return true;
@@ -497,16 +497,16 @@ final class HomeLayoutRecovery {
 
         RecyclerView recycler = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.recycler_view);
         if (recycler != null) {
-            mLauncher.mRecyclerView = recycler;
-            mLauncher.ensureResizableBottomBar("restore:" + source);
+            mLauncher.mAppBars.mRecyclerView = recycler;
+            mLauncher.mAppBars.ensureResizableBottomBar("restore:" + source);
             boolean autoHideBottomBar = mLauncher.mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-            if (mLauncher.mAppListAdapter != null && recycler.getAdapter() != mLauncher.mAppListAdapter) {
-                recycler.setAdapter(mLauncher.mAppListAdapter);
+            if (mLauncher.mAppBars.mAppListAdapter != null && recycler.getAdapter() != mLauncher.mAppBars.mAppListAdapter) {
+                recycler.setAdapter(mLauncher.mAppBars.mAppListAdapter);
             }
             if (recycler.getLayoutManager() == null) {
                 recycler.setLayoutManager(new LinearLayoutManager(mLauncher.getApplicationContext(), RecyclerView.HORIZONTAL, false));
             }
-            mLauncher.installBottomRecyclerDecorations(recycler);
+            mLauncher.mAppBars.installBottomRecyclerDecorations(recycler);
             recycler.clearAnimation();
             if (!autoHideBottomBar) {
                 recycler.setVisibility(View.VISIBLE);
@@ -514,19 +514,19 @@ final class HomeLayoutRecovery {
             recycler.setEnabled(true);
             recycler.setClickable(true);
             recycler.setLongClickable(true);
-            mLauncher.refreshRecyclerDecorationsAfterLayout(recycler);
+            mLauncher.mAppBars.refreshRecyclerDecorationsAfterLayout(recycler);
         }
 
         RecyclerView leftRecycler = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.left_recycler_view);
-        if (leftRecycler != null && mLauncher.shouldUseLeftRecycler()) {
-            if (mLauncher.mLeftAppListAdapter != null && leftRecycler.getAdapter() != mLauncher.mLeftAppListAdapter) {
-                leftRecycler.setAdapter(mLauncher.mLeftAppListAdapter);
+        if (leftRecycler != null && mLauncher.mAppBars.shouldUseLeftRecycler()) {
+            if (mLauncher.mAppBars.mLeftAppListAdapter != null && leftRecycler.getAdapter() != mLauncher.mAppBars.mLeftAppListAdapter) {
+                leftRecycler.setAdapter(mLauncher.mAppBars.mLeftAppListAdapter);
             }
             if (!(leftRecycler.getLayoutManager() instanceof Launcher.EvenVerticalLayoutManager)) {
                 leftRecycler.setLayoutManager(
-                        new Launcher.EvenVerticalLayoutManager(mLauncher.getApplicationContext(), Launcher.MAX_LEFT));
+                        new Launcher.EvenVerticalLayoutManager(mLauncher.getApplicationContext(), LauncherAppBars.MAX_LEFT));
             }
-            mLauncher.installLeftRecyclerDecorations(leftRecycler);
+            mLauncher.mAppBars.installLeftRecyclerDecorations(leftRecycler);
             leftRecycler.clearAnimation();
             leftRecycler.setVisibility(View.VISIBLE);
         }
