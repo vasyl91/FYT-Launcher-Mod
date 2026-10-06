@@ -866,7 +866,8 @@ class NotificationListener : NotificationListenerService() {
         val gen = idleStealGeneration
 
         val userTouched = userActedRecently()
-        val autoStart = !userTouched && isInAutoStartWindow()
+        // "No touch" proves nothing unless every touch is seen; see UserTouches.
+        val autoStart = !userTouched && com.syu.util.UserTouches.isMonitoring() && isInAutoStartWindow()
         // A tap: give the tapped player time to start. An app that came up by itself right after
         // the panes: no ambiguity, so no settle, which would only be added silence.
         val settle = when {
@@ -905,9 +906,17 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
-    /** The user touched the launcher or a pane just now; see UserTouches. */
-    private fun userActedRecently(): Boolean =
-        com.syu.util.UserTouches.sinceLastTouchMs() < USER_TOUCH_INTENT_MS
+    /**
+     * The user touched the screen just now; see UserTouches. Not a touch from before the current
+     * pane rebuild: pressing home on the screen is what starts the rebuild, and the panes' apps
+     * then come up by themselves within the same few seconds.
+     */
+    private fun userActedRecently(): Boolean {
+        val since = com.syu.util.UserTouches.sinceLastTouchMs()
+        if (since >= USER_TOUCH_INTENT_MS) return false
+        val touchAt = SystemClock.elapsedRealtime() - since
+        return touchAt > com.syu.util.WindowUtil.lastPaneLaunchSetAtMs() + 200L
+    }
 
     /** The panes have just come up, the launcher still in front, with a stock source playing. */
     private fun isInAutoStartWindow(): Boolean {
@@ -1191,7 +1200,7 @@ class NotificationListener : NotificationListenerService() {
 
         // Started by itself right after the panes came up (Spotify resuming once it is on the
         // screen again), with no touch: the stock source keeps the channel and the app is paused.
-        if (!userTouched && isInAutoStartWindow()) {
+        if (!userTouched && com.syu.util.UserTouches.isMonitoring() && isInAutoStartWindow()) {
             val stock = autoStartStockChannel()
             Log.d("NotificationListener", "Ignoring $pkg - started by itself after the panes, keeping channel $stock")
             pauseSoundingExternalPlayers("started by itself after the panes")

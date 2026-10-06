@@ -856,6 +856,17 @@ public class WindowUtil {
     private static final long PANE_LAUNCH_JANK_FRAME_NS = 34_000_000L;
     /** The next pane starts only after this long without a janky frame. */
     private static final long PANE_LAUNCH_SMOOTH_NS = 150_000_000L;
+    /** When the last set of panes started opening (elapsedRealtime). */
+    private static volatile long lastPaneLaunchSetAtMs = 0L;
+
+    /**
+     * When the last set of panes started opening. A touch before that is not the user choosing a
+     * pane's app -- pressing home on the screen is what starts the set.
+     */
+    public static long lastPaneLaunchSetAtMs() {
+        return lastPaneLaunchSetAtMs;
+    }
+
     /** Bumped by every new launch sequence and by removePip(): an older sequence stops. */
     private static volatile int paneLaunchGeneration = 0;
 
@@ -1039,6 +1050,7 @@ public class WindowUtil {
         final int generation = ++paneLaunchGeneration;
         pendingPaneLaunches = launches.size();
         if (launches.isEmpty()) return;
+        lastPaneLaunchSetAtMs = SystemClock.elapsedRealtime();
 
         List<PaneLaunch> queue = new ArrayList<>(launches);
         int page = visiblePage();

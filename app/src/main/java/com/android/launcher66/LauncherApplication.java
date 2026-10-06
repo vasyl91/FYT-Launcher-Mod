@@ -119,6 +119,8 @@ public class LauncherApplication extends Application {
             return;
         }
         initData();
+        // Tells the sound channel logic a tapped app from one that came up by itself.
+        com.syu.util.UserTouches.start();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         // First start after a device restart (not a wake from sleep): the launcher is kept in
         // front and the autostart is scheduled, see ColdStart.
