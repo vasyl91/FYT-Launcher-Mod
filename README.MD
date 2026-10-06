@@ -237,6 +237,8 @@ I cannot guarantee that I'll fix every error.
 
 <details>
 
+Skip this part for builds 1.1.8 and above.
+
 Tampering with `android.jar` has been deprecated since build 1.1.7.
 
 for builds up to 1.1.6 — replace `android.jar` in `C:\Users\<UserName>\AppData\Local\Android\Sdk\platforms\android-36` with the file from this [release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android.jar).
