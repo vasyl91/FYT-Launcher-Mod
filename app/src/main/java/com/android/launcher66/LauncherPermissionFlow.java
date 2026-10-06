@@ -22,7 +22,8 @@ import java.util.List;
  */
 final class LauncherPermissionFlow {
 
-    private final Launcher mLauncher;
+    // Not final: field initializers below use it in lambdas, which javac rejects for a blank final.
+    private Launcher mLauncher;
 
     LauncherPermissionFlow(Launcher launcher) {
         mLauncher = launcher;

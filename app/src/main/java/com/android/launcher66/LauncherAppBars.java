@@ -55,7 +55,8 @@ import share.Config;
  */
 final class LauncherAppBars {
 
-    private final Launcher mLauncher;
+    // Not final: field initializers below use it in lambdas, which javac rejects for a blank final.
+    private Launcher mLauncher;
 
     LauncherAppBars(Launcher launcher) {
         mLauncher = launcher;

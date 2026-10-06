@@ -14,7 +14,8 @@ import com.syu.util.WindowUtil;
  */
 final class LauncherFab {
 
-    private final Launcher mLauncher;
+    // Not final: field initializers below use it in lambdas, which javac rejects for a blank final.
+    private Launcher mLauncher;
 
     LauncherFab(Launcher launcher) {
         mLauncher = launcher;

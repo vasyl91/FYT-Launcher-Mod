@@ -18,7 +18,8 @@ import com.syu.util.WindowUtil;
  */
 final class HomeLayoutRecovery {
 
-    private final Launcher mLauncher;
+    // Not final: field initializers below use it in lambdas, which javac rejects for a blank final.
+    private Launcher mLauncher;
 
     HomeLayoutRecovery(Launcher launcher) {
         mLauncher = launcher;

@@ -15,7 +15,8 @@ import com.syu.widget.Widget;
  */
 final class LauncherWake {
 
-    private final Launcher mLauncher;
+    // Not final: field initializers below use it in lambdas, which javac rejects for a blank final.
+    private Launcher mLauncher;
 
     LauncherWake(Launcher launcher) {
         mLauncher = launcher;
