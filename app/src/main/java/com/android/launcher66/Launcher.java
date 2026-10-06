@@ -1289,8 +1289,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     Launcher.this.lastpath = null;
                     lastProcessedPath = null; // Reset when no image data
                     
-                    // Try to load the last saved bitmap
-                    Bitmap savedBitmap = getBitmapFromPreferences();
+                    // The saved cover only stands in for this same file (read failing this time);
+                    // a track without a cover gets the default, not the previous track's cover.
+                    Bitmap savedBitmap = path != null
+                            && path.equals(mPrefs.getString(PREF_LAST_ALBUM_PATH, ""))
+                            ? getBitmapFromPreferences() : null;
                     if (savedBitmap != null) {
                         Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), savedBitmap);
                         if (Launcher.this.ivALbumBg != null) {
@@ -3464,15 +3467,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // Paused again (or gone): the next onResume() reschedules it.
             if (mPaused || isDestroyed() || isFinishing()) return;
 
+            // When the bridge is woken by the status broadcast alone, nothing is paused and the
+            // waits below only delayed it: YouTube's like state came 80 s into a cold boot
+            // (capture 06-10 03:28). Only the boot stall is still waited out.
+            boolean byBroadcast = FytRating.wakesByBroadcast();
             // Starting an activity is a call into system_server too: at boot, after the stall and
             // after the pane apps' cold starts (see FYT_RATING_BOOT_UPTIME_MS).
-            long bootWait = Math.max(bootStallDelayMs(),
+            long bootWait = byBroadcast ? bootStallDelayMs() : Math.max(bootStallDelayMs(),
                     FYT_RATING_BOOT_UPTIME_MS - SystemClock.elapsedRealtime());
             if (bootWait > 0L) {
                 mHandler.postDelayed(this, bootWait);
                 return;
             }
-            if (arePanesStillComing() && mFytRatingWakeWaits < FYT_RATING_WAKE_MAX_WAITS) {
+            if (!byBroadcast && arePanesStillComing() && mFytRatingWakeWaits < FYT_RATING_WAKE_MAX_WAITS) {
                 mFytRatingWakeWaits++;
                 mHandler.postDelayed(this, FYT_RATING_WAKE_RECHECK_MS);
                 return;
