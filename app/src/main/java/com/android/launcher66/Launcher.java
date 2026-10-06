@@ -211,6 +211,12 @@ import share.ResValue;
 import share.ShareHandler;
 
 public class Launcher extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, LauncherModel.Callbacks, View.OnTouchListener, PropertyChangeListener, LauncherAppWidgetHost.OnWidgetClickListener {
+    /** The PiP swap buttons (FabOverlayService); see that class. */
+    final LauncherFab mFab = new LauncherFab(this);
+
+    /** Asks the user for the permissions, one step per resume; see that class. */
+    final LauncherPermissionFlow mPermissionFlow = new LauncherPermissionFlow(this);
+
     /** Starts the PiP panes from the launcher's side; see that class. */
     final LauncherPipStarter mPipStarter = new LauncherPipStarter(this);
 
@@ -552,10 +558,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     SharedPreferences mPrefs;
 	private boolean fytData = true;  
     // Request codes of the permission flow, see PermissionStep.
-    private static final int REQUEST_CODE_WRITE_SETTINGS = 1003;
-    private static final int REQUEST_CODE_STORAGE = 1004;
-    private static final int REQUEST_CODE_OVERLAY = 1006;
-    private static final int REQUEST_CODE_NOTIFICATION_ACCESS = 1007;
+    static final int REQUEST_CODE_WRITE_SETTINGS = 1003;
+    static final int REQUEST_CODE_STORAGE = 1004;
+    static final int REQUEST_CODE_OVERLAY = 1006;
+    static final int REQUEST_CODE_NOTIFICATION_ACCESS = 1007;
     private FusedLocationProviderClient fusedLocationClient;
     Helpers helpers = new Helpers();
     LinearLayout bottomButtons;
@@ -656,7 +662,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private ConstraintLayout nextLayoutTwo;
     private ConstraintLayout favoriteLayoutTwo;
     private int orientation;
-    private boolean floatingButton = false;
+    boolean floatingButton = false;
     private boolean statusBarSwipeDetection = false;
 
     public static int calculatedStatsWidth;
@@ -3438,7 +3444,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         // Back in front, whichever path below is taken: the permission flow goes on with its next
         // step once the resume has settled (see schedulePermissionFlow()).
-        schedulePermissionFlow();
+        mPermissionFlow.schedulePermissionFlow();
 
         if (mHomeFromAllAppsPending) {
             requestPostResumeAppDataRefresh();
@@ -3512,19 +3518,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mHomeWeather.scheduleWeatherCheckAfterHome();
 
         // Floating button
-        floatingButton = checkIfFloatingButton();
+        floatingButton = mFab.checkIfFloatingButton();
         if (!floatingButton) {
-            sOverlayStepArmedForFab = false;
+            LauncherFab.sOverlayStepArmedForFab = false;
         } else if (hasOverlayPermission()) {
-            startFabOverlayServiceAfterBootStall();
-        } else if (!sOverlayStepArmedForFab) {
+            mFab.startFabOverlayServiceAfterBootStall();
+        } else if (!LauncherFab.sOverlayStepArmedForFab) {
             // The buttons need the overlay permission. Its screen used to be opened from here on
             // every resume, on top of whatever the permission flow had just opened, and leaving it
             // without granting reopened it at once. Now it is a step of the flow like everything
             // else: asked for the buttons (once more, if it was declined earlier), and not again
             // until they are switched off and on.
-            sOverlayStepArmedForFab = true;
-            sPermissionStepsHandled.remove(PermissionStep.OVERLAY);
+            LauncherFab.sOverlayStepArmedForFab = true;
+            LauncherPermissionFlow.armOverlayStep();
         }
 
         mHandler.postDelayed(()-> {
@@ -3581,326 +3587,33 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         });
     }
 
-    // =====================================================================================
-    // PERMISSION FLOW
-    // =====================================================================================
 
-    /**
-     * Everything the launcher asks the user for, in the order it is asked. The runtime permissions
-     * share one system dialog; each of the others has a Settings screen of its own.
-     */
-    private enum PermissionStep { RUNTIME, OVERLAY, NOTIFICATION_ACCESS, WRITE_SETTINGS }
 
-    /**
-     * Lets the resume settle before a dialog or screen goes over it: the PiP rebuild starts 250 ms
-     * after the resume and staggers its pane launches over about a second after that.
-     */
-    private static final long PERMISSION_FLOW_DELAY_MS = 1500L;
-    /** How often a runtime request cancelled without an answer is asked again. */
-    private static final int MAX_RUNTIME_REQUEST_RETRIES = 2;
 
-    /** Steps asked (or found granted) since the process started; a declined one is not asked again. */
-    private static final EnumSet<PermissionStep> sPermissionStepsHandled = EnumSet.noneOf(PermissionStep.class);
-    private static int sRuntimeRequestRetries = 0;
-    /** The overlay step has been asked for the swap buttons; see onPostResume(). */
-    private static boolean sOverlayStepArmedForFab = false;
-    /** Step whose dialog or Settings screen is open right now; null if none. */
-    private PermissionStep mPermissionStepInFlight = null;
-    private final Runnable mPermissionFlowRunnable = this::runNextPermissionStep;
 
-    /**
-     * Called at the start of every onPostResume(): the launcher is in front again, so whatever the
-     * previous step opened has been closed, and the next step follows once the resume has settled.
-     */
-    private void schedulePermissionFlow() {
-        if (mPermissionStepInFlight != null) {
-            Log.i(TAG, "Permission flow: back from " + mPermissionStepInFlight);
-            mPermissionStepInFlight = null;
-        }
-        mHandler.removeCallbacks(mPermissionFlowRunnable);
-        mHandler.postDelayed(mPermissionFlowRunnable, Math.max(PERMISSION_FLOW_DELAY_MS, bootStallDelayMs()));
-    }
 
-    private void runNextPermissionStep() {
-        if (sPermissionStepsHandled.size() == PermissionStep.values().length) {
-            return; // everything asked (or found granted) already
-        }
-        // Not in front (any more): the next onPostResume() schedules the flow again.
-        if (mPermissionStepInFlight != null || mPaused || isFinishing() || isDestroyed()) {
-            return;
-        }
-        // Do not pull the user out of a drag, or open a screen over a workspace being rebuilt.
-        if (mWorkspace == null || (mDragController != null && mDragController.isDragging())) {
-            mHandler.removeCallbacks(mPermissionFlowRunnable);
-            mHandler.postDelayed(mPermissionFlowRunnable, PERMISSION_FLOW_DELAY_MS);
-            return;
-        }
-        for (PermissionStep step : PermissionStep.values()) {
-            if (sPermissionStepsHandled.contains(step)) {
-                continue;
-            }
-            sPermissionStepsHandled.add(step);
-            if (isPermissionStepNeeded(step) && startPermissionStep(step)) {
-                mPermissionStepInFlight = step;
-                Log.i(TAG, "Permission flow: asking for " + step);
-                return;
-            }
-        }
-    }
 
-    private boolean isPermissionStepNeeded(PermissionStep step) {
-        switch (step) {
-            case RUNTIME:
-                return !getMissingRuntimePermissions().isEmpty();
-            case OVERLAY:
-                return !hasOverlayPermission();
-            case NOTIFICATION_ACCESS:
-                return !hasNotificationAccess();
-            case WRITE_SETTINGS:
-                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                        && !LauncherApplication.hasSystemPrivileges()
-                        && !Settings.System.canWrite(this);
-            default:
-                return false;
-        }
-    }
 
-    /**
-     * Opens the dialog or Settings screen of a step, always in the launcher's own task (see the
-     * notification access screen above).
-     *
-     * @return false if there is nothing to ask or the screen does not exist on this ROM; the flow
-     *         then goes on with the next step
-     */
-    private boolean startPermissionStep(PermissionStep step) {
-        try {
-            switch (step) {
-                case RUNTIME: {
-                    List<String> missing = getMissingRuntimePermissions();
-                    if (missing.isEmpty()) {
-                        return false;
-                    }
-                    ActivityCompat.requestPermissions(this, missing.toArray(new String[0]), REQUEST_CODE_STORAGE);
-                    return true;
-                }
-                case OVERLAY:
-                    startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:" + getPackageName())), REQUEST_CODE_OVERLAY);
-                    return true;
-                case NOTIFICATION_ACCESS:
-                    startActivityForResult(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS),
-                            REQUEST_CODE_NOTIFICATION_ACCESS);
-                    return true;
-                case WRITE_SETTINGS:
-                    startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                            Uri.parse("package:" + getPackageName())), REQUEST_CODE_WRITE_SETTINGS);
-                    return true;
-                default:
-                    return false;
-            }
-        } catch (ActivityNotFoundException | SecurityException | IllegalArgumentException e) {
-            Log.w(TAG, "Permission flow: cannot ask for " + step + " on this device", e);
-            return false;
-        }
-    }
 
-    /** Runtime permissions still missing: storage (media images on Android 13+) and location. */
-    private List<String> getMissingRuntimePermissions() {
-        List<String> missing = new ArrayList<>();
-        String storage = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                ? android.Manifest.permission.READ_MEDIA_IMAGES
-                : android.Manifest.permission.READ_EXTERNAL_STORAGE;
-        if (!isPermissionGranted(storage)) {
-            missing.add(storage);
-        }
-        if (!isPermissionGranted(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Always together: Android 12+ ignores a request for FINE without COARSE - also when
-            // COARSE is already granted ("approximate") and only precise location is missing,
-            // which the old code asked for alone, so that dialog never showed up.
-            missing.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
-            missing.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        } else if (!isPermissionGranted(android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            missing.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        }
-        return missing;
-    }
 
-    private boolean isPermissionGranted(String permission) {
-        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private boolean hasNotificationAccess() {
-        return NotificationManagerCompat.getEnabledListenerPackages(this).contains(getPackageName());
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode != REQUEST_CODE_STORAGE) {
-            return;
-        }
-        if (grantResults.length == 0) {
-            // Cancelled without an answer (e.g. the dialog was cleared by a home press while another
-            // app covered it). That is no decision, so it is asked again once the launcher is back
-            // in front. The old code logged it as "all granted" and did not ask again until the
-            // launcher was recreated.
-            if (sRuntimeRequestRetries < MAX_RUNTIME_REQUEST_RETRIES) {
-                sRuntimeRequestRetries++;
-                sPermissionStepsHandled.remove(PermissionStep.RUNTIME);
-            }
-            Log.w(TAG, "Permission flow: runtime request cancelled without an answer");
-            return;
-        }
-        for (int i = 0; i < permissions.length && i < grantResults.length; i++) {
-            Log.i(TAG, "Permission flow: " + permissions[i]
-                    + (grantResults[i] == PackageManager.PERMISSION_GRANTED ? " granted" : " denied"));
-        }
-        // The next step follows from onPostResume(), once the dialog is gone.
-    }
-
-    private static boolean isPermissionFlowRequest(int requestCode) {
-        return requestCode == REQUEST_CODE_OVERLAY
-                || requestCode == REQUEST_CODE_NOTIFICATION_ACCESS
-                || requestCode == REQUEST_CODE_WRITE_SETTINGS;
-    }
-
-    /** Back from a Settings screen of the permission flow; see onActivityResult(). */
-    private void onPermissionScreenResult(int requestCode) {
-        if (requestCode == REQUEST_CODE_OVERLAY) {
-            boolean granted = hasOverlayPermission();
-            Log.i(TAG, "Permission flow: SYSTEM_ALERT_WINDOW " + (granted ? "granted" : "not granted"));
-            if (!granted && checkIfFloatingButton()) {
-                Toast.makeText(this, "Overlay permission is required", Toast.LENGTH_SHORT).show();
-            }
-        } else if (requestCode == REQUEST_CODE_NOTIFICATION_ACCESS) {
-            Log.i(TAG, "Permission flow: notification access "
-                    + (hasNotificationAccess() ? "granted" : "not granted"));
-        } else if (requestCode == REQUEST_CODE_WRITE_SETTINGS) {
-            boolean granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.System.canWrite(this);
-            Log.i(TAG, "Permission flow: WRITE_SETTINGS " + (granted ? "granted" : "not granted"));
+        if (requestCode == REQUEST_CODE_STORAGE) {
+            mPermissionFlow.onRuntimeRequestResult(permissions, grantResults);
         }
     }
 
-    private boolean checkIfFloatingButton() {
-        boolean floatingBtn = mPrefs.getBoolean(Keys.FAB_OVERLAY_BUTTON, false);
-        boolean floatingBtnLeft = mPrefs.getBoolean(Keys.FAB_OVERLAY_BUTTON_LEFT, false);
-        boolean floatingBtnRight = mPrefs.getBoolean(Keys.FAB_OVERLAY_BUTTON_RIGHT, false);
-        if (!floatingBtn && !floatingBtnLeft && !floatingBtnRight) return false;
-        String firstPkg = mPrefs.getString(Keys.PIP_FIRST_PACKAGE, "");
-        String secondPkg = mPrefs.getString(Keys.PIP_SECOND_PACKAGE, "");
-        String thirdPkg = mPrefs.getString(Keys.PIP_THIRD_PACKAGE, "");
-        String fourthPkg = mPrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
 
-        if (!firstPkg.isEmpty() && !secondPkg.isEmpty() && !thirdPkg.isEmpty() && !fourthPkg.isEmpty()) {
-            return true;
-        } else return false;
-    }
 
-    /**
-     * FabOverlayService adds up to three overlay windows on the main thread, and a new window
-     * needs a relayout from system_server on its first traversal. Started 0.4 s after the boot
-     * resume, that relayout waited out the whole boot-time stall and froze the launcher for 12 s
-     * (capture 29-09-2026 08:09: IWindowSession.relayout, with the workspace binding queued
-     * behind it). The buttons control the panes, which only come up after the stall anyway, so
-     * at boot the service starts once the stall is over; otherwise at once, as before.
-     */
-    private void startFabOverlayServiceAfterBootStall() {
-        mHandler.removeCallbacks(mDeferredFabStart);
-        long wait = bootStallDelayMs();
-        if (wait > 0L) {
-            mHandler.postDelayed(mDeferredFabStart, wait);
-            return;
-        }
-        startFabOverlayService();
-    }
 
-    private final Runnable mDeferredFabStart = () -> {
-        // Paused (or gone) by then: the next onResume() starts it.
-        if (mPaused || isDestroyed() || isFinishing()) return;
-        floatingButton = checkIfFloatingButton();
-        if (floatingButton && hasOverlayPermission()) {
-            startFabOverlayService();
-        }
-    };
 
-    /**
-     * Starts FabOverlayService, or brings its buttons back if it is already running - but only
-     * while a PiP is on the screen (see canShowOverlayFab()). Otherwise the buttons are hidden.
-     */
-    private void startFabOverlayService() {
-        if (!canShowOverlayFab()) {
-            // E.g. back from an app that showed no window of its own, with the app drawer still
-            // open: there is no pane, and none is coming. WindowUtil calls showOverlayFab() once
-            // it has added the panes again.
-            hideOverlayFab();
-            return;
-        }
-        if (!isServiceRunning(FabOverlayService.class)) {
-            Intent serviceIntent = new Intent(LauncherApplication.sApp, FabOverlayService.class);
-            if (ServiceIntentGate.startIfAvailable(this, serviceIntent, "fab overlay")) {
-                setServiceRunningCache(FabOverlayService.class, true);
-            }
-        } else {
-            SysCalls.sendBroadcast(Launcher.this, new Intent(Keys.SHOW_FAB));
-        }
-    }
 
-    /**
-     * The swap buttons act on the PiP panes, so they belong on the screen only together with them:
-     * the launcher resumed on the home screen (the app drawer, the widget list and overview mode
-     * all remove the panes), the user layout with PiP enabled (the only case in which WindowUtil
-     * adds panes at all), and the panes actually added (WindowUtil.isPipOnScreen()).
-     * <p>
-     * onPostResume() used to show the buttons on every resume. Starting an app that shows no
-     * window of its own from the app drawer pauses and resumes the launcher with the drawer still
-     * open: onResume() removed the panes again, and onPostResume() still brought the buttons up.
-     * <p>
-     * Main thread only. FabOverlayService asks it as well, when it is created.
-     */
-    public boolean canShowOverlayFab() {
-        if (mPaused || isFinishing() || isDestroyed() || mWorkspace == null || mPrefs == null) {
-            return false;
-        }
-        if (mState != State.WORKSPACE || isAllAppsVisible() || mWorkspace.isInOverviewMode()) {
-            return false;
-        }
-        if (!mPrefs.getBoolean(Keys.USER_LAYOUT, false) || !mPrefs.getBoolean(Keys.DISPLAY_PIP, true)) {
-            return false;
-        }
-        return WindowUtil.isPipOnScreen();
-    }
 
-    /**
-     * Shows the PiP swap buttons. WindowUtil calls this once it has added the panes. Ignored while
-     * canShowOverlayFab() sees no PiP on the screen, which also covers a call that is still
-     * pending when the app drawer opens or the launcher is paused.
-     * <p>
-     * Starts FabOverlayService if it is not running yet: onPostResume() no longer starts it while
-     * the panes are still coming up (at boot, or after recreateView() has stopped it).
-     */
-    public void showOverlayFab() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            mHandler.post(this::showOverlayFab);
-            return;
-        }
-        if (!canShowOverlayFab()) {
-            return;
-        }
-        if (isServiceRunning(FabOverlayService.class)) {
-            SysCalls.sendBroadcast(Launcher.this, new Intent(Keys.SHOW_FAB));
-            return;
-        }
-        floatingButton = checkIfFloatingButton();
-        if (floatingButton && hasOverlayPermission()) {
-            startFabOverlayServiceAfterBootStall();
-        }
-    }
 
-    public void hideOverlayFab() {
-        Intent intent = new Intent(Keys.HIDE_FAB);
-        SysCalls.sendBroadcast(Launcher.this, intent);
-    }
+
 
     @Override 
     protected void onPause() {
@@ -3948,7 +3661,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mPlayer = null;
         }
         if (isServiceRunning(FabOverlayService.class)) {
-            hideOverlayFab();
+            mFab.hideOverlayFab();
         }
 
         scheduleStatusBarSwipeDetectorSync();
@@ -4239,7 +3952,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mCloseSystemDialogsReceiver = null;
     }      
 
-    private boolean hasOverlayPermission() {
+    boolean hasOverlayPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return Settings.canDrawOverlays(this);
         }
@@ -4281,7 +3994,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return isRunning;
     }
 
-    private static void setServiceRunningCache(Class<? extends Service> serviceClass, boolean isRunning) {
+    static void setServiceRunningCache(Class<? extends Service> serviceClass, boolean isRunning) {
         synchronized (sServiceRunningCacheLock) {
             String serviceName = serviceClass.getName();
             sServiceRunningCache.put(serviceName, isRunning);
@@ -4298,7 +4011,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         setServiceRunningCache(CanbusService.class, false);
         SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, FabOverlayService.class));
         setServiceRunningCache(FabOverlayService.class, false);
-        mHandler.removeCallbacks(mDeferredFabStart);
+        mHandler.removeCallbacks(mFab.mDeferredFabStart);
         mHandler.removeCallbacks(mApplyPendingBarSnapshots);
         mHandler.removeCallbacks(mSyncStatusBarSwipeDetector);
         // On recreation the new launcher can be created before this one is destroyed; the strip
@@ -4754,12 +4467,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (isPermissionFlowRequest(requestCode)) {
+        if (LauncherPermissionFlow.isPermissionFlowRequest(requestCode)) {
             // Only logged here: the next step starts from onPostResume(), once the launcher is
             // really back in front. These results used to fall through into the widget and
             // shortcut handling below as well, which strips empty screens on RESULT_CANCELED -
             // what a Settings screen returns when it is left with "back".
-            onPermissionScreenResult(requestCode);
+            mPermissionFlow.onPermissionScreenResult(requestCode);
             return;
         }
         mWaitingForResult = false;
@@ -12430,5 +12143,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void cancelPipWatchdog() {
         mPipStarter.cancelPipWatchdog();
+    }
+
+    public boolean canShowOverlayFab() {
+        return mFab.canShowOverlayFab();
+    }
+
+    public void showOverlayFab() {
+        mFab.showOverlayFab();
+    }
+
+    public void hideOverlayFab() {
+        mFab.hideOverlayFab();
     }
 }
