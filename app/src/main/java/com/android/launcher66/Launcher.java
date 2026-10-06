@@ -211,6 +211,9 @@ import share.ResValue;
 import share.ShareHandler;
 
 public class Launcher extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, LauncherModel.Callbacks, View.OnTouchListener, PropertyChangeListener, LauncherAppWidgetHost.OnWidgetClickListener {
+    /** The music widget and the music bar; see that class. */
+    final LauncherMusicWidget mMusicWidget = new LauncherMusicWidget(this);
+
     /** The bottom and left app bars; see that class. */
     final LauncherAppBars mAppBars = new LauncherAppBars(this);
 
@@ -275,13 +278,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     static final String TAG = "Launcher";
     private static final String TOOLBAR_ICON_METADATA_NAME = "com.android.launcher.toolbar_icon";
     private static final String TOOLBAR_VOICE_SEARCH_ICON_METADATA_NAME = "com.android.launcher.toolbar_voice_search_icon";
-    private String mediaSource = "fyt";
-    private AudioManager mAudioManager;
-    private String activeController;
-    private String state;
+    String state;
     boolean userLayout;
     boolean leftBar;
-    private String musictitle = null;
     private KWAPI kwAPi;
     public TextView mAllAppView;
     /** The current instance. Also read by ColdStart from its guard thread, hence volatile. */
@@ -299,10 +298,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public int carSpeed;
     RelativeLayout firstLayout;
     private RadioRuler img_freq_point;
-    public ImageView ivALbumBg;
-    public ImageView ivALbumBgTwo;
-    public ImageView ivMusicScore;
-    public ImageView ivMusicScore2;
     private Button kuwomusic_next;
     private Button kuwomusic_playpause;
     private Button kuwomusic_prev;
@@ -355,12 +350,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      private ImageView mMapbgUnitView;
     private TextView mMiuDrive;
     private View mMusicIcon;
-    private Button mMusicNextButton;
-    private Button mMusicNextButtonTwo;
-    private Button mMusicPrevButton;
-    private Button mMusicPrevButtonTwo;
-    private Button mMusicFavoriteButton;
-    private Button mMusicFavoriteButtonTwo;
     private ImageView mNaviMycar;
     private View mNaviRunView;
     private View mNaviView;
@@ -410,7 +399,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private TextView mTvGallery;
     private TextView mTvGuide;
     private TextView mTvMovie;
-    private TextView mTvMusic;
+    TextView mTvMusic;
     private TextView mTvNavi;
     private TextView mTvPerson;
     private TextView mTvRadio;
@@ -422,25 +411,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private View mWeather;
     private View mWeightWatcher;
     private ArrayList<Object> mWidgetsAndShortcuts;
-    private ProgressBar musicProgress;
-    private SeekBar musicSeekBar;
-    private Button mPlayPauseButton;
-    private Button mPlayPauseButtonTwo;
     public View pipViews;
     long preOnResumeTime;
     public boolean showKuwoContent;
     RemoteTools tools;
-    private TextView tvAlbum;
-    private TextView tvAritst;
-    private TextView tvAritstTwo;
     private TextView tvBand;
     private TextView tvBtavCurTime;
     private TextView tvBtavTotalTime;
     private TextView tvCurFreq;
-    private TextView tvCurTime;
-    private TextView tvMusicName;
-    private TextView tvMusicNameTwo;
-    private TextView tvTotalTime;
     private TextView tvUnit;
     private Button video_next;
     private Button video_playpause;
@@ -526,7 +504,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private Rect mRectForFolderAnimation = new Rect();
     private HideFromAccessibilityHelper mHideFromAccessibilityHelper = new HideFromAccessibilityHelper();
     SharedPreferences mPrefs;
-	private boolean fytData = true;  
+	boolean fytData = true;  
     // Request codes of the permission flow, see PermissionStep.
     static final int REQUEST_CODE_WRITE_SETTINGS = 1003;
     static final int REQUEST_CODE_STORAGE = 1004;
@@ -536,7 +514,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     Helpers helpers = new Helpers();
     LinearLayout bottomButtons;
     LinearLayout bottomButtonsWidgets;
-    private boolean temporarilyDisablePlayPauseButton = false;
     private MainViewModel mViewModel;
     private final AtomicBoolean atomicOnCreate = new AtomicBoolean(false);
     public boolean onResumePip = false;
@@ -549,11 +526,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     // Status bar swipe strip (StatusBarSwipeDetector): runs only while the launcher is resumed.
     // onResume() and onPause() both (re)schedule this one runnable, so the latest state wins.
     private static final long SWIPE_DETECTOR_SYNC_DELAY_MS = 500L;
-    /**
-     * Longest wait for AudioManager.isMusicActive() on the main thread. The answer normally takes a
-     * few ms; while the audioserver hangs (at boot on this ROM) the last known one is used instead.
-     */
-    private static final long AUDIO_STATE_WAIT_MS = 100L;
     /** Bumped by every widget list the loader delivers; see the widget sort in onCreate(). */
     private int mWidgetsListGeneration = 0;
     private final Runnable mSyncStatusBarSwipeDetector = this::syncStatusBarSwipeDetector;
@@ -590,26 +562,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private String mCustomElementsSetupAfterBindSource;
     private Runnable mFastHomeDeferredPipRunnable;
     boolean widgetBar = false;
-    private boolean barTint = false;
-    private boolean widgetTint = false;
     private DeviceProfile grid;
     private static final AtomicLong LAST_PROCESSED_NONCE = new AtomicLong(-1L);
     final Executor bg = Executors.newSingleThreadExecutor();
-    private static final String PREF_LAST_ALBUM_ART = "last_album_art_bitmap";
-    private static final String PREF_LAST_ALBUM_PATH = "last_album_path";
-    private static final String MUSIC_TITLE_PREF = "music_title_pref";
-    private static final String ARTIST_PREF = "artist_pref";
-    private String lastProcessedPath = null;
-    private String lastMusictitle = null;
-    private String lastArtist = null;
-    private ConstraintLayout prevLayout;
-    private ConstraintLayout playPauseLayout;
-    private ConstraintLayout nextLayout;
-    private ConstraintLayout favoriteLayout;
-    private ConstraintLayout prevLayoutTwo ;
-    private ConstraintLayout playPauseLayoutTwo;
-    private ConstraintLayout nextLayoutTwo;
-    private ConstraintLayout favoriteLayoutTwo;
     int orientation;
     boolean floatingButton = false;
     private boolean statusBarSwipeDetection = false;
@@ -756,7 +711,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override 
         public void onReceive(Context arg0, Intent intent) {
             String action = intent.getAction();
-            if (("fyt".equals(mediaSource) || activeController == null) && "com.fyt.systemui.remove".equals(action)) {
+            if (("fyt".equals(mMusicWidget.mediaSource) || mMusicWidget.activeController == null) && "com.fyt.systemui.remove".equals(action)) {
                 Bundle bundle = intent.getExtras();
                 String packageName = bundle.getString("pkg");
                 if ("com.syu.music".equals(packageName)) {
@@ -771,8 +726,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 } else { // from file title
                                     File file = new File(MusicService.music_path);
                                     String filename = file.getName();
-                                    musictitle = filename.substring(0, filename.lastIndexOf("."));
-                                    strArr[0] = musictitle;
+                                    mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
+                                    strArr[0] = mMusicWidget.musictitle;
                                 }
                                 strArr[1] = MusicService.author_name;
                                 strArr[2] = MusicService.state.toString();
@@ -784,7 +739,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 strArr[2] = MusicService.state.toString();
                                 strArr[4] = "/" + LauncherApplication.sApp.getResources().getString(R.string.music_author);             
                             }
-                            LauncherNotify.NOTIFIER_MUSIC.set(null, new long[2], new float[]{0.0f, 0.0f}, strArr, MusicService.album_cover, mediaSource);
+                            LauncherNotify.NOTIFIER_MUSIC.set(null, new long[2], new float[]{0.0f, 0.0f}, strArr, MusicService.album_cover, mMusicWidget.mediaSource);
                         }
                     }, 1000L);
                 } else if (FytPackage.GaodeACTION.equals(packageName)) {
@@ -1099,320 +1054,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     };
     private int[] images = {ResValue.getInstance().num00, ResValue.getInstance().num01, ResValue.getInstance().num02, ResValue.getInstance().num03, ResValue.getInstance().num04, ResValue.getInstance().num05, ResValue.getInstance().num06, ResValue.getInstance().num07, ResValue.getInstance().num08, ResValue.getInstance().num09};
-    String lastpath = null;
-    public IUiRefresher refreshMusic = new IUiRefresher() {
-        @Override
-        public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
-            mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            mediaSource = source; 
-            if (mediaSource == null) {
-                mediaSource = "fyt";
-            }
-            state = null;
-            String artist = null;
-            String album = null;
-            String path = null;
-            if (strs != null && strs.length > 5) {
-                musictitle = strs[0];
-                artist = strs[1];   
-                if ("null".equals(artist)) {
-                    artist = strs[3];
-                }
-                if ("null".equals(artist)) {
-                    artist = "\u0020";
-                }
-                state = strs[2];
-                album = strs[3];
-                path = strs[4];
-                activeController = strs[5];
-            }
-            if (path == null || path.isEmpty()) {
-                // Some apps produce null path - we need a value to properly save a bitmap
-                path = String.valueOf(Arrays.hashCode(byts));
-            }
-            if ("mediaController".equals(mediaSource)) {
-                boolean activeControllerAppRunning = false;
-                MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-                ComponentName component = new ComponentName(Launcher.this, NotificationListener.class);
-                List<MediaController> controllers = msm.getActiveSessions(component);
 
-                for (MediaController controller : controllers) {
-                    if (controller.getPackageName().equals(activeController)) {
-                        activeControllerAppRunning = true;
-                        break;
-                    }
-                }
-                if (!activeControllerAppRunning) {
-                    if (Launcher.this.tvMusicName != null) {
-                        Launcher.this.tvMusicName.setText(R.string.music_name);
-                    }
-                    if (Launcher.this.tvMusicNameTwo != null) {
-                        Launcher.this.tvMusicNameTwo.setText(R.string.music_name);
-                    }
-                    if (Launcher.this.mPlayPauseButton != null) {
-                        Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        setWidgetButtonsTint(mPlayPauseButton);
-                    }
-                    if (Launcher.this.mPlayPauseButtonTwo != null) {
-                        Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        setBarButtonsTint(mPlayPauseButtonTwo);
-                    }
-                    if (Launcher.this.tvAritst != null) {
-                        Launcher.this.tvAritst.setText(R.string.music_author);
-                    }
-                    if (Launcher.this.tvAritstTwo != null) {
-                        Launcher.this.tvAritstTwo.setText(R.string.music_author);
-                    }
-                    if (Launcher.this.tvAlbum != null) {
-                        Launcher.this.tvAlbum.setText(R.string.music_album);
-                    }  
-                    if (Launcher.this.tvCurTime != null) {
-                        Launcher.this.tvCurTime.setText("00:00");
-                    }
-                    if (Launcher.this.tvTotalTime != null) {
-                        Launcher.this.tvTotalTime.setText("00:00");
-                    }
-                    if (Launcher.this.musicProgress != null) {
-                        Launcher.this.musicProgress.setProgress(0);
-                    }
-                    if (Launcher.this.musicSeekBar != null) {
-                        Launcher.this.musicSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListenerImp(Launcher.this, null));
-                    }
-                    updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
-                    return;         
-                }
-            }
 
-            updateFavoriteButtonState();
-            setPlayPauseIcon(false);
-
-            if ("true".equals(state)) {
-                Lrc lrc = new Lrc();
-                Id3Info info = lrc.getId3Info(path);
-                byte[] dataPic =  info.dataPic;
-                if (dataPic == null) {
-                    dataPic = byts;
-                }
-                if (dataPic != null && dataPic.length > 0) {
-                    Bitmap bp = BitmapFactory.decodeByteArray(dataPic, 0, dataPic.length);
-                    if (bp != null) {
-                        if (LauncherApplication.sApp.getResources().getBoolean(R.bool.music_bitmap_circular)) {
-                            if (Utils.getNameToBool("isRoundedCorner")) {
-                                bp = Launcher.GetRoundedCornerBitmap(bp);
-                            } else {
-                                bp = Launcher.makeRoundCorner(bp);
-                            }
-                        }
-                        
-                        // Only save if this is a new path
-                        if (!path.equals(lastProcessedPath)) {
-                            saveBitmapToPreferences(bp, path);
-                        }
-                        
-                        Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), bp);
-                        if (Launcher.this.ivALbumBg != null) {
-                            Launcher.this.ivALbumBg.setImageDrawable(drawable);
-                        }
-                        if (Launcher.this.ivALbumBgTwo != null) {
-                            Launcher.this.ivALbumBgTwo.setImageDrawable(drawable);
-                        }
-                    }
-                } else {
-                    Launcher.this.lastpath = null;
-                    lastProcessedPath = null; // Reset when no image data
-                    
-                    // The saved cover only stands in for this same file (read failing this time);
-                    // a track without a cover gets the default, not the previous track's cover.
-                    Bitmap savedBitmap = path != null
-                            && path.equals(mPrefs.getString(PREF_LAST_ALBUM_PATH, ""))
-                            ? getBitmapFromPreferences() : null;
-                    if (savedBitmap != null) {
-                        Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), savedBitmap);
-                        if (Launcher.this.ivALbumBg != null) {
-                            Launcher.this.ivALbumBg.setImageDrawable(drawable);
-                        }
-                        if (Launcher.this.ivALbumBgTwo != null) {
-                            Launcher.this.ivALbumBgTwo.setImageDrawable(drawable);
-                        }
-                    } else {
-                        // Use default if no saved bitmap
-                        if (Launcher.this.ivALbumBg != null) {
-                            Launcher.this.ivALbumBg.setImageResource(ResValue.getInstance().music_album_def);
-                        }
-                        if (Launcher.this.ivALbumBgTwo != null) {
-                            Launcher.this.ivALbumBgTwo.setImageResource(ResValue.getInstance().music_album_def);
-                        }
-                    }
-                }
-                if (Launcher.this.ivMusicScore != null) {
-                    ((AnimationDrawable) Launcher.this.ivMusicScore.getDrawable()).start();
-                }
-                if (Launcher.this.ivMusicScore2 != null) {
-                    ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).start();
-                }
-
-                applyMusicTitle(musictitle);
-                applyMusicArtist(artist);
-                if (album != null && !album.isEmpty() && !album.trim().isEmpty() && Launcher.this.tvAlbum != null) {
-                    Launcher.this.tvAlbum.setText(album);
-                }
-                if (lngs != null && lngs.length > 1) {
-                    long curProgress = lngs[1];
-                    long totalProgress = lngs[0];
-                    if (totalProgress > 0) {
-                        if (curProgress < 0) {
-                            curProgress = 0;
-                        }
-                        int progressPercent = (int) ((1000 * curProgress) / totalProgress);
-                        if (progressPercent < 5) {
-                            if (Launcher.this.musicSeekBar != null) {
-                                Launcher.this.musicSeekBar.setProgress(5);
-                            }
-                            if (Launcher.this.musicProgress != null) {
-                                Launcher.this.musicProgress.setProgress(progressPercent);
-                            }
-                        } else {
-                            if (Launcher.this.musicSeekBar != null) {
-                                Launcher.this.musicSeekBar.setProgress(progressPercent);
-                            }
-                            if (Launcher.this.musicProgress != null) {
-                                Launcher.this.musicProgress.setProgress(progressPercent);
-                            }
-                        }
-                    }
-                    if (curProgress == 0 && totalProgress == 0) {
-                        if (Launcher.this.musicProgress != null) {
-                            Launcher.this.musicProgress.setProgress(0);
-                        }  
-                        if (Launcher.this.tvAritst != null) {
-                            Launcher.this.tvAritst.setText("Live");
-                        }    
-                        if (Launcher.this.tvAritstTwo != null) {
-                            Launcher.this.tvAritstTwo.setText("Live");
-                        }                   
-                    }
-                    String cur = Launcher.this.timeParse(curProgress);
-                    String total = Launcher.this.timeParse(totalProgress);
-                    if (Launcher.this.tvCurTime != null && cur != null) {
-                        Launcher.this.tvCurTime.setText(cur);
-                    }
-                    if (Launcher.this.tvTotalTime != null && total != null) {
-                        Launcher.this.tvTotalTime.setText(total);
-                        return;
-                    }
-                    return;
-                }
-                return;
-            }
-            if (CarStates.mAppID != 8 && ("fyt".equals(mediaSource) || activeController == null)) {
-                if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
-                    if (fytData) { // from metadata
-                        musictitle = MusicService.music_name;
-                    } else { // from file title
-                        File file = new File(MusicService.music_path);
-                        String filename = file.getName();
-                        musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    }
-                    Utils.setTextStr(Launcher.this.tvMusicName, musictitle);
-                    Utils.setTextStr(Launcher.this.tvMusicNameTwo, musictitle); 
-                    if (MusicService.author_name != null && !MusicService.author_name.isEmpty()) {
-                        Utils.setTextStr(Launcher.this.tvAritst, MusicService.author_name);
-                        Utils.setTextStr(Launcher.this.tvAritstTwo, MusicService.author_name);
-                    } else {
-                        Utils.setTextId(Launcher.this.tvAritst, R.string.music_author);
-                        Utils.setTextId(Launcher.this.tvAritstTwo, R.string.music_author);
-                    }                            
-                } else {
-                    Utils.setTextId(Launcher.this.tvMusicName, R.string.music_name);
-                    Utils.setTextId(Launcher.this.tvMusicNameTwo, R.string.music_name); 
-                    Utils.setTextId(Launcher.this.tvAritst, R.string.music_author);
-                    Utils.setTextId(Launcher.this.tvAritstTwo, R.string.music_author);         
-                }
-
-                Utils.setTextStr(Launcher.this.tvCurTime, "00:00");
-                Utils.setTextStr(Launcher.this.tvTotalTime, "00:00");
-                if (Launcher.this.musicSeekBar != null) {
-                    Launcher.this.musicSeekBar.setProgress(0);
-                }
-                if (Launcher.this.musicProgress != null) {
-                    Launcher.this.musicProgress.setProgress(0);
-                }
-                if (Launcher.this.mPlayPauseButton != null) {
-                    Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                    setWidgetButtonsTint(mPlayPauseButton);
-                    return;
-                }
-                if (Launcher.this.mPlayPauseButtonTwo != null) {
-                    Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                    setBarButtonsTint(mPlayPauseButtonTwo);
-                    return;
-                }
-                return;
-            }
-            if (Launcher.this.ivMusicScore != null) {
-                ((AnimationDrawable) Launcher.this.ivMusicScore.getDrawable()).selectDrawable(0);
-                ((AnimationDrawable) Launcher.this.ivMusicScore.getDrawable()).stop();
-            }
-            if (Launcher.this.ivMusicScore2 != null) {
-                ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).selectDrawable(0);
-                ((AnimationDrawable) Launcher.this.ivMusicScore2.getDrawable()).stop();
-            }
-            /*if (Launcher.this.mPlayPauseButton != null) {
-                Launcher.this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-            }
-            if (Launcher.this.mPlayPauseButtonTwo != null) {
-                Launcher.this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-            }*/
-            if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
-                if (Launcher.this.tvMusicName != null) {
-                    if (!(Launcher.this.tvMusicName.getText().toString()).equals(musictitle)) {
-                        Launcher.this.tvMusicName.setText(musictitle);                                                  
-                    }
-                    Launcher.this.tvMusicName.setSelected(true);
-                }
-                if (Launcher.this.tvMusicNameTwo != null) {
-                    if (!(Launcher.this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
-                        Launcher.this.tvMusicNameTwo.setText(musictitle);                       
-                    }
-                    Launcher.this.tvMusicNameTwo.setSelected(true); 
-                }
-            }
-            if (artist != null && !artist.isEmpty() && Launcher.this.tvAritst != null) {
-                if (Launcher.this.tvAritst != null) {
-                    if (!(Launcher.this.tvAritst.getText().toString()).equals(artist)) {
-                        Launcher.this.tvAritst.setText(artist);              
-                    }
-                    Launcher.this.tvAritst.setSelected(true);
-                }                   
-            }
-            if (artist != null && !artist.isEmpty() && Launcher.this.tvAritstTwo != null) {
-                if (Launcher.this.tvAritstTwo != null) {
-                    if (!(Launcher.this.tvAritstTwo.getText().toString()).equals(artist)) {
-                        Launcher.this.tvAritstTwo.setText(artist);              
-                    }
-                    Launcher.this.tvAritstTwo.setSelected(true);
-                }                   
-            }
-            requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
-        }
-    };
-
-    // set play/pause icon for stock and other music players
-    public void setPlayPauseIcon(boolean wait) {
-        if (wait) {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    setPlayPauseIcon();
-                    requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
-                }
-            }, 300);
-        } else {
-           setPlayPauseIcon();
-        }
-    }
-
-    private void requestWidgetUpdate(Class<?>... providers) {
+    void requestWidgetUpdate(Class<?>... providers) {
         if (providers != null && providers.length > 0) {
             for (Class<?> provider : providers) {
                 Widget.widgetUpdate(LauncherApplication.sApp, provider);
@@ -1441,50 +1085,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }, delay);
     }
 
-    /**
-     * Whether anything is playing right now, decided from whichever source
-     * currently owns the widget.
-     *
-     * MusicService.state cannot answer this on its own: it is only ever set
-     * from intents sent by com.syu.music, so once that package is force
-     * stopped the last value it published stays behind. isMusicActive() is no
-     * better on its own either, since it still reports true for a moment after
-     * a pause.
-     */
-    private boolean isMediaPlayingNow() {
-        if ("mediaController".equals(mediaSource)) {
-            MediaWidgetState.Snapshot snapshot = MediaWidgetState.getExternalSnapshot();
-            if (snapshot != null) {
-                return snapshot.playing;
-            }
-            return "true".equals(state);
-        }
-        // Not mAudioManager.isMusicActive() directly: see AudioStateCache.
-        return MusicService.state.booleanValue()
-                || AudioStateCache.isMusicActive(this, AUDIO_STATE_WAIT_MS);
-    }
 
-    public void setPlayPauseIcon() {
-        boolean playing = isMediaPlayingNow();
-        if (this.mPlayPauseButton != null && !temporarilyDisablePlayPauseButton) {
-            if (playing) {
-                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
-            } else {
-                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
-            }
-        }
-        if (this.mPlayPauseButtonTwo != null && !temporarilyDisablePlayPauseButton) {
-            if (playing) {
-                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
-            } else {
-                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
-            }
-        }         
-    }
 
     /**
      * Checks whether the radio is the current MCU source. The previous process
@@ -1492,206 +1093,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      * always — causing the widget buttons and refreshRadioFreq to react to a state
      * that had nothing to do with what was actually playing.
      */
-    private boolean isRadioPlaying() {
+    boolean isRadioPlaying() {
         return CarStates.mAppID == 1;
     }
 
-    public void preSetMusicWidgets() {
-        Bitmap savedBitmap = getBitmapFromPreferences();
-        if (savedBitmap != null) {
-            Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), savedBitmap);
-            if (this.ivALbumBg != null) {
-                this.ivALbumBg.setImageDrawable(drawable);
-            }
-            if (this.ivALbumBgTwo != null) {
-                this.ivALbumBgTwo.setImageDrawable(drawable);
-            }
-        } else {
-            // Use default if no saved bitmap
-            if (this.ivALbumBg != null) {
-                this.ivALbumBg.setImageResource(ResValue.getInstance().music_album_def);
-            }
-            if (this.ivALbumBgTwo != null) {
-                this.ivALbumBgTwo.setImageResource(ResValue.getInstance().music_album_def);
-            }
-        }
 
-        // seeded so the first live update is not written back as a change
-        lastMusictitle = normalizeMediaText(mPrefs.getString(MUSIC_TITLE_PREF, null));
-        lastArtist = normalizeMediaText(mPrefs.getString(ARTIST_PREF, null));
-        showMusicTitle(lastMusictitle);
-        showMusicArtist(lastArtist);
 
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        // Asked once for both buttons, and never waiting long for the audioserver; see AudioStateCache.
-        final boolean playing = MusicService.state.booleanValue()
-                || AudioStateCache.isMusicActive(this, AUDIO_STATE_WAIT_MS);
-        if (this.mPlayPauseButton != null) {
-            if (playing) {
-                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
-            } else {
-                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
-            }
-        }
-        if (this.mPlayPauseButtonTwo != null) {
-            if (playing) {
-                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
-            } else {
-                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
-            }
-        }    
-    }
 
-    /**
-     * Null, blank, literal "null" and "Unknown" all mean the track supplied no
-     * value, and have to be stored as such - skipping the write is what leaves
-     * the previous track's title or artist behind.
-     */
-    private static String normalizeMediaText(String value) {
-        if (value == null) {
-            return "";
-        }
-        String trimmed = value.trim();
-        if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed) || "Unknown".equalsIgnoreCase(trimmed)) {
-            return "";
-        }
-        return trimmed;
-    }
 
-    private void applyMusicTitle(String rawTitle) {
-        String title = normalizeMediaText(rawTitle);
-        saveTitleToPreferences(title);
-        showMusicTitle(title);
-    }
 
-    private void applyMusicArtist(String rawArtist) {
-        String artist = normalizeMediaText(rawArtist);
-        saveArtistToPreferences(artist);
-        showMusicArtist(artist);
-    }
 
-    private void showMusicTitle(String title) {
-        TextView[] views = { this.tvMusicName, this.tvMusicNameTwo };
-        for (TextView view : views) {
-            if (view == null) {
-                continue;
-            }
-            if (title.isEmpty()) {
-                view.setText(R.string.music_name);
-            } else if (!view.getText().toString().equals(title)) {
-                view.setText(title);
-            } else if (mediaSource != null && !mediaSource.equals(helpers.returnMediaSourcePre())) {
-                // restarts the marquee when the source changed but the text did not
-                helpers.setMediaSourcePre(mediaSource);
-                view.setText("\u0020" + title + "\u0020");
-            }
-            view.setSelected(true);
-        }
-    }
 
-    private void showMusicArtist(String artist) {
-        TextView[] views = { this.tvAritst, this.tvAritstTwo };
-        for (TextView view : views) {
-            if (view == null) {
-                continue;
-            }
-            if (artist.isEmpty()) {
-                view.setText(R.string.music_author);
-            } else if (!view.getText().toString().equals(artist)) {
-                view.setText(artist);
-            }
-            view.setSelected(true);
-        }
-    }
 
-    private void saveTitleToPreferences(String currentTitle) {
-        String title = normalizeMediaText(currentTitle);
-        if (title.equals(lastMusictitle)) {
-            return;
-        }
-        lastMusictitle = title;
-        mPrefs.edit().putString(MUSIC_TITLE_PREF, title).apply();
-    }
 
-    private void saveArtistToPreferences(String currentArtist) {
-        String artist = normalizeMediaText(currentArtist);
-        if (artist.equals(lastArtist)) {
-            return;
-        }
-        lastArtist = artist;
-        mPrefs.edit().putString(ARTIST_PREF, artist).apply();
-    }
-
-    private void saveBitmapToPreferences(Bitmap bitmap, String currentPath) {
-        if (bitmap == null || currentPath == null) return;
-        
-        // Check if this is the same path we just processed
-        if (currentPath.equals(lastProcessedPath)) {
-            return;
-        }
-        
-        new AsyncTask<Object, Void, Void>() {
-            @Override
-            protected void onProgress(Void[] progress) {
-                //
-            }
-
-            @Override
-            protected Void doInBackground(Object... params) {
-                Bitmap bitmapToSave = (Bitmap) params[0];
-                String path = (String) params[1];
-                
-                try {
-                    // Double-check with persisted path
-                    String lastSavedPath = mPrefs.getString(PREF_LAST_ALBUM_PATH, "");
-                    
-                    if (path.equals(lastSavedPath)) {
-                        return null; // Already saved for this path
-                    }
-                    
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    bitmapToSave.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                    
-                    SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putString(PREF_LAST_ALBUM_ART, encodedBitmap);
-                    editor.putString(PREF_LAST_ALBUM_PATH, path);
-                    editor.apply();
-                    
-                    // Update in-memory cache
-                    lastProcessedPath = path;
-                    
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onBackgroundError(Exception e) {
-                Log.e(TAG, "saveBitmapToPreferences: " + e.getMessage());
-            }
-        }.execute(bitmap, currentPath);
-    }
-
-    private Bitmap getBitmapFromPreferences() {
-        try {
-            String encodedBitmap = mPrefs.getString(PREF_LAST_ALBUM_ART, null);
-            
-            if (encodedBitmap != null) {
-                byte[] decodedBytes = Base64.decode(encodedBitmap, Base64.DEFAULT);
-                return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     private int radioBand = -1;
     Callback.OnRefreshLisenter refreshRadioBand = new Callback.OnRefreshLisenter() { 
@@ -1973,7 +1387,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         }
                         break; 
                     case "pause.button":
-                        setPlayPauseIcon(true);   
+                        mMusicWidget.setPlayPauseIcon(true);   
                         break;          
                 }
             }
@@ -2852,7 +2266,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         registerResumeRefreshersAndNotify();
         restoreResumeMediaState();
 
-        setPlayPauseIcon(true);
+        mMusicWidget.setPlayPauseIcon(true);
 
         processPendingUpdateOnResume();
 
@@ -2910,7 +2324,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             registerResumeRefreshersAndNotify();
             restoreResumeMediaState();
-            setPlayPauseIcon(true);
+            mMusicWidget.setPlayPauseIcon(true);
             if (processPendingUpdate) {
                 processPendingUpdateOnResume();
             }
@@ -3024,7 +2438,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (!canRegisterNotifyRefreshers()) {
             return;
         }
-        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(refreshMusic, true);
+        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(mMusicWidget.refreshMusic, true);
         LauncherNotify.NOTIFIER_VIDEO.addUiRefresher(refreshVideo, true);
         LauncherNotify.NOTIFIER_BTAV.addUiRefresher(refreshBtav, true);
         LauncherNotify.NOTIFIER_DVR.addUiRefresher(refreshDvr, true);
@@ -3034,7 +2448,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     /** Unregisters this instance from every LauncherNotify channel. */
     private void unregisterNotifyRefreshers() {
-        LauncherNotify.NOTIFIER_MUSIC.removeUiRefresher(refreshMusic);
+        LauncherNotify.NOTIFIER_MUSIC.removeUiRefresher(mMusicWidget.refreshMusic);
         LauncherNotify.NOTIFIER_VIDEO.removeUiRefresher(refreshVideo);
         LauncherNotify.NOTIFIER_BTAV.removeUiRefresher(refreshBtav);
         LauncherNotify.NOTIFIER_DVR.removeUiRefresher(refreshDvr);
@@ -3053,7 +2467,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (!canRegisterNotifyRefreshers()) {
             return;
         }
-        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(refreshMusic, true);
+        LauncherNotify.NOTIFIER_MUSIC.addUiRefresher(mMusicWidget.refreshMusic, true);
     }
 
     private boolean canRegisterNotifyRefreshers() {
@@ -3095,7 +2509,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             firstLayout.setVisibility(View.VISIBLE);
         }
         isfirstlayout = false;
-        lastpath = null;
+        mMusicWidget.lastpath = null;
         if (showKuwoContent && !AppUtil.isInTheTaskbar(getApplicationContext(), FytPackage.KWACTION)) {
             showKuwoContent = false;
             if (kuwomusic_playpause != null) {
@@ -3618,10 +3032,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mWorkspace.onWorkspaceDestroy();
         mDragController = null;
         mWorkspace = null;
-        ivALbumBg = null;
-        ivALbumBgTwo = null;
-        tvMusicNameTwo = null;
-        tvAritstTwo = null;
+        mMusicWidget.ivALbumBg = null;
+        mMusicWidget.ivALbumBgTwo = null;
+        mMusicWidget.tvMusicNameTwo = null;
+        mMusicWidget.tvAritstTwo = null;
         weatherImg1 = null;
         weatherCity1 = null;
         weatherTemp = null;
@@ -5050,69 +4464,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public void initMusicWidgetView(View musicWidgetView) {
-        if (musicWidgetView != null) {
-            mPlayPauseButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_playpause);
-            mMusicPrevButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_prev);
-            mMusicNextButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_next);
-            mMusicFavoriteButton = musicWidgetView.findViewById(ResValue.getInstance().musicbutton_favorite);
-            setWidgetButtonsTint(mPlayPauseButton);
-            setWidgetButtonsTint(mMusicPrevButton);
-            setWidgetButtonsTint(mMusicNextButton);
-            updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
-            tvMusicName = musicWidgetView.findViewById(ResValue.getInstance().tv_musicName);
-            ivALbumBg = musicWidgetView.findViewById(ResValue.getInstance().iv_album_bg);
-            ivMusicScore = musicWidgetView.findViewById(ResValue.getInstance().music_score);
-            ivMusicScore2 = musicWidgetView.findViewById(ResValue.getInstance().music_score2);
-            tvAritst = musicWidgetView.findViewById(ResValue.getInstance().tv_artist);
-            tvAlbum = musicWidgetView.findViewById(ResValue.getInstance().tv_album);
-            tvCurTime = musicWidgetView.findViewById(ResValue.getInstance().music_cur_time);
-            tvTotalTime = musicWidgetView.findViewById(ResValue.getInstance().music_total_time);
-            mTvMusic = musicWidgetView.findViewById(ResValue.getInstance().tv_music);
-            musicSeekBar = musicWidgetView.findViewById(ResValue.getInstance().music_seekbar);
-            musicProgress = musicWidgetView.findViewById(ResValue.getInstance().music_progress);
-            widgetTint = mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
-            if (widgetTint && musicProgress != null) {
-                musicProgress.getProgressDrawable().setColorFilter(
-                    Color.BLACK, 
-                    PorterDuff.Mode.SRC_IN
-                );
-            } else if (musicProgress != null) {
-                musicProgress.getProgressDrawable().clearColorFilter();
-            }
-            putCustomView(Config.WS_Music, musicWidgetView.findViewById(ResValue.getInstance().rl_music));
-            if (getCustomView(Config.WS_Music) != null) {
-                getCustomView(Config.WS_Music).setOnClickListener(this);
-            }
-        }
-    }
 
-    public void initMusicBarView(View musicBarView) {
-        if (musicBarView != null) {
-            mPlayPauseButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_playpause_two);
-            mMusicPrevButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_prev_two);
-            mMusicNextButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_next_two);
-            mMusicFavoriteButtonTwo = musicBarView.findViewById(ResValue.getInstance().musicbutton_favorite_two);
-            setBarButtonsTint(mPlayPauseButtonTwo);
-            setBarButtonsTint(mMusicPrevButtonTwo);
-            setBarButtonsTint(mMusicNextButtonTwo);
-            updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
-            tvMusicNameTwo = musicBarView.findViewById(ResValue.getInstance().tv_musicName_two);
-            ivALbumBgTwo = musicBarView.findViewById(ResValue.getInstance().iv_album_bg_two);
-            tvAritstTwo = musicBarView.findViewById(ResValue.getInstance().tv_artist_two);
-            View musicWidget = musicBarView.findViewById(ResValue.getInstance().rl_music_two);
-            if (musicWidget != null) {
-                musicWidget.setOnClickListener(this);
-            }
-        }
-    }
 
     public void initRadioWidgetView(View radioWidgetView) {
         if (radioWidgetView != null) {
             mRadioPrevButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_prev);
             mRadioNextButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_next);
-            setWidgetButtonsTint(mRadioPrevButton);
-            setWidgetButtonsTint(mRadioNextButton);
+            mMusicWidget.setWidgetButtonsTint(mRadioPrevButton);
+            mMusicWidget.setWidgetButtonsTint(mRadioNextButton);
             mRadioPauseButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_pause);
             mRadioBandButton = radioWidgetView.findViewById(ResValue.getInstance().radio_btn_band);
             mRadioIcon = radioWidgetView.findViewById(ResValue.getInstance().mRadioIcon);
@@ -5140,14 +4499,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return;
         }
         if (musicBarView != null) {
-            initMusicBarView(musicBarView);
+            mMusicWidget.initMusicBarView(musicBarView);
         }
         if (barWeatherView != null) {
             initBarWeatherView(barWeatherView);
         }
         try {
-            preSetMusicWidgets();
-            updateFavoriteButtonState();
+            mMusicWidget.preSetMusicWidgets();
+            mMusicWidget.updateFavoriteButtonState();
         } catch (Exception e) {
             Log.w(TAG, "rebindBarWidgetsAfterWake: music state refresh failed", e);
         }
@@ -5160,13 +4519,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void clearBarWidgetReferences() {
         // Music bar
-        mPlayPauseButtonTwo = null;
-        mMusicPrevButtonTwo = null;
-        mMusicNextButtonTwo = null;
-        mMusicFavoriteButtonTwo = null;
-        tvMusicNameTwo = null;
-        ivALbumBgTwo = null;
-        tvAritstTwo = null;
+        mMusicWidget.mPlayPauseButtonTwo = null;
+        mMusicWidget.mMusicPrevButtonTwo = null;
+        mMusicWidget.mMusicNextButtonTwo = null;
+        mMusicWidget.mMusicFavoriteButtonTwo = null;
+        mMusicWidget.tvMusicNameTwo = null;
+        mMusicWidget.ivALbumBgTwo = null;
+        mMusicWidget.tvAritstTwo = null;
         
         // Weather bar
         weatherCity1 = null;
@@ -5204,54 +4563,54 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             putCustomView(Config.WS_Allapps, mWorkspace.findViewById(ResValue.getInstance().rl_allapps));
             putCustomView(Config.WS_Showbar, mWorkspace.findViewById(ResValue.getInstance().show_bar));
         }
-        if (tvMusicName != null) {
+        if (mMusicWidget.tvMusicName != null) {
             if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
                 if (fytData) { // from metadata
-                    if (!(this.tvMusicName.getText().toString()).equals(MusicService.music_name)) {
-                        tvMusicName.setText(MusicService.music_name);                        
+                    if (!(mMusicWidget.tvMusicName.getText().toString()).equals(MusicService.music_name)) {
+                        mMusicWidget.tvMusicName.setText(MusicService.music_name);                        
                     }
                 } else { // from file title
                     File file = new File(MusicService.music_path);
                     String filename = file.getName();
-                    musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    if (!(this.tvMusicName.getText().toString()).equals(musictitle)) {
-                        tvMusicName.setText(musictitle);                        
+                    mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
+                    if (!(mMusicWidget.tvMusicName.getText().toString()).equals(mMusicWidget.musictitle)) {
+                        mMusicWidget.tvMusicName.setText(mMusicWidget.musictitle);                        
                     }
                 }
-                tvMusicName.setSelected(true);
+                mMusicWidget.tvMusicName.setSelected(true);
             } else {
-                tvMusicName.setText(R.string.music_name);
-                tvMusicName.setSelected(true);
+                mMusicWidget.tvMusicName.setText(R.string.music_name);
+                mMusicWidget.tvMusicName.setSelected(true);
             }
         }
-        if (tvMusicNameTwo != null) {
+        if (mMusicWidget.tvMusicNameTwo != null) {
             if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
                 if (fytData) { // from metadata
-                    if (!(this.tvMusicNameTwo.getText().toString()).equals(MusicService.music_name)) {
-                        tvMusicNameTwo.setText(MusicService.music_name);                        
+                    if (!(mMusicWidget.tvMusicNameTwo.getText().toString()).equals(MusicService.music_name)) {
+                        mMusicWidget.tvMusicNameTwo.setText(MusicService.music_name);                        
                     }
                 } else { // from file title
                     File file = new File(MusicService.music_path);
                     String filename = file.getName();
-                    musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    if (!(this.tvMusicNameTwo.getText().toString()).equals(musictitle)) {
-                        tvMusicNameTwo.setText(musictitle);                        
+                    mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
+                    if (!(mMusicWidget.tvMusicNameTwo.getText().toString()).equals(mMusicWidget.musictitle)) {
+                        mMusicWidget.tvMusicNameTwo.setText(mMusicWidget.musictitle);                        
                     }
                 }
-                tvMusicNameTwo.setSelected(true);
+                mMusicWidget.tvMusicNameTwo.setSelected(true);
             } else {
-                tvMusicNameTwo.setText(R.string.music_name);
-                tvMusicNameTwo.setSelected(true);
+                mMusicWidget.tvMusicNameTwo.setText(R.string.music_name);
+                mMusicWidget.tvMusicNameTwo.setSelected(true);
             }
         }
-        if (tvCurTime != null) {
-            tvCurTime.setText("00:00");
+        if (mMusicWidget.tvCurTime != null) {
+            mMusicWidget.tvCurTime.setText("00:00");
         }
-        if (tvTotalTime != null) {
-            tvTotalTime.setText("00:00");
+        if (mMusicWidget.tvTotalTime != null) {
+            mMusicWidget.tvTotalTime.setText("00:00");
         }
-        if (musicSeekBar != null) {
-            musicSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListenerImp(this, null));
+        if (mMusicWidget.musicSeekBar != null) {
+            mMusicWidget.musicSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListenerImp(this, null));
         }
         /*if (mPlayPauseButton != null) {
             if (MusicService.state.booleanValue()) {
@@ -5260,14 +4619,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }
         }*/
-        if (tvAritst != null) {
-            tvAritst.setText(R.string.music_author);
+        if (mMusicWidget.tvAritst != null) {
+            mMusicWidget.tvAritst.setText(R.string.music_author);
         }
-        if (tvAritstTwo != null) {
-            tvAritstTwo.setText(R.string.music_author);
+        if (mMusicWidget.tvAritstTwo != null) {
+            mMusicWidget.tvAritstTwo.setText(R.string.music_author);
         }
-        if (tvAlbum != null) {
-            tvAlbum.setText(R.string.music_album);
+        if (mMusicWidget.tvAlbum != null) {
+            mMusicWidget.tvAlbum.setText(R.string.music_album);
         }
         if (mBtavView != null) {
             mBtavView.setOnClickListener(this);
@@ -5383,7 +4742,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private void initAnim() {
     }
 
-    private class OnSeekBarChangeListenerImp implements SeekBar.OnSeekBarChangeListener {
+    class OnSeekBarChangeListenerImp implements SeekBar.OnSeekBarChangeListener {
         private OnSeekBarChangeListenerImp() {
         }
 
@@ -5395,10 +4754,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (fromUser) {
                 boolean handled = false;
-                if ("mediaController".equals(Launcher.this.mediaSource)) {
+                if ("mediaController".equals(Launcher.this.mMusicWidget.mediaSource)) {
                     handled = MediaTransportController.seekToProgress(
                             Launcher.this,
-                            Launcher.this.getPreferredMediaControllerPackage(),
+                            Launcher.this.mMusicWidget.getPreferredMediaControllerPackage(),
                             progress,
                             seekBar.getMax()
                     );
@@ -5406,8 +4765,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (!handled && Launcher.this.mPlayer != null) {
                     Launcher.this.mPlayer.seekTo(progress);
                 }
-                if (Launcher.this.musicSeekBar != null) {
-                    Launcher.this.musicSeekBar.setProgress(progress);
+                if (Launcher.this.mMusicWidget.musicSeekBar != null) {
+                    Launcher.this.mMusicWidget.musicSeekBar.setProgress(progress);
                 }
             }
         }
@@ -5436,372 +4795,20 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public void bindMusicWidgetOnclickListener(View musicWidgetView) {
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        prevLayout = musicWidgetView.findViewById(R.id.constraint_layout_prev);
-        playPauseLayout = musicWidgetView.findViewById(R.id.constraint_layout_playpause);
-        nextLayout = musicWidgetView.findViewById(R.id.constraint_layout_next);
-        favoriteLayout = musicWidgetView.findViewById(R.id.constraint_layout_favorite);
-        
-        // Set up previous button
-        View.OnClickListener prevClickListener = v -> onPrevButtonClicked(false);
-        prevLayout.setOnClickListener(prevClickListener);
-        if (mMusicPrevButton != null) {
-            mMusicPrevButton.setOnClickListener(prevClickListener);
-        }
-        
-        // Set up play/pause button
-        View.OnClickListener playPauseClickListener = v -> onPlayPauseButtonClicked(false);
-        playPauseLayout.setOnClickListener(playPauseClickListener);
-        if (mPlayPauseButton != null) {
-            mPlayPauseButton.setOnClickListener(playPauseClickListener);
-        }
-        
-        // Set up next button
-        View.OnClickListener nextClickListener = v -> onNextButtonClicked(false);
-        nextLayout.setOnClickListener(nextClickListener);
-        if (mMusicNextButton != null) {
-            mMusicNextButton.setOnClickListener(nextClickListener);
-        }
 
-        View.OnClickListener favoriteClickListener = v -> onFavoriteButtonClicked(false);
-        if (favoriteLayout != null) {
-            favoriteLayout.setOnClickListener(favoriteClickListener);
-        }
-        if (mMusicFavoriteButton != null) {
-            mMusicFavoriteButton.setOnClickListener(favoriteClickListener);
-        }
-        
-        // Make layouts clickable
-        prevLayout.setClickable(true);
-        playPauseLayout.setClickable(true);
-        nextLayout.setClickable(true);
-        if (favoriteLayout != null) {
-            favoriteLayout.setClickable(true);
-        }
-        
-        prevLayout.setFocusable(true);
-        playPauseLayout.setFocusable(true);
-        nextLayout.setFocusable(true);
-        if (favoriteLayout != null) {
-            favoriteLayout.setFocusable(true);
-        }
-    }
 
-    public void bindMusicBarOnclickListener(View musicBarView) {
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        prevLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_prev_two);
-        playPauseLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_playpause_two);
-        nextLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_next_two);
-        favoriteLayoutTwo = musicBarView.findViewById(R.id.constraint_layout_favorite_two);
-        
-        // Set up previous button
-        View.OnClickListener prevClickListener = v -> onPrevButtonClicked(true);
-        prevLayoutTwo.setOnClickListener(prevClickListener);
-        if (mMusicPrevButtonTwo != null) {
-            mMusicPrevButtonTwo.setOnClickListener(prevClickListener);
-        }
-        
-        // Set up play/pause button
-        View.OnClickListener playPauseClickListener = v -> onPlayPauseButtonClicked(true);
-        playPauseLayoutTwo.setOnClickListener(playPauseClickListener);
-        if (mPlayPauseButtonTwo != null) {
-            mPlayPauseButtonTwo.setOnClickListener(playPauseClickListener);
-        }
-        
-        // Set up next button
-        View.OnClickListener nextClickListener = v -> onNextButtonClicked(true);
-        nextLayoutTwo.setOnClickListener(nextClickListener);
-        if (mMusicNextButtonTwo != null) {
-            mMusicNextButtonTwo.setOnClickListener(nextClickListener);
-        }
 
-        View.OnClickListener favoriteClickListener = v -> onFavoriteButtonClicked(true);
-        if (favoriteLayoutTwo != null) {
-            favoriteLayoutTwo.setOnClickListener(favoriteClickListener);
-        }
-        if (mMusicFavoriteButtonTwo != null) {
-            mMusicFavoriteButtonTwo.setOnClickListener(favoriteClickListener);
-        }
-        
-        // Make LayoutTwos clickable
-        prevLayoutTwo.setClickable(true);
-        playPauseLayoutTwo.setClickable(true);
-        nextLayoutTwo.setClickable(true);
-        if (favoriteLayoutTwo != null) {
-            favoriteLayoutTwo.setClickable(true);
-        }
-        
-        prevLayoutTwo.setFocusable(true);
-        playPauseLayoutTwo.setFocusable(true);
-        nextLayoutTwo.setFocusable(true);
-        if (favoriteLayoutTwo != null) {
-            favoriteLayoutTwo.setFocusable(true);
-        }
-    }
 
-    public void onFavoriteButtonClicked(boolean barView) {
-        if (barView && mWorkspace != null) {
-            mWorkspace.scheduleAutoHide();
-        }
-        String preferredPackage = getPreferredMediaControllerPackage();
-        if (MediaFavoriteController.isFavoriteTemporarilyDisabledPackage(preferredPackage)) {
-            updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN, false);
-            return;
-        }
-        int stateBefore = MediaFavoriteController.getCurrentFavoriteState(this, preferredPackage);
-        boolean sent = MediaFavoriteReceiver.handleFavoriteAction(this, preferredPackage);
-        if (sent) {
-            if (stateBefore == MediaFavoriteController.FAVORITE_STATE_FAVORITED) {
-                updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED);
-            } else if (stateBefore == MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED) {
-                updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_FAVORITED);
-            } else {
-                updateFavoriteButtonState(MediaFavoriteController.getCurrentFavoriteState(this, preferredPackage));
-            }
-            mHandler.postDelayed(this::updateFavoriteButtonState, 700);
-        }
-    }
-
-    private void updateFavoriteButtonState() {
-        String preferredPackage = getPreferredMediaControllerPackage();
-        if (MediaFavoriteController.isFavoriteTemporarilyDisabledPackage(preferredPackage)) {
-            updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN, false);
-            return;
-        }
-        updateFavoriteButtonState(MediaFavoriteController.getCurrentFavoriteState(this, preferredPackage));
-    }
-
-    private void updateFavoriteButtonState(int favoriteState) {
-        updateFavoriteButtonState(favoriteState, true);
-    }
-
-    private void updateFavoriteButtonState(int favoriteState, boolean enabled) {
-        int drawable = favoriteState == MediaFavoriteController.FAVORITE_STATE_FAVORITED
-                ? R.drawable.music_favorite_p
-                : R.drawable.btn_ic_favorite;
-        setFavoriteButtonBackground(mMusicFavoriteButton, drawable, false, enabled);
-        setFavoriteButtonBackground(mMusicFavoriteButtonTwo, drawable, true, enabled);
-    }
-
-    private void setFavoriteButtonBackground(Button button, int drawable, boolean barView, boolean enabled) {
-        if (button == null) {
-            return;
-        }
-        button.setEnabled(enabled);
-        button.setAlpha(enabled ? 1f : 0.45f);
-        button.setBackground(SkinUtils.getDrawable(drawable));
-        if (barView) {
-            setBarButtonsTint(button);
-        } else {
-            setWidgetButtonsTint(button);
-        }
-    }
     
-    private String getPreferredMediaControllerPackage() {
-        if ("mediaController".equals(mediaSource) && activeController != null && !activeController.isEmpty()) {
-            return activeController;
-        }
-        return null;
-    }
 
-    private void refreshLeftCycleForIntent(Intent launchIntent) {
-        if (launchIntent == null || launchIntent.getComponent() == null) {
-            return;
-        }
 
-        try {
-            ComponentName componentName = launchIntent.getComponent();
-            PackageManager pm = getPackageManager();
-            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-            String appTitle = appInfo.loadLabel(pm).toString();
-            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-            mAppBars.refreshLeftCycle(bean);
-            cleanWidgetBar();
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.w(TAG, "Unable to refresh music app cycle", e);
-        }
-    }
 
-    private void openActiveMusicPlayer(View v) {
-        WindowUtil.removePip();
-        Intent launchIntent = MediaTransportController.getActivePlayerLaunchIntent(
-                this,
-                getPreferredMediaControllerPackage()
-        );
-        if (launchIntent == null) {
-            return;
-        }
-        refreshLeftCycleForIntent(launchIntent);
-        startActivitySafely(v, launchIntent, "music");
-    }
 
-    public void onPrevButtonClicked(boolean barView) {
-        if (barView) {
-            mWorkspace.scheduleAutoHide();
-        }
 
-        if (isRadioPlaying() && "mediaController".equals(mediaSource)) {
-            openActiveMusicPlayer(null);
-            return;
-        }
 
-        MediaTransportController.handleAction(
-                this,
-                MediaTransportController.ACTION_PREVIOUS,
-                getPreferredMediaControllerPackage()
-        );
-        requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
-    }
 
-    public void onPlayPauseButtonClicked(boolean barView) {
-        if (barView) {
-            mWorkspace.scheduleAutoHide();
-        }
-        if (!temporarilyDisablePlayPauseButton) {
-            if ("fyt".equals(mediaSource)) {
-                if (this.mPlayPauseButton != null) {
-                    if (MusicService.state.booleanValue()) {
-                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        setWidgetButtonsTint(mPlayPauseButton);
-                    } else {
-                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                        setWidgetButtonsTint(mPlayPauseButton);
-                    }
-                }
-                if (this.mPlayPauseButtonTwo != null && barView) {
-                    if (MusicService.state.booleanValue()) {
-                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        setBarButtonsTint(mPlayPauseButtonTwo);
-                    } else {
-                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                        setBarButtonsTint(mPlayPauseButtonTwo);
-                    }
-                } 
-                Intent intent = new Intent();
-                intent.setAction("com.syu.music.playpause");
-                intent.setPackage("com.syu.music");
-                SysCalls.startService(this, intent);
-            } else if ("mediaController".equals(mediaSource)) {
-                boolean activeControllerAppRunning = false;
-                MediaSessionManager msm = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-                ComponentName component = new ComponentName(this, NotificationListener.class);
-                List<MediaController> controllers = msm.getActiveSessions(component);
-                for (MediaController controller : controllers) {
-                    if (controller.getPackageName().equals(activeController)) {
-                        activeControllerAppRunning = true;
-
-                        PlaybackState state = controller.getPlaybackState();
-                        int playbackState = (state != null) ? state.getState() : PlaybackState.STATE_NONE;
-
-                        if (playbackState == PlaybackState.STATE_PLAYING) {
-                            handler.postDelayed(() -> {
-                                if (playbackState == PlaybackState.STATE_PLAYING) {
-                                    if (this.mPlayPauseButton != null) {
-                                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                        setWidgetButtonsTint(mPlayPauseButton);
-                                    }
-                                    if (this.mPlayPauseButtonTwo != null && barView) {
-                                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                        setBarButtonsTint(mPlayPauseButtonTwo);
-                                    } 
-                                    controller.getTransportControls().pause();  
-                                } else {
-                                    if (this.mPlayPauseButton != null) {
-                                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                        setWidgetButtonsTint(mPlayPauseButton);
-                                    }
-                                    if (this.mPlayPauseButtonTwo != null && barView) {
-                                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                        setBarButtonsTint(mPlayPauseButtonTwo);
-                                    }   
-                                    controller.getTransportControls().play();
-                                }
-                            }, 350);
-
-                        } else {
-                            if (this.mPlayPauseButton != null) {
-                                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                setWidgetButtonsTint(mPlayPauseButton);
-                            }
-                            if (this.mPlayPauseButtonTwo != null && barView) {
-                                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                setBarButtonsTint(mPlayPauseButtonTwo);
-                            }   
-
-                            controller.getTransportControls().play();
-                        }
-                        break;
-                    }
-                }
-                if (!activeControllerAppRunning || isRadioPlaying()) {
-                    WindowUtil.removePip();
-                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage(activeController);
-                    try {
-                        ComponentName componentName = launchIntent.getComponent();
-                        PackageManager pm = getPackageManager();
-                        ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                        String appTitle = appInfo.loadLabel(pm).toString();
-                        AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                        this.refreshLeftCycle(bean);
-                        cleanWidgetBar();
-                    } catch (PackageManager.NameNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    startActivity(launchIntent);
-                }
-            }
-        }
-
-        temporarilyDisablePlayPauseButton = true;
-
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                temporarilyDisablePlayPauseButton = false;
-            }
-        }, 500);
-    }
-
-    public void onNextButtonClicked(boolean barView) {
-        if (barView) {
-            mWorkspace.scheduleAutoHide();
-        }
-
-        if (isRadioPlaying() && "mediaController".equals(mediaSource)) {
-            openActiveMusicPlayer(null);
-            return;
-        }
-
-        MediaTransportController.handleAction(
-                this,
-                MediaTransportController.ACTION_NEXT,
-                getPreferredMediaControllerPackage()
-        );
-        requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
-    }
-
-    private void setBarButtonsTint(Button button) {
-        if (button == null) {
-            return;
-        }
-        barTint = mPrefs.getBoolean(Keys.BLACK_BAR, false);
-        if (barTint) {
-            helpers.applyColorFilterToButton(button);
-        }
-    }
-
-    private void setWidgetButtonsTint(Button button) {
-        if (button == null) {
-            return;
-        }
-        widgetTint = mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
-        if (widgetTint) {
-            helpers.applyColorFilterToButton(button);
-        }
-    }
 
     public void bindRadioWidgetOnclickListener() {
         if (mRadioPrevButton != null) {
@@ -6538,31 +5545,31 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mWorkspace.cancelPendingAutoHide();
                 mWorkspace.clearWidgetReferences();
             }
-            ivALbumBgTwo = null;
-            tvMusicNameTwo = null;
-            tvAritstTwo = null;
+            mMusicWidget.ivALbumBgTwo = null;
+            mMusicWidget.tvMusicNameTwo = null;
+            mMusicWidget.tvAritstTwo = null;
             weatherImg1 = null;
             weatherCity1 = null;
             // Was "weatherTemp = null": that cleared the hotseat weather widget's temperature on
             // every onPause() and left the bar field pointing at the removed overlay view.
             weatherTemp1 = null;
             weatherWeather1 = null;
-            cleanupViewRecursively(prevLayoutTwo);
-            cleanupViewRecursively(playPauseLayoutTwo);
-            cleanupViewRecursively(nextLayoutTwo);
-            cleanupViewRecursively(favoriteLayoutTwo);
-            cleanupViewRecursively(mMusicNextButtonTwo);
-            cleanupViewRecursively(mMusicPrevButtonTwo);
-            cleanupViewRecursively(mPlayPauseButtonTwo);
-            cleanupViewRecursively(mMusicFavoriteButtonTwo);
-            prevLayoutTwo = null;
-            playPauseLayoutTwo = null;
-            nextLayoutTwo = null;
-            favoriteLayoutTwo = null;
-            mMusicNextButtonTwo = null;
-            mMusicPrevButtonTwo = null;
-            mPlayPauseButtonTwo = null;
-            mMusicFavoriteButtonTwo = null;
+            cleanupViewRecursively(mMusicWidget.prevLayoutTwo);
+            cleanupViewRecursively(mMusicWidget.playPauseLayoutTwo);
+            cleanupViewRecursively(mMusicWidget.nextLayoutTwo);
+            cleanupViewRecursively(mMusicWidget.favoriteLayoutTwo);
+            cleanupViewRecursively(mMusicWidget.mMusicNextButtonTwo);
+            cleanupViewRecursively(mMusicWidget.mMusicPrevButtonTwo);
+            cleanupViewRecursively(mMusicWidget.mPlayPauseButtonTwo);
+            cleanupViewRecursively(mMusicWidget.mMusicFavoriteButtonTwo);
+            mMusicWidget.prevLayoutTwo = null;
+            mMusicWidget.playPauseLayoutTwo = null;
+            mMusicWidget.nextLayoutTwo = null;
+            mMusicWidget.favoriteLayoutTwo = null;
+            mMusicWidget.mMusicNextButtonTwo = null;
+            mMusicWidget.mMusicPrevButtonTwo = null;
+            mMusicWidget.mPlayPauseButtonTwo = null;
+            mMusicWidget.mMusicFavoriteButtonTwo = null;
             removeCustomView("WS_Music_Two");
         }
     }    
@@ -7320,7 +6327,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.WS_Music) || v == getCustomView(Config.WS_Music_Two) || v == getCustomView(Config.WS_Music3)) {
-                openActiveMusicPlayer(v);
+                mMusicWidget.openActiveMusicPlayer(v);
                 return;
             }
             if (v == getCustomView(Config.WS_Maps)) {
@@ -7572,14 +6579,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void stopMusic() {
-        if ("mediaController".equals(mediaSource)) {
-            if (mPlayPauseButton != null) {
-                mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
+        if ("mediaController".equals(mMusicWidget.mediaSource)) {
+            if (mMusicWidget.mPlayPauseButton != null) {
+                mMusicWidget.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                mMusicWidget.setWidgetButtonsTint(mMusicWidget.mPlayPauseButton);
             }
-            if (mPlayPauseButtonTwo != null) {
-                mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
+            if (mMusicWidget.mPlayPauseButtonTwo != null) {
+                mMusicWidget.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                mMusicWidget.setBarButtonsTint(mMusicWidget.mPlayPauseButtonTwo);
             }
             SysCalls.sendBroadcast(Launcher.this, new Intent("media.play.pause")); 
         }
@@ -10275,5 +9282,25 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void refreshLeftCycle(AppListBean bean) {
         mAppBars.refreshLeftCycle(bean);
+    }
+
+    public void initMusicWidgetView(View musicWidgetView) {
+        mMusicWidget.initMusicWidgetView(musicWidgetView);
+    }
+
+    public void initMusicBarView(View musicBarView) {
+        mMusicWidget.initMusicBarView(musicBarView);
+    }
+
+    public void bindMusicWidgetOnclickListener(View musicWidgetView) {
+        mMusicWidget.bindMusicWidgetOnclickListener(musicWidgetView);
+    }
+
+    public void bindMusicBarOnclickListener(View musicBarView) {
+        mMusicWidget.bindMusicBarOnclickListener(musicBarView);
+    }
+
+    public void preSetMusicWidgets() {
+        mMusicWidget.preSetMusicWidgets();
     }
 }
