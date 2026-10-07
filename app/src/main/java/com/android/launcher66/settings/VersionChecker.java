@@ -30,7 +30,8 @@ public class VersionChecker {
 
     private static final String TAG = "VersionChecker";
     private static final String GITHUB_RELEASES_URL = "https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest";
-    private static final String UPDATE_FILE_PREFIX = "update";
+    private static final String UPDATE_FILE_PREFIX = "fyt_release_";
+    private static final String PHONE_UPDATE_FILE_PREFIX = "phone_release_";
     private static final String UPDATE_FILE_SUFFIX = ".apk";
 
     private AsyncTask<Void, Void, String> checkTask;
@@ -254,6 +255,9 @@ public class VersionChecker {
                     });
 
                     input = connection.getInputStream();
+                    if (!LauncherApplication.isFytDevice()) {
+                        UPDATE_FILE_PREFIX = PHONE_UPDATE_FILE_PREFIX;
+                    }
                     outputFile = new File(appContext.getExternalFilesDir(null),
                             UPDATE_FILE_PREFIX + latestVersion + UPDATE_FILE_SUFFIX);
                     output = new FileOutputStream(outputFile);
@@ -439,7 +443,10 @@ public class VersionChecker {
      */
     public static void deleteInstalledUpdates(Context context) {
         final Context appContext = context.getApplicationContext();
-        final String currentVersion = BuildConfig.VERSION_NAME;
+        final String currentVersion = BuildConfig.VERSION_NAME;       
+        if (!LauncherApplication.isFytDevice()) {
+            UPDATE_FILE_PREFIX = PHONE_UPDATE_FILE_PREFIX;
+        }
         new Thread(() -> {
             File dir = appContext.getExternalFilesDir(null);
             File[] files = dir != null ? dir.listFiles() : null;
