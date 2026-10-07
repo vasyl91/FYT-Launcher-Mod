@@ -389,6 +389,7 @@
     <string name="bg_drawable">Default background</string>
     <string name="bg_color">Colored background</string>
     <string name="bg_color_picker">Set the background color</string>
+    <string name="bg_alpha">Set the transparency of the colored background</string>
     <string name="app_list_stats">Open the app list</string>
     <string name="app_list_stats_summary">Select the apps that will display the window with fuel statistics</string>
     <string name="app_list_dialog">Selected apps will display the stats window</string>

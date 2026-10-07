@@ -492,6 +492,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         if (userLayout && userStats) {
             textColor = prefs.getString("stats_color", "#FFFFFFFF");
             String bgColor = prefs.getString("bg_stats_color", "#FF000000");
+            int bgAlpha = prefs.getInt(Keys.ALPHA_SEEK_BAR, 255);
             boolean background = prefs.getBoolean("stats_bg", true);
             boolean leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
             boolean drawableBg = prefs.getBoolean("bg_drawable", false);
@@ -567,6 +568,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     GradientDrawable shape =  new GradientDrawable();
                     shape.setCornerRadius(radius);
                     shape.setColor(Color.parseColor(bgColor));
+                    shape.setAlpha(bgAlpha);
                     absoluteStats.setBackground(shape);
                 }
                 
@@ -579,7 +581,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     statsTopLeftX, // temporary; we'll overwrite below with safeLayoutX
                     statsTopLeftY,
                     WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                    // Display only: every touch (taps, swipes, long presses) goes through to the
+                    // app or home screen underneath, which the stats would otherwise block.
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                            | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                            | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                     PixelFormat.TRANSLUCENT
             );
             statsLayoutParams.gravity = Gravity.TOP | Gravity.START;

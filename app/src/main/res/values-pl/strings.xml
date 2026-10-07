@@ -246,6 +246,7 @@
     <string name="bg_drawable">Domyślne tło</string>
     <string name="bg_color">Kolorowe tło</string>
     <string name="bg_color_picker">Ustaw kolor tła</string>
+    <string name="bg_alpha">Ustaw przezroczystość kolorowego tła</string>
     <string name="app_list_stats">Otwórz listę aplikacji</string>
     <string name="app_list_stats_summary">Zaznacz aplikacje, w których będą wyświetlane statystyki paliwa</string>
     <string name="app_list_dialog">Zaznaczone aplikacje będą wyświetlały statystyki paliwa</string>
