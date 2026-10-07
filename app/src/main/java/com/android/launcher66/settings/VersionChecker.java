@@ -10,6 +10,7 @@ import androidx.core.content.FileProvider;
 
 import com.android.async.AsyncTask;
 import com.android.launcher66.BuildConfig;
+import com.android.launcher66.LauncherApplication;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,7 +31,7 @@ public class VersionChecker {
 
     private static final String TAG = "VersionChecker";
     private static final String GITHUB_RELEASES_URL = "https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest";
-    private static final String UPDATE_FILE_PREFIX = "fyt_release_";
+    private static String UPDATE_FILE_PREFIX = "fyt_release_";
     private static final String PHONE_UPDATE_FILE_PREFIX = "phone_release_";
     private static final String UPDATE_FILE_SUFFIX = ".apk";
 
