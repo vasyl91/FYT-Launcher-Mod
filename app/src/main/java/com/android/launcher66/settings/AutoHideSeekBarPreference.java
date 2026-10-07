@@ -39,17 +39,6 @@ public class AutoHideSeekBarPreference extends Preference {
     @Override
     public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-
-        View rootView = holder.itemView;
-        if (rootView != null) {
-            // Apply relative padding (start, top, end, bottom)
-            rootView.setPaddingRelative(
-                SettingsActivity.nestedPaddingStart / 2,
-                rootView.getPaddingTop(),
-                SettingsActivity.nestedPaddingEnd,
-                rootView.getPaddingBottom()
-            );
-        }
         
         SeekBar seekBar = (SeekBar) holder.findViewById(R.id.autohide_seekbar);
         seekBar.setMax(MAX_VALUE - MIN_VALUE); // Adjust range for SeekBar
