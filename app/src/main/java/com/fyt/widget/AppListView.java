@@ -144,13 +144,6 @@ public class AppListView extends ListView {
             return false;
         }
 
-        FytPackage.setDefaultNavigationPackage(navigationPackage);
-        try {
-            CarStates.getCar(context).mTools.sendStr(0, 9, navigationPackage);
-        } catch (Exception e) {
-            Log.w("AppListView", "Failed to assign default navigation package: " + navigationPackage, e);
-        }
-
         Intent navigationIntent = FytPackage.getLaunchIntent(context, navigationPackage);
         if (navigationIntent == null) {
             return false;

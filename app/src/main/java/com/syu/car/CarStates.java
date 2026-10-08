@@ -26,7 +26,8 @@ public class CarStates {
     final int[] RADIO_LOOK_CODE = {0, 1, 2, 20, 23, 21};
     final int[] BT_LOOK_CODE = {0, 1, 2, 28, 26, 13, 9};
     final int[] SOUND_LOOK_CODE = {2, 3};
-    String mNaviPkg = "";
+    /** Reported by com.syu.ms (FinalMain.U_NAVI_PACKAGE); empty until it has. */
+    volatile String mNaviPkg = "";
     int mTvStyle = 0;
     List<String> mHideApps = new ArrayList();
     List<String> mShowApps = new ArrayList();
@@ -67,11 +68,16 @@ public class CarStates {
                         CarStates.mAccState = ints[0];
                         return;
                     }
+                    // The navigation app picked in the system settings.
+                    if (updateCode == FinalMain.U_NAVI_PACKAGE) {
+                        mNaviPkg = strs != null && strs.length > 0 && strs[0] != null ? strs[0].trim() : "";
+                        return;
+                    }
                     if (updateCode == FinalMain.U_LAMPLET && ints != null && ints.length > 0) {
                         HeadlightNightMode.onLightsReported(mContext, ints[0]);
                     }
                 }
-            }, 0, 28, 39, 50, FinalMain.U_LAMPLET);
+            }, 0, FinalMain.U_NAVI_PACKAGE, 39, 50, FinalMain.U_LAMPLET);
         }
     }
 

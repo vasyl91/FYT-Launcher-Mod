@@ -8,10 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.syu.car.CarStates;
 import com.syu.util.FytPackage;
 
 import java.util.ArrayList;
@@ -69,9 +66,6 @@ public class AllAppsList {
                     }
                     if (info.componentName.getPackageName().equals(FytPackage.GaodeACTION)) {
                         Config.EXISTAMPAUTO = true;
-                    }
-                    if (FytPackage.isNavigationPackage(LauncherApplication.sApp, info.componentName.getPackageName())) {
-                        setDefaultNavi();
                     }
                     if (info.componentName.getPackageName().equals(FytPackage.voiceAction)) {
                         Config.EXISTVOICE = true;
@@ -163,9 +157,6 @@ public class AllAppsList {
                 }
                 if (packageName.equals(FytPackage.GaodeACTION)) {
                     Config.EXISTAMPAUTO = true;
-                }
-                if (FytPackage.isNavigationPackage(LauncherApplication.sApp, packageName)) {
-                    setDefaultNavi();
                 }
                 if (packageName.equals(FytPackage.voiceAction)) {
                     Config.EXISTVOICE = true;
@@ -299,20 +290,6 @@ public class AllAppsList {
         return null;
     }
 
-    private void setDefaultNavi() {
-        try {
-            if (LauncherApplication.isFytDevice()) {
-                String naviPackage = FytPackage.resolveNavigationPackage(LauncherApplication.sApp);
-                if (naviPackage != null && !naviPackage.equals("")) {
-                    FytPackage.setDefaultNavigationPackage(naviPackage);
-                    CarStates.getCar(LauncherApplication.sApp).mTools.sendStr(0, 9, naviPackage);
-                }
-            }
-        } catch (Exception e) {
-            Toast.makeText(LauncherApplication.sApp, LauncherApplication.sApp.getString(R.string.init_default_app_error), Toast.LENGTH_LONG).show();
-            Log.e("AllAppsList", "Failed to set default navi: " + e.getMessage());
-        }
-    }
 
     static List<ResolveInfo> findActivitysByIntent(Context context, Intent intent) {
         final PackageManager packageManager = context.getPackageManager();
