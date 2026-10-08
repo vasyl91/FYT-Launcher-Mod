@@ -30,6 +30,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.preference.PreferenceManager;
+
 import com.android.launcher66.settings.AppListAutostartDialogFragment;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.LogcatWorker;
@@ -769,18 +771,19 @@ public final class ColdStart {
     }
 
     // =============================================================================================
-    // Last app back in front after a device restart (LAUNCHER_HOME off)
+    // Last app back in front after a device restart or a wake (LAUNCHER_HOME off)
     //
     // The stock launcher stays behind the app that was in front when the device went off. After a
     // restart com.syu.ms has nothing to open over this launcher (capture 08-10-2026:
     // sTopAppWhenMcuOff empty at boot, though it was com.syu.carlink at the power-off), so the
     // launcher opens that app itself. ForegroundAppTracker reports each app in front on the main
-    // display, noteForegroundApp() keeps the last one.
+    // display, noteForegroundApp() keeps the last one. After a wake WakeDetectionService does the
+    // same with the app noted when the device went to sleep.
     // =============================================================================================
 
     private static final String KEY_LAST_APP = "last_foreground_app";
-    /** After com.syu.ms's own restore (~2 s after the start), before the panes are built. */
-    private static final long LAST_APP_RESTORE_DELAY_MS = 2500L;
+    /** After com.syu.ms's own restore (~1-2 s after a start or a wake), before the panes are built. */
+    public static final long LAST_APP_RESTORE_DELAY_MS = 2500L;
     /** Shown only for a while (system dialogs, recents): the app before them stays noted. */
     private static final List<String> TRANSIENT_PACKAGES = Arrays.asList(
             "android", "com.android.systemui", "com.android.launcher3");
@@ -795,33 +798,76 @@ public final class ColdStart {
                 .edit().putString(KEY_LAST_APP, last).apply();
     }
 
+    /** The app noted last; "" for the home screen, or when nothing has been noted. */
+    public static String lastApp(Context context) {
+        return context.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
+                .getString(KEY_LAST_APP, "");
+    }
+
     /** Main thread, from start(): read before ForegroundAppTracker notes the launcher instead. */
     private void scheduleLastAppRestore() {
-        final String pkg = app.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
-                .getString(KEY_LAST_APP, "");
+        final String pkg = lastApp(app);
         if (pkg.isEmpty()) {
             return;
         }
         Log.i(TAG, "Cold boot: bringing back " + pkg + " in " + LAST_APP_RESTORE_DELAY_MS + " ms");
-        // Its own thread: both calls go into system_server, which stalls at boot.
-        mainHandler.postDelayed(() -> new Thread(() -> {
+        mainHandler.postDelayed(() -> bringBackLastApp(app, pkg), LAST_APP_RESTORE_DELAY_MS);
+    }
+
+    /**
+     * Puts pkg, the app that was in front ("" = the home screen), back in front -- over the
+     * launcher's home screen, or over a PiP pane's app that com.syu.ms opened full screen: it
+     * takes the panes' apps for the top app (capture 09-10-2026: sTopAppWhenMcuOff Maps, a pane,
+     * with the home screen in front). Whatever else is in front (a reversing camera, the user's
+     * choice) stays. On its own thread: the calls go into system_server, which stalls at boot.
+     */
+    public static void bringBackLastApp(Context context, String pkg) {
+        final Context app = context.getApplicationContext();
+        new Thread(() -> {
             try {
-                // Only over the home screen: whatever else is in front by then (com.syu.ms's
-                // restore, a reversing camera, the user's choice) stays.
-                ComponentName top = topActivity();
-                Intent launch = app.getPackageManager().getLaunchIntentForPackage(pkg);
-                if (launch == null || !new ComponentName(app, Launcher.class).equals(top)) {
-                    Log.i(TAG, pkg + " not brought back: " + (launch == null ? "no launch activity"
-                            : (top != null ? top.flattenToShortString() : "unknown") + " in front"));
+                ActivityManager am = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
+                ComponentName top = am != null ? DefaultDisplayTask.topActivity(am) : null;
+                if (top != null && top.getPackageName().equals(pkg)) {
+                    return; // already back, com.syu.ms's own restore
+                }
+                boolean overHome = new ComponentName(app, Launcher.class).equals(top);
+                boolean overPane = top != null && !top.getPackageName().equals(pkg)
+                        && isPipPackage(app, top.getPackageName());
+                if (!overHome && !overPane) {
+                    Log.i(TAG, (pkg.isEmpty() ? "Home screen" : pkg) + " not brought back: "
+                            + (top != null ? top.flattenToShortString() : "unknown") + " in front");
                     return;
                 }
-                app.startActivity(launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                Log.i(TAG, "Brought back " + pkg);
+                Intent launch = pkg.isEmpty() ? null : app.getPackageManager().getLaunchIntentForPackage(pkg);
+                if (launch != null) {
+                    app.startActivity(launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    Log.i(TAG, "Brought back " + pkg + " over " + top.flattenToShortString());
+                } else if (overPane) {
+                    Launcher launcher = Launcher.getLauncher();
+                    if (launcher != null) {
+                        am.moveTaskToFront(launcher.getTaskId(), 0);
+                        Log.i(TAG, "Brought back the home screen over " + top.flattenToShortString());
+                    }
+                }
             } catch (RuntimeException e) {
                 // Escaping this thread it would end the whole launcher (CrashHandler).
                 Log.w(TAG, "Bringing back " + pkg + " failed", e);
             }
-        }, "LastAppRestore").start(), LAST_APP_RESTORE_DELAY_MS);
+        }, "LastAppRestore").start();
+    }
+
+    private static boolean isPipPackage(Context context, String pkg) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (!prefs.getBoolean(Keys.DISPLAY_PIP, true)) {
+            return false;
+        }
+        for (String key : new String[]{Keys.PIP_FIRST_PACKAGE, Keys.PIP_SECOND_PACKAGE,
+                Keys.PIP_THIRD_PACKAGE, Keys.PIP_FOURTH_PACKAGE}) {
+            if (pkg.equals(prefs.getString(key, ""))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // =============================================================================================
