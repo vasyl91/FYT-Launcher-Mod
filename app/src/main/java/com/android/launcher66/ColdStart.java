@@ -51,7 +51,8 @@ import java.util.Locale;
  *   <li><b>Boot-time stall:</b> at every boot this ROM blocks all calls into system_server for
  *       about ten seconds; work that can wait is deferred past it, see {@link #bootStallDelayMs()}.
  *   <li><b>Launcher in front:</b> for a while after the restart, whatever comes up over the
- *       launcher is sent back behind it (setting Keys.LAUNCHER_HOME).
+ *       launcher is sent back behind it (setting Keys.LAUNCHER_HOME); with it off, the app that
+ *       was in front before the restart is opened again.
  *   <li><b>Autostart:</b> the apps picked in AppListAutostartDialogFragment are started once the
  *       stall is over.
  * </ul>
@@ -110,6 +111,9 @@ public final class ColdStart {
             boolean launcherHome = settings.getBoolean(Keys.LAUNCHER_HOME, true);
             bootCompletedAutostart = settings.getBoolean(Keys.AUTOSTART_APPS_BY_BOOT_COMPLETED, true);
             coldStart.startBootFrontGuard(launcherHome);
+            if (!launcherHome) {
+                coldStart.scheduleLastAppRestore();
+            }
             coldStart.scheduleBootAutostart(launcherHome);
         }
         return coldStart;
@@ -646,9 +650,10 @@ public final class ColdStart {
     }
 
     private static boolean isProtectedCover(String packageName) {
-        if (PROTECTED_COVER_PACKAGES.contains(packageName)) {
-            return true;
-        }
+        return PROTECTED_COVER_PACKAGES.contains(packageName) || isCameraPackage(packageName);
+    }
+
+    private static boolean isCameraPackage(String packageName) {
         String lower = packageName.toLowerCase(Locale.ROOT);
         for (String part : PROTECTED_COVER_NAME_PARTS) {
             if (lower.contains(part)) {
@@ -761,6 +766,62 @@ public final class ColdStart {
         @Override public void onActionModeFinished(ActionMode mode) { base.onActionModeFinished(mode); }
         @Override public void onProvideKeyboardShortcuts(List<KeyboardShortcutGroup> data, Menu menu, int deviceId) { base.onProvideKeyboardShortcuts(data, menu, deviceId); }
         @Override public void onPointerCaptureChanged(boolean hasCapture) { base.onPointerCaptureChanged(hasCapture); }
+    }
+
+    // =============================================================================================
+    // Last app back in front after a device restart (LAUNCHER_HOME off)
+    //
+    // The stock launcher stays behind the app that was in front when the device went off. After a
+    // restart com.syu.ms has nothing to open over this launcher (capture 08-10-2026:
+    // sTopAppWhenMcuOff empty at boot, though it was com.syu.carlink at the power-off), so the
+    // launcher opens that app itself. ForegroundAppTracker reports each app in front on the main
+    // display, noteForegroundApp() keeps the last one.
+    // =============================================================================================
+
+    private static final String KEY_LAST_APP = "last_foreground_app";
+    /** After com.syu.ms's own restore (~2 s after the start), before the panes are built. */
+    private static final long LAST_APP_RESTORE_DELAY_MS = 2500L;
+    /** Shown only for a while (system dialogs, recents): the app before them stays noted. */
+    private static final List<String> TRANSIENT_PACKAGES = Arrays.asList(
+            "android", "com.android.systemui", "com.android.launcher3");
+
+    /** From ForegroundAppTracker, main thread. The launcher itself counts as no app. */
+    public static void noteForegroundApp(Context context, String packageName) {
+        if (TRANSIENT_PACKAGES.contains(packageName) || isCameraPackage(packageName)) {
+            return;
+        }
+        String last = packageName.equals(context.getPackageName()) ? "" : packageName;
+        context.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
+                .edit().putString(KEY_LAST_APP, last).apply();
+    }
+
+    /** Main thread, from start(): read before ForegroundAppTracker notes the launcher instead. */
+    private void scheduleLastAppRestore() {
+        final String pkg = app.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
+                .getString(KEY_LAST_APP, "");
+        if (pkg.isEmpty()) {
+            return;
+        }
+        Log.i(TAG, "Cold boot: bringing back " + pkg + " in " + LAST_APP_RESTORE_DELAY_MS + " ms");
+        // Its own thread: both calls go into system_server, which stalls at boot.
+        mainHandler.postDelayed(() -> new Thread(() -> {
+            try {
+                // Only over the home screen: whatever else is in front by then (com.syu.ms's
+                // restore, a reversing camera, the user's choice) stays.
+                ComponentName top = topActivity();
+                Intent launch = app.getPackageManager().getLaunchIntentForPackage(pkg);
+                if (launch == null || !new ComponentName(app, Launcher.class).equals(top)) {
+                    Log.i(TAG, pkg + " not brought back: " + (launch == null ? "no launch activity"
+                            : (top != null ? top.flattenToShortString() : "unknown") + " in front"));
+                    return;
+                }
+                app.startActivity(launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                Log.i(TAG, "Brought back " + pkg);
+            } catch (RuntimeException e) {
+                // Escaping this thread it would end the whole launcher (CrashHandler).
+                Log.w(TAG, "Bringing back " + pkg + " failed", e);
+            }
+        }, "LastAppRestore").start(), LAST_APP_RESTORE_DELAY_MS);
     }
 
     // =============================================================================================

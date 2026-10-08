@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.Display;
 
+import com.android.launcher66.ColdStart;
 import com.android.launcher66.LauncherApplication;
 
 import java.lang.reflect.Field;
@@ -166,6 +167,7 @@ public final class ForegroundAppTracker {
             return;
         }
         sLastPackage = packageName;
+        ColdStart.noteForegroundApp(context, packageName);
         Intent intent = new Intent(Keys.ACCESIBILITY_SERVICE);
         intent.setPackage(context.getPackageName());
         intent.putExtra("package_name", packageName);
