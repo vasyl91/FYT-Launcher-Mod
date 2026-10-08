@@ -66,15 +66,6 @@ public class BottomBarHeightSeekBarPreference extends Preference {
     public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        View rootView = holder.itemView;
-        // Apply relative padding (start, top, end, bottom) - same as AutoHideSeekBarPreference
-        rootView.setPaddingRelative(
-                SettingsActivity.nestedPaddingStart / 2,
-                rootView.getPaddingTop(),
-                SettingsActivity.nestedPaddingEnd,
-                rootView.getPaddingBottom()
-        );
-
         // The orientation may have changed since the last bind: show the value stored for this one.
         readValue();
 

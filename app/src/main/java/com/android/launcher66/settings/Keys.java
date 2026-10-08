@@ -89,6 +89,7 @@ public final class Keys {
     public static final String BG_DRAWABLE = "bg_drawable";
     public static final String BG_COLOR = "bg_color";
     public static final String BG_COLOR_PICKER = "bg_color_picker";
+    public static final String ALPHA_SEEK_BAR = "alpha_seek_bar";
     public static final String APP_LIST = "app_list";
     public static final String APP_STATS_WIDTH = "app_stats_width";
     public static final String APP_STATS_WIDTH_SELECTOR = "app_stats_width_selector";

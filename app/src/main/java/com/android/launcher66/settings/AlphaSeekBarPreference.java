@@ -11,11 +11,11 @@ import androidx.preference.PreferenceViewHolder;
 
 import com.android.launcher66.R;
 
-public class AutoHideSeekBarPreference extends Preference {
+public class AlphaSeekBarPreference extends Preference {
 
-    private static final int MIN_VALUE = 3;
-    private static final int MAX_VALUE = 15;
-    private static final int DEFAULT_VALUE = 5;
+    private static final int MIN_VALUE = 0;
+    private static final int MAX_VALUE = 255;
+    private static final int DEFAULT_VALUE = 255;
 
     private int currentValue;
 
@@ -25,9 +25,9 @@ public class AutoHideSeekBarPreference extends Preference {
 
     private OnSeekBarProgressChangeListener progressChangeListener;
 
-    public AutoHideSeekBarPreference(Context context, AttributeSet attrs) {
+    public AlphaSeekBarPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setLayoutResource(R.layout.seekbar_preference_autohide); // Custom layout for the SeekBar
+        setLayoutResource(R.layout.seekbar_preference_alpha);
     }
 
     @Override
@@ -39,14 +39,21 @@ public class AutoHideSeekBarPreference extends Preference {
     @Override
     public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        
-        SeekBar seekBar = (SeekBar) holder.findViewById(R.id.autohide_seekbar);
+
+        SeekBar seekBar = (SeekBar) holder.findViewById(R.id.alpha_seekbar);
+        if (seekBar == null) {
+            return;
+        }
+        seekBar.setOnSeekBarChangeListener(null);
         seekBar.setMax(MAX_VALUE - MIN_VALUE); // Adjust range for SeekBar
         seekBar.setProgress(currentValue - MIN_VALUE); // Map value to SeekBar progress
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (!fromUser) {
+                    return;
+                }
                 currentValue = progress + MIN_VALUE; // Map progress back to actual value
                 persistInt(currentValue); // Save the value
                 callChangeListener(currentValue); // Notify listeners
@@ -72,11 +79,12 @@ public class AutoHideSeekBarPreference extends Preference {
     // Method to set the external listener
     public void setOnSeekBarProgressChangeListener(OnSeekBarProgressChangeListener listener) {
         this.progressChangeListener = listener;
-    }    
+    }
 
-    public void resetPosition() {
-        if (DEFAULT_VALUE != currentValue) {
-            currentValue = DEFAULT_VALUE;
+    public void resetPosition(int resetValue) {
+        int newValue = Math.max(MIN_VALUE, Math.min(resetValue, MAX_VALUE));
+        if (newValue != currentValue) {
+            currentValue = newValue;
             persistInt(currentValue);
             notifyChanged(); 
             callChangeListener(currentValue); 

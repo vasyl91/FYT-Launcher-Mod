@@ -142,6 +142,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private Preference statsBg;
     private Preference colorPickerPref;
     private Preference bgColorPickerPref;
+    private Preference bgAlpha;
+    private AlphaSeekBarPreference alphaSeekBar;
     private Preference appList;
     private Preference appStatsCoordinates;
     private Preference codesGuide;
@@ -344,6 +346,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         bgDrawable = findPreference(Keys.BG_DRAWABLE);
         bgColor = findPreference(Keys.BG_COLOR);
         bgColorPickerPref = findPreference(Keys.BG_COLOR_PICKER);
+        bgAlpha = findPreference("bg_alpha");
+        alphaSeekBar = findPreference(Keys.ALPHA_SEEK_BAR);
         appList = findPreference(Keys.APP_LIST);
         appStatsCoordinates = findPreference(Keys.APP_STATS_COORDINATES);
 
@@ -618,10 +622,19 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             bgColor.setVisible(statsBackgroundBool());
             bgColor.setOnPreferenceClickListener(this);
         }
-        if (bgColorPickerPref != null) {
-            colorBgBool = sharedPrefs.getBoolean(Keys.BG_COLOR, false);
+        colorBgBool = sharedPrefs.getBoolean(Keys.BG_COLOR, false);
+        if (bgColorPickerPref != null) {   
             bgColorPickerPref.setVisible(statsBackgroundBool() && colorBgBool);
             bgColorPickerPref.setOnPreferenceClickListener(this);
+        }
+        if (bgAlpha != null) {   
+            bgAlpha.setVisible(statsBackgroundBool() && colorBgBool);
+            bgAlpha.setOnPreferenceClickListener(this);
+        }
+        if (alphaSeekBar != null) {   
+            alphaSeekBar.setVisible(statsBackgroundBool() && colorBgBool);
+            alphaSeekBar.setOnPreferenceClickListener(this);
+            storeAlphaDefault(alphaSeekBar, Keys.ALPHA_SEEK_BAR, 255);
         }
         if (appList != null) {
             appList.setOnPreferenceClickListener(this);
@@ -836,14 +849,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 bgDrawable.setVisible(backgroundBool);
                 bgColor.setVisible(backgroundBool);
                 bgColorPickerPref.setVisible(backgroundBool && colorBgBool);
+                bgAlpha.setVisible(backgroundBool && colorBgBool);
+                alphaSeekBar.setVisible(backgroundBool && colorBgBool);
                 break;
             case Keys.BG_DRAWABLE:
                 bgColor.setChecked(!drawableBgBool);
                 bgColorPickerPref.setVisible(!drawableBgBool);
+                bgAlpha.setVisible(!drawableBgBool);
+                alphaSeekBar.setVisible(!drawableBgBool);
                 break;
             case Keys.BG_COLOR:
                 bgDrawable.setChecked(!colorBgBool);
                 bgColorPickerPref.setVisible(colorBgBool);
+                bgAlpha.setVisible(colorBgBool);
+                alphaSeekBar.setVisible(colorBgBool);
                 break;
             case Keys.BG_COLOR_PICKER:
                 ColorPicker bgPicker = ColorPicker.newInstance(bgDefaultColorR, bgDefaultColorG, bgDefaultColorB);
@@ -1320,6 +1339,17 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
     };
 
+    /**
+     * AlphaSeekBarPreference shows 0 for a value that was never saved (it ignores
+     * android:defaultValue).
+     * Saving the shared default once makes the bar show the value that is actually applied.
+     */
+    private void storeAlphaDefault(AlphaSeekBarPreference seekPreference, String key, int value) {
+        if (!sharedPrefs.contains(key)) {
+            seekPreference.resetPosition(value);
+        }
+    }
+
     public void setCountDownTimer(int delay) {
         countDownTimerBool = true;
         countDownTimer = new CountDownTimer(delay, 1000) {
@@ -1565,14 +1595,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     bgColor.setChecked(true);
                     bgDrawable.setChecked(false);
                     bgColorPickerPref.setVisible(true);
+                    bgAlpha.setVisible(true);
+                    alphaSeekBar.setVisible(true);
                 } else {
                     bgDrawable.setChecked(true);
                     bgColorPickerPref.setVisible(false);
+                    bgAlpha.setVisible(false);
+                    alphaSeekBar.setVisible(false);
                 }
             } else {
                 bgDrawable.setVisible(false);
                 bgColor.setVisible(false);
                 bgColorPickerPref.setVisible(false);
+                bgAlpha.setVisible(false);
+                alphaSeekBar.setVisible(false);
             }
         } else {
             statsScreen.setVisible(false);
@@ -1586,6 +1622,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             bgDrawable.setVisible(false);
             bgColor.setVisible(false);
             bgColorPickerPref.setVisible(false);
+            bgAlpha.setVisible(false);
+            alphaSeekBar.setVisible(false);
         }
     }
 

@@ -201,6 +201,12 @@
             android:key="bg_color_picker"
             android:title="@string/bg_color_picker" />
         <Preference
+            android:key="bg_alpha"
+            android:title="@string/bg_alpha" />
+        <com.android.launcher66.settings.AlphaSeekBarPreference
+            android:key="alpha_seek_bar"
+            android:defaultValue="255" />
+        <Preference
             android:key="app_list"
             android:title="@string/app_list_stats"
             android:summary="@string/app_list_stats_summary"  />
