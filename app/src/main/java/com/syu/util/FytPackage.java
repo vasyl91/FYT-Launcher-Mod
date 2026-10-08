@@ -9,7 +9,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.util.Log;
+import com.android.launcher66.LauncherApplication;
+import com.syu.car.CarStates;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 public class FytPackage {
-    private static final String TAG = "FytPackage";
     private static final long NAVIGATION_CACHE_MS = 30000L;
     private static final Object sPackageCacheLock = new Object();
     private static final Map<String, Intent> sLaunchIntentCache = new HashMap<>();
@@ -163,7 +163,17 @@ public class FytPackage {
         return intent;
     }
 
+    /**
+     * The navigation app to open. On FYT that is only the one picked in the system settings, as
+     * com.syu.ms reports it; "" until it has, and callers then let com.syu.ms open it itself
+     * (C_JUMP_PAGE). Nothing is guessed there: persist.sys.navi.packagename is not kept up to date
+     * by com.syu.ms on every ROM, and a guess handed back to it replaced the user's choice.
+     */
     public static String resolveNavigationPackage(Context context) {
+        if (LauncherApplication.isFytDevice()) {
+            String systemPackage = CarStates.getCar(context).getmNaviPkg();
+            return isPackageInstalled(context, systemPackage) ? systemPackage : "";
+        }
         long now = SystemClock.uptimeMillis();
         synchronized (sPackageCacheLock) {
             if (sCachedNavigationPackage != null
@@ -193,23 +203,6 @@ public class FytPackage {
         }
 
         return findNavigationPackageFromLaunchers(context);
-    }
-
-    public static boolean setDefaultNavigationPackage(String packageName) {
-        if (TextUtils.isEmpty(packageName)) {
-            return false;
-        }
-        try {
-            SystemProperties.set(SYS_NAVI_PACKAGE, packageName);
-            synchronized (sPackageCacheLock) {
-                sCachedNavigationPackage = packageName;
-                sCachedNavigationPackageAt = SystemClock.uptimeMillis();
-            }
-            return true;
-        } catch (Exception e) {
-            Log.w(TAG, "Failed to set default navigation package: " + packageName, e);
-            return false;
-        }
     }
 
     public static boolean isNavigationPackage(Context context, String packageName) {

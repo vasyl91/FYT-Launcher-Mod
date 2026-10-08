@@ -20,11 +20,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.ColdStart;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.ServiceIntentGate;
 import com.android.launcher66.perf.BaselineProfileCompiler;
 import com.android.recycler.AppListDialogFragment;
+import com.syu.car.CarStates;
+import com.syu.ipc.data.FinalMain;
+import com.syu.remote.Callback;
 import com.syu.util.WindowHost;
 import com.syu.util.WindowUtil;
 
@@ -109,6 +113,22 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
     /** A long sleep ends in a cold PiP reset, and the layout settles well after the first pass. */
     private static final long WIDGET_BAR_WAKE_SECOND_MS = 6000L;
 
+    /**
+     * ACC as com.syu.ms reports it (FinalMain.U_ACC_ON), the head unit's own signal that its apps
+     * use as well. In the capture 09-10-2026 it came 1.2 s before the display went off and 0.1 s
+     * before it came back on. The display stays as the fallback: whichever reports first switches
+     * DISPLAY_ON, and the other then changes nothing.
+     */
+    private Callback.OnRefreshLisenter accListener;
+    /** Last ACC state reported; -1 until known, the first report being the state, not a change. */
+    private int lastAccState = -1;
+
+    /**
+     * The app in front when the device went to sleep ("" = the home screen), null if unknown. With
+     * LAUNCHER_HOME off it is put back after the wake, see ColdStart.bringBackLastApp().
+     */
+    private String appBeforeSleep;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -122,6 +142,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
         mPropertyChangeClass.initBoolean(isDefaultDisplayOn());
         mPropertyChangeClass.addObserver(DISPLAY_ON, this);
         setupDisplayListener();
+        setupAccListener();
     }
 
     /**
@@ -172,12 +193,38 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
         displayManager.registerDisplayListener(displayListener, handler);
     }
 
+    private void setupAccListener() {
+        if (!LauncherApplication.isFytDevice()) {
+            return;
+        }
+        CarStates car = CarStates.getCar(LauncherApplication.sApp);
+        // Already connected: CarStates has the state, and the next report is a change.
+        lastAccState = car.mTools.connected() ? CarStates.mAccState : -1;
+        accListener = (updateCode, ints, flts, strs) -> {
+            if (ints == null || ints.length == 0) {
+                return;
+            }
+            int previous = lastAccState;
+            lastAccState = ints[0];
+            if (previous == -1 || previous == lastAccState) {
+                return;
+            }
+            boolean on = lastAccState != 0;
+            Log.i(TAG, "ACC " + (on ? "on" : "off") + " reported by com.syu.ms");
+            mPropertyChangeClass.setBoolean(DISPLAY_ON, on);
+        };
+        car.mTools.addRefreshLisenter(0, accListener, FinalMain.U_ACC_ON);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         mPropertyChangeClass.deleteObserver(DISPLAY_ON, this);
         if (displayManager != null && displayListener != null) {
             displayManager.unregisterDisplayListener(displayListener);
+        }
+        if (accListener != null) {
+            CarStates.getCar(LauncherApplication.sApp).mTools.removeRefreshLisenter(0, accListener);
         }
         // Nothing this instance queued (ensure loop, pressHomeButton, widget bar, night mode)
         // may run after it is gone.
@@ -240,6 +287,11 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     // the launcher paused -- and the panes unbuilt -- until something pushes it back.
                     WindowUtil.reassertHomeOverPipAppsAfterWake(WAKE_REASSERT_WINDOW_MS);
                     postForGeneration(wakeGen, this::pressHomeButtonAfterWake, 500);
+                } else if (appBeforeSleep != null) {
+                    // As with the stock launcher, the app that was in front before the sleep.
+                    final String before = appBeforeSleep;
+                    postForGeneration(wakeGen, () -> ColdStart.bringBackLastApp(this, before),
+                            ColdStart.LAST_APP_RESTORE_DELAY_MS);
                 }
                 // Everything delayed here belongs to this wake only; see postForGeneration().
                 postForGeneration(wakeGen, this::dismissAppListDialog, 500);
@@ -305,6 +357,8 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
             } else if (val.contains("false")) {
                 lastDisplayOnHandledMs = 0L;
                 Log.e(TAG, "ACC turned off, device has been put into sleep mode");
+                // Noted by ForegroundAppTracker, which needs system privileges.
+                appBeforeSleep = ForegroundAppTracker.isActive() ? ColdStart.lastApp(this) : null;
                 // Baseline Profile: a compilation still waiting for its delay would otherwise
                 // fire right into the busy first seconds after the next wake.
                 BaselineProfileCompiler.onDeviceSleep();

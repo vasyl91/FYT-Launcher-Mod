@@ -30,6 +30,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.preference.PreferenceManager;
+
 import com.android.launcher66.settings.AppListAutostartDialogFragment;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.LogcatWorker;
@@ -51,7 +53,8 @@ import java.util.Locale;
  *   <li><b>Boot-time stall:</b> at every boot this ROM blocks all calls into system_server for
  *       about ten seconds; work that can wait is deferred past it, see {@link #bootStallDelayMs()}.
  *   <li><b>Launcher in front:</b> for a while after the restart, whatever comes up over the
- *       launcher is sent back behind it (setting Keys.LAUNCHER_HOME).
+ *       launcher is sent back behind it (setting Keys.LAUNCHER_HOME); with it off, the app that
+ *       was in front before the restart is opened again.
  *   <li><b>Autostart:</b> the apps picked in AppListAutostartDialogFragment are started once the
  *       stall is over.
  * </ul>
@@ -110,6 +113,9 @@ public final class ColdStart {
             boolean launcherHome = settings.getBoolean(Keys.LAUNCHER_HOME, true);
             bootCompletedAutostart = settings.getBoolean(Keys.AUTOSTART_APPS_BY_BOOT_COMPLETED, true);
             coldStart.startBootFrontGuard(launcherHome);
+            if (!launcherHome) {
+                coldStart.scheduleLastAppRestore();
+            }
             coldStart.scheduleBootAutostart(launcherHome);
         }
         return coldStart;
@@ -646,9 +652,10 @@ public final class ColdStart {
     }
 
     private static boolean isProtectedCover(String packageName) {
-        if (PROTECTED_COVER_PACKAGES.contains(packageName)) {
-            return true;
-        }
+        return PROTECTED_COVER_PACKAGES.contains(packageName) || isCameraPackage(packageName);
+    }
+
+    private static boolean isCameraPackage(String packageName) {
         String lower = packageName.toLowerCase(Locale.ROOT);
         for (String part : PROTECTED_COVER_NAME_PARTS) {
             if (lower.contains(part)) {
@@ -761,6 +768,106 @@ public final class ColdStart {
         @Override public void onActionModeFinished(ActionMode mode) { base.onActionModeFinished(mode); }
         @Override public void onProvideKeyboardShortcuts(List<KeyboardShortcutGroup> data, Menu menu, int deviceId) { base.onProvideKeyboardShortcuts(data, menu, deviceId); }
         @Override public void onPointerCaptureChanged(boolean hasCapture) { base.onPointerCaptureChanged(hasCapture); }
+    }
+
+    // =============================================================================================
+    // Last app back in front after a device restart or a wake (LAUNCHER_HOME off)
+    //
+    // The stock launcher stays behind the app that was in front when the device went off. After a
+    // restart com.syu.ms has nothing to open over this launcher (capture 08-10-2026:
+    // sTopAppWhenMcuOff empty at boot, though it was com.syu.carlink at the power-off), so the
+    // launcher opens that app itself. ForegroundAppTracker reports each app in front on the main
+    // display, noteForegroundApp() keeps the last one. After a wake WakeDetectionService does the
+    // same with the app noted when the device went to sleep.
+    // =============================================================================================
+
+    private static final String KEY_LAST_APP = "last_foreground_app";
+    /** After com.syu.ms's own restore (~1-2 s after a start or a wake), before the panes are built. */
+    public static final long LAST_APP_RESTORE_DELAY_MS = 2500L;
+    /** Shown only for a while (system dialogs, recents): the app before them stays noted. */
+    private static final List<String> TRANSIENT_PACKAGES = Arrays.asList(
+            "android", "com.android.systemui", "com.android.launcher3");
+
+    /** From ForegroundAppTracker, main thread. The launcher itself counts as no app. */
+    public static void noteForegroundApp(Context context, String packageName) {
+        if (TRANSIENT_PACKAGES.contains(packageName) || isCameraPackage(packageName)) {
+            return;
+        }
+        String last = packageName.equals(context.getPackageName()) ? "" : packageName;
+        context.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
+                .edit().putString(KEY_LAST_APP, last).apply();
+    }
+
+    /** The app noted last; "" for the home screen, or when nothing has been noted. */
+    public static String lastApp(Context context) {
+        return context.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
+                .getString(KEY_LAST_APP, "");
+    }
+
+    /** Main thread, from start(): read before ForegroundAppTracker notes the launcher instead. */
+    private void scheduleLastAppRestore() {
+        final String pkg = lastApp(app);
+        if (pkg.isEmpty()) {
+            return;
+        }
+        Log.i(TAG, "Cold boot: bringing back " + pkg + " in " + LAST_APP_RESTORE_DELAY_MS + " ms");
+        mainHandler.postDelayed(() -> bringBackLastApp(app, pkg), LAST_APP_RESTORE_DELAY_MS);
+    }
+
+    /**
+     * Puts pkg, the app that was in front ("" = the home screen), back in front -- over the
+     * launcher's home screen, or over a PiP pane's app that com.syu.ms opened full screen: it
+     * takes the panes' apps for the top app (capture 09-10-2026: sTopAppWhenMcuOff Maps, a pane,
+     * with the home screen in front). Whatever else is in front (a reversing camera, the user's
+     * choice) stays. On its own thread: the calls go into system_server, which stalls at boot.
+     */
+    public static void bringBackLastApp(Context context, String pkg) {
+        final Context app = context.getApplicationContext();
+        new Thread(() -> {
+            try {
+                ActivityManager am = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
+                ComponentName top = am != null ? DefaultDisplayTask.topActivity(am) : null;
+                if (top != null && top.getPackageName().equals(pkg)) {
+                    return; // already back, com.syu.ms's own restore
+                }
+                boolean overHome = new ComponentName(app, Launcher.class).equals(top);
+                boolean overPane = top != null && !top.getPackageName().equals(pkg)
+                        && isPipPackage(app, top.getPackageName());
+                if (!overHome && !overPane) {
+                    Log.i(TAG, (pkg.isEmpty() ? "Home screen" : pkg) + " not brought back: "
+                            + (top != null ? top.flattenToShortString() : "unknown") + " in front");
+                    return;
+                }
+                Intent launch = pkg.isEmpty() ? null : app.getPackageManager().getLaunchIntentForPackage(pkg);
+                if (launch != null) {
+                    app.startActivity(launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    Log.i(TAG, "Brought back " + pkg + " over " + top.flattenToShortString());
+                } else if (overPane) {
+                    Launcher launcher = Launcher.getLauncher();
+                    if (launcher != null) {
+                        am.moveTaskToFront(launcher.getTaskId(), 0);
+                        Log.i(TAG, "Brought back the home screen over " + top.flattenToShortString());
+                    }
+                }
+            } catch (RuntimeException e) {
+                // Escaping this thread it would end the whole launcher (CrashHandler).
+                Log.w(TAG, "Bringing back " + pkg + " failed", e);
+            }
+        }, "LastAppRestore").start();
+    }
+
+    private static boolean isPipPackage(Context context, String pkg) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (!prefs.getBoolean(Keys.DISPLAY_PIP, true)) {
+            return false;
+        }
+        for (String key : new String[]{Keys.PIP_FIRST_PACKAGE, Keys.PIP_SECOND_PACKAGE,
+                Keys.PIP_THIRD_PACKAGE, Keys.PIP_FOURTH_PACKAGE}) {
+            if (pkg.equals(prefs.getString(key, ""))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // =============================================================================================

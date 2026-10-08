@@ -6521,13 +6521,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private void openNavigation(View v) {
         String navigationPackage = FytPackage.resolveNavigationPackage(this);
         if (!TextUtils.isEmpty(navigationPackage)) {
-            FytPackage.setDefaultNavigationPackage(navigationPackage);
-            try {
-                CarStates.getCar(getApplicationContext()).mTools.sendStr(0, 9, navigationPackage);
-            } catch (Exception e) {
-                Log.w(TAG, "Failed to assign default navigation package: " + navigationPackage, e);
-            }
-
             Intent navigationIntent = FytPackage.getLaunchIntent(this, navigationPackage);
             if (navigationIntent != null && startActivitySafely(v, navigationIntent, navigationPackage)) {
                 return;

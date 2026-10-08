@@ -313,13 +313,6 @@ public class Hotseat extends FrameLayout {
     private void openNavigation(View v) {
         String navigationPackage = FytPackage.resolveNavigationPackage(getContext());
         if (navigationPackage != null && !navigationPackage.equals("")) {
-            FytPackage.setDefaultNavigationPackage(navigationPackage);
-            try {
-                CarStates.getCar(this.mLauncher).mTools.sendStr(0, 9, navigationPackage);
-            } catch (Exception e) {
-                Log.w(TAG, "Failed to assign default navigation package: " + navigationPackage, e);
-            }
-
             Intent navigationIntent = FytPackage.getLaunchIntent(getContext(), navigationPackage);
             if (navigationIntent != null
                     && ActivityStartUtils.startActivitySafely(this.mLauncher, v, navigationIntent, navigationPackage)) {
