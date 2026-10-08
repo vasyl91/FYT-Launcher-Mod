@@ -128,6 +128,16 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
      * LAUNCHER_HOME off it is put back after the wake, see ColdStart.bringBackLastApp().
      */
     private String appBeforeSleep;
+    /** From the sleep to the wake handling; see isAsleep(). */
+    private static volatile boolean sAsleep;
+
+    /**
+     * Whether the device is asleep. The ROM brings the home screen up by itself after ACC off
+     * (capture 09-10-2026 00:53:11, 1 s after it), which is not the user's last app.
+     */
+    public static boolean isAsleep() {
+        return sAsleep;
+    }
 
     @Override
     public void onCreate() {
@@ -267,6 +277,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                     LogcatWorker.get().start(LauncherApplication.sApp);
                 }
                 lastDisplayOnHandledMs = now;
+                sAsleep = false;
                 repairUsed = false;
                 coldResetUsed = false;
                 final int wakeGen = ++wakeGeneration;
@@ -359,6 +370,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 Log.e(TAG, "ACC turned off, device has been put into sleep mode");
                 // Noted by ForegroundAppTracker, which needs system privileges.
                 appBeforeSleep = ForegroundAppTracker.isActive() ? ColdStart.lastApp(this) : null;
+                sAsleep = true;
                 // Baseline Profile: a compilation still waiting for its delay would otherwise
                 // fire right into the busy first seconds after the next wake.
                 BaselineProfileCompiler.onDeviceSleep();

@@ -1228,6 +1228,7 @@ public class WindowUtil {
 
         // Captured on the main thread; everything below runs on REASSERT_EXEC.
         final int launcherTaskId = launcher.getTaskId();
+        final String launcherPkg = launcher.getPackageName();
         final ActivityManager am =
                 (ActivityManager) launcher.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
         if (am == null) return;
@@ -1258,6 +1259,19 @@ public class WindowUtil {
                             && DEFAULT_SOURCE_STEALERS.contains(tasks.get(0).topActivity.getPackageName());
 
                     if (stealerOnTop) {
+                        // Only while the home screen is what the main display shows. A pane set
+                        // started before a wake's restore goes on after it: moving the launcher's
+                        // task to the front then covered the restored app (capture 09-10-2026
+                        // 00:53:24, com.syu.carlink).
+                        ComponentName mainTop = DefaultDisplayTask.topActivity(am);
+                        String mainPkg = mainTop != null ? mainTop.getPackageName() : null;
+                        if (mainPkg != null && !mainPkg.equals(launcherPkg)
+                                && !DEFAULT_SOURCE_STEALERS.contains(mainPkg)) {
+                            pendingReasserts = 0;
+                            Log.i(TAG, "reassertLauncherTop: " + mainTop.flattenToShortString()
+                                    + " in front, launcher left behind it");
+                            return;
+                        }
                         am.moveTaskToFront(launcherTaskId, 0);
                         pendingReasserts = 0;
                         Log.i(TAG, "reassertLauncherTop moved launcher to top");
