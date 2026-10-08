@@ -35,6 +35,7 @@ import androidx.preference.PreferenceManager;
 import com.android.launcher66.settings.AppListAutostartDialogFragment;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.LogcatWorker;
+import com.android.launcher66.settings.WakeDetectionService;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -790,7 +791,8 @@ public final class ColdStart {
 
     /** From ForegroundAppTracker, main thread. The launcher itself counts as no app. */
     public static void noteForegroundApp(Context context, String packageName) {
-        if (TRANSIENT_PACKAGES.contains(packageName) || isCameraPackage(packageName)) {
+        if (TRANSIENT_PACKAGES.contains(packageName) || isCameraPackage(packageName)
+                || WakeDetectionService.isAsleep()) {
             return;
         }
         String last = packageName.equals(context.getPackageName()) ? "" : packageName;
