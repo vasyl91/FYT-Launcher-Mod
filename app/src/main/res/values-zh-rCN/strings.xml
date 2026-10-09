@@ -278,6 +278,8 @@
     <string name="all_apps_textSize_str">设置应用列表图标文字大小（最大50）</string>  
     <string name="workspace_textSize_str">设置主屏幕图标文字大小（最大50）</string>     
     <string name="launcher_home">设备启动或唤醒时始终置顶显示主屏幕</string>
+    <string name="cold_start_last_app_delay">重启后延迟重新打开上次的应用</string>
+    <string name="cold_start_last_app_delay_summary">关闭上方选项时，设备重启后会在主屏幕出现后立即重新打开之前在前台的应用。开启此选项后将等待 5 秒，直到主机系统服务启动完成；如果该应用在打开后 2 秒内关闭，会再打开一次。SYU 和 FYT 原厂应用（com.syu.*、com.fyt.*）始终启用此功能，此选项为其他所有应用启用。从休眠唤醒时不使用。</string>
     <string name="baseline_profile_summary">基准配置文件摘要</string>
     <string name="baseline_profile_reset">重置基准配置文件</string>
     <string name="baseline_reset_title">重置使用优化</string>
