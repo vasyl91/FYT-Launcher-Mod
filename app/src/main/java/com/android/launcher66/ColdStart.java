@@ -115,7 +115,7 @@ public final class ColdStart {
             bootCompletedAutostart = settings.getBoolean(Keys.AUTOSTART_APPS_BY_BOOT_COMPLETED, true);
             coldStart.startBootFrontGuard(launcherHome);
             if (!launcherHome) {
-                coldStart.scheduleLastAppRestore();
+                coldStart.scheduleLastAppRestore(settings);
             }
             coldStart.scheduleBootAutostart(launcherHome);
         }
@@ -783,8 +783,16 @@ public final class ColdStart {
     // =============================================================================================
 
     private static final String KEY_LAST_APP = "last_foreground_app";
-    /** After com.syu.ms's own restore (~1-2 s after a start or a wake), before the panes are built. */
-    public static final long LAST_APP_RESTORE_DELAY_MS = 2500L;
+    /**
+     * At a cold boot, for the stock apps (com.syu.*, com.fyt.*) always and for the others with
+     * Keys.COLD_START_LAST_APP_DELAY: com.syu.ms starts the services it keeps alive up to 4.1 s
+     * after the launcher's start, and com.syu.carlink opened before its service crashed (capture
+     * 09-10-2026 01:10:12: launcher 26.5 s, carlink opened 29.0 s, its service only 30.6 s).
+     */
+    private static final long COLD_BOOT_SAFE_RESTORE_DELAY_MS = 5000L;
+    /** With that delay, how long the app is watched for dying right after its start. */
+    private static final long LAST_APP_WATCH_MS = 2000L;
+    private static final long LAST_APP_WATCH_STEP_MS = 500L;
     /** Shown only for a while (system dialogs, recents): the app before them stays noted. */
     private static final List<String> TRANSIENT_PACKAGES = Arrays.asList(
             "android", "com.android.systemui", "com.android.launcher3");
@@ -807,13 +815,38 @@ public final class ColdStart {
     }
 
     /** Main thread, from start(): read before ForegroundAppTracker notes the launcher instead. */
-    private void scheduleLastAppRestore() {
+    private void scheduleLastAppRestore(SharedPreferences settings) {
         final String pkg = lastApp(app);
         if (pkg.isEmpty()) {
             return;
         }
-        Log.i(TAG, "Cold boot: bringing back " + pkg + " in " + LAST_APP_RESTORE_DELAY_MS + " ms");
-        mainHandler.postDelayed(() -> bringBackLastApp(app, pkg), LAST_APP_RESTORE_DELAY_MS);
+        boolean safe = pkg.startsWith("com.syu.") || pkg.startsWith("com.fyt.")
+                || settings.getBoolean(Keys.COLD_START_LAST_APP_DELAY, false);
+        if (safe) {
+            Log.i(TAG, "Cold boot: bringing back " + pkg + " in " + COLD_BOOT_SAFE_RESTORE_DELAY_MS
+                    + " ms, watched for " + LAST_APP_WATCH_MS + " ms");
+            mainHandler.postDelayed(() -> bringBackLastApp(app, pkg, LAST_APP_WATCH_MS),
+                    COLD_BOOT_SAFE_RESTORE_DELAY_MS);
+            return;
+        }
+        // No delay: as soon as the home screen is up, the only thing it is opened over.
+        Log.i(TAG, "Cold boot: bringing back " + pkg + " once the home screen is up");
+        app.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityResumed(Activity activity) {
+                if (activity instanceof Launcher) {
+                    app.unregisterActivityLifecycleCallbacks(this);
+                    bringBackLastApp(app, pkg, 0L);
+                }
+            }
+
+            @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+            @Override public void onActivityStarted(Activity activity) {}
+            @Override public void onActivityPaused(Activity activity) {}
+            @Override public void onActivityStopped(Activity activity) {}
+            @Override public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+            @Override public void onActivityDestroyed(Activity activity) {}
+        });
     }
 
     /**
@@ -822,8 +855,9 @@ public final class ColdStart {
      * takes the panes' apps for the top app (capture 09-10-2026: sTopAppWhenMcuOff Maps, a pane,
      * with the home screen in front). Whatever else is in front (a reversing camera, the user's
      * choice) stays. On its own thread: the calls go into system_server, which stalls at boot.
+     * With watchMs above 0 the app is watched that long for dying, see watchLastApp().
      */
-    public static void bringBackLastApp(Context context, String pkg) {
+    public static void bringBackLastApp(Context context, String pkg, long watchMs) {
         final Context app = context.getApplicationContext();
         new Thread(() -> {
             try {
@@ -844,6 +878,7 @@ public final class ColdStart {
                 if (launch != null) {
                     app.startActivity(launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     Log.i(TAG, "Brought back " + pkg + " over " + top.flattenToShortString());
+                    watchLastApp(app, am, pkg, launch, watchMs);
                 } else if (overPane) {
                     Launcher launcher = Launcher.getLauncher();
                     if (launcher != null) {
@@ -856,6 +891,41 @@ public final class ColdStart {
                 Log.w(TAG, "Bringing back " + pkg + " failed", e);
             }
         }, "LastAppRestore").start();
+    }
+
+    /**
+     * Opens pkg once more if it dies within watchMs of being brought back. com.syu.carlink
+     * opened before com.syu.ms had started its service crashed on its own (capture 09-10-2026
+     * 29.558, FileNotFoundException for /sdcard/carlink/logo/car_log.png), and once the boot-time
+     * stall let go of it, the launcher under it came back. A crash removes the app's task; pressing
+     * Home leaves it in the background, so a task still there means the user went home. Kept
+     * short, so that an app the user closes on purpose is not opened again.
+     */
+    private static void watchLastApp(Context app, ActivityManager am, String pkg, Intent launch,
+                                     long watchMs) {
+        ComponentName home = new ComponentName(app, Launcher.class);
+        for (long waited = 0L; waited < watchMs; waited += LAST_APP_WATCH_STEP_MS) {
+            SystemClock.sleep(LAST_APP_WATCH_STEP_MS);
+            ComponentName top = DefaultDisplayTask.topActivity(am);
+            if (top == null || top.getPackageName().equals(pkg)) {
+                continue;
+            }
+            if (home.equals(top) && !hasTask(am, pkg)) {
+                app.startActivity(launch);
+                Log.i(TAG, "Brought back " + pkg + " again, it died after its start");
+            }
+            return;
+        }
+    }
+
+    private static boolean hasTask(ActivityManager am, String pkg) {
+        for (ActivityManager.RunningTaskInfo task : am.getRunningTasks(32)) {
+            if ((task.baseActivity != null && pkg.equals(task.baseActivity.getPackageName()))
+                    || (task.topActivity != null && pkg.equals(task.topActivity.getPackageName()))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isPipPackage(Context context, String pkg) {

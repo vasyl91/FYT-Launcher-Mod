@@ -29,8 +29,8 @@ public class CarStates {
     /** Reported by com.syu.ms (FinalMain.U_NAVI_PACKAGE); empty until it has. */
     volatile String mNaviPkg = "";
     int mTvStyle = 0;
-    List<String> mHideApps = new ArrayList();
-    List<String> mShowApps = new ArrayList();
+    List<String> mHideApps = new ArrayList<>();
+    List<String> mShowApps = new ArrayList<>();
 
     public static CarStates getCar(Context context) {
         if (mCar == null) {

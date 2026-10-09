@@ -301,8 +301,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 } else if (appBeforeSleep != null) {
                     // As with the stock launcher, the app that was in front before the sleep.
                     final String before = appBeforeSleep;
-                    postForGeneration(wakeGen, () -> ColdStart.bringBackLastApp(this, before),
-                            ColdStart.LAST_APP_RESTORE_DELAY_MS);
+                    postForGeneration(wakeGen, () -> ColdStart.bringBackLastApp(this, before, 0L), 0);
                 }
                 // Everything delayed here belongs to this wake only; see postForGeneration().
                 postForGeneration(wakeGen, this::dismissAppListDialog, 500);

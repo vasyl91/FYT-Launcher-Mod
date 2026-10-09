@@ -156,6 +156,11 @@
             android:defaultValue="true"
             android:title="@string/launcher_home"
             android:summary=" " />
+        <SwitchPreferenceCompat
+            android:key="cold_start_last_app_delay"
+            android:defaultValue="false"
+            android:title="@string/cold_start_last_app_delay"
+            android:summary="@string/cold_start_last_app_delay_summary" />
         <Preference
             android:layout="@layout/preference_separator"
             android:selectable="false" />

@@ -338,6 +338,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference wallpaperPicker = findPreference(Keys.WALLPAPER_PICKER);
         CustomNoSwitchPreference wallpaperPickerSource = findPreference(Keys.WALLPAPER_PICKER_SOURCE);
         Preference launcherHome = findPreference(Keys.LAUNCHER_HOME);
+        Preference coldStartLastAppDelay = findPreference(Keys.COLD_START_LAST_APP_DELAY);
 
         allAppsTextSize = findPreference(Keys.ALL_APPS_TEXT_SIZE);
         String allAppsTextSizeStr = sharedPrefs.getString(Keys.ALL_APPS_TEXT_SIZE, "18");
@@ -460,6 +461,16 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (launcherHome != null) {
             launcherHome.setOnPreferenceClickListener(this);
+            // The last app is brought back only with the home screen not kept in front (ColdStart).
+            launcherHome.setOnPreferenceChangeListener((preference, newValue) -> {
+                if (coldStartLastAppDelay != null) {
+                    coldStartLastAppDelay.setVisible(Boolean.FALSE.equals(newValue));
+                }
+                return true;
+            });
+        }
+        if (coldStartLastAppDelay != null) {
+            coldStartLastAppDelay.setVisible(!sharedPrefs.getBoolean(Keys.LAUNCHER_HOME, true));
         }
         // statusText() blocks (ProfileVerifier), so it is loaded off the main thread.
         updateBaselineProfileSummary();
