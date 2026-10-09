@@ -49,7 +49,10 @@ public final class Keys {
     public static final String WALLPAPER_PICKER_SOURCE = "wallpaper_picker_source"; 
     public static final String ALL_APPS_TEXT_SIZE = "all_apps_textSize"; 
     public static final String WORKSPACE_TEXT_SIZE = "workspace_textSize";
+    /** Before it was split into LAUNCHER_HOME_WAKE and LAUNCHER_HOME_COLD_START; only migrated. */
     public static final String LAUNCHER_HOME = "launcher_home";
+    public static final String LAUNCHER_HOME_WAKE = "launcher_home_wake";
+    public static final String LAUNCHER_HOME_COLD_START = "launcher_home_cold_start";
     public static final String COLD_START_LAST_APP_DELAY = "cold_start_last_app_delay";
     public static final String AUTOSTART_APPS = "autostart_apps";
     public static final String AUTOSTART_APPS_BY_BOOT_COMPLETED = "autostart_apps_by_boot_completed";

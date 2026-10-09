@@ -277,7 +277,8 @@
     <string name="wallpaper_picker_launcher">In-app wallpaper picker</string> 
     <string name="all_apps_textSize_str">Set all apps icon text size (max. 50)</string>  
     <string name="workspace_textSize_str">Set main screen icon text size (max. 50)</string>     
-    <string name="launcher_home">Home screen always on top while device starts or wakes up</string>
+    <string name="launcher_home_wake">Home screen always on top while device wakes up</string>
+    <string name="launcher_home_cold_start">Home screen always on top while device starts</string>
     <string name="cold_start_last_app_delay">Delay reopening the last app after a restart</string>
     <string name="cold_start_last_app_delay_summary">With the option above off, the app that was in front is opened again after a device restart, as soon as the home screen is up. With this on, it waits 5 s, until the head unit services are up, and if the app closes within 2 s of opening, it is opened once more. Stock SYU and FYT apps (com.syu.*, com.fyt.*) always get this; this option adds it for all other apps. Not used after a wake from sleep.</string>
     <string name="baseline_profile_summary">Baseline Profile summary</string>

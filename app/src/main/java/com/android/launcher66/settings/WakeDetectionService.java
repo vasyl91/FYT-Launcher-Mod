@@ -125,7 +125,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
 
     /**
      * The app in front when the device went to sleep ("" = the home screen), null if unknown. With
-     * LAUNCHER_HOME off it is put back after the wake, see ColdStart.bringBackLastApp().
+     * LAUNCHER_HOME_WAKE off it is put back after the wake, see ColdStart.bringBackLastApp().
      */
     private String appBeforeSleep;
     /** From the sleep to the wake handling; see isAsleep(). */
@@ -292,7 +292,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 // which is why PiP came back after a short sleep but not after a long one.
                 WindowUtil.invalidateOpenPipDebounce();
 
-                if (prefs.getBoolean(Keys.LAUNCHER_HOME, true)) {
+                if (prefs.getBoolean(Keys.LAUNCHER_HOME_WAKE, true)) {
                     // Starts now and off the main thread: com.syu.ms relaunches the last top app
                     // within a few hundred ms of the wake, and a PiP app restored fullscreen keeps
                     // the launcher paused -- and the panes unbuilt -- until something pushes it back.
@@ -381,7 +381,7 @@ public class WakeDetectionService extends Service implements PropertyChangeListe
                 // Bumped before anything is posted below, so that the next wake cancels it in turn.
                 final int sleepGen = ++wakeGeneration;
 
-                if (prefs.getBoolean(Keys.LAUNCHER_HOME, true)) {
+                if (prefs.getBoolean(Keys.LAUNCHER_HOME_WAKE, true)) {
                     // Move task to front to leave it as the last top app
                     // FYT often runs full screen the last top app
                     // Dropped if a wake comes first: if the SoC suspends within these 5 s, the

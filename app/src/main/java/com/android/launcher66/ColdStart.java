@@ -54,7 +54,7 @@ import java.util.Locale;
  *   <li><b>Boot-time stall:</b> at every boot this ROM blocks all calls into system_server for
  *       about ten seconds; work that can wait is deferred past it, see {@link #bootStallDelayMs()}.
  *   <li><b>Launcher in front:</b> for a while after the restart, whatever comes up over the
- *       launcher is sent back behind it (setting Keys.LAUNCHER_HOME); with it off, the app that
+ *       launcher is sent back behind it (setting Keys.LAUNCHER_HOME_COLD_START); with it off, the app that
  *       was in front before the restart is opened again.
  *   <li><b>Autostart:</b> the apps picked in AppListAutostartDialogFragment are started once the
  *       stall is over.
@@ -102,7 +102,7 @@ public final class ColdStart {
      * the launcher's process after a device restart it keeps the launcher in front (if enabled)
      * and schedules the autostart.
      *
-     * The boot is recorded even with Keys.LAUNCHER_HOME off. Otherwise switching it on in the first
+     * The boot is recorded even with Keys.LAUNCHER_HOME_COLD_START off. Otherwise switching it on in the first
      * minutes after a restart would make the next process restart (crash, update) look like the
      * first start of this boot, and the launcher could be pulled over an app the user has opened.
      */
@@ -111,7 +111,7 @@ public final class ColdStart {
         coldStart.coldBoot = coldStart.isMainProcess() && coldStart.isFirstStartAfterColdBoot();
         startLogcat(app, coldStart.coldBoot, settings);
         if (coldStart.coldBoot) {
-            boolean launcherHome = settings.getBoolean(Keys.LAUNCHER_HOME, true);
+            boolean launcherHome = settings.getBoolean(Keys.LAUNCHER_HOME_COLD_START, true);
             bootCompletedAutostart = settings.getBoolean(Keys.AUTOSTART_APPS_BY_BOOT_COMPLETED, true);
             coldStart.startBootFrontGuard(launcherHome);
             if (!launcherHome) {
@@ -516,7 +516,7 @@ public final class ColdStart {
     /** On the main thread, from start(): keeps the launcher in front for BOOT_FRONT_WINDOW_MS. */
     private void startBootFrontGuard(boolean enabled) {
         if (!enabled) {
-            Log.i(TAG, "Cold boot, but LAUNCHER_HOME is off: launcher left where it is");
+            Log.i(TAG, "Cold boot, but LAUNCHER_HOME_COLD_START is off: launcher left where it is");
             return;
         }
         Log.i(TAG, "Cold boot, keeping the launcher in front for " + BOOT_FRONT_WINDOW_MS + " ms");
@@ -772,7 +772,8 @@ public final class ColdStart {
     }
 
     // =============================================================================================
-    // Last app back in front after a device restart or a wake (LAUNCHER_HOME off)
+    // Last app back in front after a device restart or a wake (LAUNCHER_HOME_COLD_START or
+    // LAUNCHER_HOME_WAKE off)
     //
     // The stock launcher stays behind the app that was in front when the device went off. After a
     // restart com.syu.ms has nothing to open over this launcher (capture 08-10-2026:

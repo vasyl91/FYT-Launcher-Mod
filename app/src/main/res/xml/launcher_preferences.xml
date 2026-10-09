@@ -152,9 +152,14 @@
             android:title="@string/workspace_textSize_str"
             android:summary="28" />
         <SwitchPreferenceCompat
-            android:key="launcher_home"
+            android:key="launcher_home_wake"
             android:defaultValue="true"
-            android:title="@string/launcher_home"
+            android:title="@string/launcher_home_wake"
+            android:summary=" " />
+        <SwitchPreferenceCompat
+            android:key="launcher_home_cold_start"
+            android:defaultValue="true"
+            android:title="@string/launcher_home_cold_start"
             android:summary=" " />
         <SwitchPreferenceCompat
             android:key="cold_start_last_app_delay"
