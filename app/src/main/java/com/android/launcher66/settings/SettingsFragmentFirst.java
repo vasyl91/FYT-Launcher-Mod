@@ -337,7 +337,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference accessibilityPreference = findPreference(Keys.ACCESSIBILITY_SETTINGS);
         Preference wallpaperPicker = findPreference(Keys.WALLPAPER_PICKER);
         CustomNoSwitchPreference wallpaperPickerSource = findPreference(Keys.WALLPAPER_PICKER_SOURCE);
-        Preference launcherHome = findPreference(Keys.LAUNCHER_HOME);
+        Preference launcherHomeWake = findPreference(Keys.LAUNCHER_HOME_WAKE);
+        Preference launcherHomeColdStart = findPreference(Keys.LAUNCHER_HOME_COLD_START);
         Preference coldStartLastAppDelay = findPreference(Keys.COLD_START_LAST_APP_DELAY);
 
         allAppsTextSize = findPreference(Keys.ALL_APPS_TEXT_SIZE);
@@ -459,10 +460,13 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (workspaceTextSize != null) {
             workspaceTextSize.setOnPreferenceClickListener(this);
         }
-        if (launcherHome != null) {
-            launcherHome.setOnPreferenceClickListener(this);
+        if (launcherHomeWake != null) {
+            launcherHomeWake.setOnPreferenceClickListener(this);
+        }
+        if (launcherHomeColdStart != null) {
+            launcherHomeColdStart.setOnPreferenceClickListener(this);
             // The last app is brought back only with the home screen not kept in front (ColdStart).
-            launcherHome.setOnPreferenceChangeListener((preference, newValue) -> {
+            launcherHomeColdStart.setOnPreferenceChangeListener((preference, newValue) -> {
                 if (coldStartLastAppDelay != null) {
                     coldStartLastAppDelay.setVisible(Boolean.FALSE.equals(newValue));
                 }
@@ -470,7 +474,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             });
         }
         if (coldStartLastAppDelay != null) {
-            coldStartLastAppDelay.setVisible(!sharedPrefs.getBoolean(Keys.LAUNCHER_HOME, true));
+            coldStartLastAppDelay.setVisible(!sharedPrefs.getBoolean(Keys.LAUNCHER_HOME_COLD_START, true));
         }
         // statusText() blocks (ProfileVerifier), so it is loaded off the main thread.
         updateBaselineProfileSummary();

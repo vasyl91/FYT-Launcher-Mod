@@ -122,6 +122,15 @@ public class LauncherApplication extends Application {
         // Tells the sound channel logic a tapped app from one that came up by itself.
         com.syu.util.UserTouches.start();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        // One setting became two (wake, cold start): both start from the old one, once.
+        if (prefs.contains(Keys.LAUNCHER_HOME)) {
+            boolean launcherHome = prefs.getBoolean(Keys.LAUNCHER_HOME, true);
+            prefs.edit()
+                    .putBoolean(Keys.LAUNCHER_HOME_WAKE, launcherHome)
+                    .putBoolean(Keys.LAUNCHER_HOME_COLD_START, launcherHome)
+                    .remove(Keys.LAUNCHER_HOME)
+                    .apply();
+        }
         // First start after a device restart (not a wake from sleep): the launcher is kept in
         // front and the autostart is scheduled, see ColdStart.
         coldStart = ColdStart.start(this, prefs);

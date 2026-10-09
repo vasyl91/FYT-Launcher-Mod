@@ -1304,7 +1304,7 @@ public class WindowUtil {
      *
      * Runs on REASSERT_EXEC, so a congested main thread cannot delay it, and only acts on the
      * configured PiP packages: anything else on top (a bridge activity, a fullscreen app the user
-     * had open) is left for pressHomeButton() and the user's LAUNCHER_HOME preference to decide.
+     * had open) is left for pressHomeButton() and the user's LAUNCHER_HOME_WAKE preference to decide.
      */
     public static void reassertHomeOverPipAppsAfterWake(long windowMs) {
         final Launcher launcher = Launcher.getLauncher();
