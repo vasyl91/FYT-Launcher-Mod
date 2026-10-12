@@ -49,7 +49,8 @@ import java.util.Map;
  *   <li><b>suspend</b> -- the time the CPU spent suspended (elapsedRealtime() - uptimeMillis()). A
  *       suspend since the last change means the device has been asleep, whatever was reported.
  *   <li><b>restart</b> -- the process was started, or restarted, during a sleep: the state is kept
- *       in prefs with the kernel's boot id, so that a wake after a restart is not lost.
+ *       in prefs with the kernel's boot id, so that a wake after a restart is not lost. Whether
+ *       that restart came right at the wake: see {@link #restartAtTheWake()}.
  * </ul>
  *
  * <p>Not a sleep: the FYT black screen (FinalMain.U_BLACK_SCREEN), the screen blanked from the
@@ -92,6 +93,12 @@ final class WakeSignals {
     static final int POLL_MISMATCHES = 2;
     /** A suspend this long since the last change: the device has been asleep in between. */
     static final long SUSPEND_MIN_MS = 5000L;
+    /**
+     * A wake reported as RESTART is taken for the wake itself, not for one the user may long have
+     * been busy since, only if it provably came at most this long after the display came on; see
+     * restartAtTheWake().
+     */
+    static final long RESTART_AT_WAKE_MS = 5000L;
     /** How long the screen signals stay ignored after a black screen has ended. */
     static final long BLACK_SCREEN_GRACE_MS = 3000L;
     /** On a FYT unit, how long a screen-off waits for a black screen report. */
@@ -101,6 +108,7 @@ final class WakeSignals {
     private static final String KEY_ASLEEP = "asleep";
     private static final String KEY_BOOT_ID = "boot_id";
     private static final String KEY_SINCE_ELAPSED = "since_elapsed";
+    private static final String KEY_SINCE_UPTIME = "since_uptime";
 
     private final Context app;
     private final Listener listener;
@@ -124,6 +132,11 @@ final class WakeSignals {
     /** Last value of the codes that are only logged. */
     private final SparseIntArray loggedCodes = new SparseIntArray();
     private Runnable pendingOff;
+    /**
+     * For the wake reported as RESTART: the CPU's awake time (uptimeMillis()) since the state was
+     * last kept, during the sleep. -1 if not known, or not started during a sleep.
+     */
+    private long restartAwakeMs = -1L;
 
     // ---------------------------------------------------------------- own thread
     private DisplayManager displayManager;
@@ -156,10 +169,13 @@ final class WakeSignals {
         final boolean persistedAsleep = state.getBoolean(KEY_ASLEEP, false);
         final String persistedBootId = state.getString(KEY_BOOT_ID, null);
         final long persistedElapsed = state.getLong(KEY_SINCE_ELAPSED, 0L);
+        final long persistedUptime = state.getLong(KEY_SINCE_UPTIME, 0L);
         bootId = ColdStart.readKernelBootId();
         final boolean sameBoot = isSameBoot(bootId, persistedBootId, persistedElapsed,
                 SystemClock.elapsedRealtime());
-        main.post(() -> init(displayOn, persistedAsleep && sameBoot));
+        final long awakeSinceKept = persistedUptime > 0L
+                ? SystemClock.uptimeMillis() - persistedUptime : -1L;
+        main.post(() -> init(displayOn, persistedAsleep && sameBoot, awakeSinceKept));
 
         if (displayManager != null) {
             try {
@@ -193,11 +209,14 @@ final class WakeSignals {
      * Otherwise the display decides; a service created while the screen was off used to start
      * awake and never saw the next wake, because on -> on is no change.
      */
-    private void init(boolean displayOn, boolean asleepBeforeRestart) {
+    private void init(boolean displayOn, boolean asleepBeforeRestart, long awakeSinceKeptMs) {
         awake = !asleepBeforeRestart && displayOn;
         suspendedAtChange = suspendedMs();
+        restartAwakeMs = asleepBeforeRestart ? awakeSinceKeptMs : -1L;
         if (asleepBeforeRestart) {
-            Log.i(TAG, "Started during a sleep (display " + (displayOn ? "on" : "off") + ")");
+            Log.i(TAG, "Started during a sleep (display " + (displayOn ? "on" : "off")
+                    + (restartAwakeMs >= 0L ? ", CPU awake " + restartAwakeMs + " ms since it was noted" : "")
+                    + ")");
         } else {
             Log.i(TAG, "Started " + (awake ? "awake" : "asleep, display off"));
         }
@@ -327,11 +346,23 @@ final class WakeSignals {
     private void persist() {
         final boolean asleep = !awake;
         final long since = SystemClock.elapsedRealtime();
+        final long sinceUptime = SystemClock.uptimeMillis();
         bg.post(() -> state.edit()
                 .putBoolean(KEY_ASLEEP, asleep)
                 .putString(KEY_BOOT_ID, bootId)
                 .putLong(KEY_SINCE_ELAPSED, since)
+                .putLong(KEY_SINCE_UPTIME, sinceUptime)
                 .apply());
+    }
+
+    /**
+     * Main thread, for the wake reported as RESTART: whether the process was started right at the
+     * wake. uptimeMillis() stands still while the CPU is suspended and runs all the time the
+     * display is on, so the awake time since the state was kept during the sleep is at least the
+     * time since the wake -- whatever that sleep was like.
+     */
+    boolean restartAtTheWake() {
+        return restartAtTheWake(restartAwakeMs);
     }
 
     // ---------------------------------------------------------------- decisions (unit tested)
@@ -345,6 +376,11 @@ final class WakeSignals {
     /** ACC reported off and no suspend since the sleep: the screen alone is not a wake. */
     static boolean accBlocksWake(int accState, long suspendedSinceChangeMs) {
         return accState == 0 && suspendedSinceChangeMs < SUSPEND_MIN_MS;
+    }
+
+    /** See RESTART_AT_WAKE_MS; a negative time is not known. */
+    static boolean restartAtTheWake(long awakeSinceKeptMs) {
+        return awakeSinceKeptMs >= 0L && awakeSinceKeptMs <= RESTART_AT_WAKE_MS;
     }
 
     /**

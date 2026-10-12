@@ -122,6 +122,8 @@ public class LauncherApplication extends Application {
         initData();
         // Tells the sound channel logic a tapped app from one that came up by itself.
         com.syu.util.UserTouches.start();
+        // And the buttons FYT's framework reports (HomeFrontGuard); calls into system_server.
+        new Thread(com.syu.util.UserTouches::startButtons, "FytButtons").start();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         // One setting became two (wake, cold start): both start from the old one, once.
         if (prefs.contains(Keys.LAUNCHER_HOME)) {

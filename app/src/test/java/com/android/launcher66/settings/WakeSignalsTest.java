@@ -35,6 +35,15 @@ class WakeSignalsTest {
     }
 
     @Test
+    void aRestartIsTheWakeOnlyIfItProvablyCameRightAtIt() {
+        long max = WakeSignals.RESTART_AT_WAKE_MS;
+        assertTrue(WakeSignals.restartAtTheWake(0L));
+        assertTrue(WakeSignals.restartAtTheWake(max));
+        assertFalse(WakeSignals.restartAtTheWake(max + 1L));            // may be long after it
+        assertFalse(WakeSignals.restartAtTheWake(-1L));                 // not known
+    }
+
+    @Test
     void theBootIdDecidesWhetherAKeptStateIsOfThisBoot() {
         assertTrue(WakeSignals.isSameBoot("a1", "a1", 50_000L, 10_000L));
         assertFalse(WakeSignals.isSameBoot("b2", "a1", 50_000L, 900_000L));

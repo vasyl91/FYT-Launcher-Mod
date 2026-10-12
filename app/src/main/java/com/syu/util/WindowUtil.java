@@ -30,6 +30,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.CellLayout;
 import com.android.launcher66.DefaultDisplayTask;
+import com.android.launcher66.HomeFrontGuard;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.NotificationListener;
@@ -44,6 +45,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -1292,81 +1294,6 @@ public class WindowUtil {
     }
 
     /**
-     * Pushes the launcher back over any PiP app that comes up fullscreen right after a wake.
-     *
-     * com.syu.ms remembers the top app when the MCU goes off and relaunches it on wake with a
-     * plain MAIN/LAUNCHER intent -- which, for an app that lives in a pane, means fullscreen on
-     * the default display. In one long-sleep capture it relaunched YouTube 91 ms after the cold
-     * reset had force-stopped it; the launcher was paused behind it, and pressHomeButton() --
-     * posted 500 ms after the wake on a main thread that then stalled for two seconds -- only
-     * brought it back at +2.2 s. The panes cannot be built while the launcher is paused, so every
-     * app in them started that much later. Earlier this same restore is what left Maps fullscreen.
-     *
-     * Runs on REASSERT_EXEC, so a congested main thread cannot delay it, and only acts on the
-     * configured PiP packages: anything else on top (a bridge activity, a fullscreen app the user
-     * had open) is left for pressHomeButton() and the user's LAUNCHER_HOME_WAKE preference to decide.
-     */
-    public static void reassertHomeOverPipAppsAfterWake(long windowMs) {
-        final Launcher launcher = Launcher.getLauncher();
-        if (launcher == null) return;
-        final ActivityManager am =
-                (ActivityManager) launcher.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        if (am == null) return;
-
-        if (prefs == null) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-        }
-        final Set<String> pipPkgs = new HashSet<>();
-        for (String k : new String[]{ Keys.PIP_FIRST_PACKAGE, Keys.PIP_SECOND_PACKAGE,
-                                      Keys.PIP_THIRD_PACKAGE, Keys.PIP_FOURTH_PACKAGE }) {
-            String pkg = prefs.getString(k, "");
-            if (pkg != null && !pkg.isEmpty()) pipPkgs.add(pkg);
-        }
-        if (pipPkgs.isEmpty()) return;
-
-        final int launcherTaskId = launcher.getTaskId();
-        final long deadline = SystemClock.elapsedRealtime() + windowMs;
-        final int myGeneration;
-        synchronized (WindowUtil.class) {
-            myGeneration = ++wakeReassertGeneration;
-        }
-
-        REASSERT_EXEC.execute(new Runnable() {
-            @Override public void run() {
-                if (wakeReassertGeneration != myGeneration) return;
-                if (SystemClock.elapsedRealtime() > deadline) return;
-                try {
-                    // A PiP app restored fullscreen necessarily pauses the launcher. While the
-                    // launcher is resumed, any PiP package reported on top is one of our own panes
-                    // on its VirtualDisplay, and there is nothing to push back.
-                    Launcher current = Launcher.getLauncher();
-                    boolean launcherInFront = current != null && current.allowPip;
-
-                    // While it is paused, only the default display tells: getRunningTasks(1) may
-                    // also report a pane's task there, and pushing back over that could cover
-                    // whatever really is fullscreen (a reversing camera, say).
-                    ComponentName topActivity =
-                            launcherInFront ? null : DefaultDisplayTask.topActivity(am);
-                    if (topActivity != null) {
-                        String top = topActivity.getPackageName();
-                        if (pipPkgs.contains(top)) {
-                            am.moveTaskToFront(launcherTaskId, 0);
-                            Log.i(TAG, "wake reassert: " + top + " came up fullscreen, launcher moved back on top");
-                        }
-                    }
-                } catch (Throwable t) {
-                    Log.w(TAG, "wake reassert failed, stopping", t);
-                    return;
-                }
-                REASSERT_EXEC.schedule(this, WAKE_REASSERT_POLL_MS, TimeUnit.MILLISECONDS);
-            }
-        });
-    }
-
-    private static final long WAKE_REASSERT_POLL_MS = 120L;
-    private static volatile int wakeReassertGeneration = 0;
-
-    /**
      * Reparents a swapped pair with the source-stealing side going first, for the same reason
      * the launch order matters: the steal has to land while the rebuild window is still open.
      */
@@ -1904,6 +1831,9 @@ public class WindowUtil {
                 }
 
                 ThreadManager.getLongPool().execute(() -> {
+                    // com.syu.ms opens its top app again right after it is gone (see below); that
+                    // one is the launcher's doing, not the user's (HomeFrontGuard).
+                    HomeFrontGuard.expectSystemLaunch(LauncherApplication.sApp, pkgs, "PiP reset");
                     // Tasks first, processes only if that is not enough.
                     //
                     // Steps 1-3 already destroyed every VirtualDisplay together with the tasks on
@@ -1927,6 +1857,7 @@ public class WindowUtil {
                         if (!forced && i >= 2) {
                             forced = true;
                             Log.i(TAG, "coldResetPipStack: tasks still present, force-stopping");
+                            HomeFrontGuard.expectSystemLaunch(LauncherApplication.sApp, pkgs, "PiP reset");
                             for (String pkg : pkgs) {
                                 forceStopPackageNow(pkg);
                                 removeTasksForPackage(pkg);
@@ -2198,6 +2129,8 @@ public class WindowUtil {
                 return;
             }
             ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+            HomeFrontGuard.expectSystemLaunch(LauncherApplication.sApp,
+                    Collections.singleton(AppPackageName), "pinned PiP restart");
             try {
                 Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
                 forceStopPackage.setAccessible(true);

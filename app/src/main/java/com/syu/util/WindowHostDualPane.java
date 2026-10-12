@@ -31,10 +31,12 @@ import androidx.annotation.NonNull;
 
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.HomeFrontGuard;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.settings.Keys;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Executors;
@@ -1678,6 +1680,8 @@ public class WindowHostDualPane {
     private void restartPaneApp(Side side, String pkg, int expectedGen) {
         if (gen != expectedGen || pkg == null || pkg.isEmpty()) return;
 
+        // com.syu.ms may open it again full screen right away (see HomeFrontGuard).
+        HomeFrontGuard.expectSystemLaunch(activity, Collections.singleton(pkg), "pane restart");
         forceStopApp(activity, pkg);
 
         postMainDelayed(() -> {

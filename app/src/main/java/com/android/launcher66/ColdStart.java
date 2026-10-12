@@ -28,6 +28,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -261,6 +262,7 @@ public final class ColdStart {
      * this thread.
      */
     private void runBootAutostart(boolean returnToLauncher) {
+        final long began = SystemClock.elapsedRealtime();
         // Uninstalled apps are removed from the stored list here, so they are neither started nor
         // counted, and the autostart dialog numbers the rest without gaps.
         List<String> packages = AppListAutostartDialogFragment.getInstalledSelectedPackages(app);
@@ -311,7 +313,7 @@ public final class ColdStart {
         }
         if (returnToLauncher && !started.isEmpty()) {
             SystemClock.sleep(BOOT_AUTOSTART_GAP_MS);
-            returnToLauncherAfterAutostart(started);
+            returnToLauncherAfterAutostart(started, began);
         }
     }
 
@@ -397,10 +399,12 @@ public final class ColdStart {
     /**
      * The autostarted apps do not need to stay in front, as with FYT's autostart during the
      * front guard. The launcher comes back only over one of them, never over something the user
-     * has opened meanwhile, and -- the guard's rule, see HomeFrontGuard.checkLauncherInFront() --
-     * only once that app's process is up, or Android would never launch its activity.
+     * has opened meanwhile, nor when the user has touched the screen (or pressed a button FYT
+     * reports) since the autostart began -- one of these apps may be in use by then -- and -- the
+     * guard's rule, see HomeFrontGuard.checkLauncherInFront() -- only once that app's process is
+     * up, or Android would never launch its activity.
      */
-    private void returnToLauncherAfterAutostart(List<String> started) {
+    private void returnToLauncherAfterAutostart(List<String> started, long autostartBegan) {
         ComponentName top = HomeFrontGuard.topActivity(app);
         if (top == null || !started.contains(top.getPackageName())) {
             return;
@@ -415,6 +419,11 @@ public final class ColdStart {
         if (top == null || !started.contains(top.getPackageName())) {
             return; // it closed itself meanwhile (JamesDSP does), or the user opened something
         }
+        if (HomeFrontGuard.userActedSince(autostartBegan)) {
+            Log.i(TAG, "Boot autostart done, but the user has acted since: "
+                    + top.flattenToShortString() + " left in front");
+            return;
+        }
         Log.i(TAG, "Boot autostart done, bringing the launcher back over " + top.flattenToShortString());
         HomeFrontGuard.bringLauncherToFront(app);
     }
@@ -422,18 +431,23 @@ public final class ColdStart {
     // =============================================================================================
     // Launcher in front after a device restart
     //
-    // Whatever comes up over the launcher after a cold boot (FYT SystemUI's autostart apps,
-    // com.syu.ms restoring the last app, ...) is sent back behind it, see HomeFrontGuard.
+    // What the device opens over the launcher after a cold boot (FYT SystemUI's autostart apps,
+    // com.syu.ms restoring the last app or opening the navigation, ...) is sent back behind it;
+    // what the user opens stays. See HomeFrontGuard.
     // =============================================================================================
 
-    /** How long after the start the launcher is kept in front, at least. */
+    /** How long after the start whatever comes up is taken for the device's own, at least ... */
     private static final long BOOT_FRONT_WINDOW_MS = 20000L;
     /**
-     * And at least this long after the boot-time stall: a window counted from the start alone had
-     * mostly gone by inside the stall, during which no check could reach system_server, and ended
-     * before the apps that come up after it.
+     * ... and until this long after the boot-time stall. What the device opens comes before and
+     * during the stall (FYT SystemUI's autostart about 3 s after BOOT_COMPLETED, which is when the
+     * stall begins) and shows once it is over; a window counted from the start alone had mostly
+     * gone by in the stall. The user can hardly open anything before it is over, while anything
+     * that comes up later is more likely the user's than the device's -- and with no touch to
+     * tell, a button on the steering wheel (FYT reports some, see UserTouches) would be taken for
+     * the device's. So only a short margin.
      */
-    private static final long BOOT_FRONT_AFTER_STALL_MS = 15000L;
+    private static final long BOOT_FRONT_AFTER_STALL_MS = 5000L;
 
     /** On the main thread, from start(). */
     private void startBootFrontGuard(boolean enabled) {
@@ -442,8 +456,9 @@ public final class ColdStart {
             return;
         }
         long window = Math.max(BOOT_FRONT_WINDOW_MS, bootStallDelayMs() + BOOT_FRONT_AFTER_STALL_MS);
-        Log.i(TAG, "Cold boot, keeping the launcher in front for " + window + " ms");
-        HomeFrontGuard.start(app, "Boot", window, HomeFrontGuard.CHECK_INTERVAL_MS);
+        Log.i(TAG, "Cold boot, what comes up within " + window + " ms is taken for the device's own");
+        HomeFrontGuard.expect(Collections.singleton(HomeFrontGuard.ANY_APP), window, false, "cold boot");
+        HomeFrontGuard.start(app, "Boot", HomeFrontGuard.CHECK_INTERVAL_MS, true);
     }
 
     // =============================================================================================
