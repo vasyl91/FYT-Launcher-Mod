@@ -161,7 +161,7 @@ public class WindowUtil {
     /**
      * True from the moment a rebuild is committed until its last pane has been dispatched.
      *
-     * Used by WakeDetectionService so its ensure loop does not judge the panes, or reopen them,
+     * Used by WakeDetection so its ensure loop does not judge the panes, or reopen them,
      * while a rebuild is on its way.
      */
     public static boolean isPipRebuildInProgress() {
@@ -369,7 +369,7 @@ public class WindowUtil {
      * Serialises the decision to rebuild.
      *
      * openPip() runs on the worker pool, and after a wake two triggers land there at the same
-     * moment -- Launcher.onResume() and WakeDetectionService's ensure loop. shouldDebounceOpenPip()
+     * moment -- Launcher.onResume() and WakeDetection's ensure loop. shouldDebounceOpenPip()
      * was a plain check-then-act, so both read the old timestamp, both passed, and each went on to
      * build its own WindowHost. setHost() then kept only the second one and the first one's windows
      * were orphaned on screen: black panes with a divider that no longer follow the workspace

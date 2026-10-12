@@ -9,53 +9,37 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.ActionMode;
-import android.view.Display;
-import android.view.KeyEvent;
-import android.view.KeyboardShortcutGroup;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.SearchEvent;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.accessibility.AccessibilityEvent;
 
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.settings.AppListAutostartDialogFragment;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.LogcatWorker;
-import com.android.launcher66.settings.WakeDetectionService;
+import com.android.launcher66.settings.WakeDetection;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * The launcher's first start after a device restart (a cold boot), as opposed to a wake from
- * sleep, which WakeDetectionService handles.
+ * sleep, which WakeDetection handles.
  *
  * <ul>
  *   <li><b>Boot-time stall:</b> at every boot this ROM blocks all calls into system_server for
  *       about ten seconds; work that can wait is deferred past it, see {@link #bootStallDelayMs()}.
  *   <li><b>Launcher in front:</b> for a while after the restart, whatever comes up over the
- *       launcher is sent back behind it (setting Keys.LAUNCHER_HOME_COLD_START); with it off, the app that
- *       was in front before the restart is opened again.
+ *       launcher is sent back behind it (setting Keys.LAUNCHER_HOME_COLD_START, see
+ *       HomeFrontGuard); with it off, the app that was in front before the restart is opened again.
  *   <li><b>Autostart:</b> the apps picked in AppListAutostartDialogFragment are started once the
  *       stall is over.
  * </ul>
@@ -195,7 +179,8 @@ public final class ColdStart {
         return true;
     }
 
-    private static String readKernelBootId() {
+    /** The kernel's id of the running boot; null if it cannot be read. Also used by WakeSignals. */
+    public static String readKernelBootId() {
         try (BufferedReader reader = new BufferedReader(new FileReader(BOOT_ID_PATH))) {
             String id = reader.readLine();
             return (id == null || id.trim().isEmpty()) ? null : id.trim();
@@ -412,363 +397,53 @@ public final class ColdStart {
     /**
      * The autostarted apps do not need to stay in front, as with FYT's autostart during the
      * front guard. The launcher comes back only over one of them, never over something the user
-     * has opened meanwhile, and -- the guard's rule, see checkLauncherInFront() -- only once that
-     * app's process is up, or Android would never launch its activity.
+     * has opened meanwhile, and -- the guard's rule, see HomeFrontGuard.checkLauncherInFront() --
+     * only once that app's process is up, or Android would never launch its activity.
      */
     private void returnToLauncherAfterAutostart(List<String> started) {
-        ComponentName top = topActivity();
+        ComponentName top = HomeFrontGuard.topActivity(app);
         if (top == null || !started.contains(top.getPackageName())) {
             return;
         }
-        long deadline = SystemClock.uptimeMillis() + BOOT_FRONT_MAX_START_WAIT_MS;
-        while (!isPackageRunning(top.getPackageName()) && SystemClock.uptimeMillis() < deadline) {
-            SystemClock.sleep(BOOT_FRONT_STARTING_POLL_MS);
+        long deadline = SystemClock.uptimeMillis() + HomeFrontGuard.MAX_START_WAIT_MS;
+        while (!HomeFrontGuard.isPackageRunning(app, top.getPackageName())
+                && SystemClock.uptimeMillis() < deadline) {
+            SystemClock.sleep(HomeFrontGuard.STARTING_POLL_MS);
         }
-        SystemClock.sleep(BOOT_FRONT_COVER_GRACE_MS);
-        top = topActivity();
+        SystemClock.sleep(HomeFrontGuard.COVER_GRACE_MS);
+        top = HomeFrontGuard.topActivity(app);
         if (top == null || !started.contains(top.getPackageName())) {
             return; // it closed itself meanwhile (JamesDSP does), or the user opened something
         }
         Log.i(TAG, "Boot autostart done, bringing the launcher back over " + top.flattenToShortString());
-        bringLauncherToFront();
+        HomeFrontGuard.bringLauncherToFront(app);
     }
 
     // =============================================================================================
     // Launcher in front after a device restart
     //
-    // For BOOT_FRONT_WINDOW_MS after a cold boot nothing keeps the launcher down: whatever comes up
-    // over it (FYT SystemUI's autostart apps, com.syu.ms restoring the last app, ...) is sent back
-    // behind it as soon as it has started, as often as it takes. Left in front are only what the
-    // user opens from the launcher and a few protected apps (reversing camera, phone, system
-    // dialogs); see isProtectedCover(). The checks run on their own thread, see bootFrontThread.
+    // Whatever comes up over the launcher after a cold boot (FYT SystemUI's autostart apps,
+    // com.syu.ms restoring the last app, ...) is sent back behind it, see HomeFrontGuard.
     // =============================================================================================
 
-    /** How long after the start the launcher is kept in front. */
+    /** How long after the start the launcher is kept in front, at least. */
     private static final long BOOT_FRONT_WINDOW_MS = 20000L;
-    /** Regular re-check while the guard runs, besides the checks each pause of the launcher triggers. */
-    private static final long BOOT_FRONT_CHECK_INTERVAL_MS = 1000L;
-    /** First check after the launcher was paused; the system launches what paused it meanwhile. */
-    private static final long BOOT_FRONT_PAUSE_CHECK_MS = 250L;
-    /** Re-check interval while the covering app's process is still starting. */
-    private static final long BOOT_FRONT_STARTING_POLL_MS = 150L;
-    /** Longest wait for the covering app's process; after that the launcher comes back anyway. */
-    private static final long BOOT_FRONT_MAX_START_WAIT_MS = 10000L;
     /**
-     * Time a covering app gets once its process runs, before the launcher comes back: enough for
-     * its onCreate(), where autostart activities (openpanorama, JamesDSP) start their service.
+     * And at least this long after the boot-time stall: a window counted from the start alone had
+     * mostly gone by inside the stall, during which no check could reach system_server, and ended
+     * before the apps that come up after it.
      */
-    private static final long BOOT_FRONT_COVER_GRACE_MS = 800L;
-    /** Minimum time between two pull-backs, and how many there may be at most. */
-    private static final long BOOT_FRONT_MIN_PULL_GAP_MS = 400L;
-    private static final int BOOT_FRONT_MAX_PULL_BACKS = 15;
-    /** A pause of the launcher this soon after a touch or key press in it is the user's doing. */
-    private static final long USER_ACTION_GRACE_MS = 1500L;
-    /**
-     * Never pulled back over, and checked before anything else: a reversing camera must stay
-     * visible and a call reachable; system dialogs, recents and phone projection are opened on
-     * purpose; vasyl.fytrating's WakeActivity is started by the launcher itself.
-     */
-    private static final List<String> PROTECTED_COVER_PACKAGES = Arrays.asList(
-            "android",
-            "com.android.systemui",
-            "com.android.launcher3",                   // recents on this ROM
-            "com.android.settings",
-            "com.android.permissioncontroller",
-            "com.google.android.permissioncontroller",
-            "com.android.packageinstaller",
-            "com.google.android.packageinstaller",
-            "com.android.phone",
-            "com.android.dialer",
-            "com.android.incallui",
-            "com.syu.ms",
-            "com.syu.bt",
-            "com.syu.canbus",
-            "com.syu.carlink",
-            "com.google.android.projection.gearhead",
-            "vasyl.fytrating");
-    /** Package name parts of camera apps (reversing, 360 view), which are protected as well. */
-    private static final String[] PROTECTED_COVER_NAME_PARTS = {"camera", "panorama", "backcar", "reverse"};
+    private static final long BOOT_FRONT_AFTER_STALL_MS = 15000L;
 
-    /**
-     * The checks run on their own thread: each of them calls into system_server, which stalls for
-     * seconds at boot while the audioserver hangs, and on the main thread every such call froze
-     * the launcher along with it.
-     */
-    private HandlerThread bootFrontThread;
-    private volatile Handler bootFrontHandler;
-    private final Object bootFrontLock = new Object();
-    private volatile boolean bootFrontGuardActive;
-    private long bootFrontDeadline;
-    /** Resumed activities of this process, counted on the main thread; above 0 = launcher in front. */
-    private volatile int resumedActivities;
-    /** uptimeMillis() of the last touch or key press in one of this process' windows. */
-    private volatile long lastUserInputUptime;
-    /** Windows wrapped by UserInputSpy; main thread only. */
-    private final List<WeakReference<Window>> spiedWindows = new ArrayList<>();
-    private volatile int bootFrontPullBacks;
-    /** Guard thread only, like the three fields below. */
-    private long lastPullBackUptime;
-    /** What covers the launcher, when it was first seen, and since when its process runs (0 = not yet). */
-    private ComponentName currentCover;
-    private long coverSeenUptime;
-    private long coverRunningUptime;
-
-    /** On the main thread, from start(): keeps the launcher in front for BOOT_FRONT_WINDOW_MS. */
+    /** On the main thread, from start(). */
     private void startBootFrontGuard(boolean enabled) {
         if (!enabled) {
             Log.i(TAG, "Cold boot, but LAUNCHER_HOME_COLD_START is off: launcher left where it is");
             return;
         }
-        Log.i(TAG, "Cold boot, keeping the launcher in front for " + BOOT_FRONT_WINDOW_MS + " ms");
-        bootFrontThread = new HandlerThread("BootFrontGuard");
-        bootFrontThread.start();
-        bootFrontHandler = new Handler(bootFrontThread.getLooper());
-        bootFrontGuardActive = true;
-        bootFrontDeadline = SystemClock.elapsedRealtime() + BOOT_FRONT_WINDOW_MS;
-        // Lifecycle callbacks rather than LauncherApplication.isAppTop(): the launcher's own
-        // resumed state is exact, while getRunningTasks() mixes in the PiP panes' tasks.
-        app.registerActivityLifecycleCallbacks(resumeTracker);
-        scheduleBootFrontCheck(BOOT_FRONT_CHECK_INTERVAL_MS);
-    }
-
-    private boolean userActedRecently() {
-        long last = lastUserInputUptime;
-        return last > 0L && SystemClock.uptimeMillis() - last < USER_ACTION_GRACE_MS;
-    }
-
-    /** From the guard's thread or the main thread; the first call wins. */
-    private void stopBootFrontGuard(String reason) {
-        synchronized (bootFrontLock) {
-            if (!bootFrontGuardActive) {
-                return;
-            }
-            bootFrontGuardActive = false;
-        }
-        bootFrontHandler.removeCallbacks(bootFrontCheck);
-        bootFrontThread.quitSafely();
-        app.unregisterActivityLifecycleCallbacks(resumeTracker);
-        mainHandler.post(this::stopWatchingUserInput);
-        Log.i(TAG, "Boot front guard finished: " + reason + " (pulled the launcher back "
-                + bootFrontPullBacks + " time(s))");
-    }
-
-    private void scheduleBootFrontCheck(long delayMs) {
-        Handler handler = bootFrontHandler;
-        if (!bootFrontGuardActive || handler == null) {
-            return;
-        }
-        handler.removeCallbacks(bootFrontCheck);
-        handler.postDelayed(bootFrontCheck, delayMs);
-    }
-
-    private final Runnable bootFrontCheck = new Runnable() {
-        @Override
-        public void run() {
-            if (!bootFrontGuardActive) {
-                return;
-            }
-            try {
-                if (SystemClock.elapsedRealtime() > bootFrontDeadline) {
-                    stopBootFrontGuard("time window over");
-                    return;
-                }
-                // The display, not PowerManager.isInteractive(): ACC off on FYT only switches the
-                // display off and leaves the interactive state (and ACTION_SCREEN_OFF) alone,
-                // which is also why WakeDetectionService watches the display.
-                if (!isDefaultDisplayOn()) {
-                    stopBootFrontGuard("screen off");
-                    return;
-                }
-                long next = checkLauncherInFront();
-                if (bootFrontGuardActive) {
-                    scheduleBootFrontCheck(next);
-                }
-            } catch (RuntimeException e) {
-                // An exception escaping the guard's thread would end the whole launcher
-                // (CrashHandler); the guard ends instead.
-                Log.w(TAG, "Boot front guard check failed", e);
-                stopBootFrontGuard("error: " + e);
-            }
-        }
-    };
-
-    /** One check, on the guard's thread. Returns when the next one is due. */
-    private long checkLauncherInFront() {
-        if (resumedActivities > 0) {
-            currentCover = null;
-            return BOOT_FRONT_CHECK_INTERVAL_MS;
-        }
-        long now = SystemClock.uptimeMillis();
-        ComponentName cover = topActivity();
-        if (cover != null && app.getPackageName().equals(cover.getPackageName())) {
-            // Our own task is on top and about to be resumed: at start, or right after a pull-back.
-            return BOOT_FRONT_STARTING_POLL_MS;
-        }
-        String name = cover != null ? cover.flattenToShortString() : "an unknown activity";
-        if (cover != null && !cover.equals(currentCover)) {
-            currentCover = cover;
-            coverSeenUptime = now;
-            coverRunningUptime = 0L;
-            Log.i(TAG, "Launcher covered by " + name
-                    + (isProtectedCover(cover.getPackageName()) ? ", which is left in front" : ""));
-        }
-        if (cover != null && isProtectedCover(cover.getPackageName())) {
-            return BOOT_FRONT_CHECK_INTERVAL_MS;
-        }
-        if (cover != null) {
-            if (coverRunningUptime == 0L) {
-                if (isPackageRunning(cover.getPackageName())) {
-                    coverRunningUptime = now;
-                } else if (now - coverSeenUptime < BOOT_FRONT_MAX_START_WAIT_MS) {
-                    // Pulling back now would leave its activity unlaunched for good: Android 10
-                    // only launches activities of the focused stack when their process comes up.
-                    return BOOT_FRONT_STARTING_POLL_MS;
-                } else {
-                    Log.w(TAG, name + " did not start within " + BOOT_FRONT_MAX_START_WAIT_MS + " ms");
-                    coverRunningUptime = now - BOOT_FRONT_COVER_GRACE_MS;
-                }
-            }
-            long graceLeft = coverRunningUptime + BOOT_FRONT_COVER_GRACE_MS - now;
-            if (graceLeft > 0L) {
-                return graceLeft;
-            }
-        }
-        if (lastPullBackUptime > 0L && now - lastPullBackUptime < BOOT_FRONT_MIN_PULL_GAP_MS) {
-            return lastPullBackUptime + BOOT_FRONT_MIN_PULL_GAP_MS - now;
-        }
-        if (bootFrontPullBacks >= BOOT_FRONT_MAX_PULL_BACKS) {
-            stopBootFrontGuard("keeps being covered by " + name + ", giving up");
-            return BOOT_FRONT_CHECK_INTERVAL_MS;
-        }
-        if (!bootFrontGuardActive) {
-            // Ended on the main thread during this check, e.g. because the user opened something.
-            return BOOT_FRONT_CHECK_INTERVAL_MS;
-        }
-        bootFrontPullBacks++;
-        lastPullBackUptime = now;
-        Log.i(TAG, "Bringing the launcher back over " + name + " (" + bootFrontPullBacks + "/"
-                + BOOT_FRONT_MAX_PULL_BACKS + ")");
-        bringLauncherToFront();
-        return BOOT_FRONT_PAUSE_CHECK_MS;
-    }
-
-    private static boolean isProtectedCover(String packageName) {
-        return PROTECTED_COVER_PACKAGES.contains(packageName) || isCameraPackage(packageName);
-    }
-
-    private static boolean isCameraPackage(String packageName) {
-        String lower = packageName.toLowerCase(Locale.ROOT);
-        for (String part : PROTECTED_COVER_NAME_PARTS) {
-            if (lower.contains(part)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /** Counts the resumed activities of this process; registered only while the guard runs. */
-    private final Application.ActivityLifecycleCallbacks resumeTracker = new Application.ActivityLifecycleCallbacks() {
-        @Override
-        public void onActivityResumed(Activity activity) {
-            resumedActivities++;
-            watchUserInput(activity);
-        }
-
-        @Override
-        public void onActivityPaused(Activity activity) {
-            if (resumedActivities > 0) {
-                resumedActivities--;
-            }
-            if (resumedActivities > 0 || !bootFrontGuardActive) {
-                return;
-            }
-            if (userActedRecently()) {
-                // The user opened something from the launcher: leave it in front.
-                stopBootFrontGuard("the user opened something");
-            } else {
-                scheduleBootFrontCheck(BOOT_FRONT_PAUSE_CHECK_MS);
-            }
-        }
-
-        @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
-        @Override public void onActivityStarted(Activity activity) {}
-        @Override public void onActivityStopped(Activity activity) {}
-        @Override public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
-        @Override public void onActivityDestroyed(Activity activity) {}
-    };
-
-    /**
-     * Notes touches and key presses in the activity's window while the guard runs, so that an app
-     * the user opens is told apart from one the system brings up. The wrapper forwards everything
-     * unchanged and is taken out again when the guard ends. Main thread.
-     */
-    private void watchUserInput(Activity activity) {
-        Window window = activity.getWindow();
-        Window.Callback callback = window != null ? window.getCallback() : null;
-        if (callback == null || callback instanceof UserInputSpy) {
-            return;
-        }
-        window.setCallback(new UserInputSpy(callback));
-        spiedWindows.add(new WeakReference<>(window));
-    }
-
-    /** Main thread. */
-    private void stopWatchingUserInput() {
-        for (WeakReference<Window> ref : spiedWindows) {
-            Window window = ref.get();
-            // Only if nothing has wrapped our wrapper in the meantime.
-            if (window != null && window.getCallback() instanceof UserInputSpy) {
-                window.setCallback(((UserInputSpy) window.getCallback()).base);
-            }
-        }
-        spiedWindows.clear();
-    }
-
-    private final class UserInputSpy implements Window.Callback {
-        final Window.Callback base;
-
-        UserInputSpy(Window.Callback base) {
-            this.base = base;
-        }
-
-        @Override
-        public boolean dispatchTouchEvent(MotionEvent event) {
-            int action = event.getActionMasked();
-            if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_UP) {
-                lastUserInputUptime = SystemClock.uptimeMillis();
-            }
-            return base.dispatchTouchEvent(event);
-        }
-
-        @Override
-        public boolean dispatchKeyEvent(KeyEvent event) {
-            lastUserInputUptime = SystemClock.uptimeMillis();
-            return base.dispatchKeyEvent(event);
-        }
-
-        @Override public boolean dispatchKeyShortcutEvent(KeyEvent event) { return base.dispatchKeyShortcutEvent(event); }
-        @Override public boolean dispatchTrackballEvent(MotionEvent event) { return base.dispatchTrackballEvent(event); }
-        @Override public boolean dispatchGenericMotionEvent(MotionEvent event) { return base.dispatchGenericMotionEvent(event); }
-        @Override public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent event) { return base.dispatchPopulateAccessibilityEvent(event); }
-        @Override public View onCreatePanelView(int featureId) { return base.onCreatePanelView(featureId); }
-        @Override public boolean onCreatePanelMenu(int featureId, Menu menu) { return base.onCreatePanelMenu(featureId, menu); }
-        @Override public boolean onPreparePanel(int featureId, View view, Menu menu) { return base.onPreparePanel(featureId, view, menu); }
-        @Override public boolean onMenuOpened(int featureId, Menu menu) { return base.onMenuOpened(featureId, menu); }
-        @Override public boolean onMenuItemSelected(int featureId, MenuItem item) { return base.onMenuItemSelected(featureId, item); }
-        @Override public void onWindowAttributesChanged(WindowManager.LayoutParams attrs) { base.onWindowAttributesChanged(attrs); }
-        @Override public void onContentChanged() { base.onContentChanged(); }
-        @Override public void onWindowFocusChanged(boolean hasFocus) { base.onWindowFocusChanged(hasFocus); }
-        @Override public void onAttachedToWindow() { base.onAttachedToWindow(); }
-        @Override public void onDetachedFromWindow() { base.onDetachedFromWindow(); }
-        @Override public void onPanelClosed(int featureId, Menu menu) { base.onPanelClosed(featureId, menu); }
-        @Override public boolean onSearchRequested() { return base.onSearchRequested(); }
-        @Override public boolean onSearchRequested(SearchEvent searchEvent) { return base.onSearchRequested(searchEvent); }
-        @Override public ActionMode onWindowStartingActionMode(ActionMode.Callback callback) { return base.onWindowStartingActionMode(callback); }
-        @Override public ActionMode onWindowStartingActionMode(ActionMode.Callback callback, int type) { return base.onWindowStartingActionMode(callback, type); }
-        @Override public void onActionModeStarted(ActionMode mode) { base.onActionModeStarted(mode); }
-        @Override public void onActionModeFinished(ActionMode mode) { base.onActionModeFinished(mode); }
-        @Override public void onProvideKeyboardShortcuts(List<KeyboardShortcutGroup> data, Menu menu, int deviceId) { base.onProvideKeyboardShortcuts(data, menu, deviceId); }
-        @Override public void onPointerCaptureChanged(boolean hasCapture) { base.onPointerCaptureChanged(hasCapture); }
+        long window = Math.max(BOOT_FRONT_WINDOW_MS, bootStallDelayMs() + BOOT_FRONT_AFTER_STALL_MS);
+        Log.i(TAG, "Cold boot, keeping the launcher in front for " + window + " ms");
+        HomeFrontGuard.start(app, "Boot", window, HomeFrontGuard.CHECK_INTERVAL_MS);
     }
 
     // =============================================================================================
@@ -779,7 +454,7 @@ public final class ColdStart {
     // restart com.syu.ms has nothing to open over this launcher (capture 08-10-2026:
     // sTopAppWhenMcuOff empty at boot, though it was com.syu.carlink at the power-off), so the
     // launcher opens that app itself. ForegroundAppTracker reports each app in front on the main
-    // display, noteForegroundApp() keeps the last one. After a wake WakeDetectionService does the
+    // display, noteForegroundApp() keeps the last one. After a wake WakeDetection does the
     // same with the app noted when the device went to sleep.
     // =============================================================================================
 
@@ -800,8 +475,8 @@ public final class ColdStart {
 
     /** From ForegroundAppTracker, main thread. The launcher itself counts as no app. */
     public static void noteForegroundApp(Context context, String packageName) {
-        if (TRANSIENT_PACKAGES.contains(packageName) || isCameraPackage(packageName)
-                || WakeDetectionService.isAsleep()) {
+        if (TRANSIENT_PACKAGES.contains(packageName) || HomeFrontGuard.isCameraPackage(packageName)
+                || WakeDetection.isAsleep()) {
             return;
         }
         String last = packageName.equals(context.getPackageName()) ? "" : packageName;
@@ -941,94 +616,5 @@ public final class ColdStart {
             }
         }
         return false;
-    }
-
-    // =============================================================================================
-    // System state (from the guard's thread and the autostart thread)
-    // =============================================================================================
-
-    /**
-     * Top activity on the default display; see DefaultDisplayTask for why the PiP panes' tasks are
-     * skipped. The launcher runs as uid 1000, so other apps' tasks are included (for an ordinary
-     * app getRunningTasks() would hide them).
-     */
-    private ComponentName topActivity() {
-        try {
-            ActivityManager am = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
-            return am != null ? DefaultDisplayTask.topActivity(am) : null;
-        } catch (RuntimeException e) {
-            Log.w(TAG, "Cannot read the top task: " + e);
-            return null;
-        }
-    }
-
-    /**
-     * Whether a process with this package is up. Only uid 1000 sees other apps' processes here;
-     * without it, or on any error, the answer is true so the guard never waits on a guess.
-     */
-    private boolean isPackageRunning(String packageName) {
-        if (android.os.Process.myUid() != android.os.Process.SYSTEM_UID) {
-            return true;
-        }
-        try {
-            ActivityManager am = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
-            List<ActivityManager.RunningAppProcessInfo> processes =
-                    am != null ? am.getRunningAppProcesses() : null;
-            if (processes == null) {
-                return true;
-            }
-            for (ActivityManager.RunningAppProcessInfo info : processes) {
-                if (packageName.equals(info.processName)) {
-                    return true;
-                }
-                if (info.pkgList != null) {
-                    for (String pkg : info.pkgList) {
-                        if (packageName.equals(pkg)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        } catch (RuntimeException e) {
-            return true;
-        }
-    }
-
-    /** Unknown counts as on, as in WakeDetectionService. */
-    private boolean isDefaultDisplayOn() {
-        DisplayManager dm = (DisplayManager) app.getSystemService(Context.DISPLAY_SERVICE);
-        Display display = dm != null ? dm.getDisplay(Display.DEFAULT_DISPLAY) : null;
-        return display == null || display.getState() == Display.STATE_ON;
-    }
-
-    /**
-     * Same approach as WakeDetectionService.pressHomeButton(), which the wake logs show working on
-     * this ROM: a live launcher gets its task moved to the front (no new intent, no second
-     * ActivityRecord). The HOME intent is only the fallback when there is no launcher activity;
-     * the launcher runs as uid 1000, so the explicit component still counts as a Home start.
-     */
-    private void bringLauncherToFront() {
-        Launcher launcher = Launcher.getLauncher();
-        if (launcher != null && !launcher.isFinishing() && !launcher.isDestroyed()) {
-            try {
-                ActivityManager am = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
-                if (am != null) {
-                    am.moveTaskToFront(launcher.getTaskId(), 0);
-                    return;
-                }
-            } catch (RuntimeException e) {
-                Log.w(TAG, "moveTaskToFront failed, falling back to the HOME intent", e);
-            }
-        }
-        Intent home = new Intent(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_HOME)
-                .setClass(app, Launcher.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        try {
-            app.startActivity(home);
-        } catch (RuntimeException e) {
-            Log.w(TAG, "Cannot bring the launcher to front", e);
-        }
     }
 }
