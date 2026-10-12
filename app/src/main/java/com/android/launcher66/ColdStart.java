@@ -28,7 +28,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,9 +37,9 @@ import java.util.List;
  * <ul>
  *   <li><b>Boot-time stall:</b> at every boot this ROM blocks all calls into system_server for
  *       about ten seconds; work that can wait is deferred past it, see {@link #bootStallDelayMs()}.
- *   <li><b>Launcher in front:</b> for a while after the restart, whatever comes up over the
- *       launcher is sent back behind it (setting Keys.LAUNCHER_HOME_COLD_START, see
- *       HomeFrontGuard); with it off, the app that was in front before the restart is opened again.
+ *   <li><b>Launcher in front:</b> with Keys.LAUNCHER_HOME_COLD_START on the launcher opens nothing
+ *       over itself after the restart, and comes back after its own autostart; nothing else is
+ *       sent back. With it off, the app that was in front before the restart is opened again.
  *   <li><b>Autostart:</b> the apps picked in AppListAutostartDialogFragment are started once the
  *       stall is over.
  * </ul>
@@ -98,8 +97,11 @@ public final class ColdStart {
         if (coldStart.coldBoot) {
             boolean launcherHome = settings.getBoolean(Keys.LAUNCHER_HOME_COLD_START, true);
             bootCompletedAutostart = settings.getBoolean(Keys.AUTOSTART_APPS_BY_BOOT_COMPLETED, true);
-            coldStart.startBootFrontGuard(launcherHome);
-            if (!launcherHome) {
+            if (launcherHome) {
+                // Nothing to keep in front of: see the section "Launcher in front".
+                Log.i(TAG, "Cold boot: LAUNCHER_HOME_COLD_START on, the last app is not opened again");
+            } else {
+                Log.i(TAG, "Cold boot, LAUNCHER_HOME_COLD_START off: the last app, if any, is opened again");
                 coldStart.scheduleLastAppRestore(settings);
             }
             coldStart.scheduleBootAutostart(launcherHome);
@@ -397,12 +399,12 @@ public final class ColdStart {
     }
 
     /**
-     * The autostarted apps do not need to stay in front, as with FYT's autostart during the
-     * front guard. The launcher comes back only over one of them, never over something the user
-     * has opened meanwhile, nor when the user has touched the screen (or pressed a button FYT
-     * reports) since the autostart began -- one of these apps may be in use by then -- and -- the
-     * guard's rule, see HomeFrontGuard.checkLauncherInFront() -- only once that app's process is
-     * up, or Android would never launch its activity.
+     * The autostarted apps do not need to stay in front. The launcher comes back only over one of
+     * them, never over something the user has opened meanwhile, nor when the user has touched the
+     * screen (or pressed a button FYT reports) since the autostart began -- one of these apps may
+     * be in use by then -- and only once that app's process is up: pulling the launcher over it
+     * earlier would leave its activity unlaunched for good, as Android 10 only launches the
+     * activities of the focused stack when their process comes up.
      */
     private void returnToLauncherAfterAutostart(List<String> started, long autostartBegan) {
         ComponentName top = HomeFrontGuard.topActivity(app);
@@ -429,38 +431,19 @@ public final class ColdStart {
     }
 
     // =============================================================================================
-    // Launcher in front after a device restart
+    // Launcher in front after a device restart (LAUNCHER_HOME_COLD_START on)
     //
-    // What the device opens over the launcher after a cold boot (FYT SystemUI's autostart apps,
-    // com.syu.ms restoring the last app or opening the navigation, ...) is sent back behind it;
-    // what the user opens stays. See HomeFrontGuard.
+    // The launcher is what Android starts at boot, and with the setting on it opens nothing over
+    // itself: neither the last app (see below) nor, once its own autostart is done, the apps of it
+    // (returnToLauncherAfterAutostart()). Nothing else is sent back. The device itself opens
+    // nothing at a cold boot -- com.syu.ms's sTopAppWhenMcuOff is empty after a restart (captures
+    // 08-10-2026 and 12-10-2026), and nothing came up in six cold boots -- while an app that comes
+    // up then may well be the user's, opened with a button or adb: for 27 s anything was taken for
+    // the device's and sent back, com.syu.filemanager among them (12-10-2026). FYT SystemUI's own
+    // autostart list is the exception, and stays in front; on the launcher's list instead
+    // (AppListAutostartDialogFragment) those apps are started after the boot-time stall and the
+    // launcher comes back over them.
     // =============================================================================================
-
-    /** How long after the start whatever comes up is taken for the device's own, at least ... */
-    private static final long BOOT_FRONT_WINDOW_MS = 20000L;
-    /**
-     * ... and until this long after the boot-time stall. What the device opens comes before and
-     * during the stall (FYT SystemUI's autostart about 3 s after BOOT_COMPLETED, which is when the
-     * stall begins) and shows once it is over; a window counted from the start alone had mostly
-     * gone by in the stall. The user can hardly open anything before it is over, while anything
-     * that comes up later is more likely the user's than the device's -- and with no touch to
-     * tell, a button on the steering wheel (FYT reports some, see UserTouches) would be taken for
-     * the device's. So only a short margin.
-     */
-    private static final long BOOT_FRONT_AFTER_STALL_MS = 5000L;
-
-    /** On the main thread, from start(). */
-    private void startBootFrontGuard(boolean enabled) {
-        if (!enabled) {
-            Log.i(TAG, "Cold boot, but LAUNCHER_HOME_COLD_START is off: launcher left where it is");
-            return;
-        }
-        long window = Math.max(BOOT_FRONT_WINDOW_MS, bootStallDelayMs() + BOOT_FRONT_AFTER_STALL_MS);
-        Log.i(TAG, "Cold boot, what comes up within " + window + " ms is taken for the device's own");
-        HomeFrontGuard.expect(Collections.singleton(HomeFrontGuard.ANY_APP), window, false, "cold boot");
-        HomeFrontGuard.start(app, "Boot", HomeFrontGuard.CHECK_INTERVAL_MS,
-                HomeFrontGuard.CHECK_INTERVAL_MS, true);
-    }
 
     // =============================================================================================
     // Last app back in front after a device restart or a wake (LAUNCHER_HOME_COLD_START or

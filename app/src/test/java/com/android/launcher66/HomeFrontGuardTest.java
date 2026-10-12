@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -70,7 +69,7 @@ class HomeFrontGuardTest {
     void onlyTheExpectedAppWithinItsTimeIsTheDevicesOwn() {
         HomeFrontGuard.Expectations expected = new HomeFrontGuard.Expectations();
         expected.add(Arrays.asList("com.google.android.apps.maps", "com.spotify.music"),
-                NOW + 3000L, true, "restore", NOW);
+                NOW + 3000L, "restore", NOW);
 
         assertNotNull(expected.match("com.spotify.music", NOW + 1000L));
         assertNull(expected.match("com.syu.radio", NOW + 1000L));            // another app
@@ -82,7 +81,7 @@ class HomeFrontGuardTest {
     void anExpectationForOneLaunchIsUsedUp() {
         HomeFrontGuard.Expectations expected = new HomeFrontGuard.Expectations();
         expected.add(Arrays.asList("com.google.android.apps.maps", "com.spotify.music"),
-                NOW + 3000L, true, "restore", NOW);
+                NOW + 3000L, "restore", NOW);
 
         HomeFrontGuard.Expectations.Entry entry = expected.match("com.google.android.apps.maps", NOW);
         expected.use(entry);
@@ -93,44 +92,12 @@ class HomeFrontGuardTest {
     }
 
     @Test
-    void theColdBootPhaseTakesAnyAppAndStaysOpen() {
-        HomeFrontGuard.Expectations expected = new HomeFrontGuard.Expectations();
-        expected.add(Collections.singleton(HomeFrontGuard.ANY_APP), NOW + 20_000L, false,
-                "cold boot", NOW);
-
-        HomeFrontGuard.Expectations.Entry entry = expected.match("com.syu.radio", NOW + 5000L);
-        assertNotNull(entry);
-        expected.use(entry);
-        assertNotNull(expected.match("", NOW + 6000L));                      // cannot be seen
-        assertNull(expected.match("com.syu.radio", NOW + 20_001L));          // after the boot
-        assertEquals(NOW + 20_000L, expected.lastUntil());
-    }
-
-    @Test
-    void anExpectationNamingTheAppComesBeforeOneForAnyApp() {
-        HomeFrontGuard.Expectations expected = new HomeFrontGuard.Expectations();
-        expected.add(Collections.singleton(HomeFrontGuard.ANY_APP), NOW + 20_000L, false,
-                "cold boot", NOW);
-        expected.add(Collections.singleton("com.syu.music"), NOW + 3000L, true, "PiP reset", NOW);
-
-        HomeFrontGuard.Expectations.Entry entry = expected.match("com.syu.music", NOW + 1000L);
-        assertNotNull(entry);
-        assertEquals("PiP reset", entry.reason);
-        HomeFrontGuard.Expectations.Entry any = expected.match("com.syu.radio", NOW + 1000L);
-        assertSame(any, expected.match("", NOW + 1000L));
-        assertEquals("cold boot", any.reason);
-    }
-
-    @Test
     void whatTheDeviceIsStillExpectedToOpenIsNoAppToGoBackBehind() {
         HomeFrontGuard.Expectations expected = new HomeFrontGuard.Expectations();
-        expected.add(Collections.singleton("com.google.android.apps.maps"), NOW + 3000L, true,
-                "restore", NOW);
-        expected.add(Collections.singleton(HomeFrontGuard.ANY_APP), NOW + 20_000L, false,
-                "cold boot", NOW);
+        expected.add(Collections.singleton("com.google.android.apps.maps"), NOW + 3000L, "restore", NOW);
 
         assertTrue(expected.namesUnused("com.google.android.apps.maps", NOW + 100L));
-        assertFalse(expected.namesUnused("com.syu.carlink", NOW + 100L));      // any app: not named
+        assertFalse(expected.namesUnused("com.syu.carlink", NOW + 100L));
         expected.use(expected.match("com.google.android.apps.maps", NOW + 100L));
         assertFalse(expected.namesUnused("com.google.android.apps.maps", NOW + 200L));
     }
@@ -138,7 +105,7 @@ class HomeFrontGuardTest {
     @Test
     void aSleepForgetsEverything() {
         HomeFrontGuard.Expectations expected = new HomeFrontGuard.Expectations();
-        expected.add(Collections.singleton("com.syu.music"), NOW + 3000L, true, "restore", NOW);
+        expected.add(Collections.singleton("com.syu.music"), NOW + 3000L, "restore", NOW);
         expected.clear();
         assertNull(expected.match("com.syu.music", NOW));
         assertEquals(0L, expected.lastUntil());

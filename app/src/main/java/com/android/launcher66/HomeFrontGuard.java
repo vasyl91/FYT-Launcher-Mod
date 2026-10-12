@@ -51,17 +51,19 @@ import java.util.Set;
  * Keeps the home screen in front against what the device brings up by itself -- and only against
  * that: whatever the user opens stays in front.
  *
- * <p>Runs after a cold boot (ColdStart, setting Keys.LAUNCHER_HOME_COLD_START), after a wake
- * (WakeDetection, Keys.LAUNCHER_HOME_WAKE), and after the launcher itself has stopped a pane's app,
- * which com.syu.ms then opens again full screen (see expectSystemLaunch()). One at a time.
+ * <p>Runs after a wake (WakeDetection, Keys.LAUNCHER_HOME_WAKE), and after the launcher itself has
+ * stopped a pane's app, which com.syu.ms then opens again full screen (see expectSystemLaunch()).
+ * One at a time. Not after a cold boot: the device opens nothing by itself then (com.syu.ms's
+ * sTopAppWhenMcuOff is empty after a restart, and nothing came up in any capture), and an app
+ * taken for the device's only because it came up early was the user's -- opened with adb or a
+ * button, com.syu.filemanager was sent back (12-10-2026).
  *
  * <p>An app that comes up over the launcher (a "cover") is sent back behind it only when both hold:
  * <ul>
- *   <li>it is what the device was expected to open just then (see Expectations): after a wake the
- *       app com.syu.ms opens again -- the one it took for the top app when the device went to
- *       sleep, noted by WakeDetection at that moment; a pane's app the launcher has just stopped;
- *       at a cold boot anything until the boot has settled (FYT SystemUI's autostart apps,
- *       com.syu.ms opening the navigation ...), when the user can hardly have opened anything;
+ *   <li>it is the very app the device was expected to open just then (see Expectations): after a
+ *       wake the app com.syu.ms opens again -- the one it took for the top app when the MCU went
+ *       off, noted by WakeDetection at that moment; a pane's app the launcher has just stopped.
+ *       Never "any app": a button can open any app, and nothing of it is seen;
  *   <li>nothing says the user opened it: no touch (with system privileges anywhere on the screen,
  *       see UserTouches, otherwise in the launcher's own windows) and no button reported by FYT's
  *       framework, from shortly before it came up on.
@@ -80,8 +82,8 @@ import java.util.Set;
  * <p>What is in front is read from the task stack, which only a launcher with system privileges
  * sees whole -- not from the launcher's own lifecycle, which runs on the main thread, and that
  * stalls for about 2 s on the first frame after a wake. Without system privileges it comes from
- * the usage events (if usage access is given) and the lifecycle, otherwise it is not known, and
- * only an expectation for any app can match it.
+ * the usage events (if usage access is given) and the lifecycle; an app that cannot be seen is
+ * never sent back.
  *
  * <p>The checks run on the guard's own thread: each of them calls into system_server, which stalls
  * for seconds at boot while the audioserver hangs, and on the main thread every such call froze
@@ -100,15 +102,14 @@ public final class HomeFrontGuard {
     public static final long FAST_CHECK_INTERVAL_MS = 250L;
     /** First check after the launcher was paused; the system launches what paused it meanwhile. */
     static final long PAUSE_CHECK_MS = 250L;
-    /** Re-check interval while the covering app's process is still starting. */
+    /** Re-check interval while the launcher's own task is about to be resumed. */
     static final long STARTING_POLL_MS = 150L;
-    /** Longest wait for the covering app's process; after that the launcher comes back anyway. */
-    static final long MAX_START_WAIT_MS = 10000L;
     /**
-     * Time a covering app gets once its process runs, before the launcher comes back: enough for
-     * its onCreate(), where autostart activities (openpanorama, JamesDSP) start their service. At a
-     * cold boot only; see start().
+     * For ColdStart's boot autostart: the longest wait for an autostarted app's process, and the
+     * time it gets once that runs before the launcher comes back -- enough for its onCreate(),
+     * where autostart activities (openpanorama, JamesDSP) start their service.
      */
+    static final long MAX_START_WAIT_MS = 10000L;
     static final long COVER_GRACE_MS = 800L;
     /** Minimum time between two pull-backs, and how many there may be at most. */
     private static final long MIN_PULL_GAP_MS = 400L;
@@ -129,8 +130,6 @@ public final class HomeFrontGuard {
     private static final long KEYGUARD_POLL_MS = 500L;
     /** How far back the usage events are read for the app in front. */
     private static final long USAGE_LOOKBACK_MS = 60_000L;
-    /** "Any app" in an expectation. */
-    public static final String ANY_APP = "*";
     /**
      * Never pulled back over, whatever was expected: a reversing camera must stay visible and a
      * call reachable; system dialogs are the system's; vasyl.fytrating's WakeActivity is started
@@ -177,18 +176,16 @@ public final class HomeFrontGuard {
      */
     static final class Expectations {
 
+        /** Matches one cover only. */
         static final class Entry {
             final Set<String> packages;
             final long untilElapsed;
-            /** Matches one cover only; a cold boot's phase matches every cover. */
-            final boolean once;
             final String reason;
             boolean used;
 
-            Entry(Set<String> packages, long untilElapsed, boolean once, String reason) {
+            Entry(Set<String> packages, long untilElapsed, String reason) {
                 this.packages = packages;
                 this.untilElapsed = untilElapsed;
-                this.once = once;
                 this.reason = reason;
             }
         }
@@ -198,44 +195,39 @@ public final class HomeFrontGuard {
 
         private final List<Entry> entries = new ArrayList<>();
 
-        synchronized void add(Collection<String> packages, long untilElapsed, boolean once,
-                              String reason, long nowElapsed) {
+        synchronized void add(Collection<String> packages, long untilElapsed, String reason,
+                              long nowElapsed) {
             for (Iterator<Entry> it = entries.iterator(); it.hasNext(); ) {
                 Entry entry = it.next();
                 if (entry.used || entry.untilElapsed < nowElapsed - KEEP_MS) {
                     it.remove();
                 }
             }
-            entries.add(new Entry(new HashSet<>(packages), untilElapsed, once, reason));
+            entries.add(new Entry(new HashSet<>(packages), untilElapsed, reason));
         }
 
         /**
-         * What a cover first seen at seenAt was expected as, null if nothing: one naming its
-         * package before one for any app. "" (a cover that cannot be seen) only matches any app.
+         * What a cover first seen at seenAt was expected as, null if nothing. "" (a cover that
+         * cannot be seen) never matches.
          */
         synchronized Entry match(String pkg, long seenAtElapsed) {
-            Entry anyApp = null;
+            if (pkg.isEmpty()) {
+                return null;
+            }
             for (Entry entry : entries) {
-                if (entry.used || seenAtElapsed > entry.untilElapsed) {
-                    continue;
-                }
-                if (!pkg.isEmpty() && entry.packages.contains(pkg)) {
+                if (!entry.used && seenAtElapsed <= entry.untilElapsed
+                        && entry.packages.contains(pkg)) {
                     return entry;
                 }
-                if (anyApp == null && entry.packages.contains(ANY_APP)) {
-                    anyApp = entry;
-                }
             }
-            return anyApp;
+            return null;
         }
 
         synchronized void use(Entry entry) {
-            if (entry.once) {
-                entry.used = true;
-            }
+            entry.used = true;
         }
 
-        /** Whether an entry not used yet names this package (not just any app) at that time. */
+        /** Whether an entry not used yet names this package at that time. */
         synchronized boolean namesUnused(String pkg, long atElapsed) {
             for (Entry entry : entries) {
                 if (!entry.used && atElapsed <= entry.untilElapsed && entry.packages.contains(pkg)) {
@@ -273,15 +265,15 @@ public final class HomeFrontGuard {
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
 
     /**
-     * Any thread. One of packages (or ANY_APP) may come up within windowMs from now as the
-     * device's own; with once only one cover is taken for it.
+     * Any thread. One of packages may come up within windowMs from now as the device's own; one
+     * cover only is taken for it.
      */
-    public static void expect(Collection<String> packages, long windowMs, boolean once, String reason) {
+    public static void expect(Collection<String> packages, long windowMs, String reason) {
         if (packages.isEmpty()) {
             return;
         }
         long now = SystemClock.elapsedRealtime();
-        EXPECTED.add(packages, now + windowMs, once, reason, now);
+        EXPECTED.add(packages, now + windowMs, reason, now);
         Log.i(TAG, "Expecting " + packages + " within " + windowMs + " ms (" + reason + ")");
     }
 
@@ -292,12 +284,12 @@ public final class HomeFrontGuard {
      */
     public static void expectSystemLaunch(Context context, Collection<String> packages, String reason) {
         for (String pkg : packages) {
-            expect(Collections.singleton(pkg), RELAUNCH_EXPECT_MS, true, reason);
+            expect(Collections.singleton(pkg), RELAUNCH_EXPECT_MS, reason);
         }
         final Context app = context.getApplicationContext();
         MAIN.post(() -> {
             if (sCurrent == null && sResumedActivities > 0) {
-                start(app, reason, PAUSE_CHECK_MS, FAST_CHECK_INTERVAL_MS, false);
+                start(app, reason, PAUSE_CHECK_MS, FAST_CHECK_INTERVAL_MS);
             }
         });
     }
@@ -360,19 +352,15 @@ public final class HomeFrontGuard {
 
     /**
      * Main thread. Starts a guard, ending one that runs; it goes on for as long as something is
-     * expected (see expect()), the first check after firstCheckMs, then every intervalMs. With
-     * waitForCoverStart a cover gets its process started and COVER_GRACE_MS before it is sent back
-     * (the autostart apps of a cold boot need their onCreate()); otherwise it goes back at once.
-     * name is for the log.
+     * expected (see expect()), the first check after firstCheckMs, then every intervalMs. name is
+     * for the log.
      */
-    public static void start(Context context, String name, long firstCheckMs, long intervalMs,
-                             boolean waitForCoverStart) {
+    public static void start(Context context, String name, long firstCheckMs, long intervalMs) {
         HomeFrontGuard previous = sCurrent;
         if (previous != null) {
             previous.stop("replaced by " + name);
         }
-        HomeFrontGuard guard = new HomeFrontGuard(context.getApplicationContext(), name, intervalMs,
-                waitForCoverStart);
+        HomeFrontGuard guard = new HomeFrontGuard(context.getApplicationContext(), name, intervalMs);
         synchronized (HomeFrontGuard.class) {
             sCurrent = guard;
         }
@@ -406,7 +394,6 @@ public final class HomeFrontGuard {
     private final Context app;
     private final String name;
     private final long interval;
-    private final boolean waitForCoverStart;
     private final HandlerThread thread;
     private final Handler handler;
     private final Object lock = new Object();
@@ -419,13 +406,12 @@ public final class HomeFrontGuard {
     /** Guard thread only, like the fields below. */
     private long lastPullBack;
     /**
-     * What covers the launcher ("" = not known) and its task (-1 = not known), when it was first
-     * seen, since when its process runs (0 = not yet).
+     * What covers the launcher ("" = not known) and its task (-1 = not known), and when it was
+     * first seen.
      */
     private String currentCover;
     private int currentCoverTask = -1;
     private long coverSeen;
-    private long coverRunning;
     /** What the current cover was expected as; null until that is known. */
     private Expectations.Entry coverExpected;
     /** Whether the current cover is left in front for good: the user's, or not the device's. */
@@ -447,11 +433,10 @@ public final class HomeFrontGuard {
      */
     private boolean launcherSeen;
 
-    private HomeFrontGuard(Context app, String name, long interval, boolean waitForCoverStart) {
+    private HomeFrontGuard(Context app, String name, long interval) {
         this.app = app;
         this.name = name;
         this.interval = interval;
-        this.waitForCoverStart = waitForCoverStart;
         this.thread = new HandlerThread("HomeFrontGuard");
         this.thread.start();
         this.handler = new Handler(thread.getLooper());
@@ -550,7 +535,6 @@ public final class HomeFrontGuard {
             currentCover = cover;
             currentCoverTask = coverTask;
             coverSeen = now;
-            coverRunning = 0L;
             coverExpected = null;
             coverLeft = coverTask != -1 && leftTasks.contains(coverTask);
             lastProtection = null;
@@ -585,24 +569,6 @@ public final class HomeFrontGuard {
         if (coverExpected == null) {
             coverExpected = expected;
             Log.i(TAG, name + ": " + coverName + " taken for the device's (" + expected.reason + ")");
-        }
-        if (waitForCoverStart) {
-            if (coverRunning == 0L) {
-                if (top == null || isPackageRunning(app, cover)) {
-                    coverRunning = now;
-                } else if (now - coverSeen < MAX_START_WAIT_MS) {
-                    // Pulling back now would leave its activity unlaunched for good: Android 10
-                    // only launches activities of the focused stack when their process comes up.
-                    return STARTING_POLL_MS;
-                } else {
-                    Log.w(TAG, coverName + " did not start within " + MAX_START_WAIT_MS + " ms");
-                    coverRunning = now - COVER_GRACE_MS;
-                }
-            }
-            long graceLeft = coverRunning + COVER_GRACE_MS - now;
-            if (graceLeft > 0L) {
-                return graceLeft;
-            }
         }
         if (lastPullBack > 0L && now - lastPullBack < MIN_PULL_GAP_MS) {
             return lastPullBack + MIN_PULL_GAP_MS - now;
