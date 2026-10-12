@@ -51,19 +51,19 @@ import java.util.Set;
  * Keeps the home screen in front against what the device brings up by itself -- and only against
  * that: whatever the user opens stays in front.
  *
- * <p>Runs after a wake (WakeDetection, Keys.LAUNCHER_HOME_WAKE), and after the launcher itself has
- * stopped a pane's app, which com.syu.ms then opens again full screen (see expectSystemLaunch()).
- * One at a time. Not after a cold boot: the device opens nothing by itself then (com.syu.ms's
- * sTopAppWhenMcuOff is empty after a restart, and nothing came up in any capture), and an app
- * taken for the device's only because it came up early was the user's -- opened with adb or a
- * button, com.syu.filemanager was sent back (12-10-2026).
+ * <p>Runs after a wake (WakeDetection) and after a cold boot (ColdStart), for the app com.syu.ms may
+ * open again then, and after the launcher itself has stopped a pane's app, which com.syu.ms then
+ * opens again full screen (see expectSystemLaunch()). One at a time. An app is never taken for the
+ * device's only because it came up early: it was the user's -- opened with adb or a button,
+ * com.syu.filemanager was sent back at a cold boot (12-10-2026).
  *
  * <p>An app that comes up over the launcher (a "cover") is sent back behind it only when both hold:
  * <ul>
  *   <li>it is the very app the device was expected to open just then (see Expectations): after a
- *       wake the app com.syu.ms opens again -- the one it took for the top app when the MCU went
- *       off, noted by WakeDetection at that moment; a pane's app the launcher has just stopped.
- *       Never "any app": a button can open any app, and nothing of it is seen;
+ *       wake or a cold boot the app com.syu.ms opens again -- the one it took for the top app when
+ *       the MCU went off, noted by WakeDetection at that moment -- unless that is what is to be in
+ *       front; a pane's app the launcher has just stopped. Never "any app": a button can open any
+ *       app, and nothing of it is seen;
  *   <li>nothing says the user opened it: no touch (with system privileges anywhere on the screen,
  *       see UserTouches, otherwise in the launcher's own windows) and no button reported by FYT's
  *       framework, from shortly before it came up on.
