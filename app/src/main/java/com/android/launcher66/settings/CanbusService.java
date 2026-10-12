@@ -36,6 +36,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Folder;
@@ -469,6 +470,14 @@ public class CanbusService extends Service implements PropertyChangeListener {
         new Handler(Looper.getMainLooper()).postDelayed(()-> {
             Launcher launcher = Launcher.getLauncher();
             if (launcher == null || launcher.mAppsCustomizeTabHost == null) {
+                return;
+            }
+            // Over the home screen only. hasPipStarted() is a pref, still the one from before a
+            // restart: at a cold boot with LAUNCHER_HOME_COLD_START off the last app was back in
+            // front at 27.5 s, this service started at 29.5 s, and the home screen's stats came
+            // up over that app (capture 13-10-2026 00:11). The panes coming up on the home screen
+            // add them anyway (PIP_STARTED).
+            if (!launcher.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
                 return;
             }
             if (userLayout 
