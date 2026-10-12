@@ -75,9 +75,9 @@ import java.util.Set;
  * user opened a car info page with a wheel button 0.2 s into a wake, and com.syu.ms's YouTube came
  * up over it 0.7 s later.
  *
- * <p>Never sent back either: the protected apps (reversing camera, phone, system dialogs, and
- * unless they are exactly what the device was expected to open, the apps opened on purpose), see
- * isProtected(), and nothing at all while the reverse gear or a call is on.
+ * <p>Never sent back either: a reversing camera, the phone and the system's own screens, see
+ * isProtected(), and nothing at all while the reverse gear or a call is on. Every other app is
+ * treated alike, whichever it is.
  *
  * <p>What is in front is read from the task stack, which only a launcher with system privileges
  * sees whole -- not from the launcher's own lifecycle, which runs on the main thread, and that
@@ -132,12 +132,14 @@ public final class HomeFrontGuard {
     private static final long USAGE_LOOKBACK_MS = 60_000L;
     /**
      * Never pulled back over, whatever was expected: a reversing camera must stay visible and a
-     * call reachable; system dialogs are the system's; vasyl.fytrating's WakeActivity is started
-     * by the launcher itself.
+     * call reachable; system dialogs and recents are the system's; vasyl.fytrating's WakeActivity
+     * is started by the launcher itself. No app is protected for being one the user may want in
+     * front: any app may be, and the user's are not sent back anyway (see the class comment).
      */
-    private static final List<String> ALWAYS_PROTECTED_PACKAGES = Arrays.asList(
+    private static final List<String> PROTECTED_PACKAGES = Arrays.asList(
             "android",
             "com.android.systemui",
+            "com.android.launcher3",                   // recents on this ROM
             "com.android.permissioncontroller",
             "com.google.android.permissioncontroller",
             "com.android.packageinstaller",
@@ -147,19 +149,6 @@ public final class HomeFrontGuard {
             "com.android.incallui",
             "com.syu.ms",
             "vasyl.fytrating");
-    /**
-     * Opened on purpose -- recents, settings, the head unit's Bluetooth and car info apps, phone
-     * projection -- and pulled back over only when it is exactly the app the device was expected
-     * to open: com.syu.ms opens com.syu.carlink again at a wake if it was in front at the sleep
-     * (capture 12-10-2026 04:49:11), and a wheel button opens a com.syu.canbus page.
-     */
-    private static final List<String> PROTECTED_UNLESS_EXPECTED_PACKAGES = Arrays.asList(
-            "com.android.launcher3",                   // recents on this ROM
-            "com.android.settings",
-            "com.syu.bt",
-            "com.syu.canbus",
-            "com.syu.carlink",
-            "com.google.android.projection.gearhead");
     /**
      * Package name parts of camera apps (reversing, 360 view), which are protected as well.
      * "panoram" for openpanorama and FYT's own 360 view, com.syu.panoramic (FytPackage.INNER360).
@@ -546,8 +535,7 @@ public final class HomeFrontGuard {
         }
         Expectations.Entry expected = coverExpected != null
                 ? coverExpected : EXPECTED.match(cover, coverSeen);
-        boolean named = expected != null && !cover.isEmpty() && expected.packages.contains(cover);
-        String protection = isProtected(cover, named) ? "protected" : protectedState();
+        String protection = isProtected(cover) ? "protected" : protectedState();
         if (protection != null && !protection.equals(lastProtection)) {
             Log.i(TAG, name + ": " + coverName + " left in front (" + protection + ")");
         }
@@ -808,18 +796,9 @@ public final class HomeFrontGuard {
     // System state (from the guard's thread and ColdStart's autostart thread)
     // =============================================================================================
 
-    /** Whether a cover is never pulled back over, when no expectation names it. */
+    /** Whether a cover is never pulled back over, whatever was expected. */
     static boolean isProtected(String packageName) {
-        return isProtected(packageName, false);
-    }
-
-    /**
-     * Whether a cover is never pulled back over. named: an expectation names its package, which
-     * lifts the protection of the apps opened on purpose, not that of the others.
-     */
-    static boolean isProtected(String packageName, boolean named) {
-        return ALWAYS_PROTECTED_PACKAGES.contains(packageName) || isCameraPackage(packageName)
-                || (!named && PROTECTED_UNLESS_EXPECTED_PACKAGES.contains(packageName));
+        return PROTECTED_PACKAGES.contains(packageName) || isCameraPackage(packageName);
     }
 
     static boolean isCameraPackage(String packageName) {
