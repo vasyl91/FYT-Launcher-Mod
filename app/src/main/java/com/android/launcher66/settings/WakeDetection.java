@@ -29,7 +29,6 @@ import com.syu.util.WindowUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -76,8 +75,6 @@ public final class WakeDetection implements WakeSignals.Listener {
      * opens apps without a touch, through com.syu.ms.
      */
     private static final long WAKE_RESTORE_MS = 3000L;
-    /** Without system privileges the app is not known: any app, and a shorter time. */
-    private static final long WAKE_RESTORE_UNKNOWN_MS = 2000L;
     /**
      * At once: the launcher is in front at the wake (the ROM and the sleep's home press put it
      * there), and the guard has to see it before anything comes up -- see
@@ -255,16 +252,16 @@ public final class WakeDetection implements WakeSignals.Listener {
             // Nothing else moves the launcher to the front here: the move 500 ms after the wake
             // that did ran 2 s late, after the first frame (captures 12-10-2026), and covered the
             // car info page the user had opened with a steering wheel button meanwhile.
-            if (!HomeFrontGuard.isAnotherHomeDefault(app)) {
-                if (restoreCandidates == null) {
-                    HomeFrontGuard.expect(Collections.singleton(HomeFrontGuard.ANY_APP),
-                            WAKE_RESTORE_UNKNOWN_MS, true, "opened again after the wake");
-                } else {
-                    HomeFrontGuard.expect(restoreCandidates, WAKE_RESTORE_MS, true,
-                            "opened again after the wake");
-                }
+            // Not known (no system privileges, a process started during the sleep), or nothing
+            // (the launcher was the top app at the MCU off): nothing is watched for. Never "any
+            // app": a button can open any app, and nothing of it is seen.
+            if (restoreCandidates == null || restoreCandidates.isEmpty()) {
+                Log.i(TAG, "Nothing expected to be opened again after the wake");
+            } else if (!HomeFrontGuard.isAnotherHomeDefault(app)) {
+                HomeFrontGuard.expect(restoreCandidates, WAKE_RESTORE_MS,
+                        "opened again after the wake");
                 HomeFrontGuard.start(app, "Wake", WAKE_FRONT_FIRST_CHECK_MS,
-                        HomeFrontGuard.FAST_CHECK_INTERVAL_MS, false);
+                        HomeFrontGuard.FAST_CHECK_INTERVAL_MS);
             }
         } else if (appBeforeSleep != null) {
             // As with the stock launcher, the app that was in front before the sleep.
