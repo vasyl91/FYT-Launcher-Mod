@@ -122,6 +122,20 @@ class HomeFrontGuardTest {
     }
 
     @Test
+    void whatTheDeviceIsStillExpectedToOpenIsNoAppToGoBackBehind() {
+        HomeFrontGuard.Expectations expected = new HomeFrontGuard.Expectations();
+        expected.add(Collections.singleton("com.google.android.apps.maps"), NOW + 3000L, true,
+                "restore", NOW);
+        expected.add(Collections.singleton(HomeFrontGuard.ANY_APP), NOW + 20_000L, false,
+                "cold boot", NOW);
+
+        assertTrue(expected.namesUnused("com.google.android.apps.maps", NOW + 100L));
+        assertFalse(expected.namesUnused("com.syu.carlink", NOW + 100L));      // any app: not named
+        expected.use(expected.match("com.google.android.apps.maps", NOW + 100L));
+        assertFalse(expected.namesUnused("com.google.android.apps.maps", NOW + 200L));
+    }
+
+    @Test
     void aSleepForgetsEverything() {
         HomeFrontGuard.Expectations expected = new HomeFrontGuard.Expectations();
         expected.add(Collections.singleton("com.syu.music"), NOW + 3000L, true, "restore", NOW);

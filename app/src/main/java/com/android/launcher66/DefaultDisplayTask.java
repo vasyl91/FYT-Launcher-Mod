@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.view.Display;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,6 +64,32 @@ public final class DefaultDisplayTask {
             }
         }
         return tasks.get(0);
+    }
+
+    /**
+     * The tasks of the default display, most recently active first: the one in front, then the
+     * one that was in front before it, and so on. Without display information every task is
+     * listed, the panes' included; see knowsDisplays().
+     *
+     * @throws RuntimeException as ActivityManager.getRunningTasks() does
+     */
+    @SuppressWarnings("deprecation")
+    public static List<ActivityManager.RunningTaskInfo> defaultDisplayTasks(ActivityManager am) {
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(SEARCH_LIMIT);
+        List<ActivityManager.RunningTaskInfo> result = new ArrayList<>();
+        if (tasks != null) {
+            for (ActivityManager.RunningTaskInfo task : tasks) {
+                if (isOnDefaultDisplay(task)) {
+                    result.add(task);
+                }
+            }
+        }
+        return result;
+    }
+
+    /** Whether the tasks' displays can be read, i.e. the panes' tasks told apart. */
+    public static boolean knowsDisplays() {
+        return DISPLAY_ID != null;
     }
 
     /**
