@@ -155,8 +155,9 @@ public final class WakeDetection implements WakeSignals.Listener {
      */
     private String appBeforeSleep;
     /**
-     * What com.syu.ms will open again at the wake, noted when the device went to sleep: the app it
-     * takes for the top one when the MCU goes off, from getRunningTasks(1) with the panes' tasks
+     * What com.syu.ms will open again at the wake, noted when the device went to sleep and again
+     * when the MCU goes off (onMcuOff()): the app it takes for the top one when the MCU goes off,
+     * from getRunningTasks(1) with the panes' tasks
      * (capture 09-10-2026: sTopAppWhenMcuOff Maps, a pane, with the home screen in front), and
      * the app in front on the main display. Empty: the launcher, nothing to expect. Null: not known
      * (no system privileges, or the sleep was not seen).
@@ -345,7 +346,8 @@ public final class WakeDetection implements WakeSignals.Listener {
         // Nothing is pulled to the front any more until the next wake asks for it.
         HomeFrontGuard.reset("device asleep");
         // Now, before the panes go below: their tasks are what com.syu.ms may take for the top app.
-        restoreCandidates = topAppsForRestore();
+        // Noted again when the MCU goes off, see onMcuOff().
+        restoreCandidates = topAppsForRestore("at the sleep");
         // Noted by ForegroundAppTracker, which needs system privileges.
         appBeforeSleep = ForegroundAppTracker.isActive() ? ColdStart.lastApp(app) : null;
         sAsleep = true;
@@ -393,9 +395,28 @@ public final class WakeDetection implements WakeSignals.Listener {
         }     
     }
 
-    /** See restoreCandidates. Main thread, at the sleep. */
+    /**
+     * com.syu.ms notes the app it opens again at the wake right after this, from the same view
+     * the launcher has here: noted again, so that the wake expects just that app. After the home
+     * press at SLEEP_HOME_EARLY_MS it is the launcher, i.e. nothing ("MCU OFF sTopAppWhenMcuOff: "
+     * empty in the captures of 12-10-2026 21:47-21:49), and an app the user opens soon after the
+     * wake is no longer taken for the one com.syu.ms opens again. Not known on a device without
+     * com.syu.ms, nor before the first sleep this process sees.
+     */
+    @Override
+    public void onMcuOff() {
+        if (!sAsleep) {
+            return;
+        }
+        Set<String> candidates = topAppsForRestore("when the MCU went off");
+        if (candidates != null) {
+            restoreCandidates = candidates;
+        }
+    }
+
+    /** See restoreCandidates. Main thread, at the sleep and when the MCU goes off. */
     @SuppressWarnings("deprecation")
-    private Set<String> topAppsForRestore() {
+    private Set<String> topAppsForRestore(String when) {
         if (!HomeFrontGuard.seesOtherTasks(app)) {
             return null;
         }
@@ -414,11 +435,11 @@ public final class WakeDetection implements WakeSignals.Listener {
                 candidates.add(main.getPackageName());
             }
             candidates.remove(app.getPackageName());
-            Log.i(TAG, "Expected to be opened again at the wake: "
+            Log.i(TAG, "Expected to be opened again at the wake, " + when + ": "
                     + (candidates.isEmpty() ? "nothing (home screen)" : candidates));
             return candidates;
         } catch (RuntimeException e) {
-            Log.w(TAG, "Cannot read the top task at the sleep: " + e);
+            Log.w(TAG, "Cannot read the top task " + when + ": " + e);
             return null;
         }
     }

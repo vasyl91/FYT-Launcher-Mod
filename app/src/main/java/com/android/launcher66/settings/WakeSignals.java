@@ -74,6 +74,13 @@ final class WakeSignals {
         void onSleep(String source);
 
         void onWake(String source);
+
+        /**
+         * The MCU has gone off during a sleep (com.syu.ms's U_MCU_ON 0). com.syu.ms notes the app
+         * it opens again at the wake right after it sends this: 5-31 ms later in the captures of
+         * 12-10-2026 (21:47:52.675 here, "MCU OFF sTopAppWhenMcuOff" at 21:47:52.680).
+         */
+        void onMcuOff();
     }
 
     static final String ACC = "acc";
@@ -431,6 +438,11 @@ final class WakeSignals {
                     loggedCodes.put(updateCode, value);
                     Log.i(TAG, "com.syu.ms " + loggedCodeName(updateCode) + " = " + value
                             + (awake ? " (awake)" : " (asleep)"));
+                    // Not the first report, which is the state, not a change.
+                    if (updateCode == FinalMain.U_MCU_ON && value == 0
+                            && previous != Integer.MIN_VALUE && !awake) {
+                        listener.onMcuOff();
+                    }
                 }
             }
         };
