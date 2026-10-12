@@ -458,7 +458,8 @@ public final class ColdStart {
         long window = Math.max(BOOT_FRONT_WINDOW_MS, bootStallDelayMs() + BOOT_FRONT_AFTER_STALL_MS);
         Log.i(TAG, "Cold boot, what comes up within " + window + " ms is taken for the device's own");
         HomeFrontGuard.expect(Collections.singleton(HomeFrontGuard.ANY_APP), window, false, "cold boot");
-        HomeFrontGuard.start(app, "Boot", HomeFrontGuard.CHECK_INTERVAL_MS, true);
+        HomeFrontGuard.start(app, "Boot", HomeFrontGuard.CHECK_INTERVAL_MS,
+                HomeFrontGuard.CHECK_INTERVAL_MS, true);
     }
 
     // =============================================================================================

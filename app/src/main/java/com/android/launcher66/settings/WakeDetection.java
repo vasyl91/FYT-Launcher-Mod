@@ -14,7 +14,6 @@ import android.util.Log;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Lifecycle;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.ColdStart;
@@ -72,9 +71,9 @@ public final class WakeDetection implements WakeSignals.Listener {
     /**
      * With LAUNCHER_HOME_WAKE on, the app com.syu.ms opens again at the wake (see
      * restoreCandidates) is sent back behind the launcher if it comes up within this, and nothing
-     * says the user opened it (HomeFrontGuard). In the captures it came within a few hundred ms;
+     * says the user opened it (HomeFrontGuard). In the captures it came 0.5-1 s after ACC on;
      * anything later, or anything else, is taken for the user's -- a button on the steering wheel
-     * opens apps without a touch. pressHomeButtonAfterWake() looks once, at 500 ms.
+     * opens apps without a touch, through com.syu.ms.
      */
     private static final long WAKE_RESTORE_MS = 3000L;
     /** Without system privileges the app is not known: any app, and a shorter time. */
@@ -150,9 +149,8 @@ public final class WakeDetection implements WakeSignals.Listener {
      * (no system privileges, or the sleep was not seen).
      */
     private Set<String> restoreCandidates;
-    /** elapsedRealtime() of the last sleep and of the last wake handled. */
+    /** elapsedRealtime() of the last sleep. */
     private long sleepElapsed;
-    private long wakeElapsed;
     /** From the sleep to the wake handling; see isAsleep(). */
     private static volatile boolean sAsleep;
 
@@ -229,18 +227,20 @@ public final class WakeDetection implements WakeSignals.Listener {
         // which is why PiP came back after a short sleep but not after a long one.
         WindowUtil.invalidateOpenPipDebounce();
 
-        wakeElapsed = now;
         boolean homeOnWake = prefs.getBoolean(Keys.LAUNCHER_HOME_WAKE, true);
         if (homeOnWake && WakeSignals.RESTART.equals(source) && !signals.restartAtTheWake()) {
             // The process was started during the sleep, and the display was on already: that wake
             // may have been long ago, and the user busy with an app since -- nothing here says.
             Log.i(TAG, "Started after the wake, nothing brought to the front");
         } else if (homeOnWake) {
-            postForGeneration(wakeGen, this::pressHomeButtonAfterWake, 500);
-            // com.syu.ms relaunches the last top app within a few hundred ms of the wake, and a
-            // PiP app restored fullscreen keeps the launcher paused -- and the panes unbuilt --
-            // until something pushes it back. Only that app, and only if the user did not open it
-            // meanwhile; see HomeFrontGuard.
+            // com.syu.ms relaunches the last top app within a second of the wake, and a PiP app
+            // restored fullscreen keeps the launcher paused -- and the panes unbuilt -- until
+            // something pushes it back. Only that app, and only if the user did not open it
+            // meanwhile; see HomeFrontGuard. Its first check also sends back the app that was in
+            // front at the sleep, if it still is: that one is among restoreCandidates as well.
+            // Nothing else moves the launcher to the front here: the move 500 ms after the wake
+            // that did ran 2 s late, after the first frame (captures 12-10-2026), and covered the
+            // car info page the user had opened with a steering wheel button meanwhile.
             if (!HomeFrontGuard.isAnotherHomeDefault(app)) {
                 if (restoreCandidates == null) {
                     HomeFrontGuard.expect(Collections.singleton(HomeFrontGuard.ANY_APP),
@@ -249,7 +249,8 @@ public final class WakeDetection implements WakeSignals.Listener {
                     HomeFrontGuard.expect(restoreCandidates, WAKE_RESTORE_MS, true,
                             "opened again after the wake");
                 }
-                HomeFrontGuard.start(app, "Wake", WAKE_FRONT_FIRST_CHECK_MS, false);
+                HomeFrontGuard.start(app, "Wake", WAKE_FRONT_FIRST_CHECK_MS,
+                        HomeFrontGuard.FAST_CHECK_INTERVAL_MS, false);
             }
         } else if (appBeforeSleep != null) {
             // As with the stock launcher, the app that was in front before the sleep.
@@ -447,38 +448,6 @@ public final class WakeDetection implements WakeSignals.Listener {
     }
 
     /**
-     * Brings the launcher to the front after a wake.
-     *
-     * The HOME intent below is NOT harmless when the launcher is already running. With setClass()
-     * plus FLAG_ACTIVITY_NEW_TASK the system answered START_SUCCESS and built a second
-     * ActivityRecord instead of reusing the existing one -- the launcher was destroyed and
-     * recreated a couple of seconds into the wake. The pane rebuild that had already started was
-     * torn down with it, and everything had to be done again on the new instance, which is the
-     * ~3.5 s of wasted work before the apps in the panes even began to load.
-     *
-     * When the launcher is alive, moving its task to the front does the same job without a relaunch.
-     */
-    /**
-     * pressHomeButton() for the wake. Usually the launcher has resumed with the display already
-     * (capture 05-10-2026: onResume 35 ms before this was even posted), and the move to the front
-     * was a call into system_server in the busiest second of the wake for nothing. An app that
-     * com.syu.ms brings back later is handled by HomeFrontGuard.
-     */
-    private void pressHomeButtonAfterWake() {
-        Launcher launcher = Launcher.getLauncher();
-        if (launcher != null && launcher.mHasFocus
-                && launcher.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
-            Log.d(TAG, "pressHomeButton: launcher already in front after the wake");
-            return;
-        }
-        if (HomeFrontGuard.userActedSince(wakeElapsed)) {
-            Log.i(TAG, "pressHomeButton: the user has acted since the wake, left as it is");
-            return;
-        }
-        pressHomeButton();
-    }
-
-    /**
      * pressHomeButton() for the sleep. Not when the user has touched the screen or pressed a
      * button since: with ACC off the screen of some units stays on, and they are still in use.
      */
@@ -490,6 +459,18 @@ public final class WakeDetection implements WakeSignals.Listener {
         pressHomeButton();
     }
 
+    /**
+     * Brings the launcher to the front.
+     *
+     * The HOME intent below is NOT harmless when the launcher is already running. With setClass()
+     * plus FLAG_ACTIVITY_NEW_TASK the system answered START_SUCCESS and built a second
+     * ActivityRecord instead of reusing the existing one -- the launcher was destroyed and
+     * recreated a couple of seconds into the wake. The pane rebuild that had already started was
+     * torn down with it, and everything had to be done again on the new instance, which is the
+     * ~3.5 s of wasted work before the apps in the panes even began to load.
+     *
+     * When the launcher is alive, moving its task to the front does the same job without a relaunch.
+     */
     public void pressHomeButton() {
         Launcher launcher = Launcher.getLauncher();
         if (launcher != null && !launcher.isDestroyed() && !launcher.isFinishing()) {

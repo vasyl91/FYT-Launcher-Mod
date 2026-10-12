@@ -17,11 +17,28 @@ class HomeFrontGuardTest {
     private static final long NOW = 100_000L;
 
     @Test
-    void systemAppsAndHeadUnitAppsAreNeverPulledBackOver() {
+    void systemAppsAndHeadUnitAppsAreNotPulledBackOver() {
         assertTrue(HomeFrontGuard.isProtected("com.android.systemui"));
         assertTrue(HomeFrontGuard.isProtected("com.syu.bt"));
         assertTrue(HomeFrontGuard.isProtected("com.syu.carlink"));
         assertTrue(HomeFrontGuard.isProtected("vasyl.fytrating"));
+    }
+
+    @Test
+    void anAppOpenedOnPurposeGoesBackOnlyWhenItIsExactlyWhatWasExpected() {
+        // com.syu.ms opening com.syu.carlink again at a wake, as it was in front at the sleep.
+        assertFalse(HomeFrontGuard.isProtected("com.syu.carlink", true));
+        assertFalse(HomeFrontGuard.isProtected("com.syu.canbus", true));
+        assertTrue(HomeFrontGuard.isProtected("com.syu.canbus", false));    // a wheel button's page
+    }
+
+    @Test
+    void safetyAndSystemAppsStayProtectedEvenWhenExpected() {
+        assertTrue(HomeFrontGuard.isProtected("com.android.systemui", true));
+        assertTrue(HomeFrontGuard.isProtected("com.android.incallui", true));
+        assertTrue(HomeFrontGuard.isProtected("com.syu.ms", true));
+        assertTrue(HomeFrontGuard.isProtected("com.syu.camera360", true));
+        assertTrue(HomeFrontGuard.isProtected("com.syu.panoramic", true));
     }
 
     @Test

@@ -41,18 +41,46 @@ public final class DefaultDisplayTask {
      *
      * @throws RuntimeException as ActivityManager.getRunningTasks() does
      */
-    @SuppressWarnings("deprecation")
     public static ComponentName topActivity(ActivityManager am) {
+        ActivityManager.RunningTaskInfo task = topTask(am);
+        return task != null ? task.topActivity : null;
+    }
+
+    /**
+     * The task topActivity() is taken from; null if there is none.
+     *
+     * @throws RuntimeException as ActivityManager.getRunningTasks() does
+     */
+    @SuppressWarnings("deprecation")
+    public static ActivityManager.RunningTaskInfo topTask(ActivityManager am) {
         List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(SEARCH_LIMIT);
         if (tasks == null || tasks.isEmpty()) {
             return null;
         }
         for (ActivityManager.RunningTaskInfo task : tasks) {
             if (isOnDefaultDisplay(task)) {
-                return task.topActivity;
+                return task;
             }
         }
-        return tasks.get(0).topActivity;
+        return tasks.get(0);
+    }
+
+    /**
+     * Whether the task with this id is still there, on any display.
+     *
+     * @throws RuntimeException as ActivityManager.getRunningTasks() does
+     */
+    @SuppressWarnings("deprecation")
+    public static boolean isRunning(ActivityManager am, int taskId) {
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(Integer.MAX_VALUE);
+        if (tasks != null) {
+            for (ActivityManager.RunningTaskInfo task : tasks) {
+                if (task.id == taskId) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean isOnDefaultDisplay(ActivityManager.RunningTaskInfo task) {

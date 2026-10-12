@@ -95,8 +95,10 @@ public final class UserTouches {
     /**
      * Button presses as FYT's framework reports them: the system service "syu" hands out its BSP
      * module (com.syu.ipc.RemoteModuleBsp), whose callbacks get FinalBsp.U_BUTTON_EVENT, with the
-     * button as FinalBsp.KEY_CODE_* (NAVI 221, MODE 222, HOME 225 ...). No capture has shown yet
-     * which buttons arrive there, so every report is logged. Nothing happens on a device without
+     * button as FinalBsp.KEY_CODE_* (NAVI 221, MODE 222, HOME 225 ...). A steering wheel button
+     * on the CAN bus is not among them (captures 12-10-2026: com.syu.ms opened a car info page for
+     * it, and nothing was reported here); which buttons are, no capture has shown yet, so every
+     * report is logged. Nothing happens on a device without
      * the service, or where it may not be used. Once per process, off the main thread: these are
      * calls into system_server.
      */

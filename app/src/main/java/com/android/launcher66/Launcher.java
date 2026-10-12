@@ -3809,11 +3809,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return mWorkspace.getPaddingTop();
     }
 
-    /** Any touch or key on the launcher; see UserTouches. */
+    /**
+     * Any touch on the launcher; see UserTouches. Not from onUserInteraction(): Android calls that
+     * from performUserLeaving() as well, whenever an activity is started over the launcher -- by
+     * com.syu.ms at a wake too -- and every such app looked tapped (captures 12-10-2026: each
+     * wake's HomeFrontGuard ended on it, "the user opened something").
+     */
     @Override
-    public void onUserInteraction() {
-        super.onUserInteraction();
-        com.syu.util.UserTouches.note();
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int action = ev.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_UP) {
+            com.syu.util.UserTouches.note();
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     @Override
@@ -5883,6 +5891,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            com.syu.util.UserTouches.note();    // a key on the launcher; see dispatchTouchEvent()
             switch (event.getKeyCode()) {
                 case KeyEvent.KEYCODE_HOME:
                     return true;
