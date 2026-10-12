@@ -35,7 +35,7 @@ public class NightModeService extends Service {
     private static final Object TASK_LOCK = new Object();
 
     /* The interval below which a subsequent wallpaper refresh request is ignored.
-     * The Launcher (onResume + delayed watchdog) and WakeDetectionService can start
+     * The Launcher (onResume + delayed watchdog) and WakeDetection can start
      * the service several times within a second — without this, each one would start a SunTask.
      */
     private static final long MIN_REFRESH_INTERVAL_MS = 5000;
@@ -349,7 +349,7 @@ public class NightModeService extends Service {
             // schedules the next one (same job ID). Cancelling it here left no job at all whenever
             // the new task was cancelled (service restarted) or failed before scheduling, and the
             // next sunrise/sunset switch - wallpaper and brightness - did not happen.
-            // WakeDetectionService still drops the job on purpose when the screen goes off.
+            // WakeDetection still drops the job on purpose when the screen goes off.
 
             String urlString = "https://api.sunrise-sunset.org/json?lat=" + lat + "&lng=" + longt
                     + "&date=today" + "&tzid=" + ZoneId.systemDefault();

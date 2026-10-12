@@ -25,7 +25,10 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
+import com.android.launcher66.HomeFrontGuard;
+
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Executors;
@@ -1258,6 +1261,8 @@ public class WindowHostSinglePane {
     private void restartPaneApp(String pkg, int expectedGen) {
         if (gen != expectedGen || pkg == null || pkg.isEmpty()) return;
 
+        // com.syu.ms may open it again full screen right away (see HomeFrontGuard).
+        HomeFrontGuard.expectSystemLaunch(activity, Collections.singleton(pkg), "pane restart");
         forceStopApp(activity, pkg);
 
         postMainDelayed(() -> {

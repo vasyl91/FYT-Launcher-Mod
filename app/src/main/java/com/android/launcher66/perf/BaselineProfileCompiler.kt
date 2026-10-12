@@ -62,7 +62,7 @@ import kotlin.coroutines.resume
  *       - at least [REFRESH_MIN_SESSIONS] usage sessions since the previous compilation.
  *     A session is:
  *       - a device restart (cold boot, detected by LauncherApplication) - always counts,
- *       - a wake-up from sleep reported by WakeDetectionService ([onDeviceWake];
+ *       - a wake-up from sleep reported by WakeDetection ([onDeviceWake];
  *         ACTION_SCREEN_ON is not delivered on FYT) or a launcher process restart without a
  *         device restart - counts if at least [SESSION_MIN_GAP_MS] of device time passed since
  *         the previous counted session (filters quick display off/on and crash restarts).
@@ -233,7 +233,7 @@ object BaselineProfileCompiler {
     }
 
     /**
-     * Call from WakeDetectionService when the head unit wakes up (display on after sleep).
+     * Call from WakeDetection when the head unit wakes up (display on after sleep).
      * Counts a usage session, or restarts a pending initial compilation cancelled by the sleep.
      */
     @JvmStatic
@@ -250,7 +250,7 @@ object BaselineProfileCompiler {
         }
     }
 
-    /** Call from WakeDetectionService when the head unit goes to sleep (ACC off). */
+    /** Call from WakeDetection when the head unit goes to sleep (ACC off). */
     @JvmStatic
     fun onDeviceSleep() {
         if (cancelPendingJob()) Log.i(TAG, "Sleep: pending compilation postponed to the next wake")

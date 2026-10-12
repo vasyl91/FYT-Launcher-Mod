@@ -3,13 +3,13 @@ package com.android.launcher66;
 import android.os.SystemClock;
 import com.android.launcher66.settings.FytRating;
 import com.android.launcher66.settings.Keys;
-import com.android.launcher66.settings.WakeDetectionService;
+import com.android.launcher66.settings.WakeDetection;
 import com.syu.util.WindowHost;
 import com.syu.util.WindowUtil;
 import com.syu.widget.Widget;
 
 /**
- * What the launcher itself does after the device wakes: the widget bar refresh WakeDetectionService
+ * What the launcher itself does after the device wakes: the widget bar refresh WakeDetection
  * asks for, and waking the fYT Rating bridge once the panes are up. The layout repair passes of a
  * wake are in HomeLayoutRecovery. Split out of Launcher.
  */
@@ -24,7 +24,7 @@ final class LauncherWake {
 
     /**
      * Widget bar repair after a wake. Scheduled both from the WAKE_REFRESH broadcast and directly
-     * from WakeDetectionService, because the dynamic receiver is unregistered in onStop() and the
+     * from WakeDetection, because the dynamic receiver is unregistered in onStop() and the
      * broadcast is lost whenever the launcher is still stopped when it is sent. If the launcher
      * cannot act yet (paused), the pending flag makes onResume() finish the job.
      */
@@ -35,7 +35,7 @@ final class LauncherWake {
     boolean mWidgetBarWakeRefreshPending = false;
 
     /**
-     * Direct entry point for WakeDetectionService. Does not depend on the dynamic receiver,
+     * Direct entry point for WakeDetection. Does not depend on the dynamic receiver,
      * which is unregistered while the launcher is stopped.
      */
     public void onDeviceWake(String source) {
@@ -115,7 +115,7 @@ final class LauncherWake {
      * Panes are configured but not up yet. isPipRebuildInProgress() alone missed the gap between
      * onResume() and the start of the rebuild: at boot the wake fired right there, paused the
      * launcher, and the rebuild that followed had to retry and dismissed a pane (capture 23:13,
-     * 40.777). Same expectations as WakeDetectionService.isPipExpected().
+     * 40.777). Same expectations as WakeDetection.isPipExpected().
      */
     boolean arePanesStillComing() {
         if (WindowUtil.isPipRebuildInProgress()) return true;

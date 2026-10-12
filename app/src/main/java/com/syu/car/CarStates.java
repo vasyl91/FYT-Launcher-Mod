@@ -19,8 +19,18 @@ public class CarStates {
     public RemoteTools mTools;
     public static int mAppID = 0;
     public static int mAccState = 0;
+    /** FinalMain.U_BLACK_SCREEN: the screen blanked with the device on, not a sleep (WakeSignals). */
+    public static volatile int mBlackScreen = 0;
+    /** FinalMain.U_BACKCAR: reverse gear, i.e. the reversing camera is up (HomeFrontGuard). */
+    public static volatile int mBackcarState = 0;
     public static int mExistCarRadio = 0;
-    final int[] MAIN_LOOK_CODE = {0, 28, 39, 50, 4, 101};
+    /**
+     * com.syu.ms reports only the codes registered here. U_BLACK_SCREEN and U_BACKCAR are kept
+     * below; U_MCU_ON, U_STANDBY and U_ARM_SLEEP_WAKEUP are only logged by WakeSignals, as no
+     * capture has shown yet what they report around a sleep.
+     */
+    final int[] MAIN_LOOK_CODE = {0, 28, 39, 50, 4, 101, FinalMain.U_BLACK_SCREEN, FinalMain.U_BACKCAR,
+            FinalMain.U_MCU_ON, FinalMain.U_STANDBY, FinalMain.U_ARM_SLEEP_WAKEUP};
     final int[] TV_LOOK_CODE = new int[0];
     final int[] CANBUS_LOOK_CODE = {1000, FinalCanbus.U_EXIST_CAR_RADIO};
     final int[] RADIO_LOOK_CODE = {0, 1, 2, 20, 23, 21};
@@ -68,6 +78,14 @@ public class CarStates {
                         CarStates.mAccState = ints[0];
                         return;
                     }
+                    if (updateCode == FinalMain.U_BLACK_SCREEN && ints != null && ints.length > 0) {
+                        CarStates.mBlackScreen = ints[0];
+                        return;
+                    }
+                    if (updateCode == FinalMain.U_BACKCAR && ints != null && ints.length > 0) {
+                        CarStates.mBackcarState = ints[0];
+                        return;
+                    }
                     // The navigation app picked in the system settings.
                     if (updateCode == FinalMain.U_NAVI_PACKAGE) {
                         mNaviPkg = strs != null && strs.length > 0 && strs[0] != null ? strs[0].trim() : "";
@@ -77,7 +95,8 @@ public class CarStates {
                         HeadlightNightMode.onLightsReported(mContext, ints[0]);
                     }
                 }
-            }, 0, FinalMain.U_NAVI_PACKAGE, 39, 50, FinalMain.U_LAMPLET);
+            }, 0, FinalMain.U_NAVI_PACKAGE, 39, 50, FinalMain.U_LAMPLET, FinalMain.U_BLACK_SCREEN,
+                    FinalMain.U_BACKCAR);
         }
     }
 

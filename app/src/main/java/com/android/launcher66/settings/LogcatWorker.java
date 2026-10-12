@@ -213,6 +213,8 @@ public final class LogcatWorker {
 
     private CountDownTimer countDownTimer; // main thread only
     private StateListener listener;        // main thread only
+    /** A wake came while the capture before it was ending; see startForWake(). Guarded by lock. */
+    private boolean wakeStartPending;
 
     /** A finished capture whose file name may still show a wrong clock; see fixNameForClock(). */
     private static final class NameCheck {
@@ -305,6 +307,36 @@ public final class LogcatWorker {
         mainHandler.post(this::startCountdown);
         // Hard stop: unblocks reader.readLine() when the log is quiet.
         mainHandler.postDelayed(deadlineRunnable, timeoutSeconds * 1000L);
+    }
+
+    /**
+     * The capture of a wake (Keys.LOGCAT_SERVICE_WAKE); main thread.
+     *
+     * start() is ignored while a capture runs, and one that a sleep interrupted still ran at the
+     * next wake: its hard stop counts uptime, which stands still while the device sleeps, and the
+     * capture itself only notices its time is up at the next line it reads. So the wake was not
+     * captured at all. A capture that still has time left is now extended over the wake, and one
+     * that has run out is followed by the wake's own capture as soon as it has finished.
+     */
+    public void startForWake(Context context) {
+        final Context ctx = context.getApplicationContext();
+        synchronized (lock) {
+            if (!finished.get()) {
+                long now = SystemClock.elapsedRealtime();
+                if (running && now < deadlineElapsedMs) {
+                    deadlineElapsedMs = Math.max(deadlineElapsedMs, now + timeoutSeconds * 1000L);
+                    Log.i(TAG, "startForWake(): capture running, extended over the wake");
+                    mainHandler.removeCallbacks(deadlineRunnable);
+                    mainHandler.postDelayed(deadlineRunnable, deadlineElapsedMs - now);
+                    startCountdown();
+                    return;
+                }
+                wakeStartPending = true;
+                Log.i(TAG, "startForWake(): the previous capture is ending, the wake's follows it");
+                return;
+            }
+        }
+        start(ctx);
     }
 
     public void stop(boolean showToast, Context contextForToast) {
@@ -1294,6 +1326,14 @@ public final class LogcatWorker {
             }
             StateListener l = listener;
             if (l != null) l.onLogcatStopped(success, message);
+            boolean wakePending;
+            synchronized (lock) {
+                wakePending = wakeStartPending;
+                wakeStartPending = false;
+            }
+            if (wakePending && ctx != null) {
+                start(ctx);
+            }
         });
     }
 

@@ -127,7 +127,7 @@ import com.android.launcher66.settings.NightModeService;
 import com.android.launcher66.settings.SessionPrefs;
 import com.android.launcher66.settings.SettingsActivity;
 import com.android.launcher66.settings.StatusBarSwipeDetector;
-import com.android.launcher66.settings.WakeDetectionService;
+import com.android.launcher66.settings.WakeDetection;
 import com.android.recycler.AppListAdapter;
 import com.android.recycler.AppListBean;
 import com.android.recycler.AppListDialogFragment;
@@ -1249,7 +1249,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         Launcher.this.mUserPresent = true;
                         Launcher.this.updateRunning();
                         break;                     
-                    case WakeDetectionService.ACTION_WAKE_REFRESH:
+                    case WakeDetection.ACTION_WAKE_REFRESH:
                         mHomeRecovery.repairLayoutAfterWake(intent.getStringExtra("phase"));
                         break;
                     case Intent.ACTION_CLOSE_SYSTEM_DIALOGS:
@@ -2016,7 +2016,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 IntentFilter filter = new IntentFilter();
                 filter.addAction("android.intent.action.SCREEN_OFF");
                 filter.addAction(Intent.ACTION_USER_PRESENT);
-                filter.addAction(WakeDetectionService.ACTION_WAKE_REFRESH);
+                filter.addAction(WakeDetection.ACTION_WAKE_REFRESH);
                 filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
                 filter.addAction(Keys.UPDATE_USER_PAGE);
                 filter.addAction("pause.button");
@@ -3084,7 +3084,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public static boolean isServiceRunning(Class<? extends Service> serviceClass) {
         // Services of this process know it themselves: no getRunningServices() round trip (all the
         // services of the system, on every resume once the cache had expired), and no stale cache
-        // after WakeDetectionService stopped one behind this cache's back.
+        // after WakeDetection stopped one behind this cache's back.
         if (serviceClass == NightModeService.class) {
             return NightModeService.isRunning();
         }
@@ -3125,8 +3125,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void stopServicesOnDestroy() {
-        SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, WakeDetectionService.class));
-        setServiceRunningCache(WakeDetectionService.class, false);
+        // Not WakeDetectionService: sleep and wake are the process', not this activity's, and a
+        // recreation of the activity used to end their handling for good (see WakeDetection).
         SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, NightModeService.class));
         setServiceRunningCache(NightModeService.class, false);
         SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, CanbusService.class));
@@ -3809,11 +3809,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return mWorkspace.getPaddingTop();
     }
 
-    /** Any touch or key on the launcher; see UserTouches. */
+    /**
+     * Any touch on the launcher; see UserTouches. Not from onUserInteraction(): Android calls that
+     * from performUserLeaving() as well, whenever an activity is started over the launcher -- by
+     * com.syu.ms at a wake too -- and every such app looked tapped (captures 12-10-2026: each
+     * wake's HomeFrontGuard ended on it, "the user opened something").
+     */
     @Override
-    public void onUserInteraction() {
-        super.onUserInteraction();
-        com.syu.util.UserTouches.note();
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int action = ev.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_UP) {
+            com.syu.util.UserTouches.note();
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     @Override
@@ -5883,6 +5891,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            com.syu.util.UserTouches.note();    // a key on the launcher; see dispatchTouchEvent()
             switch (event.getKeyCode()) {
                 case KeyEvent.KEYCODE_HOME:
                     return true;

@@ -36,6 +36,7 @@ import com.android.launcher66.settings.CrashLogger;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.LogcatWorker;
 import com.android.launcher66.settings.VersionChecker;
+import com.android.launcher66.settings.WakeDetection;
 import com.android.launcher66.settings.WakeDetectionService;
 import com.fyt.skin.SkinManager;
 import com.fyt.skin.util.FileUtil;
@@ -121,6 +122,8 @@ public class LauncherApplication extends Application {
         initData();
         // Tells the sound channel logic a tapped app from one that came up by itself.
         com.syu.util.UserTouches.start();
+        // And the buttons FYT's framework reports (HomeFrontGuard); calls into system_server.
+        new Thread(com.syu.util.UserTouches::startButtons, "FytButtons").start();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         // One setting became two (wake, cold start): both start from the old one, once.
         if (prefs.contains(Keys.LAUNCHER_HOME)) {
@@ -131,9 +134,14 @@ public class LauncherApplication extends Application {
                     .remove(Keys.LAUNCHER_HOME)
                     .apply();
         }
+        // Before anything can start a HomeFrontGuard: it needs to know whether the launcher is in front.
+        HomeFrontGuard.trackActivities(this);
         // First start after a device restart (not a wake from sleep): the launcher is kept in
         // front and the autostart is scheduled, see ColdStart.
         coldStart = ColdStart.start(this, prefs);
+        // Sleep and wake, for as long as the process lives; its calls into system_server run
+        // on its own thread.
+        WakeDetection.start(this);
         initProperties();
         sHandler = new Handler(Looper.getMainLooper());
         cfg();
@@ -144,8 +152,9 @@ public class LauncherApplication extends Application {
         if (BuildConfig.DEBUG) {
             enableStrictMode();
         }
-        // Two binder calls (resolveService, startService), so off the main thread: at a cold boot
-        // they could block it during the boot-time stall (see ColdStart).
+        // Keeps the process up for WakeDetection, see there. Two binder calls (resolveService,
+        // startService), so off the main thread: at a cold boot they could block it during the
+        // boot-time stall (see ColdStart).
         handler.postDelayed(() -> new Thread(() -> ServiceIntentGate.startIfAvailable(
                 this,
                 new Intent(this, WakeDetectionService.class),
