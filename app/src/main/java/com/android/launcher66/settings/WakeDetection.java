@@ -160,6 +160,12 @@ public final class WakeDetection implements WakeSignals.Listener {
      * (no system privileges, or the sleep was not seen).
      */
     private Set<String> restoreCandidates;
+    /**
+     * What was in front on the main display when the device went to sleep: its package, "" for
+     * the home screen, null if not known. With LAUNCHER_HOME_WAKE off that is what the wake is to
+     * show again, whoever opens it.
+     */
+    private String frontAtSleep;
     /** elapsedRealtime() of the last sleep. */
     private long sleepElapsed;
     /** From the sleep to the wake handling; see isAsleep(). */
@@ -239,34 +245,17 @@ public final class WakeDetection implements WakeSignals.Listener {
         WindowUtil.invalidateOpenPipDebounce();
 
         boolean homeOnWake = prefs.getBoolean(Keys.LAUNCHER_HOME_WAKE, true);
-        if (homeOnWake && WakeSignals.RESTART.equals(source) && !signals.restartAtTheWake()) {
+        if (WakeSignals.RESTART.equals(source) && !signals.restartAtTheWake()) {
             // The process was started during the sleep, and the display was on already: that wake
             // may have been long ago, and the user busy with an app since -- nothing here says.
             Log.i(TAG, "Started after the wake, nothing brought to the front");
-        } else if (homeOnWake) {
-            // com.syu.ms relaunches the last top app within a second of the wake, and a PiP app
-            // restored fullscreen keeps the launcher paused -- and the panes unbuilt -- until
-            // something pushes it back. Only that app, and only if the user did not open it
-            // meanwhile; see HomeFrontGuard. Its first check also sends back the app that was in
-            // front at the sleep, if it still is: that one is among restoreCandidates as well.
-            // Nothing else moves the launcher to the front here: the move 500 ms after the wake
-            // that did ran 2 s late, after the first frame (captures 12-10-2026), and covered the
-            // car info page the user had opened with a steering wheel button meanwhile.
-            // Not known (no system privileges, a process started during the sleep), or nothing
-            // (the launcher was the top app at the MCU off): nothing is watched for. Never "any
-            // app": a button can open any app, and nothing of it is seen.
-            if (restoreCandidates == null || restoreCandidates.isEmpty()) {
-                Log.i(TAG, "Nothing expected to be opened again after the wake");
-            } else if (!HomeFrontGuard.isAnotherHomeDefault(app)) {
-                HomeFrontGuard.expect(restoreCandidates, WAKE_RESTORE_MS,
-                        "opened again after the wake");
-                HomeFrontGuard.start(app, "Wake", WAKE_FRONT_FIRST_CHECK_MS,
-                        HomeFrontGuard.FAST_CHECK_INTERVAL_MS);
+        } else {
+            if (!homeOnWake && appBeforeSleep != null) {
+                // As with the stock launcher, the app that was in front before the sleep.
+                final String before = appBeforeSleep;
+                postForGeneration(wakeGen, () -> ColdStart.bringBackLastApp(app, before, 0L), 0);
             }
-        } else if (appBeforeSleep != null) {
-            // As with the stock launcher, the app that was in front before the sleep.
-            final String before = appBeforeSleep;
-            postForGeneration(wakeGen, () -> ColdStart.bringBackLastApp(app, before, 0L), 0);
+            watchForRestore(homeOnWake);
         }
         // Everything delayed here belongs to this wake only; see postForGeneration().
         postForGeneration(wakeGen, this::dismissAppListDialog, 500);
@@ -344,6 +333,7 @@ public final class WakeDetection implements WakeSignals.Listener {
         HomeFrontGuard.reset("device asleep");
         // Now, before the panes go below: their tasks are what com.syu.ms may take for the top app.
         // Noted again when the MCU goes off, see onMcuOff().
+        frontAtSleep = mainDisplayFront();
         restoreCandidates = topAppsForRestore("at the sleep");
         // Noted by ForegroundAppTracker, which needs system privileges.
         appBeforeSleep = ForegroundAppTracker.isActive() ? ColdStart.lastApp(app) : null;
@@ -366,6 +356,8 @@ public final class WakeDetection implements WakeSignals.Listener {
             // rest of them only runs out after the next wake (see postForGeneration).
             postForGeneration(sleepGen, this::pressHomeButtonAfterSleep, SLEEP_HOME_EARLY_MS);
             postForGeneration(sleepGen, this::pressHomeButtonAfterSleep, SLEEP_HOME_MS);
+        } else if ("".equals(frontAtSleep)) {
+            postForGeneration(sleepGen, this::keepHomeScreenTopAfterSleep, SLEEP_HOME_EARLY_MS);
         }
 
         WindowUtil.removePip();
@@ -411,6 +403,24 @@ public final class WakeDetection implements WakeSignals.Listener {
         }
     }
 
+    /** See frontAtSleep. Main thread. */
+    private String mainDisplayFront() {
+        if (!HomeFrontGuard.seesOtherTasks(app)) {
+            return null;
+        }
+        try {
+            ActivityManager am = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
+            ComponentName top = am != null ? DefaultDisplayTask.topActivity(am) : null;
+            if (top == null) {
+                return null;
+            }
+            return top.getPackageName().equals(app.getPackageName()) ? "" : top.getPackageName();
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Cannot read the app in front: " + e);
+            return null;
+        }
+    }
+
     /** See restoreCandidates. Main thread, at the sleep and when the MCU goes off. */
     @SuppressWarnings("deprecation")
     private Set<String> topAppsForRestore(String when) {
@@ -434,6 +444,8 @@ public final class WakeDetection implements WakeSignals.Listener {
             candidates.remove(app.getPackageName());
             Log.i(TAG, "Expected to be opened again at the wake, " + when + ": "
                     + (candidates.isEmpty() ? "nothing (home screen)" : candidates));
+            // Kept for a restart: com.syu.ms may open it again then as well, see ColdStart.
+            ColdStart.noteMcuOffApps(app, candidates);
             return candidates;
         } catch (RuntimeException e) {
             Log.w(TAG, "Cannot read the top task " + when + ": " + e);
@@ -475,6 +487,81 @@ public final class WakeDetection implements WakeSignals.Listener {
             String serviceName = serviceClass.getName();
             sServiceRunningCache.put(serviceName, isRunning);
             sServiceRunningCacheTime.put(serviceName, SystemClock.uptimeMillis());
+        }
+    }
+
+    /**
+     * com.syu.ms relaunches its last top app within a second of the wake, and a PiP app restored
+     * fullscreen keeps the launcher paused -- and the panes unbuilt -- until something pushes it
+     * back. That app -- the one noted when the MCU went off, see restoreCandidates -- is sent back
+     * behind what is to be in front, and only if the user did not open it meanwhile (see
+     * HomeFrontGuard): the home screen with LAUNCHER_HOME_WAKE on, with it off the app in front at
+     * the sleep, whose coming back is what the wake is for. With the home press before the MCU
+     * goes off com.syu.ms usually takes the launcher, and nothing is watched for.
+     *
+     * <p>Nothing else is moved to the front here: the move 500 ms after the wake that did ran 2 s
+     * late, after the first frame (captures 12-10-2026), and covered the car info page the user
+     * had opened with a steering wheel button meanwhile. Not known (no system privileges, a
+     * process started during the sleep): nothing is watched for. Never "any app": a button can
+     * open any app, and nothing of it is seen.
+     */
+    private void watchForRestore(boolean homeOnWake) {
+        Set<String> expected = restoreToWatch(restoreCandidates, homeOnWake, frontAtSleep);
+        if (expected.isEmpty()) {
+            Log.i(TAG, "Nothing expected to be opened again after the wake");
+            return;
+        }
+        if (HomeFrontGuard.isAnotherHomeDefault(app)) {
+            return;
+        }
+        HomeFrontGuard.expect(expected, WAKE_RESTORE_MS, "opened again after the wake");
+        HomeFrontGuard.start(app, "Wake", WAKE_FRONT_FIRST_CHECK_MS,
+                HomeFrontGuard.FAST_CHECK_INTERVAL_MS);
+    }
+
+    /**
+     * See watchForRestore(): what com.syu.ms may open again and is to be sent back. candidates and
+     * frontAtSleep as restoreCandidates and frontAtSleep; never null.
+     */
+    static Set<String> restoreToWatch(Set<String> candidates, boolean homeOnWake, String frontAtSleep) {
+        Set<String> expected = new HashSet<>();
+        if (candidates == null || (!homeOnWake && frontAtSleep == null)) {
+            return expected;                // not known what com.syu.ms takes, or what is to be in front
+        }
+        expected.addAll(candidates);
+        if (!homeOnWake) {
+            expected.remove(frontAtSleep);  // its coming back is what the wake is for
+        }
+        return expected;
+    }
+
+    /**
+     * LAUNCHER_HOME_WAKE off, the home screen in front at the sleep: the launcher's task is moved
+     * to the front once more. Nothing changes on the screen, but the launcher becomes the top app
+     * com.syu.ms notes when the MCU goes off, rather than the pane app resumed last ("MCU OFF
+     * sTopAppWhenMcuOff: com.google.android.apps.maps" with the home screen in front, capture
+     * 13-10-2026 00:31:21), which it may open full screen at the wake. Not when anything else is in
+     * front by now, nor when the user has acted since the sleep.
+     */
+    private void keepHomeScreenTopAfterSleep() {
+        if (HomeFrontGuard.userActedSince(sleepElapsed)) {
+            Log.i(TAG, "Home screen not kept on top: the user has acted since the sleep");
+            return;
+        }
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher == null || launcher.isDestroyed() || launcher.isFinishing()
+                || !"".equals(mainDisplayFront())) {
+            Log.i(TAG, "Home screen not kept on top: not in front any more");
+            return;
+        }
+        try {
+            ActivityManager am = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
+            if (am != null) {
+                am.moveTaskToFront(launcher.getTaskId(), 0);
+                Log.i(TAG, "Home screen kept as the top app for com.syu.ms");
+            }
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Home screen not kept on top: " + e);
         }
     }
 

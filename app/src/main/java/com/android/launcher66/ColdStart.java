@@ -28,7 +28,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The launcher's first start after a device restart (a cold boot), as opposed to a wake from
@@ -104,6 +106,7 @@ public final class ColdStart {
                 Log.i(TAG, "Cold boot, LAUNCHER_HOME_COLD_START off: the last app, if any, is opened again");
                 coldStart.scheduleLastAppRestore(settings);
             }
+            coldStart.watchForRestoreAfterBoot(launcherHome);
             coldStart.scheduleBootAutostart(launcherHome);
         }
         return coldStart;
@@ -435,15 +438,72 @@ public final class ColdStart {
     //
     // The launcher is what Android starts at boot, and with the setting on it opens nothing over
     // itself: neither the last app (see below) nor, once its own autostart is done, the apps of it
-    // (returnToLauncherAfterAutostart()). Nothing else is sent back. The device itself opens
-    // nothing at a cold boot -- com.syu.ms's sTopAppWhenMcuOff is empty after a restart (captures
-    // 08-10-2026 and 12-10-2026), and nothing came up in six cold boots -- while an app that comes
-    // up then may well be the user's, opened with a button or adb: for 27 s anything was taken for
-    // the device's and sent back, com.syu.filemanager among them (12-10-2026). FYT SystemUI's own
-    // autostart list is the exception, and stays in front; on the launcher's list instead
+    // (returnToLauncherAfterAutostart()). Apart from that, only one app is ever sent back: the one
+    // com.syu.ms may open again by itself (watchForRestoreAfterBoot()). An app that comes up early
+    // is not taken for the device's for that: it may well be the user's, opened with a button or
+    // adb -- for 27 s anything was, and com.syu.filemanager was sent back (12-10-2026). FYT
+    // SystemUI's own autostart list stays in front; on the launcher's list instead
     // (AppListAutostartDialogFragment) those apps are started after the boot-time stall and the
     // launcher comes back over them.
     // =============================================================================================
+
+    /**
+     * How long after the start the app com.syu.ms may open again is watched for, at least, and
+     * until this long after the boot-time stall: this unit's com.syu.ms makes up its mind 1.5 s
+     * after the launcher's start (captures 12-10-2026, "goto DataMain.sTopAppWhenMcuOff:"), others
+     * may wait for the stall.
+     */
+    private static final long BOOT_RESTORE_WINDOW_MS = 20000L;
+    private static final long BOOT_RESTORE_AFTER_STALL_MS = 5000L;
+    private static final String KEY_MCU_OFF_APPS = "mcu_off_apps";
+
+    /**
+     * From WakeDetection, main thread: the apps com.syu.ms may take for its top app when the MCU
+     * goes off (see WakeDetection.restoreCandidates), kept over a restart.
+     */
+    public static void noteMcuOffApps(Context context, Set<String> apps) {
+        context.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
+                .edit().putString(KEY_MCU_OFF_APPS, String.join(",", apps)).apply();
+    }
+
+    /** See noteMcuOffApps(); null if never noted. */
+    static Set<String> mcuOffApps(Context context) {
+        String raw = context.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
+                .getString(KEY_MCU_OFF_APPS, null);
+        if (raw == null) {
+            return null;
+        }
+        Set<String> apps = new HashSet<>();
+        for (String pkg : raw.split(",")) {
+            if (!pkg.isEmpty()) {
+                apps.add(pkg);
+            }
+        }
+        return apps;
+    }
+
+    /**
+     * On the main thread, from start(). This unit's com.syu.ms opens nothing at a cold boot: its
+     * sTopAppWhenMcuOff is empty after a restart (captures 08-10-2026 and 12-10-2026). Another
+     * firmware's may keep it, and open that app again at the boot as it does at a wake -- with the
+     * home screen in front at the last sleep, the pane app resumed last, out of its pane. That
+     * app, as WakeDetection noted it from the same view when the MCU last went off, is sent back
+     * behind what is to be in front, unless it is that: the home screen with the setting on, the
+     * last app with it off (scheduleLastAppRestore() opens that one anyway).
+     */
+    private void watchForRestoreAfterBoot(boolean launcherHome) {
+        Set<String> apps = mcuOffApps(app);
+        if (apps != null && !launcherHome) {
+            apps.remove(lastApp(app));
+        }
+        if (apps == null || apps.isEmpty()) {
+            Log.i(TAG, "Cold boot: nothing com.syu.ms may open again is watched for");
+            return;
+        }
+        long window = Math.max(BOOT_RESTORE_WINDOW_MS, bootStallDelayMs() + BOOT_RESTORE_AFTER_STALL_MS);
+        HomeFrontGuard.expect(apps, window, "opened again after the restart");
+        HomeFrontGuard.start(app, "Boot", 0L, HomeFrontGuard.CHECK_INTERVAL_MS);
+    }
 
     // =============================================================================================
     // Last app back in front after a device restart or a wake (LAUNCHER_HOME_COLD_START or
