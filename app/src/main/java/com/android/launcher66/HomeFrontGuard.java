@@ -523,22 +523,26 @@ public final class HomeFrontGuard {
             launcherInFront();
             return interval;
         }
+        Front top = front(app);
+        if (top != null && app.getPackageName().equals(top.packageName())) {
+            // Our own task is on top: in front, or about to be resumed (at start, or right after
+            // a pull-back), which without the task stack is waited for. Also with the display
+            // still off: what comes up from now on is in front of it in the task stack's order.
+            launcherInFront();
+            return seesTasks ? interval : STARTING_POLL_MS;
+        }
         if (!isDefaultDisplayOn(app)) {
             // Nothing to see. Not the end of the guard: the display alone is not a sleep (the
             // FYT black screen, a display still off early at boot); WakeDetection ends it then.
-            return CHECK_INTERVAL_MS;
+            // Looked at again as often as usual: a wake's first check came 0.1 s before the
+            // display was on, and waiting a whole second missed carlink and Maps coming up
+            // (capture 12-10-2026 21:13:23).
+            return interval;
         }
         if (isKeyguardLocked()) {
             return KEYGUARD_POLL_MS;    // what is under it does not show
         }
         long now = SystemClock.elapsedRealtime();
-        Front top = front(app);
-        if (top != null && app.getPackageName().equals(top.packageName())) {
-            // Our own task is on top: in front, or about to be resumed (at start, or right after
-            // a pull-back), which without the task stack is waited for.
-            launcherInFront();
-            return seesTasks ? interval : STARTING_POLL_MS;
-        }
         String cover = top != null ? top.packageName() : "";
         int coverTask = top != null ? top.taskId : -1;
         String coverName = top != null ? top.activity.flattenToShortString() : "an app it cannot see";

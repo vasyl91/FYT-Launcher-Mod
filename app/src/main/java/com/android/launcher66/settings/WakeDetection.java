@@ -88,8 +88,16 @@ public final class WakeDetection implements WakeSignals.Listener {
      * With LAUNCHER_HOME_WAKE on, the launcher is moved to the front after a sleep, so that it is
      * the app com.syu.ms takes for the top one when the MCU goes off and opens again at the wake.
      * Twice: the later one alone was lost whenever the SoC suspended within its delay.
+     *
+     * <p>The first one before the MCU goes off, 0.8-1 s after ACC off in the captures: com.syu.ms
+     * notes its top app right then (12-10-2026 21:11:31.884 ACC off, 21:11:32.894 "MCU OFF
+     * sTopAppWhenMcuOff: com.google.android.apps.maps"), from getRunningTasks(1), the panes'
+     * tasks included. With the home screen in front that was always the pane app resumed last,
+     * which it then opened full screen at the wake, out of its pane. Moving the launcher's task
+     * to the front makes it the top one there (21:13:22.228, and com.syu.ms's "newPackage =
+     * com.android.launcher66" 0.2 s later), but at 1.5 s that came after the MCU had gone off.
      */
-    private static final long SLEEP_HOME_EARLY_MS = 1500L;
+    private static final long SLEEP_HOME_EARLY_MS = 300L;
     private static final long SLEEP_HOME_MS = 5000L;
     /**
      * Delays between successive "is PiP actually up?" checks after a wake, in ms.
