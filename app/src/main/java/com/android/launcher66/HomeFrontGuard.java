@@ -235,6 +235,16 @@ public final class HomeFrontGuard {
             }
         }
 
+        /** Whether an entry not used yet names this package (not just any app) at that time. */
+        synchronized boolean namesUnused(String pkg, long atElapsed) {
+            for (Entry entry : entries) {
+                if (!entry.used && atElapsed <= entry.untilElapsed && entry.packages.contains(pkg)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /** When the last open entry runs out; 0 if there is none. */
         synchronized long lastUntil() {
             long last = 0L;
@@ -429,6 +439,13 @@ public final class HomeFrontGuard {
      * device opens over it is sent back behind it. Null: the launcher.
      */
     private Front leftInFront;
+    /** Tasks this guard has sent back: never what another one is sent back behind. */
+    private final Set<Integer> pulledBackTasks = new HashSet<>();
+    /**
+     * Whether the launcher has been seen in front since the guard started: every task in front of
+     * it in the task stack's order has come up since then.
+     */
+    private boolean launcherSeen;
 
     private HomeFrontGuard(Context app, String name, long interval, boolean waitForCoverStart) {
         this.app = app;
@@ -597,10 +614,13 @@ public final class HomeFrontGuard {
         pullBacks++;
         lastPullBack = now;
         EXPECTED.use(coverExpected);
-        Front back = pullBackTarget(coverTask);
+        if (coverTask != -1) {
+            pulledBackTasks.add(coverTask);
+        }
+        Front back = pullBackTarget(coverTask, now);
         if (back != null && moveTaskToFront(app, back.taskId)) {
             Log.i(TAG, name + ": sending " + coverName + " back behind "
-                    + back.activity.flattenToShortString() + ", left in front before ("
+                    + back.activity.flattenToShortString() + ", in front before it ("
                     + pullBacks + "/" + MAX_PULL_BACKS + ")");
         } else {
             Log.i(TAG, name + ": bringing the launcher back over " + coverName + " (" + pullBacks
@@ -612,6 +632,7 @@ public final class HomeFrontGuard {
 
     /** The launcher is in front (again): what covers it next is new, and goes back behind it. */
     private void launcherInFront() {
+        launcherSeen = true;
         currentCover = null;
         currentCoverTask = -1;
         coverExpected = null;
@@ -631,17 +652,45 @@ public final class HomeFrontGuard {
     }
 
     /**
-     * What a cover the device opened is sent back behind: the app left in front before it, if
-     * its task is still there; null for the launcher.
+     * What a cover the device opened is sent back behind: what was in front before it, null for
+     * the launcher.
+     *
+     * <p>Once the launcher has been seen in front, the task stack's order says it: the first task
+     * below the cover, unless it is one this guard has sent back or one the device is still
+     * expected to open. A check every 250 ms does not see everything -- in the capture
+     * 12-10-2026 20:52:40 carlink, opened with a button 0.3 s into the wake, was in front for
+     * 0.2 s before com.syu.ms's Maps came over it, and the launcher was brought over both. Before
+     * that, or without the panes' tasks told apart (one would come up full screen), only the app
+     * the guard itself saw left in front.
      */
-    private Front pullBackTarget(int coverTask) {
-        Front back = leftInFront;
-        if (back == null || back.taskId == -1 || back.taskId == coverTask) {
-            return null;
-        }
+    private Front pullBackTarget(int coverTask, long now) {
         try {
             ActivityManager am = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
-            return am != null && DefaultDisplayTask.isRunning(am, back.taskId) ? back : null;
+            if (am == null) {
+                return null;
+            }
+            if (launcherSeen && DefaultDisplayTask.knowsDisplays()) {
+                for (ActivityManager.RunningTaskInfo task : DefaultDisplayTask.defaultDisplayTasks(am)) {
+                    if (task.topActivity == null || task.id == coverTask
+                            || pulledBackTasks.contains(task.id)) {
+                        continue;
+                    }
+                    String pkg = task.topActivity.getPackageName();
+                    if (pkg.equals(app.getPackageName())) {
+                        return null;                // the launcher was in front before it
+                    }
+                    if (EXPECTED.namesUnused(pkg, now)) {
+                        continue;                   // the device's as well
+                    }
+                    return new Front(task.topActivity, task.id);
+                }
+                return null;
+            }
+            Front back = leftInFront;
+            if (back == null || back.taskId == -1 || back.taskId == coverTask) {
+                return null;
+            }
+            return DefaultDisplayTask.isRunning(am, back.taskId) ? back : null;
         } catch (RuntimeException e) {
             return null;
         }

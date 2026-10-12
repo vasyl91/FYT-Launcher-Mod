@@ -78,7 +78,12 @@ public final class WakeDetection implements WakeSignals.Listener {
     private static final long WAKE_RESTORE_MS = 3000L;
     /** Without system privileges the app is not known: any app, and a shorter time. */
     private static final long WAKE_RESTORE_UNKNOWN_MS = 2000L;
-    private static final long WAKE_FRONT_FIRST_CHECK_MS = 250L;
+    /**
+     * At once: the launcher is in front at the wake (the ROM and the sleep's home press put it
+     * there), and the guard has to see it before anything comes up -- see
+     * HomeFrontGuard.pullBackTarget().
+     */
+    private static final long WAKE_FRONT_FIRST_CHECK_MS = 0L;
     /**
      * With LAUNCHER_HOME_WAKE on, the launcher is moved to the front after a sleep, so that it is
      * the app com.syu.ms takes for the top one when the MCU goes off and opens again at the wake.
