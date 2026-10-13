@@ -1,0 +1,13 @@
+# The launcher calls the daemon (magisk domain) over binder and passes it its SurfaceView's
+# Surface. One rule per line: a type missing on some Android version must not drop the others.
+allow untrusted_app magisk binder { call transfer }
+allow untrusted_app_29 magisk binder { call transfer }
+allow untrusted_app_30 magisk binder { call transfer }
+allow untrusted_app_32 magisk binder { call transfer }
+allow priv_app magisk binder { call transfer }
+allow platform_app magisk binder { call transfer }
+allow system_app magisk binder { call transfer }
+allow magisk untrusted_app binder { call transfer }
+allow magisk priv_app binder { call transfer }
+allow magisk platform_app binder { call transfer }
+allow magisk system_app binder { call transfer }

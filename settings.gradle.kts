@@ -41,3 +41,8 @@ include(":baselineprofile")
 // would not find it under the project's name.
 project(":baselineprofile").projectDir = file("baselineProfile")
 include(":hiddenapi-stubs")
+// FYT VDHost: the Android 11+ replacement for ActivityView (see vdhost/README.md).
+include(":vdhost-shared")
+project(":vdhost-shared").projectDir = file("vdhost/shared")
+include(":vdhost-server")
+project(":vdhost-server").projectDir = file("vdhost/server")

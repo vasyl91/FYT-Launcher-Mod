@@ -254,6 +254,12 @@ public final class WindowHostAvReaper {
      */
     private static Boolean isDisplayEmpty(int displayId) {
         if (displayId < 0) return Boolean.TRUE;
+
+        // A WindowHostVdView display: the VD host can list its tasks even when the launcher,
+        // not being system on Android 11+, may not.
+        Boolean hosted = WindowHostVdClient.isDisplayEmpty(displayId);
+        if (hosted != null) return hosted;
+
         try {
             Object atm = getActivityTaskManager();
             if (atm == null) return null;

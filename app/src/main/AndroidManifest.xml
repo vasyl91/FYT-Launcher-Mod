@@ -472,6 +472,15 @@
             android:authorities="${applicationId}.litepalinit"
             android:exported="false" />
 
+        <!-- The FYT VDHost daemon (Magisk module) delivers its binder here; see
+             WindowHostVdProvider. Exported because the daemon is not part of this app; the
+             provider itself only accepts root, system and shell. -->
+        <provider
+            android:name="com.syu.util.WindowHostVdProvider"
+            android:authorities="${applicationId}.vdhost"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
+
         <meta-data
             android:name="android.nfc.disable_beam_default"
             android:value="true" />

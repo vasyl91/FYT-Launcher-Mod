@@ -1,0 +1,2 @@
+# Launcher packages the VD host serves, one per line.
+com.android.launcher66

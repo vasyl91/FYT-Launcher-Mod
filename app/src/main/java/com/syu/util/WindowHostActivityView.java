@@ -38,6 +38,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Reflection facade over the ROM's hidden android.app.ActivityView.
+ *
+ * On Android 11+ the panes are WindowHostVdView instead (see WindowHostVdClient.shouldUse()):
+ * the framework class is gone from Android 12 on, and Android 11's has none of the members this
+ * facade relies on. WindowHostVdView mirrors Android 10's member names, so most of the reflection
+ * below works on both; the places where the two differ test isHosted().
  */
 public class WindowHostActivityView {
     private static final String TAG = "WindowHostActivityView";
@@ -144,6 +149,12 @@ public class WindowHostActivityView {
 
     static void ensureLoaded() {
         if (sActivityView != null) return;
+        if (WindowHostVdClient.shouldUse()) {
+            sActivityView = WindowHostVdView.class;
+            sStateCb = null;
+            Log.i(TAG, "panes use WindowHostVdView (Android " + Build.VERSION.SDK_INT + ")");
+            return;
+        }
         try { sActivityView = Class.forName("android.app.ActivityView"); }
         catch (Throwable e) { throw new RuntimeException("ActivityView not available", e); }
         try { sStateCb = Class.forName("android.app.ActivityView$StateCallback"); }
@@ -157,7 +168,7 @@ public class WindowHostActivityView {
      */
     static Object newInstance(Context ctx) {
         ensureLoaded();
-        Object av = newInstanceRaw(ctx);
+        Object av = sActivityView == WindowHostVdView.class ? new WindowHostVdView(ctx) : newInstanceRaw(ctx);
         installImeCrashGuard(av);
         synchronized (sLiveAvs) { sLiveAvs.add(av); }
         return av;
@@ -281,6 +292,9 @@ public class WindowHostActivityView {
 
     static View asView(Object av) { return (View) av; }
 
+    /** A WindowHostVdView (Android 11+), not the framework's ActivityView. */
+    static boolean isHosted(Object av) { return av instanceof WindowHostVdView; }
+
     static void release(Object av) {
         if (av == null) return;
         final int id = System.identityHashCode(av);
@@ -327,7 +341,8 @@ public class WindowHostActivityView {
 
     static void installImeCrashGuard(final Object av) {
         try {
-            if (av == null) return;
+            // WindowHostVdView never reports IME geometry, so there is nothing to guard.
+            if (av == null || isHosted(av)) return;
             synchronized (sImeGuarded) {
                 if (Boolean.TRUE.equals(sImeGuarded.get(av))) return;
             }
@@ -443,6 +458,10 @@ public class WindowHostActivityView {
         try {
             View v = asView(av);
             if (v == null || !v.isAttachedToWindow()) return false;
+
+            // The embedded display renders into the view's own surface and gets its touches from
+            // the view, so there is no window-side location or tap region to keep in sync.
+            if (isHosted(av)) return getVirtualDisplayId(av) >= 0;
 
             int displayId = getVirtualDisplayId(av);
             if (displayId < 0) return false;
@@ -658,6 +677,10 @@ public class WindowHostActivityView {
      * uses startReadinessWatch(), which is event-driven rather than timed.
      */
     static void trySetCallback(Object av, Callback cb) {
+        if (isHosted(av)) {
+            ((WindowHostVdView) av).setListener(cb);
+            return;
+        }
         if (sStateCb == null) {
             startReadinessWatch(av, cb);
             return;
@@ -954,6 +977,14 @@ public class WindowHostActivityView {
         final String targetPkg = compatIntent.getComponent() != null
                 ? compatIntent.getComponent().getPackageName()
                 : compatIntent.getPackage();
+
+        if (isHosted(av)) {
+            // The launch options carry freeform bounds meant for ActivityView; on a display of
+            // its own the task just fills it, so WindowHostVdView builds its own.
+            if (((WindowHostVdView) av).startActivitySafely(compatIntent)) return true;
+            invalidateLaunchCache(targetPkg);
+            return false;
+        }
 
         PendingIntent pi = null;
         try { pi = obtainPendingIntent(ctx, targetPkg, compatIntent); } catch (Throwable ignore) {}

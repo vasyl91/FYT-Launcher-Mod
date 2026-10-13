@@ -254,6 +254,9 @@ dependencies {
 
     ksp(libs.glide.ksp)
 
+    // ─── VD host (Android 11+ panes, see vdhost/README.md) ───
+    implementation(project(":vdhost-shared"))
+
     // ─── Baseline Profile ───
     "baselineProfile"(project(":baselineprofile"))
 

@@ -1,0 +1,6 @@
+id=fyt_vdhost
+name=FYT VDHost
+version=v@VERSION@
+versionCode=@VERSION_CODE@
+author=vasyl91
+description=Embedded app windows for FYT Launcher Mod on Android 11+ (replaces Android 10's ActivityView). Runs a small system-uid service that owns the launcher's virtual displays.

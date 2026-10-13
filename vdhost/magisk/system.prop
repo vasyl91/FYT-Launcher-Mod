@@ -1,0 +1,2 @@
+# Tells the launcher that the VD host daemon is installed and will attach shortly after boot.
+ro.fyt.vdhost=1

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ActivityTaskManager only places activities on secondary displays when this feature is declared;
+  without it a launch aimed at a pane's virtual display silently lands on the main screen.
+  Most ROMs declare it already, in which case this changes nothing.
+-->
+<permissions>
+    <feature name="android.software.activities_on_secondary_displays" />
+</permissions>

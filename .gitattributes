@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Magisk module scripts run under /system/bin/sh: CRLF line endings would break them.
+vdhost/magisk/** text eol=lf

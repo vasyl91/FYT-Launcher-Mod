@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- No components: this APK is only a container for classes.dex, run with app_process. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:hasCode="true" />
+</manifest>
