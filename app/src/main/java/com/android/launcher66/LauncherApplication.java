@@ -642,6 +642,14 @@ public class LauncherApplication extends Application {
         return false;
     }
 
+    /**
+     * Whether the PiP panes can work here: on an FYT unit, or on any rooted device (the FYT
+     * VDHost Magisk module hosts the panes there; see vdhost/README.md).
+     */
+    public static boolean canHostPips() {
+        return isFytDevice() || isRooted() || com.syu.util.WindowHostVdClient.isModuleInstalled();
+    }
+
     public static boolean isRooted() {
         String[] paths = {
             "/system/bin/su",

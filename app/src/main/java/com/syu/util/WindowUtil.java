@@ -320,7 +320,7 @@ public class WindowUtil {
     }
 
     public static void initDefaultApp() {
-        if (!LauncherApplication.isFytDevice() || !LauncherApplication.isRooted()) return;
+        if (!LauncherApplication.canHostPips()) return;
         if (helpers == null) {
             helpers = new Helpers();
         }
@@ -586,7 +586,7 @@ public class WindowUtil {
     }
 
     public static void openPip(boolean show) {
-        if (!LauncherApplication.isFytDevice() || !LauncherApplication.isRooted()) return;
+        if (!LauncherApplication.canHostPips()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
 
@@ -756,7 +756,7 @@ public class WindowUtil {
     }
 
     public static void removePip() {
-        if (!LauncherApplication.isFytDevice() || !LauncherApplication.isRooted()) return;
+        if (!LauncherApplication.canHostPips()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         launcher.handler.post(launcher::cancelPipWatchdog);
@@ -1390,7 +1390,7 @@ public class WindowUtil {
     }
 
     public static void openMultiplePips() {
-        if (!LauncherApplication.isFytDevice() || !LauncherApplication.isRooted()) return;
+        if (!LauncherApplication.canHostPips()) return;
         if (waitForBootBeforeOpening()) return;
         openMultiplePipsNow();
     }
@@ -1434,7 +1434,7 @@ public class WindowUtil {
     }
 
     private static void openMultiplePipsNow() {
-        if (!LauncherApplication.isFytDevice() || !LauncherApplication.isRooted()) return;
+        if (!LauncherApplication.canHostPips()) return;
 
         // Second line of defence. Even with the in-flight claim, two runnables could already be
         // queued on the main handler; building a second WindowHost orphans the first one's windows.
@@ -1973,7 +1973,7 @@ public class WindowUtil {
     // =====================================================================================
 
     public static void openPinnedPip() {
-        if (!LauncherApplication.isFytDevice() || !LauncherApplication.isRooted()) return;
+        if (!LauncherApplication.canHostPips()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         suppressMediaSourceSwitch();
@@ -2113,7 +2113,7 @@ public class WindowUtil {
     }
 
     public static void restartPinnedPipApp() {
-        if (!LauncherApplication.isFytDevice() || !LauncherApplication.isRooted()) return;
+        if (!LauncherApplication.canHostPips()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         final WindowHost host = host();
@@ -2159,7 +2159,7 @@ public class WindowUtil {
     }
 
     public static void removePinnedPip() {
-        if (!LauncherApplication.isFytDevice() || !LauncherApplication.isRooted()) return;
+        if (!LauncherApplication.canHostPips()) return;
         if (prefs == null) {
             prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
         }

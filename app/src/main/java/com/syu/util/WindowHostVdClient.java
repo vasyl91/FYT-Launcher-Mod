@@ -51,7 +51,7 @@ public final class WindowHostVdClient {
     }
 
     /** The Magisk module sets ro.fyt.vdhost=1 (system.prop). */
-    static boolean isModuleInstalled() {
+    public static boolean isModuleInstalled() {
         try {
             Class<?> sp = Class.forName("android.os.SystemProperties");
             Object v = sp.getMethod("get", String.class, String.class)
