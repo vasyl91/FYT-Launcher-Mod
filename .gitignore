@@ -16,3 +16,5 @@ app/build/
 /app/fyt/
 /app/phone/
 /hiddenapi-stubs/build/
+/vdhost/server/build/
+/vdhost/shared/build/

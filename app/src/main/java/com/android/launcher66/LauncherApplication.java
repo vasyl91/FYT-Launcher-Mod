@@ -642,6 +642,31 @@ public class LauncherApplication extends Application {
         return false;
     }
 
+    public static boolean isRooted() {
+        String[] paths = {
+            "/system/bin/su",
+            "/system/xbin/su",
+            "/sbin/su",
+            "/system/su",
+            "/vendor/bin/su",
+            "/data/local/bin/su",
+            "/data/local/xbin/su"
+        };
+
+        for (String path : paths) {
+            if (new File(path).exists()) {
+                return true;
+            }
+        }
+
+        String tags = Build.TAGS;
+        if (tags != null && tags.contains("test-keys")) {
+            return true;
+        }
+
+        return false;
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Deferred startup work
     // ---------------------------------------------------------------------------------------------
