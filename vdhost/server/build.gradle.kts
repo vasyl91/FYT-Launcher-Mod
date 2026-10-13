@@ -57,10 +57,14 @@ val magiskZip by tasks.registering(Zip::class) {
     from(magiskTemplate) {
         exclude("module.prop")
     }
+    // Local copies: a lambda that reads the script's own vals captures the script object, which
+    // the configuration cache cannot serialize.
+    val version = moduleVersion
+    val versionCode = moduleVersionCode.toString()
     from(magiskTemplate.file("module.prop")) {
         filter { line ->
-            line.replace("@VERSION@", moduleVersion)
-                .replace("@VERSION_CODE@", moduleVersionCode.toString())
+            line.replace("@VERSION@", version)
+                .replace("@VERSION_CODE@", versionCode)
         }
     }
     from(layout.buildDirectory.dir("outputs/apk/release")) {
