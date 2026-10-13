@@ -120,6 +120,8 @@ public class LauncherApplication extends Application {
             return;
         }
         initData();
+        // Android 11+ PiP panes: start listening for Shizuku (the lowest-priority pane host).
+        com.syu.util.WindowHostVdClient.init(this);
         // Tells the sound channel logic a tapped app from one that came up by itself.
         com.syu.util.UserTouches.start();
         // And the buttons FYT's framework reports (HomeFrontGuard); calls into system_server.
@@ -642,12 +644,20 @@ public class LauncherApplication extends Application {
         return false;
     }
 
+    private static boolean sNoPaneHostLogged;
+
     /**
-     * Whether the PiP panes can work here: on an FYT unit, or on any rooted device (the FYT
-     * VDHost Magisk module hosts the panes there; see vdhost/README.md).
+     * Whether the PiP panes can work here: on an FYT unit, or wherever a VD host is there or on
+     * its way -- the launcher installed as system, the FYT VDHost Magisk module, or Shizuku (see
+     * vdhost/README.md). Root alone is not enough: without the module nothing would host the panes.
      */
     public static boolean canHostPips() {
-        return isFytDevice() || isRooted() || com.syu.util.WindowHostVdClient.isModuleInstalled();
+        if (isFytDevice() || com.syu.util.WindowHostVdClient.canHostPanes()) return true;
+        if (isRooted() && !sNoPaneHostLogged) {
+            sNoPaneHostLogged = true;
+            Log.w(TAG, "PiP panes need the FYT VDHost Magisk module or Shizuku; neither is available");
+        }
+        return false;
     }
 
     public static boolean isRooted() {

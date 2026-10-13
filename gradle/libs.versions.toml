@@ -31,6 +31,7 @@ viewpager = "1.1.0"
 material = "1.14.0"
 kotlinxCoroutines = "1.11.0"
 okhttp = "5.4.0"
+shizuku = "13.1.5"
 leakcanary = "2.14"
 flexbox = "3.0.0"
 litepal = "8ad8322cc6"
@@ -102,6 +103,8 @@ leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", ve
 litepal = { module = "com.github.guolindev:LitePal", version.ref = "litepal" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
+shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizuku" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 
 # ─── Tests ───

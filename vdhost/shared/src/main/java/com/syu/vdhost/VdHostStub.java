@@ -10,8 +10,11 @@ import android.util.Log;
 import android.view.InputEvent;
 import android.view.Surface;
 
-/** Server side of {@link VdHostProtocol}: unmarshals a call and hands it to {@link VdHostCore}. */
-public final class VdHostStub extends Binder {
+/**
+ * Server side of {@link VdHostProtocol}: unmarshals a call and hands it to {@link VdHostCore}.
+ * Not final: the Shizuku UserService in the launcher extends it.
+ */
+public class VdHostStub extends Binder {
     private static final String TAG = "FytVdHost";
 
     /** Decides which uids may use the host at all. */

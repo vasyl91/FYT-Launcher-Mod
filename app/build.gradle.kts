@@ -256,6 +256,8 @@ dependencies {
 
     // ─── VD host (Android 11+ panes, see vdhost/README.md) ───
     implementation(project(":vdhost-shared"))
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
 
     // ─── Baseline Profile ───
     "baselineProfile"(project(":baselineprofile"))

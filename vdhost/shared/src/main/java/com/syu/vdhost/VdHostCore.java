@@ -1,13 +1,16 @@
 package com.syu.vdhost;
 
 import android.app.ActivityOptions;
+import android.content.AttributionSource;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Process;
 import android.os.RemoteException;
 import android.util.Log;
 import android.util.SparseArray;
@@ -16,13 +19,16 @@ import android.view.InputEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * What the host actually does. Runs either in the Magisk daemon (uid 1000, Context = the system
- * context) or inside the launcher when the launcher is android.uid.system.
+ * What the host actually does. Runs in one of three places:
+ *  - inside the launcher when the launcher is android.uid.system;
+ *  - in the Magisk daemon (uid 1000, Context = the system context, package "android");
+ *  - in a Shizuku UserService (uid 2000, package "com.android.shell").
  *
  * Every display remembers the uid that created it; only that uid may touch it.
  */
@@ -36,7 +42,8 @@ public final class VdHostCore {
     /** UserHandle.USER_CURRENT */
     private static final int USER_CURRENT = -2;
 
-    private final Context mContext;
+    /** The package the system sees as the caller; it must belong to this process's uid. */
+    private final String mPackageName;
     private final DisplayManager mDisplayManager;
     private final SparseArray<Record> mDisplays = new SparseArray<>();
 
@@ -64,9 +71,55 @@ public final class VdHostCore {
     }
 
     public VdHostCore(Context context) {
-        mContext = context;
-        mDisplayManager = context.getSystemService(DisplayManager.class);
+        this(context, context.getPackageName());
+    }
+
+    /**
+     * @param packageName the package to act as. DisplayManagerService refuses
+     *                    createVirtualDisplay() unless the package belongs to the calling uid, so a
+     *                    Shizuku UserService (uid 2000, but loaded from the launcher's APK, whose
+     *                    Context says "com.android.launcher66") passes "com.android.shell".
+     */
+    public VdHostCore(Context context, String packageName) {
+        mPackageName = packageName;
+        if (packageName.equals(context.getPackageName())) {
+            mDisplayManager = context.getSystemService(DisplayManager.class);
+        } else {
+            mDisplayManager = newDisplayManager(new PackageContext(context, packageName));
+        }
         if (mDisplayManager == null) throw new IllegalStateException("DisplayManager unavailable");
+    }
+
+    /** DisplayManager(Context) is @hide; getSystemService() would bind it to the base Context. */
+    private static DisplayManager newDisplayManager(Context context) {
+        try {
+            Constructor<DisplayManager> c = DisplayManager.class.getDeclaredConstructor(Context.class);
+            c.setAccessible(true);
+            return c.newInstance(context);
+        } catch (Throwable t) {
+            Log.w(TAG, "DisplayManager(Context) unavailable", t);
+            return null;
+        }
+    }
+
+    /** A Context that reports another package of the same uid. */
+    private static final class PackageContext extends ContextWrapper {
+        private final String mPackage;
+
+        PackageContext(Context base, String pkg) {
+            super(base);
+            mPackage = pkg;
+        }
+
+        @Override public String getPackageName() { return mPackage; }
+
+        @Override public String getOpPackageName() { return mPackage; }
+
+        @Override public Context getApplicationContext() { return this; }
+
+        @Override public AttributionSource getAttributionSource() {
+            return new AttributionSource.Builder(Process.myUid()).setPackageName(mPackage).build();
+        }
     }
 
     // ---------------------------------------------------------------------------------------
@@ -81,9 +134,32 @@ public final class VdHostCore {
         int dpi = Math.max(72, densityDpi);
         int f = sanitizeFlags(flags);
 
-        VirtualDisplay vd = mDisplayManager.createVirtualDisplay(
-                name != null ? name : "FytVdHost", w, h, dpi, surface, f);
-        if (vd == null) throw new IllegalStateException("createVirtualDisplay returned null");
+        // Not every host holds every permission: shell (Shizuku) has no CAPTURE_SECURE_VIDEO_OUTPUT,
+        // and older shells may lack ADD_TRUSTED_DISPLAY. Drop what is refused, step by step.
+        final int[] attempts = {
+                f,
+                f & ~VdHostProtocol.VD_FLAG_SECURE,
+                f & ~(VdHostProtocol.VD_FLAG_SECURE | VdHostProtocol.VD_FLAG_TRUSTED
+                        | VdHostProtocol.VD_FLAG_ALWAYS_UNLOCKED),
+        };
+        VirtualDisplay vd = null;
+        SecurityException refused = null;
+        for (int i = 0; i < attempts.length && vd == null; i++) {
+            if (i > 0 && attempts[i] == attempts[i - 1]) continue;
+            try {
+                vd = mDisplayManager.createVirtualDisplay(
+                        name != null ? name : "FytVdHost", w, h, dpi, surface, attempts[i]);
+                f = attempts[i];
+            } catch (SecurityException e) {
+                refused = e;
+                Log.w(TAG, "createVirtualDisplay refused flags=0x" + Integer.toHexString(attempts[i])
+                        + ": " + e.getMessage());
+            }
+        }
+        if (vd == null) {
+            if (refused != null) throw refused;
+            throw new IllegalStateException("createVirtualDisplay returned null");
+        }
         final int displayId = vd.getDisplay().getDisplayId();
 
         IBinder.DeathRecipient death = () -> {
@@ -280,7 +356,7 @@ public final class VdHostCore {
         for (int k = 0; k < types.length; k++) {
             Class<?> t = types[k];
             if (t == String.class) {
-                args[k] = (strings++ == 0) ? mContext.getPackageName() : null;
+                args[k] = (strings++ == 0) ? mPackageName : null;
             } else if (t == int.class) {
                 // requestCode, startFlags, userId
                 args[k] = ints == 0 ? -1 : (ints == 1 ? 0 : USER_CURRENT);

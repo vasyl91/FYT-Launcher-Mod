@@ -19,10 +19,23 @@ Creating such a display (trusted, so the IME and focus behave), starting other a
 injecting input need `ADD_TRUSTED_DISPLAY`, `INTERNAL_SYSTEM_WINDOW` and `INJECT_EVENTS`:
 signature permissions no app can be granted. They are used by the **VD host**:
 
-| Launcher installed as | VD host | Needs |
-|---|---|---|
-| `android.uid.system` (fyt flavor via the USB installer) | runs inside the launcher | nothing else |
-| normal / priv-app (Android 12+ units where the system install is refused, phone flavor) | this Magisk module's daemon, uid 1000 | Magisk |
+Three hosts, used in this order of preference (`WindowHostVdClient`):
+
+| # | When | VD host | Runs as | Needs |
+|---|---|---|---|---|
+| 1 | launcher installed as `android.uid.system` (fyt flavor via the USB installer) | inside the launcher | 1000 | nothing else |
+| 2 | FYT VDHost Magisk module installed | the module's daemon | 1000 | Magisk |
+| 3 | Shizuku running (no root needed) | `WindowHostVdShizukuService`, a Shizuku UserService | 2000 (shell) | Shizuku 13+, one-time permission prompt |
+
+The first host that attaches is kept until it dies. When the module is installed, Shizuku waits
+20 s for the daemon before standing in (at boot the daemon starts after the launcher), and a
+daemon that attaches later still replaces it. If no host can be expected at all (e.g. rooted
+without the module and without Shizuku), the launcher does not open the panes on non-FYT
+devices; on Android 12+ a pane without a host stays empty instead of crashing.
+
+Shizuku mode limits: shell has no `CAPTURE_SECURE_VIDEO_OUTPUT`, so apps using `FLAG_SECURE`
+(video streaming, banking) show black in a pane. Shizuku without root has to be started again
+after every reboot (wireless debugging), unless its own start-on-boot option is used.
 
 No system_server patching and no LSPosed are involved.
 
@@ -43,6 +56,7 @@ Launcher side, `app/src/main/java/com/syu/util/`:
 - `WindowHostVdClient`: finds the host (in-process or daemon) and picks the backend
   (`shouldUse()`: Android 11+ and the launcher is system, or the module is installed).
 - `WindowHostVdProvider`: the daemon delivers its binder here (`<package>.vdhost`).
+- `WindowHostVdShizuku` / `WindowHostVdShizukuService`: the Shizuku host.
 
 ## Building the module
 
