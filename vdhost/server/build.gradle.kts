@@ -46,7 +46,7 @@ dependencies {
 
 val magiskTemplate = layout.projectDirectory.dir("../magisk")
 
-val magiskZip by tasks.registering(Zip::class) {
+tasks.register<Zip>("magiskZip") {
     group = "build"
     description = "Packages the daemon into a flashable Magisk module."
     dependsOn("assembleRelease")
