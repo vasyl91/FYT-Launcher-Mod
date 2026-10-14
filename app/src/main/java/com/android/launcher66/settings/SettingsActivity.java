@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.R;
 import com.fyt.skin.SkinAttribute;
 import com.fyt.skin.SkinUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -125,6 +126,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        if (!LauncherApplication.isFytDevice()) {
+            // Before anything is inflated, fragments restored by super.onCreate() included.
+            getTheme().applyStyle(R.style.SettingsTheme_PhoneRows, true);
+        }
         super.onCreate(savedInstanceState);
         calculateLayoutDimensions();
         mSettingsActivity = new WeakReference<>(this);

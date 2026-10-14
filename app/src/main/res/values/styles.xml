@@ -195,6 +195,13 @@
         <item name="android:windowTranslucentNavigation">false</item>
     </style>
     
+    <!-- Non-FYT devices only (SettingsActivity.onCreate()): plain preferences start closer to
+         the edge, so the nested ones (indented in code by nestedPaddingStart) stand out again. -->
+    <style name="SettingsTheme.PhoneRows" parent="">
+        <item name="android:listPreferredItemPaddingStart">0dp</item>
+        <item name="android:listPreferredItemPaddingLeft">0dp</item>
+    </style>
+
     <style name="SettingsTheme.ActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar.Bridge">
         <item name="android:textColorPrimary">@color/colorAccent</item>
         <item name="android:colorControlNormal">@color/colorAccent</item>
