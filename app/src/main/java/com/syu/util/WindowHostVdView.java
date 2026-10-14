@@ -63,6 +63,12 @@ public class WindowHostVdView extends ViewGroup {
      */
     private boolean mDisplayDonor;
 
+    /**
+     * The pane the user last touched, while the launcher itself has not been touched or focused
+     * since. Main thread. See forwardBackToFocusedPane().
+     */
+    private static java.lang.ref.WeakReference<WindowHostVdView> sFocusedPane;
+
     /** Every open view, so a new pane can find the display its app already runs on. Main thread. */
     private static final Set<WindowHostVdView> sOpenViews =
             Collections.newSetFromMap(new WeakHashMap<WindowHostVdView, Boolean>());
@@ -193,6 +199,35 @@ public class WindowHostVdView extends ViewGroup {
     }
 
     // =====================================================================================
+    // Back for the pane the user works in
+    // =====================================================================================
+
+    /**
+     * Touching a pane makes its display the top focused one, so its app gets the keyboard and
+     * hardware keys. The Back GESTURE, though, is resolved on the screen it is made on: Android 16
+     * hands it to the main screen's focused window -- the launcher -- even while the pane has the
+     * focus, so an embedded app's keyboard or back stack could never be closed by it. The launcher
+     * forwards it instead, as a Back key on the pane's display.
+     *
+     * @return true when Back went to a pane, and the launcher must not act on it
+     */
+    public static boolean forwardBackToFocusedPane() {
+        WindowHostVdView pane = sFocusedPane != null ? sFocusedPane.get() : null;
+        if (pane == null || !pane.mOpened || !pane.isAttachedToWindow() || pane.mVirtualDisplay == null) {
+            sFocusedPane = null;
+            return false;
+        }
+        Log.i(TAG, "Back forwarded to display " + pane.getVirtualDisplayId());
+        pane.performBackPress();
+        return true;
+    }
+
+    /** The launcher's own window was touched or got the focus back: Back is the launcher's again. */
+    public static void noteLauncherInteraction() {
+        sFocusedPane = null;
+    }
+
+    // =====================================================================================
     // Display hand-over between WindowHost rebuilds
     // =====================================================================================
 
@@ -287,6 +322,7 @@ public class WindowHostVdView extends ViewGroup {
         if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
             ViewParent p = getParent();
             if (p != null) p.requestDisallowInterceptTouchEvent(true);
+            sFocusedPane = new java.lang.ref.WeakReference<>(this);
         }
 
         MotionEvent out = toDisplayEvent(ev, vd);

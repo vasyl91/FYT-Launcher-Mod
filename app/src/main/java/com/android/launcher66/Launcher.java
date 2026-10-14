@@ -1925,6 +1925,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             @Override
             public void handleOnBackPressed() {
                 Log.d(TAG, "onBackPressed----->");
+                // Android 11+ panes: Back meant for the app the user is working in (see there).
+                if (com.syu.util.WindowHostVdView.forwardBackToFocusedPane()) return;
                 if (isAllAppsVisible()) {
                     if (Launcher.this.mAppsCustomizeContent != null && (Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Applications || Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Widgets)) {
                         helpers.setInAllApps(false);
@@ -3821,6 +3823,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_UP) {
             com.syu.util.UserTouches.note();
         }
+        if (action == MotionEvent.ACTION_DOWN) {
+            com.syu.util.WindowHostVdView.noteLauncherInteraction();
+        }
         return super.dispatchTouchEvent(ev);
     }
 
@@ -3829,6 +3834,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onWindowFocusChanged(hasFocus);
         mHasFocus = hasFocus;
         if (hasFocus) {
+            com.syu.util.WindowHostVdView.noteLauncherInteraction();
             mHomeRecovery.scheduleFocusHomeRecovery("focus");
         }
     }
