@@ -62,8 +62,8 @@ public class WindowHostVdView extends ViewGroup {
      * showing the same app. Cleared as soon as the view is attached again (a swap only moves it).
      */
     private boolean mDisplayDonor;
-    /** Bumped whenever the surface goes or comes back: drops a pending hand-over attach. */
-    private int mSurfaceGen;
+    /** Set while the SurfaceView swaps its surface for a new one after a hand-over. */
+    private boolean mRenewingSurface;
 
     /**
      * The pane the user last touched, while the launcher itself has not been touched or focused
@@ -271,33 +271,30 @@ public class WindowHostVdView extends ViewGroup {
 
         mVirtualDisplay = donor;
         WindowHostVdClient.noteDisplay(donor.getDisplayId(), true);
-        // The fresh display holds this view's surface. Both displays on one surface for a moment
-        // and SurfaceFlinger, tearing the fresh one down, disconnects the surface under the donor
-        // too: the pane stays black ("BufferQueue has no connected producer") until a resize. So
-        // the fresh display lets go first, and the donor gets the surface once that went through.
-        mine.setSurface(null);
         mine.release();
-        final int gen = mSurfaceGen;
-        final WindowHostVdDisplay adopted = donor;
-        postDelayed(() -> {
-            if (gen != mSurfaceGen || mVirtualDisplay != adopted || !mOpened) return;
-            attachSurface(adopted);
-        }, HANDOVER_ATTACH_DELAY_MS);
+        // The fresh display had this view's surface, and SurfaceFlinger lets go of a released
+        // display's surface whenever it gets to it -- sometimes only after the donor connected:
+        // "connect: already connected", or later "no connected producer", and the pane stays
+        // black or dimmed until a resize. So the donor never gets that surface: the SurfaceView
+        // drops it and makes a new one, which surfaceCreated() hands to the donor.
+        Surface surface = mSurfaceView.getHolder().getSurface();
+        if (surface != null && surface.isValid()) {
+            mRenewingSurface = true;
+            mSurfaceView.setVisibility(View.GONE);
+            // In case the surface goes without surfaceDestroyed() coming here.
+            postDelayed(this::endSurfaceRenewal, SURFACE_RENEWAL_TIMEOUT_MS);
+        }
         Log.i(TAG, "display " + donor.getDisplayId() + " with " + pkg + " handed over from the previous pane"
                 + " (fresh display " + mine.getDisplayId() + " released)");
     }
 
-    /** Long enough for SurfaceFlinger to have dropped the released display's hold on the surface. */
-    private static final long HANDOVER_ATTACH_DELAY_MS = 400;
+    private static final long SURFACE_RENEWAL_TIMEOUT_MS = 500;
 
-    private void attachSurface(WindowHostVdDisplay vd) {
-        Surface surface = mSurfaceView.getHolder().getSurface();
-        if (surface == null || !surface.isValid()) return;   // surfaceCreated() attaches it
-        vd.setSurface(surface);
-        int w = mSurfaceView.getWidth();
-        int h = mSurfaceView.getHeight();
-        if (w > 0 && h > 0) vd.resize(w, h, getBaseDisplayDensity());
-        vd.setDisplayState(true);
+    /** Shows the SurfaceView again once its old surface is gone: a new one comes with it. */
+    private void endSurfaceRenewal() {
+        if (!mRenewingSurface) return;
+        mRenewingSurface = false;
+        mSurfaceView.setVisibility(getVisibility());
     }
 
     // =====================================================================================
@@ -320,6 +317,7 @@ public class WindowHostVdView extends ViewGroup {
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
+        if (mRenewingSurface) return;   // endSurfaceRenewal() shows it again
         mSurfaceView.setVisibility(visibility);
     }
 
@@ -454,7 +452,6 @@ public class WindowHostVdView extends ViewGroup {
     private class SurfaceCallback implements SurfaceHolder.Callback {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-            mSurfaceGen++;
             WindowHostVdDisplay vd = mVirtualDisplay;
             if (vd == null) {
                 createDisplayIfPossible();
@@ -478,7 +475,11 @@ public class WindowHostVdView extends ViewGroup {
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
-            mSurfaceGen++;
+            if (mRenewingSurface) {
+                // The surface the fresh display had; the adopted display stays on for the new one.
+                post(WindowHostVdView.this::endSurfaceRenewal);
+                return;
+            }
             WindowHostVdDisplay vd = mVirtualDisplay;
             if (vd != null) {
                 // As ActivityView: the embedded app stops while the pane is not on screen.
