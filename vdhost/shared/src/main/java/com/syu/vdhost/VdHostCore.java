@@ -53,6 +53,10 @@ public final class VdHostCore {
     private Method mSetDisplayId;
     private Object mActivityTaskManager;
     private Method mStartActivityAsUser;
+    private boolean mDisplayStateResolved;
+    private Method mSetDisplayState;
+    private Method mSetVirtualDisplayState;
+    private Object mDisplayManagerGlobal;
 
     private static final class Record {
         final int displayId;
@@ -200,12 +204,46 @@ public final class VdHostCore {
 
     public void setDisplayState(int callerUid, int displayId, boolean on) {
         Record r = require(callerUid, displayId);
+        if (!resolveDisplayState()) return;
         try {
-            // @hide, Android 10+. The same switch ActivityView flips when its surface comes and goes.
-            VirtualDisplay.class.getMethod("setDisplayState", boolean.class).invoke(r.vd, on);
+            if (mSetDisplayState != null) {
+                mSetDisplayState.invoke(r.vd, on);
+            } else {
+                Object token = Hidden.readField(r.vd, "mToken");
+                mSetVirtualDisplayState.invoke(mDisplayManagerGlobal, token, on);
+            }
         } catch (Throwable t) {
-            Log.w(TAG, "setDisplayState failed", t);
+            Log.w(TAG, "setDisplayState failed: " + t);
         }
+    }
+
+    /**
+     * The switch ActivityView flips when its surface comes and goes: VirtualDisplay.setDisplayState()
+     * (@hide), or DisplayManagerGlobal.setVirtualDisplayState() behind it. Android 16 has dropped
+     * the former; without either the embedded app simply keeps running while its pane is hidden.
+     */
+    private synchronized boolean resolveDisplayState() {
+        if (mDisplayStateResolved) return mSetDisplayState != null || mSetVirtualDisplayState != null;
+        mDisplayStateResolved = true;
+        try {
+            mSetDisplayState = VirtualDisplay.class.getMethod("setDisplayState", boolean.class);
+            return true;
+        } catch (Throwable ignore) { }
+        try {
+            Class<?> dmg = Class.forName("android.hardware.display.DisplayManagerGlobal");
+            Object global = dmg.getMethod("getInstance").invoke(null);
+            for (Method m : dmg.getDeclaredMethods()) {
+                if (m.getName().equals("setVirtualDisplayState") && m.getParameterTypes().length == 2
+                        && m.getParameterTypes()[1] == boolean.class) {
+                    m.setAccessible(true);
+                    mSetVirtualDisplayState = m;
+                    mDisplayManagerGlobal = global;
+                    return true;
+                }
+            }
+        } catch (Throwable ignore) { }
+        Log.i(TAG, "no virtual display state switch on this Android version; skipping it");
+        return false;
     }
 
     /** Releases everything, e.g. when the daemon shuts down. */
