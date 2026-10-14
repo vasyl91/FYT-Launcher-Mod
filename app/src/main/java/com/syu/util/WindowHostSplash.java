@@ -554,6 +554,11 @@ public final class WindowHostSplash {
     private static Boolean hasVisibleTask(int displayId) {
         if (displayId < 0) return Boolean.FALSE;
 
+        // A WindowHostVdView display (Android 11+): the VD host can list its tasks even when the
+        // launcher, not being system, is refused ActivityTaskManager (blocked hidden API).
+        Boolean empty = WindowHostVdClient.isDisplayEmpty(displayId);
+        if (empty != null) return !empty;
+
         long now = SystemClock.uptimeMillis();
         if (snapshot == null || (now - snapshotAtMs) > SNAPSHOT_TTL_MS) {
             snapshot = queryVisibleDisplays();
