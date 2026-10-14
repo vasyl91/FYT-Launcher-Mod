@@ -384,7 +384,8 @@
     <string name="extended_divider">Rozszerz strefę dotyku w środkowej części dividera</string>
     <string name="cover_splash">Kolor splasha PiP</string>
     <string name="cover_splash_icon">Średnia z nieprzezroczystych pikseli ikon aplikacji</string>
-    <string name="cover_splash_night_mode">Biały i szary w zależności od trybu nocnego</string>
+    <string name="cover_splash_night_mode">Biały i czarny w zależności od trybu nocnego</string>
+    <string name="cover_splash_black">Tryb ciemny</string>
     <string name="swipe_detector">Wykrywanie przesunięcia dla paska stanu</string>
     <string name="swipe_detector_summary">Środkowo-dolna część paska stanu będzie wykrywać przesunięcia palcem i tym samym pozwoli na przechodzenie pomiędzy ekranami. Funkcja może być przydatna w momencie gdy widok PiP zakrywa większość widocznego ekranu.</string>
 

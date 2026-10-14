@@ -163,7 +163,12 @@ public final class Keys {
     public static final String FAB_OVERLAY_BUTTON_RIGHT = "fab_overlay_button_right";
     public static final String BLOCK_FLOATING_BUTTON = "block_floating_button";
     public static final String EXTENDED_DIVIDER = "extended_divider";
+    /** Old boolean (true = icon colour, false = night mode); migrated to COVER_SPLASH_MODE. */
     public static final String COVER_SPLASH = "cover_splash";
+    public static final String COVER_SPLASH_MODE = "cover_splash_mode";
+    public static final String COVER_SPLASH_ICON = "icon";
+    public static final String COVER_SPLASH_NIGHT_MODE = "night_mode";
+    public static final String COVER_SPLASH_BLACK = "black";
     public static final String SWIPE_DETECTOR = "swipe_detector";
 
     public static final String RECYCLER_APP = "recycler_app";

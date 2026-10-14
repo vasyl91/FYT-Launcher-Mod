@@ -136,6 +136,15 @@ public class LauncherApplication extends Application {
                     .remove(Keys.LAUNCHER_HOME)
                     .apply();
         }
+        // PiP splash colour: a boolean became three options (CustomNestedThreePreference), once.
+        if (prefs.contains(Keys.COVER_SPLASH)) {
+            boolean iconColour = prefs.getBoolean(Keys.COVER_SPLASH, true);
+            prefs.edit()
+                    .putString(Keys.COVER_SPLASH_MODE,
+                            iconColour ? Keys.COVER_SPLASH_ICON : Keys.COVER_SPLASH_NIGHT_MODE)
+                    .remove(Keys.COVER_SPLASH)
+                    .apply();
+        }
         // Before anything can start a HomeFrontGuard: it needs to know whether the launcher is in front.
         HomeFrontGuard.trackActivities(this);
         // First start after a device restart (not a wake from sleep): the launcher is kept in

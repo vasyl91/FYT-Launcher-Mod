@@ -488,13 +488,17 @@ public final class WindowHostSplash {
         // main thread, once per pane, in the middle of the launch sequence.
         Drawable icon = iconFor(ctx, pkg);
 
-        if (prefs(ctx).getBoolean(Keys.COVER_SPLASH, true)) {
-            cover.setBackgroundColor(backgroundFor(pkg, icon));
-        } else {
-            int bgColor = helpers().isDay()
-                ? Color.rgb(247, 247, 247)
-                : Color.rgb(169, 169, 169);    
-            cover.setBackgroundColor(bgColor);        
+        switch (coverSplashMode(prefs(ctx))) {
+            case Keys.COVER_SPLASH_BLACK:
+                // "Dark mode": always black, whatever the night mode and the icon.
+                cover.setBackgroundColor(Color.BLACK);
+                break;
+            case Keys.COVER_SPLASH_NIGHT_MODE:
+                cover.setBackgroundColor(helpers().isDay() ? Color.rgb(247, 247, 247) : Color.BLACK);
+                break;
+            default:
+                cover.setBackgroundColor(backgroundFor(pkg, icon));
+                break;
         }
 
         if (icon != null) {
@@ -507,6 +511,17 @@ public final class WindowHostSplash {
             lp.gravity = Gravity.CENTER;
             cover.addView(iv, lp);
         }
+    }
+
+    /**
+     * Keys.COVER_SPLASH_MODE; before it existed the choice was the boolean Keys.COVER_SPLASH
+     * (true = icon colour, false = night mode), which LauncherApplication migrates once.
+     */
+    private static String coverSplashMode(SharedPreferences p) {
+        if (p.contains(Keys.COVER_SPLASH_MODE)) {
+            return p.getString(Keys.COVER_SPLASH_MODE, Keys.COVER_SPLASH_ICON);
+        }
+        return p.getBoolean(Keys.COVER_SPLASH, true) ? Keys.COVER_SPLASH_ICON : Keys.COVER_SPLASH_NIGHT_MODE;
     }
 
     private static void fadeOut(final ViewGroup paneHost, final View cover,

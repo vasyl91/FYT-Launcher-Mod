@@ -528,7 +528,8 @@
     <string name="extended_divider">Extend touchable area around divider\'s three dots</string>
     <string name="cover_splash">PiP splash color</string>
     <string name="cover_splash_icon">Average of the apps\' icon\'s opaque pixels</string>
-    <string name="cover_splash_night_mode">White and grey depending on the night mode</string>
+    <string name="cover_splash_night_mode">White and black depending on the night mode</string>
+    <string name="cover_splash_black">Dark mode</string>
     <string name="swipe_detector">Swipe detection for status bar</string>
     <string name="swipe_detector_summary">Bottom center part of the status bar will detect swipes and allow to scroll between pages. This might be useful when PiP view occupies most of the visible screen.</string>
 

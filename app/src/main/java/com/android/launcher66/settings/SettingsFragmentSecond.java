@@ -183,7 +183,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomSwitchPreference leftFabPreference;
     private CustomSwitchPreference rightFabPreference;
     private CustomSwitchPreference extendedDivider;
-    private CustomNestedNoSwitchPreference coverSplash;
+    private CustomNestedThreePreference coverSplash;
     private CustomSwitchPreference swipeDetector;
     private CustomWidgetSwitchPreference userDate;
     private CustomWidgetSwitchPreference userMusic;
@@ -323,7 +323,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         leftFabPreference = findPreference(Keys.FAB_OVERLAY_BUTTON_LEFT);
         rightFabPreference = findPreference(Keys.FAB_OVERLAY_BUTTON_RIGHT);
         extendedDivider = findPreference(Keys.EXTENDED_DIVIDER);
-        coverSplash = findPreference(Keys.COVER_SPLASH);
+        coverSplash = findPreference(Keys.COVER_SPLASH_MODE);
         swipeDetector = findPreference(Keys.SWIPE_DETECTOR);
         userDate = findPreference(Keys.USER_DATE);
         userMusic = findPreference(Keys.USER_MUSIC);
