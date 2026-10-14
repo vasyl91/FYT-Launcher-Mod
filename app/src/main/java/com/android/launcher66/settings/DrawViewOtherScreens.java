@@ -1042,7 +1042,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
 
     /**
      * Non-FYT devices: keeps the creator clear of the edge-to-edge system bars, and gives the
-     * arrow buttons half their size. Their size is a share of the screen in pixels,
+     * arrow buttons the 0.75 they always had there. Their size is a share of the screen in pixels,
      * so SettingsActivity's scaled density (which takes care of all text) does not reach them.
      */
     private void applySystemBarInsets() {
@@ -1050,7 +1050,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
 
         for (Button b : new Button[]{ mTopUp, mTopDown, mBottomUp, mBottomDown,
                 mLeftToLeft, mLeftToRight, mRightToLeft, mRightToRight }) {
-            scaleButton(b, 0.5f);
+            scaleButton(b, 0.75f);
         }
 
         int statusBarHeight = getSettingsActivity().getStatusBarHeight();

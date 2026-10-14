@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -82,30 +83,56 @@ public class SettingsActivity extends AppCompatActivity {
     public static int adaptiveNameTextSize;
     
     /**
-     * Non-FYT devices (phones): the settings and the creator are shown at 0.75 of the screen's
-     * density -- the size they used to get from PreferenceScaleHelper and the creators' scaleView(),
-     * which shrank every list row and control by 0.75 after it was already on screen (a visible
-     * jump, a squeezed nested indent). Applied here, before anything is inflated, it costs nothing.
+     * Non-FYT devices (phones): the sizes PreferenceScaleHelper and the creators' scaleView() used
+     * to give the settings by shrinking every list row after it was already on screen (a visible
+     * jump, a squeezed nested indent) -- now applied here, before anything is inflated:
+     *   landscape: everything at 0.75 of the screen's density;
+     *   portrait:  icons, switches, paddings and row heights at 0.5, text at 0.75 (fontScale 1.5).
      */
-    private static final float NON_FYT_DENSITY_SCALE = 0.75f;
+    private static final float NON_FYT_DENSITY_SCALE_LANDSCAPE = 0.75f;
+    private static final float NON_FYT_DENSITY_SCALE_PORTRAIT = 0.5f;
+    private static final float NON_FYT_TEXT_SCALE_PORTRAIT = 1.5f;
+
+    /** Orientation the density was chosen for; another one needs a recreate(). */
+    private int mScaledForOrientation = Configuration.ORIENTATION_UNDEFINED;
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LauncherApplication.isFytDevice() ? newBase : withScaledDensity(newBase));
+        if (LauncherApplication.isFytDevice()) {
+            super.attachBaseContext(newBase);
+            return;
+        }
+        mScaledForOrientation = newBase.getResources().getConfiguration().orientation;
+        super.attachBaseContext(withScaledDensity(newBase));
     }
 
     private static Context withScaledDensity(Context base) {
         DisplayMetrics dm = base.getResources().getDisplayMetrics();
-        int dpi = Math.round(dm.densityDpi * NON_FYT_DENSITY_SCALE);
+        Configuration current = base.getResources().getConfiguration();
+        boolean portrait = current.orientation == Configuration.ORIENTATION_PORTRAIT;
+        float scale = portrait ? NON_FYT_DENSITY_SCALE_PORTRAIT : NON_FYT_DENSITY_SCALE_LANDSCAPE;
+        int dpi = Math.round(dm.densityDpi * scale);
         if (dpi <= 0 || dm.widthPixels <= 0 || dm.heightPixels <= 0) return base;
 
-        Configuration config = new Configuration(base.getResources().getConfiguration());
+        Configuration config = new Configuration(current);
         config.densityDpi = dpi;
+        if (portrait) config.fontScale = current.fontScale * NON_FYT_TEXT_SCALE_PORTRAIT;
         // The same pixels, in the new dp.
         config.screenWidthDp = Math.round(dm.widthPixels * 160f / dpi);
         config.screenHeightDp = Math.round(dm.heightPixels * 160f / dpi);
         config.smallestScreenWidthDp = Math.min(config.screenWidthDp, config.screenHeightDp);
         return base.createConfigurationContext(config);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // The activity handles rotation itself, but the scaled density depends on it.
+        if (!LauncherApplication.isFytDevice()
+                && mScaledForOrientation != Configuration.ORIENTATION_UNDEFINED
+                && newConfig.orientation != mScaledForOrientation) {
+            recreate();
+        }
     }
 
     /**
