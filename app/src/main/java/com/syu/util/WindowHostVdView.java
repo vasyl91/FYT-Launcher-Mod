@@ -180,6 +180,17 @@ public class WindowHostVdView extends ViewGroup {
         adoptDisplayOf(pkg);
         final WindowHostVdDisplay vd = mVirtualDisplay;
 
+        // A display taken over from the previous pane already runs this app: leave it alone.
+        // Starting it again brought the task to front with a transition animation, and a static
+        // app (no new frame after it) kept showing the frame composited halfway through it --
+        // the app dimmed -- until a resize; apps whose launcher activity is not singleTask
+        // (Docs) also stacked one more activity on every rebuild.
+        if (pkg != null && pkg.equals(vd.getPackage())
+                && Boolean.FALSE.equals(WindowHostVdClient.isDisplayEmpty(vd.getDisplayId()))) {
+            Log.i(TAG, pkg + " already runs on display " + vd.getDisplayId() + ", not started again");
+            return true;
+        }
+
         Intent i = new Intent(intent).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // No launch bounds or freeform mode here: the task simply fills the display.
         Bundle options = ActivityOptions.makeBasic().setLaunchDisplayId(vd.getDisplayId()).toBundle();
@@ -510,6 +521,7 @@ public class WindowHostVdView extends ViewGroup {
             if (vd == null || !mOpened || surface == null || !surface.isValid()) return;
             vd.setSurface(surface);
             vd.setDisplayState(true);
+            postDelayed(() -> recomposeDisplay(gen), SURFACE_RECOMPOSE_DELAY_MS);
         };
         ViewTreeObserver vto = isAttachedToWindow() ? getViewTreeObserver() : null;
         if (vto != null && vto.isAlive()) {
@@ -517,6 +529,35 @@ public class WindowHostVdView extends ViewGroup {
             invalidate();
         }
         postDelayed(attach, SURFACE_ATTACH_BACKSTOP_MS);
+    }
+
+    /** When the display is composited afresh after the surface went on; transitions are over by then. */
+    private static final long SURFACE_RECOMPOSE_DELAY_MS = 1500;
+    /** How long the display stays without the surface for that. */
+    private static final long SURFACE_RECOMPOSE_GAP_MS = 150;
+
+    /**
+     * SurfaceFlinger composites a display only when something on it changes. Coming back on
+     * screen the app's task animates in (display switched on, task brought to front); an app that
+     * draws nothing afterwards (Firefox on a page, APK Analyzer) left the pane showing the last
+     * frame composited during that animation -- the app dimmed -- for as long as it stayed
+     * static (SurfaceFlinger: frame=1 on the pane's SurfaceView, while the display itself was
+     * composed at full opacity), until a divider drag re-attached the surface. So re-attach it
+     * once, after the animations: the display is composited from scratch. The SurfaceView keeps
+     * its last frame meanwhile, nothing flickers.
+     */
+    private void recomposeDisplay(final int gen) {
+        if (gen != mAttachGen) return;
+        final WindowHostVdDisplay vd = mVirtualDisplay;
+        Surface surface = mSurfaceView.getHolder().getSurface();
+        if (vd == null || !mOpened || surface == null || !surface.isValid()) return;
+        vd.setSurface(null);
+        postDelayed(() -> {
+            Surface s = mSurfaceView.getHolder().getSurface();
+            // A new surface meanwhile has its own attach on the way.
+            if (gen != mAttachGen || mVirtualDisplay != vd || !mOpened || s == null || !s.isValid()) return;
+            vd.setSurface(s);
+        }, SURFACE_RECOMPOSE_GAP_MS);
     }
 
     private class SurfaceCallback implements SurfaceHolder.Callback {
