@@ -14,6 +14,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.InputDevice;
@@ -210,12 +211,50 @@ public final class VdHostCore {
     public void setSurface(int callerUid, int displayId, Surface surface) {
         Record r = require(callerUid, displayId);
         r.vd.setSurface(surface);
+        if (surface == null) waitUntilDetached();
         Surface old;
         synchronized (r) {
             old = r.surface;
             r.surface = surface;
         }
         releaseSurface(old, surface);
+    }
+
+    private Object mWindowManager;
+    private Method mSyncTransactions;
+    private boolean mSyncResolved;
+
+    /**
+     * Returns once SurfaceFlinger no longer renders the display into the surface just taken off.
+     * The client calls setSurface(null) from SurfaceHolder.Callback.surfaceDestroyed(), and the
+     * SurfaceView removes its BLAST layer right after that returns; but the display manager
+     * applies a surface change only with the next window traversal. A frame SurfaceFlinger
+     * queued in between went to a layer that was already gone, and its buffer queue then waited
+     * for that frame's release forever, keeping itself, the layer and its buffers alive -- an
+     * offscreen layer of several MB on every pane teardown. IWindowManager.syncInputTransactions()
+     * runs the pending traversal (where the display manager hands the change over) and waits for
+     * SurfaceFlinger to have applied it.
+     */
+    private void waitUntilDetached() {
+        long start = SystemClock.uptimeMillis();
+        try {
+            synchronized (this) {
+                if (!mSyncResolved) {
+                    mSyncResolved = true;
+                    mWindowManager = Hidden.getService("window", "android.view.IWindowManager");
+                    mSyncTransactions = Hidden.findMethod(mWindowManager, "syncInputTransactions", 1);
+                }
+            }
+            if (mSyncTransactions != null) {
+                mSyncTransactions.invoke(mWindowManager, false);
+                long took = SystemClock.uptimeMillis() - start;
+                if (took > 100) Log.i(TAG, "surface detach took " + took + " ms");
+                return;
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "syncInputTransactions failed: " + t);
+        }
+        SystemClock.sleep(50);   // a traversal or two, as a fallback
     }
 
     private static void releaseSurface(Surface old, Surface keep) {
