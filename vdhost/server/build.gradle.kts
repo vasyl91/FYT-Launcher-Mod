@@ -6,8 +6,8 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
-val moduleVersion = "1.0.0"
-val moduleVersionCode = 1
+val moduleVersion = "1.0.1"
+val moduleVersionCode = 2
 
 android {
     namespace = "com.syu.vdhost.server"

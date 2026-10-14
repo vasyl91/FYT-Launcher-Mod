@@ -68,6 +68,15 @@ public final class VdHostCore {
         final VirtualDisplay vd;
         final IBinder token;
         final IBinder.DeathRecipient death;
+        /**
+         * This process' copy of the surface the display renders into (unparcelled from the
+         * client). Released as soon as it is replaced or the display goes: the copy holds the
+         * client's buffer queue producer, and through it the client's whole BLAST surface --
+         * layer, last buffer and all. Left to the garbage collector of a host that hardly
+         * allocates, every surface the panes ever had stayed alive in SurfaceFlinger (hundreds
+         * of offscreen SurfaceView layers, several MB each).
+         */
+        Surface surface;
 
         Record(int displayId, int ownerUid, VirtualDisplay vd, IBinder token, IBinder.DeathRecipient death) {
             this.displayId = displayId;
@@ -182,7 +191,9 @@ public final class VdHostCore {
         }
 
         synchronized (mDisplays) {
-            mDisplays.put(displayId, new Record(displayId, callerUid, vd, token, death));
+            Record r = new Record(displayId, callerUid, vd, token, death);
+            r.surface = surface;
+            mDisplays.put(displayId, r);
         }
         applyImePolicy(displayId);
         scheduleFocusRestore();
@@ -199,6 +210,17 @@ public final class VdHostCore {
     public void setSurface(int callerUid, int displayId, Surface surface) {
         Record r = require(callerUid, displayId);
         r.vd.setSurface(surface);
+        Surface old;
+        synchronized (r) {
+            old = r.surface;
+            r.surface = surface;
+        }
+        releaseSurface(old, surface);
+    }
+
+    private static void releaseSurface(Surface old, Surface keep) {
+        if (old == null || old == keep) return;
+        try { old.release(); } catch (Throwable t) { Log.w(TAG, "surface release failed", t); }
     }
 
     public void resize(int callerUid, int displayId, int width, int height, int densityDpi) {
@@ -269,6 +291,12 @@ public final class VdHostCore {
         }
         try { r.token.unlinkToDeath(r.death, 0); } catch (Throwable ignore) { }
         try { r.vd.release(); } catch (Throwable t) { Log.w(TAG, "release failed", t); }
+        Surface old;
+        synchronized (r) {
+            old = r.surface;
+            r.surface = null;
+        }
+        releaseSurface(old, null);
         Log.i(TAG, "released display " + displayId);
     }
 
