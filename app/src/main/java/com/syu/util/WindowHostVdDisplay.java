@@ -29,6 +29,8 @@ public final class WindowHostVdDisplay {
     private volatile int mHeight;
     private volatile int mDensityDpi;
     private volatile boolean mReleased;
+    /** The app last started on this display; it travels with the display (see WindowHostVdView). */
+    private volatile String mPackage;
 
     WindowHostVdDisplay(Context ctx, VdHostProtocol.Proxy host, int displayId, int width, int height, int densityDpi) {
         mHost = host;
@@ -59,6 +61,19 @@ public final class WindowHostVdDisplay {
 
     boolean isReleased() {
         return mReleased;
+    }
+
+    String getPackage() {
+        return mPackage;
+    }
+
+    void setPackage(String pkg) {
+        mPackage = pkg;
+    }
+
+    /** Whether this display still lives on the given host (a replaced host took its displays along). */
+    boolean isOn(VdHostProtocol.Proxy host) {
+        return !mReleased && host != null && host.asBinder() == mHost.asBinder();
     }
 
     public void resize(int width, int height, int densityDpi) {

@@ -24,6 +24,10 @@ import android.view.WindowManager;
 
 import com.syu.vdhost.VdHostProtocol;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
+
 /**
  * Android 11+ replacement for Android 10's android.app.ActivityView.
  *
@@ -52,6 +56,16 @@ public class WindowHostVdView extends ViewGroup {
     private WindowHostActivityView.Callback mListener;
     private boolean mOpened = true;
     private boolean mReadyReported;
+    /**
+     * Set when the pane that owned this view took it off screen without releasing it (WindowHost
+     * replaced by a rebuild): its display, and the app on it, may then be handed to the new pane
+     * showing the same app. Cleared as soon as the view is attached again (a swap only moves it).
+     */
+    private boolean mDisplayDonor;
+
+    /** Every open view, so a new pane can find the display its app already runs on. Main thread. */
+    private static final Set<WindowHostVdView> sOpenViews =
+            Collections.newSetFromMap(new WeakHashMap<WindowHostVdView, Boolean>());
 
     public WindowHostVdView(Context context) {
         super(context);
@@ -60,6 +74,7 @@ public class WindowHostVdView extends ViewGroup {
         mSurfaceView.getHolder().addCallback(mSurfaceCallback);
         addView(mSurfaceView);
         WindowHostVdClient.addListener(mHostListener);
+        sOpenViews.add(this);
     }
 
     // =====================================================================================
@@ -84,6 +99,7 @@ public class WindowHostVdView extends ViewGroup {
     private void performRelease() {
         if (!mOpened) return;
         mOpened = false;
+        sOpenViews.remove(this);
         mSurfaceView.getHolder().removeCallback(mSurfaceCallback);
         WindowHostVdClient.removeListener(mHostListener);
 
@@ -144,8 +160,12 @@ public class WindowHostVdView extends ViewGroup {
      * start is kept as a fallback; the display is public, so the system usually allows it too.
      */
     boolean startActivitySafely(Intent intent) {
-        WindowHostVdDisplay vd = mVirtualDisplay;
-        if (vd == null || intent == null) return false;
+        if (mVirtualDisplay == null || intent == null) return false;
+
+        final String pkg = intent.getComponent() != null
+                ? intent.getComponent().getPackageName() : intent.getPackage();
+        adoptDisplayOf(pkg);
+        final WindowHostVdDisplay vd = mVirtualDisplay;
 
         Intent i = new Intent(intent).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // No launch bounds or freeform mode here: the task simply fills the display.
@@ -153,7 +173,10 @@ public class WindowHostVdView extends ViewGroup {
 
         try {
             int res = vd.startActivity(i, options);
-            if (res >= 0) return true;
+            if (res >= 0) {
+                vd.setPackage(pkg);
+                return true;
+            }
             Log.w(TAG, "VD host start of " + i.getComponent() + " returned " + res + ", starting directly");
         } catch (Throwable t) {
             Log.w(TAG, "VD host start failed, starting directly", t);
@@ -161,11 +184,67 @@ public class WindowHostVdView extends ViewGroup {
 
         try {
             getContext().startActivity(i, options);
+            vd.setPackage(pkg);
             return true;
         } catch (Throwable t) {
             Log.w(TAG, "direct start failed", t);
             return false;
         }
+    }
+
+    // =====================================================================================
+    // Display hand-over between WindowHost rebuilds
+    // =====================================================================================
+
+    /**
+     * A rebuild replaces every pane with a new one that has a display of its own. Starting the app
+     * there would MOVE its task from the old display to the new one without recreating it, and an
+     * app that handles configuration changes itself (Firefox) keeps talking to the old display:
+     * its keyboard is refused ("display ID mismatch") and its next popup crashes once that display
+     * is gone. So the new pane takes the old display over instead -- the task never changes
+     * display, and its state is kept.
+     */
+    static void markDisplayDonor(Object av) {
+        if (av instanceof WindowHostVdView) ((WindowHostVdView) av).mDisplayDonor = true;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mDisplayDonor = false;
+    }
+
+    /** Main thread. Swaps this view's fresh display for the one pkg already runs on, if any. */
+    private void adoptDisplayOf(String pkg) {
+        final WindowHostVdDisplay mine = mVirtualDisplay;
+        // Only a display nothing was started on yet; a pane switching apps keeps its own.
+        if (pkg == null || mine == null || mine.getPackage() != null) return;
+
+        final VdHostProtocol.Proxy host = WindowHostVdClient.current();
+        WindowHostVdDisplay donor = null;
+        for (WindowHostVdView v : sOpenViews.toArray(new WindowHostVdView[0])) {
+            if (v == this || v == null || !v.mOpened || !v.mDisplayDonor || v.isAttachedToWindow()) continue;
+            WindowHostVdDisplay d = v.mVirtualDisplay;
+            if (d == null || !pkg.equals(d.getPackage()) || !d.isOn(host)) continue;
+            v.mVirtualDisplay = null;        // its release() must not take the display along
+            donor = d;
+            break;
+        }
+        if (donor == null) return;
+
+        mVirtualDisplay = donor;
+        WindowHostVdClient.noteDisplay(donor.getDisplayId(), true);
+        Surface surface = mSurfaceView.getHolder().getSurface();
+        if (surface != null && surface.isValid()) {
+            donor.setSurface(surface);
+            int w = mSurfaceView.getWidth();
+            int h = mSurfaceView.getHeight();
+            if (w > 0 && h > 0) donor.resize(w, h, getBaseDisplayDensity());
+            donor.setDisplayState(true);
+        }
+        mine.release();
+        Log.i(TAG, "display " + donor.getDisplayId() + " with " + pkg + " handed over from the previous pane"
+                + " (fresh display " + mine.getDisplayId() + " released)");
     }
 
     // =====================================================================================

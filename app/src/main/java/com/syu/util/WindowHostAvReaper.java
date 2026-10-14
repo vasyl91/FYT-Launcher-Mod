@@ -53,6 +53,13 @@ public final class WindowHostAvReaper {
     private static final long INITIAL_GRACE_MS = 1500L;
     /** After this long we stop trying and leave the ActivityView alone (old behaviour). */
     private static final long GIVE_UP_MS = 30_000L;
+    /**
+     * WindowHostVdView (Android 11+): its task never leaves the display -- the next pane showing
+     * the same app takes the whole display over (WindowHostVdView.adoptDisplayOf()). A display
+     * still parked here after this long belongs to no pane any more and is released. Uptime, like
+     * every time in this class, so a sleeping unit does not count towards it.
+     */
+    private static final long HOSTED_RELEASE_MS = 90_000L;
     /** Hard cap on parked entries; the oldest is dropped past this point. */
     private static final int MAX_PENDING = 32;
 
@@ -76,7 +83,7 @@ public final class WindowHostAvReaper {
             this.av = av;
             this.displayId = displayId;
             this.earliestCheck = now + INITIAL_GRACE_MS;
-            this.deadline = now + GIVE_UP_MS;
+            this.deadline = now + (WindowHostActivityView.isHosted(av) ? HOSTED_RELEASE_MS : GIVE_UP_MS);
         }
     }
 
@@ -188,6 +195,26 @@ public final class WindowHostAvReaper {
             // Grace period is per entry, not per poll: a poll scheduled for an older entry must
             // not query a freshly parked one before its own takeover has had time to complete.
             if (now < e.earliestCheck) continue;
+
+            if (WindowHostActivityView.isHosted(e.av)) {
+                // Display handed over to a new pane (or gone with its host): nothing left to keep.
+                if (WindowHostActivityView.getVirtualDisplayId(e.av) != e.displayId) {
+                    it.remove();
+                    releaseNow(e.av, e.displayId, "display handed over");
+                    continue;
+                }
+                if (now >= e.deadline) {
+                    it.remove();
+                    releaseNow(e.av, e.displayId, "not taken over by any pane");
+                    continue;
+                }
+                // Its task stays put by design; "empty" only means the app is gone.
+                if (Boolean.TRUE.equals(isDisplayEmpty(e.displayId))) {
+                    it.remove();
+                    releaseNow(e.av, e.displayId, "display empty");
+                }
+                continue;
+            }
 
             Boolean empty = isDisplayEmpty(e.displayId);
             if (empty == null) {

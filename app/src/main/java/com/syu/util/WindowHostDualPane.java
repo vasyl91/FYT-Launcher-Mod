@@ -641,6 +641,7 @@ public class WindowHostDualPane {
                 }
             } catch (Throwable ignore) { }
  
+            WindowHostVdView.markDisplayDonor(paneAV);
             out.add(paneAV);
             resetVdCache(paneAV);
  
@@ -809,6 +810,10 @@ public class WindowHostDualPane {
                 try { WindowHostActivityView.release(rightAV); } catch (Throwable ignore) {}
                 resetVdCache(rightAV); rightAV = null; rightTask = -1; rightReady.set(false);
             }
+        } else {
+            // Off screen but kept: panes of the next WindowHost may take their displays over.
+            WindowHostVdView.markDisplayDonor(leftAV);
+            WindowHostVdView.markDisplayDonor(rightAV);
         }
 
         added = false;

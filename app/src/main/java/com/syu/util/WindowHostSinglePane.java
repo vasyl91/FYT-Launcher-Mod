@@ -512,6 +512,7 @@ public class WindowHostSinglePane {
         } catch (Throwable ignore) { }
  
         childAttached = false;
+        WindowHostVdView.markDisplayDonor(av);
         out.add(av);
  
         resetVdCache(av);
@@ -628,6 +629,9 @@ public class WindowHostSinglePane {
             try { WindowHostActivityView.release(av); } catch (Throwable ignore) {}
             resetVdCache(av);
             av = null; taskId = -1; avReady.set(false);
+        } else if (av != null) {
+            // Off screen but kept: a pane of the next WindowHost may take its display over.
+            WindowHostVdView.markDisplayDonor(av);
         }
 
         added = false;
