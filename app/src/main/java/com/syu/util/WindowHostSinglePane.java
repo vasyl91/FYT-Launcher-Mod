@@ -189,6 +189,7 @@ public class WindowHostSinglePane {
             ensureWindow(act, wm, token);
             setPendingBoundsFast(b);
             ensureActivityView(act, myGen);
+            WindowHostVdView.expectPackage(av, pkg);
             if (!childAttached) attachPane();
 
             boolean haveTask = (taskId > 0) && pkg.equals(currentPkg);

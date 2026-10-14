@@ -62,6 +62,8 @@ public class WindowHostVdView extends ViewGroup {
      * showing the same app. Cleared as soon as the view is attached again (a swap only moves it).
      */
     private boolean mDisplayDonor;
+    /** The app the pane is about to show, if it said so (expectPackage()). */
+    private String mExpectedPkg;
     /** Set while the SurfaceView swaps its surface for a new one after a hand-over. */
     private boolean mRenewingSurface;
 
@@ -251,22 +253,37 @@ public class WindowHostVdView extends ViewGroup {
         mDisplayDonor = false;
     }
 
+    /**
+     * Tells the pane's view which app it is about to show, before it is attached: when a pane of
+     * the previous WindowHost still has that app on its display, the view takes that display
+     * right away (createDisplayIfPossible()) instead of making a fresh one first, which saves a
+     * display's buffers and swapping the surface afterwards (adoptDisplayOf()).
+     */
+    static void expectPackage(Object av, String pkg) {
+        if (av instanceof WindowHostVdView) ((WindowHostVdView) av).mExpectedPkg = pkg;
+    }
+
+    /** Main thread. Detaches and returns the display pkg runs on in a detached previous pane, if any. */
+    private WindowHostVdDisplay takeDonorDisplay(String pkg) {
+        if (pkg == null) return null;
+        final VdHostProtocol.Proxy host = WindowHostVdClient.current();
+        for (WindowHostVdView v : sOpenViews.toArray(new WindowHostVdView[0])) {
+            if (v == this || v == null || !v.mOpened || !v.mDisplayDonor || v.isAttachedToWindow()) continue;
+            WindowHostVdDisplay d = v.mVirtualDisplay;
+            if (d == null || !pkg.equals(d.getPackage()) || !d.isOn(host)) continue;
+            v.mVirtualDisplay = null;        // its release() must not take the display along
+            return d;
+        }
+        return null;
+    }
+
     /** Main thread. Swaps this view's fresh display for the one pkg already runs on, if any. */
     private void adoptDisplayOf(String pkg) {
         final WindowHostVdDisplay mine = mVirtualDisplay;
         // Only a display nothing was started on yet; a pane switching apps keeps its own.
         if (pkg == null || mine == null || mine.getPackage() != null) return;
 
-        final VdHostProtocol.Proxy host = WindowHostVdClient.current();
-        WindowHostVdDisplay donor = null;
-        for (WindowHostVdView v : sOpenViews.toArray(new WindowHostVdView[0])) {
-            if (v == this || v == null || !v.mOpened || !v.mDisplayDonor || v.isAttachedToWindow()) continue;
-            WindowHostVdDisplay d = v.mVirtualDisplay;
-            if (d == null || !pkg.equals(d.getPackage()) || !d.isOn(host)) continue;
-            v.mVirtualDisplay = null;        // its release() must not take the display along
-            donor = d;
-            break;
-        }
+        WindowHostVdDisplay donor = takeDonorDisplay(pkg);
         if (donor == null) return;
 
         mVirtualDisplay = donor;
@@ -410,6 +427,19 @@ public class WindowHostVdView extends ViewGroup {
         }
 
         int dpi = getBaseDisplayDensity();
+        // The app this pane shows still runs on a previous pane's display: take that one. This
+        // view's surface is new and has never been on another display, so it can go straight on.
+        WindowHostVdDisplay donor = takeDonorDisplay(mExpectedPkg);
+        if (donor != null) {
+            mVirtualDisplay = donor;
+            WindowHostVdClient.noteDisplay(donor.getDisplayId(), true);
+            donor.setSurface(surface);
+            donor.resize(w, h, dpi);
+            donor.setDisplayState(true);
+            Log.i(TAG, "display " + donor.getDisplayId() + " with " + mExpectedPkg
+                    + " taken over from the previous pane, no fresh display");
+            return;
+        }
         try {
             int id = host.createDisplay(mClientToken, "WindowHostVd@" + System.identityHashCode(this),
                     w, h, dpi, VdHostProtocol.DEFAULT_FLAGS, surface);

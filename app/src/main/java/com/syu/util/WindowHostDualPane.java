@@ -265,6 +265,8 @@ public class WindowHostDualPane {
             scheduleRestore();
             setPendingBoundsFast(b);
             ensureActivityView(act, myGen);
+            WindowHostVdView.expectPackage(leftAV, lPkg);
+            WindowHostVdView.expectPackage(rightAV, rPkg);
             if (!leftAttached)  attachPane(Side.LEFT);
             if (!rightAttached) attachPane(Side.RIGHT);
 
