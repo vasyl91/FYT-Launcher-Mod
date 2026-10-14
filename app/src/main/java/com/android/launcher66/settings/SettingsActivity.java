@@ -18,6 +18,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -80,32 +81,46 @@ public class SettingsActivity extends AppCompatActivity {
     public static int adaptiveNameTextSize;
     
     /**
-     * The FYT unit the settings and the creator were designed on: 2000x1200 at 240 dpi, i.e. a
-     * smallest width of 800 dp. Elsewhere the activity runs at the density that gives the same
-     * smallest width, so every dp and sp keeps the proportions it has on that unit -- a 1080 px
-     * wide phone at 450 dpi gets 216 dpi. Done before anything is inflated, so nothing has to be
-     * shrunk afterwards (that used to happen per list row, visibly, after the row was shown).
+     * Non-FYT devices (phones): the settings and the creator are shown at 0.75 of the screen's
+     * density -- the size they used to get from PreferenceScaleHelper and the creators' scaleView(),
+     * which shrank every list row and control by 0.75 after it was already on screen (a visible
+     * jump, a squeezed nested indent). Applied here, before anything is inflated, it costs nothing.
      */
-    private static final int REFERENCE_SMALLEST_WIDTH_DP = 800;
+    private static final float NON_FYT_DENSITY_SCALE = 0.75f;
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LauncherApplication.isFytDevice() ? newBase : withReferenceDensity(newBase));
+        super.attachBaseContext(LauncherApplication.isFytDevice() ? newBase : withScaledDensity(newBase));
     }
 
-    private static Context withReferenceDensity(Context base) {
+    private static Context withScaledDensity(Context base) {
         DisplayMetrics dm = base.getResources().getDisplayMetrics();
-        int shortSide = Math.min(dm.widthPixels, dm.heightPixels);
-        if (shortSide <= 0) return base;
-        int dpi = Math.round(shortSide * 160f / REFERENCE_SMALLEST_WIDTH_DP);
-        if (dpi <= 0 || dpi == dm.densityDpi) return base;
+        int dpi = Math.round(dm.densityDpi * NON_FYT_DENSITY_SCALE);
+        if (dpi <= 0 || dm.widthPixels <= 0 || dm.heightPixels <= 0) return base;
 
         Configuration config = new Configuration(base.getResources().getConfiguration());
         config.densityDpi = dpi;
-        config.smallestScreenWidthDp = REFERENCE_SMALLEST_WIDTH_DP;
+        // The same pixels, in the new dp.
         config.screenWidthDp = Math.round(dm.widthPixels * 160f / dpi);
         config.screenHeightDp = Math.round(dm.heightPixels * 160f / dpi);
+        config.smallestScreenWidthDp = Math.min(config.screenWidthDp, config.screenHeightDp);
         return base.createConfigurationContext(config);
+    }
+
+    /**
+     * Fits a label into its button: the text shrinks (down to 6 sp) until it fits, never grows
+     * past maxSp. The creators' CONFIRM button is a share of the bar, its text was not.
+     */
+    public static void fitTextToView(TextView view, float maxSp) {
+        if (view == null) return;
+        view.setTextSize(TypedValue.COMPLEX_UNIT_SP, maxSp);
+        view.setMinWidth(0);
+        view.setMinHeight(0);
+        view.setMinimumWidth(0);
+        view.setMinimumHeight(0);
+        view.setMaxLines(1);
+        androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                view, 6, Math.max(7, Math.round(maxSp)), 1, TypedValue.COMPLEX_UNIT_SP);
     }
 
     @Override

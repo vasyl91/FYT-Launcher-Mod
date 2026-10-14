@@ -339,7 +339,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             if (mLeftToRight != null) { mLeftToRight.setOnClickListener(this); setCalculatedButtonSizes(mLeftToRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
             if (mRightToLeft != null) { mRightToLeft.setOnClickListener(this); setCalculatedButtonSizes(mRightToLeft, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
             if (mRightToRight != null) { mRightToRight.setOnClickListener(this); setCalculatedButtonSizes(mRightToRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
-            if (mConfirmLayout != null) { mConfirmLayout.setOnClickListener(this); mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize); }
+            if (mConfirmLayout != null) { mConfirmLayout.setOnClickListener(this); SettingsActivity.fitTextToView(mConfirmLayout, SettingsActivity.confirmTextSize); }
 
             setCalculatedTextSize(rootView, R.id.selected_widget_string, SettingsActivity.selectionTextSize);
             setCalculatedTextSize(rootView, R.id.rectangle_name, SettingsActivity.selectionTextSize);
@@ -1333,12 +1333,17 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     }
 
     /**
-     * Non-FYT devices: keeps the creator clear of the edge-to-edge system bars. Sizes need no
-     * scaling here any more: SettingsActivity runs at a reference density on those devices, so the
-     * controls already have the proportions they have on the FYT unit.
+     * Non-FYT devices: keeps the creator clear of the edge-to-edge system bars, and gives the
+     * arrow buttons the 0.75 they always had there. Their size is a share of the screen in pixels,
+     * so SettingsActivity's scaled density (which takes care of all text) does not reach them.
      */
     private void applySystemBarInsets() {
         if (mRootView == null) return;
+
+        for (Button b : new Button[]{ mTopUp, mTopDown, mBottomUp, mBottomDown,
+                mLeftToLeft, mLeftToRight, mRightToLeft, mRightToRight }) {
+            scaleButton(b, 0.75f);
+        }
 
         int statusBarHeight = getSettingsActivity().getStatusBarHeight();
         int navigationBarHeight = getSettingsActivity().getNavigationBarHeight();
@@ -1380,6 +1385,16 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 }
                 creatorBarAutoHide.setLayoutParams(marginParams);
             }
+        }
+    }
+
+    private static void scaleButton(Button button, float scaleFactor) {
+        if (button == null) return;
+        ViewGroup.LayoutParams params = button.getLayoutParams();
+        if (params != null && params.width > 0 && params.height > 0) {
+            params.width = Math.round(params.width * scaleFactor);
+            params.height = Math.round(params.height * scaleFactor);
+            button.setLayoutParams(params);
         }
     }
 
