@@ -3,6 +3,7 @@ package com.syu.util;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Insets;
 import android.os.Binder;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.InputDevice;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.PixelCopy;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -62,6 +64,8 @@ public class WindowHostVdView extends ViewGroup {
      * showing the same app. Cleared as soon as the view is attached again (a swap only moves it).
      */
     private boolean mDisplayDonor;
+    /** Bumped whenever the surface goes or comes back: drops the pending blank-pane checks. */
+    private int mBlankCheckGen;
 
     /**
      * The pane the user last touched, while the launcher itself has not been touched or focused
@@ -276,6 +280,7 @@ public class WindowHostVdView extends ViewGroup {
             int h = mSurfaceView.getHeight();
             if (w > 0 && h > 0) donor.resize(w, h, getBaseDisplayDensity());
             donor.setDisplayState(true);
+            scheduleBlankCheck();
         }
         mine.release();
         Log.i(TAG, "display " + donor.getDisplayId() + " with " + pkg + " handed over from the previous pane"
@@ -433,6 +438,76 @@ public class WindowHostVdView extends ViewGroup {
         try { mListener.onDestroyed(); } catch (Throwable t) { Log.w(TAG, "onDestroyed failed", t); }
     }
 
+    // =====================================================================================
+    // Blank pane after the surface comes back
+    // =====================================================================================
+
+    private static final long BLANK_CHECK_DELAY_MS = 800;
+    private static final int BLANK_CHECK_SIZE = 24;
+
+    /**
+     * Now and then, once the pane is back on screen (settings, app drawer, unlock), the embedded app
+     * comes back black although it runs: it never redraws into the new surface. Any resize fixes
+     * it, so look at what the surface shows a moment later and, while it is still black or empty,
+     * first hand the surface over again (no config change), then nudge the display size by a pixel
+     * (the app relayouts and draws), once: a pane still black after that is black for real.
+     */
+    private void scheduleBlankCheck() {
+        final int gen = ++mBlankCheckGen;
+        postDelayed(() -> checkBlank(gen, 0), BLANK_CHECK_DELAY_MS);
+    }
+
+    private void checkBlank(final int gen, final int attempt) {
+        if (gen != mBlankCheckGen || !mOpened || mVirtualDisplay == null || !isAttachedToWindow()) return;
+        Surface surface = mSurfaceView.getHolder().getSurface();
+        if (surface == null || !surface.isValid()) return;
+        final Bitmap sample = Bitmap.createBitmap(BLANK_CHECK_SIZE, BLANK_CHECK_SIZE, Bitmap.Config.ARGB_8888);
+        try {
+            PixelCopy.request(mSurfaceView, sample, result -> {
+                boolean blank = result == PixelCopy.ERROR_SOURCE_NO_DATA
+                        || (result == PixelCopy.SUCCESS && isBlack(sample));
+                sample.recycle();
+                if (blank) onBlank(gen, attempt);
+            }, getHandler());
+        } catch (Throwable t) {
+            sample.recycle();
+            Log.w(TAG, "blank check failed", t);
+        }
+    }
+
+    private static boolean isBlack(Bitmap b) {
+        for (int y = 0; y < b.getHeight(); y++) {
+            for (int x = 0; x < b.getWidth(); x++) {
+                int c = b.getPixel(x, y);
+                if (((c >> 16) & 0xff) > 8 || ((c >> 8) & 0xff) > 8 || (c & 0xff) > 8) return false;
+            }
+        }
+        return true;
+    }
+
+    private void onBlank(int gen, int attempt) {
+        WindowHostVdDisplay vd = mVirtualDisplay;
+        Surface surface = mSurfaceView.getHolder().getSurface();
+        if (gen != mBlankCheckGen || vd == null || surface == null || !surface.isValid()) return;
+        if (attempt == 0) {
+            Log.i(TAG, "display " + vd.getDisplayId() + " blank after the surface came back; re-attaching it");
+            vd.setSurface(null);
+            vd.setSurface(surface);
+            vd.setDisplayState(true);
+        } else if (attempt == 1) {
+            int w = mSurfaceView.getWidth();
+            int h = mSurfaceView.getHeight();
+            if (w <= 1 || h <= 1) return;
+            // Off by one pixel from what the display has now; the next surfaceChanged() squares it.
+            int nh = vd.getHeight() == h ? h - 1 : h;
+            Log.i(TAG, "display " + vd.getDisplayId() + " still blank; resizing to " + w + "x" + nh);
+            vd.resize(w, nh, getBaseDisplayDensity());
+        } else {
+            return;
+        }
+        postDelayed(() -> checkBlank(gen, attempt + 1), BLANK_CHECK_DELAY_MS);
+    }
+
     private class SurfaceCallback implements SurfaceHolder.Callback {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
@@ -442,6 +517,7 @@ public class WindowHostVdView extends ViewGroup {
             } else {
                 vd.setSurface(holder.getSurface());
                 vd.setDisplayState(true);
+                scheduleBlankCheck();
             }
             reportReadyIfPossible();
         }
@@ -459,6 +535,7 @@ public class WindowHostVdView extends ViewGroup {
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
+            mBlankCheckGen++;
             WindowHostVdDisplay vd = mVirtualDisplay;
             if (vd != null) {
                 // As ActivityView: the embedded app stops while the pane is not on screen.
