@@ -320,7 +320,7 @@ public class WindowUtil {
     }
 
     public static void initDefaultApp() {
-        if (!LauncherApplication.canHostPips()) return;
+        if (!LauncherApplication.isFytDevice()) return;
         if (helpers == null) {
             helpers = new Helpers();
         }
