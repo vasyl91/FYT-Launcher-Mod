@@ -3093,6 +3093,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (serviceClass == CanbusService.class) {
             return CanbusService.isRunning();
         }
+        if (serviceClass == FabOverlayService.class) {
+            return FabOverlayService.isRunning();
+        }
         String serviceName = serviceClass.getName();
         long now = SystemClock.uptimeMillis();
         synchronized (sServiceRunningCacheLock) {

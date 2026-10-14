@@ -347,6 +347,7 @@ public final class WindowHostSplash {
             View cover = build(container.getContext(), pkg);
             cover.setTag(key);
             bumpGeneration(cover);
+            Log.d(TAG, "cover up: " + key + " " + pkg);
             container.addView(cover, lp != null ? lp : new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             cover.bringToFront();
@@ -534,9 +535,11 @@ public final class WindowHostSplash {
                     .withEndAction(() -> {
                         if (generationOf(cover) != expectedGeneration) {
                             cover.setAlpha(1f);   // someone re-covered mid-fade
+                            Log.d(TAG, "cover re-raised mid-fade: " + cover.getTag() + " " + coverPackage.get(cover));
                             return;
                         }
                         try { paneHost.removeView(cover); } catch (Throwable ignore) { }
+                        Log.d(TAG, "cover down: " + cover.getTag() + " " + coverPackage.get(cover));
                         runQuietly(onDone);
                     })
                     .start();

@@ -1081,6 +1081,9 @@ public class WindowUtil {
         return true;
     }
 
+    /** After the last pane of a set is launched, when the swap buttons are asked for again. */
+    private static final long FAB_AFTER_PANES_MS = 300L;
+
     private static void launchNextPane(List<PaneLaunch> queue, int generation) {
         if (paneLaunchCancelled(generation)) return;
         if (queue.isEmpty()) {
@@ -1113,6 +1116,14 @@ public class WindowUtil {
         if (queue.isEmpty()) {
             pendingPaneLaunches = 0;
             PaneFrameMonitor.stop(generation);
+            // openPip() asks for the swap buttons once, a moment after it scheduled the panes,
+            // when they may not be on the screen yet: canShowOverlayFab() then says no and,
+            // with FabOverlayService just stopped by recreateView(), nothing brought the buttons
+            // back. Ask again now that the last pane is launched; a no-op when they are up.
+            Launcher fabLauncher = Launcher.getLauncher();
+            if (fabLauncher != null) {
+                fabLauncher.handler.postDelayed(fabLauncher::showOverlayFab, FAB_AFTER_PANES_MS);
+            }
             return;
         }
         Launcher launcher = Launcher.getLauncher();

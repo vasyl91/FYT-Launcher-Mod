@@ -307,6 +307,9 @@ public class WindowHostVdView extends ViewGroup {
 
     private static final long SURFACE_RENEWAL_TIMEOUT_MS = 500;
 
+    /** How long a display stays on after its surface went, in case the surface comes back. */
+    private static final long DISPLAY_OFF_GRACE_MS = 1000;
+
     /** Shows the SurfaceView again once its old surface is gone: a new one comes with it. */
     private void endSurfaceRenewal() {
         if (!mRenewingSurface) return;
@@ -512,9 +515,11 @@ public class WindowHostVdView extends ViewGroup {
             }
             WindowHostVdDisplay vd = mVirtualDisplay;
             if (vd != null) {
-                // As ActivityView: the embedded app stops while the pane is not on screen.
-                vd.setDisplayState(false);
+                // As ActivityView: the embedded app stops while the pane is not on screen -- after
+                // a grace period, so a swap or a hand-over (the surface is back at once) does not
+                // stop and restart it.
                 vd.setSurface(null);
+                vd.setDisplayStateOffSoon(DISPLAY_OFF_GRACE_MS);
             }
             reportDestroyed();
         }

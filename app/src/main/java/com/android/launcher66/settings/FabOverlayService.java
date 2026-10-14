@@ -128,9 +128,17 @@ public class FabOverlayService extends Service {
         return null;
     }
 
+    /** Whether the service is running; Launcher.isServiceRunning() reads it instead of a cache. */
+    private static volatile boolean sRunning;
+
+    public static boolean isRunning() {
+        return sRunning;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        sRunning = true;
         Log.i(TAG, "Service created");
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -727,6 +735,7 @@ public class FabOverlayService extends Service {
 
     @Override
     public void onDestroy() {
+        sRunning = false;
         // unregisterReceiver() throws IllegalArgumentException when registration failed. Guarded,
         // so the exception cannot abort onDestroy() before the overlays are removed and leave
         // orphaned type 2038 windows (with their ViewRootImpl) in the WindowManager.

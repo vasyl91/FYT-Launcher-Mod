@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.display.DisplayManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.Display;
@@ -31,6 +33,9 @@ public final class WindowHostVdDisplay {
     private volatile boolean mReleased;
     /** The app last started on this display; it travels with the display (see WindowHostVdView). */
     private volatile String mPackage;
+
+    private static final Handler MAIN = new Handler(Looper.getMainLooper());
+    private final Runnable mDisplayOff = () -> setDisplayState(false);
 
     WindowHostVdDisplay(Context ctx, VdHostProtocol.Proxy host, int displayId, int width, int height, int densityDpi) {
         mHost = host;
@@ -89,7 +94,19 @@ public final class WindowHostVdDisplay {
         }
     }
 
+    /**
+     * Turns the display off after graceMs unless it is turned on again before: a pane swap or a
+     * rebuild hand-over detaches the view only for a moment, and switching the display off and on
+     * in between stopped and restarted the embedded app every time.
+     */
+    void setDisplayStateOffSoon(long graceMs) {
+        if (mReleased) return;
+        MAIN.removeCallbacks(mDisplayOff);
+        MAIN.postDelayed(mDisplayOff, graceMs);
+    }
+
     public void setDisplayState(boolean on) {
+        MAIN.removeCallbacks(mDisplayOff);
         if (mReleased) return;
         try {
             mHost.setDisplayState(mDisplayId, on);
@@ -108,6 +125,7 @@ public final class WindowHostVdDisplay {
     }
 
     public void release() {
+        MAIN.removeCallbacks(mDisplayOff);
         if (mReleased) return;
         mReleased = true;
         WindowHostVdClient.noteDisplay(mDisplayId, false);
@@ -120,6 +138,7 @@ public final class WindowHostVdDisplay {
 
     /** The host died with the display; nothing left to release. */
     void markDead() {
+        MAIN.removeCallbacks(mDisplayOff);
         mReleased = true;
         WindowHostVdClient.noteDisplay(mDisplayId, false);
     }
