@@ -20,6 +20,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 
 import com.syu.vdhost.VdHostProtocol;
@@ -64,6 +65,8 @@ public class WindowHostVdView extends ViewGroup {
     private boolean mDisplayDonor;
     /** The app the pane is about to show, if it said so (expectPackage()). */
     private String mExpectedPkg;
+    /** Bumped by every surface change: drops a pending scheduleSurfaceAttach(). */
+    private int mAttachGen;
     /** Set while the SurfaceView swaps its surface for a new one after a hand-over. */
     private boolean mRenewingSurface;
 
@@ -436,18 +439,19 @@ public class WindowHostVdView extends ViewGroup {
         if (donor != null) {
             mVirtualDisplay = donor;
             WindowHostVdClient.noteDisplay(donor.getDisplayId(), true);
-            donor.setSurface(surface);
             donor.resize(w, h, dpi);
             donor.setDisplayState(true);
+            scheduleSurfaceAttach();
             Log.i(TAG, "display " + donor.getDisplayId() + " with " + mExpectedPkg
                     + " taken over from the previous pane, no fresh display");
             return;
         }
         try {
             int id = host.createDisplay(mClientToken, "WindowHostVd@" + System.identityHashCode(this),
-                    w, h, dpi, VdHostProtocol.DEFAULT_FLAGS, surface);
+                    w, h, dpi, VdHostProtocol.DEFAULT_FLAGS, null);
             mVirtualDisplay = new WindowHostVdDisplay(getContext(), host, id, w, h, dpi);
             WindowHostVdClient.noteDisplay(id, true);
+            scheduleSurfaceAttach();
             Log.i(TAG, "display " + id + " created " + w + "x" + h + "@" + dpi);
         } catch (Throwable t) {
             Log.w(TAG, "createDisplay failed", t);
@@ -482,6 +486,39 @@ public class WindowHostVdView extends ViewGroup {
         try { mListener.onDestroyed(); } catch (Throwable t) { Log.w(TAG, "onDestroyed failed", t); }
     }
 
+    /** Longest wait for the window's frame before the surface is handed over regardless. */
+    private static final long SURFACE_ATTACH_BACKSTOP_MS = 500;
+    /** After that frame, so its sync with the window manager is through as well. */
+    private static final long SURFACE_ATTACH_SETTLE_MS = 32;
+
+    /**
+     * Hands the SurfaceView's surface to the display once the window has committed a frame, never
+     * from inside the surface callbacks. Those run while a new (or relaid out) window is in its
+     * BLAST sync with the window manager, and a display frame queued at that moment can get stuck
+     * in the SurfaceView's sync: the pane then keeps that one frame -- black, or the app dimmed
+     * halfway through its opening animation -- while the display goes on rendering (SurfaceFlinger
+     * shows frame=1 on that SurfaceView), until a resize relays the window out.
+     */
+    private void scheduleSurfaceAttach() {
+        final int gen = ++mAttachGen;
+        final boolean[] done = new boolean[1];
+        final Runnable attach = () -> {
+            if (done[0] || gen != mAttachGen) return;
+            done[0] = true;
+            WindowHostVdDisplay vd = mVirtualDisplay;
+            Surface surface = mSurfaceView.getHolder().getSurface();
+            if (vd == null || !mOpened || surface == null || !surface.isValid()) return;
+            vd.setSurface(surface);
+            vd.setDisplayState(true);
+        };
+        ViewTreeObserver vto = isAttachedToWindow() ? getViewTreeObserver() : null;
+        if (vto != null && vto.isAlive()) {
+            vto.registerFrameCommitCallback(() -> postDelayed(attach, SURFACE_ATTACH_SETTLE_MS));
+            invalidate();
+        }
+        postDelayed(attach, SURFACE_ATTACH_BACKSTOP_MS);
+    }
+
     private class SurfaceCallback implements SurfaceHolder.Callback {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
@@ -489,8 +526,8 @@ public class WindowHostVdView extends ViewGroup {
             if (vd == null) {
                 createDisplayIfPossible();
             } else {
-                vd.setSurface(holder.getSurface());
                 vd.setDisplayState(true);
+                scheduleSurfaceAttach();
             }
             reportReadyIfPossible();
         }
@@ -508,6 +545,7 @@ public class WindowHostVdView extends ViewGroup {
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
+            mAttachGen++;
             if (mRenewingSurface) {
                 // The surface the fresh display had; the adopted display stays on for the new one.
                 post(WindowHostVdView.this::endSurfaceRenewal);
