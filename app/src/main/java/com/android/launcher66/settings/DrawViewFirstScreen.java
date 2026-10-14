@@ -357,7 +357,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         }
 
         if (!LauncherApplication.isFytDevice()) {
-            scaleView();
+            applySystemBarInsets();
         }
     }
 
@@ -1332,11 +1332,14 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         }
     }
 
-    // For non FYT devices
-    private void scaleView() {
+    /**
+     * Non-FYT devices: keeps the creator clear of the edge-to-edge system bars. Sizes need no
+     * scaling here any more: SettingsActivity runs at a reference density on those devices, so the
+     * controls already have the proportions they have on the FYT unit.
+     */
+    private void applySystemBarInsets() {
         if (mRootView == null) return;
-        
-        float scaleFactor = 0.75f;
+
         int statusBarHeight = getSettingsActivity().getStatusBarHeight();
         int navigationBarHeight = getSettingsActivity().getNavigationBarHeight();
         boolean isPortrait = SettingsActivity.isPortrait;
@@ -1378,45 +1381,6 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 creatorBarAutoHide.setLayoutParams(marginParams);
             }
         }
-        
-        // Scale buttons in bottom bar
-        if (mTopUp != null) scaleButton(mTopUp, scaleFactor);
-        if (mTopDown != null) scaleButton(mTopDown, scaleFactor);
-        if (mBottomUp != null) scaleButton(mBottomUp, scaleFactor);
-        if (mBottomDown != null) scaleButton(mBottomDown, scaleFactor);
-        if (mLeftToLeft != null) scaleButton(mLeftToLeft, scaleFactor);
-        if (mLeftToRight != null) scaleButton(mLeftToRight, scaleFactor);
-        if (mRightToLeft != null) scaleButton(mRightToLeft, scaleFactor);
-        if (mRightToRight != null) scaleButton(mRightToRight, scaleFactor);
-        if (mConfirmLayout != null) {
-            scaleButton(mConfirmLayout, scaleFactor);
-            mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize * scaleFactor);
-        }
-        
-        // Scale text in bottom bar
-        scaleTextView(mRootView, R.id.selected_widget_string, SettingsActivity.selectionTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.rectangle_name, SettingsActivity.selectionTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.top_button_string, SettingsActivity.arrowTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.bottom_button_string, SettingsActivity.arrowTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.left_button_string, SettingsActivity.arrowTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.right_button_string, SettingsActivity.arrowTextSize * scaleFactor);
     }
 
-    private void scaleButton(Button button, float scaleFactor) {
-        if (button == null) return;
-        ViewGroup.LayoutParams params = button.getLayoutParams();
-        if (params != null) {
-            params.width = (int) (params.width * scaleFactor);
-            params.height = (int) (params.height * scaleFactor);
-            button.setLayoutParams(params);
-        }
-    }
-
-    private void scaleTextView(View rootView, int textViewId, float textSizeSp) {
-        if (rootView == null) return;
-        TextView tv = rootView.findViewById(textViewId);
-        if (tv != null) {
-            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp);
-        }
-    }
 }

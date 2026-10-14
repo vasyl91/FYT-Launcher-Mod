@@ -13,6 +13,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -78,6 +79,35 @@ public class SettingsActivity extends AppCompatActivity {
     public static int adaptiveCoordinatesSize;
     public static int adaptiveNameTextSize;
     
+    /**
+     * The FYT unit the settings and the creator were designed on: 2000x1200 at 240 dpi, i.e. a
+     * smallest width of 800 dp. Elsewhere the activity runs at the density that gives the same
+     * smallest width, so every dp and sp keeps the proportions it has on that unit -- a 1080 px
+     * wide phone at 450 dpi gets 216 dpi. Done before anything is inflated, so nothing has to be
+     * shrunk afterwards (that used to happen per list row, visibly, after the row was shown).
+     */
+    private static final int REFERENCE_SMALLEST_WIDTH_DP = 800;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LauncherApplication.isFytDevice() ? newBase : withReferenceDensity(newBase));
+    }
+
+    private static Context withReferenceDensity(Context base) {
+        DisplayMetrics dm = base.getResources().getDisplayMetrics();
+        int shortSide = Math.min(dm.widthPixels, dm.heightPixels);
+        if (shortSide <= 0) return base;
+        int dpi = Math.round(shortSide * 160f / REFERENCE_SMALLEST_WIDTH_DP);
+        if (dpi <= 0 || dpi == dm.densityDpi) return base;
+
+        Configuration config = new Configuration(base.getResources().getConfiguration());
+        config.densityDpi = dpi;
+        config.smallestScreenWidthDp = REFERENCE_SMALLEST_WIDTH_DP;
+        config.screenWidthDp = Math.round(dm.widthPixels * 160f / dpi);
+        config.screenHeightDp = Math.round(dm.heightPixels * 160f / dpi);
+        return base.createConfigurationContext(config);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -180,9 +210,6 @@ public class SettingsActivity extends AppCompatActivity {
         progressHeight = calculateDimension(orientationDimension, 13.75);
 
         nestedPaddingStart = calculateDimension(orientationDimension, 6.5);
-        if (!LauncherApplication.isFytDevice()) {
-            nestedPaddingStart = (int) (nestedPaddingStart * 1.5f);
-        }
         nestedPaddingEnd = calculateDimension(orientationDimension, 0.8);
 
         dialogTitle = calculateAdaptiveTextSize(screenWidth, 20);
@@ -215,9 +242,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     public int getStatusBarHeight() {
         int result = 0;
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        // The system bars are drawn at the screen's real density, not at this activity's
+        // reference density (see attachBaseContext()).
+        android.content.res.Resources res = getApplicationContext().getResources();
+        int resourceId = res.getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
-            result = getResources().getDimensionPixelSize(resourceId);
+            result = res.getDimensionPixelSize(resourceId);
         }
         Log.i(TAG, "Status bar height: " + result);
         return result;
@@ -225,9 +255,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     public int getNavigationBarHeight() {
         int result = 0;
-        int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        // The system bars are drawn at the screen's real density, not at this activity's
+        // reference density (see attachBaseContext()).
+        android.content.res.Resources res = getApplicationContext().getResources();
+        int resourceId = res.getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) {
-            result = getResources().getDimensionPixelSize(resourceId);
+            result = res.getDimensionPixelSize(resourceId);
         }
         Log.i(TAG, "Navigation bar height: " + result);
         return result;

@@ -32,7 +32,6 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -208,25 +207,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         super.onViewCreated(view, savedInstanceState);
 
         if (!LauncherApplication.isFytDevice()) {
-            float scaleFactor = 0.75f;
-            
+            // Only the system bar insets: the proportions come from SettingsActivity's
+            // reference density, before anything is inflated.
             recyclerView = findRecyclerView(view);
-
-            if (recyclerView != null) {
-                // Find RecyclerView by searching through view hierarchy
-                view.post(() -> {
-                    if (recyclerView != null) {
-                        Log.i("SCALE", "Found RecyclerView!");
-                        PreferenceScaleHelper.scaleRecyclerView(recyclerView, scaleFactor);
-                    } else {
-                        Log.e("SCALE", "RecyclerView not found!");
-                        // Fallback: scale whatever is visible now
-                        scaleAllViews(view, scaleFactor);
-                    }
-
-                    refreshRecyclerMultiple();
-                });    
-            }      
+            PreferenceScaleHelper.applySystemBarInsets(recyclerView);
         }
     }
 
@@ -245,32 +229,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         return null;
     }
 
-    private void scaleAllViews(View view, float scale) {
-        if (view instanceof ViewGroup viewGroup) {
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                View child = viewGroup.getChildAt(i);
-                scaleAllViews(child, scale);
-            }
-        }
-        
-        // Scale text
-        if (view instanceof TextView textView) {
-            float currentSizePx = textView.getTextSize();
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, currentSizePx * scale);
-        }
-        
-        // Scale padding
-        int paddingLeft = (int) (view.getPaddingLeft() * scale);
-        int paddingTop = (int) (view.getPaddingTop() * scale);
-        int paddingRight = (int) (view.getPaddingRight() * scale);
-        int paddingBottom = (int) (view.getPaddingBottom() * scale);
-        view.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-        
-        // Scale minimum height
-        if (view.getMinimumHeight() > 0) {
-            view.setMinimumHeight((int) (view.getMinimumHeight() * scale));
-        }
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -995,30 +953,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             default:
                 break;
         }
-        if (!LauncherApplication.isFytDevice()) {
-            refreshRecyclerMultiple();
-        }
         return false;
     }
 
-    private void refreshRecyclerMultiple() {
-        // Each new Handler(...) was invisible to mHandler.removeCallbacksAndMessages(null)
-        // in onDestroyView(), so this::refreshRecycler kept the fragment alive for another
-        // 1.6 s after the screen closed. A shared handler can actually be cancelled.
-        long[] delays = {300, 500, 700, 900, 1200, 1400, 1600};
-        for (long delay : delays) {
-            mHandler.postDelayed(this::refreshRecycler, delay);
-        }
-    }
 
-    private void refreshRecycler() {
-        if (recyclerView != null) {
-            RecyclerView.Adapter adapter = recyclerView.getAdapter();
-            if (adapter != null) {
-                adapter.notifyDataSetChanged();
-            }               
-        }
-    }
 
     @Override
     public void onDestroyView() {

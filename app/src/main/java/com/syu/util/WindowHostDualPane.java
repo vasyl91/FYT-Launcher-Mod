@@ -175,9 +175,11 @@ public class WindowHostDualPane {
     private final AtomicBoolean rightBlackScreenDetected = new AtomicBoolean(false);
 
     /**
-     * Divider geometry.
+     * Divider geometry. What is drawn scales with the screen (screenUnits()), so the bar and its
+     * dots keep the proportions they have on the FYT unit on any density; the touch areas stay in
+     * dp, because a finger is the same size on every screen.
      */
-    private final int DIVIDER_VISUAL_PX     = dp(8);
+    private final int DIVIDER_VISUAL_PX     = Math.round(screenUnits(8));
     /** Full-height touchable strip -- this is the whole grab area when the handle is off. */
     private final int DIVIDER_BAR_TOUCH_PX  = dp(32);
     /** Wide grab handle, centred vertically. Purely an ADDITION on top of the strip above. */
@@ -1835,7 +1837,7 @@ public class WindowHostDualPane {
             bar.setBackgroundColor(0xFFE0E0E0);
             addView(bar);
 
-            View dots = new VerticalDotsView(ctx, 0xFF666666, 2.5f, 9f);
+            View dots = new VerticalDotsView(ctx, 0xFF666666, screenUnits(2.5f), screenUnits(9f));
             addView(dots, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER));
         }
     }
@@ -1858,12 +1860,11 @@ public class WindowHostDualPane {
         private final float dotRadiusPx;
         private final float spacingPx;
 
-        VerticalDotsView(Context ctx, int dotColor, float dotRadiusDp, float spacingDp) {
+        VerticalDotsView(Context ctx, int dotColor, float dotRadiusPx, float spacingPx) {
             super(ctx);
-            float d = ctx.getResources().getDisplayMetrics().density;
             p.setColor(dotColor);
-            dotRadiusPx = dotRadiusDp * d;
-            spacingPx = spacingDp * d;
+            this.dotRadiusPx = dotRadiusPx;
+            this.spacingPx = spacingPx;
             setWillNotDraw(false);
         }
 
@@ -2086,6 +2087,26 @@ public class WindowHostDualPane {
 
     private static int dp(int v) {
         return Math.round(LauncherApplication.sApp.getResources().getDisplayMetrics().density * v);
+    }
+
+    /**
+     * Pixels for v dp of the FYT unit the divider was designed on (2000x1200 at 240 dpi, i.e. a
+     * smallest width of 800 dp), scaled by the shorter screen side instead of the density: the
+     * same as dp() there, 11 px instead of 22 for the bar on a 1080x2340 phone at 450 dpi.
+     */
+    private static float screenUnits(float v) {
+        android.util.DisplayMetrics dm = new android.util.DisplayMetrics();
+        try {
+            android.hardware.display.DisplayManager dmgr = LauncherApplication.sApp
+                    .getSystemService(android.hardware.display.DisplayManager.class);
+            // The whole panel, system bars included: 1200 on the FYT unit, not 1200 minus a bar.
+            dmgr.getDisplay(android.view.Display.DEFAULT_DISPLAY).getRealMetrics(dm);
+        } catch (Throwable t) {
+            dm = LauncherApplication.sApp.getResources().getDisplayMetrics();
+        }
+        int shortSide = Math.min(dm.widthPixels, dm.heightPixels);
+        if (shortSide <= 0) return v * LauncherApplication.sApp.getResources().getDisplayMetrics().density;
+        return v * shortSide / 800f;
     }
 
     private static int clampPx(int v, int min, int max) {

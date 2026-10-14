@@ -221,25 +221,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         super.onViewCreated(view, savedInstanceState);
 
         if (!LauncherApplication.isFytDevice()) {
-            float scaleFactor = 0.75f;
-            
+            // Only the system bar insets: the proportions come from SettingsActivity's
+            // reference density, before anything is inflated.
             recyclerView = findRecyclerView(view);
-
-            if (recyclerView != null) {
-                // Find RecyclerView by searching through view hierarchy
-                view.post(() -> {
-                    if (recyclerView != null) {
-                        Log.i("SCALE", "Found RecyclerView!");
-                        PreferenceScaleHelper.scaleRecyclerView(recyclerView, scaleFactor);
-                    } else {
-                        Log.e("SCALE", "RecyclerView not found!");
-                        // Fallback: scale whatever is visible now
-                        scaleAllViews(view, scaleFactor);
-                    }
-
-                    refreshRecyclerMultiple();  
-                });    
-            }      
+            PreferenceScaleHelper.applySystemBarInsets(recyclerView);
         }
     }
 
@@ -258,37 +243,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         return null;
     }
 
-    private void scaleAllViews(View view, float scale) {
-        if (view instanceof ViewGroup viewGroup) {
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                View child = viewGroup.getChildAt(i);
-                scaleAllViews(child, scale);
-            }
-        }
-        
-        // Scale text
-        if (view instanceof TextView textView) {
-            float currentSizePx = textView.getTextSize();
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, currentSizePx * scale);
-        }
-        
-        // Scale padding
-        int paddingLeft = (int) (view.getPaddingLeft() * scale);
-        int paddingTop = (int) (view.getPaddingTop() * scale);
-        int paddingRight = (int) (view.getPaddingRight() * scale);
-        int paddingBottom = (int) (view.getPaddingBottom() * scale);
-        view.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-        
-        // Scale minimum height
-        if (view.getMinimumHeight() > 0) {
-            view.setMinimumHeight((int) (view.getMinimumHeight() * scale));
-        }
-
-        view.postDelayed(()-> {
-            view.requestLayout();
-            view.invalidate();
-        }, 200);
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -990,9 +944,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             default:
                 break;
         }
-        if (!LauncherApplication.isFytDevice()) {
-            refreshRecyclerMultiple();
-        }
         return false;
     }
 
@@ -1070,24 +1021,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         pendingDialog = PendingDialog.NONE;
     }
 
-    private void refreshRecyclerMultiple() {       
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 300);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 500);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 700);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 900);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1200);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1400);
-        new Handler(Looper.getMainLooper()).postDelayed(this::refreshRecycler, 1600);
-    }
 
-    private void refreshRecycler() {
-        if (recyclerView != null) {
-            RecyclerView.Adapter adapter = recyclerView.getAdapter();
-            if (adapter != null) {
-                adapter.notifyDataSetChanged();
-            }               
-        }
-    }
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
