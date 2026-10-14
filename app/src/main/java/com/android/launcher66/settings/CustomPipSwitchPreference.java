@@ -87,6 +87,8 @@ public class CustomPipSwitchPreference extends SwitchPreferenceCompat {
     public interface OnModeSwitchChangeListener { void onModeChanged(boolean isPip); }
     public void setOnModeSwitchChangeListener(@Nullable OnModeSwitchChangeListener l) { mModeListener = l; }
     public void setModeChecked(boolean isPip) { 
+        // Pinned PiP needs FYT's framework: elsewhere the pane is always a window.
+        if (!LauncherApplication.isFytDevice()) isPip = false;
         if (mModeSwitch != null) mModeSwitch.setChecked(isPip);
         saveModeState(isPip);
     }
@@ -168,6 +170,12 @@ public class CustomPipSwitchPreference extends SwitchPreferenceCompat {
                     : new LinearLayout.LayoutParams(rawLp.width, rawLp.height);
             lp.setMarginStart(paddingStart);
             mMainSwitch.setLayoutParams(lp);
+        }
+
+        if (!LauncherApplication.isFytDevice()) {
+            // Pinned PiP exists on FYT units only: no Window/PiP choice anywhere else, always Window.
+            if (mModeContainer != null) mModeContainer.setVisibility(View.GONE);
+            if (getSavedModeState()) saveModeState(false);
         }
 
         if (mModeSwitch != null) {

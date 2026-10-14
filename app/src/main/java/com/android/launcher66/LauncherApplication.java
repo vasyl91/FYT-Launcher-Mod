@@ -145,6 +145,15 @@ public class LauncherApplication extends Application {
                     .remove(Keys.COVER_SPLASH)
                     .apply();
         }
+        // Pinned PiP exists on FYT units only: elsewhere every pane is a window.
+        if (!isFytDevice()) {
+            prefs.edit()
+                    .putBoolean(Keys.PIP_FIRST_MODE, false)
+                    .putBoolean(Keys.PIP_SECOND_MODE, false)
+                    .putBoolean(Keys.PIP_THIRD_MODE, false)
+                    .putBoolean(Keys.PIP_FOURTH_MODE, false)
+                    .apply();
+        }
         // Before anything can start a HomeFrontGuard: it needs to know whether the launcher is in front.
         HomeFrontGuard.trackActivities(this);
         // First start after a device restart (not a wake from sleep): the launcher is kept in
