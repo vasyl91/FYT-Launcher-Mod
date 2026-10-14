@@ -313,6 +313,11 @@ public final class VdHostCore {
 
     public void injectInput(int callerUid, int displayId, InputEvent event) {
         if (event == null || find(callerUid, displayId) == null) return;
+        if (event instanceof MotionEvent && ((MotionEvent) event).getActionMasked() == MotionEvent.ACTION_DOWN) {
+            // The user is working in a pane now: it gets the focus (and with it the IME and
+            // Back), so a focus restore still pending from its launch must not take it away.
+            cancelFocusRestore();
+        }
         try {
             resolveInput();
             mSetDisplayId.invoke(event, displayId);
@@ -429,7 +434,8 @@ public final class VdHostCore {
      * Android 16 before it even has a window. Keys (Back above all) then go to a display with
      * nothing to receive them, and the launcher behind the panes stops reacting. The launch is
      * asynchronous, so this runs a little later, twice. Touching a pane still focuses it, which is
-     * what typing into an embedded app needs (the IME follows the top focused display).
+     * what typing into an embedded app needs (the IME and Back follow the top focused display);
+     * a touch on a pane also cancels a restore still pending (see injectInput()).
      *
      * The launcher itself may call this after starting an activity directly (scheduleFocusRestore()
      * runs on its own after createDisplay() and startActivity()).
@@ -445,6 +451,14 @@ public final class VdHostCore {
         mFocusHandler.removeCallbacksAndMessages(null);
         mFocusHandler.postDelayed(this::focusMainDisplay, 400);
         mFocusHandler.postDelayed(this::focusMainDisplay, 1500);
+    }
+
+    private void cancelFocusRestore() {
+        Handler h;
+        synchronized (this) {
+            h = mFocusHandler;
+        }
+        if (h != null) h.removeCallbacksAndMessages(null);
     }
 
     private void focusMainDisplay() {
