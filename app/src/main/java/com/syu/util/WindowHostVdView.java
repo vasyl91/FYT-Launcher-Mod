@@ -1,7 +1,6 @@
 package com.syu.util;
 
 import android.app.ActivityOptions;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Insets;
@@ -139,10 +138,10 @@ public class WindowHostVdView extends ViewGroup {
     /**
      * Starts the intent on this view's display.
      *
-     * The display is public and owned by system (the daemon) or by the launcher itself (in-process
-     * host), so the launcher may usually launch on it directly, keeping itself as the caller like
-     * ActivityView did. If the system refuses, the host launches instead: as system it passes every
-     * check, including for activities without android:allowEmbedded.
+     * The VD host launches first: as system or shell it passes every "may launch on this display"
+     * check, including for activities without android:allowEmbedded, and it hands the top focus
+     * back to the main screen afterwards (see VdHostCore.scheduleFocusRestore()). The launcher's own
+     * start is kept as a fallback; the display is public, so the system usually allows it too.
      */
     boolean startActivitySafely(Intent intent) {
         WindowHostVdDisplay vd = mVirtualDisplay;
@@ -153,22 +152,20 @@ public class WindowHostVdView extends ViewGroup {
         Bundle options = ActivityOptions.makeBasic().setLaunchDisplayId(vd.getDisplayId()).toBundle();
 
         try {
-            getContext().startActivity(i, options);
-            return true;
-        } catch (SecurityException | ActivityNotFoundException e) {
-            Log.i(TAG, "direct start refused (" + e.getMessage() + "), asking the VD host");
+            int res = vd.startActivity(i, options);
+            if (res >= 0) return true;
+            Log.w(TAG, "VD host start of " + i.getComponent() + " returned " + res + ", starting directly");
         } catch (Throwable t) {
-            Log.w(TAG, "direct start failed", t);
+            Log.w(TAG, "VD host start failed, starting directly", t);
         }
 
         try {
-            int res = vd.startActivity(i, options);
-            if (res >= 0) return true;
-            Log.w(TAG, "VD host start of " + i.getComponent() + " returned " + res);
+            getContext().startActivity(i, options);
+            return true;
         } catch (Throwable t) {
-            Log.w(TAG, "VD host start failed", t);
+            Log.w(TAG, "direct start failed", t);
+            return false;
         }
-        return false;
     }
 
     // =====================================================================================

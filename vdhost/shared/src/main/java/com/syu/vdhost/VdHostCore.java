@@ -9,6 +9,8 @@ import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
@@ -53,6 +55,8 @@ public final class VdHostCore {
     private Method mSetDisplayId;
     private Object mActivityTaskManager;
     private Method mStartActivityAsUser;
+    private Handler mFocusHandler;
+    private boolean mFocusUnavailableLogged;
     private boolean mDisplayStateResolved;
     private Method mSetDisplayState;
     private Method mSetVirtualDisplayState;
@@ -181,6 +185,7 @@ public final class VdHostCore {
             mDisplays.put(displayId, new Record(displayId, callerUid, vd, token, death));
         }
         applyImePolicy(displayId);
+        scheduleFocusRestore();
         Log.i(TAG, "created display " + displayId + " " + w + "x" + h + "@" + dpi
                 + " flags=0x" + Integer.toHexString(f) + " for uid " + callerUid);
         return displayId;
@@ -355,6 +360,7 @@ public final class VdHostCore {
             Object res = mStartActivityAsUser.invoke(mActivityTaskManager, args);
             int code = res instanceof Integer ? (Integer) res : -1;
             Log.i(TAG, "startActivity " + i.getComponent() + " on display " + displayId + " -> " + code);
+            if (code >= 0) scheduleFocusRestore();
             return code;
         } catch (java.lang.reflect.InvocationTargetException e) {
             Throwable cause = e.getCause() != null ? e.getCause() : e;
@@ -410,6 +416,81 @@ public final class VdHostCore {
             }
         }
         return args;
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Focus
+    // ---------------------------------------------------------------------------------------
+
+    /**
+     * Hands the top focus back to the main screen.
+     *
+     * A new display, and an activity starting on one, becomes the top focused display -- on
+     * Android 16 before it even has a window. Keys (Back above all) then go to a display with
+     * nothing to receive them, and the launcher behind the panes stops reacting. The launch is
+     * asynchronous, so this runs a little later, twice. Touching a pane still focuses it, which is
+     * what typing into an embedded app needs (the IME follows the top focused display).
+     *
+     * The launcher itself may call this after starting an activity directly (scheduleFocusRestore()
+     * runs on its own after createDisplay() and startActivity()).
+     */
+    public void scheduleFocusRestore() {
+        synchronized (this) {
+            if (mFocusHandler == null) {
+                HandlerThread t = new HandlerThread("vdhost-focus");
+                t.start();
+                mFocusHandler = new Handler(t.getLooper());
+            }
+        }
+        mFocusHandler.removeCallbacksAndMessages(null);
+        mFocusHandler.postDelayed(this::focusMainDisplay, 400);
+        mFocusHandler.postDelayed(this::focusMainDisplay, 1500);
+    }
+
+    private void focusMainDisplay() {
+        try {
+            Object atm = Hidden.getService("activity_task", "android.app.IActivityTaskManager");
+            // Android 12+: focusTopTask(displayId) focuses the display's top task and moves the
+            // display to the top.
+            try {
+                atm.getClass().getMethod("focusTopTask", int.class).invoke(atm, 0);
+                return;
+            } catch (NoSuchMethodException ignore) { }
+            // Android 11: setFocusedTask() on the top task of the main display.
+            int taskId = topTaskIdOn(atm, 0);
+            if (taskId >= 0) {
+                atm.getClass().getMethod("setFocusedTask", int.class).invoke(atm, taskId);
+                return;
+            }
+            logFocusUnavailable(null);
+        } catch (Throwable t) {
+            logFocusUnavailable(t);
+        }
+    }
+
+    private static int topTaskIdOn(Object atm, int displayId) throws ReflectiveOperationException {
+        for (String name : new String[]{ "getAllRootTaskInfosOnDisplay", "getAllStackInfosOnDisplay" }) {
+            Method m;
+            try { m = atm.getClass().getMethod(name, int.class); }
+            catch (NoSuchMethodException e) { continue; }
+            Object result = m.invoke(atm, displayId);
+            if (!(result instanceof List) || ((List<?>) result).isEmpty()) return -1;
+            Object top = ((List<?>) result).get(0);
+            Object ids = Hidden.readField(top, "childTaskIds");
+            if (ids == null) ids = Hidden.readField(top, "taskIds");
+            if (ids instanceof int[] && ((int[]) ids).length > 0) {
+                int[] a = (int[]) ids;
+                return a[a.length - 1];
+            }
+            return -1;
+        }
+        return -1;
+    }
+
+    private void logFocusUnavailable(Throwable t) {
+        if (mFocusUnavailableLogged) return;
+        mFocusUnavailableLogged = true;
+        Log.w(TAG, "cannot hand the focus back to the main screen" + (t != null ? ": " + t : ""));
     }
 
     // ---------------------------------------------------------------------------------------

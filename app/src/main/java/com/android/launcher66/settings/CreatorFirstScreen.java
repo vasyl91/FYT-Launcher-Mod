@@ -269,7 +269,18 @@ public class CreatorFirstScreen extends Fragment {
         //    silently became a different coordinate space than the launcher's.
         boolean leftBar = sharedPrefs.getBoolean(Keys.LEFT_BAR, false);
         boolean autoHideBottomBar = sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-        int workspaceWidth = leftBar ? rootWidth - (int) (rootWidth * 0.071f) : rootWidth;
+        // The launcher shifts everything on its first page right by Launcher.calculatedLeftBarWidth
+        // (CellLayout placeholders, PiP panes), so the canvas has to leave exactly that room. In
+        // portrait the bar is 7.1 % of its HEIGHT (W,0.071 in the layout), not of the width: the
+        // canvas used to be ~66 px wider than the launcher's area on a 1080x2340 phone, and a
+        // rectangle drawn up to its right edge came out wider than the screen allowed.
+        int leftBarWidth = 0;
+        if (leftBar) {
+            leftBarWidth = com.android.launcher66.Launcher.calculatedLeftBarWidth > 0
+                    ? com.android.launcher66.Launcher.calculatedLeftBarWidth
+                    : (int) ((portrait ? rootHeight - legacyBarHeight : rootWidth) * 0.071f);
+        }
+        int workspaceWidth = rootWidth - leftBarWidth;
         // With auto-hide the workspace keeps the full height; only the collapsed button is reserved.
         int workspaceHeight = autoHideBottomBar ? rootHeight : rootHeight - barHeight;
         View canvasArea = rootView.findViewById(R.id.creator_first_screen);

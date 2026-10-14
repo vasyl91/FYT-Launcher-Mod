@@ -581,7 +581,9 @@ public class Helpers {
         }
         
         // Calculate right border exclusion area for left bar mode
-        float leftBarWidth = Launcher.screenWidth * 0.071f;
+        // Same width the launcher offsets the first page by (7.1 % of the bar's height in portrait).
+        float leftBarWidth = Launcher.calculatedLeftBarWidth > 0
+                ? Launcher.calculatedLeftBarWidth : Launcher.screenWidth * 0.071f;
         int margin = Integer.valueOf(mPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
         
         // Check for overlaps between rectangles
