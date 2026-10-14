@@ -676,12 +676,15 @@ public class WindowUtil {
                                 // Dismiss windowed activity on main thread (existing)
                                 launcher.handler.post(host::dismiss);
                             }
-                            // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
-                            Method getServiceMethod = ActivityManager.class.getMethod("getService");
-                            Object activityManager = getServiceMethod.invoke(null);
-                            Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
-                            Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
-                            setPinnedStackVisibleMethod.invoke(activityManager, false);
+                            // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP.
+                            // FYT's framework only; elsewhere there is no pinned PiP to remove.
+                            if (LauncherApplication.isFytDevice()) {
+                                Method getServiceMethod = ActivityManager.class.getMethod("getService");
+                                Object activityManager = getServiceMethod.invoke(null);
+                                Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
+                                Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
+                                setPinnedStackVisibleMethod.invoke(activityManager, false);
+                            }
                             Log.i(TAG, "openPip() pane: dismissed");
                         } catch (Throwable t) {
                             Log.w(TAG, "openPip() pane: dismiss failed", t);
@@ -819,12 +822,15 @@ public class WindowUtil {
                     // Dismiss windowed activity on main thread (existing)
                     launcher.handler.post(host::dismiss);
                 }
-                // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
-                Method getServiceMethod = ActivityManager.class.getMethod("getService");
-                Object activityManager = getServiceMethod.invoke(null);
-                Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
-                Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
-                setPinnedStackVisibleMethod.invoke(activityManager, false);
+                // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP.
+                // FYT's framework only; elsewhere there is no pinned PiP to remove.
+                if (LauncherApplication.isFytDevice()) {
+                    Method getServiceMethod = ActivityManager.class.getMethod("getService");
+                    Object activityManager = getServiceMethod.invoke(null);
+                    Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
+                    Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
+                    setPinnedStackVisibleMethod.invoke(activityManager, false);
+                }
                 Log.i(TAG, "removePip() pane: dismissed");
             } catch (Throwable t) {
                 Log.w(TAG, "removePip() pane: dismiss failed", t);
@@ -1973,7 +1979,8 @@ public class WindowUtil {
     // =====================================================================================
 
     public static void openPinnedPip() {
-        if (!LauncherApplication.canHostPips()) return;
+        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): FYT units only.
+        if (!LauncherApplication.isFytDevice()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         suppressMediaSourceSwitch();
@@ -2123,6 +2130,8 @@ public class WindowUtil {
                 setHost(null);
             });
         }
+        // The panes above are rebuilt everywhere; the pinned PiP app below exists on FYT units only.
+        if (!LauncherApplication.isFytDevice()) return;
         if (AppPackageName != null && !AppPackageName.isEmpty()) {
             if (FytPackage.GMAPS.equals(AppPackageName)) {
                 Log.i(TAG, "restartPinnedPipApp: skip force-stop for Google Maps");
@@ -2159,7 +2168,8 @@ public class WindowUtil {
     }
 
     public static void removePinnedPip() {
-        if (!LauncherApplication.canHostPips()) return;
+        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): FYT units only.
+        if (!LauncherApplication.isFytDevice()) return;
         if (prefs == null) {
             prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
         }
