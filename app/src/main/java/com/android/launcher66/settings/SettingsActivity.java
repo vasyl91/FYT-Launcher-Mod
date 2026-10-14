@@ -136,6 +136,32 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     /**
+     * Non-FYT: the PiP and widget rows size their buttons and the Window/PiP switch as a share of
+     * the row's measured height. The old per-row shrink scaled those controls by 0.5 (portrait) /
+     * 0.75 (landscape) of what they had at the screen's own density; at this activity's scaled
+     * density the row is mostly text (0.75) and paddings (0.5), so a share of it comes out larger.
+     * This factor turns it back into the old size: old row scale x the row height at the screen's
+     * own density / the row height here, both estimated like the rows' resolveRowHeightFallback().
+     * 1 on FYT units.
+     */
+    public static float legacyControlScale(Context ctx) {
+        if (LauncherApplication.isFytDevice() || ctx == null) return 1f;
+        DisplayMetrics here = ctx.getResources().getDisplayMetrics();
+        DisplayMetrics own = android.content.res.Resources.getSystem().getDisplayMetrics();
+        boolean portrait = ctx.getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_PORTRAIT;
+        float oldRowScale = portrait ? NON_FYT_DENSITY_SCALE_PORTRAIT : NON_FYT_DENSITY_SCALE_LANDSCAPE;
+        float rowHere = estimatedRowHeight(here);
+        return rowHere > 0f ? oldRowScale * estimatedRowHeight(own) / rowHere : 1f;
+    }
+
+    /** Title + summary line (16 sp / 14 sp, 1.3 line height) and 32 dp of vertical padding. */
+    @SuppressWarnings("deprecation")
+    private static float estimatedRowHeight(DisplayMetrics m) {
+        return (16f + 14f) * 1.3f * m.scaledDensity + 32f * m.density;
+    }
+
+    /**
      * Fits a label into its button: the text shrinks (down to 6 sp) until it fits, never grows
      * past maxSp. The creators' CONFIRM button is a share of the bar, its text was not.
      */
