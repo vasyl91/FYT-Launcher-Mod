@@ -237,25 +237,38 @@ public final class VdHostCore {
      */
     private void waitUntilDetached() {
         long start = SystemClock.uptimeMillis();
+        boolean synced = false;
         try {
             synchronized (this) {
                 if (!mSyncResolved) {
                     mSyncResolved = true;
                     mWindowManager = Hidden.getService("window", "android.view.IWindowManager");
                     mSyncTransactions = Hidden.findMethod(mWindowManager, "syncInputTransactions", 1);
+                    Log.i(TAG, mSyncTransactions != null
+                            ? "surface detach waits via IWindowManager.syncInputTransactions()"
+                            : "no IWindowManager.syncInputTransactions(); surface detach waits a fixed time");
                 }
             }
             if (mSyncTransactions != null) {
                 mSyncTransactions.invoke(mWindowManager, false);
-                long took = SystemClock.uptimeMillis() - start;
-                if (took > 100) Log.i(TAG, "surface detach took " + took + " ms");
-                return;
+                synced = true;
             }
         } catch (Throwable t) {
             Log.w(TAG, "syncInputTransactions failed: " + t);
         }
-        SystemClock.sleep(50);   // a traversal or two, as a fallback
+        // A frame SurfaceFlinger queued just before the change still has to pass through the
+        // client's buffer queue onto its layer -- which must still be there for that. Displays
+        // that cannot be switched off (Android 16) keep rendering until this very moment.
+        SystemClock.sleep(synced ? DETACH_DRAIN_MS : DETACH_FALLBACK_MS);
+        long took = SystemClock.uptimeMillis() - start;
+        if (took > 150) Log.i(TAG, "surface detach took " + took + " ms");
+        else Log.d(TAG, "surface detach in " + took + " ms" + (synced ? "" : " (fixed wait)"));
     }
+
+    /** About two frames for the last queued frame to reach the client's layer. */
+    private static final long DETACH_DRAIN_MS = 34;
+    /** Without syncInputTransactions(): a traversal or two, plus the drain. */
+    private static final long DETACH_FALLBACK_MS = 80;
 
     private static void releaseSurface(Surface old, Surface keep) {
         if (old == null || old == keep) return;
