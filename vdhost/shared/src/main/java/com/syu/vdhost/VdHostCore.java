@@ -263,7 +263,7 @@ public final class VdHostCore {
         // A frame SurfaceFlinger queued just before the change still has to pass through the
         // client's buffer queue onto its layer -- which must still be there for that. Displays
         // that cannot be switched off (Android 16) keep rendering until this very moment.
-        SystemClock.sleep(synced ? DETACH_DRAIN_MS : DETACH_FALLBACK_MS);
+        SystemClock.sleep(synced ? drainMs() : DETACH_FALLBACK_MS);
         long took = SystemClock.uptimeMillis() - start;
         if (took > 150) Log.i(TAG, "surface detach took " + took + " ms");
         else Log.d(TAG, "surface detach in " + took + " ms" + (synced ? "" : " (fixed wait)"));
@@ -271,6 +271,24 @@ public final class VdHostCore {
 
     /** About two frames for the last queued frame to reach the client's layer. */
     private static final long DETACH_DRAIN_MS = 34;
+    /** Overrides DETACH_DRAIN_MS (0..1000 ms) for testing, e.g. adb shell setprop debug.fytvdhost.drain_ms 120 */
+    private static final String PROP_DRAIN_MS = "debug.fytvdhost.drain_ms";
+    private long mLoggedDrainMs = DETACH_DRAIN_MS;
+
+    private long drainMs() {
+        long ms = DETACH_DRAIN_MS;
+        try {
+            ms = (Long) Class.forName("android.os.SystemProperties")
+                    .getMethod("getLong", String.class, long.class)
+                    .invoke(null, PROP_DRAIN_MS, DETACH_DRAIN_MS);
+        } catch (Throwable ignore) { }
+        ms = Math.max(0, Math.min(1000, ms));
+        if (ms != mLoggedDrainMs) {
+            mLoggedDrainMs = ms;
+            Log.i(TAG, "surface detach drain " + ms + " ms (" + PROP_DRAIN_MS + ")");
+        }
+        return ms;
+    }
     /** Without syncInputTransactions(): a traversal or two, plus the drain. */
     private static final long DETACH_FALLBACK_MS = 80;
 
