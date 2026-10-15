@@ -1745,14 +1745,43 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // On large interfaces, we want the screen to auto-rotate based on the current orientation
         unlockScreenOrientation(true);
         
-        initRegisterReceiver();
-        markStartup("receivers");
+        // Three binder calls into system_server, which is busy right after a boot (up to 0.1 s
+        // there): none of these receivers is needed to show the home screen.
+        runAfterFirstFrame(this::initRegisterReceiver);
         
         requestWidgetUpdate();
         markStartup("widgetUpdate");
 		
         onBackPressedX();
         markStartup("onCreateEnd");
+    }
+
+    /** When runAfterFirstFrame() runs its work if no frame was drawn by then (keyguard). */
+    private static final long AFTER_FIRST_FRAME_BACKSTOP_MS = 1000;
+
+    /**
+     * Runs work the first frame does not need once that frame is drawn, or after
+     * AFTER_FIRST_FRAME_BACKSTOP_MS when the window is not drawn by then.
+     */
+    private void runAfterFirstFrame(Runnable work) {
+        final boolean[] done = {false};
+        final Runnable once = () -> {
+            if (!done[0]) {
+                done[0] = true;
+                work.run();
+            }
+        };
+        final View decor = getWindow().getDecorView();
+        decor.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                decor.getViewTreeObserver().removeOnPreDrawListener(this);
+                // Posted from the traversal that draws the frame, so it runs after it.
+                mHandler.post(once);
+                return true;
+            }
+        });
+        mHandler.postDelayed(once, AFTER_FIRST_FRAME_BACKSTOP_MS);
     }
 
     private void markStartup(String step) {
@@ -3367,6 +3396,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private void initRegisterReceiver() {
+        // Runs after the first frame (see onCreate()): unregisterAllReceivers() may have run first.
+        if (isDestroyed() || removeMusic == null) {
+            return;
+        }
         IntentFilter musicFilter = new IntentFilter();
         musicFilter.addAction("com.fyt.systemui.remove");
         this.mAutoMap = new MyAutoMapReceiver();
