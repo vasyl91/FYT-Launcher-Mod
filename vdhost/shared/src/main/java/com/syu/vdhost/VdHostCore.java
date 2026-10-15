@@ -346,6 +346,19 @@ public final class VdHostCore {
             mDisplays.remove(displayId);
         }
         try { r.token.unlinkToDeath(r.death, 0); } catch (Throwable ignore) { }
+        // Released while still rendering into a pane's surface (a pane set torn down): take the
+        // surface off first, the same way as on setSurface(null) -- destroying the display is
+        // just as asynchronous, and a last frame into a surface whose layer is going leaks it.
+        Surface attached;
+        synchronized (r) { attached = r.surface; }
+        if (attached != null) {
+            try {
+                r.vd.setSurface(null);
+                waitUntilDetached();
+            } catch (Throwable t) {
+                Log.w(TAG, "detaching display " + displayId + " before release failed", t);
+            }
+        }
         try { r.vd.release(); } catch (Throwable t) { Log.w(TAG, "release failed", t); }
         Surface old;
         synchronized (r) {
