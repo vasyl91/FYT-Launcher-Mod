@@ -98,8 +98,12 @@ public final class VdHostCore {
      *                    Shizuku UserService (uid 2000, but loaded from the launcher's APK, whose
      *                    Context says "com.android.launcher66") passes "com.android.shell".
      */
+    /** Logged when a host starts, so a log shows which host code actually runs. */
+    public static final String REVISION = "detach-sync-drain";
+
     public VdHostCore(Context context, String packageName) {
         mPackageName = packageName;
+        Log.i(TAG, "VD host core revision " + REVISION);
         if (packageName.equals(context.getPackageName())) {
             mDisplayManager = context.getSystemService(DisplayManager.class);
         } else {

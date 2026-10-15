@@ -593,6 +593,8 @@ public class WindowHostVdView extends ViewGroup {
                 return;
             }
             WindowHostVdDisplay vd = mVirtualDisplay;
+            Log.d(TAG, "surface destroyed, display " + (vd != null ? vd.getDisplayId() : -1)
+                    + (vd != null ? " detached" : " (none)"));
             if (vd != null) {
                 // As ActivityView: the embedded app stops while the pane is not on screen -- after
                 // a grace period, so a swap or a hand-over (the surface is back at once) does not
