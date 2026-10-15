@@ -32,6 +32,15 @@ public final class VdHostServer {
 
     private VdHostServer() {}
 
+    /**
+     * Deprecated for apps (the system makes their main looper), but a process started by
+     * app_process has none: the system context and the framework's handlers need it.
+     */
+    @SuppressWarnings("deprecation")
+    private static void prepareMainLooper() {
+        Looper.prepareMainLooper();
+    }
+
     public static void main(String[] args) {
         List<String> packages = new ArrayList<>();
         for (int i = 0; i < args.length; i++) {
@@ -46,7 +55,7 @@ public final class VdHostServer {
             log("WARNING: not running as uid 1000 -- createVirtualDisplay() is likely to be refused");
         }
 
-        Looper.prepareMainLooper();
+        prepareMainLooper();
 
         final Context context;
         final VdHostCore core;
