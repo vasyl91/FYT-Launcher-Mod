@@ -33,6 +33,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.perf.BaselineProfileCompiler;
 import com.android.launcher66.settings.CrashLogger;
+import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.LogcatWorker;
 import com.android.launcher66.settings.VersionChecker;
@@ -104,6 +105,18 @@ public class LauncherApplication extends Application {
 
     public String getApkPath() {
         return this.apkPath;
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        // Starts reading the preference files used first: SharedPreferences loads a file on a
+        // thread of its own, so it reads while the content providers start. Otherwise onCreate()
+        // and the Launcher's first lines waited for the reads on the main thread (0.4 s at a boot).
+        if (!isWallpaperPickerProcess()) {
+            PreferenceManager.getDefaultSharedPreferences(this);
+            getSharedPreferences(Helpers.SUS_PREFS, MODE_PRIVATE);
+        }
     }
 
     @Override
