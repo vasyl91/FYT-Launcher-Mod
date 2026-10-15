@@ -118,6 +118,32 @@ public final class WindowHostVdClient {
         }
     }
 
+    /** Whether a host runs outside the launcher: the Magisk daemon or Shizuku's service. */
+    public static boolean hasPrivilegedHost() {
+        synchronized (sLock) {
+            return sHost != null && sSource != Source.LOCAL;
+        }
+    }
+
+    /**
+     * Has the host compile the launcher with its profile, see VdHostProtocol.Proxy.compilePackage().
+     * Blocking for tens of seconds: never on the main thread.
+     *
+     * @return the host's report ("OK ..." on success), or null when no host outside the launcher
+     *         is attached or it predates the call (Magisk module older than the launcher)
+     */
+    public static String compilePackage(String pkg) throws RemoteException {
+        VdHostProtocol.Proxy host;
+        Source source;
+        synchronized (sLock) {
+            host = sHost;
+            source = sSource;
+        }
+        if (host == null || source == Source.LOCAL) return null;
+        String result = host.compilePackage(pkg);
+        return result == null ? null : source + ": " + result;
+    }
+
     static VdHostProtocol.Proxy current() {
         synchronized (sLock) {
             return sHost;

@@ -22,10 +22,15 @@ import android.view.InputEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * What the host actually does. Runs in one of three places:
@@ -99,7 +104,7 @@ public final class VdHostCore {
      *                    Context says "com.android.launcher66") passes "com.android.shell".
      */
     /** Logged when a host starts, so a log shows which host code actually runs. */
-    public static final String REVISION = "detach-sync-drain";
+    public static final String REVISION = "compile-package";
 
     public VdHostCore(Context context, String packageName) {
         mPackageName = packageName;
@@ -650,6 +655,108 @@ public final class VdHostCore {
         } catch (Throwable t) {
             Log.w(TAG, "getTaskCount failed", t);
             return -1;
+        }
+    }
+
+    /** Process.SHELL_UID (@hide before Android 10). */
+    private static final int SHELL_UID = 2000;
+    private static final long COMPILE_TIMEOUT_MINUTES = 10;
+
+    /**
+     * Compiles one of the caller's packages with its profile (speed-profile), for a launcher that
+     * is not a system app and so cannot ask PackageManager itself. See
+     * VdHostProtocol.Proxy.compilePackage().
+     *
+     * Root and shell (Shizuku) run "cmd package compile", which every Android version takes from
+     * them. Android 14+ (ART Service) takes that command from root and shell only, so uid 1000
+     * (the Magisk daemon) calls performDexOptMode() first, the same call the launcher makes on
+     * FYT units, and the command only when that fails.
+     */
+    public String compilePackage(int callerUid, String pkg) {
+        if (pkg == null || !isPackageOfUid(pkg, callerUid)) {
+            throw new SecurityException(pkg + " is not a package of uid " + callerUid);
+        }
+        int me = Process.myUid();
+        String result;
+        if (me == 0 || me == SHELL_UID) {
+            result = runCompileCommand(pkg);
+        } else {
+            result = performDexOptMode(pkg);
+            if (!result.startsWith("OK")) {
+                String viaCommand = runCompileCommand(pkg);
+                result = viaCommand.startsWith("OK") ? viaCommand : result + "; " + viaCommand;
+            }
+        }
+        Log.i(TAG, "compile " + pkg + " for uid " + callerUid + ": " + result);
+        return result;
+    }
+
+    private static boolean isPackageOfUid(String pkg, int uid) {
+        try {
+            Object pm = Hidden.getService("package", "android.content.pm.IPackageManager");
+            Object pkgs = pm.getClass().getMethod("getPackagesForUid", int.class).invoke(pm, uid);
+            return pkgs instanceof String[] && Arrays.asList((String[]) pkgs).contains(pkg);
+        } catch (Throwable t) {
+            Log.w(TAG, "getPackagesForUid failed", t);
+            return false;
+        }
+    }
+
+    /**
+     * IPackageManager.performDexOptMode(): (pkg, checkProfiles, filter, force, bootComplete,
+     * split) up to Android 13, without checkProfiles later; gone where ART Service dropped it.
+     */
+    private static String performDexOptMode(String pkg) {
+        try {
+            Object pm = Hidden.getService("package", "android.content.pm.IPackageManager");
+            Method m = Hidden.findMethod(pm, "performDexOptMode", -1);
+            if (m == null) return "FAILED (performDexOptMode: not on this Android)";
+            Class<?>[] types = m.getParameterTypes();
+            Object[] args = new Object[types.length];
+            // Strings in order: package, compiler filter, split (null = all); booleans all true.
+            Object[] strings = { pkg, "speed-profile", null };
+            int nextString = 0;
+            for (int i = 0; i < types.length; i++) {
+                if (types[i] == String.class && nextString < strings.length) {
+                    args[i] = strings[nextString++];
+                } else if (types[i] == boolean.class) {
+                    args[i] = true;
+                } else {
+                    return "FAILED (performDexOptMode: unknown shape " + Arrays.toString(types) + ")";
+                }
+            }
+            Object ok = m.invoke(pm, args);
+            return Boolean.TRUE.equals(ok) ? "OK (performDexOptMode)" : "FAILED (performDexOptMode = " + ok + ")";
+        } catch (Throwable t) {
+            Throwable cause = t.getCause() != null ? t.getCause() : t;
+            return "FAILED (performDexOptMode: " + cause + ")";
+        }
+    }
+
+    private static String runCompileCommand(String pkg) {
+        try {
+            java.lang.Process p = new ProcessBuilder(
+                    "/system/bin/cmd", "package", "compile", "-m", "speed-profile", "-f", pkg)
+                    .redirectErrorStream(true)
+                    .start();
+            String out;
+            try (InputStream in = p.getInputStream()) {
+                ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                byte[] chunk = new byte[4096];
+                int n;
+                while ((n = in.read(chunk)) > 0) buf.write(chunk, 0, n);
+                out = buf.toString(StandardCharsets.UTF_8.name()).trim();
+            }
+            if (!p.waitFor(COMPILE_TIMEOUT_MINUTES, TimeUnit.MINUTES)) {
+                p.destroy();
+                return "FAILED (cmd: timed out)";
+            }
+            int exit = p.exitValue();
+            return exit == 0 && out.contains("Success")
+                    ? "OK (cmd)"
+                    : "FAILED (cmd, exit " + exit + ": " + out + ")";
+        } catch (Throwable t) {
+            return "FAILED (cmd: " + t + ")";
         }
     }
 }

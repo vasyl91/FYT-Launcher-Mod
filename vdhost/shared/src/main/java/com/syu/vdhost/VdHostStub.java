@@ -116,6 +116,19 @@ public class VdHostStub extends Binder {
                     reply.writeInt(res);
                     return true;
                 }
+                case VdHostProtocol.TX_COMPILE_PACKAGE: {
+                    String pkg = data.readString();
+                    String res;
+                    long ident = Binder.clearCallingIdentity();
+                    try {
+                        res = mCore.compilePackage(uid, pkg);
+                    } finally {
+                        Binder.restoreCallingIdentity(ident);
+                    }
+                    reply.writeNoException();
+                    reply.writeString(res);
+                    return true;
+                }
                 default:
                     return super.onTransact(code, data, reply, flags);
             }

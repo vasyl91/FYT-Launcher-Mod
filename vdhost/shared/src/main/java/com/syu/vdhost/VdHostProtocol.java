@@ -35,6 +35,11 @@ public final class VdHostProtocol {
     static final int TX_INJECT_INPUT     = IBinder.FIRST_CALL_TRANSACTION + 6;   // oneway
     static final int TX_START_ACTIVITY   = IBinder.FIRST_CALL_TRANSACTION + 7;
     static final int TX_GET_TASK_COUNT   = IBinder.FIRST_CALL_TRANSACTION + 8;
+    /**
+     * Added without a new VERSION: a host that predates it answers UNKNOWN_TRANSACTION, which
+     * only this call has to cope with (see Proxy.compilePackage()).
+     */
+    static final int TX_COMPILE_PACKAGE  = IBinder.FIRST_CALL_TRANSACTION + 9;
 
     /** Set to "1" by the Magisk module (system.prop), so the launcher knows a daemon is coming. */
     public static final String PROP_MODULE = "ro.fyt.vdhost";
@@ -195,6 +200,28 @@ public final class VdHostProtocol {
                 mRemote.transact(TX_GET_TASK_COUNT, data, reply, 0);
                 reply.readException();
                 return reply.readInt();
+            } finally {
+                reply.recycle();
+                data.recycle();
+            }
+        }
+
+        /**
+         * Compiles one of the caller's own packages with its profile, as "adb shell cmd package
+         * compile -m speed-profile -f" does. Blocks until the compilation is over: tens of seconds.
+         *
+         * @return the host's report, starting with "OK" on success; null when the host predates
+         *         this call (a Magisk module older than the launcher)
+         */
+        public String compilePackage(String packageName) throws RemoteException {
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(DESCRIPTOR);
+                data.writeString(packageName);
+                if (!mRemote.transact(TX_COMPILE_PACKAGE, data, reply, 0)) return null;
+                reply.readException();
+                return reply.readString();
             } finally {
                 reply.recycle();
                 data.recycle();
