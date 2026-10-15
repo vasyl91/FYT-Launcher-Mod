@@ -147,7 +147,7 @@
     <string name="baseline_reset_schedule_btn">Resetuj harmonogram</string>
     <string name="baseline_reset_full_btn">Pełny reset…</string>
     <string name="baseline_reset_full_title">Pełny reset?</string>
-    <string name="baseline_reset_full_message">Wszystkie dane o użyciu zebrane od instalacji zostaną trwale usunięte. Launcher wróci do domyślnego profilu bazowego (Baseline Profile) dołączonego do aplikacji, a harmonogram odświeżeń 3/14/30 dni rozpocznie się od nowa.\n\nLauncher zostanie natychmiast uruchomiony ponownie. Do czasu ponownej kompilacji (około 2 minuty po restarcie) start może być nieco wolniejszy.</string>
+    <string name="baseline_reset_full_message">Wszystkie dane o użyciu zebrane od instalacji zostaną trwale usunięte. Launcher wróci do domyślnego profilu bazowego (Baseline Profile) dołączonego do aplikacji, a harmonogram odświeżeń 3/14/30 dni rozpocznie się od nowa.\n\nLauncher może zostać uruchomiony ponownie. Do czasu ponownej kompilacji (w ciągu około 2 minut) start może być nieco wolniejszy.</string>
     <string name="baseline_reset_full_confirm_btn">Usuń i uruchom ponownie</string>
     <string name="baseline_reset_schedule_done">Harmonogram odświeżeń zresetowany. Następne odświeżenie po 3 dniach użytkowania.</string>
     <string name="baseline_reset_full_started">Zebrane dane usunięte. Ponowna kompilacja z domyślnego profilu trwa w tle.</string>

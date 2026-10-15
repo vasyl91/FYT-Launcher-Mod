@@ -160,6 +160,8 @@ object BaselineProfileCompiler {
     private val CHECKPOINT_INTERVAL_MS = TimeUnit.MINUTES.toMillis(15)
 
     private const val ACTION_INSTALL_PROFILE = "androidx.profileinstaller.action.INSTALL_PROFILE"
+    /** ProfileInstaller's record of the APK it last wrote the profile for (its files dir). */
+    private const val PROFILE_INSTALLER_SKIP_FILE = "profileinstaller_profileWrittenFor_lastUpdateTime.dat"
     private const val RECEIVER = "androidx.profileinstaller.ProfileInstallReceiver"
 
     /** ProfileInstaller result codes: 1 = RESULT_INSTALL_SUCCESS, 2 = RESULT_ALREADY_INSTALLED. */
@@ -383,12 +385,23 @@ object BaselineProfileCompiler {
         editor.commit()
 
         return try {
-            Log.i(TAG, "Full reset: clearing profiles, the launcher process will be killed")
-            val pm = systemPackageManager()
-            pm.javaClass.getMethod("clearApplicationProfileData", String::class.java)
-                .invoke(pm, app.packageName)
-            // Still alive (the firmware did not kill the package): compile right away instead.
-            Log.w(TAG, "Full reset: process was not killed, compiling now")
+            if (compilesItself()) {
+                Log.i(TAG, "Full reset: clearing profiles, the launcher process will be killed")
+                val pm = systemPackageManager()
+                pm.javaClass.getMethod("clearApplicationProfileData", String::class.java)
+                    .invoke(pm, app.packageName)
+            } else {
+                // The daemon's call (uid 1000) kills the launcher like the one above; Shizuku's
+                // command leaves it running.
+                Log.i(TAG, "Full reset: the VD host clears the profiles")
+                val report = WindowHostVdClient.clearProfiles(app.packageName)
+                    ?: "no VD host (root or Shizuku)"
+                lastHostReport = report
+                Log.i(TAG, "VD host: $report")
+                check(report.substringAfter(": ").startsWith("OK")) { report }
+            }
+            // Still alive (the package was not killed): compile right away instead.
+            Log.i(TAG, "Full reset: profiles cleared, the process is still alive - compiling now")
             scheduleInitialCompilation(app, prefs, apkStamp(app), 0L)
             true
         } catch (t: Throwable) {
@@ -683,8 +696,7 @@ object BaselineProfileCompiler {
      * would (see VdHostCore.compilePackage). Synchronous binder call - may take tens of seconds.
      */
     private fun compileThroughHost(pkg: String): Boolean {
-        val report = WindowHostVdClient.compilePackage(pkg)
-            ?: "no VD host, or the Magisk module is older than the launcher"
+        val report = WindowHostVdClient.compilePackage(pkg) ?: "no VD host (root or Shizuku)"
         lastHostReport = report
         Log.i(TAG, "VD host compilation: $report")
         return report.substringAfter(": ").startsWith("OK")
@@ -692,10 +704,12 @@ object BaselineProfileCompiler {
 
     /**
      * Without uid 1000 the broadcast to ProfileInstallReceiver is refused (DUMP permission), so
-     * ProfileInstaller writes the profile in this process. Not forced: a profile it already wrote
-     * for this APK is kept (RESULT_ALREADY_INSTALLED), with what ART recorded since.
+     * ProfileInstaller writes the profile in this process. Forced like the broadcast's write:
+     * ProfileInstaller skips an APK it already wrote the profile for, which it tells by this
+     * file - after a full reset that would leave the cleared profile empty.
      */
     private fun writeProfile(context: Context): Int? {
+        File(context.filesDir, PROFILE_INSTALLER_SKIP_FILE).delete()
         var result: Int? = null
         ProfileInstaller.writeProfile(context, { it.run() }, object : ProfileInstaller.DiagnosticsCallback {
             override fun onDiagnosticReceived(code: Int, data: Any?) {}

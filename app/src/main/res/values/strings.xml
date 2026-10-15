@@ -288,7 +288,7 @@
     <string name="baseline_reset_schedule_btn">Reset schedule</string>
     <string name="baseline_reset_full_btn">Full reset…</string>
     <string name="baseline_reset_full_title">Full reset?</string>
-    <string name="baseline_reset_full_message">All usage data collected since installation will be permanently deleted. The launcher returns to the default Baseline Profile shipped with the app and the 3/14/30-day refresh schedule starts again.\n\nThe launcher will restart immediately. Until it is recompiled (about 2 minutes after the restart), startup may be slightly slower.</string>
+    <string name="baseline_reset_full_message">All usage data collected since installation will be permanently deleted. The launcher returns to the default Baseline Profile shipped with the app and the 3/14/30-day refresh schedule starts again.\n\nThe launcher may restart. Until it is recompiled (within about 2 minutes), startup may be slightly slower.</string>
     <string name="baseline_reset_full_confirm_btn">Delete and restart</string>
     <string name="baseline_reset_schedule_done">Refresh schedule reset. The next refresh runs after 3 days of use.</string>
     <string name="baseline_reset_full_started">Collected data deleted. Recompiling from the default profile in the background.</string>

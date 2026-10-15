@@ -129,10 +129,24 @@ public final class WindowHostVdClient {
      * Has the host compile the launcher with its profile, see VdHostProtocol.Proxy.compilePackage().
      * Blocking for tens of seconds: never on the main thread.
      *
-     * @return the host's report ("OK ..." on success), or null when no host outside the launcher
-     *         is attached or it predates the call (Magisk module older than the launcher)
+     * @return the host's report ("DAEMON: OK ..." on success), or null when no host outside the
+     *         launcher is attached
      */
     public static String compilePackage(String pkg) throws RemoteException {
+        return callPrivilegedHost(pkg, true);
+    }
+
+    /**
+     * Has the host drop the launcher's ART profiles, see VdHostProtocol.Proxy.clearProfiles().
+     * Blocking: never on the main thread.
+     *
+     * @return as compilePackage()
+     */
+    public static String clearProfiles(String pkg) throws RemoteException {
+        return callPrivilegedHost(pkg, false);
+    }
+
+    private static String callPrivilegedHost(String pkg, boolean compile) throws RemoteException {
         VdHostProtocol.Proxy host;
         Source source;
         synchronized (sLock) {
@@ -140,8 +154,7 @@ public final class WindowHostVdClient {
             source = sSource;
         }
         if (host == null || source == Source.LOCAL) return null;
-        String result = host.compilePackage(pkg);
-        return result == null ? null : source + ": " + result;
+        return source + ": " + (compile ? host.compilePackage(pkg) : host.clearProfiles(pkg));
     }
 
     static VdHostProtocol.Proxy current() {

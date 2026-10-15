@@ -116,12 +116,15 @@ public class VdHostStub extends Binder {
                     reply.writeInt(res);
                     return true;
                 }
-                case VdHostProtocol.TX_COMPILE_PACKAGE: {
+                case VdHostProtocol.TX_COMPILE_PACKAGE:
+                case VdHostProtocol.TX_CLEAR_PROFILES: {
                     String pkg = data.readString();
                     String res;
                     long ident = Binder.clearCallingIdentity();
                     try {
-                        res = mCore.compilePackage(uid, pkg);
+                        res = code == VdHostProtocol.TX_COMPILE_PACKAGE
+                                ? mCore.compilePackage(uid, pkg)
+                                : mCore.clearProfiles(uid, pkg);
                     } finally {
                         Binder.restoreCallingIdentity(ident);
                     }

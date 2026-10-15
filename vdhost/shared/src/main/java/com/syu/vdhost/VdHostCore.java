@@ -691,6 +691,40 @@ public final class VdHostCore {
         return result;
     }
 
+    /**
+     * Drops the ART profiles of one of the caller's packages, see
+     * VdHostProtocol.Proxy.clearProfiles().
+     *
+     * uid 1000 and root call clearApplicationProfileData(), as the launcher does on FYT units; it
+     * freezes the package, which stops it. Shell may not make that call; on Android 14+ it has
+     * "cmd package art clear-app-profiles", which leaves the package running. Android 11-13 with
+     * Shizuku over ADB therefore cannot clear them.
+     */
+    public String clearProfiles(int callerUid, String pkg) {
+        if (pkg == null || !isPackageOfUid(pkg, callerUid)) {
+            throw new SecurityException(pkg + " is not a package of uid " + callerUid);
+        }
+        String result = clearApplicationProfileData(pkg);
+        if (!result.startsWith("OK") && Build.VERSION.SDK_INT >= 34) {
+            String viaCommand = runCommand(null,
+                    "/system/bin/cmd", "package", "art", "clear-app-profiles", pkg);
+            result = viaCommand.startsWith("OK") ? viaCommand : result + "; " + viaCommand;
+        }
+        Log.i(TAG, "clear profiles of " + pkg + " for uid " + callerUid + ": " + result);
+        return result;
+    }
+
+    private static String clearApplicationProfileData(String pkg) {
+        try {
+            Object pm = Hidden.getService("package", "android.content.pm.IPackageManager");
+            pm.getClass().getMethod("clearApplicationProfileData", String.class).invoke(pm, pkg);
+            return "OK (clearApplicationProfileData)";
+        } catch (Throwable t) {
+            Throwable cause = t.getCause() != null ? t.getCause() : t;
+            return "FAILED (clearApplicationProfileData: " + cause + ")";
+        }
+    }
+
     private static boolean isPackageOfUid(String pkg, int uid) {
         try {
             Object pm = Hidden.getService("package", "android.content.pm.IPackageManager");
@@ -734,9 +768,14 @@ public final class VdHostCore {
     }
 
     private static String runCompileCommand(String pkg) {
+        return runCommand("Success",
+                "/system/bin/cmd", "package", "compile", "-m", "speed-profile", "-f", pkg);
+    }
+
+    /** @param success text the output must contain besides exit code 0, or null for none */
+    private static String runCommand(String success, String... command) {
         try {
-            java.lang.Process p = new ProcessBuilder(
-                    "/system/bin/cmd", "package", "compile", "-m", "speed-profile", "-f", pkg)
+            java.lang.Process p = new ProcessBuilder(command)
                     .redirectErrorStream(true)
                     .start();
             String out;
@@ -752,7 +791,7 @@ public final class VdHostCore {
                 return "FAILED (cmd: timed out)";
             }
             int exit = p.exitValue();
-            return exit == 0 && out.contains("Success")
+            return exit == 0 && (success == null || out.contains(success))
                     ? "OK (cmd)"
                     : "FAILED (cmd, exit " + exit + ": " + out + ")";
         } catch (Throwable t) {

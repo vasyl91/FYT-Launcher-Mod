@@ -288,7 +288,7 @@
     <string name="baseline_reset_schedule_btn">重置计划</string>
     <string name="baseline_reset_full_btn">完全重置…</string>
     <string name="baseline_reset_full_title">完全重置？</string>
-    <string name="baseline_reset_full_message">自安装以来收集的所有使用数据将被永久删除。启动器将恢复为应用自带的默认基准配置文件（Baseline Profile），并重新开始 3/14/30 天优化计划。\n\n启动器将立即重启。在重新编译完成之前（重启后约 2 分钟），启动速度可能会稍慢。</string>
+    <string name="baseline_reset_full_message">自安装以来收集的所有使用数据将被永久删除。启动器将恢复为应用自带的默认基准配置文件（Baseline Profile），并重新开始 3/14/30 天优化计划。\n\n启动器可能会重启。在重新编译完成之前（约 2 分钟内），启动速度可能会稍慢。</string>
     <string name="baseline_reset_full_confirm_btn">删除并重启</string>
     <string name="baseline_reset_schedule_done">优化计划已重置。下一次优化将在使用 3 天后进行。</string>
     <string name="baseline_reset_full_started">已删除收集的数据。正在后台根据默认配置文件重新编译。</string>
