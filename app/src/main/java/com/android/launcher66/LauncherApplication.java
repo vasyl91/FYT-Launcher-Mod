@@ -119,13 +119,18 @@ public class LauncherApplication extends Application {
                     + (SystemClock.elapsedRealtime() - start) + "ms");
             return;
         }
+        // Which steps the time goes to, in one line at the end. Android gives the start up to
+        // here a time limit ("failed to complete startup"), which a boot can use up.
+        StartupSteps steps = new StartupSteps(start);
         initData();
+        steps.mark("initData");
         // Android 11+ PiP panes: start listening for Shizuku (the lowest-priority pane host).
         com.syu.util.WindowHostVdClient.init(this);
         // Tells the sound channel logic a tapped app from one that came up by itself.
         com.syu.util.UserTouches.start();
         // And the buttons FYT's framework reports (HomeFrontGuard); calls into system_server.
         new Thread(com.syu.util.UserTouches::startButtons, "FytButtons").start();
+        steps.mark("touches");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         // One setting became two (wake, cold start): both start from the old one, once.
         if (prefs.contains(Keys.LAUNCHER_HOME)) {
@@ -154,21 +159,30 @@ public class LauncherApplication extends Application {
                     .putBoolean(Keys.PIP_FOURTH_MODE, false)
                     .apply();
         }
+        steps.mark("prefs");
         // Before anything can start a HomeFrontGuard: it needs to know whether the launcher is in front.
         HomeFrontGuard.trackActivities(this);
         // First start after a device restart (not a wake from sleep): the launcher is kept in
         // front and the autostart is scheduled, see ColdStart.
         coldStart = ColdStart.start(this, prefs);
+        steps.mark("coldStart");
         // Sleep and wake, for as long as the process lives; its calls into system_server run
         // on its own thread.
         WakeDetection.start(this);
+        steps.mark("wake");
         initProperties();
+        steps.mark("properties");
         sHandler = new Handler(Looper.getMainLooper());
         cfg();
+        steps.mark("cfg");
         setupBase();
+        steps.mark("setupBase");
         initWindow();
+        steps.mark("initWindow");
         connectService();
+        steps.mark("connectService");
         DataPack.init(this);
+        steps.mark("dataPack");
         if (BuildConfig.DEBUG) {
             enableStrictMode();
         }
@@ -181,9 +195,35 @@ public class LauncherApplication extends Application {
                 "wake detection"
         ), "StartWakeDetection").start(), 1000);
         LeakCanaryInit.init();
+        steps.mark("leakCanary");
         handler.postDelayed(this::runDeferredStartupWork,
                 Math.max(DEFERRED_STARTUP_WORK_MS, ColdStart.bootStallDelayMs()));
-        Log.d(TAG, "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms");
+        Log.d(TAG, "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms" + steps);
+    }
+
+    /** Durations of the onCreate() steps; toString() lists those of 20 ms or more. */
+    private static final class StartupSteps {
+        private static final long REPORTED_MS = 20;
+        private final StringBuilder slow = new StringBuilder();
+        private long last;
+
+        StartupSteps(long start) {
+            last = start;
+        }
+
+        void mark(String step) {
+            long now = SystemClock.elapsedRealtime();
+            if (now - last >= REPORTED_MS) {
+                slow.append(slow.length() == 0 ? " (" : ", ").append(step).append(' ')
+                        .append(now - last);
+            }
+            last = now;
+        }
+
+        @Override
+        public String toString() {
+            return slow.length() == 0 ? "" : slow + ")";
+        }
     }
 
     /**
