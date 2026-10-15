@@ -1,4 +1,4 @@
-# FYT VDHost: app windows on Android 11+
+# FYT VDHost: app windows on Android 11+, and on 8-10 without a system launcher
 
 On Android 10 the launcher shows apps inside its pages (multiple PiP) with the framework's hidden
 `android.app.ActivityView`. FYT did not modify that class (it is identical to AOSP 10); it works
@@ -27,10 +27,17 @@ Three hosts, used in this order of preference (`WindowHostVdClient`):
 | 2 | FYT VDHost Magisk module installed | the module's daemon | 1000 | Magisk |
 | 3 | Shizuku running (no root needed) | `WindowHostVdShizukuService`, a Shizuku UserService | 2000 (shell) | Shizuku 13+, one-time permission prompt |
 
-Hosts 2 and 3 also run on Android 8-10, for one job only: a launcher that is not a system app
-cannot have itself compiled with its Baseline Profile, so the host does it
-(`VdHostCore.compilePackage()`, `clearProfiles()`, used by `BaselineProfileCompiler`). The panes
-keep the framework's ActivityView there.
+Hosts 2 and 3 also run on Android 8-10. There ActivityView works for a system launcher only
+(FYT, which keeps it): any other launcher cannot start other apps in it (ACTIVITY_EMBEDDING) nor
+forward touches (INJECT_EVENTS), so it uses `WindowHostVdView` with the host, as on 11+
+(`WindowHostVdClient.shouldUse()`). The host reaches the older platform the way ActivityView did
+on it (see `VdHostCore`): `IActivityManager` before Android 10, touches through an
+`IInputForwarder` on 8.1-9 and an `IActivityContainer` on 8.0, and on 8.0, which has no
+`DESTROY_CONTENT_ON_REMOVAL`, it removes a display's stacks before releasing it. Not tested on a
+device yet.
+
+The host also compiles a launcher that is not a system app with its Baseline Profile, on every
+version (`VdHostCore.compilePackage()`, `clearProfiles()`, used by `BaselineProfileCompiler`).
 
 The first host that attaches is kept until it dies. When the module is installed, Shizuku waits
 20 s for the daemon before standing in (at boot the daemon starts after the launcher), and a

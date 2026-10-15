@@ -39,6 +39,11 @@ import java.util.concurrent.TimeUnit;
  *  - in a Shizuku UserService (uid 2000, package "com.android.shell").
  *
  * Every display remembers the uid that created it; only that uid may touch it.
+ *
+ * Android 8-10 (the daemon and Shizuku only: a system launcher keeps the framework's
+ * ActivityView there) reach the same things through older doors, the ones ActivityView used on
+ * them: IActivityManager instead of IActivityTaskManager before 10, and touches through an
+ * IInputForwarder (8.1-9) or an IActivityContainer (8.0) instead of an event's display id.
  */
 public final class VdHostCore {
     private static final String TAG = "FytVdHost";
@@ -83,6 +88,12 @@ public final class VdHostCore {
          * of offscreen SurfaceView layers, several MB each).
          */
         Surface surface;
+        /**
+         * Android 8.0-9: where this display's input goes in (see injectThroughSink()) and the
+         * method to call on it. Guarded by the record.
+         */
+        Object inputSink;
+        Method inputSinkMethod;
 
         Record(int displayId, int ownerUid, VirtualDisplay vd, IBinder token, IBinder.DeathRecipient death) {
             this.displayId = displayId;
@@ -200,10 +211,19 @@ public final class VdHostCore {
             throw new IllegalStateException("client already dead");
         }
 
+        Record record = new Record(displayId, callerUid, vd, token, death);
+        record.surface = surface;
         synchronized (mDisplays) {
-            Record r = new Record(displayId, callerUid, vd, token, death);
-            r.surface = surface;
-            mDisplays.put(displayId, r);
+            mDisplays.put(displayId, record);
+        }
+        if (Build.VERSION.SDK_INT < 27) {
+            // Before the app starts: its task then goes into the container's stack instead of
+            // under an empty one opened later on top of it.
+            try {
+                synchronized (record) { openInputSink(record); }
+            } catch (Throwable t) {
+                Log.w(TAG, "no input container for display " + displayId, t);
+            }
         }
         applyImePolicy(displayId);
         scheduleFocusRestore();
@@ -253,13 +273,21 @@ public final class VdHostCore {
                     mSyncResolved = true;
                     mWindowManager = Hidden.getService("window", "android.view.IWindowManager");
                     mSyncTransactions = Hidden.findMethod(mWindowManager, "syncInputTransactions", 1);
+                    // Android 10: syncInputTransactions() without waitForAnimations.
+                    if (mSyncTransactions == null) {
+                        mSyncTransactions = Hidden.findMethod(mWindowManager, "syncInputTransactions", 0);
+                    }
                     Log.i(TAG, mSyncTransactions != null
                             ? "surface detach waits via IWindowManager.syncInputTransactions()"
                             : "no IWindowManager.syncInputTransactions(); surface detach waits a fixed time");
                 }
             }
             if (mSyncTransactions != null) {
-                mSyncTransactions.invoke(mWindowManager, false);
+                if (mSyncTransactions.getParameterTypes().length == 1) {
+                    mSyncTransactions.invoke(mWindowManager, false);
+                } else {
+                    mSyncTransactions.invoke(mWindowManager);
+                }
                 synced = true;
             }
         } catch (Throwable t) {
@@ -382,6 +410,7 @@ public final class VdHostCore {
                 Log.w(TAG, "detaching display " + displayId + " before release failed", t);
             }
         }
+        if (Build.VERSION.SDK_INT < 27) removeStacksOn(displayId);
         try { r.vd.release(); } catch (Throwable t) { Log.w(TAG, "release failed", t); }
         Surface old;
         synchronized (r) {
@@ -439,15 +468,67 @@ public final class VdHostCore {
             cancelFocusRestore();
         }
         try {
-            resolveInput();
-            mSetDisplayId.invoke(event, displayId);
             if (event instanceof MotionEvent && event.getSource() == InputDevice.SOURCE_UNKNOWN) {
                 ((MotionEvent) event).setSource(InputDevice.SOURCE_TOUCHSCREEN);
             }
-            mInjectInputEvent.invoke(mInputManager, event, INJECT_MODE_ASYNC);
+            if (Build.VERSION.SDK_INT >= 29) {
+                resolveInput();
+                mSetDisplayId.invoke(event, displayId);
+                mInjectInputEvent.invoke(mInputManager, event, INJECT_MODE_ASYNC);
+            } else {
+                Record r = find(callerUid, displayId);
+                if (r != null) injectThroughSink(r, event);
+            }
         } catch (Throwable t) {
             Log.w(TAG, "injectInputEvent failed", t);
         }
+    }
+
+    /**
+     * Android 8-9: an event has no display id yet, and IInputManager.injectInputEvent() always
+     * hits the main screen. ActivityView's way in instead: on 8.1-9 an IInputForwarder for the
+     * display, which only the display's owner (this host) may create; on 8.0 the
+     * IActivityContainer of a stack on the display (opened with the display, see createDisplay()).
+     */
+    private void injectThroughSink(Record r, InputEvent event) throws ReflectiveOperationException {
+        // 8.0: the container's stack goes with its last task, and the container injects nothing
+        // after that: one new container, once.
+        int attempts = Build.VERSION.SDK_INT < 27 ? 2 : 1;
+        for (int i = 0; i < attempts; i++) {
+            Object sink;
+            Method method;
+            synchronized (r) {
+                if (r.inputSink == null) openInputSink(r);
+                sink = r.inputSink;
+                method = r.inputSinkMethod;
+            }
+            if (Boolean.TRUE.equals(method.invoke(sink, event)) || i + 1 == attempts) return;
+            synchronized (r) {
+                if (r.inputSink == sink) r.inputSink = null;
+            }
+        }
+    }
+
+    /** Caller holds the record. */
+    private static void openInputSink(Record r) throws ReflectiveOperationException {
+        if (Build.VERSION.SDK_INT >= 27) {
+            Object im = Hidden.getService("input", "android.hardware.input.IInputManager");
+            Object forwarder = im.getClass().getMethod("createInputForwarder", int.class)
+                    .invoke(im, r.displayId);
+            if (forwarder == null) throw new IllegalStateException("no input forwarder");
+            r.inputSinkMethod = Class.forName("android.app.IInputForwarder")
+                    .getMethod("forwardEvent", InputEvent.class);
+            r.inputSink = forwarder;
+        } else {
+            Object am = Hidden.getService("activity", "android.app.IActivityManager");
+            Object container = am.getClass().getMethod("createStackOnDisplay", int.class)
+                    .invoke(am, r.displayId);
+            if (container == null) throw new IllegalStateException("no activity container");
+            r.inputSinkMethod = Class.forName("android.app.IActivityContainer")
+                    .getMethod("injectEvent", InputEvent.class);
+            r.inputSink = container;
+        }
+        Log.i(TAG, "input of display " + r.displayId + " goes through " + r.inputSink.getClass().getName());
     }
 
     private synchronized void resolveInput() throws ReflectiveOperationException {
@@ -499,7 +580,7 @@ public final class VdHostCore {
 
     private synchronized void resolveStartActivity() throws ReflectiveOperationException {
         if (mStartActivityAsUser != null) return;
-        Object atm = Hidden.getService("activity_task", "android.app.IActivityTaskManager");
+        Object atm = activityTasks();
         Method found = null;
         for (Method m : atm.getClass().getMethods()) {
             if (!m.getName().equals("startActivityAsUser")) continue;
@@ -508,7 +589,7 @@ public final class VdHostCore {
             for (Class<?> c : p) if (c == Intent.class) hasIntent = true;
             if (hasIntent && p.length >= 11 && p[p.length - 1] == int.class) { found = m; break; }
         }
-        if (found == null) throw new NoSuchMethodException("IActivityTaskManager.startActivityAsUser");
+        if (found == null) throw new NoSuchMethodException(atm.getClass().getName() + ".startActivityAsUser");
         mActivityTaskManager = atm;
         mStartActivityAsUser = found;
     }
@@ -516,7 +597,8 @@ public final class VdHostCore {
     /**
      * (IApplicationThread caller, String callingPackage, [String callingFeatureId,] Intent intent,
      *  String resolvedType, IBinder resultTo, String resultWho, int requestCode, int startFlags,
-     *  ProfilerInfo profilerInfo, Bundle options, int userId)
+     *  ProfilerInfo profilerInfo, Bundle options, int userId) -- IActivityManager's of Android
+     *  8-9 has the same shape.
      */
     private Object[] buildStartArgs(Class<?>[] types, Intent intent, Bundle options) {
         Object[] args = new Object[types.length];
@@ -583,14 +665,14 @@ public final class VdHostCore {
 
     private void focusMainDisplay() {
         try {
-            Object atm = Hidden.getService("activity_task", "android.app.IActivityTaskManager");
+            Object atm = activityTasks();
             // Android 12+: focusTopTask(displayId) focuses the display's top task and moves the
             // display to the top.
             try {
                 atm.getClass().getMethod("focusTopTask", int.class).invoke(atm, 0);
                 return;
             } catch (NoSuchMethodException ignore) { }
-            // Android 11: setFocusedTask() on the top task of the main display.
+            // Android 8-11: setFocusedTask() on the top task of the main display.
             int taskId = topTaskIdOn(atm, 0);
             if (taskId >= 0) {
                 atm.getClass().getMethod("setFocusedTask", int.class).invoke(atm, taskId);
@@ -603,22 +685,77 @@ public final class VdHostCore {
     }
 
     private static int topTaskIdOn(Object atm, int displayId) throws ReflectiveOperationException {
+        List<Object> stacks = stacksOn(atm, displayId);
+        if (stacks == null || stacks.isEmpty()) return -1;
+        int[] ids = taskIdsOf(stacks.get(0));
+        return ids != null && ids.length > 0 ? ids[ids.length - 1] : -1;
+    }
+
+    /**
+     * IActivityTaskManager on Android 10+, IActivityManager before: getAllStackInfos(),
+     * setFocusedTask(), removeStack() and startActivityAsUser() moved from one to the other.
+     */
+    private static Object activityTasks() throws ReflectiveOperationException {
+        if (Build.VERSION.SDK_INT >= 29) {
+            return Hidden.getService("activity_task", "android.app.IActivityTaskManager");
+        }
+        return Hidden.getService("activity", "android.app.IActivityManager");
+    }
+
+    /**
+     * The root tasks (stacks) on a display, top first: the per-display query of Android 11+, or
+     * getAllStackInfos() of every display, which lists each display's stacks top first too.
+     *
+     * @return null when the platform has neither
+     */
+    private static List<Object> stacksOn(Object atm, int displayId) throws ReflectiveOperationException {
         for (String name : new String[]{ "getAllRootTaskInfosOnDisplay", "getAllStackInfosOnDisplay" }) {
             Method m;
             try { m = atm.getClass().getMethod(name, int.class); }
             catch (NoSuchMethodException e) { continue; }
             Object result = m.invoke(atm, displayId);
-            if (!(result instanceof List) || ((List<?>) result).isEmpty()) return -1;
-            Object top = ((List<?>) result).get(0);
-            Object ids = Hidden.readField(top, "childTaskIds");
-            if (ids == null) ids = Hidden.readField(top, "taskIds");
-            if (ids instanceof int[] && ((int[]) ids).length > 0) {
-                int[] a = (int[]) ids;
-                return a[a.length - 1];
-            }
-            return -1;
+            List<Object> out = new ArrayList<>();
+            if (result instanceof List) out.addAll((List<?>) result);
+            return out;
         }
-        return -1;
+        Method all;
+        try { all = atm.getClass().getMethod("getAllStackInfos"); }
+        catch (NoSuchMethodException e) { return null; }
+        Object result = all.invoke(atm);
+        List<Object> out = new ArrayList<>();
+        if (!(result instanceof List)) return out;
+        for (Object info : (List<?>) result) {
+            Object id = info != null ? Hidden.readField(info, "displayId") : null;
+            if (id instanceof Integer && (Integer) id == displayId) out.add(info);
+        }
+        return out;
+    }
+
+    /** RootTaskInfo (Android 12+) has childTaskIds, StackInfo taskIds. */
+    private static int[] taskIdsOf(Object info) {
+        Object ids = Hidden.readField(info, "childTaskIds");
+        if (ids == null) ids = Hidden.readField(info, "taskIds");
+        return ids instanceof int[] ? (int[]) ids : null;
+    }
+
+    /**
+     * Android 8.0 has no VIRTUAL_DISPLAY_FLAG_DESTROY_CONTENT_ON_REMOVAL: a released display's
+     * tasks would move to the main screen. Its stacks are removed first instead, which finishes
+     * their tasks, as the flag does from 8.1 on.
+     */
+    private static void removeStacksOn(int displayId) {
+        try {
+            Object atm = activityTasks();
+            List<Object> stacks = stacksOn(atm, displayId);
+            if (stacks == null) return;
+            Method remove = atm.getClass().getMethod("removeStack", int.class);
+            for (Object info : stacks) {
+                Object stackId = Hidden.readField(info, "stackId");
+                if (stackId instanceof Integer) remove.invoke(atm, stackId);
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "removing the stacks of display " + displayId + " failed", t);
+        }
     }
 
     private void logFocusUnavailable(Throwable t) {
@@ -635,21 +772,13 @@ public final class VdHostCore {
     public int getTaskCount(int callerUid, int displayId) {
         if (find(callerUid, displayId) == null) return -1;
         try {
-            Object atm = Hidden.getService("activity_task", "android.app.IActivityTaskManager");
-            Method m = null;
-            for (String name : new String[]{ "getAllRootTaskInfosOnDisplay", "getAllStackInfosOnDisplay" }) {
-                try { m = atm.getClass().getMethod(name, int.class); break; }
-                catch (NoSuchMethodException ignore) { }
-            }
-            if (m == null) return -1;
-            Object result = m.invoke(atm, displayId);
-            if (!(result instanceof List)) return -1;
+            List<Object> stacks = stacksOn(activityTasks(), displayId);
+            if (stacks == null) return -1;
             int count = 0;
-            for (Object info : (List<?>) result) {
+            for (Object info : stacks) {
                 if (info == null) continue;
-                Object ids = Hidden.readField(info, "childTaskIds");     // RootTaskInfo, 12+
-                if (ids == null) ids = Hidden.readField(info, "taskIds"); // StackInfo, 11
-                count += (ids instanceof int[]) ? ((int[]) ids).length : 1;
+                int[] ids = taskIdsOf(info);
+                count += ids != null ? ids.length : 1;
             }
             return count;
         } catch (Throwable t) {

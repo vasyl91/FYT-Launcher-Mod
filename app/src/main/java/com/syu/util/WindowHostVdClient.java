@@ -18,8 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Connection to the VD host, which stands in for the framework's ActivityView on Android 11+
- * (see WindowHostVdView).
+ * Connection to the VD host, which stands in for the framework's ActivityView on Android 11+,
+ * and on Android 8-10 for a launcher that is not a system app (see WindowHostVdView).
  *
  * Three hosts, most reliable first:
  *  1. LOCAL   -- the launcher runs as android.uid.system (FYT install): the host runs right here.
@@ -78,23 +78,24 @@ public final class WindowHostVdClient {
     /**
      * Whether the panes should be WindowHostVdView instead of the framework's ActivityView.
      *
-     * Android 10 keeps the real ActivityView. Android 12+ has no ActivityView at all, so it is
-     * always WindowHostVdView there: with no host yet the panes just stay empty instead of
-     * crashing. Android 11 still has a framework ActivityView, which is kept as a last resort
-     * when no host can be expected.
+     * Android 8-10 keep the real ActivityView for a system launcher (FYT). Any other launcher
+     * could not start other apps in it (that needs ACTIVITY_EMBEDDING, and INJECT_EVENTS for the
+     * touches), so it takes the VD host there, as on Android 12+, which has no ActivityView at
+     * all: with no host yet the panes just stay empty instead of crashing. Android 11 still has a
+     * framework ActivityView, which is kept as a last resort when no host can be expected.
      */
     static boolean shouldUse() {
-        if (Build.VERSION.SDK_INT < 30) return false;
+        if (Build.VERSION.SDK_INT < 30) return !isSystemUid();
         if (Build.VERSION.SDK_INT >= 31) return true;
         return canHostPanes();
     }
 
     /**
-     * Android 11+: whether some host is there or can be expected. Rooted without the Magisk
-     * module and without Shizuku there is nothing that could run the panes.
+     * Whether some host is there or can be expected (on Android 8-10 a system launcher counts:
+     * it has the framework's ActivityView). Rooted without the Magisk module and without Shizuku
+     * there is nothing that could run the panes.
      */
     public static boolean canHostPanes() {
-        if (Build.VERSION.SDK_INT < 30) return false;
         return current() != null || isSystemUid() || isModuleInstalled() || WindowHostVdShizuku.isUsable();
     }
 
@@ -222,8 +223,7 @@ public final class WindowHostVdClient {
             sMain.post(WindowHostVdShizuku::unbind);
         }
         notifyListeners(true);
-        // Android 8-10: the panes keep ActivityView; the host only compiles the Baseline Profile.
-        if (!replaced && Build.VERSION.SDK_INT >= 30) sMain.post(WindowHostVdClient::openPanesIfMissing);
+        if (!replaced) sMain.post(WindowHostVdClient::openPanesIfMissing);
         return true;
     }
 

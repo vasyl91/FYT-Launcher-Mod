@@ -56,8 +56,6 @@ final class WindowHostVdShizuku {
     private WindowHostVdShizuku() {}
 
     static void init(Context app) {
-        // Android 8-10 as well: there the host only compiles the Baseline Profile (see
-        // BaselineProfileCompiler), the panes keep the system's ActivityView.
         if (sInitialized || WindowHostVdClient.isSystemUid()) return;
         sInitialized = true;
         sApp = app;

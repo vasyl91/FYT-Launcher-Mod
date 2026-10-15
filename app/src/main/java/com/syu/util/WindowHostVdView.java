@@ -3,8 +3,8 @@ package com.syu.util;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Insets;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -30,7 +30,8 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
- * Android 11+ replacement for Android 10's android.app.ActivityView.
+ * Replacement for Android 10's android.app.ActivityView: on Android 11+, and on Android 8-10
+ * for a launcher that is not a system app (see WindowHostVdClient.shouldUse()).
  *
  * ActivityView put the VirtualDisplay's own layer tree under its SurfaceView
  * (IWindowSession.reparentDisplayContent) and let the system route touches into it. That API is
@@ -132,8 +133,6 @@ public class WindowHostVdView extends ViewGroup {
     private void updateTapExcludeRegion(int x, int y) { }
 
     private void cleanTapExcludeRegion() { }
-
-    public void setForwardedInsets(Insets insets) { }
 
     private int getBaseDisplayDensity() {
         WindowManager wm = getContext().getSystemService(WindowManager.class);
@@ -524,7 +523,10 @@ public class WindowHostVdView extends ViewGroup {
             postDelayed(() -> recomposeDisplay(gen), SURFACE_RECOMPOSE_DELAY_MS);
         };
         ViewTreeObserver vto = isAttachedToWindow() ? getViewTreeObserver() : null;
-        if (vto != null && vto.isAlive()) {
+        if (Build.VERSION.SDK_INT < 29) {
+            // No frame commit callback, and no BLAST sync to wait out either (Android 12+).
+            postDelayed(attach, SURFACE_ATTACH_SETTLE_MS);
+        } else if (vto != null && vto.isAlive()) {
             vto.registerFrameCommitCallback(() -> postDelayed(attach, SURFACE_ATTACH_SETTLE_MS));
             invalidate();
         }
