@@ -212,31 +212,19 @@ public class LauncherApplication extends Application {
         handler.postDelayed(this::runDeferredStartupWork,
                 Math.max(DEFERRED_STARTUP_WORK_MS, ColdStart.bootStallDelayMs()));
         Log.d(TAG, "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms" + steps);
+        sOnCreateEnd = SystemClock.elapsedRealtime();
     }
 
-    /** Durations of the onCreate() steps; toString() lists those of 20 ms or more. */
-    private static final class StartupSteps {
-        private static final long REPORTED_MS = 20;
-        private final StringBuilder slow = new StringBuilder();
-        private long last;
+    /**
+     * When onCreate() ended, for the first Launcher of the process to time its own start from
+     * (see Launcher.mStartupSteps); 0 once taken.
+     */
+    private static long sOnCreateEnd;
 
-        StartupSteps(long start) {
-            last = start;
-        }
-
-        void mark(String step) {
-            long now = SystemClock.elapsedRealtime();
-            if (now - last >= REPORTED_MS) {
-                slow.append(slow.length() == 0 ? " (" : ", ").append(step).append(' ')
-                        .append(now - last);
-            }
-            last = now;
-        }
-
-        @Override
-        public String toString() {
-            return slow.length() == 0 ? "" : slow + ")";
-        }
+    static long takeOnCreateEnd() {
+        long end = sOnCreateEnd;
+        sOnCreateEnd = 0;
+        return end;
     }
 
     /**

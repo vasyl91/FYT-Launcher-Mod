@@ -508,6 +508,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     LinearLayout bottomButtonsWidgets;
     private MainViewModel mViewModel;
     private final AtomicBoolean atomicOnCreate = new AtomicBoolean(false);
+    /**
+     * Times the first Launcher of the process from the end of Application.onCreate() to its first
+     * frame on screen, logged in one line (see logFirstFrame()); null for later instances and
+     * once that frame is out.
+     */
+    private StartupSteps mStartupSteps;
     public boolean onResumePip = false;
     public boolean allowPip = false;
     private volatile WindowHost mWindowHost;
@@ -1628,7 +1634,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        long appCreated = LauncherApplication.takeOnCreateEnd();
+        if (appCreated > 0) {
+            mStartupSteps = new StartupSteps(appCreated);
+            // Class loading and the constructor (field initialisers, Helpers).
+            markStartup("instantiate");
+        }
         super.onCreate(savedInstanceState);
+        markStartup("super");
         Log.i("onCreate", "onCreate----->");
         allowPip = true;
         atomicOnCreate.set(true);
@@ -1640,12 +1653,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         SessionPrefs.get().edit().clear().apply();
         helpers = new Helpers();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);  
+        markStartup("prefs");
 
         // Resolves the PiP packages' icons and launch intents on a worker thread, so the first
         // pane rebuild does not block the main thread on PackageManager.
         WindowUtil.prewarmConfiguredPipPackages(this);
 
         calculateLayoutDimensions();       
+        markStartup("dimensions");
 
         if (mPrefs.getBoolean("transparent_statusbar", false)) {
             getWindow().addFlags(Integer.MIN_VALUE);
@@ -1661,6 +1676,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (!userLayout) {
             WindowUtil.restartPinnedPipApp();
         }
+        markStartup("pinnedPip");
 
         getWindow().addFlags(Integer.MIN_VALUE);
 
@@ -1668,6 +1684,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         LogPreview.show("------------------->>> density:" + density);
 
         checkForLocaleChange();
+        markStartup("locale");
 
         initVariable();
 
@@ -1675,11 +1692,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mAppWidgetHost = new LauncherAppWidgetHost(LauncherApplication.sApp, this, APPWIDGET_HOST_ID);
         mAppWidgetHost.setOnWidgetClickListener(this);
         mAppWidgetHost.startListening();
+        markStartup("widgetHost");
 
         registerContentObservers();
 
         mSavedState = savedInstanceState;
         restoreState(mSavedState);
+        markStartup("restore");
 
         // Update customization drawer _after_ restoring the states. Sorting by label loads every
         // widget's and shortcut's label from its app: two seconds of onCreate() at boot (capture
@@ -1712,6 +1731,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mModel.startLoader(true, mWorkspace.getCurrentPage());
             }
         }
+        markStartup("loader");
 
         // For handling default keys
         mDefaultKeySsb = new SpannableStringBuilder();
@@ -1720,15 +1740,57 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mHandler.post(this.runnable_register);
         
         updateGlobalIcons();
+        markStartup("globalIcons");
         
         // On large interfaces, we want the screen to auto-rotate based on the current orientation
         unlockScreenOrientation(true);
         
         initRegisterReceiver();
+        markStartup("receivers");
         
         requestWidgetUpdate();
+        markStartup("widgetUpdate");
 		
         onBackPressedX();
+        markStartup("onCreateEnd");
+    }
+
+    private void markStartup(String step) {
+        if (mStartupSteps != null) {
+            mStartupSteps.mark(step);
+        }
+    }
+
+    /**
+     * Logs the first start's steps once its first frame is drawn: what happens between onResume()
+     * and that frame (posted work, then measure and layout) and the frame itself count too.
+     */
+    private void logFirstFrame() {
+        final StartupSteps steps = mStartupSteps;
+        if (steps == null) {
+            return;
+        }
+        mStartupSteps = null;
+        final View decor = getWindow().getDecorView();
+        final Runnable report = () -> {
+            steps.mark("draw");
+            Log.d(TAG, "first frame: " + (SystemClock.elapsedRealtime()
+                    - android.os.Process.getStartElapsedRealtime())
+                    + "ms after the process start" + steps);
+        };
+        decor.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                decor.getViewTreeObserver().removeOnPreDrawListener(this);
+                steps.mark("untilDraw");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    decor.getViewTreeObserver().registerFrameCommitCallback(report);
+                } else {
+                    decor.post(report);
+                }
+                return true;
+            }
+        });
     }
 
     private void calculateLayoutDimensions() {
@@ -1866,12 +1928,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         LauncherAppState.setApplicationContext(getApplicationContext());
         LauncherAppState app = LauncherAppState.getInstance();
+        markStartup("appState");
 
         ContentResolver resolver = getApplicationContext().getContentResolver();       
         Config.PLATFORM_ID = ShareHandler.getInt(resolver, 10, 0);
         Config.CUSTOMER_ID = ShareHandler.getInt(resolver, 9, 0);
         Config.USER_UIID = ShareHandler.getInt(resolver, 11, 0);
         Config.CHIP_UIID = ShareHandler.getInt(resolver, 13, 0);
+        markStartup("shareHandler");
         
         // Determine the dynamic grid properties
         Point smallestSize = new Point();
@@ -1888,6 +1952,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Math.min(largestSize.x, largestSize.y),
                 realSize.x, realSize.y,
                 dm.widthPixels, dm.heightPixels);
+        markStartup("grid");
 
         // the LauncherApplication should call this, but in case of Instrumentation it might not be present yet
         mSharedPrefs = getSharedPreferences(LauncherAppState.getSharedPreferencesKey(),
@@ -1901,12 +1966,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         mViewModel.setFirstUse(mModel.mFirstUse);
+        markStartup("model");
         
         setContentView(R.layout.launcher);
+        markStartup("inflate");
         
         setupViews();
+        markStartup("setupViews");
         grid.layout(this);
         mAppBars.prefetchBarSnapshots();
+        markStartup("gridLayout");
 
         mStats = new Stats(this);
 
@@ -2041,6 +2110,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             WindowUtil.initDefaultApp();
         }
         FirstFrameAnimatorHelper.setIsVisible(true);
+        markStartup("onStart");
     }
 
 
@@ -2098,7 +2168,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
             helpers.setAllAppsShouldBeVisible(false);
         }
+        markStartup("resumeStart");
         handleView();
+        markStartup("handleView");
         if (Config.CHIP_UIID == 6 && !LauncherApplication.isHaveDvd) {
         }
         if (mOnResumeState == State.WORKSPACE) {
@@ -2182,8 +2254,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         mWorkspace.updateInteractionForState();
         mWorkspace.onResume();
+        markStartup("workspaceResume");
         registerResumeRefreshersAndNotify();
         restoreResumeMediaState();
+        markStartup("refreshers");
 
         mMusicWidget.setPlayPauseIcon(true);
 
@@ -2213,6 +2287,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         mHomeRecovery.scheduleHomeLayoutWatchdog("onResume", !isAllAppsVisible());
         mPipStarter.schedulePipWatchdog("onResume");
+        markStartup("onResumeEnd");
+        logFirstFrame();
     }
 
     private void scheduleFastHomeDeferredResumeWork(boolean processPendingUpdate) {
