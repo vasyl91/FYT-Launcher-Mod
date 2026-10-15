@@ -1483,11 +1483,22 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         new Thread(() -> {
             // Normally never returns: clearing the profiles kills the launcher process, which
             // then restarts and recompiles from the Baseline Profile in the background.
-            final boolean ok = BaselineProfileCompiler.resetToBaselineProfile(appContext);
+            final BaselineProfileCompiler.ResetResult result =
+                    BaselineProfileCompiler.resetToBaselineProfile(appContext);
+            final int message;
+            switch (result) {
+                case CLEARED:
+                    message = R.string.baseline_reset_full_started;
+                    break;
+                case BASELINE_REAPPLIED:
+                    message = R.string.baseline_reset_reapplied;
+                    break;
+                default:
+                    message = R.string.baseline_reset_failed;
+                    break;
+            }
             mHandler.post(() -> {
-                Toast.makeText(appContext,
-                        ok ? R.string.baseline_reset_full_started : R.string.baseline_reset_failed,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(appContext, message, Toast.LENGTH_LONG).show();
                 if (isAdded()) {
                     updateBaselineProfileSummary();
                 }

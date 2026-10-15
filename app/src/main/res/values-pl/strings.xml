@@ -150,6 +150,7 @@
     <string name="baseline_reset_full_message">Wszystkie dane o użyciu zebrane od instalacji zostaną trwale usunięte. Launcher wróci do domyślnego profilu bazowego (Baseline Profile) dołączonego do aplikacji, a harmonogram odświeżeń 3/14/30 dni rozpocznie się od nowa.\n\nLauncher może zostać uruchomiony ponownie. Do czasu ponownej kompilacji (w ciągu około 2 minut) start może być nieco wolniejszy.</string>
     <string name="baseline_reset_full_confirm_btn">Usuń i uruchom ponownie</string>
     <string name="baseline_reset_schedule_done">Harmonogram odświeżeń zresetowany. Następne odświeżenie po 3 dniach użytkowania.</string>
+    <string name="baseline_reset_reapplied">Shizuku bez roota na Androidzie 13 lub starszym nie pozwala usunąć zebranych danych. Domyślny profil został nałożony ponownie i jest kompilowany w tle; zebrane dane pozostają.</string>
     <string name="baseline_reset_full_started">Zebrane dane usunięte. Ponowna kompilacja z domyślnego profilu trwa w tle.</string>
     <string name="baseline_reset_failed">Reset nie powiódł się. Spróbuj ponownie później.</string>
     <string name="baseline_reset_unavailable">Funkcja niedostępna na tym urządzeniu.</string>

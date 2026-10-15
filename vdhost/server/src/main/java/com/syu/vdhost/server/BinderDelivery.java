@@ -171,6 +171,7 @@ final class BinderDelivery {
 
     /**
      * IContentProvider.call():
+     *   Android 8-9: (String callingPkg, String method, String arg, Bundle extras)
      *   Android 10:  (String callingPkg, String authority, String method, String arg, Bundle extras)
      *   Android 11:  (String callingPkg, String featureId, String authority, String method, String arg, Bundle extras)
      *   Android 12+: (AttributionSource source, String authority, String method, String arg, Bundle extras)
@@ -191,6 +192,8 @@ final class BinderDelivery {
                 stringArgs = new String[]{ mOwnPackage, null, authority, VdHostProtocol.METHOD_ATTACH, null };
             } else if (strings == 4) {
                 stringArgs = new String[]{ mOwnPackage, authority, VdHostProtocol.METHOD_ATTACH, null };
+            } else if (strings == 3) {
+                stringArgs = new String[]{ mOwnPackage, VdHostProtocol.METHOD_ATTACH, null };
             } else {
                 continue;
             }

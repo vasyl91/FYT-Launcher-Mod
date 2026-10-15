@@ -291,6 +291,7 @@
     <string name="baseline_reset_full_message">All usage data collected since installation will be permanently deleted. The launcher returns to the default Baseline Profile shipped with the app and the 3/14/30-day refresh schedule starts again.\n\nThe launcher may restart. Until it is recompiled (within about 2 minutes), startup may be slightly slower.</string>
     <string name="baseline_reset_full_confirm_btn">Delete and restart</string>
     <string name="baseline_reset_schedule_done">Refresh schedule reset. The next refresh runs after 3 days of use.</string>
+    <string name="baseline_reset_reapplied">The collected data cannot be deleted with Shizuku without root on Android 13 or older. The default profile was applied again and is being compiled in the background; the collected data stays.</string>
     <string name="baseline_reset_full_started">Collected data deleted. Recompiling from the default profile in the background.</string>
     <string name="baseline_reset_failed">Reset failed. Try again later.</string>
     <string name="baseline_reset_unavailable">Not available on this device.</string>

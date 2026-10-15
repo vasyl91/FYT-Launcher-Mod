@@ -27,6 +27,11 @@ Three hosts, used in this order of preference (`WindowHostVdClient`):
 | 2 | FYT VDHost Magisk module installed | the module's daemon | 1000 | Magisk |
 | 3 | Shizuku running (no root needed) | `WindowHostVdShizukuService`, a Shizuku UserService | 2000 (shell) | Shizuku 13+, one-time permission prompt |
 
+Hosts 2 and 3 also run on Android 8-10, for one job only: a launcher that is not a system app
+cannot have itself compiled with its Baseline Profile, so the host does it
+(`VdHostCore.compilePackage()`, `clearProfiles()`, used by `BaselineProfileCompiler`). The panes
+keep the framework's ActivityView there.
+
 The first host that attaches is kept until it dies. When the module is installed, Shizuku waits
 20 s for the daemon before standing in (at boot the daemon starts after the launcher), and a
 daemon that attaches later still replaces it. If no host can be expected at all (e.g. rooted

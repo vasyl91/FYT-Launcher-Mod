@@ -222,7 +222,8 @@ public final class WindowHostVdClient {
             sMain.post(WindowHostVdShizuku::unbind);
         }
         notifyListeners(true);
-        if (!replaced) sMain.post(WindowHostVdClient::openPanesIfMissing);
+        // Android 8-10: the panes keep ActivityView; the host only compiles the Baseline Profile.
+        if (!replaced && Build.VERSION.SDK_INT >= 30) sMain.post(WindowHostVdClient::openPanesIfMissing);
         return true;
     }
 

@@ -1,9 +1,12 @@
 # FYT VDHost installer.
 
-if [ "$API" -lt 30 ]; then
-  ui_print "! Android 11 or newer is required (this is API $API)."
-  ui_print "! On Android 10 the launcher uses the system's own ActivityView."
+if [ "$API" -lt 26 ]; then
+  ui_print "! Android 8 or newer is required (this is API $API)."
   abort "! Installation aborted"
+fi
+if [ "$API" -lt 30 ]; then
+  # The launcher keeps the system's ActivityView for its panes there.
+  ui_print "- Android 8-10: the service only compiles the launcher's Baseline Profile."
 fi
 
 ui_print "- FYT VDHost for Android API $API"

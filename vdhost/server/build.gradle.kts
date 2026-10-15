@@ -15,7 +15,8 @@ android {
 
     defaultConfig {
         applicationId = "com.syu.vdhost.server"
-        minSdk = 30
+        // 8-10 only compile the launcher's Baseline Profile (its panes keep ActivityView there).
+        minSdk = 26
         targetSdk = 36
         versionCode = moduleVersionCode
         versionName = moduleVersion

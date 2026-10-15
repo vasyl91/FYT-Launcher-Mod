@@ -4,7 +4,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -57,7 +56,9 @@ final class WindowHostVdShizuku {
     private WindowHostVdShizuku() {}
 
     static void init(Context app) {
-        if (sInitialized || Build.VERSION.SDK_INT < 30 || WindowHostVdClient.isSystemUid()) return;
+        // Android 8-10 as well: there the host only compiles the Baseline Profile (see
+        // BaselineProfileCompiler), the panes keep the system's ActivityView.
+        if (sInitialized || WindowHostVdClient.isSystemUid()) return;
         sInitialized = true;
         sApp = app;
         sGraceStart = SystemClock.elapsedRealtime();

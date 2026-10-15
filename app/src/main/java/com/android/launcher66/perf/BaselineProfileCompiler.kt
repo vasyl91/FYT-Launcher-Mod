@@ -50,7 +50,7 @@ import kotlin.coroutines.resume
  * Why it works without root: the launcher runs as UID 1000 (android.uid.system) and is signed
  * with the platform key, so system_server grants it the same operations as "adb shell".
  *
- * Other builds (phone flavor, Android 11+) are compiled the same way by the VD host when one runs
+ * Other builds (phone flavor, Android 8+) are compiled the same way by the VD host when one runs
  * outside the launcher: the FYT VDHost Magisk module's daemon or Shizuku's service (see
  * [compileThroughHost]). Without either, nothing is compiled and Android's own idle dexopt
  * applies the profile some night.
@@ -204,15 +204,26 @@ object BaselineProfileCompiler {
 
     /**
      * True if this build / device can use the compiler: the fyt system build on Android 8-13
-     * compiles itself; a release build of any other kind on Android 11+ through the VD host, once
-     * root or Shizuku runs one ([canCompileNow]). A debug build has no profile to compile.
+     * compiles itself; a release build of any other kind through the VD host, once root or
+     * Shizuku runs one ([canCompileNow]). A debug build has no profile to compile.
      */
     @JvmStatic
     fun isSupported(): Boolean =
         TEST_BUILD_TYPE_PREFIXES.none { BuildConfig.BUILD_TYPE.startsWith(it) } &&
-            (compilesItself() ||
-                (!BuildConfig.DEBUG && Process.myUid() != Process.SYSTEM_UID &&
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R))
+            (compilesItself() || (!BuildConfig.DEBUG && Process.myUid() != Process.SYSTEM_UID))
+
+    /** Outcome of [resetToBaselineProfile]. */
+    enum class ResetResult {
+        /** The collected data is gone; the Baseline Profile is compiled again. */
+        CLEARED,
+        /**
+         * The host may not clear the data (Shizuku over ADB on Android 8-13): the Baseline
+         * Profile is written and compiled again on top of it.
+         */
+        BASELINE_REAPPLIED,
+        /** Not available, or clearing failed (the Baseline Profile is still re-applied). */
+        FAILED,
+    }
 
     /** The fyt system build on Android 8-13: PackageManager compiles it at its own request. */
     private fun compilesItself(): Boolean =
@@ -363,14 +374,15 @@ object BaselineProfileCompiler {
      * restarts, and on that start the initial compilation runs as for a new APK. The state is
      * committed before the call for that reason. Blocking binder call: call off the main thread.
      *
-     * @return false if the profiles could not be cleared (nothing was killed; the Baseline
-     * Profile is then re-applied on top of the collected data). Normally the function does not
-     * return at all.
+     * Without uid 1000 the VD host clears the profiles: the daemon's call (uid 1000) kills the
+     * launcher the same way, Shizuku's (shell, Android 14+) leaves it running.
+     *
+     * @return see [ResetResult]. With the system's call the function normally does not return.
      */
     @JvmStatic
     @WorkerThread
-    fun resetToBaselineProfile(context: Context): Boolean {
-        if (!isSupported()) return false
+    fun resetToBaselineProfile(context: Context): ResetResult {
+        if (!isSupported()) return ResetResult.FAILED
         generation.incrementAndGet()
         cancelPendingJob()
         val app = context.applicationContext
@@ -385,31 +397,35 @@ object BaselineProfileCompiler {
         editor.commit()
 
         return try {
+            var result = ResetResult.CLEARED
             if (compilesItself()) {
                 Log.i(TAG, "Full reset: clearing profiles, the launcher process will be killed")
                 val pm = systemPackageManager()
                 pm.javaClass.getMethod("clearApplicationProfileData", String::class.java)
                     .invoke(pm, app.packageName)
             } else {
-                // The daemon's call (uid 1000) kills the launcher like the one above; Shizuku's
-                // command leaves it running.
                 Log.i(TAG, "Full reset: the VD host clears the profiles")
                 val report = WindowHostVdClient.clearProfiles(app.packageName)
                     ?: "no VD host (root or Shizuku)"
                 lastHostReport = report
                 Log.i(TAG, "VD host: $report")
-                check(report.substringAfter(": ").startsWith("OK")) { report }
+                val outcome = report.substringAfter(": ")
+                if (outcome.startsWith("UNSUPPORTED")) {
+                    result = ResetResult.BASELINE_REAPPLIED
+                } else {
+                    check(outcome.startsWith("OK")) { report }
+                }
             }
             // Still alive (the package was not killed): compile right away instead.
-            Log.i(TAG, "Full reset: profiles cleared, the process is still alive - compiling now")
+            Log.i(TAG, "Full reset: $result, the process is still alive - compiling now")
             scheduleInitialCompilation(app, prefs, apkStamp(app), 0L)
-            true
+            result
         } catch (t: Throwable) {
             // Profiles not cleared: at least re-apply the Baseline Profile on top of them now,
             // instead of leaving the state "pending" until the next restart.
             Log.e(TAG, "Full reset failed, re-applying the baseline profile only", t)
             scheduleInitialCompilation(app, prefs, apkStamp(app), 0L)
-            false
+            ResetResult.FAILED
         }
     }
 

@@ -696,13 +696,17 @@ public final class VdHostCore {
      * VdHostProtocol.Proxy.clearProfiles().
      *
      * uid 1000 and root call clearApplicationProfileData(), as the launcher does on FYT units; it
-     * freezes the package, which stops it. Shell may not make that call; on Android 14+ it has
-     * "cmd package art clear-app-profiles", which leaves the package running. Android 11-13 with
-     * Shizuku over ADB therefore cannot clear them.
+     * freezes the package, which stops it. Shell may not make that call (it is system or root
+     * only, also behind "cmd package compile -c / --reset"); on Android 14+ it has
+     * "cmd package art clear-app-profiles", which leaves the package running. Shizuku over ADB
+     * on Android 8-13 therefore cannot clear them: the report then starts with "UNSUPPORTED".
      */
     public String clearProfiles(int callerUid, String pkg) {
         if (pkg == null || !isPackageOfUid(pkg, callerUid)) {
             throw new SecurityException(pkg + " is not a package of uid " + callerUid);
+        }
+        if (Process.myUid() == SHELL_UID && Build.VERSION.SDK_INT < 34) {
+            return "UNSUPPORTED (shell may clear profiles only on Android 14+)";
         }
         String result = clearApplicationProfileData(pkg);
         if (!result.startsWith("OK") && Build.VERSION.SDK_INT >= 34) {
