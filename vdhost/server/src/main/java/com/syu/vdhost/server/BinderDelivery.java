@@ -192,7 +192,9 @@ final class BinderDelivery {
                 stringArgs = new String[]{ mOwnPackage, null, authority, VdHostProtocol.METHOD_ATTACH, null };
             } else if (strings == 4) {
                 stringArgs = new String[]{ mOwnPackage, authority, VdHostProtocol.METHOD_ATTACH, null };
-            } else if (strings == 3) {
+            } else if (strings == 3 && Build.VERSION.SDK_INT < 29) {
+                // Android 12+ keeps a deprecated default of this shape, which calls the provider
+                // with the authority "unknown" and is refused: Android 8-9 only.
                 stringArgs = new String[]{ mOwnPackage, VdHostProtocol.METHOD_ATTACH, null };
             } else {
                 continue;
