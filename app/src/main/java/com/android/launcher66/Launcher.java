@@ -139,7 +139,6 @@ import com.fyt.car.IUiRefresher;
 import com.fyt.car.LauncherNotify;
 import com.fyt.car.MapConfig;
 import com.fyt.car.MusicService;
-import com.fyt.flow.TrifficReceiver;
 import com.fyt.skin.SkinUtils;
 import com.fyt.widget.RadioRuler;
 import com.fyt.widget.TurntableView3;
@@ -381,7 +380,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private SharedPreferences mSharedPrefs;
     private AnimatorSet mStateAnimation;
     private Stats mStats;
-    private TrifficReceiver mTrifficReceiver;
     private ImageView mTurnIconView;
     private TurntableView3 mTurntableView;
     private TextView mTvApps;
@@ -3158,7 +3156,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         BroadcastReceiver[] receivers = {
             removeMusic,
             mAutoMap,
-            mTrifficReceiver,
             mReceiver,
             mCloseSystemDialogsReceiver,
         };
@@ -3176,7 +3173,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // Clear references
         removeMusic = null;
         mAutoMap = null;
-        mTrifficReceiver = null;
         mReceiver = null;
         mCloseSystemDialogsReceiver = null;
     }      
@@ -3400,22 +3396,24 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (isDestroyed() || removeMusic == null) {
             return;
         }
+        // Both matter on FYT units only: FYT's SystemUI sends com.fyt.systemui.remove (for
+        // com.syu.music), and MyAutoMapReceiver ignores AutoNavi until com.syu.ms has reported
+        // the ACC state. Elsewhere they cost two binder calls, and every AutoNavi broadcast a
+        // getRunningTasks() call.
+        if (!LauncherApplication.isFytDevice()) {
+            return;
+        }
         IntentFilter musicFilter = new IntentFilter();
         musicFilter.addAction("com.fyt.systemui.remove");
         this.mAutoMap = new MyAutoMapReceiver();
         IntentFilter amapFilter = new IntentFilter();
         amapFilter.addAction("AUTONAVI_STANDARD_BROADCAST_SEND");
-        this.mTrifficReceiver = new TrifficReceiver();
-        IntentFilter trifficFilter = new IntentFilter();
-        trifficFilter.addAction("intent.action.mapgoo.simtool.info.triffic.v2");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(this.removeMusic, musicFilter, Context.RECEIVER_EXPORTED);
             registerReceiver(this.mAutoMap, amapFilter, Context.RECEIVER_EXPORTED);
-            registerReceiver(this.mTrifficReceiver, trifficFilter, Context.RECEIVER_EXPORTED);
         } else {
             registerReceiver(this.removeMusic, musicFilter);
             registerReceiver(this.mAutoMap, amapFilter);
-            registerReceiver(this.mTrifficReceiver, trifficFilter);
         }
     }
 
