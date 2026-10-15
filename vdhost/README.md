@@ -119,3 +119,24 @@ feature ActivityTaskManager silently starts a pane's app on the main screen inst
 - The IME of an embedded app is shown on the main screen (`DISPLAY_IME_POLICY_FALLBACK_DISPLAY`).
 - Launcher features that call privileged task APIs directly (e.g. `removeTask`) still need the
   launcher to be system; only the pane hosting goes through the VD host.
+
+## Still to test on a device: Android 8-10
+
+The Android 8-10 path (launcher not installed as system, panes through the module's daemon or
+Shizuku) was written from the AOSP sources only. On one device each of Android 8.0, 8.1/9 and 10,
+with the module and, separately, with Shizuku over ADB:
+
+- [ ] The panes open (`panes use WindowHostVdView`), and the apps start in them, not on the main
+      screen (`startActivity ... on display N -> 0` or higher).
+- [ ] Touches reach the apps: 10 through the event's display id, 8.1-9 `input of display N goes
+      through ...InputForwarder`, 8.0 `...ActivityContainer`.
+- [ ] Back and the keyboard of an embedded app; the launcher reacts to keys again after a pane
+      app was started (focus restore).
+- [ ] Closing a pane: its app does not show up on the main screen (8.0: its stacks are removed
+      before the display goes).
+- [ ] Swapping and resizing panes, rebuilds (display hand-over), screen off/on.
+- [ ] `isDisplayEmpty` (WindowHostAvReaper, splash cover) answers instead of null.
+- [ ] The Baseline Profile is compiled (`VD host compilation: ... OK`) and the full reset works
+      with root; with Shizuku over ADB it reports that the data cannot be deleted.
+- [ ] Shizuku started with root: creating a display is expected to fail before Android 14 (root
+      owns no package, see WindowHostVdShizukuService).
