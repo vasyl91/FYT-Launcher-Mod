@@ -3,6 +3,10 @@
 # SurfaceView[PipWindowHost:*](BLAST) layers) and the launcher's virtual displays it knows.
 # Runs on the PC (Git Bash, Linux, macOS); needs only adb, no root.
 #
+# SurfaceFlinger drops the layers of a removed pane with a delay (up to ~30 s on Android 14),
+# so a count taken right after a return or a swap is not a leak: measure again after ~30 s.
+# Only layers still there by then are.
+#
 #   ./pane-leaks.sh            the only connected device
 #   ./pane-leaks.sh SERIAL     a given device (adb devices)
 set -euo pipefail

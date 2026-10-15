@@ -2,6 +2,10 @@
 # SurfaceView[PipWindowHost:*](BLAST) layers) and the launcher's virtual displays it knows.
 # Runs on the PC; needs only adb, no root.
 #
+# SurfaceFlinger drops the layers of a removed pane with a delay (up to ~30 s on Android 14),
+# so a count taken right after a return or a swap is not a leak: measure again after ~30 s.
+# Only layers still there by then are.
+#
 #   powershell -ExecutionPolicy Bypass -File .\pane-leaks.ps1            the only connected device
 #   powershell -ExecutionPolicy Bypass -File .\pane-leaks.ps1 SERIAL     a given device (adb devices)
 param([string]$Serial)
