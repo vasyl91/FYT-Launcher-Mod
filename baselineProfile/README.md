@@ -16,7 +16,7 @@ FYT test unit and delivering it to user head units (no root, no PC).
 | `su_wrapper.sh` | `baselineprofile/tools/` | Makes Magisk understand Macrobenchmark's `su root <cmd>` |
 | `apply_profile_on_device.sh` | `baselineprofile/tools/` | Dev unit only: applies a profile manually for quick checks |
 | `BaselineProfileCompiler.kt` | `app/src/main/java/com/android/launcher66/perf/` | Applies the profile on user units automatically |
-| Generated profiles | `app/src/fytRelease/generated/baselineProfiles/` | `baseline-prof.txt`, `startup-prof.txt` – committed to Git |
+| Generated profiles | `app/src/main/generated/baselineProfiles/` | `baseline-prof.txt`, `startup-prof.txt` – committed to Git, used by every release build (fyt and phone) |
 
 Data flow:
 
@@ -144,7 +144,7 @@ At the end Gradle prints the paths and a comparison with the previous profile, e
 
 ```
 A baseline profile was generated for the variant `fytRelease`:
-file:///…/app/src/fytRelease/generated/baselineProfiles/baseline-prof.txt
+file:///…/app/src/main/generated/baselineProfiles/baseline-prof.txt
 Comparison with previous baseline profile:
   11230 Old rules / 11175 New rules / 24 Added / 79 Removed
 ```
@@ -154,7 +154,7 @@ Between runs with an unchanged app, a difference below ~1 % is normal.
 ### Check the result
 
 ```powershell
-$bp = "app\src\fytRelease\generated\baselineProfiles\baseline-prof.txt"
+$bp = "app\src\main\generated\baselineProfiles\baseline-prof.txt"
 (Get-Content $bp).Count                                               # total rules
 (Select-String -Path $bp -Pattern "Lcom/android/launcher66/").Count   # launcher rules
 (Select-String -Path $bp -Pattern "WallpaperPicker|WallpaperCrop").Count
@@ -189,9 +189,10 @@ assets/dexopt/baseline.profm
 R8 also uses `startup-prof.txt` to place startup classes in the primary DEX
 (`dexLayoutOptimization = true`).
 
-> The `profile` build type has its own source set and does **not** receive the profile from
-> `src/fytRelease`. Ship `fytRelease` builds, or copy the file to
-> `app/src/fytProfile/baselineProfiles/` if you really deploy `profile` builds.
+> The profile lives in `src/main` (`mergeIntoMain = true`), so `phoneRelease` gets it too: the
+> phone flavor runs the same code and differs in the manifest only. On a phone build the launcher
+> is not a system app; the FYT VDHost Magisk module's daemon or Shizuku compiles it instead (see
+> `BaselineProfileCompiler`).
 
 ---
 

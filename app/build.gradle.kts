@@ -152,8 +152,7 @@ androidComponents {
     // non-debuggable build type. Only the fyt ones are used:
     // fytNonMinifiedRelease - the generator installs and profiles it on the head unit,
     // fytBenchmarkRelease   - StartupBenchmark measures startup with the profile.
-    // The generated profile itself is used by fytRelease (saved in src, see baselineProfile {})
-    // and by phoneRelease (see onVariants below).
+    // The generated profile itself is used by every release build (src/main, see baselineProfile {}).
     beforeVariants { v ->
         val bt = v.buildType.orEmpty()
         val addedByPlugin = bt.startsWith("nonMinified") || bt.startsWith("benchmark")
@@ -164,14 +163,6 @@ androidComponents {
     onVariants { variant ->
         val flavor = variant.flavorName ?: ""
         val buildType = variant.buildType ?: ""
-
-        // phone runs the same code as fyt (the flavors differ in the manifest only), so it takes
-        // the profile generated on the FYT unit (the generator is set up for fyt only, see
-        // baselineProfile/README.md).
-        if (variant.name == "phoneRelease") {
-            variant.sources.baselineProfiles
-                ?.addStaticSourceDirectory("src/fytRelease/generated/baselineProfiles")
-        }
 
         variant.outputs.forEach { output ->
             if (output is com.android.build.api.variant.impl.VariantOutputImpl) {
@@ -187,6 +178,9 @@ baselineProfile {
     automaticGenerationDuringBuild = false
     // Save the result in src/ (committed to the repository).
     saveInSrc = true
+    // In src/main/generated/baselineProfiles, for every flavor: phone runs the same code as fyt
+    // (the flavors differ in the manifest only), and the generator profiles the fyt build.
+    mergeIntoMain = true
     // Startup profile -> R8 places startup classes in the primary DEX file.
     dexLayoutOptimization = true
     // The Baseline Profile variants disabled above are intentional.
