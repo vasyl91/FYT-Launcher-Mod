@@ -351,6 +351,8 @@
     <string name="app_type_module_missing">moduł Magisk niezainstalowany</string>
     <string name="app_type_shizuku_running">Shizuku zainstalowane i działa</string>
     <string name="app_type_shizuku_stopped">Shizuku zainstalowane, nie działa</string>
+    <string name="build_type_release">Build release</string>
+    <string name="build_type_debug">Build debug</string>
     <string name="app_version">Wersja: %1$s</string>
     <string name="app_version_update">Wersja: %1$s (Dostępna nowsza wersja: %2$s)</string>    
     <string name="update_version_button">Naciśnij, aby pobrać i zainstalować aktualizację</string>

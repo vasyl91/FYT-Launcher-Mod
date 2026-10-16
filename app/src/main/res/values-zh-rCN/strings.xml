@@ -493,6 +493,8 @@
     <string name="app_type_module_missing">未安装 Magisk 模块</string>
     <string name="app_type_shizuku_running">已安装并运行 Shizuku</string>
     <string name="app_type_shizuku_stopped">已安装 Shizuku，未运行</string>
+    <string name="build_type_release">Release 版本</string>
+    <string name="build_type_debug">Debug 版本</string>
     <string name="app_version">版本: %1$s</string>
     <string name="app_version_update">版本: %1$s（有新版本: %2$s）</string>
     <string name="update_version_button">点击此处下载并更新应用</string>

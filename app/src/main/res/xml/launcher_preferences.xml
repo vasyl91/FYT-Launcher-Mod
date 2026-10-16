@@ -350,6 +350,9 @@
         <Preference
             android:key="app_type"
             android:selectable="false" />
+        <Preference
+            android:key="build_type"
+            android:selectable="false" />
 
         <Preference
             android:key="app_version_update"

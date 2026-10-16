@@ -517,6 +517,11 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (appType != null) {
             appType.setTitle(appTypeText());
         }
+        Preference buildType = findPreference("build_type");
+        if (buildType != null) {
+            buildType.setTitle(com.android.launcher66.BuildConfig.DEBUG
+                    ? R.string.build_type_debug : R.string.build_type_release);
+        }
         if (appVersion != null) {
             String currentVersion = Helpers.getAppVersion(LauncherApplication.sApp);
             appVersion.setTitle(getString(R.string.app_version, currentVersion));
