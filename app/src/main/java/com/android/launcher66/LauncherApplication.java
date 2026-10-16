@@ -172,6 +172,19 @@ public class LauncherApplication extends Application {
                     .putBoolean(Keys.PIP_FOURTH_MODE, false)
                     .apply();
         }
+        if (!showsFytOptions()) {
+            // Settings hide what only an FYT unit has, so none of it may stay on.
+            prefs.edit()
+                    .putBoolean(Keys.NIGHT_MODE_LIGHTS, false)
+                    .putBoolean(Keys.USER_RADIO, false)
+                    .putBoolean(Keys.USER_STATS, false)
+                    .putBoolean(Keys.DISPLAY_CANBUS_READER, false)
+                    .apply();
+        } else if (!prefs.contains(Keys.USER_RADIO)) {
+            // The radio widget shows the FYT radio: on by default there only. Written down, as
+            // the code reading it disagrees on the default.
+            prefs.edit().putBoolean(Keys.USER_RADIO, isFytDevice()).apply();
+        }
         steps.mark("prefs");
         // Before anything can start a HomeFrontGuard: it needs to know whether the launcher is in front.
         HomeFrontGuard.trackActivities(this);
@@ -688,6 +701,14 @@ public class LauncherApplication extends Application {
                (manufacturer != null && manufacturer.toUpperCase().contains("FYT")) ||
                (platform != null && !platform.isEmpty()) ||
                (displayId != null && displayId.toUpperCase().contains("FYT"));
+    }
+
+    /**
+     * Whether settings show what only an FYT unit has (its music title source, night by car
+     * lights, the radio widget, fuel statistics, the canbus reader): there, and in debug builds.
+     */
+    public static boolean showsFytOptions() {
+        return BuildConfig.DEBUG || isFytDevice();
     }
 
     public static boolean isServiceRunning(Class<? extends Service> serviceClass) {

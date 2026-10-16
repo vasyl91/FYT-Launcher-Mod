@@ -286,6 +286,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         youtubeRevancedKids = findPreference(Keys.YOUTUBE_REVANCED_KIDS);
         Preference copyPatchUrl = findPreference(Keys.COPY_PATCH_URL);
         Preference fytData = findPreference(Keys.FYT_DATA);
+        if (fytData != null && !LauncherApplication.showsFytOptions()) {
+            fytData.setVisible(false);
+        }
 
         clientIdPreference = findPreference(Keys.SPOTIFY_CLIENT_ID);
         dialogClientIdEditText();
@@ -586,7 +589,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             nightModeBool = sharedPrefs.getBoolean(Keys.NIGHT_MODE, false);
             if (nightModeLights != null) {
                 nightModeLights.setOnPreferenceClickListener(this);
-                nightModeLights.setVisible(nightModeBool);
+                nightModeLights.setVisible(nightModeBool && LauncherApplication.showsFytOptions());
             }
             correctionCategory.setVisible(nightModeBool);
             sunriseCorrectionSeekBar.setVisible(nightModeBool);
@@ -823,7 +826,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 nightModeBool = sharedPrefs.getBoolean(Keys.NIGHT_MODE, false);
                 handler.post(updateSummary);
                 if (nightModeLights != null) {
-                    nightModeLights.setVisible(nightModeBool);
+                    nightModeLights.setVisible(nightModeBool && LauncherApplication.showsFytOptions());
                 }
                 correctionCategory.setVisible(nightModeBool);
                 sunriseTitleAndSummary.setVisible(nightModeBool);

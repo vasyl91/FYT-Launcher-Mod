@@ -93,6 +93,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private static final int TIMER_DURATION = 1000;
     private int padding;
     private boolean pipBool = true;
+    /** Whether panes can work here (see LauncherApplication.canHostPips()). */
+    private boolean pipsPossible = true;
     private boolean autoHideBool = false;
     private boolean resizableBarBool = false;
     private boolean dualPipGuard = false;
@@ -265,6 +267,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         editor = sharedPrefs.edit();
         addPreferencesFromResource(R.xml.creator_preferences);
         padding = SettingsActivity.dialogPadding;
+        if (!LauncherApplication.showsFytOptions()) {
+            for (String key : new String[]{ Keys.USER_RADIO, "stats_category", "canbus_reader" }) {
+                hideWithSeparator(findPreference(key));
+            }
+        }
+        // Shizuku installed but not started yet counts: the panes come with it.
+        pipsPossible = LauncherApplication.canHostPips()
+                || com.syu.util.WindowHostVdClient.isShizukuInstalled(requireContext());
 
         Preference displayPip = findPreference(Keys.DISPLAY_PIP);
         pipDualPref   = findPreference(Keys.PIP_DUAL);
@@ -368,6 +378,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         if (displayPip != null) {
             displayPip.setOnPreferenceClickListener(this);
+            displayPip.setVisible(pipsPossible);
         }
         if (pipDualPref != null) {
             pipDualPref.setScreenValuePrefKey(Keys.PIP_DUAL_SCREEN);
@@ -2072,7 +2083,27 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30")));
     }
 
+    /**
+     * Hides a preference, and with a category the separator above it, so no two separators
+     * meet.
+     */
+    private void hideWithSeparator(@Nullable Preference preference) {
+        if (preference == null) return;
+        preference.setVisible(false);
+        if (!(preference instanceof PreferenceCategory)) return;
+        androidx.preference.PreferenceGroup parent = preference.getParent();
+        if (parent == null) return;
+        for (int i = 1; i < parent.getPreferenceCount(); i++) {
+            if (parent.getPreference(i) != preference) continue;
+            Preference above = parent.getPreference(i - 1);
+            if (above.getLayoutResource() == R.layout.preference_separator) above.setVisible(false);
+            return;
+        }
+    }
+
     private void setPipGroupVisible(boolean visible) {
+        // Without a VD host (a plain user app: no root, no Shizuku) there are no panes to set.
+        visible &= pipsPossible;
         if (pipDualPref != null)   pipDualPref.setVisible(visible);
         if (pipFirstPref != null)  pipFirstPref.setVisible(visible);
         if (pipSecondPref != null) pipSecondPref.setVisible(visible);
