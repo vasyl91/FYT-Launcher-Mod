@@ -11,6 +11,9 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+
+import com.syu.util.WindowHostVdClient;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -109,9 +112,29 @@ final class LauncherPermissionFlow {
             case WRITE_SETTINGS:
                 return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                         && !LauncherApplication.hasSystemPrivileges()
-                        && !Settings.System.canWrite(mLauncher);
+                        && !Settings.System.canWrite(mLauncher)
+                        && !allowWriteSettingsThroughHost();
             default:
                 return false;
+        }
+    }
+
+    /**
+     * With a VD host (the FYT VDHost Magisk module or Shizuku) there is no trip to Settings: the
+     * host turns the WRITE_SETTINGS app op on, as the user would there. A blocking call into the
+     * host, made once.
+     */
+    private boolean allowWriteSettingsThroughHost() {
+        try {
+            String report = WindowHostVdClient.allowWriteSettings(mLauncher.getPackageName());
+            if (report == null) {
+                return false;
+            }
+            Log.i(Launcher.TAG, "Permission flow: WRITE_SETTINGS through the VD host: " + report);
+            return Settings.System.canWrite(mLauncher);
+        } catch (Throwable t) {
+            Log.w(Launcher.TAG, "Permission flow: WRITE_SETTINGS through the VD host failed: " + t);
+            return false;
         }
     }
 

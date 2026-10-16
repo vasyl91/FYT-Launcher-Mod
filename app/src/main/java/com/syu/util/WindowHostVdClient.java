@@ -36,7 +36,7 @@ public final class WindowHostVdClient {
 
     enum Source { LOCAL, DAEMON, SHIZUKU }
 
-    interface Listener {
+    public interface Listener {
         /** Main thread. available == false: the host died and every display it owned is gone. */
         void onHostChanged(boolean available);
     }
@@ -44,6 +44,8 @@ public final class WindowHostVdClient {
     private static final Object sLock = new Object();
     private static VdHostProtocol.Proxy sHost;
     private static Source sSource;
+    /** The uid the attached host runs as (see VdHostProtocol.Proxy.getHostUid()), -1 if unknown. */
+    private static int sHostUid = -1;
     private static IBinder.DeathRecipient sDeath;
 
     private static final CopyOnWriteArrayList<Listener> sListeners = new CopyOnWriteArrayList<>();
@@ -126,6 +128,50 @@ public final class WindowHostVdClient {
         }
     }
 
+    /** The privileged host, or null: none attached, or the launcher is its own (system) host. */
+    private static VdHostProtocol.Proxy privilegedHost() {
+        synchronized (sLock) {
+            return sSource == Source.LOCAL ? null : sHost;
+        }
+    }
+
+    /**
+     * Whether the privileged host may send protected broadcasts (BOOT_COMPLETED): the daemon
+     * (system) and Shizuku with root may, Shizuku over ADB (shell) may not.
+     */
+    public static boolean canSendBootCompleted() {
+        synchronized (sLock) {
+            return sSource != null && sSource != Source.LOCAL && (sHostUid == 0 || sHostUid == Process.SYSTEM_UID);
+        }
+    }
+
+    /** See VdHostProtocol.Proxy.sendBootCompleted(). Blocking. @return the report, null without a host */
+    public static String sendBootCompleted(String pkg) throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        return host != null ? host.sendBootCompleted(pkg) : null;
+    }
+
+    /** See VdHostProtocol.Proxy.allowWriteSettings(). Blocking. @return the report, null without a host */
+    public static String allowWriteSettings(String pkg) throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        return host != null ? host.allowWriteSettings(pkg) : null;
+    }
+
+    /** See VdHostProtocol.Proxy.watchForeground(). @return false without a host */
+    public static boolean watchForeground(IBinder callback) throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        if (host == null) return false;
+        host.watchForeground(callback);
+        return true;
+    }
+
+    /** See VdHostProtocol.Proxy.exec(). @return null without a host */
+    public static VdHostProtocol.ExecHandle exec(String[] argv, android.os.ParcelFileDescriptor out,
+                                                IBinder clientToken) throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        return host != null ? host.exec(argv, out, clientToken) : null;
+    }
+
     /**
      * Has the host compile the launcher with its profile, see VdHostProtocol.Proxy.compilePackage().
      * Blocking for tens of seconds: never on the main thread.
@@ -190,6 +236,13 @@ public final class WindowHostVdClient {
             return false;
         }
 
+        int hostUid;
+        try {
+            hostUid = proxy.getHostUid();
+        } catch (Throwable t) {
+            hostUid = -1;
+        }
+
         final boolean replaced;
         synchronized (sLock) {
             if (sHost != null && sHost.asBinder() == binder) return true;
@@ -212,6 +265,7 @@ public final class WindowHostVdClient {
             sHost = proxy;
             sSource = source;
             sDeath = death;
+            sHostUid = hostUid;
         }
 
         Log.i(TAG, source + " VD host attached" + (replaced ? ", replacing Shizuku" : ""));
@@ -248,6 +302,7 @@ public final class WindowHostVdClient {
             sHost = null;
             sSource = null;
             sDeath = null;
+            sHostUid = -1;
         }
         sDisplays.clear();
         Log.w(TAG, source + " VD host died; its displays are gone");
@@ -256,11 +311,11 @@ public final class WindowHostVdClient {
         WindowHostVdShizuku.onHostLost();
     }
 
-    static void addListener(Listener l) {
+    public static void addListener(Listener l) {
         if (l != null) sListeners.addIfAbsent(l);
     }
 
-    static void removeListener(Listener l) {
+    public static void removeListener(Listener l) {
         sListeners.remove(l);
     }
 

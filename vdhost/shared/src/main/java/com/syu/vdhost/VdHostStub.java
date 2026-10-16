@@ -5,6 +5,7 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcel;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.InputEvent;
@@ -23,6 +24,7 @@ public class VdHostStub extends Binder {
     }
 
     private final VdHostCore mCore;
+    private final HostServices mServices = new HostServices();
     private final CallerPolicy mPolicy;
 
     public VdHostStub(VdHostCore core, CallerPolicy policy) {
@@ -130,6 +132,47 @@ public class VdHostStub extends Binder {
                     }
                     reply.writeNoException();
                     reply.writeString(res);
+                    return true;
+                }
+                case VdHostProtocol.TX_GET_HOST_UID: {
+                    reply.writeNoException();
+                    reply.writeInt(android.os.Process.myUid());
+                    return true;
+                }
+                case VdHostProtocol.TX_EXEC: {
+                    String[] argv = data.createStringArray();
+                    ParcelFileDescriptor out = data.readTypedObject(ParcelFileDescriptor.CREATOR);
+                    IBinder client = data.readStrongBinder();
+                    IBinder handle = mServices.exec(argv, out, client);
+                    reply.writeNoException();
+                    reply.writeStrongBinder(handle);
+                    return true;
+                }
+                case VdHostProtocol.TX_SEND_BOOT_COMPLETED:
+                case VdHostProtocol.TX_ALLOW_WRITE_SETTINGS: {
+                    String pkg = data.readString();
+                    String res;
+                    long ident = Binder.clearCallingIdentity();
+                    try {
+                        res = code == VdHostProtocol.TX_SEND_BOOT_COMPLETED
+                                ? mServices.sendBootCompleted(pkg)
+                                : mServices.allowWriteSettings(uid, pkg);
+                    } finally {
+                        Binder.restoreCallingIdentity(ident);
+                    }
+                    reply.writeNoException();
+                    reply.writeString(res);
+                    return true;
+                }
+                case VdHostProtocol.TX_WATCH_FOREGROUND: {
+                    IBinder callback = data.readStrongBinder();
+                    long ident = Binder.clearCallingIdentity();
+                    try {
+                        mServices.watchForeground(callback);
+                    } finally {
+                        Binder.restoreCallingIdentity(ident);
+                    }
+                    reply.writeNoException();
                     return true;
                 }
                 default:

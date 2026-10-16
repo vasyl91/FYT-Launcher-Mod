@@ -695,7 +695,7 @@ public final class VdHostCore {
      * IActivityTaskManager on Android 10+, IActivityManager before: getAllStackInfos(),
      * setFocusedTask(), removeStack() and startActivityAsUser() moved from one to the other.
      */
-    private static Object activityTasks() throws ReflectiveOperationException {
+    static Object activityTasks() throws ReflectiveOperationException {
         if (Build.VERSION.SDK_INT >= 29) {
             return Hidden.getService("activity_task", "android.app.IActivityTaskManager");
         }
@@ -708,7 +708,7 @@ public final class VdHostCore {
      *
      * @return null when the platform has neither
      */
-    private static List<Object> stacksOn(Object atm, int displayId) throws ReflectiveOperationException {
+    static List<Object> stacksOn(Object atm, int displayId) throws ReflectiveOperationException {
         for (String name : new String[]{ "getAllRootTaskInfosOnDisplay", "getAllStackInfosOnDisplay" }) {
             Method m;
             try { m = atm.getClass().getMethod(name, int.class); }
@@ -858,7 +858,7 @@ public final class VdHostCore {
         }
     }
 
-    private static boolean isPackageOfUid(String pkg, int uid) {
+    static boolean isPackageOfUid(String pkg, int uid) {
         try {
             Object pm = Hidden.getService("package", "android.content.pm.IPackageManager");
             Object pkgs = pm.getClass().getMethod("getPackagesForUid", int.class).invoke(pm, uid);
@@ -906,7 +906,7 @@ public final class VdHostCore {
     }
 
     /** @param success text the output must contain besides exit code 0, or null for none */
-    private static String runCommand(String success, String... command) {
+    static String runCommand(String success, String... command) {
         try {
             java.lang.Process p = new ProcessBuilder(command)
                     .redirectErrorStream(true)

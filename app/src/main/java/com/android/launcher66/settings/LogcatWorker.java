@@ -22,6 +22,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+import com.syu.util.WindowHostVdClient;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -413,11 +414,20 @@ public final class LogcatWorker {
             }
             boolean fullLog = false;
             boolean bootLog = false;
-            if (LauncherApplication.hasSystemPrivileges()) {
-                fullLog = prefs.getBoolean(Keys.LOGCAT_FULL, false);
+            boolean wantsFullLog = prefs.getBoolean(Keys.LOGCAT_FULL, false);
+            // Without system privileges the VD host (root or Shizuku) reads the whole log.
+            boolean viaHost = wantsFullLog && !LauncherApplication.hasSystemPrivileges()
+                    && WindowHostVdClient.canHostPanes() && awaitPrivilegedHost();
+            if (wantsFullLog && !LauncherApplication.hasSystemPrivileges() && !viaHost) {
+                writeLine("===== everything: no VD host (root or Shizuku) attached, only the"
+                        + " launcher's own log =====");
+            }
+            if (LauncherApplication.hasSystemPrivileges() || viaHost) {
+                fullLog = wantsFullLog;
                 // The boot log setting: only with both settings on.
                 bootLog = fullLog && prefs.getBoolean(Keys.BOOT_LOGCAT, false);
             }
+            sViaHost = viaHost;
             // On every capture, cold start or not: the buffers follow the setting. Tied to
             // coldStart, a capture after a wake would give the large buffers back (the next boot
             // then had small ones again) and dump all 8 MiB of them (see captureStartMs()).
@@ -785,6 +795,34 @@ public final class LogcatWorker {
         return size == null || size.isEmpty() ? "default" : size;
     }
 
+    /**
+     * The commands of the current capture run in the VD host (see HostProcess): the whole log
+     * without system privileges. Set at the start of every capture, on its worker thread.
+     */
+    private static volatile boolean sViaHost;
+    /** How long a capture waits for the VD host: Shizuku binds a moment after the start. */
+    private static final long HOST_WAIT_MS = 15_000L;
+
+    /** Whether the whole log can be captured here: as system, or through a VD host. */
+    public static boolean canCaptureAllLogs() {
+        return LauncherApplication.hasSystemPrivileges() || WindowHostVdClient.canHostPanes();
+    }
+
+    /** Up to HOST_WAIT_MS, while the capture runs. @return whether a VD host is attached */
+    private boolean awaitPrivilegedHost() {
+        long deadline = SystemClock.elapsedRealtime() + HOST_WAIT_MS;
+        while (!HostProcess.isAvailable()) {
+            if (!running || SystemClock.elapsedRealtime() >= deadline) return false;
+            SystemClock.sleep(250L);
+        }
+        return true;
+    }
+
+    private static Process startProcess(List<String> cmd) throws IOException {
+        if (sViaHost) return HostProcess.start(cmd.toArray(new String[0]));
+        return new ProcessBuilder(cmd).redirectErrorStream(true).start();
+    }
+
     /** Runs a short command, 3 s at most; true when it exited with 0. */
     private static boolean runQuietly(String... cmd) {
         return runCommand(cmd, null) == 0;
@@ -801,7 +839,7 @@ public final class LogcatWorker {
     private static int runCommand(String[] cmd, List<String> output) {
         Process proc = null;
         try {
-            proc = new ProcessBuilder(cmd).redirectErrorStream(true).start();
+            proc = startProcess(java.util.Arrays.asList(cmd));
             // These commands print a few lines at most, which fit the pipe: waiting first cannot
             // block on a full pipe, and a command that hangs costs 3 s, not the capture.
             if (!proc.waitFor(3L, TimeUnit.SECONDS)) return -1;
@@ -842,7 +880,7 @@ public final class LogcatWorker {
             cmd.add("-T");
             cmd.add(fmt.format(new Date(sinceMs)));
         }
-        return new ProcessBuilder(cmd).redirectErrorStream(true).start();
+        return startProcess(cmd);
     }
 
     /**

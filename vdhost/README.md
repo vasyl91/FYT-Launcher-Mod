@@ -110,6 +110,19 @@ feature ActivityTaskManager silently starts a pane's app on the main screen inst
 - "not running as uid 1000": the root solution's `su` does not support a target uid.
 - "protocol N, expected M": update the module and the launcher together.
 
+## Other errands for a launcher that is not a system app
+
+The host also does the few things the launcher does itself as `android.uid.system`
+(`HostServices`, each one narrow on purpose):
+
+| What | Launcher side | Daemon (1000) / Shizuku root (0) | Shizuku over ADB (2000) |
+|---|---|---|---|
+| Compile with the Baseline Profile, full reset | `BaselineProfileCompiler` | yes | compile yes, reset Android 14+ only |
+| Read the whole log (logcat, logd buffer sizes) | `LogcatWorker` through `HostProcess` | yes | yes (setprop may be refused) |
+| BOOT_COMPLETED to an autostarted app | `ColdStart` | yes | no: a protected broadcast |
+| The app in front, without the accessibility service | `ForegroundAppTracker` | yes | yes |
+| WRITE_SETTINGS without the trip to Settings | `LauncherPermissionFlow` | yes | yes |
+
 ## Differences from ActivityView
 
 - The embedded app's frames go through one extra composition (the display's buffer is composed

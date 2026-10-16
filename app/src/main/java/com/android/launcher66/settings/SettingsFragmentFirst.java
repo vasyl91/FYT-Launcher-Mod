@@ -62,6 +62,7 @@ import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.async.AsyncTask;
+import com.android.launcher66.ColdStart;
 import com.android.launcher66.DeviceProfile;
 import com.android.launcher66.LauncherAppState;
 import com.android.launcher66.LauncherApplication;
@@ -444,7 +445,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (bootCompletedAutostart != null) {
             bootCompletedAutostart.setOnPreferenceClickListener(this);
-            bootCompletedAutostart.setVisible(LauncherApplication.hasSystemPrivileges());
+            // BOOT_COMPLETED goes out as system, or through a VD host that may send it.
+            bootCompletedAutostart.setVisible(ColdStart.canSendBootCompleted());
         }
         nightMode();        
         if (logcatService != null) {
@@ -471,12 +473,13 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (logcatFull != null) {
             logcatFull.setOnPreferenceClickListener(this);
-            logcatFull.setVisible(LauncherApplication.hasSystemPrivileges());
+            // As system, or through a VD host (root or Shizuku), see LogcatWorker.
+            logcatFull.setVisible(LogcatWorker.canCaptureAllLogs());
             // The boot log only works together with "log everything" (LogcatWorker), so it is
             // shown only while that is on.
             logcatFull.setOnPreferenceChangeListener((preference, newValue) -> {
                 if (logcatBoot != null) {
-                    logcatBoot.setVisible(LauncherApplication.hasSystemPrivileges()
+                    logcatBoot.setVisible(LogcatWorker.canCaptureAllLogs()
                             && Boolean.TRUE.equals(newValue));
                 }
                 return true;
@@ -484,7 +487,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (logcatBoot != null) {
             logcatBoot.setOnPreferenceClickListener(this);
-            logcatBoot.setVisible(LauncherApplication.hasSystemPrivileges()
+            logcatBoot.setVisible(LogcatWorker.canCaptureAllLogs()
                     && logcatFull != null && logcatFull.isChecked());
         }
         if (logcatRun != null) {

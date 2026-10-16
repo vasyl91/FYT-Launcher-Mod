@@ -52,6 +52,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.util.WindowHostVdClient;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -200,8 +201,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
      * PiP panes waiting behind them.
      */
     private void registerAccessibilityEventListener() {
-        // With system privileges the foreground app comes from the task stack, and the
-        // accessibility service (and its settings screen) is not needed at all.
+        // With system privileges, or a VD host (root or Shizuku), the foreground app comes from
+        // the task stack, and the accessibility service (and its settings screen) is not needed.
         if (ForegroundAppTracker.start(this)) {
             return;
         }
@@ -213,13 +214,25 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 Log.d(TAG, "Accessibility service enabled");
             } else if (!isStateServiceSwitchedOn()) {
                 Log.d(TAG, "Accessibility service disabled");
-                openAccessibilitySettings();
+                openAccessibilitySettingsIfNeeded();
             }
         });
         if (!accessibilityManager.isEnabled() && !isStateServiceSwitchedOn()) {
             Log.d(TAG, "Accessibility service is not enabled");
-            openAccessibilitySettings();
+            openAccessibilitySettingsIfNeeded();
         }
+    }
+
+    /**
+     * Not while a VD host reports the foreground app, nor while one is on its way: Shizuku binds
+     * a moment after the start, and ForegroundAppTracker takes over as soon as it is there.
+     */
+    private void openAccessibilitySettingsIfNeeded() {
+        if (ForegroundAppTracker.isActive() || WindowHostVdClient.canHostPanes()) {
+            Log.d(TAG, "Accessibility settings not opened: the VD host reports the foreground app");
+            return;
+        }
+        openAccessibilitySettings();
     }
 
     /** StateAccessibilityService is on in the accessibility settings (bound or not yet). */

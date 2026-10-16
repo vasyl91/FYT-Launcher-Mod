@@ -6,13 +6,18 @@ import android.app.TaskStackListener;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcel;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.Display;
 
 import com.android.launcher66.ColdStart;
 import com.android.launcher66.LauncherApplication;
+import com.syu.util.WindowHostVdClient;
+import com.syu.vdhost.VdHostProtocol;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -20,7 +25,9 @@ import java.util.List;
 
 /**
  * Tells CanbusService which app is in front on the main display, from the system's task stack,
- * for a launcher with system privileges.
+ * for a launcher with system privileges -- or, for any other one, from the VD host (the FYT VDHost
+ * Magisk module's daemon or Shizuku), which watches the task stack for it (see
+ * VdHostProtocol.Proxy.watchForeground()).
  *
  * Without them, StateAccessibilityService does this job, which needs the user to switch an
  * accessibility service on, and AccessibilityManager only reports it about 25 s into a boot. The
@@ -52,6 +59,10 @@ public final class ForegroundAppTracker {
     private static String sLastPackage;        // main thread
     private static Field sDisplayIdField;
     private static boolean sDisplayIdResolved;
+    /** Not a system app: the host reports the app to this binder. Null otherwise. */
+    private static HostCallback sHostCallback;
+    /** Watches for a host to (re)attach, while the host reports or is still awaited. */
+    private static WindowHostVdClient.Listener sHostListener;
 
     private static final Runnable CHECK = ForegroundAppTracker::checkForeground;
 
@@ -64,15 +75,16 @@ public final class ForegroundAppTracker {
     }
 
     /**
-     * Registers the listener. Only with system privileges; returns false when the system refuses
-     * it, and the caller keeps the accessibility service then.
+     * Registers the listener, with system privileges; otherwise has the VD host watch (see
+     * startThroughHost()). Returns false when neither works, and the caller keeps the
+     * accessibility service then.
      */
     public static synchronized boolean start(Context context) {
         if (sActive) {
             return true;
         }
         if (!LauncherApplication.hasSystemPrivileges()) {
-            return false;
+            return startThroughHost(context.getApplicationContext());
         }
         Context appContext = context.getApplicationContext();
         Listener listener;
@@ -114,12 +126,64 @@ public final class ForegroundAppTracker {
         return false;
     }
 
-    public static synchronized void stop() {
+    /**
+     * Without system privileges: the host watches the task stack. With no host attached yet
+     * (Shizuku binds a moment after the start) this returns false, the caller keeps the
+     * accessibility service, and the tracker takes over as soon as a host attaches
+     * (StateAccessibilityService then stays quiet, see isActive()). Main thread.
+     */
+    private static boolean startThroughHost(Context appContext) {
+        sContext = appContext;
+        if (sHostListener == null) {
+            sHostListener = available -> {
+                if (available) watchThroughHost();
+            };
+            WindowHostVdClient.addListener(sHostListener);
+        }
+        return watchThroughHost();
+    }
+
+    /** Registers the callback with the host now attached, if any. Main thread. */
+    private static synchronized boolean watchThroughHost() {
+        if (sContext == null || sHostListener == null) {
+            return false;   // stopped meanwhile
+        }
+        if (sHostCallback == null) {
+            sHostCallback = new HostCallback();
+        }
+        try {
+            if (!WindowHostVdClient.watchForeground(sHostCallback)) {
+                return false;
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "The VD host cannot report the foreground app: " + t);
+            return false;
+        }
+        sLastPackage = null;
         if (!sActive) {
+            sActive = true;
+            Log.i(TAG, "The VD host reports the foreground app; the accessibility service is not needed");
+        }
+        return true;
+    }
+
+    public static synchronized void stop() {
+        if (sHostListener != null) {
+            WindowHostVdClient.removeListener(sHostListener);
+            sHostListener = null;
+        }
+        if (!sActive) {
+            sContext = null;
             return;
         }
         sActive = false;
         MAIN.removeCallbacks(CHECK);
+        if (sHostCallback != null) {
+            // The host keeps calling until this process ends; HostCallback ignores it now.
+            sHostCallback = null;
+            sContext = null;
+            return;
+        }
         try {
             sUnregister.invoke(sService, sListener);
         } catch (Throwable t) {
@@ -163,6 +227,11 @@ public final class ForegroundAppTracker {
             Log.w(TAG, "Could not read the running tasks: " + t);
             return;
         }
+        report(context, packageName);
+    }
+
+    /** Main thread: tells CanbusService about the app in front, when it changed. */
+    private static void report(Context context, String packageName) {
         if (packageName == null || packageName.equals(sLastPackage)) {
             return;
         }
@@ -191,6 +260,24 @@ public final class ForegroundAppTracker {
             return sDisplayIdField.getInt(task);
         } catch (Throwable t) {
             return Display.DEFAULT_DISPLAY;
+        }
+    }
+
+    /** What the VD host calls with the app in front (VdHostProtocol.FOREGROUND_CHANGED). */
+    private static final class HostCallback extends Binder {
+        @Override
+        protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+            if (code != VdHostProtocol.FOREGROUND_CHANGED) {
+                return super.onTransact(code, data, reply, flags);
+            }
+            final String packageName = data.readString();
+            MAIN.post(() -> {
+                Context context = sContext;
+                if (sActive && sHostCallback == this && context != null) {
+                    report(context, packageName);
+                }
+            });
+            return true;
         }
     }
 

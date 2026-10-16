@@ -22,6 +22,7 @@ import com.android.launcher66.settings.AppListAutostartDialogFragment;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.LogcatWorker;
 import com.android.launcher66.settings.WakeDetection;
+import com.syu.util.WindowHostVdClient;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -296,9 +297,11 @@ public final class ColdStart {
                     wakeDisplayMediaTitles(pkg);
                 } else if (james) {
                     wakeJamesDSP(pkg);
-                } else if (boot && bootCompletedAutostart) {
-                    autostartWithIntent(pkg);
-                } else {
+                } else if (!(boot && bootCompletedAutostart && sendBootCompleted(pkg))) {
+                    if (launch == null) {
+                        Log.w(TAG, "Boot autostart: " + pkg + " could not be woken and has no launch activity");
+                        continue;
+                    }
                     launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     app.startActivity(launch);
                 }
@@ -347,35 +350,56 @@ public final class ColdStart {
      * FLAG_RECEIVER_FOREGROUND lets the receiver run at foreground priority.
      */
     private void wakeDisplayMediaTitles(String pkg) {
-        Intent intent;
-        if (LauncherApplication.hasSystemPrivileges()) {
-            intent = new Intent(Intent.ACTION_BOOT_COMPLETED);
+        if (canSendBootCompleted() && sendBootCompleted(pkg)) {
             Log.i(TAG, "Display Media Titles by 'BOOT_COMPLETED' broadcast");
-        } else {
-            intent = new Intent(DISPLAY_MEDIA_TITLES_WAKE_ACTION);
-            Log.i(TAG, "Display Media Titles by 'vasyl.titles.action.WAKE' broadcast");
+            return;
         }
-        SysCalls.sendBroadcast(app, intent
+        Log.i(TAG, "Display Media Titles by 'vasyl.titles.action.WAKE' broadcast");
+        SysCalls.sendBroadcast(app, new Intent(DISPLAY_MEDIA_TITLES_WAKE_ACTION)
                 .setPackage(pkg) // package of the installed variant
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
     }
 
     private void wakeJamesDSP(String pkg) {
-        Intent intent;
-        if (LauncherApplication.hasSystemPrivileges()) {
-            intent = new Intent(Intent.ACTION_BOOT_COMPLETED);
+        if (canSendBootCompleted() && sendBootCompleted(pkg)) {
             Log.i(TAG, "JamesDSP by 'BOOT_COMPLETED' broadcast");
-        } else {
-            intent = new Intent(JAMES_DSP_WAKE_ACTION);
-            Log.i(TAG, "JamesDSP by 'james.dsp.action.AUTOSTART' broadcast");
+            return;
         }
-        SysCalls.sendBroadcast(app, intent
+        Log.i(TAG, "JamesDSP by 'james.dsp.action.AUTOSTART' broadcast");
+        SysCalls.sendBroadcast(app, new Intent(JAMES_DSP_WAKE_ACTION)
                 .setPackage(pkg)
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
     }
 
+    /**
+     * BOOT_COMPLETED is a protected broadcast: the launcher sends it as system, otherwise the VD
+     * host does when it may (the FYT VDHost Magisk module's daemon, Shizuku with root; not Shizuku
+     * over ADB).
+     */
+    public static boolean canSendBootCompleted() {
+        return LauncherApplication.hasSystemPrivileges() || WindowHostVdClient.canSendBootCompleted();
+    }
+
+    /** Sends BOOT_COMPLETED to pkg (see canSendBootCompleted()). @return whether it went out */
+    private boolean sendBootCompleted(String pkg) {
+        if (LauncherApplication.hasSystemPrivileges()) {
+            SysCalls.sendBroadcast(app, new Intent(Intent.ACTION_BOOT_COMPLETED)
+                    .setPackage(pkg)
+                    .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
+            return true;
+        }
+        try {
+            String report = WindowHostVdClient.sendBootCompleted(pkg);
+            Log.i(TAG, "BOOT_COMPLETED to " + pkg + " through the VD host: " + report);
+            return report != null && report.startsWith("OK");
+        } catch (Throwable t) {
+            Log.w(TAG, "BOOT_COMPLETED to " + pkg + " through the VD host failed: " + t);
+            return false;
+        }
+    }
+
     private boolean hasBootCompletedReceiver(String pkg) {
-        if (!LauncherApplication.hasSystemPrivileges()) return false;
+        if (!canSendBootCompleted()) return false;
         Intent intent = new Intent(Intent.ACTION_BOOT_COMPLETED);
         intent.setPackage(pkg);
 
@@ -393,12 +417,6 @@ public final class ColdStart {
         }
 
         return false;
-    }
-
-    private void autostartWithIntent(String pkg) {
-        SysCalls.sendBroadcast(app, new Intent(Intent.ACTION_BOOT_COMPLETED)
-                .setPackage(pkg)
-                .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
     }
 
     /**

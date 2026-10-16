@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcel;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.view.InputEvent;
 import android.view.Surface;
@@ -37,6 +38,18 @@ public final class VdHostProtocol {
     static final int TX_GET_TASK_COUNT   = IBinder.FIRST_CALL_TRANSACTION + 8;
     static final int TX_COMPILE_PACKAGE  = IBinder.FIRST_CALL_TRANSACTION + 9;
     static final int TX_CLEAR_PROFILES   = IBinder.FIRST_CALL_TRANSACTION + 10;
+    static final int TX_GET_HOST_UID     = IBinder.FIRST_CALL_TRANSACTION + 11;
+    static final int TX_EXEC             = IBinder.FIRST_CALL_TRANSACTION + 12;
+    static final int TX_SEND_BOOT_COMPLETED = IBinder.FIRST_CALL_TRANSACTION + 13;
+    static final int TX_WATCH_FOREGROUND = IBinder.FIRST_CALL_TRANSACTION + 14;
+    static final int TX_ALLOW_WRITE_SETTINGS = IBinder.FIRST_CALL_TRANSACTION + 15;
+
+    /** The handle exec() returns: waitFor() (blocking, the exit code), destroy(). */
+    static final int EXEC_WAIT_FOR = IBinder.FIRST_CALL_TRANSACTION;
+    static final int EXEC_DESTROY  = IBinder.FIRST_CALL_TRANSACTION + 1;
+
+    /** What watchForeground()'s callback gets: one-way, the package in front as a String. */
+    public static final int FOREGROUND_CHANGED = IBinder.FIRST_CALL_TRANSACTION;
 
     /** Set to "1" by the Magisk module (system.prop), so the launcher knows a daemon is coming. */
     public static final String PROP_MODULE = "ro.fyt.vdhost";
@@ -223,6 +236,78 @@ public final class VdHostProtocol {
             return packageCall(TX_CLEAR_PROFILES, packageName);
         }
 
+        /** The uid the host runs as: 1000 (daemon), 2000 (Shizuku over ADB) or 0 (Shizuku with root). */
+        public int getHostUid() throws RemoteException {
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(DESCRIPTOR);
+                mRemote.transact(TX_GET_HOST_UID, data, reply, 0);
+                reply.readException();
+                return reply.readInt();
+            } finally {
+                reply.recycle();
+                data.recycle();
+            }
+        }
+
+        /**
+         * Runs a command as the host, its output (stderr included) going into out, which the host
+         * closes when the command ends. Only reading the logs (logcat) and setting logd's buffer
+         * sizes (logcat -G, setprop persist.logd.size*) are allowed. Closing the reading end of the pipe, or
+         * the death of clientToken's process, ends the command.
+         */
+        public ExecHandle exec(String[] argv, ParcelFileDescriptor out, IBinder clientToken)
+                throws RemoteException {
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(DESCRIPTOR);
+                data.writeStringArray(argv);
+                data.writeTypedObject(out, 0);
+                data.writeStrongBinder(clientToken);
+                mRemote.transact(TX_EXEC, data, reply, 0);
+                reply.readException();
+                return new ExecHandle(reply.readStrongBinder());
+            } finally {
+                reply.recycle();
+                data.recycle();
+            }
+        }
+
+        /**
+         * Sends BOOT_COMPLETED to one package, as the launcher's boot autostart does as system.
+         *
+         * @return the host's report, "OK ..." on success; "UNSUPPORTED ..." for Shizuku over ADB,
+         *         as shell may not send that broadcast
+         */
+        public String sendBootCompleted(String packageName) throws RemoteException {
+            return packageCall(TX_SEND_BOOT_COMPLETED, packageName);
+        }
+
+        /** Lets the caller's package write the system settings (the WRITE_SETTINGS app op). */
+        public String allowWriteSettings(String packageName) throws RemoteException {
+            return packageCall(TX_ALLOW_WRITE_SETTINGS, packageName);
+        }
+
+        /**
+         * The host reports the app in front on the main display to callback whenever it changes
+         * (FOREGROUND_CHANGED), until callback's process dies.
+         */
+        public void watchForeground(IBinder callback) throws RemoteException {
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(DESCRIPTOR);
+                data.writeStrongBinder(callback);
+                mRemote.transact(TX_WATCH_FOREGROUND, data, reply, 0);
+                reply.readException();
+            } finally {
+                reply.recycle();
+                data.recycle();
+            }
+        }
+
         private String packageCall(int code, String packageName) throws RemoteException {
             Parcel data = Parcel.obtain();
             Parcel reply = Parcel.obtain();
@@ -251,6 +336,37 @@ public final class VdHostProtocol {
                 reply.readException();
             } finally {
                 reply.recycle();
+                data.recycle();
+            }
+        }
+    }
+
+    /** The client side of a command exec() started. */
+    public static final class ExecHandle {
+        private final IBinder mRemote;
+
+        ExecHandle(IBinder remote) {
+            mRemote = remote;
+        }
+
+        /** Blocks until the command ends. @return its exit code */
+        public int waitFor() throws RemoteException {
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                mRemote.transact(EXEC_WAIT_FOR, data, reply, 0);
+                return reply.readInt();
+            } finally {
+                reply.recycle();
+                data.recycle();
+            }
+        }
+
+        public void destroy() throws RemoteException {
+            Parcel data = Parcel.obtain();
+            try {
+                mRemote.transact(EXEC_DESTROY, data, null, IBinder.FLAG_ONEWAY);
+            } finally {
                 data.recycle();
             }
         }
