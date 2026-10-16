@@ -711,6 +711,15 @@ public class LauncherApplication extends Application {
         return BuildConfig.DEBUG || isFytDevice();
     }
 
+    /**
+     * Whether settings show an option that needs the launcher as system, root or Shizuku: where
+     * it can work, and in debug builds anywhere. Without what it needs it does nothing there,
+     * each one checks again when it runs.
+     */
+    public static boolean showsPrivilegedOption(boolean usable) {
+        return usable || BuildConfig.DEBUG;
+    }
+
     public static boolean isServiceRunning(Class<? extends Service> serviceClass) {
         ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager != null) {

@@ -93,7 +93,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private static final int TIMER_DURATION = 1000;
     private int padding;
     private boolean pipBool = true;
-    /** Whether panes can work here (see LauncherApplication.canHostPips()). */
+    /**
+     * Whether the PiP options show: panes can work here (LauncherApplication.canHostPips()),
+     * or this is a debug build.
+     */
     private boolean pipsPossible = true;
     private boolean autoHideBool = false;
     private boolean resizableBarBool = false;
@@ -273,8 +276,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             }
         }
         // Shizuku installed but not started yet counts: the panes come with it.
-        pipsPossible = LauncherApplication.canHostPips()
-                || com.syu.util.WindowHostVdClient.isShizukuInstalled(requireContext());
+        pipsPossible = LauncherApplication.showsPrivilegedOption(LauncherApplication.canHostPips()
+                || com.syu.util.WindowHostVdClient.isShizukuInstalled(requireContext()));
 
         Preference displayPip = findPreference(Keys.DISPLAY_PIP);
         pipDualPref   = findPreference(Keys.PIP_DUAL);
@@ -466,7 +469,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (swipeDetector != null) {
             swipeDetector.setOnPreferenceClickListener(this);
-            if (!LauncherApplication.hasSystemPrivileges()) {
+            if (!LauncherApplication.showsPrivilegedOption(LauncherApplication.hasSystemPrivileges())) {
                 swipeDetector.setVisible(false);
             }
         }  
@@ -2115,7 +2118,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (rightFabPreference != null) rightFabPreference.setVisible(visible);
         if (extendedDivider != null) extendedDivider.setVisible(visible);
         if (coverSplash != null) coverSplash.setVisible(visible);
-        if (swipeDetector != null && LauncherApplication.hasSystemPrivileges()) swipeDetector.setVisible(visible);
+        if (swipeDetector != null && LauncherApplication.showsPrivilegedOption(
+                LauncherApplication.hasSystemPrivileges())) swipeDetector.setVisible(visible);
     }
 
     private void updatePipSummaries() {

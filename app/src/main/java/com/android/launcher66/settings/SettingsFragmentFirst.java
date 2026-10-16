@@ -452,7 +452,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (bootCompletedAutostart != null) {
             bootCompletedAutostart.setOnPreferenceClickListener(this);
             // BOOT_COMPLETED goes out as system, or through a VD host that may send it.
-            bootCompletedAutostart.setVisible(ColdStart.canSendBootCompleted());
+            bootCompletedAutostart.setVisible(
+                    LauncherApplication.showsPrivilegedOption(ColdStart.canSendBootCompleted()));
         }
         nightMode();        
         if (logcatService != null) {
@@ -480,21 +481,22 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (logcatFull != null) {
             logcatFull.setOnPreferenceClickListener(this);
             // As system, or through a VD host (root or Shizuku), see LogcatWorker.
-            logcatFull.setVisible(LogcatWorker.canCaptureAllLogs());
+            logcatFull.setVisible(
+                    LauncherApplication.showsPrivilegedOption(LogcatWorker.canCaptureAllLogs()));
             // The boot log only works together with "log everything" (LogcatWorker), so it is
             // shown only while that is on.
             logcatFull.setOnPreferenceChangeListener((preference, newValue) -> {
                 if (logcatBoot != null) {
-                    logcatBoot.setVisible(LogcatWorker.canCaptureAllLogs()
-                            && Boolean.TRUE.equals(newValue));
+                    logcatBoot.setVisible(LauncherApplication.showsPrivilegedOption(
+                            LogcatWorker.canCaptureAllLogs()) && Boolean.TRUE.equals(newValue));
                 }
                 return true;
             });
         }
         if (logcatBoot != null) {
             logcatBoot.setOnPreferenceClickListener(this);
-            logcatBoot.setVisible(LogcatWorker.canCaptureAllLogs()
-                    && logcatFull != null && logcatFull.isChecked());
+            logcatBoot.setVisible(LauncherApplication.showsPrivilegedOption(
+                    LogcatWorker.canCaptureAllLogs()) && logcatFull != null && logcatFull.isChecked());
         }
         if (logcatRun != null) {
             logcatRun.setOnPreferenceClickListener(this);
