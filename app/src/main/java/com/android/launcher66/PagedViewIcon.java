@@ -45,7 +45,7 @@ public class PagedViewIcon extends androidx.appcompat.widget.AppCompatTextView {
         // Ensure we are using the right text size
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, grid.iconTextSize);
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, grid.labelTextSizeSp());
     }
 
     public void applyFromApplicationInfo(AppInfo info, boolean scaleUp,

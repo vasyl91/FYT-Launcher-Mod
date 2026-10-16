@@ -583,6 +583,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             
             consumptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic); 
             mileageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
+            fitStatsText(statsWidth, statsHeight, consumptionTV, consumptionTextView, mileageTV, mileageTextView);
             if (background) {
                 if (drawableBg) {
                     absoluteStats.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_custom));
@@ -1159,4 +1160,34 @@ public class CanbusService extends Service implements PropertyChangeListener {
             mPropertyChangeSupport.removePropertyChangeListener(name, listener);
         }
     }
+
+    /**
+     * Fits the two rows (label + value each) into the window, which is a share of the screen:
+     * Launcher.textSizeBasic stays as it is where they fit, as on the FYT units the sizes come
+     * from, and shrinks where a sp is a larger share of the screen (a phone) or the window is
+     * narrow. The values are measured two digits longer than they start.
+     */
+    private static void fitStatsText(int width, int height, TextView consumptionLabel,
+            TextView consumptionValue, TextView mileageLabel, TextView mileageValue) {
+        if (width <= 0 || height <= 0) return;
+        float px = consumptionValue.getTextSize();
+        if (px <= 0f) return;
+        android.graphics.Paint.FontMetrics fm = consumptionValue.getPaint().getFontMetrics();
+        float lineHeight = fm.bottom - fm.top;
+        float rowWidth = Math.max(
+                rowWidth(consumptionLabel, consumptionValue), rowWidth(mileageLabel, mileageValue));
+        float scale = 1f;
+        if (lineHeight > 0f) scale = Math.min(scale, (height / 2f) / lineHeight);
+        if (rowWidth > 0f) scale = Math.min(scale, width * 0.95f / rowWidth);
+        if (scale >= 1f) return;
+        for (TextView view : new TextView[]{ consumptionLabel, consumptionValue, mileageLabel, mileageValue }) {
+            view.setTextSize(TypedValue.COMPLEX_UNIT_PX, px * scale);
+        }
+    }
+
+    private static float rowWidth(TextView label, TextView value) {
+        return label.getPaint().measureText(label.getText().toString())
+                + value.getPaint().measureText(value.getText() + "88");
+    }
+
 }

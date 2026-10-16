@@ -32,6 +32,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+import com.android.launcher66.ScreenScale;
 import com.fyt.skin.SkinAttribute;
 import com.fyt.skin.SkinUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -88,12 +89,12 @@ public class SettingsActivity extends AppCompatActivity {
     /**
      * Non-FYT devices (phones): the sizes PreferenceScaleHelper and the creators' scaleView() used
      * to give the settings by shrinking every list row after it was already on screen (a visible
-     * jump, a squeezed nested indent) -- now applied here, before anything is inflated:
+     * jump, a squeezed nested indent) -- now applied here, before anything is inflated, at the
+     * density ScreenScale works out from the screen's size. On a 1080 x 2340 phone at 440 dpi:
      *   landscape: everything at 0.75 of the screen's density;
      *   portrait:  icons, switches, paddings and row heights at 0.5, text at 0.75 (fontScale 1.5).
+     * Those shares of the screen are what every other phone and tablet gets.
      */
-    private static final float NON_FYT_DENSITY_SCALE_LANDSCAPE = 0.75f;
-    private static final float NON_FYT_DENSITY_SCALE_PORTRAIT = 0.5f;
     private static final float NON_FYT_TEXT_SCALE_PORTRAIT = 1.5f;
 
     /** Orientation the density was chosen for; another one needs a recreate(). */
@@ -110,21 +111,8 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private static Context withScaledDensity(Context base) {
-        DisplayMetrics dm = base.getResources().getDisplayMetrics();
-        Configuration current = base.getResources().getConfiguration();
-        boolean portrait = current.orientation == Configuration.ORIENTATION_PORTRAIT;
-        float scale = portrait ? NON_FYT_DENSITY_SCALE_PORTRAIT : NON_FYT_DENSITY_SCALE_LANDSCAPE;
-        int dpi = Math.round(dm.densityDpi * scale);
-        if (dpi <= 0 || dm.widthPixels <= 0 || dm.heightPixels <= 0) return base;
-
-        Configuration config = new Configuration(current);
-        config.densityDpi = dpi;
-        if (portrait) config.fontScale = current.fontScale * NON_FYT_TEXT_SCALE_PORTRAIT;
-        // The same pixels, in the new dp.
-        config.screenWidthDp = Math.round(dm.widthPixels * 160f / dpi);
-        config.screenHeightDp = Math.round(dm.heightPixels * 160f / dpi);
-        config.smallestScreenWidthDp = Math.min(config.screenWidthDp, config.screenHeightDp);
-        return base.createConfigurationContext(config);
+        Configuration config = ScreenScale.scaledConfiguration(base.getResources());
+        return config != null ? base.createConfigurationContext(config) : base;
     }
 
     @Override
@@ -144,24 +132,20 @@ public class SettingsActivity extends AppCompatActivity {
      * 0.75 (landscape) of what they had at the screen's own density; at this activity's scaled
      * density the row is mostly text (0.75) and paddings (0.5), so a share of it comes out larger.
      * This factor turns it back into the old size: old row scale x the row height at the screen's
-     * own density / the row height here, both estimated like the rows' resolveRowHeightFallback().
-     * 1 on FYT units.
+     * own density / the row height at the old scaled density, both estimated like the rows'
+     * resolveRowHeightFallback(). The densities cancel out, so it is the same on every screen,
+     * as the sizes the rows are a share of now are. 1 on FYT units.
      */
     public static float legacyControlScale(Context ctx) {
-        if (LauncherApplication.isFytDevice() || ctx == null) return 1f;
-        DisplayMetrics here = ctx.getResources().getDisplayMetrics();
-        DisplayMetrics own = android.content.res.Resources.getSystem().getDisplayMetrics();
+        if (!ScreenScale.applies() || ctx == null) return 1f;
         boolean portrait = ctx.getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_PORTRAIT;
-        float oldRowScale = portrait ? NON_FYT_DENSITY_SCALE_PORTRAIT : NON_FYT_DENSITY_SCALE_LANDSCAPE;
-        float rowHere = estimatedRowHeight(here);
-        return rowHere > 0f ? oldRowScale * estimatedRowHeight(own) / rowHere : 1f;
-    }
-
-    /** Title + summary line (16 sp / 14 sp, 1.3 line height) and 32 dp of vertical padding. */
-    @SuppressWarnings("deprecation")
-    private static float estimatedRowHeight(DisplayMetrics m) {
-        return (16f + 14f) * 1.3f * m.scaledDensity + 32f * m.density;
+        float textScale = portrait ? NON_FYT_TEXT_SCALE_PORTRAIT : 1f;
+        float fontScale = android.content.res.Resources.getSystem().getConfiguration().fontScale;
+        // Row heights in units of the screen's own density: text lines + padding.
+        float rowOwn = (16f + 14f) * 1.3f * fontScale + 32f;
+        float rowScaledText = (16f + 14f) * 1.3f * fontScale * textScale + 32f;
+        return rowOwn / rowScaledText;
     }
 
     /**
@@ -275,26 +259,42 @@ public class SettingsActivity extends AppCompatActivity {
         
         arrowLongDim = calculateDimension(orientationDimension, 8.5);
         arrowShortDim = calculateDimension(orientationDimension, 3.5);
-        arrowTextSize = calculateAdaptiveTextSize(screenWidth, 14);
+        // Text sizes in sp, which the scaled density already makes a share of the screen on
+        // non-FYT devices: they are taken from the reference phone instead of this screen,
+        // which would count its size twice.
+        boolean proportional = ScreenScale.applies();
+        int textWidth = !proportional ? screenWidth : isPortrait
+                ? ScreenScale.REFERENCE_SHORT_SIDE_PX : ScreenScale.REFERENCE_LONG_SIDE_PX;
+        arrowTextSize = calculateAdaptiveTextSize(textWidth, 14);
         
-        selectionTextSize = calculateAdaptiveTextSize(screenWidth, 20);
-        confirmTextSize = calculateAdaptiveTextSize(screenWidth, 22);
+        selectionTextSize = calculateAdaptiveTextSize(textWidth, 20);
+        confirmTextSize = calculateAdaptiveTextSize(textWidth, 22);
 
         barHeight = calculateDimension(orientationDimension, 9.0);
 
         progressWidth = calculateDimension(orientationDimension, 35.0);
         progressHeight = calculateDimension(orientationDimension, 13.75);
 
-        nestedPaddingStart = calculateDimension(orientationDimension, 6.5);
-        nestedPaddingEnd = calculateDimension(orientationDimension, 0.8);
+        // The indents are shares of the row width. In landscape that is the longer side they
+        // are taken from; in portrait they were the longer side's share too, so they grew with
+        // the screen's height: now the same share of the width a 1080 x 2340 phone had.
+        int indentBase = proportional && isPortrait
+                ? Math.round(screenWidth * (float) ScreenScale.REFERENCE_LONG_SIDE_PX
+                        / ScreenScale.REFERENCE_SHORT_SIDE_PX)
+                : orientationDimension;
+        nestedPaddingStart = calculateDimension(indentBase, 6.5);
+        nestedPaddingEnd = calculateDimension(indentBase, 0.8);
 
-        dialogTitle = calculateAdaptiveTextSize(screenWidth, 20);
-        dialogTextView = calculateAdaptiveTextSize(screenWidth, 16);
+        dialogTitle = calculateAdaptiveTextSize(textWidth, 20);
+        dialogTextView = calculateAdaptiveTextSize(textWidth, 16);
         dialogMargin = calculateDimension(orientationDimension, 0.95);
         dialogPadding = calculateDimension(orientationDimension, 0.9);
 
         adaptiveCoordinatesSize = calculateAdaptiveTextSize(orientationDimension, 50);
-        adaptiveNameTextSize = calculateAdaptiveTextSize(orientationDimension, 40);
+        // In pixels of the creator canvas: the reference phone's size, grown with the screen.
+        adaptiveNameTextSize = !proportional ? calculateAdaptiveTextSize(orientationDimension, 40)
+                : Math.round(calculateAdaptiveTextSize(ScreenScale.REFERENCE_LONG_SIDE_PX, 40)
+                        * orientationDimension / (float) ScreenScale.REFERENCE_LONG_SIDE_PX);
     }
 
     public int calculateDimension(int dimension, double percentage) {

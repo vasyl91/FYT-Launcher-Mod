@@ -122,7 +122,7 @@ public class DeviceProfile {
             points.add(new DeviceProfileQuery(p4.minWidthDps, p4.minHeightDps, p4.iconTextSize));
         }
         this.iconTextSize = invDistWeightedInterpolate(minWidth, minHeight, points);
-        this.iconTextSizePx = DynamicGrid.pxFromSp(this.iconTextSize, dm);
+        this.iconTextSizePx = DynamicGrid.pxFromSp(this.iconTextSize * ScreenScale.textFactor(resources), dm);
         points.clear();
         Iterator<DeviceProfile> it5 = profiles.iterator();
         while (it5.hasNext()) {
@@ -193,6 +193,14 @@ public class DeviceProfile {
 
     public void updateIconTextSize(int iSize) {
         this.iconTextSize = iSize;
+    }
+
+    /**
+     * The drawer labels' size in sp: iconTextSize (the setting) as the same share of the screen
+     * on every device. In sp alone it was twice as large a share on a phone as on an FYT unit.
+     */
+    public float labelTextSizeSp() {
+        return this.iconTextSize * ScreenScale.textFactor(LauncherApplication.sApp.getResources());
     }
 
     
