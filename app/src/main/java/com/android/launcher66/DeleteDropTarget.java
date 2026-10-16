@@ -608,6 +608,21 @@ public class DeleteDropTarget extends ButtonDropTarget {
                 DragLayer.ANIMATION_END_DISAPPEAR, null);
     }
 
+    /**
+     * The X the user sees is the overlay, drawn twice the drawable's size and lower than this
+     * view (updateOverlayPosition()), so it counts as part of the target.
+     */
+    @Override
+    public void getHitRectRelativeToDragLayer(Rect outRect) {
+        super.getHitRectRelativeToDragLayer(outRect);
+        if (!mOverlayAdded || mOverlayParams == null || mLauncher == null) return;
+        int[] dragLayerOnScreen = new int[2];
+        mLauncher.getDragLayer().getLocationOnScreen(dragLayerOnScreen);
+        int left = mOverlayParams.x - dragLayerOnScreen[0];
+        int top = mOverlayParams.y - dragLayerOnScreen[1];
+        outRect.union(left, top, left + mOverlayParams.width, top + mOverlayParams.height);
+    }
+
     private void showOverlayDrawable(TransitionDrawable drawable) {
         if (drawable == null) return;
 

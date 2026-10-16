@@ -1520,9 +1520,13 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                     // outline offset
                     left += dragOffset.x + ((mCellWidth * spanX) + ((spanX - 1) * mWidthGap)
                              - dragRegion.width()) / 2;
+                    // The icon sits centred in a cell taller than its content (measureChild()
+                    // pads it by the same amount): without this the outline showed at the top of
+                    // the cell, above where the icon lands. FYT cells fit their content (no
+                    // padding), phones' are taller.
                     int cHeight = getShortcutsAndWidgets().getCellContentHeight();
                     int cellPaddingY = (int) Math.max(0, ((mCellHeight - cHeight) / 2f));
-                    //top += dragOffset.y + cellPaddingY;
+                    top += dragOffset.y + cellPaddingY;
                 } else {
                     // Center the drag outline in the cell
                     left += ((mCellWidth * spanX) + ((spanX - 1) * mWidthGap)

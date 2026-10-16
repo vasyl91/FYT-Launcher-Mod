@@ -96,8 +96,11 @@
     <style name="SearchButton" parent="Theme.MaterialComponents.DayNight.Bridge" />
 
     <style name="DropTargetButtonContainer" parent="Theme.MaterialComponents.DayNight.Bridge">
+        <!-- 0px takes the weight: without it the delete target was 0px wide in portrait, so
+             nothing could be dropped on it (values-land fills the parent instead). -->
         <item name="android:layout_width">0.0px</item>
         <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1</item>
     </style>
     
     <style name="DropTargetButton" parent="Theme.MaterialComponents.DayNight.Bridge">
