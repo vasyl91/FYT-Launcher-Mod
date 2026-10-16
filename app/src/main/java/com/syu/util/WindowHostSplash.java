@@ -485,11 +485,19 @@ public final class WindowHostSplash {
         cover.removeAllViews();
         coverPackage.put(cover, pkg);
 
+        String mode = coverSplashMode(prefs(ctx));
+        if (Keys.COVER_SPLASH_TRANSPARENT.equals(mode)) {
+            // Nothing to see, but the cover still comes and goes as any other, so the panes keep
+            // the timing they have with it (swaps, synchronised reveals).
+            cover.setBackgroundColor(Color.TRANSPARENT);
+            return;
+        }
+
         // Cached: see iconStateCache. This used to be a getApplicationIcon() binder call on the
         // main thread, once per pane, in the middle of the launch sequence.
         Drawable icon = iconFor(ctx, pkg);
 
-        switch (coverSplashMode(prefs(ctx))) {
+        switch (mode) {
             case Keys.COVER_SPLASH_BLACK:
                 // "Dark mode": always black, whatever the night mode and the icon.
                 cover.setBackgroundColor(Color.BLACK);

@@ -536,6 +536,7 @@
     <string name="cover_splash_icon">应用图标不透明像素的平均值</string>
     <string name="cover_splash_night_mode">根据夜间模式显示为白色或黑色</string>
     <string name="cover_splash_black">深色模式</string>
+    <string name="cover_splash_transparent">透明</string>
     <string name="swipe_detector">状态栏滑动检测</string>
     <string name="swipe_detector_summary">状态栏底部中央区域将检测滑动并允许在页面之间滚动。当画中画视图占据大部分可见屏幕时此功能可能很有用。</string>
 

@@ -76,6 +76,8 @@ public class FabOverlayService extends Service {
     private static final long BLOCK_AFTER_CLICK_MS = 3000L;
     /** Clicks are ignored for this long after a BLOCK_FLOATING_BUTTON broadcast. */
     private static final long BLOCK_ON_REQUEST_MS = 5000L;
+    /** Icon colour while clicks are ignored, instead of the usual white. */
+    private static final int BLOCKED_ICON_COLOR = 0xFF8A8A8A;
 
     // ---- Clean-up of positions stored by older versions ------------------------------------
 
@@ -122,6 +124,9 @@ public class FabOverlayService extends Service {
 
     /** Uptime (ms) until which clicks are ignored, see {@link #blockFor(long)}. */
     private long blockedUntilUptimeMs = 0L;
+    private final android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    /** Turns the icons white again once the block is over, or later when it was extended. */
+    private final Runnable unblockIcons = this::refreshBlockedLook;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -307,6 +312,8 @@ public class FabOverlayService extends Service {
     private void addOverlay(OverlayFab fab) {
         try {
             fab.view = createFabView(fab.iconRes);
+            fab.iconTint = fab.view.getImageTintList();
+            applyBlockedLook(fab, SystemClock.uptimeMillis() < blockedUntilUptimeMs);
             fab.params = createLayoutParams();
             // Position is computed before addView(), so the button never shows up at a
             // temporary spot and then jumps (the old code moved it in a post() callback).
@@ -625,6 +632,25 @@ public class FabOverlayService extends Service {
     private void blockFor(long durationMs) {
         blockedUntilUptimeMs = Math.max(blockedUntilUptimeMs,
                 SystemClock.uptimeMillis() + durationMs);
+        refreshBlockedLook();
+    }
+
+    /** Grey icons while clicks are ignored, white ones as soon as the buttons work again. */
+    private void refreshBlockedLook() {
+        mainHandler.removeCallbacks(unblockIcons);
+        long remaining = blockedUntilUptimeMs - SystemClock.uptimeMillis();
+        boolean blocked = remaining > 0;
+        for (OverlayFab fab : activeFabs) {
+            applyBlockedLook(fab, blocked);
+        }
+        if (blocked) {
+            mainHandler.postDelayed(unblockIcons, remaining);
+        }
+    }
+
+    private static void applyBlockedLook(OverlayFab fab, boolean blocked) {
+        if (fab.view == null) return;
+        fab.view.setImageTintList(blocked ? ColorStateList.valueOf(BLOCKED_ICON_COLOR) : fab.iconTint);
     }
 
     // ---- Visibility ------------------------------------------------------------------------
@@ -736,6 +762,7 @@ public class FabOverlayService extends Service {
     @Override
     public void onDestroy() {
         sRunning = false;
+        mainHandler.removeCallbacks(unblockIcons);
         // unregisterReceiver() throws IllegalArgumentException when registration failed. Guarded,
         // so the exception cannot abort onDestroy() before the overlays are removed and leave
         // orphaned type 2038 windows (with their ViewRootImpl) in the WindowManager.
@@ -800,6 +827,8 @@ public class FabOverlayService extends Service {
         WindowManager.LayoutParams params;
         /** True between a successful addView() and removeOverlay(). */
         boolean added;
+        /** The icon's own tint, given back when a block ends. */
+        ColorStateList iconTint;
 
         // Touch state of this button only
         float downRawX;

@@ -169,6 +169,7 @@ public final class Keys {
     public static final String COVER_SPLASH_ICON = "icon";
     public static final String COVER_SPLASH_NIGHT_MODE = "night_mode";
     public static final String COVER_SPLASH_BLACK = "black";
+    public static final String COVER_SPLASH_TRANSPARENT = "transparent";
     public static final String SWIPE_DETECTOR = "swipe_detector";
 
     public static final String RECYCLER_APP = "recycler_app";

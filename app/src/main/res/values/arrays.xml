@@ -41,10 +41,12 @@
         <item>@string/cover_splash_icon</item>
         <item>@string/cover_splash_night_mode</item>
         <item>@string/cover_splash_black</item>
+        <item>@string/cover_splash_transparent</item>
     </string-array>
     <string-array name="cover_splash_values" translatable="false">
         <item>icon</item>
         <item>night_mode</item>
         <item>black</item>
+        <item>transparent</item>
     </string-array>
 </resources>
