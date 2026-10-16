@@ -25,7 +25,12 @@ public final class VdHostProtocol {
     private VdHostProtocol() {}
 
     public static final String DESCRIPTOR = "com.syu.vdhost.IVdHost";
-    public static final int VERSION = 1;
+    /**
+     * Raised whenever a transaction is added or changed: a host of another version is refused (see
+     * WindowHostVdClient), since one that does not know a call answers it with an empty reply --
+     * no exception, just nothing (version 1 hosts ran no logcat at all for version 2 launchers).
+     */
+    public static final int VERSION = 2;
 
     static final int TX_GET_VERSION      = IBinder.FIRST_CALL_TRANSACTION;
     static final int TX_CREATE_DISPLAY   = IBinder.FIRST_CALL_TRANSACTION + 1;
@@ -268,7 +273,9 @@ public final class VdHostProtocol {
                 data.writeStrongBinder(clientToken);
                 mRemote.transact(TX_EXEC, data, reply, 0);
                 reply.readException();
-                return new ExecHandle(reply.readStrongBinder());
+                IBinder handle = reply.readStrongBinder();
+                if (handle == null) throw new IllegalStateException("the VD host started nothing");
+                return new ExecHandle(handle);
             } finally {
                 reply.recycle();
                 data.recycle();

@@ -414,10 +414,13 @@ public final class LogcatWorker {
             }
             boolean fullLog = false;
             boolean bootLog = false;
+            // Whether this capture may reach back to the boot is decided by when it started, not
+            // by when the VD host came (Shizuku can take a minute or more after the boot).
+            final long captureStartedAt = SystemClock.elapsedRealtime();
             boolean wantsFullLog = prefs.getBoolean(Keys.LOGCAT_FULL, false);
             // Without system privileges the VD host (root or Shizuku) reads the whole log.
             boolean viaHost = wantsFullLog && !LauncherApplication.hasSystemPrivileges()
-                    && WindowHostVdClient.canHostPanes() && awaitPrivilegedHost();
+                    && WindowHostVdClient.canHostPanes() && awaitPrivilegedHost(coldStart);
             if (wantsFullLog && !LauncherApplication.hasSystemPrivileges() && !viaHost) {
                 writeLine("===== everything: no VD host (root or Shizuku) attached, only the"
                         + " launcher's own log =====");
@@ -433,7 +436,7 @@ public final class LogcatWorker {
             // then had small ones again) and dump all 8 MiB of them (see captureStartMs()).
             syncLogdBufferSize(bootLog);
             // Everything since boot only in the capture of a cold start.
-            boolean fromBoot = isBootCapture(bootLog, coldStart, mode, SystemClock.elapsedRealtime());
+            boolean fromBoot = isBootCapture(bootLog, coldStart, mode, captureStartedAt);
 
             // "--pid" exists since Android 7.0; when it is not available we filter by hand.
             boolean usePidFlag = !fullLog;
@@ -459,6 +462,9 @@ public final class LogcatWorker {
             }
             SimpleDateFormat lineFormat = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
             int restartCount = 0;
+            // logcat runs that failed at once in a row: a command that cannot run at all must not
+            // be restarted four times a second until the capture ends.
+            int failedRuns = 0;
 
             while (running && SystemClock.elapsedRealtime() < deadlineElapsedMs) {
                 restartCount++;
@@ -523,6 +529,14 @@ public final class LogcatWorker {
 
                 writeLine("----- logcat ended. exit=" + exit + " lines=" + linesThisRun + " -----");
                 fileWriter.flush();
+
+                failedRuns = (exit != 0 && linesThisRun == 0L) ? failedRuns + 1 : 0;
+                if (failedRuns >= MAX_FAILED_RUNS && !isShuttingDown()) {
+                    error = "logcat could not run (exit " + exit + ")"
+                            + (sViaHost ? " in the VD host" : "");
+                    writeLine("===== " + error + " " + failedRuns + " times in a row; capture stopped =====");
+                    break;
+                }
 
                 // A flag this build does not understand makes logcat exit immediately with an
                 // error. Drop them one at a time and keep filtering by hand instead.
@@ -639,12 +653,7 @@ public final class LogcatWorker {
      * sys.boot_completed was seen (0 = not by the latest moment), or -1 if the capture was stopped.
      */
     private long waitForBootToSettle() {
-        deadlineElapsedMs = SystemClock.elapsedRealtime() + timeoutSeconds * 1000L;
-        mainHandler.post(() -> {
-            mainHandler.removeCallbacks(deadlineRunnable);
-            cancelCountdown();
-            if (running) helpers.setCountDownLogcat(timeoutSeconds);
-        });
+        holdDeadline();
         long completedSeenAt = 0L;
         while (running) {
             long now = SystemClock.elapsedRealtime();
@@ -720,6 +729,11 @@ public final class LogcatWorker {
                 boolean resized = false;
                 if (!changed.isEmpty() || anyBufferBelowBootSize()) {
                     resized = runQuietly("logcat", "-b", "all", "-G", BOOT_LOG_BUFFER_SIZE);
+                }
+                if (failed && sViaHost) {
+                    writeLine("===== logd buffers not enlarged for the next boot: the VD host may not"
+                            + " set " + LOGD_SIZE_PROP + " (Shizuku without root). Developer options >"
+                            + " Logger buffer sizes does the same =====");
                 }
                 if (!changed.isEmpty() || resized || failed) {
                     Log.i(TAG, "Boot log: logd buffers -> " + BOOT_LOG_BUFFER_SIZE
@@ -802,20 +816,53 @@ public final class LogcatWorker {
     private static volatile boolean sViaHost;
     /** How long a capture waits for the VD host: Shizuku binds a moment after the start. */
     private static final long HOST_WAIT_MS = 15_000L;
+    /**
+     * The same at a cold start: Shizuku without root is started by the user's ADB, which can take
+     * a minute or two after a boot (wireless debugging without Wi-Fi).
+     */
+    private static final long HOST_WAIT_COLD_START_MS = 180_000L;
+    private static final int MAX_FAILED_RUNS = 3;
 
     /** Whether the whole log can be captured here: as system, or through a VD host. */
     public static boolean canCaptureAllLogs() {
         return LauncherApplication.hasSystemPrivileges() || WindowHostVdClient.canHostPanes();
     }
 
-    /** Up to HOST_WAIT_MS, while the capture runs. @return whether a VD host is attached */
-    private boolean awaitPrivilegedHost() {
-        long deadline = SystemClock.elapsedRealtime() + HOST_WAIT_MS;
+    /**
+     * Waits for a VD host while the capture runs, its time limit held meanwhile (as during
+     * waitForBootToSettle()): the capture's time counts from the moment the whole log can be read.
+     *
+     * @return whether a VD host is attached
+     */
+    private boolean awaitPrivilegedHost(boolean coldStart) throws Exception {
+        if (HostProcess.isAvailable()) return true;
+        long waitMs = coldStart ? HOST_WAIT_COLD_START_MS : HOST_WAIT_MS;
+        long began = SystemClock.elapsedRealtime();
+        writeLine("===== waiting up to " + waitMs / 1000L + " s for the VD host (root or Shizuku) =====");
+        fileWriter.flush();
+        holdDeadline();
         while (!HostProcess.isAvailable()) {
-            if (!running || SystemClock.elapsedRealtime() >= deadline) return false;
+            long now = SystemClock.elapsedRealtime();
+            deadlineElapsedMs = now + timeoutSeconds * 1000L;
+            if (!running || now - began >= waitMs) {
+                restartDeadline();
+                return false;
+            }
             SystemClock.sleep(250L);
         }
+        writeLine("===== VD host attached after " + (SystemClock.elapsedRealtime() - began) / 1000L + " s =====");
+        restartDeadline();
         return true;
+    }
+
+    /** Takes the time limit off (hard stop and countdown) until restartDeadline(). */
+    private void holdDeadline() {
+        deadlineElapsedMs = SystemClock.elapsedRealtime() + timeoutSeconds * 1000L;
+        mainHandler.post(() -> {
+            mainHandler.removeCallbacks(deadlineRunnable);
+            cancelCountdown();
+            if (running) helpers.setCountDownLogcat(timeoutSeconds);
+        });
     }
 
     private static Process startProcess(List<String> cmd) throws IOException {
