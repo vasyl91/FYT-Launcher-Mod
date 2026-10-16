@@ -1,7 +1,5 @@
 package com.android.launcher66.settings;
 
-import static com.android.launcher66.settings.SettingsActivity.getSettingsActivity;
-
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
@@ -942,47 +940,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
             scaleButton(b, 0.75f);
         }
 
-        int statusBarHeight = getSettingsActivity().getStatusBarHeight();
-        int navigationBarHeight = getSettingsActivity().getNavigationBarHeight();
-        boolean isPortrait = SettingsActivity.isPortrait;
-        
-        // Apply top inset for status bar
-        mRootView.setPadding(
-            mRootView.getPaddingLeft(),
-            mRootView.getPaddingTop() + statusBarHeight,
-            mRootView.getPaddingRight(),
-            mRootView.getPaddingBottom()
-        );
-        
-        // Apply bottom or right inset for navigation bar
-        View creatorBar = mRootView.findViewById(R.id.creator_bar);
-        View creatorBarAutoHide = mRootView.findViewById(R.id.creator_bar_auto_hide);
-        
-        if (creatorBar != null) {
-            ViewGroup.LayoutParams params = creatorBar.getLayoutParams();
-            if (params instanceof ViewGroup.MarginLayoutParams) {
-                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-                if (isPortrait) {
-                    marginParams.bottomMargin += navigationBarHeight;
-                } else {
-                    marginParams.rightMargin += navigationBarHeight;
-                }
-                creatorBar.setLayoutParams(marginParams);
-            }
-        }
-        
-        if (creatorBarAutoHide != null) {
-            ViewGroup.LayoutParams params = creatorBarAutoHide.getLayoutParams();
-            if (params instanceof ViewGroup.MarginLayoutParams) {
-                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-                if (isPortrait) {
-                    marginParams.bottomMargin += navigationBarHeight;
-                } else {
-                    marginParams.rightMargin += navigationBarHeight;
-                }
-                creatorBarAutoHide.setLayoutParams(marginParams);
-            }
-        }
+        SettingsActivity.padForSystemBars(mRootView);
     }
 
     private static void scaleButton(Button button, float scaleFactor) {

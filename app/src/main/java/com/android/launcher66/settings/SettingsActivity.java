@@ -25,6 +25,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.LauncherApplication;
@@ -311,6 +314,28 @@ public class SettingsActivity extends AppCompatActivity {
         double scaleFactor = Math.pow(ratio, 0.5); 
         
         return (int) (baseSize * scaleFactor);
+    }
+
+    /**
+     * Pads a creator screen on every side by the system bars (and the display cutout) its window
+     * really lies under, so whatever it constrains to its parent stays clear of them. These are
+     * the window's own insets, not the status_bar_height / navigation_bar_height dimensions: those
+     * say how big a bar is, not whether this window is under it, nor on which side the navigation
+     * bar is.
+     */
+    static void padForSystemBars(@NonNull View root) {
+        final int left = root.getPaddingLeft();
+        final int top = root.getPaddingTop();
+        final int right = root.getPaddingRight();
+        final int bottom = root.getPaddingBottom();
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars()
+                    | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(left + bars.left, top + bars.top, right + bars.right, bottom + bars.bottom);
+            Log.d(TAG, "Creator insets: " + bars);
+            return insets;
+        });
+        ViewCompat.requestApplyInsets(root);
     }
 
     public int getStatusBarHeight() {

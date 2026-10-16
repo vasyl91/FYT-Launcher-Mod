@@ -1,7 +1,5 @@
 package com.android.launcher66.settings;
 
-import static com.android.launcher66.settings.SettingsActivity.getSettingsActivity;
-
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
@@ -44,6 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DrawViewFirstScreen extends View implements View.OnClickListener {
+
+    private static final String TAG = "DrawViewFirstScreen";
 
     // Core
     private final SharedPreferences sharedPrefs;
@@ -401,6 +401,8 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
      * as its measured size and scales itself down to whatever room the creator has: the preview
      * stays true to the launcher instead of quietly becoming a different, smaller space.
      */
+    private float mLoggedScale = -1f;
+
     public void setWorkspaceArea(int width, int height) {
         if (width <= 0 || height <= 0 || (width == workspaceWidth && height == workspaceHeight)) {
             return;
@@ -436,6 +438,12 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         setTranslationX(Math.max(0f, (availableWidth - workspaceWidth * scale) / 2f));
         setTranslationY(Math.max(0f, availableHeight - workspaceHeight * scale));
         setMeasuredDimension(workspaceWidth, workspaceHeight);
+        if (scale != mLoggedScale) {
+            mLoggedScale = scale;
+            Log.d(TAG, "Canvas " + workspaceWidth + "x" + workspaceHeight + " in " + availableWidth
+                    + "x" + availableHeight + ": x" + scale + ", offset " + getTranslationX()
+                    + "/" + getTranslationY());
+        }
     }
 
     @Override
@@ -1345,47 +1353,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             scaleButton(b, 0.75f);
         }
 
-        int statusBarHeight = getSettingsActivity().getStatusBarHeight();
-        int navigationBarHeight = getSettingsActivity().getNavigationBarHeight();
-        boolean isPortrait = SettingsActivity.isPortrait;
-        
-        // Apply top inset for status bar
-        mRootView.setPadding(
-            mRootView.getPaddingLeft(),
-            mRootView.getPaddingTop() + statusBarHeight,
-            mRootView.getPaddingRight(),
-            mRootView.getPaddingBottom()
-        );
-        
-        // Apply bottom or right inset for navigation bar
-        View creatorBar = mRootView.findViewById(R.id.creator_bar);
-        View creatorBarAutoHide = mRootView.findViewById(R.id.creator_bar_auto_hide);
-        
-        if (creatorBar != null) {
-            ViewGroup.LayoutParams params = creatorBar.getLayoutParams();
-            if (params instanceof ViewGroup.MarginLayoutParams) {
-                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-                if (isPortrait) {
-                    marginParams.bottomMargin += navigationBarHeight;
-                } else {
-                    marginParams.rightMargin += navigationBarHeight;
-                }
-                creatorBar.setLayoutParams(marginParams);
-            }
-        }
-        
-        if (creatorBarAutoHide != null) {
-            ViewGroup.LayoutParams params = creatorBarAutoHide.getLayoutParams();
-            if (params instanceof ViewGroup.MarginLayoutParams) {
-                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-                if (isPortrait) {
-                    marginParams.bottomMargin += navigationBarHeight;
-                } else {
-                    marginParams.rightMargin += navigationBarHeight;
-                }
-                creatorBarAutoHide.setLayoutParams(marginParams);
-            }
-        }
+        SettingsActivity.padForSystemBars(mRootView);
     }
 
     private static void scaleButton(Button button, float scaleFactor) {
