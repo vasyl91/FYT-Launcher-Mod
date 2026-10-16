@@ -486,6 +486,13 @@
     <string name="logcat_service_run_toast">记录完成。请在 Download/Launcher66_Logs 中查看结果</string>
     <string name="logcat_service_timeout">超时</string>
     <string name="logcat_service_timeout_str">设置日志记录超时（秒）：</string>
+    <string name="app_type_system">系统应用</string>
+    <string name="app_type_user">用户应用</string>
+    <string name="app_type_root">已启用 root</string>
+    <string name="app_type_module_installed">已安装 Magisk 模块</string>
+    <string name="app_type_module_missing">未安装 Magisk 模块</string>
+    <string name="app_type_shizuku_running">已安装并运行 Shizuku</string>
+    <string name="app_type_shizuku_stopped">已安装 Shizuku，未运行</string>
     <string name="app_version">版本: %1$s</string>
     <string name="app_version_update">版本: %1$s（有新版本: %2$s）</string>
     <string name="update_version_button">点击此处下载并更新应用</string>

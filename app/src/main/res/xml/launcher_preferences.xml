@@ -348,6 +348,10 @@
         app:title="@string/app_version">
 
         <Preference
+            android:key="app_type"
+            android:selectable="false" />
+
+        <Preference
             android:key="app_version_update"
             android:title="@string/update_version_button" />        
 

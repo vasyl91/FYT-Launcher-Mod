@@ -70,6 +70,7 @@ import com.android.launcher66.MediaFavoriteController;
 import com.android.launcher66.R;
 import com.android.launcher66.WallpaperPickerActivity;
 import com.android.launcher66.perf.BaselineProfileCompiler;
+import com.syu.util.WindowHostVdClient;
 import com.fyt.skin.SkinAttribute;
 import com.fyt.skin.SkinUtils;
 
@@ -83,6 +84,8 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -504,6 +507,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (logcatServiceTimeout != null) {
             logcatServiceTimeout.setOnPreferenceClickListener(this);
+        }
+        Preference appType = findPreference("app_type");
+        if (appType != null) {
+            appType.setTitle(appTypeText());
         }
         if (appVersion != null) {
             String currentVersion = Helpers.getAppVersion(LauncherApplication.sApp);
@@ -1408,6 +1415,28 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     // =====================================================================================
     // BASELINE PROFILE
     // =====================================================================================
+
+    /**
+     * How the launcher runs here, under the version: as a system app, which needs nothing else,
+     * or as a user app with what it can use instead -- root (and then whether the FYT VDHost
+     * Magisk module is installed), or else Shizuku, when installed.
+     */
+    private String appTypeText() {
+        if (LauncherApplication.hasSystemPrivileges()) {
+            return getString(R.string.app_type_system);
+        }
+        List<String> parts = new ArrayList<>();
+        parts.add(getString(R.string.app_type_user));
+        if (WindowHostVdClient.hasRoot()) {
+            parts.add(getString(R.string.app_type_root));
+            parts.add(getString(WindowHostVdClient.isModuleInstalled()
+                    ? R.string.app_type_module_installed : R.string.app_type_module_missing));
+        } else if (WindowHostVdClient.isShizukuInstalled(requireContext())) {
+            parts.add(getString(WindowHostVdClient.isShizukuRunning()
+                    ? R.string.app_type_shizuku_running : R.string.app_type_shizuku_stopped));
+        }
+        return android.text.TextUtils.join(", ", parts);
+    }
 
     /** Loads the Baseline Profile status off the main thread and shows it as the summary. */
     private void updateBaselineProfileSummary() {

@@ -488,6 +488,13 @@
     <string name="logcat_service_run_toast">Finished logging. Check the results in Download/Launcher66_Logs</string>
     <string name="logcat_service_timeout">Timeout</string>
     <string name="logcat_service_timeout_str">Set the logcat timeout (in seconds):</string>
+    <string name="app_type_system">System app</string>
+    <string name="app_type_user">User app</string>
+    <string name="app_type_root">root enabled</string>
+    <string name="app_type_module_installed">Magisk module installed</string>
+    <string name="app_type_module_missing">Magisk module not installed</string>
+    <string name="app_type_shizuku_running">Shizuku installed and running</string>
+    <string name="app_type_shizuku_stopped">Shizuku installed, not running</string>
     <string name="app_version">Version: %1$s</string>
     <string name="app_version_update">Version: %1$s (Available newer version: %2$s)</string>
     <string name="update_version_button">Press here to download and update the app</string>

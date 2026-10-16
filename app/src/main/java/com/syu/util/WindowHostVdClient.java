@@ -128,6 +128,35 @@ public final class WindowHostVdClient {
         }
     }
 
+    /** Shizuku and its forks (Shizuku Next) keep this package name. */
+    private static final String SHIZUKU_PACKAGE = "moe.shizuku.privileged.api";
+
+    public static boolean isShizukuInstalled(Context context) {
+        try {
+            context.getPackageManager().getPackageInfo(SHIZUKU_PACKAGE, 0);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    public static boolean isShizukuRunning() {
+        return WindowHostVdShizuku.isRunning();
+    }
+
+    /**
+     * Root is there: the daemon of the FYT VDHost Magisk module (or Shizuku started with root)
+     * runs as system or root, the module's property is set, or a su binary can be seen.
+     */
+    public static boolean hasRoot() {
+        if (canSendBootCompleted() || isModuleInstalled()) return true;
+        for (String path : new String[]{ "/system/bin/su", "/system/xbin/su", "/sbin/su",
+                "/debug_ramdisk/su", "/vendor/bin/su" }) {
+            if (new java.io.File(path).exists()) return true;
+        }
+        return false;
+    }
+
     /** The privileged host, or null: none attached, or the launcher is its own (system) host. */
     private static VdHostProtocol.Proxy privilegedHost() {
         synchronized (sLock) {

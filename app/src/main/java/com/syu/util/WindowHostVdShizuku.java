@@ -89,6 +89,15 @@ final class WindowHostVdShizuku {
         }
     }
 
+    /** Shizuku's server is up (whether this launcher may use it or not). */
+    static boolean isRunning() {
+        try {
+            return Shizuku.pingBinder();
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     /** A better host went away (or never came): reconsider binding, after a fresh grace period. */
     static void onHostLost() {
         if (!sInitialized) return;

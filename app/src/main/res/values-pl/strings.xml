@@ -344,6 +344,13 @@
     <string name="logcat_service_run_toast">Logcat ukończył pracę. Sprawdź wyniki w Download/Launcher66_Logs</string>
     <string name="logcat_service_timeout">Czas zapisu</string>
     <string name="logcat_service_timeout_str">Ustaw czas zapisu (sekundy):</string>
+    <string name="app_type_system">Aplikacja systemowa</string>
+    <string name="app_type_user">Aplikacja użytkownika</string>
+    <string name="app_type_root">root dostępny</string>
+    <string name="app_type_module_installed">moduł Magisk zainstalowany</string>
+    <string name="app_type_module_missing">moduł Magisk niezainstalowany</string>
+    <string name="app_type_shizuku_running">Shizuku zainstalowane i działa</string>
+    <string name="app_type_shizuku_stopped">Shizuku zainstalowane, nie działa</string>
     <string name="app_version">Wersja: %1$s</string>
     <string name="app_version_update">Wersja: %1$s (Dostępna nowsza wersja: %2$s)</string>    
     <string name="update_version_button">Naciśnij, aby pobrać i zainstalować aktualizację</string>
