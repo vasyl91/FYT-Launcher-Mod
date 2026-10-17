@@ -149,14 +149,15 @@ androidComponents {
     }
 
     // The Baseline Profile plugin adds nonMinified* and benchmark* build types for every
-    // non-debuggable build type. Only the fyt ones are used:
-    // fytNonMinifiedRelease - the generator installs and profiles it on the head unit,
-    // fytBenchmarkRelease   - StartupBenchmark measures startup with the profile.
+    // non-debuggable build type. Only those made from release are used, for both flavors (the
+    // fyt build installs on FYT units only, being a system app; the phone build everywhere else):
+    // <flavor>NonMinifiedRelease - the generator installs and profiles it on the device,
+    // <flavor>BenchmarkRelease   - StartupBenchmark measures startup with the profile.
     // The generated profile itself is used by every release build (src/main, see baselineProfile {}).
     beforeVariants { v ->
         val bt = v.buildType.orEmpty()
         val addedByPlugin = bt.startsWith("nonMinified") || bt.startsWith("benchmark")
-        val used = v.name == "fytNonMinifiedRelease" || v.name == "fytBenchmarkRelease"
+        val used = bt == "nonMinifiedRelease" || bt == "benchmarkRelease"
         if (addedByPlugin && !used) v.enable = false
     }
 
@@ -179,7 +180,7 @@ baselineProfile {
     // Save the result in src/ (committed to the repository).
     saveInSrc = true
     // In src/main/generated/baselineProfiles, for every flavor: phone runs the same code as fyt
-    // (the flavors differ in the manifest only), and the generator profiles the fyt build.
+    // (the flavors differ in the manifest only), so a profile made on either device serves both.
     mergeIntoMain = true
     // Startup profile -> R8 places startup classes in the primary DEX file.
     dexLayoutOptimization = true

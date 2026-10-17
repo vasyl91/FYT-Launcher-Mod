@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # =============================================================================
-# prepare_device.sh - prepares a ROOTED FYT test unit for Baseline Profile generation.
+# prepare_device.sh - prepares a test device for Baseline Profile generation: a ROOTED FYT
+# unit (fyt build, a system app) or a phone (phone build; Android 13+ needs no root).
 #
 # Run from Git Bash (MINGW64) on the PC, with exactly one device connected over ADB:
 #   cd baselineprofile/tools
 #   ./prepare_device.sh            # prepare the device
 #   ./prepare_device.sh --restore  # remove the su wrapper (a reboot does the same)
 #
-# Re-run after EVERY reboot of the head unit: the su wrapper lives in /sbin (tmpfs).
+# Re-run after EVERY reboot of the device: the su wrapper lives in /sbin (tmpfs).
 # =============================================================================
 set -u
 
@@ -53,13 +54,20 @@ DEVICES=$(adb devices | tr -d '\r' | awk 'NR>1 && $2=="device"' | wc -l)
 [ "$DEVICES" -eq 1 ] || fail "Expected exactly 1 connected device, found $DEVICES"
 API=$(sh_dev getprop ro.build.version.sdk)
 ok "$(sh_dev getprop ro.product.model) - API $API ($(sh_dev getprop ro.build.type))"
-[ "$API" = "29" ] || warn "This setup was validated on Android 10 (API 29)"
+[ "$API" -ge 28 ] 2>/dev/null || fail "Baseline Profiles need Android 9 (API 28) or later"
 
 echo "== Launcher package =="
 DUMP=$(sh_dev dumpsys package $PKG)
-if echo "$DUMP" | grep -q "userId=1000"; then ok "userId=1000 (android.uid.system)"; else warn "userId is not 1000"; fi
+# The system app's build is fyt; anything else (or none yet: Gradle installs it) gets phone.
+if echo "$DUMP" | grep -q "userId=1000"; then
+  FLAVOR=Fyt
+  ok "userId=1000 (android.uid.system): the fyt build"
+else
+  FLAVOR=Phone
+  ok "Not the system app: the phone build"
+fi
 echo "$DUMP" | grep -E "codePath=" | head -n 2 | sed 's/^ */         /'
-if echo "$DUMP" | grep -q "codePath=/data/app"; then
+if [ "$FLAVOR" = Fyt ] && echo "$DUMP" | grep -q "codePath=/data/app"; then
   warn "An update of the launcher is installed in /data/app (left over from a test run)."
   warn "Remove it with: adb uninstall $PKG   (reverts to the system version)"
 fi
@@ -70,28 +78,42 @@ if sh_dev id | grep -q "uid=0"; then
 elif su_root_works; then
   ok "\"su root <cmd>\" works"
 elif sh_dev "su -c id" | grep -q "uid=0"; then
-  echo "  Magisk su detected; it does not understand \"su root <cmd>\" - installing the wrapper"
-  [ -f "$WRAPPER" ] || fail "$WRAPPER not found next to this script"
-  sh_dev "su -c 'test -e /sbin/magisk && echo yes'" | grep -q yes || fail "/sbin/magisk not found"
-
-  # The wrapper must have LF line endings, whatever Git checked out on Windows.
-  tr -d '\r' < "$WRAPPER" > .su_wrapper.lf
-  adb push .su_wrapper.lf /data/local/tmp/su_wrapper.sh >/dev/null || fail "adb push failed"
-  rm -f .su_wrapper.lf
-
-  LABEL=$(sh_dev "su -c 'ls -Z /sbin/magisk'" | awk '{for(i=1;i<=NF;i++) if ($i ~ /^u:object_r:/) print $i}' | head -n 1)
-  [ -n "$LABEL" ] || LABEL="u:object_r:system_file:s0"
-
-  # Keep the original only once - never move the wrapper over su.orig.
-  sh_dev "su -c 'mount -o rw,remount /sbin; test -e /sbin/su.orig || mv /sbin/su /sbin/su.orig; cp /data/local/tmp/su_wrapper.sh /sbin/su; chmod 755 /sbin/su; chcon $LABEL /sbin/su'"
-  if su_root_works; then
-    ok "Wrapper installed (label $LABEL), \"su root id\" works"
-  else
-    fail "Wrapper installed but \"su root id\" still fails"
+  echo "  Magisk su detected; it does not understand \"su root <cmd>\""
+  if ! sh_dev "su -c 'test -e /sbin/magisk && echo yes'" | grep -q yes; then
+    # Magisk on Android 11+ keeps no /sbin: the wrapper cannot go there.
+    if [ "$API" -ge 33 ]; then
+      warn "Magisk su without /sbin: Android 13+ needs no root, so deny root to Shell in Magisk"
+      warn "while generating, or Macrobenchmark may stop at 0/N on \"su root\"."
+      SKIP_WRAPPER=1
+    else
+      fail "/sbin/magisk not found"
+    fi
   fi
-  echo "  Accept the root request for \"Shell\" on the head unit screen if it appears (choose: forever)."
+
+  if [ -z "${SKIP_WRAPPER:-}" ]; then
+    echo "  Installing the wrapper"
+    [ -f "$WRAPPER" ] || fail "$WRAPPER not found next to this script"
+    # The wrapper must have LF line endings, whatever Git checked out on Windows.
+    tr -d '\r' < "$WRAPPER" > .su_wrapper.lf
+    adb push .su_wrapper.lf /data/local/tmp/su_wrapper.sh >/dev/null || fail "adb push failed"
+    rm -f .su_wrapper.lf
+
+    LABEL=$(sh_dev "su -c 'ls -Z /sbin/magisk'" | awk '{for(i=1;i<=NF;i++) if ($i ~ /^u:object_r:/) print $i}' | head -n 1)
+    [ -n "$LABEL" ] || LABEL="u:object_r:system_file:s0"
+
+    # Keep the original only once - never move the wrapper over su.orig.
+    sh_dev "su -c 'mount -o rw,remount /sbin; test -e /sbin/su.orig || mv /sbin/su /sbin/su.orig; cp /data/local/tmp/su_wrapper.sh /sbin/su; chmod 755 /sbin/su; chcon $LABEL /sbin/su'"
+    if su_root_works; then
+      ok "Wrapper installed (label $LABEL), \"su root id\" works"
+    else
+      fail "Wrapper installed but \"su root id\" still fails"
+    fi
+    echo "  Accept the root request for \"Shell\" on the device's screen if it appears (choose: forever)."
+  fi
+elif [ "$API" -ge 33 ]; then
+  ok "No root: Android 13+ needs none for the profile"
 else
-  fail "No usable root. Root the test unit with Magisk first (allow root for Shell)."
+  fail "No usable root. Android 9-12 need it: root the device with Magisk (allow root for Shell)."
 fi
 
 echo "== Launcher as the default HOME app =="
@@ -112,4 +134,4 @@ ok "Perfetto tracing enabled (needed by StartupBenchmark)"
 
 echo
 echo "Device ready. Generate the profile from the project root:"
-echo "  ./gradlew :app:generateFytReleaseBaselineProfile \"-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile\""
+echo "  ./gradlew :app:generate${FLAVOR}ReleaseBaselineProfile \"-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile\""
