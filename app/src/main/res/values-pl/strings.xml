@@ -67,6 +67,7 @@
     <string name="uninstall_system_app_text">To aplikacja systemowa i nie można jej odinstalować.</string>
     <string name="dream_name">Wyrzutnia rakiet</string>
     <string name="folder_hint_text">Folder bez nazwy</string>
+    <string name="widget_fit_toggle">Dopasuj widżet do komórek</string>
     <string name="workspace_description_format">Ekran główny %1$d</string>
     <string name="default_scroll_format">Strona %1$d z %2$d</string>
     <string name="workspace_scroll_format">Ekran główny %1$d z %2$d</string>

@@ -70,6 +70,7 @@
     <string name="uninstall_system_app_text">"This is a system app and can't be uninstalled."</string>
     <string name="dream_name">Rocket Launcher</string>
     <string name="folder_hint_text">Unnamed Folder</string>
+    <string name="widget_fit_toggle">Fit the widget to its cells</string>
     <string name="workspace_description_format">Home screen %1$d</string>
     <string name="default_scroll_format">Page %1$d of %2$d</string>
     <string name="workspace_scroll_format">Home screen %1$d of %2$d</string>
