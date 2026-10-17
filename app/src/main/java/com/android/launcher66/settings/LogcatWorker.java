@@ -488,14 +488,28 @@ public final class LogcatWorker {
 
             // Whether logcat reached a line after the capture's end: everything owed is written.
             boolean caughtUp = false;
+            // The last line written, for where a restart goes on from (parsed then only).
+            String lastWritten = null;
             while (running) {
                 restartCount++;
+                // The VD host went away under the capture (Shizuku Next restarts its server now
+                // and then, A16: back after 6 s): logd keeps the lines, so wait for it.
+                if (sViaHost && !HostProcess.isAvailable() && !awaitHostBack()) {
+                    error = "the VD host did not come back";
+                    break;
+                }
                 boolean sinceFlagThisRun = useSinceFlag && sinceMs > 0L;
                 writeLine("----- logcat start #" + restartCount
                         + " (pidFlag=" + usePidFlag + ", sinceFlag=" + sinceFlagThisRun + ") -----");
                 fileWriter.flush();
 
-                proc = startLogcat(myPid, usePidFlag, sinceFlagThisRun ? sinceMs : 0L, lineFormat, fullLog);
+                try {
+                    proc = startLogcat(myPid, usePidFlag, sinceFlagThisRun ? sinceMs : 0L, lineFormat, fullLog);
+                } catch (IOException noHost) {
+                    // Gone again just now: back to the wait at the top.
+                    if (!sViaHost || HostProcess.isAvailable()) throw noHost;
+                    continue;
+                }
                 logcatProcess = proc;
 
                 reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
@@ -532,6 +546,7 @@ public final class LogcatWorker {
 
                         fileWriter.write(line);
                         fileWriter.write('\n');
+                        lastWritten = line;
                         linesThisRun++;
                         linesWritten++;
                         if ((linesThisRun & 0x1F) == 0) fileWriter.flush();
@@ -583,8 +598,13 @@ public final class LogcatWorker {
                 // retry without them, the capture is owed that much.
                 if (!running || caughtUp || drainKilled || (draining && !flagsRefused)) break;
 
-                // Whatever the mode, a restart must not dump the buffer we already wrote.
-                sinceMs = System.currentTimeMillis();
+                // Whatever the mode, a restart must not dump the buffer we already wrote, nor
+                // skip what came since the last line written (logcat may have been behind, or
+                // gone a while with the host): it goes on from that line's time. A line or two
+                // of that same millisecond may come twice.
+                long now = System.currentTimeMillis();
+                long lastMs = lineWallMs(lineFormat, lastWritten, now);
+                sinceMs = lastMs > 0L && lastMs <= now ? lastMs : now;
 
                 try {
                     Thread.sleep(250L);
@@ -594,7 +614,7 @@ public final class LogcatWorker {
                 }
             }
 
-            if (draining) {
+            if (draining && error == null) {
                 writeLine(drainTimedOut
                         ? "===== stopped after " + DRAIN_MAX_MS / 1000L + " s of reading past the end:"
                                 + " logcat had not caught up with it ====="
@@ -845,6 +865,32 @@ public final class LogcatWorker {
             SystemClock.sleep(250L);
         }
         writeLine("===== VD host attached after " + (SystemClock.elapsedRealtime() - began) / 1000L + " s =====");
+        return true;
+    }
+
+    /** How long a capture waits for a VD host that went away under it. */
+    private static final long HOST_RETURN_WAIT_MS = 60_000L;
+
+    /**
+     * Waits for the VD host to come back after it went away during the capture. Only a
+     * shutdown ends the wait early, as in awaitPrivilegedHost().
+     *
+     * @return whether a VD host is attached again
+     */
+    private boolean awaitHostBack() throws Exception {
+        long began = SystemClock.elapsedRealtime();
+        writeLine("===== the VD host went away; waiting up to " + HOST_RETURN_WAIT_MS / 1000L
+                + " s for it =====");
+        fileWriter.flush();
+        while (!HostProcess.isAvailable()) {
+            if (!running || SystemClock.elapsedRealtime() - began >= HOST_RETURN_WAIT_MS) {
+                writeLine("===== the VD host did not come back =====");
+                return false;
+            }
+            SystemClock.sleep(250L);
+        }
+        writeLine("===== VD host back after " + (SystemClock.elapsedRealtime() - began) / 1000L
+                + " s =====");
         return true;
     }
 
