@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <!-- The VD host daemon is never installed or launched (see vdhost/README.md): this only keeps
+       Android Studio from creating its own configuration for the module and selecting it. Build
+       the Magisk module with ./gradlew :vdhost-server:magiskZip. -->
+  <configuration default="false" name="vdhost-server" type="AndroidRunConfigurationType" factoryName="Android App">
+    <module name="FYT_Launcher_Mod.vdhost-server.main" />
+    <option name="DEPLOY" value="false" />
+    <option name="MODE" value="do_nothing" />
+    <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+    <option name="DEBUGGER_TYPE" value="Auto" />
+    <method v="2">
+      <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+    </method>
+  </configuration>
+</component>
