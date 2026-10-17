@@ -343,7 +343,7 @@
         android:layout="@layout/preference_separator"
         android:selectable="false" /> 
 
-    <PreferenceCategory
+    <com.android.launcher66.settings.VersionPreferenceCategory
         app:key="app_version"
         app:title="@string/app_version">
 
@@ -356,7 +356,7 @@
             android:focusable="false"
             android:clickable="false" />
             
-    </PreferenceCategory>
+    </com.android.launcher66.settings.VersionPreferenceCategory>
 
     <Preference
         android:layout="@layout/preference_separator"
