@@ -5378,6 +5378,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (mAppWidgetHost != null) {
                     mAppWidgetHost.deleteAppWidgetId(appWidgetId);
                 }
+                WidgetFit.forget(Launcher.this, appWidgetId);
             }
         }.start();
     }

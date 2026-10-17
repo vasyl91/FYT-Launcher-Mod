@@ -58,6 +58,8 @@ public class AppWidgetResizeFrame extends FrameLayout {
     private int mWidgetPaddingRight;
     private int mWidgetPaddingTop;
     private LauncherAppWidgetHostView mWidgetView;
+    /** In the middle of the frame: fits the widget's content to its cells, or stops doing so. */
+    private ImageView mFitToggle;
 
     public AppWidgetResizeFrame(Context context, LauncherAppWidgetHostView widgetView, CellLayout cellLayout, DragLayer dragLayer) {
         super(context);
@@ -96,6 +98,16 @@ public class AppWidgetResizeFrame extends FrameLayout {
         this.mBottomHandle.setImageResource(R.drawable.widget_resize_handle_bottom);
         FrameLayout.LayoutParams lp4 = new FrameLayout.LayoutParams(-2, -2, 81);
         addView(this.mBottomHandle, lp4);
+        float toggleDensity = context.getResources().getDisplayMetrics().density;
+        int toggleSize = Math.round(40.0f * toggleDensity);
+        int togglePadding = Math.round(8.0f * toggleDensity);
+        this.mFitToggle = new ImageView(context);
+        this.mFitToggle.setImageResource(R.drawable.ic_widget_fit);
+        this.mFitToggle.setPadding(togglePadding, togglePadding, togglePadding, togglePadding);
+        this.mFitToggle.setContentDescription(context.getString(R.string.widget_fit_toggle));
+        addView(this.mFitToggle, new FrameLayout.LayoutParams(toggleSize, toggleSize,
+                android.view.Gravity.CENTER));
+        showFitState();
         Rect p = AppWidgetHostView.getDefaultPaddingForWidget(context, widgetView.getAppWidgetInfo().provider, null);
         this.mWidgetPaddingLeft = p.left;
         this.mWidgetPaddingTop = p.top;
@@ -105,6 +117,26 @@ public class AppWidgetResizeFrame extends FrameLayout {
         this.mBackgroundPadding = (int) Math.ceil(24.0f * density);
         this.mTouchTargetWidth = this.mBackgroundPadding * 2;
         this.mCellLayout.markCellsAsUnoccupiedForView(this.mWidgetView);
+    }
+
+    private void showFitState() {
+        this.mFitToggle.setBackgroundResource(this.mWidgetView.isFitContent()
+                ? R.drawable.widget_fit_toggle_on : R.drawable.widget_fit_toggle_off);
+    }
+
+    /** Whether x, y (in this frame) is on the fit toggle; checked before the borders. */
+    public boolean isOnFitToggle(int x, int y) {
+        return x >= this.mFitToggle.getLeft() && x < this.mFitToggle.getRight()
+                && y >= this.mFitToggle.getTop() && y < this.mFitToggle.getBottom();
+    }
+
+    /** Fits the widget's content to its cells, or stops; remembered for this widget. */
+    public void toggleFit() {
+        boolean fit = !this.mWidgetView.isFitContent();
+        this.mWidgetView.setFitContent(fit);
+        WidgetFit.set(getContext(), this.mWidgetView.getAppWidgetId(), fit);
+        showFitState();
+        performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
     }
 
     public boolean beginResizeIfPointInRegion(int x, int y) {

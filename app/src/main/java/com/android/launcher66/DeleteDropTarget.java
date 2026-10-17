@@ -417,6 +417,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
                 new Thread("deleteAppWidgetId") {
                     public void run() {
                         appWidgetHost.deleteAppWidgetId(launcherAppWidgetInfo.appWidgetId);
+                        WidgetFit.forget(mLauncher, launcherAppWidgetInfo.appWidgetId);
                     }
                 }.start();
             }

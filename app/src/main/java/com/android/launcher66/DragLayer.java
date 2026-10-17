@@ -134,6 +134,12 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         for (AppWidgetResizeFrame child: mResizeFrames) {
             child.getHitRect(hitRect);
             if (hitRect.contains(x, y)) {
+                if (child.isOnFitToggle(x - child.getLeft(), y - child.getTop())) {
+                    // Handled here: anything else on the frame would close it first. The same
+                    // down comes again to onTouchEvent() once intercepted: toggled once only.
+                    if (intercept) child.toggleFit();
+                    return true;
+                }
                 if (child.beginResizeIfPointInRegion(x - child.getLeft(), y - child.getTop())) {
                     mCurrentResizeFrame = child;
                     mXDown = x;

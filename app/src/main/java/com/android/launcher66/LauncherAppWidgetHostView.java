@@ -1,8 +1,13 @@
 package com.android.launcher66;
 
 import android.appwidget.AppWidgetHostView;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.PointF;
+import android.graphics.Rect;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -59,6 +64,141 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
         // Store the orientation in which the widget was inflated
         mPreviousOrientation = mContext.getResources().getConfiguration().orientation;
         super.updateAppWidget(remoteViews);
+        // New content may take another part of the widget.
+        requestFit();
+    }
+
+    // =====================================================================================
+    // Fit to the cells
+    // =====================================================================================
+
+    private static final String TAG = "WidgetFit";
+    /** Further than this a widget's content is not enlarged: a mostly empty one would blur. */
+    private static final float MAX_FIT_SCALE = 4f;
+    /** The content is drawn this small to find where it shows (longer side, in pixels). */
+    private static final int FIT_PROBE_SIZE = 160;
+    /** Pixels fainter than this (of 255) count as empty: soft shadows round a card do too. */
+    private static final int FIT_ALPHA_THRESHOLD = 24;
+    /** After an update or a layout, before the content is looked at: the burst settles. */
+    private static final long FIT_DELAY_MS = 200L;
+
+    /**
+     * Whether the widget's content is enlarged to fill its cells. Many widgets lay their visible
+     * part out small in the middle of transparent margins of their own layout (a card on a
+     * large empty view); this finds the part that shows and scales the content up, evenly, until
+     * it fills the cells one way and is centred the other. The widget's own view keeps its size
+     * and position (touch, drag and the resize frame go by it) and clips what spills over.
+     * Set for each widget by the user from its resize frame (see WidgetFit).
+     */
+    private boolean mFitContent;
+    private final Runnable mFitRunnable = this::applyFit;
+
+    @Override
+    public void setAppWidget(int appWidgetId, AppWidgetProviderInfo info) {
+        super.setAppWidget(appWidgetId, info);
+        setFitContent(WidgetFit.isOn(getContext(), appWidgetId));
+    }
+
+    public boolean isFitContent() {
+        return mFitContent;
+    }
+
+    public void setFitContent(boolean fit) {
+        mFitContent = fit;
+        if (fit) {
+            requestFit();
+        } else {
+            removeCallbacks(mFitRunnable);
+            View content = getChildCount() > 0 ? getChildAt(0) : null;
+            if (content != null) resetFit(content);
+        }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (changed) requestFit();
+    }
+
+    private void requestFit() {
+        if (!mFitContent) return;
+        removeCallbacks(mFitRunnable);
+        postDelayed(mFitRunnable, FIT_DELAY_MS);
+    }
+
+    private static void resetFit(View content) {
+        content.setScaleX(1f);
+        content.setScaleY(1f);
+        content.setTranslationX(0f);
+        content.setTranslationY(0f);
+    }
+
+    private void applyFit() {
+        View content = getChildCount() > 0 ? getChildAt(0) : null;
+        int w = getWidth();
+        int h = getHeight();
+        if (!mFitContent || content == null || w <= 0 || h <= 0) return;
+        Rect shown = shownBounds(content, w, h);
+        if (shown == null || shown.width() <= 0 || shown.height() <= 0) {
+            resetFit(content);
+            return;
+        }
+        float k = Math.min(MAX_FIT_SCALE,
+                Math.min(w / (float) shown.width(), h / (float) shown.height()));
+        if (k <= 1.02f) {
+            resetFit(content);
+            return;
+        }
+        // Scaled from the content's top left, then moved so the part that shows is centred.
+        int left = content.getLeft();
+        int top = content.getTop();
+        content.setPivotX(0f);
+        content.setPivotY(0f);
+        content.setScaleX(k);
+        content.setScaleY(k);
+        content.setTranslationX((w - shown.width() * k) / 2f - left - (shown.left - left) * k);
+        content.setTranslationY((h - shown.height() * k) / 2f - top - (shown.top - top) * k);
+    }
+
+    /**
+     * Where the content shows, in this view's pixels: the bounds of what it draws that is not
+     * (nearly) transparent. Drawn small, untransformed; null when it cannot be drawn.
+     */
+    private static Rect shownBounds(View content, int w, int h) {
+        float f = Math.min(1f, FIT_PROBE_SIZE / (float) Math.max(w, h));
+        int bw = Math.max(1, Math.round(w * f));
+        int bh = Math.max(1, Math.round(h * f));
+        Bitmap probe = Bitmap.createBitmap(bw, bh, Bitmap.Config.ARGB_8888);
+        try {
+            Canvas canvas = new Canvas(probe);
+            canvas.scale(f, f);
+            canvas.translate(content.getLeft(), content.getTop());
+            content.draw(canvas);
+            int[] px = new int[bw * bh];
+            probe.getPixels(px, 0, bw, 0, 0, bw, bh);
+            int minX = bw, minY = bh, maxX = -1, maxY = -1;
+            for (int y = 0; y < bh; y++) {
+                for (int x = 0; x < bw; x++) {
+                    if ((px[y * bw + x] >>> 24) > FIT_ALPHA_THRESHOLD) {
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                    }
+                }
+            }
+            if (maxX < 0) return null;
+            return new Rect(Math.max(0, (int) Math.floor(minX / f)),
+                    Math.max(0, (int) Math.floor(minY / f)),
+                    Math.min(w, (int) Math.ceil((maxX + 1) / f)),
+                    Math.min(h, (int) Math.ceil((maxY + 1) / f)));
+        } catch (Throwable t) {
+            // A hardware bitmap in the content cannot be drawn in software, for one.
+            Log.w(TAG, "content not measured: " + t);
+            return null;
+        } finally {
+            probe.recycle();
+        }
     }
 
     public boolean orientationChangedSincedInflation() {
