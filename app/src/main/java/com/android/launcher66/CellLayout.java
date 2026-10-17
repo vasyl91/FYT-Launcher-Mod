@@ -775,6 +775,13 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         }
     }
 
+    /** A resizable widget: drawn at the widget scale (see ShortcutAndWidgetContainer). */
+    private static boolean isScaledWidget(View child) {
+        if (!(child instanceof LauncherAppWidgetHostView)) return false;
+        AppWidgetProviderInfo pinfo = ((LauncherAppWidgetHostView) child).getAppWidgetInfo();
+        return pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE;
+    }
+
     public void setTagToCellInfoForPoint(int touchX, int touchY) {
         final CellInfo cellInfo = mCellInfo;
         Rect frame = mRect;
@@ -789,26 +796,24 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
             if ((child.getVisibility() == VISIBLE || child.getAnimation() != null) &&
                     lp.isLockedToGrid) {
-                child.getHitRect(frame);
-
-                float scale = child.getScaleX();
-                frame = new Rect(child.getLeft(), child.getTop(), child.getRight(),
-                        child.getBottom());
-
-                // The child hit rect is relative to the CellLayoutChildren parent, so we need to
-                // offset that by this CellLayout's padding to test an (x,y) point that is relative
-                // to this view.
-                if (child instanceof LauncherAppWidgetHostView) {
-                    final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
-                    AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-                    if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
-                        frame.offsetTo(child.getLeft() + (int) (frame.width() / (scale * scale)), child.getTop() + (int) (frame.height() / (scale * scale)));
-                    }
+                if (isScaledWidget(child)) {
+                    // Where the widget is drawn: the hit rect has the scale and the centring
+                    // translation of ShortcutAndWidgetContainer.onLayout() in it. It is relative
+                    // to that container, which sits in this view at its own left and top. (The
+                    // formula here before was fitted to a scale of 1.75 and missed the widget
+                    // altogether at any other.)
+                    child.getHitRect(frame);
+                    frame.offset(mShortcutsAndWidgets.getLeft(), mShortcutsAndWidgets.getTop());
                 } else {
+                    float scale = child.getScaleX();
+                    frame.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
+                    // The child hit rect is relative to the CellLayoutChildren parent, so we need
+                    // to offset that by this CellLayout's padding to test an (x,y) point that is
+                    // relative to this view.
                     frame.offset(getPaddingLeft(), getPaddingTop());
+                    frame.inset((int) (frame.width() * (1f - scale) / 2),
+                            (int) (frame.height() * (1f - scale) / 2));
                 }
-                frame.inset((int) (frame.width() * (1f - scale) / 2),
-                        (int) (frame.height() * (1f - scale) / 2));
                 if (frame.contains(x, y)) {
                     cellInfo.cell = child;
                     cellInfo.cellX = lp.cellX;
