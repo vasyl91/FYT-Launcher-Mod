@@ -613,7 +613,9 @@ public class DeleteDropTarget extends ButtonDropTarget {
 
     /**
      * The X the user sees is the overlay, drawn twice the drawable's size and lower than this
-     * view (updateOverlayPosition()), so it counts as part of the target.
+     * view (updateOverlayPosition()), so it counts as part of the target. Without a label the
+     * view no longer reaches as far on one side as on the other, so the target is made as wide on
+     * both sides of the X as on its wider one.
      */
     @Override
     public void getHitRectRelativeToDragLayer(Rect outRect) {
@@ -624,6 +626,10 @@ public class DeleteDropTarget extends ButtonDropTarget {
         int left = mOverlayParams.x - dragLayerOnScreen[0];
         int top = mOverlayParams.y - dragLayerOnScreen[1];
         outRect.union(left, top, left + mOverlayParams.width, top + mOverlayParams.height);
+        int centerX = left + mOverlayParams.width / 2;
+        int halfWidth = Math.max(centerX - outRect.left, outRect.right - centerX);
+        outRect.left = centerX - halfWidth;
+        outRect.right = centerX + halfWidth;
     }
 
     private void showOverlayDrawable(TransitionDrawable drawable) {
