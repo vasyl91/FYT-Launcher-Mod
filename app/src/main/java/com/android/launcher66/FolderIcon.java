@@ -201,13 +201,16 @@ public class FolderIcon extends LinearLayout implements FolderListener {
          * pixels a folder's preview has too) and the folder background's margin on each side,
          * as AOSP's folderIconSizePx. That one is the icon's pixels taken as dp, which made the
          * ring the density times too large and its centre too low (CellLayout centres it by
-         * half of this).
+         * half of this). The rings themselves are RING_SCALE of it.
          */
         static int ringBaseSize() {
             DeviceProfile grid = LauncherAppState.getInstance().getDynamicGrid().getDeviceProfile();
             if (Launcher.workspaceIconAndFolderSize <= 0) return grid.folderIconSizePx;
             return Launcher.workspaceIconAndFolderSize - 2 * grid.folderBackgroundOffset;
         }
+
+        /** A tenth larger than the icon and its margin, so the ring shows round the icon. */
+        private static final float RING_SCALE = 1.1f;
 
         public void animateToAcceptState() {
             if (mNeutralAnimator != null) {
@@ -216,7 +219,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
             mAcceptAnimator = LauncherAnimUtils.ofFloat(mCellLayout, 0f, 1f);
             mAcceptAnimator.setDuration(CONSUMPTION_ANIMATION_DURATION);
 
-            final int previewSize = sPreviewSize;
+            final int previewSize = Math.round(sPreviewSize * RING_SCALE);
             mAcceptAnimator.addUpdateListener(new AnimatorUpdateListener() {
                 public void onAnimationUpdate(ValueAnimator animation) {
                     final float percent = (Float) animation.getAnimatedValue();
@@ -245,7 +248,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
             mNeutralAnimator = LauncherAnimUtils.ofFloat(mCellLayout, 0f, 1f);
             mNeutralAnimator.setDuration(CONSUMPTION_ANIMATION_DURATION);
 
-            final int previewSize = sPreviewSize;
+            final int previewSize = Math.round(sPreviewSize * RING_SCALE);
             mNeutralAnimator.addUpdateListener(new AnimatorUpdateListener() {
                 public void onAnimationUpdate(ValueAnimator animation) {
                     final float percent = (Float) animation.getAnimatedValue();
