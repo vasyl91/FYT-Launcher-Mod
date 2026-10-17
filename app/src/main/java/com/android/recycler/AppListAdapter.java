@@ -235,6 +235,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
         values.put("className", bean.className == null ? "" : bean.className);
         try {
             LitePal.update(AppMultiple.class, values, targetRowId);
+            com.android.launcher66.BarRows.invalidate();
         } catch (Exception e) {
             Log.e(TAG, "onClickData: failed to persist slot rowId=" + targetRowId, e);
         }

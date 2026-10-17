@@ -145,7 +145,7 @@ public class FabOverlayService extends Service {
         super.onCreate();
         sRunning = true;
         Log.i(TAG, "Service created");
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         themedContext = new ContextThemeWrapper(this, R.style.AppTheme);
         readSettings();

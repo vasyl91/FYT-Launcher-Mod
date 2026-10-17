@@ -1651,7 +1651,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         SessionPrefs.get().edit().clear().apply();
         helpers = new Helpers();
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);  
+        // The application's context: the preferences are read there already (attachBaseContext),
+        // where this activity's own context would look its folder up on disk first.
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());  
         markStartup("prefs");
 
         // Resolves the PiP packages' icons and launch intents on a worker thread, so the first
@@ -1983,7 +1985,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         markStartup("grid");
 
         // the LauncherApplication should call this, but in case of Instrumentation it might not be present yet
-        mSharedPrefs = getSharedPreferences(LauncherAppState.getSharedPreferencesKey(),
+        mSharedPrefs = getApplicationContext().getSharedPreferences(LauncherAppState.getSharedPreferencesKey(),
                 Context.MODE_PRIVATE);
 
         mModel = app.setLauncher(this);

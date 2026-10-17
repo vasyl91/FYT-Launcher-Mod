@@ -346,7 +346,7 @@ class NotificationListener : NotificationListenerService() {
         contextRef = WeakReference(this)
         paused = false
 
-        settings = PreferenceManager.getDefaultSharedPreferences(this)
+        settings = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
         handlerControllerTime = Handler(Looper.getMainLooper())
         handlerFytTime = Handler(Looper.getMainLooper())

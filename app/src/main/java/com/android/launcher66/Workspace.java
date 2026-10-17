@@ -3714,7 +3714,8 @@ public class Workspace extends SmoothPagedView
 
     protected void setWallpaperDimension() {
         String spKey = WallpaperCropActivity.getSharedPreferencesKey();
-        SharedPreferences sp = mLauncher.getSharedPreferences(spKey, Context.MODE_MULTI_PROCESS);
+        SharedPreferences sp = mLauncher.getApplicationContext()
+                .getSharedPreferences(spKey, Context.MODE_MULTI_PROCESS);
         WallpaperPickerActivity.suggestWallpaperDimension(mLauncher.getResources(),
                 sp, mLauncher.getWindowManager(), mWallpaperManager);
     }

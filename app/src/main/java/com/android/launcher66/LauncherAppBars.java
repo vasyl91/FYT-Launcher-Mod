@@ -317,8 +317,8 @@ final class LauncherAppBars {
         mPostResumeAppDataDirty = false;
         mLastPostResumeAppDataRefreshMs = SystemClock.uptimeMillis();
         mLauncher.bg.execute(() -> {
-            List<AppMultiple> data = LitePal.order("\"index\" asc").find(AppMultiple.class);
-            List<LeftAppMultiple> left = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
+            List<AppMultiple> data = BarRows.bottom();
+            List<LeftAppMultiple> left = BarRows.left(MAX_LEFT);
             mLauncher.runOnUiThread(() -> {
                 refreshCycle(data);
                 refreshLeftBar(left);
@@ -500,7 +500,8 @@ final class LauncherAppBars {
         // A database that has opened once does not become unavailable again, so probe once.
         if (!sDatabaseProbeOk) {
             try {
-                LitePal.limit(1).find(AppMultiple.class);
+                // The bottom bar's rows: usually read already (BarRows.preload()).
+                BarRows.bottom();
                 sDatabaseProbeOk = true;
             } catch (Exception e) {
                 Log.w(Launcher.TAG, "Database not ready: " + e.getMessage());
@@ -766,7 +767,7 @@ final class LauncherAppBars {
             applyLeftBarSnapshot();
             return;
         }
-        List<LeftAppMultiple> leftAppData = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
+        List<LeftAppMultiple> leftAppData = BarRows.left(MAX_LEFT);
         long sourceSignature = calculateLeftAppRowsSignature(leftAppData);
         if (sourceSignature == mLastLeftAppListSourceSignature
                 && mLeftAppListAdapter != null
@@ -896,7 +897,7 @@ final class LauncherAppBars {
                         bottomRows, currentUserLayout, currentWidgetBar, currentOrientation)) {
                     bottom = s;
                 }
-                leftRows = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
+                leftRows = BarRows.left(MAX_LEFT);
                 s = BarSnapshotStore.load(appContext, BarSnapshotStore.LEFT);
                 if (s != null && leftRows != null && s.signature == leftBarSnapshotSignature(
                         leftRows, currentUserLayout, currentLeftBar)) {
@@ -1206,7 +1207,7 @@ final class LauncherAppBars {
 
     List<AppMultiple> queryBottomAppRows() {
         try {
-            return LitePal.order("\"index\" asc").find(AppMultiple.class);
+            return BarRows.bottom();
         } catch (Exception e) {
             Log.e(Launcher.TAG, "Database error while reading AppMultiple: " + e.getMessage());
             return null;
@@ -1525,6 +1526,7 @@ final class LauncherAppBars {
             for (int i = 0; i < need; i++) {
                 new LeftAppMultiple(0, "", "", "").save();
             }
+            BarRows.invalidate();
             physical = LitePal.order("id asc").find(LeftAppMultiple.class);
         }
         
@@ -1575,10 +1577,11 @@ final class LauncherAppBars {
             v.put("packageName", src.packageName);
             v.put("className", src.className);
             LitePal.update(LeftAppMultiple.class, v, dst.id);
+            BarRows.invalidate();
         }
         
         // Refresh the display
-        List<LeftAppMultiple> topRows = LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
+        List<LeftAppMultiple> topRows = BarRows.left(MAX_LEFT);
         refreshLeftBar(topRows);
     }
 
@@ -1591,7 +1594,7 @@ final class LauncherAppBars {
 
         final List<LeftAppMultiple> src = (leftAppData != null && !leftAppData.isEmpty())
                 ? leftAppData
-                : LitePal.order("id asc").limit(MAX_LEFT).find(LeftAppMultiple.class);
+                : BarRows.left(MAX_LEFT);
         long sourceSignature = calculateLeftAppRowsSignature(src);
         if (sourceSignature == mLastLeftAppListSourceSignature
                 && mLeftAppListAdapter != null
@@ -1713,6 +1716,7 @@ final class LauncherAppBars {
                 v.put("className", "");
             }
             LitePal.update(LeftAppMultiple.class, v, dst.id);
+            BarRows.invalidate();
         }
 
         mLastLeftAppListSourceSignature = Long.MIN_VALUE;
@@ -1766,6 +1770,7 @@ final class LauncherAppBars {
                 v.put("className", "");
                 try {
                     LitePal.update(AppMultiple.class, v, bean.rowId);
+                    BarRows.invalidate();
                 } catch (Exception e) {
                     Log.e(Launcher.TAG, "pruneBottomBarBeans: failed to clear row " + bean.rowId, e);
                 }
@@ -1895,6 +1900,7 @@ final class LauncherAppBars {
 
         ab8 = new AppListBean(appName8, icon8, FytPackage.AddAction, "");
         new AppMultiple(7, appName8, FytPackage.AddAction, "").save();
+        BarRows.invalidate();
         
         mLauncher.userLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
         mLauncher.widgetBar = mLauncher.mPrefs.getBoolean(Keys.WIDGET_BAR, false);

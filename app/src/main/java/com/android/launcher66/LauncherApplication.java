@@ -187,6 +187,7 @@ public class LauncherApplication extends Application {
             // the code reading it disagrees on the default.
             prefs.edit().putBoolean(Keys.USER_RADIO, isFytDevice()).apply();
         }
+        warmUpOffMainThread();
         // The music widget's last cover used to live in these preferences: out to its file.
         if (prefs.contains(LauncherMusicWidget.PREF_LAST_ALBUM_ART)) {
             final Context app = this;
@@ -326,6 +327,36 @@ public class LauncherApplication extends Application {
             appEnable(FytPackage.auxAction, auxEnable);
             appEnable(FytPackage.frontvideoAction, frontVideoEnable);
         }, "AppEnable").start();
+    }
+
+    /**
+     * What the launcher's first screen reads from disk, read first on threads of their own: the
+     * bars' rows (which also opens their database), the workspace's database, and the
+     * preference files and folders the main thread opens early. The main thread then finds
+     * them in memory (StrictMode caught each of them on it at a start).
+     */
+    private void warmUpOffMainThread() {
+        BarRows.preload(LauncherAppBars.MAX_LEFT);
+        new Thread(() -> {
+            try {
+                getFilesDir();
+                getCacheDir();
+                getSharedPreferences(LauncherAppState.getSharedPreferencesKey(), MODE_PRIVATE);
+                getSharedPreferences(Launcher.EvenVerticalLayoutManager.LM_PREFS, MODE_PRIVATE);
+                getSharedPreferences(com.android.launcher66.settings.AppListCacheDialogFragment.PREFS_NAME,
+                        MODE_PRIVATE);
+                getSharedPreferences(getPackageName(), MODE_PRIVATE);
+                getSharedPreferences(WallpaperCropActivity.getSharedPreferencesKey(),
+                        MODE_MULTI_PROCESS);
+                // Opens the workspace's database (LauncherProvider) before Workspace asks it.
+                android.database.Cursor c = getContentResolver().query(
+                        LauncherSettings.WorkspaceScreens.CONTENT_URI, new String[] { "_id" },
+                        null, null, null);
+                if (c != null) c.close();
+            } catch (Throwable t) {
+                Log.w(TAG, "start-up warm-up: " + t);
+            }
+        }, "StartupWarmUp").start();
     }
 
     private void initData() {
