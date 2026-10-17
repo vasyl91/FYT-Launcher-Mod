@@ -1630,13 +1630,23 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     }
 
     private boolean shouldExcludeFirstBottomCell() {
-        return (mLauncher.getWorkspace().getCurrentPage() == 0 &&
-                prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false));
+        return isFirstWorkspacePageShown() && prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
     }
 
     private boolean shouldExcludeLastRow() {
-        return (mLauncher.getWorkspace().getCurrentPage() == 0 &&
-                !prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false));
+        return isFirstWorkspacePageShown() && !prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+    }
+
+    /**
+     * Whether this is the workspace's first page (the one with the bottom bar), shown now. Only
+     * the page itself: a folder's grid is a CellLayout too, and with the first page shown it lost
+     * its last row (or its first bottom cell), which in a new folder's 1 x 1 grid is the only
+     * cell -- the items got no cell and no view, and the drop crashed in Folder.hideItem().
+     */
+    private boolean isFirstWorkspacePageShown() {
+        Workspace workspace = mLauncher.getWorkspace();
+        return workspace != null && workspace.getCurrentPage() == 0
+                && workspace.getChildCount() > 0 && workspace.getChildAt(0) == this;
     }
 
     /**
