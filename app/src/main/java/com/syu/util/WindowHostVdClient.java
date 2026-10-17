@@ -101,6 +101,19 @@ public final class WindowHostVdClient {
         return current() != null || isSystemUid() || isModuleInstalled() || WindowHostVdShizuku.isUsable();
     }
 
+    /**
+     * Whether the panes are VD views with no host to run them yet (Shizuku comes half a minute
+     * after a boot): they come up by themselves when one attaches, nothing can start them before.
+     * A system launcher on Android 11+ is its own host and never waits.
+     */
+    public static boolean panesAwaitHost() {
+        if (!shouldUse()) return false;
+        if (Build.VERSION.SDK_INT >= 30 && isSystemUid()) return false;
+        synchronized (sLock) {
+            return sHost == null;
+        }
+    }
+
     /** The host, or null while none has attached yet. */
     static VdHostProtocol.Proxy get(Context ctx) {
         synchronized (sLock) {
