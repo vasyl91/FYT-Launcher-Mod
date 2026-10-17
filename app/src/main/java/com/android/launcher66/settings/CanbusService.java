@@ -1177,7 +1177,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
         float rowWidth = Math.max(
                 rowWidth(consumptionLabel, consumptionValue), rowWidth(mileageLabel, mileageValue));
         float scale = 1f;
-        if (lineHeight > 0f) scale = Math.min(scale, (height / 2f) / lineHeight);
+        // Some room to spare: two rows exactly as tall as the window lost a pixel to rounding,
+        // and the column then wrapped the second row out of the window (the narrowest window,
+        // where the height decides).
+        if (lineHeight > 0f) scale = Math.min(scale, (height * 0.9f / 2f) / lineHeight);
         if (rowWidth > 0f) scale = Math.min(scale, width * 0.95f / rowWidth);
         if (scale >= 1f) return;
         for (TextView view : new TextView[]{ consumptionLabel, consumptionValue, mileageLabel, mileageValue }) {
