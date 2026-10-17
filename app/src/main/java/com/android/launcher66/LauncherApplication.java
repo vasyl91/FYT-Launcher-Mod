@@ -341,6 +341,7 @@ public class LauncherApplication extends Application {
             try {
                 getFilesDir();
                 getCacheDir();
+                LauncherMusicWidget.preloadAlbumArt(this);
                 getSharedPreferences(LauncherAppState.getSharedPreferencesKey(), MODE_PRIVATE);
                 getSharedPreferences(Launcher.EvenVerticalLayoutManager.LM_PREFS, MODE_PRIVATE);
                 getSharedPreferences(com.android.launcher66.settings.AppListCacheDialogFragment.PREFS_NAME,

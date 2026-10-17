@@ -675,6 +675,8 @@ final class LauncherMusicWidget {
                     if (!writeAlbumArt(mLauncher, byteArrayOutputStream.toByteArray())) {
                         return null;
                     }
+                    sAlbumArt = bitmapToSave;
+                    sAlbumArtLoaded = true;
 
                     // The cover is a file: only its track's path is a preference.
                     mLauncher.mPrefs.edit()
@@ -699,15 +701,26 @@ final class LauncherMusicWidget {
     }
 
     Bitmap getBitmapFromPreferences() {
+        if (sAlbumArtLoaded) return sAlbumArt;
+        // Not read yet by the start-up warm-up (preloadAlbumArt()): read here, once.
+        preloadAlbumArt(mLauncher);
+        return sAlbumArt;
+    }
+
+    /** The last cover, kept: read from its file once, off the main thread at a start. */
+    private static volatile Bitmap sAlbumArt;
+    private static volatile boolean sAlbumArtLoaded;
+
+    /** Reads the last cover into memory; called by the start-up warm-up thread. */
+    static void preloadAlbumArt(Context context) {
+        if (sAlbumArtLoaded) return;
         try {
-            File file = albumArtFile(mLauncher);
-            if (file.isFile()) {
-                return BitmapFactory.decodeFile(file.getPath());
-            }
+            File file = albumArtFile(context);
+            sAlbumArt = file.isFile() ? BitmapFactory.decodeFile(file.getPath()) : null;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.w(Launcher.TAG, "album art not read: " + e);
         }
-        return null;
+        sAlbumArtLoaded = true;
     }
 
     /** The last cover, as a PNG file of its own. */
@@ -743,7 +756,11 @@ final class LauncherMusicWidget {
         try {
             String encoded = prefs.getString(PREF_LAST_ALBUM_ART, null);
             if (encoded != null) {
-                writeAlbumArt(context, Base64.decode(encoded, Base64.DEFAULT));
+                byte[] png = Base64.decode(encoded, Base64.DEFAULT);
+                if (writeAlbumArt(context, png)) {
+                    sAlbumArt = BitmapFactory.decodeByteArray(png, 0, png.length);
+                    sAlbumArtLoaded = true;
+                }
             }
         } catch (RuntimeException e) {
             Log.w(Launcher.TAG, "album art not moved: " + e);
