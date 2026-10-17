@@ -18,6 +18,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.launcher66.LauncherApplication;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -857,6 +859,12 @@ public class WindowHostActivityView {
 
             if (bounds != null) {
                 options.setLaunchBounds(bounds);
+            }
+            // The rest is hidden API: from Android 9 on refused to a user app, with warnings in
+            // the log at every launch, so only a system app (or Android 8) asks for it.
+            if (!LauncherApplication.hasSystemPrivileges()
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                return options;
             }
 
             try {
