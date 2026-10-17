@@ -5340,9 +5340,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (info.minResizeHeight <= 0 || info.minResizeHeight > info.minHeight) {
             info.minResizeHeight = info.minHeight;
         }
-        Log.d(TAG, "Widget " + info.provider + " gives no size, sized "
-                + info.minWidth + "x" + info.minHeight + " px");
+        // Once per widget: the sizes are asked for again and again, on fresh copies of info.
+        if (sSizedWidgets.add(info.provider)) {
+            Log.d(TAG, "Widget " + info.provider + " gives no size, sized "
+                    + info.minWidth + "x" + info.minHeight + " px");
+        }
     }
+
+    private static final java.util.Set<ComponentName> sSizedWidgets =
+            java.util.Collections.synchronizedSet(new java.util.HashSet<>());
 
     private static int widgetSide(int targetCells, int minResize, int cell, int padding) {
         if (targetCells <= 0 && minResize > 0) return minResize;
