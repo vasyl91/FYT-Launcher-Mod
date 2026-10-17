@@ -57,7 +57,7 @@ No system_server patching and no LSPosed are involved.
 vdhost/
   shared/   :vdhost-shared  protocol (VdHostProtocol), implementation (VdHostCore), binder stub
   server/   :vdhost-server  the daemon (VdHostServer, BinderDelivery) + Magisk packaging task
-  magisk/   module template (service.sh, customize.sh, sepolicy.rule, system.prop, ...)
+  magisk/   module template (service.sh, post-fs-data.sh, customize.sh, sepolicy.rule, system.prop, ...)
 ```
 
 Launcher side, `app/src/main/java/com/syu/util/`:
@@ -93,6 +93,10 @@ restarting it if it exits. It must be uid 1000 from the start:
 `DisplayManagerService.createVirtualDisplay()` checks the caller's package name, and before
 Android 14 root has none that passes. Binder records the caller's uid when the process opens the
 driver, so switching uid later would not help.
+
+`post-fs-data.sh` only serves the launcher's boot log: logd starts with its default buffer sizes,
+before `persist.logd.size` is loaded, so with the boot log on it grows the buffers to that size
+before zygote starts (`logcat -b all -G`), and "main" keeps the start of the boot.
 
 The daemon cannot be looked up by the launcher (SELinux blocks apps from unlabelled services), so
 it pushes: once a second it checks whether the launcher process is (re)started and, if so, calls

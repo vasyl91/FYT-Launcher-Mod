@@ -732,7 +732,8 @@ public final class LogcatWorker {
                     Log.i(TAG, "Boot log: logd buffers -> " + BOOT_LOG_BUFFER_SIZE
                             + (changed.isEmpty() ? "" : " (was: " + changed + ")")
                             + (resized ? ", resized now" : "") + (failed ? ", setprop failed" : "")
-                            + "; the start of a boot is kept from the next boot on");
+                            + "; logd starts with its own sizes, before " + LOGD_SIZE_PROP
+                            + " is read: the FYT VDHost module grows them before zygote");
                 }
             } else {
                 List<String> restored = new ArrayList<>();
