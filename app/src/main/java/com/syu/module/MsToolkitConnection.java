@@ -11,6 +11,7 @@ import android.os.Looper;
 
 import com.syu.ipc.IRemoteToolkit;
 import com.syu.loopview.MessageHandler;
+import com.syu.remote.RemoteTools;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,7 +28,9 @@ public class MsToolkitConnection implements ServiceConnection {
     private final Runnable mRunnableConnect = new Runnable() { 
         @Override
         public void run() {
-            if (MsToolkitConnection.this.mRemoteToolkit != null) {
+            if (MsToolkitConnection.this.mRemoteToolkit != null
+                    || !RemoteTools.isInstalled(MsToolkitConnection.this.mContext, "com.syu.ms")) {
+                // Connected, or no FYT service to connect to (a phone): no more retries.
                 MsToolkitConnection.this.mConnecting = false;
                 return;
             }

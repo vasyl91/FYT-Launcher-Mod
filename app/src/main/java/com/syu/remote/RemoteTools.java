@@ -54,6 +54,11 @@ public class RemoteTools implements ServiceConnection {
         if (this.pkgName == null || this.pkgName.isEmpty()) {
             this.pkgName = "com.syu.ms";
         }
+        if (!isInstalled(this.mContext, this.pkgName)) {
+            // Not an FYT unit (or not this service on it): binding again every second or so
+            // only made system_server log "Unable to start service" forever.
+            return;
+        }
         Intent intent = new Intent(this.action);
         intent.setPackage(this.pkgName);
         this.mContext.bindService(intent, this, 1);
@@ -67,6 +72,16 @@ public class RemoteTools implements ServiceConnection {
                 handler.removeCallbacks(this);
             }
         }, new Random().nextInt(1500) + HttpURLConnection.HTTP_INTERNAL_ERROR);
+    }
+
+    /** Whether the package of an FYT service is installed here at all. */
+    public static boolean isInstalled(Context context, String pkg) {
+        try {
+            context.getPackageManager().getPackageInfo(pkg, 0);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public void unBind() {
