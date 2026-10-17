@@ -4,20 +4,16 @@ import com.android.launcher66.SysCalls;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.ComponentName;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.launcher66.AppInfo;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
 import com.android.launcher66.settings.Helpers;
@@ -25,144 +21,30 @@ import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SettingsActivity;
 import com.syu.util.WindowUtil;
 
-import org.litepal.LitePal;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder>
-        implements AppListDialogFragment.ItemClickDataListener {
+/**
+ * The left bar: the apps opened last, each opened again by a tap. Choosing its apps (the app
+ * picker) is the bottom bar's alone (AppListAdapter).
+ */
+public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> {
 
-    private static final String TAG = "LeftAppListAdapter";
     private static final String RECYCLER_APP = "recycler.app";
     private static final String RECYCLER_APP_MAP = "recycler.app.map";
-    private static final int APP_PICKER_STATE_RETRY_LIMIT = 4;
-    private static final long APP_PICKER_STATE_RETRY_MS = 150L;
 
     private List<AppListBean> mData;
     private final Launcher mLauncher;
     private final Helpers helpers = new Helpers();
     private long mDataSignature;
 
-    /**
-     * Slot the picker was opened for. Set BEFORE the dialog is shown and consumed exactly
-     * once in {@link #onClickData}, so no stale target can survive between two openings.
-     */
-    private int mPendingPosition = RecyclerView.NO_POSITION;
-    private long mPendingRowId = -1L;
-
     public LeftAppListAdapter(Launcher launcher, List<AppListBean> data) {
         this.mData = data;
         this.mLauncher = launcher;
         this.mDataSignature = calculateDataSignature(data);
         setHasStableIds(true);
-    }
-
-    // =====================================================================================
-    // APP PICKER
-    // =====================================================================================
-
-    private void showAppPickerDialog(int position) {
-        showAppPickerDialog(position, 0);
-    }
-
-    private void showAppPickerDialog(int position, int attempt) {
-        if (position == RecyclerView.NO_POSITION || mData == null || position >= mData.size()) {
-            return;
-        }
-
-        AppListBean target = mData.get(position);
-        if (target == null) {
-            return;
-        }
-
-        // Remember the target FIRST - every early return below used to leave the previous
-        // click's slot in place.
-        mPendingPosition = position;
-        mPendingRowId = target.rowId;
-
-        FragmentManager fragmentManager = mLauncher.getSupportFragmentManager();
-        if (fragmentManager.isStateSaved()) {
-            View decor = mLauncher.getWindow() == null ? null : mLauncher.getWindow().getDecorView();
-            if (decor != null && attempt < APP_PICKER_STATE_RETRY_LIMIT) {
-                decor.postDelayed(
-                        () -> showAppPickerDialog(position, attempt + 1),
-                        APP_PICKER_STATE_RETRY_MS
-                );
-            } else {
-                mPendingPosition = RecyclerView.NO_POSITION;
-                mPendingRowId = -1L;
-            }
-            return;
-        }
-
-        if (AppListDialogFragment.isListDialogShowing(fragmentManager)) {
-            return;
-        }
-
-        // Always a fresh instance - see the note in AppListAdapter.showAppPickerDialog().
-        AppListDialogFragment dialog = AppListDialogFragment.newInstance(target.rowId);
-        dialog.setItemClickDataListener(this);
-        dialog.show(fragmentManager, AppListDialogFragment.TAG);
-    }
-
-    @Override
-    public void onClickData(AppInfo appInfo, long rowId) {
-        final int position = mPendingPosition;
-        final long targetRowId = rowId > 0L ? rowId : mPendingRowId;
-
-        mPendingPosition = RecyclerView.NO_POSITION;
-        mPendingRowId = -1L;
-
-        if (appInfo == null || mData == null
-                || position == RecyclerView.NO_POSITION || position >= mData.size()) {
-            Log.w(TAG, "onClickData: no valid target slot, ignoring selection");
-            return;
-        }
-
-        AppListBean bean = new AppListBean(
-                appInfo.title == null ? "" : appInfo.title.toString(),
-                appInfo.iconBitmap,
-                appInfo.getPackageName(),
-                appInfo.getClassName()
-        );
-        bean.rowId = targetRowId;
-
-        mData.set(position, bean);
-        mDataSignature = calculateDataSignature(mData);
-        notifyItemChanged(position);
-
-        if (targetRowId <= 0L) {
-            // No physical row behind this bean. Fall back to the ordering path, which
-            // rewrites the whole left bar correctly, instead of the old
-            // saveOrUpdate("index = ?", ...) - see the note below.
-            Log.w(TAG, "onClickData: bean has no rowId, falling back to refreshLeftCycle()");
-            mLauncher.refreshLeftCycle(bean);
-            return;
-        }
-
-        // Update by primary key, exactly like Launcher.refreshLeftCycle() does.
-        //
-        // The old code did:
-        //     new LeftAppMultiple(lastClickIndex, ...).saveOrUpdate("index = ?", ...)
-        // which was broken in two different ways, because every LeftAppMultiple row is
-        // created with index = 0:
-        //   - position 0  -> "index = 0" matches EVERY row, so the whole left bar got
-        //                    overwritten with the same app;
-        //   - position > 0 -> nothing matches, so saveOrUpdate() INSERTED a new row.
-        //                    refreshLeftBar() reads order("id asc").limit(MAX_LEFT), so
-        //                    that row was never visible - the pick silently did nothing
-        //                    while the table kept growing.
-        ContentValues values = new ContentValues();
-        values.put("name", bean.name == null ? "" : bean.name);
-        values.put("packageName", bean.packageName == null ? "" : bean.packageName);
-        values.put("className", bean.className == null ? "" : bean.className);
-        try {
-            LitePal.update(LeftAppMultiple.class, values, targetRowId);
-        } catch (Exception e) {
-            Log.e(TAG, "onClickData: failed to persist left slot rowId=" + targetRowId, e);
-        }
     }
 
     // =====================================================================================
@@ -228,7 +110,8 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder>
             }
 
             if (TextUtils.isEmpty(appListBean.packageName) || TextUtils.isEmpty(appListBean.className)) {
-                showAppPickerDialog(appListHolder.getBindingAdapterPosition());
+                // An empty slot: nothing opened there yet.
+                return;
 
             } else if ("com.android.launcher66".equals(appListBean.packageName)
                     && !"com.android.launcher66.settings.SettingsActivity".equals(appListBean.className)) {
@@ -259,10 +142,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder>
             }
         });
 
-        appListHolder.itemView.setOnLongClickListener(view -> {
-            showAppPickerDialog(appListHolder.getBindingAdapterPosition());
-            return true;
-        });
+        appListHolder.itemView.setOnLongClickListener(null);
     }
 
     private void onClickIcon(AppListBean appListBean) {
