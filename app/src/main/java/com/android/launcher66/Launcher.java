@@ -5309,10 +5309,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     /**
      * Gives info a size where it has none (minWidth or minHeight 0: many Samsung and some Google
-     * widgets, made for launchers that size them in cells), so it can be listed and added. In
-     * order: the cells it asks for (Android 12+), its smallest resized size, two cells. The
-     * pixels are a hair under the cells, so rectToCell() comes to exactly those cells. Widgets
-     * with a size of their own are left alone; calling it again changes nothing.
+     * widgets, made for launchers that size them in cells), so it can be listed and added: the
+     * cells it asks for (Android 12+), else two cells, or its smallest resized size if that is
+     * larger. (The smallest size alone made Samsung's alarm clock 2x1, where it shows its
+     * smallest layout, the word "Alarm".) The pixels are a hair under the cells, so rectToCell()
+     * comes to exactly those cells. Widgets with a size of their own are left alone; calling it
+     * again changes nothing.
      */
     static void fillWidgetSize(AppWidgetProviderInfo info) {
         if (info == null || (info.minWidth > 0 && info.minHeight > 0)) return;
@@ -5351,9 +5353,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             java.util.Collections.synchronizedSet(new java.util.HashSet<>());
 
     private static int widgetSide(int targetCells, int minResize, int cell, int padding) {
-        if (targetCells <= 0 && minResize > 0) return minResize;
         int cells = targetCells > 0 ? targetCells : DEFAULT_WIDGET_SPAN;
-        return Math.max(1, cells * cell - padding - 1);
+        int side = Math.max(1, cells * cell - padding - 1);
+        return targetCells > 0 ? side : Math.max(side, minResize);
     }
 
     static int[] getSpanForWidget(Context context, PendingAddWidgetInfo info) {
