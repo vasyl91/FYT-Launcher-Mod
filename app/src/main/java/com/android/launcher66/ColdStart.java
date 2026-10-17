@@ -228,6 +228,7 @@ public final class ColdStart {
      */
     private static final List<String> DISPLAY_MEDIA_TITLES_PACKAGES = Arrays.asList(
             "vasyl.titles",
+            "vasyl.titles.phone",
             "com.syu.widget.music",
             "com.syu.screensaver",
             "com.ava.car",
@@ -293,11 +294,14 @@ public final class ColdStart {
                     SystemClock.sleep(BOOT_AUTOSTART_GAP_MS);
                 }
 
+                // Whether BOOT_COMPLETED really went out: when it failed the app is started
+                // instead, and the log said "by BOOT_COMPLETED" all the same.
+                boolean bootSent = false;
                 if (titles) {
                     wakeDisplayMediaTitles(pkg);
                 } else if (james) {
                     wakeJamesDSP(pkg);
-                } else if (!(boot && bootCompletedAutostart && sendBootCompleted(pkg))) {
+                } else if (!(bootSent = boot && bootCompletedAutostart && sendBootCompleted(pkg))) {
                     if (launch == null) {
                         Log.w(TAG, "Boot autostart: " + pkg + " could not be woken and has no launch activity");
                         continue;
@@ -311,8 +315,8 @@ public final class ColdStart {
                 Log.i(TAG, "Boot autostart: "
                         + (titles ? "woke " + pkg + " by broadcast"
                         : james ? "woke " + pkg + " by broadcast"
-                        : boot ? "woke " + pkg + " by BOOT_COMPLETED"
-                        : "started " + pkg)
+                        : bootSent ? "woke " + pkg + " by BOOT_COMPLETED"
+                        : "started " + pkg + (boot ? " (BOOT_COMPLETED did not go out)" : ""))
                         + " (" + started.size() + "/" + packages.size() + ")");
 
             } catch (RuntimeException e) {
