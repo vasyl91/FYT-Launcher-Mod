@@ -505,6 +505,32 @@ public class DragLayer extends FrameLayout implements ViewGroup.OnHierarchyChang
         Rect r = new Rect();
         getViewRectRelativeToSelf(dragView, r);
 
+        if (LauncherAppWidgetHostView.isScaled(child)) {
+            // The drag view is the widget at its drawn size already (Workspace.beginDragShared()):
+            // it ends where the widget is drawn, the top left of its cells (scaled about its centre
+            // and moved back by its centring translation), at the parents' scale only. Taken as
+            // any other view, it grew by the widget scale before it landed.
+            int[] at = { lp.x, lp.y };
+            float parentScale = getDescendantCoordRelativeToSelf((View) child.getParent(), at);
+            float childScale = child.getScaleX();
+            float drawnWidth = child.getMeasuredWidth() * childScale * parentScale;
+            float drawnHeight = child.getMeasuredHeight() * childScale * parentScale;
+            int toX = Math.round(at[0] - (dragView.getMeasuredWidth() - drawnWidth) / 2f);
+            int toY = Math.round(at[1] - (dragView.getMeasuredHeight() - drawnHeight) / 2f);
+            final int fromX = r.left;
+            final int fromY = r.top;
+            child.setVisibility(INVISIBLE);
+            Runnable onCompleteRunnable = () -> {
+                child.setVisibility(VISIBLE);
+                if (onFinishAnimationRunnable != null) {
+                    onFinishAnimationRunnable.run();
+                }
+            };
+            animateViewIntoPosition(dragView, fromX, fromY, toX, toY, 1, 1, 1, parentScale,
+                    parentScale, onCompleteRunnable, ANIMATION_END_DISAPPEAR, duration, anchorView);
+            return;
+        }
+
         int coord[] = new int[2];
         float childScale = child.getScaleX();
         coord[0] = lp.x + (int) (child.getMeasuredWidth() * (1 - childScale) / 2);

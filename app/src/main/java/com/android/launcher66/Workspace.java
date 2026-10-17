@@ -5054,14 +5054,7 @@ public class Workspace extends SmoothPagedView
         final Canvas canvas = new Canvas();
         
         // Identify view type for scaling
-        boolean isWidget = false;
-        if (child instanceof LauncherAppWidgetHostView) {
-            final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
-            AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-            if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
-                isWidget = true;
-            }
-        }
+        boolean isWidget = LauncherAppWidgetHostView.isScaled(child);
 
         float widgetScaleFactor = ScreenScale.widgetScale();
         float widgetScale = isWidget ? widgetScaleFactor : 1.0f;
@@ -5112,8 +5105,8 @@ public class Workspace extends SmoothPagedView
         if (child instanceof BubbleTextView || child instanceof PagedViewIcon) {
             // The icon as drawn: grid.iconSizePx is Launcher.workspaceIconAndFolderSize (pixels)
             // taken as dp, so on a phone it was the density times too large, and the outline,
-            // centred by it, showed about an icon's width left of where the icon landed. On FYT
-            // units (density about 1) the two agree.
+            // centred by it, showed about an icon's width left of where the icon landed (on FYT
+            // units, at a density of 1.5, half an icon).
             int iconSize = grid.iconSizePx;
             Drawable icon = ((TextView) child).getCompoundDrawables()[1];
             if (icon != null && icon.getBounds().width() > 0) {

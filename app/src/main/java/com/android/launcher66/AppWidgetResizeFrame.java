@@ -74,10 +74,10 @@ public class AppWidgetResizeFrame extends FrameLayout {
         this.mCellLayout = cellLayout;
         this.mWidgetView = widgetView;
         this.mDragLayer = dragLayer;
-        AppWidgetProviderInfo info = widgetView.getAppWidgetInfo();
-        int[] result = Launcher.getSpanForWidget(this.mLauncher, info);
-        this.mMinHSpan = result[0];
-        this.mMinVSpan = result[1];
+        // Any widget may be made as small as one cell, whatever it gives as its smallest size
+        // or resize mode: the user decides.
+        this.mMinHSpan = 1;
+        this.mMinVSpan = 1;
         setBackgroundResource(R.drawable.widget_resize_frame_holo);
         setPadding(0, 0, 0, 0);
         this.mLeftHandle = new ImageView(context);
@@ -306,8 +306,7 @@ public class AppWidgetResizeFrame extends FrameLayout {
 
         if (mWidgetView instanceof LauncherAppWidgetHostView) {
             final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) mWidgetView;
-            AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-            if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
+            if (LauncherAppWidgetHostView.isScaled(hostView)) {
                 float scale = hostView.getScaleToFit();
                 
                 // Get actual scaled dimensions of the widget

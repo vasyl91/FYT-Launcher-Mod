@@ -775,13 +775,6 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         }
     }
 
-    /** A resizable widget: drawn at the widget scale (see ShortcutAndWidgetContainer). */
-    private static boolean isScaledWidget(View child) {
-        if (!(child instanceof LauncherAppWidgetHostView)) return false;
-        AppWidgetProviderInfo pinfo = ((LauncherAppWidgetHostView) child).getAppWidgetInfo();
-        return pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE;
-    }
-
     public void setTagToCellInfoForPoint(int touchX, int touchY) {
         final CellInfo cellInfo = mCellInfo;
         Rect frame = mRect;
@@ -796,7 +789,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
             if ((child.getVisibility() == VISIBLE || child.getAnimation() != null) &&
                     lp.isLockedToGrid) {
-                if (isScaledWidget(child)) {
+                if (LauncherAppWidgetHostView.isScaled(child)) {
                     // Where the widget is drawn: the hit rect has the scale and the centring
                     // translation of ShortcutAndWidgetContainer.onLayout() in it. It is relative
                     // to that container, which sits in this view at its own left and top. (The
@@ -1492,18 +1485,6 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             int left = topLeft[0];
             int top = topLeft[1];
 
-            float density = this.mLauncher.getResources().getDisplayMetrics().density;
-            int mBackgroundPadding = (int) Math.ceil(24.0f * density);
-
-            if (v != null && v instanceof LauncherAppWidgetHostView) {
-                final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) v;
-                AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-                if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
-                    top = topLeft[1] + (mBackgroundPadding / 2);
-                } else if (pinfo != null && pinfo.resizeMode == AppWidgetProviderInfo.RESIZE_BOTH) {
-                    top = topLeft[1] + mBackgroundPadding;
-                }
-            }
 
             if (v != null && dragOffset == null) {
                 // When drawing the drag outline, it did not account for margin offsets
@@ -2676,22 +2657,16 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             }
             // Store view type
             mIsWidget = false;
-            if (child instanceof LauncherAppWidgetHostView) {
-                final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
-                AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-                if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
-                    mIsWidget = true;
-                }
-            }
+            mIsWidget = LauncherAppWidgetHostView.isScaled(child);
 
             // Calculate compensation for widget scaling
             if (mIsWidget) {
                 finalScale = widgetScaleFactor;
-                float density = mLauncher.getResources().getDisplayMetrics().density;
-                int mBackgroundPadding = (int) Math.ceil(24.0f * density);
-                // Calculate compensation to maintain position during scale
-                mCompensationX = (child.getWidth() * (finalScale - 1.0f)) / 2.0f;
-                mCompensationY = (child.getHeight() * (finalScale - 1.0f)) / 2.0f + (mBackgroundPadding / 2.0f);
+                // The widget's own centring translation (ShortcutAndWidgetContainer.onLayout()),
+                // kept while it shakes.
+                LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
+                mCompensationX = hostView.getTranslationXForCentering();
+                mCompensationY = hostView.getTranslationYForCentering();
                 // Adjust initial translation to include compensation
                 initDeltaX = child.getTranslationX() - mCompensationX;
                 initDeltaY = child.getTranslationY() - mCompensationY;
@@ -3765,12 +3740,10 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 }
                 y += rowPadding;
 
-                // The widget is drawn that much lower, and lower again by
-                // ShortcutAndWidgetContainer.widgetShiftY(): without both off its height it
-                // reached over the row below.
-                int shiftY = rowPadding + ShortcutAndWidgetContainer.widgetShiftY();
+                // The widget is drawn that much lower: without it off its height it reached
+                // over the row below.
                 width = (int) (myCellHSpan * cellWidth / cellScaleX - leftMargin - rightMargin);
-                height = (int) ((myCellVSpan * cellHeight - shiftY) / cellScaleY - topMargin - bottomMargin);
+                height = (int) ((myCellVSpan * cellHeight - rowPadding) / cellScaleY - topMargin - bottomMargin);
             }
         }
 

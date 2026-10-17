@@ -126,6 +126,25 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
         return ViewGroup.FOCUS_BLOCK_DESCENDANTS;
     }
 
+    /**
+     * Whether v is a widget laid out at the widget scale (ScreenScale.widgetScale()) and centred
+     * by a translation in its cells: every widget, whatever its resize mode, so any of them can
+     * be resized.
+     */
+    public static boolean isScaled(View v) {
+        return v instanceof LauncherAppWidgetHostView
+                && ((LauncherAppWidgetHostView) v).getAppWidgetInfo() != null;
+    }
+
+    /**
+     * No default padding round the widget's content (AppWidgetHostView's, for widgets made
+     * before Android 12): it fills its cells edge to edge.
+     */
+    @Override
+    public void setPadding(int left, int top, int right, int bottom) {
+        super.setPadding(0, 0, 0, 0);
+    }
+
     public void setScaleToFit(float scale) {
         mScaleToFit = scale;
         setScaleX(scale);
