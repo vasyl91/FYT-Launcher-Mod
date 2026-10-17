@@ -185,6 +185,11 @@ public class LauncherApplication extends Application {
             // the code reading it disagrees on the default.
             prefs.edit().putBoolean(Keys.USER_RADIO, isFytDevice()).apply();
         }
+        // The music widget's last cover used to live in these preferences: out to its file.
+        if (prefs.contains(LauncherMusicWidget.PREF_LAST_ALBUM_ART)) {
+            final Context app = this;
+            new Thread(() -> LauncherMusicWidget.migrateAlbumArt(app, prefs), "AlbumArtMove").start();
+        }
         steps.mark("prefs");
         // Before anything can start a HomeFrontGuard: it needs to know whether the launcher is in front.
         HomeFrontGuard.trackActivities(this);

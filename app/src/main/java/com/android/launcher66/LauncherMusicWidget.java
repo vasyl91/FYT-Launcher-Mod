@@ -672,13 +672,15 @@ final class LauncherMusicWidget {
                     
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     bitmapToSave.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                    
-                    SharedPreferences.Editor editor = mLauncher.mPrefs.edit();
-                    editor.putString(PREF_LAST_ALBUM_ART, encodedBitmap);
-                    editor.putString(PREF_LAST_ALBUM_PATH, path);
-                    editor.apply();
+                    if (!writeAlbumArt(mLauncher, byteArrayOutputStream.toByteArray())) {
+                        return null;
+                    }
+
+                    // The cover is a file: only its track's path is a preference.
+                    mLauncher.mPrefs.edit()
+                            .putString(PREF_LAST_ALBUM_PATH, path)
+                            .remove(PREF_LAST_ALBUM_ART)
+                            .apply();
                     
                     // Update in-memory cache
                     lastProcessedPath = path;
@@ -698,16 +700,55 @@ final class LauncherMusicWidget {
 
     Bitmap getBitmapFromPreferences() {
         try {
-            String encodedBitmap = mLauncher.mPrefs.getString(PREF_LAST_ALBUM_ART, null);
-            
-            if (encodedBitmap != null) {
-                byte[] decodedBytes = Base64.decode(encodedBitmap, Base64.DEFAULT);
-                return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+            File file = albumArtFile(mLauncher);
+            if (file.isFile()) {
+                return BitmapFactory.decodeFile(file.getPath());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /** The last cover, as a PNG file of its own. */
+    private static File albumArtFile(Context context) {
+        return new File(context.getFilesDir(), "last_album_art.png");
+    }
+
+    /** Writes the cover through a temporary file, so a half-written one is never read. */
+    private static boolean writeAlbumArt(Context context, byte[] png) {
+        File file = albumArtFile(context);
+        File tmp = new File(file.getPath() + ".tmp");
+        try (java.io.FileOutputStream out = new java.io.FileOutputStream(tmp)) {
+            out.write(png);
+        } catch (java.io.IOException e) {
+            Log.w(Launcher.TAG, "album art not saved: " + e);
+            tmp.delete();
+            return false;
+        }
+        if (!tmp.renameTo(file)) {
+            tmp.delete();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Moves a cover kept in the default preferences (as Base64, a quarter of a megabyte) to its
+     * file. In the preferences it made reading them take two seconds at a cold start, and every
+     * write of any setting write it all again. Off the main thread; once.
+     */
+    static void migrateAlbumArt(Context context, SharedPreferences prefs) {
+        if (!prefs.contains(PREF_LAST_ALBUM_ART)) return;
+        try {
+            String encoded = prefs.getString(PREF_LAST_ALBUM_ART, null);
+            if (encoded != null) {
+                writeAlbumArt(context, Base64.decode(encoded, Base64.DEFAULT));
+            }
+        } catch (RuntimeException e) {
+            Log.w(Launcher.TAG, "album art not moved: " + e);
+        }
+        prefs.edit().remove(PREF_LAST_ALBUM_ART).apply();
     }
 
     public void initMusicWidgetView(View musicWidgetView) {
