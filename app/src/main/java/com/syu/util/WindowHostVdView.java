@@ -70,6 +70,14 @@ public class WindowHostVdView extends ViewGroup {
     private int mAttachGen;
     /** Set while the SurfaceView swaps its surface for a new one after a hand-over. */
     private boolean mRenewingSurface;
+    /** What this pane last started, to start again on a fresh display after the host died. */
+    private Intent mLastIntent;
+    /**
+     * The VD host died under this pane (Shizuku restarts its server, e.g. when ADB comes and
+     * goes): its display and app are gone, and nothing but this view starts the app again -- the
+     * pane's own launch sequence only runs once. Cleared by that start.
+     */
+    private boolean mLostToHostDeath;
 
     /**
      * The pane the user last touched, while the launcher itself has not been touched or focused
@@ -194,6 +202,7 @@ public class WindowHostVdView extends ViewGroup {
         // No launch bounds or freeform mode here: the task simply fills the display.
         Bundle options = ActivityOptions.makeBasic().setLaunchDisplayId(vd.getDisplayId()).toBundle();
 
+        mLastIntent = new Intent(intent);
         try {
             int res = vd.startActivity(i, options);
             if (res >= 0) {
@@ -465,6 +474,16 @@ public class WindowHostVdView extends ViewGroup {
             Log.i(TAG, "display " + id + " created " + w + "x" + h + "@" + dpi);
         } catch (Throwable t) {
             Log.w(TAG, "createDisplay failed", t);
+            return;
+        }
+        if (mLostToHostDeath && mLastIntent != null) {
+            mLostToHostDeath = false;
+            Intent again = mLastIntent;
+            Log.i(TAG, "VD host back: starting " + again.getComponent() + " again on display "
+                    + mVirtualDisplay.getDisplayId());
+            if (!startActivitySafely(again)) {
+                Log.w(TAG, "could not start " + again.getComponent() + " again after the VD host died");
+            }
         }
     }
 
@@ -479,6 +498,7 @@ public class WindowHostVdView extends ViewGroup {
         if (vd == null) return;
         vd.markDead();
         mVirtualDisplay = null;
+        mLostToHostDeath = true;
         reportDestroyed();
     }
 
