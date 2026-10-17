@@ -3,6 +3,7 @@ package com.syu.vdhost;
 import android.app.ActivityManager;
 import android.app.TaskStackListener;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -16,6 +17,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +36,10 @@ final class HostServices {
     private static final Pattern PACKAGE_NAME = Pattern.compile("[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+");
     /** Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND */
     private static final int BOOT_BROADCAST_FLAGS = 0x00000020 | 0x10000000;
+    /** UserHandle.USER_CURRENT, AppOpsManager.OP_NONE, ActivityManager.BROADCAST_SUCCESS (hidden). */
+    private static final int USER_CURRENT = -2;
+    private static final int OP_NONE = -1;
+    private static final int BROADCAST_SUCCESS = 0;
     /** Several task changes arrive together (a launch moves, creates and focuses): one look. */
     private static final long FOREGROUND_DEBOUNCE_MS = 150;
 
@@ -166,6 +172,11 @@ final class HostServices {
     /**
      * Sends BOOT_COMPLETED to one package, the way the launcher's boot autostart wakes an app as
      * system. It is a protected broadcast: system and root may send it, shell may not.
+     *
+     * Straight to the activity manager, as am does it, and am only when that call is missing.
+     * am from the Magisk daemon ended at once with exit 255 and no output, not even its
+     * "Broadcasting:" line: system_server writes am's output into the daemon's pipe, which it
+     * may not, and the command gave up before it sent anything.
      */
     String sendBootCompleted(String pkg) {
         if (pkg == null || !PACKAGE_NAME.matcher(pkg).matches()) {
@@ -175,11 +186,64 @@ final class HostServices {
         if (me != 0 && me != Process.SYSTEM_UID) {
             return "UNSUPPORTED (only system or root may send BOOT_COMPLETED)";
         }
-        String result = VdHostCore.runCommand(null, "/system/bin/am", "broadcast",
-                "-a", "android.intent.action.BOOT_COMPLETED", "-p", pkg,
-                "-f", String.valueOf(BOOT_BROADCAST_FLAGS));
+        String result;
+        try {
+            result = broadcastBootCompleted(pkg);
+        } catch (Throwable t) {
+            Throwable cause = t instanceof InvocationTargetException && t.getCause() != null
+                    ? t.getCause() : t;
+            Log.w(TAG, "BOOT_COMPLETED through the activity manager failed, trying am: " + cause);
+            result = VdHostCore.runCommand(null, "/system/bin/am", "broadcast",
+                    "-a", Intent.ACTION_BOOT_COMPLETED, "-p", pkg,
+                    "-f", String.valueOf(BOOT_BROADCAST_FLAGS));
+        }
         Log.i(TAG, "BOOT_COMPLETED to " + pkg + ": " + result);
         return result;
+    }
+
+    /**
+     * IActivityManager.broadcastIntentWithFeature() (Android 11+) or broadcastIntent(), with no
+     * caller, as am calls it. Their parameters differ between releases, but keep their order:
+     * the intent, then ints for the result code, the app op and, last, the user.
+     */
+    private static String broadcastBootCompleted(String pkg) throws ReflectiveOperationException {
+        Object am = Hidden.getService("activity", "android.app.IActivityManager");
+        Method broadcast = null;
+        for (String name : new String[]{ "broadcastIntentWithFeature", "broadcastIntent" }) {
+            for (Method m : am.getClass().getMethods()) {
+                if (!m.getName().equals(name)
+                        || !Arrays.asList(m.getParameterTypes()).contains(Intent.class)) continue;
+                if (broadcast == null
+                        || m.getParameterTypes().length > broadcast.getParameterTypes().length) {
+                    broadcast = m;
+                }
+            }
+            if (broadcast != null) break;
+        }
+        if (broadcast == null) throw new NoSuchMethodException("IActivityManager.broadcastIntent");
+
+        Intent intent = new Intent(Intent.ACTION_BOOT_COMPLETED)
+                .setPackage(pkg)
+                .addFlags(BOOT_BROADCAST_FLAGS);
+        Class<?>[] types = broadcast.getParameterTypes();
+        int ints = 0;
+        for (Class<?> type : types) if (type == int.class) ints++;
+        Object[] args = new Object[types.length];
+        int intIndex = 0;
+        for (int i = 0; i < types.length; i++) {
+            if (types[i] == Intent.class) {
+                args[i] = intent;
+            } else if (types[i] == int.class) {
+                // resultCode 0, appOp OP_NONE, the current user (UserHandle.USER_CURRENT)
+                args[i] = intIndex == 0 ? 0 : intIndex == ints - 1 ? USER_CURRENT : OP_NONE;
+                intIndex++;
+            } else if (types[i] == boolean.class) {
+                args[i] = false;    // neither ordered nor sticky
+            }
+        }
+        Object result = broadcast.invoke(am, args);
+        return Integer.valueOf(BROADCAST_SUCCESS).equals(result)
+                ? "OK (binder)" : "FAILED (binder, result " + result + ")";
     }
 
     // ---------------------------------------------------------------------------------------
