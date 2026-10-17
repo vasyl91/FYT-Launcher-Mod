@@ -340,6 +340,7 @@
     <string name="logcat_full_off">Loguj tylko dla launchera</string>
     <string name="logcat_service_run">Logcat</string>
     <string name="logcat_service_run_summary">Naciśnij, aby zacząć zapis</string>
+    <string name="logcat_service_saving">Zapisywanie logu do momentu zatrzymania…</string>
     <string name="logcat_service_run_working">Trwa zapisywanie... %1$s Naciśnij tutaj aby zatrzymać</string>
     <string name="logcat_service_run_toast">Logcat ukończył pracę. Sprawdź wyniki w Download/Launcher66_Logs</string>
     <string name="logcat_service_timeout">Czas zapisu</string>

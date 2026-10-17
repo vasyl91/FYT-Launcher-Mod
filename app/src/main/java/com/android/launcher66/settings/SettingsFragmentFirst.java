@@ -505,6 +505,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             if (LogcatWorker.get().isActive() && delay > 0) {
                 setCountDownTimer(delay);
                 setTickRunnable(delay);
+            } else if (LogcatWorker.get().isSaving()) {
+                showLogcatSaving();
             } else {
                 logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
                 helpers.setCountDownLogcat(0);
@@ -1085,11 +1087,21 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         @Override
         public void run() {
             cancelCountDownTimer();
+            removeTickRunnable();
+            if (LogcatWorker.get().isSaving()) {
+                showLogcatSaving();
+                return;
+            }
             logcatRun.setEnabled(true);
             logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
-            removeTickRunnable();
         }
     };
+
+    /** The capture has ended and still writes what it read up to then; its listener re-enables. */
+    private void showLogcatSaving() {
+        logcatRun.setEnabled(false);
+        logcatRun.setSummary(getString(R.string.logcat_service_saving));
+    }
 
     public void startLogcatRun() {
         LogcatWorker.get().start(requireContext(), LogcatWorker.Mode.FROM_NOW);
@@ -1099,7 +1111,11 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         LogcatWorker.get().stop(true, requireContext());
         removeTickRunnable();
         cancelCountDownTimer();
-        logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
+        if (LogcatWorker.get().isSaving()) {
+            showLogcatSaving();
+        } else {
+            logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
+        }
     }
 
     private void dialogAllAppsTextSizeEditText() {

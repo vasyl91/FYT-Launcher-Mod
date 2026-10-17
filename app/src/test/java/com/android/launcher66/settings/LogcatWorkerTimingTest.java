@@ -38,12 +38,16 @@ class LogcatWorkerTimingTest {
     }
 
     @Test
-    void bootDumpWaitsForTheBootToSettle() {
-        assertFalse(LogcatWorker.bootDumpDue(30_000L, 0L));          // boot not completed yet
-        assertFalse(LogcatWorker.bootDumpDue(40_000L, 25_000L));     // completed, not settled
-        assertFalse(LogcatWorker.bootDumpDue(45_000L, 20_000L));     // settled, before 50 s
-        assertTrue(LogcatWorker.bootDumpDue(50_000L, 20_000L));
-        assertTrue(LogcatWorker.bootDumpDue(55_000L, 35_000L));      // 20 s after completion
-        assertTrue(LogcatWorker.bootDumpDue(120_000L, 0L));          // latest moment
+    void endOfCaptureComparesTheLineTime() {
+        java.text.SimpleDateFormat fmt = new java.text.SimpleDateFormat("MM-dd HH:mm:ss.SSS", java.util.Locale.US);
+        long now = System.currentTimeMillis();
+        String line = fmt.format(new java.util.Date(now)) + "  1234  1234 I Tag: text";
+        long lineMs = LogcatWorker.lineWallMs(fmt, line, now);
+        assertEquals(now, lineMs);
+        assertTrue(LogcatWorker.isNewerThan(fmt, line, now - 1L));
+        assertFalse(LogcatWorker.isNewerThan(fmt, line, now));
+        // Lines without a time (logcat's own headers) never end the capture.
+        assertFalse(LogcatWorker.isNewerThan(fmt, "--------- beginning of main", 0L));
+        assertEquals(-1L, LogcatWorker.lineWallMs(fmt, "--------- beginning of main", now));
     }
 }

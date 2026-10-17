@@ -482,6 +482,7 @@
     <string name="logcat_full_off">仅记录启动器日志</string>
     <string name="logcat_service_run">日志服务</string>
     <string name="logcat_service_run_summary">点击开始记录</string>
+    <string name="logcat_service_saving">正在保存截至停止时的日志…</string>
     <string name="logcat_service_run_working">正在工作... %1$s 点击此处取消</string>
     <string name="logcat_service_run_toast">记录完成。请在 Download/Launcher66_Logs 中查看结果</string>
     <string name="logcat_service_timeout">超时</string>
