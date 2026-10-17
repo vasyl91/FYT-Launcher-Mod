@@ -4,11 +4,12 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -64,6 +65,8 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
 
     /** At most this many update requests per widget view, a moment apart. */
     private static final String UPDATE_TAG = "WidgetUpdate";
+    /** The launcher's own option key: changed to have the widget's app draw it again. */
+    private static final String OPTION_REDRAW_REQUEST = "com.android.launcher66.redraw_request";
     private static final int MAX_UPDATE_REQUESTS = 2;
     private static final long UPDATE_REQUEST_DELAY_MS = 1000L;
     private int mUpdateRequests;
@@ -73,6 +76,11 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
      * again. Mostly an image the app shares through its own content provider: the read
      * permission it gave the launcher is dropped whenever the launcher is installed again, and
      * comes back only with the app's next update (a restart of the phone was the cure).
+     *
+     * APPWIDGET_UPDATE is the system's to send (Permission Denial for the launcher); what the
+     * host may do is change the widget's options, as it does on every resize: the app gets
+     * APPWIDGET_OPTIONS_CHANGED, on which most widgets (all of Jetpack Glance's) draw again.
+     * A key of the launcher's own changes, so the options always differ.
      */
     private void requestProviderUpdate() {
         final AppWidgetProviderInfo info = getAppWidgetInfo();
@@ -83,15 +91,15 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
         }
         mUpdateRequests++;
         postDelayed(() -> {
-            Intent update = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-                    .setComponent(info.provider)
-                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId });
             try {
-                getContext().sendBroadcast(update);
+                AppWidgetManager manager = AppWidgetManager.getInstance(getContext());
+                Bundle options = manager.getAppWidgetOptions(appWidgetId);
+                options.putLong(OPTION_REDRAW_REQUEST, SystemClock.elapsedRealtime());
+                manager.updateAppWidgetOptions(appWidgetId, options);
                 Log.i(UPDATE_TAG, "widget " + appWidgetId + " (" + info.provider.flattenToShortString()
-                        + ") failed to show: asked its app for an update");
+                        + ") failed to show: asked its app to draw it again");
             } catch (RuntimeException e) {
-                Log.w(UPDATE_TAG, "widget " + appWidgetId + ": update not requested: " + e);
+                Log.w(UPDATE_TAG, "widget " + appWidgetId + ": redraw not requested: " + e);
             }
         }, UPDATE_REQUEST_DELAY_MS);
     }
