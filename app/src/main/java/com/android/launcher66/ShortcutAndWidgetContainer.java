@@ -25,6 +25,12 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
     private Context mContext;
     private final float widgetScaleFactor = ScreenScale.widgetScale();
 
+    private boolean mRowPadding = true;
+
+    void setRowPadding(boolean rowPadding) {
+        mRowPadding = rowPadding;
+    }
+
     public ShortcutAndWidgetContainer(Context context) {
         super(context);
         mContext = context;
@@ -94,8 +100,10 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         // Normal setup for other views
         if (LauncherAppWidgetHostView.isScaled(child)) {
             // Widgets have their own scale
+            lp.rowPadding = mRowPadding;
             lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, widgetScaleFactor, widgetScaleFactor);
         } else {
+            lp.rowPadding = mRowPadding;
             lp.setup(this.mCellWidth, this.mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
         }
     }
@@ -147,10 +155,12 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
 
             if (LauncherAppWidgetHostView.isScaled(child)) {
                 // Widgets have their own scale
+                lp.rowPadding = mRowPadding;
                 lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, widgetScaleFactor, widgetScaleFactor);
             } else {
                 LauncherAppState app = LauncherAppState.getInstance();
                 DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
+                lp.rowPadding = mRowPadding;
                 lp.setup(mCellWidth, mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
                 int cHeight = getCellContentHeight();
                 int cellPaddingY = (int) Math.max(0.0f, (lp.height - cHeight) / 2.0f);

@@ -168,6 +168,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 
         int[] cell = itemCellSize(grid);
         mContent.setCellDimensions(cell[0], cell[1]);
+        mContent.setRowPadding(false);
         mContent.setGridSize(0, 0);
         mContent.getShortcutsAndWidgets().setMotionEventSplittingEnabled(false);
         mContent.setInvertIfRtl(true);
@@ -274,7 +275,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 
     public void startEditingFolderName() {
         mFolderName.setHint("");
-        WindowUtil.removePip();
+        // The panes stay: the keyboard comes over them, and they take no focus from it.
         mIsEditingName = true;
         mFolderName.postDelayed(new Runnable() {
             @Override

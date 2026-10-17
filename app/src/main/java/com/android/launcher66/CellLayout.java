@@ -392,6 +392,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         return mIsHotseat ? mHotseatScale : 1.0f;
     }
 
+    /** Whether the top rows sit lower by the workspace's top padding (see LayoutParams). */
+    public void setRowPadding(boolean rowPadding) {
+        mShortcutsAndWidgets.setRowPadding(rowPadding);
+    }
+
     public void setCellDimensions(int width, int height) {
         mFixedCellWidth = mCellWidth = width;
         mFixedCellHeight = mCellHeight = height;
@@ -3609,6 +3614,13 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
     public static class LayoutParams extends ViewGroup.MarginLayoutParams {
         /**
+         * Whether the top rows are moved down by the workspace's top padding: on the workspace
+         * only. In a folder it pushed each row over the next and the last over the folder's
+         * name. Set by ShortcutAndWidgetContainer before every setup().
+         */
+        boolean rowPadding = true;
+
+        /**
          * Horizontal location of the item in the grid.
          */
         @ViewDebug.ExportedProperty
@@ -3728,16 +3740,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 y = (myCellY * cellHeight + topMargin);
 
                 // padding for the first row and for consecutive rows so it doesn't look wierd
-                int rowPadding = 0;
-                if (myCellY == 0) {
-                    rowPadding = Launcher.workspaceTopPadding;
-                }
-                if (myCellY == 1) {
-                    rowPadding = Launcher.workspaceTopPadding / 2;
-                }
-                if (myCellY == 2) {
-                    rowPadding = Launcher.workspaceTopPadding / 4;
-                }
+                int rowPadding = rowPadding(myCellY);
                 y += rowPadding;
 
                 // The widget is drawn that much lower: without it off its height it reached
@@ -3767,16 +3770,16 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 y = (int) (myCellY * (cellHeight + heightGap) + topMargin);
 
                 // padding for the first row and for consecutive rows so it doesn't look wierd
-                if (myCellY == 0) {
-                    y += Launcher.workspaceTopPadding;
-                }
-                if (myCellY == 1) {
-                    y += Launcher.workspaceTopPadding / 2;
-                }
-                if (myCellY == 2) {
-                    y += Launcher.workspaceTopPadding / 4;
-                }
+                y += rowPadding(myCellY);
             }
+        }
+
+        private int rowPadding(int cellY) {
+            if (!rowPadding) return 0;
+            if (cellY == 0) return Launcher.workspaceTopPadding;
+            if (cellY == 1) return Launcher.workspaceTopPadding / 2;
+            if (cellY == 2) return Launcher.workspaceTopPadding / 4;
+            return 0;
         }
 
         public String toString() {
