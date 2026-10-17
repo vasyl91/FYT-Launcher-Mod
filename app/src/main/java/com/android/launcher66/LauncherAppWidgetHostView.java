@@ -1,8 +1,10 @@
 package com.android.launcher66;
 
 import android.appwidget.AppWidgetHostView;
+import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PointF;
@@ -56,7 +58,42 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
 
     @Override
     protected View getErrorView() {
+        requestProviderUpdate();
         return mInflater.inflate(R.layout.appwidget_error, this, false);
+    }
+
+    /** At most this many update requests per widget view, a moment apart. */
+    private static final String UPDATE_TAG = "WidgetUpdate";
+    private static final int MAX_UPDATE_REQUESTS = 2;
+    private static final long UPDATE_REQUEST_DELAY_MS = 1000L;
+    private int mUpdateRequests;
+
+    /**
+     * The content could not be shown ("Problem loading widget"): asks the widget's app to send it
+     * again. Mostly an image the app shares through its own content provider: the read
+     * permission it gave the launcher is dropped whenever the launcher is installed again, and
+     * comes back only with the app's next update (a restart of the phone was the cure).
+     */
+    private void requestProviderUpdate() {
+        final AppWidgetProviderInfo info = getAppWidgetInfo();
+        final int appWidgetId = getAppWidgetId();
+        if (info == null || info.provider == null || appWidgetId <= 0
+                || mUpdateRequests >= MAX_UPDATE_REQUESTS) {
+            return;
+        }
+        mUpdateRequests++;
+        postDelayed(() -> {
+            Intent update = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+                    .setComponent(info.provider)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId });
+            try {
+                getContext().sendBroadcast(update);
+                Log.i(UPDATE_TAG, "widget " + appWidgetId + " (" + info.provider.flattenToShortString()
+                        + ") failed to show: asked its app for an update");
+            } catch (RuntimeException e) {
+                Log.w(UPDATE_TAG, "widget " + appWidgetId + ": update not requested: " + e);
+            }
+        }, UPDATE_REQUEST_DELAY_MS);
     }
 
     @Override
