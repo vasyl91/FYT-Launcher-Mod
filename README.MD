@@ -116,6 +116,25 @@ The second method, related to the modified Android ActivityView class, displays 
 
 ---
 
+## Versions and updates
+
+Every release comes in two versions:
+
+| File | Version | Where |
+|---|---|---|
+| `fyt_release_<version>.apk` | FYT version | FYT units only. A system app (signed with the platform key, `android:sharedUserId="android.uid.system"`), installed with `installer.zip`. |
+| `standard_release_<version>.apk` | Standard version (called "phone" up to 1.2.1) | Any other Android 8+ device: phones, tablets, other head units. A user app; the privileged features come from the [FYT VDHost](vdhost/README.md) Magisk module (root) or Shizuku. |
+
+The launcher's settings show which one is installed, under its version (e.g. "Release build · FYT version").
+
+**Built-in update.** The updater downloads its own version's file (`fyt_release_` or `standard_release_` + the version) from the [latest release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest). A debug build is offered the release of the same or a newer version, to install over it ("Press here to download and install release version …").
+
+Versions up to 1.2.1 download `update<version>.apk` instead, whichever version they are. So that they still find their update, every release also carries the FYT version under that name: the [Release assets](.github/workflows/release-assets.yml) workflow adds it by itself when a release is published. It waits up to 10 minutes for `fyt_release_<version>.apk`, if the files are uploaded after publishing; otherwise run it by hand (Actions → Release assets → Run workflow, with the tag). A standard ("phone") 1.2.1 would download the FYT version and fail to install it: it has to be updated to the standard version by hand once.
+
+Releases are tagged `v<version>` (e.g. `v1.2.2`): the updater reads the version from the tag.
+
+---
+
 ## Fuel statistics
 
 To get it working, you have to find the CAN bus codes. Without them, the enabled widget will show 0 by default. You can do this with the help of the CAN bus logging tool (check the guide in the launcher's settings) or look for the codes manually in the source code as described below.
