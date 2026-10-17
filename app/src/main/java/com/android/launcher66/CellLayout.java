@@ -3749,21 +3749,28 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     myCellX = colCount - myCellX - cellHSpan;
                 }
 
-                width = (int) (myCellHSpan * cellWidth / cellScaleX - leftMargin - rightMargin);
-                height = (int) (myCellVSpan * cellHeight / cellScaleY - topMargin - bottomMargin);
                 x = (myCellX * cellWidth + leftMargin);
                 y = (myCellY * cellHeight + topMargin);
 
                 // padding for the first row and for consecutive rows so it doesn't look wierd
+                int rowPadding = 0;
                 if (myCellY == 0) {
-                    y += Launcher.workspaceTopPadding;
+                    rowPadding = Launcher.workspaceTopPadding;
                 }
                 if (myCellY == 1) {
-                    y += Launcher.workspaceTopPadding / 2;
+                    rowPadding = Launcher.workspaceTopPadding / 2;
                 }
                 if (myCellY == 2) {
-                    y += Launcher.workspaceTopPadding / 4;
+                    rowPadding = Launcher.workspaceTopPadding / 4;
                 }
+                y += rowPadding;
+
+                // The widget is drawn that much lower, and lower again by
+                // ShortcutAndWidgetContainer.widgetShiftY(): without both off its height it
+                // reached over the row below.
+                int shiftY = rowPadding + ShortcutAndWidgetContainer.widgetShiftY();
+                width = (int) (myCellHSpan * cellWidth / cellScaleX - leftMargin - rightMargin);
+                height = (int) ((myCellVSpan * cellHeight - shiftY) / cellScaleY - topMargin - bottomMargin);
             }
         }
 

@@ -25,6 +25,15 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
     private Context mContext;
     private final float widgetScaleFactor = ScreenScale.widgetScale();
 
+    /**
+     * How much lower than its cells a resizable widget is drawn: half the resize frame's
+     * padding (24 dp). CellLayout.LayoutParams takes it off the widget's height.
+     */
+    static int widgetShiftY() {
+        float density = LauncherApplication.sApp.getResources().getDisplayMetrics().density;
+        return (int) (Math.ceil(24.0f * density) / 2.0f);
+    }
+
     public ShortcutAndWidgetContainer(Context context) {
         super(context);
         mContext = context;
@@ -207,13 +216,9 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
                         float scaleX = widgetScaleFactor;
                         float scaleY = widgetScaleFactor;
 
-                        Rect p = AppWidgetHostView.getDefaultPaddingForWidget(mContext, hostView.getAppWidgetInfo().provider, null);
-                        float density = this.mLauncher.getResources().getDisplayMetrics().density;
-                        int mBackgroundPadding = (int) Math.ceil(24.0f * density);
-
                         lahv.setScaleToFit(Math.min(scaleX, scaleY));
                         lahv.setTranslationForCentering(-(lp.width - (lp.width * scaleX)) / 2.0f,
-                                (-(lp.height - (lp.height * scaleY)) / 2.0f) + (mBackgroundPadding / 2.0f));
+                                (-(lp.height - (lp.height * scaleY)) / 2.0f) + widgetShiftY());
                     }
                 }
 
