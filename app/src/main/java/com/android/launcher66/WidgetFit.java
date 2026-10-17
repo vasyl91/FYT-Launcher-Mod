@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
  */
 final class WidgetFit {
 
-    private static final String PREFS = "widget_fit";
+    static final String PREFS = "widget_fit";
 
     private WidgetFit() {
     }

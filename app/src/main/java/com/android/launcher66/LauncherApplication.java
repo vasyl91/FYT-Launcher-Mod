@@ -116,6 +116,8 @@ public class LauncherApplication extends Application {
         if (!isWallpaperPickerProcess()) {
             PreferenceManager.getDefaultSharedPreferences(this);
             getSharedPreferences(Helpers.SUS_PREFS, MODE_PRIVATE);
+            // Read for every widget the workspace binds (setAppWidget()).
+            getSharedPreferences(WidgetFit.PREFS, MODE_PRIVATE);
         }
     }
 
