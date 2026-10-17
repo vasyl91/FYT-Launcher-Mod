@@ -5295,11 +5295,59 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     static int[] getSpanForWidget(Context context, AppWidgetProviderInfo info) {
+        fillWidgetSize(info);
         return getSpanForWidget(context, info.provider, info.minWidth, info.minHeight);
     }
 
     static int[] getMinSpanForWidget(Context context, AppWidgetProviderInfo info) {
+        fillWidgetSize(info);
         return getSpanForWidget(context, info.provider, info.minResizeWidth, info.minResizeHeight);
+    }
+
+    /** The cells a widget that gives no size of its own gets: it can be resized from there. */
+    private static final int DEFAULT_WIDGET_SPAN = 2;
+
+    /**
+     * Gives info a size where it has none (minWidth or minHeight 0: many Samsung and some Google
+     * widgets, made for launchers that size them in cells), so it can be listed and added. In
+     * order: the cells it asks for (Android 12+), its smallest resized size, two cells. The
+     * pixels are a hair under the cells, so rectToCell() comes to exactly those cells. Widgets
+     * with a size of their own are left alone; calling it again changes nothing.
+     */
+    static void fillWidgetSize(AppWidgetProviderInfo info) {
+        if (info == null || (info.minWidth > 0 && info.minHeight > 0)) return;
+        int cell = CellLayout.widgetCellSize();
+        if (cell <= 0) return;
+        Rect padding = AppWidgetHostView.getDefaultPaddingForWidget(LauncherApplication.sApp,
+                info.provider, null);
+        int targetX = 0;
+        int targetY = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            targetX = info.targetCellWidth;
+            targetY = info.targetCellHeight;
+        }
+        if (info.minWidth <= 0) {
+            info.minWidth = widgetSide(targetX, info.minResizeWidth, cell,
+                    padding.left + padding.right);
+        }
+        if (info.minHeight <= 0) {
+            info.minHeight = widgetSide(targetY, info.minResizeHeight, cell,
+                    padding.top + padding.bottom);
+        }
+        if (info.minResizeWidth <= 0 || info.minResizeWidth > info.minWidth) {
+            info.minResizeWidth = info.minWidth;
+        }
+        if (info.minResizeHeight <= 0 || info.minResizeHeight > info.minHeight) {
+            info.minResizeHeight = info.minHeight;
+        }
+        Log.d(TAG, "Widget " + info.provider + " gives no size, sized "
+                + info.minWidth + "x" + info.minHeight + " px");
+    }
+
+    private static int widgetSide(int targetCells, int minResize, int cell, int padding) {
+        if (targetCells <= 0 && minResize > 0) return minResize;
+        int cells = targetCells > 0 ? targetCells : DEFAULT_WIDGET_SPAN;
+        return Math.max(1, cells * cell - padding - 1);
     }
 
     static int[] getSpanForWidget(Context context, PendingAddWidgetInfo info) {

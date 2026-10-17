@@ -463,6 +463,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         for (Object o : widgetsAndShortcuts) {
             if (o instanceof AppWidgetProviderInfo widget) {
                 if (app.shouldShowAppOrWidgetProvider(widget.provider) && !isFilterWidgets(widget.provider.getClassName()) && (Config.CUSTOMER_ID != 8 || (!widget.provider.getPackageName().contains("antutu") && !widget.provider.getPackageName().contains("ludashi"))))  {
+                    Launcher.fillWidgetSize(widget);
                     if (widget.minWidth > 0 && widget.minHeight > 0) {
                         // Ensure that all widgets we show can be added on a workspace of this size
                         int[] spanXY = Launcher.getSpanForWidget(mLauncher, widget);

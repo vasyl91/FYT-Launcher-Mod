@@ -3419,7 +3419,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
      * @param height Height in pixels
      * @param result An array of length 2 in which to store the result (may be null).
      */
-    public static int[] rectToCell(int width, int height, int[] result) {
+    /** The side of the square cell rectToCell() counts widget spans in, in pixels. */
+    public static int widgetCellSize() {
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
         Rect padding = grid.getWorkspacePadding(grid.isLandscape ?
@@ -3431,7 +3432,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                 - padding.left - padding.right, (int) grid.numColumns);
         int parentHeight = grid.calculateCellHeight(grid.heightPx
                 - padding.top - padding.bottom, (int) grid.numRows);
-        int smallerSize = Math.min(parentWidth, parentHeight);
+        return Math.min(parentWidth, parentHeight);
+    }
+
+    public static int[] rectToCell(int width, int height, int[] result) {
+        int smallerSize = widgetCellSize();
 
         // Always round up to next largest cell
         int spanX = (int) Math.ceil(width / (float) smallerSize);
