@@ -579,6 +579,8 @@ public class Workspace extends SmoothPagedView
         Display display = mLauncher.getWindowManager().getDefaultDisplay();
         display.getSize(mDisplaySize);
 
+        // grid.iconSizePx is the icon's pixels taken as dp (the density times the icon on a
+        // phone), and the distance is kept so: it feels right as it is.
         mMaxDistanceForFolderCreation = (0.55f * grid.iconSizePx);
         mFlingThresholdVelocity = (int) (FLING_THRESHOLD_VELOCITY * mDensity);
     }
