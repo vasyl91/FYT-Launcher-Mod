@@ -500,10 +500,11 @@
     <string name="build_type_release">Release build</string>
     <string name="build_type_debug">Debug build</string>
     <string name="build_flavor_fyt">FYT version</string>
-    <string name="build_flavor_phone">Phone version</string>
+    <string name="build_flavor_standard">Standard version</string>
     <string name="app_version">Version: %1$s</string>
     <string name="app_version_update">Version: %1$s (Available newer version: %2$s)</string>
     <string name="update_version_button">Press here to download and update the app</string>
+    <string name="install_release_button">Press here to download and install release version %1$s</string>
     <string name="confirmation_dialog">Do you want to update to the %1$s version?</string>
     <string name="update_btn">UPDATE</string>
     <string name="update_allow_install">Allow installing apps from this source, then tap update again</string>

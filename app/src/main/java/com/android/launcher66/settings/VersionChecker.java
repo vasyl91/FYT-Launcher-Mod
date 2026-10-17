@@ -32,14 +32,17 @@ public class VersionChecker {
     private static final String GITHUB_RELEASES_URL = "https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest";
     /**
      * The release asset this build updates from, which is also the downloaded file's name:
-     * fyt_release_ or phone_release_ + version. The download used to fetch update<version>.apk
-     * (the FYT build) whatever the flavor and only named the file after it, so a phone got the
-     * FYT build, which declares permissions in a group Android 12+ does not have: -127,
-     * INSTALL_FAILED_BAD_PERMISSION_GROUP (and its shared system uid could not have replaced
-     * the phone build either).
+     * fyt_release_ or standard_release_ + version. Up to 1.2.1 the download fetched
+     * update<version>.apk (the FYT build) whatever the flavor, so the standard build (then
+     * "phone") got the FYT build, which declares permissions in a group Android 12+ does not
+     * have: -127, INSTALL_FAILED_BAD_PERMISSION_GROUP (and its shared system uid could not have
+     * replaced the standard build either). Releases still carry the FYT build as
+     * update<version>.apk too, for those versions (.github/workflows/release-assets.yml).
      */
     private static final String UPDATE_FILE_PREFIX = BuildConfig.FLAVOR + "_release_";
     private static final String UPDATE_FILE_SUFFIX = ".apk";
+    /** Names earlier versions downloaded updates as: such files are never used again. */
+    private static final String[] LEGACY_UPDATE_FILE_PREFIXES = { "update", "phone_release_" };
 
     private AsyncTask<Void, Void, String> checkTask;
     private AsyncTask<Void, Integer, File> downloadTask;
@@ -179,21 +182,14 @@ public class VersionChecker {
                 }
             }
 
+            /**
+             * Whether latest is offered: a newer version, or for a debug build also the same
+             * one (a debug build may be replaced by its release). It used to count a debug
+             * build's equal first number as newer, so a debug 1.3.0 was offered release 1.2.2.
+             */
             private boolean isNewerVersion(String current, String latest) {
-                String[] currentParts = current.split("\\.");
-                String[] latestParts = latest.split("\\.");
-                boolean isDebug = BuildConfig.DEBUG;
-
-                int maxLength = Math.max(currentParts.length, latestParts.length);
-                for (int i = 0; i < maxLength; i++) {
-                    int currentNum = (i < currentParts.length) ? Integer.parseInt(currentParts[i]) : 0;
-                    int latestNum = (i < latestParts.length) ? Integer.parseInt(latestParts[i]) : 0;
-
-                    if (latestNum == currentNum && isDebug) return true;
-                    if (latestNum > currentNum) return true;
-                    if (latestNum < currentNum) return false;
-                }
-                return false;
+                int comparison = compareVersions(latest, current);
+                return BuildConfig.DEBUG ? comparison >= 0 : comparison > 0;
             }
         }.execute();
     }
@@ -457,7 +453,15 @@ public class VersionChecker {
             }
             for (File file : files) {
                 String name = file.getName();
-                if (!file.isFile() || !name.startsWith(UPDATE_FILE_PREFIX) || !name.endsWith(UPDATE_FILE_SUFFIX)) {
+                if (!file.isFile() || !name.endsWith(UPDATE_FILE_SUFFIX)) {
+                    continue;
+                }
+                if (isLegacyUpdateFile(name)) {
+                    Log.i(TAG, "Deleting update file of an earlier version " + name);
+                    deleteQuietly(file);
+                    continue;
+                }
+                if (!name.startsWith(UPDATE_FILE_PREFIX)) {
                     continue;
                 }
                 String fileVersion = name.substring(UPDATE_FILE_PREFIX.length(),
@@ -474,6 +478,13 @@ public class VersionChecker {
                 }
             }
         }, "UpdateFileCleanup").start();
+    }
+
+    private static boolean isLegacyUpdateFile(String name) {
+        for (String prefix : LEGACY_UPDATE_FILE_PREFIXES) {
+            if (name.startsWith(prefix) && !prefix.equals(UPDATE_FILE_PREFIX)) return true;
+        }
+        return false;
     }
 
     /** Numeric comparison of dotted versions ("1.2.10" > "1.2.9"). Negative if a < b. */

@@ -356,10 +356,11 @@
     <string name="build_type_release">Build release</string>
     <string name="build_type_debug">Build debug</string>
     <string name="build_flavor_fyt">Wersja FYT</string>
-    <string name="build_flavor_phone">Wersja na telefon</string>
+    <string name="build_flavor_standard">Wersja standardowa</string>
     <string name="app_version">Wersja: %1$s</string>
     <string name="app_version_update">Wersja: %1$s (Dostępna nowsza wersja: %2$s)</string>    
     <string name="update_version_button">Naciśnij, aby pobrać i zainstalować aktualizację</string>
+    <string name="install_release_button">Naciśnij, aby pobrać i zainstalować wersję release %1$s</string>
     <string name="confirmation_dialog">Czy chcesz zaktualizować aplikację do wersji %1$s?</string>
     <string name="update_btn">AKTUALIZUJ</string>
     <string name="update_allow_install">Zezwól na instalowanie aplikacji z tego źródła, potem ponów aktualizację</string>

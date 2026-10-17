@@ -521,7 +521,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             String build = getString(com.android.launcher66.BuildConfig.DEBUG
                     ? R.string.build_type_debug : R.string.build_type_release);
             String flavor = getString("fyt".equals(com.android.launcher66.BuildConfig.FLAVOR)
-                    ? R.string.build_flavor_fyt : R.string.build_flavor_phone);
+                    ? R.string.build_flavor_fyt : R.string.build_flavor_standard);
             appVersion.setSummary(appTypeText() + "\n" + build + " · " + flavor);
             String currentVersion = Helpers.getAppVersion(LauncherApplication.sApp);
             appVersion.setTitle(getString(R.string.app_version, currentVersion));
@@ -529,8 +529,18 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 @Override
                 public void onUpdateAvailable(String latestVersion) {
                     if (isAdded()) { 
-                        appVersion.setTitle(getString(R.string.app_version_update, currentVersion, latestVersion));
                         latestAppVersion = latestVersion;
+                        if (com.android.launcher66.BuildConfig.DEBUG) {
+                            // A debug build is offered the release (of the same version or a
+                            // newer one) to install over it, not a newer version as such.
+                            appVersion.setTitle(getString(R.string.app_version, currentVersion));
+                            if (appVersionUpdate != null) {
+                                appVersionUpdate.setTitle(getString(R.string.install_release_button,
+                                        latestVersion));
+                            }
+                        } else {
+                            appVersion.setTitle(getString(R.string.app_version_update, currentVersion, latestVersion));
+                        }
                         if (appVersionUpdate != null) {
                             appVersionUpdate.setVisible(true);
                         }
