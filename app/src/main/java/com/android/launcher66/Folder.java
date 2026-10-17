@@ -166,7 +166,8 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
 
-        mContent.setCellDimensions(grid.folderCellWidthPx, grid.folderCellHeightPx);
+        int[] cell = itemCellSize(grid);
+        mContent.setCellDimensions(cell[0], cell[1]);
         mContent.setGridSize(0, 0);
         mContent.getShortcutsAndWidgets().setMotionEventSplittingEnabled(false);
         mContent.setInvertIfRtl(true);
@@ -187,6 +188,30 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         mFolderName.setInputType(mFolderName.getInputType() |
                 InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         mAutoScrollHelper = new FolderAutoScrollHelper(mScrollView);
+    }
+
+    /**
+     * A folder cell: one item as it is drawn (its icon over a line of its label), with AOSP's
+     * margins round it. grid.folderCellWidthPx / folderCellHeightPx come from grid.iconSizePx,
+     * the icon's pixels taken as dp: on a phone two items made a folder room for four, and a tap
+     * in the empty half opened the app above it.
+     */
+    private int[] itemCellSize(DeviceProfile grid) {
+        int iconSize = Utilities.sIconTextureWidth;
+        if (iconSize <= 0) return new int[] { grid.folderCellWidthPx, grid.folderCellHeightPx };
+        BubbleTextView probe = (BubbleTextView) mInflater.inflate(R.layout.application, this, false);
+        Drawable icon = new android.graphics.drawable.ColorDrawable();
+        icon.setBounds(0, 0, iconSize, iconSize);
+        probe.setCompoundDrawables(null, icon, null, null);
+        // As applyFromShortcutInfo() sets it.
+        probe.setCompoundDrawablePadding((int) ((grid.folderIconSizePx - grid.iconSizePx) / 2f));
+        probe.setText("Ag");
+        // The folder's cells set their own padding (ShortcutAndWidgetContainer.measureChild()).
+        probe.setPadding(0, 0, 0, 0);
+        probe.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        int width = iconSize + grid.edgeMarginPx * 3;
+        int height = probe.getMeasuredHeight() + (int) (1.5f * grid.edgeMarginPx);
+        return new int[] { width, height };
     }
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
