@@ -1087,20 +1087,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         }
     }
 
-    /**
-     * How far right of the left padding onLayout() puts the children: half the free width, which
-     * counts the gaps between the columns although the children's x counts them too. With gaps
-     * (phones; none on FYT units) an icon sits that far right of its cell as the grid maths has it.
-     */
-    int shortcutsContainerOffsetX() {
-        int offset = getMeasuredWidth() - getPaddingLeft() - getPaddingRight() -
-                (mCountX * mCellWidth);
-        return (int) Math.ceil(offset / 2f);
-    }
-
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        int left = getPaddingLeft() + shortcutsContainerOffsetX();
+        int offset = getMeasuredWidth() - getPaddingLeft() - getPaddingRight() -
+                (mCountX * mCellWidth);
+        int left = getPaddingLeft() + (int) Math.ceil(offset / 2f);
         int top = getPaddingTop();
         int count = getChildCount();
         for (int i = 0; i < count; i++) {
@@ -1529,8 +1520,6 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                     // outline offset
                     left += dragOffset.x + ((mCellWidth * spanX) + ((spanX - 1) * mWidthGap)
                              - dragRegion.width()) / 2;
-                    // Where the icon really lands, see shortcutsContainerOffsetX().
-                    left += shortcutsContainerOffsetX();
                     // The icon sits centred in a cell taller than its content (measureChild()
                     // pads it by the same amount): without this the outline showed at the top of
                     // the cell, above where the icon lands. FYT cells fit their content (no
