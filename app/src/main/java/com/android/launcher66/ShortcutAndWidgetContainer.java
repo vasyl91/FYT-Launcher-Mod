@@ -23,7 +23,7 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
     private int mWidthGap;
     private Launcher mLauncher;
     private Context mContext;
-    private float widgetScaleFactor = 1.75f;
+    private final float widgetScaleFactor = ScreenScale.widgetScale();
 
     public ShortcutAndWidgetContainer(Context context) {
         super(context);

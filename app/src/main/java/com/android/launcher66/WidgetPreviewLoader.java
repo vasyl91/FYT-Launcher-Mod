@@ -127,7 +127,7 @@ public class WidgetPreviewLoader {
     private IconCache mIconCache;
 
     private final float sWidgetPreviewIconPaddingPercentage = 0.25f;
-    private float widgetScaleFactor = 1.75f;
+    private final float widgetScaleFactor = ScreenScale.widgetScale();
 
     private CacheDb mDb;
 
@@ -480,7 +480,8 @@ public class WidgetPreviewLoader {
 
     /** The upscale used to make the previews in the widget tray look bigger. */
     private float trayUpscaleFactor() {
-        return Math.max(0.1f, widgetScaleFactor - 0.25f);
+        // 1.5 on the FYT unit it was tuned on, and the same share of it elsewhere.
+        return Math.max(0.1f, widgetScaleFactor * (1.5f / 1.75f));
     }
 
     /**

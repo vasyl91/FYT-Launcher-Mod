@@ -183,7 +183,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private final static Paint sPaint = new Paint();
 
     private int excludeLastRow = 1; // do not allow to place the object where the bottom bar is
-    private float widgetScaleFactor = 1.75f;
+    private final float widgetScaleFactor = ScreenScale.widgetScale();
 
     boolean userDate = true;
     boolean userMusic = true;

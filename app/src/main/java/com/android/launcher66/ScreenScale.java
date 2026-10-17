@@ -29,6 +29,13 @@ public final class ScreenScale {
     public static final int REFERENCE_SHORT_SIDE_PX = 1080;
     public static final int REFERENCE_LONG_SIDE_PX = 2340;
 
+    /**
+     * How much larger than they lay out widgets are drawn on the FYT unit they were tuned on
+     * (2000 x 1200 at 240 dpi: a shorter side of 800 dp). At 1 they looked too small there.
+     */
+    private static final float WIDGET_SCALE_FYT = 1.75f;
+    private static final float FYT_SHORT_SIDE_DP = 800f;
+
     private static Boolean sApplies;
 
     private ScreenScale() {
@@ -68,6 +75,20 @@ public final class ScreenScale {
     public static float textFactor(Resources res) {
         float factor = factor(res);
         return applies() && isPortrait(res) ? factor * TEXT_SCALE_PORTRAIT : factor;
+    }
+
+    /**
+     * The widgets' scale: on FYT units the tuned one, elsewhere the one that makes a dp of a
+     * widget the same share of the screen as there. A widget lays out in its cells' pixels over
+     * this scale and is drawn this much larger, so the share goes with scale / shorter side in
+     * dp. A 1080 px phone at 450 dpi (384 dp) comes to about 0.84.
+     */
+    public static float widgetScale() {
+        if (!applies()) return WIDGET_SCALE_FYT;
+        DisplayMetrics dm = Resources.getSystem().getDisplayMetrics();
+        int shortSide = Math.min(dm.widthPixels, dm.heightPixels);
+        if (shortSide <= 0 || dm.density <= 0) return WIDGET_SCALE_FYT;
+        return WIDGET_SCALE_FYT * (shortSide / dm.density) / FYT_SHORT_SIDE_DP;
     }
 
     /**

@@ -5063,7 +5063,7 @@ public class Workspace extends SmoothPagedView
             }
         }
 
-        float widgetScaleFactor = 1.75f;
+        float widgetScaleFactor = ScreenScale.widgetScale();
         float widgetScale = isWidget ? widgetScaleFactor : 1.0f;
         
         // Create scaled drag outline
