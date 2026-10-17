@@ -321,21 +321,34 @@ public class SettingsActivity extends AppCompatActivity {
      * really lies under, so whatever it constrains to its parent stays clear of them. These are
      * the window's own insets, not the status_bar_height / navigation_bar_height dimensions: those
      * say how big a bar is, not whether this window is under it, nor on which side the navigation
-     * bar is.
+     * bar is. Read from the window once the screen is attached: dispatched insets never reach it,
+     * AppCompat's (hidden) action bar layout takes them on the way, and the screen is added after
+     * they went out.
      */
     static void padForSystemBars(@NonNull View root) {
         final int left = root.getPaddingLeft();
         final int top = root.getPaddingTop();
         final int right = root.getPaddingRight();
         final int bottom = root.getPaddingBottom();
-        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+        final Runnable apply = () -> {
+            WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(root);
+            if (insets == null) return;
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars()
                     | WindowInsetsCompat.Type.displayCutout());
-            v.setPadding(left + bars.left, top + bars.top, right + bars.right, bottom + bars.bottom);
+            root.setPadding(left + bars.left, top + bars.top, right + bars.right, bottom + bars.bottom);
             Log.d(TAG, "Creator insets: " + bars);
-            return insets;
+        };
+        if (root.isAttachedToWindow()) apply.run();
+        root.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(@NonNull View v) {
+                apply.run();
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(@NonNull View v) {
+            }
         });
-        ViewCompat.requestApplyInsets(root);
     }
 
     public int getStatusBarHeight() {
