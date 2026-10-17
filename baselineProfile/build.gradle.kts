@@ -33,11 +33,11 @@ android {
     experimentalProperties["android.experimental.self-instrumenting"] = true
 
     // The same flavors as :app, so each variant targets the matching build: fyt for FYT units
-    // (a system app, installs nowhere else), phone for every other device. The profile they
+    // (a system app, installs nowhere else), standard for every other device. The profile they
     // make is the same file, used by both builds.
     flavorDimensions += "device"
     productFlavors {
-        create("phone") { dimension = "device" }
+        create("standard") { dimension = "device" }
         // Default in Android Studio, like :app's fyt: set in finalizeDsl below.
         create("fyt") { dimension = "device" }
     }
@@ -49,7 +49,7 @@ android {
 }
 
 androidComponents {
-    // The plugin enables only its own variants here (debug is disabled), so per flavor (phone,
+    // The plugin enables only its own variants here (debug is disabled), so per flavor (standard,
     // fyt) this module has exactly:
     // <flavor>NonMinifiedRelease - generates the profile (default in Android Studio),
     // <flavor>BenchmarkRelease   - StartupBenchmark.
@@ -68,7 +68,7 @@ androidComponents {
         } else {
             logger.warn(
                 "baselineprofile: cannot mark nonMinifiedRelease as default, " +
-                    "select phone- or fytNonMinifiedRelease in Build Variants manually."
+                    "select standard- or fytNonMinifiedRelease in Build Variants manually."
             )
         }
     }

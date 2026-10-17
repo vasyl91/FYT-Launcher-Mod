@@ -50,7 +50,7 @@ import kotlin.coroutines.resume
  * Why it works without root: the launcher runs as UID 1000 (android.uid.system) and is signed
  * with the platform key, so system_server grants it the same operations as "adb shell".
  *
- * Other builds (phone flavor, Android 8+) are compiled the same way by the VD host when one runs
+ * Other builds (standard flavor, Android 8+) are compiled the same way by the VD host when one runs
  * outside the launcher: the FYT VDHost Magisk module's daemon or Shizuku's service (see
  * [compileThroughHost]). Without either, nothing is compiled and Android's own idle dexopt
  * applies the profile some night.

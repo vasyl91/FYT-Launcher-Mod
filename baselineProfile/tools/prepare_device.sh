@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
 # prepare_device.sh - prepares a test device for Baseline Profile generation: a ROOTED FYT
-# unit (fyt build, a system app) or a phone (phone build; Android 13+ needs no root).
+# unit (fyt build, a system app) or any other device (standard build; Android 13+ needs no root).
 #
 # Run from Git Bash (MINGW64) on the PC, with exactly one device connected over ADB:
 #   cd baselineprofile/tools
@@ -58,13 +58,13 @@ ok "$(sh_dev getprop ro.product.model) - API $API ($(sh_dev getprop ro.build.typ
 
 echo "== Launcher package =="
 DUMP=$(sh_dev dumpsys package $PKG)
-# The system app's build is fyt; anything else (or none yet: Gradle installs it) gets phone.
+# The system app's build is fyt; anything else (or none yet: Gradle installs it) gets standard.
 if echo "$DUMP" | grep -q "userId=1000"; then
   FLAVOR=Fyt
   ok "userId=1000 (android.uid.system): the fyt build"
 else
-  FLAVOR=Phone
-  ok "Not the system app: the phone build"
+  FLAVOR=Standard
+  ok "Not the system app: the standard build"
 fi
 echo "$DUMP" | grep -E "codePath=" | head -n 2 | sed 's/^ */         /'
 if [ "$FLAVOR" = Fyt ] && echo "$DUMP" | grep -q "codePath=/data/app"; then

@@ -42,7 +42,7 @@ import java.util.Set;
  * <p>This was WakeDetectionService, and it lived only as long as that service, which was not long
  * enough. Launcher.onDestroy() stopped it on every recreation of the activity (a change of the
  * night mode or of the language is one) and nothing started it again until the process was
- * restarted. Without system privileges (the phone build, also used on FYT units that refuse the
+ * restarted. Without system privileges (the standard build, also used on FYT units that refuse the
  * system build) Android stops a background service about a minute after the app has left the
  * screen, and refuses to start one from the background. Either way the next wakes went by with
  * nothing handled: no logcat capture, no home screen in front, no panes. Now it is created with

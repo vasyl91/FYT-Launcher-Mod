@@ -14,7 +14,7 @@ local.properties
 # --- Build ---
 app/build/
 /app/fyt/
-/app/phone/
+/app/standard/
 /hiddenapi-stubs/build/
 /vdhost/server/build/
 /vdhost/shared/build/

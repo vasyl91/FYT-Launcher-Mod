@@ -13,7 +13,7 @@ import org.junit.runner.RunWith
 
 /**
  * Optional verification: cold start without compilation vs. with the Baseline Profile.
- * Runs on the phoneBenchmarkRelease / fytBenchmarkRelease variant (minified, signed with the
+ * Runs on the standardBenchmarkRelease / fytBenchmarkRelease variant (minified, signed with the
  * release key).
  */
 @RunWith(AndroidJUnit4::class)

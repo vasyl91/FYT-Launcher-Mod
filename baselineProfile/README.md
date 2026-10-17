@@ -16,7 +16,7 @@ FYT test unit or on a phone, and delivering it to user devices (no root, no PC).
 | `su_wrapper.sh` | `baselineprofile/tools/` | Makes Magisk understand Macrobenchmark's `su root <cmd>` |
 | `apply_profile_on_device.sh` | `baselineprofile/tools/` | Dev unit only: applies a profile manually for quick checks |
 | `BaselineProfileCompiler.kt` | `app/src/main/java/com/android/launcher66/perf/` | Applies the profile on user units automatically |
-| Generated profiles | `app/src/main/generated/baselineProfiles/` | `baseline-prof.txt`, `startup-prof.txt` – committed to Git, used by every release build (fyt and phone) |
+| Generated profiles | `app/src/main/generated/baselineProfiles/` | `baseline-prof.txt`, `startup-prof.txt` – committed to Git, used by every release build (fyt and standard) |
 
 Data flow:
 
@@ -44,7 +44,7 @@ long inactivity) – a head unit in a car practically never gets there.
 - FYT unit (fyt build, validated on Android 10 / API 29): rooted with Magisk, root access for
   **Shell** allowed (Magisk → Superuser); the launcher installed as a system app
   (`/oem/priv-app/…`, `sharedUserId=android.uid.system`).
-- Phone (phone build): Android 13+ (API 33) needs no root; Android 9–12 need root as above.
+- Phone or any other non-FYT device (standard build): Android 13+ (API 33) needs no root; Android 9–12 need root as above.
   On a phone rooted with Magisk on Android 11+ deny root to **Shell** while generating
   (`prepare_device.sh` says so): Macrobenchmark's `su root` may hang there.
 - Connected over ADB (USB or Wi-Fi), exactly one device.
@@ -53,7 +53,7 @@ long inactivity) – a head unit in a car practically never gets there.
 - Gradle installs `fytNonMinifiedRelease` as an **update** of the system app. It must be signed
   with the **same platform key** as the APK in `/oem/priv-app` (release signing config:
   `keystore.properties` or the fallback `app/keystore.jks`).
-- On a phone `phoneNonMinifiedRelease` replaces the installed launcher: one signed with another
+- On a phone `standardNonMinifiedRelease` replaces the installed launcher: one signed with another
   key (a debug build, say) must be uninstalled first.
 - Wrong key → `INSTALL_FAILED_UPDATE_INCOMPATIBLE` / `INSTALL_FAILED_SHARED_USER_INCOMPATIBLE`.
 
@@ -105,7 +105,7 @@ If a root prompt appears on the head unit screen, allow it for **Shell** permane
 
 ## 4. Generate the profile
 
-From the project root. On a phone use `generatePhoneReleaseBaselineProfile` instead of
+From the project root. On a phone use `generateStandardReleaseBaselineProfile` instead of
 `generateFytReleaseBaselineProfile` (`prepare_device.sh` prints the right one).
 
 **PowerShell** – the `-P` argument must be quoted, otherwise PowerShell splits it at the dot:
@@ -124,7 +124,7 @@ Notes:
 - `enabledRules=BaselineProfile` runs only the generator; the two `StartupBenchmark` tests are
   reported as `SKIPPED`. Gradle still counts them (e.g. `Starting 4 tests`).
 - The task picks the right variants itself (`fytNonMinifiedRelease` or
-  `phoneNonMinifiedRelease`); the selection in the *Build Variants* panel does not matter.
+  `standardNonMinifiedRelease`); the selection in the *Build Variants* panel does not matter.
 - Either run overwrites the same `baseline-prof.txt` / `startup-prof.txt`, used by both builds.
 - Duration on a UMS512 unit: roughly **10–16 minutes**. Do not touch the unit meanwhile.
 
@@ -197,8 +197,8 @@ assets/dexopt/baseline.profm
 R8 also uses `startup-prof.txt` to place startup classes in the primary DEX
 (`dexLayoutOptimization = true`).
 
-> The profile lives in `src/main` (`mergeIntoMain = true`), so `phoneRelease` gets it too: the
-> phone flavor runs the same code and differs in the manifest only. On a phone build the launcher
+> The profile lives in `src/main` (`mergeIntoMain = true`), so `standardRelease` gets it too: the
+> standard flavor runs the same code and differs in the manifest only. On a standard build the launcher
 > is not a system app; the FYT VDHost Magisk module's daemon or Shizuku compiles it instead (see
 > `BaselineProfileCompiler`).
 
@@ -397,11 +397,11 @@ API – see Troubleshooting.
 ## 8. Optional: measure the gain
 
 `StartupBenchmark` compares a cold start without compilation against a start with the profile
-(variant `fytBenchmarkRelease` or `phoneBenchmarkRelease`, minified like the shipped APK):
+(variant `fytBenchmarkRelease` or `standardBenchmarkRelease`, minified like the shipped APK):
 
 ```powershell
 ./gradlew :baselineprofile:connectedFytBenchmarkReleaseAndroidTest "-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=Macrobenchmark"
-./gradlew :baselineprofile:connectedPhoneBenchmarkReleaseAndroidTest "-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=Macrobenchmark"
+./gradlew :baselineprofile:connectedStandardBenchmarkReleaseAndroidTest "-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=Macrobenchmark"
 ```
 
 Results (`timeToInitialDisplayMs`, min/median/max) appear in the Gradle output / Android Studio
@@ -479,8 +479,8 @@ Key decisions in the build setup and why they matter:
 - **Self-instrumenting test module** (`android.experimental.self-instrumenting = true`): the test
   APK instruments itself and drives the launcher via shell/UiAutomator, so it does not need the
   platform key even though the launcher runs as UID 1000.
-- **Same flavors in `:baselineprofile`** (`phone`, `fyt`) so the plugin pairs variants: the
-  fyt build installs on FYT units only (a system app), the phone build everywhere else. The
+- **Same flavors in `:baselineprofile`** (`standard`, `fyt`) so the plugin pairs variants: the
+  fyt build installs on FYT units only (a system app), the standard build everywhere else. The
   `nonMinifiedProfile` / `benchmarkProfile` variants in `:app` are disabled with
   `beforeVariants`.
 - **`suppressErrors = EMULATOR,LOW-BATTERY,UNLOCKED`**: a head unit has no battery / lock screen.

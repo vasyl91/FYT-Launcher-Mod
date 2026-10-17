@@ -41,7 +41,9 @@ android {
 
     flavorDimensions += "device"
     productFlavors {
-        create("phone") {
+        // Any Android 8+ device, a user app (privileged through the VD host's Magisk module or
+        // Shizuku where there is one). Called "phone" up to 1.2.1.
+        create("standard") {
             dimension = "device"
         }
         create("fyt") {
@@ -150,7 +152,7 @@ androidComponents {
 
     // The Baseline Profile plugin adds nonMinified* and benchmark* build types for every
     // non-debuggable build type. Only those made from release are used, for both flavors (the
-    // fyt build installs on FYT units only, being a system app; the phone build everywhere else):
+    // fyt build installs on FYT units only, being a system app; the standard build everywhere else):
     // <flavor>NonMinifiedRelease - the generator installs and profiles it on the device,
     // <flavor>BenchmarkRelease   - StartupBenchmark measures startup with the profile.
     // The generated profile itself is used by every release build (src/main, see baselineProfile {}).
@@ -179,7 +181,7 @@ baselineProfile {
     automaticGenerationDuringBuild = false
     // Save the result in src/ (committed to the repository).
     saveInSrc = true
-    // In src/main/generated/baselineProfiles, for every flavor: phone runs the same code as fyt
+    // In src/main/generated/baselineProfiles, for every flavor: standard runs the same code as fyt
     // (the flavors differ in the manifest only), so a profile made on either device serves both.
     mergeIntoMain = true
     // Startup profile -> R8 places startup classes in the primary DEX file.
