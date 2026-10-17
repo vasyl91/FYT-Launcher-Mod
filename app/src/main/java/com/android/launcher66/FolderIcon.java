@@ -177,6 +177,8 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         public FolderRingAnimator(Launcher launcher, FolderIcon folderIcon) {
             mFolderIcon = folderIcon;
             Resources res = launcher.getResources();
+            // Each time: the icon size goes with the orientation.
+            sPreviewSize = ringBaseSize();
 
             // We need to reload the static values when configuration changes in case they are
             // different in another configuration
@@ -186,15 +188,25 @@ public class FolderIcon extends LinearLayout implements FolderListener {
                             + Thread.currentThread());
                 }
 
-                LauncherAppState app = LauncherAppState.getInstance();
-                DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-                sPreviewSize = grid.folderIconSizePx;
                 sPreviewPadding = res.getDimensionPixelSize(R.dimen.folder_preview_padding);
                 sSharedOuterRingDrawable = ContextCompat.getDrawable(LauncherApplication.sApp, R.drawable.portal_ring_outer_holo);
                 sSharedInnerRingDrawable = ContextCompat.getDrawable(LauncherApplication.sApp, R.drawable.portal_ring_inner_nolip_holo);
                 sSharedFolderLeaveBehind = ContextCompat.getDrawable(LauncherApplication.sApp, R.drawable.portal_ring_rest);
                 sStaticValuesDirty = false;
             }
+        }
+
+        /**
+         * The rings' size at rest: the icon as drawn (Launcher.workspaceIconAndFolderSize, the
+         * pixels a folder's preview has too) and the folder background's margin on each side,
+         * as AOSP's folderIconSizePx. That one is the icon's pixels taken as dp, which made the
+         * ring the density times too large and its centre too low (CellLayout centres it by
+         * half of this).
+         */
+        static int ringBaseSize() {
+            DeviceProfile grid = LauncherAppState.getInstance().getDynamicGrid().getDeviceProfile();
+            if (Launcher.workspaceIconAndFolderSize <= 0) return grid.folderIconSizePx;
+            return Launcher.workspaceIconAndFolderSize - 2 * grid.folderBackgroundOffset;
         }
 
         public void animateToAcceptState() {
