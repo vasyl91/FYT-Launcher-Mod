@@ -593,8 +593,8 @@ public final class LogcatWorker {
 
             if (draining) {
                 writeLine(drainTimedOut
-                        ? "===== stopped reading " + DRAIN_MAX_MS / 1000L + " s after the end: logcat"
-                                + " had not caught up with it ====="
+                        ? "===== stopped after " + DRAIN_MAX_MS / 1000L + " s of reading past the end:"
+                                + " logcat had not caught up with it ====="
                         : "===== written up to the end of the capture ("
                                 + new SimpleDateFormat("HH:mm:ss.SSS", Locale.US).format(new Date(cutoffWallMs))
                                 + ") =====");
@@ -825,7 +825,8 @@ public final class LogcatWorker {
     /**
      * Waits for a VD host while the capture runs. The time limit goes on meanwhile: the logs are
      * all in logd's buffers, and what happened up to the capture's end is read once the host is
-     * there. A capture that ends while it waits stops waiting.
+     * there -- so a capture that ends while it waits goes on waiting (Shizuku comes a minute or
+     * two after the boot); only a shutdown ends the wait.
      *
      * @return whether a VD host is attached
      */
@@ -837,7 +838,7 @@ public final class LogcatWorker {
         fileWriter.flush();
         while (!HostProcess.isAvailable()) {
             long now = SystemClock.elapsedRealtime();
-            if (!running || draining || now - began >= waitMs) return false;
+            if (!running || now - began >= waitMs) return false;
             SystemClock.sleep(250L);
         }
         writeLine("===== VD host attached after " + (SystemClock.elapsedRealtime() - began) / 1000L + " s =====");
@@ -1394,26 +1395,28 @@ public final class LogcatWorker {
             helpers.setCountDownLogcat(0);
         });
         mainHandler.postDelayed(drainWatch, DRAIN_POLL_MS);
-        // runLogging() reports the real result (with the file path) from its finally block; this
-        // only fires if the worker thread is stuck somewhere.
-        mainHandler.postDelayed(() -> finishOnce(false, null), DRAIN_MAX_MS + FINISH_WATCHDOG_MS);
     }
 
-    /** Stops logcat once it has caught up with the end of the capture, or took too long. */
+    /**
+     * Stops logcat once it has caught up with the end of the capture, or took too long. Both
+     * count only while logcat runs: before it (the VD host still to come) nothing is read yet.
+     */
     private final Runnable drainWatch = new Runnable() {
         @Override
         public void run() {
             if (!running || !draining) return;
             long now = SystemClock.elapsedRealtime();
-            if (now - drainStartedElapsedMs >= DRAIN_MAX_MS) {
+            if (logcatProcess == null) {
+                lastReadElapsedMs = now;
+                drainStartedElapsedMs = now;
+            } else if (now - drainStartedElapsedMs >= DRAIN_MAX_MS) {
                 drainTimedOut = true;
                 drainKilled = true;
                 killProcess();
+                // runLogging() reports the result (with the file path) from its finally block;
+                // this only fires if the worker thread is stuck somewhere.
+                mainHandler.postDelayed(() -> finishOnce(false, null), FINISH_WATCHDOG_MS);
                 return;
-            }
-            if (logcatProcess == null) {
-                // Not reading yet (the VD host or the log sizes first): idle does not count.
-                lastReadElapsedMs = now;
             } else if (now - lastReadElapsedMs >= DRAIN_IDLE_MS) {
                 drainKilled = true;     // waiting for new lines: everything up to the end is read
                 killProcess();
