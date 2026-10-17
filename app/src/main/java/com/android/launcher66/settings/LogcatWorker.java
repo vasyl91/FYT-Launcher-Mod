@@ -439,9 +439,12 @@ public final class LogcatWorker {
             // by when the VD host came (Shizuku can take a minute or more after the boot).
             final long captureStartedAt = SystemClock.elapsedRealtime();
             boolean wantsFullLog = prefs.getBoolean(Keys.LOGCAT_FULL, false);
-            // Without system privileges the VD host (root or Shizuku) reads the whole log.
+            // Without system privileges the VD host (root or Shizuku) reads the whole log. Shizuku
+            // installed counts as a host on its way: at a cold start its binder comes a while after
+            // the launcher (A16: about 30 s), and the capture used to give up on it at once.
             boolean viaHost = wantsFullLog && !LauncherApplication.hasSystemPrivileges()
-                    && WindowHostVdClient.canHostPanes() && awaitPrivilegedHost(coldStart);
+                    && (WindowHostVdClient.canHostPanes() || WindowHostVdClient.isShizukuInstalled(ctx))
+                    && awaitPrivilegedHost(coldStart);
             if (wantsFullLog && !LauncherApplication.hasSystemPrivileges() && !viaHost) {
                 writeLine("===== everything: no VD host (root or Shizuku) attached, only the"
                         + " launcher's own log =====");
