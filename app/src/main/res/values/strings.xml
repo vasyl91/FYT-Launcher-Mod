@@ -499,6 +499,8 @@
     <string name="app_type_shizuku_stopped">Shizuku installed, not running</string>
     <string name="build_type_release">Release build</string>
     <string name="build_type_debug">Debug build</string>
+    <string name="build_flavor_fyt">FYT version</string>
+    <string name="build_flavor_phone">Phone version</string>
     <string name="app_version">Version: %1$s</string>
     <string name="app_version_update">Version: %1$s (Available newer version: %2$s)</string>
     <string name="update_version_button">Press here to download and update the app</string>

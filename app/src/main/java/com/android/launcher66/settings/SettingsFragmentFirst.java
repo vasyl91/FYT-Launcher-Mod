@@ -516,10 +516,13 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             logcatServiceTimeout.setOnPreferenceClickListener(this);
         }
         if (appVersion != null) {
-            // Under the version: how the launcher runs here, and the build.
+            // Under the version: how the launcher runs here, and the build and which of the two
+            // apps it is (the update downloads that one's file).
             String build = getString(com.android.launcher66.BuildConfig.DEBUG
                     ? R.string.build_type_debug : R.string.build_type_release);
-            appVersion.setSummary(appTypeText() + "\n" + build);
+            String flavor = getString("fyt".equals(com.android.launcher66.BuildConfig.FLAVOR)
+                    ? R.string.build_flavor_fyt : R.string.build_flavor_phone);
+            appVersion.setSummary(appTypeText() + "\n" + build + " · " + flavor);
             String currentVersion = Helpers.getAppVersion(LauncherApplication.sApp);
             appVersion.setTitle(getString(R.string.app_version, currentVersion));
             versionChecker.checkForUpdate(currentVersion, new VersionChecker.VersionCheckCallback() {
