@@ -5484,6 +5484,7 @@ public class Workspace extends SmoothPagedView
                 mapPointFromSelfToHotseatLayout(mLauncher.getHotseat(), mDragViewVisualCenter);
             } else {
                 mapPointFromSelfToChild(dropTargetLayout, mDragViewVisualCenter, null);
+                alignToIconColumns(dropTargetLayout, d);
             }
         }
 
@@ -6032,6 +6033,17 @@ public class Workspace extends SmoothPagedView
         return res;
     }
 
+    /**
+     * An icon sits CellLayout.shortcutsContainerOffsetX() right of the cell the grid maths gives
+     * it, so the cell is looked up that much further left: the one the icon then lands in is the
+     * one under the dragged icon. Widgets, placed by their own rules, keep the point as it is.
+     */
+    private void alignToIconColumns(CellLayout layout, DragObject d) {
+        if (layout != null && !isDragWidget(d)) {
+            mDragViewVisualCenter[0] -= layout.shortcutsContainerOffsetX();
+        }
+    }
+
     private boolean isDragWidget(DragObject d) {
         return (d.dragInfo instanceof LauncherAppWidgetInfo ||
                 d.dragInfo instanceof PendingAddWidgetInfo);
@@ -6104,6 +6116,7 @@ public class Workspace extends SmoothPagedView
                 mapPointFromSelfToHotseatLayout(mLauncher.getHotseat(), mDragViewVisualCenter);
             } else {
                 mapPointFromSelfToChild(mDragTargetLayout, mDragViewVisualCenter, null);
+                alignToIconColumns(mDragTargetLayout, d);
             }
 
             ItemInfo info = (ItemInfo) d.dragInfo;

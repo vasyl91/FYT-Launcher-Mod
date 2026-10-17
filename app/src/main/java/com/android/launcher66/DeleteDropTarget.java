@@ -73,6 +73,12 @@ public class DeleteDropTarget extends ButtonDropTarget {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        if (!LauncherApplication.isFytDevice()) {
+            // Only the X (or the bin) is meant to show: since the target got its width on phones
+            // (portrait), its "Remove" / "Uninstall" label showed beside it and stayed after the
+            // drop. onDragStart() relabels only a target that has a label.
+            setText("");
+        }
 
         mOriginalTextColor = getTextColors();
         mHoverColor = ContextCompat.getColor(getContext(), R.color.delete_target_hover_tint);
