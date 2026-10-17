@@ -10,7 +10,6 @@ import androidx.core.content.FileProvider;
 
 import com.android.async.AsyncTask;
 import com.android.launcher66.BuildConfig;
-import com.android.launcher66.LauncherApplication;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,8 +30,15 @@ public class VersionChecker {
 
     private static final String TAG = "VersionChecker";
     private static final String GITHUB_RELEASES_URL = "https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest";
-    private static String UPDATE_FILE_PREFIX = "fyt_release_";
-    private static final String PHONE_UPDATE_FILE_PREFIX = "phone_release_";
+    /**
+     * The release asset this build updates from, which is also the downloaded file's name:
+     * fyt_release_ or phone_release_ + version. The download used to fetch update<version>.apk
+     * (the FYT build) whatever the flavor and only named the file after it, so a phone got the
+     * FYT build, which declares permissions in a group Android 12+ does not have: -127,
+     * INSTALL_FAILED_BAD_PERMISSION_GROUP (and its shared system uid could not have replaced
+     * the phone build either).
+     */
+    private static final String UPDATE_FILE_PREFIX = BuildConfig.FLAVOR + "_release_";
     private static final String UPDATE_FILE_SUFFIX = ".apk";
 
     private AsyncTask<Void, Void, String> checkTask;
@@ -220,7 +226,8 @@ public class VersionChecker {
             @Override
             protected void onPreExecute() {
                 downloadUrl = GITHUB_RELEASES_URL.replace("/releases/latest",
-                        "/releases/download/v" + latestVersion + "/update" + latestVersion + ".apk");
+                        "/releases/download/v" + latestVersion + "/"
+                                + UPDATE_FILE_PREFIX + latestVersion + UPDATE_FILE_SUFFIX);
             }
 
             @Override
@@ -256,9 +263,6 @@ public class VersionChecker {
                     });
 
                     input = connection.getInputStream();
-                    if (!LauncherApplication.isFytDevice()) {
-                        UPDATE_FILE_PREFIX = PHONE_UPDATE_FILE_PREFIX;
-                    }
                     outputFile = new File(appContext.getExternalFilesDir(null),
                             UPDATE_FILE_PREFIX + latestVersion + UPDATE_FILE_SUFFIX);
                     output = new FileOutputStream(outputFile);
@@ -444,10 +448,7 @@ public class VersionChecker {
      */
     public static void deleteInstalledUpdates(Context context) {
         final Context appContext = context.getApplicationContext();
-        final String currentVersion = BuildConfig.VERSION_NAME;       
-        if (!LauncherApplication.isFytDevice()) {
-            UPDATE_FILE_PREFIX = PHONE_UPDATE_FILE_PREFIX;
-        }
+        final String currentVersion = BuildConfig.VERSION_NAME;
         new Thread(() -> {
             File dir = appContext.getExternalFilesDir(null);
             File[] files = dir != null ? dir.listFiles() : null;

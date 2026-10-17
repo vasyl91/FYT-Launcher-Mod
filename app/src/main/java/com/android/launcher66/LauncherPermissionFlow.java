@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * The launcher's permission flow: the runtime permissions, the overlay permission, notification
- * access and WRITE_SETTINGS, asked one after another, each once the resume has settled and only
+ * access, WRITE_SETTINGS and installing unknown apps (its own updates), asked one after another, each once the resume has settled and only
  * while the launcher is in front. Split out of Launcher, which forwards the activity results.
  */
 final class LauncherPermissionFlow {
@@ -40,7 +40,9 @@ final class LauncherPermissionFlow {
      * Everything the launcher asks the user for, in the order it is asked. The runtime permissions
      * share one system dialog; each of the others has a Settings screen of its own.
      */
-    private enum PermissionStep { RUNTIME, OVERLAY, NOTIFICATION_ACCESS, WRITE_SETTINGS }
+    private enum PermissionStep {
+        RUNTIME, OVERLAY, NOTIFICATION_ACCESS, WRITE_SETTINGS, INSTALL_PACKAGES
+    }
 
     /**
      * Lets the resume settle before a dialog or screen goes over it: the PiP rebuild starts 250 ms
@@ -114,6 +116,11 @@ final class LauncherPermissionFlow {
                         && !LauncherApplication.hasSystemPrivileges()
                         && !Settings.System.canWrite(mLauncher)
                         && !allowWriteSettingsThroughHost();
+            case INSTALL_PACKAGES:
+                // The update in the settings installs the downloaded APK; a system app may anyway.
+                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                        && !LauncherApplication.hasSystemPrivileges()
+                        && !mLauncher.getPackageManager().canRequestPackageInstalls();
             default:
                 return false;
         }
@@ -168,6 +175,10 @@ final class LauncherPermissionFlow {
                     mLauncher.startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
                             Uri.parse("package:" + mLauncher.getPackageName())), Launcher.REQUEST_CODE_WRITE_SETTINGS);
                     return true;
+                case INSTALL_PACKAGES:
+                    mLauncher.startActivityForResult(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                            Uri.parse("package:" + mLauncher.getPackageName())), Launcher.REQUEST_CODE_INSTALL_PACKAGES);
+                    return true;
                 default:
                     return false;
             }
@@ -209,7 +220,8 @@ final class LauncherPermissionFlow {
     static boolean isPermissionFlowRequest(int requestCode) {
         return requestCode == Launcher.REQUEST_CODE_OVERLAY
                 || requestCode == Launcher.REQUEST_CODE_NOTIFICATION_ACCESS
-                || requestCode == Launcher.REQUEST_CODE_WRITE_SETTINGS;
+                || requestCode == Launcher.REQUEST_CODE_WRITE_SETTINGS
+                || requestCode == Launcher.REQUEST_CODE_INSTALL_PACKAGES;
     }
 
     /** Back from a Settings screen of the permission flow; see onActivityResult(). */
@@ -226,6 +238,10 @@ final class LauncherPermissionFlow {
         } else if (requestCode == Launcher.REQUEST_CODE_WRITE_SETTINGS) {
             boolean granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.System.canWrite(mLauncher);
             Log.i(Launcher.TAG, "Permission flow: WRITE_SETTINGS " + (granted ? "granted" : "not granted"));
+        } else if (requestCode == Launcher.REQUEST_CODE_INSTALL_PACKAGES) {
+            boolean granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+                    || mLauncher.getPackageManager().canRequestPackageInstalls();
+            Log.i(Launcher.TAG, "Permission flow: install unknown apps " + (granted ? "granted" : "not granted"));
         }
     }
     /** onRequestPermissionsResult() for the runtime permissions' dialog. */

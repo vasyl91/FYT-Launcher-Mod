@@ -513,16 +513,11 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (logcatServiceTimeout != null) {
             logcatServiceTimeout.setOnPreferenceClickListener(this);
         }
-        Preference appType = findPreference("app_type");
-        if (appType != null) {
-            appType.setTitle(appTypeText());
-        }
-        Preference buildType = findPreference("build_type");
-        if (buildType != null) {
-            buildType.setTitle(com.android.launcher66.BuildConfig.DEBUG
-                    ? R.string.build_type_debug : R.string.build_type_release);
-        }
         if (appVersion != null) {
+            // Under the version: how the launcher runs here, and the build.
+            String build = getString(com.android.launcher66.BuildConfig.DEBUG
+                    ? R.string.build_type_debug : R.string.build_type_release);
+            appVersion.setSummary(appTypeText() + "\n" + build);
             String currentVersion = Helpers.getAppVersion(LauncherApplication.sApp);
             appVersion.setTitle(getString(R.string.app_version, currentVersion));
             versionChecker.checkForUpdate(currentVersion, new VersionChecker.VersionCheckCallback() {
@@ -1281,6 +1276,20 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     private void downloadAndInstall() {
+        // Without leave to install unknown apps the download would end in a refused install:
+        // the screen to give it first, then the update again.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && !LauncherApplication.hasSystemPrivileges()
+                && !requireContext().getPackageManager().canRequestPackageInstalls()) {
+            try {
+                startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                        android.net.Uri.parse("package:" + requireContext().getPackageName())));
+                Toast.makeText(LauncherApplication.sApp, R.string.update_allow_install, Toast.LENGTH_LONG).show();
+                return;
+            } catch (android.content.ActivityNotFoundException e) {
+                Log.w(TAG, "No screen to allow installing unknown apps, trying the update anyway", e);
+            }
+        }
         versionChecker.downloadAndInstallApk(LauncherApplication.sApp, latestAppVersion, new VersionChecker.DownloadCallback() {
             @Override
             public void onDownloadStarted(String fileName) {

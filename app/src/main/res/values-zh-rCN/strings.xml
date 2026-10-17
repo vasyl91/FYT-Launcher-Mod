@@ -500,6 +500,7 @@
     <string name="update_version_button">点击此处下载并更新应用</string>
     <string name="confirmation_dialog">是否要更新到 %1$s 版本？</string>
     <string name="update_btn">更新</string>
+    <string name="update_allow_install">请允许安装来自此来源的应用，然后再次点击更新</string>
     <string name="progress_dialog_str">正在下载 %1$s</string>
     <string name="download_in_progress">正在下载...</string>
     <string name="tv_map_str">欢迎使用 FYT Launcher Mod！\n创建您自己的布局来显示导航窗口。\n\n此桌面支持使用两种不同的方法以画中画模式显示应用，但某些车机可能不支持其中任何一种。这意味着，除非您将设备刷入支持它的自定义 ROM（前提是您的车机存在这样的 ROM），否则您将无法在主屏幕上显示导航应用。\n您仍然可以使用此桌面，但需要在桌面设置中关闭画中画（否则每次尝试打开主页面时 Google 地图都会弹出——如果发生这种情况，请清除桌面数据或重新安装）。</string>

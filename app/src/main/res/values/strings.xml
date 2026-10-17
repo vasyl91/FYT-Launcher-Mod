@@ -502,6 +502,7 @@
     <string name="update_version_button">Press here to download and update the app</string>
     <string name="confirmation_dialog">Do you want to update to the %1$s version?</string>
     <string name="update_btn">UPDATE</string>
+    <string name="update_allow_install">Allow installing apps from this source, then tap update again</string>
     <string name="progress_dialog_str">Downloading %1$s</string>
     <string name="download_in_progress">Download in progress...</string>
     <string name="tv_map_str">Welcome to FYT Launcher Mod!\nCreate your own layout to display the navi window.\n\nThis Launcher allows to display apps in Picture-in-Picture mode using two different methods, nonetheless it might happen that some units do not support any of them. This means that you won\'t be able to display the navi app on the main screen, unless you flash your device with the custom ROM that supports it (provided that such ROM exists for your head unit).\nYou can still use the launcher however you\'ll have to turn off the PiP in the launcher\'s settings (otherwise Google Maps will pop up every time you\'ll try to open the home page - if it happens, wipe the launcher\'s data or reinstall it).</string>
