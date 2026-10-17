@@ -5554,6 +5554,14 @@ public class Workspace extends SmoothPagedView
                         mTargetCell, resultSpan, CellLayout.MODE_ON_DROP);
 
                 boolean foundCell = mTargetCell[0] >= 0 && mTargetCell[1] >= 0;
+                // A place with no room at all (over the PiP panes, say) can come back as a
+                // cell with a 0 span: taken as the widget's new size it crashed the drop.
+                if (foundCell && (resultSpan[0] < 1 || resultSpan[1] < 1)) {
+                    Log.w(TAG, "onDrop(): no room at " + mTargetCell[0] + "," + mTargetCell[1]
+                            + " (span " + resultSpan[0] + "x" + resultSpan[1] + "), back to where it was");
+                    foundCell = false;
+                    mTargetCell[0] = mTargetCell[1] = -1;
+                }
 
                 // if the widget resizes on drop
                 if (foundCell && (cell instanceof AppWidgetHostView) &&
@@ -6517,9 +6525,16 @@ public class Workspace extends SmoothPagedView
                 intent.getComponent().getClassName();
     }
 
+    /** The widget drawn at its cells' size; null when that size is empty. */
     public Bitmap createWidgetBitmap(ItemInfo widgetInfo, View layout) {
         int[] unScaledSize = estimateItemSize(widgetInfo.spanX,
                 widgetInfo.spanY, false);
+        if (unScaledSize[0] <= 0 || unScaledSize[1] <= 0
+                || unScaledSize[0] == Integer.MAX_VALUE || unScaledSize[1] == Integer.MAX_VALUE) {
+            Log.w(TAG, "createWidgetBitmap: no size for a " + widgetInfo.spanX + "x"
+                    + widgetInfo.spanY + " widget");
+            return null;
+        }
         int visibility = layout.getVisibility();
         layout.setVisibility(VISIBLE);
 
@@ -6625,8 +6640,11 @@ public class Workspace extends SmoothPagedView
             Log.d(TAG, "6557954 Animate widget drop, final view is appWidgetHostView");
             mLauncher.getDragLayer().removeView(finalView);
         }
+        Bitmap crossFadeBitmap = null;
         if ((animationType == ANIMATE_INTO_POSITION_AND_RESIZE || external) && finalView != null) {
-            Bitmap crossFadeBitmap = createWidgetBitmap(info, finalView);
+            crossFadeBitmap = createWidgetBitmap(info, finalView);
+        }
+        if (crossFadeBitmap != null) {
             dragView.setCrossFadeBitmap(crossFadeBitmap);
             dragView.crossFade((int) (duration * 0.8f));
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET && external) {
