@@ -52,6 +52,8 @@ public class AppWidgetResizeFrame extends FrameLayout {
     private boolean mTopBorderActive;
     private ImageView mTopHandle;
     private int mTopTouchRegionAdjustment;
+    private int mLeftTouchRegionAdjustment;
+    private int mRightTouchRegionAdjustment;
     private int mTouchTargetWidth;
     private int mWidgetPaddingBottom;
     private int mWidgetPaddingLeft;
@@ -140,8 +142,8 @@ public class AppWidgetResizeFrame extends FrameLayout {
     }
 
     public boolean beginResizeIfPointInRegion(int x, int y) {
-        this.mLeftBorderActive = x < this.mTouchTargetWidth; 
-        this.mRightBorderActive = x > getWidth() - this.mTouchTargetWidth;
+        this.mLeftBorderActive = x < this.mTouchTargetWidth + this.mLeftTouchRegionAdjustment;
+        this.mRightBorderActive = x > (getWidth() - this.mTouchTargetWidth) + this.mRightTouchRegionAdjustment;
         this.mTopBorderActive = y < this.mTouchTargetWidth + this.mTopTouchRegionAdjustment;
         this.mBottomBorderActive = y > (getHeight() - this.mTouchTargetWidth) + this.mBottomTouchRegionAdjustment;
         boolean anyBordersActive = this.mLeftBorderActive || this.mRightBorderActive || this.mTopBorderActive || this.mBottomBorderActive;
@@ -158,19 +160,26 @@ public class AppWidgetResizeFrame extends FrameLayout {
         return anyBordersActive;
     }
 
+    /**
+     * The frame may move its own padding past the screen's edges, on both axes: it is that much
+     * larger than the widget all round, so a widget as wide (or tall) as the screen has its frame
+     * reach beyond it. Kept on the screen, it stopped short of the last cell's threshold and the
+     * widget snapped back to one cell less.
+     */
     public void updateDeltas(int deltaX, int deltaY) {
+        int overhang = this.mBackgroundPadding;
         if (this.mLeftBorderActive) {
-            this.mDeltaX = Math.max(-this.mBaselineX, deltaX);
+            this.mDeltaX = Math.max(-this.mBaselineX - overhang, deltaX);
             this.mDeltaX = Math.min(this.mBaselineWidth - (this.mTouchTargetWidth * 2), this.mDeltaX);
         } else if (this.mRightBorderActive) {
-            this.mDeltaX = Math.min(this.mDragLayer.getWidth() - (this.mBaselineX + this.mBaselineWidth), deltaX);
+            this.mDeltaX = Math.min(this.mDragLayer.getWidth() + overhang - (this.mBaselineX + this.mBaselineWidth), deltaX);
             this.mDeltaX = Math.max((-this.mBaselineWidth) + (this.mTouchTargetWidth * 2), this.mDeltaX);
         }
         if (this.mTopBorderActive) {
-            this.mDeltaY = Math.max(-this.mBaselineY, deltaY);
+            this.mDeltaY = Math.max(-this.mBaselineY - overhang, deltaY);
             this.mDeltaY = Math.min(this.mBaselineHeight - (this.mTouchTargetWidth * 2), this.mDeltaY);
         } else if (this.mBottomBorderActive) {
-            this.mDeltaY = Math.min(this.mDragLayer.getHeight() - (this.mBaselineY + this.mBaselineHeight), deltaY);
+            this.mDeltaY = Math.min(this.mDragLayer.getHeight() + overhang - (this.mBaselineY + this.mBaselineHeight), deltaY);
             this.mDeltaY = Math.max((-this.mBaselineHeight) + (this.mTouchTargetWidth * 2), this.mDeltaY);
         }
     }
@@ -376,7 +385,18 @@ public class AppWidgetResizeFrame extends FrameLayout {
             newY = (mTmpPt[1] - mBackgroundPadding) + mWidgetPaddingTop;
         }
 
-        // Adjust touch regions if near edges
+        // Adjust touch regions if near edges: the part of the frame past the screen cannot be
+        // touched, so its border regions move in by that much (both axes alike).
+        if (newX < 0) {
+            mLeftTouchRegionAdjustment = -newX;
+        } else {
+            mLeftTouchRegionAdjustment = 0;
+        }
+        if (newX + newWidth > mDragLayer.getWidth()) {
+            mRightTouchRegionAdjustment = -((newX + newWidth) - mDragLayer.getWidth());
+        } else {
+            mRightTouchRegionAdjustment = 0;
+        }
         if (newY < 0) {
             mTopTouchRegionAdjustment = -newY;
         } else {
