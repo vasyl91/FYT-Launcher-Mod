@@ -1684,6 +1684,83 @@ public class LauncherModel extends BroadcastReceiver {
             return true;
         }
 
+        /**
+         * A desktop widget whose cells an item loaded before it holds: moved to the free cells
+         * nearest to its own on its screen, or to a new screen at the end, rather than left out
+         * (it stayed in the database, unseen, with its widget id). Caller holds sBgLock.
+         */
+        private void placeOverlappingWidget(LauncherAppWidgetInfo widget,
+                HashMap<Long, ItemInfo[][]> occupied, int countX, int countY,
+                ContentResolver resolver) {
+            int spanX = Math.min(Math.max(1, widget.spanX), countX);
+            int spanY = Math.min(Math.max(1, widget.spanY), countY);
+            long screenId = widget.screenId;
+            int[] cell = nearestVacantArea(occupied.get(screenId), widget.cellX, widget.cellY,
+                    spanX, spanY, countX, countY);
+            if (cell == null) {
+                screenId = LauncherAppState.getLauncherProvider().generateNewScreenId();
+                sBgWorkspaceScreens.add(screenId);
+                updateWorkspaceScreenOrder(mContext, sBgWorkspaceScreens);
+                cell = new int[] {0, 0};
+            }
+            Log.w(TAG, "widget " + widget.appWidgetId + " overlapped another item at "
+                    + widget.screenId + ":" + widget.cellX + "," + widget.cellY + ", moved to "
+                    + screenId + ":" + cell[0] + "," + cell[1]);
+            widget.screenId = screenId;
+            widget.cellX = cell[0];
+            widget.cellY = cell[1];
+            widget.spanX = spanX;
+            widget.spanY = spanY;
+
+            ItemInfo[][] cells = occupied.get(screenId);
+            if (cells == null) {
+                cells = new ItemInfo[countX + 1][countY + 1];
+                occupied.put(screenId, cells);
+            }
+            for (int x = cell[0]; x < cell[0] + spanX; x++) {
+                for (int y = cell[1]; y < cell[1] + spanY; y++) {
+                    cells[x][y] = widget;
+                }
+            }
+
+            ContentValues values = new ContentValues();
+            values.put(LauncherSettings.Favorites.SCREEN, screenId);
+            values.put(LauncherSettings.Favorites.CELLX, cell[0]);
+            values.put(LauncherSettings.Favorites.CELLY, cell[1]);
+            values.put(LauncherSettings.Favorites.SPANX, spanX);
+            values.put(LauncherSettings.Favorites.SPANY, spanY);
+            resolver.update(LauncherSettings.Favorites.getContentUri(widget.id, false),
+                    values, null, null);
+            sBgItemsIdMap.put(widget.id, widget);
+            sBgAppWidgets.add(widget);
+        }
+
+        /** The free spanX x spanY area whose corner is nearest to (cellX, cellY); null if none. */
+        private static int[] nearestVacantArea(ItemInfo[][] cells, int cellX, int cellY,
+                int spanX, int spanY, int countX, int countY) {
+            int[] best = null;
+            int bestDistance = Integer.MAX_VALUE;
+            for (int y = 0; y + spanY <= countY; y++) {
+                for (int x = 0; x + spanX <= countX; x++) {
+                    boolean free = true;
+                    for (int i = x; i < x + spanX && free && cells != null; i++) {
+                        for (int j = y; j < y + spanY; j++) {
+                            if (cells[i][j] != null) {
+                                free = false;
+                                break;
+                            }
+                        }
+                    }
+                    int distance = (x - cellX) * (x - cellX) + (y - cellY) * (y - cellY);
+                    if (free && distance < bestDistance) {
+                        best = new int[] {x, y};
+                        bestDistance = distance;
+                    }
+                }
+            }
+            return best;
+        }
+
         /** Clears all the sBg data structures */
         private void clearSBgDataStructures() {
             synchronized (sBgLock) {
@@ -1732,6 +1809,7 @@ public class LauncherModel extends BroadcastReceiver {
                 // Load workspace in reverse order to ensure that latest items are loaded first (and
                 // before any earlier duplicates)
                 final HashMap<Long, ItemInfo[][]> occupied = new HashMap<Long, ItemInfo[][]>();
+                final ArrayList<LauncherAppWidgetInfo> overlappingWidgets = new ArrayList<>();
                 ArrayList<Long> needRetainScreens = new ArrayList<Long>();
 
                 try {
@@ -1985,6 +2063,9 @@ public class LauncherModel extends BroadcastReceiver {
                                             deleteOnItemOverlap)) {
                                         if (deleteOnItemOverlap.get()) {
                                             itemsToRemove.add(id);
+                                        } else if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                                            // Placed once everything else is, see placeOverlappingWidget()
+                                            overlappingWidgets.add(appWidgetInfo);
                                         }
                                         break;
                                     }
@@ -2145,6 +2226,9 @@ public class LauncherModel extends BroadcastReceiver {
                         sBgWorkspaceScreens.removeAll(unusedScreens);
                         updateWorkspaceScreenOrder(mContext, sBgWorkspaceScreens);
                     }      
+                }
+                for (LauncherAppWidgetInfo widget : overlappingWidgets) {
+                    placeOverlappingWidget(widget, occupied, countX, countY, contentResolver);
                 }
                 unsetWorkspaceLoadingProtect();
 
