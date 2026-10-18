@@ -2149,6 +2149,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (userLayout) {
             WindowUtil.initDefaultApp();
         }
+        // HiCar and the 360° camera take the panes away; see onPause() and PaneYieldWatcher.
+        com.syu.util.PaneYieldWatcher.start();
         FirstFrameAnimatorHelper.setIsVisible(true);
         markStartup("onStart");
     }
@@ -2877,6 +2879,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.setEdgeHandleHostVisible(false);
         }
         Log.d(TAG, "---->>> onPause");
+        // Sees other apps' processes as the system launcher only; any other has PaneYieldWatcher.
         mHandler.postDelayed(()-> {
             if (Utils.topApp(FytPackage.hicarAction)
                 || Utils.topApp(FytPackage.fourcamera2Action)) {
