@@ -154,6 +154,14 @@ public final class MediaFavoriteController {
             return false;
         }
 
+        // YT Music's own button: the like lands in the account through the app, and its session
+        // shows the result (option 1, the video id and the Data API, when it shows none).
+        YouTubeMusicLike musicLike = youTubeMusicLike(controller);
+        if (musicLike != null) {
+            return sendCustomAction(controller, musicLike.action,
+                    musicLike.liked ? "YT Music undo like" : "YT Music like");
+        }
+
         // The session picker no longer applies this rule, because doing so kept
         // the status from ever being resolved. The write path is where it
         // belongs: nothing may be sent for a video whose rating the launcher is
@@ -295,6 +303,10 @@ public final class MediaFavoriteController {
         FavoriteActions actions = state == null
                 ? new FavoriteActions()
                 : findFavoriteActions(state.getCustomActions());
+        YouTubeMusicLike musicLike = youTubeMusicLike(controller);
+        if (musicLike != null) {
+            return musicLike.liked ? FAVORITE_STATE_FAVORITED : FAVORITE_STATE_NOT_FAVORITED;
+        }
         if (isYouTubePackage(controller.getPackageName())) {
             String packageName = controller.getPackageName();
             String videoId = findVideoId(controller);
@@ -430,6 +442,11 @@ public final class MediaFavoriteController {
         // session and it has none.
         if (isStockMusicSource(packageName)) {
             return !isStockFavoriteAvailable();
+        }
+
+        if (isYouTubeMusicPackage(packageName)
+                && youTubeMusicLike(findRevancedController(LauncherApplication.sApp, packageName)) != null) {
+            return false;
         }
 
         if (isYouTubePackage(packageName)) {
@@ -2057,6 +2074,58 @@ public final class MediaFavoriteController {
                 || YOUTUBE_MUSIC_PACKAGE.equals(packageName);
     }
 
+    private static boolean isYouTubeMusicPackage(String packageName) {
+        return YOUTUBE_MUSIC_REVANCED_PACKAGE.equals(packageName)
+                || YOUTUBE_MUSIC_PACKAGE.equals(packageName);
+    }
+
+    /** YT Music's like button as its session shows it; see youTubeMusicLike(). */
+    private static final class YouTubeMusicLike {
+        final PlaybackState.CustomAction action;
+        final boolean liked;
+
+        YouTubeMusicLike(PlaybackState.CustomAction action, boolean liked) {
+            this.action = action;
+            this.liked = liked;
+        }
+    }
+
+    /** The like button's last reading, logged when it changes. */
+    private static volatile String lastYouTubeMusicLike;
+
+    /**
+     * YT Music's session gives no video id for a song (only a music video's thumbnail has one),
+     * but the like button among its custom actions says the state: "Like", then "Undo like"
+     * once liked (capture 18-10-2026 17:42:42). Null for another player, or no such button.
+     */
+    private static YouTubeMusicLike youTubeMusicLike(MediaController controller) {
+        if (controller == null || !isYouTubeMusicPackage(controller.getPackageName())) {
+            return null;
+        }
+        PlaybackState state = safePlaybackState(controller);
+        List<PlaybackState.CustomAction> actions = state != null ? state.getCustomActions() : null;
+        if (actions == null) {
+            return null;
+        }
+        for (PlaybackState.CustomAction action : actions) {
+            String text = ((action.getAction() == null ? "" : action.getAction())
+                    + " " + (action.getName() == null ? "" : action.getName().toString()))
+                    .toLowerCase(Locale.US);
+            if (!text.contains("like") || text.contains("dislike")) {
+                continue;
+            }
+            boolean liked = text.contains("undo") || text.contains("remove") || text.contains("unlike");
+            String reading = action.getAction() + "|" + action.getName() + "|" + liked;
+            if (!reading.equals(lastYouTubeMusicLike)) {
+                lastYouTubeMusicLike = reading;
+                Log.i(TAG, "YT Music like button: " + action.getAction() + " \"" + action.getName()
+                        + "\" -> " + (liked ? "liked" : "not liked"));
+            }
+            return new YouTubeMusicLike(action, liked);
+        }
+        return null;
+    }
+
     private static FavoriteState ratingToFavoriteState(Rating rating) {
         if (rating == null) {
             return FavoriteState.UNKNOWN;
@@ -2881,14 +2950,17 @@ public final class MediaFavoriteController {
         } catch (Throwable ignored) {
         }
         try {
-            Rating r = md.getRating(key);
+            Rating r = MediaMetadata.METADATA_KEY_USER_RATING.equals(key)
+                    || MediaMetadata.METADATA_KEY_RATING.equals(key) ? md.getRating(key) : null;
             if (r != null) {
                 return "Rating: style=" + r.getRatingStyle() + " rated=" + r.isRated();
             }
         } catch (Throwable ignored) {
         }
         try {
-            Bitmap b = md.getBitmap(key);
+            Bitmap b = MediaMetadata.METADATA_KEY_ALBUM_ART.equals(key)
+                    || MediaMetadata.METADATA_KEY_ART.equals(key)
+                    || MediaMetadata.METADATA_KEY_DISPLAY_ICON.equals(key) ? md.getBitmap(key) : null;
             if (b != null) {
                 return "Bitmap " + b.getWidth() + "x" + b.getHeight();
             }
