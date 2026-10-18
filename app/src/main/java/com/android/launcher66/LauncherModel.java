@@ -1685,6 +1685,26 @@ public class LauncherModel extends BroadcastReceiver {
         }
 
         /**
+         * Screens that hold items but are missing from the screen table go back in, at the end:
+         * a screen stripped as empty while an item was on its way to it (see
+         * Workspace.mScreenAwaitingAdd) left the item on a screen that Workspace recreated in memory
+         * only, at every start, and whose id a later new screen could get again. Caller holds sBgLock.
+         */
+        private void restoreMissingScreens() {
+            java.util.TreeSet<Long> missing = new java.util.TreeSet<>();
+            for (ItemInfo item : sBgItemsIdMap.values()) {
+                if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP
+                        && item.screenId >= 0 && !sBgWorkspaceScreens.contains(item.screenId)) {
+                    missing.add(item.screenId);
+                }
+            }
+            if (missing.isEmpty()) return;
+            Log.w(TAG, "screens " + missing + " hold items but were not saved: added");
+            sBgWorkspaceScreens.addAll(missing);
+            updateWorkspaceScreenOrder(mContext, sBgWorkspaceScreens);
+        }
+
+        /**
          * A desktop widget whose cells an item loaded before it holds: moved to the free cells
          * nearest to its own on its screen, or to a new screen at the end, rather than left out
          * (it stayed in the database, unseen, with its widget id). Caller holds sBgLock.
@@ -2158,6 +2178,7 @@ public class LauncherModel extends BroadcastReceiver {
                     for (Integer i : orderedScreens.keySet()) {
                         sBgWorkspaceScreens.add(orderedScreens.get(i));
                     }
+                    restoreMissingScreens();
                     Log.i(TAG, "sBgWorkspaceScreens: " + sBgWorkspaceScreens);
                     mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 

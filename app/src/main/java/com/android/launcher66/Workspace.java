@@ -305,6 +305,16 @@ public class Workspace extends SmoothPagedView
     private final Handler stripHandler = new Handler(Looper.getMainLooper());
     private Runnable stripAction;
     private static final long STRIP_DELAY = 2500;
+    /**
+     * The screen an item dropped from the tray is on its way to, and since when. The item is added
+     * only after the drop animation, often after the bind or configure activity too, and a strip
+     * in between took the still empty screen: a new screen at the end was dropped from the
+     * database and the workspace went to the one before it. Kept until the add ends, at most
+     * SCREEN_AWAITING_ADD_MAX_MS.
+     */
+    private long mScreenAwaitingAdd = ItemInfo.NO_ID;
+    private long mScreenAwaitingAddSince;
+    private static final long SCREEN_AWAITING_ADD_MAX_MS = 120_000L;
     /** A strip requested while the workspace was loading; see stripEmptyScreens(). */
     private boolean mStripScreensAfterLoad = false;
     /** A strip based on the database requested while the workspace was loading. */
@@ -2856,6 +2866,17 @@ public class Workspace extends SmoothPagedView
         return mWorkspaceScreens.containsKey(EXTRA_EMPTY_SCREEN_ID) && nScreens > 1;
     }
 
+    /** See mScreenAwaitingAdd. */
+    void holdScreenForAdd(long screenId) {
+        mScreenAwaitingAdd = screenId;
+        mScreenAwaitingAddSince = SystemClock.uptimeMillis();
+    }
+
+    /** The add from the tray ended, added or not; see mScreenAwaitingAdd. */
+    public void releaseScreenForAdd() {
+        mScreenAwaitingAdd = ItemInfo.NO_ID;
+    }
+
     public void commitExtraEmptyScreen() {
         int index = getPageIndexForScreenId(EXTRA_EMPTY_SCREEN_ID);
         CellLayout cl = mWorkspaceScreens.get(EXTRA_EMPTY_SCREEN_ID);
@@ -3026,6 +3047,14 @@ public class Workspace extends SmoothPagedView
             cl = mWorkspaceScreens.get(id);
             if (cl != null && id >= 0 && cl.getShortcutsAndWidgets().getChildCount() == 0) {
                 removeScreens.add(id);
+            }
+        }
+        if (mScreenAwaitingAdd != ItemInfo.NO_ID && removeScreens.contains(mScreenAwaitingAdd)) {
+            if (SystemClock.uptimeMillis() - mScreenAwaitingAddSince < SCREEN_AWAITING_ADD_MAX_MS) {
+                Log.i(TAG, "stripEmptyScreens: screen " + mScreenAwaitingAdd + " kept, an item is on its way to it");
+                removeScreens.remove(mScreenAwaitingAdd);
+            } else {
+                mScreenAwaitingAdd = ItemInfo.NO_ID;
             }
         }
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -6354,6 +6383,9 @@ public class Workspace extends SmoothPagedView
 
         if (info instanceof PendingAddItemInfo) {
             final PendingAddItemInfo pendingInfo = (PendingAddItemInfo) dragInfo;
+            if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                holdScreenForAdd(screenId);
+            }
 
             boolean findNearestVacantCell = true;
             if (pendingInfo.itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT) {

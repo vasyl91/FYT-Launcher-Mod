@@ -3793,6 +3793,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return;
         }
 
+        // A shortcut from the tray: added below or cancelled, its screen is no longer awaited
+        mWorkspace.releaseScreenForAdd();
+
         // The pattern used here is that a user PICKs a specific application,
         // which, depending on the target, might need to CREATE the actual target.
 
@@ -3844,6 +3847,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             };
         } else if (resultCode == RESULT_CANCELED) {
             animationType = Workspace.CANCEL_TWO_STAGE_WIDGET_DROP_ANIMATION;
+            mWorkspace.releaseScreenForAdd();
             onCompleteRunnable = new Runnable() {
                 @Override
                 public void run() {
@@ -5400,6 +5404,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     private void completeAddAppWidget(final int appWidgetId, long container, long screenId, AppWidgetHostView hostView, AppWidgetProviderInfo appWidgetInfo) {
         Log.i("WIDGET", "completeAddAppWidget");
+        // Added or not, the screen is no longer awaited: the strip at the end may take it if empty
+        mWorkspace.releaseScreenForAdd();
         if (appWidgetInfo == null) {
             // Expected after a configure activity: completeTwoStageWidgetDrop() passes no info.
             Log.d("WIDGET", "No AppWidgetProviderInfo passed for ID " + appWidgetId + ", looking it up");
@@ -5496,7 +5502,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     /**
      * Once the tray has closed (see exitSpringLoadedDragModeDelayed()), the screen the widget went
-     * to: dropped on the new screen at the end, the workspace was left on the last one before it.
+     * to, should anything have moved the workspace meanwhile: a strip of the still empty new
+     * screen at the end used to leave it on the one before (see Workspace.mScreenAwaitingAdd).
      */
     private void showScreenOfAddedWidget(final long screenId) {
         mHandler.postDelayed(() -> {
