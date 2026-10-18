@@ -228,6 +228,23 @@ public class MusicService extends Service {
         return true;
     }
 
+    /** For controlSyuMedia(). */
+    public static final int SYU_MEDIA_PLAY_PAUSE = 0;
+    public static final int SYU_MEDIA_NEXT = 1;
+    public static final int SYU_MEDIA_PREVIOUS = 2;
+
+    /**
+     * Play/pause, next or previous for com.syu.media, over its IPlayer binder: it has no intents,
+     * and its media session handles no keys for music. Any thread; the call goes out on the
+     * client's.
+     *
+     * @return false when its service is not bound (not running)
+     */
+    public static boolean controlSyuMedia(int command) {
+        SyuMediaClient client = SyuMediaClient.sInstance;
+        return client != null && client.control(command);
+    }
+
     /** Asks com.syu.media again, at most once a second; for a flag changed in its own screen. */
     public static void requestSyuMediaRefresh() {
         SyuMediaClient client = SyuMediaClient.sInstance;
@@ -387,6 +404,10 @@ public class MusicService extends Service {
     private static final class SyuMediaClient implements ServiceConnection {
         private static final String IPLAYER = "com.syu.media.IPlayer";
         private static final String ICALLBACK = "com.syu.media.ICallback";
+        private static final int TX_PLAY = 1;
+        private static final int TX_PLAY_LAST = 5;
+        private static final int TX_PLAY_NEXT = 6;
+        private static final int TX_PAUSE = 7;
         private static final int TX_IS_PLAYING = 8;
         private static final int TX_GET_PROGRESS = 9;
         private static final int TX_GET_PLAYING_SONG = 10;
@@ -412,6 +433,8 @@ public class MusicService extends Service {
         private final Runnable tick = this::refresh;
         // worker thread only
         private IBinder player;
+        /** Whether player is set, for control() on another thread. */
+        private volatile boolean connected;
         private SyuMediaState last;
 
         static synchronized void start(Context app) {
@@ -452,6 +475,7 @@ public class MusicService extends Service {
         public void onServiceConnected(ComponentName name, IBinder service) {
             worker.post(() -> {
                 player = service;
+                connected = true;
                 Log.d(TAG, MEDIA_PKG + " connected");
                 Parcel reply = callPlayer(TX_REGISTER_CALLBACK, callback);
                 if (reply != null) {
@@ -488,6 +512,7 @@ public class MusicService extends Service {
                 return;
             }
             player = null;
+            connected = false;
             Log.d(TAG, MEDIA_PKG + " disconnected");
             if (last != null && last.playing) {
                 // Keep the track, only the play state changes.
@@ -503,6 +528,32 @@ public class MusicService extends Service {
             }
             lastRequestedRefreshAtMs = now;
             worker.post(this::refresh);
+        }
+
+        /** See MusicService.controlSyuMedia(). Any thread. */
+        boolean control(int command) {
+            if (!connected) {
+                return false;
+            }
+            worker.post(() -> {
+                int code;
+                if (command == SYU_MEDIA_NEXT) {
+                    code = TX_PLAY_NEXT;
+                } else if (command == SYU_MEDIA_PREVIOUS) {
+                    code = TX_PLAY_LAST;
+                } else {
+                    // No toggle in IPlayer: the state decides, read now
+                    code = readInt(TX_IS_PLAYING, 0) != 0 ? TX_PAUSE : TX_PLAY;
+                }
+                Parcel reply = callPlayer(code, null);
+                if (reply != null) {
+                    reply.recycle();
+                }
+                Log.d(TAG, MEDIA_PKG + " control " + command + " -> call " + code);
+                // Its callbacks follow too; this one does not wait for them
+                refresh();
+            });
+            return true;
         }
 
         /** See MusicService.setSyuMediaFavorite(). */
