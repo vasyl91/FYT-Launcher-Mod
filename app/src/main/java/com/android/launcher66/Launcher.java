@@ -5489,6 +5489,24 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         resetAddInfo();
         WindowUtil.removePip();
         mWorkspace.triggerStripEmptyScreens("Launcher, completeAddAppWidget()", true);
+        if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+            showScreenOfAddedWidget(screenId);
+        }
+    }
+
+    /**
+     * Once the tray has closed (see exitSpringLoadedDragModeDelayed()), the screen the widget went
+     * to: dropped on the new screen at the end, the workspace was left on the last one before it.
+     */
+    private void showScreenOfAddedWidget(final long screenId) {
+        mHandler.postDelayed(() -> {
+            if (mWorkspace == null) return;
+            int index = mWorkspace.getPageIndexForScreenId(screenId);
+            if (index >= 0 && index != mWorkspace.getNextPage()) {
+                Log.i("WIDGET", "showing the added widget's screen " + screenId + " (page " + index + ")");
+                mWorkspace.snapToPage(index);
+            }
+        }, EXIT_SPRINGLOADED_MODE_LONG_TIMEOUT + 300);
     }
 
     @Override
