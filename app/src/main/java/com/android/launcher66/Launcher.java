@@ -8323,6 +8323,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Log.d(TAG, "bindAppWidget: id=" + item.appWidgetId + " belongs to component " + appWidgetInfo.provider);
         }
 
+        // A widget saved with no cells was left out at every start (Workspace.addInScreen():
+        // "Invalid spans: 0x0"): a drop over the PiP panes used to save 0x0 before it crashed.
+        // It gets the cells it asks for again, saved, where it was.
+        if (item.spanX < 1 || item.spanY < 1) {
+            int[] span = getSpanForWidget(this, appWidgetInfo);
+            int[] minSpan = getMinSpanForWidget(this, appWidgetInfo);
+            item.spanX = Math.max(1, span[0]);
+            item.spanY = Math.max(1, span[1]);
+            item.minSpanX = Math.max(1, Math.min(item.spanX, minSpan[0]));
+            item.minSpanY = Math.max(1, Math.min(item.spanY, minSpan[1]));
+            Log.w(TAG, "bindAppWidget: id=" + item.appWidgetId + " was saved with no cells, now "
+                    + item.spanX + "x" + item.spanY);
+            LauncherModel.updateItemInDatabase(this, item);
+        }
+
         // Reuse the host view if this widget already has one.
         //
         // mAppWidgetHost.createView() inflates the provider's RemoteViews across a process boundary
