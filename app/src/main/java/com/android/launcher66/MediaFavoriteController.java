@@ -2583,13 +2583,23 @@ public final class MediaFavoriteController {
         if (queue == null || queue.isEmpty()) {
             Log.d(DEBUG_TAG, "  queue: empty");
         } else {
-            // The item playing only: a radio queue runs to hundreds
+            // The item playing (or titled so) only: a radio queue runs to hundreds
             long activeId = ps != null ? ps.getActiveQueueItemId() : MediaSession.QueueItem.UNKNOWN_ID;
             Log.d(DEBUG_TAG, "  queue: " + queue.size() + " items, active id " + activeId);
+            // and the first few when none is: what its items hold
+            String title = md != null ? md.getString(MediaMetadata.METADATA_KEY_TITLE) : null;
+            boolean any = false;
             for (MediaSession.QueueItem q : queue) {
-                if (q.getQueueId() != activeId) continue;
+                if (q.getQueueId() == activeId || isTitled(q, title)) any = true;
+            }
+            int shown = 0;
+            for (MediaSession.QueueItem q : queue) {
+                if (any ? q.getQueueId() != activeId && !isTitled(q, title) : shown >= 3) continue;
+                shown++;
                 MediaDescription qd = q.getDescription();
-                Log.d(DEBUG_TAG, "  queue mediaId=" + qd.getMediaId()
+                Log.d(DEBUG_TAG, "  queue id=" + q.getQueueId()
+                        + " mediaId=" + qd.getMediaId()
+                        + " subtitle=" + qd.getSubtitle()
                         + " title=" + qd.getTitle()
                         + " iconUri=" + qd.getIconUri()
                         + " mediaUri=" + qd.getMediaUri());
@@ -2733,34 +2743,107 @@ public final class MediaFavoriteController {
 
             for (MediaSession.QueueItem item : queue) {
                 if (item.getQueueId() == activeItemId) {
-                    
-                    MediaDescription qd = item.getDescription();
-                    List<String> candidates = new ArrayList<>();
-
-                    if (qd.getMediaId() != null) {
-                        candidates.add(qd.getMediaId());
-                    }
-                    if (qd.getIconUri() != null) {
-                        candidates.add(qd.getIconUri().toString());
-                    }
-                    for (String s : candidates) {
-                        Matcher m = VIDEO_ID_IN_URL.matcher(s);
-                        if (m.find()) {
-                            return m.group(1);
-                        }
-                        m = BARE_VIDEO_ID.matcher(s);
-                        if (m.matches()) {
-                            return s;
-                        }
+                    String id = videoIdOf(item.getDescription());
+                    if (id != null) {
+                        return id;
                     }
                     break;
                 }
             }
         }
+        // YT Music may name no item as the active one (UNKNOWN_ID, capture 18-10-2026 17:14:22):
+        // the item of the same title then, and artist if the title is there more than once.
+        String byTitle = videoIdByTitle(queue, metadata);
+        if (byTitle != null) {
+            return byTitle;
+        }
         if (isYouTubePackage(controller.getPackageName())) {
             warnNoVideoId(controller, metadata);
         }
         return null;
+    }
+
+    /** The video id in a queue item's media id or icon URI; null if neither holds one. */
+    private static String videoIdOf(MediaDescription qd) {
+        if (qd == null) {
+            return null;
+        }
+        List<String> candidates = new ArrayList<>();
+        if (qd.getMediaId() != null) {
+            candidates.add(qd.getMediaId());
+        }
+        if (qd.getIconUri() != null) {
+            candidates.add(qd.getIconUri().toString());
+        }
+        for (String s : candidates) {
+            Matcher m = VIDEO_ID_IN_URL.matcher(s);
+            if (m.find()) {
+                return m.group(1);
+            }
+            m = BARE_VIDEO_ID.matcher(s);
+            if (m.matches()) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The video id of the queue item titled as the track playing; null if none is, or the
+     * items that are point at different videos and the artist does not tell them apart.
+     */
+    private static String videoIdByTitle(List<MediaSession.QueueItem> queue, MediaMetadata metadata) {
+        if (queue == null || queue.isEmpty() || metadata == null) {
+            return null;
+        }
+        String title = trimmed(metadata.getString(MediaMetadata.METADATA_KEY_TITLE));
+        if (title == null) {
+            return null;
+        }
+        String artist = trimmed(metadata.getString(MediaMetadata.METADATA_KEY_ARTIST));
+        String any = null;
+        String byArtist = null;
+        boolean anyAmbiguous = false;
+        boolean byArtistAmbiguous = false;
+        for (MediaSession.QueueItem item : queue) {
+            if (!isTitled(item, title)) {
+                continue;
+            }
+            MediaDescription qd = item.getDescription();
+            String id = videoIdOf(qd);
+            if (id == null) {
+                continue;
+            }
+            if (any == null) any = id;
+            else if (!any.equals(id)) anyAmbiguous = true;
+            String subtitle = trimmed(textOf(qd.getSubtitle()));
+            if (artist != null && subtitle != null && subtitle.contains(artist)) {
+                if (byArtist == null) byArtist = id;
+                else if (!byArtist.equals(id)) byArtistAmbiguous = true;
+            }
+        }
+        if (byArtist != null && !byArtistAmbiguous) {
+            return byArtist;
+        }
+        return anyAmbiguous ? null : any;
+    }
+
+    private static boolean isTitled(MediaSession.QueueItem item, String title) {
+        String t = trimmed(title);
+        return t != null && item.getDescription() != null
+                && t.equals(trimmed(textOf(item.getDescription().getTitle())));
+    }
+
+    private static String textOf(CharSequence text) {
+        return text != null ? text.toString() : null;
+    }
+
+    private static String trimmed(String text) {
+        if (text == null) {
+            return null;
+        }
+        String t = text.trim();
+        return t.isEmpty() ? null : t;
     }
 
     /** The session (package and media id) last reported as giving no video id. */
