@@ -9,6 +9,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.syu.ipc.IRemoteModule;
@@ -61,7 +62,13 @@ public class RemoteTools implements ServiceConnection {
         }
         Intent intent = new Intent(this.action);
         intent.setPackage(this.pkgName);
-        this.mContext.bindService(intent, this, 1);
+        try {
+            this.mContext.bindService(intent, this, 1);
+        } catch (SecurityException e) {
+            // Not exported to this launcher (not the system one): binding again cannot help.
+            Log.w("RemoteTools", this.pkgName + " not bindable: " + e);
+            return;
+        }
         final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() { 
             @Override

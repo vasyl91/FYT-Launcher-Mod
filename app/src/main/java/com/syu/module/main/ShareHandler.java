@@ -3,6 +3,7 @@ package com.syu.module.main;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 import com.android.launcher66.LauncherApplication;
 
@@ -17,7 +18,14 @@ public class ShareHandler {
         }
         Cursor cursor;
         int result = valueIfNotFound;
-        if (resolver != null && (cursor = resolver.query(URI, null, Integer.toString(key), null, null)) != null) {
+        try {
+            cursor = resolver != null ? resolver.query(URI, null, Integer.toString(key), null, null) : null;
+        } catch (RuntimeException e) {
+            // Not exported to a launcher that is not the system one, on some firmware
+            Log.w("ShareHandler", "com.syu.ms.provider not readable: " + e);
+            return valueIfNotFound;
+        }
+        if (cursor != null) {
             try {
                 if (cursor.moveToFirst()) {
                     result = cursor.getInt(0);

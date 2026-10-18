@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
 
 import com.syu.ipc.IRemoteToolkit;
 import com.syu.loopview.MessageHandler;
@@ -36,7 +37,14 @@ public class MsToolkitConnection implements ServiceConnection {
             }
             Intent intent = new Intent("com.syu.ms.toolkit");
             intent.setComponent(new ComponentName("com.syu.ms", "app.ToolkitService"));
-            MsToolkitConnection.this.mContext.bindService(intent, MsToolkitConnection.INSTANCE, 1);
+            try {
+                MsToolkitConnection.this.mContext.bindService(intent, MsToolkitConnection.INSTANCE, 1);
+            } catch (SecurityException e) {
+                // Not exported to this launcher (not the system one): binding again cannot help.
+                Log.w("MsToolkitConnection", "com.syu.ms toolkit not bindable: " + e);
+                MsToolkitConnection.this.mConnecting = false;
+                return;
+            }
             MsToolkitConnection.this.mHandler.postDelayed(this, new Random().nextInt(MessageHandler.WHAT_ITEM_SELECTED) + 1000);
         }
     };

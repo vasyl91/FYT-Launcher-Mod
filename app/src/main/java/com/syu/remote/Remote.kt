@@ -9,6 +9,7 @@ import android.os.HandlerThread
 import android.os.IBinder
 import android.os.Looper
 import android.os.RemoteException
+import android.util.Log
 import android.util.SparseArray
 import com.syu.ipc.IRemoteModule
 import com.syu.ipc.IRemoteToolkit
@@ -80,8 +81,14 @@ class Remote private constructor(
     private fun bind() {
         val intent = Intent(action).apply { `package` = pkgName }
         autoConn = true
-        mContext.bindService(intent, this, Context.BIND_AUTO_CREATE)
-        
+        try {
+            mContext.bindService(intent, this, Context.BIND_AUTO_CREATE)
+        } catch (e: SecurityException) {
+            // Not exported to this launcher (not the system one): binding again cannot help.
+            Log.w("Remote", "$pkgName not bindable: $e")
+            return
+        }
+
         Handler(Looper.getMainLooper()).postDelayed({
             if (autoConn && mToolkit == null) {
                 bind()
