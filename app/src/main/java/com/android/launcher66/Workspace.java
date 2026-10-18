@@ -585,61 +585,10 @@ public class Workspace extends SmoothPagedView
         mFlingThresholdVelocity = (int) (FLING_THRESHOLD_VELOCITY * mDensity);
     }
 
-    /**
-     * The screens' ids read at the start off the main thread (see LauncherApplication), for the
-     * first Workspace; dropped by any change to the screen table (see LauncherProvider), and
-     * a Workspace that finds none queries them itself.
-     */
-    private static long[] sPreloadedScreenIds;
-    private static int sScreensGeneration;
-
-    static void preloadScreens(Context context) {
-        int generation;
-        synchronized (Workspace.class) {
-            generation = sScreensGeneration;
-        }
-        long[] ids = queryScreenIds(context.getContentResolver());
-        synchronized (Workspace.class) {
-            if (generation == sScreensGeneration) {
-                sPreloadedScreenIds = ids;
-            }
-        }
-    }
-
-    static synchronized void screensChanged() {
-        sScreensGeneration++;
-        sPreloadedScreenIds = null;
-    }
-
-    private static synchronized long[] takePreloadedScreens() {
-        long[] ids = sPreloadedScreenIds;
-        // Also refuses a preload still under way
-        screensChanged();
-        return ids;
-    }
-
-    /** The persisted screens' ids in rank order; null if the query failed. */
-    private static long[] queryScreenIds(ContentResolver resolver) {
-        try (Cursor c = resolver.query(
-                LauncherSettings.WorkspaceScreens.CONTENT_URI,
-                new String[] { "_id" },
-                null, null,
-                LauncherSettings.WorkspaceScreens.SCREEN_RANK + " ASC")) {
-            if (c == null) {
-                return null;
-            }
-            long[] ids = new long[c.getCount()];
-            for (int i = 0; i < ids.length && c.moveToNext(); i++) {
-                ids[i] = c.getLong(0);
-            }
-            return ids;
-        }
-    }
-
     private void loadWorkspaceScreensFromProvider() {
-        long[] ids = takePreloadedScreens();
+        long[] ids = WorkspaceScreensPreload.take();
         if (ids == null) {
-            ids = queryScreenIds(mLauncher.getContentResolver());
+            ids = WorkspaceScreensPreload.query(mLauncher.getContentResolver());
         }
         if (ids == null) {
             Log.w(TAG, "loadWorkspaceScreensFromProvider: query returned null");

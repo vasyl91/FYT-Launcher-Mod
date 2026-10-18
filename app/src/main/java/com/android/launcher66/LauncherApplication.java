@@ -337,6 +337,15 @@ public class LauncherApplication extends Application {
      */
     private void warmUpOffMainThread() {
         BarRows.preload(LauncherAppBars.MAX_LEFT);
+        // Its own thread: the main thread needs the screens about a second from now, when
+        // Workspace is inflated. Opens the workspace's database (LauncherProvider) on the way.
+        new Thread(() -> {
+            try {
+                WorkspaceScreensPreload.preload(this);
+            } catch (Throwable t) {
+                Log.w(TAG, "start-up screens read: " + t);
+            }
+        }, "StartupScreens").start();
         new Thread(() -> {
             try {
                 getFilesDir();
@@ -350,9 +359,6 @@ public class LauncherApplication extends Application {
                 getSharedPreferences(WallpaperCropActivity.getSharedPreferencesKey(),
                         MODE_MULTI_PROCESS);
                 getSharedPreferences(PendingUpdateStore.PREFS, MODE_PRIVATE);
-                // Opens the workspace's database (LauncherProvider) and reads its screens for
-                // the Workspace.
-                Workspace.preloadScreens(this);
             } catch (Throwable t) {
                 Log.w(TAG, "start-up warm-up: " + t);
             }

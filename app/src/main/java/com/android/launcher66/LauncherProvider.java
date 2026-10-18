@@ -197,7 +197,7 @@ public class LauncherProvider extends ContentProvider {
     /** The screens Workspace may have read ahead are dropped before their table is written. */
     private static void screensMayChange(SqlArguments args) {
         if (TABLE_WORKSPACE_SCREENS.equals(args.table)) {
-            Workspace.screensChanged();
+            WorkspaceScreensPreload.changed();
         }
     }
 
