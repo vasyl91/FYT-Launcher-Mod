@@ -165,8 +165,8 @@ public class LauncherApplication extends Application {
                     .remove(Keys.COVER_SPLASH)
                     .apply();
         }
-        // Pinned PiP exists on FYT units only: elsewhere every pane is a window.
-        if (!isFytDevice()) {
+        // Pinned PiP is the FYT system launcher's only: elsewhere every pane is a window.
+        if (!supportsPinnedPip()) {
             prefs.edit()
                     .putBoolean(Keys.PIP_FIRST_MODE, false)
                     .putBoolean(Keys.PIP_SECOND_MODE, false)
@@ -729,6 +729,15 @@ public class LauncherApplication extends Application {
         return ai.uid == android.os.Process.SYSTEM_UID || (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
     }
 
+    /**
+     * Whether a pane can be FYT's pinned PiP instead of a window: on an FYT unit, as the system
+     * launcher only -- it sets system properties and moves the pinned stack, which no other app
+     * may do (the standard version there gets windows, through root or Shizuku).
+     */
+    public static boolean supportsPinnedPip() {
+        return isFytDevice() && hasSystemPrivileges();
+    }
+
     public static boolean isFytDevice() {
         String board = SystemProperties.get("ro.product.board");
         String manufacturer = SystemProperties.get("ro.product.manufacturer");
@@ -774,12 +783,16 @@ public class LauncherApplication extends Application {
     private static boolean sNoPaneHostLogged;
 
     /**
-     * Whether the PiP panes can work here: on an FYT unit, or wherever a VD host is there or on
-     * its way -- the launcher installed as system, the FYT VDHost Magisk module, or Shizuku (see
-     * vdhost/README.md). Root alone is not enough: without the module nothing would host the panes.
+     * Whether the PiP panes can work here: wherever a VD host is there or on its way -- the
+     * launcher installed as system, the FYT VDHost Magisk module, or Shizuku (see
+     * vdhost/README.md) -- and on an FYT unit up to Android 10, where the framework's ActivityView
+     * runs them. Root alone is not enough: without the module nothing would host the panes. From
+     * Android 11 an FYT unit is no exception: the panes are VD views there too, and the standard
+     * version without root or Shizuku would only wait for a host.
      */
     public static boolean canHostPips() {
-        if (isFytDevice() || com.syu.util.WindowHostVdClient.canHostPanes()) return true;
+        if ((isFytDevice() && Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
+                || com.syu.util.WindowHostVdClient.canHostPanes()) return true;
         if (isRooted() && !sNoPaneHostLogged) {
             sNoPaneHostLogged = true;
             Log.w(TAG, "PiP panes need the FYT VDHost Magisk module or Shizuku; neither is available");
