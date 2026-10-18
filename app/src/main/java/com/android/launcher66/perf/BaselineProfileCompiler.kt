@@ -203,14 +203,16 @@ object BaselineProfileCompiler {
     internal var elapsedNow: () -> Long = { SystemClock.elapsedRealtime() }
 
     /**
-     * True if this build / device can use the compiler: the fyt system build on Android 8-13
-     * compiles itself; a release build of any other kind through the VD host, once root or
-     * Shizuku runs one ([canCompileNow]). A debug build has no profile to compile.
+     * True if this build / device can use the compiler: a release build, the fyt system build on
+     * Android 8-13 compiling itself, any other through the VD host once root or Shizuku runs one
+     * ([canCompileNow]). Never a debug build: AGP packs the Baseline Profile into non-debuggable
+     * builds only, so the fyt debug build was compiled without one and still reported OK.
      */
     @JvmStatic
     fun isSupported(): Boolean =
         TEST_BUILD_TYPE_PREFIXES.none { BuildConfig.BUILD_TYPE.startsWith(it) } &&
-            (compilesItself() || (!BuildConfig.DEBUG && Process.myUid() != Process.SYSTEM_UID))
+            !BuildConfig.DEBUG &&
+            (compilesItself() || Process.myUid() != Process.SYSTEM_UID)
 
     /** Outcome of [resetToBaselineProfile]. */
     enum class ResetResult {
@@ -314,6 +316,10 @@ object BaselineProfileCompiler {
     @JvmStatic
     @WorkerThread
     fun statusText(context: Context): String {
+        if (BuildConfig.DEBUG) {
+            return "Not used in a debug build: it carries no Baseline Profile (only release " +
+                "builds do), so there is nothing to compile."
+        }
         val prefs = prefs(context)
         // Bring device time and a pending compile time up to date for the display.
         prefs.edit().also { updateDeviceTime(prefs, it) }.apply()
