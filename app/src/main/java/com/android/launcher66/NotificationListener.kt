@@ -1511,11 +1511,10 @@ class NotificationListener : NotificationListenerService() {
         if (bitmap == null) {
             bitmap = currentMeta.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)
         }
-        if (bitmap == null && activeControllerPackage.contains("youtube")) {
-            val context = contextRef.get()
-            if (context != null) {
-                bitmap = getHighResAppIcon(context, activeControllerPackage)
-            }
+        if (bitmap == null) {
+            // No cover of its own: the player's icon, for every player (YouTube's only before),
+            // so the widget shows and keeps that rather than the previous track's cover.
+            bitmap = appIconFor(activeControllerPackage)
         }
 
         // PNG-encoding a full-size cover costs tens of ms and a fresh ByteArray each time,
@@ -1590,6 +1589,22 @@ class NotificationListener : NotificationListenerService() {
         )
         Widget.widgetUpdate(this, DateMusicProvider::class.java)
         Widget.widgetUpdate(this, DateRadioProvider::class.java)
+    }
+
+    private var appIconPackage: String? = null
+    private var appIconBitmap: Bitmap? = null
+
+    /**
+     * The player's icon as a cover, kept per package: the same bitmap each time, so the PNG cache
+     * in mediaControllerStatus() holds (it runs several times a second).
+     */
+    private fun appIconFor(packageName: String): Bitmap? {
+        if (packageName.isEmpty()) return null
+        if (packageName == appIconPackage) return appIconBitmap
+        val context = contextRef.get() ?: return null
+        appIconBitmap = getHighResAppIcon(context, packageName)
+        appIconPackage = packageName
+        return appIconBitmap
     }
 
     fun getHighResAppIcon(context: Context, packageName: String): Bitmap? {

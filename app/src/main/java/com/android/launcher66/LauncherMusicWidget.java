@@ -255,6 +255,7 @@ final class LauncherMusicWidget {
             setPlayPauseIcon(false);
 
             if ("true".equals(mLauncher.state)) {
+                saveLastPlayer(currentPlayerPackage());
                 Lrc lrc = new Lrc();
                 Id3Info info = lrc.getId3Info(path);
                 byte[] dataPic =  info.dataPic;
@@ -284,6 +285,20 @@ final class LauncherMusicWidget {
                         if (ivALbumBgTwo != null) {
                             ivALbumBgTwo.setImageDrawable(drawable);
                         }
+                    }
+                } else if (playerIcon(currentPlayerPackage()) != null) {
+                    // No cover: the player's icon, shown and kept under this track's title (the
+                    // path names both, so the next track of the same player is saved again).
+                    lastpath = null;
+                    String player = currentPlayerPackage();
+                    Bitmap icon = playerIcon(player);
+                    saveBitmapToPreferences(icon, "icon:" + player + ":" + normalizeMediaText(musictitle));
+                    Drawable drawable = new BitmapDrawable(mLauncher.getApplicationContext().getResources(), icon);
+                    if (ivALbumBg != null) {
+                        ivALbumBg.setImageDrawable(drawable);
+                    }
+                    if (ivALbumBgTwo != null) {
+                        ivALbumBgTwo.setImageDrawable(drawable);
                     }
                 } else {
                     lastpath = null;
@@ -513,26 +528,41 @@ final class LauncherMusicWidget {
 
     /** The state of that player's session right now; null if it has none or it cannot be read. */
     private Boolean isSessionPlaying(String packageName) {
-        if (packageName == null || packageName.isEmpty()) {
+        MediaController controller = findSession(packageName);
+        if (controller == null) {
             return null;
         }
         try {
-            MediaSessionManager msm = (MediaSessionManager) mLauncher.getSystemService(Context.MEDIA_SESSION_SERVICE);
-            List<MediaController> controllers = msm != null
-                    ? msm.getActiveSessions(new ComponentName(mLauncher, NotificationListener.class)) : null;
-            if (controllers == null) {
-                return null;
-            }
-            for (MediaController controller : controllers) {
-                if (packageName.equals(controller.getPackageName())) {
-                    PlaybackState state = controller.getPlaybackState();
-                    return state != null && MediaWidgetState.isPlaybackActive(state.getState());
-                }
-            }
+            PlaybackState state = controller.getPlaybackState();
+            return state != null && MediaWidgetState.isPlaybackActive(state.getState());
         } catch (RuntimeException e) {
-            // No notification access (SecurityException) or the session went away meanwhile.
+            return null; // the session went away meanwhile
+        }
+    }
+
+    /** That player's active session; null if it has none or the sessions cannot be read. */
+    private MediaController findSession(String packageName) {
+        List<MediaController> controllers = activeSessions();
+        if (controllers == null || packageName == null || packageName.isEmpty()) {
+            return null;
+        }
+        for (MediaController controller : controllers) {
+            if (packageName.equals(controller.getPackageName())) {
+                return controller;
+            }
         }
         return null;
+    }
+
+    /** The active sessions; null if they cannot be read (no notification access). */
+    private List<MediaController> activeSessions() {
+        try {
+            MediaSessionManager msm = (MediaSessionManager) mLauncher.getSystemService(Context.MEDIA_SESSION_SERVICE);
+            return msm != null
+                    ? msm.getActiveSessions(new ComponentName(mLauncher, NotificationListener.class)) : null;
+        } catch (RuntimeException e) {
+            return null; // SecurityException
+        }
     }
 
     public void setPlayPauseIcon() {
@@ -556,6 +586,85 @@ final class LauncherMusicWidget {
             }
         }         
     }
+
+    /** The player of what the widget shows now: the session's app, else FYT's stock player. */
+    private String currentPlayerPackage() {
+        if ("mediaController".equals(mediaSource)) {
+            return activeController;
+        }
+        return LauncherApplication.isFytDevice() ? STOCK_MUSIC_PACKAGE : null;
+    }
+
+    private String mPlayerIconPackage;
+    private Bitmap mPlayerIcon;
+
+    /** The player's icon as a cover (a track without one), kept per package; null without it. */
+    private Bitmap playerIcon(String packageName) {
+        if (packageName == null || packageName.isEmpty()) {
+            return null;
+        }
+        if (packageName.equals(mPlayerIconPackage)) {
+            return mPlayerIcon;
+        }
+        Bitmap icon = null;
+        try {
+            Drawable drawable = mLauncher.getPackageManager().getApplicationIcon(packageName);
+            icon = Bitmap.createBitmap(PLAYER_ICON_SIZE, PLAYER_ICON_SIZE, Bitmap.Config.ARGB_8888);
+            android.graphics.Canvas canvas = new android.graphics.Canvas(icon);
+            drawable.setBounds(0, 0, PLAYER_ICON_SIZE, PLAYER_ICON_SIZE);
+            drawable.draw(canvas);
+        } catch (PackageManager.NameNotFoundException | RuntimeException e) {
+            icon = null;
+        }
+        mPlayerIconPackage = packageName;
+        mPlayerIcon = icon;
+        return icon;
+    }
+
+    private static final int PLAYER_ICON_SIZE = 256;
+
+    /** The app the last track played in; see openLastPlayerIfNoSession(). */
+    static final String PREF_LAST_PLAYER = "last_music_player";
+
+    private void saveLastPlayer(String packageName) {
+        if (packageName == null || packageName.isEmpty()
+                || packageName.equals(mLauncher.mPrefs.getString(PREF_LAST_PLAYER, null))) {
+            return;
+        }
+        mLauncher.mPrefs.edit().putString(PREF_LAST_PLAYER, packageName).apply();
+    }
+
+    /**
+     * After a restart (no session of the last track's app): any button of the widget opens that
+     * app instead, as the restored title and cover suggest. Not FYT's stock player, whose play
+     * resumes the last track by itself. True if it was opened.
+     */
+    private boolean openLastPlayerIfNoSession() {
+        String packageName = mLauncher.mPrefs.getString(PREF_LAST_PLAYER, null);
+        if (packageName == null || packageName.isEmpty() || STOCK_MUSIC_PACKAGE.equals(packageName)) {
+            return false;
+        }
+        List<MediaController> controllers = activeSessions();
+        if (controllers == null) {
+            return false; // no access to the sessions: not known whether it has one
+        }
+        for (MediaController controller : controllers) {
+            if (packageName.equals(controller.getPackageName())) {
+                return false;
+            }
+        }
+        Intent launchIntent = mLauncher.getPackageManager().getLaunchIntentForPackage(packageName);
+        if (launchIntent == null) {
+            return false;
+        }
+        Log.i(Launcher.TAG, "Music widget: no session of " + packageName + ", opening it");
+        WindowUtil.removePip();
+        refreshLeftCycleForIntent(launchIntent);
+        mLauncher.startActivitySafely(null, launchIntent, "music");
+        return true;
+    }
+
+    private static final String STOCK_MUSIC_PACKAGE = "com.syu.music";
 
     public void preSetMusicWidgets() {
         // seeded so the first live update is not written back as a change
@@ -976,6 +1085,9 @@ final class LauncherMusicWidget {
         if (barView && mLauncher.mWorkspace != null) {
             mLauncher.mWorkspace.scheduleAutoHide();
         }
+        if (openLastPlayerIfNoSession()) {
+            return;
+        }
         String preferredPackage = getPreferredMediaControllerPackage();
         if (MediaFavoriteController.isFavoriteTemporarilyDisabledPackage(preferredPackage)) {
             // Logged: from the outside a press refused here does nothing at all.
@@ -1074,6 +1186,9 @@ final class LauncherMusicWidget {
         if (barView) {
             mLauncher.mWorkspace.scheduleAutoHide();
         }
+        if (openLastPlayerIfNoSession()) {
+            return;
+        }
 
         if (mLauncher.mRadioWidget.isRadioPlaying() && "mediaController".equals(mediaSource)) {
             openActiveMusicPlayer(null);
@@ -1091,6 +1206,9 @@ final class LauncherMusicWidget {
     public void onPlayPauseButtonClicked(boolean barView) {
         if (barView) {
             mLauncher.mWorkspace.scheduleAutoHide();
+        }
+        if (openLastPlayerIfNoSession()) {
+            return;
         }
         if (!temporarilyDisablePlayPauseButton) {
             if ("fyt".equals(mediaSource) && !LauncherApplication.isFytDevice()) {
@@ -1199,6 +1317,9 @@ final class LauncherMusicWidget {
     public void onNextButtonClicked(boolean barView) {
         if (barView) {
             mLauncher.mWorkspace.scheduleAutoHide();
+        }
+        if (openLastPlayerIfNoSession()) {
+            return;
         }
 
         if (mLauncher.mRadioWidget.isRadioPlaying() && "mediaController".equals(mediaSource)) {
