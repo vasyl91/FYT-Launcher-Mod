@@ -52,7 +52,9 @@ import java.util.Set;
  * offered at all.
  *
  *   - YouTube ReVanced and YT Music ReVanced while fYT Rating holds an account;
- *   - Spotify while SpotifyRating holds one.
+ *   - Spotify while SpotifyRating holds one;
+ *   - com.syu.media (the 7870's stock player) always: its own library holds the flag;
+ *   - com.syu.music (the 7862/8581 stock player) on a rooted unit: its database holds the flag.
  *
  * Hiding them is only the visible half. The binding half is the hard block in
  * MediaFavoriteController.isFavoriteCacheUsable, which refuses the cache for those
@@ -180,7 +182,9 @@ public class AppListCacheDialogFragment extends DialogFragment
      * The players offered: every launcher app, minus the ones a signed-in account owns.
      *
      *   - YouTube ReVanced and YT Music ReVanced: hidden while fYT Rating holds an account;
-     *   - Spotify: hidden while SpotifyRating holds one.
+     *   - Spotify: hidden while SpotifyRating holds one;
+     *   - com.syu.media: always, its own library holds the flag;
+     *   - com.syu.music: on a rooted unit, its database holds the flag.
      *
      * The rule itself is MediaFavoriteController.isFavoriteCacheBlockedByAccount, the
      * predicate its hard block uses, so the two cannot drift apart. It is also wider

@@ -3,9 +3,12 @@ package com.fyt.car;
 import com.android.launcher66.SysCalls;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,11 +17,14 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.util.Log;
 
+import com.android.launcher66.MediaFavoriteController;
 import com.android.launcher66.NotificationListener;
 import com.android.launcher66.settings.Helpers;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -171,13 +177,63 @@ public class MusicService extends Service {
      *   ICallback 1 onSongChanged(MediaSource), 2 onPlayStatusChanged(int), 3 onPlayModeChanged(int)
      *   MediaSource: int id, String title, displayName, artist, album, path, folder,
      *             int duration (ms), byte favorite, int length
+     *
+     * Its favorites live in its own library, the "favorite" column of content://com.syu.media/song,
+     * a provider exported without a permission. com.syu.media writes it there itself
+     * (MediaProviderUtils.update: "favorite" by "_id=? AND path=?"), and its player screen reads it
+     * back on every track change. The flag inside MediaSource is not used: it is the in-memory
+     * copy, only refreshed while that screen is open.
      */
     public static final String MEDIA_PKG = "com.syu.media";
     private static final String MEDIA_SERVICE_ACTION = "com.syu.media.music.MusicService";
+    private static final Uri MEDIA_SONGS = Uri.parse("content://com.syu.media/song");
+    private static final String COLUMN_FAVORITE = "favorite";
 
     /** Starts following com.syu.media, once per process. Any thread. */
     public static void startSyuMedia(Context context) {
         SyuMediaClient.start(context.getApplicationContext());
+    }
+
+    /** The com.syu.media update the fields above were last filled from; main thread. */
+    private static volatile SyuMediaState sSyuMediaShown;
+
+    /**
+     * Whether the track in the fields above is com.syu.media's (a 7870), not com.syu.music's: the
+     * last com.syu.media update is still what they show.
+     */
+    public static boolean isSyuMediaSource() {
+        SyuMediaState s = sSyuMediaShown;
+        return s != null && !s.path.isEmpty() && s.path.equals(music_path);
+    }
+
+    /** com.syu.media's favorite flag of the track shown; null while unknown or not its track. */
+    public static Boolean getSyuMediaFavorite() {
+        return isSyuMediaSource() ? sSyuMediaShown.favorite : null;
+    }
+
+    /**
+     * Writes com.syu.media's favorite flag of the track shown. Main thread: the flag reads as
+     * changed at once, and is read back from the library once written (put back if refused).
+     *
+     * @return false when there is no com.syu.media track to write it for
+     */
+    public static boolean setSyuMediaFavorite(boolean favorite) {
+        SyuMediaClient client = SyuMediaClient.sInstance;
+        SyuMediaState s = sSyuMediaShown;
+        if (client == null || !isSyuMediaSource() || s.favorite == null) {
+            return false;
+        }
+        sSyuMediaShown = s.withFavorite(favorite);
+        client.writeFavorite(s, favorite);
+        return true;
+    }
+
+    /** Asks com.syu.media again, at most once a second; for a flag changed in its own screen. */
+    public static void requestSyuMediaRefresh() {
+        SyuMediaClient client = SyuMediaClient.sInstance;
+        if (client != null) {
+            client.requestRefresh();
+        }
     }
 
     /** What com.syu.media reports, read on the client's thread and applied on the main one. */
@@ -185,30 +241,52 @@ public class MusicService extends Service {
         final boolean playing;
         final long progress;
         final long duration;
+        final int id;
         final String title;
         final String artist;
         final String album;
         final String path;
+        /** From its library; null when it could not be read. */
+        final Boolean favorite;
 
-        SyuMediaState(boolean playing, long progress, SyuMediaSong song) {
+        SyuMediaState(boolean playing, long progress, SyuMediaSong song, Boolean favorite) {
             this.playing = playing;
             this.progress = Math.max(progress, 0);
             this.duration = song != null ? Math.max(song.duration, 0) : 0;
+            this.id = song != null ? song.id : -1;
             this.title = song != null ? song.title : "";
             this.artist = song != null ? song.artist : "";
             this.album = song != null ? song.album : "";
             this.path = song != null ? song.path : "";
+            this.favorite = favorite;
         }
 
-        /** Same track and play state; the position is left out, it moves every second. */
+        SyuMediaState withFavorite(Boolean favorite) {
+            return new SyuMediaState(playing, progress, songOf(this), favorite);
+        }
+
+        /** Same track, play state and favorite; the position is left out, it moves every second. */
         boolean sameAs(SyuMediaState o) {
-            return o != null && playing == o.playing && duration == o.duration
+            return o != null && playing == o.playing && duration == o.duration && id == o.id
                     && title.equals(o.title) && artist.equals(o.artist)
-                    && album.equals(o.album) && path.equals(o.path);
+                    && album.equals(o.album) && path.equals(o.path)
+                    && Objects.equals(favorite, o.favorite);
         }
     }
 
+    private static SyuMediaSong songOf(SyuMediaState s) {
+        SyuMediaSong song = new SyuMediaSong();
+        song.id = s.id;
+        song.title = s.title;
+        song.artist = s.artist;
+        song.album = s.album;
+        song.path = s.path;
+        song.duration = (int) s.duration;
+        return song;
+    }
+
     private static final class SyuMediaSong {
+        int id;
         String title;
         String artist;
         String album;
@@ -221,7 +299,7 @@ public class MusicService extends Service {
                 return null;
             }
             SyuMediaSong s = new SyuMediaSong();
-            p.readInt(); // id
+            s.id = p.readInt();
             String title = p.readString();
             String displayName = p.readString();
             // Untagged files: the file name, as com.syu.media shows them.
@@ -231,7 +309,7 @@ public class MusicService extends Service {
             s.path = nonNull(p.readString());
             p.readString(); // folder
             s.duration = p.readInt();
-            // favorite and length follow, not needed
+            // favorite (the library's is used, see above) and length follow
             return s;
         }
     }
@@ -241,6 +319,8 @@ public class MusicService extends Service {
      * come as an intent to a service instance. Main thread, as there.
      */
     private static void applySyuMedia(Context app, SyuMediaState s) {
+        SyuMediaState before = sSyuMediaShown;
+        sSyuMediaShown = s;
         TOTALMINUTES = s.duration;
         CURMINUTES = s.progress;
         music_name = s.title;
@@ -268,6 +348,13 @@ public class MusicService extends Service {
         Helpers helpers = new Helpers();
         if (state && hasTitle && helpers.isFytMusicAllowed()) {
             NotificationListener.onFytUpdate(state, music_path, SOURCE, CURMINUTES);
+        }
+
+        // A flag changed in com.syu.media's own screen, or read only now: the hearts do not redraw
+        // by themselves while it is paused.
+        if (before == null || !before.path.equals(s.path)
+                || !Objects.equals(before.favorite, s.favorite)) {
+            MediaFavoriteController.onStockFavoriteChanged(app);
         }
     }
 
@@ -311,8 +398,12 @@ public class MusicService extends Service {
         /** com.syu.music sent an update every second while playing; this keeps that pace. */
         private static final long TICK_MS = 1000;
         private static final long REBIND_MS = 5000;
+        /** requestRefresh() comes with every heart drawn: one lookup per second is enough. */
+        private static final long REQUESTED_REFRESH_MIN_MS = 1000;
 
-        private static SyuMediaClient sInstance;
+        private static volatile SyuMediaClient sInstance;
+
+        private volatile long lastRequestedRefreshAtMs;
 
         private final Context app;
         private final Handler worker;
@@ -400,8 +491,67 @@ public class MusicService extends Service {
             Log.d(TAG, MEDIA_PKG + " disconnected");
             if (last != null && last.playing) {
                 // Keep the track, only the play state changes.
-                publish(new SyuMediaState(false, last.progress, songOf(last)));
+                publish(new SyuMediaState(false, last.progress, songOf(last), last.favorite));
             }
+        }
+
+        /** See MusicService.requestSyuMediaRefresh(). Any thread. */
+        void requestRefresh() {
+            long now = SystemClock.elapsedRealtime();
+            if (now - lastRequestedRefreshAtMs < REQUESTED_REFRESH_MIN_MS) {
+                return;
+            }
+            lastRequestedRefreshAtMs = now;
+            worker.post(this::refresh);
+        }
+
+        /** See MusicService.setSyuMediaFavorite(). */
+        void writeFavorite(SyuMediaState track, boolean favorite) {
+            worker.post(() -> {
+                ContentValues values = new ContentValues();
+                values.put(COLUMN_FAVORITE, favorite);
+                int rows = 0;
+                try {
+                    rows = app.getContentResolver().update(MEDIA_SONGS, values,
+                            trackSelection(track), trackSelectionArgs(track));
+                } catch (RuntimeException e) {
+                    Log.w(TAG, MEDIA_PKG + ": favorite not written", e);
+                }
+                Log.d(TAG, MEDIA_PKG + ": favorite=" + favorite + " written to " + rows + " row(s)");
+                // Read back whatever the library now holds, and publish it even when it is what
+                // was last published: the flag shown was changed ahead of the write.
+                last = null;
+                refresh();
+            });
+        }
+
+        /** The track's favorite flag in com.syu.media's library; null if it cannot be read. */
+        private Boolean readFavorite(SyuMediaSong song) {
+            if (song == null || song.path.isEmpty()) {
+                return null;
+            }
+            SyuMediaState track = new SyuMediaState(false, 0, song, null);
+            try (Cursor c = app.getContentResolver().query(MEDIA_SONGS,
+                    new String[]{COLUMN_FAVORITE}, trackSelection(track),
+                    trackSelectionArgs(track), null)) {
+                if (c != null && c.moveToFirst()) {
+                    return c.getInt(0) != 0;
+                }
+            } catch (RuntimeException e) {
+                Log.w(TAG, MEDIA_PKG + ": favorite not readable: " + e);
+            }
+            return null; // not in its library (yet)
+        }
+
+        /** As com.syu.media's own MediaProviderUtils.update(); by path alone without an id. */
+        private static String trackSelection(SyuMediaState track) {
+            return track.id >= 0 ? "_id=? AND path=?" : "path=?";
+        }
+
+        private static String[] trackSelectionArgs(SyuMediaState track) {
+            return track.id >= 0
+                    ? new String[]{String.valueOf(track.id), track.path}
+                    : new String[]{track.path};
         }
 
         /** Reads the player's state and publishes it. Worker thread. */
@@ -426,7 +576,7 @@ public class MusicService extends Service {
             if (player == null) {
                 return; // died during the calls
             }
-            SyuMediaState s = new SyuMediaState(playing, progress, song);
+            SyuMediaState s = new SyuMediaState(playing, progress, song, readFavorite(song));
             // While playing every second, like com.syu.music; otherwise only what changed.
             if (playing || !s.sameAs(last)) {
                 publish(s);
@@ -439,16 +589,6 @@ public class MusicService extends Service {
         private void publish(SyuMediaState s) {
             last = s;
             main.post(() -> applySyuMedia(app, s));
-        }
-
-        private static SyuMediaSong songOf(SyuMediaState s) {
-            SyuMediaSong song = new SyuMediaSong();
-            song.title = s.title;
-            song.artist = s.artist;
-            song.album = s.album;
-            song.path = s.path;
-            song.duration = (int) s.duration;
-            return song;
         }
 
         private int readInt(int code, int fallback) {

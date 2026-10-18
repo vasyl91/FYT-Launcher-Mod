@@ -29,6 +29,7 @@ import com.android.launcher66.settings.AppListCacheDialogFragment;
 import com.android.launcher66.settings.FytRating;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SpotifyRating;
+import com.android.launcher66.settings.SyuMusicLibrary;
 import com.fyt.car.MusicService;
 import com.syu.widget.DateMusicProvider;
 import com.syu.widget.Widget;
@@ -436,10 +437,11 @@ public final class MediaFavoriteController {
      *     the list; see isFavoriteCacheUsable.
      */
     public static boolean isFavoriteTemporarilyDisabledPackage(String packageName) {
-        // The stock player exposes no rating of any kind, so the only thing the
-        // button can act on is the launcher's own cache: greyed out and refusing
-        // presses unless com.syu.music is on the cache list and its track can be
-        // identified. Checked first, because every rule below is about a media
+        // The stock player exposes no rating on a session. com.syu.media (7870): its
+        // library's flag, greyed out until that has answered. com.syu.music: the only
+        // thing the button can act on is the launcher's own cache: greyed out and
+        // refusing presses unless com.syu.music is on the cache list and its track can
+        // be identified. Checked first, because every rule below is about a media
         // session and it has none.
         if (isStockMusicSource(packageName)) {
             return !isStockFavoriteAvailable();
@@ -1238,7 +1240,8 @@ public final class MediaFavoriteController {
         return packageName != null
                 && !packageName.isEmpty()
                 && !"null".equals(packageName)
-                && !STOCK_MUSIC_PACKAGE.equals(packageName);
+                && !STOCK_MUSIC_PACKAGE.equals(packageName)
+                && !MusicService.MEDIA_PKG.equals(packageName);
     }
 
     /**
@@ -1251,7 +1254,9 @@ public final class MediaFavoriteController {
      * not name.
      */
     public static boolean isStockMusicSource(String packageName) {
-        if (STOCK_MUSIC_PACKAGE.equals(packageName)) {
+        // com.syu.media (the 7870) has a session, but for its media buttons only; its track is
+        // MusicService's like com.syu.music's.
+        if (STOCK_MUSIC_PACKAGE.equals(packageName) || MusicService.MEDIA_PKG.equals(packageName)) {
             return true;
         }
         if (isExternalPackage(packageName)) {
@@ -1265,23 +1270,87 @@ public final class MediaFavoriteController {
     }
 
     // =====================================================================================
-    // Stock player (com.syu.music): the launcher's cache is all there is
+    // Stock player, its own library each. com.syu.media (7870): content://com.syu.media/song.
+    // com.syu.music (7862, 8581): its music.db, opened through root (SyuMusicLibrary).
+    // The launcher's cache is only the fallback where neither can be reached.
     // =====================================================================================
+
+    /*
+     * Which one is told by the package the track came from: MusicService follows com.syu.media
+     * itself (FYT units only), and isSyuMediaSource() says whether the track it shows is that
+     * player's; otherwise a stock track is com.syu.music's. Each player keeps its favorites in its
+     * own library, which on an FYT unit the launcher reaches - the provider for com.syu.media, and
+     * for com.syu.music, on a rooted unit, its database. Only where a library is out of reach does
+     * the opt-in cache stand in, see isFavoriteCacheUsable.
+     */
+
+    /** The stock state for com.syu.media's track: FAVORITED, NOT_FAVORITED or UNKNOWN. */
+    private static int syuMediaFavoriteState() {
+        Boolean favorite = MusicService.getSyuMediaFavorite();
+        if (favorite == null) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
+        return favorite ? FAVORITE_STATE_FAVORITED : FAVORITE_STATE_NOT_FAVORITED;
+    }
+
+    /**
+     * The stock source is com.syu.music (7862/8581, not the 7870's com.syu.media) and its real
+     * favorites database is reachable, so the launcher manages it there, not in the cache.
+     */
+    private static boolean isSyuMusicLibrarySource() {
+        return !MusicService.isSyuMediaSource()
+                && SyuMusicLibrary.isAvailable(LauncherApplication.sApp);
+    }
+
+    /**
+     * Redraws both hearts after a stock flag changed by other means than a press here (com.syu.media
+     * or com.syu.music in its own screen, say) or was read only now. Main thread.
+     */
+    public static void onStockFavoriteChanged(Context context) {
+        refreshWidget(context);
+        Launcher launcher = Launcher.mLauncher;
+        if (launcher != null) {
+            try {
+                launcher.mMusicWidget.updateFavoriteButtonState();
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Stock favorite redraw failed", e);
+            }
+        }
+    }
 
     /**
      * Whether the favorite button can do anything for the stock player.
      *
-     * Only through the cache, and the cache is opt-in: with com.syu.music off the
-     * list the button stays greyed out and refuses presses, as it always did. On
-     * the list it works whenever the track can be identified. Asks exactly what
-     * getStockFavoriteState asks, so the drawn state and the greyed button agree.
+     * com.syu.media / com.syu.music with its library reachable: once the library has answered for
+     * the track (a track with no row answers NOT_FAVORITED, so the button lights at once).
+     *
+     * com.syu.music without it (no root): only through the cache, and the cache is opt-in:
+     * off the list the button stays greyed out and refuses presses, as it always did; on the list
+     * it works whenever the track can be identified. Asks exactly what getStockFavoriteState asks,
+     * so the drawn state and the greyed button agree.
      */
     private static boolean isStockFavoriteAvailable() {
+        if (MusicService.isSyuMediaSource()) {
+            return syuMediaFavoriteState() != FAVORITE_STATE_UNKNOWN;
+        }
+        if (isSyuMusicLibrarySource()) {
+            return SyuMusicLibrary.getState(LauncherApplication.sApp, MusicService.music_path)
+                    != FAVORITE_STATE_UNKNOWN;
+        }
         return isFavoriteCacheUsable(STOCK_MUSIC_PACKAGE) && currentStockTrackKey() != null;
     }
 
     /** The state kept for the stock player's track; unknown whenever unavailable. */
     private static int getStockFavoriteState(Context context) {
+        if (MusicService.isSyuMediaSource()) {
+            // Picks up a flag changed in com.syu.media's own screen while it is paused, when
+            // nothing else asks it.
+            MusicService.requestSyuMediaRefresh();
+            return syuMediaFavoriteState();
+        }
+        if (isSyuMusicLibrarySource()) {
+            return SyuMusicLibrary.getState(context, MusicService.music_path);
+        }
         if (context == null || !isFavoriteCacheUsable(STOCK_MUSIC_PACKAGE)) {
             return FAVORITE_STATE_UNKNOWN;
         }
@@ -1290,10 +1359,38 @@ public final class MediaFavoriteController {
     }
 
     /**
-     * A press while the stock player is the source: flips the kept state, and
+     * A press while the stock player is the source. com.syu.media: flips the flag in its library
+     * (its provider). com.syu.music with its library reachable: inserts or deletes its row, which
+     * its own screen then reflects. com.syu.music without it: flips the kept cache state, and
      * nothing else - there is no player to tell.
      */
     private static boolean toggleStockFavorite(Context context) {
+        if (MusicService.isSyuMediaSource()) {
+            int before = syuMediaFavoriteState();
+            if (before == FAVORITE_STATE_UNKNOWN) {
+                Log.d(TAG, "Press ignored: com.syu.media's favorite is not known yet");
+                return false;
+            }
+            boolean sent = MusicService.setSyuMediaFavorite(before != FAVORITE_STATE_FAVORITED);
+            if (sent) {
+                refreshWidget(context);
+            }
+            return sent;
+        }
+        if (isSyuMusicLibrarySource()) {
+            String path = MusicService.music_path;
+            int before = SyuMusicLibrary.getState(context, path);
+            if (before == FAVORITE_STATE_UNKNOWN) {
+                Log.d(TAG, "Press ignored: com.syu.music's favorite is not known yet");
+                return false;
+            }
+            boolean sent = SyuMusicLibrary.setFavorite(context, path, MusicService.music_name,
+                    MusicService.author_name, MusicService.album, before != FAVORITE_STATE_FAVORITED);
+            if (sent) {
+                refreshWidget(context);
+            }
+            return sent;
+        }
         if (context == null || !isFavoriteCacheUsable(STOCK_MUSIC_PACKAGE)) {
             Log.d(TAG, "Press ignored: the stock player is not on the cache list");
             return false;
@@ -1960,6 +2057,16 @@ public final class MediaFavoriteController {
      * the controller would refuse.
      */
     public static boolean isFavoriteCacheBlockedByAccount(String packageName) {
+        // Not an account, but the same kind of owner: com.syu.media's own library holds the
+        // flag, read and written there (see the stock player section), never cached.
+        if (MusicService.MEDIA_PKG.equals(packageName)) {
+            return true;
+        }
+        // com.syu.music the same, where its real favorites database is reachable (a rooted
+        // unit): the cache is its fallback only where it is not.
+        if (SyuMusicLibrary.PACKAGE.equals(packageName)) {
+            return SyuMusicLibrary.isAvailable(LauncherApplication.sApp);
+        }
         if (isYouTubePackage(packageName)) {
             return isFytAccountPresent();
         }

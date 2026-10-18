@@ -218,8 +218,11 @@ public class LauncherApplication extends Application {
         DataPack.init(this);
         steps.mark("dataPack");
         // The 7870's player (com.syu.media) reports nothing to MusicService by itself: follow it
-        // over its binder. Binds on its own thread; on other units the bind just fails.
-        MusicService.startSyuMedia(this);
+        // over its binder, on FYT units only. Binds on its own thread; where com.syu.media is
+        // missing (7862, 8581: com.syu.music) the bind just fails.
+        if (isFytDevice()) {
+            MusicService.startSyuMedia(this);
+        }
         if (BuildConfig.DEBUG) {
             enableStrictMode();
         }
