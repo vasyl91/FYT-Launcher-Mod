@@ -2528,6 +2528,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private void registerResumeRefreshersAndNotify() {
         registerNotifyRefreshers();
 
+        // com.syu.ms (radio, MCU, Bluetooth): an FYT unit's only. Elsewhere tools stays null.
+        if (!LauncherApplication.isFytDevice()) {
+            return;
+        }
         tools = CarStates.getCar(app).getTools();
 
         if (!mRefreshersRegistered) {
@@ -3000,12 +3004,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             mWindowHost = null;
         }        
-        tools.removeRefreshLisenter(0, refreshMain);
-        tools.removeRefreshLisenter(4, refreshMain);
-        tools.removeRefreshLisenter(7, refreshMain);
-        tools.removeRefreshLisenter(2, refreshBtInfo);
-        tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioBand);
-        tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioFreq);
+        if (tools != null) {
+            tools.removeRefreshLisenter(0, refreshMain);
+            tools.removeRefreshLisenter(4, refreshMain);
+            tools.removeRefreshLisenter(7, refreshMain);
+            tools.removeRefreshLisenter(2, refreshBtInfo);
+            tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioBand);
+            tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioFreq);
+        }
         purgeMyRefreshListeners();
         mRefreshersRegistered = false;
         unregisterAllReceivers();

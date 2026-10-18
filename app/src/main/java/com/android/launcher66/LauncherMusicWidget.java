@@ -26,7 +26,6 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import com.android.async.AsyncTask;
 import com.android.launcher66.settings.Keys;
 import com.android.recycler.AppListBean;
 import com.fyt.car.IUiRefresher;
@@ -128,6 +127,12 @@ final class LauncherMusicWidget {
 
     static final String PREF_LAST_ALBUM_PATH = "last_album_path";
 
+    /**
+     * The title of the track the saved cover belongs to. A track without a cover left the
+     * previous one's in the file, and a restart showed it under the new title.
+     */
+    static final String PREF_LAST_ALBUM_TITLE = "last_album_title";
+
     static final String MUSIC_TITLE_PREF = "music_title_pref";
 
     static final String ARTIST_PREF = "artist_pref";
@@ -163,6 +168,13 @@ final class LauncherMusicWidget {
             mediaSource = source; 
             if (mediaSource == null) {
                 mediaSource = "fyt";
+            }
+            if (strs == null && !LauncherApplication.isFytDevice()) {
+                // Nothing published yet (right after a start, when the listener re-sends what it
+                // holds): no stock player here to read instead, and the placeholders below wrote
+                // over the last track restored by preSetMusicWidgets().
+                setPlayPauseIcon(false);
+                return;
             }
             mLauncher.state = null;
             String artist = null;
@@ -360,7 +372,8 @@ final class LauncherMusicWidget {
                 }
                 return;
             }
-            if (CarStates.mAppID != 8 && ("fyt".equals(mediaSource) || activeController == null)) {
+            if (LauncherApplication.isFytDevice() && CarStates.mAppID != 8
+                    && ("fyt".equals(mediaSource) || activeController == null)) {
                 if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
                     if (mLauncher.fytData) { // from metadata
                         musictitle = MusicService.music_name;
@@ -480,6 +493,13 @@ final class LauncherMusicWidget {
      */
     boolean isMediaPlayingNow() {
         if ("mediaController".equals(mediaSource)) {
+            // The session itself first: the snapshot is only as fresh as the last callback the
+            // listener got, and after a long sleep (listener reconnected, PAUSED missed) a play
+            // could leave it saying paused while the music played.
+            Boolean live = isSessionPlaying(activeController);
+            if (live != null) {
+                return live;
+            }
             MediaWidgetState.Snapshot snapshot = MediaWidgetState.getExternalSnapshot();
             if (snapshot != null) {
                 return snapshot.playing;
@@ -489,6 +509,30 @@ final class LauncherMusicWidget {
         // Not mAudioManager.isMusicActive() directly: see AudioStateCache.
         return MusicService.state.booleanValue()
                 || AudioStateCache.isMusicActive(mLauncher, AUDIO_STATE_WAIT_MS);
+    }
+
+    /** The state of that player's session right now; null if it has none or it cannot be read. */
+    private Boolean isSessionPlaying(String packageName) {
+        if (packageName == null || packageName.isEmpty()) {
+            return null;
+        }
+        try {
+            MediaSessionManager msm = (MediaSessionManager) mLauncher.getSystemService(Context.MEDIA_SESSION_SERVICE);
+            List<MediaController> controllers = msm != null
+                    ? msm.getActiveSessions(new ComponentName(mLauncher, NotificationListener.class)) : null;
+            if (controllers == null) {
+                return null;
+            }
+            for (MediaController controller : controllers) {
+                if (packageName.equals(controller.getPackageName())) {
+                    PlaybackState state = controller.getPlaybackState();
+                    return state != null && MediaWidgetState.isPlaybackActive(state.getState());
+                }
+            }
+        } catch (RuntimeException e) {
+            // No notification access (SecurityException) or the session went away meanwhile.
+        }
+        return null;
     }
 
     public void setPlayPauseIcon() {
@@ -514,7 +558,16 @@ final class LauncherMusicWidget {
     }
 
     public void preSetMusicWidgets() {
+        // seeded so the first live update is not written back as a change
+        lastMusictitle = normalizeMediaText(mLauncher.mPrefs.getString(MUSIC_TITLE_PREF, null));
+        lastArtist = normalizeMediaText(mLauncher.mPrefs.getString(ARTIST_PREF, null));
+
         Bitmap savedBitmap = getBitmapFromPreferences();
+        // Only under its own track's title (saved before the title key existed: as before).
+        String coverTitle = mLauncher.mPrefs.getString(PREF_LAST_ALBUM_TITLE, null);
+        if (savedBitmap != null && coverTitle != null && !coverTitle.equals(lastMusictitle)) {
+            savedBitmap = null;
+        }
         if (savedBitmap != null) {
             Drawable drawable = new BitmapDrawable(mLauncher.getApplicationContext().getResources(), savedBitmap);
             if (this.ivALbumBg != null) {
@@ -533,34 +586,14 @@ final class LauncherMusicWidget {
             }
         }
 
-        // seeded so the first live update is not written back as a change
-        lastMusictitle = normalizeMediaText(mLauncher.mPrefs.getString(MUSIC_TITLE_PREF, null));
-        lastArtist = normalizeMediaText(mLauncher.mPrefs.getString(ARTIST_PREF, null));
         showMusicTitle(lastMusictitle);
         showMusicArtist(lastArtist);
 
         mAudioManager = (AudioManager) mLauncher.getSystemService(Context.AUDIO_SERVICE);
-        // Asked once for both buttons, and never waiting long for the audioserver; see AudioStateCache.
-        final boolean playing = MusicService.state.booleanValue()
-                || AudioStateCache.isMusicActive(mLauncher, AUDIO_STATE_WAIT_MS);
-        if (this.mPlayPauseButton != null) {
-            if (playing) {
-                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
-            } else {
-                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setWidgetButtonsTint(mPlayPauseButton);
-            }
-        }
-        if (this.mPlayPauseButtonTwo != null) {
-            if (playing) {
-                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
-            } else {
-                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                setBarButtonsTint(mPlayPauseButtonTwo);
-            }
-        }    
+        // The same decision as every other icon update (the session, then what the stock player
+        // and the audioserver say): this one used to go by the stock player's last value alone,
+        // and it is what a wake from sleep shows.
+        setPlayPauseIcon();
     }
 
     /**
@@ -627,7 +660,9 @@ final class LauncherMusicWidget {
 
     void saveTitleToPreferences(String currentTitle) {
         String title = normalizeMediaText(currentTitle);
-        if (title.equals(lastMusictitle)) {
+        // A track always has a title: a blank one is a moment between two (or a stop), and
+        // writing it erased the last track a restart shows.
+        if (title.isEmpty() || title.equals(lastMusictitle)) {
             return;
         }
         lastMusictitle = title;
@@ -650,55 +685,51 @@ final class LauncherMusicWidget {
         if (currentPath.equals(lastProcessedPath)) {
             return;
         }
-        
-        new AsyncTask<Object, Void, Void>() {
-            @Override
-            protected void onProgress(Void[] progress) {
-                //
-            }
+        // Here, on the main thread, where it is read: set on the saving thread, a quick track
+        // change could check against an old value.
+        lastProcessedPath = currentPath;
+        final String coverTitle = normalizeMediaText(musictitle);
 
-            @Override
-            protected Void doInBackground(Object... params) {
-                Bitmap bitmapToSave = (Bitmap) params[0];
-                String path = (String) params[1];
-                
-                try {
-                    // Double-check with persisted path
-                    String lastSavedPath = mLauncher.mPrefs.getString(PREF_LAST_ALBUM_PATH, "");
-                    
-                    if (path.equals(lastSavedPath)) {
-                        return null; // Already saved for this path
-                    }
-                    
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    bitmapToSave.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
-                    if (!writeAlbumArt(mLauncher, byteArrayOutputStream.toByteArray())) {
-                        return null;
-                    }
-                    sAlbumArt = bitmapToSave;
-                    sAlbumArtLoaded = true;
-
-                    // The cover is a file: only its track's path is a preference.
-                    mLauncher.mPrefs.edit()
-                            .putString(PREF_LAST_ALBUM_PATH, path)
-                            .remove(PREF_LAST_ALBUM_ART)
-                            .apply();
-                    
-                    // Update in-memory cache
-                    lastProcessedPath = path;
-                    
-                } catch (Exception e) {
-                    e.printStackTrace();
+        // One thread, in order: the last track's cover is the one left in the file (four
+        // threads could finish two quick saves the other way round).
+        ALBUM_ART_SAVER.execute(() -> {
+            try {
+                // Double-check with persisted path
+                String lastSavedPath = mLauncher.mPrefs.getString(PREF_LAST_ALBUM_PATH, "");
+                if (currentPath.equals(lastSavedPath)) {
+                    return; // Already saved for this path
                 }
-                return null;
-            }
 
-            @Override
-            protected void onBackgroundError(Exception e) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
+                if (!writeAlbumArt(mLauncher, byteArrayOutputStream.toByteArray())) {
+                    return;
+                }
+                synchronized (ALBUM_ART_LOCK) {
+                    sAlbumArt = bitmap;
+                    sAlbumArtLoaded = true;
+                }
+
+                // The cover is a file: only its track's path and title are preferences.
+                mLauncher.mPrefs.edit()
+                        .putString(PREF_LAST_ALBUM_PATH, currentPath)
+                        .putString(PREF_LAST_ALBUM_TITLE, coverTitle)
+                        .remove(PREF_LAST_ALBUM_ART)
+                        .apply();
+            } catch (Exception e) {
                 Log.e(Launcher.TAG, "saveBitmapToPreferences: " + e.getMessage());
             }
-        }.execute(bitmap, currentPath);
+        });
     }
+
+    /** Saves the covers, one after the other; see saveBitmapToPreferences(). */
+    private static final java.util.concurrent.ExecutorService ALBUM_ART_SAVER =
+            java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "AlbumArtSave");
+                t.setDaemon(true);
+                return t;
+            });
+    private static final Object ALBUM_ART_LOCK = new Object();
 
     Bitmap getBitmapFromPreferences() {
         if (sAlbumArtLoaded) return sAlbumArt;
@@ -714,13 +745,20 @@ final class LauncherMusicWidget {
     /** Reads the last cover into memory; called by the start-up warm-up thread. */
     static void preloadAlbumArt(Context context) {
         if (sAlbumArtLoaded) return;
+        Bitmap read = null;
         try {
             File file = albumArtFile(context);
-            sAlbumArt = file.isFile() ? BitmapFactory.decodeFile(file.getPath()) : null;
+            read = file.isFile() ? BitmapFactory.decodeFile(file.getPath()) : null;
         } catch (Exception e) {
             Log.w(Launcher.TAG, "album art not read: " + e);
         }
-        sAlbumArtLoaded = true;
+        synchronized (ALBUM_ART_LOCK) {
+            // A cover saved (or moved) meanwhile is newer than the one just read
+            if (!sAlbumArtLoaded) {
+                sAlbumArt = read;
+                sAlbumArtLoaded = true;
+            }
+        }
     }
 
     /** The last cover, as a PNG file of its own. */
@@ -758,8 +796,11 @@ final class LauncherMusicWidget {
             if (encoded != null) {
                 byte[] png = Base64.decode(encoded, Base64.DEFAULT);
                 if (writeAlbumArt(context, png)) {
-                    sAlbumArt = BitmapFactory.decodeByteArray(png, 0, png.length);
-                    sAlbumArtLoaded = true;
+                    Bitmap moved = BitmapFactory.decodeByteArray(png, 0, png.length);
+                    synchronized (ALBUM_ART_LOCK) {
+                        sAlbumArt = moved;
+                        sAlbumArtLoaded = true;
+                    }
                 }
             }
         } catch (RuntimeException e) {
@@ -1052,7 +1093,12 @@ final class LauncherMusicWidget {
             mLauncher.mWorkspace.scheduleAutoHide();
         }
         if (!temporarilyDisablePlayPauseButton) {
-            if ("fyt".equals(mediaSource)) {
+            if ("fyt".equals(mediaSource) && !LauncherApplication.isFytDevice()) {
+                // The source a restart starts with; no stock player to ask on another device:
+                // the session the system would send the key to.
+                MediaTransportController.handleAction(mLauncher,
+                        MediaTransportController.ACTION_PLAY_PAUSE, getPreferredMediaControllerPackage());
+            } else if ("fyt".equals(mediaSource)) {
                 if (this.mPlayPauseButton != null) {
                     if (MusicService.state.booleanValue()) {
                         this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
@@ -1087,29 +1133,18 @@ final class LauncherMusicWidget {
                         PlaybackState state = controller.getPlaybackState();
                         int playbackState = (state != null) ? state.getState() : PlaybackState.STATE_NONE;
 
-                        if (playbackState == PlaybackState.STATE_PLAYING) {
+                        // Buffering is playing too: a play sent to it again would be lost.
+                        if (MediaWidgetState.isPlaybackActive(playbackState)) {
                             mLauncher.handler.postDelayed(() -> {
-                                if (playbackState == PlaybackState.STATE_PLAYING) {
-                                    if (this.mPlayPauseButton != null) {
-                                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                        setWidgetButtonsTint(mPlayPauseButton);
-                                    }
-                                    if (this.mPlayPauseButtonTwo != null && barView) {
-                                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                        setBarButtonsTint(mPlayPauseButtonTwo);
-                                    } 
-                                    controller.getTransportControls().pause();  
-                                } else {
-                                    if (this.mPlayPauseButton != null) {
-                                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                        setWidgetButtonsTint(mPlayPauseButton);
-                                    }
-                                    if (this.mPlayPauseButtonTwo != null && barView) {
-                                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                        setBarButtonsTint(mPlayPauseButtonTwo);
-                                    }   
-                                    controller.getTransportControls().play();
+                                if (this.mPlayPauseButton != null) {
+                                    this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                                    setWidgetButtonsTint(mPlayPauseButton);
                                 }
+                                if (this.mPlayPauseButtonTwo != null && barView) {
+                                    this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
+                                    setBarButtonsTint(mPlayPauseButtonTwo);
+                                }
+                                controller.getTransportControls().pause();
                             }, 350);
 
                         } else {
@@ -1148,13 +1183,18 @@ final class LauncherMusicWidget {
 
         temporarilyDisablePlayPauseButton = true;
 
-        mLauncher.mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                temporarilyDisablePlayPauseButton = false;
-            }
+        // The icon above is a guess made before the player has answered, and every update in the
+        // next 500 ms is dropped: once the button is free again the real state is shown, and
+        // once more a little later for a player slow to start (after a long sleep, say).
+        mLauncher.mHandler.postDelayed(() -> {
+            temporarilyDisablePlayPauseButton = false;
+            setPlayPauseIcon();
         }, 500);
+        mLauncher.mHandler.postDelayed(this::setPlayPauseIcon, PLAY_PAUSE_RECHECK_MS);
     }
+
+    /** After a tap: the second look at the real state, see onPlayPauseButtonClicked(). */
+    private static final long PLAY_PAUSE_RECHECK_MS = 1500L;
 
     public void onNextButtonClicked(boolean barView) {
         if (barView) {

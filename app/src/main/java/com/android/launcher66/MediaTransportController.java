@@ -115,7 +115,8 @@ public final class MediaTransportController {
             }
         }
 
-        return getStockMusicIntent(context);
+        // FYT's stock player: an FYT unit's only
+        return LauncherApplication.isFytDevice() ? getStockMusicIntent(context) : null;
     }
 
     private static MediaController getTargetController(Context context, String preferredPackage) {
@@ -216,6 +217,10 @@ public final class MediaTransportController {
     }
 
     private static boolean dispatchToStockMusic(Context context, String action) {
+        // FYT's stock player (com.syu.music): an FYT unit's only, as everything of FYT's
+        if (!LauncherApplication.isFytDevice()) {
+            return false;
+        }
         String stockAction = getStockAction(action);
         if (stockAction == null) {
             return false;

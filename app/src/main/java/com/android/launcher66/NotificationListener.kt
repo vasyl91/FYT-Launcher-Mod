@@ -677,6 +677,8 @@ class NotificationListener : NotificationListenerService() {
     // ---------------------------------------------------------------------
 
     private fun mcuTools(): RemoteTools? {
+        // The MCU and com.syu.ms: an FYT unit's only
+        if (!LauncherApplication.isFytDevice()) return null
         val context = contextRef.get() ?: return null
         return try {
             CarStates.getCar(context)?.tools
@@ -695,6 +697,7 @@ class NotificationListener : NotificationListenerService() {
     }
 
     private fun handOverToThirdPartyPlayer() {
+        if (!LauncherApplication.isFytDevice()) return
         // com.syu.ms hands the channel over by itself as soon as it sees a third party player
         // start, so by the time we get here the MCU is normally already on 10. Sending it again
         // makes com.syu.ms re-run the whole source switch, and that second switch is what pauses
@@ -1241,8 +1244,11 @@ class NotificationListener : NotificationListenerService() {
         override fun run() {
             val service = serviceRef.get() ?: return
             if (service.destroyed.get()) return
-            // CarStates.mAppID is maintained in the process, so reading it costs nothing
-            service.onMcuChannelChanged(CarStates.mAppID)
+            // CarStates.mAppID is maintained in the process, so reading it costs nothing. The MCU's
+            // channel: an FYT unit's only.
+            if (LauncherApplication.isFytDevice()) {
+                service.onMcuChannelChanged(CarStates.mAppID)
+            }
             val context = service.contextRef.get() ?: return
             // Not AudioManager.isMusicActive(): that waits for the audioserver, which hangs at boot
             // on this ROM, and from here it froze the whole launcher for ~10 s. AudioStateCache
@@ -1293,6 +1299,9 @@ class NotificationListener : NotificationListenerService() {
             super.onSessionDestroyed()
             val service = serviceRef.get() ?: return
             service.markNotPlaying(service.mediaController)
+            // Gone while playing, it left the widget's button on pause for good.
+            service.updateExternalMediaWidgetState(false)
+            service.sendBroadcastAsync(Intent("pause.button"))
         }
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
@@ -1313,9 +1322,10 @@ class NotificationListener : NotificationListenerService() {
             service.prevMinutes = 0
             // A real transition just happened, so the cached session answer is stale by definition.
             service.invalidateExternalPlayingCache()
+            // Buffering is not a pause: YouTube Music goes PAUSED, BUFFERING, PLAYING on a play, and
+            // a stream buffers while it plays (see MediaWidgetState.isPlaybackActive()).
             if (service.currentState == PlaybackState.STATE_PAUSED
-                || service.currentState == PlaybackState.STATE_STOPPED
-                || service.currentState == PlaybackState.STATE_BUFFERING) {
+                || service.currentState == PlaybackState.STATE_STOPPED) {
                 service.markNotPlaying(service.mediaController)
                 // Closed out here rather than relying on set() being reached
                 // through a re-attach: while musicState stays "true" the
@@ -1347,6 +1357,11 @@ class NotificationListener : NotificationListenerService() {
                 service.helpers.updateControllerTimeBool(false)
                 service.musicState = "false"
             } else if (service.currentState == PlaybackState.STATE_PLAYING) {
+                // The button at once, whatever the checks below make of the rest: they skip a song
+                // already seen playing (songPrev/prevState, kept in the preferences), and a PAUSED
+                // missed in a long sleep left the button on play while the music played again.
+                service.updateExternalMediaWidgetState(true)
+                service.sendBroadcastAsync(Intent("pause.button"))
                 // YoutubeMusic or Spotify (and probably some other music apps) need some delay to load the album art
                 service.postDelayedIfAlive(700) {
                     // playback may have stopped during the delay; this write
