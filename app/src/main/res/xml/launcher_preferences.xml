@@ -151,6 +151,9 @@
             android:key="workspace_textSize"
             android:title="@string/workspace_textSize_str"
             android:summary="28" />
+        <Preference
+            android:layout="@layout/preference_separator"
+            android:selectable="false" />
         <SwitchPreferenceCompat
             android:key="launcher_home_wake"
             android:defaultValue="true"
