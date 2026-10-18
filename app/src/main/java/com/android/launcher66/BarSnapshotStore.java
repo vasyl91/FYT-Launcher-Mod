@@ -123,9 +123,9 @@ final class BarSnapshotStore {
 
     /** Replaces the snapshot of that bar, in the background. */
     static void saveAsync(Context context, String which, long signature, List<Item> items) {
-        final File f = file(context, which);
         final List<Item> copy = new ArrayList<>(items);
-        WRITER.execute(() -> write(f, signature, copy));
+        // getFilesDir() checks the directory on disk: on the writer's thread too
+        WRITER.execute(() -> write(file(context, which), signature, copy));
     }
 
     static void write(File f, long signature, List<Item> items) {

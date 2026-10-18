@@ -68,11 +68,15 @@ import java.util.TreeMap;
 public class CanbusService extends Service implements PropertyChangeListener {
 
     private static final String TAG = "CanbusService";
+    /** The apps the fuel statistics are shown over; read at the start, see LauncherApplication. */
+    public static final String APP_STATS_PREFS = "AppStatsPrefs";
     private AccessibilityManager accessibilityManager;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private AccessibilityManager.AccessibilityStateChangeListener accessibilityListener;
     private SharedPreferences prefs;
+    /** The last package of a Keys.ACCESIBILITY_SERVICE broadcast; see getCurrentActivityName(). */
+    private String mLastReportedPackage;
     private Helpers helpers = new Helpers();
     private IBinder binder;
     private View absoluteStats;
@@ -117,7 +121,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
         super.onCreate();
         sRunning = true;
         Log.d(TAG, "Service created");
-        prefs = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());    
+        // The application's context: it has the file's path already, this service's would look it up
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
         userStats = prefs.getBoolean(Keys.USER_STATS, false);
         horsePower = Integer.parseInt(prefs.getString("horse_power_code_int", "0"));
@@ -366,6 +371,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             if (packageName == null) {
                                 break;
                             }
+                            mLastReportedPackage = packageName;
                             if (packageName.equals("com.android.launcher3")) {
                                 helpers.setInRecent(true);
                                 helpers.setInAllApps(false);
@@ -389,7 +395,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
 
         private void currentForegroundApplication(String packageName) {
-            SharedPreferences statsPrefs = getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+            SharedPreferences statsPrefs = getApplicationContext().getSharedPreferences(APP_STATS_PREFS, MODE_PRIVATE);
             Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<>()));
             String appPackageName = SystemProperties.get("persist.launcher.packagename", "");
             if (packageName.contains(":")) {
@@ -440,7 +446,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 }
                 break;
             case Keys.FUELSTATS:
-                Log.i("fuelStatsChange", "\t(" + evt.getOldValue() + " -> " + evt.getNewValue() + ")" + " CurrentActivityName: " + getCurrentActivityName());
+                Log.i("fuelStatsChange", "\t(" + evt.getOldValue() + " -> " + evt.getNewValue() + ")");
                 if (String.valueOf(evt.getNewValue()).contains("com.android.launcher")) {
                     helpers.setForegroundAppOpened(false);
                 }
@@ -461,7 +467,16 @@ public class CanbusService extends Service implements PropertyChangeListener {
         } 
     }   
 
+    /**
+     * The app in front: the one ForegroundAppTracker last reported when it runs (the task stack,
+     * apps only), else the most recently used one by UsageStatsManager. That is a binder call
+     * reading a day of usage, on the main thread: 2.3 s right after a boot (FYT, Android 10).
+     */
     private String getCurrentActivityName() {
+        String reported = mLastReportedPackage;
+        if (reported != null && ForegroundAppTracker.isActive()) {
+            return reported;
+        }
         String currentApp = "NULL";
         UsageStatsManager usm = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
         long time = System.currentTimeMillis();

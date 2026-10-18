@@ -63,7 +63,7 @@ public class WindowHostDualPane {
 
     private static final String TAG = "WindowHostDualPane";
 
-    private static final String PREFS = "pip_window_host_prefs";
+    public static final String PREFS = "pip_window_host_prefs";
     private static final String KEY_SPLIT = "dual_split_ratio";
 
     private static final long SURFACE_RESTORE_DELAY_MS      = 500L;
