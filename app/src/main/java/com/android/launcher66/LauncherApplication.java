@@ -165,7 +165,7 @@ public class LauncherApplication extends Application {
                     .remove(Keys.COVER_SPLASH)
                     .apply();
         }
-        // Pinned PiP is the FYT system launcher's only: elsewhere every pane is a window.
+        // Pinned PiP exists on FYT units only: elsewhere every pane is a window.
         if (!supportsPinnedPip()) {
             prefs.edit()
                     .putBoolean(Keys.PIP_FIRST_MODE, false)
@@ -730,12 +730,12 @@ public class LauncherApplication extends Application {
     }
 
     /**
-     * Whether a pane can be FYT's pinned PiP instead of a window: on an FYT unit, as the system
-     * launcher only -- it sets system properties and moves the pinned stack, which no other app
-     * may do (the standard version there gets windows, through root or Shizuku).
+     * Whether a pane can be FYT's pinned PiP instead of a window: on an FYT unit, the standard
+     * version included (it works there too). What it calls that a user app may be refused (system
+     * properties, setPinnedStackVisible, forceStopPackage) is caught, see WindowUtil.
      */
     public static boolean supportsPinnedPip() {
-        return isFytDevice() && hasSystemPrivileges();
+        return isFytDevice();
     }
 
     public static boolean isFytDevice() {

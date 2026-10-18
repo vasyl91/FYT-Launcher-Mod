@@ -41,7 +41,6 @@ import com.android.launcher66.settings.Keys;
 import com.fyt.thread.ThreadManager;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -2105,11 +2104,18 @@ public class WindowUtil {
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         Intent intent = FytPackage.getIntent(LauncherApplication.sApp, packageName);
+        if (intent == null) return;
         intent.putExtra("force_pip", true);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         SystemProperties.set("sys.lsec.force_pip", "true");
         if (intent.resolveActivity(LauncherApplication.sApp.getPackageManager()) != null) {
-            launcher.handler.postDelayed(() -> LauncherApplication.sApp.startActivity(intent), 100);
+            launcher.handler.postDelayed(() -> {
+                try {
+                    LauncherApplication.sApp.startActivity(intent);
+                } catch (RuntimeException e) {
+                    Log.w(TAG, "startPinnedPip(" + packageName + ") failed: " + e);
+                }
+            }, 100);
         }  
         checkIfOpenedOnTheRightScreen(500);
         checkIfOpenedOnTheRightScreen(1500);
@@ -2155,7 +2161,8 @@ public class WindowUtil {
                 Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
                 forceStopPackage.setAccessible(true);
                 forceStopPackage.invoke(activityManager, AppPackageName);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            } catch (ReflectiveOperationException | RuntimeException e) {
+                // Also the standard version's: FORCE_STOP_PACKAGES is the system's
                 Log.e(TAG, "restartPinnedPipApp() failed: " + e);
             }
         }
