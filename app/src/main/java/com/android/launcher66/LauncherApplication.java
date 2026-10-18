@@ -35,10 +35,10 @@ import com.android.launcher66.perf.BaselineProfileCompiler;
 import com.android.launcher66.settings.CrashLogger;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
-import com.android.launcher66.settings.LogcatWorker;
 import com.android.launcher66.settings.VersionChecker;
 import com.android.launcher66.settings.WakeDetection;
 import com.android.launcher66.settings.WakeDetectionService;
+import com.fyt.car.MusicService;
 import com.fyt.skin.SkinManager;
 import com.fyt.skin.util.FileUtil;
 import com.syu.canbus.ZipCompare;
@@ -219,7 +219,7 @@ public class LauncherApplication extends Application {
         steps.mark("dataPack");
         // The 7870's player (com.syu.media) reports nothing to MusicService by itself: follow it
         // over its binder. Binds on its own thread; on other units the bind just fails.
-        com.fyt.car.MusicService.startSyuMedia(this);
+        MusicService.startSyuMedia(this);
         if (BuildConfig.DEBUG) {
             enableStrictMode();
         }
