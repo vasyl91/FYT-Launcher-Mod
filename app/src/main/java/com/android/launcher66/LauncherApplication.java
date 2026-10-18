@@ -794,15 +794,14 @@ public class LauncherApplication extends Application {
 
     /**
      * Whether the PiP panes can work here: wherever a VD host is there or on its way -- the
-     * launcher installed as system, the FYT VDHost Magisk module, or Shizuku (see
-     * vdhost/README.md) -- and on an FYT unit up to Android 10, where the framework's ActivityView
-     * runs them. Root alone is not enough: without the module nothing would host the panes. From
-     * Android 11 an FYT unit is no exception: the panes are VD views there too, and the standard
-     * version without root or Shizuku would only wait for a host.
+     * launcher installed as system (on Android 8-10 that is the framework's ActivityView), the
+     * FYT VDHost Magisk module, or Shizuku (see vdhost/README.md). Being an FYT unit says nothing
+     * of it: the standard version there without root or Shizuku would only wait for a host, and a
+     * system install on another device has what the FYT one has. Root alone is not enough either:
+     * without the module nothing would host the panes.
      */
     public static boolean canHostPips() {
-        if ((isFytDevice() && Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
-                || com.syu.util.WindowHostVdClient.canHostPanes()) return true;
+        if (com.syu.util.WindowHostVdClient.canHostPanes()) return true;
         if (isRooted() && !sNoPaneHostLogged) {
             sNoPaneHostLogged = true;
             Log.w(TAG, "PiP panes need the FYT VDHost Magisk module or Shizuku; neither is available");

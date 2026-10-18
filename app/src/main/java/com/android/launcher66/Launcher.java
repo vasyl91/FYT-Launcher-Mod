@@ -2019,13 +2019,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         mStats = new Stats(this);
 
-        if (LauncherApplication.hasSystemPrivileges()) {
-            kwAPi = KWAPI.createKWAPI(this, "fangyitong");
-            if (kwAPi != null) {
-                kwAPi.registerPlayerStatusListener(this, onRefreshKwStatus);
-            }            
+        // Kuwo's car music SDK, as FYT's launcher has it: an FYT unit's, and a system app's only
+        // (the system build on another device, a ROM made with the same key, leaves it out).
+        if (LauncherApplication.isFytDevice() && LauncherApplication.hasSystemPrivileges()) {
+            try {
+                kwAPi = KWAPI.createKWAPI(this, "fangyitong");
+                if (kwAPi != null) {
+                    kwAPi.registerPlayerStatusListener(this, onRefreshKwStatus);
+                }
+            } catch (RuntimeException e) {
+                Log.w(TAG, "KWAPI not created: " + e);
+            }
         } else {
-            Log.w(TAG, "Launcher not installed as a system app, KWAPI can not be created.");
+            Log.w(TAG, "Not the system launcher of an FYT unit, KWAPI can not be created.");
         }
     }
 
