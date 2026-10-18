@@ -315,7 +315,8 @@ public final class SyuMusicLibrary {
                         new String[]{nonEmpty(name, fileNameOf(path)), path, folderOf(path),
                                 nonEmpty(artist, "<unknown>"), nonEmpty(album, "<unknown>")});
             }
-            Log.d(TAG, "favorite=" + favorite + " written for " + path);
+            Log.d(TAG, "favorite=" + favorite + " written for " + path
+                    + (sAccess == ACCESS_DIRECT ? " (opened directly)" : " (through root)"));
         } catch (RuntimeException e) {
             Log.w(TAG, "favorite write failed", e);
         } finally {
