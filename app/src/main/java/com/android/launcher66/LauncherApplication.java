@@ -362,6 +362,7 @@ public class LauncherApplication extends Application {
                 getSharedPreferences(com.syu.util.WindowHostDualPane.PREFS, MODE_PRIVATE);
                 getSharedPreferences(com.android.launcher66.settings.CanbusService.APP_STATS_PREFS,
                         MODE_PRIVATE);
+                BaselineProfileCompiler.warmUp(this);
             } catch (Throwable t) {
                 Log.w(TAG, "start-up warm-up: " + t);
             }

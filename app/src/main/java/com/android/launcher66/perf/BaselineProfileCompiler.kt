@@ -247,6 +247,16 @@ object BaselineProfileCompiler {
      * @param coldBoot true for the first launcher start after a device restart
      * (ColdStart.isColdBoot()); such a start always counts as a session.
      */
+    /**
+     * Reads what scheduleIfNeeded() needs from disk (its preferences, the APK's stamp), from the
+     * start-up warm-up thread: both are kept in memory, and the main thread took them otherwise.
+     */
+    @JvmStatic
+    fun warmUp(context: Context) {
+        prefs(context)
+        apkStamp(context)
+    }
+
     @JvmStatic
     @JvmOverloads
     fun scheduleIfNeeded(app: Application, coldBoot: Boolean = false) {
