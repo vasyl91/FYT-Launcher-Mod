@@ -43,6 +43,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import share.Config;
 import share.ResValue;
 
@@ -164,6 +166,7 @@ final class LauncherMusicWidget {
     public IUiRefresher refreshMusic = new IUiRefresher() {
         @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
+            mLastRefresh = new Object[] { ints, lngs, flts, strs, byts, source };
             mAudioManager = (AudioManager) mLauncher.getSystemService(Context.AUDIO_SERVICE);
             mediaSource = source; 
             if (mediaSource == null) {
@@ -256,13 +259,14 @@ final class LauncherMusicWidget {
 
             if ("true".equals(mLauncher.state)) {
                 saveLastPlayer(currentPlayerPackage());
-                Lrc lrc = new Lrc();
-                Id3Info info = lrc.getId3Info(path);
-                byte[] dataPic =  info.dataPic;
+                boolean coverPending = !isId3Read(path);
+                byte[] dataPic = coverPending ? null : mId3Pic;
                 if (dataPic == null) {
                     dataPic = byts;
                 }
-                if (dataPic != null && dataPic.length > 0) {
+                if (coverPending && (dataPic == null || dataPic.length == 0)) {
+                    // The file's own cover is being read: the one shown stays until it lands
+                } else if (dataPic != null && dataPic.length > 0) {
                     Bitmap bp = BitmapFactory.decodeByteArray(dataPic, 0, dataPic.length);
                     if (bp != null) {
                         if (LauncherApplication.sApp.getResources().getBoolean(R.bool.music_bitmap_circular)) {
@@ -614,6 +618,56 @@ final class LauncherMusicWidget {
             }
         }         
     }
+
+    /** The last onRefresh() arguments, to draw them again once a file's cover has been read. */
+    private Object[] mLastRefresh;
+    /** The file whose cover was read last (main thread), the cover (null for none), and whether it has been. */
+    private String mId3Path;
+    private byte[] mId3Pic;
+    private boolean mId3Read;
+
+    /**
+     * The cover in a track's file is read off the main thread, once per file: read there it took
+     * about 30 ms of every update, once a second while the stock player played (StrictMode,
+     * capture 18-10-2026 23:18:46). False while it is being read; the widget is drawn again then.
+     */
+    private boolean isId3Read(String path) {
+        if (path.equals(mId3Path)) {
+            return mId3Read;
+        }
+        mId3Path = path;
+        mId3Pic = null;
+        mId3Read = false;
+        ID3_READER.execute(() -> {
+            byte[] pic = null;
+            try {
+                Id3Info info = new Lrc().getId3Info(path);
+                pic = info != null ? info.dataPic : null;
+            } catch (RuntimeException e) {
+                Log.w(Launcher.TAG, "Unreadable tags: " + path, e);
+            }
+            byte[] cover = pic;
+            mLauncher.mHandler.post(() -> {
+                if (!path.equals(mId3Path)) {
+                    return; // another track meanwhile
+                }
+                mId3Pic = cover;
+                mId3Read = true;
+                Object[] a = mLastRefresh;
+                if (a != null) {
+                    refreshMusic.onRefresh((int[]) a[0], (long[]) a[1], (float[]) a[2],
+                            (String[]) a[3], (byte[]) a[4], (String) a[5]);
+                }
+            });
+        });
+        return false;
+    }
+
+    private static final ExecutorService ID3_READER = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "MusicId3");
+        t.setDaemon(true);
+        return t;
+    });
 
     /** The player of what the widget shows now: the session's app, else FYT's stock player. */
     private String currentPlayerPackage() {
@@ -1187,6 +1241,17 @@ final class LauncherMusicWidget {
         }
     }
 
+    /**
+     * Where the transport buttons go: the session's app, or on an FYT unit the stock player whose
+     * track the widget shows (its play state does not matter, see dispatchToStockPlayer()).
+     */
+    String getTransportTargetPackage() {
+        if ("fyt".equals(mediaSource) && LauncherApplication.isFytDevice()) {
+            return MusicService.isSyuMediaSource() ? MusicService.MEDIA_PKG : MusicService.MUSIC_PKG;
+        }
+        return getPreferredMediaControllerPackage();
+    }
+
     String getPreferredMediaControllerPackage() {
         if ("mediaController".equals(mediaSource) && activeController != null && !activeController.isEmpty()) {
             return activeController;
@@ -1241,7 +1306,7 @@ final class LauncherMusicWidget {
         MediaTransportController.handleAction(
                 mLauncher,
                 MediaTransportController.ACTION_PREVIOUS,
-                getPreferredMediaControllerPackage()
+                getTransportTargetPackage()
         );
         mLauncher.requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
     }
@@ -1278,10 +1343,9 @@ final class LauncherMusicWidget {
                         setBarButtonsTint(mPlayPauseButtonTwo);
                     }
                 } 
-                Intent intent = new Intent();
-                intent.setAction("com.syu.music.playpause");
-                intent.setPackage("com.syu.music");
-                SysCalls.startService(mLauncher, intent);
+                // com.syu.music, or com.syu.media on the 7870 (which takes no intents)
+                MediaTransportController.dispatchToStockPlayer(mLauncher,
+                        MediaTransportController.ACTION_PLAY_PAUSE);
             } else if ("mediaController".equals(mediaSource)) {
                 boolean activeControllerAppRunning = false;
                 MediaSessionManager msm = (MediaSessionManager) mLauncher.getSystemService(Context.MEDIA_SESSION_SERVICE);
@@ -1366,7 +1430,7 @@ final class LauncherMusicWidget {
         MediaTransportController.handleAction(
                 mLauncher,
                 MediaTransportController.ACTION_NEXT,
-                getPreferredMediaControllerPackage()
+                getTransportTargetPackage()
         );
         mLauncher.requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
     }

@@ -52,6 +52,8 @@ private const val ACTIVE_SESSION_POLL_MS = 250L
 
 /** Panes are up ~1.5 s after the rebuild starts; the channel is taken right after that. */
 private const val PANE_RESTART_GRACE_MS = 2500L
+/** See isStockPlayerLeaving(): the channel goes within ~20 ms of the resume when it comes after it. */
+private const val STOCK_LEAVE_WINDOW_MS = 500L
 
 private const val MAX_CHANNEL_RESTORES = 6
 
@@ -248,6 +250,8 @@ class NotificationListener : NotificationListenerService() {
     private var paneRebuildEndedAtMs = 0L
     /** When the panes last came up with the launcher in front, 0 once it went to the background. */
     private var rebuildSettledAtMs = 0L
+    /** When the current pane rebuild window was opened (the launcher back in front, mostly). */
+    private var rebuildStartedAtMs = 0L
     /** The stock channel that was playing through that rebuild, MCU_CH_ANDROID for none. */
     private var rebuildStockChannel = MCU_CH_ANDROID
 
@@ -772,6 +776,19 @@ class NotificationListener : NotificationListenerService() {
         if (previous == -1) return
         Log.d("NotificationListener", "MCU channel $previous -> $channel")
 
+        if (isStockPlayerLeaving(previous, channel)) {
+            // Back in com.syu.music pauses it and gives its channel up, as the launcher comes
+            // back to the front: the user's own stop. Restored at "Panes settled", it played
+            // again 3 s later, but only when the channel went after the launcher's resume (on
+            // the 7862, 18 ms after it once, 40-54 ms before it four times: capture 18-10-2026
+            // 23:18:46, 23:29:09); the widget, buttons included, then followed whichever it was.
+            Log.d("NotificationListener", "Stock channel $previous given up by its player - not restored")
+            channelToRestore = MCU_CH_ANDROID
+            pendingRestore?.let { handler?.removeCallbacks(it) }
+            pendingRestore = null
+            return
+        }
+
         if (isPaneChannelSteal(channel)) {
             if (stealSeenAtMs == 0L) stealSeenAtMs = SystemClock.elapsedRealtime()
             scheduleChannelRestore()
@@ -1084,6 +1101,15 @@ class NotificationListener : NotificationListenerService() {
     }
 
     /**
+     * The stock channel went to none right as the panes' rebuild began, i.e. as the launcher came
+     * back to the front: the stock player leaving with its own screen. A pane's app takes the
+     * channel only once it has been launched, later than this.
+     */
+    private fun isStockPlayerLeaving(previous: Int, channel: Int): Boolean =
+        channel == MCU_CH_ANDROID && isStockChannel(previous) && previous == channelToRestore
+                && SystemClock.elapsedRealtime() - rebuildStartedAtMs < STOCK_LEAVE_WINDOW_MS
+
+    /**
      * Relaunching a media app into a pane makes the framework hand the sound channel to
      * the third party player within a few hundred ms, with nothing playing there. All
      * three conditions have to hold, and a real source switch fails at least one of them:
@@ -1137,7 +1163,10 @@ class NotificationListener : NotificationListenerService() {
         val now = SystemClock.elapsedRealtime()
         val rearming = now >= paneRestartUntil
         paneRestartUntil = now + PANE_RESTART_GRACE_MS
-        if (rearming) channelRestores = 0
+        if (rearming) {
+            channelRestores = 0
+            rebuildStartedAtMs = now
+        }
         if (!isMcuChannelPlaying()) return
         channelToRestore = mcuChannel()
         if (rearming) {

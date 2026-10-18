@@ -126,6 +126,7 @@ import com.android.launcher66.settings.MainViewModel;
 import com.android.launcher66.settings.NightModeService;
 import com.android.launcher66.settings.SessionPrefs;
 import com.android.launcher66.settings.SettingsActivity;
+import com.android.launcher66.settings.SyuMusicLibrary;
 import com.android.launcher66.settings.StatusBarSwipeDetector;
 import com.android.launcher66.settings.WakeDetection;
 import com.android.recycler.AppListAdapter;
@@ -2169,6 +2170,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onResume() {
         super.onResume();
         mWallpaperPicker.hideWallpaperPickerIndicator();
+        if (LauncherApplication.isFytDevice()) {
+            // A like changed in the stock player's own screen: read before the hearts are drawn
+            SyuMusicLibrary.onLauncherResumed(this);
+            MusicService.requestSyuMediaRefresh();
+        }
         // Deferred until the panes are up; see mFytRatingWake.
         mDeviceWake.scheduleFytRatingWake();
         scheduleStatusBarSwipeDetectorSync();

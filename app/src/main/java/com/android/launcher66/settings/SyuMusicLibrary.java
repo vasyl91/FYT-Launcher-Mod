@@ -10,9 +10,12 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.MediaFavoriteController;
 import com.syu.util.WindowHostVdClient;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,20 +31,26 @@ import java.util.concurrent.TimeUnit;
  * and checks with "select Name from Table_Favorite where Path = ?". So a row's presence is the
  * favorite state.
  *
- * Reaching that database (it is owned by com.syu.music, uid system, mode 660, and this launcher is
- * not that uid): this runs only on a rooted unit, with the user's root, on the user's own apps.
- * The file must be touched through a real SQLite connection - replacing it as a whole file would
- * corrupt com.syu.music's open connection, and there is no sqlite3 binary on the unit to run SQL
- * as root - so root widens the file's other-permission for the moment of the open, the launcher
- * opens the real file with its own SQLite engine (multi-process safe with the player's connection,
- * so each sees the other's committed change), and the permission is taken away again the instant
- * the connection closes. com.syu.music, the owner, keeps its own access the whole time.
+ * Reaching that database (it is owned by com.syu.music, uid system, mode 660):
+ *   - with system privileges (the FYT build, uid 1000 like com.syu.music): opened directly;
+ *   - on a rooted unit, with the user's root: the file must be touched through a real SQLite
+ *     connection - replacing it as a whole file would corrupt com.syu.music's open connection, and
+ *     there is no sqlite3 binary on the unit to run SQL as root - so root widens the file's
+ *     other-permission for the moment of the open, the launcher opens the real file with its own
+ *     SQLite engine (multi-process safe with the player's connection, so each sees the other's
+ *     committed change), and the permission is taken away again the instant the connection
+ *     closes. com.syu.music, the owner, keeps its own access the whole time;
+ *   - not through Shizuku as shell (uid 2000): neither the uid nor SELinux's shell domain may
+ *     touch another app's private data, nor chmod it.
+ * Which one is found out by opening the database once, off the main thread; until then the
+ * library counts as reachable, and where it is not (no root, su refused) {@link #isAvailable}
+ * turns false and the caller keeps its opt-in cache instead.
  *
- * Without root the launcher cannot reach it and {@link #isAvailable} is false, so the caller keeps
- * its opt-in cache instead.
- *
- * Reads are cached per path so the widget's per-draw lookups stay on the main thread while the
- * database work (and the su calls) run on {@link #IO}; writes are optimistic and read back.
+ * The whole Table_Favorite (its paths) is read at once and kept, so the widget's per-draw lookups
+ * stay on the main thread and a track change needs no read of its own; it is read again on
+ * {@link #IO} at most every {@link #REREAD_MIN_MS} and at once when the launcher comes back to the
+ * front ({@link #onLauncherResumed}), where a like changed in com.syu.music's own screen shows up.
+ * Writes are optimistic and read back.
  */
 public final class SyuMusicLibrary {
 
@@ -62,8 +71,11 @@ public final class SyuMusicLibrary {
     private static final int ACCESS_UNKNOWN = 0;
     private static final int ACCESS_NONE = 1;
     private static final int ACCESS_ROOT = 2;
+    /** System privileges: the launcher is com.syu.music's uid, the file is opened as it is. */
+    private static final int ACCESS_DIRECT = 3;
 
     private static volatile int sAccess = ACCESS_UNKNOWN;
+    private static volatile boolean sProbing;
 
     private static final ExecutorService IO = Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "SyuMusicLib");
@@ -72,80 +84,91 @@ public final class SyuMusicLibrary {
     });
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
 
-    /** Favorite state per track path, for the main thread; absent until a read lands. */
-    private static final ConcurrentHashMap<String, Boolean> FAV_BY_PATH = new ConcurrentHashMap<>();
-    private static volatile String sLoadingPath;
+    /** Every liked path, as last read; null until the first read lands. */
+    private static volatile Set<String> sFavorites;
+    /** Presses still being written, by path: they win over a read until written and read back. */
+    private static final ConcurrentHashMap<String, Boolean> PENDING = new ConcurrentHashMap<>();
+    private static volatile boolean sReading;
 
     /**
-     * A known path is read again no more than this often, so a like made inside com.syu.music is
-     * picked up (getState is called about once a second while a stock track plays). Each read is a
-     * pair of su calls, so it is not run on every draw.
+     * The table is read again no more than this often, so a like made inside com.syu.music is
+     * picked up (getState is called about once a second while a stock track plays). With root
+     * each read is a pair of su calls, so it is not run on every draw.
      */
     private static final long REREAD_MIN_MS = 1500L;
     private static volatile long sLastReadAtMs;
-    /** The path a press is being written for; its re-reads wait so they cannot show a stale row. */
-    private static volatile String sWritingPath;
 
     private SyuMusicLibrary() {
     }
 
     /**
      * Whether com.syu.music's real favorites are reachable, so the launcher manages them there
-     * instead of in its cache: com.syu.music installed and a root (su) host present on the unit.
+     * instead of in its cache: com.syu.music installed and its database opened (or not tried yet).
      */
     public static boolean isAvailable(Context context) {
-        return accessMode(context) == ACCESS_ROOT;
+        int a = accessMode(context);
+        return a == ACCESS_ROOT || a == ACCESS_DIRECT || a == ACCESS_UNKNOWN;
     }
 
     /**
      * The favorite state of {@code path}: FAVORITED, NOT_FAVORITED, or UNKNOWN until the first
-     * background read for it lands (then the widget is redrawn). A track the database has no row
-     * for reads as NOT_FAVORITED, so the button is usable and the first press likes it.
-     *
-     * Besides the first read, the path is read again (throttled) so a like made inside
-     * com.syu.music reaches the widget: the cached value is returned at once, and a changed row
-     * redraws when its read lands.
+     * read of the table lands (then the widget is redrawn). A track the table has no row for reads
+     * as NOT_FAVORITED, so the button is usable and the first press likes it.
      */
     public static int getState(Context context, String path) {
-        if (TextUtils.isEmpty(path) || accessMode(context) != ACCESS_ROOT) {
+        if (TextUtils.isEmpty(path) || !isAvailable(context)) {
             return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
         }
-        Boolean fav = FAV_BY_PATH.get(path);
-        maybeRead(context.getApplicationContext(), path, fav != null);
-        if (fav != null) {
-            return fav ? MediaFavoriteController.FAVORITE_STATE_FAVORITED
-                    : MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED;
+        maybeRead(context.getApplicationContext(), false);
+        Boolean pending = PENDING.get(path);
+        Set<String> favorites = sFavorites;
+        if (pending == null && favorites == null) {
+            return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
         }
-        return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+        boolean fav = pending != null ? pending : favorites.contains(path);
+        return fav ? MediaFavoriteController.FAVORITE_STATE_FAVORITED
+                : MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED;
+    }
+
+    /**
+     * The launcher is in front again: a like changed in com.syu.music's own screen meanwhile is
+     * read now, not up to REREAD_MIN_MS into the next tracks (each showed the old heart for a
+     * moment). Main thread.
+     */
+    public static void onLauncherResumed(Context context) {
+        int a = sAccess;
+        if (a == ACCESS_ROOT || a == ACCESS_DIRECT) {
+            maybeRead(context.getApplicationContext(), true);
+        }
     }
 
     /**
      * Writes the favorite state of {@code path} into com.syu.music's library (insert or delete the
-     * row, as it does itself). Optimistic: the cached state flips at once for the redraw, then the
-     * row is written and read back on {@link #IO}.
+     * row, as it does itself). Optimistic: the state flips at once for the redraw, then the row is
+     * written and the table read back on {@link #IO}.
      *
      * @return false when the library is not reachable
      */
     public static boolean setFavorite(Context context, String path, String name,
             String artist, String album, boolean favorite) {
-        if (TextUtils.isEmpty(path) || accessMode(context) != ACCESS_ROOT) {
+        int a = accessMode(context);
+        if (TextUtils.isEmpty(path) || (a != ACCESS_ROOT && a != ACCESS_DIRECT)) {
             return false;
         }
-        FAV_BY_PATH.put(path, favorite);
-        sWritingPath = path;
+        PENDING.put(path, favorite);
         Context app = context.getApplicationContext();
         IO.execute(() -> {
             try {
                 writeFavorite(path, name, artist, album, favorite);
-                Boolean actual = readFavorite(path);
+                Set<String> actual = readFavorites();
                 if (actual != null) {
-                    FAV_BY_PATH.put(path, actual);
+                    sFavorites = actual;
+                    sLastReadAtMs = SystemClock.elapsedRealtime();
                 }
-                redraw(app);
             } finally {
-                if (path.equals(sWritingPath)) {
-                    sWritingPath = null;
-                }
+                // Only this press's own value: a later press for the path stays pending
+                PENDING.remove(path, favorite);
+                redraw(app);
             }
         });
         return true;
@@ -155,6 +178,7 @@ public final class SyuMusicLibrary {
     // Access mode
     // =====================================================================================
 
+    /** The access found; UNKNOWN (and the probe started) until the database has been opened. */
     private static int accessMode(Context context) {
         int a = sAccess;
         if (a != ACCESS_UNKNOWN) {
@@ -163,11 +187,38 @@ public final class SyuMusicLibrary {
         if (context == null || !isInstalled(context)) {
             return ACCESS_NONE; // not cached: com.syu.music may be installed later
         }
-        // WindowHostVdClient.hasRoot() is the launcher's own su/root check (binary or module); it
-        // does not invoke su, so no superuser prompt here - that comes on the first real DB touch.
-        a = WindowHostVdClient.hasRoot() ? ACCESS_ROOT : ACCESS_NONE;
-        sAccess = a;
-        return a;
+        if (!sProbing) {
+            sProbing = true;
+            Context app = context.getApplicationContext();
+            IO.execute(() -> probe(app));
+        }
+        return ACCESS_UNKNOWN;
+    }
+
+    /**
+     * Opens the database the way this launcher can (the first read of the table): directly with
+     * system privileges, else through root when there is any (WindowHostVdClient.hasRoot() looks
+     * for su files: here, off the main thread). The su prompt, if any, comes now. IO thread.
+     */
+    private static void probe(Context app) {
+        int found = ACCESS_NONE;
+        if (LauncherApplication.hasSystemPrivileges()) {
+            sAccess = ACCESS_DIRECT;
+            if (readAndKeep()) {
+                found = ACCESS_DIRECT;
+            }
+        }
+        if (found == ACCESS_NONE && WindowHostVdClient.hasRoot()) {
+            sAccess = ACCESS_ROOT;
+            if (readAndKeep()) {
+                found = ACCESS_ROOT;
+            }
+        }
+        sAccess = found;
+        sProbing = false;
+        Log.i(TAG, "com.syu.music's favorites: " + (found == ACCESS_DIRECT ? "opened directly"
+                : found == ACCESS_ROOT ? "opened through root" : "out of reach, the cache stays"));
+        redraw(app);
     }
 
     private static boolean isInstalled(Context context) {
@@ -184,50 +235,64 @@ public final class SyuMusicLibrary {
     // =====================================================================================
 
     /**
-     * Reads {@code path} in the background when it is worth it: always for a path not yet known,
-     * otherwise at most every {@link #REREAD_MIN_MS} and never while a press for it is being
-     * written. The widget is redrawn only when the row's state actually changed.
+     * Reads the table in the background when it is worth it: now when asked to, otherwise at most
+     * every {@link #REREAD_MIN_MS}. The widget is redrawn only when a path's state changed.
      */
-    private static void maybeRead(Context app, String path, boolean known) {
-        if (path.equals(sWritingPath)) {
+    private static void maybeRead(Context app, boolean now) {
+        int a = sAccess;
+        if (a != ACCESS_ROOT && a != ACCESS_DIRECT) {
+            return; // the probe reads it first
+        }
+        if (sReading) {
             return;
         }
-        if (known && SystemClock.elapsedRealtime() - sLastReadAtMs < REREAD_MIN_MS) {
+        if (!now && sFavorites != null
+                && SystemClock.elapsedRealtime() - sLastReadAtMs < REREAD_MIN_MS) {
             return;
         }
-        if (path.equals(sLoadingPath)) {
-            return;
-        }
-        sLoadingPath = path;
+        sReading = true;
         sLastReadAtMs = SystemClock.elapsedRealtime();
         IO.execute(() -> {
-            Boolean fav = readFavorite(path);
-            if (path.equals(sLoadingPath)) {
-                sLoadingPath = null;
+            Set<String> before = sFavorites;
+            try {
+                readAndKeep();
+            } finally {
+                sReading = false;
             }
-            // A press for this path may have started while this read was in flight; its own
-            // write and read-back are authoritative, so this stale row must not overwrite them
-            // (that was the heart's momentary blink back to the old state on a press).
-            if (fav == null || path.equals(sWritingPath)) {
-                return;
-            }
-            if (!fav.equals(FAV_BY_PATH.put(path, fav))) {
-                redraw(app); // first value for the path, or it changed in com.syu.music
+            if (!java.util.Objects.equals(before, sFavorites)) {
+                redraw(app); // first read, or a like changed in com.syu.music
             }
         });
     }
 
-    /** True/false from the row's presence, or null when the database could not be opened. */
-    private static Boolean readFavorite(String path) {
+    /** Reads the table into sFavorites; false when the database could not be opened. IO thread. */
+    private static boolean readAndKeep() {
+        Set<String> favorites = readFavorites();
+        if (favorites == null) {
+            return false;
+        }
+        sFavorites = favorites;
+        sLastReadAtMs = SystemClock.elapsedRealtime();
+        return true;
+    }
+
+    /** Every liked path, or null when the database could not be opened. */
+    private static Set<String> readFavorites() {
         SQLiteDatabase db = open();
         if (db == null) {
             return null;
         }
-        try (Cursor c = db.rawQuery("SELECT 1 FROM " + TABLE + " WHERE Path=? LIMIT 1",
-                new String[]{path})) {
-            return c != null && c.moveToFirst();
+        try (Cursor c = db.rawQuery("SELECT Path FROM " + TABLE, null)) {
+            Set<String> paths = new HashSet<>();
+            while (c != null && c.moveToNext()) {
+                String path = c.getString(0);
+                if (path != null) {
+                    paths.add(path);
+                }
+            }
+            return paths;
         } catch (RuntimeException e) {
-            Log.w(TAG, "favorite read failed", e);
+            Log.w(TAG, "favorites read failed", e);
             return null;
         } finally {
             close(db);
@@ -258,9 +323,13 @@ public final class SyuMusicLibrary {
         }
     }
 
-    /** Opens the real database behind a momentary root grant; null if the grant or open failed. */
+    /**
+     * Opens the real database, directly or behind a momentary root grant; null if the grant or
+     * open failed.
+     */
     private static SQLiteDatabase open() {
-        if (!su(GRANT)) {
+        boolean root = sAccess == ACCESS_ROOT;
+        if (root && !su(GRANT)) {
             return null;
         }
         SQLiteDatabase db;
@@ -272,7 +341,7 @@ public final class SyuMusicLibrary {
             Log.w(TAG, "openDatabase failed", e);
             db = null;
         }
-        if (db == null) {
+        if (db == null && root) {
             su(REVOKE);
         }
         return db;
@@ -283,7 +352,9 @@ public final class SyuMusicLibrary {
             db.close();
         } catch (RuntimeException ignored) {
         }
-        su(REVOKE);
+        if (sAccess == ACCESS_ROOT) {
+            su(REVOKE);
+        }
     }
 
     // =====================================================================================

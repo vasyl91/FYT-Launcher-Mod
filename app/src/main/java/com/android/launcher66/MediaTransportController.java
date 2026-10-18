@@ -43,6 +43,11 @@ public final class MediaTransportController {
             return openActivePlayer(context, preferredPackage);
         }
 
+        if (isStockPackage(preferredPackage)) {
+            // Not on to the sessions when it is unreachable: that would be another app's
+            return dispatchToStockPlayer(context, action);
+        }
+
         MediaController controller = getTargetController(context, preferredPackage);
         if (controller != null && dispatchToController(controller, action)) {
             return true;
@@ -232,6 +237,55 @@ public final class MediaTransportController {
             return false;
         }
         return true;
+    }
+
+    /**
+     * The unit's own player, whatever else has a session: com.syu.media's session on the 7870 (its
+     * media buttons; it takes no intents), com.syu.music's intents otherwise. For the widget while
+     * it shows the stock track: with that player paused, the session fallback below picked a
+     * paused app's session instead (Musicolet's, capture 18-10-2026 23:18:46).
+     */
+    public static boolean dispatchToStockPlayer(Context context, String action) {
+        if (context == null || !LauncherApplication.isFytDevice()) {
+            return false;
+        }
+        if (MusicService.isSyuMediaSource()) {
+            return dispatchToSyuMedia(context, action);
+        }
+        return dispatchToStockMusic(context, action);
+    }
+
+    private static boolean isStockPackage(String packageName) {
+        return STOCK_MUSIC_PACKAGE.equals(packageName) || MusicService.MEDIA_PKG.equals(packageName);
+    }
+
+    /** As a media button to com.syu.media's own session; false without one (not running). */
+    private static boolean dispatchToSyuMedia(Context context, String action) {
+        int keyCode = getMediaKeyCode(action);
+        if (keyCode == 0) {
+            return false;
+        }
+        MediaSessionManager sessionManager =
+                (MediaSessionManager) context.getSystemService(Context.MEDIA_SESSION_SERVICE);
+        if (sessionManager == null) {
+            return false;
+        }
+        try {
+            List<MediaController> controllers =
+                    sessionManager.getActiveSessions(new ComponentName(context, NotificationListener.class));
+            for (MediaController controller : controllers) {
+                if (MusicService.MEDIA_PKG.equals(controller.getPackageName())) {
+                    long now = android.os.SystemClock.uptimeMillis();
+                    controller.dispatchMediaButtonEvent(new KeyEvent(now, now, KeyEvent.ACTION_DOWN, keyCode, 0));
+                    controller.dispatchMediaButtonEvent(new KeyEvent(now, now, KeyEvent.ACTION_UP, keyCode, 0));
+                    Log.d(TAG, "Sent media key " + keyCode + " to " + MusicService.MEDIA_PKG);
+                    return true;
+                }
+            }
+        } catch (RuntimeException e) {
+            Log.w(TAG, MusicService.MEDIA_PKG + " unreachable", e);
+        }
+        return false;
     }
 
     private static String getStockAction(String action) {
