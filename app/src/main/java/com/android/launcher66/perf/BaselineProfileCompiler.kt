@@ -203,8 +203,8 @@ object BaselineProfileCompiler {
     internal var elapsedNow: () -> Long = { SystemClock.elapsedRealtime() }
 
     /**
-     * True if this build / device can use the compiler: a release build, the fyt system build on
-     * Android 8-13 compiling itself, any other through the VD host once root or Shizuku runs one
+     * True if this build / device can use the compiler: a release build, the fyt system build
+     * compiling itself, any other through the VD host once root or Shizuku runs one
      * ([canCompileNow]). Never a debug build: AGP packs the Baseline Profile into non-debuggable
      * builds only, so the fyt debug build was compiled without one and still reported OK.
      */
@@ -227,10 +227,14 @@ object BaselineProfileCompiler {
         FAILED,
     }
 
-    /** The fyt system build on Android 8-13: PackageManager compiles it at its own request. */
+    /**
+     * The fyt system build: PackageManager compiles it at its own request. From Android 14 the
+     * same performDexOptMode() goes to ART Service and still lets uid 1000 in (system, root or
+     * shell; checkProfiles is ignored there, profiles are always checked), as does
+     * clearApplicationProfileData(). (It used to stop at Android 13 for no such reason.)
+     */
     private fun compilesItself(): Boolean =
-        Process.myUid() == Process.SYSTEM_UID &&
-            Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU
+        Process.myUid() == Process.SYSTEM_UID && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
     /** Whether a compilation can run now: by the launcher itself, or a VD host is attached. */
     private fun canCompileNow(): Boolean = compilesItself() || WindowHostVdClient.hasPrivilegedHost()
