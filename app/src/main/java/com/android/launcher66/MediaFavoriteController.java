@@ -606,13 +606,13 @@ public final class MediaFavoriteController {
      * Falls back to the id of the last state lookup when the session cannot be
      * read at all, which is the one case where there is nothing better to go on.
      */
-    private static String currentRevancedVideoId(String packageName) {
+    private static String currentRevancedVideoId(String preferredPackage) {
         long now = SystemClock.elapsedRealtime();
         // Only the same build's: with YouTube in a PiP and YouTube Music playing, the id the
         // other one left behind was taken for this one's.
         if (revancedVideoIdAtMs != 0L
                 && now - revancedVideoIdAtMs < REVANCED_VIDEO_ID_MAX_AGE_MS
-                && (packageName == null || packageName.equals(revancedPackage))) {
+                && (preferredPackage == null || preferredPackage.equals(revancedPackage))) {
             String remembered = revancedVideoId;
             return remembered != null
                     ? remembered
@@ -622,7 +622,7 @@ public final class MediaFavoriteController {
         String videoId = null;
         String packageName = null;
         try {
-            MediaController controller = findRevancedController(LauncherApplication.sApp, packageName);
+            MediaController controller = findRevancedController(LauncherApplication.sApp, preferredPackage);
             if (controller != null) {
                 packageName = controller.getPackageName();
                 videoId = findVideoId(controller);
