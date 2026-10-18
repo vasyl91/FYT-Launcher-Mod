@@ -937,6 +937,8 @@ final class LauncherMusicWidget {
         }
         String preferredPackage = getPreferredMediaControllerPackage();
         if (MediaFavoriteController.isFavoriteTemporarilyDisabledPackage(preferredPackage)) {
+            // Logged: from the outside a press refused here does nothing at all.
+            Log.i(Launcher.TAG, "Favorite press ignored: " + preferredPackage + " not ready (status or video id)");
             updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN, false);
             return;
         }

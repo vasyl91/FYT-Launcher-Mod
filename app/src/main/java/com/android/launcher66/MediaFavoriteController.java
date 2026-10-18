@@ -441,7 +441,7 @@ public final class MediaFavoriteController {
             // made for kids flag was then compared against the wrong id, came
             // back false, and the button was drawn enabled on a video the
             // switch was supposed to grey out.
-            return isRevancedFavoriteDisabled(packageName, currentRevancedVideoId());
+            return isRevancedFavoriteDisabled(packageName, currentRevancedVideoId(packageName));
         }
 
         if (YOUTUBE_PACKAGE.equals(packageName)) {
@@ -489,7 +489,7 @@ public final class MediaFavoriteController {
         // as unrated is the switch's decision, and it is taken before anything
         // else so no later rule can override it.
         if (madeForKids && !isKidsRatingAllowed()) {
-            pokeRevanced();
+            pokeRevanced(packageName);
             return true;
         }
 
@@ -509,7 +509,7 @@ public final class MediaFavoriteController {
             if (madeForKids || YouTubeRevancedLikeState.isStateResolved(videoId)) {
                 return false;
             }
-            pokeRevanced();
+            pokeRevanced(packageName);
             return true;
         }
 
@@ -539,7 +539,7 @@ public final class MediaFavoriteController {
         // exactly as in the signed-in branch above, so the lookup is kept
         // running the same way instead of waiting on a button nobody can press.
         if (isFytAccountPresent()) {
-            pokeRevanced();
+            pokeRevanced(packageName);
         }
         return true;
     }
@@ -606,10 +606,13 @@ public final class MediaFavoriteController {
      * Falls back to the id of the last state lookup when the session cannot be
      * read at all, which is the one case where there is nothing better to go on.
      */
-    private static String currentRevancedVideoId() {
+    private static String currentRevancedVideoId(String packageName) {
         long now = SystemClock.elapsedRealtime();
+        // Only the same build's: with YouTube in a PiP and YouTube Music playing, the id the
+        // other one left behind was taken for this one's.
         if (revancedVideoIdAtMs != 0L
-                && now - revancedVideoIdAtMs < REVANCED_VIDEO_ID_MAX_AGE_MS) {
+                && now - revancedVideoIdAtMs < REVANCED_VIDEO_ID_MAX_AGE_MS
+                && (packageName == null || packageName.equals(revancedPackage))) {
             String remembered = revancedVideoId;
             return remembered != null
                     ? remembered
@@ -619,7 +622,7 @@ public final class MediaFavoriteController {
         String videoId = null;
         String packageName = null;
         try {
-            MediaController controller = findRevancedController(LauncherApplication.sApp);
+            MediaController controller = findRevancedController(LauncherApplication.sApp, packageName);
             if (controller != null) {
                 packageName = controller.getPackageName();
                 videoId = findVideoId(controller);
@@ -1011,15 +1014,21 @@ public final class MediaFavoriteController {
     /** Whether ReVanced holds a session right now, permission rules aside. */
     private static boolean hasRevancedSession(Context context, String preferredPackage) {
         return isYouTubePackage(preferredPackage)
-                || findRevancedController(context) != null;
+                || findRevancedController(context, preferredPackage) != null;
     }
 
     /**
      * The ReVanced session as the system reports it, with none of the favorite
      * rules applied. Deliberately separate from the picker: this answers "is it
      * there", not "may it be used".
+     *
+     * With more than one of the YouTube builds holding a session - YouTube in a
+     * PiP, YouTube Music playing - the one the widget shows (preferredPackage)
+     * is taken, else the one playing, and only then the first listed: the first
+     * listed used to be the paused YouTube in the PiP, and the YouTube Music
+     * video was never looked up.
      */
-    private static MediaController findRevancedController(Context context) {
+    private static MediaController findRevancedController(Context context, String preferredPackage) {
         if (context == null) {
             return null;
         }
@@ -1037,11 +1046,25 @@ public final class MediaFavoriteController {
                 return null;
             }
 
+            MediaController playing = null;
+            MediaController first = null;
             for (MediaController controller : controllers) {
-                if (controller != null && isYouTubePackage(controller.getPackageName())) {
+                if (controller == null || !isYouTubePackage(controller.getPackageName())) {
+                    continue;
+                }
+                if (controller.getPackageName().equals(preferredPackage)) {
                     return controller;
                 }
+                if (first == null) {
+                    first = controller;
+                }
+                PlaybackState state = safePlaybackState(controller);
+                if (playing == null && state != null
+                        && state.getState() == PlaybackState.STATE_PLAYING) {
+                    playing = controller;
+                }
             }
+            return playing != null ? playing : first;
         } catch (Exception e) {
             Log.w(TAG, "Could not look for a ReVanced session", e);
         }
@@ -1065,7 +1088,7 @@ public final class MediaFavoriteController {
      * requestRefresh refuses anything already answered, already in flight, or
      * still inside its backoff.
      */
-    private static void pokeRevanced() {
+    private static void pokeRevanced(String preferredPackage) {
         if (!POKING.compareAndSet(false, true)) {
             // Reached again through the diagnostics, which ask this same rule.
             return;
@@ -1073,7 +1096,7 @@ public final class MediaFavoriteController {
 
         try {
             Context context = LauncherApplication.sApp;
-            MediaController controller = findRevancedController(context);
+            MediaController controller = findRevancedController(context, preferredPackage);
             if (controller == null) {
                 return;
             }
@@ -2720,7 +2743,31 @@ public final class MediaFavoriteController {
                 }
             }
         }
+        if (isYouTubePackage(controller.getPackageName())) {
+            warnNoVideoId(controller.getPackageName(), metadata);
+        }
         return null;
+    }
+
+    /** The session (package and media id) last reported as giving no video id. */
+    private static volatile String lastNoVideoIdKey;
+
+    /**
+     * Once per track: without a video id nothing can be rated, and every path that needs one
+     * gives up silently - this line is what tells that apart on the device.
+     */
+    private static void warnNoVideoId(String packageName, MediaMetadata metadata) {
+        String mediaId = metadata != null
+                ? metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID) : null;
+        String title = metadata != null
+                ? metadata.getString(MediaMetadata.METADATA_KEY_TITLE) : null;
+        String key = packageName + "|" + mediaId + "|" + title;
+        if (key.equals(lastNoVideoIdKey)) {
+            return;
+        }
+        lastNoVideoIdKey = key;
+        Log.w(TAG, "No video id in the " + packageName + " session: mediaId=" + mediaId
+                + ", title=" + title);
     }
 
     private static String describeMetadataValue(MediaMetadata md, String key) {
