@@ -2538,6 +2538,12 @@ public final class MediaFavoriteController {
     }
 
     public static void dumpMediaDebug(Context context, MediaController controller) {
+        dumpMediaDebug(context, controller, true);
+    }
+
+    /** Without the notification's actions: those read the player's resources from disk. */
+    private static void dumpMediaDebug(Context context, MediaController controller,
+            boolean notificationActions) {
         String pkg = controller.getPackageName();
         Log.d(DEBUG_TAG, "=========== " + pkg + " ===========");
 
@@ -2577,16 +2583,24 @@ public final class MediaFavoriteController {
         if (queue == null || queue.isEmpty()) {
             Log.d(DEBUG_TAG, "  queue: empty");
         } else {
+            // The item playing only: a radio queue runs to hundreds
+            long activeId = ps != null ? ps.getActiveQueueItemId() : MediaSession.QueueItem.UNKNOWN_ID;
+            Log.d(DEBUG_TAG, "  queue: " + queue.size() + " items, active id " + activeId);
             for (MediaSession.QueueItem q : queue) {
+                if (q.getQueueId() != activeId) continue;
                 MediaDescription qd = q.getDescription();
                 Log.d(DEBUG_TAG, "  queue mediaId=" + qd.getMediaId()
                         + " title=" + qd.getTitle()
-                        + " iconUri=" + qd.getIconUri());
+                        + " iconUri=" + qd.getIconUri()
+                        + " mediaUri=" + qd.getMediaUri());
+                dumpBundle("queue.extras", qd.getExtras());
             }
         }
         Log.d(DEBUG_TAG, "  queueTitle = " + controller.getQueueTitle());
 
-        dumpNotificationActions(context, controller);
+        if (notificationActions) {
+            dumpNotificationActions(context, controller);
+        }
 
         Log.d(DEBUG_TAG, "  >>> videoId candidate = " + findVideoId(controller));
         Log.d(DEBUG_TAG, "==================================================");
@@ -2744,7 +2758,7 @@ public final class MediaFavoriteController {
             }
         }
         if (isYouTubePackage(controller.getPackageName())) {
-            warnNoVideoId(controller.getPackageName(), metadata);
+            warnNoVideoId(controller, metadata);
         }
         return null;
     }
@@ -2756,7 +2770,8 @@ public final class MediaFavoriteController {
      * Once per track: without a video id nothing can be rated, and every path that needs one
      * gives up silently - this line is what tells that apart on the device.
      */
-    private static void warnNoVideoId(String packageName, MediaMetadata metadata) {
+    private static void warnNoVideoId(MediaController controller, MediaMetadata metadata) {
+        String packageName = controller.getPackageName();
         String mediaId = metadata != null
                 ? metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID) : null;
         String title = metadata != null
@@ -2767,12 +2782,16 @@ public final class MediaFavoriteController {
         }
         lastNoVideoIdKey = key;
         Log.w(TAG, "No video id in the " + packageName + " session: mediaId=" + mediaId
-                + ", title=" + title);
+                + ", title=" + title + "; what it holds:");
+        // Where the id could be instead (YT Music gives none in mediaId): the whole session, once
+        // per track. Its own findVideoId() comes back here with the same key and stops.
+        dumpMediaDebug(LauncherApplication.sApp, controller, false);
     }
 
     private static String describeMetadataValue(MediaMetadata md, String key) {
         try {
-            CharSequence text = md.getText(key);
+            // Not for the others: read as text they log a ClassCastException each
+            CharSequence text = isTextMetadataKey(key) ? md.getText(key) : null;
             if (text != null) {
                 return "Text: " + text;
             }

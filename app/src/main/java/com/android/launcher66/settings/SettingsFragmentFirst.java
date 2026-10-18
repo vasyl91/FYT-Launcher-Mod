@@ -522,7 +522,18 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                     ? R.string.build_type_debug : R.string.build_type_release);
             String flavor = getString("fyt".equals(com.android.launcher66.BuildConfig.FLAVOR)
                     ? R.string.build_flavor_fyt : R.string.build_flavor_standard);
-            appVersion.setSummary(appTypeText() + "\n" + build + " · " + flavor);
+            String buildLine = build + " · " + flavor;
+            appVersion.setSummary(buildLine);
+            // The root check looks for su files on disk: off the main thread
+            final Context appContext = requireContext().getApplicationContext();
+            new Thread(() -> {
+                final String appType = appTypeText(appContext);
+                mHandler.post(() -> {
+                    if (isAdded() && appVersion != null) {
+                        appVersion.setSummary(appType + "\n" + buildLine);
+                    }
+                });
+            }, "AppTypeText").start();
             String currentVersion = Helpers.getAppVersion(LauncherApplication.sApp);
             appVersion.setTitle(getString(R.string.app_version, currentVersion));
             versionChecker.checkForUpdate(currentVersion, new VersionChecker.VersionCheckCallback() {
@@ -1469,18 +1480,19 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
      * or as a user app with what it can use instead -- root (and then whether the FYT VDHost
      * Magisk module is installed), or else Shizuku, when installed.
      */
-    private String appTypeText() {
+    /** Any thread. */
+    private static String appTypeText(Context context) {
         if (LauncherApplication.hasSystemPrivileges()) {
-            return getString(R.string.app_type_system);
+            return context.getString(R.string.app_type_system);
         }
         List<String> parts = new ArrayList<>();
-        parts.add(getString(R.string.app_type_user));
+        parts.add(context.getString(R.string.app_type_user));
         if (WindowHostVdClient.hasRoot()) {
-            parts.add(getString(R.string.app_type_root));
-            parts.add(getString(WindowHostVdClient.isModuleInstalled()
+            parts.add(context.getString(R.string.app_type_root));
+            parts.add(context.getString(WindowHostVdClient.isModuleInstalled()
                     ? R.string.app_type_module_installed : R.string.app_type_module_missing));
-        } else if (WindowHostVdClient.isShizukuInstalled(requireContext())) {
-            parts.add(getString(WindowHostVdClient.isShizukuRunning()
+        } else if (WindowHostVdClient.isShizukuInstalled(context)) {
+            parts.add(context.getString(WindowHostVdClient.isShizukuRunning()
                     ? R.string.app_type_shizuku_running : R.string.app_type_shizuku_stopped));
         }
         return android.text.TextUtils.join(", ", parts);

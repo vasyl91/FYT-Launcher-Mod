@@ -44,6 +44,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import share.Config;
 
@@ -1516,7 +1518,24 @@ final class LauncherAppBars {
         if (!(mLauncher.userLayout && mLauncher.leftBar || !mLauncher.userLayout)) return;
         
         Log.d(Launcher.TAG, "--------------->>>   refreshLeftCycle");
-        
+        // The database off the main thread (StrictMode, a tap on every app opened), in order
+        LEFT_CYCLE_WRITER.execute(() -> {
+            List<LeftAppMultiple> topRows;
+            try {
+                topRows = writeLeftCycle(bean);
+            } catch (RuntimeException e) {
+                Log.w(Launcher.TAG, "refreshLeftCycle: left bar rows not written", e);
+                return;
+            }
+            mLauncher.mHandler.post(() -> refreshLeftBar(topRows));
+        });
+    }
+
+    private static final ExecutorService LEFT_CYCLE_WRITER =
+            Executors.newSingleThreadExecutor(r -> new Thread(r, "LeftCycleWriter"));
+
+    /** The opened app first in the left bar's rows; returns the rows to show. */
+    private List<LeftAppMultiple> writeLeftCycle(AppListBean bean) {
         // Get all physical rows from database
         List<LeftAppMultiple> physical = LitePal.order("id asc").find(LeftAppMultiple.class);
         
@@ -1580,9 +1599,7 @@ final class LauncherAppBars {
             BarRows.invalidate();
         }
         
-        // Refresh the display
-        List<LeftAppMultiple> topRows = BarRows.left(MAX_LEFT);
-        refreshLeftBar(topRows);
+        return BarRows.left(MAX_LEFT);
     }
 
     public void refreshLeftBar(@Nullable List<LeftAppMultiple> leftAppData) {

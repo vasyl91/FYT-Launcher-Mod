@@ -164,6 +164,15 @@ public class SettingsActivity extends AppCompatActivity {
                 view, 6, Math.max(7, Math.round(maxSp)), 1, TypedValue.COMPLEX_UNIT_SP);
     }
 
+    /**
+     * Through the application's context, as in Launcher: it already knows the files' paths,
+     * this activity's own context would look each one up on disk again (StrictMode).
+     */
+    @Override
+    public SharedPreferences getSharedPreferences(String name, int mode) {
+        return getApplicationContext().getSharedPreferences(name, mode);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         if (!LauncherApplication.isFytDevice()) {

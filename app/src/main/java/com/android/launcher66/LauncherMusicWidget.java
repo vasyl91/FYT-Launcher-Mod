@@ -515,11 +515,34 @@ final class LauncherMusicWidget {
             if (live != null) {
                 return live;
             }
+            if (activeSessions() != null) {
+                // The sessions could be read and none is its own (after a restart, say): the
+                // snapshot and the saved state still say what played before.
+                return false;
+            }
             MediaWidgetState.Snapshot snapshot = MediaWidgetState.getExternalSnapshot();
             if (snapshot != null) {
                 return snapshot.playing;
             }
             return "true".equals(mLauncher.state);
+        }
+        if (!LauncherApplication.isFytDevice()) {
+            // No stock player: the source a restart starts with. Whatever else makes a sound
+            // (navigation, say) is not what the widget shows; a session that plays is.
+            List<MediaController> controllers = activeSessions();
+            if (controllers != null) {
+                for (MediaController controller : controllers) {
+                    try {
+                        PlaybackState state = controller.getPlaybackState();
+                        if (state != null && MediaWidgetState.isPlaybackActive(state.getState())) {
+                            return true;
+                        }
+                    } catch (RuntimeException ignored) {
+                        // the session went away meanwhile
+                    }
+                }
+                return false;
+            }
         }
         // Not mAudioManager.isMusicActive() directly: see AudioStateCache.
         return MusicService.state.booleanValue()
@@ -653,8 +676,9 @@ final class LauncherMusicWidget {
                 return false;
             }
         }
-        Intent launchIntent = mLauncher.getPackageManager().getLaunchIntentForPackage(packageName);
+        Intent launchIntent = launchIntentIfInstalled(packageName);
         if (launchIntent == null) {
+            Log.i(Launcher.TAG, "Music widget: no session of " + packageName + ", not installed");
             return false;
         }
         Log.i(Launcher.TAG, "Music widget: no session of " + packageName + ", opening it");
@@ -662,6 +686,20 @@ final class LauncherMusicWidget {
         refreshLeftCycleForIntent(launchIntent);
         mLauncher.startActivitySafely(null, launchIntent, "music");
         return true;
+    }
+
+    /** Its launch intent; null if it is not installed (or has nothing to open). */
+    private Intent launchIntentIfInstalled(String packageName) {
+        if (packageName == null || packageName.isEmpty()) {
+            return null;
+        }
+        PackageManager pm = mLauncher.getPackageManager();
+        try {
+            pm.getApplicationInfo(packageName, 0);
+            return pm.getLaunchIntentForPackage(packageName);
+        } catch (PackageManager.NameNotFoundException | RuntimeException e) {
+            return null;
+        }
     }
 
     private static final String STOCK_MUSIC_PACKAGE = "com.syu.music";
@@ -1281,20 +1319,13 @@ final class LauncherMusicWidget {
                     }
                 }
                 if (!activeControllerAppRunning || mLauncher.mRadioWidget.isRadioPlaying()) {
-                    WindowUtil.removePip();
-                    Intent launchIntent = mLauncher.getPackageManager().getLaunchIntentForPackage(activeController);
-                    try {
-                        ComponentName componentName = launchIntent.getComponent();
-                        PackageManager pm = mLauncher.getPackageManager();
-                        ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                        String appTitle = appInfo.loadLabel(pm).toString();
-                        AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                        mLauncher.refreshLeftCycle(bean);
-                        mLauncher.cleanWidgetBar();
-                    } catch (PackageManager.NameNotFoundException e) {
-                        throw new RuntimeException(e);
+                    // Uninstalled meanwhile: nothing to open (it used to crash here)
+                    Intent launchIntent = launchIntentIfInstalled(activeController);
+                    if (launchIntent != null) {
+                        WindowUtil.removePip();
+                        refreshLeftCycleForIntent(launchIntent);
+                        mLauncher.startActivitySafely(null, launchIntent, "music");
                     }
-                    mLauncher.startActivity(launchIntent);
                 }
             }
         }
