@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -75,6 +76,16 @@ public final class SyuMusicLibrary {
     private static final ConcurrentHashMap<String, Boolean> FAV_BY_PATH = new ConcurrentHashMap<>();
     private static volatile String sLoadingPath;
 
+    /**
+     * A known path is read again no more than this often, so a like made inside com.syu.music is
+     * picked up (getState is called about once a second while a stock track plays). Each read is a
+     * pair of su calls, so it is not run on every draw.
+     */
+    private static final long REREAD_MIN_MS = 1500L;
+    private static volatile long sLastReadAtMs;
+    /** The path a press is being written for; its re-reads wait so they cannot show a stale row. */
+    private static volatile String sWritingPath;
+
     private SyuMusicLibrary() {
     }
 
@@ -90,17 +101,21 @@ public final class SyuMusicLibrary {
      * The favorite state of {@code path}: FAVORITED, NOT_FAVORITED, or UNKNOWN until the first
      * background read for it lands (then the widget is redrawn). A track the database has no row
      * for reads as NOT_FAVORITED, so the button is usable and the first press likes it.
+     *
+     * Besides the first read, the path is read again (throttled) so a like made inside
+     * com.syu.music reaches the widget: the cached value is returned at once, and a changed row
+     * redraws when its read lands.
      */
     public static int getState(Context context, String path) {
         if (TextUtils.isEmpty(path) || accessMode(context) != ACCESS_ROOT) {
             return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
         }
         Boolean fav = FAV_BY_PATH.get(path);
+        maybeRead(context.getApplicationContext(), path, fav != null);
         if (fav != null) {
             return fav ? MediaFavoriteController.FAVORITE_STATE_FAVORITED
                     : MediaFavoriteController.FAVORITE_STATE_NOT_FAVORITED;
         }
-        requestLoad(context.getApplicationContext(), path);
         return MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
     }
 
@@ -117,14 +132,21 @@ public final class SyuMusicLibrary {
             return false;
         }
         FAV_BY_PATH.put(path, favorite);
+        sWritingPath = path;
         Context app = context.getApplicationContext();
         IO.execute(() -> {
-            writeFavorite(path, name, artist, album, favorite);
-            Boolean actual = readFavorite(path);
-            if (actual != null) {
-                FAV_BY_PATH.put(path, actual);
+            try {
+                writeFavorite(path, name, artist, album, favorite);
+                Boolean actual = readFavorite(path);
+                if (actual != null) {
+                    FAV_BY_PATH.put(path, actual);
+                }
+                redraw(app);
+            } finally {
+                if (path.equals(sWritingPath)) {
+                    sWritingPath = null;
+                }
             }
-            redraw(app);
         });
         return true;
     }
@@ -161,19 +183,30 @@ public final class SyuMusicLibrary {
     // Database
     // =====================================================================================
 
-    private static void requestLoad(Context app, String path) {
+    /**
+     * Reads {@code path} in the background when it is worth it: always for a path not yet known,
+     * otherwise at most every {@link #REREAD_MIN_MS} and never while a press for it is being
+     * written. The widget is redrawn only when the row's state actually changed.
+     */
+    private static void maybeRead(Context app, String path, boolean known) {
+        if (path.equals(sWritingPath)) {
+            return;
+        }
+        if (known && SystemClock.elapsedRealtime() - sLastReadAtMs < REREAD_MIN_MS) {
+            return;
+        }
         if (path.equals(sLoadingPath)) {
             return;
         }
         sLoadingPath = path;
+        sLastReadAtMs = SystemClock.elapsedRealtime();
         IO.execute(() -> {
             Boolean fav = readFavorite(path);
             if (path.equals(sLoadingPath)) {
                 sLoadingPath = null;
             }
-            if (fav != null) {
-                FAV_BY_PATH.put(path, fav);
-                redraw(app);
+            if (fav != null && !fav.equals(FAV_BY_PATH.put(path, fav))) {
+                redraw(app); // first value for the path, or it changed in com.syu.music
             }
         });
     }
