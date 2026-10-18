@@ -349,11 +349,10 @@ public class LauncherApplication extends Application {
                 getSharedPreferences(getPackageName(), MODE_PRIVATE);
                 getSharedPreferences(WallpaperCropActivity.getSharedPreferencesKey(),
                         MODE_MULTI_PROCESS);
-                // Opens the workspace's database (LauncherProvider) before Workspace asks it.
-                android.database.Cursor c = getContentResolver().query(
-                        LauncherSettings.WorkspaceScreens.CONTENT_URI, new String[] { "_id" },
-                        null, null, null);
-                if (c != null) c.close();
+                getSharedPreferences(PendingUpdateStore.PREFS, MODE_PRIVATE);
+                // Opens the workspace's database (LauncherProvider) and reads its screens for
+                // the Workspace.
+                Workspace.preloadScreens(this);
             } catch (Throwable t) {
                 Log.w(TAG, "start-up warm-up: " + t);
             }

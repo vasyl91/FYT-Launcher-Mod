@@ -112,6 +112,7 @@ public class LauncherProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues initialValues) {
         SqlArguments args = new SqlArguments(uri);
+        screensMayChange(args);
         SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
         addModifiedTime(initialValues);
         long rowId = dbInsertAndCheck(this.mOpenHelper, db, args.table, null, initialValues);
@@ -126,6 +127,7 @@ public class LauncherProvider extends ContentProvider {
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
         SqlArguments args = new SqlArguments(uri);
+        screensMayChange(args);
         SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
         db.beginTransaction();
         try {
@@ -151,6 +153,7 @@ public class LauncherProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         LogPreview.show("delete");
         SqlArguments args = new SqlArguments(uri, selection, selectionArgs);
+        screensMayChange(args);
         SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
         int count = db.delete(args.table, args.where, args.args);
         if (count > 0) {
@@ -181,6 +184,7 @@ public class LauncherProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         LogPreview.show("update");
         SqlArguments args = new SqlArguments(uri, selection, selectionArgs);
+        screensMayChange(args);
         addModifiedTime(values);
         SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
         int count = db.update(args.table, values, args.where, args.args);
@@ -188,6 +192,13 @@ public class LauncherProvider extends ContentProvider {
             sendNotify(uri);
         }
         return count;
+    }
+
+    /** The screens Workspace may have read ahead are dropped before their table is written. */
+    private static void screensMayChange(SqlArguments args) {
+        if (TABLE_WORKSPACE_SCREENS.equals(args.table)) {
+            Workspace.screensChanged();
+        }
     }
 
     private void sendNotify(Uri uri) {

@@ -1631,6 +1631,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         } else return false;
     }
 
+    /**
+     * Through the application's context: the same files, but it already knows their paths (read
+     * off the main thread at the start, see LauncherApplication), while this activity's own
+     * context would look each one up on disk again.
+     */
+    @Override
+    public SharedPreferences getSharedPreferences(String name, int mode) {
+        return getApplicationContext().getSharedPreferences(name, mode);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         long appCreated = LauncherApplication.takeOnCreateEnd();

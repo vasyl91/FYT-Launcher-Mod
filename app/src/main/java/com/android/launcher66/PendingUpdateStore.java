@@ -7,7 +7,7 @@ import android.util.Log;
 import com.android.launcher66.settings.Keys;
 
 public final class PendingUpdateStore {
-    private static final String PREFS = "LauncherPrefs";
+    static final String PREFS = "LauncherPrefs";
     private static final Object LOCK = new Object();
 
     private PendingUpdateStore() {}

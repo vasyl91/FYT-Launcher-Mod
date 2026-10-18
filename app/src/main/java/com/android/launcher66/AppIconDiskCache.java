@@ -78,7 +78,8 @@ final class AppIconDiskCache {
     }
 
     private final Context mContext;
-    private final File mFile;
+    /** Taken on first use: getFilesDir() checks the directory on disk each time. */
+    private File mFile;
     private final Map<String, Entry> mEntries = new HashMap<>();
     private final ScheduledExecutorService mSaver = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread t = new Thread(r, "IconDiskCacheSave");
@@ -98,7 +99,13 @@ final class AppIconDiskCache {
 
     AppIconDiskCache(Context context) {
         mContext = context;
-        mFile = new File(context.getFilesDir(), FILE_NAME);
+    }
+
+    private synchronized File file() {
+        if (mFile == null) {
+            mFile = new File(mContext.getFilesDir(), FILE_NAME);
+        }
+        return mFile;
     }
 
     // =========================================================================================
@@ -278,7 +285,7 @@ final class AppIconDiskCache {
         mLocale = currentLocale();
         long start = System.nanoTime();
         int count = 0;
-        try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(mFile)))) {
+        try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file())))) {
             if (in.readInt() != MAGIC || in.readInt() != FORMAT) {
                 return;
             }
@@ -312,7 +319,7 @@ final class AppIconDiskCache {
                 mDirty = true;
             }
         } catch (IOException | RuntimeException e) {
-            if (mFile.exists()) {
+            if (file().exists()) {
                 Log.w(TAG, "cache unreadable, starting empty", e);
             }
             mEntries.clear();
@@ -381,7 +388,7 @@ final class AppIconDiskCache {
             }
             rows.add(new Object[] {me.getKey(), apkStamp, title, installTime, w, h, density, png});
         }
-        File tmp = new File(mFile.getPath() + ".tmp");
+        File tmp = new File(file().getPath() + ".tmp");
         try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(tmp)))) {
             out.writeInt(MAGIC);
             out.writeInt(FORMAT);
@@ -414,7 +421,7 @@ final class AppIconDiskCache {
             tmp.delete();
             return;
         }
-        if (!tmp.renameTo(mFile)) {
+        if (!tmp.renameTo(file())) {
             Log.w(TAG, "cache not saved: rename failed");
             //noinspection ResultOfMethodCallIgnored
             tmp.delete();
