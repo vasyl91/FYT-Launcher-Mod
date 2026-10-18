@@ -17,6 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RemoteViews;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 import androidx.appcompat.view.ContextThemeWrapper;
 
 import com.android.launcher66.DragLayer.TouchCompleteListener;
@@ -43,8 +46,26 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
      */
     private final PointF mTranslationForCentering = new PointF(0, 0);
 
+    /**
+     * Where the widgets' RemoteViews are inflated and their actions prepared: off the main thread,
+     * which otherwise loaded their images itself (setImageURI reads the app's file or provider;
+     * StrictMode caught it on every widget update). The content goes in on the main thread
+     * afterwards, see setExecutor().
+     */
+    private static final Executor APPLY_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "WidgetApply");
+        t.setDaemon(true);
+        return t;
+    });
+
     public LauncherAppWidgetHostView(Context context, Launcher launcher) {
         super(context);
+        // The task queues the content for the main thread as it ends: a fit posted after it runs
+        // on the new content (updateAppWidget() returns before it is there).
+        setExecutor(task -> APPLY_EXECUTOR.execute(() -> {
+            task.run();
+            post(this::requestFit);
+        }));
         mContext = context;
         mLauncher = launcher;
         mLongPressHelper = new CheckLongPressHelper(this);
@@ -109,7 +130,8 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
         // Store the orientation in which the widget was inflated
         mPreviousOrientation = mContext.getResources().getConfiguration().orientation;
         super.updateAppWidget(remoteViews);
-        // New content may take another part of the widget.
+        // New content may take another part of the widget (applied later, see the constructor;
+        // here for what is applied at once: the default and the error view).
         requestFit();
     }
 
