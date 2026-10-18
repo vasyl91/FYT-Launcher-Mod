@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -2095,8 +2096,10 @@ public final class MediaFavoriteController {
 
     /**
      * YT Music's session gives no video id for a song (only a music video's thumbnail has one),
-     * but the like button among its custom actions says the state: "Like", then "Undo like"
-     * once liked (capture 18-10-2026 17:42:42). Null for another player, or no such button.
+     * but the like button among its custom actions says the state (capture 18-10-2026 17:42:42).
+     * Its name is in the app's language ("Like" / "Undo like", "Podoba mi się" / "Cofnij
+     * polubienie"), its icon's resource name is not: see likeIconState(). Null for another
+     * player, or no such button.
      */
     private static YouTubeMusicLike youTubeMusicLike(MediaController controller) {
         if (controller == null || !isYouTubeMusicPackage(controller.getPackageName())) {
@@ -2107,24 +2110,97 @@ public final class MediaFavoriteController {
         if (actions == null) {
             return null;
         }
+        String packageName = controller.getPackageName();
         for (PlaybackState.CustomAction action : actions) {
-            String text = ((action.getAction() == null ? "" : action.getAction())
-                    + " " + (action.getName() == null ? "" : action.getName().toString()))
-                    .toLowerCase(Locale.US);
-            if (!text.contains("like") || text.contains("dislike")) {
+            int icon = likeIconState(packageName, action.getIcon());
+            if (icon == LIKE_ICON_OTHER) {
                 continue;
             }
-            boolean liked = text.contains("undo") || text.contains("remove") || text.contains("unlike");
+            boolean liked = icon == LIKE_ICON_LIKED;
+            String source = "icon";
+            if (icon == LIKE_ICON_UNKNOWN) {
+                // The icon not looked up yet (or its name says nothing): the English names
+                String text = ((action.getAction() == null ? "" : action.getAction())
+                        + " " + (action.getName() == null ? "" : action.getName().toString()))
+                        .toLowerCase(Locale.US);
+                if (!text.contains("like") || text.contains("dislike")) {
+                    continue;
+                }
+                liked = text.contains("undo") || text.contains("remove") || text.contains("unlike");
+                source = "name";
+            }
             String reading = action.getAction() + "|" + action.getName() + "|" + liked;
             if (!reading.equals(lastYouTubeMusicLike)) {
                 lastYouTubeMusicLike = reading;
                 Log.i(TAG, "YT Music like button: " + action.getAction() + " \"" + action.getName()
-                        + "\" -> " + (liked ? "liked" : "not liked"));
+                        + "\" icon " + iconEntryNames.getOrDefault(packageName + ":" + action.getIcon(), "?")
+                                .replace(LOOKING_UP, "?")
+                        + " (by " + source + ") -> " + (liked ? "liked" : "not liked"));
             }
             return new YouTubeMusicLike(action, liked);
         }
         return null;
     }
+
+    /** What likeIconState() tells of an icon. */
+    private static final int LIKE_ICON_UNKNOWN = 0;
+    private static final int LIKE_ICON_OTHER = 1; // thumb down, shuffle, repeat
+    private static final int LIKE_ICON_NOT_LIKED = 2;
+    private static final int LIKE_ICON_LIKED = 3;
+
+    /** Resource names of players' icons, by package and id; "" for one that has none. */
+    private static final ConcurrentHashMap<String, String> iconEntryNames = new ConcurrentHashMap<>();
+
+    /**
+     * What the icon's resource name says: LIKED for the filled thumb up, NOT_LIKED for the outline
+     * one, OTHER for any other icon, UNKNOWN while the name is not known (or says nothing). The
+     * names are YouTube's icon set, yt_fill_thumb_up / yt_outline_thumb_up / ..._thumb_down (the
+     * ids of capture 18-10-2026 18:01:44 are in that alphabetical order: 2131232976 < 2131233337
+     * < 2131233341). Looked up once per icon, off the main thread: the player's resources come
+     * from its APK.
+     */
+    private static int likeIconState(String packageName, int icon) {
+        if (icon == 0) {
+            return LIKE_ICON_UNKNOWN;
+        }
+        String key = packageName + ":" + icon;
+        String name = iconEntryNames.get(key);
+        if (name == null) {
+            if (iconEntryNames.putIfAbsent(key, LOOKING_UP) == null) {
+                FAVORITE_CACHE_EXECUTOR.execute(() -> {
+                    String entry = "";
+                    try {
+                        entry = LauncherApplication.sApp.getPackageManager()
+                                .getResourcesForApplication(packageName).getResourceEntryName(icon)
+                                .toLowerCase(Locale.US);
+                    } catch (Exception e) {
+                        // Uninstalled meanwhile, or no such resource: the names decide
+                    }
+                    iconEntryNames.put(key, entry);
+                    if (!entry.isEmpty()) {
+                        refreshWidget(LauncherApplication.sApp);
+                    }
+                });
+            }
+            return LIKE_ICON_UNKNOWN;
+        }
+        if (name.isEmpty() || LOOKING_UP.equals(name)) {
+            return LIKE_ICON_UNKNOWN;
+        }
+        if (name.contains("thumb_down") || name.contains("dislike")) {
+            return LIKE_ICON_OTHER;
+        }
+        if (name.contains("thumb_up") || name.contains("like")) {
+            // Neither: a name of another kind, the button's own names decide
+            if (name.contains("fill")) return LIKE_ICON_LIKED;
+            if (name.contains("outline")) return LIKE_ICON_NOT_LIKED;
+            return LIKE_ICON_UNKNOWN;
+        }
+        // Shuffle, repeat - or a name that says nothing (shortened by the build): the names decide
+        return name.contains("shuffle") || name.contains("repeat") ? LIKE_ICON_OTHER : LIKE_ICON_UNKNOWN;
+    }
+
+    private static final String LOOKING_UP = "\u0000";
 
     private static FavoriteState ratingToFavoriteState(Rating rating) {
         if (rating == null) {
