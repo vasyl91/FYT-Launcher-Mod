@@ -286,9 +286,14 @@ final class LauncherMusicWidget {
                             ivALbumBgTwo.setImageDrawable(drawable);
                         }
                     }
-                } else if (playerIcon(currentPlayerPackage()) != null) {
-                    // No cover: the player's icon, shown and kept under this track's title (the
-                    // path names both, so the next track of the same player is saved again).
+                } else if ("mediaController".equals(mediaSource)
+                        && playerIcon(currentPlayerPackage()) != null) {
+                    // No cover, a third-party session: the player's icon, as for every other app.
+                    // The stock players (com.syu.music, com.syu.media) are deliberately left out so
+                    // they fall through to music_album_def below, not their app icon.
+                    //
+                    // Shown and kept under this track's title (the path names both, so the next
+                    // track of the same player is saved again).
                     lastpath = null;
                     String player = currentPlayerPackage();
                     Bitmap icon = playerIcon(player);

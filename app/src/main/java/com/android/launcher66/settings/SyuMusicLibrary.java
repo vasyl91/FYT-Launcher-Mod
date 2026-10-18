@@ -205,7 +205,13 @@ public final class SyuMusicLibrary {
             if (path.equals(sLoadingPath)) {
                 sLoadingPath = null;
             }
-            if (fav != null && !fav.equals(FAV_BY_PATH.put(path, fav))) {
+            // A press for this path may have started while this read was in flight; its own
+            // write and read-back are authoritative, so this stale row must not overwrite them
+            // (that was the heart's momentary blink back to the old state on a press).
+            if (fav == null || path.equals(sWritingPath)) {
+                return;
+            }
+            if (!fav.equals(FAV_BY_PATH.put(path, fav))) {
                 redraw(app); // first value for the path, or it changed in com.syu.music
             }
         });
