@@ -198,8 +198,10 @@ class NotificationListener : NotificationListenerService() {
     private var verifyIfLive = false
     private val destroyed = AtomicBoolean(false)
 
-    // Sessions belonging to these packages are not third party players
-    private val ownSourcePackages = setOf("com.android.launcher66", "com.syu.radio", "com.syu.music")
+    // Sessions belonging to these packages are not third party players. com.syu.media (the 7870's
+    // stock player) has a session for its media buttons only: its track comes through MusicService.
+    private val ownSourcePackages = setOf("com.android.launcher66", "com.syu.radio", "com.syu.music",
+            MusicService.MEDIA_PKG)
 
     // Edge detection so the arbitration runs once per transition into PLAYING,
     // not on every callback
@@ -1667,12 +1669,15 @@ class NotificationListener : NotificationListenerService() {
 
     private fun pickController(controllers: MutableList<MediaController>?): MediaController? {
         if (controllers == null) return null
-        for (mc in controllers) {
+        // com.syu.media's session has a play state but no metadata, and the stock player shows
+        // through MusicService: picked, its PLAYING would stop the stock time loop (set()).
+        val candidates = controllers.filter { it.packageName != MusicService.MEDIA_PKG }
+        for (mc in candidates) {
             if (mc.playbackState != null && mc.playbackState?.state == PlaybackState.STATE_PLAYING) {
                 return mc
             }
         }
-        return if (controllers.isNotEmpty()) controllers[0] else null
+        return if (candidates.isNotEmpty()) candidates[0] else null
     }
 
     class SessionListener(service: NotificationListener) : MediaSessionManager.OnActiveSessionsChangedListener {

@@ -217,6 +217,9 @@ public class LauncherApplication extends Application {
         steps.mark("connectService");
         DataPack.init(this);
         steps.mark("dataPack");
+        // The 7870's player (com.syu.media) reports nothing to MusicService by itself: follow it
+        // over its binder. Binds on its own thread; on other units the bind just fails.
+        com.fyt.car.MusicService.startSyuMedia(this);
         if (BuildConfig.DEBUG) {
             enableStrictMode();
         }

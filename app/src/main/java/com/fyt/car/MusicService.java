@@ -2,10 +2,18 @@ package com.fyt.car;
 
 import com.android.launcher66.SysCalls;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Parcel;
+import android.os.RemoteException;
 import android.util.Log;
 
 import com.android.launcher66.NotificationListener;
@@ -144,5 +152,375 @@ public class MusicService extends Service {
                 Log.w(TAG, "sendBroadcast(" + latest.getAction() + ") failed", e);
             }
         });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // The 7870's player (com.syu.media)
+    // ---------------------------------------------------------------------------------------------
+
+    /*
+     * com.syu.media, the 7870's stock player, never starts this service: it reports its track to
+     * com.syu.ms only. Its playback service, though, is exported without a permission (an
+     * intent-filter, targetSdk 26) and speaks AIDL com.syu.media.IPlayer, so the launcher binds to
+     * it and fills the same fields as onStartCommand() does for com.syu.music. On a unit without
+     * com.syu.media the bind fails and nothing else happens.
+     *
+     * The protocol, from the decompiled com.syu.media (no AIDL files: the codes are fixed by it):
+     *   IPlayer   8 isPlaying() -> int, 9 getProgress() -> int (ms), 10 getPlayingSong() ->
+     *             MediaSource, 15 registerCallback(ICallback), 16 unregisterCallback(ICallback)
+     *   ICallback 1 onSongChanged(MediaSource), 2 onPlayStatusChanged(int), 3 onPlayModeChanged(int)
+     *   MediaSource: int id, String title, displayName, artist, album, path, folder,
+     *             int duration (ms), byte favorite, int length
+     */
+    public static final String MEDIA_PKG = "com.syu.media";
+    private static final String MEDIA_SERVICE_ACTION = "com.syu.media.music.MusicService";
+
+    /** Starts following com.syu.media, once per process. Any thread. */
+    public static void startSyuMedia(Context context) {
+        SyuMediaClient.start(context.getApplicationContext());
+    }
+
+    /** What com.syu.media reports, read on the client's thread and applied on the main one. */
+    private static final class SyuMediaState {
+        final boolean playing;
+        final long progress;
+        final long duration;
+        final String title;
+        final String artist;
+        final String album;
+        final String path;
+
+        SyuMediaState(boolean playing, long progress, SyuMediaSong song) {
+            this.playing = playing;
+            this.progress = Math.max(progress, 0);
+            this.duration = song != null ? Math.max(song.duration, 0) : 0;
+            this.title = song != null ? song.title : "";
+            this.artist = song != null ? song.artist : "";
+            this.album = song != null ? song.album : "";
+            this.path = song != null ? song.path : "";
+        }
+
+        /** Same track and play state; the position is left out, it moves every second. */
+        boolean sameAs(SyuMediaState o) {
+            return o != null && playing == o.playing && duration == o.duration
+                    && title.equals(o.title) && artist.equals(o.artist)
+                    && album.equals(o.album) && path.equals(o.path);
+        }
+    }
+
+    private static final class SyuMediaSong {
+        String title;
+        String artist;
+        String album;
+        String path;
+        int duration;
+
+        /** Reads a MediaSource written with its "non-null" int in front, as IPlayer sends it. */
+        static SyuMediaSong read(Parcel p) {
+            if (p.readInt() == 0) {
+                return null;
+            }
+            SyuMediaSong s = new SyuMediaSong();
+            p.readInt(); // id
+            String title = p.readString();
+            String displayName = p.readString();
+            // Untagged files: the file name, as com.syu.media shows them.
+            s.title = nonNull(title != null && !title.isEmpty() ? title : displayName);
+            s.artist = nonNull(p.readString());
+            s.album = nonNull(p.readString());
+            s.path = nonNull(p.readString());
+            p.readString(); // folder
+            s.duration = p.readInt();
+            // favorite and length follow, not needed
+            return s;
+        }
+    }
+
+    /**
+     * Same as onStartCommand() with sendData()/sendInternalData(), for an update that does not
+     * come as an intent to a service instance. Main thread, as there.
+     */
+    private static void applySyuMedia(Context app, SyuMediaState s) {
+        TOTALMINUTES = s.duration;
+        CURMINUTES = s.progress;
+        music_name = s.title;
+        author_name = s.artist;
+        music_path = s.path;
+        state = s.playing;
+        album = s.album;
+
+        boolean hasTitle = !music_name.isEmpty() && !music_name.contains("Unknown");
+        if (hasTitle) {
+            Intent intent = new Intent(TITLES_RECEIVER);
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(PLAY_STATE, state);
+            bundle.putString(TITLE, music_name);
+            bundle.putString(PLAY_ARTIST, author_name);
+            bundle.putString(PLAY_ALBUM, album);
+            bundle.putString(PLAY_PATH, music_path);
+            bundle.putString(PLAY_SOURCE, SOURCE);
+            bundle.putLong(PLAY_TOTALMINUTES, TOTALMINUTES);
+            bundle.putLong(PLAY_CURMINUTES, CURMINUTES);
+            intent.putExtras(bundle);
+            postFrom(app, sPendingExternal, intent);
+        }
+
+        Helpers helpers = new Helpers();
+        if (state && hasTitle && helpers.isFytMusicAllowed()) {
+            NotificationListener.onFytUpdate(state, music_path, SOURCE, CURMINUTES);
+        }
+    }
+
+    /** post() without a service instance; shares its slot, so the newest intent still wins. */
+    private static void postFrom(final Context app, final AtomicReference<Intent> slot, Intent intent) {
+        if (slot.getAndSet(intent) != null) {
+            return;
+        }
+        BROADCASTER.execute(() -> {
+            Intent latest = slot.getAndSet(null);
+            if (latest == null) {
+                return;
+            }
+            try {
+                SysCalls.sendBroadcast(app, latest);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "sendBroadcast(" + latest.getAction() + ") failed", e);
+            }
+        });
+    }
+
+    /**
+     * The binding to com.syu.media's MusicService. Without BIND_AUTO_CREATE: the launcher only
+     * listens, it does not bring the player up (created, it resumes the last track by itself). The
+     * connection comes as soon as the player's service runs, and again after each restart.
+     *
+     * Binder calls go out on "SyuMediaClient", never the main thread; the fields are written on the
+     * main thread, like onStartCommand() writes them.
+     */
+    private static final class SyuMediaClient implements ServiceConnection {
+        private static final String IPLAYER = "com.syu.media.IPlayer";
+        private static final String ICALLBACK = "com.syu.media.ICallback";
+        private static final int TX_IS_PLAYING = 8;
+        private static final int TX_GET_PROGRESS = 9;
+        private static final int TX_GET_PLAYING_SONG = 10;
+        private static final int TX_REGISTER_CALLBACK = 15;
+        private static final int CB_SONG_CHANGED = 1;
+        private static final int CB_PLAY_STATUS_CHANGED = 2;
+        private static final int CB_PLAY_MODE_CHANGED = 3;
+
+        /** com.syu.music sent an update every second while playing; this keeps that pace. */
+        private static final long TICK_MS = 1000;
+        private static final long REBIND_MS = 5000;
+
+        private static SyuMediaClient sInstance;
+
+        private final Context app;
+        private final Handler worker;
+        private final Handler main = new Handler(Looper.getMainLooper());
+        private final Binder callback = new CallbackStub();
+        private final Runnable tick = this::refresh;
+        // worker thread only
+        private IBinder player;
+        private SyuMediaState last;
+
+        static synchronized void start(Context app) {
+            if (sInstance != null) {
+                return;
+            }
+            sInstance = new SyuMediaClient(app);
+            sInstance.worker.post(sInstance::bind);
+        }
+
+        private SyuMediaClient(Context app) {
+            this.app = app;
+            HandlerThread thread = new HandlerThread("SyuMediaClient");
+            thread.start();
+            worker = new Handler(thread.getLooper());
+        }
+
+        private void bind() {
+            Intent intent = new Intent(MEDIA_SERVICE_ACTION).setPackage(MEDIA_PKG);
+            boolean bound;
+            try {
+                bound = app.bindService(intent, this, 0);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "bindService(" + MEDIA_PKG + ") failed", e);
+                bound = false;
+            }
+            if (!bound) {
+                // Not a 7870 (no com.syu.media): nothing to follow.
+                Log.d(TAG, MEDIA_PKG + " not available");
+                try {
+                    app.unbindService(this);
+                } catch (RuntimeException ignored) {
+                }
+            }
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            worker.post(() -> {
+                player = service;
+                Log.d(TAG, MEDIA_PKG + " connected");
+                Parcel reply = callPlayer(TX_REGISTER_CALLBACK, callback);
+                if (reply != null) {
+                    reply.recycle();
+                }
+                refresh();
+            });
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // The player's service stopped or its process died; the binding stays and connects
+            // again when it is back. Until then it is not playing.
+            worker.post(this::dropPlayer);
+        }
+
+        @Override
+        public void onBindingDied(ComponentName name) {
+            // com.syu.media was updated or reinstalled: this binding is over, a new one is needed.
+            worker.post(() -> {
+                dropPlayer();
+                try {
+                    app.unbindService(this);
+                } catch (RuntimeException ignored) {
+                }
+                worker.postDelayed(this::bind, REBIND_MS);
+            });
+        }
+
+        /** Worker thread. */
+        private void dropPlayer() {
+            worker.removeCallbacks(tick);
+            if (player == null) {
+                return;
+            }
+            player = null;
+            Log.d(TAG, MEDIA_PKG + " disconnected");
+            if (last != null && last.playing) {
+                // Keep the track, only the play state changes.
+                publish(new SyuMediaState(false, last.progress, songOf(last)));
+            }
+        }
+
+        /** Reads the player's state and publishes it. Worker thread. */
+        private void refresh() {
+            worker.removeCallbacks(tick);
+            if (player == null) {
+                return;
+            }
+            Parcel reply = callPlayer(TX_GET_PLAYING_SONG, null);
+            SyuMediaSong song = null;
+            if (reply != null) {
+                try {
+                    song = SyuMediaSong.read(reply);
+                } catch (RuntimeException e) {
+                    Log.w(TAG, MEDIA_PKG + ": unreadable song", e);
+                } finally {
+                    reply.recycle();
+                }
+            }
+            boolean playing = readInt(TX_IS_PLAYING, 0) != 0;
+            long progress = readInt(TX_GET_PROGRESS, 0);
+            if (player == null) {
+                return; // died during the calls
+            }
+            SyuMediaState s = new SyuMediaState(playing, progress, song);
+            // While playing every second, like com.syu.music; otherwise only what changed.
+            if (playing || !s.sameAs(last)) {
+                publish(s);
+            }
+            if (playing) {
+                worker.postDelayed(tick, TICK_MS);
+            }
+        }
+
+        private void publish(SyuMediaState s) {
+            last = s;
+            main.post(() -> applySyuMedia(app, s));
+        }
+
+        private static SyuMediaSong songOf(SyuMediaState s) {
+            SyuMediaSong song = new SyuMediaSong();
+            song.title = s.title;
+            song.artist = s.artist;
+            song.album = s.album;
+            song.path = s.path;
+            song.duration = (int) s.duration;
+            return song;
+        }
+
+        private int readInt(int code, int fallback) {
+            Parcel reply = callPlayer(code, null);
+            if (reply == null) {
+                return fallback;
+            }
+            try {
+                return reply.readInt();
+            } finally {
+                reply.recycle();
+            }
+        }
+
+        /**
+         * One IPlayer call; the reply past its exception header, or null when the call failed (the
+         * caller recycles it). Worker thread.
+         */
+        private Parcel callPlayer(int code, IBinder arg) {
+            IBinder p = player;
+            if (p == null) {
+                return null;
+            }
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(IPLAYER);
+                if (arg != null) {
+                    data.writeStrongBinder(arg);
+                }
+                p.transact(code, data, reply, 0);
+                reply.readException();
+                return reply;
+            } catch (RemoteException | RuntimeException e) {
+                // DeadObjectException: onServiceDisconnected() follows. A RuntimeException is
+                // thrown by the player itself (getPlayingSong() with a song without an id).
+                Log.w(TAG, MEDIA_PKG + " call " + code + " failed: " + e);
+                reply.recycle();
+                return null;
+            } finally {
+                data.recycle();
+            }
+        }
+
+        /** ICallback, implemented by hand like IPlayer. Binder threads: hands over to the worker. */
+        private final class CallbackStub extends Binder {
+            CallbackStub() {
+                attachInterface(null, ICALLBACK);
+            }
+
+            @Override
+            protected boolean onTransact(int code, Parcel data, Parcel reply, int flags)
+                    throws RemoteException {
+                if (code == INTERFACE_TRANSACTION) {
+                    reply.writeString(ICALLBACK);
+                    return true;
+                }
+                if (code != CB_SONG_CHANGED && code != CB_PLAY_STATUS_CHANGED
+                        && code != CB_PLAY_MODE_CHANGED) {
+                    return super.onTransact(code, data, reply, flags);
+                }
+                data.enforceInterface(ICALLBACK);
+                if (code != CB_PLAY_MODE_CHANGED) {
+                    // The arguments are not needed: refresh() reads song, state and position
+                    // together, so they always belong to each other.
+                    worker.post(SyuMediaClient.this::refresh);
+                }
+                if (reply != null) {
+                    reply.writeNoException();
+                }
+                return true;
+            }
+        }
     }
 }
