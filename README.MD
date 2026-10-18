@@ -2,7 +2,13 @@
 
 **Launcher Mod has been tested on Android 10 with a 2000x1200 resolution, as this is the only FYT device I own.**
 
-It should work with all resolutions on Android 8 through 16, provided you install it as a privileged/system app. Depending on the FYT brand, Android 12+ might not allow you to install the app with `android:sharedUserId="android.uid.system"` without root access or the proper platform keystore. This is a fundamental security restriction that cannot be bypassed. In that case, you can use the non-privileged standard version (see [Versions and updates](#versions-and-updates)): the PiPs work in it as windows through root with the [FYT VDHost](vdhost/README.md) Magisk module, or through Shizuku, and pinned PiP works on FYT devices as in the FYT version. Both versions are the same app (`com.android.launcher66`) signed with different keys, so the FYT version has to be uninstalled before installing the standard one (this wipes the launcher's data). The standard version was tested on a phone running Android 16.
+It should work with all resolutions on Android 8 through 16 (see [Supported devices](#supported-devices)), as the FYT version (a system app) on FYT units, or as the standard version (a user app) on any device.
+
+The FYT version declares `android:sharedUserId="android.uid.system"`, so it runs as the system itself (uid 1000). Android accepts that only from an APK signed with the same platform key as the firmware, and this one is signed with the public AOSP test key, which FYT firmware is built with. A firmware signed with its own platform key refuses it (`INSTALL_FAILED_SHARED_USER_INCOMPATIBLE`), whatever its Android version and whether it is rooted or not: the check is the signature, not a permission root could grant. On such a unit, and on any other device, use the standard version (see [Versions and updates](#versions-and-updates)): it gets the privileges it needs from root through the [FYT VDHost](vdhost/README.md) Magisk module, or from Shizuku without root. The PiPs work in it as windows, and pinned PiP works on FYT units as in the FYT version.
+
+The check is the key, not the brand: some custom ROMs (unofficial builds in particular) are made with the same public AOSP test key, and the FYT version installs there as a system app too. It then works as on an FYT unit wherever the system is all it needs (the PiPs, the Baseline Profile, the status bar swipe area, the boot autostart, the full logcat), while what only an FYT unit has (pinned PiP, radio, CAN bus, FYT's music and navigation sources, skins) stays off: the launcher sees it is not on one. A ROM signed with its own platform key would need the launcher built and signed with that key, which only the ROM's maintainer has. **No such build exists yet**: on these ROMs use the standard version.
+
+Both versions are the same app (`com.android.launcher66`), but Android does not let an update change the shared user id: the FYT version has to be uninstalled before installing the standard one, and the other way round (this wipes the launcher's data).
 
 IMPORTANT: Note that some FYT devices do not support pinned PiP on the main screen. You can still use the launcher, but you'll have to turn off PiP in the launcher's settings (otherwise Google Maps will pop up every time you try to open the home page — if this happens, wipe the launcher's data or reinstall it).
 
@@ -38,7 +44,24 @@ For the first installation, download `installer.zip`, unpack it onto a FAT32-for
 
 If installation doesn't start automatically, please try other USB ports. If it still doesn't start regardless of the USB port, it means either your device is not an FYT device, or it is an FYT device but runs Android 12 or higher (some brands don't allow installing apps via scripts from a USB drive).
 
-Following this method is important because it installs the launcher as a privileged/system app, which is essential for it to work properly. 
+This method installs the FYT version as a privileged system app, in place of the stock launcher: install it this way the first time. Where the script cannot run, or the firmware refuses the FYT version (see above), install the standard version like any other APK and give it root with the [FYT VDHost](vdhost/README.md) Magisk module or start Shizuku.
+
+<a id="supported-devices"></a>**Supported devices:**
+
+| Android | Installed as | Privileges from | Multiple PiPs | Pinned PiP | Tested |
+|---|---|---|---|---|---|
+| 8–9 | FYT version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ➖ |
+| 10 | FYT version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ✅ FYT unit, 2000x1200 |
+| 11–16 | FYT version | the system (uid 1000) | ✅ the launcher's own virtual displays | ✅ | ➖ |
+| 8–10 | standard version | root ([FYT VDHost](vdhost/README.md) module) or Shizuku | ✅ virtual displays through the module or Shizuku | ✅ on FYT units | ➖ |
+| 11–16 | standard version | root ([FYT VDHost](vdhost/README.md) module) | ✅ virtual displays through the module | ✅ on FYT units | ✅ Android 14, Xiaomi Redmi Note 8T |
+| 11–16 | standard version | Shizuku | ✅ virtual displays through Shizuku ¹ | ✅ on FYT units | ✅ Android 16, Samsung Galaxy A55 |
+| 8–16 | standard version | none | ❌ | ✅ on FYT units | ➖ |
+| 8–16 | FYT version on a non-FYT ROM made with the AOSP test key | the system (uid 1000) | ✅ as the FYT version on the same Android | ❌ FYT units only | ➖ |
+
+¹ Apps that protect their content (`FLAG_SECURE`: video streaming, banking) show black in a PiP, and the PiPs come up only once Shizuku has started (about half a minute after a boot, longer if it waits for Wi-Fi).
+
+Without system privileges, root or Shizuku the launcher itself works everywhere; what needs them (the multiple PiPs, the status bar swipe area, the boot autostart, the full logcat) is hidden or does nothing.
 
 ---
 
@@ -48,7 +71,7 @@ Most FYT ROMs offer two ways of displaying apps on the launcher's screen. The mo
 The only reliable way I've found to prevent Google Maps from switching to its minimal UI requires root, LSPosed, and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/latest). It successfully forces the app to keep its full UI inside FYT's Picture-in-Picture mode (remember to select Google Maps in the LSPosed "Enable module" section).
 Check out this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always make a full backup (AllAppUpdate.bin, config.txt, etc.) before flashing anything!
 
-The second method, related to the modified Android ActivityView class, displays apps in windowed mode as they normally appear. This doesn't affect the layout and doesn't require root. The multiple-PiP feature uses this method.
+The second method displays apps in windowed mode as they normally appear: through Android's hidden ActivityView class (FYT version on Android 8–10; FYT did not modify it), otherwise through the launcher's own virtual displays. This doesn't affect the layout and needs no root in the FYT version. The multiple-PiP feature uses this method.
 
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
@@ -113,6 +136,39 @@ The second method, related to the modified Android ActivityView class, displays 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_inapp_stat.gif)
 
 </details>
+
+---
+
+## Baseline Profiles
+
+A Baseline Profile lists the code the launcher runs when it starts and in everyday use (pages, widgets, bars, PiPs), so that Android compiles it ahead of time instead of interpreting it at every start. It is generated with the [`:baselineprofile`](baselineProfile/README.md) module and ships inside every release APK. It is one file for both versions, which run the same code.
+
+Android compiles it by itself only during idle maintenance (screen off, charging, long inactivity), which a head unit in a car practically never reaches. The launcher therefore does it itself, in the background and without restarting:
+
+1. **After installing:** 90 s after the first start of a new APK, the profile is applied and the launcher compiled with it (`speed-profile`). The compiled code is used from the next launcher start.
+2. **Usage refreshes:** meanwhile Android records the code your own setup uses in the same profile. The launcher is compiled again with it after 3, 14 and 30 days, each time once it has had at least 5, 10 and 10 sessions (a device restart, a wake-up from sleep, or a launcher restart at least 3 minutes after the previous session).
+
+Its state and two resets (the refresh schedule only, or everything back to the profile in the APK) are in the launcher's settings.
+
+| Installed as | Android | After installing | Usage refreshes | Reset | Compiled by |
+|---|---|---|---|---|---|
+| FYT version (system app) | 8–16 | ✅ | ✅ | ✅ | Android's package manager, asked by the launcher itself (uid 1000) |
+| Standard version + [FYT VDHost](vdhost/README.md) module (root) | 8–16 | ✅ | ✅ | ✅ | the module's daemon (uid 1000) |
+| Standard version + Shizuku | 8–16 | ✅ | ✅ | ✅ ¹ | Shizuku's service, as `adb shell cmd package compile -m speed-profile -f` would |
+| Standard version, no root, no Shizuku | 8–16 | ❌ ² | ❌ ² | ❌ | – |
+| Debug build (any version) | 8–16 | ❌ ³ | ❌ ³ | ❌ | – |
+
+¹ On Android 8–13 Shizuku may not clear the recorded data: the profile from the APK is applied again on top of it.<br>
+² Android's own idle maintenance applies the profile one day.<br>
+³ Debug builds carry no Baseline Profile.
+
+**Generating a new profile** (for developers, after larger code changes; see [baselineProfile/README.md](baselineProfile/README.md)) takes one test device, an FYT unit (FYT version) or any other device (standard version), connected over ADB:
+
+| Android on the test device | Generating a profile |
+|---|---|
+| 8 | ❌ Macrobenchmark needs Android 9+ |
+| 9–12 | ✅ with root (Magisk, root allowed for Shell) |
+| 13–16 | ✅ without root |
 
 ---
 
