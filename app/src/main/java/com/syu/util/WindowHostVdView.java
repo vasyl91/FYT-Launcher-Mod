@@ -487,6 +487,15 @@ public class WindowHostVdView extends ViewGroup {
         }
     }
 
+    /**
+     * No display only because the VD host (root or Shizuku) has not attached yet: the panes come
+     * up with the launcher, Shizuku's host can attach a second or more later (after an install from
+     * Android Studio, or a long sleep). The display, and onReady(), come when it does.
+     */
+    boolean isAwaitingHost() {
+        return mOpened && mVirtualDisplay == null && WindowHostVdClient.get(getContext()) == null;
+    }
+
     private void onHostChanged(boolean available) {
         if (!mOpened) return;
         if (available) {

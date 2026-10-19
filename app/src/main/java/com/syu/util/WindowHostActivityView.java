@@ -297,6 +297,11 @@ public class WindowHostActivityView {
     /** A WindowHostVdView (Android 11+), not the framework's ActivityView. */
     static boolean isHosted(Object av) { return av instanceof WindowHostVdView; }
 
+    /** See WindowHostVdView.isAwaitingHost(); false for the framework's ActivityView. */
+    static boolean isAwaitingVdHost(Object av) {
+        return av instanceof WindowHostVdView && ((WindowHostVdView) av).isAwaitingHost();
+    }
+
     static void release(Object av) {
         if (av == null) return;
         final int id = System.identityHashCode(av);

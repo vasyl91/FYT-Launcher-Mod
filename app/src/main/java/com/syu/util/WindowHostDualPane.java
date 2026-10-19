@@ -78,6 +78,9 @@ public class WindowHostDualPane {
      * resolves on its first tick. A 4 ms step meant 150 posts per second per pane for nothing.
      */
     private static final int  START_WAIT_STEP_MS    = 16;
+    /** For a VD host still to attach (Shizuku, after the launcher's own start). */
+    private static final int  HOST_WAIT_TIMEOUT_MS  = 15000;
+    private static final int  HOST_WAIT_STEP_MS     = 100;
 
     private static final int  GEOMETRY_RETRIES      = 30;
 
@@ -1540,9 +1543,19 @@ public class WindowHostDualPane {
     }
 
     private void startWhenReady(Side side, String pkg, int expectedGen) {
-        waitUntil(() -> readyOf(side).get() && attachedOf(side), START_WAIT_TIMEOUT_MS, START_WAIT_STEP_MS,
-                () -> { if (gen == expectedGen) startNow(side, pkg, expectedGen); },
-                () -> { if (gen == expectedGen) startNow(side, pkg, expectedGen); });
+        BooleanSupplier ready = () -> readyOf(side).get() && attachedOf(side);
+        Runnable start = () -> { if (gen == expectedGen) startNow(side, pkg, expectedGen); };
+        waitUntil(ready, START_WAIT_TIMEOUT_MS, START_WAIT_STEP_MS, start, () -> {
+            if (gen != expectedGen) return;
+            if (WindowHostActivityView.isAwaitingVdHost(avOf(side))) {
+                // Started without a display, every attempt failed and nothing tried again once the
+                // host came, 0.7 s later: the dual pane stayed empty (capture 19-10-2026 08:03:14)
+                Log.i(TAG, side + ": VD host not attached yet, " + pkg + " starts when it is");
+                waitUntil(ready, HOST_WAIT_TIMEOUT_MS, HOST_WAIT_STEP_MS, start, start);
+                return;
+            }
+            start.run();
+        });
     }
 
     private void startNow(Side side, String pkg, int expectedGen) {
