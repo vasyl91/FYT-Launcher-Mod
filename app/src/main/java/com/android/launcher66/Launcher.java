@@ -140,6 +140,8 @@ import com.fyt.car.IUiRefresher;
 import com.fyt.car.LauncherNotify;
 import com.fyt.car.MapConfig;
 import com.fyt.car.MusicService;
+import com.fyt.car.StockSources;
+import com.fyt.car.StockTitles;
 import com.fyt.skin.SkinUtils;
 import com.fyt.widget.RadioRuler;
 import com.fyt.widget.TurntableView3;
@@ -4553,6 +4555,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     if (!(mMusicWidget.tvMusicName.getText().toString()).equals(MusicService.music_name)) {
                         mMusicWidget.tvMusicName.setText(MusicService.music_name);                        
                     }
+                } else if (StockSources.isSyuMediaUnit()) {
+                    // A stream has no file name; a name without a dot is the whole name
+                    mMusicWidget.musictitle = StockTitles.displayTitle(true, MusicService.music_path, MusicService.music_name);
+                    if (!(mMusicWidget.tvMusicName.getText().toString()).equals(mMusicWidget.musictitle)) {
+                        mMusicWidget.tvMusicName.setText(mMusicWidget.musictitle);
+                    }
                 } else { // from file title
                     File file = new File(MusicService.music_path);
                     String filename = file.getName();
@@ -4572,6 +4580,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (fytData) { // from metadata
                     if (!(mMusicWidget.tvMusicNameTwo.getText().toString()).equals(MusicService.music_name)) {
                         mMusicWidget.tvMusicNameTwo.setText(MusicService.music_name);                        
+                    }
+                } else if (StockSources.isSyuMediaUnit()) {
+                    // A stream has no file name; a name without a dot is the whole name
+                    mMusicWidget.musictitle = StockTitles.displayTitle(true, MusicService.music_path, MusicService.music_name);
+                    if (!(mMusicWidget.tvMusicNameTwo.getText().toString()).equals(mMusicWidget.musictitle)) {
+                        mMusicWidget.tvMusicNameTwo.setText(mMusicWidget.musictitle);
                     }
                 } else { // from file title
                     File file = new File(MusicService.music_path);
@@ -4829,7 +4843,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetPrev");
                 intent.setPackage("com.syu.bt");
-                ServiceIntentGate.startIfAvailable(this, intent, "btav prev");
+                if (!ServiceIntentGate.startIfAvailable(this, intent, "btav prev")) {
+                    // 7870: no com.syu.bt; com.syu.media plays BT audio, controlled through com.syu.ms
+                    StockSources.controlBt(MediaTransportController.ACTION_PREVIOUS);
+                }
             });
         }
         if (mBtavNextButton != null) {
@@ -4837,7 +4854,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetNext");
                 intent.setPackage("com.syu.bt");
-                ServiceIntentGate.startIfAvailable(this, intent, "btav next");
+                if (!ServiceIntentGate.startIfAvailable(this, intent, "btav next")) {
+                    StockSources.controlBt(MediaTransportController.ACTION_NEXT);
+                }
             });
         }
         if (mBtavPlayPauseButton != null) {
@@ -4845,21 +4864,27 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetPlayPause");
                 intent.setPackage("com.syu.bt");
-                ServiceIntentGate.startIfAvailable(this, intent, "btav playpause");
+                if (!ServiceIntentGate.startIfAvailable(this, intent, "btav playpause")) {
+                    StockSources.controlBt(MediaTransportController.ACTION_PLAY_PAUSE);
+                }
             });
         }
         if (mBtavIcon != null) {
-            mBtavIcon.setOnClickListener(v -> {
-                Intent intent = new Intent();
-                intent.setComponent(new ComponentName("com.syu.bt", "com.syu.bt.act.ActBtAvStart"));
-                this.startActivity(intent);
-            });
+            mBtavIcon.setOnClickListener(v -> openBtAvPage());
         }
         if (mRadioIcon != null) {
-            mRadioIcon.setOnClickListener(v -> this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.radio"), "bt"));
+            mRadioIcon.setOnClickListener(v -> {
+                if (!openMediaPageInPlaceOf("com.syu.radio", v, "bt")) {
+                    this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.radio"), "bt");
+                }
+            });
         }
         if (mMusicIcon != null) {
-            mMusicIcon.setOnClickListener(v -> this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.music"), "bt"));
+            mMusicIcon.setOnClickListener(v -> {
+                if (!openMediaPageInPlaceOf("com.syu.music", v, "bt")) {
+                    this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.music"), "bt");
+                }
+            });
         }
         if (mNaviView != null) {
             mNaviView.setOnClickListener(v -> {
@@ -6312,6 +6337,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             throw new RuntimeException(e);
                         }
                         startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "bt");
+                    } else {
+                        // 7870: the radio is a page of com.syu.media
+                        openMediaPage(v, "com.syu.radio", "bt");
                     }
                 }
                 WindowUtil.removePip();
@@ -6336,6 +6364,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             throw new RuntimeException(e);
                         }
                         startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "music");
+                    } else {
+                        // 7870: the radio is a page of com.syu.media
+                        openMediaPage(v, "com.syu.radio", "music");
                     }
                 }
                 WindowUtil.removePip();
@@ -6362,6 +6393,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.WS_MusicIV)) {
+                if (openMediaPageInPlaceOf("com.syu.music", v, "music")) {
+                    return;
+                }
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.music"), "music");
                 return;
             }
@@ -6455,9 +6489,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.BTAV)) {
-                Intent intent2 = new Intent();
-                intent2.setComponent(new ComponentName("com.syu.bt", "com.syu.bt.act.ActBtAvStart"));
-                startActivity(intent2);
+                openBtAvPage();
                 return;
             }
             if (v == getCustomView(Config.ECAR)) {
@@ -6769,6 +6801,48 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         CarStates.getCar(getApplicationContext()).mTools.sendInt(0, 24, 0);
+    }
+
+    /**
+     * A page of com.syu.media, the 7870's stock radio / music / BT player, which has no app of
+     * com.syu.radio or com.syu.music.
+     *
+     * @return false off a 7870
+     */
+    private boolean openMediaPage(View v, String action, String tag) {
+        Intent page = StockSources.mediaPage(action);
+        if (page == null) {
+            return false;
+        }
+        Log.d(TAG, "Opening the " + action + " page of " + MusicService.MEDIA_PKG);
+        startActivitySafely(v, page, tag);
+        return true;
+    }
+
+    /** openMediaPage() for the app of a 7862 that is not installed: false where it is (or off a 7870). */
+    private boolean openMediaPageInPlaceOf(String packageName, View v, String tag) {
+        return StockSources.isSyuMediaUnit() && !helpers.isPackageInstalled(packageName)
+                && openMediaPage(v, packageName, tag);
+    }
+
+    /**
+     * The BT audio page: com.syu.bt's where it is, a page of com.syu.media on a 7870. Where there
+     * is neither nothing happens (it used to be an ActivityNotFoundException).
+     */
+    private void openBtAvPage() {
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName("com.syu.bt", "com.syu.bt.act.ActBtAvStart"));
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+            return;
+        }
+        Intent page = StockSources.btPage();
+        if (page != null) {
+            Log.d(TAG, "Opening the BT music page of " + MusicService.MEDIA_PKG);
+            startActivitySafely(null, page, "bt");
+            return;
+        }
+        Log.w(TAG, "No BT audio page here (no com.syu.bt, no com.syu.media)");
     }
 
     public boolean startActivitySafely(final View v, final Intent intent, final Object tag) {

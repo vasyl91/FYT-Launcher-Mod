@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 import com.fyt.car.MusicService;
+import com.fyt.car.StockSources;
 import com.syu.widget.WidgetProvider;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public final class MediaTransportController {
     private static final String TAG = "MediaTransport";
     private static final String STOCK_MUSIC_PACKAGE = "com.syu.music";
     private static final String STOCK_MUSIC_ACTIVITY = "com.syu.music.MAct";
+    /** The radio app of a 7862, the target of the widget's buttons while the radio is shown. */
+    private static final String STOCK_RADIO_PACKAGE = "com.syu.radio";
 
     private MediaTransportController() {
     }
@@ -112,6 +115,16 @@ public final class MediaTransportController {
             return null;
         }
 
+        // The page of the stock source shown (a 7870's com.syu.media page, the radio app of a
+        // 7862 while the radio is shown); com.syu.music's, and a session's app, as before
+        if (LauncherApplication.isFytDevice()
+                && (preferredPackage == null || isStockPackage(preferredPackage))) {
+            Intent page = StockSources.pageIntent(context);
+            if (page != null) {
+                return page;
+            }
+        }
+
         MediaController controller = getTargetController(context, preferredPackage);
         if (controller != null) {
             Intent launchIntent = getPackageLaunchIntent(context, controller.getPackageName());
@@ -157,7 +170,10 @@ public final class MediaTransportController {
 
         MediaController fallback = null;
         for (MediaController controller : controllers) {
-            if (controller == null || STOCK_MUSIC_PACKAGE.equals(controller.getPackageName())) {
+            // com.syu.media (7870) has a session for its media buttons only: it ignores
+            // TransportControls, and its players are driven over their binder
+            if (controller == null || STOCK_MUSIC_PACKAGE.equals(controller.getPackageName())
+                    || MusicService.MEDIA_PKG.equals(controller.getPackageName())) {
                 continue;
             }
             PlaybackState state = safePlaybackState(controller);
@@ -249,14 +265,20 @@ public final class MediaTransportController {
         if (context == null || !LauncherApplication.isFytDevice()) {
             return false;
         }
-        if (MusicService.isSyuMediaSource()) {
+        // The radio (on the 7870 BT too) has the widget: its commands go to com.syu.ms
+        if (StockSources.shownOverlay() != null) {
+            return StockSources.control(action);
+        }
+        // On the 7870 there is no com.syu.music to send intents to, whether or not a track is known
+        if (MusicService.isSyuMediaSource() || StockSources.isSyuMediaUnit()) {
             return dispatchToSyuMedia(action);
         }
         return dispatchToStockMusic(context, action);
     }
 
     private static boolean isStockPackage(String packageName) {
-        return STOCK_MUSIC_PACKAGE.equals(packageName) || MusicService.MEDIA_PKG.equals(packageName);
+        return STOCK_MUSIC_PACKAGE.equals(packageName) || MusicService.MEDIA_PKG.equals(packageName)
+                || STOCK_RADIO_PACKAGE.equals(packageName);
     }
 
     /**

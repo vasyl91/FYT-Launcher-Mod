@@ -31,6 +31,8 @@ import com.android.recycler.AppListBean;
 import com.fyt.car.IUiRefresher;
 import com.fyt.car.LauncherNotify;
 import com.fyt.car.MusicService;
+import com.fyt.car.StockSources;
+import com.fyt.car.StockTitles;
 import com.fyt.skin.SkinUtils;
 import com.syu.car.CarStates;
 import com.syu.util.Id3Info;
@@ -375,13 +377,16 @@ final class LauncherMusicWidget {
                     if (curProgress == 0 && totalProgress == 0) {
                         if (musicProgress != null) {
                             musicProgress.setProgress(0);
-                        }  
+                        }
+                        // The radio's second line says where it is tuned (FM 101.50 MHz) rather than "Live"
+                        String liveLine = StockSources.radioShown() && artist != null && !artist.trim().isEmpty()
+                                ? artist : "Live";
                         if (tvAritst != null) {
-                            tvAritst.setText("Live");
-                        }    
+                            tvAritst.setText(liveLine);
+                        }
                         if (tvAritstTwo != null) {
-                            tvAritstTwo.setText("Live");
-                        }                   
+                            tvAritstTwo.setText(liveLine);
+                        }
                     }
                     String cur = mLauncher.timeParse(curProgress);
                     String total = mLauncher.timeParse(totalProgress);
@@ -396,11 +401,14 @@ final class LauncherMusicWidget {
                 }
                 return;
             }
-            if (LauncherApplication.isFytDevice() && CarStates.mAppID != 8
+            if (LauncherApplication.isFytDevice() && stockChannelLeft()
                     && ("fyt".equals(mediaSource) || activeController == null)) {
                 if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
                     if (mLauncher.fytData) { // from metadata
                         musictitle = MusicService.music_name;
+                    } else if (StockSources.isSyuMediaUnit()) {
+                        // A stream has no file name to take the title from
+                        musictitle = StockTitles.displayTitle(true, MusicService.music_path, MusicService.music_name);
                     } else { // from file title
                         File file = new File(MusicService.music_path);
                         String filename = file.getName();
@@ -553,9 +561,37 @@ final class LauncherMusicWidget {
                 return false;
             }
         }
+        if (StockSources.shownOverlay() != null) {
+            // The radio's sound is the MCU's, not an Android player the audioserver would report
+            return StockSources.isShownPlaying();
+        }
+        if (StockSources.isSyuMediaUnit() && MusicService.isSyuMediaSource()) {
+            // The player's own state, read over its binder: isMusicActive() goes on saying
+            // "playing" for a moment after a pause, and for the sound of any other app
+            return MusicService.state.booleanValue();
+        }
         // Not mAudioManager.isMusicActive() directly: see AudioStateCache.
         return MusicService.state.booleanValue()
                 || AudioStateCache.isMusicActive(mLauncher, AUDIO_STATE_WAIT_MS);
+    }
+
+    /**
+     * Whether the stock source the widget shows is off its channel (paused, say): com.syu.music's
+     * channel is 8; the 7870's players have their own (music 8, internet radio 7); the radio (BT)
+     * the widget shows as an overlay is always taken to be on it, being what it shows.
+     */
+    private boolean stockChannelLeft() {
+        if (StockSources.shownOverlay() != null) {
+            return false;
+        }
+        int channel = StockSources.isSyuMediaUnit() ? StockSources.shownChannel() : 8;
+        return CarStates.mAppID != channel;
+    }
+
+    /** The play state the widget's stock source reports, for the icon a press is about to change. */
+    private boolean stockPlayingForIcon() {
+        return StockSources.shownOverlay() != null
+                ? StockSources.isShownPlaying() : MusicService.state.booleanValue();
     }
 
     /** The state of that player's session right now; null if it has none or it cannot be read. */
@@ -637,6 +673,12 @@ final class LauncherMusicWidget {
         }
         mId3Path = path;
         mId3Pic = null;
+        if (!StockTitles.isLocalFile(path)
+                && (StockSources.isSyuMediaUnit() || StockSources.shownOverlay() != null)) {
+            // A stream's URL or a station: there is no file to read the tags of
+            mId3Read = true;
+            return true;
+        }
         mId3Read = false;
         ID3_READER.execute(() -> {
             byte[] pic = null;
@@ -674,7 +716,13 @@ final class LauncherMusicWidget {
         if ("mediaController".equals(mediaSource)) {
             return activeController;
         }
-        return LauncherApplication.isFytDevice() ? STOCK_MUSIC_PACKAGE : null;
+        if (!LauncherApplication.isFytDevice()) {
+            return null;
+        }
+        // The 7870's stock player is com.syu.media. The radio shown on a 7862 stays com.syu.music
+        // here, a stock player no button opens as "the last player"
+        return StockSources.isSyuMediaUnit() || MusicService.isSyuMediaSource()
+                ? MusicService.MEDIA_PKG : STOCK_MUSIC_PACKAGE;
     }
 
     private String mPlayerIconPackage;
@@ -723,7 +771,8 @@ final class LauncherMusicWidget {
      */
     private boolean openLastPlayerIfNoSession() {
         String packageName = mLauncher.mPrefs.getString(PREF_LAST_PLAYER, null);
-        if (packageName == null || packageName.isEmpty() || STOCK_MUSIC_PACKAGE.equals(packageName)) {
+        if (packageName == null || packageName.isEmpty() || STOCK_MUSIC_PACKAGE.equals(packageName)
+                || MusicService.MEDIA_PKG.equals(packageName)) {
             return false;
         }
         List<MediaController> controllers = activeSessions();
@@ -1247,7 +1296,12 @@ final class LauncherMusicWidget {
      */
     String getTransportTargetPackage() {
         if ("fyt".equals(mediaSource) && LauncherApplication.isFytDevice()) {
-            return MusicService.isSyuMediaSource() ? MusicService.MEDIA_PKG : MusicService.MUSIC_PKG;
+            String overlay = StockSources.overlayPackage();
+            if (overlay != null) {
+                return overlay;
+            }
+            return MusicService.isSyuMediaSource() || StockSources.isSyuMediaUnit()
+                    ? MusicService.MEDIA_PKG : MusicService.MUSIC_PKG;
         }
         return getPreferredMediaControllerPackage();
     }
@@ -1326,7 +1380,7 @@ final class LauncherMusicWidget {
                         MediaTransportController.ACTION_PLAY_PAUSE, getPreferredMediaControllerPackage());
             } else if ("fyt".equals(mediaSource)) {
                 if (this.mPlayPauseButton != null) {
-                    if (MusicService.state.booleanValue()) {
+                    if (stockPlayingForIcon()) {
                         this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                         setWidgetButtonsTint(mPlayPauseButton);
                     } else {
@@ -1335,7 +1389,7 @@ final class LauncherMusicWidget {
                     }
                 }
                 if (this.mPlayPauseButtonTwo != null && barView) {
-                    if (MusicService.state.booleanValue()) {
+                    if (stockPlayingForIcon()) {
                         this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                         setBarButtonsTint(mPlayPauseButtonTwo);
                     } else {

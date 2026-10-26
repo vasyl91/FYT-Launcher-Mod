@@ -31,6 +31,7 @@ import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SpotifyRating;
 import com.android.launcher66.settings.SyuMusicLibrary;
 import com.fyt.car.MusicService;
+import com.fyt.car.StockSources;
 import com.syu.widget.DateMusicProvider;
 import com.syu.widget.Widget;
 
@@ -1330,6 +1331,10 @@ public final class MediaFavoriteController {
      * so the drawn state and the greyed button agree.
      */
     private static boolean isStockFavoriteAvailable() {
+        // The radio (on the 7870 BT audio too) has no favorites to keep: the heart is greyed out
+        if (StockSources.shownOverlay() != null) {
+            return false;
+        }
         if (MusicService.isSyuMediaSource()) {
             return syuMediaFavoriteState() != FAVORITE_STATE_UNKNOWN;
         }
@@ -1342,6 +1347,9 @@ public final class MediaFavoriteController {
 
     /** The state kept for the stock player's track; unknown whenever unavailable. */
     private static int getStockFavoriteState(Context context) {
+        if (StockSources.shownOverlay() != null) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
         if (MusicService.isSyuMediaSource()) {
             // Picks up a flag changed in com.syu.media's own screen while it is paused, when
             // nothing else asks it.
@@ -1365,6 +1373,10 @@ public final class MediaFavoriteController {
      * nothing else - there is no player to tell.
      */
     private static boolean toggleStockFavorite(Context context) {
+        if (StockSources.shownOverlay() != null) {
+            Log.d(TAG, "Press ignored: " + StockSources.shownKind() + " has no favorites");
+            return false;
+        }
         if (MusicService.isSyuMediaSource()) {
             int before = syuMediaFavoriteState();
             if (before == FAVORITE_STATE_UNKNOWN) {
