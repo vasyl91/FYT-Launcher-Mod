@@ -39,6 +39,7 @@ import com.android.launcher66.settings.VersionChecker;
 import com.android.launcher66.settings.WakeDetection;
 import com.android.launcher66.settings.WakeDetectionService;
 import com.fyt.car.MusicService;
+import com.fyt.car.StockSources;
 import com.fyt.skin.SkinManager;
 import com.fyt.skin.util.FileUtil;
 import com.syu.canbus.ZipCompare;
@@ -221,6 +222,9 @@ public class LauncherApplication extends Application {
         // over its binder, on FYT units only. Binds on its own thread; where com.syu.media is
         // missing (7862, 8581: com.syu.music) the bind just fails.
         if (isFytDevice()) {
+            // Which stock source the music widget shows, from the MCU's channel; learns on its own
+            // thread whether this is a 7870. Before the players below report into it.
+            StockSources.init(this);
             MusicService.startSyuMedia(this);
         }
         if (BuildConfig.DEBUG) {

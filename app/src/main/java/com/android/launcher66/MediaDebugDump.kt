@@ -10,6 +10,7 @@ import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import com.fyt.car.StockSources
 
 object MediaDebugDump {
 
@@ -27,6 +28,8 @@ object MediaDebugDump {
         }
         dumpNotifications(service)
         dumpSessions(service)
+        // The stock sources behind the music widget: channel, source shown, players, last resume
+        for (line in StockSources.dump().lines()) Log.d(TAG, line)
     }
 
     private fun dumpNotifications(service: NotificationListener) {
