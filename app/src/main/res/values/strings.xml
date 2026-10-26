@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_filter_class">com.syu.car.CustomFilter</string>
+    <string name="app_filter_class" translatable="false">com.syu.car.CustomFilter</string>
     <string name="application_name">Launcher Mod</string>
     <string name="home">Home</string>
-    <string name="uid_name">Android Core Apps</string>
     <string name="folder_name" />
     <string name="wallpaper_instructions">Set wallpaper</string>
     <string name="wallpaper_accessibility_name">Wallpaper %1$d of %2$d</string>
@@ -14,50 +13,24 @@
     <string name="crop_wallpaper">Crop wallpaper</string>
     <string name="activity_not_found">"App isn't installed."</string>
     <string name="widgets_tab_label">Widgets</string>
-    <string name="widget_adder">Widgets</string>
     <string name="toggle_weight_watcher">Show Mem</string>
     <string name="long_press_widget_to_add">Touch &amp; hold to pick up a widget.</string>
     <string name="market">Shop</string>
     <string name="widget_dims_format">%1$d × %2$d</string>
-    <string name="external_drop_widget_pick_format">%1$s (%2$d × %3$d)</string>
-    <string name="external_drop_widget_error">"Couldn't drop item on this Home screen."</string>
-    <string name="external_drop_widget_pick_title">Choose widget to create</string>
+    <string name="external_drop_widget_pick_format" translatable="false">%1$s (%2$d × %3$d)</string>
     <string name="rename_folder_label">Folder name</string>
-    <string name="rename_folder_title">Rename folder</string>
-    <string name="rename_action">OK</string>
-    <string name="cancel_action">Cancel</string>
-    <string name="menu_item_add_item">Add to Home screen</string>
     <string name="group_applications">Apps</string>
-    <string name="group_shortcuts">Shortcuts</string>
-    <string name="group_widgets">Widgets</string>
-    <string name="completely_out_of_space">No more room on your Home screens.</string>
     <string name="out_of_space">No more room on this Home screen.</string>
     <string name="hotseat_out_of_space">No more room on the hotseat.</string>
-    <string name="invalid_hotseat_item">This widget is too large for the hotseat.</string>
-    <string name="shortcut_installed">Shortcut \"%s\" created.</string>
     <string name="shortcut_uninstalled">Shortcut \"%s\" was removed.</string>
     <string name="shortcut_duplicate">Shortcut \"%s\" already exists.</string>
-    <string name="title_select_shortcut">Choose shortcut</string>
     <string name="title_select_application">Choose app</string>
     <string name="all_apps_button_label">Apps</string>
     <string name="all_apps_home_button_label">Home</string>
-    <string name="delete_zone_label_workspace">Remove</string>
-    <string name="delete_zone_label_all_apps">Uninstall</string>
     <string name="delete_target_label">Remove</string>
     <string name="delete_target_uninstall_label">Uninstall</string>
-    <string name="info_target_label">App info</string>
     <string name="accessibility_search_button">Search</string>
     <string name="accessibility_voice_search_button">Voice Search</string>
-    <string name="accessibility_all_apps_button">Apps</string>
-    <string name="accessibility_delete_button">Remove</string>
-    <string name="delete_zone_label_all_apps_system_app">Uninstall update</string>
-    <string name="help_url" />
-    <string name="cab_menu_delete_app">Uninstall app</string>
-    <string name="cab_menu_app_info">App details</string>
-    <string name="cab_app_selection_text">1 app selected</string>
-    <string name="cab_widget_selection_text">1 widget selected</string>
-    <string name="cab_folder_selection_text">1 folder selected</string>
-    <string name="cab_shortcut_selection_text">1 shortcut selected</string>
     <string name="permlab_install_shortcut">install shortcuts</string>
     <string name="permdesc_install_shortcut">Allows an app to add shortcuts without user intervention.</string>
     <string name="permlab_uninstall_shortcut">uninstall shortcuts</string>
@@ -68,10 +41,8 @@
     <string name="permdesc_write_settings">Allows the app to change the settings and shortcuts in Home.</string>
     <string name="gadget_error_text">Problem loading widget</string>
     <string name="uninstall_system_app_text">"This is a system app and can't be uninstalled."</string>
-    <string name="dream_name">Rocket Launcher</string>
     <string name="folder_hint_text">Unnamed Folder</string>
     <string name="widget_fit_toggle">Fit the widget to its cells</string>
-    <string name="workspace_description_format">Home screen %1$d</string>
     <string name="default_scroll_format">Page %1$d of %2$d</string>
     <string name="workspace_scroll_format">Home screen %1$d of %2$d</string>
     <string name="apps_customize_apps_scroll_format">Apps page %1$d of %2$d</string>
@@ -95,125 +66,84 @@
     <string name="folder_closed">Folder closed</string>
     <string name="folder_renamed">Folder renamed to %1$s</string>
     <string name="folder_name_format">Folder: %1$s</string>
-    <string name="custom_workspace_cling_title_1" />
-    <string name="custom_workspace_cling_description_1" />
-    <string name="custom_workspace_cling_title_2" />
-    <string name="custom_workspace_cling_description_2" />
-    <string name="debug_memory_activity">* HPROF</string>
+    <string name="debug_memory_activity" translatable="false">* HPROF</string>
     <string name="widget_button_text">Widgets</string>
-    <string name="livewallpaper_button_text">Live Wallpapers</string>
     <string name="wallpaper_button_text">Wallpapers</string>
     <string name="settings_button_text">Settings</string>
-    <string name="no_app_msg">请修改车载设置中“选择导航应用”选项。</string>
-    <string name="no_tv_msg">No TV device!</string>
     <string name="car_aux">AUX</string>
-    <string name="car_tv">TV</string>
     <string name="car_dvr">DVR</string>
-    <string name="car_steer">Steer</string>
-    <string name="car_speech">Voice</string>
     <string name="car_setting">Car Setting</string>
-    <string name="car_wallpaper">Wallpapers</string>
     <string name="car_video">Video</string>
-    <string name="car_dvd">DVD</string>
     <string name="car_radio">Radio</string>
     <string name="car_music">Music</string>
     <string name="car_bt">Bluetooth</string>
-    <string name="car_carlife">CarLife</string>
     <string name="music_unknown">Unknown</string>
-    <string name="car_bt_music">Bt Music</string>
+    <string name="car_bt_music">BT Music</string>
     <string name="car_app">Apps</string>
     <string name="car_eq">EQ</string>
-    <string name="car_temp">Temp</string>
-    <string name="car_weather">Weather</string>
-    <string name="car_city">City</string>
-    <string name="car_wind_direction">Wind Direction</string>
-    <string name="car_temprange">Temp Range</string>
-    <string name="sys_settings">Settings</string>
     <string name="music_name">Song</string>
     <string name="music_author">Author</string>
     <string name="music_album">Album</string>
-    <string name="car_link">E-CARLINK</string>
-    <string name="date_str_format">yyyy/MM/dd</string>
     <string name="car_settings">Settings</string>
     <string name="car_navi">Navi</string>
-    <string name="easy_conn">null</string>
-    <string name="car_gaode">Auto Navi</string>
     <string name="car_kuwo">Kuwo Music</string>
-    <string name="car_klfm">Koala FM</string>
-    <string name="car_unicar">Flow Recharge</string>
-    <string name="car_gallery">Picture</string>
+    <string name="car_gallery">Gallery</string>
     <string name="car_file">File</string>
-    <string name="car_voice">Voice</string>
-    <string name="car_recharge">Recharge</string>
     <string name="car_car">Car</string>
-    <string name="car_easyconn">Easyconn</string>
-    <string name="car_browser">Browser</string>
-    <string name="car_miu_drive">喵驾</string>
+    <string name="car_miu_drive">Miu Drive</string>
     <string name="am">AM</string>
     <string name="pm">PM</string>
     <string name="dvr_switch">Please turn on the DVR switch</string>
     <string name="app_name">Timer</string>
     <string name="widget_name">Car Widget</string>
-    <string name="dtwidget_name">Dates</string>
-    <string name="dtmusicwidget_name">Music</string>
-    <string name="google_setting">GoogleSetting</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Not connected</string>
-    <string name="apps">应用</string>
-    <string name="car_carplay">Carplay</string>
     <string name="car_canbus">Canbus</string>
-    <string name="car_time">Time</string>
-    <string name="clingmusictitle">使用车助理语音操作音乐播放器</string>
-    <string name="clingvideotitle">使用车助理语音操作视频播放器</string>
-    <string name="clingnavetitle">使用车助理语音操作导航应用</string>
-    <string name="clingradiotitle">使用车助理语音操作FM电台</string>
-    <string name="clingbttitle">使用车助理语音操作蓝牙电话</string>
-    <string name="clingkuwotitle">使用车助理语音操作酷我音乐</string>
-    <string name="clingkaolatitle">使用车助理语音操作考拉FM</string>
-    <string name="clingmusictext">"1.可以通过唤醒语“打开音乐/播放音乐/播放歌曲/我要听音乐”来播放音乐。
-2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
-3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
-4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
-5.可以通过“关闭音乐”来暂停音乐。"</string>
-    <string name="clingvideotext">"1.可以通过唤醒语“打开视频”唤醒视频播放器。
-2.可以通过唤醒语“下一曲/上一曲”来切换上下曲。
-3.可以通过唤醒语“播放/暂停”来切换播放暂停键。"</string>
-    <string name="clingnavetext">"1.可以通过唤醒语“打开导航/开始导航/返回导航/回到导航/进入导航”唤醒导航应用。
-2.可以通过唤醒语“我要去世界之窗/导航到世界之窗/中山公园怎么走/怎么去白石洲/带我去白石洲”发起导航。
-3.可以通过唤醒语“我要回家/我要去公司/导航回家/导航去公司/带我回家/带我去公司”以及“修改家/公司的地址为XX”来导航家里到公司的路线。
-4.可以通过唤醒语“（查找/搜索）附近的餐馆/附近的停车场/附近的加油站”来搜索周边。
-5.可以通过唤醒语“我饿了/我想吃饭/我想洗脚/我想上网/我想吃肯德基”来搜索商圈。
-6.可以通过唤醒语“停止导航/结束导航/关闭导航/取消导航/退出导航”来关闭导航。"</string>
-    <string name="clingradiotext">"1.可以通过唤醒语“打开收音机”唤醒收音机应用。
-2.可以通过唤醒语“上一台/切换上一台/换上一台/上一个台/切换上一个台/换上一个台/前一台/前 一个台/切换前一台/换前一台/切换前一个台/换前一个台”播放上一台。
-3.可以通过唤醒语“下一台/切换下一台/换下一台/下一个台/切换下一个台/换下一个台/后一台/后一个台/切换后一台/换后一台/后一个台/切换后一个台/换后一个台”来播放下一台。
-4.可以通过唤醒语“调频到XX（例：调频到101.1）”来播放具体某台。
-5.可以通过唤醒语“关闭收音机”来关闭收音机。"</string>
-    <string name="clingbttext">"1.可以通过唤醒语“打开蓝牙/打开电话”唤醒蓝牙应用。
-2.可以通过唤醒语“离线（打联系人）：打个电话张三给李冰/给老妈打电话/呼叫黄豆豆/拨打张三的电话/打李冰的电话”以及“在线（打号码）：呼叫110/打电话给110”来打电话。
-3.可以通过唤醒语“第一个/第二个/深圳那个/北京那个/电信那个/移动那个(广东有多个结果，请再次选择)/最前面那个/最后面那个/最上面那个/最下面那个/尾号是0580/0580结尾/150开头/座机/短号/手机”来选择电话号码。
-4.可以通过唤醒语“关闭蓝牙/关闭电话”来关闭蓝牙电话。"</string>
-    <string name="clingkuwotext">"1.可以通过唤醒语“打开酷我音乐”来播放酷我音乐。
-2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
-3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
-4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
-5.可以通过“关闭酷我音乐”来关闭。"</string>
-    <string name="clingkaolatext">"1.可以通过唤醒语“打开考拉FM”来打开考拉FM。
-2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
-3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
-4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
-5.可以通过“关闭考拉FM”来关闭。"</string>
-    <string name="cling_cancel">取消</string>
-    <string name="navi_destination">Distance destination</string>
-    <string name="navi_curr_road">Current road</string>
-    <string name="navi_next_road">Next road</string>
-    <string name="surplus_distance">0公里</string>
-    <string name="remaintime">剩余0分钟</string>
+    <string name="clingmusictitle">Control the music player by voice with Car Assistant</string>
+    <string name="clingvideotitle">Control the video player by voice with Car Assistant</string>
+    <string name="clingnavetitle">Control the navigation app by voice with Car Assistant</string>
+    <string name="clingradiotitle">Control the FM radio by voice with Car Assistant</string>
+    <string name="clingbttitle">Control Bluetooth calls by voice with Car Assistant</string>
+    <string name="clingkuwotitle">Control Kuwo Music by voice with Car Assistant</string>
+    <string name="clingkaolatitle">Control Koala FM by voice with Car Assistant</string>
+    <string name="clingmusictext">"1. Say “Open music / Play music / Play a song / I want to listen to music” to play music.
+2. Say “Play something / Just play something” to play random music.
+3. Say “I want to hear Little Apple / Play The Moon Represents My Heart / I want to hear songs by Wang Feng / Play songs by Eason Chan” to play specific songs.
+4. Say “Previous song / Next song / Play the previous song / Play the next song / Change the song” to control the music.
+5. Say “Close music” to pause the music."</string>
+    <string name="clingvideotext">"1. Say “Open video” to start the video player.
+2. Say “Next / Previous” to switch to the next or previous video.
+3. Say “Play / Pause” to toggle play and pause."</string>
+    <string name="clingnavetext">"1. Say “Open navigation / Start navigation / Back to navigation / Return to navigation / Enter navigation” to start the navigation app.
+2. Say “I want to go to Window of the World / Navigate to Window of the World / How do I get to Zhongshan Park / How do I get to Baishizhou / Take me to Baishizhou” to start navigating.
+3. Say “I want to go home / I want to go to work / Navigate home / Navigate to work / Take me home / Take me to work” or “Change the home/work address to XX” to navigate between home and work.
+4. Say “(Find / Search) nearby restaurants / nearby parking lots / nearby gas stations” to search the surroundings.
+5. Say “I'm hungry / I want to eat / I want a foot massage / I want to go online / I want KFC” to search for nearby businesses.
+6. Say “Stop navigation / End navigation / Close navigation / Cancel navigation / Exit navigation” to close navigation."</string>
+    <string name="clingradiotext">"1. Say “Open radio” to start the radio app.
+2. Say “Previous station / Switch to the previous station / Change to the previous station” to play the previous station.
+3. Say “Next station / Switch to the next station / Change to the next station” to play the next station.
+4. Say “Tune to XX (e.g., tune to 101.1)” to play a specific station.
+5. Say “Close radio” to close the radio."</string>
+    <string name="clingbttext">"1. Say “Open Bluetooth / Open phone” to start the Bluetooth app.
+2. Say “Offline (contacts): Call Zhang San / Call Mom / Call Huang Doudou / Dial Zhang San / Call Li Bing” or “Online (number): Call 110 / Phone 110” to make a call.
+3. Say “The first one / The second one / The Shenzhen one / The Beijing one / The China Telecom one / The China Mobile one (several results in Guangdong, please choose again) / The one at the front / The last one / The top one / The bottom one / Ending in 0580 / Ends with 0580 / Starting with 150 / Landline / Short number / Mobile” to choose a phone number.
+4. Say “Close Bluetooth / Close phone” to close the Bluetooth phone."</string>
+    <string name="clingkuwotext">"1. Say “Open Kuwo Music” to play Kuwo Music.
+2. Say “Play something / Just play something” to play random music.
+3. Say “I want to hear Little Apple / Play The Moon Represents My Heart / I want to hear songs by Wang Feng / Play songs by Eason Chan” to play specific songs.
+4. Say “Previous song / Next song / Play the previous song / Play the next song / Change the song” to control the music.
+5. Say “Close Kuwo Music” to close it."</string>
+    <string name="clingkaolatext">"1. Say “Open Koala FM” to open Koala FM.
+2. Say “Play something / Just play something” to play random music.
+3. Say “I want to hear Little Apple / Play The Moon Represents My Heart / I want to hear songs by Wang Feng / Play songs by Eason Chan” to play specific songs.
+4. Say “Previous song / Next song / Play the previous song / Play the next song / Change the song” to control the music.
+5. Say “Close Koala FM” to close it."</string>
+    <string name="cling_cancel">Cancel</string>
     <string name="car_calculator">Calculator</string>
     <string name="car_guide">Guide</string>
-    <string name="skin_ruleless">Lionel</string>
-    <string name="car_km">km/h</string>
+    <string name="skin_ruleless" translatable="false">Lionel</string>
     <string name="select_default_app">Select the application that needs to be opened by default</string>
     
     <string name="dt_time_widget">Time Widget</string>
@@ -222,23 +152,8 @@
     <string name="dt_navi_widget">Navi Widget</string>
     <string name="group_wallpapers">Wallpapers</string>
     
-    <string name="car_navi_title">"在线地图  实时路况"</string>
-    <string name="car_bt_title">一键拨号</string>
-    <string name="car_allapps_title">打开更多APP应用</string>
-    <string name="car_settings_title">系统功能设置</string>
-    <string name="car_realnavi">实时导航</string>
-    <string name="chooser_wallpaper">Choose wallpaper from</string>
-    <string name="folder_cling_move_item">To move an app, touch &amp; hold it.</string>
-    <string name="workspace_cling_open_all_apps">To see all your apps, touch the circle.</string>
-    <string name="use_carradio">Please use the original car radio.</string>
+    <string name="car_realnavi">Live navigation</string>
 
-    <string name="menu_add">Add</string>
-    <string name="menu_manage_apps">Manage apps</string>
-    <string name="menu_wallpaper">Wallpaper</string>
-    <string name="menu_search">Search</string>
-    <string name="menu_notifications">Notifications</string>
-    <string name="menu_settings">System settings</string>
-    <string name="menu_help">Help</string>
 
     <string name="launcher_settings">Launcher settings</string>  
     <string name="launcher_creator">Launcher creator</string> 
@@ -253,16 +168,15 @@
     <string name="user_layout">User layout</string> 
     <string name="stock_layout">Stock layout</string> 
     <string name="layout_creator">LAYOUT CREATOR</string> 
-    <string name="layout_summary_disabled"><![CDATA[Set layout type to <b>"User Layout"</b> to enable creator]]></string> 
+    <string name="layout_summary_disabled"><![CDATA[Set layout type to <b>"User layout"</b> to enable creator]]></string> 
     <string name="layout_summary_enabled">Set your layout</string> 
-    <string name="fyt_title_source">Fyt music title source</string> 
+    <string name="fyt_title_source">FYT music title source</string> 
     <string name="fyt_metadata">From metadata</string> 
     <string name="fyt_file">From file path</string> 
     <string name="left_bar">Use left bar</string> 
     <string name="left_bar_on">Left bar + bottom bar</string> 
     <string name="left_bar_off">Only bottom bar</string>
     <string name="stats_screen_summary">Set the screen that will display the stats</string>   
-    <string name="pip_dialog_str">Display navi on the screen (1 is default):</string>  
     <string name="date_widget">Date and time widget</string> 
     <string name="music_widget">Music widget</string> 
     <string name="radio_widget">Radio widget</string>
@@ -276,10 +190,10 @@
     <string name="wallpaper_picker_source">Wallpaper picker source</string> 
     <string name="wallpaper_picker_system">System wallpaper picker</string> 
     <string name="wallpaper_picker_launcher">In-app wallpaper picker</string> 
-    <string name="all_apps_textSize_str">Set all apps icon text size (max. 50)</string>  
-    <string name="workspace_textSize_str">Set main screen icon text size (max. 50)</string>     
-    <string name="launcher_home_wake">Home screen always on top while device wakes up</string>
-    <string name="launcher_home_cold_start">Home screen always on top while device starts</string>
+    <string name="all_apps_textSize_str">Set app drawer icon text size (max. 50)</string>
+    <string name="workspace_textSize_str">Set Home screen icon text size (max. 50)</string>
+    <string name="launcher_home_wake">Keep the Home screen on top when the device wakes up</string>
+    <string name="launcher_home_cold_start">Keep the Home screen on top when the device boots</string>
     <string name="cold_start_last_app_delay">Delay reopening the last app after a restart</string>
     <string name="cold_start_last_app_delay_summary">With the option above off, the app that was in front is opened again after a device restart, as soon as the home screen is up. With this on, it waits 5 s, until the head unit services are up, and if the app closes within 2 s of opening, it is opened once more. Stock SYU and FYT apps (com.syu.*, com.fyt.*) always get this; this option adds it for all other apps. Not used after a wake from sleep.</string>
     <string name="baseline_profile_summary">Baseline Profile summary</string>
@@ -304,21 +218,21 @@
     <string name="youtube_category">YouTube</string>
     <string name="spotify_category">Spotify</string>
     <string name="music_misc_category">Other</string>
-    <string name="favorite_cache">Select the music apps you want to use the favorite cache with</string>
+    <string name="favorite_cache">Select the music apps that should use the favorites cache</string>
     <string name="favorite_cache_list">Favorites button cache</string>
     <string name="favorite_cache_summary">Some apps don\'t provide like/dislike status to external apps. Selected apps will use the built-in cache system, but like/dislike status information will be stored only in the launcher. Music Widget won\'t know whether you liked or disliked a video elsewhere.</string>
     <string name="oauth_for_youtube_revanced">Enable Google Authorization for YouTube ReVanced to retrieve the like status</string>
     <string name="youtube_revanced_kids">Favorite button for YouTube ReVanced videos with madeForKids=true</string>
     <string name="youtube_revanced_kids_on">The Favorite button will be enabled but videos liked on YouTube might appear as not liked in the widget.</string>
-    <string name="youtube_revanced_kids_off">Videos that return madeForKids=true never correctly reflect the like state due to a YouTube API bug - videos liked on YouTube appear as not liked in the widget. The Favorite button will be disabled to prevent confusion.</string>
-    <string name="copy_patch_url">Tap to copy the URL of the „Expose like status in MediaSession” patch for ReVanced Manager</string>
-    <string name="copy_patch_url_smmary">Use this patch for YouTube. YT Music ReVanced works without it.</string>
+    <string name="youtube_revanced_kids_off">Videos that return madeForKids=true never correctly reflect the like state due to a YouTube API bug – videos liked on YouTube appear as not liked in the widget. The Favorite button will be disabled to prevent confusion.</string>
+    <string name="copy_patch_url">Tap to copy the URL of the “Expose like status in MediaSession” patch for ReVanced Manager</string>
+    <string name="copy_patch_url_summary">Use this patch for YouTube. YT Music ReVanced works without it.</string>
     <string name="url_copied">URL copied to clipboard</string>
     <string name="fyt_rating_installed">fYT Rating: installed</string>
-    <string name="fyt_rating_not_installed">fYT Rating: not installed, double-click to go to the download page</string>
+    <string name="fyt_rating_not_installed">fYT Rating: not installed, double-tap to go to the download page</string>
     <string name="fyt_rating_state_unavailable">Install fYT Rating to read the like status</string>
-    <string name="fyt_rating_state_not_logged_in">Not logged in - open fYT Rating and sign in</string>
-    <string name="fyt_rating_state_not_allowed">Logged in, but this launcher is not allowed yet - allow it in fYT Rating</string>
+    <string name="fyt_rating_state_not_logged_in">Not logged in – open fYT Rating and sign in</string>
+    <string name="fyt_rating_state_not_allowed">Logged in, but this launcher is not allowed yet – allow it in fYT Rating</string>
     <string name="fyt_rating_state_ready">User logged in, app ready</string>
     <string name="fyt_rating_missing">fYT Rating is not installed</string>
     <string name="fyt_rating_opening">Opening fYT Rating…</string>
@@ -328,14 +242,14 @@
     <string name="spotify_client_id_dialog">Create an app at developer.spotify.com, add launcher66://spotify-callback as a Redirect URI, then paste the Client ID here.</string>
     <string name="spotify_copy_uri">Tap to copy the Redirect URI</string>  
     <string name="uri_copied">URI copied to clipboard</string>
-    <string name="spotify_instruction">Instruction for app configuration at developer.spotify.com</string>
+    <string name="spotify_instruction">Instructions for configuring the app at developer.spotify.com</string>
     <string name="spotify_client_id_missing">Fill in the Spotify Client ID first</string>
     <string name="oauth_for_spotify">Spotify sign-in</string>
     <string name="spotify_logout">Sign out of Spotify</string>
     <string name="spotify_logout_summary">Removes the tokens stored on this device</string>
     <string name="spotify_logged_out">Signed out of Spotify</string>
     <string name="spotify_opening_browser">Opening the browser…</string>
-    <string name="spotify_no_browser">No browser installed; one is needed for the sign-in</string>
+    <string name="spotify_no_browser">No browser found; one is required to sign in</string>
     <string name="spotify_logged_in">Signed in to Spotify</string>
     <string name="spotify_login_failed">Spotify sign-in failed</string>
     <string name="spotify_login_error">Spotify: %1$s</string>
@@ -343,48 +257,43 @@
     <string name="spotify_state_not_logged_in">Not signed in</string>
     <string name="spotify_state_expired">Access expired, sign in again</string>
     <string name="spotify_state_ready">Signed in</string>
-    <string name="spotify_dev_site">https://developer.spotify.com/</string>
+    <string name="spotify_dev_site" translatable="false">https://developer.spotify.com/</string>
     
     <string name="device_settings">Device settings</string> 
     <string name="layout_category">Layout</string>
     <string name="misc_category">Miscellaneous</string>
     <string name="widgets_category">Widgets</string>
     <string name="stats_category">Fuel statistics</string>
-    <string name="layout_set">Layout has been set! Press Home button to see the result.</string>
-    <string name="stats_pos_set">In-app window location saved!</string>
-    <string name="creator_map">Navi</string>    
-    <string name="creator_date">Date</string>
-    <string name="creator_music">Music</string>
-    <string name="creator_radio">Radio</string>
+    <string name="layout_set">The layout has been set! Press the Home button to see the result.</string>
     <string name="stats_name">In-app stats</string>
     <string name="overlapping">Widgets are overlapping!</string>
-    <string name="wont_save">Current layout will not be saved. Proceeding will reset the layout.</string>
+    <string name="wont_save">The current layout will not be saved. Proceeding will reset the layout.</string>
     <string name="proceed_and_reset">Proceed and reset</string>
     <string name="dismiss">Dismiss</string>
 
-    <string name="instantaneous_consumption">\u0020Fuel consum.:</string>
-    <string name="driving_mileage">\u0020Cruising Range:</string>
+    <string name="instantaneous_consumption">\u0020Fuel consumption:</string>
+    <string name="driving_mileage">\u0020Cruising range:</string>
     <string name="instantaneous_consumption_mini">\u0020C:</string>
     <string name="driving_mileage_mini">\u0020R:</string>
     <string name="instantaneous_consumption_val">%1$s L/100km\u0020</string>
     <string name="driving_mileage_val">%1$s km\u0020</string>
     <string name="instantaneous_consumption_val_mini">%1$s\u0020</string>
     <string name="driving_mileage_val_mini">%1$s\u0020</string>
-    <string name="stats_resize">Double tap the widget to resize</string>
+    <string name="stats_resize">Double-tap the widget to resize</string>
     <string name="stats_window">Fuel statistics</string>
     <string name="stats_codes">Statistics codes</string>
-    <string name="stats_window_summary"><![CDATA[Use canbus reader or look for the necessary canbus codes in the class <b>%1$s</b> and its subclasses (please refer to README.MD)]]></string>
-    <string name="stats_window_summary_vehicle_not_exist">Original vehicle equipment does not exist. Try using the CAN bus reader, however, it might not find the codes.</string>
-    <string name="stats_codes_summary">Press this preference to set the canbus codes. \nFuel: %1$s, Range: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
+    <string name="stats_window_summary"><![CDATA[Use the Canbus reader or look for the necessary canbus codes in the class <b>%1$s</b> and its subclasses (see README.md)]]></string>
+    <string name="stats_window_summary_vehicle_not_exist">Original vehicle equipment does not exist. Try using the Canbus reader; however, it might not find the codes.</string>
+    <string name="stats_codes_summary">Tap to set the canbus codes. \nFuel: %1$s, Range: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Additional statistics data <b>(optional)</b></string>
-    <string name="extra_stats_codes_summary">Press this preference to set additional car info for approximate fuel consumption. \nRPM canbus code: %1$s, Horsepower: %2$s, Vehicle mass: %3$s</string>
+    <string name="extra_stats_codes_summary">Tap to set additional car info for approximate fuel consumption. \nRPM canbus code: %1$s, Horsepower: %2$s, Vehicle mass: %3$s</string>
     <string name="stats_dialog_title">Canbus codes:</string>
     <string name="fuel_code_text">Fuel code:</string>
     <string name="range_code_text">Range code:</string>
     <string name="cmdInt_code_text">cmdInt code:</string>
     <string name="cmdArr_code_text">cmdArr code:</string>
     <string name="canbus_optional"><b>Optional data (should be 0 if not used):</b></string>
-    <string name="canbus_optional_description">Use that if your canbus stops sending fuel consumption data i.e. below some speed level.</string>
+    <string name="canbus_optional_description">Use that if your canbus stops sending fuel consumption data, e.g., below a certain speed.</string>
     <string name="rpm_code_text">RPM canbus code:</string>
     <string name="horse_power_code_text">Horsepower:</string>
     <string name="vehicle_mass_code_text">Vehicle mass (in kg):</string>
@@ -403,24 +312,24 @@
     <string name="canbus_reader_category">Canbus reader</string>
     <string name="display_canbus_reader">Display canbus reader</string> 
     <string name="codes_guide">Canbus guide</string> 
-    <string name="codes_guide_initial_reading_title">Codes logger - initial reading</string> 
-    <string name="codes_guide_initial_reading_one">\'Canbus reader\' might not work for every car! It depends on the source code provided by the manufacturer. \n\nThere are three values essential to properly read the canbus data - cmdInt, cmdArr represented in logs by CMD (these are less important, most of the random combinations should work) and the canbus codes represented in logs by CODE (these are important to determine).</string>
-    <string name="codes_guide_initial_reading_two">Running the \'Initial reading\' should create the txt file containing logs that look like above. Crucial part is to determine codes representing a current fuel consumption and a mileage. \n\nFor the current fuel consumption please look for the code that contains rather few outputs - on the attached screenshot it is the code 91. \n\nFor the mileage it should be the code that usually holds single output that rather doesn\'t change so fast or changes in specific intervals - on the attached screenshot it is the code 92. \n\nThe rest of the codes are negligible unless you are looking for something else.</string>
-    <string name="codes_guide_initial_reading_three">\'Time window\' - this is the time (in secods) during which the \'Codes logger\' will save the outputs for each cmdInt and cmdArr loop. \n\n\'Omit single figures\' - this aims to ignore the outputs that are single figures because the current fuel consumption and the mileage are usually represented by more than one digit. Selecting this option might greatly speed up the process because the loop won\'t dwell on the irrelevant outputs. \n\nUseful hint - to efficiently start examining the canbus codes use the narrow scope of starting-max cmdInt and cmdArr. You can set them as you wish provided that they are not greater than maximal values (info provided in the input dialog) and the starting point is not greater than the max value, however the wider range and the longer time window the longer the process lasts.</string> 
-    <string name="codes_guide_detailed_reading_title">Code inspector - detailed reading</string> 
-    <string name="codes_guide_detailed_reading">This part is meant to test specific cmdInt and cmdArr combination to reveal the codes they hold. As I said before cmdInt and cmdArr are less important and most of the random combinations should work, however that is something I learned after I had created this module. Anyway it may be of use for specific tests.</string> 
+    <string name="codes_guide_initial_reading_title">Codes logger – initial reading</string> 
+    <string name="codes_guide_initial_reading_one">\'Canbus reader\' might not work for every car! It depends on the source code provided by the manufacturer. \n\nThere are three values essential to properly read the canbus data – cmdInt, cmdArr represented in logs by CMD (these are less important, most of the random combinations should work) and the canbus codes represented in logs by CODE (these are important to determine).</string>
+    <string name="codes_guide_initial_reading_two">Running the \'Initial reading\' should create the txt file containing logs that look like the ones above. The crucial part is to identify the codes representing the current fuel consumption and the range. \n\nFor the current fuel consumption, look for the code that contains rather few outputs – on the attached screenshot it is the code 91. \n\nThe range code usually holds a single output that doesn\'t change quickly or changes at specific intervals – on the attached screenshot it is the code 92. \n\nThe rest of the codes are negligible unless you are looking for something else.</string>
+    <string name="codes_guide_initial_reading_three">\'Time window\' – this is the time (in seconds) during which the \'Codes logger\' will save the outputs for each cmdInt and cmdArr loop. \n\n\'Omit single figures\' – this aims to ignore the outputs that are single figures because the current fuel consumption and the mileage are usually represented by more than one digit. Selecting this option might greatly speed up the process because the loop won\'t dwell on the irrelevant outputs. \n\nUseful hint – to efficiently start examining the canbus codes use the narrow scope of starting-max cmdInt and cmdArr. You can set them as you wish provided that they are not greater than the maximum values (see the input dialog) and the starting point is not greater than the max value. The wider the range and the longer the time window, the longer the process takes.</string> 
+    <string name="codes_guide_detailed_reading_title">Code inspector – detailed reading</string> 
+    <string name="codes_guide_detailed_reading">This part is meant to test specific cmdInt and cmdArr combination to reveal the codes they hold. As mentioned earlier, cmdInt and cmdArr are less important and most random combinations should work. This module was created before I learned that, but it can still be useful for specific tests.</string> 
     <string name="codes_guide_miscellaneous_title">Miscellaneous</string> 
-    <string name="codes_guide_miscellaneous">Skip codes - as the name tells this section aims to ignore the reading of the given codes. It works for both the \'Codes logger\' and the \'Code inspector\'. It probably won\'t speed up the proces but the logs won\'t contain the output you\'re not interested in.</string> 
+    <string name="codes_guide_miscellaneous">Skip codes – as the name suggests, this section aims to ignore the reading of the given codes. It works for both the \'Codes logger\' and the \'Code inspector\'. It probably won\'t speed up the process, but the logs won\'t contain output you\'re not interested in.</string> 
     <string name="skip_codes">Skip codes</string>
-    <string name="skip_codes_summary">Following codes will be skipped: %1$s</string>
+    <string name="skip_codes_summary">The following codes will be skipped: %1$s</string>
     <string name="skip_codes_empty_summary">Data will be read from the whole codes set.</string>
-    <string name="skip_codes_dialog_str">Type the codes to skip (separated by a comma):</string>
+    <string name="skip_codes_dialog_str">Type the codes to skip (separated by commas):</string>
     <string name="logger_category">Codes logger</string>
     <string name="code_logger_string">Initial reading</string>    
-    <string name="code_logger_summary">Press to start the process</string>
-    <string name="code_logger_summary_working">Working... %1$s Press here to cancel</string>
+    <string name="code_logger_summary">Tap to start the process</string>
+    <string name="code_logger_summary_working">Working… %1$s Tap to cancel</string>
     <string name="code_logger_data">Initial reading data</string>
-    <string name="code_logger_data_summary">Press this preference to set the initial reading data. \nStarting cmdInt: %1$s, Starting cmdArr: %2$s, max cmdInt: %3$s, max cmdArr: %4$s, Time window: %5$s</string>
+    <string name="code_logger_data_summary">Tap to set the initial reading data. \nStarting cmdInt: %1$s, Starting cmdArr: %2$s, max cmdInt: %3$s, max cmdArr: %4$s, Time window: %5$s</string>
     <string name="starting_cmd_int_text">Starting cmdInt (max. 1198):</string>
     <string name="starting_cmd_arr_text">Starting cmdArr (max. 1198):</string>
     <string name="max_cmd_int_text">Max cmdInt (max. 1199):</string>
@@ -428,15 +337,15 @@
     <string name="code_logger_timeout_text">Time window:</string>
     <string name="omit_digits">Omit single figures</string>
     <string name="omit_digits_summary">Fuel consumption and range usually contain more than one digit. Selecting this option might greatly speed up the process.</string>
-    <string name="code_logger_dialog_toast">Starting value can not be greater than max value</string>
+    <string name="code_logger_dialog_toast">The starting value cannot be greater than the maximum value</string>
     <string name="code_logger_toast">Finished logging the codes. Check the results in Download/Launcher66_Canbus</string> 
     
     <string name="inspector_category">Code inspector</string>
     <string name="code_inspector_string">Detailed reading</string>
-    <string name="code_inspector_summary">Press to start the process</string>
-    <string name="code_inspector_summary_working">Working... %1$s Press here to cancel</string>
+    <string name="code_inspector_summary">Tap to start the process</string>
+    <string name="code_inspector_summary_working">Working… %1$s Tap to cancel</string>
     <string name="code_inspector_data">Detailed reading data</string>
-    <string name="code_inspector_data_summary">Press this preference to set the detailed reading data. \ncmdInt: %1$s, cmdArr: %2$s, Timeout: %3$s</string>
+    <string name="code_inspector_data_summary">Tap to set the detailed reading data. \ncmdInt: %1$s, cmdArr: %2$s, Timeout: %3$s</string>
     <string name="inspector_cmd_int_text">cmdInt (max. 1198):</string>
     <string name="inspector_cmd_arr_text">cmdArr (max. 1199):</string>
     <string name="code_inspector_timeout_text">Timeout:</string>
@@ -445,12 +354,10 @@
     <string name="cancel_btn">CANCEL</string>
     <string name="set_btn">SUBMIT</string>
     <string name="vehicle_not_exist">Original vehicle equipment does not exist</string>
-    <string name="image_load_fail">Coudn\'t load image</string>
-    <string name="wallpaper_load_fail">Couldn\'t load image as wallpaper</string>
     <string name="night_mode">Night mode</string>
-    <string name="night_mode_summary">Calculated sunrise: %1$s and sunset: %2$s.</string>
+    <string name="night_mode_summary">Calculated sunrise: %1$s, sunset: %2$s.</string>
     <string name="night_mode_lights">Night by car lights</string>
-    <string name="night_mode_lights_summary">Lights on means night, lights off means day, instead of sunrise and sunset. Only for cars that switch their lights on automatically; with daytime running lights required by law it stays night all day.</string>
+    <string name="night_mode_lights_summary">Lights on means night, lights off means day, instead of sunrise and sunset. Only for cars that switch their lights on automatically; in regions where daytime running lights are mandatory, it will stay night all day.</string>
     <string name="summary_correction_sunrise">\u0020Corrected sunrise: %1$s.</string>
     <string name="summary_correction_sunset">\u0020Corrected sunset: %1$s.</string>
     <string name="sun_corrections">Sunrise and sunset adjustment (optional)</string>
@@ -461,12 +368,12 @@
     <string name="default_wallpapers">Use the default wallpapers</string>
     <string name="save_day_wallpaper">Save the day wallpaper</string>
     <string name="save_day_wallpaper_dialog">Saving the day wallpaper</string>
-    <string name="save_day_wallpaper_summary">Set the wallpaper you want to display for the day mode and press this preference to save it, otherwise the default wallpaper will be used. <b>It might take a little while, wait for the confirming "Toast"!</b></string>
+    <string name="save_day_wallpaper_summary">Set the wallpaper you want to display in day mode, then tap this preference to save it. Otherwise, the default wallpaper will be used. <b>It might take a little while – wait for the confirmation toast!</b></string>
     <string name="save_night_wallpaper">Save the night wallpaper</string>
     <string name="save_night_wallpaper_dialog">Saving the night wallpaper</string>
-    <string name="save_night_wallpaper_summary">Set the wallpaper you want to display for the night mode and press this preference to save it, otherwise the default wallpaper will be used. <b>It might take a little while, wait for the confirming "Toast"!</b></string>
+    <string name="save_night_wallpaper_summary">Set the wallpaper you want to display in night mode, then tap this preference to save it. Otherwise, the default wallpaper will be used. <b>It might take a little while – wait for the confirmation toast!</b></string>
     <string name="wallpaper_set">%1$s mode wallpaper has been set!</string>
-    <string name="wallpaper_not_set">Something went wrong, %1$s mode wallpaper has not been set!</string>
+    <string name="wallpaper_not_set">Something went wrong. The %1$s mode wallpaper has not been set!</string>
     <string name="wallpaper_error">Error, %1$s mode wallpaper has not been set:\u0020</string>
     <string name="brightness">Dynamic brightness</string>
     <string name="day_seek_bar">Set brightness for day mode</string>
@@ -484,15 +391,15 @@
     <string name="logcat_full_off">Log only for launcher</string>
     <string name="boot_logcat">Include boot logs</string>
     <string name="logcat_service_run">Logcat service</string>
-    <string name="logcat_service_run_summary">Press to start logging</string>
-    <string name="logcat_service_saving">Saving the log up to the stop…</string>
-    <string name="logcat_service_run_working">Working... %1$s Press here to cancel</string>
+    <string name="logcat_service_run_summary">Tap to start logging</string>
+    <string name="logcat_service_saving">Saving the log…</string>
+    <string name="logcat_service_run_working">Working… %1$s Tap to cancel</string>
     <string name="logcat_service_run_toast">Finished logging. Check the results in Download/Launcher66_Logs</string>
     <string name="logcat_service_timeout">Timeout</string>
     <string name="logcat_service_timeout_str">Set the logcat timeout (in seconds):</string>
     <string name="app_type_system">System app</string>
     <string name="app_type_user">User app</string>
-    <string name="app_type_root">root enabled</string>
+    <string name="app_type_root">Root enabled</string>
     <string name="app_type_module_installed">Magisk module installed</string>
     <string name="app_type_module_missing">Magisk module not installed</string>
     <string name="app_type_shizuku_running">Shizuku installed and running</string>
@@ -502,28 +409,26 @@
     <string name="build_flavor_fyt">FYT version</string>
     <string name="build_flavor_standard">Standard version</string>
     <string name="app_version">Version: %1$s</string>
-    <string name="app_version_update">Version: %1$s (Available newer version: %2$s)</string>
-    <string name="update_version_button">Press here to download and update the app</string>
-    <string name="install_release_button">Press here to download and install release version %1$s</string>
-    <string name="confirmation_dialog">Do you want to update to the %1$s version?</string>
+    <string name="app_version_update">Version: %1$s (newer version available: %2$s)</string>
+    <string name="update_version_button">Tap to download and update the app</string>
+    <string name="install_release_button">Tap to download and install release version %1$s</string>
+    <string name="confirmation_dialog">Do you want to update to version %1$s?</string>
     <string name="update_btn">UPDATE</string>
-    <string name="update_allow_install">Allow installing apps from this source, then tap update again</string>
+    <string name="update_allow_install">Allow installing apps from this source, then tap UPDATE again</string>
     <string name="progress_dialog_str">Downloading %1$s</string>
-    <string name="download_in_progress">Download in progress...</string>
-    <string name="tv_map_str">Welcome to FYT Launcher Mod!\nCreate your own layout to display the navi window.\n\nThis Launcher allows to display apps in Picture-in-Picture mode using two different methods, nonetheless it might happen that some units do not support any of them. This means that you won\'t be able to display the navi app on the main screen, unless you flash your device with the custom ROM that supports it (provided that such ROM exists for your head unit).\nYou can still use the launcher however you\'ll have to turn off the PiP in the launcher\'s settings (otherwise Google Maps will pop up every time you\'ll try to open the home page - if it happens, wipe the launcher\'s data or reinstall it).</string>
+    <string name="download_in_progress">Download in progress…</string>
+    <string name="tv_map_str">Welcome to FYT Launcher Mod!\nCreate your own layout to display the navi window.\n\nThis launcher lets you display apps in Picture-in-Picture mode using two different methods; however, some units may not support either of them. This means that you won\'t be able to display the navi app on the main screen, unless you flash your device with the custom ROM that supports it (provided that such ROM exists for your head unit).\nYou can still use the launcher; however, you\'ll have to turn off the PiP in the launcher\'s settings (otherwise Google Maps will pop up every time you try to open the home page – if it happens, wipe the launcher\'s data or reinstall it).</string>
 
     <string name="materialcolorpicker__errHex">Hex Code Format incorrect</string>
-    <string name="materialcolorpicker__inputColor">Color: </string>
     <string name="materialcolorpicker__btnSelectColor">Select</string>
     <string name="materialcolorpicker__hash" translatable="false">#</string>
 
     <string name="prompt_folder_full">The folder is full.</string>
-    <string name="prompt_gallery_disable">The gallery process is not started!</string>
-    <string name="circular_sliding_screen">Desktop cycle</string>
+    <string name="prompt_gallery_disable">The gallery process has not started!</string>
 
     <string name="display_pip">Display PiP</string>
     <string name="pref_dual_pip_title">Dual PiP</string>
-    <string name="pref_dual_pip_summary">First PiP for the left app and Second PiP for the right one.</string>
+    <string name="pref_dual_pip_summary">First PiP for the left app and second PiP for the right one.</string>
     <string name="pref_first_pip_title">First PiP</string>
     <string name="pref_second_pip_title">Second PiP</string>
     <string name="pref_third_pip_title">Third PiP</string>
@@ -532,23 +437,23 @@
     <string name="pip_list_dialog">Select the front app (not every app is supported)</string>
     <string name="pip_screen_button">Page:</string>
     <string name="pip_position_button">\u0020\u0020\u0020ADJUST\u0020\u0020\u0020</string>
-    <string name="double_tap">Page: %1$s \nDouble tap anywhere \nto hide/show bottom bar</string>
+    <string name="double_tap">Page: %1$s \nDouble-tap anywhere \nto show/hide the bottom bar</string>
     <string name="screen_first">Page: 1</string>
     <string name="adjust_widget">Adjust your widget</string>
     <string name="restart_pip">Restart PiP</string>
-    <string name="restart_pip_summary">Press to restart the app</string>
-    <string name="fab_overlay_button">Show floating button that switches apps between PiPs: <b>left dual/first &lt;-&gt; third</b> and <b>right dual/second &lt;-&gt; fourth</b></string>
-    <string name="fab_overlay_button_left">Show floating button that switches apps between PiPs: <b>left dual/first &lt;-&gt; third</b></string>
-    <string name="fab_overlay_button_right">Show floating button that switches apps between PiPs: <b>right dual/second &lt;-&gt; fourth</b></string>
-    <string name="fab_overlay_summary">Set apps for every PiP and use only `Window` mode to show this button.</string>
-    <string name="extended_divider">Extend touchable area around divider\'s three dots</string>
+    <string name="restart_pip_summary">Tap to restart the app</string>
+    <string name="fab_overlay_button">Show floating button that switches apps between PiPs: <b>left dual/first ↔ third</b> and <b>right dual/second ↔ fourth</b></string>
+    <string name="fab_overlay_button_left">Show floating button that switches apps between PiPs: <b>left dual/first ↔ third</b></string>
+    <string name="fab_overlay_button_right">Show floating button that switches apps between PiPs: <b>right dual/second ↔ fourth</b></string>
+    <string name="fab_overlay_summary">Assign an app to every PiP and use only Window mode to show this button.</string>
+    <string name="extended_divider">Enlarge the touch area around the divider\'s three dots</string>
     <string name="cover_splash">PiP splash color</string>
-    <string name="cover_splash_icon">Average of the apps\' icon\'s opaque pixels</string>
+    <string name="cover_splash_icon">Average color of the app icon\'s opaque pixels</string>
     <string name="cover_splash_night_mode">White and black depending on the night mode</string>
-    <string name="cover_splash_black">Dark mode</string>
+    <string name="cover_splash_black">Black</string>
     <string name="cover_splash_transparent">Transparent</string>
     <string name="swipe_detector">Swipe detection for status bar</string>
-    <string name="swipe_detector_summary">Bottom center part of the status bar will detect swipes and allow to scroll between pages. This might be useful when PiP view occupies most of the visible screen.</string>
+    <string name="swipe_detector_summary">Bottom center part of the status bar will detect swipes and allow scrolling between pages. This might be useful when PiP view occupies most of the visible screen.</string>
 
     <string name="widgets_background_preference">Choose background for widgets</string>
     <string name="widgets_background_dialog_title">Select background for widgets:</string>
@@ -556,11 +461,11 @@
     <string name="bar_background_dialog_title">Select background for bottom bar:</string>
     <string name="pick_image_manually">Pick wallpaper</string>
     <string name="cancel">Cancel</string>
-    <string name="black_widgets">Widgets text and buttons color</string>
-    <string name="black_bar">Bottom bar text and buttons color</string>
+    <string name="black_widgets">Widget text and button color</string>
+    <string name="black_bar">Bottom bar text and button color</string>
     <string name="black_color">Black</string>
     <string name="white_color">White</string>
-    <string name="auto_hide_bottom_bar">Auto hide bottom bar</string>
+    <string name="auto_hide_bottom_bar">Auto-hide bottom bar</string>
     <string name="auto_hide_timeout">Timeout: %1$ss</string>
     <string name="resizable_bottom_bar">Resizable bottom bar</string>
     <string name="resizable_bottom_bar_summary">Height: %1$s of the screen\'s shorter edge (%2$s)</string>
