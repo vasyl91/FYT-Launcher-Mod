@@ -17,11 +17,6 @@
     <string name="workspace_scroll_format">主畫面 %1$d，共 %2$d 個</string>
     <string name="apps_customize_apps_scroll_format">第 %1$d 個應用程式頁面，共 %2$d 頁</string>
     <string name="apps_customize_widgets_scroll_format">第 %1$d 個小工具頁面，共 %2$d 頁</string>
-    <string name="first_run_cling_title">歡迎！</string>
-    <string name="first_run_cling_description">自訂主畫面。</string>
-    <string name="first_run_cling_create_screens_hint">建立更多應用程式和資料夾的畫面</string>
-    <string name="all_apps_cling_add_item">輕觸並按住應用程式，即可加到主畫面。</string>
-    <string name="folder_cling_create_folder">如要建立類似的資料夾，請輕觸並按住某個應用程式，然後疊到另一個應用程式之上。</string>
     <string name="folder_tap_to_rename">輕觸即可儲存新改的名稱</string>
     <string name="folder_closed">已關閉資料夾</string>
     <string name="folder_renamed">資料夾已重新命名為「%1$s」</string>

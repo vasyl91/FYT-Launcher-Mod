@@ -20,14 +20,6 @@
     <string name="permdesc_write_settings">Permite que la aplicación cambie la configuración y los accesos directos de la pantalla principal.</string>
     <string name="uninstall_system_app_text">Esta es una aplicación del sistema y no se puede desinstalar.</string>
     <string name="workspace_scroll_format">Pantalla principal %1$d de %2$d</string>
-    <string name="first_run_cling_title">¡Bienvenido/a!</string>
-    <string name="first_run_cling_description">Siéntete como en casa.</string>
-    <string name="first_run_cling_create_screens_hint">Crea más pantallas para aplicaciones y carpetas.</string>
-    <string name="workspace_cling_move_item">Mantén presionado el fondo para administrar el fondo de pantalla, los widgets y la configuración.</string>
-    <string name="all_apps_cling_title">Elige algunas aplicaciones</string>
-    <string name="all_apps_cling_add_item">Para agregar una aplicación a tu pantalla principal, mantenla presionada.</string>
-    <string name="folder_cling_title">Aquí tienes una carpeta</string>
-    <string name="folder_cling_create_folder">Para crear una carpeta como esta, mantén presionada una aplicación y luego muévela sobre otra.</string>
     <string name="folder_tap_to_close">Toca para cerrar la carpeta.</string>
     <string name="folder_tap_to_rename">Toca para guardar el nuevo nombre.</string>
     <string name="folder_renamed">El nombre de la carpeta se cambió a %1$s.</string>

@@ -17,12 +17,4 @@
     <string name="workspace_scroll_format">Skrin Laman Utama %1$d daripada %2$d</string>
     <string name="apps_customize_apps_scroll_format">Halaman apl %1$d daripada %2$d</string>
     <string name="apps_customize_widgets_scroll_format">Halaman widget %1$d daripada %2$d</string>
-    <string name="first_run_cling_description">Buat seperti berada di rumah sendiri.</string>
-    <string name="first_run_cling_create_screens_hint">Buat lebih banyak skrin untuk apl dan folder</string>
-    <string name="workspace_cling_title">Susun ruang anda</string>
-    <string name="workspace_cling_move_item">Sentuh &amp; tahan latar belakang untuk mengurus kertas dinding, widget dan tetapan.</string>
-    <string name="all_apps_cling_title">Pilih beberapa apl</string>
-    <string name="all_apps_cling_add_item">Untuk menambahkan apl pada skrin Laman Utama anda, sentuh &amp; tahan apl.</string>
-    <string name="folder_cling_title">Ini ada folder</string>
-    <string name="folder_cling_create_folder">Untuk membuat satu folder seperti ini, sentuh &amp; tahan apl, kemudian alihkan ke atas folder lain.</string>
 </resources>

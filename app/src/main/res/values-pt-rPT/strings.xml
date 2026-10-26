@@ -28,16 +28,6 @@
     <string name="workspace_scroll_format">Ecrã principal %1$d de %2$d</string>
     <string name="apps_customize_apps_scroll_format">Página de aplicações %1$d de %2$d</string>
     <string name="apps_customize_widgets_scroll_format">Página de widgets %1$d de %2$d</string>
-    <string name="first_run_cling_title">Bem-vindo(a)!</string>
-    <string name="first_run_cling_description">Sinta-se em casa.</string>
-    <string name="first_run_cling_create_screens_hint">Crie mais ecrãs para aplicações e pastas</string>
-    <string name="workspace_cling_title">Organizar o seu espaço</string>
-    <string name="workspace_cling_move_item">Toque sem soltar no fundo para gerir a imagem de fundo, os widgets e as definições.</string>
-    <string name="all_apps_cling_title">Escolher algumas aplicações</string>
-    <string name="all_apps_cling_add_item">Para adicionar uma aplicação ao Ecrã principal, toque na mesma sem soltar.</string>
-    <string name="folder_cling_title">Eis uma pasta</string>
-    <string name="folder_cling_create_folder">Para criar uma pasta, toque sem soltar numa aplicação e arraste-a para cima de outra aplicação.</string>
-    <string name="cling_dismiss">OK</string>
     <string name="folder_tap_to_rename">Toque para guardar o nome novo</string>
     <string name="folder_renamed">Nome de pasta alterado para %1$s</string>
     <string name="wallpaper_button_text">Imagens de fundo</string>

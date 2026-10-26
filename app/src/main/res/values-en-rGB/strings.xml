@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hotseat_out_of_space">No more room on the hot seat.</string>
-    <string name="workspace_cling_title">Organise your space</string>
 
     <string name="favorite_cache">Select the music apps that should use the favourites cache</string>
     <string name="favorite_cache_list">Favourites button cache</string>

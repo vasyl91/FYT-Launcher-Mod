@@ -18,12 +18,6 @@
     <string name="permdesc_write_settings">Võimaldab rakendusel muuta avaekraanil seadeid ja otseteid.</string>
     <string name="folder_hint_text">Nimetu kaust</string>
     <string name="workspace_scroll_format">Avaekraan %1$d/%2$d</string>
-    <string name="first_run_cling_create_screens_hint">Looge rakenduste ja kaustade jaoks rohkem ekraanikuvasid</string>
-    <string name="workspace_cling_title">Korraldage oma ruumi</string>
-    <string name="workspace_cling_move_item">Taustapildi, vidinate ja seadete haldamiseks puudutage tausta ning hoidke seda all.</string>
-    <string name="all_apps_cling_add_item">Rakenduse lisamiseks avaekraanile vajutage ja hoidke seda all.</string>
-    <string name="folder_cling_title">Siin on kaust</string>
-    <string name="folder_cling_create_folder">Sarnase loomiseks vajutage ja hoidke rakendust all, seejärel viige see teise peale.</string>
     <string name="folder_closed">Kaust on suletud</string>
     <string name="folder_name_format">Kaust: %1$s</string>
 </resources>

@@ -20,13 +20,6 @@
     <string name="workspace_scroll_format">"Écran d'accueil %1$d sur %2$d"</string>
     <string name="apps_customize_apps_scroll_format">Page des applications : %1$d sur %2$d</string>
     <string name="apps_customize_widgets_scroll_format">Page des widgets : %1$d sur %2$d</string>
-    <string name="first_run_cling_title">Bienvenue!</string>
-    <string name="first_run_cling_description">Faites comme chez vous.</string>
-    <string name="first_run_cling_create_screens_hint">"Créer plus d'écrans pour les applications et les dossiers"</string>
-    <string name="workspace_cling_title">Organiser son espace personnel</string>
-    <string name="workspace_cling_move_item">"Maintenez votre doigt sur l'arrière-plan pour gérer les fonds d'écran, les widgets et les paramètres."</string>
-    <string name="all_apps_cling_add_item">"Pour ajouter une application à votre écran d'accueil, maintenez votre doigt dessus."</string>
-    <string name="folder_cling_create_folder">Pour créer un dossier comme ça, maintenez votre doigt sur une application, puis déplacez-la sur une autre.</string>
     <string name="folder_tap_to_close">Toucher pour fermer le dossier</string>
     <string name="folder_tap_to_rename">Toucher pour enregistrer le nouveau nom</string>
     <string name="folder_name_format">Dossier : %1$s</string>
