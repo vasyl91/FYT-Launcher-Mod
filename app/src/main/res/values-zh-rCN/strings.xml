@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_filter_class">com.syu.car.CustomFilter</string>
     <string name="application_name">Launcher Mod</string>
     <string name="home">主屏</string>
-    <string name="uid_name">Android 核心应用</string>
     <string name="folder_name" />
     <string name="wallpaper_instructions">设置壁纸</string>
     <string name="wallpaper_accessibility_name">第%1$d张壁纸，共%2$d张</string>
@@ -14,50 +12,23 @@
     <string name="crop_wallpaper">剪裁壁纸</string>
     <string name="activity_not_found">未安装该应用。</string>
     <string name="widgets_tab_label">小部件</string>
-    <string name="widget_adder">小部件</string>
     <string name="toggle_weight_watcher">显示内存</string>
     <string name="long_press_widget_to_add">触摸并按住小部件即可选择。</string>
     <string name="market">商店</string>
     <string name="widget_dims_format">%1$d × %2$d</string>
-    <string name="external_drop_widget_pick_format">%1$s (%2$d × %3$d)</string>
-    <string name="external_drop_widget_error">无法将相关内容拖放到此主屏幕上。</string>
-    <string name="external_drop_widget_pick_title">选择要创建的小部件</string>
     <string name="rename_folder_label">文件夹名称</string>
-    <string name="rename_folder_title">重命名文件夹</string>
-    <string name="rename_action">确定</string>
-    <string name="cancel_action">取消</string>
-    <string name="menu_item_add_item">添加到主屏幕</string>
     <string name="group_applications">应用</string>
-    <string name="group_shortcuts">快捷方式</string>
-    <string name="group_widgets">小部件</string>
-    <string name="completely_out_of_space">您的主屏幕上没有空间了。</string>
     <string name="out_of_space">此主屏幕上已没有空间。</string>
     <string name="hotseat_out_of_space">底部区域已无空间。</string>
-    <string name="invalid_hotseat_item">该小部件太大，底部区域容纳不下。</string>
-    <string name="shortcut_installed">已创建“%s”快捷方式。</string>
     <string name="shortcut_uninstalled">已删除“%s”快捷方式。</string>
     <string name="shortcut_duplicate">“%s”快捷方式已存在。</string>
-    <string name="title_select_shortcut">选择快捷方式</string>
     <string name="title_select_application">选择应用</string>
     <string name="all_apps_button_label">应用</string>
     <string name="all_apps_home_button_label">主屏幕</string>
-    <string name="delete_zone_label_workspace">删除</string>
-    <string name="delete_zone_label_all_apps">卸载</string>
     <string name="delete_target_label">删除</string>
     <string name="delete_target_uninstall_label">卸载</string>
-    <string name="info_target_label">应用信息</string>
     <string name="accessibility_search_button">搜索</string>
     <string name="accessibility_voice_search_button">语音搜索</string>
-    <string name="accessibility_all_apps_button">应用</string>
-    <string name="accessibility_delete_button">删除</string>
-    <string name="delete_zone_label_all_apps_system_app">卸载更新内容</string>
-    <string name="help_url" />
-    <string name="cab_menu_delete_app">卸载应用</string>
-    <string name="cab_menu_app_info">应用详情</string>
-    <string name="cab_app_selection_text">已选择1个应用</string>
-    <string name="cab_widget_selection_text">已选择1个小部件</string>
-    <string name="cab_folder_selection_text">已选择1个文件夹</string>
-    <string name="cab_shortcut_selection_text">已选择1个快捷方式</string>
     <string name="permlab_install_shortcut">安装快捷方式</string>
     <string name="permdesc_install_shortcut">允许应用自行添加快捷方式。</string>
     <string name="permlab_uninstall_shortcut">卸载快捷方式</string>
@@ -68,9 +39,8 @@
     <string name="permdesc_write_settings">允许应用更改主屏幕中的设置和快捷方式。</string>
     <string name="gadget_error_text">加载小部件时出现问题</string>
     <string name="uninstall_system_app_text">这是系统应用，无法卸载。</string>
-    <string name="dream_name">火箭发射器</string>
     <string name="folder_hint_text">未命名文件夹</string>
-    <string name="workspace_description_format">主屏幕%1$d</string>
+    <string name="widget_fit_toggle">使小部件适应其单元格</string>
     <string name="default_scroll_format">第%1$d页，共%2$d页</string>
     <string name="workspace_scroll_format">主屏幕：第%1$d屏，共%2$d屏</string>
     <string name="apps_customize_apps_scroll_format">应用：第%1$d页，共%2$d页</string>
@@ -94,75 +64,39 @@
     <string name="folder_closed">文件夹已关闭</string>
     <string name="folder_renamed">已将文件夹重命名为“%1$s”</string>
     <string name="folder_name_format">文件夹：%1$s</string>
-    <string name="custom_workspace_cling_title_1" />
-    <string name="custom_workspace_cling_description_1" />
-    <string name="custom_workspace_cling_title_2" />
-    <string name="custom_workspace_cling_description_2" />
-    <string name="debug_memory_activity">* HPROF</string>
     <string name="widget_button_text">小部件</string>
-    <string name="livewallpaper_button_text">动态壁纸</string>
     <string name="wallpaper_button_text">壁纸</string>
     <string name="settings_button_text">设置</string>
-    <string name="no_app_msg">请修改车载设置中“选择导航应用”选项。</string>
-    <string name="no_tv_msg">未检测到电视设备！</string>
     <string name="car_aux">AUX</string>
-    <string name="car_tv">TV</string>
     <string name="car_dvr">行车记录仪</string>
-    <string name="car_steer">方向盘学习</string>
-    <string name="car_speech">语音</string>
     <string name="car_setting">车载设置</string>
-    <string name="car_wallpaper">壁纸</string>
     <string name="car_video">视频</string>
-    <string name="car_dvd">DVD</string>
     <string name="car_radio">收音机</string>
     <string name="car_music">音乐</string>
     <string name="car_bt">蓝牙</string>
-    <string name="car_carlife">百度CarLife</string>
     <string name="music_unknown">未知</string>
     <string name="car_bt_music">蓝牙音乐</string>
     <string name="car_app">应用</string>
     <string name="car_eq">EQ</string>
-    <string name="car_temp">温度</string>
-    <string name="car_weather">天气</string>
-    <string name="car_city">城市</string>
-    <string name="car_wind_direction">风向</string>
-    <string name="car_temprange">温度范围</string>
-    <string name="sys_settings">设置</string>
     <string name="music_name">歌曲</string>
     <string name="music_author">歌手</string>
     <string name="music_album">专辑</string>
-    <string name="car_link">E-CARLINK</string>
-    <string name="date_str_format">yyyy/MM/dd</string>
     <string name="car_settings">设置</string>
     <string name="car_navi">导航</string>
-    <string name="easy_conn">null</string>
-    <string name="car_gaode">高德导航</string>
     <string name="car_kuwo">酷我音乐</string>
-    <string name="car_klfm">考拉FM</string>
-    <string name="car_unicar">流量充值</string>
     <string name="car_gallery">图片浏览</string>
     <string name="car_file">文件管理</string>
-    <string name="car_voice">智能语音</string>
-    <string name="car_recharge">充值</string>
     <string name="car_car">我的爱车</string>
-    <string name="car_easyconn">手机互联</string>
-    <string name="car_browser">一键上网</string>
     <string name="car_miu_drive">喵驾</string>
     <string name="am">上午</string>
     <string name="pm">下午</string>
     <string name="dvr_switch">请打开内置DVR开关</string>
     <string name="app_name">时间</string>
     <string name="widget_name">车载控件</string>
-    <string name="dtwidget_name">日期</string>
-    <string name="dtmusicwidget_name">音乐</string>
-    <string name="google_setting">谷歌设置</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">未连接</string>
-    <string name="apps">应用</string>
-    <string name="car_carplay">Carplay</string>
     <string name="car_canbus">CAN总线</string>
-    <string name="car_time">时间</string>
     <string name="clingmusictitle">使用车助理语音操作音乐播放器</string>
     <string name="clingvideotitle">使用车助理语音操作视频播放器</string>
     <string name="clingnavetitle">使用车助理语音操作导航应用</string>
@@ -170,113 +104,56 @@
     <string name="clingbttitle">使用车助理语音操作蓝牙电话</string>
     <string name="clingkuwotitle">使用车助理语音操作酷我音乐</string>
     <string name="clingkaolatitle">使用车助理语音操作考拉FM</string>
-    <string name="clingmusictext">"1.可以通过唤醒语“打开音乐/播放音乐/播放歌曲/我要听音乐”来播放音乐。
-2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
-3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
-4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
-5.可以通过“关闭音乐”来暂停音乐。"</string>
-    <string name="clingvideotext">"1.可以通过唤醒语“打开视频”唤醒视频播放器。
-2.可以通过唤醒语“下一曲/上一曲”来切换上下曲。
-3.可以通过唤醒语“播放/暂停”来切换播放暂停键。"</string>
-    <string name="clingnavetext">"1.可以通过唤醒语“打开导航/开始导航/返回导航/回到导航/进入导航”唤醒导航应用。
-2.可以通过唤醒语“我要去世界之窗/导航到世界之窗/中山公园怎么走/怎么去白石洲/带我去白石洲”发起导航。
-3.可以通过唤醒语“我要回家/我要去公司/导航回家/导航去公司/带我回家/带我去公司”以及“修改家/公司的地址为XX”来导航家里到公司的路线。
-4.可以通过唤醒语“（查找/搜索）附近的餐馆/附近的停车场/附近的加油站”来搜索周边。
-5.可以通过唤醒语“我饿了/我想吃饭/我想洗脚/我想上网/我想吃肯德基”来搜索商圈。
-6.可以通过唤醒语“停止导航/结束导航/关闭导航/取消导航/退出导航”来关闭导航。"</string>
-    <string name="clingradiotext">"1.可以通过唤醒语“打开收音机”唤醒收音机应用。
-2.可以通过唤醒语“上一台/切换上一台/换上一台/上一个台/切换上一个台/换上一个台/前一台/前 一个台/切换前一台/换前一台/切换前一个台/换前一个台”播放上一台。
-3.可以通过唤醒语“下一台/切换下一台/换下一台/下一个台/切换下一个台/换下一个台/后一台/后一个台/切换后一台/换后一台/后一个台/切换后一个台/换后一个台”来播放下一台。
-4.可以通过唤醒语“调频到XX（例：调频到101.1）”来播放具体某台。
-5.可以通过唤醒语“关闭收音机”来关闭收音机。"</string>
-    <string name="clingbttext">"1.可以通过唤醒语“打开蓝牙/打开电话”唤醒蓝牙应用。
-2.可以通过唤醒语“离线（打联系人）：打个电话张三给李冰/给老妈打电话/呼叫黄豆豆/拨打张三的电话/打李冰的电话”以及“在线（打号码）：呼叫110/打电话给110”来打电话。
-3.可以通过唤醒语“第一个/第二个/深圳那个/北京那个/电信那个/移动那个(广东有多个结果，请再次选择)/最前面那个/最后面那个/最上面那个/最下面那个/尾号是0580/0580结尾/150开头/座机/短号/手机”来选择电话号码。
-4.可以通过唤醒语“关闭蓝牙/关闭电话”来关闭蓝牙电话。"</string>
-    <string name="clingkuwotext">"1.可以通过唤醒语“打开酷我音乐”来播放酷我音乐。
-2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
-3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
-4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
-5.可以通过“关闭酷我音乐”来关闭。"</string>
-    <string name="clingkaolatext">"1.可以通过唤醒语“打开考拉FM”来打开考拉FM。
-2.可以通过唤醒语“放首歌听/随便听听”来随便听听某音乐。
-3.可以通过唤醒语“我要听小苹果/播放月亮代表我的心/我要听汪峰的歌/播放陈奕迅的歌”来播放特定歌曲。
-4.可以通过“上一首/下一首/播放上一首/播放下一首/换一首”来控制音乐
-5.可以通过“关闭考拉FM”来关闭。"</string>
     <string name="cling_cancel">取消</string>
-    <string name="navi_destination">距目的地</string>
-    <string name="navi_curr_road">当前道路</string>
-    <string name="navi_next_road">下一道路</string>
-    <string name="surplus_distance">0公里</string>
-    <string name="remaintime">剩余0分钟</string>
     <string name="car_calculator">计算器</string>
     <string name="car_guide">指南</string>
-    <string name="skin_ruleless">Lionel</string>
-    <string name="car_km">公里/小时</string>
     <string name="select_default_app">选择需要默认打开的应用</string>
-    
+
     <string name="dt_time_widget">时间日期</string>
     <string name="dt_radio_widget">收音</string>
     <string name="dt_music_widget">音乐</string>
     <string name="dt_navi_widget">导航</string>
     <string name="group_wallpapers">壁纸</string>
-    
-    <string name="car_navi_title">"在线地图  实时路况"</string>
-    <string name="car_bt_title">一键拨号</string>
-    <string name="car_allapps_title">打开更多APP应用</string>
-    <string name="car_settings_title">系统功能设置</string>
+
     <string name="car_realnavi">实时导航</string>
-    <string name="chooser_wallpaper">从以下位置选择壁纸</string>
-    <string name="folder_cling_move_item">要移动应用，请触摸并按住它。</string>
-    <string name="workspace_cling_open_all_apps">要查看所有应用，请点击圆形按钮。</string>
-    <string name="use_carradio">请使用原车收音机。</string>
 
-    <string name="menu_add">添加</string>
-    <string name="menu_manage_apps">管理应用</string>
-    <string name="menu_wallpaper">壁纸</string>
-    <string name="menu_search">搜索</string>
-    <string name="menu_notifications">通知</string>
-    <string name="menu_settings">系统设置</string>
-    <string name="menu_help">帮助</string>
-
-    <string name="launcher_settings">桌面设置</string>  
-    <string name="launcher_creator">桌面布局编辑器</string> 
-    <string name="selected_widget">已选择:\u0020</string>       
-    <string name="top">上 </string>       
-    <string name="bottom">下 </string>         
+    <string name="launcher_settings">桌面设置</string>
+    <string name="launcher_creator">桌面布局编辑器</string>
+    <string name="selected_widget">已选择:\u0020</string>
+    <string name="top">上 </string>
+    <string name="bottom">下 </string>
     <string name="left">\u0020左\u0020</string>
-    <string name="right">\u0020右\u0020</string>  
-    <string name="confirm_layout">确认</string> 
+    <string name="right">\u0020右\u0020</string>
+    <string name="confirm_layout">确认</string>
 
-    <string name="layout_type">布局类型</string> 
-    <string name="user_layout">用户布局</string> 
-    <string name="stock_layout">原厂布局</string> 
-    <string name="layout_creator">布局编辑器</string> 
-    <string name="layout_summary_disabled"><![CDATA[将布局类型设置为 <b>"用户布局"</b> 以启用编辑器]]></string> 
-    <string name="layout_summary_enabled">设置您的布局</string> 
-    <string name="fyt_title_source">音乐标题来源</string> 
-    <string name="fyt_metadata">来自元数据</string> 
-    <string name="fyt_file">来自文件路径</string> 
-    <string name="left_bar">使用左侧栏</string> 
-    <string name="left_bar_on">左侧栏 + 底部栏</string> 
+    <string name="layout_type">布局类型</string>
+    <string name="user_layout">用户布局</string>
+    <string name="stock_layout">原厂布局</string>
+    <string name="layout_creator">布局编辑器</string>
+    <string name="layout_summary_disabled"><![CDATA[将布局类型设置为 <b>"用户布局"</b> 以启用编辑器]]></string>
+    <string name="layout_summary_enabled">设置您的布局</string>
+    <string name="fyt_title_source">音乐标题来源</string>
+    <string name="fyt_metadata">来自元数据</string>
+    <string name="fyt_file">来自文件路径</string>
+    <string name="left_bar">使用左侧栏</string>
+    <string name="left_bar_on">左侧栏 + 底部栏</string>
     <string name="left_bar_off">仅底部栏</string>
-    <string name="stats_screen_summary">设置显示统计信息的屏幕</string>   
-    <string name="pip_dialog_str">在屏幕上显示导航（默认1）：</string>  
-    <string name="date_widget">时间日期小部件</string> 
-    <string name="music_widget">音乐小部件</string> 
+    <string name="stats_screen_summary">设置显示统计信息的屏幕</string>
+    <string name="date_widget">时间日期小部件</string>
+    <string name="music_widget">音乐小部件</string>
     <string name="radio_widget">收音机小部件</string>
-    <string name="start_page">设置起始页</string> 
-    <string name="start_page_str">设置起始页（默认1）：</string> 
-    <string name="margins_str">边距（最大25）</string> 
-    <string name="transparent_statusbar">透明状态栏</string>  
-    <string name="notification_str">通知监听设置</string> 
-    <string name="accessibility_str">无障碍服务设置</string> 
-    <string name="wallpaper_picker">壁纸选择器</string>  
-    <string name="wallpaper_picker_source">壁纸选择器来源</string> 
-    <string name="wallpaper_picker_system">系统壁纸选择器</string> 
-    <string name="wallpaper_picker_launcher">应用内壁纸选择器</string> 
-    <string name="all_apps_textSize_str">设置应用列表图标文字大小（最大50）</string>  
-    <string name="workspace_textSize_str">设置主屏幕图标文字大小（最大50）</string>     
+    <string name="start_page">设置起始页</string>
+    <string name="start_page_str">设置起始页（默认1）：</string>
+    <string name="margins_str">边距（最大25）</string>
+    <string name="transparent_statusbar">透明状态栏</string>
+    <string name="notification_str">通知监听设置</string>
+    <string name="accessibility_str">无障碍服务设置</string>
+    <string name="wallpaper_picker">壁纸选择器</string>
+    <string name="wallpaper_picker_source">壁纸选择器来源</string>
+    <string name="wallpaper_picker_system">系统壁纸选择器</string>
+    <string name="wallpaper_picker_launcher">应用内壁纸选择器</string>
+    <string name="all_apps_textSize_str">设置应用列表图标文字大小（最大50）</string>
+    <string name="workspace_textSize_str">设置主屏幕图标文字大小（最大50）</string>
     <string name="launcher_home_wake">设备唤醒时始终置顶显示主屏幕</string>
     <string name="launcher_home_cold_start">设备启动时始终置顶显示主屏幕</string>
     <string name="cold_start_last_app_delay">重启后延迟重新打开上次的应用</string>
@@ -311,7 +188,7 @@
     <string name="youtube_revanced_kids_on">收藏按钮将启用，但在 YouTube 中已点赞的视频可能会在小组件中显示为未点赞。</string>
     <string name="youtube_revanced_kids_off">由于 YouTube API 的错误，madeForKids=true 的视频无法正确反映点赞状态 - 在 YouTube 中已点赞的视频会在小组件中显示为未点赞。为避免造成混淆，收藏按钮将被禁用。</string>
     <string name="copy_patch_url">点击以复制适用于 ReVanced Manager 的“Expose like status in MediaSession”补丁链接</string>
-    <string name="copy_patch_url_smmary">使用此补丁用于 YouTube。YT Music ReVanced 无需此补丁即可运行。</string>
+    <string name="copy_patch_url_summary">使用此补丁用于 YouTube。YT Music ReVanced 无需此补丁即可运行。</string>
     <string name="url_copied">链接已复制到剪贴板</string>
     <string name="fyt_rating_installed">fYT Rating：已安装</string>
     <string name="fyt_rating_not_installed">fYT Rating：未安装，双击前往下载页面</string>
@@ -342,18 +219,13 @@
     <string name="spotify_state_not_logged_in">未登录</string>
     <string name="spotify_state_expired">访问权限已过期，请重新登录</string>
     <string name="spotify_state_ready">已登录</string>
-    
-    <string name="device_settings">设备设置</string> 
+
+    <string name="device_settings">设备设置</string>
     <string name="layout_category">布局</string>
     <string name="misc_category">其他</string>
     <string name="widgets_category">小部件</string>
     <string name="stats_category">油耗统计</string>
     <string name="layout_set">布局已设置！按 Home 键查看效果。</string>
-    <string name="stats_pos_set">应用内窗口位置已保存！</string>
-    <string name="creator_map">导航</string>    
-    <string name="creator_date">日期</string>
-    <string name="creator_music">音乐</string>
-    <string name="creator_radio">收音机</string>
     <string name="stats_name">应用内统计</string>
     <string name="overlapping">小部件重叠了！</string>
     <string name="wont_save">当前布局将不会被保存。继续将重置布局。</string>
@@ -399,22 +271,22 @@
     <string name="stats_coordinates_string">设置应用内统计窗口位置</string>
 
     <string name="canbus_reader_category">CAN 总线读取器</string>
-    <string name="display_canbus_reader">显示 CAN 总线读取器</string> 
-    <string name="codes_guide">CAN 总线指南</string> 
-    <string name="codes_guide_initial_reading_title">代码记录器 - 初始读取</string> 
+    <string name="display_canbus_reader">显示 CAN 总线读取器</string>
+    <string name="codes_guide">CAN 总线指南</string>
+    <string name="codes_guide_initial_reading_title">代码记录器 - 初始读取</string>
     <string name="codes_guide_initial_reading_one">\'CAN 总线读取器\' 可能不适用于所有车辆！这取决于制造商提供的源代码。\n\n正确读取 CAN 总线数据需要三个关键值——cmdInt、cmdArr（在日志中以 CMD 表示，这两个不太重要，大多数随机组合都可以使用）以及 CAN 总线代码（在日志中以 CODE 表示，这些代码对判断数据至关重要）。</string>
     <string name="codes_guide_initial_reading_two">运行“初始读取”会创建一个包含如上日志的 txt 文件。关键是要确定代表当前油耗和续航里程的代码。\n\n对于当前油耗，请查找输出较少的代码——在附带的截图中是代码 91。\n\n对于续航里程，通常是保持单一输出、不会变化太快或按特定间隔变化的代码——在附带的截图中是代码 92。\n\n除非您有其他需求，其余代码可以忽略。</string>
-    <string name="codes_guide_initial_reading_three">“时间窗口”——这是“代码记录器”在每个 cmdInt 和 cmdArr 循环中保存输出的时间（以秒为单位）。\n\n“忽略单位数”——用于忽略只有一位数的输出，因为当前油耗和续航里程通常由多位数字表示。选择此选项可大大加快处理速度，因为循环不会停留在无关的输出上。\n\n实用提示——要高效地开始检查 CAN 总线代码，请使用较窄的起始-最大 cmdInt 和 cmdArr 范围。只要不超过最大值（输入对话框中会提供信息）且起始点不大于最大值，您就可以随意设置，不过范围越宽、时间窗口越长，处理时间就越久。</string> 
-    <string name="codes_guide_detailed_reading_title">代码检查器 - 详细读取</string> 
-    <string name="codes_guide_detailed_reading">此部分用于测试特定的 cmdInt 和 cmdArr 组合，以揭示它们所持有的代码。如前所述，cmdInt 和 cmdArr 不太重要，大多数随机组合应该都可以工作，不过这是我创建此模块之后才了解到的。无论如何，它可能对特定测试有用。</string> 
-    <string name="codes_guide_miscellaneous_title">其他</string> 
-    <string name="codes_guide_miscellaneous">跳过代码——顾名思义，此部分旨在忽略对给定代码的读取。它对“代码记录器”和“代码检查器”都有效。它可能不会加快处理速度，但日志不会包含您不感兴趣的输出。</string> 
+    <string name="codes_guide_initial_reading_three">“时间窗口”——这是“代码记录器”在每个 cmdInt 和 cmdArr 循环中保存输出的时间（以秒为单位）。\n\n“忽略单位数”——用于忽略只有一位数的输出，因为当前油耗和续航里程通常由多位数字表示。选择此选项可大大加快处理速度，因为循环不会停留在无关的输出上。\n\n实用提示——要高效地开始检查 CAN 总线代码，请使用较窄的起始-最大 cmdInt 和 cmdArr 范围。只要不超过最大值（输入对话框中会提供信息）且起始点不大于最大值，您就可以随意设置，不过范围越宽、时间窗口越长，处理时间就越久。</string>
+    <string name="codes_guide_detailed_reading_title">代码检查器 - 详细读取</string>
+    <string name="codes_guide_detailed_reading">此部分用于测试特定的 cmdInt 和 cmdArr 组合，以揭示它们所持有的代码。如前所述，cmdInt 和 cmdArr 不太重要，大多数随机组合应该都可以工作，不过这是我创建此模块之后才了解到的。无论如何，它可能对特定测试有用。</string>
+    <string name="codes_guide_miscellaneous_title">其他</string>
+    <string name="codes_guide_miscellaneous">跳过代码——顾名思义，此部分旨在忽略对给定代码的读取。它对“代码记录器”和“代码检查器”都有效。它可能不会加快处理速度，但日志不会包含您不感兴趣的输出。</string>
     <string name="skip_codes">跳过代码</string>
     <string name="skip_codes_summary">将跳过以下代码：%1$s</string>
     <string name="skip_codes_empty_summary">将读取整个代码集的数据。</string>
     <string name="skip_codes_dialog_str">输入要跳过的代码（用逗号分隔）：</string>
     <string name="logger_category">代码记录器</string>
-    <string name="code_logger_string">初始读取</string>    
+    <string name="code_logger_string">初始读取</string>
     <string name="code_logger_summary">点击开始</string>
     <string name="code_logger_summary_working">正在工作... %1$s 点击此处取消</string>
     <string name="code_logger_data">初始读取数据</string>
@@ -427,8 +299,8 @@
     <string name="omit_digits">忽略单位数</string>
     <string name="omit_digits_summary">油耗和续航里程通常包含多个数字。选择此选项可大大加快处理速度。</string>
     <string name="code_logger_dialog_toast">起始值不能大于最大值</string>
-    <string name="code_logger_toast">代码记录完成。请在 Download/Launcher66_Canbus 中查看结果</string> 
-    
+    <string name="code_logger_toast">代码记录完成。请在 Download/Launcher66_Canbus 中查看结果</string>
+
     <string name="inspector_category">代码检查器</string>
     <string name="code_inspector_string">详细读取</string>
     <string name="code_inspector_summary">点击开始</string>
@@ -438,13 +310,11 @@
     <string name="inspector_cmd_int_text">cmdInt（最大1198）：</string>
     <string name="inspector_cmd_arr_text">cmdArr（最大1199）：</string>
     <string name="code_inspector_timeout_text">超时：</string>
-    <string name="code_inspector_toast">代码检查完成。请在 Download/Launcher66_Canbus 中查看结果</string> 
+    <string name="code_inspector_toast">代码检查完成。请在 Download/Launcher66_Canbus 中查看结果</string>
 
     <string name="cancel_btn">取消</string>
     <string name="set_btn">提交</string>
     <string name="vehicle_not_exist">未检测到原车设备</string>
-    <string name="image_load_fail">无法加载图片</string>
-    <string name="wallpaper_load_fail">无法将图片设置为壁纸</string>
     <string name="night_mode">夜间模式</string>
     <string name="night_mode_summary">计算得出的日出: %1$s，日落: %2$s。</string>
     <string name="night_mode_lights">根据车灯切换夜间</string>
@@ -480,6 +350,7 @@
     <string name="logcat_full">日志范围</string>
     <string name="logcat_full_on">记录所有日志</string>
     <string name="logcat_full_off">仅记录启动器日志</string>
+    <string name="boot_logcat">包含启动日志</string>
     <string name="logcat_service_run">日志服务</string>
     <string name="logcat_service_run_summary">点击开始记录</string>
     <string name="logcat_service_saving">正在保存截至停止时的日志…</string>
@@ -496,6 +367,8 @@
     <string name="app_type_shizuku_stopped">已安装 Shizuku，未运行</string>
     <string name="build_type_release">Release 版本</string>
     <string name="build_type_debug">Debug 版本</string>
+    <string name="build_flavor_fyt">FYT 版本</string>
+    <string name="build_flavor_standard">标准版本</string>
     <string name="app_version">版本: %1$s</string>
     <string name="app_version_update">版本: %1$s（有新版本: %2$s）</string>
     <string name="update_version_button">点击此处下载并更新应用</string>
@@ -508,13 +381,10 @@
     <string name="tv_map_str">欢迎使用 FYT Launcher Mod！\n创建您自己的布局来显示导航窗口。\n\n此桌面支持使用两种不同的方法以画中画模式显示应用，但某些车机可能不支持其中任何一种。这意味着，除非您将设备刷入支持它的自定义 ROM（前提是您的车机存在这样的 ROM），否则您将无法在主屏幕上显示导航应用。\n您仍然可以使用此桌面，但需要在桌面设置中关闭画中画（否则每次尝试打开主页面时 Google 地图都会弹出——如果发生这种情况，请清除桌面数据或重新安装）。</string>
 
     <string name="materialcolorpicker__errHex">十六进制代码格式不正确</string>
-    <string name="materialcolorpicker__inputColor">颜色：</string>
     <string name="materialcolorpicker__btnSelectColor">选择</string>
-    <string name="materialcolorpicker__hash" translatable="false">#</string>
 
     <string name="prompt_folder_full">文件夹已满。</string>
     <string name="prompt_gallery_disable">图库进程未启动！</string>
-    <string name="circular_sliding_screen">桌面循环</string>
 
     <string name="display_pip">显示画中画</string>
     <string name="pref_dual_pip_title">双画中画</string>
@@ -532,15 +402,15 @@
     <string name="adjust_widget">调整您的小部件</string>
     <string name="restart_pip">重启画中画</string>
     <string name="restart_pip_summary">点击重启应用</string>
-    <string name="fab_overlay_button">显示浮动按钮，用于在画中画之间切换应用：<b>左双画/第一个 &lt;-&gt; 第三个</b> 和 <b>右双画/第二个 &lt;-&gt; 第四个</b></string>
-    <string name="fab_overlay_button_left">显示浮动按钮，用于在画中画之间切换应用：<b>左双画/第一个 &lt;-&gt; 第三个</b></string>
-    <string name="fab_overlay_button_right">显示浮动按钮，用于在画中画之间切换应用：<b>右双画/第二个 &lt;-&gt; 第四个</b></string>
+    <string name="fab_overlay_button">显示浮动按钮，用于在画中画之间切换应用：<b>左双画/第一个 ↔ 第三个</b> 和 <b>右双画/第二个 ↔ 第四个</b></string>
+    <string name="fab_overlay_button_left">显示浮动按钮，用于在画中画之间切换应用：<b>左双画/第一个 ↔ 第三个</b></string>
+    <string name="fab_overlay_button_right">显示浮动按钮，用于在画中画之间切换应用：<b>右双画/第二个 ↔ 第四个</b></string>
     <string name="fab_overlay_summary">为每个画中画设置应用，仅使用“窗口”模式时显示此按钮。</string>
     <string name="extended_divider">扩大分隔线三点的可点击区域</string>
     <string name="cover_splash">画中画启动画面颜色</string>
     <string name="cover_splash_icon">应用图标不透明像素的平均值</string>
     <string name="cover_splash_night_mode">根据夜间模式显示为白色或黑色</string>
-    <string name="cover_splash_black">深色模式</string>
+    <string name="cover_splash_black">黑色</string>
     <string name="cover_splash_transparent">透明</string>
     <string name="swipe_detector">状态栏滑动检测</string>
     <string name="swipe_detector_summary">状态栏底部中央区域将检测滑动并允许在页面之间滚动。当画中画视图占据大部分可见屏幕时此功能可能很有用。</string>
