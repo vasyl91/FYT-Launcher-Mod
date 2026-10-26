@@ -55,7 +55,7 @@
             <com.android.launcher66.settings.CustomPreference
                 android:key="copy_patch_url"
                 android:title="@string/copy_patch_url"
-                android:summary="@string/copy_patch_url_smmary"
+                android:summary="@string/copy_patch_url_summary"
                 app:layout="@layout/nested_preference_category_content" />
             
         </com.android.launcher66.settings.CustomPreferenceCategory>
