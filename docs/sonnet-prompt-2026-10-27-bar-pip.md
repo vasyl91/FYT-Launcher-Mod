@@ -14,13 +14,13 @@ Ta runda następuje po `docs/sonnet-prompt-2026-10-27-music-widget.md` (commity 
 | Xiaomi Redmi Note 8T | 14 | `standard` | root (VDHost) | VD | telefon |
 | Samsung Galaxy A55 | 16 | `standard` | Shizuku Next | VD | 120 Hz; tu PiP zostaje w tyle |
 
-Na 7862 każda zmiana jest no-opem albo ścisłą poprawą: E1 (swipe z nakładki) zmienia tylko pasek auto-hide, E2 (panele) usuwa wyłącznie zbędną pracę. Wyjątek to celowo E3, które na 7862 nie zmienia niczego. Każdą zmianę, która dotyka 7862, uzasadnij w treści commita („on the 7862 … stays as before because …”).
+Na 7862 każda zmiana jest no-opem albo ścisłą poprawą: E1 (swipe z nakładki) zmienia tylko pasek auto-hide. E2a (panele) usuwa wyłącznie zbędną pracę i animację WM. E2b przesuwa panele o klatkę wcześniej, a samych stron nie zmienia. E3 na 7862 nie zmienia niczego. Każdą zmianę, która dotyka 7862, uzasadnij w treści commita („on the 7862 … stays as before because …”).
 
 ## 1. Zasady pracy i konwencje repo (jak w poprzednich rundach)
 
 - **Komentarze i commity po angielsku**, w stylu otaczającego kodu: pełne zdania, wyjaśniają *dlaczego*. Gęstość komentarzy jak w sąsiednim kodzie.
 - **Commity**: temat w trybie rozkazującym `<Obszar>: <co>`, treść zawinięta na ~72 znaki. Zakończ dokładnie trailerami z system-remindera sesji. **Nie wpisuj nazwy ani identyfikatora modelu** nigdzie w repo.
-- **Jeden commit = jedna logiczna zmiana** (E1, E2, E3 w tej kolejności). Push: `git push -u origin ccr-087eed00-gbqsuz` (przy błędzie sieci ponów 4× z odstępem 2/4/8/16 s).
+- **Jeden commit = jedna logiczna zmiana** (E1, E2a, E2b, E3 w tej kolejności). Push: `git push -u origin ccr-087eed00-gbqsuz` (przy błędzie sieci ponów 4× z odstępem 2/4/8/16 s).
 - **Nie ruszaj commita `57e3600 [BRANCH-ONLY] CI: …` ani plików `.github/workflows/*.yml`.**
 - **Logowanie**: `android.util.Log` z `TAG` danej klasy. Rutynowe zdarzenia na `I`/`D`.
 - **StrictMode** (debug): nic z dysku ani sieci na wątku głównym.
@@ -154,7 +154,7 @@ Na 7862 każda zmiana jest no-opem albo ścisłą poprawą: E1 (swipe z nakładk
 
 ---
 
-## E2 — PiP: okna paneli bez animacji przesunięcia i bez zbędnej pracy na klatkę
+## E2a — PiP: okna paneli bez animacji przesunięcia i bez zbędnej pracy na klatkę
 
 ### Jak jest dziś (fakty z kodu)
 - Panel PiP to osobne okno potomne launchera: `TYPE_APPLICATION_PANEL` z tokenem launchera (`WindowHostSinglePane.ensureWindow()` ≈534–588, `WindowHostDualPane` ≈718–743). Startuje w `x = y = -10000`, rozmiar 1×1. Treść paneli VD to `SurfaceView` w `WindowHostVdView`. Na 7862 (A10, system) to `ActivityView` frameworku.
@@ -194,18 +194,82 @@ Na 7862 każda zmiana jest no-opem albo ścisłą poprawą: E1 (swipe z nakładk
 
    Na 7862 (ActivityView) zostaje jedna synchronizacja na przebieg zamiast jednej na każde przesunięcie, z tym samym wynikiem.
 
-5. **Diagnostyka** (jedna linia na przewinięcie):
-   - w `WindowUtil` licznik przesunięć okien paneli (`updatePipBounds`, tylko faktycznie wysłane) i czas od `Workspace.onPageBeginMoving`;
-   - w `onPageEndMoving` `Log.d(TAG, "pane moves: N in M ms")`, gdy N > 0;
-   - dodaj publiczne `WindowUtil.onPagesBeginMoving()` / `onPagesSettled()` i wołaj je z tych metod `Workspace`.
+5. **Diagnostyka** (jedna linia `Log.d` na przewinięcie):
+   - dodaj publiczne `WindowUtil.onPagesBeginMoving()` / `onPagesSettled()` i wołaj je z `Workspace.onPageBeginMoving`/`onPageEndMoving`;
+   - licznik przesunięć okien paneli (w `updatePipBounds`, tylko faktycznie wysłane) i czas trwania przewinięcia;
+   - opóźnienie przesunięcia: w `setPendingBoundsFast` zapisz `System.nanoTime()` żądania. Stały `OnPreDrawListener` na `root` okna panelu (dodany raz w `ensureWindow`, zawsze zwraca `true`) przy następnym przebiegu tego okna liczy czas od żądania i dodaje go do statystyki w `WindowUtil` (średnia, maksimum). Potem zeruje znacznik czasu;
+   - log w `onPagesSettled()`, gdy N > 0: `pane moves: N in M ms, move to pane frame avg A ms, max B ms`.
 
-   Porównanie A55, 7870 i 7862 pokaże liczbę klatek na przewinięcie.
+   Po E2a opóźnienie wyniesie mniej więcej jedną klatkę (8 ms przy 120 Hz, 16 ms przy 60 Hz). Po E2b powinno spaść do ułamka klatki. Po tym na urządzeniu widać, że E2b działa.
 
 6. Test: `PaneWindows` decyduje tylko po SDK. Wydziel `static boolean usesPublicApi(int sdkInt)` (≥ 34) i przetestuj granicę 33/34 w `app/src/test/java/com/syu/util/PaneWindowsTest.java`. `PaneWindows` nie może mieć statycznych pól z typami Androida; samo `Build.VERSION` czytaj w `disableMoveAnimation`.
 
 7. Treść commita: przyczyna (animacja przesunięcia okna w WM, każda klatka zaczyna ją od nowa, widoczna przy włączonych animacjach, A55 120 Hz), dlaczego bez dławienia, co ubyło z pracy na klatkę. Na 7862: panele przesuwają się tak samo albo bez animacji, jeśli była; synchronizacja `ActivityView` daje ten sam wynik przy mniejszej liczbie wywołań.
 
 8. **Nie zmieniaj**: wzoru pozycji (`updatePipPosition`), zmiany rozmiaru (`applyPaneGeometry`/`applySplit`), protokołu hosta VD ani okna statystyk `CanbusService` (osobny temat; wspomnij w raporcie, że ten sam pomocnik można tam później zastosować).
+
+## E2b — PagedView/Workspace: panele przesuwane w tej samej klatce co strony (osobny commit, po E2a)
+
+### Wynik testu właściciela i przyczyna reszty opóźnienia
+Na A55 z wyłączoną „Skalą animacji okna” PiP idzie szybciej, ale nadal wolniej niż strony. Animacja WM była więc jedną z przyczyn. Reszta to opóźnienie w czasie, widoczne w kodzie:
+- Pozycję paneli liczy się dziś w trakcie rysowania launchera, czyli w fazie `CALLBACK_TRAVERSAL` Choreographera:
+  - `Workspace.computeScroll` (≈3926);
+  - `screenScrolled` z `dispatchDraw` (≈4150);
+  - `PagedView.computeScrollHelper` (≈751), który przy dociąganiu i rzucie także w `draw` liczy pozycję stron z `Scroller`.
+- `updateViewLayout` wołane w tej fazie planuje przebieg okna panelu (`ViewRootImpl.scheduleTraversals`) dopiero na **następną** klatkę, bo Choreographer pobiera zadania fazy na jej początku. Okno panelu dostaje nową pozycję (`relayoutWindow`) klatkę po tym, jak launcher narysował stronę, a WM nakłada ją jeszcze później. Przy 120 Hz i szybkim rzucie daje to widoczną szczelinę: panel jedzie za stroną.
+- Wyjście: znać pozycję stron, zanim launcher je narysuje, i przesunąć panele w fazie `CALLBACK_ANIMATION` tej samej klatki. Przebieg okna panelu odbędzie się wtedy w tej samej klatce co rysowanie stron.
+
+### Implementacja
+1. **Czysta klasa** `app/src/main/java/com/android/launcher66/ScrollerPrediction.java` (final, bez `android.*`). Używa tego samego wzoru co `android.widget.Scroller.computeScrollOffset()` po `startScroll`:
+   ```java
+   /** Scroller's own progress: passedMs * (1.0f / (float) durationMs). */
+   static float progress(int passedMs, int durationMs)
+   /** Scroller's x for the frame: passedMs >= durationMs (or durationMs <= 0) -> finalX,
+    *  else startX + Math.round(interpolated * (finalX - startX)). */
+   static int x(int startX, int finalX, int passedMs, int durationMs, float interpolated)
+   ```
+   Wynik ma być **co do piksela** równy temu, co `Scroller` policzy w `draw` (to samo rzutowanie `float`, `Math.round(float)`). Wtedy filtr równości w `updatePipPositionsForScroll` (≈1702) sprawi, że wywołania w `draw` nic już nie zmienią.
+
+   Test `app/src/test/java/com/android/launcher66/ScrollerPredictionTest.java`:
+   - `passed = 0` → `startX`;
+   - `passed == duration` → `finalX`;
+   - `duration <= 0` → `finalX`;
+   - kilka punktów z kwintyczną interpolacją `PagedView.ScrollInterpolator` (`t -= 1; t^5 + 1`), przeliczoną w teście tym samym wzorem co `Scroller`;
+   - ruch w lewo i w prawo.
+
+2. **`PagedView`**:
+   - Pole `protected Interpolator mScrollerInterpolator`. Ustaw je tam, gdzie powstaje `mScroller`: w `init()` (≈329), a w `SmoothPagedView.init()` (≈62) dla trybu 0 także, choć Workspace używa trybu 1.
+   - Pole `private boolean mScrollerPredictable`: `true` zaraz po `mScroller.startScroll(...)` w `snapToPage` (≈2355), `false` przy `mScroller.fling(...)` (≈2035).
+   - Metoda `int scrollXForThisFrame()`:
+     - przy `mScroller.isFinished() || !mScrollerPredictable || mFreeScroll || getScaleX() != 1f` zwraca `mUnboundedScrollX`. Przy przeciąganiu palcem faza INPUT tej klatki już przesunęła strony; w pozostałych przypadkach zostaje dzisiejsze zachowanie;
+     - w przeciwnym razie zwraca `ScrollerPrediction.x(mScroller.getStartX(), mScroller.getFinalX(), passed, duration, passed < duration ? mScrollerInterpolator.getInterpolation(ScrollerPrediction.progress(passed, duration)) : 1f)`, gdzie `passed = mScroller.timePassed()`, `duration = mScroller.getDuration()`.
+
+     `Scroller.timePassed()` liczy od `AnimationUtils.currentAnimationTimeMillis()`, a Choreographer w `doFrame` blokuje ten zegar na czas klatki. W fazie ANIMATION wychodzi więc ta sama wartość co później w `draw`.
+
+     **Nie wołaj tu `mScroller.computeScrollOffset()`**: w ostatniej klatce ustawiłby `mFinished`, a `computeScrollHelper` w `draw` nie wykonałby wtedy końcowego `scrollTo` i strona stanęłaby kilka pikseli przed celem.
+
+3. **`Workspace`**:
+   - Dodaj `Choreographer.FrameCallback mPaneFrame` i flagę `mPaneFramePosted`. W `doFrame` zdejmij flagę; jeśli `isPageMoving()`, wywołaj `WindowUtil.updatePipPositionsForScroll(scrollXForThisFrame())` i postuj się ponownie (`Choreographer.getInstance().postFrameCallback`). Pierwszy raz postuj go w `onPageBeginMoving()`, gdy flaga jest zdjęta. Callback sam wygasa, gdy strony stoją.
+   - Dotychczasowe wywołania w `draw` (`computeScroll`, `screenScrolled`, `computeScrollHelper`, `notifyPageSwitchListener`) **zostają** jako zabezpieczenie. Przy tej samej wartości filtr równości robi z nich no-op, a przy innej (ścieżka, której przewidywanie nie objęło) zadziałają jak dziś.
+   - Komentarz przy callbacku:
+     - dlaczego faza ANIMATION (przebieg okna panelu w tej samej klatce co rysowanie stron);
+     - dlaczego przewidywanie zamiast `computeScrollOffset`;
+     - wynik testu na A55.
+
+4. **Sprzęt**: bez dodatkowej pracy na klatkę. Dochodzi jeden lekki callback, a przesunięcia okien są te same, tylko o klatkę wcześniej. Słabe urządzenie robi wszystko w swoim tempie klatek, tak jak dziś.
+
+5. Treść commita:
+   - wynik testu na A55 (bez animacji okien szybciej, ale nadal z tyłu);
+   - mechanizm opóźnienia o klatkę i rozwiązanie;
+   - dokładność przewidywania i dlaczego bez `computeScrollOffset`.
+
+   Na 7862 panele przesuwają się o klatkę wcześniej, czyli równiej ze stronami; ruch samych stron się nie zmienia.
+
+6. **Granica tego rozwiązania** (opisz w raporcie): WM nakłada pozycję okna niezależnie od klatki launchera, więc może zostać różnica rzędu jednej klatki. Jeśli tester ją nadal zobaczy, o dalszym kroku decyduje właściciel:
+   - (a) wyprzedzanie panelu o jedną klatkę w fazie dociągania (tylko tam ruch jest znany z góry);
+   - (b) rysowanie paneli wewnątrz okna launchera zamiast w osobnych oknach. To duża zmiana, ale tylko ona daje pełną zgodność.
+
+   **Nie wdrażaj ich w tej rundzie.**
 
 ---
 
@@ -258,13 +322,13 @@ Pinned PiP ma działać na jednostkach FYT z `com.syu.music` (7862, 8581 i stars
 ---
 
 ## 4. Czego NIE zmieniać
-- Zwykłego paska (bez auto-hide), `StatusBarSwipeDetector`, `BottomBarEdgeHandle` ani progów stronicowania `PagedView` (`persist.sys.la_*`).
+- Zwykłego paska (bez auto-hide), `StatusBarSwipeDetector`, `BottomBarEdgeHandle` ani progów i czasów stronicowania `PagedView` (`persist.sys.la_*`, `Scroller`). E2b tylko odczytuje stan `Scroller`.
 - Wzoru pozycji paneli, zmiany ich rozmiaru, hosta VD, `CanbusService`.
 - `initDefaultApp()` i właściwości `persist.launcher.packagename`.
 - Plików `.github/workflows/*` i commita `[BRANCH-ONLY]`.
 
 ## 5. Weryfikacja
-1. Testy JVM: nowe (`BarSwipeGestureTest`, `PaneWindowsTest`, `PinnedPipTest`) i wszystkie dotychczasowe zielone (`:app:testFytDebugUnitTest` w CI).
+1. Testy JVM: nowe (`BarSwipeGestureTest`, `PaneWindowsTest`, `ScrollerPredictionTest`, `PinnedPipTest`) i wszystkie dotychczasowe zielone (`:app:testFytDebugUnitTest` w CI).
 2. CI `Build` zielone na ostatnim commicie (obie wersje debug).
 3. Przegląd własnego diffu:
    - żadnej zmiany flag okna nakładki w trakcie gestu;
@@ -277,12 +341,12 @@ Pinned PiP ma działać na jednostkach FYT z `com.syu.music` (7862, 8581 i stars
    - (a) Auto-hide: otworzyć pasek, przeciągnąć po nim w lewo lub w prawo. Strony idą za palcem, pasek się zsuwa. Palec zatrzymany w miejscu paska nadal prowadzi strony, a po puszczeniu strony się dociągają.
    - (b) Auto-hide: tapnięcie ikony, przycisku wszystkich aplikacji i przycisków muzyki działa. Przytrzymanie ikony otwiera wybór aplikacji, a późniejszy ruch nie przewija stron. Ruch pionowy nie przewija.
    - (c) Auto-hide: palec trzymany na pasku dłużej niż timeout nie traci paska. Pasek chowa się po puszczeniu.
-   - (d) A55 (i 7870, Redmi): przewijanie stron z panelami PiP. Panel idzie równo ze stroną i placeholderem. W logu jest `window move animation off (api)` (A13: `privateFlags`) oraz `pane moves: N in M ms`.
+   - (d) A55 (i 7870, Redmi), animacje okien włączone jak fabrycznie: przewijanie stron z panelami PiP. Panel idzie równo ze stroną i placeholderem. W logu jest `window move animation off (api)` (A13: `privateFlags`), a w liniach `pane moves: …` średnie opóźnienie wynosi ułamek klatki.
    - (e) 7862: przewijanie z panelami bez zmian albo równiej; Pinned PiP działa jak dotąd, przełącznik Window/PiP widoczny.
    - (f) 7870: brak przełącznika Window/PiP w ustawieniach paneli; zapisany wcześniej tryb pinned wraca do Window (log `I` z resetu).
 
 ## 6. Raport końcowy (w odpowiedzi, po polsku)
-- Lista commitów (hash + temat) i dla E1–E3: zrobione / pominięte, z jednym zdaniem dlaczego.
-- Jak potwierdzić przyczynę na A55 bez nowej wersji: Opcje programisty → „Skala animacji okna” → wyłączona. Jeśli PiP wtedy idzie równo, przyczyną była animacja przesunięcia.
+- Lista commitów (hash + temat) i dla E1, E2a, E2b, E3: zrobione / pominięte, z jednym zdaniem dlaczego.
+- Że po E2a i E2b może zostać różnica rzędu jednej klatki (E2b.6) i jakie są wtedy opcje (a)/(b) do decyzji właściciela.
 - Co na 7862 się zmieniło (tylko mniej pracy przy synchronizacji `ActivityView`) i dlaczego.
 - Pytania do właściciela, jeśli coś zostało niejasne.
