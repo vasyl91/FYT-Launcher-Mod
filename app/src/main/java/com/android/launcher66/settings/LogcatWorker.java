@@ -57,9 +57,13 @@ import java.util.concurrent.atomic.AtomicLong;
  *  - a capture started before shared storage is mounted (the launcher starts that early at boot)
  *    begins in the fallback folder and is moved to Downloads as soon as Downloads can be written;
  *    files earlier runs had to leave there are moved over after the next capture in Downloads;
- *  - the file name comes from the clock at the start, which FYT often has wrong after boot and
- *    corrects only later: a capture never appends to an older file that got the same name, and
- *    its file is renamed to the real start time once the clock has been corrected;
+ *  - the file name is what started the capture, what it holds and the clock at the start
+ *    (reboot_full_27-10-2026_21-51-41.txt, see LogFileName). The scope changes from pid to full
+ *    when the VD host attaches during the capture, and the file is renamed then. A capture that a
+ *    wake extends keeps the name of its own trigger; the wake is a line in its text. A late full
+ *    dump ends in _late.txt. The clock is what FYT often has wrong after boot and corrects only
+ *    later: a capture never appends to an older file that got the same name, and its file is
+ *    renamed to the real start time once the clock has been corrected, the prefix kept;
  *  - the capture's own timing (timeout, retries) runs on elapsedRealtime(), so a clock correction
  *    during a capture neither ends it at once nor stalls it;
  *  - while a capture runs, a main thread that stops responding is reported with its stack, so
@@ -97,24 +101,25 @@ public final class LogcatWorker {
     /** What started the capture: how long it waits for a VD host that is on its way (see hostWaitMs()). */
     public enum Trigger {
         /** The launcher's first start after a device restart. */
-        COLD_START("cold start"),
+        COLD_START("cold start", "reboot"),
         /** Any other start of the process (crash, update). */
-        PROCESS_START("process start"),
-        WAKE("wake"),
+        PROCESS_START("process start", "start"),
+        WAKE("wake", "wake"),
         /** The run button in the settings. */
-        MANUAL("manual");
+        MANUAL("manual", "user");
 
         final String label;
+        /** The word that starts the capture's file name, see LogFileName. */
+        final String fileLabel;
 
-        Trigger(String label) {
+        Trigger(String label, String fileLabel) {
             this.label = label;
+            this.fileLabel = fileLabel;
         }
     }
 
     private static final String TAG = "LogcatWorker";
     private static final String LOG_FILE_SUFFIX = ".txt";
-    /** A late full dump is named like its capture, with this before the extension. */
-    private static final String LATE_DUMP_SUFFIX = "_full.txt";
     private static final String LOG_DIR_NAME = "Launcher66_Logs";
     private static final String STREAM_BUFFER = "main";
     private static final int DEFAULT_TIMEOUT_SECONDS = 30;
@@ -127,8 +132,6 @@ public final class LogcatWorker {
      * than the time a last move into Downloads can take, so its toast (with the path) is not lost.
      */
     private static final long FINISH_WATCHDOG_MS = 5000L;
-    /** File name format; the name is the capture's start time. */
-    private static final String NAME_PATTERN = "dd-MM-yyyy_HH-mm-ss";
     /**
      * A file name counts as wrong only when it is further off the real start time than this, and
      * further than the capture's own length plus NAME_CLOCK_MARGIN_MS (see nameToleranceMs()).
@@ -446,6 +449,9 @@ public final class LogcatWorker {
         // When the file name was taken, on the monotonic clock: the real start time can be worked
         // out from it once the wall clock has been corrected.
         long startElapsedMs = 0L;
+        // Whether the VD host attached during the capture, which then holds everything: the file
+        // name says so at the end.
+        boolean upgraded = false;
         // The wall clock of the start, for a late full dump and the switch to the host: they go
         // back to it.
         final long captureBeganWallMs = System.currentTimeMillis();
@@ -466,28 +472,12 @@ public final class LogcatWorker {
                         + "), capturing to " + dir + " until it is");
             }
 
-            startElapsedMs = SystemClock.elapsedRealtime();
-            String timestamp = new SimpleDateFormat(NAME_PATTERN, Locale.getDefault())
-                    .format(new Date());
-            // A new file every time, never appended to: FYT often boots with the same wrong clock,
-            // and captures of two different boots then got the same name and ended up in one file.
-            logFile = uniqueFile(dir, timestamp + LOG_FILE_SUFFIX);
-            Log.i(TAG, "Opening log file: " + logFile.getAbsolutePath());
-
-            fileWriter = new BufferedWriter(new FileWriter(logFile, false), 8192);
-            writeLine(streamHeader(myPid, STREAM_BUFFER, timeoutSeconds, mode, trigger));
-            writeLine("===== device=" + Build.MANUFACTURER + " " + Build.MODEL
-                    + ", android=" + Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ") =====");
-            fileWriter.flush();
-
             if (prefs == null) {
                 prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
             }
+            // The scope is worked out before the file is named: the name says what the file holds.
             boolean fullLog = false;
             boolean bootLog = false;
-            // Whether this capture may reach back to the boot is decided by when it started, not
-            // by when the VD host came (Shizuku can take a minute or more after the boot).
-            final long captureStartedAt = SystemClock.elapsedRealtime();
             boolean wantsFullLog = prefs.getBoolean(Keys.LOGCAT_FULL, LogcatDefaults.on(ctx));
             boolean system = LauncherApplication.hasSystemPrivileges();
             boolean hostAttached = !system && wantsFullLog && HostProcess.isAvailable();
@@ -499,6 +489,30 @@ public final class LogcatWorker {
             StartPlan plan = startPlan(wantsFullLog, system, hostAttached,
                     wantsFullLog && !system && !hostAttached && HostAwait.isExpected(ctx));
             boolean viaHost = plan == StartPlan.HOST;
+            if (system || viaHost) {
+                fullLog = wantsFullLog;
+                // The boot log setting: only with both settings on.
+                bootLog = fullLog && prefs.getBoolean(Keys.BOOT_LOGCAT, LogcatDefaults.on(ctx));
+            }
+
+            startElapsedMs = SystemClock.elapsedRealtime();
+            String timestamp = new SimpleDateFormat(LogFileName.NAME_PATTERN, Locale.getDefault())
+                    .format(new Date());
+            // A new file every time, never appended to: FYT often boots with the same wrong clock,
+            // and captures of two different boots then got the same name and ended up in one file.
+            logFile = uniqueFile(dir, LogFileName.name(
+                    LogFileName.prefix(trigger.fileLabel, fullLog), timestamp, LOG_FILE_SUFFIX));
+            Log.i(TAG, "Opening log file: " + logFile.getAbsolutePath());
+
+            fileWriter = new BufferedWriter(new FileWriter(logFile, false), 8192);
+            writeLine(streamHeader(myPid, STREAM_BUFFER, timeoutSeconds, mode, trigger));
+            writeLine("===== device=" + Build.MANUFACTURER + " " + Build.MODEL
+                    + ", android=" + Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ") =====");
+            fileWriter.flush();
+
+            // Whether this capture may reach back to the boot is decided by when it started, not
+            // by when the VD host came (Shizuku can take a minute or more after the boot).
+            final long captureStartedAt = SystemClock.elapsedRealtime();
             if (plan == StartPlan.NO_HOST) {
                 writeLine("===== everything: no VD host (root or Shizuku) attached, only the"
                         + " launcher's own log =====");
@@ -508,11 +522,6 @@ public final class LogcatWorker {
                         + " attaches (up to " + windowMs / 1000L + " s) =====");
                 awaitingHost = true;
                 mainHandler.post(() -> awaitHostOnMain(windowMs));
-            }
-            if (system || viaHost) {
-                fullLog = wantsFullLog;
-                // The boot log setting: only with both settings on.
-                bootLog = fullLog && prefs.getBoolean(Keys.BOOT_LOGCAT, LogcatDefaults.on(ctx));
             }
             sViaHost = viaHost;
             writeLine(scopeLine(fullLog, viaHost));
@@ -548,6 +557,7 @@ public final class LogcatWorker {
                     // from the start of the capture.
                     upgradeRequested = false;
                     awaitingHost = false;
+                    upgraded = true;
                     fullLog = true;
                     usePidFlag = false;
                     sViaHost = true;
@@ -746,6 +756,23 @@ public final class LogcatWorker {
                 if (moved != null) {
                     logFile = moved;
                     waitingForPublic = false;
+                }
+            }
+
+            if (upgraded && logFile != null && logFile.exists()) {
+                // Named for the scope it started with, pid; from the host's arrival it holds
+                // everything. After the move to Downloads, which keeps the name, and before the
+                // clock check, the toast and the late dump's watch, which all take the final name.
+                String renamed = LogFileName.withScope(logFile.getName(), true);
+                if (!renamed.equals(logFile.getName())) {
+                    File target = uniqueFile(logFile.getParentFile(), renamed);
+                    if (logFile.renameTo(target)) {
+                        Log.i(TAG, "Log file renamed to " + target.getName()
+                                + " (the VD host attached, the capture holds everything from then on)");
+                        logFile = target;
+                    } else {
+                        Log.w(TAG, "Could not rename " + logFile.getName() + " to " + target.getName());
+                    }
                 }
             }
 
@@ -1039,9 +1066,14 @@ public final class LogcatWorker {
                 File dir = captureFile.getParentFile();
                 if (dir == null || !dir.isDirectory()) return;
                 String name = captureFile.getName();
-                String base = name.endsWith(LOG_FILE_SUFFIX)
-                        ? name.substring(0, name.length() - LOG_FILE_SUFFIX.length()) : name;
-                out = uniqueFile(dir, base + LATE_DUMP_SUFFIX);
+                // Next to reboot_pid_<stamp>.txt: reboot_full_<stamp>_late.txt, the stamp the same.
+                LogFileName.Parts parts = LogFileName.parse(name);
+                out = uniqueFile(dir, parts != null
+                        ? LogFileName.name(LogFileName.prefix(trigger.fileLabel, true),
+                                parts.timestamp, LogFileName.LATE_SUFFIX)
+                        : (name.endsWith(LOG_FILE_SUFFIX)
+                                ? name.substring(0, name.length() - LOG_FILE_SUFFIX.length()) : name)
+                                + LogFileName.LATE_SUFFIX);
                 long afterS = (SystemClock.elapsedRealtime() - startElapsedMs) / 1000L;
                 List<String> cmd = new ArrayList<>();
                 cmd.add("logcat");
@@ -1441,12 +1473,13 @@ public final class LogcatWorker {
      */
     private static File fixNameForClock(File file, long startElapsedMs, long toleranceMs) {
         String name = file.getName();
-        if (name.length() < NAME_PATTERN.length()) return file;
-        SimpleDateFormat fmt = new SimpleDateFormat(NAME_PATTERN, Locale.getDefault());
+        LogFileName.Parts parts = LogFileName.parse(name);
+        if (parts == null) return file;   // not a name this class gave
+        SimpleDateFormat fmt = new SimpleDateFormat(LogFileName.NAME_PATTERN, Locale.getDefault());
         fmt.setLenient(false);
         long shownMs;
         try {
-            Date shown = fmt.parse(name.substring(0, NAME_PATTERN.length()));
+            Date shown = fmt.parse(parts.timestamp);
             if (shown == null) return file;
             shownMs = shown.getTime();
         } catch (ParseException e) {
@@ -1458,8 +1491,9 @@ public final class LogcatWorker {
         if (Math.abs(offBy) <= toleranceMs) return file;
 
         File dir = file.getParentFile();
-        String suffix = name.endsWith(LATE_DUMP_SUFFIX) ? LATE_DUMP_SUFFIX : LOG_FILE_SUFFIX;
-        File target = uniqueFile(dir, fmt.format(new Date(realStartMs)) + suffix);
+        // The prefix and the kind of file stay, only the stamp is corrected.
+        File target = uniqueFile(dir, LogFileName.name(parts.prefix,
+                fmt.format(new Date(realStartMs)), parts.suffix));
         if (!file.renameTo(target)) {
             Log.w(TAG, "Could not rename " + file + " to " + target.getName());
             return file;
