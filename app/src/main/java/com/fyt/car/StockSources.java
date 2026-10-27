@@ -88,6 +88,8 @@ public final class StockSources {
     // read from any thread
     private static volatile Kind sShown = Kind.SYU_MUSIC;
     private static volatile boolean sSyuMediaUnit;
+    /** Whether probeDevice() has finished, i.e. whether sSyuMediaUnit means anything yet. */
+    private static volatile boolean sProbed;
     private static volatile int sSyuMediaUid = -1;
     private static volatile ComponentName sRadioAppComponent;
     private static final Map<String, ComponentName> sPages = new ConcurrentHashMap<>();
@@ -126,6 +128,14 @@ public final class StockSources {
 
     /** Off the main thread: package lookups are binder calls. */
     private static void probeDevice() {
+        try {
+            probeDeviceNow();
+        } finally {
+            sProbed = true;
+        }
+    }
+
+    private static void probeDeviceNow() {
         PackageManager pm = sApp.getPackageManager();
         boolean unit = false;
         int uid = -1;
@@ -179,6 +189,14 @@ public final class StockSources {
      */
     public static boolean isSyuMediaUnit() {
         return sSyuMediaUnit;
+    }
+
+    /**
+     * Whether the device lookup has finished. Until then {@link #isSyuMediaUnit()} is false on a
+     * 7870 as well; whoever must not take that for "not a 7870" waits for this.
+     */
+    public static boolean isProbed() {
+        return sProbed;
     }
 
     /** The uid of com.syu.media on a 7870, else -1. */
