@@ -142,7 +142,9 @@ public class Callback_0443_WC2_YingFeiNiDi_GX50 extends CallbackCanbusBase {
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_16Q50l_SP /* 5308859 */:
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_14Q50_L /* 8651195 */:
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_20QX60 /* 15204795 */:
-                ParkingHelper.getInstance().buildUi(new Parking_YFND_QX60(LauncherApplication.getInstance()));
+                // Not built: ParkingHelper.buildUi() is empty in this mod, so the view (and its 13 asset reads, which
+                // are not in the APK) was made and thrown away at every start. Its constructor registers nothing.
+                //ParkingHelper.getInstance().buildUi(new Parking_YFND_QX60(LauncherApplication.getInstance()));
                 DataMain.NOTIFY_EVENTS[12].addNotify(ParkingHelper.getInstance(), 0);
                 for (int i4 = 141; i4 <= 144; i4++) {
                     DataCanbus.NOTIFY_EVENTS[i4].addNotify(ParkingHelper.getInstance(), 0);
