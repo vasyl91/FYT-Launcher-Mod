@@ -54,10 +54,12 @@ public class LauncherAppState {
     }
 
     public static void setApplicationContext(Context context) {
-        if (sContext != null) {
+        Context app = context.getApplicationContext();
+        // Every Launcher instance calls this, so a recreation is the same object again: nothing to say.
+        if (sContext != null && sContext != app) {
             Log.w("Launcher", "setApplicationContext called twice! old=" + sContext + " new=" + context);
         }
-        sContext = context.getApplicationContext();
+        sContext = app;
     }
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")

@@ -130,7 +130,7 @@
 
         <activity
             android:clearTaskOnLaunch="true"
-            android:configChanges="mcc|mnc"
+            android:configChanges="mcc|mnc|uiMode"
             android:name="com.android.launcher66.Launcher"
             android:launchMode="singleTask"
             android:screenOrientation="nosensor"

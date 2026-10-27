@@ -282,6 +282,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final long CUSTOM_ELEMENTS_SETUP_DEBOUNCE_MS = 150L;
     private static final long WORKSPACE_NULL_LOADER_THROTTLE_MS = 1200L;
     static final String TAG = "Launcher";
+    /** The night bits of the configuration the launcher last saw; see onConfigurationChanged(). */
+    private int mUiNightMode;
     private static final String TOOLBAR_ICON_METADATA_NAME = "com.android.launcher.toolbar_icon";
     private static final String TOOLBAR_VOICE_SEARCH_ICON_METADATA_NAME = "com.android.launcher.toolbar_voice_search_icon";
     String state;
@@ -1647,6 +1649,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mUiNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         long appCreated = LauncherApplication.takeOnCreateEnd();
         if (appCreated > 0) {
             mStartupSteps = new StartupSteps(appCreated);
@@ -3000,6 +3003,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "---->>> onDestroy");
+        // Why a destroy that is a recreation: if it still happens after uiMode was declared, the
+        // next capture names the change (assetsPaths would be an overlay, which cannot be declared).
+        int changing = changingConfigurations();
+        Log.i(TAG, "onDestroy: isChangingConfigurations=" + isChangingConfigurations()
+                + ", changes=" + (changing == -1 ? "unknown" : "0x" + Integer.toHexString(changing)
+                        + " (" + ConfigChanges.configChangeNames(changing) + ")"));
         mWallpaperPicker.hideWallpaperPickerIndicator();
         mPermissionFlow.onDestroy();
         // Unconditional, and before any field is cleared. onPause() returns early on
@@ -3277,11 +3286,30 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
+    /**
+     * The configuration changes behind a recreation (Activity.getChangingConfigurations(), which is
+     * not in the public SDK, so by reflection); -1 where that is refused.
+     */
+    private int changingConfigurations() {
+        try {
+            return (Integer) android.app.Activity.class.getMethod("getChangingConfigurations").invoke(this);
+        } catch (Throwable t) {
+            return -1;
+        }
+    }
+
     private void stopServicesOnDestroy() {
         // Not WakeDetectionService: sleep and wake are the process', not this activity's, and a
         // recreation of the activity used to end their handling for good (see WakeDetection).
-        SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, NightModeService.class));
-        setServiceRunningCache(NightModeService.class, false);
+        // Nor NightModeService on a recreation: its onDestroy() cancels the SunTask of the whole
+        // process (the lights' too), the new instance's startService() finds it running and does
+        // nothing (onStartCommand() is idempotent), and it came back 7.4 s late on the 7870.
+        // CanbusService and FabOverlayService stay as they were: FabOverlayService adds overlay
+        // views at its start, so starting it twice could add them twice.
+        if (!isChangingConfigurations()) {
+            SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, NightModeService.class));
+            setServiceRunningCache(NightModeService.class, false);
+        }
         SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, CanbusService.class));
         setServiceRunningCache(CanbusService.class, false);
         SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, FabOverlayService.class));
@@ -4723,6 +4751,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        // Declared in the manifest (uiMode): the 7870's ROM flips the night mode with the car's
+        // lights, and the Activity was destroyed and rebuilt 72 ms after "Lights on" each time.
+        int night = newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        if (night != mUiNightMode) {
+            Log.i(TAG, "uiMode night 0x" + Integer.toHexString(mUiNightMode) + " -> 0x"
+                    + Integer.toHexString(night) + ", the launcher stays");
+            mUiNightMode = night;
+        }
         
         // Refresh decorations when orientation changes
         mAppBars.markAppDataDirty();
