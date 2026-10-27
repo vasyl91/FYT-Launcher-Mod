@@ -35,6 +35,14 @@ public final class HostAwait {
     public static final long WAIT_WAKE_MS = 60_000L;
     public static final long WAIT_SHORT_MS = 15_000L;
 
+    /** Up to this uptime a start counts as a boot: Shizuku is then still to come (see WAIT_COLD_BOOT_MS). */
+    private static final long BOOT_UPTIME_MS = 3L * 60L * 1000L;
+
+    /** The window for a waiter that is not tied to a wake: the boot's while it is booting, else the wake's. */
+    public static long windowForUptime(long uptimeMs) {
+        return uptimeMs < BOOT_UPTIME_MS ? WAIT_COLD_BOOT_MS : WAIT_WAKE_MS;
+    }
+
     /** How often awaitBlocking() looks at whether its caller still wants the host. */
     private static final long BLOCKING_STEP_MS = 500L;
 

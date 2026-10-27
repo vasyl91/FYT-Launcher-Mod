@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.TypedValue;
@@ -52,6 +53,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.util.HostAwait;
 import com.syu.util.WindowHostVdClient;
 
 import java.beans.PropertyChangeEvent;
@@ -178,6 +180,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
         Log.d(TAG, "Service destroyed");
         removeLocationUpdates();
         unregisterAccessibilityEventListener();
+        if (hostWait != null) {
+            hostWait.cancel();
+            hostWait = null;
+        }
         ForegroundAppTracker.stop();
         mPropertyChangeClass.deleteObserver(Keys.ALLAPPS, this);
         mPropertyChangeClass.deleteObserver(Keys.FUELSTATS, this);
@@ -237,8 +243,29 @@ public class CanbusService extends Service implements PropertyChangeListener {
             Log.d(TAG, "Accessibility settings not opened: the VD host reports the foreground app");
             return;
         }
+        if (HostAwait.isExpected(this)) {
+            // Shizuku installed but not running yet (the 7870 starts it minutes after the launcher):
+            // the settings opened over the launcher at the start, before it. The window is the boot's
+            // for a start in the first minutes, a wake's later; a host that attaches ends the question
+            // (canHostPanes() is true then), one that does not leaves what was done before.
+            if (hostWait != null) return;
+            hostWait = HostAwait.await(HostAwait.windowForUptime(SystemClock.elapsedRealtime()),
+                    "accessibility settings", attached -> {
+                hostWait = null;
+                if (attached || ForegroundAppTracker.isActive() || WindowHostVdClient.canHostPanes()
+                        || isStateServiceSwitchedOn()) {
+                    Log.d(TAG, "Accessibility settings not opened: the VD host reports the foreground app");
+                    return;
+                }
+                openAccessibilitySettings();
+            });
+            return;
+        }
         openAccessibilitySettings();
     }
+
+    /** The wait for a VD host before the accessibility settings are opened; main thread. */
+    private HostAwait.Handle hostWait;
 
     /** StateAccessibilityService is on in the accessibility settings (bound or not yet). */
     private boolean isStateServiceSwitchedOn() {

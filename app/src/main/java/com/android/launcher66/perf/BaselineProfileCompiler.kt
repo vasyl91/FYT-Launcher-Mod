@@ -18,6 +18,7 @@ import androidx.annotation.WorkerThread
 import androidx.profileinstaller.ProfileInstaller
 import androidx.profileinstaller.ProfileVerifier
 import com.android.launcher66.BuildConfig
+import com.syu.util.HostAwait
 import com.syu.util.WindowHostVdClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 import java.text.SimpleDateFormat
@@ -151,6 +153,10 @@ object BaselineProfileCompiler {
 
     /** Head unit boot is busy (CAN bus, BT, navigation) - do not compete for CPU. */
     private const val START_DELAY_MS = 90_000L
+
+    /** A VD host on its way is waited for until this long after the process started (see [canCompileOrAwaitHost]). */
+    private const val HOST_WAIT_SINCE_START_MS = 10L * 60L * 1000L
+
     private const val INSTALL_TIMEOUT_MS = 30_000L
 
     /** While the clock is wrong: how often to check whether it has been corrected. */
@@ -238,6 +244,26 @@ object BaselineProfileCompiler {
 
     /** Whether a compilation can run now: by the launcher itself, or a VD host is attached. */
     private fun canCompileNow(): Boolean = compilesItself() || WindowHostVdClient.hasPrivilegedHost()
+
+    /**
+     * Like [canCompileNow], but a VD host that is on its way (Shizuku installed, not running yet:
+     * the 7870 starts it minutes after the launcher) is waited for, up to [HOST_WAIT_SINCE_START_MS]
+     * after the process started, instead of leaving the work to the next session. One blocking
+     * wait on a background thread, released by the host's arrival (an event, not a poll); a
+     * sleep or a reset ([generation]) ends it. The count of attempts is not touched.
+     */
+    private suspend fun canCompileOrAwaitHost(context: Context, gen: Int): Boolean {
+        if (canCompileNow()) return true
+        return withContext(Dispatchers.IO) {
+            if (!HostAwait.isExpected(context)) return@withContext false
+            val remaining = HOST_WAIT_SINCE_START_MS -
+                (SystemClock.elapsedRealtime() - Process.getStartElapsedRealtime())
+            if (remaining <= 0L) return@withContext false
+            Log.i(TAG, "Waiting up to ${remaining / 1000} s for the VD host (Shizuku)")
+            HostAwait.awaitBlocking(remaining) { gen == generation.get() } &&
+                gen == generation.get() && canCompileNow()
+        }
+    }
 
     /** How the last compilation of this process went through the VD host, for [statusText]. */
     @Volatile
@@ -470,7 +496,7 @@ object BaselineProfileCompiler {
             // and the next start / wake simply tries again.
             delay(delayMs)
             if (gen != generation.get()) return@startPendingJob
-            if (!canCompileNow()) {
+            if (!canCompileOrAwaitHost(context, gen)) {
                 // Not an attempt: the next start or wake tries again.
                 val status = "Waiting for root (FYT VDHost module) or Shizuku - $stamp"
                 prefs.edit().putString(KEY_LAST_STATUS, status).apply()
@@ -568,7 +594,7 @@ object BaselineProfileCompiler {
         startPendingJob {
             delay(START_DELAY_MS)
             if (gen != generation.get()) return@startPendingJob
-            if (!canCompileNow()) {
+            if (!canCompileOrAwaitHost(context, gen)) {
                 // The schedule stays due: the next session tries again.
                 Log.i(TAG, "Usage refresh due, waiting for root (FYT VDHost module) or Shizuku")
                 return@startPendingJob

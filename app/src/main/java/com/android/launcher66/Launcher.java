@@ -3001,6 +3001,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onDestroy();
         Log.d(TAG, "---->>> onDestroy");
         mWallpaperPicker.hideWallpaperPickerIndicator();
+        mPermissionFlow.onDestroy();
         // Unconditional, and before any field is cleared. onPause() returns early on
         // (mHomeButtonPressed && isOnMainWorkspaceScreen()), so leaving via HOME from the
         // main screen never unregistered the refreshers and the static NOTIFIER_* kept

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
@@ -12,6 +13,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
+import com.syu.util.HostAwait;
 import com.syu.util.WindowHostVdClient;
 
 import java.util.ArrayList;
@@ -94,6 +96,11 @@ final class LauncherPermissionFlow {
             if (sPermissionStepsHandled.contains(step)) {
                 continue;
             }
+            // Not handled yet while a VD host that could grant it is attached or on its way: the
+            // other steps go on, and this one is asked again when the host has answered.
+            if (step == PermissionStep.WRITE_SETTINGS && writeSettingsAwaitsHost()) {
+                continue;
+            }
             sPermissionStepsHandled.add(step);
             if (isPermissionStepNeeded(step) && startPermissionStep(step)) {
                 mPermissionStepInFlight = step;
@@ -114,8 +121,7 @@ final class LauncherPermissionFlow {
             case WRITE_SETTINGS:
                 return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                         && !LauncherApplication.hasSystemPrivileges()
-                        && !Settings.System.canWrite(mLauncher)
-                        && !allowWriteSettingsThroughHost();
+                        && !Settings.System.canWrite(mLauncher);
             case INSTALL_PACKAGES:
                 // The update in the settings installs the downloaded APK; a system app may anyway.
                 return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
@@ -126,10 +132,76 @@ final class LauncherPermissionFlow {
         }
     }
 
+    /** The host's answer about WRITE_SETTINGS is in (or none will come): what is left goes to the Settings screen. */
+    private static boolean sWriteSettingsHostDone;
+    private static boolean sWriteSettingsHostCallRunning;
+    /** The wait of this Launcher instance for a host that is on its way; main thread. */
+    private HostAwait.Handle mWriteSettingsHostWait;
+
+    /**
+     * WRITE_SETTINGS is missing and a VD host may still grant it: the Settings screen is what
+     * the user got when no host was there at that moment, and on the 7870 Shizuku is not there
+     * for the first minutes. With a host attached the (blocking) call into it goes to a worker
+     * thread and the flow runs again with its answer; with one on its way the flow waits for it,
+     * up to HostAwait.windowForUptime(), then falls back to the Settings screen. Where no host is
+     * there or expected (nothing installed), and on a system launcher, this is false at once.
+     *
+     * @return whether the step waits
+     */
+    private boolean writeSettingsAwaitsHost() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || LauncherApplication.hasSystemPrivileges()
+                || sWriteSettingsHostDone || Settings.System.canWrite(mLauncher)) {
+            return false;
+        }
+        if (WindowHostVdClient.hasPrivilegedHost()) {
+            if (!sWriteSettingsHostCallRunning) {
+                sWriteSettingsHostCallRunning = true;
+                final Launcher launcher = mLauncher;
+                new Thread(() -> {
+                    allowWriteSettingsThroughHost();
+                    launcher.mHandler.post(() -> {
+                        sWriteSettingsHostCallRunning = false;
+                        sWriteSettingsHostDone = true;
+                        runLater();
+                    });
+                }, "WriteSettingsHost").start();
+            }
+            return true;
+        }
+        if (!HostAwait.isExpected(mLauncher)) {
+            return false;
+        }
+        if (mWriteSettingsHostWait == null) {
+            mWriteSettingsHostWait = HostAwait.await(HostAwait.windowForUptime(SystemClock.elapsedRealtime()),
+                    "WRITE_SETTINGS", attached -> {
+                mWriteSettingsHostWait = null;
+                if (!attached) {
+                    sWriteSettingsHostDone = true;   // no host came: the Settings screen, as before
+                }
+                runLater();
+            });
+        }
+        return true;
+    }
+
+    /** Runs the flow again once the resume has settled; it does nothing while a step's screen is open. */
+    private void runLater() {
+        mLauncher.mHandler.removeCallbacks(mPermissionFlowRunnable);
+        mLauncher.mHandler.postDelayed(mPermissionFlowRunnable, PERMISSION_FLOW_DELAY_MS);
+    }
+
+    /** The Launcher goes: its wait for a host ends with it. */
+    void onDestroy() {
+        if (mWriteSettingsHostWait != null) {
+            mWriteSettingsHostWait.cancel();
+            mWriteSettingsHostWait = null;
+        }
+    }
+
     /**
      * With a VD host (the FYT VDHost Magisk module or Shizuku) there is no trip to Settings: the
      * host turns the WRITE_SETTINGS app op on, as the user would there. A blocking call into the
-     * host, made once.
+     * host: never on the main thread, see writeSettingsAwaitsHost().
      */
     private boolean allowWriteSettingsThroughHost() {
         try {

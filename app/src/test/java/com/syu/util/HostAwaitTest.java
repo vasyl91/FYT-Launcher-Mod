@@ -41,4 +41,12 @@ class HostAwaitTest {
     void withNothingInstalledNothingIsExpected() {
         assertFalse(HostAwait.expected(false, false, false, false, false));
     }
+
+    @Test
+    void theWindowIsTheBootsWhileBootingAndTheWakesAfter() {
+        assertTrue(HostAwait.windowForUptime(20_000L) == HostAwait.WAIT_COLD_BOOT_MS);
+        assertTrue(HostAwait.windowForUptime(179_999L) == HostAwait.WAIT_COLD_BOOT_MS);
+        assertTrue(HostAwait.windowForUptime(180_000L) == HostAwait.WAIT_WAKE_MS);
+        assertTrue(HostAwait.windowForUptime(3_600_000L) == HostAwait.WAIT_WAKE_MS);
+    }
 }
