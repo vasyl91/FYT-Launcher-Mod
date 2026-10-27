@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Sıfırla</string>
     <string name="reset_night_mode">Gece modu için varsayılan değerleri ayarla</string>
     <string name="init_default_app_error">Lütfen cihaz ayarlarında navigasyon/ön uygulamayı ayarlayın.</string>
+    <string name="logcat_names_info">Günlük dosyası adları</string>
+    <string name="logcat_names_info_summary">reboot – cihaz yeniden başlatıldıktan sonra başlatıcıyla birlikte başladı\nstart – başlatıcı kendiliğinden yeniden başladıktan sonra (çökme, güncelleme) onunla birlikte başladı\nwake – cihaz uyandığında başladı\nuser – “Logcat hizmeti” ile elle başlatıldı\nfull – cihazın tüm günlüklerini içerir\npid – yalnızca başlatıcının günlüklerini içerir</string>
     <string name="logcat_service">Açılışta Logcat hizmeti</string>
     <string name="logcat_service_summary"><![CDATA[Logcat, uygulama başladığında günlük kaydına başlar. Cihazı veya uygulamayı yeniden başlatın ve günlükleri <b>Download/Launcher66_Logs</b> içinde kontrol edin.]]></string>
     <string name="logcat_service_wake">Cihaz uyandığında Logcat hizmeti</string>

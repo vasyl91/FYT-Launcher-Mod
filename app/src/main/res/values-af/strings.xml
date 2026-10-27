@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Terugstel</string>
     <string name="reset_night_mode">Stel die verstekwaardes vir nagmodus</string>
     <string name="init_default_app_error">Stel asseblief die navigasie-/voorgrondprogram in die toestelinstellings.</string>
+    <string name="logcat_names_info">Logleêrname</string>
+    <string name="logcat_names_info_summary">reboot – begin saam met die lanseerder nadat die toestel herbegin is\nstart – begin saam met die lanseerder nadat dit self herbegin het (ineenstorting, opdatering)\nwake – begin wanneer die toestel wakker word\nuser – met die hand begin met “Logcat-diens”\nfull – bevat al die toestel se logs\npid – bevat net die lanseerder se logs</string>
     <string name="logcat_service">Logcat-diens by opstart</string>
     <string name="logcat_service_summary"><![CDATA[Logcat sal begin log wanneer die program begin. Herbegin die toestel of program en kyk na die logboeke in <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat-diens wanneer die toestel wakker word</string>

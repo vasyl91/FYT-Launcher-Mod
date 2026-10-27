@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">초기화</string>
     <string name="reset_night_mode">야간 모드를 기본값으로 설정</string>
     <string name="init_default_app_error">기기 설정에서 내비게이션/전면 앱을 설정하세요.</string>
+    <string name="logcat_names_info">로그 파일 이름</string>
+    <string name="logcat_names_info_summary">reboot – 기기가 다시 시작된 후 런처와 함께 시작됨\nstart – 런처가 스스로 다시 시작된 후(비정상 종료, 업데이트) 함께 시작됨\nwake – 기기가 절전에서 깨어날 때 시작됨\nuser – “Logcat 서비스”(으)로 수동 시작됨\nfull – 기기의 모든 로그 포함\npid – 런처의 로그만 포함</string>
     <string name="logcat_service">시작 시 Logcat 서비스</string>
     <string name="logcat_service_summary"><![CDATA[앱이 시작되면 Logcat이 로그 기록을 시작합니다. 기기 또는 앱을 재시작하고 <b>Download/Launcher66_Logs</b>에서 로그를 확인하세요.]]></string>
     <string name="logcat_service_wake">기기가 깨어날 때 Logcat 서비스</string>

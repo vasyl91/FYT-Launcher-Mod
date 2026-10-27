@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Επαναφορά</string>
     <string name="reset_night_mode">Ορισμός των προεπιλεγμένων τιμών για τη νυχτερινή λειτουργία</string>
     <string name="init_default_app_error">Ορίστε την εφαρμογή πλοήγησης/προσκηνίου στις ρυθμίσεις της συσκευής.</string>
+    <string name="logcat_names_info">Ονόματα αρχείων καταγραφής</string>
+    <string name="logcat_names_info_summary">reboot – ξεκίνησε με το launcher μετά την επανεκκίνηση της συσκευής\nstart – ξεκίνησε με το launcher αφού αυτό επανεκκινήθηκε μόνο του (κατάρρευση, ενημέρωση)\nwake – ξεκίνησε όταν η συσκευή ξύπνησε\nuser – ξεκίνησε χειροκίνητα με «Υπηρεσία Logcat»\nfull – περιέχει όλα τα αρχεία καταγραφής της συσκευής\npid – περιέχει μόνο τα αρχεία καταγραφής του launcher</string>
     <string name="logcat_service">Υπηρεσία Logcat κατά την εκκίνηση</string>
     <string name="logcat_service_summary"><![CDATA[Το Logcat θα ξεκινά την καταγραφή όταν ξεκινά η εφαρμογή. Επανεκκινήστε τη συσκευή ή την εφαρμογή και ελέγξτε τα αρχεία καταγραφής στο <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Υπηρεσία Logcat όταν ξυπνά η συσκευή</string>

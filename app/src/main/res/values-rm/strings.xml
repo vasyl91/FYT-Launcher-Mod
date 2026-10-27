@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Reinizialisar</string>
     <string name="reset_night_mode">Fixar las valurs standard per il modus da notg</string>
     <string name="init_default_app_error">Fixescha l\'app da navigaziun/da l\'emprim plan en ils parameters da l\'apparat.</string>
+    <string name="logcat_names_info">Names dals fails da protocol</string>
+    <string name="logcat_names_info_summary">reboot – avià cun il launcher suenter che l\'apparat è vegnì reavià\nstart – avià cun il launcher suenter ch\'el è sa reavià sez (crash, actualisaziun)\nwake – avià cura che l\'apparat è sa dasdà\nuser – avià a maun cun «Servetsch Logcat»\nfull – cuntegna tut ils protocols da l\'apparat\npid – cuntegna be ils protocols dal launcher</string>
     <string name="logcat_service">Servetsch Logcat cun l\'enviar</string>
     <string name="logcat_service_summary"><![CDATA[Logcat cumenza a registrar cur che l\'app vegn envidada. Fa in reboot da l\'apparat u da l\'app e controllescha ils logs en <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Servetsch Logcat cur che l\'apparat sa dasdat</string>

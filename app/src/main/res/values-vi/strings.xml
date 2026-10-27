@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Đặt lại</string>
     <string name="reset_night_mode">Đặt giá trị mặc định cho chế độ ban đêm</string>
     <string name="init_default_app_error">Vui lòng đặt ứng dụng dẫn đường/ứng dụng phía trước trong cài đặt thiết bị.</string>
+    <string name="logcat_names_info">Tên tệp nhật ký</string>
+    <string name="logcat_names_info_summary">reboot – bắt đầu cùng launcher sau khi thiết bị khởi động lại\nstart – bắt đầu cùng launcher sau khi nó tự khởi động lại (sự cố, cập nhật)\nwake – bắt đầu khi thiết bị thức dậy\nuser – bắt đầu thủ công bằng “Dịch vụ Logcat”\nfull – chứa tất cả nhật ký của thiết bị\npid – chỉ chứa nhật ký của launcher</string>
     <string name="logcat_service">Dịch vụ Logcat khi khởi động</string>
     <string name="logcat_service_summary"><![CDATA[Logcat sẽ bắt đầu ghi nhật ký khi ứng dụng khởi động. Khởi động lại thiết bị hoặc ứng dụng rồi xem nhật ký tại <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Dịch vụ Logcat khi thiết bị thức dậy</string>

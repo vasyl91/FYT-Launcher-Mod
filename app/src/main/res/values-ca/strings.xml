@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Restableix</string>
     <string name="reset_night_mode">Defineix els valors predeterminats del mode nocturn</string>
     <string name="init_default_app_error">Defineix l\'aplicació de navegació/de primer pla a la configuració del dispositiu.</string>
+    <string name="logcat_names_info">Noms dels fitxers de registre</string>
+    <string name="logcat_names_info_summary">reboot – iniciat amb el llançador després de reiniciar el dispositiu\nstart – iniciat amb el llançador després que s\'hagi reiniciat per si sol (error, actualització)\nwake – iniciat quan el dispositiu es desperta\nuser – iniciat manualment amb «Servei Logcat»\nfull – conté tots els registres del dispositiu\npid – conté només els registres del llançador</string>
     <string name="logcat_service">Servei Logcat a l\'inici</string>
     <string name="logcat_service_summary"><![CDATA[Logcat començarà a registrar quan s\'iniciï l\'aplicació. Reinicia el dispositiu o l\'aplicació i consulta els registres a <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Servei Logcat quan el dispositiu es desperta</string>

@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Poništi</string>
     <string name="reset_night_mode">Postavi zadane vrijednosti noćnog načina</string>
     <string name="init_default_app_error">Postavite navigacijsku aplikaciju/aplikaciju u prednjem planu u postavkama uređaja.</string>
+    <string name="logcat_names_info">Nazivi datoteka zapisnika</string>
+    <string name="logcat_names_info_summary">reboot – pokrenuto s launcherom nakon ponovnog pokretanja uređaja\nstart – pokrenuto s launcherom nakon što se sam ponovno pokrenuo (pad, ažuriranje)\nwake – pokrenuto kad se uređaj probudio\nuser – pokrenuto ručno putem „Logcat usluga“\nfull – sadrži sve zapisnike uređaja\npid – sadrži samo zapisnike launchera</string>
     <string name="logcat_service">Logcat usluga pri pokretanju</string>
     <string name="logcat_service_summary"><![CDATA[Logcat će započeti bilježenje kad se aplikacija pokrene. Ponovno pokrenite uređaj ili aplikaciju i provjerite zapisnike u <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat usluga kad se uređaj probudi</string>

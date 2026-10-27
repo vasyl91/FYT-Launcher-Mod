@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">リセット</string>
     <string name="reset_night_mode">ナイトモードをデフォルト値に設定</string>
     <string name="init_default_app_error">端末設定でナビ/前面アプリを設定してください。</string>
+    <string name="logcat_names_info">ログファイル名</string>
+    <string name="logcat_names_info_summary">reboot – デバイスの再起動後にランチャーとともに開始\nstart – ランチャーが自動的に再起動した後（クラッシュ、アップデート）にともに開始\nwake – デバイスのスリープ解除時に開始\nuser – 「Logcatサービス」から手動で開始\nfull – デバイスのすべてのログを含む\npid – ランチャーのログのみを含む</string>
     <string name="logcat_service">起動時のLogcatサービス</string>
     <string name="logcat_service_summary"><![CDATA[アプリの起動時にLogcatがログの記録を開始します。端末またはアプリを再起動し、<b>Download/Launcher66_Logs</b>のログを確認してください。]]></string>
     <string name="logcat_service_wake">端末の復帰時のLogcatサービス</string>

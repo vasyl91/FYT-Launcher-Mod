@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Obnoviť</string>
     <string name="reset_night_mode">Nastaviť predvolené hodnoty nočného režimu</string>
     <string name="init_default_app_error">Nastavte navigačnú aplikáciu/aplikáciu v popredí v nastaveniach zariadenia.</string>
+    <string name="logcat_names_info">Názvy súborov denníka</string>
+    <string name="logcat_names_info_summary">reboot – spustené s launcherom po reštarte zariadenia\nstart – spustené s launcherom po jeho samostatnom reštarte (pád, aktualizácia)\nwake – spustené pri prebudení zariadenia\nuser – spustené ručne cez „Služba Logcat“\nfull – obsahuje všetky denníky zariadenia\npid – obsahuje iba denníky launchera</string>
     <string name="logcat_service">Služba Logcat pri spustení</string>
     <string name="logcat_service_summary"><![CDATA[Logcat začne zaznamenávať po spustení aplikácie. Reštartujte zariadenie alebo aplikáciu a skontrolujte protokoly v <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Služba Logcat pri prebudení zariadenia</string>

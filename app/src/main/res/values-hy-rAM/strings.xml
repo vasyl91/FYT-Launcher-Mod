@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Վերակայել</string>
     <string name="reset_night_mode">Սահմանել գիշերային ռեժիմի լռելյայն արժեքները</string>
     <string name="init_default_app_error">Խնդրում ենք սարքի կարգավորումներում սահմանել նավիգացիոն/առաջին պլանի հավելվածը։</string>
+    <string name="logcat_names_info">Մատյանի ֆայլերի անունները</string>
+    <string name="logcat_names_info_summary">reboot – գործարկվել է լանչերի հետ սարքի վերագործարկումից հետո\nstart – գործարկվել է լանչերի հետ՝ նրա ինքնուրույն վերագործարկումից հետո (խափանում, թարմացում)\nwake – գործարկվել է սարքի արթնանալիս\nuser – գործարկվել է ձեռքով «Logcat ծառայություն»-ով\nfull – պարունակում է սարքի բոլոր մատյանները\npid – պարունակում է միայն լանչերի մատյանները</string>
     <string name="logcat_service">Logcat ծառայություն գործարկման ժամանակ</string>
     <string name="logcat_service_summary"><![CDATA[Logcat-ը կսկսի գրանցել, երբ հավելվածը գործարկվի։ Վերագործարկեք սարքը կամ հավելվածը և ստուգեք մատյանները <b>Download/Launcher66_Logs</b>-ում։]]></string>
     <string name="logcat_service_wake">Logcat ծառայություն սարքի արթնանալու ժամանակ</string>

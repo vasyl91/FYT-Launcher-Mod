@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">إعادة الضبط</string>
     <string name="reset_night_mode">ضبط القيم الافتراضية للوضع الليلي</string>
     <string name="init_default_app_error">يُرجى ضبط تطبيق الملاحة/المقدمة في إعدادات الجهاز.</string>
+    <string name="logcat_names_info">أسماء ملفات السجل</string>
+    <string name="logcat_names_info_summary">reboot – بدأ مع المشغّل بعد إعادة تشغيل الجهاز\nstart – بدأ مع المشغّل بعد إعادة تشغيله من تلقاء نفسه (تعطّل، تحديث)\nwake – بدأ عند استيقاظ الجهاز\nuser – بدأ يدويًا عبر «خدمة Logcat»\nfull – يحتوي على جميع سجلات الجهاز\npid – يحتوي على سجلات المشغّل فقط</string>
     <string name="logcat_service">خدمة Logcat عند بدء التشغيل</string>
     <string name="logcat_service_summary"><![CDATA[سيبدأ Logcat بتسجيل السجلات عند بدء تشغيل التطبيق. أعد تشغيل الجهاز أو التطبيق وتحقق من السجلات في <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">خدمة Logcat عند استيقاظ الجهاز</string>

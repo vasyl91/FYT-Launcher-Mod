@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">ຣີເຊັດ</string>
     <string name="reset_night_mode">ຕັ້ງຄ່າເລີ່ມຕົ້ນສຳລັບໂໝດກາງຄືນ</string>
     <string name="init_default_app_error">ກະລຸນາຕັ້ງແອັບນຳທາງ/ແອັບດ້ານໜ້າໃນການຕັ້ງຄ່າອຸປະກອນ.</string>
+    <string name="logcat_names_info">ຊື່ໄຟລ໌ບັນທຶກ</string>
+    <string name="logcat_names_info_summary">reboot – ເລີ່ມພ້ອມກັບ launcher ຫຼັງຈາກອຸປະກອນເລີ່ມໃໝ່\nstart – ເລີ່ມພ້ອມກັບ launcher ຫຼັງຈາກມັນເລີ່ມໃໝ່ເອງ (ຂັດຂ້ອງ, ອັບເດດ)\nwake – ເລີ່ມເມື່ອອຸປະກອນຕື່ນຂຶ້ນ\nuser – ເລີ່ມດ້ວຍມືດ້ວຍ “ບໍລິການ Logcat”\nfull – ມີບັນທຶກທັງໝົດຂອງອຸປະກອນ\npid – ມີສະເພາະບັນທຶກຂອງ launcher</string>
     <string name="logcat_service">ບໍລິການ Logcat ເມື່ອເລີ່ມຕົ້ນ</string>
     <string name="logcat_service_summary"><![CDATA[Logcat ຈະເລີ່ມບັນທຶກເມື່ອແອັບເລີ່ມຕົ້ນ. ເປີດອຸປະກອນ ຫຼື ແອັບຄືນໃໝ່ ແລ້ວກວດບັນທຶກໃນ <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">ບໍລິການ Logcat ເມື່ອອຸປະກອນຕື່ນ</string>

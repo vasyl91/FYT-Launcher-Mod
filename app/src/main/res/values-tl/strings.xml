@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">I-reset</string>
     <string name="reset_night_mode">Itakda ang mga default na halaga para sa night mode</string>
     <string name="init_default_app_error">Pakitakda ang navi/front app sa mga setting ng device.</string>
+    <string name="logcat_names_info">Mga pangalan ng log file</string>
+    <string name="logcat_names_info_summary">reboot – sinimulan kasama ng launcher pagkatapos mag-restart ang device\nstart – sinimulan kasama ng launcher pagkatapos nitong mag-restart nang mag-isa (crash, update)\nwake – sinimulan nang magising ang device\nuser – manu-manong sinimulan gamit ang “Logcat service”\nfull – naglalaman ng lahat ng log ng device\npid – naglalaman lamang ng mga log ng launcher</string>
     <string name="logcat_service">Logcat service sa startup</string>
     <string name="logcat_service_summary"><![CDATA[Magsisimulang mag-log ang Logcat kapag nagsimula ang application. I-restart ang device o app at tingnan ang mga log sa <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat service kapag nagising ang device</string>

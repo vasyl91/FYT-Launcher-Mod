@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Réinitialiser</string>
     <string name="reset_night_mode">Rétablir les valeurs par défaut du mode nuit</string>
     <string name="init_default_app_error">Veuillez définir l\'application de navigation/de premier plan dans les paramètres de l\'appareil.</string>
+    <string name="logcat_names_info">Noms des fichiers journaux</string>
+    <string name="logcat_names_info_summary">reboot – démarré avec le launcher après le redémarrage de l\'appareil\nstart – démarré avec le launcher après son redémarrage spontané (plantage, mise à jour)\nwake – démarré au réveil de l\'appareil\nuser – démarré à la main avec « Service Logcat »\nfull – contient tous les journaux de l\'appareil\npid – contient uniquement les journaux du launcher</string>
     <string name="logcat_service">Service Logcat au démarrage</string>
     <string name="logcat_service_summary"><![CDATA[Logcat commencera à enregistrer au lancement de l\'application. Redémarrez l\'appareil ou l\'application et consultez les journaux dans <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Service Logcat au réveil de l\'appareil</string>

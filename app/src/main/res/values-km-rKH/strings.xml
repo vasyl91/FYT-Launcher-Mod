@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">កំណត់ឡើងវិញ</string>
     <string name="reset_night_mode">កំណត់តម្លៃលំនាំដើមសម្រាប់មុខងារយប់</string>
     <string name="init_default_app_error">សូមកំណត់កម្មវិធីណាវី/កម្មវិធីខាងមុខនៅក្នុងការកំណត់ឧបករណ៍។</string>
+    <string name="logcat_names_info">ឈ្មោះឯកសារកំណត់ហេតុ</string>
+    <string name="logcat_names_info_summary">reboot – ចាប់ផ្តើមជាមួយ launcher បន្ទាប់ពីឧបករណ៍ចាប់ផ្តើមឡើងវិញ\nstart – ចាប់ផ្តើមជាមួយ launcher បន្ទាប់ពីវាចាប់ផ្តើមឡើងវិញដោយខ្លួនឯង (គាំង ការអាប់ដេត)\nwake – ចាប់ផ្តើមនៅពេលឧបករណ៍ភ្ញាក់\nuser – ចាប់ផ្តើមដោយដៃជាមួយ “សេវាកម្ម Logcat”\nfull – មានកំណត់ហេតុទាំងអស់របស់ឧបករណ៍\npid – មានតែកំណត់ហេតុរបស់ launcher ប៉ុណ្ណោះ</string>
     <string name="logcat_service">សេវាកម្ម Logcat ពេលចាប់ផ្តើម</string>
     <string name="logcat_service_summary"><![CDATA[Logcat នឹងចាប់ផ្តើមកត់ត្រានៅពេលកម្មវិធីចាប់ផ្តើម។ ចាប់ផ្តើមឧបករណ៍ ឬកម្មវិធីឡើងវិញ ហើយពិនិត្យកំណត់ហេតុនៅក្នុង <b>Download/Launcher66_Logs</b>។]]></string>
     <string name="logcat_service_wake">សេវាកម្ម Logcat ពេលឧបករណ៍ភ្ញាក់</string>

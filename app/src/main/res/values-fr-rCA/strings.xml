@@ -24,4 +24,6 @@
     <string name="folder_tap_to_rename">Toucher pour enregistrer le nouveau nom</string>
     <string name="folder_name_format">Dossier : %1$s</string>
     <string name="widget_button_text">Widgets</string>
+    <string name="logcat_names_info">Noms des fichiers journaux</string>
+    <string name="logcat_names_info_summary">reboot – démarré avec le launcher après le redémarrage de l\'appareil\nstart – démarré avec le launcher après son redémarrage spontané (plantage, mise à jour)\nwake – démarré au réveil de l\'appareil\nuser – démarré à la main avec « Service Logcat »\nfull – contient tous les journaux de l\'appareil\npid – contient uniquement les journaux du launcher</string>
 </resources>

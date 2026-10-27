@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Restablecer</string>
     <string name="reset_night_mode">Establecer los valores predeterminados del modo nocturno</string>
     <string name="init_default_app_error">Establece la aplicación de navegación/principal en los ajustes del dispositivo.</string>
+    <string name="logcat_names_info">Nombres de los archivos de registro</string>
+    <string name="logcat_names_info_summary">reboot – iniciado con el launcher tras reiniciar el dispositivo\nstart – iniciado con el launcher tras reiniciarse este por sí solo (fallo, actualización)\nwake – iniciado al despertar el dispositivo\nuser – iniciado manualmente con «Servicio Logcat»\nfull – contiene todos los registros del dispositivo\npid – contiene solo los registros del launcher</string>
     <string name="logcat_service">Servicio Logcat al iniciar</string>
     <string name="logcat_service_summary"><![CDATA[Logcat empezará a registrar cuando se inicie la aplicación. Reinicia el dispositivo o la aplicación y consulta los registros en <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Servicio Logcat al reactivarse el dispositivo</string>

@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Nollaa</string>
     <string name="reset_night_mode">Aseta yötilan oletusarvot</string>
     <string name="init_default_app_error">Aseta navigointi-/etualan sovellus laitteen asetuksissa.</string>
+    <string name="logcat_names_info">Lokitiedostojen nimet</string>
+    <string name="logcat_names_info_summary">reboot – käynnistetty käynnistimen mukana laitteen uudelleenkäynnistyksen jälkeen\nstart – käynnistetty käynnistimen mukana sen käynnistyttyä itse uudelleen (kaatuminen, päivitys)\nwake – käynnistetty laitteen herätessä\nuser – käynnistetty käsin kohdasta ”Logcat-palvelu”\nfull – sisältää kaikki laitteen lokit\npid – sisältää vain käynnistimen lokit</string>
     <string name="logcat_service">Logcat-palvelu käynnistyksessä</string>
     <string name="logcat_service_summary"><![CDATA[Logcat alkaa kirjata lokia, kun sovellus käynnistyy. Käynnistä laite tai sovellus uudelleen ja tarkista lokit kansiosta <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat-palvelu laitteen herätessä</string>

@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Resetare</string>
     <string name="reset_night_mode">Setați valorile implicite pentru modul noapte</string>
     <string name="init_default_app_error">Setați aplicația de navigare/din prim-plan în setările dispozitivului.</string>
+    <string name="logcat_names_info">Numele fișierelor de jurnal</string>
+    <string name="logcat_names_info_summary">reboot – pornit împreună cu launcherul după repornirea dispozitivului\nstart – pornit împreună cu launcherul după ce acesta a repornit singur (blocare, actualizare)\nwake – pornit la trezirea dispozitivului\nuser – pornit manual cu „Serviciu Logcat”\nfull – conține toate jurnalele dispozitivului\npid – conține doar jurnalele launcherului</string>
     <string name="logcat_service">Serviciu Logcat la pornire</string>
     <string name="logcat_service_summary"><![CDATA[Logcat va începe să înregistreze când pornește aplicația. Reporniți dispozitivul sau aplicația și verificați jurnalele în <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Serviciu Logcat când dispozitivul se trezește</string>

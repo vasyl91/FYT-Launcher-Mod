@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Atiestatīt</string>
     <string name="reset_night_mode">Iestatīt nakts režīma noklusējuma vērtības</string>
     <string name="init_default_app_error">Lūdzu, iestatiet navigācijas/priekšplāna lietotni ierīces iestatījumos.</string>
+    <string name="logcat_names_info">Žurnāla failu nosaukumi</string>
+    <string name="logcat_names_info_summary">reboot – palaists kopā ar palaidēju pēc ierīces restartēšanas\nstart – palaists kopā ar palaidēju pēc tā pašrestartēšanās (avārija, atjauninājums)\nwake – palaists, kad ierīce pamodās\nuser – palaists manuāli ar “Logcat pakalpojums”\nfull – satur visus ierīces žurnālus\npid – satur tikai palaidēja žurnālus</string>
     <string name="logcat_service">Logcat pakalpojums startēšanas laikā</string>
     <string name="logcat_service_summary"><![CDATA[Logcat sāks reģistrēt žurnālu, kad tiks palaista lietotne. Pārstartējiet ierīci vai lietotni un pārbaudiet žurnālus mapē <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat pakalpojums, kad ierīce pamostas</string>

@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Reset</string>
     <string name="reset_night_mode">Atur nilai default untuk mode malam</string>
     <string name="init_default_app_error">Harap atur aplikasi navigasi/depan di setelan perangkat.</string>
+    <string name="logcat_names_info">Nama file log</string>
+    <string name="logcat_names_info_summary">reboot – dimulai bersama launcher setelah perangkat dimulai ulang\nstart – dimulai bersama launcher setelah launcher dimulai ulang sendiri (error, pembaruan)\nwake – dimulai saat perangkat bangun\nuser – dimulai secara manual dengan “Layanan Logcat”\nfull – berisi semua log perangkat\npid – hanya berisi log launcher</string>
     <string name="logcat_service">Layanan Logcat saat startup</string>
     <string name="logcat_service_summary"><![CDATA[Logcat akan mulai mencatat log saat aplikasi dimulai. Mulai ulang perangkat atau aplikasi dan periksa log di <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Layanan Logcat saat perangkat bangun</string>

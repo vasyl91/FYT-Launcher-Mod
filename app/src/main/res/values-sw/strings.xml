@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Weka upya</string>
     <string name="reset_night_mode">Weka thamani chaguomsingi za hali ya usiku</string>
     <string name="init_default_app_error">Tafadhali weka programu ya navi/mbele kwenye mipangilio ya kifaa.</string>
+    <string name="logcat_names_info">Majina ya faili za kumbukumbu</string>
+    <string name="logcat_names_info_summary">reboot – ilianza pamoja na kizindua baada ya kifaa kuwashwa upya\nstart – ilianza pamoja na kizindua baada ya kujiwasha upya chenyewe (hitilafu, sasisho)\nwake – ilianza kifaa kilipoamka\nuser – ilianzishwa kwa mkono kwa “Huduma ya Logcat”\nfull – ina kumbukumbu zote za kifaa\npid – ina kumbukumbu za kizindua pekee</string>
     <string name="logcat_service">Huduma ya Logcat wakati wa kuanza</string>
     <string name="logcat_service_summary"><![CDATA[Logcat itaanza kurekodi programu inapoanza. Washa upya kifaa au programu na uangalie kumbukumbu kwenye <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Huduma ya Logcat kifaa kinapoamka</string>

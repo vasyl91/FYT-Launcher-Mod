@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Нулиране</string>
     <string name="reset_night_mode">Задаване на стойностите по подразбиране за нощния режим</string>
     <string name="init_default_app_error">Моля, задайте навигационното/основното приложение в настройките на устройството.</string>
+    <string name="logcat_names_info">Имена на лог файловете</string>
+    <string name="logcat_names_info_summary">reboot – стартиран заедно с лаунчъра след рестартиране на устройството\nstart – стартиран заедно с лаунчъра след като той сам се е рестартирал (срив, актуализация)\nwake – стартиран при събуждане на устройството\nuser – стартиран ръчно чрез „Услуга Logcat“\nfull – съдържа всички логове на устройството\npid – съдържа само логовете на лаунчъра</string>
     <string name="logcat_service">Услуга Logcat при стартиране</string>
     <string name="logcat_service_summary"><![CDATA[Logcat ще започне да записва при стартиране на приложението. Рестартирайте устройството или приложението и проверете журналите в <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Услуга Logcat при събуждане на устройството</string>

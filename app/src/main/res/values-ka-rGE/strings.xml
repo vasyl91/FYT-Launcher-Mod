@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">გადატვირთვა</string>
     <string name="reset_night_mode">ღამის რეჟიმის ნაგულისხმევი მნიშვნელობების დაყენება</string>
     <string name="init_default_app_error">გთხოვთ, დააყენოთ ნავიგაციის/წინა პლანის აპი მოწყობილობის პარამეტრებში.</string>
+    <string name="logcat_names_info">ჟურნალის ფაილების სახელები</string>
+    <string name="logcat_names_info_summary">reboot – დაიწყო ლანჩერთან ერთად მოწყობილობის გადატვირთვის შემდეგ\nstart – დაიწყო ლანჩერთან ერთად მისი თვითგადატვირთვის შემდეგ (ავარია, განახლება)\nwake – დაიწყო მოწყობილობის გაღვიძებისას\nuser – დაიწყო ხელით „Logcat სერვისი“-ით\nfull – შეიცავს მოწყობილობის ყველა ჟურნალს\npid – შეიცავს მხოლოდ ლანჩერის ჟურნალებს</string>
     <string name="logcat_service">Logcat სერვისი გაშვებისას</string>
     <string name="logcat_service_summary"><![CDATA[Logcat ჩანაწერების წარმოებას დაიწყებს აპის გაშვებისას. გადატვირთეთ მოწყობილობა ან აპი და შეამოწმეთ ლოგები <b>Download/Launcher66_Logs</b>-ში.]]></string>
     <string name="logcat_service_wake">Logcat სერვისი მოწყობილობის გაღვიძებისას</string>

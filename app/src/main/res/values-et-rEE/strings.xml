@@ -20,4 +20,6 @@
     <string name="workspace_scroll_format">Avaekraan %1$d/%2$d</string>
     <string name="folder_closed">Kaust on suletud</string>
     <string name="folder_name_format">Kaust: %1$s</string>
+    <string name="logcat_names_info">Logifailide nimed</string>
+    <string name="logcat_names_info_summary">reboot – käivitatud koos käivitajaga pärast seadme taaskäivitust\nstart – käivitatud koos käivitajaga pärast selle iseseisvat taaskäivitust (krahh, värskendus)\nwake – käivitatud seadme ärkamisel\nuser – käivitatud käsitsi valikuga „Logcati teenus“\nfull – sisaldab kõiki seadme logisid\npid – sisaldab ainult käivitaja logisid</string>
 </resources>

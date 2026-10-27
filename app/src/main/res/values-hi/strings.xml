@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">रीसेट</string>
     <string name="reset_night_mode">रात मोड के डिफ़ॉल्ट मान सेट करें</string>
     <string name="init_default_app_error">कृपया डिवाइस सेटिंग में नेवी/अग्रभूमि ऐप सेट करें।</string>
+    <string name="logcat_names_info">लॉग फ़ाइल के नाम</string>
+    <string name="logcat_names_info_summary">reboot – डिवाइस के रीस्टार्ट होने के बाद लॉन्चर के साथ शुरू हुआ\nstart – लॉन्चर के अपने आप रीस्टार्ट होने (क्रैश, अपडेट) के बाद उसके साथ शुरू हुआ\nwake – डिवाइस के जागने पर शुरू हुआ\nuser – “Logcat सेवा” से हाथ से शुरू किया गया\nfull – डिवाइस के सभी लॉग शामिल हैं\npid – केवल लॉन्चर के लॉग शामिल हैं</string>
     <string name="logcat_service">स्टार्टअप पर Logcat सेवा</string>
     <string name="logcat_service_summary"><![CDATA[ऐप शुरू होने पर Logcat लॉग करना शुरू कर देगा। डिवाइस या ऐप रीस्टार्ट करें और <b>Download/Launcher66_Logs</b> में लॉग देखें।]]></string>
     <string name="logcat_service_wake">डिवाइस के जागने पर Logcat सेवा</string>

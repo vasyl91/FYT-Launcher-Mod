@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Resetten</string>
     <string name="reset_night_mode">De standaardwaarden voor de nachtmodus instellen</string>
     <string name="init_default_app_error">Stel de navigatie-/voorgrondapp in bij de apparaatinstellingen.</string>
+    <string name="logcat_names_info">Namen van logbestanden</string>
+    <string name="logcat_names_info_summary">reboot – gestart met de launcher nadat het apparaat opnieuw was opgestart\nstart – gestart met de launcher nadat deze zichzelf opnieuw had gestart (crash, update)\nwake – gestart toen het apparaat ontwaakte\nuser – handmatig gestart met “Logcat-service”\nfull – bevat alle logs van het apparaat\npid – bevat alleen de logs van de launcher</string>
     <string name="logcat_service">Logcat-service bij opstarten</string>
     <string name="logcat_service_summary"><![CDATA[Logcat begint met loggen wanneer de applicatie start. Start het apparaat of de app opnieuw op en bekijk de logs in <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat-service wanneer het apparaat ontwaakt</string>

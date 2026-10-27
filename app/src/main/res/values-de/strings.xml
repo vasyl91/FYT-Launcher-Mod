@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Zurücksetzen</string>
     <string name="reset_night_mode">Standardwerte für den Nachtmodus festlegen</string>
     <string name="init_default_app_error">Bitte die Navi-/Front-App in den Geräteeinstellungen festlegen.</string>
+    <string name="logcat_names_info">Namen der Logdateien</string>
+    <string name="logcat_names_info_summary">reboot – mit dem Launcher gestartet, nachdem das Gerät neu gestartet wurde\nstart – mit dem Launcher gestartet, nachdem er sich selbst neu gestartet hat (Absturz, Update)\nwake – gestartet, als das Gerät aufgewacht ist\nuser – von Hand mit „Logcat-Dienst“ gestartet\nfull – enthält alle Logs des Geräts\npid – enthält nur die Logs des Launchers</string>
     <string name="logcat_service">Logcat-Dienst beim Start</string>
     <string name="logcat_service_summary"><![CDATA[Logcat beginnt mit der Aufzeichnung, wenn die Anwendung startet. Starten Sie das Gerät oder die App neu und prüfen Sie die Logs in <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat-Dienst beim Aufwachen des Geräts</string>

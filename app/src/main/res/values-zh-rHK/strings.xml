@@ -27,4 +27,6 @@
     <string name="fyt_rating_state_ready">用戶已登入，應用程式已就緒</string>
 
     <string name="app_type_user">用戶應用程式</string>
+    <string name="logcat_names_info">記錄檔名稱</string>
+    <string name="logcat_names_info_summary">reboot – 裝置重新啟動後隨啟動器一同啟動\nstart – 啟動器自行重新啟動（當機、更新）後隨之啟動\nwake – 裝置喚醒時啟動\nuser – 透過「記錄服務」手動啟動\nfull – 包含裝置的所有記錄\npid – 僅包含啟動器的記錄</string>
 </resources>

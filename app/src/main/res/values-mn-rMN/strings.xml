@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Дахин тохируулах</string>
     <string name="reset_night_mode">Шөнийн горимын анхдагч утгуудыг тохируулах</string>
     <string name="init_default_app_error">Төхөөрөмжийн тохиргоонд навиг/урд талын аппыг тохируулна уу.</string>
+    <string name="logcat_names_info">Лог файлын нэрс</string>
+    <string name="logcat_names_info_summary">reboot – төхөөрөмжийг дахин эхлүүлсний дараа лаунчертай хамт эхэлсэн\nstart – лаунчер өөрөө дахин эхэлсний дараа (гэмтэл, шинэчлэлт) түүнтэй хамт эхэлсэн\nwake – төхөөрөмж сэрэх үед эхэлсэн\nuser – “Logcat үйлчилгээ”-ээр гараар эхлүүлсэн\nfull – төхөөрөмжийн бүх логийг агуулна\npid – зөвхөн лаунчерын логийг агуулна</string>
     <string name="logcat_service">Эхлэхэд Logcat үйлчилгээ</string>
     <string name="logcat_service_summary"><![CDATA[Апп эхлэхэд Logcat бүртгэж эхлэх болно. Төхөөрөмж эсвэл аппыг дахин эхлүүлж, бүртгэлийг <b>Download/Launcher66_Logs</b> дотор шалгана уу.]]></string>
     <string name="logcat_service_wake">Төхөөрөмж сэрэхэд Logcat үйлчилгээ</string>

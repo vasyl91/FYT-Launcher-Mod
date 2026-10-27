@@ -142,4 +142,6 @@
     <string name="bar_background_dialog_title">Selecione a imagem de fundo da barra inferior:</string>
     <string name="pick_image_manually">Escolher imagem de fundo</string>
     <string name="resizable_bottom_bar_summary">Altura: %1$s do lado mais curto do ecrã (%2$s)</string>
+    <string name="logcat_names_info">Nomes dos ficheiros de registo</string>
+    <string name="logcat_names_info_summary">reboot – iniciado com o launcher depois de o dispositivo reiniciar\nstart – iniciado com o launcher depois de este reiniciar sozinho (falha, atualização)\nwake – iniciado quando o dispositivo acordou\nuser – iniciado manualmente com «Serviço Logcat»\nfull – contém todos os registos do dispositivo\npid – contém apenas os registos do launcher</string>
 </resources>

@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Återställ</string>
     <string name="reset_night_mode">Ställ in standardvärden för nattläge</string>
     <string name="init_default_app_error">Ställ in navigerings-/förgrundsappen i enhetsinställningarna.</string>
+    <string name="logcat_names_info">Namn på loggfiler</string>
+    <string name="logcat_names_info_summary">reboot – startad med launchern efter att enheten startats om\nstart – startad med launchern efter att den startat om av sig själv (krasch, uppdatering)\nwake – startad när enheten vaknade\nuser – startad manuellt med ”Logcat-tjänst”\nfull – innehåller alla enhetens loggar\npid – innehåller bara launcherns loggar</string>
     <string name="logcat_service">Logcat-tjänst vid start</string>
     <string name="logcat_service_summary"><![CDATA[Logcat börjar logga när appen startar. Starta om enheten eller appen och kontrollera loggarna i <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat-tjänst när enheten vaknar</string>

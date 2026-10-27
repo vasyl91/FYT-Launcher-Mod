@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Ресетуј</string>
     <string name="reset_night_mode">Подеси подразумеване вредности ноћног режима</string>
     <string name="init_default_app_error">Подесите навигациону апликацију/апликацију у првом плану у подешавањима уређаја.</string>
+    <string name="logcat_names_info">Називи датотека евиденције</string>
+    <string name="logcat_names_info_summary">reboot – покренуто са лаунчером након поновног покретања уређаја\nstart – покренуто са лаунчером након што се сам поново покренуо (рушење, ажурирање)\nwake – покренуто када се уређај пробудио\nuser – покренуто ручно преко „Logcat услуга“\nfull – садржи све евиденције уређаја\npid – садржи само евиденције лаунчера</string>
     <string name="logcat_service">Logcat услуга при покретању</string>
     <string name="logcat_service_summary"><![CDATA[Logcat ће почети да бележи када се апликација покрене. Поново покрените уређај или апликацију и проверите евиденције у <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat услуга када се уређај пробуди</string>

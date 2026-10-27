@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Atstatyti</string>
     <string name="reset_night_mode">Nustatyti numatytąsias nakties režimo reikšmes</string>
     <string name="init_default_app_error">Įrenginio nustatymuose nustatykite navigacijos / priekinio plano programą.</string>
+    <string name="logcat_names_info">Žurnalo failų pavadinimai</string>
+    <string name="logcat_names_info_summary">reboot – paleista kartu su paleidikliu iš naujo paleidus įrenginį\nstart – paleista kartu su paleidikliu jam pačiam persikrovus (strigtis, naujinimas)\nwake – paleista, kai įrenginys pabudo\nuser – paleista rankiniu būdu: „Logcat“ paslauga\nfull – joje yra visi įrenginio žurnalai\npid – joje yra tik paleidiklio žurnalai</string>
     <string name="logcat_service">„Logcat“ paslauga paleidžiant</string>
     <string name="logcat_service_summary"><![CDATA[„Logcat“ pradės registruoti, kai bus paleista programa. Paleiskite įrenginį ar programą iš naujo ir patikrinkite žurnalus aplanke <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">„Logcat“ paslauga pažadinus įrenginį</string>

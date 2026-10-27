@@ -17,4 +17,6 @@
     <string name="workspace_scroll_format">Skrin Laman Utama %1$d daripada %2$d</string>
     <string name="apps_customize_apps_scroll_format">Halaman apl %1$d daripada %2$d</string>
     <string name="apps_customize_widgets_scroll_format">Halaman widget %1$d daripada %2$d</string>
+    <string name="logcat_names_info">Nama fail log</string>
+    <string name="logcat_names_info_summary">reboot – dimulakan bersama pelancar selepas peranti dimulakan semula\nstart – dimulakan bersama pelancar selepas ia dimulakan semula dengan sendirinya (ranap, kemas kini)\nwake – dimulakan apabila peranti bangun\nuser – dimulakan secara manual dengan “Perkhidmatan Logcat”\nfull – mengandungi semua log peranti\npid – hanya mengandungi log pelancar</string>
 </resources>

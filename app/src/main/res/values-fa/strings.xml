@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">بازنشانی</string>
     <string name="reset_night_mode">تنظیم مقادیر پیش‌فرض حالت شب</string>
     <string name="init_default_app_error">لطفاً برنامه ناوبری/جلو را در تنظیمات دستگاه تنظیم کنید.</string>
+    <string name="logcat_names_info">نام فایل‌های گزارش</string>
+    <string name="logcat_names_info_summary">reboot – همراه با لانچر پس از راه‌اندازی مجدد دستگاه شروع شده\nstart – همراه با لانچر پس از راه‌اندازی مجدد خودکار آن شروع شده (خرابی، به‌روزرسانی)\nwake – هنگام بیدار شدن دستگاه شروع شده\nuser – به‌صورت دستی با «سرویس Logcat» شروع شده\nfull – شامل همه گزارش‌های دستگاه است\npid – فقط شامل گزارش‌های لانچر است</string>
     <string name="logcat_service">سرویس Logcat هنگام شروع</string>
     <string name="logcat_service_summary"><![CDATA[Logcat با شروع برنامه، ثبت گزارش را آغاز می‌کند. دستگاه یا برنامه را دوباره راه‌اندازی کنید و گزارش‌ها را در <b>Download/Launcher66_Logs</b> ببینید.]]></string>
     <string name="logcat_service_wake">سرویس Logcat هنگام بیدار شدن دستگاه</string>

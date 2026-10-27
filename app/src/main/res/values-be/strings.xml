@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Скід</string>
     <string name="reset_night_mode">Задаць значэнні начнога рэжыму па змаўчанні</string>
     <string name="init_default_app_error">Задайце навігацыйную праграму/праграму на пярэднім плане ў наладах прылады.</string>
+    <string name="logcat_names_info">Імёны файлаў журнала</string>
+    <string name="logcat_names_info_summary">reboot – запушчаны разам з лаўнчарам пасля перазапуску прылады\nstart – запушчаны разам з лаўнчарам пасля яго самастойнага перазапуску (збой, абнаўленне)\nwake – запушчаны, калі прылада прачнулася\nuser – запушчаны ўручную праз «Служба Logcat»\nfull – змяшчае ўсе журналы прылады\npid – змяшчае толькі журналы лаўнчара</string>
     <string name="logcat_service">Служба Logcat пры запуску</string>
     <string name="logcat_service_summary"><![CDATA[Logcat пачне запіс, калі запусціцца праграма. Перазагрузіце прыладу або праграму і праверце логі ў <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Служба Logcat пры абуджэнні прылады</string>

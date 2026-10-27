@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Lähtesta</string>
     <string name="reset_night_mode">Määra öörežiimi vaikeväärtused</string>
     <string name="init_default_app_error">Määrake navigatsiooni-/esiplaanirakendus seadme seadetes.</string>
+    <string name="logcat_names_info">Logifailide nimed</string>
+    <string name="logcat_names_info_summary">reboot – käivitatud koos käivitajaga pärast seadme taaskäivitust\nstart – käivitatud koos käivitajaga pärast selle iseseisvat taaskäivitust (krahh, värskendus)\nwake – käivitatud seadme ärkamisel\nuser – käivitatud käsitsi valikuga „Logcati teenus“\nfull – sisaldab kõiki seadme logisid\npid – sisaldab ainult käivitaja logisid</string>
     <string name="logcat_service">Logcati teenus käivitumisel</string>
     <string name="logcat_service_summary"><![CDATA[Logcat alustab logimist, kui rakendus käivitub. Taaskäivitage seade või rakendus ja kontrollige logisid kaustas <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcati teenus seadme ärkamisel</string>

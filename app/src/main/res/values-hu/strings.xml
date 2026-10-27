@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Visszaállítás</string>
     <string name="reset_night_mode">Az éjszakai mód alapértékeinek beállítása</string>
     <string name="init_default_app_error">Állítsa be a navigációs/előtér alkalmazást az eszközbeállításokban.</string>
+    <string name="logcat_names_info">Naplófájlok nevei</string>
+    <string name="logcat_names_info_summary">reboot – az indítóval együtt indult az eszköz újraindítása után\nstart – az indítóval együtt indult, miután az magától újraindult (összeomlás, frissítés)\nwake – az eszköz felébredésekor indult\nuser – kézzel indítva a(z) „Logcat szolgáltatás” segítségével\nfull – az eszköz összes naplóját tartalmazza\npid – csak az indító naplóit tartalmazza</string>
     <string name="logcat_service">Logcat szolgáltatás indításkor</string>
     <string name="logcat_service_summary"><![CDATA[A Logcat az alkalmazás indulásakor megkezdi a naplózást. Indítsa újra az eszközt vagy az alkalmazást, majd ellenőrizze a naplókat a <b>Download/Launcher66_Logs</b> mappában.]]></string>
     <string name="logcat_service_wake">Logcat szolgáltatás az eszköz felébredésekor</string>

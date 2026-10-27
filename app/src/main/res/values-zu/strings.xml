@@ -321,6 +321,8 @@
     <string name="reset_night_mode_category">Setha kabusha</string>
     <string name="reset_night_mode">Setha amanani azenzakalelayo emodi yobusuku</string>
     <string name="init_default_app_error">Sicela usethe uhlelo lokusebenza le-navi/langaphambili ezilungiselelweni zedivayisi.</string>
+    <string name="logcat_names_info">Amagama amafayela e-log</string>
+    <string name="logcat_names_info_summary">reboot – iqalwe kanye nesiqalisi ngemva kokuqala kabusha kwedivayisi\nstart – iqalwe kanye nesiqalisi ngemva kokuthi siziqalise kabusha (ukuphahlazeka, ukubuyekeza)\nwake – iqalwe lapho idivayisi ivuka\nuser – iqalwe ngesandla ku-“Isevisi ye-Logcat”\nfull – iqukethe wonke amalogi edivayisi\npid – iqukethe amalogi esiqalisi kuphela</string>
     <string name="logcat_service">Isevisi ye-Logcat ekuqaleni</string>
     <string name="logcat_service_summary"><![CDATA[I-Logcat izoqala ukulogwa lapho uhlelo lokusebenza luqala. Qalisa kabusha idivayisi noma uhlelo lokusebenza futhi uhlole amalogi ku-<b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Isevisi ye-Logcat lapho idivayisi iphapha</string>
