@@ -11,26 +11,20 @@ class PinnedPipLaunchTest {
     private static final int FULLSCREEN = 1;
 
     @Test
-    void aPinnedTaskOnTheDefaultDisplayIsInsideTheStack() {
-        assertFalse(PinnedPipLaunch.outsidePinned(PINNED, 0));
+    void aTaskOnTheDefaultDisplayIsLeftToTheFramework() {
+        // The running PiP in FYT's pinned stack (mode 6, log 27-10-2026 23:31) or a full-screen
+        // task, which FYT's ActivityStarter moves into that stack: neither needs a restart.
+        assertFalse(PinnedPipLaunch.outsidePinned(0));
     }
 
     @Test
-    void aFullScreenTaskOnTheDefaultDisplayIsOutside() {
-        assertTrue(PinnedPipLaunch.outsidePinned(FULLSCREEN, 0));
+    void aTaskOnAVirtualDisplayIsOutside() {
+        assertTrue(PinnedPipLaunch.outsidePinned(61));   // the retired ActivityView of log B
     }
 
     @Test
-    void aTaskOnAVirtualDisplayIsOutsideWhateverItsModeIsKnownAs() {
-        assertTrue(PinnedPipLaunch.outsidePinned(-1, 61));   // the retired ActivityView of log B
-        assertTrue(PinnedPipLaunch.outsidePinned(PINNED, 61));
-    }
-
-    @Test
-    void whatCannotBeReadSaysNothing() {
-        assertFalse(PinnedPipLaunch.outsidePinned(-1, -1));
-        assertFalse(PinnedPipLaunch.outsidePinned(-1, 0));
-        assertFalse(PinnedPipLaunch.outsidePinned(PINNED, -1));
+    void anUnreadableDisplaySaysNothing() {
+        assertFalse(PinnedPipLaunch.outsidePinned(-1));
     }
 
     @Test

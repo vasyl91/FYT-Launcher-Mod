@@ -15,21 +15,28 @@ public final class PinnedPipLaunch {
     }
 
     /**
-     * Whether a task is outside the pinned stack: its windowing mode is known and is not pinned, or
-     * its display is known and is not the default one (the retired ActivityView of a window pane
-     * lives on a virtual display). A negative value means "could not be read" and says nothing.
+     * Whether a task of the pinned PiP app lives where a force_pip start cannot put it in the pinned
+     * stack: on another display than the default one, which is where the retired ActivityView of a
+     * window pane leaves it. FYT's ActivityStarter takes such a task to the default display full
+     * screen (moveTopStack) instead. On the default display it does the right thing: a task in its
+     * pinned stack is the PiP itself, shown again, and one full screen is moved into that stack
+     * (moveActivityToMpip). A negative display means "could not be read" and says nothing.
+     *
+     * <p>The windowing mode is not asked. FYT's pinned stack is not WINDOWING_MODE_PINNED but a
+     * mode of its own, 6 (getOrCreateStack(6, ...)), and taking every mode but 2 for "outside" made
+     * the running PiP a stray task: it was force-stopped each time its page was shown, and never
+     * came back (log 27-10-2026 23:31, tasks 56, 60 and 61 on display 0 in mode 6).
      */
-    public static boolean outsidePinned(int windowingMode, int displayId) {
-        return (windowingMode >= 0 && windowingMode != WINDOWING_MODE_PINNED)
-                || (displayId >= 0 && displayId != 0);
+    public static boolean outsidePinned(int displayId) {
+        return displayId >= 0 && displayId != 0;
     }
 
     /**
      * Whether the pinned PiP app has to be force-stopped before it is started again. A changed
-     * package or size always does. A task of the package that lives outside the pinned stack does
-     * too: FYT's framework moves it to the default display full screen instead of making a pinned
-     * stack, and only a fresh start gets one. Not when the package is also in a window pane, whose
-     * window the force-stop would kill on every return to the home screen.
+     * package or size always does. A task of the package left on another display does too: FYT's
+     * framework moves it to the default display full screen instead of making a pinned stack, and
+     * only a fresh start gets one. Not when the package is also in a window pane, whose window the
+     * force-stop would kill on every return to the home screen.
      */
     public static boolean needsRestart(boolean packageChanged, boolean sizeChanged,
             boolean taskOutsidePinned, boolean alsoInWindowPane) {

@@ -82,9 +82,9 @@ public final class DefaultDisplayTask {
     }
 
     /**
-     * The first task of the package that lives outside the pinned stack, on the default display
-     * full screen or on the virtual display of a retired window pane; null if there is none or
-     * what is needed to tell cannot be read.
+     * The first task of the package that a force_pip start cannot put in the pinned stack, one on
+     * another display than the default one (a retired window pane's virtual display); null if there
+     * is none or the display cannot be read. See PinnedPipLaunch.outsidePinned().
      *
      * @throws RuntimeException as ActivityManager.getRunningTasks() does
      */
@@ -95,7 +95,7 @@ public final class DefaultDisplayTask {
         if (tasks == null) return null;
         for (ActivityManager.RunningTaskInfo task : tasks) {
             if (!isOfPackage(task, pkg)) continue;
-            if (PinnedPipLaunch.outsidePinned(windowingMode(task), displayId(task))) {
+            if (PinnedPipLaunch.outsidePinned(displayId(task))) {
                 return task;
             }
         }

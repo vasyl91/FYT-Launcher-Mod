@@ -2157,7 +2157,7 @@ public class WindowUtil {
             }
             boolean packageChanged = !packageName.equals(currentPackage);
             boolean sizeChanged = checkIfMapSizeChanged(pipKey);
-            // The app may still have a task outside the pinned stack (a window pane's retired
+            // The app may still have a task on another display (a window pane's retired
             // ActivityView, say). FYT's framework then moves that task to the default display full
             // screen instead of making a pinned stack, so the app is restarted first. Asked only
             // when nothing else already restarts it: it is a binder call.
