@@ -89,6 +89,21 @@ final class WindowHostVdShizuku {
         }
     }
 
+    /**
+     * Shizuku runs and the user has refused this launcher for good: it will not become a host.
+     * Not running is not known to be refused, so false then (HostAwait waits for it).
+     */
+    static boolean isDeniedForGood() {
+        if (!sInitialized) return false;
+        try {
+            return Shizuku.pingBinder() && !Shizuku.isPreV11()
+                    && Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED
+                    && Shizuku.shouldShowRequestPermissionRationale();
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     /** Shizuku's server is up (whether this launcher may use it or not). */
     static boolean isRunning() {
         try {

@@ -373,6 +373,8 @@ public class LauncherApplication extends Application {
                 getSharedPreferences(com.android.launcher66.settings.CanbusService.APP_STATS_PREFS,
                         MODE_PRIVATE);
                 BaselineProfileCompiler.warmUp(this);
+                // Whether Shizuku is installed (a PackageManager call), for HostAwait.isExpected().
+                com.syu.util.HostAwait.warmUp(this);
             } catch (Throwable t) {
                 Log.w(TAG, "start-up warm-up: " + t);
             }
