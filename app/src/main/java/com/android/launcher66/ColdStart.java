@@ -20,6 +20,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.settings.AppListAutostartDialogFragment;
 import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.LogcatDefaults;
 import com.android.launcher66.settings.LogcatWorker;
 import com.android.launcher66.settings.WakeDetection;
 import com.syu.util.WindowHostVdClient;
@@ -114,7 +115,7 @@ public final class ColdStart {
     }
 
     private static void startLogcat(Application app, boolean coldStart, SharedPreferences settings) {
-        if (settings.getBoolean(Keys.LOGCAT_SERVICE, true)) {
+        if (settings.getBoolean(Keys.LOGCAT_SERVICE, LogcatDefaults.on(app))) {
             LogcatWorker.get().start(app, coldStart);
         }
     }

@@ -48,4 +48,9 @@
     <bool name="showFrontAndAux">true</bool>
     <bool name="supportFolder">false</bool>
     <bool name="center_crop">true</bool>
+    <!-- Whether the four logcat settings (capture at start, at wake, log everything, boot log) are
+         on until the user changes them: off in release, overridden to on by src/debug. The build
+         types made by the Baseline Profile plugin (nonMinifiedRelease, benchmarkRelease) take this
+         value and so behave like release. -->
+    <bool name="logcat_on_by_default">false</bool>
 </resources>

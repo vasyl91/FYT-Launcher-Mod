@@ -488,7 +488,7 @@ public final class LogcatWorker {
             // Whether this capture may reach back to the boot is decided by when it started, not
             // by when the VD host came (Shizuku can take a minute or more after the boot).
             final long captureStartedAt = SystemClock.elapsedRealtime();
-            boolean wantsFullLog = prefs.getBoolean(Keys.LOGCAT_FULL, false);
+            boolean wantsFullLog = prefs.getBoolean(Keys.LOGCAT_FULL, LogcatDefaults.on(ctx));
             boolean system = LauncherApplication.hasSystemPrivileges();
             boolean hostAttached = !system && wantsFullLog && HostProcess.isAvailable();
             // Without system privileges the VD host (root or Shizuku) reads the whole log. One that
@@ -512,7 +512,7 @@ public final class LogcatWorker {
             if (system || viaHost) {
                 fullLog = wantsFullLog;
                 // The boot log setting: only with both settings on.
-                bootLog = fullLog && prefs.getBoolean(Keys.BOOT_LOGCAT, false);
+                bootLog = fullLog && prefs.getBoolean(Keys.BOOT_LOGCAT, LogcatDefaults.on(ctx));
             }
             sViaHost = viaHost;
             writeLine(scopeLine(fullLog, viaHost));
@@ -551,7 +551,7 @@ public final class LogcatWorker {
                     fullLog = true;
                     usePidFlag = false;
                     sViaHost = true;
-                    bootLog = prefs.getBoolean(Keys.BOOT_LOGCAT, false);
+                    bootLog = prefs.getBoolean(Keys.BOOT_LOGCAT, LogcatDefaults.on(ctx));
                     syncLogdBufferSize(bootLog);
                     fromBoot = isBootCapture(bootLog, coldStart, mode, captureStartedAt);
                     sinceMs = upgradeSinceMs(fromBoot, captureSinceMs, captureBeganWallMs);

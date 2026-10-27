@@ -315,22 +315,22 @@
 
         <SwitchPreferenceCompat
             android:key="logcat_service"
-            android:defaultValue="false"
+            android:defaultValue="@bool/logcat_on_by_default"
             android:title="@string/logcat_service" />
         <SwitchPreferenceCompat
             android:key="logcat_service_wake"
-            android:defaultValue="false"
+            android:defaultValue="@bool/logcat_on_by_default"
             android:title="@string/logcat_service_wake" />
         <com.android.launcher66.settings.CustomNoSwitchPreference
             android:key="logcat_full"
-            android:defaultValue="false"
+            android:defaultValue="@bool/logcat_on_by_default"
             android:title="@string/logcat_full"
             android:summaryOn="@string/logcat_full_on"
             android:summaryOff="@string/logcat_full_off"
             app:layout="@layout/preference_no_switch" />
         <SwitchPreferenceCompat
             android:key="boot_logcat"
-            android:defaultValue="false"
+            android:defaultValue="@bool/logcat_on_by_default"
             android:title="@string/boot_logcat" />
         <Preference
             android:key="logcat_service_run"

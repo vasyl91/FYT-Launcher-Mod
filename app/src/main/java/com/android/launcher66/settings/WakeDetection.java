@@ -307,7 +307,8 @@ public final class WakeDetection implements WakeSignals.Listener {
             Log.i(TAG, "Ignoring duplicate display-on event after " + (now - lastDisplayOnHandledMs) + " ms");
             return;
         }
-        boolean logcatBoolean = prefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, true);
+        boolean logcatBoolean = prefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE,
+                LogcatDefaults.on(LauncherApplication.sApp));
         if (logcatBoolean) {
             LogcatWorker.get().startForWake(LauncherApplication.sApp);
         }

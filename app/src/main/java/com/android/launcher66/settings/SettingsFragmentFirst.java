@@ -458,7 +458,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         nightMode();        
         if (logcatService != null) {
             logcatService.setOnPreferenceClickListener(this);
-            logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, false);
+            logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, LogcatDefaults.on(requireContext()));
             if (logcatServiceBool) {
                 String summaryText = getString(R.string.logcat_service_summary);
                 logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
@@ -468,7 +468,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (logcatServiceWake != null) {
             logcatServiceWake.setOnPreferenceClickListener(this);
-            logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, false);
+            logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, LogcatDefaults.on(requireContext()));
             if (logcatServiceWakeBool) {
                 String summaryText = getString(LauncherApplication.isFytDevice()
                         ? R.string.logcat_service_wake_summary
@@ -929,7 +929,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 brightnessPref.setChecked(false);
                 break;
             case Keys.LOGCAT_SERVICE:
-                logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, false);
+                logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, LogcatDefaults.on(requireContext()));
                 if (logcatServiceBool) {
                     String summaryText = getString(R.string.logcat_service_summary);
                     logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
@@ -938,7 +938,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 }
                 break;
             case Keys.LOGCAT_SERVICE_WAKE:
-                logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, false);
+                logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, LogcatDefaults.on(requireContext()));
                 if (logcatServiceWakeBool) {
                     String summaryText = getString(LauncherApplication.isFytDevice()
                             ? R.string.logcat_service_wake_summary
