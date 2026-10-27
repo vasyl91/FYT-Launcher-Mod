@@ -183,6 +183,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     // Content
     private ArrayList<AppInfo> mApps;
     private ArrayList<Object> mWidgets;
+    /** The pages were built from a list of widgets once: only then can a same list be skipped, see onPackagesUpdated(). */
+    private boolean mWidgetsListed;
 
     // Cling
     private boolean mHasShownAllAppsCling;
@@ -459,7 +461,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
 
         // Get the list of widgets and shortcuts
-        mWidgets.clear();
+        ArrayList<Object> next = new ArrayList<>();
         for (Object o : widgetsAndShortcuts) {
             if (o instanceof AppWidgetProviderInfo widget) {
                 if (app.shouldShowAppOrWidgetProvider(widget.provider) && !isFilterWidgets(widget.provider.getClassName()) && (Config.CUSTOMER_ID != 8 || (!widget.provider.getPackageName().contains("antutu") && !widget.provider.getPackageName().contains("ludashi"))))  {
@@ -480,10 +482,10 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                                     int a = LauncherApplication.sApp.getResources().getInteger(R.integer.apps_launcher_packagename);
                                     String widgetpackagename = "com.android.launcher" + a;
                                     if (widget.provider.getPackageName().contains(widgetpackagename)) {
-                                        mWidgets.add(widget);
+                                        next.add(widget);
                                     }
                                 } else {
-                                    mWidgets.add(widget);
+                                    next.add(widget);
                                 }
                             }
                         } else {
@@ -497,10 +499,40 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 }
             } else {
                 // just add shortcuts
-                mWidgets.add(o);
+                next.add(o);
             }
         }
+        // LauncherModel.PackageUpdatedTask reports every package it hears of, and a wake brings
+        // bluetooth, gms and wellbeing "updating" again: the list is the same then, and rebuilding
+        // the pages for it was done twice in a row (capture 26-10-2026 19:43:08 and 19:43:31).
+        if (mWidgetsListed && sameWidgets(mWidgets, next)) {
+            Log.d(TAG, "onPackagesUpdated: the same " + next.size() + " widgets and shortcuts, pages kept");
+            return;
+        }
+        mWidgets.clear();
+        mWidgets.addAll(next);
+        mWidgetsListed = true;
         updatePageCountsAndInvalidateData();
+    }
+
+    /** The same providers and shortcut activities in the same order. */
+    static boolean sameWidgets(java.util.List<Object> current, java.util.List<Object> next) {
+        if (current.size() != next.size()) return false;
+        for (int i = 0; i < next.size(); i++) {
+            if (!widgetKey(current.get(i)).equals(widgetKey(next.get(i)))) return false;
+        }
+        return true;
+    }
+
+    private static String widgetKey(Object o) {
+        if (o instanceof AppWidgetProviderInfo widget && widget.provider != null) {
+            return widget.provider.flattenToString();
+        }
+        if (o instanceof android.content.pm.ResolveInfo info && info.activityInfo != null) {
+            return info.activityInfo.packageName + "/" + info.activityInfo.name;
+        }
+        // Not known to identify itself: never equal to another object, so the pages are rebuilt.
+        return "?" + System.identityHashCode(o);
     }
 
     public void setBulkBind(boolean bulkBind) {

@@ -38,6 +38,7 @@ import com.android.launcher66.R;
 import com.android.launcher66.Workspace;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.WakeDetection;
 import com.fyt.thread.ThreadManager;
 
 import java.lang.reflect.Field;
@@ -352,10 +353,12 @@ public class WindowUtil {
     }
 
     public static void startMapPip(final boolean show) {
+        if (WakeDetection.skipPipWork("startMapPip")) return;
         ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
     }
 
     public static void startMapPip(final boolean show, int millis) {
+        if (WakeDetection.skipPipWork("startMapPip")) return;
         delayMillis = millis;
         ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
     }
@@ -1989,6 +1992,7 @@ public class WindowUtil {
     // =====================================================================================
 
     public static void openPinnedPip() {
+        if (WakeDetection.skipPipWork("openPinnedPip")) return;
         // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): FYT units only.
         if (!LauncherApplication.isFytDevice()) return;
         final Launcher launcher = Launcher.getLauncher();

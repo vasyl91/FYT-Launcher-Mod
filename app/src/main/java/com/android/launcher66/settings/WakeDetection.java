@@ -68,6 +68,36 @@ public final class WakeDetection implements WakeSignals.Listener {
     private static final long DISPLAY_ON_DEBOUNCE_MS = 2500L;
     public static final String ACTION_WAKE_REFRESH = "com.android.launcher66.action.WAKE_REFRESH";
     private long lastDisplayOnHandledMs = 0L;
+    /** elapsedRealtime of the last sleep signal, 0 before the first one; see skipPipWork(). */
+    private static volatile long sSleepElapsedMs;
+    private static volatile long sSkipLoggedForSleep;
+    /** PiP work is left alone this long after the sleep signal; see skipPipForSleep(). */
+    private static final long PIP_SKIP_AFTER_SLEEP_MS = 30_000L;
+
+    /**
+     * Whether the PiP work started now is for a device that is going to sleep. After ACC off the
+     * ROM sends CloseSystemDialogs, which moves the launcher to its default screen and so through
+     * Workspace.onPageBeginMoving()/onPageEndMoving(): removePinnedPip(), then openPinnedPip(),
+     * and a startMapPip from the pause (capture 26-10-2026 19:43:28-35: nothing in those paths
+     * asked whether the device was asleep, the panes went up and down for a screen that was off).
+     * Limited to PIP_SKIP_AFTER_SLEEP_MS, so a wake that was missed cannot keep PiP away for good.
+     */
+    static boolean skipPipForSleep(boolean asleep, long sinceSleepMs) {
+        return asleep && sinceSleepMs < PIP_SKIP_AFTER_SLEEP_MS;
+    }
+
+    /** For WindowUtil: true when the PiP work should be skipped (one line in the log per sleep). */
+    public static boolean skipPipWork(String what) {
+        long at = sSleepElapsedMs;
+        long since = at > 0L ? SystemClock.elapsedRealtime() - at : Long.MAX_VALUE;
+        if (!skipPipForSleep(sAsleep, since)) return false;
+        if (sSkipLoggedForSleep != at) {
+            sSkipLoggedForSleep = at;
+            Log.i(TAG, "PiP work skipped, " + since / 1000L + " s after the sleep signal (" + what + ")");
+        }
+        return true;
+    }
+
     /** elapsedRealtime of the last wake that was handled, 0 before the first one; see msSinceWake(). */
     private static volatile long sWakeElapsedMs;
 
@@ -392,6 +422,7 @@ public final class WakeDetection implements WakeSignals.Listener {
         restoreCandidates = topAppsForRestore("at the sleep");
         // Noted by ForegroundAppTracker, which needs system privileges.
         appBeforeSleep = ForegroundAppTracker.isActive() ? ColdStart.lastApp(app) : null;
+        sSleepElapsedMs = SystemClock.elapsedRealtime();
         sAsleep = true;
         HeadlightNightMode.onSleep();
         // Baseline Profile: a compilation still waiting for its delay would otherwise
