@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -1718,6 +1719,48 @@ public class WindowUtil {
     /** Last offset actually pushed to the panes; see updatePipPositionsForScroll(). */
     private static int lastScrollOffset = Integer.MIN_VALUE;
 
+    // What the pane windows did during one scroll of the pages, for one line in the log. Main thread.
+    private static boolean pagesMoving;
+    private static long pagesMovingSinceMs;
+    private static int paneMoves;
+    private static int paneMoveSamples;
+    private static long paneMoveDelaySumNs;
+    private static long paneMoveDelayMaxNs;
+
+    /** The pages start to scroll: the count of the pane window moves starts over. */
+    public static void onPagesBeginMoving() {
+        pagesMoving = true;
+        pagesMovingSinceMs = SystemClock.uptimeMillis();
+        paneMoves = 0;
+        paneMoveSamples = 0;
+        paneMoveDelaySumNs = 0L;
+        paneMoveDelayMaxNs = 0L;
+    }
+
+    /** The pages have settled. */
+    public static void onPagesSettled() {
+        if (!pagesMoving) return;
+        pagesMoving = false;
+        if (paneMoves == 0) return;
+        final long durationMs = SystemClock.uptimeMillis() - pagesMovingSinceMs;
+        final float avgMs = paneMoveSamples == 0 ? 0f : paneMoveDelaySumNs / 1e6f / paneMoveSamples;
+        Log.d(TAG, "pane moves: " + paneMoves + " in " + durationMs + " ms, move to pane frame avg "
+                + String.format(Locale.US, "%.1f", avgMs) + " ms, max "
+                + String.format(Locale.US, "%.1f", paneMoveDelayMaxNs / 1e6f) + " ms");
+    }
+
+    /**
+     * From the pane window's own pre-draw: the time from the request to move it to its next pass.
+     * That is how far a pane is behind the page it should be under, apart from what WindowManager
+     * adds when it applies the position.
+     */
+    static void recordPaneMoveLatency(long ns) {
+        if (!pagesMoving) return;
+        paneMoveSamples++;
+        paneMoveDelaySumNs += ns;
+        if (ns > paneMoveDelayMaxNs) paneMoveDelayMaxNs = ns;
+    }
+
     private static void updatePipPosition(WindowHost host, Workspace workspace,
                                           String pipType, int scrollOffset) {
         String screenKey = getScreenKeyForType(pipType);
@@ -1759,26 +1802,31 @@ public class WindowUtil {
                 case "dual":
                     if (host.isDualVisible()) {
                         host.updateDualBounds(bounds);
+                        paneMoves++;
                     }
                     break;
                 case "first":
                     if (host.isFirstVisible() && !firstPipPinned) {
                         host.updateFirstBounds(bounds);
+                        paneMoves++;
                     }
                     break;
                 case "second":
                     if (host.isSecondVisible() && !secondPipPinned) {
                         host.updateSecondBounds(bounds);
+                        paneMoves++;
                     }
                     break;
                 case "third":
                     if (host.isThirdVisible() && !thirdPipPinned) {
                         host.updateThirdBounds(bounds);
+                        paneMoves++;
                     }
                     break;
                 case "fourth":
                     if (host.isFourthVisible() && !fourthPipPinned) {
                         host.updateFourthBounds(bounds);
+                        paneMoves++;
                     }
                     break;
             }

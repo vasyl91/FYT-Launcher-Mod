@@ -256,15 +256,27 @@ public class WindowHostSinglePane {
         }
     }
 
+    /** A tap region sync is queued for the next layout pass; see syncTapRegionOnly(). */
+    private boolean tapSyncPending;
+
     /**
      * Refreshes just the tap-exclude region / display content location after a pure move.
      * Everything applyPaneGeometry() does beyond this concerns the pane's SIZE.
      */
     private void syncTapRegionOnly() {
         if (av == null || !childAttached || host == null) return;
+        // A VD pane gets its touches from its own view, so there is nothing to sync, and the
+        // relayout of the pane window that postAfterLayout() forces on every scroll frame was all
+        // this call did for it.
+        if (WindowHostActivityView.isHosted(av)) return;
+        // One sync per layout pass is enough: it reads the position the pane has by then, which
+        // includes every move reported while it waited. The last position is always synced.
+        if (tapSyncPending) return;
+        tapSyncPending = true;
         final FrameLayout paneHost = host;
         final Object paneAV = av;
         postAfterLayout(paneHost, () -> {
+            tapSyncPending = false;
             if (host != paneHost || av != paneAV || !childAttached) return;
             try {
                 WindowHostActivityView.syncGeometryWithoutIme(paneAV);
@@ -575,6 +587,8 @@ public class WindowHostSinglePane {
         p.width = 1; p.height = 1; p.x = -10000; p.y = -10000;
         p.alpha = 1f;
         p.setTitle("PipWindowHost:" + name);
+        // Set before the window is added; it stays in lp through every updateViewLayout().
+        Log.i(TAG, name + ": window move animation off (" + PaneWindows.disableMoveAnimation(p) + ")");
 
         try { wm.addView(rootView, p); added = true; }
         catch (Throwable t) {
@@ -585,9 +599,27 @@ public class WindowHostSinglePane {
         this.root = rootView;
         this.host = container;
         this.lp = p;
+        rootView.getViewTreeObserver().addOnPreDrawListener(() -> {
+            final long requested = moveRequestedNs;
+            if (requested != 0L) {
+                moveRequestedNs = 0L;
+                WindowUtil.recordPaneMoveLatency(System.nanoTime() - requested);
+            }
+            return true;
+        });
     }
 
-    /** Moves/resizes the host window. Pane geometry is applied separately by applyPaneGeometry(). */
+    /** When the window was last asked to move; read by the next pass of its window, see WindowUtil. */
+    private long moveRequestedNs;
+
+    /**
+     * Moves/resizes the host window. Pane geometry is applied separately by applyPaneGeometry().
+     *
+     * No throttling on purpose: any limit would only part the pane from its page. A device that
+     * cannot keep up falls behind by itself, in a harmless way: ViewRootImpl folds the updates that
+     * arrive between two of the pane window's frames into one pass, so the pane window is moved to
+     * the newest position at its own pace and nothing queues up.
+     */
     private void setPendingBoundsFast(Rect b) {
         if (hasPendingBounds && pendingBounds.equals(b)) return;
 
@@ -601,6 +633,7 @@ public class WindowHostSinglePane {
         lp.x = b.left; lp.y = b.top;
         lp.alpha = 1f;
         lp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+        moveRequestedNs = System.nanoTime();
         try { wm.updateViewLayout(root, lp); } catch (Throwable ignore) {}
 
         root.setVisibility(View.VISIBLE);

@@ -3727,6 +3727,7 @@ public class Workspace extends SmoothPagedView
     protected void onPageBeginMoving() {
         super.onPageBeginMoving();
         Log.i(TAG, "onPageBeginMoving()");
+        WindowUtil.onPagesBeginMoving();
         if (getChildCount() > 1) {
             WindowUtil.removePinnedPip();
         }
@@ -3762,6 +3763,7 @@ public class Workspace extends SmoothPagedView
 
     protected void onPageEndMoving() {
         super.onPageEndMoving(); 
+        WindowUtil.onPagesSettled();
         /*Log.d(TAG, "onPageEndMoving: " + "isInOverviewMode() = " + String.valueOf(helpers.isInOverviewMode())
                                        + "; openedFromOverviewBoolean() = " + String.valueOf(helpers.openedFromOverviewBoolean())
                                        + "; getChildCount() = " + String.valueOf(getChildCount())

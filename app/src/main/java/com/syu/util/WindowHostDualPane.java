@@ -441,6 +441,10 @@ public class WindowHostDualPane {
     /** Allowed VirtualDisplay size mismatch relative to the panel, in px. */
     private static final int VD_SIZE_TOLERANCE_PX = 16;
 
+    /** A tap region sync of that half is queued for the next layout pass. */
+    private boolean leftTapSyncPending;
+    private boolean rightTapSyncPending;
+
     /** Refreshes only the embedded displays' on-screen location after a pure move. */
     private void syncTapRegionsOnly() {
         for (Side side : Side.values()) {
@@ -448,7 +452,13 @@ public class WindowHostDualPane {
             final FrameLayout paneHost = hostOf(s);
             final Object paneAV = avOf(s);
             if (paneHost == null || paneAV == null) continue;
+            // See WindowHostSinglePane.syncTapRegionOnly(): nothing to sync for a VD pane, and a
+            // single sync per layout pass is enough for an ActivityView.
+            if (WindowHostActivityView.isHosted(paneAV)) continue;
+            if (s == Side.LEFT ? leftTapSyncPending : rightTapSyncPending) continue;
+            if (s == Side.LEFT) leftTapSyncPending = true; else rightTapSyncPending = true;
             postAfterLayout(paneHost, () -> {
+                if (s == Side.LEFT) leftTapSyncPending = false; else rightTapSyncPending = false;
                 if (hostOf(s) != paneHost || avOf(s) != paneAV) return;
                 try {
                     WindowHostActivityView.syncGeometryWithoutIme(paneAV);
@@ -735,6 +745,8 @@ public class WindowHostDualPane {
         p.width = 1; p.height = 1; p.x = -10000; p.y = -10000;
         p.alpha = 1f;
         p.setTitle("PipWindowHost:Dual");
+        // Set before the window is added; it stays in lp through every updateViewLayout().
+        Log.i(TAG, "Dual: window move animation off (" + PaneWindows.disableMoveAnimation(p) + ")");
 
         try { wm.addView(rootView, p); added = true; }
         catch (Throwable t) {
@@ -752,9 +764,23 @@ public class WindowHostDualPane {
 
         applySplit(false);
         root.getViewTreeObserver().addOnGlobalLayoutListener(() -> applySplit(false));
+        root.getViewTreeObserver().addOnPreDrawListener(() -> {
+            final long requested = moveRequestedNs;
+            if (requested != 0L) {
+                moveRequestedNs = 0L;
+                WindowUtil.recordPaneMoveLatency(System.nanoTime() - requested);
+            }
+            return true;
+        });
     }
 
-    /** Moves/resizes the host window. Pane geometry is applied separately by applySplit(). */
+    /** When the window was last asked to move; read by the next pass of its window, see WindowUtil. */
+    private long moveRequestedNs;
+
+    /**
+     * Moves/resizes the host window. Pane geometry is applied separately by applySplit().
+     * See WindowHostSinglePane.setPendingBoundsFast() for why this is not throttled.
+     */
     private void setPendingBoundsFast(Rect b) {
         if (hasPendingBounds && pendingBounds.equals(b)) return;
 
@@ -768,6 +794,7 @@ public class WindowHostDualPane {
         lp.x = b.left; lp.y = b.top;
         lp.alpha = 1f;
         lp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+        moveRequestedNs = System.nanoTime();
         try { wm.updateViewLayout(root, lp); } catch (Throwable ignore) {}
 
         root.setVisibility(View.VISIBLE);
