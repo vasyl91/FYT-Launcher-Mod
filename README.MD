@@ -4,13 +4,13 @@
 
 It should work with all resolutions on Android 8 through 16 (see [Supported devices](#supported-devices)), as the FYT version (a system app) on FYT units, or as the standard version (a user app) on any device.
 
-The FYT version declares `android:sharedUserId="android.uid.system"`, so it runs as the system itself (uid 1000). Android accepts that only from an APK signed with the same platform key as the firmware, and this one is signed with the public AOSP test key, which FYT firmware is built with. A firmware signed with its own platform key refuses it (`INSTALL_FAILED_SHARED_USER_INCOMPATIBLE`), whatever its Android version and whether it is rooted or not: the check is the signature, not a permission root could grant. On such a unit, and on any other device, use the standard version (see [Versions and updates](#versions-and-updates)): it gets the privileges it needs from root through the [FYT VDHost](vdhost/README.md) Magisk module, or from Shizuku without root. The PiPs work in it as windows, and pinned PiP works on FYT units as in the FYT version.
+The FYT version declares `android:sharedUserId="android.uid.system"`, so it runs as the system itself (uid 1000). Android accepts that only from an APK signed with the same platform key as the firmware, and this one is signed with the public AOSP test key, which FYT firmware is built with. A firmware signed with its own platform key refuses it (`INSTALL_FAILED_SHARED_USER_INCOMPATIBLE`), whatever its Android version and whether it is rooted or not: the check is the signature, not a permission root could grant. On such a unit, and on any other device, use the standard version (see [Versions and updates](#versions-and-updates)): it gets the privileges it needs from root through the [FYT VDHost](vdhost/README.md) Magisk module, or from Shizuku without root. The PiPs work in it as windows, and pinned PiP works on the FYT 7862 and 8581 (stock player `com.syu.music`) as in the FYT version. It is not offered on the 7870 (`com.syu.media`).
 
 The check is the key, not the brand: some custom ROMs (unofficial builds in particular) are made with the same public AOSP test key, and the FYT version installs there as a system app too. It then works as on an FYT unit wherever the system is all it needs (the PiPs, the Baseline Profile, the status bar swipe area, the boot autostart, the full logcat), while what only an FYT unit has (pinned PiP, radio, CAN bus, FYT's music and navigation sources, skins) stays off: the launcher sees it is not on one. A ROM signed with its own platform key would need the launcher built and signed with that key, which only the ROM's maintainer has. **No such build exists yet**: on these ROMs use the standard version.
 
 Both versions are the same app (`com.android.launcher66`), but Android does not let an update change the shared user id: the FYT version has to be uninstalled before installing the standard one, and the other way round (this wipes the launcher's data).
 
-IMPORTANT: Note that some FYT devices do not support pinned PiP on the main screen. You can still use the launcher, but you'll have to turn off PiP in the launcher's settings (otherwise Google Maps will pop up every time you try to open the home page — if this happens, wipe the launcher's data or reinstall it).
+IMPORTANT: Note that some FYT devices do not support pinned PiP on the main screen. On the 7870 the launcher does not offer it at all: every PiP is a window there. You can still use the launcher, but you'll have to turn off PiP in the launcher's settings (otherwise Google Maps will pop up every time you try to open the home page — if this happens, wipe the launcher's data or reinstall it).
 
 [XDA Forums thread](https://xdaforums.com/t/reverse-engineered-launcher-for-fyt-7862-8581.4702542/)
 
@@ -53,11 +53,11 @@ This method installs the FYT version as a privileged system app, in place of the
 | 8–9 | FYT version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ➖ |
 | 10 | FYT version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ✅ FYT unit, 2000x1200 |
 | 11–16 | FYT version | the system (uid 1000) | ✅ the launcher's own virtual displays | ✅ | ➖ |
-| 8–10 | standard version | root ([FYT VDHost](vdhost/README.md) module) or Shizuku | ✅ virtual displays through the module or Shizuku | ✅ on FYT units | ➖ |
-| 11–16 | standard version | root ([FYT VDHost](vdhost/README.md) module) | ✅ virtual displays through the module | ✅ on FYT units | ✅ Android 14, Xiaomi Redmi Note 8T |
-| 11–16 | standard version | Shizuku | ✅ virtual displays through Shizuku ¹ | ✅ on FYT units | ✅ Android 16, Samsung Galaxy A55 |
-| 8–16 | standard version | none | ❌ | ✅ on FYT units | ➖ |
-| 8–16 | FYT version on a non-FYT ROM made with the AOSP test key | the system (uid 1000) | ✅ as the FYT version on the same Android | ❌ FYT units only | ➖ |
+| 8–10 | standard version | root ([FYT VDHost](vdhost/README.md) module) or Shizuku | ✅ virtual displays through the module or Shizuku | ✅ on FYT 7862/8581 | ➖ |
+| 11–16 | standard version | root ([FYT VDHost](vdhost/README.md) module) | ✅ virtual displays through the module | ✅ on FYT 7862/8581 | ✅ Android 14, Xiaomi Redmi Note 8T |
+| 11–16 | standard version | Shizuku | ✅ virtual displays through Shizuku ¹ | ✅ on FYT 7862/8581 | ✅ Android 16, Samsung Galaxy A55 |
+| 8–16 | standard version | none | ❌ | ✅ on FYT 7862/8581 | ➖ |
+| 8–16 | FYT version on a non-FYT ROM made with the AOSP test key | the system (uid 1000) | ✅ as the FYT version on the same Android | ❌ FYT 7862/8581 only | ➖ |
 
 ¹ Apps that protect their content (`FLAG_SECURE`: video streaming, banking) show black in a PiP, and the PiPs come up only once Shizuku has started (about half a minute after a boot, longer if it waits for Wi-Fi).
 

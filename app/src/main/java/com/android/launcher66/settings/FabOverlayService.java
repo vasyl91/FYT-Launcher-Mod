@@ -33,6 +33,7 @@ import androidx.core.graphics.ColorUtils;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Launcher;
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.syu.util.WindowUtil;
@@ -247,10 +248,10 @@ public class FabOverlayService extends Service {
         secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
         thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
         fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
-        firstPipPinned = prefs.getBoolean(Keys.PIP_FIRST_MODE, false);
-        secondPipPinned = prefs.getBoolean(Keys.PIP_SECOND_MODE, false);
-        thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
-        fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+        firstPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FIRST_MODE);
+        secondPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_SECOND_MODE);
+        thirdPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE);
+        fourthPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE);
     }
 
     private boolean isFloatingButton() {

@@ -11,6 +11,8 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 
+import androidx.preference.PreferenceManager;
+
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.MediaFavoriteController;
 import com.android.launcher66.MediaTransportController;
@@ -169,6 +171,13 @@ public final class StockSources {
 
     private static void onDeviceResolved(boolean unit) {
         Log.d(TAG, "device: " + (unit ? "7870 (com.syu.media)" : "com.syu.music unit"));
+        if (unit) {
+            // Pinned PiP is for the com.syu.music units. The reset in LauncherApplication.onCreate()
+            // cannot tell a 7870 yet (this lookup is asynchronous, and the 7862 must not lose the
+            // mode before it ends), so it is done here.
+            LauncherApplication.clearPinnedPipModes(
+                    PreferenceManager.getDefaultSharedPreferences(sApp), "7870");
+        }
         Kind before = sArbiter.shown();
         if (sArbiter.setSyuMediaUnit(unit)) {
             onShownChanged(before, sArbiter.shown(), "device resolved", false, false);

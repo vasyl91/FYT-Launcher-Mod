@@ -681,7 +681,7 @@ public class WindowUtil {
                             }
                             // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP.
                             // FYT's framework only; elsewhere there is no pinned PiP to remove.
-                            if (LauncherApplication.isFytDevice()) {
+                            if (LauncherApplication.supportsPinnedPip()) {
                                 Method getServiceMethod = ActivityManager.class.getMethod("getService");
                                 Object activityManager = getServiceMethod.invoke(null);
                                 Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
@@ -827,7 +827,7 @@ public class WindowUtil {
                 }
                 // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP.
                 // FYT's framework only; elsewhere there is no pinned PiP to remove.
-                if (LauncherApplication.isFytDevice()) {
+                if (LauncherApplication.supportsPinnedPip()) {
                     Method getServiceMethod = ActivityManager.class.getMethod("getService");
                     Object activityManager = getServiceMethod.invoke(null);
                     Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
@@ -2041,8 +2041,9 @@ public class WindowUtil {
 
     public static void openPinnedPip() {
         if (WakeDetection.skipPipWork("openPinnedPip")) return;
-        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): FYT units only.
-        if (!LauncherApplication.isFytDevice()) return;
+        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): the com.syu.music
+        // units only (7862, 8581), see LauncherApplication.supportsPinnedPip().
+        if (!LauncherApplication.supportsPinnedPip()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         suppressMediaSourceSwitch();
@@ -2097,10 +2098,10 @@ public class WindowUtil {
         if (prefs == null) {
             prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
         }
-        firstPipPinned = prefs.getBoolean(Keys.PIP_FIRST_MODE, false);
-        secondPipPinned = prefs.getBoolean(Keys.PIP_SECOND_MODE, false);
-        thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
-        fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+        firstPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FIRST_MODE);
+        secondPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_SECOND_MODE);
+        thirdPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE);
+        fourthPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE);
         return firstPipPinned || secondPipPinned || thirdPipPinned || fourthPipPinned;
     }
 
@@ -2199,8 +2200,9 @@ public class WindowUtil {
                 setHost(null);
             });
         }
-        // The panes above are rebuilt everywhere; the pinned PiP app below exists on FYT units only.
-        if (!LauncherApplication.isFytDevice()) return;
+        // The panes above are rebuilt everywhere; the pinned PiP app below exists on the
+        // com.syu.music units only.
+        if (!LauncherApplication.supportsPinnedPip()) return;
         if (AppPackageName != null && !AppPackageName.isEmpty()) {
             if (FytPackage.GMAPS.equals(AppPackageName)) {
                 Log.i(TAG, "restartPinnedPipApp: skip force-stop for Google Maps");
@@ -2238,8 +2240,9 @@ public class WindowUtil {
     }
 
     public static void removePinnedPip() {
-        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): FYT units only.
-        if (!LauncherApplication.isFytDevice()) return;
+        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): the com.syu.music
+        // units only (7862, 8581), see LauncherApplication.supportsPinnedPip().
+        if (!LauncherApplication.supportsPinnedPip()) return;
         if (prefs == null) {
             prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
         }
@@ -2317,8 +2320,8 @@ public class WindowUtil {
             secondPip       = prefs.getBoolean(Keys.PIP_SECOND, false);
             thirdPip        = prefs.getBoolean(Keys.PIP_THIRD, false);
             fourthPip       = prefs.getBoolean(Keys.PIP_FOURTH, false);
-            thirdPipPinned  = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
-            fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+            thirdPipPinned  = LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE);
+            fourthPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE);
 
             int covers = coverForRightAndFourthSwap() + coverForLeftAndThirdSwap();
 
@@ -2449,7 +2452,7 @@ public class WindowUtil {
             dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
             firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
             thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
-            thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
+            thirdPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE);
 
             coverForLeftAndThirdSwap();
 
@@ -2739,7 +2742,7 @@ public class WindowUtil {
             dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
             secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
             fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
-            fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+            fourthPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE);
 
             coverForRightAndFourthSwap();
 

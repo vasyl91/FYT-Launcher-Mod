@@ -166,14 +166,11 @@ public class LauncherApplication extends Application {
                     .remove(Keys.COVER_SPLASH)
                     .apply();
         }
-        // Pinned PiP exists on FYT units only: elsewhere every pane is a window.
+        // Pinned PiP exists on the FYT units with com.syu.music only: elsewhere every pane is a
+        // window. Here that means the devices that are not FYT units at all; whether an FYT unit is
+        // a 7870 is not known yet, StockSources.onDeviceResolved() clears it for that one.
         if (!supportsPinnedPip()) {
-            prefs.edit()
-                    .putBoolean(Keys.PIP_FIRST_MODE, false)
-                    .putBoolean(Keys.PIP_SECOND_MODE, false)
-                    .putBoolean(Keys.PIP_THIRD_MODE, false)
-                    .putBoolean(Keys.PIP_FOURTH_MODE, false)
-                    .apply();
+            clearPinnedPipModes(prefs, "not an FYT unit");
         }
         if (!showsFytOptions()) {
             // Settings hide what only an FYT unit has, so none of it may stay on.
@@ -752,12 +749,42 @@ public class LauncherApplication extends Application {
     }
 
     /**
-     * Whether a pane can be FYT's pinned PiP instead of a window: on an FYT unit, the standard
-     * version included (it works there too). What it calls that a user app may be refused (system
-     * properties, setPinnedStackVisible, forceStopPackage) is caught, see WindowUtil.
+     * Whether a pane can be FYT's pinned PiP instead of a window: on an FYT unit with
+     * com.syu.music (7862, 8581), in the fyt and the standard version alike. Not on the 7870
+     * (com.syu.media), where the launcher has no pinned stack to use (owner's decision). What it
+     * calls that a user app may be refused (system properties, setPinnedStackVisible,
+     * forceStopPackage) is caught, see WindowUtil.
+     *
+     * Until StockSources has found out which unit this is, an FYT unit answers true, as before:
+     * the 7862 and the 8581 never lose it, and the 7870 gets its saved modes cleared when the
+     * lookup ends (StockSources.onDeviceResolved()).
      */
     public static boolean supportsPinnedPip() {
-        return isFytDevice();
+        return PinnedPip.supported(isFytDevice(), StockSources.isSyuMediaUnit());
+    }
+
+    /** Whether the pane saved under modeKey is the pinned PiP, which is not where it is unsupported. */
+    public static boolean isPinnedMode(SharedPreferences prefs, String modeKey) {
+        return PinnedPip.mode(supportsPinnedPip(), prefs.getBoolean(modeKey, false));
+    }
+
+    /**
+     * Puts every pane back to a window, if any is saved as pinned. Main thread; the write is apply().
+     */
+    public static void clearPinnedPipModes(SharedPreferences prefs, String why) {
+        if (!prefs.getBoolean(Keys.PIP_FIRST_MODE, false)
+                && !prefs.getBoolean(Keys.PIP_SECOND_MODE, false)
+                && !prefs.getBoolean(Keys.PIP_THIRD_MODE, false)
+                && !prefs.getBoolean(Keys.PIP_FOURTH_MODE, false)) {
+            return;
+        }
+        prefs.edit()
+                .putBoolean(Keys.PIP_FIRST_MODE, false)
+                .putBoolean(Keys.PIP_SECOND_MODE, false)
+                .putBoolean(Keys.PIP_THIRD_MODE, false)
+                .putBoolean(Keys.PIP_FOURTH_MODE, false)
+                .apply();
+        Log.i(TAG, "Pinned PiP is not offered here (" + why + "): the panes are windows again");
     }
 
     public static boolean isFytDevice() {

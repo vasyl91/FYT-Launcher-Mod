@@ -889,8 +889,8 @@ public final class WakeDetection implements WakeSignals.Listener {
                 prefs.getBoolean(Keys.PIP_DUAL, false),
                 prefs.getBoolean(Keys.PIP_FIRST, false),
                 prefs.getBoolean(Keys.PIP_SECOND, false),
-                prefs.getBoolean(Keys.PIP_THIRD, false), prefs.getBoolean(Keys.PIP_THIRD_MODE, false),
-                prefs.getBoolean(Keys.PIP_FOURTH, false), prefs.getBoolean(Keys.PIP_FOURTH_MODE, false));
+                prefs.getBoolean(Keys.PIP_THIRD, false), LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE),
+                prefs.getBoolean(Keys.PIP_FOURTH, false), LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE));
         boolean awaiting = WindowHostVdClient.panesAwaitHost();
         HostWait wait = hostWait(configured, awaiting, awaiting && HostAwait.isExpected(app));
         if (wait == HostWait.NONE) return false;
@@ -958,8 +958,8 @@ public final class WakeDetection implements WakeSignals.Listener {
             boolean secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
             boolean thirdPip  = prefs.getBoolean(Keys.PIP_THIRD, false);
             boolean fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
-            boolean thirdPinned  = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
-            boolean fourthPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+            boolean thirdPinned  = LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE);
+            boolean fourthPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE);
 
             if (dualPip) {
                 if (!host.isDualVisible()) return false;
