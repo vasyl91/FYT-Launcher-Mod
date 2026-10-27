@@ -2994,7 +2994,8 @@ public class Workspace extends SmoothPagedView
      * calling stripEmptyScreens() few times in a very short succesion
      */
     public void triggerStripEmptyScreens(String sourceClass, boolean instant) {
-        Log.i(TAG, "triggerStripEmptyScreens called in: " + sourceClass);
+        // Called several times in one frame at a start (already debounced below): not worth an I each.
+        Log.d(TAG, "triggerStripEmptyScreens called in: " + sourceClass);
         if (stripAction != null) {
             stripHandler.removeCallbacks(stripAction);
         }

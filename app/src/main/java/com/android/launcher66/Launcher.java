@@ -282,6 +282,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final long CUSTOM_ELEMENTS_SETUP_DEBOUNCE_MS = 150L;
     private static final long WORKSPACE_NULL_LOADER_THROTTLE_MS = 1200L;
     static final String TAG = "Launcher";
+    private static boolean sKwapiSkipLogged;
     /** The night bits of the configuration the launcher last saw; see onConfigurationChanged(). */
     private int mUiNightMode;
     private static final String TOOLBAR_ICON_METADATA_NAME = "com.android.launcher.toolbar_icon";
@@ -2038,7 +2039,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Log.w(TAG, "KWAPI not created: " + e);
             }
         } else {
-            Log.w(TAG, "Not the system launcher of an FYT unit, KWAPI can not be created.");
+            // True on the 7870 (an FYT unit, but the standard build, no system rights): nothing is
+            // wrong there, so once per process and not a warning.
+            if (!sKwapiSkipLogged) {
+                sKwapiSkipLogged = true;
+                Log.d(TAG, "Not the system launcher of an FYT unit, KWAPI can not be created.");
+            }
         }
     }
 

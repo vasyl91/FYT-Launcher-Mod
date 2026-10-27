@@ -225,9 +225,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
             return;
         }
 
-        // Update by primary key. The old code used saveOrUpdate("index = ?", ...): "index"
-        // is a SQLite reserved keyword and must be quoted, AppMultiple.index is not
-        // guaranteed unique, and LitePal skips fields left at their default value when it
+        // Update by primary key. The old code used saveOrUpdate("index = ?", ...): AppMultiple.index
+        // is not guaranteed unique, and LitePal skips fields left at their default value when it
         // builds an UPDATE - so a slot could never be cleared back to "".
         ContentValues values = new ContentValues();
         values.put("name", bean.name == null ? "" : bean.name);

@@ -25,8 +25,10 @@ public class AppMultiple extends LitePalSupport {
      * LitePal's internal object id for rows that were just saved.
      *
      * This is the ONLY safe way to address a bottom-bar slot: {@link #index} is not
-     * guaranteed to be unique or contiguous, and it is a SQLite reserved keyword, so it
-     * must be quoted ("index") in every raw where/order clause.
+     * guaranteed to be unique or contiguous. It is also a SQLite reserved keyword: LitePal
+     * stores it as the column index_lpcolumn and rewrites "index" itself in the where, order
+     * and select clauses it builds, so write it unquoted there (quoted, it matches no column);
+     * only raw SQL has to say index_lpcolumn.
      */
     public long rowId() {
         return id > 0 ? id : getBaseObjId();

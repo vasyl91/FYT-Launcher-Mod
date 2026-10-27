@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat;
 import com.syu.car.CarStates;
 import com.syu.util.ActivityStartUtils;
 import com.syu.util.FytPackage;
-import com.syu.util.JLog;
 import com.syu.util.PackageManagers;
 
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ public class Hotseat extends FrameLayout {
         super(context, attrs, defStyle);
         Resources r = context.getResources();
         this.mIsLandscape = r.getBoolean(R.bool.hotseat_landscape_layout);
-        JLog.getInstance().e("Hotseat orientation mIsLandscape == " + this.mIsLandscape);
+        Log.d(TAG, "Hotseat orientation mIsLandscape == " + this.mIsLandscape);
     }
 
     public void setup(Launcher launcher) {
@@ -126,7 +125,8 @@ public class Hotseat extends FrameLayout {
             this.mContent.setGridSize((int) grid.numHotseatIcons, 1);
         }
         this.mContent.setIsHotseat(true);
-        JLog.getInstance().e("Cell width = " + this.mContent.getCellWidth() + " Cell Height = " + this.mContent.getHeight());
+        // -1 and 0 are the sizes before the first layout: harmless, the cells are measured later.
+        Log.d(TAG, "Cell width = " + this.mContent.getCellWidth() + " Cell Height = " + this.mContent.getHeight());
         resetLayout();
     }
 

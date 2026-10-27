@@ -317,7 +317,7 @@ public final class WakeDetection implements WakeSignals.Listener {
         repairUsed = false;
         coldResetUsed = false;
         final int wakeGen = ++wakeGeneration;
-        Log.e(TAG, "Device awakened from sleep (" + source + ")");
+        Log.i(TAG, "Device awakened from sleep (" + source + ")");
         // Baseline Profile: a wake is a usage session (ACTION_SCREEN_ON is not delivered
         // on FYT, so BaselineProfileCompiler cannot detect it on its own).
         BaselineProfileCompiler.onDeviceWake(LauncherApplication.sApp);
@@ -359,7 +359,7 @@ public final class WakeDetection implements WakeSignals.Listener {
 
             // 10 minutes = 10 * 60 * 1000 ms
             if (diff > 10 * 60 * 1000) {
-                Log.e(TAG, "Sleep duration exceeded 10 minutes: " + diff + " ms");
+                Log.i(TAG, "Sleep duration exceeded 10 minutes: " + diff + " ms");
                 SessionPrefs.get().edit().clear().apply();
             }
         }
@@ -412,7 +412,7 @@ public final class WakeDetection implements WakeSignals.Listener {
         // sleep after every (re)start of the service.
         final SharedPreferences prefs = getPrefs();
         lastDisplayOnHandledMs = 0L;
-        Log.e(TAG, "Device put to sleep (" + source + ")");
+        Log.i(TAG, "Device put to sleep (" + source + ")");
         sleepElapsed = SystemClock.elapsedRealtime();
         // Nothing is pulled to the front any more until the next wake asks for it.
         HomeFrontGuard.reset("device asleep");
@@ -713,7 +713,7 @@ public final class WakeDetection implements WakeSignals.Listener {
         DialogFragment dialog = (DialogFragment) fm.findFragmentByTag(AppListDialogFragment.TAG);
         if (dialog != null && dialog.isAdded()) {
             dialog.dismissAllowingStateLoss();
-            Log.e(TAG, "AppListDialogFragment dismissed on wake-up");
+            Log.i(TAG, "AppListDialogFragment dismissed on wake-up");
             Helpers helpers = new Helpers();
             helpers.setListOpen(false);
             Intent intentClose = new Intent(Keys.LIST_CLOSE);

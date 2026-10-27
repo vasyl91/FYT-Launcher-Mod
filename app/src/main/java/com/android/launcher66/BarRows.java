@@ -38,7 +38,11 @@ public final class BarRows {
             if (sBottom != null) return new ArrayList<>(sBottom);
             generation = sGeneration;
         }
-        List<AppMultiple> rows = LitePal.order("\"index\" asc").find(AppMultiple.class);
+        // Not quoted: LitePal stores "index" (a SQLite keyword) as index_lpcolumn and rewrites the
+        // name itself in an order clause (DBUtility.convertOrderByClauseToValidName). Quoted, it
+        // found no column called index, SQLite read "index" as a string (log: "(28) double-quoted
+        // string literal") and the bar came in rowid order. id breaks ties.
+        List<AppMultiple> rows = LitePal.order("index asc, id asc").find(AppMultiple.class);
         synchronized (LOCK) {
             if (generation == sGeneration) sBottom = rows;
         }
