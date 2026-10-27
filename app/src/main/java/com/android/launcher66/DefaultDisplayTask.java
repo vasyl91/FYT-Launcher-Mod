@@ -4,7 +4,10 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.view.Display;
 
+import com.syu.util.PinnedPipLaunch;
+
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +35,71 @@ public final class DefaultDisplayTask {
      */
     private static final Field DISPLAY_ID = findDisplayIdField();
 
+    /** TaskInfo.configuration and what leads from it to the windowing mode; null if not readable. */
+    private static final Field CONFIGURATION = findField("android.app.TaskInfo", "configuration");
+    private static final Field WINDOW_CONFIGURATION =
+            findField("android.content.res.Configuration", "windowConfiguration");
+    private static final Method GET_WINDOWING_MODE = findMethod("android.app.WindowConfiguration",
+            "getWindowingMode");
+
+    /** WindowConfiguration.WINDOWING_MODE_PINNED: the task is in the pinned stack. */
+    public static final int WINDOWING_MODE_PINNED = PinnedPipLaunch.WINDOWING_MODE_PINNED;
+
     private DefaultDisplayTask() {
+    }
+
+    /**
+     * The task's windowing mode (hidden API, read the way displayId is); -1 if it cannot be read.
+     */
+    public static int windowingMode(ActivityManager.RunningTaskInfo task) {
+        if (CONFIGURATION == null || WINDOW_CONFIGURATION == null || GET_WINDOWING_MODE == null) {
+            return -1;
+        }
+        try {
+            Object configuration = CONFIGURATION.get(task);
+            Object windowConfiguration = configuration != null
+                    ? WINDOW_CONFIGURATION.get(configuration) : null;
+            if (windowConfiguration == null) return -1;
+            return (Integer) GET_WINDOWING_MODE.invoke(windowConfiguration);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return -1;
+        }
+    }
+
+    /** The display the task is on; -1 if it cannot be read. */
+    public static int displayId(ActivityManager.RunningTaskInfo task) {
+        if (DISPLAY_ID == null) return -1;
+        try {
+            return DISPLAY_ID.getInt(task);
+        } catch (IllegalAccessException | RuntimeException e) {
+            return -1;
+        }
+    }
+
+    /**
+     * The first task of the package that lives outside the pinned stack, on the default display
+     * full screen or on the virtual display of a retired window pane; null if there is none or
+     * what is needed to tell cannot be read.
+     *
+     * @throws RuntimeException as ActivityManager.getRunningTasks() does
+     */
+    @SuppressWarnings("deprecation")
+    public static ActivityManager.RunningTaskInfo taskOutsidePinnedStack(ActivityManager am,
+            String pkg) {
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(Integer.MAX_VALUE);
+        if (tasks == null) return null;
+        for (ActivityManager.RunningTaskInfo task : tasks) {
+            if (!isOfPackage(task, pkg)) continue;
+            if (PinnedPipLaunch.outsidePinned(windowingMode(task), displayId(task))) {
+                return task;
+            }
+        }
+        return null;
+    }
+
+    private static boolean isOfPackage(ActivityManager.RunningTaskInfo task, String pkg) {
+        return (task.baseActivity != null && pkg.equals(task.baseActivity.getPackageName()))
+                || (task.topActivity != null && pkg.equals(task.topActivity.getPackageName()));
     }
 
     /**
@@ -122,10 +189,24 @@ public final class DefaultDisplayTask {
     }
 
     private static Field findDisplayIdField() {
+        return findField("android.app.TaskInfo", "displayId");
+    }
+
+    private static Field findField(String className, String name) {
         try {
-            Field field = Class.forName("android.app.TaskInfo").getDeclaredField("displayId");
+            Field field = Class.forName(className).getDeclaredField(name);
             field.setAccessible(true);
             return field;
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return null;
+        }
+    }
+
+    private static Method findMethod(String className, String name) {
+        try {
+            Method method = Class.forName(className).getMethod(name);
+            method.setAccessible(true);
+            return method;
         } catch (ReflectiveOperationException | RuntimeException e) {
             return null;
         }

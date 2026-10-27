@@ -2130,7 +2130,26 @@ public class WindowUtil {
                 Log.i(TAG, "reassertLauncherTop() started for stealer in pinned PiP");
                 reassertLauncherTop();
             }
-            if (!packageName.equals(currentPackage) || checkIfMapSizeChanged(pipKey)) {
+            boolean packageChanged = !packageName.equals(currentPackage);
+            boolean sizeChanged = checkIfMapSizeChanged(pipKey);
+            // The app may still have a task outside the pinned stack (a window pane's retired
+            // ActivityView, say). FYT's framework then moves that task to the default display full
+            // screen instead of making a pinned stack, so the app is restarted first. Asked only
+            // when nothing else already restarts it: it is a binder call.
+            ActivityManager.RunningTaskInfo strayTask = null;
+            boolean inWindowPane = false;
+            if (!packageChanged && !sizeChanged) {
+                strayTask = taskOutsidePinnedStack(packageName);
+                inWindowPane = strayTask != null && isShownInWindowPane(packageName);
+            }
+            if (PinnedPipLaunch.needsRestart(packageChanged, sizeChanged, strayTask != null,
+                    inWindowPane)) {
+                if (strayTask != null) {
+                    Log.i(TAG, "openAsPinnedPip(" + packageName + "): task " + strayTask.id
+                            + " outside the pinned stack (display "
+                            + DefaultDisplayTask.displayId(strayTask) + ", mode "
+                            + DefaultDisplayTask.windowingMode(strayTask) + "), restarting it first");
+                }
                 // save previous values
                 editor.putInt("prevPinnedPipTopLeftX", prefs.getInt(pipKey + "TopLeftX", 107));  
                 editor.putInt("prevPinnedPipTopLeftY", prefs.getInt(pipKey + "TopLeftY", 57));  
@@ -2145,12 +2164,44 @@ public class WindowUtil {
                 
                 launcher.handler.postDelayed(() -> startPinnedPip(packageName), 1000);
             } else {
+                if (strayTask != null) {
+                    Log.i(TAG, "openAsPinnedPip(" + packageName + "): task " + strayTask.id
+                            + " outside the pinned stack, also shown in a window pane, not restarted");
+                }
                 setPinnedPipBounds(pipKey, screenKey);         
                 SystemProperties.set("persist.launcher.packagename", packageName);
                 AppPackageName = packageName; 
                 startPinnedPip(packageName); 
             }
         }
+    }
+
+    /** A task of the package outside the pinned stack; null if there is none or it cannot be told. */
+    private static ActivityManager.RunningTaskInfo taskOutsidePinnedStack(String packageName) {
+        try {
+            ActivityManager am = (ActivityManager) LauncherApplication.sApp
+                    .getSystemService(Context.ACTIVITY_SERVICE);
+            return am != null ? DefaultDisplayTask.taskOutsidePinnedStack(am, packageName) : null;
+        } catch (RuntimeException e) {
+            Log.w(TAG, "taskOutsidePinnedStack(" + packageName + ") failed: " + e);
+            return null;
+        }
+    }
+
+    /**
+     * Whether a PiP slot that is on and shown as a window (not pinned) has this package. Read from
+     * the preferences, where firstPkg and secondPkg come from as well, so the answer is current.
+     */
+    private static boolean isShownInWindowPane(String packageName) {
+        return PinnedPipLaunch.shownInWindowPane(packageName,
+                new boolean[]{prefs.getBoolean(Keys.PIP_FIRST, false), prefs.getBoolean(Keys.PIP_SECOND, false),
+                        prefs.getBoolean(Keys.PIP_THIRD, false), prefs.getBoolean(Keys.PIP_FOURTH, false)},
+                new boolean[]{LauncherApplication.isPinnedMode(prefs, Keys.PIP_FIRST_MODE),
+                        LauncherApplication.isPinnedMode(prefs, Keys.PIP_SECOND_MODE),
+                        LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE),
+                        LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE)},
+                new String[]{prefs.getString(Keys.PIP_FIRST_PACKAGE, ""), prefs.getString(Keys.PIP_SECOND_PACKAGE, ""),
+                        prefs.getString(Keys.PIP_THIRD_PACKAGE, ""), prefs.getString(Keys.PIP_FOURTH_PACKAGE, "")});
     }
 
     private static void startPinnedPip(String packageName) {
