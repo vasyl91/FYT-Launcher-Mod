@@ -7,10 +7,10 @@ import android.view.WindowManager;
 import java.lang.reflect.Field;
 
 /**
- * Settings of the PiP panes' windows (WindowHostSinglePane, WindowHostDualPane) that are not
- * about their content.
+ * Settings of the windows that follow the workspace pages (the PiP panes, WindowHostSinglePane
+ * and WindowHostDualPane, and the CAN bus stats overlay) that are not about their content.
  */
-final class PaneWindows {
+public final class PaneWindows {
 
     /** WindowManager.LayoutParams.PRIVATE_FLAG_NO_MOVE_ANIMATION; hidden before API 34. */
     private static final int PRIVATE_FLAG_NO_MOVE_ANIMATION = 0x00000040;
@@ -35,7 +35,7 @@ final class PaneWindows {
      * @return how it was done, for the log: "api", "privateFlags" or "unavailable: ..."
      */
     @SuppressLint("NewApi")
-    static String disableMoveAnimation(WindowManager.LayoutParams p) {
+    public static String disableMoveAnimation(WindowManager.LayoutParams p) {
         if (usesPublicApi(Build.VERSION.SDK_INT)) {
             p.setCanPlayMoveAnimation(false);
             return "api";

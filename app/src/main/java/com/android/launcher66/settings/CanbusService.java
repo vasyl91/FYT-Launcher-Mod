@@ -54,6 +54,7 @@ import com.google.android.gms.location.Priority;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HostAwait;
+import com.syu.util.PaneWindows;
 import com.syu.util.WindowHostVdClient;
 
 import java.beans.PropertyChangeEvent;
@@ -654,6 +655,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     PixelFormat.TRANSLUCENT
             );
             statsLayoutParams.gravity = Gravity.TOP | Gravity.START;
+            // The overlay follows the pages on every frame of a scroll; WindowManager would animate
+            // each of those moves and the stats would trail the page (see PaneWindows).
+            Log.i(TAG, "stats window move animation off (" + PaneWindows.disableMoveAnimation(statsLayoutParams) + ")");
 
             // tags / prevView (your existing code)
             if (mapApp) {
