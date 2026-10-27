@@ -19,13 +19,16 @@ public class ModuleCallbackCanbusProxy extends IModuleCallback.Stub {
 
     public void setCallbackCanbus(CallbackCanbusBase callback) {
         if (this.mCallback != callback) {
-            if (this.mCallback != null) {
-                this.mCallback.out();
+            // Each on its own: a module that does not fit the car must not stop the switch (the new
+            // one is set even if its in() threw, its update() may still work)
+            CallbackCanbusBase old = this.mCallback;
+            if (old != null) {
+                CanbusModuleGuard.out(old, old::out);
                 DoorHelper.clearDoorUpdateCode();
             }
             this.mCallback = callback;
-            if (this.mCallback != null) {
-                this.mCallback.in();
+            if (callback != null) {
+                CanbusModuleGuard.in(callback, DataCanbus.DATA[1000], callback::in);
             }
         }
     }
@@ -47,7 +50,11 @@ public class ModuleCallbackCanbusProxy extends IModuleCallback.Stub {
             if (updateCode < 1000) {
                 IModuleCallback callback = this.mCallback;
                 if (callback != null) {
-                    callback.update(updateCode, ints, flts, strs);
+                    try {
+                        callback.update(updateCode, ints, flts, strs);
+                    } catch (RuntimeException e) {
+                        CanbusModuleGuard.failed(callback, "update", e);
+                    }
                     return;
                 }
                 return;
@@ -86,7 +93,11 @@ public class ModuleCallbackCanbusProxy extends IModuleCallback.Stub {
                 case FinalCanbus.U_ORI_CARBACK /* 1021 */:
                     IModuleCallback callback2 = this.mCallback;
                     if (callback2 != null) {
-                        callback2.update(updateCode, ints, flts, strs);
+                        try {
+                            callback2.update(updateCode, ints, flts, strs);
+                        } catch (RuntimeException e) {
+                            CanbusModuleGuard.failed(callback2, "update", e);
+                        }
                         break;
                     }
             }
