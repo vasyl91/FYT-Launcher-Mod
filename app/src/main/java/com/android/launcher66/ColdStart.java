@@ -20,6 +20,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.settings.AppListAutostartDialogFragment;
 import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.LogcatSettings;
 import com.android.launcher66.settings.LogcatWorker;
 import com.android.launcher66.settings.WakeDetection;
 import com.syu.util.WindowHostVdClient;
@@ -114,9 +115,12 @@ public final class ColdStart {
     }
 
     private static void startLogcat(Application app, boolean coldStart, SharedPreferences settings) {
-        if (settings.getBoolean(Keys.LOGCAT_SERVICE, true)) {
+        if (LogcatSettings.captureAtStart(settings)) {
             LogcatWorker.get().start(app, coldStart);
         }
+        // With the boot log off, which is where a release build stands, nothing else would give
+        // logd its buffer sizes back (a capture does that when it starts).
+        LogcatWorker.restoreLogdSizesIfOff(app);
     }
 
     /** Whether this process start is the first one after a device restart. */

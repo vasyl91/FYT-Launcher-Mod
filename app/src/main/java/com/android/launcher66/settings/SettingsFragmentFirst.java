@@ -458,7 +458,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         nightMode();        
         if (logcatService != null) {
             logcatService.setOnPreferenceClickListener(this);
-            logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, false);
+            logcatServiceBool = LogcatSettings.captureAtStart(sharedPrefs);
             if (logcatServiceBool) {
                 String summaryText = getString(R.string.logcat_service_summary);
                 logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
@@ -468,7 +468,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (logcatServiceWake != null) {
             logcatServiceWake.setOnPreferenceClickListener(this);
-            logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, false);
+            logcatServiceWakeBool = LogcatSettings.captureAtWake(sharedPrefs);
             if (logcatServiceWakeBool) {
                 String summaryText = getString(LauncherApplication.isFytDevice()
                         ? R.string.logcat_service_wake_summary
@@ -497,6 +497,20 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             logcatBoot.setOnPreferenceClickListener(this);
             logcatBoot.setVisible(LauncherApplication.showsPrivilegedOption(
                     LogcatWorker.canCaptureAllLogs()) && logcatFull != null && logcatFull.isChecked());
+        }
+        if (LogcatSettings.isForced()) {
+            // A debug build captures everything, always (LogcatSettings): the four switches show
+            // it and cannot be turned off. Not persistent, and that before they are checked, so
+            // what a release build stored on this device (the same signing key lets one be
+            // installed over the other) stays as it was and applies again when going back.
+            for (Preference forced : new Preference[]{logcatService, logcatServiceWake, logcatFull, logcatBoot}) {
+                if (forced instanceof TwoStatePreference twoState) {
+                    twoState.setPersistent(false);
+                    twoState.setChecked(true);
+                    twoState.setEnabled(false);
+                    twoState.setVisible(true);
+                }
+            }
         }
         if (logcatRun != null) {
             logcatRun.setOnPreferenceClickListener(this);
@@ -929,7 +943,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 brightnessPref.setChecked(false);
                 break;
             case Keys.LOGCAT_SERVICE:
-                logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, false);
+                logcatServiceBool = LogcatSettings.captureAtStart(sharedPrefs);
                 if (logcatServiceBool) {
                     String summaryText = getString(R.string.logcat_service_summary);
                     logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
@@ -938,7 +952,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 }
                 break;
             case Keys.LOGCAT_SERVICE_WAKE:
-                logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, false);
+                logcatServiceWakeBool = LogcatSettings.captureAtWake(sharedPrefs);
                 if (logcatServiceWakeBool) {
                     String summaryText = getString(LauncherApplication.isFytDevice()
                             ? R.string.logcat_service_wake_summary
