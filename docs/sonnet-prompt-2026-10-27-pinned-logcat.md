@@ -1,6 +1,6 @@
 # Launcher Mod: Pinned PiP po przełączeniu z Window, revert 66961f2, nazwy plików logów z wyzwalaczem i zakresem — instrukcja wykonawcza
 
-Pracujesz w repozytorium `vasyl91/FYT-Launcher-Mod`, na gałęzi `ccr-087eed00-gbqsuz`. Zacznij od `git pull origin ccr-087eed00-gbqsuz`. Wprowadź zmiany opisane niżej, każdą jako osobny commit, w kolejności R → P1 → P2 → P3 → L. Wypchnij je na tę gałąź. **Nie twórz pull requesta.**
+Pracujesz w repozytorium `vasyl91/FYT-Launcher-Mod`, na gałęzi `ccr-087eed00-gbqsuz`. Zacznij od `git pull origin ccr-087eed00-gbqsuz`. Wprowadź zmiany opisane niżej, każdą jako osobny commit, w kolejności R → D → S → P1 → P2 → P3 → L → I → T. Wypchnij je na tę gałąź. **Nie twórz pull requesta.**
 
 Ta runda następuje po `docs/sonnet-prompt-2026-10-27-bar-pip.md` (commity do `4f94b19`). Zmian z tamtej rundy nie cofaj. Numery linii to stan z `4f94b19`, są orientacyjne. Zawsze sprawdzaj je w kodzie.
 
@@ -13,7 +13,7 @@ Ta runda następuje po `docs/sonnet-prompt-2026-10-27-bar-pip.md` (commity do `4
 | FYT UNISOC 7870 | 13 | `standard` | Shizuku | nie (`supportsPinnedPip()` = false) |
 | Redmi Note 8T / Galaxy A55 | 14 / 16 | `standard` | root / Shizuku | nie |
 
-Pinned PiP istnieje tylko tam, gdzie `LauncherApplication.supportsPinnedPip()` zwraca true. Zmiany P1–P3 muszą być no-opem wszędzie indziej: każda nowa ścieżka zaczyna się od tej bramki albo leży w kodzie, do którego bez niej się nie dochodzi. Zmiana L dotyczy wszystkich urządzeń.
+Pinned PiP istnieje tylko tam, gdzie `LauncherApplication.supportsPinnedPip()` zwraca true. Zmiany P1–P3 muszą być no-opem wszędzie indziej: każda nowa ścieżka zaczyna się od tej bramki albo leży w kodzie, do którego bez niej się nie dochodzi. Zmiany R, D, S, L, I i T dotyczą wszystkich urządzeń.
 
 ## 1. Zasady pracy i konwencje repo (jak w poprzednich rundach)
 
@@ -25,9 +25,9 @@ Pinned PiP istnieje tylko tam, gdzie `LauncherApplication.supportsPinnedPip()` z
 - **Push**: `git push -u origin ccr-087eed00-gbqsuz`. Przy błędzie sieci ponów do 4 razy z odstępem 2/4/8/16 s.
 - **Nie ruszaj commita `57e3600 [BRANCH-ONLY] CI: …` ani plików `.github/workflows/*.yml`.**
 - **Logowanie**: `android.util.Log` z `TAG` danej klasy. Rutynowe zdarzenia na poziomie `I`/`D`. Każda nowa decyzja (pominięcie, odroczenie, restart) ma jedną linię `Log.i`, z której w capture widać, co się stało i dlaczego.
-- **StrictMode** (debug): nic z dysku ani sieci na wątku głównym. Wywołania binderowe (`getRunningTasks`) są dozwolone, robi je już otaczający kod.
+- **StrictMode** (po zmianie S działa w debugu i w release): nic z dysku ani sieci na wątku głównym. Wywołania binderowe (`getRunningTasks`) są dozwolone, robi je już otaczający kod.
 - **Testy**: JUnit 5 na JVM (`app/src/test/java`, `unitTests.isReturnDefaultValues = true`). Logikę decyzyjną wydziel do **czystych klas bez `android.*`** i przetestuj ją.
-- **Bez nowych zależności, bez nowych `strings.xml`, bez zmian schematu baz.**
+- **Bez nowych zależności i bez zmian schematu baz.** Nowe stringi wolno dodać wyłącznie w kroku I (legenda), a ich tłumaczenia w kroku T.
 - **Budowanie**: w kontenerze zwykle nie ma Android SDK. CI (`build.yml`) przy każdym pushu uruchamia:
   - `:app:testFytDebugUnitTest`;
   - `:app:assembleFytDebug`;
@@ -74,7 +74,67 @@ Commit ma zostać cofnięty w całości.
 6. Commit: `Revert "Logcat: force every capture on in debug builds, one place reads the settings"`. W treści:
    - „This reverts commit 66961f2 at the owner's request.”;
    - co wraca: start/wake capture domyślnie `true` w ColdStart/WakeDetection, przełączniki edytowalne w debugu, logd sizes przywracane tylko na starcie capture, StrictMode znów odfiltrowany;
+   - że domyślne wartości i StrictMode ustawiają na nowo następne commity (D, S);
    - konflikty rozwiązano na korzyść późniejszych commitów, łącznie z linią z `cf7b175`.
+
+R ma być czystym revertem. Nowe zachowanie wprowadzają dopiero D i S, każdy w osobnym commicie.
+
+---
+
+## D — Ustawienia logcat: domyślne wartości zależne od builda, w obu buildach zmienialne
+
+### Wymaganie właściciela
+| Ustawienie (klucz) | release | debug |
+|---|---|---|
+| „Logcat service on startup” (`Keys.LOGCAT_SERVICE`, `logcat_service`) | false | true |
+| „Logcat service when the device wakes” (`Keys.LOGCAT_SERVICE_WAKE`) | false | true |
+| „Log scope” (`Keys.LOGCAT_FULL`, false = „Log only for launcher”) | false | true („Log everything”) |
+| „Include boot logs” (`Keys.BOOT_LOGCAT`) | false | true |
+
+W obu buildach każde z tych ustawień użytkownik zmienia swobodnie: nic nie jest wymuszane ani blokowane (inaczej niż w cofniętym `66961f2`).
+
+### Fakty
+- `res/xml/launcher_preferences.xml` (≈315–332): wszystkie cztery mają `android:defaultValue="false"`. `logcat_full` to `CustomNoSwitchPreference` (summaryOn/Off = „Log everything” / „Log only for launcher”).
+- `PreferenceManager.setDefaultValues` nie jest nigdzie wołane. Wartość z XML zapisuje się dopiero przy pierwszym pokazaniu ekranu ustawień. Do tego czasu decydują wartości domyślne w `getBoolean(key, def)` w kodzie. Po revercie R kod podaje inne domyślne wartości niż XML: ColdStart i WakeDetection `true`, reszta `false`.
+- Source sety `app/src/debug` i `app/src/release` istnieją (dziś tylko `LeakCanaryInit.java`). Typy buildów `nonMinifiedRelease`/`benchmarkRelease` dodaje plugin Baseline Profile z `release` i mają zachowywać się jak release.
+- `app/src/main/res/values/bools.xml` już istnieje.
+
+### Implementacja
+1. Jedno źródło prawdy, czyli zasób:
+   - w `app/src/main/res/values/bools.xml` dopisz `<bool name="logcat_on_by_default">false</bool>` z komentarzem XML: release false, nadpisywane w debugu;
+   - utwórz `app/src/debug/res/values/bools.xml` z `<bool name="logcat_on_by_default">true</bool>`;
+   - typy `nonMinifiedRelease`/`benchmarkRelease` biorą wartość z `main`, czyli false.
+2. W `launcher_preferences.xml` ustaw `android:defaultValue="@bool/logcat_on_by_default"` dla `logcat_service`, `logcat_service_wake`, `logcat_full` i `boot_logcat`. Bez `enabled`/`persistent`, tak jak dziś.
+3. W kodzie: mała klasa `settings/LogcatDefaults.java` (final, prywatny konstruktor), np. `static boolean on(Context ctx)` = `ctx.getResources().getBoolean(R.bool.logcat_on_by_default)`. **Każdy** odczyt czterech kluczy podaje ją jako domyślną wartość: `getBoolean(Keys.X, LogcatDefaults.on(ctx))`. Miejsca (sprawdź `grep -rn "LOGCAT_SERVICE\b\|LOGCAT_SERVICE_WAKE\|LOGCAT_FULL\|BOOT_LOGCAT" app/src/main/java`):
+   - `ColdStart.startLogcat`;
+   - `WakeDetection` (≈310, kontekst `LauncherApplication.sApp`);
+   - `LogcatWorker` (≈491, ≈515, ≈554);
+   - `SettingsFragmentFirst` (≈461, ≈471, ≈946, ≈955, a także widoczność `logcatBoot`, która dziś czyta `logcatFull.isChecked()`, co jest w porządku).
+
+   Żadnego wymuszania, żadnego `isForced`, żadnych `setEnabled(false)`.
+4. Nie zmieniaj zapisanych wartości. Domyślne działają tylko tam, gdzie klucz nie był jeszcze zapisany (nowa instalacja, wyczyszczone dane). Napisz to w treści commita: na urządzeniu, na którym przełączniki już były ruszane albo ekran ustawień był otwarty, zostaje to, co zapisane.
+5. Commit `Logcat settings: off by default in release, on in debug, free to change in both`. W treści:
+   - tabela;
+   - zasób `@bool/logcat_on_by_default` z nadpisaniem w `src/debug`;
+   - kod i XML czytają ten sam zasób (wcześniej ColdStart i WakeDetection miały `true`, a XML `false`);
+   - że to nie przywraca blokady z `66961f2`.
+
+---
+
+## S — StrictMode także w release, jego linie w plikach logów
+
+### Fakty
+- `LauncherApplication`: `enableStrictMode()` (≈304–317, tylko `penaltyLog()`) jest wołane wyłącznie `if (BuildConfig.DEBUG)` w dwóch miejscach: `onCreate` ≈227 i `initWallpaperPickerProcess` ≈285.
+- `LogcatWorker.shouldWriteAppLine` (po revercie R) ma `if (line.contains("StrictMode")) return false;`. Filtr działa tylko dla capture „launcher only”. Capture „everything” zapisuje wszystko.
+
+### Implementacja
+1. Wołaj `enableStrictMode()` bez warunku `BuildConfig.DEBUG` w obu miejscach. Zmień komentarz/javadoc: tylko `penaltyLog()`, nic nie jest przerywane; w release po to, żeby capture pokazywał naruszenia z urządzeń właściciela.
+2. Usuń w `shouldWriteAppLine` linię odrzucającą `StrictMode`. Jeśli nad nią jest komentarz, dopasuj go.
+3. Sprawdź `grep -rn "BuildConfig.DEBUG" app/src/main/java`, czy nic innego nie wiąże StrictMode z debugiem (np. `allowThreadDiskReads` warunkowane debugiem). Zmieniaj tylko to, co dotyczy StrictMode.
+4. Commit `StrictMode: on in release too, and kept in the launcher's own capture`. W treści:
+   - `penaltyLog` only;
+   - koszt: stos na każde naruszenie, tylko do logu;
+   - po co: capture z release pokazuje te same naruszenia co debug.
 
 ---
 
@@ -265,16 +325,64 @@ Format: `<trigger>_<scope>_<dd-MM-yyyy_HH-mm-ss>[_N].txt`, gdzie `_N` dokłada `
 
 ---
 
+## I — Ustawienia: legenda nazw plików logów nad „Logcat service on startup”
+
+### Wymaganie właściciela
+Nad „Logcat service on startup” ma być preference tylko informacyjne. Wyjaśnia ono, co znaczą części nazw plików: `start`, `reboot`, `wake`, `user`, `full`, `pid`, każda w osobnej linii.
+
+### Implementacja
+1. W `res/xml/launcher_preferences.xml`, w `PreferenceCategory logcat_category`, **przed** `logcat_service` dodaj:
+   ```xml
+   <Preference
+       android:key="logcat_names_info"
+       android:selectable="false"
+       android:title="@string/logcat_names_info"
+       android:summary="@string/logcat_names_info_summary" />
+   ```
+   Klucz dopisz do `Keys` tylko wtedy, gdy kod go potrzebuje (nie powinien).
+2. W `res/values/strings.xml`, tuż przed `logcat_service` (≈384), dodaj:
+   ```xml
+   <string name="logcat_names_info">Log file names</string>
+   <string name="logcat_names_info_summary">reboot – started with the launcher after the device restarted\nstart – started with the launcher after it restarted on its own (crash, update)\nwake – started when the device woke up\nuser – started by hand with \"Logcat service\"\nfull – holds all of the device\'s logs\npid – holds the launcher\'s logs only</string>
+   ```
+   Sześć słów musi być **identycznych** z prefiksami z kroku L (`Trigger.fileLabel`, `LogFileName`): `reboot`, `start`, `wake`, `user`, `full`, `pid`. Zaznacz to w komentarzu XML nad stringami. Kolejność zgodna z nazwą pliku: najpierw wyzwalacze, potem zakres. Nie dopisuj innych (np. `_late`); właściciel wymienił sześć.
+3. Sprawdź, czy summary pokaże 6 linii bez ucinania. Standardowy układ androidx ma `maxLines="10"`. Jeśli kategoria lub motyw używa własnego układu z mniejszym limitem, ustaw na tym jednym preference układ albo limit tak, żeby wszystkie linie były widoczne. Nie zmieniaj limitu globalnie.
+4. Sprawdź, że `SettingsFragmentFirst` nie nadpisuje summary ani widoczności preferencji w tej kategorii hurtem (np. pętlą po wszystkich preferencjach). Jeśli nadpisuje, wyłącz z tego nową legendę.
+5. Commit `Settings: explain the parts of the log file names above the logcat switches` (tylko angielski `values/strings.xml`, XML i ewentualny układ).
+
+---
+
+## T — Tłumaczenia legendy (osobny commit)
+
+1. Dodaj oba stringi do **wszystkich 58** plików `app/src/main/res/values-*/strings.xml`. Katalogi `values-land` i `values-port` nie mają stringów. Lista: `ls app/src/main/res/values-*/strings.xml`. Pliki mają strukturę zgodną z domyślnym, więc wstaw je w tym samym miejscu: tuż przed `logcat_service`.
+2. Zasady tłumaczenia:
+   - **nie tłumacz** sześciu słów `reboot`, `start`, `wake`, `user`, `full`, `pid` (są częścią nazwy pliku) ani nazwy folderu;
+   - tłumacz opisy po myślniku i tytuł;
+   - „Logcat service” w opisie `user` zastąp tekstem, który w danym pliku ma `logcat_service_run` (tak widzi go użytkownik);
+   - zachowaj `\n` jako separatory linii, dokładnie 6 linii;
+   - escapuj apostrofy (`\'`) i cudzysłowy (`\"`), zwłaszcza w fr, it, ca, en-*;
+   - nie wprowadzaj `%`;
+   - `values-en-rGB`/`values-en-rIN`: tekst angielski (dostosuj pisownię, jeśli plik tak robi gdzie indziej);
+   - język docelowy rozpoznaj po kwalifikatorze (`in` = indonezyjski, `tl` = filipiński, `rm` = retoromański, `zu` = zulu, `km-rKH`, `lo-rLA`, `mn-rMN`, `ka-rGE`, `hy-rAM`, `zh-rHK`/`zh-rTW` = chiński tradycyjny, `zh-rCN` = uproszczony).
+3. Kontrola: skrypt (poza repo) sprawdza, że każdy plik ma oba klucze dokładnie raz, że summary ma 5 znaków `\n`, że każda linia zaczyna się od właściwego słowa w kolejności reboot, start, wake, user, full, pid, i że każdy plik jest poprawnym XML-em (`python3 -I -c "import xml.dom.minidom,sys; …"`). Nieescapowany apostrof psuje budowę zasobów (aapt2), więc to też sprawdź.
+4. Commit `Translations: the log file name legend in every language`.
+
+---
+
 ## 4. Czego NIE zmieniać
 - Warunku bramki `openPinnedPip` (tylko logowanie), `initDefaultApp()`, `reassertLauncherTop()`, `LauncherApplication.isAppTop()`.
 - Ścieżki pane’ów okiennych (`openPip`, `WindowHost*`), z wyjątkiem tego, co P1 czyta (`getRunningTasks`).
 - Formatu znacznika czasu w nazwie, folderów (`Launcher66_Logs`), przenoszenia do `Downloads`, treści nagłówków capture.
-- Logiki ustawień logcat poza tym, co przywraca revert R.
+- Logiki ustawień logcat poza tym, co przywraca revert R i co zmienia D (domyślne wartości). Żadnego blokowania przełączników.
+- Zapisanych już wartości ustawień (żadnych migracji preferencji).
 
 ## 5. Weryfikacja
 1. Po każdym commicie skompiluj zmienione czyste klasy i ich testy (`javac`, JUnit z cache Gradle, jeśli jest). Klasy z `android.*` skompiluj z `android_jar/android-36.jar` i stubami w katalogu tymczasowym.
 2. `grep`:
    - po R: zero `LogcatSettings`;
+   - po D: każdy odczyt czterech kluczy logcat ma domyślną `LogcatDefaults.on(...)`, a cztery wpisy XML mają `@bool/logcat_on_by_default`;
+   - po S: zero `BuildConfig.DEBUG` przy `enableStrictMode()` i zero filtra `"StrictMode"` w `shouldWriteAppLine`;
+   - po T: skrypt kontrolny z kroku T przechodzi dla 58 plików;
    - po P2: każde `setPinnedStackVisible(false)` w `removePinnedPip` idzie przez `hidePinnedStackNow()`;
    - po L: zero `LATE_DUMP_SUFFIX` i `"_full.txt"`.
 3. Po pushu sprawdź CI ostatniego commita (`testFytDebugUnitTest`, `assembleFytDebug`, `assembleStandardDebug`). Czerwone napraw.
@@ -283,11 +391,15 @@ Format: `<trigger>_<scope>_<dd-MM-yyyy_HH-mm-ss>[_N].txt`, gdzie `_N` dokłada `
    - b) to samo z przesuwaniem stron zaraz po powrocie: PiP pojawia się po zatrzymaniu stron. W logu ewentualnie `still starting, hidden in N ms` / `not started (pages moving)`;
    - c) zwykłe przewijanie z pinned PiP na swojej stronie: chowa się i wraca jak dotąd;
    - d) capture ręczny z „log everything”: plik `user_full_<ts>.txt`. Capture po wybudzeniu bez „everything”: `wake_pid_<ts>.txt`. Po restarcie urządzenia: `reboot_full_…` lub `reboot_pid_…`;
-   - e) 7870 z Shizuku startującym później: `reboot_pid_<ts>.txt` zmienia nazwę na `reboot_full_<ts>.txt`, gdy host dołączy w trakcie, albo powstaje `reboot_full_<ts>_late.txt`, gdy dołączy po końcu.
+   - e) 7870 z Shizuku startującym później: `reboot_pid_<ts>.txt` zmienia nazwę na `reboot_full_<ts>.txt`, gdy host dołączy w trakcie, albo powstaje `reboot_full_<ts>_late.txt`, gdy dołączy po końcu;
+   - f) świeża instalacja (lub wyczyszczone dane) release: cztery ustawienia wyłączone, „Log only for launcher”, żaden capture przy starcie i wybudzeniu. Debug: wszystkie włączone, „Log everything”. W obu przełączniki można zmieniać;
+   - g) release, capture `user_pid_…`: linie `StrictMode` są w pliku;
+   - h) ekran ustawień: legenda nad „Logcat service on startup”, 6 linii, sprawdzona po angielsku, po polsku i w jednym języku z apostrofami (np. francuskim).
 
 ## 6. Raport końcowy (w odpowiedzi, po polsku)
 - Lista commitów (hash + temat).
 - Jak rozwiązano konflikty revertu.
 - Wynik CI.
 - Odpowiedź na pytanie, czy któryś wołający `DefaultDisplayTask` wymagał zachowania starej semantyki (P3).
+- Lista miejsc przepiętych na `LogcatDefaults` (D) i informacja, czy legenda wymagała zmiany układu (I).
 - Scenariusze z pkt 5.4 do sprawdzenia.
