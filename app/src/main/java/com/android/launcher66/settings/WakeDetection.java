@@ -393,6 +393,7 @@ public final class WakeDetection implements WakeSignals.Listener {
         // Noted by ForegroundAppTracker, which needs system privileges.
         appBeforeSleep = ForegroundAppTracker.isActive() ? ColdStart.lastApp(app) : null;
         sAsleep = true;
+        HeadlightNightMode.onSleep();
         // Baseline Profile: a compilation still waiting for its delay would otherwise
         // fire right into the busy first seconds after the next wake.
         BaselineProfileCompiler.onDeviceSleep();

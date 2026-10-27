@@ -72,6 +72,22 @@ public final class HeadlightNightMode {
         MAIN.postDelayed(APPLY, APPLY_DELAY_MS);
     }
 
+    /**
+     * From WakeDetection.onSleep(): the lights the MCU reported before the sleep say nothing about
+     * the wake. ACC off puts them out, so at the wake DayNightBrightness.applyForSavedTimes()
+     * read "lights off = day" and set the full day brightness in the dark; the night came 16 s
+     * later with the next report (capture 26-10-2026 19:45:55, 7870). Forgotten here, the
+     * stored sunrise and sunset decide at the wake -- the class's documented fallback while the
+     * MCU has not reported -- until the MCU reports the lights. CarStates registers its
+     * listener once and nothing registers again at a wake, so whether the MCU repeats a value
+     * that did not change is not known (the capture only shows a changed one); if it does not,
+     * the sun decides until the lights change.
+     */
+    public static void onSleep() {
+        sLightsOn = UNKNOWN;
+        MAIN.removeCallbacks(APPLY);
+    }
+
     /** Re-applies wallpaper and brightness; called when the switch is turned on, too. */
     public static void applyNow() {
         Context context = sContext;

@@ -234,6 +234,9 @@ public class SunTask extends AsyncTask<String, Void, String> {
         if (notArctic()) {
             sunrise = stringToLongCalc(sunCalc.getSunrise());
             sunset = stringToLongCalc(sunCalc.getSunset());
+            // As the API path has it, before the corrections: the logs showed "day length (in
+            // ms): 0" on this path. Only logged and cached.
+            dayLength = sunset - sunrise;
         }
         editor.putString("sunrise", longToHourZone(sunrise));
         editor.putString("sunset", longToHourZone(sunset));
