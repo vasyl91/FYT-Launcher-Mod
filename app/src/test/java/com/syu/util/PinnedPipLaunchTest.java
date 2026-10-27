@@ -85,4 +85,11 @@ class PinnedPipLaunchTest {
         assertFalse(PinnedPipLaunch.mayStartNow(false, 0, 1, false));  // another page
         assertFalse(PinnedPipLaunch.mayStartNow(false, 1, 1, true));   // all apps open
     }
+
+    @Test
+    void thePinnedPipDoesNotCoverTheHomeScreen() {
+        assertFalse(PinnedPipLaunch.canCoverHome(PINNED));
+        assertTrue(PinnedPipLaunch.canCoverHome(FULLSCREEN));
+        assertTrue(PinnedPipLaunch.canCoverHome(-1));   // unknown: as before
+    }
 }

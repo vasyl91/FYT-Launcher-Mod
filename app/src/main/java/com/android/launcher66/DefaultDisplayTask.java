@@ -19,6 +19,11 @@ import java.util.List;
  * up full screen, has to skip the panes' tasks: otherwise a pane app is taken for it, and an app
  * that really is in front (a reversing camera, say) goes unrecognised.
  *
+ * <p>The pinned PiP is skipped as well. It is a window floating over the home screen on the default
+ * display, not what is shown full screen, and counting it as a cover made HomeFrontGuard take the
+ * launcher's own pinned PiP for an app that had come over the home screen. Where the windowing
+ * mode cannot be read, nothing is skipped.
+ *
  * <p>Not for code that has to see the top task the way com.syu.ms does. com.syu.ms picks the MCU
  * sound channel and app id from getRunningTasks(1), panes included, and the launcher's
  * counter-moves must judge by the same view: WindowUtil.reassertLauncherTop() and
@@ -103,8 +108,8 @@ public final class DefaultDisplayTask {
     }
 
     /**
-     * Top activity of the most recently active task on the default display; null if there is no
-     * task. Without display information the most recently active task of any display is used, as
+     * Top activity of the most recently active task on the default display, the pinned PiP's left
+     * out; null if there is no task. Without display information the most recently active task of any display is used, as
      * with getRunningTasks(1). A binder call into system_server: off the main thread at boot.
      *
      * @throws RuntimeException as ActivityManager.getRunningTasks() does
@@ -126,11 +131,16 @@ public final class DefaultDisplayTask {
             return null;
         }
         for (ActivityManager.RunningTaskInfo task : tasks) {
-            if (isOnDefaultDisplay(task)) {
+            if (isOnDefaultDisplay(task) && canCoverHome(task)) {
                 return task;
             }
         }
-        return tasks.get(0);
+        for (ActivityManager.RunningTaskInfo task : tasks) {
+            if (canCoverHome(task)) {
+                return task;
+            }
+        }
+        return null;
     }
 
     /**
@@ -146,7 +156,7 @@ public final class DefaultDisplayTask {
         List<ActivityManager.RunningTaskInfo> result = new ArrayList<>();
         if (tasks != null) {
             for (ActivityManager.RunningTaskInfo task : tasks) {
-                if (isOnDefaultDisplay(task)) {
+                if (isOnDefaultDisplay(task) && canCoverHome(task)) {
                     result.add(task);
                 }
             }
@@ -175,6 +185,11 @@ public final class DefaultDisplayTask {
             }
         }
         return false;
+    }
+
+    /** Whether the task can be what is shown full screen, i.e. it is not in the pinned stack. */
+    private static boolean canCoverHome(ActivityManager.RunningTaskInfo task) {
+        return PinnedPipLaunch.canCoverHome(windowingMode(task));
     }
 
     private static boolean isOnDefaultDisplay(ActivityManager.RunningTaskInfo task) {

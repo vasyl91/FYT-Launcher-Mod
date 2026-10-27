@@ -65,4 +65,13 @@ public final class PinnedPipLaunch {
             boolean allAppsVisible) {
         return !pagesMoving && currentPage == pipScreen && !allAppsVisible;
     }
+
+    /**
+     * Whether a task of this windowing mode can be what is shown full screen on the default
+     * display. The pinned PiP floats over the home screen and is not what covers it. An unknown
+     * mode (negative) counts as full screen, as before the mode was read at all.
+     */
+    public static boolean canCoverHome(int windowingMode) {
+        return windowingMode != WINDOWING_MODE_PINNED;
+    }
 }
