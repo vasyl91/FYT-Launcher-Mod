@@ -567,9 +567,11 @@ public class WeatherManager {
                 public WeatherDescription doInBackground(String[] params) {
                     if (params != null && params.length > 0) {
                         String url = OPEN_WEATHER_CURRENT_URL + "&lat=" + lat + "&lon=" + lon;
-                        Log.d("hzq", "getWeatherNew url = " + url);
+                        Log.d("hzq", "getWeatherNew url = " + redactUrl(url));
                         String entry = WeatherManager.sendGet(url);
-                        Log.d("hzq", "call getWeatherNew ** entry = " + entry);
+                        // Only the size: the answer holds the coordinates and the place.
+                        Log.d("hzq", "call getWeatherNew ** entry "
+                                + (entry == null ? "null" : "length = " + entry.length()));
                         if (entry != null && !entry.isEmpty()) {
                             return WeatherDescription.parseOpenWeatherMapData(entry);
                         }
@@ -653,6 +655,34 @@ public class WeatherManager {
         return client;
     }
 
+    private static final java.util.regex.Pattern APPID_PARAM =
+            java.util.regex.Pattern.compile("(?<=[?&])appid=[^&\\s]*");
+    private static final java.util.regex.Pattern COORDINATE_PARAM =
+            java.util.regex.Pattern.compile("(?<=[?&])(lat|lon)=(-?[0-9.]+(?:[eE][-+]?[0-9]+)?)");
+
+    /**
+     * The URL for a log: the API key is hidden and the coordinates are rounded to two places
+     * (about a kilometre). The logs go to the public Download/Launcher66_Logs and are passed
+     * on, and they showed the key and the exact position of the car.
+     */
+    static String redactUrl(String url) {
+        if (url == null) return null;
+        String out = APPID_PARAM.matcher(url).replaceAll("appid=***");
+        java.util.regex.Matcher m = COORDINATE_PARAM.matcher(out);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            String rounded;
+            try {
+                rounded = String.format(java.util.Locale.US, "%.2f", Double.parseDouble(m.group(2)));
+            } catch (NumberFormatException e) {
+                rounded = "***";
+            }
+            m.appendReplacement(sb, m.group(1) + "=" + rounded);
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
     public static String sendGet(String url) {
         // A new client per request also meant a new connection pool and dispatcher threads,
         // and a fresh TLS handshake every time.
@@ -668,7 +698,7 @@ public class WeatherManager {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                Log.w(TAG, "HTTP error: " + response.code() + " for URL: " + url);
+                Log.w(TAG, "HTTP error: " + response.code() + " for URL: " + redactUrl(url));
                 return null;
             }
             
@@ -677,7 +707,7 @@ public class WeatherManager {
             }
             return null;
         } catch (Exception e) {
-            Log.e(TAG, "Network error: " + url + " - " + e.getMessage());
+            Log.e(TAG, "Network error: " + redactUrl(url) + " - " + redactUrl(e.getMessage()));
             return null;
         }
     }
