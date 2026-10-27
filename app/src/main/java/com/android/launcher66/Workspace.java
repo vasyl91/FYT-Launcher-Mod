@@ -64,6 +64,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.AbsoluteLayout;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -362,6 +363,40 @@ public class Workspace extends SmoothPagedView
     private boolean mBarRevealed = false;
     /** The overlay bar is sliding out; it is removed when the animation ends. */
     private boolean mOverlayHideAnimating = false;
+    /** A finger is on the overlay window (BarSwipeFrame). */
+    private boolean mOverlayTouchHeld = false;
+    /** The overlay bar has slid out, but its window stays until the finger is lifted. */
+    private boolean mOverlayRemoveAtUp = false;
+    /** The auto-hide timer ran out while a finger was on the overlay: hide it when lifted. */
+    private boolean mOverlayHideAtUp = false;
+    private final BarSwipeFrame.Host mBarSwipeHost = new BarSwipeFrame.Host() {
+        @Override
+        public boolean feed(MotionEvent e) {
+            return handleExternalSwipe(e);
+        }
+
+        @Override
+        public boolean isPaging() {
+            return isExternalSwipePaging();
+        }
+
+        @Override
+        public void onTouchStarted() {
+            synchronized (overlayLock) {
+                mOverlayTouchHeld = true;
+            }
+        }
+
+        @Override
+        public void onPagingStarted() {
+            hideOverlayForSwipe();
+        }
+
+        @Override
+        public void onTouchEnded() {
+            onOverlayTouchEnded();
+        }
+    };
     /** Auto-hide without the left bar: the edge handle replaces the collapsed button. */
     private boolean mEdgeHandleMode = false;
     /** The launcher is resumed; set by Launcher.onPause() and onResume(). */
@@ -1672,12 +1707,14 @@ public class Workspace extends SmoothPagedView
 
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
-            // Choose layout based on widgetBar setting
-            if (widgetBar) {
-                overlayBottomBar = inflater.inflate(R.layout.custom_layout_two_user, null);
-            } else {
-                overlayBottomBar = inflater.inflate(R.layout.custom_layout_one_user, null);
-            }
+            // Choose layout based on widgetBar setting. The layout sits in a frame that lets a
+            // horizontal swipe on this window page the workspace (BarSwipeFrame).
+            final View barContent = inflater.inflate(
+                    widgetBar ? R.layout.custom_layout_two_user : R.layout.custom_layout_one_user, null);
+            final BarSwipeFrame barFrame = new BarSwipeFrame(getContext(), mBarSwipeHost);
+            barFrame.addView(barContent, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            overlayBottomBar = barFrame;
 
             overlayBottomBar.setOnApplyWindowInsetsListener((v, insets) -> {
                 int bottomInset = insets.getSystemWindowInsetBottom();
@@ -2220,6 +2257,24 @@ public class Workspace extends SmoothPagedView
      * once. A slide-in still running is taken over from where it is.
      */
     public void hideOverlayBottomBar(boolean animate) {
+        hideOverlay(animate, false);
+    }
+
+    /**
+     * A page swipe has started on the bar's window: the bar slides away as it does for a swipe on
+     * the grid, but its window stays until the finger is lifted. Removing it, or changing its
+     * flags, would cancel the gesture that is paging the workspace.
+     */
+    private void hideOverlayForSwipe() {
+        Log.d(TAG, "Hiding the auto-hide bar: page swipe on the bar");
+        hideOverlay(true, true);
+    }
+
+    /**
+     * @param keepWindowUntilUp leave the window in place (and touchable) after the slide until the
+     *                          finger on it is lifted; see {@link #hideOverlayForSwipe()}
+     */
+    private void hideOverlay(boolean animate, boolean keepWindowUntilUp) {
         // Also make sure to cancel any pending auto-hide
         cancelPendingAutoHide();
 
@@ -2252,20 +2307,25 @@ public class Workspace extends SmoothPagedView
                 mOverlayHideAnimating = true;
                 mBarRevealed = false;
 
-                // Touches pass through while the bar slides out.
-                setOverlayTouchable(false);
+                mOverlayHideAtUp = false;
+                if (!keepWindowUntilUp) {
+                    // Touches pass through while the bar slides out. The window gets no more of
+                    // the gesture on it then, so it does not wait for the end of it either.
+                    mOverlayTouchHeld = false;
+                    setOverlayTouchable(false);
+                }
                 bar.animate().cancel();
 
                 int distance = bar.getHeight();
                 if (!animate || distance <= 0 || !bar.isAttachedToWindow()) {
-                    finishOverlayHide(bar, windowManager);
+                    onOverlaySlideOutEnded(bar, windowManager);
                 } else {
                     restoreDurationMs = BAR_HIDE_DURATION_MS;
                     bar.animate()
                             .translationY(distance)
                             .setDuration(BAR_HIDE_DURATION_MS)
                             .setInterpolator(new AccelerateInterpolator(1.5f))
-                            .withEndAction(() -> finishOverlayHide(bar, windowManager))
+                            .withEndAction(() -> onOverlaySlideOutEnded(bar, windowManager))
                             .start();
                 }
             }
@@ -2278,6 +2338,61 @@ public class Workspace extends SmoothPagedView
         if (launcher != null) {
             mainHandler.post(launcher::disableRecycler);
         }
+    }
+
+    /**
+     * The slide-out is over. The bar is off the window by now, so a window that still has a finger
+     * on it can wait for the end of that gesture without showing anything.
+     */
+    private void onOverlaySlideOutEnded(View bar, WindowManager windowManager) {
+        synchronized (overlayLock) {
+            if (mOverlayTouchHeld && bar == overlayBottomBar) {
+                mOverlayRemoveAtUp = true;
+                return;
+            }
+        }
+        finishOverlayHide(bar, windowManager);
+    }
+
+    /** The gesture on the overlay window is over, or the window is gone. */
+    private void onOverlayTouchEnded() {
+        synchronized (overlayLock) {
+            mOverlayTouchHeld = false;
+            final View bar = overlayBottomBar;
+            final WindowManager windowManager = overlayWindowManager;
+            if (bar == null || windowManager == null) {
+                return;
+            }
+            if (mOverlayRemoveAtUp) {
+                mOverlayRemoveAtUp = false;
+                // Posted: this runs in the dispatch of the window's last event.
+                mainHandler.post(() -> {
+                    synchronized (overlayLock) {
+                        if (bar != overlayBottomBar) {
+                            return;
+                        }
+                    }
+                    finishOverlayHide(bar, windowManager);
+                });
+            } else if (mOverlayHideAtUp && isOverlayShowing && !mOverlayHideAnimating) {
+                mOverlayHideAtUp = false;
+                mainHandler.post(this::hideOverlayBottomBar);
+            }
+        }
+    }
+
+    /**
+     * The auto-hide timer ran out. A bar with a finger on it stays, the finger is not left without
+     * the bar it is using; it goes when the finger is lifted.
+     */
+    private void hideOverlayUnlessTouched() {
+        synchronized (overlayLock) {
+            if (mOverlayTouchHeld) {
+                mOverlayHideAtUp = true;
+                return;
+            }
+        }
+        hideOverlayBottomBar();
     }
 
     /** End of a hide: detaches the shared adapter and removes the window. */
@@ -2499,6 +2614,9 @@ public class Workspace extends SmoothPagedView
         overlayBottomBar = null;
         overlayWindowParams = null;
         overlayWindowManager = null;
+        mOverlayTouchHeld = false;
+        mOverlayRemoveAtUp = false;
+        mOverlayHideAtUp = false;
         
         // Re-initialize widget references to point to normal workspace views
         if (workspaceView != null && widgetBar) {
@@ -2663,7 +2781,7 @@ public class Workspace extends SmoothPagedView
         autoHideFuture = scheduler.schedule(() -> {
             synchronized (overlayLock) {
                 if (isOverlayShowing && !isOverlayAnimating) {
-                    mainHandler.post(this::hideOverlayBottomBar);
+                    mainHandler.post(this::hideOverlayUnlessTouched);
                 }
             }
         }, autoHideTimeout, TimeUnit.SECONDS);
@@ -3493,6 +3611,11 @@ public class Workspace extends SmoothPagedView
             setClickable(clickable);
             setLongClickable(longClickable);
         }
+    }
+
+    /** The paging has taken the status bar strip's or the auto-hide bar's gesture over. */
+    boolean isExternalSwipePaging() {
+        return mExternalSwipeTracking && mExternalSwipeScrolling;
     }
 
     private boolean canPageFromExternalSwipe() {
