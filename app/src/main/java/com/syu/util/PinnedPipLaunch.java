@@ -48,4 +48,21 @@ public final class PinnedPipLaunch {
         }
         return false;
     }
+
+    /**
+     * Whether the pinned PiP app was started less than settleMs ago and may not have resumed yet.
+     * startedAt is an uptime, 0 when it was never started.
+     */
+    public static boolean isSettling(long now, long startedAt, long settleMs) {
+        return startedAt > 0 && now - startedAt < settleMs;
+    }
+
+    /**
+     * Whether the pinned PiP may be started: not while the pages move (onPageEndMoving asks again),
+     * only on the page it belongs to, and not over the app drawer.
+     */
+    public static boolean mayStartNow(boolean pagesMoving, int currentPage, int pipScreen,
+            boolean allAppsVisible) {
+        return !pagesMoving && currentPage == pipScreen && !allAppsVisible;
+    }
 }

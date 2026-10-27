@@ -64,4 +64,25 @@ class PinnedPipLaunchTest {
         assertFalse(PinnedPipLaunch.shownInWindowPane("", on, pinned, pkg));
         assertFalse(PinnedPipLaunch.shownInWindowPane(null, on, pinned, pkg));
     }
+
+    @Test
+    void anAppStartedLessThanTheSettleTimeAgoIsStillSettling() {
+        assertTrue(PinnedPipLaunch.isSettling(1000, 500, 1500));
+        assertTrue(PinnedPipLaunch.isSettling(1999, 500, 1500));   // 1499 ms after
+        assertFalse(PinnedPipLaunch.isSettling(2000, 500, 1500));  // exactly 1500 ms after
+        assertFalse(PinnedPipLaunch.isSettling(5000, 500, 1500));
+    }
+
+    @Test
+    void anAppThatWasNeverStartedIsNotSettling() {
+        assertFalse(PinnedPipLaunch.isSettling(100, 0, 1500));
+    }
+
+    @Test
+    void theStartIsAllowedOnlyOnItsPageWithTheDrawerClosedAndThePagesStill() {
+        assertTrue(PinnedPipLaunch.mayStartNow(false, 1, 1, false));
+        assertFalse(PinnedPipLaunch.mayStartNow(true, 1, 1, false));   // pages moving
+        assertFalse(PinnedPipLaunch.mayStartNow(false, 0, 1, false));  // another page
+        assertFalse(PinnedPipLaunch.mayStartNow(false, 1, 1, true));   // all apps open
+    }
 }

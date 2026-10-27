@@ -2039,6 +2039,16 @@ public class WindowUtil {
     // PINNED PIP
     // =====================================================================================
 
+    /** When the pinned PiP app was last started (uptime); 0 if never. Main thread. */
+    private static long sPinnedStartUptimeMs;
+
+    /**
+     * How long after its start the pinned PiP app is left alone by removePinnedPip(). A warm start
+     * of YouTube takes 0.4-0.5 s to the resumed top (log B: 51.422 to 51.948, 54.370 to 54.794), a
+     * cold one after a force-stop longer (log A: the process is bound 0.32 s after the start).
+     */
+    private static final long PINNED_START_SETTLE_MS = 1500L;
+
     public static void openPinnedPip() {
         if (WakeDetection.skipPipWork("openPinnedPip")) return;
         // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): the com.syu.music
@@ -2091,6 +2101,21 @@ public class WindowUtil {
             if (fourthPip && fourthPipPinned && isPipPackageInstalled(fourthPkg)) {
                 openAsPinnedPip(fourthPkg, Keys.PIP_FOURTH_KEY, Keys.PIP_FOURTH_SCREEN);
             }            
+        } else {
+            // This gate used to give up without a word. When the pinned PiP does not come back, the
+            // line says which part of it held (log A: topApp() false after the stack was hidden).
+            Log.d(TAG, "openPinnedPip(): skipped, allowPip=" + launcher.allowPip
+                    + " topApp=" + Utils.topApp()
+                    + " inWidgets=" + helpers.isInWidgets()
+                    + " inAllApps=" + helpers.isInAllApps()
+                    + " inOverview=" + helpers.isInOverviewMode()
+                    + " firstPreferenceWindow=" + helpers.isFirstPreferenceWindow()
+                    + " wallpaperWindow=" + helpers.isWallpaperWindow()
+                    + " tabHost=" + (launcher.mAppsCustomizeTabHost != null)
+                    + " allAppsVisible=" + (launcher.mAppsCustomizeTabHost != null
+                            && helpers.allAppsVisibility(launcher.mAppsCustomizeTabHost.getVisibility()))
+                    + " listOpen=" + helpers.isListOpen()
+                    + " wasInRecents=" + helpers.userWasInRecents());
         }
     }
 
@@ -2176,6 +2201,26 @@ public class WindowUtil {
         }
     }
 
+    /**
+     * What keeps the pinned PiP from being started right now, for the log; null if nothing does.
+     * Main thread.
+     */
+    private static String startBlocker() {
+        final Launcher launcher = Launcher.getLauncher();
+        Workspace workspace = workspace();
+        if (launcher == null || workspace == null || prefs == null || helpers == null) return null;
+        int pipScreen = prefs.getInt(Keys.PINNED_PIP_SCREEN, 1) - 1;
+        boolean allAppsVisible = launcher.mAppsCustomizeTabHost != null
+                && helpers.allAppsVisibility(launcher.mAppsCustomizeTabHost.getVisibility());
+        if (PinnedPipLaunch.mayStartNow(workspace.isPageMoving(), workspace.getCurrentPage(),
+                pipScreen, allAppsVisible)) {
+            return null;
+        }
+        if (workspace.isPageMoving()) return "pages moving";
+        if (workspace.getCurrentPage() != pipScreen) return "not on page " + (pipScreen + 1);
+        return "all apps open";
+    }
+
     /** A task of the package outside the pinned stack; null if there is none or it cannot be told. */
     private static ActivityManager.RunningTaskInfo taskOutsidePinnedStack(String packageName) {
         try {
@@ -2214,6 +2259,17 @@ public class WindowUtil {
         SystemProperties.set("sys.lsec.force_pip", "true");
         if (intent.resolveActivity(LauncherApplication.sApp.getPackageManager()) != null) {
             launcher.handler.postDelayed(() -> {
+                // Looked at when the start is due, not when it was asked for: the pages may have
+                // been swiped since (a restart waits a second first). onPageEndMoving() asks again.
+                String blocker = startBlocker();
+                if (blocker != null) {
+                    Log.i(TAG, "startPinnedPip(" + packageName + "): not started (" + blocker
+                            + "), left to onPageEndMoving");
+                    return;
+                }
+                // The newer start wins over a hide that was put off after the previous one.
+                launcher.handler.removeCallbacks(sHideAfterStart);
+                sPinnedStartUptimeMs = SystemClock.uptimeMillis();
                 try {
                     LauncherApplication.sApp.startActivity(intent);
                 } catch (RuntimeException e) {
@@ -2299,17 +2355,37 @@ public class WindowUtil {
         }
         boolean userLayout  = prefs.getBoolean(Keys.USER_LAYOUT, false);
         if (userLayout) {
-            try {
-                // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
-                Method getServiceMethod = ActivityManager.class.getMethod("getService");
-                Object activityManager = getServiceMethod.invoke(null);
-                Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
-                Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
-                setPinnedStackVisibleMethod.invoke(activityManager, false);
-                Log.i(TAG, "removePinnedPip() pane: dismissed");
-            } catch (Throwable t) {
-                Log.w(TAG, "removePinnedPip() pane: dismiss failed", t);
+            long now = SystemClock.uptimeMillis();
+            final Launcher launcher = Launcher.getLauncher();
+            if (launcher != null && PinnedPipLaunch.isSettling(now, sPinnedStartUptimeMs, PINNED_START_SETTLE_MS)) {
+                // Hidden before its activity has resumed, the stack leaves the launcher without a
+                // resumed top (log A: forcehidden:true 0.3 s after the start, "Trying to pause when
+                // nothing is resumed"). One hide for all callers, once the app has had its time.
+                long hideAt = sPinnedStartUptimeMs + PINNED_START_SETTLE_MS;
+                launcher.handler.removeCallbacks(sHideAfterStart);
+                launcher.handler.postAtTime(sHideAfterStart, hideAt);
+                Log.i(TAG, "removePinnedPip(): the pinned app is still starting, hidden in "
+                        + (hideAt - now) + " ms");
+                return;
             }
+            hidePinnedStackNow();
+        }
+    }
+
+    /** The hide that removePinnedPip() put off until the pinned app has had time to resume. */
+    private static final Runnable sHideAfterStart = WindowUtil::hidePinnedStackNow;
+
+    private static void hidePinnedStackNow() {
+        try {
+            // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
+            Method getServiceMethod = ActivityManager.class.getMethod("getService");
+            Object activityManager = getServiceMethod.invoke(null);
+            Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
+            Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
+            setPinnedStackVisibleMethod.invoke(activityManager, false);
+            Log.i(TAG, "removePinnedPip() pane: dismissed");
+        } catch (Throwable t) {
+            Log.w(TAG, "removePinnedPip() pane: dismiss failed", t);
         }
     }
 
