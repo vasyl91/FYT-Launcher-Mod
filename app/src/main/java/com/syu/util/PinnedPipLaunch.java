@@ -11,6 +11,15 @@ public final class PinnedPipLaunch {
     /** WindowConfiguration.WINDOWING_MODE_PINNED on Android 10. */
     public static final int WINDOWING_MODE_PINNED = 2;
 
+    /**
+     * The windowing mode of FYT's own pinned stack, where a force_pip start puts the pinned PiP app:
+     * getDefaultDisplay().getOrCreateStack(6, 0, true) in its ActivityStarter, the display's
+     * mMpipStack (decompiled 7862 framework). The launcher's pinned PiP is never in mode 2 there.
+     * Android 10 has no mode 6 of its own; from Android 11 on it is WINDOWING_MODE_MULTI_WINDOW
+     * (split screen, embedded tasks), so it means FYT's pinned stack up to Android 10 only.
+     */
+    public static final int WINDOWING_MODE_FYT_PINNED = 6;
+
     private PinnedPipLaunch() {
     }
 
@@ -75,10 +84,12 @@ public final class PinnedPipLaunch {
 
     /**
      * Whether a task of this windowing mode can be what is shown full screen on the default
-     * display. The pinned PiP floats over the home screen and is not what covers it. An unknown
-     * mode (negative) counts as full screen, as before the mode was read at all.
+     * display. The pinned PiP floats over the home screen and is not what covers it, AOSP's as well
+     * as FYT's (fytPinnedMode: mode 6 is FYT's pinned stack here, i.e. Android 10 or older). An
+     * unknown mode (negative) counts as full screen, as before the mode was read at all.
      */
-    public static boolean canCoverHome(int windowingMode) {
-        return windowingMode != WINDOWING_MODE_PINNED;
+    public static boolean canCoverHome(int windowingMode, boolean fytPinnedMode) {
+        return windowingMode != WINDOWING_MODE_PINNED
+                && !(fytPinnedMode && windowingMode == WINDOWING_MODE_FYT_PINNED);
     }
 }

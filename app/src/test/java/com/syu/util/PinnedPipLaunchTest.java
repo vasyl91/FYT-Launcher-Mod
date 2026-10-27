@@ -9,6 +9,7 @@ class PinnedPipLaunchTest {
 
     private static final int PINNED = 2;
     private static final int FULLSCREEN = 1;
+    private static final int FYT_PINNED = 6;
 
     @Test
     void aTaskOnTheDefaultDisplayIsLeftToTheFramework() {
@@ -82,8 +83,20 @@ class PinnedPipLaunchTest {
 
     @Test
     void thePinnedPipDoesNotCoverTheHomeScreen() {
-        assertFalse(PinnedPipLaunch.canCoverHome(PINNED));
-        assertTrue(PinnedPipLaunch.canCoverHome(FULLSCREEN));
-        assertTrue(PinnedPipLaunch.canCoverHome(-1));   // unknown: as before
+        assertFalse(PinnedPipLaunch.canCoverHome(PINNED, true));
+        assertFalse(PinnedPipLaunch.canCoverHome(PINNED, false));
+        assertTrue(PinnedPipLaunch.canCoverHome(FULLSCREEN, true));
+        assertTrue(PinnedPipLaunch.canCoverHome(-1, true));   // unknown: as before
+    }
+
+    @Test
+    void fytsPinnedStackDoesNotCoverTheHomeScreenUpToAndroid10() {
+        // The launcher's own pinned YouTube, log 27-10-2026 23:31 (20.707, 27.374).
+        assertFalse(PinnedPipLaunch.canCoverHome(FYT_PINNED, true));
+    }
+
+    @Test
+    void modeSixIsAnyMultiWindowTaskFromAndroid11On() {
+        assertTrue(PinnedPipLaunch.canCoverHome(FYT_PINNED, false));
     }
 }

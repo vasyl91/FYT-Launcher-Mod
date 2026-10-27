@@ -2,6 +2,7 @@ package com.android.launcher66;
 
 import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.os.Build;
 import android.view.Display;
 
 import com.syu.util.PinnedPipLaunch;
@@ -21,8 +22,9 @@ import java.util.List;
  *
  * <p>The pinned PiP is skipped as well. It is a window floating over the home screen on the default
  * display, not what is shown full screen, and counting it as a cover made HomeFrontGuard take the
- * launcher's own pinned PiP for an app that had come over the home screen. Where the windowing
- * mode cannot be read, nothing is skipped.
+ * launcher's own pinned PiP for an app that had come over the home screen. On the FYT units that
+ * is FYT's own pinned stack, mode 6, not AOSP's mode 2. Where the windowing mode cannot be read,
+ * nothing is skipped.
  *
  * <p>Not for code that has to see the top task the way com.syu.ms does. com.syu.ms picks the MCU
  * sound channel and app id from getRunningTasks(1), panes included, and the launcher's
@@ -49,6 +51,12 @@ public final class DefaultDisplayTask {
 
     /** WindowConfiguration.WINDOWING_MODE_PINNED: the task is in the pinned stack. */
     public static final int WINDOWING_MODE_PINNED = PinnedPipLaunch.WINDOWING_MODE_PINNED;
+
+    /**
+     * Whether windowing mode 6 is FYT's pinned stack: up to Android 10, which has no mode 6 of its
+     * own (see PinnedPipLaunch.WINDOWING_MODE_FYT_PINNED).
+     */
+    private static final boolean FYT_PINNED_MODE = Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q;
 
     private DefaultDisplayTask() {
     }
@@ -187,9 +195,9 @@ public final class DefaultDisplayTask {
         return false;
     }
 
-    /** Whether the task can be what is shown full screen, i.e. it is not in the pinned stack. */
+    /** Whether the task can be what is shown full screen, i.e. it is not in a pinned stack. */
     private static boolean canCoverHome(ActivityManager.RunningTaskInfo task) {
-        return PinnedPipLaunch.canCoverHome(windowingMode(task));
+        return PinnedPipLaunch.canCoverHome(windowingMode(task), FYT_PINNED_MODE);
     }
 
     private static boolean isOnDefaultDisplay(ActivityManager.RunningTaskInfo task) {
