@@ -4594,58 +4594,25 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             putCustomView(Config.WS_Allapps, mWorkspace.findViewById(ResValue.getInstance().rl_allapps));
             putCustomView(Config.WS_Showbar, mWorkspace.findViewById(ResValue.getInstance().show_bar));
         }
-        if (mMusicWidget.tvMusicName != null) {
-            if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
-                if (fytData) { // from metadata
-                    if (!(mMusicWidget.tvMusicName.getText().toString()).equals(MusicService.music_name)) {
-                        mMusicWidget.tvMusicName.setText(MusicService.music_name);                        
-                    }
-                } else if (StockSources.isSyuMediaUnit()) {
-                    // A stream has no file name; a name without a dot is the whole name
-                    mMusicWidget.musictitle = StockTitles.displayTitle(true, MusicService.music_path, MusicService.music_name);
-                    if (!(mMusicWidget.tvMusicName.getText().toString()).equals(mMusicWidget.musictitle)) {
-                        mMusicWidget.tvMusicName.setText(mMusicWidget.musictitle);
-                    }
-                } else { // from file title
-                    File file = new File(MusicService.music_path);
-                    String filename = file.getName();
-                    mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    if (!(mMusicWidget.tvMusicName.getText().toString()).equals(mMusicWidget.musictitle)) {
-                        mMusicWidget.tvMusicName.setText(mMusicWidget.musictitle);                        
-                    }
-                }
-                mMusicWidget.tvMusicName.setSelected(true);
-            } else {
-                mMusicWidget.tvMusicName.setText(R.string.music_name);
-                mMusicWidget.tvMusicName.setSelected(true);
+        String initTitle = "";
+        if ((mMusicWidget.tvMusicName != null || mMusicWidget.tvMusicNameTwo != null)
+                && MusicService.music_path != null && !MusicService.music_path.isEmpty()
+                && MusicService.music_path.lastIndexOf("/") >= 0) {
+            if (fytData) { // from metadata
+                initTitle = MusicService.music_name;
+            } else if (StockSources.isSyuMediaUnit()) {
+                // A stream has no file name; a name without a dot is the whole name
+                mMusicWidget.musictitle = StockTitles.displayTitle(true, MusicService.music_path, MusicService.music_name);
+                initTitle = mMusicWidget.musictitle;
+            } else { // from file title
+                File file = new File(MusicService.music_path);
+                String filename = file.getName();
+                mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
+                initTitle = mMusicWidget.musictitle;
             }
         }
-        if (mMusicWidget.tvMusicNameTwo != null) {
-            if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
-                if (fytData) { // from metadata
-                    if (!(mMusicWidget.tvMusicNameTwo.getText().toString()).equals(MusicService.music_name)) {
-                        mMusicWidget.tvMusicNameTwo.setText(MusicService.music_name);                        
-                    }
-                } else if (StockSources.isSyuMediaUnit()) {
-                    // A stream has no file name; a name without a dot is the whole name
-                    mMusicWidget.musictitle = StockTitles.displayTitle(true, MusicService.music_path, MusicService.music_name);
-                    if (!(mMusicWidget.tvMusicNameTwo.getText().toString()).equals(mMusicWidget.musictitle)) {
-                        mMusicWidget.tvMusicNameTwo.setText(mMusicWidget.musictitle);
-                    }
-                } else { // from file title
-                    File file = new File(MusicService.music_path);
-                    String filename = file.getName();
-                    mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    if (!(mMusicWidget.tvMusicNameTwo.getText().toString()).equals(mMusicWidget.musictitle)) {
-                        mMusicWidget.tvMusicNameTwo.setText(mMusicWidget.musictitle);                        
-                    }
-                }
-                mMusicWidget.tvMusicNameTwo.setSelected(true);
-            } else {
-                mMusicWidget.tvMusicNameTwo.setText(R.string.music_name);
-                mMusicWidget.tvMusicNameTwo.setSelected(true);
-            }
-        }
+        // No artist yet: the placeholder
+        mMusicWidget.setTrack(initTitle, "");
         if (mMusicWidget.tvCurTime != null) {
             mMusicWidget.tvCurTime.setText("00:00");
         }
@@ -4662,12 +4629,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }
         }*/
-        if (mMusicWidget.tvAritst != null) {
-            mMusicWidget.tvAritst.setText(R.string.music_author);
-        }
-        if (mMusicWidget.tvAritstTwo != null) {
-            mMusicWidget.tvAritstTwo.setText(R.string.music_author);
-        }
         if (mMusicWidget.tvAlbum != null) {
             mMusicWidget.tvAlbum.setText(R.string.music_album);
         }

@@ -1633,6 +1633,10 @@ class NotificationListener : NotificationListenerService() {
         } ?: run { curMinutes = 0 }
 
         song = currentMeta.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""
+        if (song.isNullOrEmpty()) {
+            // Some apps fill only the display fields and leave TITLE / ARTIST empty
+            song = currentMeta.getString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE) ?: ""
+        }
         artist = currentMeta.getString(MediaMetadata.METADATA_KEY_ARTIST)
         if (artist == null || artist!!.isEmpty()) {
             artist = currentMeta.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
@@ -1645,6 +1649,9 @@ class NotificationListener : NotificationListenerService() {
         }
         if (artist == null || artist!!.isEmpty()) {
             artist = currentMeta.getString(MediaMetadata.METADATA_KEY_COMPOSER)
+        }
+        if (artist == null || artist!!.isEmpty()) {
+            artist = currentMeta.getString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
         }
         if (artist == null || artist!!.isEmpty()) {
             artist = "\u0020"
@@ -1710,13 +1717,22 @@ class NotificationListener : NotificationListenerService() {
         val controller = mediaController ?: return
         val currentMeta = meta ?: controller.metadata ?: return
 
-        val title = currentMeta.getString(MediaMetadata.METADATA_KEY_TITLE) ?: song ?: ""
+        val metaTitle = currentMeta.getString(MediaMetadata.METADATA_KEY_TITLE)
+        val displayTitle = if (metaTitle.isNullOrEmpty()) {
+            currentMeta.getString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)
+        } else {
+            null
+        }
+        val title = if (!displayTitle.isNullOrEmpty()) displayTitle else metaTitle ?: song ?: ""
         var resolvedArtist = currentMeta.getString(MediaMetadata.METADATA_KEY_ARTIST)
         if (resolvedArtist.isNullOrEmpty()) {
             resolvedArtist = currentMeta.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
         }
         if (resolvedArtist.isNullOrEmpty()) {
             resolvedArtist = currentMeta.getString(MediaMetadata.METADATA_KEY_AUTHOR)
+        }
+        if (resolvedArtist.isNullOrEmpty()) {
+            resolvedArtist = currentMeta.getString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
         }
         if (resolvedArtist.isNullOrEmpty()) {
             resolvedArtist = artist ?: ""

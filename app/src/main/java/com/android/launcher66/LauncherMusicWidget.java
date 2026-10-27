@@ -17,6 +17,7 @@ import android.media.AudioManager;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
+import android.os.SystemClock;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -165,6 +166,22 @@ final class LauncherMusicWidget {
 
     String lastpath = null;
 
+    /** The two lines as last set (normalized; empty means none), drawn by render(). */
+    private String mTitle = "";
+
+    private String mSecond = "";
+
+    /** One-line mode of the home widget / the bar, set by the sizer when the widget is small. */
+    boolean mHomeCompact = false;
+
+    boolean mBarCompact = false;
+
+    private String mZeroDurationKey;
+
+    private long mZeroDurationSinceMs;
+
+    private final Runnable mLiveConfirm = this::redrawLastRefresh;
+
     public IUiRefresher refreshMusic = new IUiRefresher() {
         @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
@@ -216,12 +233,7 @@ final class LauncherMusicWidget {
                     }
                 }
                 if (!activeControllerAppRunning) {
-                    if (tvMusicName != null) {
-                        tvMusicName.setText(R.string.music_name);
-                    }
-                    if (tvMusicNameTwo != null) {
-                        tvMusicNameTwo.setText(R.string.music_name);
-                    }
+                    setTrack("", "");
                     if (mPlayPauseButton != null) {
                         mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                         setWidgetButtonsTint(mPlayPauseButton);
@@ -229,12 +241,6 @@ final class LauncherMusicWidget {
                     if (mPlayPauseButtonTwo != null) {
                         mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
                         setBarButtonsTint(mPlayPauseButtonTwo);
-                    }
-                    if (tvAritst != null) {
-                        tvAritst.setText(R.string.music_author);
-                    }
-                    if (tvAritstTwo != null) {
-                        tvAritstTwo.setText(R.string.music_author);
                     }
                     if (tvAlbum != null) {
                         tvAlbum.setText(R.string.music_album);
@@ -345,14 +351,26 @@ final class LauncherMusicWidget {
                     ((AnimationDrawable) ivMusicScore2.getDrawable()).start();
                 }
 
-                applyMusicTitle(musictitle);
-                applyMusicArtist(artist);
+                String title = normalizeMediaText(musictitle);
+                String artistText = normalizeMediaText(artist);
+                saveTitleToPreferences(title);
+                saveArtistToPreferences(artistText);
+                long curProgress = lngs != null && lngs.length > 1 ? lngs[1] : 0;
+                long totalProgress = lngs != null && lngs.length > 1 ? lngs[0] : 0;
+                boolean live = false;
+                if (lngs != null && lngs.length > 1 && "mediaController".equals(mediaSource)) {
+                    live = trackZeroDuration(totalProgress, title);
+                } else {
+                    cancelLiveConfirm();
+                }
+                // Only a track with no position and no length is a radio's "tuned to" line
+                boolean radio = StockSources.radioShown() && curProgress == 0 && totalProgress == 0
+                        && lngs != null && lngs.length > 1;
+                setTrack(title, MusicWidgetText.secondLine(radio, artistText, live));
                 if (album != null && !album.isEmpty() && !album.trim().isEmpty() && tvAlbum != null) {
                     tvAlbum.setText(album);
                 }
                 if (lngs != null && lngs.length > 1) {
-                    long curProgress = lngs[1];
-                    long totalProgress = lngs[0];
                     if (totalProgress > 0) {
                         if (curProgress < 0) {
                             curProgress = 0;
@@ -377,15 +395,6 @@ final class LauncherMusicWidget {
                     if (curProgress == 0 && totalProgress == 0) {
                         if (musicProgress != null) {
                             musicProgress.setProgress(0);
-                        }
-                        // The radio's second line says where it is tuned (FM 101.50 MHz) rather than "Live"
-                        String liveLine = StockSources.radioShown() && artist != null && !artist.trim().isEmpty()
-                                ? artist : "Live";
-                        if (tvAritst != null) {
-                            tvAritst.setText(liveLine);
-                        }
-                        if (tvAritstTwo != null) {
-                            tvAritstTwo.setText(liveLine);
                         }
                     }
                     String cur = mLauncher.timeParse(curProgress);
@@ -414,20 +423,12 @@ final class LauncherMusicWidget {
                         String filename = file.getName();
                         musictitle = filename.substring(0, filename.lastIndexOf("."));
                     }
-                    Utils.setTextStr(tvMusicName, musictitle);
-                    Utils.setTextStr(tvMusicNameTwo, musictitle); 
-                    if (MusicService.author_name != null && !MusicService.author_name.isEmpty()) {
-                        Utils.setTextStr(tvAritst, MusicService.author_name);
-                        Utils.setTextStr(tvAritstTwo, MusicService.author_name);
-                    } else {
-                        Utils.setTextId(tvAritst, R.string.music_author);
-                        Utils.setTextId(tvAritstTwo, R.string.music_author);
-                    }                            
+                    // radio = false: this branch showed the placeholder for a track without an artist
+                    String stockArtist = MusicService.author_name != null ? MusicService.author_name : "";
+                    setTrack(musictitle == null ? "" : musictitle,
+                            MusicWidgetText.secondLine(false, stockArtist, false));
                 } else {
-                    Utils.setTextId(tvMusicName, R.string.music_name);
-                    Utils.setTextId(tvMusicNameTwo, R.string.music_name); 
-                    Utils.setTextId(tvAritst, R.string.music_author);
-                    Utils.setTextId(tvAritstTwo, R.string.music_author);         
+                    setTrack("", "");
                 }
 
                 Utils.setTextStr(tvCurTime, "00:00");
@@ -464,36 +465,16 @@ final class LauncherMusicWidget {
             if (mPlayPauseButtonTwo != null) {
                 mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }*/
-            if (musictitle != null && !musictitle.isEmpty() && !musictitle.trim().isEmpty()) {
-                if (tvMusicName != null) {
-                    if (!(tvMusicName.getText().toString()).equals(musictitle)) {
-                        tvMusicName.setText(musictitle);                                                  
-                    }
-                    tvMusicName.setSelected(true);
-                }
-                if (tvMusicNameTwo != null) {
-                    if (!(tvMusicNameTwo.getText().toString()).equals(musictitle)) {
-                        tvMusicNameTwo.setText(musictitle);                       
-                    }
-                    tvMusicNameTwo.setSelected(true); 
-                }
+            // Only what the player still holds replaces a line: a missing one keeps what was shown
+            String idleTitle = mTitle;
+            String idleSecond = mSecond;
+            if (musictitle != null && !musictitle.trim().isEmpty()) {
+                idleTitle = normalizeMediaText(musictitle);
             }
-            if (artist != null && !artist.isEmpty() && tvAritst != null) {
-                if (tvAritst != null) {
-                    if (!(tvAritst.getText().toString()).equals(artist)) {
-                        tvAritst.setText(artist);              
-                    }
-                    tvAritst.setSelected(true);
-                }                   
+            if (artist != null && !artist.isEmpty()) {
+                idleSecond = MusicWidgetText.secondLine(false, normalizeMediaText(artist), false);
             }
-            if (artist != null && !artist.isEmpty() && tvAritstTwo != null) {
-                if (tvAritstTwo != null) {
-                    if (!(tvAritstTwo.getText().toString()).equals(artist)) {
-                        tvAritstTwo.setText(artist);              
-                    }
-                    tvAritstTwo.setSelected(true);
-                }                   
-            }
+            setTrack(idleTitle, idleSecond);
             mLauncher.requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
         }
     };
@@ -695,14 +676,51 @@ final class LauncherMusicWidget {
                 }
                 mId3Pic = cover;
                 mId3Read = true;
-                Object[] a = mLastRefresh;
-                if (a != null) {
-                    refreshMusic.onRefresh((int[]) a[0], (long[]) a[1], (float[]) a[2],
-                            (String[]) a[3], (byte[]) a[4], (String) a[5]);
-                }
+                redrawLastRefresh();
             });
         });
         return false;
+    }
+
+    private void redrawLastRefresh() {
+        Object[] a = mLastRefresh;
+        if (a != null) {
+            refreshMusic.onRefresh((int[]) a[0], (long[]) a[1], (float[]) a[2],
+                    (String[]) a[3], (byte[]) a[4], (String) a[5]);
+        }
+    }
+
+    /**
+     * Counts how long the session has reported no duration under the same title and answers
+     * whether that makes it a YouTube live stream. While a YouTube video may still be only at its
+     * start (duration 0 for a moment), draws again once the confirmation time is over: YouTube
+     * will not necessarily send another update by itself.
+     */
+    private boolean trackZeroDuration(long totalProgress, String title) {
+        if (totalProgress > 0) {
+            mZeroDurationKey = null;
+            cancelLiveConfirm();
+            return false;
+        }
+        String key = activeController + "\n" + title;
+        long now = SystemClock.elapsedRealtime();
+        if (!key.equals(mZeroDurationKey)) {
+            mZeroDurationKey = key;
+            mZeroDurationSinceMs = now;
+        }
+        long zeroFor = now - mZeroDurationSinceMs;
+        boolean live = MusicWidgetText.isYoutubeLive(activeController, totalProgress, zeroFor);
+        cancelLiveConfirm();
+        if (!live && activeController != null
+                && MusicWidgetText.YOUTUBE_PACKAGES.contains(activeController)) {
+            // A little over, so the redraw does not land just short of the limit
+            mLauncher.mHandler.postDelayed(mLiveConfirm, MusicWidgetText.LIVE_CONFIRM_MS - zeroFor + 20L);
+        }
+        return live;
+    }
+
+    private void cancelLiveConfirm() {
+        mLauncher.mHandler.removeCallbacks(mLiveConfirm);
     }
 
     private static final ExecutorService ID3_READER = Executors.newSingleThreadExecutor(r -> {
@@ -880,36 +898,65 @@ final class LauncherMusicWidget {
     }
 
     void showMusicTitle(String title) {
-        TextView[] views = { this.tvMusicName, this.tvMusicNameTwo };
-        for (TextView view : views) {
-            if (view == null) {
-                continue;
-            }
-            if (title.isEmpty()) {
-                view.setText(R.string.music_name);
-            } else if (!view.getText().toString().equals(title)) {
-                view.setText(title);
-            } else if (mediaSource != null && !mediaSource.equals(mLauncher.helpers.returnMediaSourcePre())) {
-                // restarts the marquee when the source changed but the text did not
-                mLauncher.helpers.setMediaSourcePre(mediaSource);
-                view.setText("\u0020" + title + "\u0020");
-            }
-            view.setSelected(true);
-        }
+        mTitle = title == null ? "" : title;
+        render();
     }
 
     void showMusicArtist(String artist) {
-        TextView[] views = { this.tvAritst, this.tvAritstTwo };
-        for (TextView view : views) {
-            if (view == null) {
-                continue;
+        mSecond = artist == null ? "" : artist;
+        render();
+    }
+
+    /** Sets both lines at once and draws them (one render instead of two). */
+    void setTrack(String title, String second) {
+        mTitle = title == null ? "" : title;
+        mSecond = second == null ? "" : second;
+        render();
+    }
+
+    /**
+     * The only place that writes the four text views. Normal mode: title above, artist below (the
+     * placeholder for either that is missing). One-line mode of a small widget: "artist \u2013 title"
+     * on the first line and the second one gone.
+     */
+    void render() {
+        renderPair(tvMusicName, tvAritst, mHomeCompact);
+        renderPair(tvMusicNameTwo, tvAritstTwo, mBarCompact);
+    }
+
+    private void renderPair(TextView first, TextView second, boolean compact) {
+        if (first == null && second == null) {
+            return;
+        }
+        String firstText;
+        String secondText = null;
+        if (compact) {
+            firstText = MusicWidgetText.compactLine(mTitle, mSecond,
+                    mLauncher.getString(R.string.music_name));
+        } else {
+            firstText = mTitle.isEmpty() ? mLauncher.getString(R.string.music_name) : mTitle;
+            secondText = mSecond.isEmpty() ? mLauncher.getString(R.string.music_author) : mSecond;
+        }
+        if (first != null) {
+            if (!first.getText().toString().equals(firstText)) {
+                first.setText(firstText);
+            } else if (mediaSource != null && !mediaSource.equals(mLauncher.helpers.returnMediaSourcePre())) {
+                // restarts the marquee when the source changed but the text did not
+                mLauncher.helpers.setMediaSourcePre(mediaSource);
+                first.setText("\u0020" + firstText + "\u0020");
             }
-            if (artist.isEmpty()) {
-                view.setText(R.string.music_author);
-            } else if (!view.getText().toString().equals(artist)) {
-                view.setText(artist);
+            first.setSelected(true);
+        }
+        if (second != null) {
+            if (compact) {
+                second.setVisibility(View.GONE);
+            } else {
+                second.setVisibility(View.VISIBLE);
+                if (!second.getText().toString().equals(secondText)) {
+                    second.setText(secondText);
+                }
+                second.setSelected(true);
             }
-            view.setSelected(true);
         }
     }
 
@@ -1098,6 +1145,7 @@ final class LauncherMusicWidget {
             if (mLauncher.getCustomView(Config.WS_Music) != null) {
                 mLauncher.getCustomView(Config.WS_Music).setOnClickListener(mLauncher);
             }
+            render();
         }
     }
 
@@ -1118,6 +1166,7 @@ final class LauncherMusicWidget {
             if (musicWidget != null) {
                 musicWidget.setOnClickListener(mLauncher);
             }
+            render();
         }
     }
 
