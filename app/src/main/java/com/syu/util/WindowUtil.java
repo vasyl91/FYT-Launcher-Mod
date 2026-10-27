@@ -2173,7 +2173,7 @@ public class WindowUtil {
             helpers = new Helpers();
         }
 
-        SystemProperties.set("persist.syu.launcher.haspip", "true");
+        setPersistentProperty("persist.syu.launcher.haspip", "true");
 
         if (currentScreen == pipScreen && launcher.mAppsCustomizeTabHost != null
                 && !helpers.allAppsVisibility(launcher.mAppsCustomizeTabHost.getVisibility())) {
@@ -2210,7 +2210,7 @@ public class WindowUtil {
                 editor.apply();
 
                 setPinnedPipBounds(pipKey, screenKey);         
-                SystemProperties.set("persist.launcher.packagename", packageName);
+                setPersistentProperty("persist.launcher.packagename", packageName);
                 AppPackageName = packageName; 
                 forceStopPinnedPipApp();
                 
@@ -2221,7 +2221,7 @@ public class WindowUtil {
                             + " outside the pinned stack, also shown in a window pane, not restarted");
                 }
                 setPinnedPipBounds(pipKey, screenKey);         
-                SystemProperties.set("persist.launcher.packagename", packageName);
+                setPersistentProperty("persist.launcher.packagename", packageName);
                 AppPackageName = packageName; 
                 startPinnedPip(packageName); 
             }
@@ -2437,6 +2437,18 @@ public class WindowUtil {
             Log.i(TAG, "removePinnedPip() pane: dismissed");
         } catch (Throwable t) {
             Log.w(TAG, "removePinnedPip() pane: dismiss failed", t);
+        }
+    }
+
+    /**
+     * SystemProperties.set() of a persist.* property, left out when it holds the value already.
+     * init writes the file of the persistent properties again for every set of one, also with the
+     * same value, and the caller waits for that: openAsPinnedPip() set two of them, unchanged, on
+     * every return to the PiP's page, before its start.
+     */
+    private static void setPersistentProperty(String key, String value) {
+        if (!value.equals(SystemProperties.get(key, ""))) {
+            SystemProperties.set(key, value);
         }
     }
 
