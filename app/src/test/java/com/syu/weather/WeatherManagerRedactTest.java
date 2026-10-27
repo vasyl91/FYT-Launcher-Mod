@@ -3,6 +3,7 @@ package com.syu.weather;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,16 @@ class WeatherManagerRedactTest {
         assertEquals("x?appid=***", WeatherManager.redactUrl("x?appid=SECRET"));
         assertEquals("x?units=metric&appid=***&lat=1.00", WeatherManager.redactUrl("x?units=metric&appid=SECRET&lat=1"));
         assertFalse(WeatherManager.redactUrl("a Network error: https://h/p?appid=SECRET - timeout").contains("SECRET"));
+    }
+
+    @Test
+    void theRealRequestUrlNeverShowsTheKey() {
+        // The constant itself, so that a change of the URL format cannot uncover the key
+        String url = WeatherManager.OPEN_WEATHER_CURRENT_URL + "&lat=52.123&lon=16.987";
+        assertTrue(url.contains(WeatherManager.OPEN_WEATHER_APPID));
+        assertFalse(WeatherManager.redactUrl(url).contains(WeatherManager.OPEN_WEATHER_APPID));
+        assertFalse(WeatherManager.redactUrl("Network error: " + url + " - " + url)
+                .contains(WeatherManager.OPEN_WEATHER_APPID));
     }
 
     @Test

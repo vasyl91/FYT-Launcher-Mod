@@ -688,24 +688,27 @@ public class WeatherManager {
         // and a fresh TLS handshake every time.
         OkHttpClient client = httpClient();
 
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Accept", "*/*")
-                .addHeader("Connection", "keep-alive")
-                .addHeader("Content-Type", "application/json;charset=UTF-8")
-                .addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)")
-                .build();
+        try {
+            // Built inside the try: a URL that cannot be parsed throws an IllegalArgumentException
+            // whose message is the URL itself (key included), and it would reach the caller's log
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("Accept", "*/*")
+                    .addHeader("Connection", "keep-alive")
+                    .addHeader("Content-Type", "application/json;charset=UTF-8")
+                    .addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)")
+                    .build();
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    Log.w(TAG, "HTTP error: " + response.code() + " for URL: " + redactUrl(url));
+                    return null;
+                }
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                Log.w(TAG, "HTTP error: " + response.code() + " for URL: " + redactUrl(url));
+                if (response.body() != null) {
+                    return response.body().string();
+                }
                 return null;
             }
-            
-            if (response.body() != null) {
-                return response.body().string();
-            }
-            return null;
         } catch (Exception e) {
             Log.e(TAG, "Network error: " + redactUrl(url) + " - " + redactUrl(e.getMessage()));
             return null;
