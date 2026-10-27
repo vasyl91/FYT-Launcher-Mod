@@ -1884,7 +1884,6 @@ public final class LogcatWorker {
         if (line.contains("gralloc")) return false;
         if (line.contains("ResourcesManager")) return false;
         if (line.contains("OpenGLRenderer")) return false;
-        if (line.contains("StrictMode")) return false;
         return !line.contains("Unisoc_Location");
     }
 

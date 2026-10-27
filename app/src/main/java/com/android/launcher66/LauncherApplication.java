@@ -224,9 +224,7 @@ public class LauncherApplication extends Application {
             StockSources.init(this);
             MusicService.startSyuMedia(this);
         }
-        if (BuildConfig.DEBUG) {
-            enableStrictMode();
-        }
+        enableStrictMode();
         // Keeps the process up for WakeDetection, see there. Two binder calls (resolveService,
         // startService), so off the main thread: at a cold boot they could block it during the
         // boot-time stall (see ColdStart).
@@ -282,9 +280,7 @@ public class LauncherApplication extends Application {
         CrashHandler.getInstance(getApplicationContext());
         sHandler = new Handler(Looper.getMainLooper());
         initStaticFields();
-        if (BuildConfig.DEBUG) {
-            enableStrictMode();
-        }
+        enableStrictMode();
     }
 
     /** The system services and resources this class's static helpers read; in every process. */
@@ -301,6 +297,12 @@ public class LauncherApplication extends Application {
         sRootView = new View(this);
     }
 
+    /**
+     * Logs what StrictMode finds (disk or network on a thread that must not, leaked SQLite objects
+     * and closables) and does nothing else: no penalty ever ends the process. It runs in release
+     * builds too, so that a capture from an owner's device shows the same violations a debug build
+     * does; the price is a stack trace per violation, written to the log only.
+     */
     private void enableStrictMode() {
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .detectDiskReads()
