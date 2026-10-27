@@ -119,6 +119,7 @@ import com.android.launcher66.settings.BottomBarDimensions;
 import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.FabOverlayService;
+import com.android.launcher66.settings.ForegroundAppTracker;
 import com.android.launcher66.settings.FytRating;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
@@ -2881,6 +2882,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
         AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
         super.onPause();
+        // The 7870's ROM pauses and resumes the launcher six times in the 16 s after a wake (capture
+        // 26-10-2026 19:45:55); this says what took the screen each time. The app is the one
+        // ForegroundAppTracker saw last, which needs no query here.
+        long sinceWake = WakeDetection.msSinceWake();
+        if (sinceWake >= 0L && sinceWake <= HomeLayoutRecovery.WAKE_HOME_RECOVERY_WINDOW_MS) {
+            String front = ForegroundAppTracker.lastKnownPackage();
+            Log.i(TAG, "onPause " + sinceWake / 1000L + " s after the wake, in front: "
+                    + (front != null ? front : "unknown"));
+        }
         allowPip = false;
         cleanWidgetBar();
         if (mWorkspace != null) {

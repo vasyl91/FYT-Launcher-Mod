@@ -230,6 +230,11 @@ public final class ForegroundAppTracker {
         report(context, packageName);
     }
 
+    /** The app last seen in front, null while none has been (main thread; no query is made). */
+    public static String lastKnownPackage() {
+        return sLastPackage;
+    }
+
     /** Main thread: tells CanbusService about the app in front, when it changed. */
     private static void report(Context context, String packageName) {
         if (packageName == null || packageName.equals(sLastPackage)) {

@@ -24,7 +24,9 @@ import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.ServiceIntentGate;
 import com.android.launcher66.perf.BaselineProfileCompiler;
 import com.android.recycler.AppListDialogFragment;
+import com.syu.util.HostAwait;
 import com.syu.util.WindowHost;
+import com.syu.util.WindowHostVdClient;
 import com.syu.util.WindowUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -66,6 +68,14 @@ public final class WakeDetection implements WakeSignals.Listener {
     private static final long DISPLAY_ON_DEBOUNCE_MS = 2500L;
     public static final String ACTION_WAKE_REFRESH = "com.android.launcher66.action.WAKE_REFRESH";
     private long lastDisplayOnHandledMs = 0L;
+    /** elapsedRealtime of the last wake that was handled, 0 before the first one; see msSinceWake(). */
+    private static volatile long sWakeElapsedMs;
+
+    /** Milliseconds since the last wake was handled, -1 when there has been none in this process. */
+    public static long msSinceWake() {
+        long at = sWakeElapsedMs;
+        return at > 0L ? SystemClock.elapsedRealtime() - at : -1L;
+    }
 
     /**
      * With LAUNCHER_HOME_WAKE on, the app com.syu.ms opens again at the wake (see
@@ -125,6 +135,49 @@ public final class WakeDetection implements WakeSignals.Listener {
      * device has already gone back to sleep.
      */
     private int pipEnsureGeneration = 0;
+
+    /**
+     * The wait of the ensure loop for a VD host that is on its way, one per generation; see
+     * hostWait(). Waiting does not use up an attempt: before this, all five went on a launcher
+     * whose panes had no host to run them (openPip() returns without a word then), and "gave up
+     * after 5 attempts" followed on the 7870, where Shizuku comes minutes after a boot.
+     */
+    private HostAwait.Handle pipHostWait;
+    private int pipHostWaitGeneration = -1;
+    private int pipNoHostLoggedGeneration = -1;
+
+    /** What the ensure loop does about the VD host of the panes. */
+    enum HostWait {
+        /** Not about the host: panes that are not VD ones, or a host that is there. */
+        NONE,
+        /** The panes await a host that is on its way: wait for it, without using an attempt. */
+        WAIT,
+        /** The panes await a host and none is expected (no Shizuku, no module): nothing to do. */
+        NO_HOST
+    }
+
+    static HostWait hostWait(boolean vdPanesConfigured, boolean panesAwaitHost, boolean hostExpected) {
+        if (!vdPanesConfigured || !panesAwaitHost) return HostWait.NONE;
+        return hostExpected ? HostWait.WAIT : HostWait.NO_HOST;
+    }
+
+    /**
+     * Whether the settings have a pane that is a VD view (and so needs the host): the dual, first
+     * and second ones, and the third and fourth ones unless they are pinned (a pinned one is a
+     * system window, see isPipUp()).
+     */
+    static boolean vdPanesConfigured(boolean dual, boolean first, boolean second,
+                                     boolean third, boolean thirdPinned,
+                                     boolean fourth, boolean fourthPinned) {
+        return dual || first || second || (third && !thirdPinned) || (fourth && !fourthPinned);
+    }
+
+    private void cancelPipHostWait() {
+        if (pipHostWait != null) {
+            pipHostWait.cancel();
+            pipHostWait = null;
+        }
+    }
 
     /** At most one repair pass per wake -- a repair loop would be worse than the symptom. */
     private boolean repairUsed = false;
@@ -229,6 +282,7 @@ public final class WakeDetection implements WakeSignals.Listener {
             LogcatWorker.get().startForWake(LauncherApplication.sApp);
         }
         lastDisplayOnHandledMs = now;
+        sWakeElapsedMs = now;
         sAsleep = false;
         repairUsed = false;
         coldResetUsed = false;
@@ -296,6 +350,7 @@ public final class WakeDetection implements WakeSignals.Listener {
         } else {
             // PiP disabled in settings -- make sure nothing from an earlier wake reopens it.
             pipEnsureGeneration++;
+            cancelPipHostWait();
         }
 
         boolean widgetBar = prefs.getBoolean(Keys.WIDGET_BAR, false);
@@ -345,6 +400,7 @@ public final class WakeDetection implements WakeSignals.Listener {
         // Kill any ensure loop still in flight. Without this a wake followed quickly by a
         // sleep leaves a queued openPip() that fires with the screen already off.
         pipEnsureGeneration++;
+        cancelPipHostWait();
         // Same for everything else the last wake queued (widget bar, night mode, ...).
         // Bumped before anything is posted below, so that the next wake cancels it in turn.
         final int sleepGen = ++wakeGeneration;
@@ -662,6 +718,7 @@ public final class WakeDetection implements WakeSignals.Listener {
      */
     public void restartPip() {
         final int generation = ++pipEnsureGeneration;
+        cancelPipHostWait();
         pipEnsureLauncherWaits = 0;
         pipEnsureRebuildWaits = 0;
         schedulePipEnsureAttempt(generation, 0);
@@ -683,7 +740,16 @@ public final class WakeDetection implements WakeSignals.Listener {
 
     private void schedulePipEnsureAttempt(final int generation, final int attempt, final long delayOverrideMs) {
         if (attempt >= PIP_ENSURE_DELAYS_MS.length) {
-            Log.w(TAG, "PiP ensure: gave up after " + attempt + " attempts");
+            // The last attempt was only made, not looked at: the result is read after its delay,
+            // without a new openPip(), and only then is the loop said to have ended.
+            handler.postDelayed(() -> {
+                if (generation != pipEnsureGeneration || !isPipExpected()) return;
+                if (isPipUp() && isPipContentHealthy()) {
+                    Log.i(TAG, "PiP ensure: healthy after " + attempt + " retries");
+                } else {
+                    Log.w(TAG, "PiP ensure: gave up after " + attempt + " attempts");
+                }
+            }, PIP_ENSURE_DELAYS_MS[PIP_ENSURE_DELAYS_MS.length - 1]);
             return;
         }
         final long delay = delayOverrideMs >= 0 ? delayOverrideMs : PIP_ENSURE_DELAYS_MS[attempt];
@@ -760,6 +826,8 @@ public final class WakeDetection implements WakeSignals.Listener {
                 return;
             }
 
+            if (waitForHost(generation, attempt)) return;
+
             if (Launcher.getLauncher() == null) {
                 Log.i(TAG, "PiP ensure: launcher not available yet (attempt " + attempt + ")");
             } else {
@@ -773,6 +841,55 @@ public final class WakeDetection implements WakeSignals.Listener {
             schedulePipEnsureAttempt(generation, attempt + 1);
         }, delay);
     }
+
+    /**
+     * The panes are VD views with no host yet: waits for it when one is on its way (an event, one
+     * wait per generation, WAIT_WAKE_MS), and goes on with the same attempt when it has attached.
+     * Past the limit, or with no host to expect, the loop ends with one line: the panes come up
+     * by themselves when a host attaches (WindowHostVdClient re-opens them). The 7862 (system),
+     * the Redmi and the A55 (host attached) never get here: panesAwaitHost() is false for them.
+     *
+     * @return whether the loop stops here for this round
+     */
+    private boolean waitForHost(final int generation, final int attempt) {
+        SharedPreferences prefs = getPrefs();
+        boolean configured = vdPanesConfigured(
+                prefs.getBoolean(Keys.PIP_DUAL, false),
+                prefs.getBoolean(Keys.PIP_FIRST, false),
+                prefs.getBoolean(Keys.PIP_SECOND, false),
+                prefs.getBoolean(Keys.PIP_THIRD, false), prefs.getBoolean(Keys.PIP_THIRD_MODE, false),
+                prefs.getBoolean(Keys.PIP_FOURTH, false), prefs.getBoolean(Keys.PIP_FOURTH_MODE, false));
+        boolean awaiting = WindowHostVdClient.panesAwaitHost();
+        HostWait wait = hostWait(configured, awaiting, awaiting && HostAwait.isExpected(app));
+        if (wait == HostWait.NONE) return false;
+        if (wait == HostWait.NO_HOST) {
+            if (pipNoHostLoggedGeneration != generation) {
+                pipNoHostLoggedGeneration = generation;
+                Log.i(TAG, "PiP ensure: no VD host and none expected (no Shizuku or module): the panes"
+                        + " need one, nothing to try");
+            }
+            return true;
+        }
+        if (pipHostWaitGeneration == generation) return true;   // already waiting
+        pipHostWaitGeneration = generation;
+        cancelPipHostWait();
+        pipHostWait = HostAwait.await(HostAwait.WAIT_WAKE_MS, "PiP ensure", attached -> {
+            pipHostWait = null;
+            if (generation != pipEnsureGeneration) return;
+            if (attached) {
+                // The attach has WindowHostVdClient open the missing panes first; the loop then
+                // looks at how healthy they are.
+                schedulePipEnsureAttempt(generation, attempt, PIP_ENSURE_AFTER_HOST_MS);
+            } else {
+                Log.i(TAG, "PiP ensure: no VD host within " + HostAwait.WAIT_WAKE_MS / 1000L
+                        + " s; the panes come up when it attaches");
+            }
+        });
+        return true;
+    }
+
+    /** After the host attached: lets WindowHostVdClient's own re-opening of the panes go first. */
+    private static final long PIP_ENSURE_AFTER_HOST_MS = 500L;
 
     /** Is PiP supposed to be on screen at all? */
     private boolean isPipExpected() {
