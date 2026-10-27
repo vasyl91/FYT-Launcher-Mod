@@ -267,6 +267,16 @@ public final class LogcatWorker {
     /** A wake came while the capture before it was ending; see startForWake(). Guarded by lock. */
     private boolean wakeStartPending;
 
+    /**
+     * Lines for the worker to write before the next line it reads: they come from the main thread
+     * (a wake extending the capture, a clock change), and the file is the worker's alone.
+     */
+    private final java.util.concurrent.ConcurrentLinkedQueue<String> pendingNotes =
+            new java.util.concurrent.ConcurrentLinkedQueue<>();
+    /** The clock as the log lines show it, minus uptime (see clockDisplayOffsetMs()), when last looked at. */
+    private volatile long clockDisplayOffsetMs;
+    private BroadcastReceiver captureClockReceiver; // main thread only
+
     /** A finished capture whose file name may still show a wrong clock; see fixNameForClock(). */
     private static final class NameCheck {
         File file;
@@ -346,6 +356,8 @@ public final class LogcatWorker {
             drainTimedOut = false;
             awaitingHost = false;
             upgradeRequested = false;
+            pendingNotes.clear();
+            clockDisplayOffsetMs = clockDisplayOffsetMs();
             cutoffWallMs = 0L;
             running = true;
             finished.set(false);
@@ -362,6 +374,7 @@ public final class LogcatWorker {
         helpers.setLogcatRunBoolean(true);
 
         mainHandler.post(this::startCountdown);
+        mainHandler.post(this::registerCaptureClockReceiver);
         // Hard stop: unblocks reader.readLine() when the log is quiet.
         mainHandler.postDelayed(deadlineRunnable, timeoutSeconds * 1000L);
     }
@@ -383,6 +396,7 @@ public final class LogcatWorker {
                 if (running && !draining && now < deadlineElapsedMs) {
                     deadlineElapsedMs = Math.max(deadlineElapsedMs, now + timeoutSeconds * 1000L);
                     Log.i(TAG, "startForWake(): capture running, extended over the wake");
+                    pendingNotes.add(wakeExtendedLine(SystemClock.elapsedRealtime() / 1000L));
                     mainHandler.removeCallbacks(deadlineRunnable);
                     mainHandler.postDelayed(deadlineRunnable, deadlineElapsedMs - now);
                     startCountdown();
@@ -461,8 +475,7 @@ public final class LogcatWorker {
             Log.i(TAG, "Opening log file: " + logFile.getAbsolutePath());
 
             fileWriter = new BufferedWriter(new FileWriter(logFile, false), 8192);
-            writeLine("===== STREAM (PID=" + myPid + ", buffer=" + STREAM_BUFFER
-                    + ", timeout=" + timeoutSeconds + "s, mode=" + mode + ") =====");
+            writeLine(streamHeader(myPid, STREAM_BUFFER, timeoutSeconds, mode, trigger));
             writeLine("===== device=" + Build.MANUFACTURER + " " + Build.MODEL
                     + ", android=" + Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ") =====");
             fileWriter.flush();
@@ -600,6 +613,7 @@ public final class LogcatWorker {
                         if (!sinceFlagThisRun && sinceMs > 0L && isOlderThan(lineFormat, line, sinceMs)) continue;
                         if (!fullLog && !shouldWriteAppLine(line)) continue;
 
+                        if (!pendingNotes.isEmpty()) flushPendingNotes();
                         fileWriter.write(line);
                         fileWriter.write('\n');
                         lastWritten = line;
@@ -625,6 +639,7 @@ public final class LogcatWorker {
                 proc = null;
                 logcatProcess = null;
 
+                flushPendingNotes();
                 writeLine("----- logcat ended. exit=" + exit + " lines=" + linesThisRun + " -----");
                 fileWriter.flush();
 
@@ -761,6 +776,7 @@ public final class LogcatWorker {
                     : "Logcat: " + (error != null ? error : "no log file was created");
 
             Log.i(TAG, "runLogging finished success=" + success + " lines=" + linesWritten);
+            mainHandler.post(this::unregisterCaptureClockReceiver);
             finishOnce(success, message);
 
             // After the toast: bring over what earlier captures had to leave in the app's own
@@ -1584,6 +1600,82 @@ public final class LogcatWorker {
         String hms = String.format(Locale.US, "%02d:%02d:%02d",
                 rest / 3_600_000L, (rest / 60_000L) % 60L, (rest / 1000L) % 60L);
         return (offByMs > 0 ? "behind by " : "ahead by ") + (days > 0 ? days + "d " : "") + hms;
+    }
+
+    // ---------------------------------------------------------------- notes inside the file
+
+    static String streamHeader(int pid, String buffer, int timeoutSeconds, Mode mode, Trigger trigger) {
+        return "===== STREAM (PID=" + pid + ", buffer=" + buffer + ", timeout=" + timeoutSeconds
+                + "s, mode=" + mode + ", trigger=" + trigger.label + ") =====";
+    }
+
+    static String wakeExtendedLine(long uptimeSeconds) {
+        return "===== wake at " + uptimeSeconds + " s of uptime: capture extended =====";
+    }
+
+    /** shiftMs: how far the displayed time jumped, forward positive. */
+    static String clockChangedLine(long shiftMs, long uptimeSeconds) {
+        return "===== CLOCK CHANGED (was " + describeOffset(shiftMs) + ") at " + uptimeSeconds
+                + " s of uptime: the lines below use the new time =====";
+    }
+
+    /** A shift smaller than this is the clock being nudged, not a jump worth a line. */
+    private static final long CLOCK_NOTE_MIN_SHIFT_MS = 2000L;
+
+    /**
+     * The time the log lines show (logcat prints local time) minus the uptime: constant while the
+     * clock runs, and it moves when the clock or the time zone is set.
+     */
+    private static long clockDisplayOffsetMs() {
+        long now = System.currentTimeMillis();
+        return now + java.util.TimeZone.getDefault().getOffset(now) - SystemClock.elapsedRealtime();
+    }
+
+    private void flushPendingNotes() throws Exception {
+        String note;
+        while ((note = pendingNotes.poll()) != null) {
+            writeLine(note);
+        }
+    }
+
+    /**
+     * While a capture runs, a time or time zone set (FYT sets the clock minutes after the boot, the
+     * 7870 jumped +2d16h or -1 h in the first minute) is noted at its place in the file; the
+     * readers of the log had to guess where the times change. The receiver of a finished capture
+     * (see ensureClockReceiver()) renames the file and stays as it is.
+     */
+    private void registerCaptureClockReceiver() {   // main thread
+        Context ctx = appContext;
+        if (captureClockReceiver != null || ctx == null || !running) return;
+        captureClockReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long offset = clockDisplayOffsetMs();
+                long shift = offset - clockDisplayOffsetMs;
+                clockDisplayOffsetMs = offset;
+                if (Math.abs(shift) >= CLOCK_NOTE_MIN_SHIFT_MS) {
+                    pendingNotes.add(clockChangedLine(shift, SystemClock.elapsedRealtime() / 1000L));
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_CHANGED);
+        filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+        try {
+            ctx.registerReceiver(captureClockReceiver, filter);
+        } catch (Throwable t) {
+            Log.w(TAG, "Cannot listen for clock changes during the capture: " + t);
+            captureClockReceiver = null;
+        }
+    }
+
+    private void unregisterCaptureClockReceiver() {   // main thread
+        Context ctx = appContext;
+        if (captureClockReceiver != null && ctx != null) {
+            try {
+                ctx.unregisterReceiver(captureClockReceiver);
+            } catch (IllegalArgumentException ignored) {}
+        }
+        captureClockReceiver = null;
     }
 
     // ---------------------------------------------------------------- main thread stalls
