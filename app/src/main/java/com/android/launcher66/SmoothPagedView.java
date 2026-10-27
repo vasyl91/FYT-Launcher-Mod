@@ -60,6 +60,7 @@ public abstract class SmoothPagedView extends PagedView {
             this.mBaseLineFlingVelocity = 2500.0f;
             this.mFlingVelocityInfluence = 0.4f;
             this.mScrollInterpolator = new OvershootInterpolator();
+            this.mScrollerInterpolator = this.mScrollInterpolator;
             this.mScroller = new Scroller(getContext(), this.mScrollInterpolator);
         }
     }

@@ -2819,6 +2819,8 @@ public class Workspace extends SmoothPagedView
 
     public void onWorkspaceDestroy() {
         mLauncher = null;
+        Choreographer.getInstance().removeFrameCallback(mPaneFrame);
+        mPaneFramePosted = false;
         // Nothing queued by this workspace may run once its Launcher is gone: the delayed strip and
         // PiP restarts read mLauncher, which is null from here on.
         stripHandler.removeCallbacksAndMessages(null);
@@ -3724,10 +3726,52 @@ public class Workspace extends SmoothPagedView
         }
     }
 
+    /**
+     * Moves the PiP panes in the ANIMATION phase of every frame the pages move in, with the
+     * position the pages will have in the draw of that frame (PagedView.scrollXForThisFrame()).
+     *
+     * The panes used to follow only from the draw (computeScroll(), screenScrolled()), which is the
+     * TRAVERSAL phase. updateViewLayout() called there schedules the pane window's pass for the
+     * next frame, because Choreographer takes the callbacks of a phase at the start of the frame:
+     * the pane window got its position a frame after the page was drawn, and WindowManager applies
+     * it later still. At 120 Hz and a quick snap that is a visible gap, the pane trails the page.
+     * Called in the ANIMATION phase, the pass of the pane window falls into the same frame as the
+     * draw of the pages.
+     *
+     * The position is predicted, not read from mScroller.computeScrollOffset(): that would finish
+     * the scroller in the last frame, the draw would skip its closing scrollTo(), and the page would
+     * stop short of its place. The draws still push the position as before; for the same value the
+     * equality filter in WindowUtil makes that a no-op, and a scroll the prediction does not cover
+     * (a fling) goes through them as it did.
+     *
+     * On the Galaxy A55 the panes were already faster with the window animations off than with them
+     * on, and still behind the pages; this is the part of the delay that remained.
+     */
+    private boolean mPaneFramePosted = false;
+    private final Choreographer.FrameCallback mPaneFrame = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            mPaneFramePosted = false;
+            if (!isPageMoving() || !isAttachedToWindow()) {
+                return; // the callback ends with the scroll
+            }
+            WindowUtil.updatePipPositionsForScroll(scrollXForThisFrame());
+            postPaneFrame();
+        }
+    };
+
+    private void postPaneFrame() {
+        if (!mPaneFramePosted) {
+            mPaneFramePosted = true;
+            Choreographer.getInstance().postFrameCallback(mPaneFrame);
+        }
+    }
+
     protected void onPageBeginMoving() {
         super.onPageBeginMoving();
         Log.i(TAG, "onPageBeginMoving()");
         WindowUtil.onPagesBeginMoving();
+        postPaneFrame();
         if (getChildCount() > 1) {
             WindowUtil.removePinnedPip();
         }
