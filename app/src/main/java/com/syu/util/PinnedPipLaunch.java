@@ -74,6 +74,17 @@ public final class PinnedPipLaunch {
     }
 
     /**
+     * Whether hiding the pinned stack has to wait for the app's start to settle: only after a cold
+     * start, one whose process was not running, and only within settleMs of it. Until such a
+     * process is up the stack has no resumed activity to pause, and hidden then it left the
+     * launcher without the resumed top (log A). An app whose process runs is resumed by the start
+     * itself (its state is set when the start is handled), so its stack is hidden at once.
+     */
+    public static boolean hideMustWait(boolean coldStart, long now, long startedAt, long settleMs) {
+        return coldStart && isSettling(now, startedAt, settleMs);
+    }
+
+    /**
      * Whether a com.lsec.pipdie at now is the answer to the launcher's own force-stop of the pinned
      * PiP app at forceStoppedAt (an uptime, 0 when there was none): it came less than windowMs
      * after it.

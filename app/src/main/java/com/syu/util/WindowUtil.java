@@ -1737,8 +1737,12 @@ public class WindowUtil {
         paneMoveDelayMaxNs = 0L;
     }
 
+    /** When the pages last stopped (uptime), for the pinned PiP's start in the log; 0 if never. */
+    private static long sPagesStoppedUptimeMs;
+
     /** The pages have settled. */
     public static void onPagesSettled() {
+        sPagesStoppedUptimeMs = SystemClock.uptimeMillis();
         if (!pagesMoving) return;
         pagesMoving = false;
         if (paneMoves == 0) return;
@@ -2042,10 +2046,14 @@ public class WindowUtil {
     /** When the pinned PiP app was last started (uptime); 0 if never. Main thread. */
     private static long sPinnedStartUptimeMs;
 
+    /** Whether the app's process was not running at that start. Main thread. */
+    private static boolean sPinnedColdStart;
+
     /**
-     * How long after its start the pinned PiP app is left alone by removePinnedPip(). A warm start
-     * of YouTube takes 0.4-0.5 s to the resumed top (log B: 51.422 to 51.948, 54.370 to 54.794), a
-     * cold one after a force-stop longer (log A: the process is bound 0.32 s after the start).
+     * How long after a cold start the pinned PiP app is left alone by removePinnedPip(): the
+     * process is bound 0.32 s after the start (log A) and the activity resumes after that. A warm
+     * start is not waited for, see PinnedPipLaunch.hideMustWait(): waiting for it as well kept the
+     * PiP on the screen 0.7-0.8 s into the swipe away (log 27-10-2026 23:55).
      */
     private static final long PINNED_START_SETTLE_MS = 1500L;
 
@@ -2277,6 +2285,9 @@ public class WindowUtil {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         SystemProperties.set("sys.lsec.force_pip", "true");
         if (intent.resolveActivity(LauncherApplication.sApp.getPackageManager()) != null) {
+            // Asked now, within the 100 ms below rather than on top of them: a binder call.
+            final boolean coldStart = !WindowHostActivityView.isProcessAlive(LauncherApplication.sApp,
+                    packageName);
             launcher.handler.postDelayed(() -> {
                 // Looked at when the start is due, not when it was asked for: the pages may have
                 // been swiped since (a restart waits a second first). onPageEndMoving() asks again.
@@ -2289,8 +2300,12 @@ public class WindowUtil {
                 // The newer start wins over a hide that was put off after the previous one.
                 launcher.handler.removeCallbacks(sHideAfterStart);
                 sPinnedStartUptimeMs = SystemClock.uptimeMillis();
+                sPinnedColdStart = coldStart;
                 try {
                     LauncherApplication.sApp.startActivity(intent);
+                    Log.i(TAG, "startPinnedPip(" + packageName + "): " + (coldStart ? "cold" : "warm")
+                            + " start, " + (sPinnedStartUptimeMs - sPagesStoppedUptimeMs)
+                            + " ms after the pages last stopped");
                 } catch (RuntimeException e) {
                     Log.w(TAG, "startPinnedPip(" + packageName + ") failed: " + e);
                 }
@@ -2392,10 +2407,11 @@ public class WindowUtil {
         if (userLayout) {
             long now = SystemClock.uptimeMillis();
             final Launcher launcher = Launcher.getLauncher();
-            if (launcher != null && PinnedPipLaunch.isSettling(now, sPinnedStartUptimeMs, PINNED_START_SETTLE_MS)) {
+            if (launcher != null && PinnedPipLaunch.hideMustWait(sPinnedColdStart, now,
+                    sPinnedStartUptimeMs, PINNED_START_SETTLE_MS)) {
                 // Hidden before its activity has resumed, the stack leaves the launcher without a
-                // resumed top (log A: forcehidden:true 0.3 s after the start, "Trying to pause when
-                // nothing is resumed"). One hide for all callers, once the app has had its time.
+                // resumed top (log A: forcehidden:true 0.3 s after a cold start, "Trying to pause
+                // when nothing is resumed"). One hide for all callers, once the app has had its time.
                 long hideAt = sPinnedStartUptimeMs + PINNED_START_SETTLE_MS;
                 launcher.handler.removeCallbacks(sHideAfterStart);
                 launcher.handler.postAtTime(sHideAfterStart, hideAt);

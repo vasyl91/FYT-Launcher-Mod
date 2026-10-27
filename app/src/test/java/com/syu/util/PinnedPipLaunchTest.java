@@ -74,6 +74,20 @@ class PinnedPipLaunchTest {
     }
 
     @Test
+    void theHideWaitsOnlyForAColdStartThatIsStillSettling() {
+        assertTrue(PinnedPipLaunch.hideMustWait(true, 1000, 500, 1500));    // log A
+        assertFalse(PinnedPipLaunch.hideMustWait(true, 2000, 500, 1500));   // settled
+        assertFalse(PinnedPipLaunch.hideMustWait(true, 100, 0, 1500));      // never started
+    }
+
+    @Test
+    void aWarmStartIsHiddenAtOnce() {
+        // Log 27-10-2026 23:55: swiped away 0.67-0.8 s after a warm start, hidden 0.7-0.8 s later.
+        assertFalse(PinnedPipLaunch.hideMustWait(false, 35908, 35241, 1500));
+        assertFalse(PinnedPipLaunch.hideMustWait(false, 35242, 35241, 1500));
+    }
+
+    @Test
     void aPipDieShortlyAfterTheLaunchersOwnForceStopIsItsAnswer() {
         assertTrue(PinnedPipLaunch.answersOwnForceStop(16804, 16650, 2000));  // log 27-10-2026 23:31
         assertTrue(PinnedPipLaunch.answersOwnForceStop(18649, 16650, 2000));  // 1999 ms after
