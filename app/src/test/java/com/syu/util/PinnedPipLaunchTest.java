@@ -74,6 +74,19 @@ class PinnedPipLaunchTest {
     }
 
     @Test
+    void aPipDieShortlyAfterTheLaunchersOwnForceStopIsItsAnswer() {
+        assertTrue(PinnedPipLaunch.answersOwnForceStop(16804, 16650, 2000));  // log 27-10-2026 23:31
+        assertTrue(PinnedPipLaunch.answersOwnForceStop(18649, 16650, 2000));  // 1999 ms after
+        assertFalse(PinnedPipLaunch.answersOwnForceStop(18650, 16650, 2000)); // exactly 2000 ms after
+        assertFalse(PinnedPipLaunch.answersOwnForceStop(60000, 16650, 2000));
+    }
+
+    @Test
+    void aPipDieWithoutAForceStopOfTheLauncherIsNotItsAnswer() {
+        assertFalse(PinnedPipLaunch.answersOwnForceStop(500, 0, 2000));
+    }
+
+    @Test
     void theStartIsAllowedOnlyOnItsPageWithTheDrawerClosedAndThePagesStill() {
         assertTrue(PinnedPipLaunch.mayStartNow(false, 1, 1, false));
         assertFalse(PinnedPipLaunch.mayStartNow(true, 1, 1, false));   // pages moving

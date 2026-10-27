@@ -8015,7 +8015,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override 
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "CloseSystemDialogsIntentReceiver");
-            if (mWorkspace != null) {
+            // FYT's framework sends com.lsec.pipdie whenever the pinned PiP app dies, also when the
+            // launcher has force-stopped it to start it again. That restart must not take the user
+            // away from the page the PiP is shown on: its start would then be refused there (log
+            // 27-10-2026 23:31: 16.804, 23.633, 32.588, each "not on page 2" later).
+            boolean ownPipRestart = "com.lsec.pipdie".equals(intent.getAction())
+                    && WindowUtil.pipDieFromOwnForceStop();
+            if (ownPipRestart) {
+                Log.i(TAG, "com.lsec.pipdie after the launcher's own restart of the pinned PiP app,"
+                        + " staying on the page");
+            } else if (mWorkspace != null) {
                 mWorkspace.moveToDefaultScreen(true);
             }
             Intent i = new Intent();

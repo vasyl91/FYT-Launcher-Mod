@@ -2049,6 +2049,25 @@ public class WindowUtil {
      */
     private static final long PINNED_START_SETTLE_MS = 1500L;
 
+    /** When the launcher last force-stopped the pinned PiP app itself (uptime); 0 if never. */
+    private static volatile long sOwnForceStopUptimeMs;
+
+    /**
+     * How long after the launcher's own force-stop a com.lsec.pipdie is taken for the answer to it.
+     * It came 0.03-0.3 s after it (log 27-10-2026 23:31: 32.556 to 32.588, 16.650 to 16.804,
+     * 23.349 to 23.633).
+     */
+    private static final long OWN_FORCE_STOP_PIPDIE_MS = 2000L;
+
+    /**
+     * Whether a com.lsec.pipdie arriving now answers the launcher's own force-stop of the pinned PiP
+     * app rather than an app that died by itself. FYT's framework sends it for both.
+     */
+    public static boolean pipDieFromOwnForceStop() {
+        return PinnedPipLaunch.answersOwnForceStop(SystemClock.uptimeMillis(), sOwnForceStopUptimeMs,
+                OWN_FORCE_STOP_PIPDIE_MS);
+    }
+
     public static void openPinnedPip() {
         if (WakeDetection.skipPipWork("openPinnedPip")) return;
         // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): the com.syu.music
@@ -2320,6 +2339,9 @@ public class WindowUtil {
      * and the app list, where nothing builds them again, and restartPinnedPipApp()'s cleanup left
      * them gone (log 27-10-2026 23:31: removed at 23.430, and the openPip() com.lsec.pipdie brings
      * found pipsAdded() still true at 23.914).
+     *
+     * <p>The time is noted for the com.lsec.pipdie the death brings: the launcher stays on its page
+     * for it, see pipDieFromOwnForceStop().
      */
     private static void forceStopPinnedPipApp() {
         if (AppPackageName != null && !AppPackageName.isEmpty()) {
@@ -2330,6 +2352,7 @@ public class WindowUtil {
             ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
             HomeFrontGuard.expectSystemLaunch(LauncherApplication.sApp,
                     Collections.singleton(AppPackageName), "pinned PiP restart");
+            sOwnForceStopUptimeMs = SystemClock.uptimeMillis();
             try {
                 Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
                 forceStopPackage.setAccessible(true);

@@ -74,6 +74,15 @@ public final class PinnedPipLaunch {
     }
 
     /**
+     * Whether a com.lsec.pipdie at now is the answer to the launcher's own force-stop of the pinned
+     * PiP app at forceStoppedAt (an uptime, 0 when there was none): it came less than windowMs
+     * after it.
+     */
+    public static boolean answersOwnForceStop(long now, long forceStoppedAt, long windowMs) {
+        return forceStoppedAt > 0 && now - forceStoppedAt < windowMs;
+    }
+
+    /**
      * Whether the pinned PiP may be started: not while the pages move (onPageEndMoving asks again),
      * only on the page it belongs to, and not over the app drawer.
      */
