@@ -488,7 +488,7 @@ public final class LogcatWorker {
             // Whether this capture may reach back to the boot is decided by when it started, not
             // by when the VD host came (Shizuku can take a minute or more after the boot).
             final long captureStartedAt = SystemClock.elapsedRealtime();
-            boolean wantsFullLog = LogcatSettings.fullLog(prefs);
+            boolean wantsFullLog = prefs.getBoolean(Keys.LOGCAT_FULL, false);
             boolean system = LauncherApplication.hasSystemPrivileges();
             boolean hostAttached = !system && wantsFullLog && HostProcess.isAvailable();
             // Without system privileges the VD host (root or Shizuku) reads the whole log. One that
@@ -512,7 +512,7 @@ public final class LogcatWorker {
             if (system || viaHost) {
                 fullLog = wantsFullLog;
                 // The boot log setting: only with both settings on.
-                bootLog = fullLog && LogcatSettings.bootLog(prefs);
+                bootLog = fullLog && prefs.getBoolean(Keys.BOOT_LOGCAT, false);
             }
             sViaHost = viaHost;
             writeLine(scopeLine(fullLog, viaHost));
@@ -551,7 +551,7 @@ public final class LogcatWorker {
                     fullLog = true;
                     usePidFlag = false;
                     sViaHost = true;
-                    bootLog = LogcatSettings.bootLog(prefs);
+                    bootLog = prefs.getBoolean(Keys.BOOT_LOGCAT, false);
                     syncLogdBufferSize(bootLog);
                     fromBoot = isBootCapture(bootLog, coldStart, mode, captureStartedAt);
                     sinceMs = upgradeSinceMs(fromBoot, captureSinceMs, captureBeganWallMs);
@@ -851,65 +851,25 @@ public final class LogcatWorker {
                             + " is read: the FYT VDHost module grows them before zygote");
                 }
             } else {
-                restoreLogdSizes(prefs, sViaHost);
+                List<String> restored = new ArrayList<>();
+                for (String prop : LOGD_SIZE_PROPS) {
+                    String key = beforeKey(prop);
+                    if (!prefs.contains(key)) continue;
+                    String before = prefs.getString(key, "");
+                    // Only if it is still the boot log's size: a size set since by someone else stays.
+                    if (BOOT_LOG_BUFFER_SIZE.equals(logdProp(prop))) {
+                        runQuietly("setprop", prop, before); // "" removes the property
+                        restored.add(prop + " " + displaySize(before));
+                    }
+                    prefs.edit().remove(key).apply();
+                }
+                if (!restored.isEmpty()) {
+                    Log.i(TAG, "Boot log off: logd buffers back to " + restored + " from the next boot on");
+                }
             }
         } catch (Throwable t) {
             Log.w(TAG, "logd buffer size not changed", t);
         }
-    }
-
-    /**
-     * Gives back the logd buffer sizes the boot log replaced, the ones saved under
-     * PREF_LOGD_SIZE_BEFORE. Not on the capture's state, so it also runs at the start of the
-     * process (see restoreLogdSizesIfOff()); viaHost says where its commands run.
-     */
-    private static void restoreLogdSizes(SharedPreferences prefs, boolean viaHost) {
-        List<String> restored = new ArrayList<>();
-        for (String prop : LOGD_SIZE_PROPS) {
-            String key = beforeKey(prop);
-            if (!prefs.contains(key)) continue;
-            String before = prefs.getString(key, "");
-            // Only if it is still the boot log's size: a size set since by someone else stays.
-            if (BOOT_LOG_BUFFER_SIZE.equals(logdProp(prop))) {
-                runCommand(new String[]{"setprop", prop, before}, null, viaHost); // "" removes the property
-                restored.add(prop + " " + displaySize(before));
-            }
-            prefs.edit().remove(key).apply();
-        }
-        if (!restored.isEmpty()) {
-            Log.i(TAG, "Boot log off: logd buffers back to " + restored + " from the next boot on");
-        }
-    }
-
-    /**
-     * At the start of the process: gives logd its own buffer sizes back when an earlier build
-     * or setting had the boot log enlarge them and it is not wanted now. The sizes were saved
-     * when they were enlarged, and are restored only at the start of a capture, so a release
-     * build that captures nothing would leave them at 8 MiB per buffer for good. Off the main
-     * thread (property reads, a command). As system the commands run here, through a VD host only
-     * with one attached; with neither the saved sizes stay for the next start.
-     */
-    public static void restoreLogdSizesIfOff(Context context) {
-        final Context ctx = context.getApplicationContext();
-        new Thread(() -> {
-            try {
-                SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(ctx);
-                boolean pending = false;
-                for (String prop : LOGD_SIZE_PROPS) {
-                    if (p.contains(beforeKey(prop))) pending = true;
-                }
-                if (!pending || (LogcatSettings.fullLog(p) && LogcatSettings.bootLog(p))) return;
-                boolean system = LauncherApplication.hasSystemPrivileges();
-                if (!system && !HostProcess.isAvailable()) {
-                    Log.i(TAG, "logd buffers still enlarged by the boot log, which is off: no system"
-                            + " rights or VD host to restore them with, tried again at the next start");
-                    return;
-                }
-                restoreLogdSizes(p, !system);
-            } catch (Throwable t) {
-                Log.w(TAG, "logd buffer sizes not restored", t);
-            }
-        }, "LogcatLogdRestore").start();
     }
 
     private static String beforeKey(String prop) {
@@ -1171,34 +1131,27 @@ public final class LogcatWorker {
     }
 
     private static Process startProcess(List<String> cmd) throws IOException {
-        return startProcess(cmd, sViaHost);
-    }
-
-    private static Process startProcess(List<String> cmd, boolean viaHost) throws IOException {
-        if (viaHost) return HostProcess.start(cmd.toArray(new String[0]));
+        if (sViaHost) return HostProcess.start(cmd.toArray(new String[0]));
         return new ProcessBuilder(cmd).redirectErrorStream(true).start();
     }
 
     /** Runs a short command, 3 s at most; true when it exited with 0. */
     private static boolean runQuietly(String... cmd) {
-        return runCommand(cmd, null, sViaHost) == 0;
+        return runCommand(cmd, null) == 0;
     }
 
     /** The output of a short command (3 s at most); empty when it fails. */
     private static List<String> runForOutput(String... cmd) {
         List<String> out = new ArrayList<>();
-        if (runCommand(cmd, out, sViaHost) != 0) out.clear();
+        if (runCommand(cmd, out) != 0) out.clear();
         return out;
     }
 
-    /**
-     * Exit code of the command, -1 on any failure or after 3 s; its output goes to output. It runs
-     * in the VD host when viaHost, else as the launcher.
-     */
-    private static int runCommand(String[] cmd, List<String> output, boolean viaHost) {
+    /** Exit code of the command, -1 on any failure or after 3 s; its output goes to output. */
+    private static int runCommand(String[] cmd, List<String> output) {
         Process proc = null;
         try {
-            proc = startProcess(java.util.Arrays.asList(cmd), viaHost);
+            proc = startProcess(java.util.Arrays.asList(cmd));
             // These commands print a few lines at most, which fit the pipe: waiting first cannot
             // block on a full pipe, and a command that hangs costs 3 s, not the capture.
             if (!proc.waitFor(3L, TimeUnit.SECONDS)) return -1;
@@ -1931,8 +1884,7 @@ public final class LogcatWorker {
         if (line.contains("gralloc")) return false;
         if (line.contains("ResourcesManager")) return false;
         if (line.contains("OpenGLRenderer")) return false;
-        // StrictMode only reports in a debug build, whose capture is there to show it.
-        if (line.contains("StrictMode") && !LogcatSettings.isForced()) return false;
+        if (line.contains("StrictMode")) return false;
         return !line.contains("Unisoc_Location");
     }
 
