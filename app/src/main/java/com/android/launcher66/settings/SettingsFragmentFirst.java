@@ -482,13 +482,13 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             logcatFull.setOnPreferenceClickListener(this);
             // As system, or through a VD host (root or Shizuku), see LogcatWorker.
             logcatFull.setVisible(
-                    LauncherApplication.showsPrivilegedOption(LogcatWorker.canCaptureAllLogs()));
+                    LauncherApplication.showsPrivilegedOption(LogcatWorker.canCaptureAllLogs(requireContext())));
             // The boot log only works together with "log everything" (LogcatWorker), so it is
             // shown only while that is on.
             logcatFull.setOnPreferenceChangeListener((preference, newValue) -> {
                 if (logcatBoot != null) {
                     logcatBoot.setVisible(LauncherApplication.showsPrivilegedOption(
-                            LogcatWorker.canCaptureAllLogs()) && Boolean.TRUE.equals(newValue));
+                            LogcatWorker.canCaptureAllLogs(requireContext())) && Boolean.TRUE.equals(newValue));
                 }
                 return true;
             });
@@ -496,7 +496,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (logcatBoot != null) {
             logcatBoot.setOnPreferenceClickListener(this);
             logcatBoot.setVisible(LauncherApplication.showsPrivilegedOption(
-                    LogcatWorker.canCaptureAllLogs()) && logcatFull != null && logcatFull.isChecked());
+                    LogcatWorker.canCaptureAllLogs(requireContext())) && logcatFull != null && logcatFull.isChecked());
         }
         if (LogcatSettings.isForced()) {
             // A debug build captures everything, always (LogcatSettings): the four switches show
@@ -1142,7 +1142,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     public void startLogcatRun() {
-        LogcatWorker.get().start(requireContext(), LogcatWorker.Mode.FROM_NOW);
+        LogcatWorker.get().start(requireContext(), LogcatWorker.Mode.FROM_NOW, LogcatWorker.Trigger.MANUAL);
     }
 
     public void stopLogcatRun() {

@@ -22,6 +22,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+import com.syu.util.HostAwait;
 import com.syu.util.WindowHostVdClient;
 
 import java.io.BufferedReader;
@@ -70,6 +71,12 @@ import java.util.concurrent.atomic.AtomicLong;
  *  - the time limit counts from the start (the launcher's, for the capture at startup), and its
  *    end, like the stop button, only sets the moment the capture ends at: what logcat has not
  *    read yet up to then (the boot log takes a while) is still read and written, see beginDrain();
+ *  - "log everything" without system privileges reads through the VD host (root or Shizuku). When
+ *    that host is not there yet but on its way (HostAwait.isExpected(): Shizuku installed, which
+ *    on the 7870 starts minutes after the launcher or by hand) the capture does not wait for it:
+ *    it reads the launcher's own log at once and switches to everything, from its start, when
+ *    the host attaches; a capture that ends before it is followed by a late full dump in a file of
+ *    its own (see startPlan(), upgradeToHost() and runLateDump());
  *  - the run always ends with a toast (success or failure), so it can never fail silently.
  */
 public final class LogcatWorker {
@@ -87,8 +94,27 @@ public final class LogcatWorker {
         FROM_NOW
     }
 
+    /** What started the capture: how long it waits for a VD host that is on its way (see hostWaitMs()). */
+    public enum Trigger {
+        /** The launcher's first start after a device restart. */
+        COLD_START("cold start"),
+        /** Any other start of the process (crash, update). */
+        PROCESS_START("process start"),
+        WAKE("wake"),
+        /** The run button in the settings. */
+        MANUAL("manual");
+
+        final String label;
+
+        Trigger(String label) {
+            this.label = label;
+        }
+    }
+
     private static final String TAG = "LogcatWorker";
     private static final String LOG_FILE_SUFFIX = ".txt";
+    /** A late full dump is named like its capture, with this before the extension. */
+    private static final String LATE_DUMP_SUFFIX = "_full.txt";
     private static final String LOG_DIR_NAME = "Launcher66_Logs";
     private static final String STREAM_BUFFER = "main";
     private static final int DEFAULT_TIMEOUT_SECONDS = 30;
@@ -223,6 +249,16 @@ public final class LogcatWorker {
     private BufferedWriter fileWriter;   // worker thread only
     private int timeoutSeconds;
     private volatile Mode mode = Mode.FROM_APP_START;
+    private volatile Trigger trigger = Trigger.PROCESS_START;
+    /**
+     * The capture reads the launcher's own log only because the VD host it wants is on its way
+     * (see startPlan()): cleared once it has switched to the host. Worker and main thread.
+     */
+    private volatile boolean awaitingHost;
+    /** The host attached while the capture was waiting for it: the worker switches to it, see upgradeToHost(). */
+    private volatile boolean upgradeRequested;
+    /** The wait for the host of the running capture. Main thread only. */
+    private HostAwait.Handle hostWait;
     /** Wall clock of the oldest line we want, 0 = no lower bound (whole buffer). */
     private volatile long captureSinceMs;
 
@@ -278,22 +314,15 @@ public final class LogcatWorker {
         if (listener == l) listener = null;
     }
 
-    /** Keeps the old behaviour: captures whatever the buffer holds, i.e. from application start. */
-    public void start(Context context) {
-        start(context, Mode.FROM_APP_START, false);
-    }
-
+    /** Captures what the buffer holds, i.e. from application start; coldStart: the first start after a boot. */
     public void start(Context context, boolean coldStart) {
-        start(context, Mode.FROM_APP_START, coldStart);
+        start(context, Mode.FROM_APP_START, coldStart ? Trigger.COLD_START : Trigger.PROCESS_START);
     }
 
-    public void start(Context context, Mode captureMode) {
-        start(context, captureMode, false);
-    }
-
-    public void start(Context context, Mode captureMode, boolean coldStart) {
+    public void start(Context context, Mode captureMode, Trigger captureTrigger) {
         final Context ctx = context.getApplicationContext();
         final Mode requestedMode = captureMode != null ? captureMode : Mode.FROM_APP_START;
+        final Trigger requestedTrigger = captureTrigger != null ? captureTrigger : Trigger.PROCESS_START;
 
         synchronized (lock) {
             if (running) {
@@ -302,6 +331,7 @@ public final class LogcatWorker {
             }
 
             mode = requestedMode;
+            trigger = requestedTrigger;
             captureSinceMs = (requestedMode == Mode.FROM_NOW) ? System.currentTimeMillis() : 0L;
 
             prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -314,6 +344,8 @@ public final class LogcatWorker {
             draining = false;
             drainKilled = false;
             drainTimedOut = false;
+            awaitingHost = false;
+            upgradeRequested = false;
             cutoffWallMs = 0L;
             running = true;
             finished.set(false);
@@ -321,11 +353,12 @@ public final class LogcatWorker {
             thread = new HandlerThread("LogcatWorker");
             thread.start();
             handler = new Handler(thread.getLooper());
-            handler.post(() -> runLogging(ctx, coldStart));
+            handler.post(() -> runLogging(ctx, requestedTrigger));
             watchMainThread();
         }
 
-        Log.i(TAG, "start() mode=" + requestedMode + " timeoutSeconds=" + timeoutSeconds);
+        Log.i(TAG, "start() mode=" + requestedMode + " trigger=" + requestedTrigger.label
+                + " timeoutSeconds=" + timeoutSeconds);
         helpers.setLogcatRunBoolean(true);
 
         mainHandler.post(this::startCountdown);
@@ -360,7 +393,7 @@ public final class LogcatWorker {
                 return;
             }
         }
-        start(ctx);
+        start(ctx, Mode.FROM_APP_START, Trigger.WAKE);
     }
 
     /**
@@ -380,8 +413,9 @@ public final class LogcatWorker {
 
     // ---------------------------------------------------------------- capture
 
-    private void runLogging(Context ctx, boolean coldStart) {
+    private void runLogging(Context ctx, Trigger trigger) {
         final int myPid = android.os.Process.myPid();
+        final boolean coldStart = trigger == Trigger.COLD_START;
         Log.i(TAG, "runLogging entered pid=" + myPid);
 
         BufferedReader reader = null;
@@ -398,6 +432,9 @@ public final class LogcatWorker {
         // When the file name was taken, on the monotonic clock: the real start time can be worked
         // out from it once the wall clock has been corrected.
         long startElapsedMs = 0L;
+        // The wall clock of the start, for a late full dump and the switch to the host: they go
+        // back to it.
+        final long captureBeganWallMs = System.currentTimeMillis();
 
         try {
             File dir = usablePublicDir(ctx);
@@ -439,26 +476,38 @@ public final class LogcatWorker {
             // by when the VD host came (Shizuku can take a minute or more after the boot).
             final long captureStartedAt = SystemClock.elapsedRealtime();
             boolean wantsFullLog = LogcatSettings.fullLog(prefs);
-            // Without system privileges the VD host (root or Shizuku) reads the whole log. Shizuku
-            // installed counts as a host on its way: at a cold start its binder comes a while after
-            // the launcher (A16: about 30 s), and the capture used to give up on it at once.
-            boolean viaHost = wantsFullLog && !LauncherApplication.hasSystemPrivileges()
-                    && (WindowHostVdClient.canHostPanes() || WindowHostVdClient.isShizukuInstalled(ctx))
-                    && awaitPrivilegedHost(coldStart);
-            if (wantsFullLog && !LauncherApplication.hasSystemPrivileges() && !viaHost) {
+            boolean system = LauncherApplication.hasSystemPrivileges();
+            boolean hostAttached = !system && wantsFullLog && HostProcess.isAvailable();
+            // Without system privileges the VD host (root or Shizuku) reads the whole log. One that
+            // is on its way is not waited for: at a cold start Shizuku's binder comes a while
+            // after the launcher (the 7870: minutes), and a capture that waits reads nothing
+            // meanwhile, so what the launcher logged at the start is gone from logd's small
+            // buffers when it finally does.
+            StartPlan plan = startPlan(wantsFullLog, system, hostAttached,
+                    wantsFullLog && !system && !hostAttached && HostAwait.isExpected(ctx));
+            boolean viaHost = plan == StartPlan.HOST;
+            if (plan == StartPlan.NO_HOST) {
                 writeLine("===== everything: no VD host (root or Shizuku) attached, only the"
                         + " launcher's own log =====");
+            } else if (plan == StartPlan.HOST_ON_ITS_WAY) {
+                long windowMs = hostWaitMs(trigger);
+                writeLine("===== the VD host (Shizuku) is on its way: the launcher's own log until it"
+                        + " attaches (up to " + windowMs / 1000L + " s) =====");
+                awaitingHost = true;
+                mainHandler.post(() -> awaitHostOnMain(windowMs));
             }
-            if (LauncherApplication.hasSystemPrivileges() || viaHost) {
+            if (system || viaHost) {
                 fullLog = wantsFullLog;
                 // The boot log setting: only with both settings on.
                 bootLog = fullLog && LogcatSettings.bootLog(prefs);
             }
             sViaHost = viaHost;
+            writeLine(scopeLine(fullLog, viaHost));
             // On every capture, cold start or not: the buffers follow the setting. Tied to
             // coldStart, a capture after a wake would give the large buffers back (the next boot
-            // then had small ones again) and dump all 8 MiB of them (see captureStartMs()).
-            syncLogdBufferSize(bootLog);
+            // then had small ones again) and dump all 8 MiB of them (see captureStartMs()). A host
+            // that is still to come does this when it has arrived, see upgradeToHost().
+            if (plan != StartPlan.HOST_ON_ITS_WAY) syncLogdBufferSize(bootLog);
             // Everything since boot only in the capture of a cold start.
             boolean fromBoot = isBootCapture(bootLog, coldStart, mode, captureStartedAt);
 
@@ -468,18 +517,7 @@ public final class LogcatWorker {
             // build does not understand it we drop back to comparing timestamps ourselves.
             boolean useSinceFlag = true;
             long sinceMs = captureStartMs(bootLog, fromBoot, captureSinceMs, System.currentTimeMillis());
-            if (fromBoot) {
-                writeLine("===== boot log: everything logd still holds since boot ("
-                        + LOGD_SIZE_PROP + "=" + displaySize(currentLogdSize()) + "), then up to"
-                        + " the end of the capture =====");
-                writeLine("===== reading at " + SystemClock.elapsedRealtime() / 1000L + " s of uptime ("
-                        + ("1".equals(SystemProperties.get("sys.boot_completed", ""))
-                                ? "boot completed" : "boot not completed yet") + ") =====");
-                for (String sizeLine : runForOutput("logcat", "-b", "all", "-g")) {
-                    writeLine("===== " + sizeLine.trim() + " =====");
-                }
-                fileWriter.flush();
-            }
+            if (fromBoot) writeBootLogHeader();
             SimpleDateFormat lineFormat = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
             int restartCount = 0;
             // logcat runs that failed at once in a row: a command that cannot run at all must not
@@ -492,6 +530,24 @@ public final class LogcatWorker {
             String lastWritten = null;
             while (running) {
                 restartCount++;
+                if (upgradeRequested) {
+                    // The host the capture was waiting for has attached: from here on everything,
+                    // from the start of the capture.
+                    upgradeRequested = false;
+                    awaitingHost = false;
+                    fullLog = true;
+                    usePidFlag = false;
+                    sViaHost = true;
+                    bootLog = LogcatSettings.bootLog(prefs);
+                    syncLogdBufferSize(bootLog);
+                    fromBoot = isBootCapture(bootLog, coldStart, mode, captureStartedAt);
+                    sinceMs = upgradeSinceMs(fromBoot, captureSinceMs, captureBeganWallMs);
+                    writeLine(upgradeLine((SystemClock.elapsedRealtime() - captureStartedAt) / 1000L,
+                            sinceMs));
+                    writeLine(scopeLine(true, true));
+                    if (fromBoot) writeBootLogHeader();
+                    fileWriter.flush();
+                }
                 // The VD host went away under the capture (Shizuku Next restarts its server now
                 // and then, A16: back after 6 s): logd keeps the lines, so wait for it.
                 if (sViaHost && !HostProcess.isAvailable() && !awaitHostBack()) {
@@ -571,6 +627,13 @@ public final class LogcatWorker {
 
                 writeLine("----- logcat ended. exit=" + exit + " lines=" + linesThisRun + " -----");
                 fileWriter.flush();
+
+                // Stopped on purpose to go on through the host: no failure, no end (also while
+                // the capture is writing what it still owes), unless that is all written.
+                if (upgradeRequested && running && !caughtUp && !drainKilled) {
+                    failedRuns = 0;
+                    continue;
+                }
 
                 failedRuns = (exit != 0 && linesThisRun == 0L) ? failedRuns + 1 : 0;
                 if (failedRuns >= MAX_FAILED_RUNS && !isShuttingDown()) {
@@ -678,6 +741,19 @@ public final class LogcatWorker {
                 logFile = fixNameForClock(logFile, startElapsedMs, toleranceMs);
                 watchClockFor(logFile, startElapsedMs, toleranceMs);
             }
+
+            // The host never came during the capture: a host that comes soon gets a full dump of it.
+            final boolean lateWanted = awaitingHost && logFile != null && logFile.exists() && startElapsedMs > 0L;
+            awaitingHost = false;
+            final File lateFor = logFile;
+            final long lateStartElapsedMs = startElapsedMs;
+            mainHandler.post(() -> {
+                if (hostWait != null) {
+                    hostWait.cancel();
+                    hostWait = null;
+                }
+                if (lateWanted) watchForLateHost(lateFor, lateStartElapsedMs, captureBeganWallMs, trigger);
+            });
 
             boolean success = error == null && logFile != null && logFile.exists();
             String message = success
@@ -871,41 +947,188 @@ public final class LogcatWorker {
      * without system privileges. Set at the start of every capture, on its worker thread.
      */
     private static volatile boolean sViaHost;
-    /** How long a capture waits for the VD host: Shizuku binds a moment after the start. */
-    private static final long HOST_WAIT_MS = 15_000L;
-    /**
-     * The same at a cold start: Shizuku without root is started by the user's ADB, which can take
-     * a minute or two after a boot (wireless debugging without Wi-Fi).
-     */
-    private static final long HOST_WAIT_COLD_START_MS = 180_000L;
     private static final int MAX_FAILED_RUNS = 3;
 
-    /** Whether the whole log can be captured here: as system, or through a VD host. */
-    public static boolean canCaptureAllLogs() {
-        return LauncherApplication.hasSystemPrivileges() || WindowHostVdClient.canHostPanes();
+    /** Whether the whole log can be captured here: as system, or through a VD host, there or on its way. */
+    public static boolean canCaptureAllLogs(Context context) {
+        return LauncherApplication.hasSystemPrivileges() || WindowHostVdClient.canHostPanes()
+                || HostAwait.isExpected(context);
+    }
+
+    // ---------------------------------------------------------------- the host that is on its way
+
+    /** What a capture does about "log everything" when it starts. */
+    enum StartPlan {
+        /** The setting is off: the launcher's own log. */
+        NOT_WANTED,
+        /** The launcher is a system app: everything, as itself. */
+        SYSTEM,
+        /** A VD host is attached: everything through it. */
+        HOST,
+        /** No host yet but one is on its way: the launcher's own log now, everything when it attaches. */
+        HOST_ON_ITS_WAY,
+        /** No host and none expected: the launcher's own log. */
+        NO_HOST
+    }
+
+    static StartPlan startPlan(boolean wantsFullLog, boolean system, boolean hostAttached,
+                               boolean hostExpected) {
+        if (!wantsFullLog) return StartPlan.NOT_WANTED;
+        if (system) return StartPlan.SYSTEM;
+        if (hostAttached) return StartPlan.HOST;
+        return hostExpected ? StartPlan.HOST_ON_ITS_WAY : StartPlan.NO_HOST;
     }
 
     /**
-     * Waits for a VD host while the capture runs. The time limit goes on meanwhile: the logs are
-     * all in logd's buffers, and what happened up to the capture's end is read once the host is
-     * there -- so a capture that ends while it waits goes on waiting (Shizuku comes a minute or
-     * two after the boot); only a shutdown ends the wait.
-     *
-     * @return whether a VD host is attached
+     * How long a running capture waits for the host to switch to it. At a cold start Shizuku
+     * (started through wireless ADB) can come minutes after the launcher; after a wake it is
+     * usually running already; by hand and after a crash the user is at the screen.
      */
-    private boolean awaitPrivilegedHost(boolean coldStart) throws Exception {
-        if (HostProcess.isAvailable()) return true;
-        long waitMs = coldStart ? HOST_WAIT_COLD_START_MS : HOST_WAIT_MS;
-        long began = SystemClock.elapsedRealtime();
-        writeLine("===== waiting up to " + waitMs / 1000L + " s for the VD host (root or Shizuku) =====");
-        fileWriter.flush();
-        while (!HostProcess.isAvailable()) {
-            long now = SystemClock.elapsedRealtime();
-            if (!running || now - began >= waitMs) return false;
-            SystemClock.sleep(250L);
+    static long hostWaitMs(Trigger trigger) {
+        switch (trigger) {
+            case COLD_START: return HostAwait.WAIT_COLD_BOOT_MS;
+            case WAKE: return HostAwait.WAIT_WAKE_MS;
+            default: return HostAwait.WAIT_SHORT_MS;
         }
-        writeLine("===== VD host attached after " + (SystemClock.elapsedRealtime() - began) / 1000L + " s =====");
-        return true;
+    }
+
+    /**
+     * How long after the start of a capture a host that attaches gets a full dump of what the
+     * capture could not read: ten minutes at a cold start, a minute otherwise.
+     */
+    static long lateHostWindowMs(Trigger trigger) {
+        return trigger == Trigger.COLD_START ? 10L * 60L * 1000L : 60L * 1000L;
+    }
+
+    /** The wall clock the switch to the host reads from; 0 = everything logd holds (the boot capture). */
+    static long upgradeSinceMs(boolean fromBoot, long requestedSinceMs, long captureBeganWallMs) {
+        if (fromBoot) return 0L;
+        return requestedSinceMs > 0L ? requestedSinceMs : captureBeganWallMs;
+    }
+
+    static String scopeLine(boolean fullLog, boolean viaHost) {
+        if (!fullLog) return "===== scope: the launcher's own log (--pid) =====";
+        return "===== scope: everything (-b all, " + (viaHost ? "through the VD host" : "as system") + ") =====";
+    }
+
+    static String upgradeLine(long waitedSeconds, long sinceMs) {
+        String since = sinceMs > 0L
+                ? "everything since " + new SimpleDateFormat("HH:mm:ss.SSS", Locale.US).format(new Date(sinceMs))
+                : "everything logd still holds";
+        return "===== VD host attached after " + waitedSeconds + " s: " + since
+                + " follows (the launcher's own lines above repeat) =====";
+    }
+
+    /** Main thread: the wait of a running capture for its host. */
+    private void awaitHostOnMain(long windowMs) {
+        if (!running || !awaitingHost) return;
+        if (hostWait != null) hostWait.cancel();
+        hostWait = HostAwait.await(windowMs, "logcat capture", attached -> {
+            hostWait = null;
+            if (attached) requestUpgrade();
+        });
+    }
+
+    /** The host attached while the capture reads the launcher's own log: ends that run, the worker goes on through the host. */
+    private void requestUpgrade() {
+        synchronized (lock) {
+            if (!running || !awaitingHost) return;
+            upgradeRequested = true;
+        }
+        killProcess();
+    }
+
+    /** Main thread: a capture ended before its host came; one that attaches soon gets a dump. */
+    private void watchForLateHost(File captureFile, long startElapsedMs, long beganWallMs, Trigger trigger) {
+        long remaining = lateHostWindowMs(trigger) - (SystemClock.elapsedRealtime() - startElapsedMs);
+        if (remaining <= 0L) return;
+        HostAwait.await(remaining, "late full log dump", attached -> {
+            if (attached) runLateDump(captureFile, startElapsedMs, beganWallMs, trigger);
+        });
+    }
+
+    /**
+     * The host came after the capture ended: a one-off "logcat -d -b all" through it, into
+     * "<capture>_full.txt" beside the capture (from its start, except for a cold start, which gets
+     * whatever logd still holds). Goes through the same folders, moves and name corrections as
+     * a capture. Own thread; no host, or one that does not run it, only ends it.
+     */
+    private void runLateDump(File captureFile, long startElapsedMs, long beganWallMs, Trigger trigger) {
+        new Thread(() -> {
+            File out = null;
+            BufferedWriter writer = null;
+            Process proc = null;
+            long lines = 0L;
+            try {
+                File dir = captureFile.getParentFile();
+                if (dir == null || !dir.isDirectory()) return;
+                String name = captureFile.getName();
+                String base = name.endsWith(LOG_FILE_SUFFIX)
+                        ? name.substring(0, name.length() - LOG_FILE_SUFFIX.length()) : name;
+                out = uniqueFile(dir, base + LATE_DUMP_SUFFIX);
+                long afterS = (SystemClock.elapsedRealtime() - startElapsedMs) / 1000L;
+                List<String> cmd = new ArrayList<>();
+                cmd.add("logcat");
+                cmd.add("-d");
+                cmd.add("-b");
+                cmd.add("all");
+                cmd.add("-v");
+                cmd.add("threadtime");
+                if (trigger != Trigger.COLD_START) {
+                    cmd.add("-T");
+                    cmd.add(new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US).format(new Date(beganWallMs)));
+                }
+                proc = HostProcess.start(cmd.toArray(new String[0]));
+                final Process dumping = proc;
+                // A dump that never ends is cut: logcat -d returns at once on a healthy host.
+                mainHandler.postDelayed(() -> destroyAndWait(dumping), LATE_DUMP_MAX_MS);
+                writer = new BufferedWriter(new FileWriter(out, false), 8192);
+                writer.write("===== LATE FULL DUMP for " + name + ": the VD host attached " + afterS
+                        + " s after the capture started =====\n");
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        writer.write(line);
+                        writer.write('\n');
+                        lines++;
+                    }
+                }
+                writer.write("===== END, lines=" + lines + " =====\n");
+                Log.i(TAG, "Late full dump written: " + out.getName() + " (" + lines + " lines)");
+            } catch (Throwable t) {
+                Log.i(TAG, "Late full dump not made: " + t);
+            } finally {
+                closeQuietly(writer);
+                if (proc != null) destroyAndWait(proc);
+                if (out != null && out.exists()) {
+                    if (lines == 0L && out.length() < 200L) {
+                        //noinspection ResultOfMethodCallIgnored
+                        out.delete();     // the host did not run it: nothing worth a file
+                    } else {
+                        long toleranceMs = nameToleranceMs();
+                        File named = fixNameForClock(out, startElapsedMs, toleranceMs);
+                        watchClockFor(named, startElapsedMs, toleranceMs);
+                    }
+                }
+            }
+        }, "LogcatLateDump").start();
+    }
+
+    /** How long a late dump may take at the most. */
+    private static final long LATE_DUMP_MAX_MS = 2L * 60L * 1000L;
+
+    /** What a boot capture says about what it reads; worker thread. */
+    private void writeBootLogHeader() throws Exception {
+        writeLine("===== boot log: everything logd still holds since boot ("
+                + LOGD_SIZE_PROP + "=" + displaySize(currentLogdSize()) + "), then up to"
+                + " the end of the capture =====");
+        writeLine("===== reading at " + SystemClock.elapsedRealtime() / 1000L + " s of uptime ("
+                + ("1".equals(SystemProperties.get("sys.boot_completed", ""))
+                        ? "boot completed" : "boot not completed yet") + ") =====");
+        for (String sizeLine : runForOutput("logcat", "-b", "all", "-g")) {
+            writeLine("===== " + sizeLine.trim() + " =====");
+        }
+        fileWriter.flush();
     }
 
     /** How long a capture waits for a VD host that went away under it. */
@@ -913,7 +1136,7 @@ public final class LogcatWorker {
 
     /**
      * Waits for the VD host to come back after it went away during the capture. Only a
-     * shutdown ends the wait early, as in awaitPrivilegedHost().
+     * shutdown ends the wait early.
      *
      * @return whether a VD host is attached again
      */
@@ -922,12 +1145,9 @@ public final class LogcatWorker {
         writeLine("===== the VD host went away; waiting up to " + HOST_RETURN_WAIT_MS / 1000L
                 + " s for it =====");
         fileWriter.flush();
-        while (!HostProcess.isAvailable()) {
-            if (!running || SystemClock.elapsedRealtime() - began >= HOST_RETURN_WAIT_MS) {
-                writeLine("===== the VD host did not come back =====");
-                return false;
-            }
-            SystemClock.sleep(250L);
+        if (!HostAwait.awaitBlocking(HOST_RETURN_WAIT_MS, () -> running)) {
+            writeLine("===== the VD host did not come back =====");
+            return false;
         }
         writeLine("===== VD host back after " + (SystemClock.elapsedRealtime() - began) / 1000L
                 + " s =====");
@@ -1269,7 +1489,8 @@ public final class LogcatWorker {
         if (Math.abs(offBy) <= toleranceMs) return file;
 
         File dir = file.getParentFile();
-        File target = uniqueFile(dir, fmt.format(new Date(realStartMs)) + LOG_FILE_SUFFIX);
+        String suffix = name.endsWith(LATE_DUMP_SUFFIX) ? LATE_DUMP_SUFFIX : LOG_FILE_SUFFIX;
+        File target = uniqueFile(dir, fmt.format(new Date(realStartMs)) + suffix);
         if (!file.renameTo(target)) {
             Log.w(TAG, "Could not rename " + file + " to " + target.getName());
             return file;
@@ -1556,7 +1777,7 @@ public final class LogcatWorker {
                 wakeStartPending = false;
             }
             if (wakePending && ctx != null) {
-                start(ctx);
+                start(ctx, Mode.FROM_APP_START, Trigger.WAKE);
             }
         });
     }
@@ -1605,7 +1826,7 @@ public final class LogcatWorker {
 
     /** True when the stream was closed because we asked for it (end of the capture read, or shutdown). */
     private boolean isShuttingDown() {
-        return !running || drainKilled;
+        return !running || drainKilled || upgradeRequested;
     }
 
     private String string(int resId) {
