@@ -2185,7 +2185,7 @@ public class WindowUtil {
                 setPinnedPipBounds(pipKey, screenKey);         
                 SystemProperties.set("persist.launcher.packagename", packageName);
                 AppPackageName = packageName; 
-                restartPinnedPipApp();
+                forceStopPinnedPipApp();
                 
                 launcher.handler.postDelayed(() -> startPinnedPip(packageName), 1000);
             } else {
@@ -2310,6 +2310,18 @@ public class WindowUtil {
         // The panes above are rebuilt everywhere; the pinned PiP app below exists on the
         // com.syu.music units only.
         if (!LauncherApplication.supportsPinnedPip()) return;
+        forceStopPinnedPipApp();
+    }
+
+    /**
+     * Force-stops the pinned PiP app, so that its next force_pip start makes a fresh pinned stack.
+     * What openAsPinnedPip() calls: the window panes are not its business. Within openPip() they
+     * are dismissed and built again anyway, but openAsPinnedPip() also runs from onPageEndMoving()
+     * and the app list, where nothing builds them again, and restartPinnedPipApp()'s cleanup left
+     * them gone (log 27-10-2026 23:31: removed at 23.430, and the openPip() com.lsec.pipdie brings
+     * found pipsAdded() still true at 23.914).
+     */
+    private static void forceStopPinnedPipApp() {
         if (AppPackageName != null && !AppPackageName.isEmpty()) {
             if (FytPackage.GMAPS.equals(AppPackageName)) {
                 Log.i(TAG, "restartPinnedPipApp: skip force-stop for Google Maps");
