@@ -794,6 +794,17 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
 
             WindowUtil.updatePipPositionsForScroll(mUnboundedScrollX);
 
+            // With the ease-out (t^5) a snap has the pages on their last pixel for its last fifth
+            // or more: half a pixel of 2000 is left at 81 % of the time. The screen has stopped,
+            // yet onPageEndMoving(), and what waits for it (the pinned PiP's start), came that
+            // much later. Ended there, the scroller lets the next frame finish the page switch.
+            // Only for that interpolator: it never goes past the end, an overshoot one does.
+            if (mNextPage != INVALID_PAGE && mScrollerInterpolator instanceof ScrollInterpolator
+                    && mScroller.getCurrX() == mScroller.getFinalX()
+                    && mScroller.getCurrY() == mScroller.getFinalY()) {
+                mScroller.abortAnimation();
+            }
+
             invalidate();
             return true;
         } else if (mNextPage != INVALID_PAGE) {
