@@ -4557,6 +4557,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mMusicWidget.tvMusicNameTwo = null;
         mMusicWidget.ivALbumBgTwo = null;
         mMusicWidget.tvAritstTwo = null;
+        mMusicWidget.releaseBarSizer();
         
         // Weather bar
         weatherCity1 = null;
@@ -9397,6 +9398,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void initMusicWidgetView(View musicWidgetView) {
         mMusicWidget.initMusicWidgetView(musicWidgetView);
+    }
+
+    public void refreshMusicSizes() {
+        mMusicWidget.refreshSizes();
     }
 
     public void initMusicBarView(View musicBarView) {

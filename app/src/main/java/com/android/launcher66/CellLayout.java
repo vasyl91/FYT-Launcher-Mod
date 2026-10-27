@@ -4440,8 +4440,9 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     width = topRightX - topLeftX;
                     height = bottomLeftY - topLeftY;
 
-                    setCalculatedTextSizeAndColor(widgetView, R.id.tv_musicName, mLauncher.textSizeTitle);
-                    setCalculatedTextSizeAndColor(widgetView, R.id.tv_artist, mLauncher.textSizeArtist);
+                    // The size comes from MusicWidgetSizer (from the size of the widget); the colour here
+                    setCalculatedTextColor(widgetView, R.id.tv_musicName);
+                    setCalculatedTextColor(widgetView, R.id.tv_artist);
                     break;
 
                 case "radio":
@@ -5064,6 +5065,13 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         TextView textView = view.findViewById(viewId);
         if (textView != null) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+        }
+        setCalculatedTextColor(view, viewId);
+    }
+
+    private void setCalculatedTextColor(View view, int viewId) {
+        TextView textView = view.findViewById(viewId);
+        if (textView != null) {
             boolean blackTintWidgets = prefs.getBoolean(Keys.BLACK_WIDGETS, false);
             if (blackTintWidgets) {
                 textView.setTextColor(Color.BLACK);

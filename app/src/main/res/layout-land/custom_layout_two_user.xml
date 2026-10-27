@@ -60,7 +60,7 @@
         app:layout_constraintLeft_toRightOf="@id/rl_allapps" />
 
     <!-- Bottom Bar Music -->
-    <com.google.android.flexbox.FlexboxLayout
+    <LinearLayout
         android:id="@+id/rl_music_two"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -70,157 +70,11 @@
         app:layout_constraintTop_toTopOf="@id/iv_list_bg"
         app:layout_constraintRight_toRightOf="@id/bar_widget_date"
         app:layout_constraintLeft_toRightOf="@id/recycler_view"
-        app:alignItems="center"
-        app:flexWrap="wrap"
-        app:flexDirection="row"
-        app:justifyContent="space_evenly" >
+        android:orientation="horizontal"
+        android:gravity="center_vertical" >
 
-        <ImageView
-            android:id="@+id/iv_album_bg_two"
-            android:tag="@string/skin_ruleless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/music_album_def"
-            android:layout_centerHorizontal="true"
-            app:layout_flexBasisPercent="25%" />
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            app:flexWrap="wrap"
-            app:flexDirection="column"
-            app:alignContent="center"
-            app:justifyContent="center"
-            app:layout_flexBasisPercent="70%" >
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                app:flexWrap="wrap"
-                app:flexDirection="column"
-                app:alignContent="center"
-                app:justifyContent="center"
-                app:layout_flexBasisPercent="50%" >
-
-                <TextView
-                    android:id="@+id/tv_musicName_two"
-                    android:textSize="0sp"
-                    android:textColor="@android:color/white"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:gravity="center_horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/music_name"
-                    android:singleLine="true"
-                    android:layout_centerHorizontal="true" />
-
-                <TextView
-                    android:id="@+id/tv_artist_two"
-                    android:textSize="0sp"
-                    android:textColor="#aaffffff"
-                    android:ellipsize="marquee"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:gravity="center_horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/music_name"
-                    android:singleLine="true"
-                    android:layout_centerHorizontal="true" />
-
-            </com.google.android.flexbox.FlexboxLayout>
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                app:flexWrap="wrap"
-                app:flexDirection="row"
-                app:justifyContent="space_between"
-                app:layout_flexBasisPercent="45%" >
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraint_layout_prev_two"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_flexGrow="1"
-                    app:layout_constraintDimensionRatio="1:1">
-
-                    <Button
-                        android:id="@+id/music_prev_two"
-                        android:background="@drawable/btn_ic_prev"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintDimensionRatio="1:1"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraint_layout_playpause_two"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_flexGrow="1"
-                    app:layout_constraintDimensionRatio="1:1">
-
-                    <Button
-                        android:id="@+id/music_playpause_two"
-                        android:background="@drawable/music_pause_icon"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintDimensionRatio="1:1"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraint_layout_next_two"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_flexGrow="1"
-                    app:layout_constraintDimensionRatio="1:1">
-
-                    <Button
-                        android:id="@+id/music_next_two"
-                        android:background="@drawable/btn_ic_next"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintDimensionRatio="1:1"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraint_layout_favorite_two"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_flexGrow="1"
-                    app:layout_constraintDimensionRatio="1:1">
-
-                    <Button
-                        android:id="@+id/music_favorite_two"
-                        android:background="@drawable/btn_ic_favorite"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintDimensionRatio="1:1"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </com.google.android.flexbox.FlexboxLayout>
-        </com.google.android.flexbox.FlexboxLayout>
-    </com.google.android.flexbox.FlexboxLayout>
+        <include layout="@layout/music_bar_content" />
+    </LinearLayout>
 
     <!-- Bottom Bar Date -->
     <com.google.android.flexbox.FlexboxLayout

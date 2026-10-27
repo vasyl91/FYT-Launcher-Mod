@@ -182,6 +182,10 @@ final class LauncherMusicWidget {
 
     private final Runnable mLiveConfirm = this::redrawLastRefresh;
 
+    private MusicWidgetSizer mHomeSizer;
+
+    private MusicWidgetSizer mBarSizer;
+
     public IUiRefresher refreshMusic = new IUiRefresher() {
         @Override
         public void onRefresh(int[] ints, long[] lngs, float[] flts, String[] strs, byte[] byts, String source) {
@@ -924,6 +928,29 @@ final class LauncherMusicWidget {
         renderPair(tvMusicNameTwo, tvAritstTwo, mBarCompact);
     }
 
+    private void onCompactChanged(boolean bar, boolean compact) {
+        if (bar) {
+            mBarCompact = compact;
+        } else {
+            mHomeCompact = compact;
+        }
+        render();
+    }
+
+    void releaseBarSizer() {
+        mBarSizer = null;
+    }
+
+    /** Sizes the widgets again, for after a wake and a rebuilt bar. */
+    void refreshSizes() {
+        if (mHomeSizer != null) {
+            mHomeSizer.refresh();
+        }
+        if (mBarSizer != null) {
+            mBarSizer.refresh();
+        }
+    }
+
     private void renderPair(TextView first, TextView second, boolean compact) {
         if (first == null && second == null) {
             return;
@@ -1145,6 +1172,9 @@ final class LauncherMusicWidget {
             if (mLauncher.getCustomView(Config.WS_Music) != null) {
                 mLauncher.getCustomView(Config.WS_Music).setOnClickListener(mLauncher);
             }
+            // For the default layout the view is rl_music itself, which findViewById returns as well
+            mHomeSizer = MusicWidgetSizer.attach(musicWidgetView.findViewById(ResValue.getInstance().rl_music),
+                    false, this::onCompactChanged);
             render();
         }
     }
@@ -1166,6 +1196,7 @@ final class LauncherMusicWidget {
             if (musicWidget != null) {
                 musicWidget.setOnClickListener(mLauncher);
             }
+            mBarSizer = MusicWidgetSizer.attach(musicWidget, true, this::onCompactChanged);
             render();
         }
     }

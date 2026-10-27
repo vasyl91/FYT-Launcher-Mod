@@ -986,10 +986,6 @@ public class Workspace extends SmoothPagedView
             dateTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
             TextView weekTextSize = workspaceView.findViewById(R.id.curWeek);
             weekTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
-            TextView titleTextSize = workspaceView.findViewById(R.id.tv_musicName);
-            titleTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeTitle);
-            TextView artistTextSize = workspaceView.findViewById(R.id.tv_artist);
-            artistTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeArtist);
 
             View mUserMusicWidget = workspaceView.findViewById(R.id.rl_music);
             this.mLauncher.initMusicWidgetView(mUserMusicWidget);
@@ -1057,14 +1053,9 @@ public class Workspace extends SmoothPagedView
     }
 
     private void setWidgetBarTextView(View barView) {
+        // The music texts are sized by MusicWidgetSizer; only their colour is set here
         titleText = barView.findViewById(R.id.tv_musicName_two);
-        if (titleText != null) {
-            adjustTextSize(titleText, 1.0f);
-        }
         artistText = barView.findViewById(R.id.tv_artist_two);
-        if (artistText != null) {
-            adjustTextSize(artistText, 1.0f);
-        }
         cityText = barView.findViewById(R.id.weather_city1);
         if (cityText != null) {
             adjustTextSize(cityText, 0.65f);
@@ -1205,10 +1196,11 @@ public class Workspace extends SmoothPagedView
             return;
         }
 
-        // Count TextViews in parent
+        // Count the TextViews in the parent that take room
         int textViewCount = 0;
         for (int i = 0; i < parent.getChildCount(); i++) {
-            if (parent.getChildAt(i) instanceof TextView) {
+            if (parent.getChildAt(i) instanceof TextView
+                    && parent.getChildAt(i).getVisibility() != View.GONE) {
                 textViewCount++;
             }
         }
@@ -1434,6 +1426,9 @@ public class Workspace extends SmoothPagedView
      * safe to call on every return to the home screen.
      */
     public void verifyWidgetBarText(String source) {
+        if (mLauncher != null) {
+            mLauncher.refreshMusicSizes(); // the music texts are not among the fitted ones
+        }
         if (mBarTextFits.isEmpty()) {
             return;
         }
@@ -1491,6 +1486,7 @@ public class Workspace extends SmoothPagedView
         setWidgetBarTextView(workspaceView);
 
         mLauncher.rebindBarWidgetsAfterWake(musicWidget, weatherWidget);
+        mLauncher.refreshMusicSizes();
         Log.d(TAG, "Widget bar refreshed after wake: " + source);
     }
 
