@@ -360,6 +360,11 @@
             android:title="@string/update_version_button" />        
 
         <Preference
+            android:key="shizuku_download"
+            android:title="@string/shizuku_download_button"
+            app:isPreferenceVisible="false" />
+
+        <Preference
             android:key="empty1"
             android:focusable="false"
             android:clickable="false" />

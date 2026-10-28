@@ -74,6 +74,7 @@ public final class Keys {
     public static final String LOGCAT_SERVICE_RUN = "logcat_service_run";
     public static final String LOGCAT_SERVICE_TIMEOUT = "logcat_service_timeout";
     public static final String APP_VERSION_UPDATE = "app_version_update";
+    public static final String SHIZUKU_DOWNLOAD = "shizuku_download";
 
     public static final String DISPLAY_PIP = "display_pip";
     public static final String USER_DATE = "user_date";

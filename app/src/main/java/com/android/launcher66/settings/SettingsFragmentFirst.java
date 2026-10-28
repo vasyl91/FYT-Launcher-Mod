@@ -157,6 +157,11 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private Dialog loadingDialog;
     private AlertDialog alertUpdateDialog;
 
+    /** Where Shizuku Next is released; GitHub redirects to the latest release. */
+    private static final String SHIZUKU_NEXT_RELEASES_URL =
+            "https://github.com/rushiranpise/Shizuku-Next/releases/latest";
+    private Preference shizukuDownload;
+
     private static final String KEY_BASELINE_PROFILE_SUMMARY = "baseline_profile_summary";
     private static final String KEY_BASELINE_PROFILE_RESET = "baseline_profile_reset";
     private Preference baselineProfileSummary;
@@ -356,6 +361,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         versionChecker = new VersionChecker();
         PreferenceCategory appVersion = findPreference("app_version");
         Preference appVersionUpdate = findPreference(Keys.APP_VERSION_UPDATE);
+        shizukuDownload = findPreference(Keys.SHIZUKU_DOWNLOAD);
 
         if (userLayout != null) {
             userLayout.setOnPreferenceClickListener(this);
@@ -586,6 +592,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (appVersionUpdate != null) {
             appVersionUpdate.setOnPreferenceClickListener(this);
         }
+        if (shizukuDownload != null) {
+            shizukuDownload.setOnPreferenceClickListener(this);
+        }
     }
 
     @Override
@@ -599,6 +608,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         // SharedPreferences, so unlike the call above there is nothing to wait
         // for and no background refresh to start.
         SpotifyRating.syncPreference(requireContext(), clientIdPreference, oauthForSpotify);
+        updateShizukuDownload();
     }
 
     @Override
@@ -982,6 +992,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 break;
             case KEY_BASELINE_PROFILE_RESET:
                 showBaselineResetDialog();
+                break;
+            case Keys.SHIZUKU_DOWNLOAD:
+                ReleasesPage.open(requireContext(), SHIZUKU_NEXT_RELEASES_URL, TAG);
                 break;
             case Keys.APP_VERSION_UPDATE:
                 alertUpdateDialog = displayDownloadConfirmationDialog().create();
@@ -1502,6 +1515,27 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     /** Loads the Baseline Profile status off the main thread and shows it as the summary. */
+    /**
+     * Shows the button to download Shizuku Next in the standard version while Shizuku is not
+     * installed: it is what hosts the PiP panes there without root. The check is a binder call,
+     * so it runs off the main thread; onResume() calls it, so the button goes away on coming back
+     * from installing it. The fyt version has system privileges and never needs it.
+     */
+    private void updateShizukuDownload() {
+        if (shizukuDownload == null || !"standard".equals(com.android.launcher66.BuildConfig.FLAVOR)) {
+            return;
+        }
+        final Context appContext = requireContext().getApplicationContext();
+        new Thread(() -> {
+            final boolean missing = !WindowHostVdClient.isShizukuInstalled(appContext);
+            mHandler.post(() -> {
+                if (isAdded() && shizukuDownload != null) {
+                    shizukuDownload.setVisible(missing);
+                }
+            });
+        }, "ShizukuInstalled").start();
+    }
+
     private void updateBaselineProfileSummary() {
         if (baselineProfileSummary == null) {
             return;
