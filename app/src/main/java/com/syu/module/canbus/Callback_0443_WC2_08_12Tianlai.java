@@ -2,9 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.wc.tianlaicd.WC08TianlaiCar6Cd;
-import com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarCDAct;
-import com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarRadioAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 //import com.syu.ui.air.Air_0443_WC2_08_12Tianlai;
@@ -97,17 +94,13 @@ public class Callback_0443_WC2_08_12Tianlai extends CallbackCanbusBase {
             int value = ints[0];
             switch (value) {
                 case 1:
-                    if (!WC08TianlaiCarRadioAct.isFront) {
-                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarRadioAct");
-                        break;
-                    }
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarRadioAct");
+                    break;
                 case 2:
                     if (DataCanbus.DATA[120] == 15) {
-                        if (!WC08TianlaiCarCDAct.mIsFront) {
-                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarCDAct");
-                            break;
-                        }
-                    } else if (!WC08TianlaiCar6Cd.isFront) {
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarCDAct");
+                        break;
+                    } else {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlaicd.WC08TianlaiCar6Cd");
                         break;
                     }

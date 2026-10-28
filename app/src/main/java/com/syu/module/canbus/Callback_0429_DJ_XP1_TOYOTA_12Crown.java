@@ -2,8 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.dj.huangguan.ActivityCarCD;
-import com.syu.carinfo.dj.huangguan.ActivityCarRadio;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -128,7 +126,7 @@ public class Callback_0429_DJ_XP1_TOYOTA_12Crown extends CallbackCanbusBase {
             }
             if (updateCode == 123) {
                 int value = ints[0];
-                if (value == 1 && !ActivityCarRadio.mIsFront) {
+                if (value == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.huangguan.ActivityCarRadio");
                     return;
                 }
@@ -136,7 +134,7 @@ public class Callback_0429_DJ_XP1_TOYOTA_12Crown extends CallbackCanbusBase {
             }
             if (updateCode == 124) {
                 int value2 = ints[0];
-                if (value2 == 1 && !ActivityCarCD.mIsFront) {
+                if (value2 == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.huangguan.ActivityCarCD");
                     return;
                 }

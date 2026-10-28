@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.daojun.b70.DaojunB70LowCarSettingInfoAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -93,9 +92,6 @@ public class Callback_0439_DJ_14B70 extends CallbackCanbusBase {
         if (updateCode == 123) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (value == 1 && !DaojunB70LowCarSettingInfoAct.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.b70.DaojunB70LowCarSettingInfoAct");
-            }
         }
     }
 }

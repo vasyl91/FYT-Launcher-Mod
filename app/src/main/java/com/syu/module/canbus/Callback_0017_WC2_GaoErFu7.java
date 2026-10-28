@@ -2,14 +2,7 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.golf7.AirControlMQB_WC_Front;
-import com.syu.carinfo.golf7.AirControlMaiTengDZSJ;
-import com.syu.carinfo.golf7.AirControl_DZSJ_ClearAir;
-import com.syu.carinfo.golf7.AirControl_DZSJ_SeatHotBlow;
 import com.syu.module.canbus.data.ConstGolf;
-import com.syu.carinfo.golf7.Golf7DashBoardVW_DZSJ;
-import com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti;
-import com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -21,31 +14,18 @@ public class Callback_0017_WC2_GaoErFu7 extends CallbackCanbusBase {
     Runnable mDismissDasBoardView = new Runnable() { 
         @Override
         public void run() {
-            if (Golf7DashBoardVW_DZSJ.mIsFront && Golf7DashBoardVW_DZSJ.mInstance != null) {
-                Golf7DashBoardVW_DZSJ.mInstance.finish();
-            }
         }
     };
     Runnable mDismissAirSeatBlowHot = new Runnable() { 
         @Override
         public void run() {
-            if (AirControl_DZSJ_SeatHotBlow.mIsFront && AirControl_DZSJ_SeatHotBlow.mInstance != null) {
-                AirControl_DZSJ_SeatHotBlow.mInstance.finish();
-            }
         }
     };
     Runnable mDismissFunctionalDrivingInfo1 = new Runnable() { 
         @Override
         public void run() {
             if (DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
-                if (Golf7FunctionalEscSystemActiVW_DZSJ.mIsFront && Golf7FunctionalEscSystemActiVW_DZSJ.mInstance != null) {
-                    Golf7FunctionalEscSystemActiVW_DZSJ.mInstance.finish();
-                    return;
-                }
                 return;
-            }
-            if (Golf7FunctionalDrivingInfo1Acti.mIsFront && Golf7FunctionalDrivingInfo1Acti.mInstance != null) {
-                Golf7FunctionalDrivingInfo1Acti.mInstance.finish();
             }
         }
     };
@@ -176,12 +156,9 @@ public class Callback_0017_WC2_GaoErFu7 extends CallbackCanbusBase {
             if ((DataCanbus.DATA[293] == 1 && (this.carId == 6 || this.carId == 7)) || this.carId == 8) {
                 HandlerCanbus.update(updateCode, ints);
                 int value = ints[0];
-                if (value == 1 && !Golf7DashBoardVW_DZSJ.mIsFront) {
+                if (value == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.Golf7DashBoardVW_DZSJ");
                     HandlerUI.getInstance().removeCallbacks(this.mDismissDasBoardView);
-                } else if (Golf7DashBoardVW_DZSJ.mIsFront && value == 0) {
-                    HandlerUI.getInstance().removeCallbacks(this.mDismissDasBoardView);
-                    HandlerUI.getInstance().postDelayed(this.mDismissDasBoardView, 3000L);
                 }
             }
         }
@@ -192,22 +169,11 @@ public class Callback_0017_WC2_GaoErFu7 extends CallbackCanbusBase {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
             if (this.carId == 1) {
-                if (value == 1 && !AirControlMQB_WC_Front.mIsFront) {
+                if (value == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControlMaiTeng");
                     return;
                 } else {
-                    if (AirControlMQB_WC_Front.mIsFront && AirControlMQB_WC_Front.mInstance != null) {
-                        AirControlMQB_WC_Front.mInstance.finish();
-                        return;
-                    }
                     return;
-                }
-            }
-            if (this.carId == 6 || this.carId == 7) {
-                if (value == 1 && !AirControlMaiTengDZSJ.mIsFront && !AirControl_DZSJ_ClearAir.mIsFront) {
-                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControlMaiTengDZSJ");
-                } else if (AirControlMaiTengDZSJ.mIsFront && AirControlMaiTengDZSJ.mInstance != null) {
-                    AirControlMaiTengDZSJ.mInstance.finish();
                 }
             }
         }
@@ -217,9 +183,7 @@ public class Callback_0017_WC2_GaoErFu7 extends CallbackCanbusBase {
         HandlerCanbus.update(updateCode, ints);
         int i = ints[0];
         if (this.carId == 6 || this.carId == 7) {
-            if (!AirControl_DZSJ_SeatHotBlow.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControl_DZSJ_SeatHotBlow");
-            }
+            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControl_DZSJ_SeatHotBlow");
             HandlerUI.getInstance().removeCallbacks(this.mDismissAirSeatBlowHot);
             HandlerUI.getInstance().postDelayed(this.mDismissAirSeatBlowHot, 5000L);
         }
@@ -229,15 +193,6 @@ public class Callback_0017_WC2_GaoErFu7 extends CallbackCanbusBase {
         if (updateCode == 201) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (DataCanbus.DATA[1000] == 393233 || DataCanbus.DATA[1000] == 458769) {
-                if (value == 1 && !Golf7FunctionalEscSystemActiVW_DZSJ.mIsFront) {
-                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ");
-                }
-            } else if (value == 1 && !Golf7FunctionalDrivingInfo1Acti.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti");
-            } else {
-                boolean z = Golf7FunctionalDrivingInfo1Acti.mIsFront;
-            }
             HandlerUI.getInstance().removeCallbacks(this.mDismissFunctionalDrivingInfo1);
             HandlerUI.getInstance().postDelayed(this.mDismissFunctionalDrivingInfo1, 6000L);
         }

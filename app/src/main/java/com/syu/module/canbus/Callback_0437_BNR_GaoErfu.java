@@ -3,7 +3,6 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.module.canbus.data.ConstGolf;
-import com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -14,9 +13,6 @@ public class Callback_0437_BNR_GaoErfu extends CallbackCanbusBase {
     Runnable mDismissFunctionalDrivingInfo1 = new Runnable() { 
         @Override
         public void run() {
-            if (Golf7FunctionalDrivingInfo1Acti.mIsFront && Golf7FunctionalDrivingInfo1Acti.mInstance != null) {
-                Golf7FunctionalDrivingInfo1Acti.mInstance.finish();
-            }
         }
     };
 
@@ -89,9 +85,6 @@ public class Callback_0437_BNR_GaoErfu extends CallbackCanbusBase {
         if (updateCode == 201) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (value == 1 && !Golf7FunctionalDrivingInfo1Acti.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti");
-            }
             HandlerUI.getInstance().removeCallbacks(this.mDismissFunctionalDrivingInfo1);
             HandlerUI.getInstance().postDelayed(this.mDismissFunctionalDrivingInfo1, 100000L);
         }

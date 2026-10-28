@@ -2,9 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi;
-import com.syu.carinfo.psa_all.PSAOilMileIndexActi;
-import com.syu.carinfo.rzc.biaozhi408.RZC_BZ408AlarmRecordActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
@@ -45,28 +42,20 @@ public class Callback_0123_RZC4_PSA301 extends CallbackCanbusBase {
             if (updateCode == 115) {
                 HandlerCanbus.update(updateCode, ints);
                 int value = DataCanbus.DATA[115];
-                if (value == 1 && !BZ408OilMileIndexActi.mIsFront) {
+                if (value == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi");
                     return;
                 } else {
-                    if (value == 0 && BZ408OilMileIndexActi.mIsFront && PSAOilMileIndexActi.mInstance != null) {
-                        PSAOilMileIndexActi.mInstance.finish();
-                        return;
-                    }
                     return;
                 }
             }
             if (updateCode == 116) {
                 HandlerCanbus.update(updateCode, ints);
                 int value2 = DataCanbus.DATA[116];
-                if (value2 != 0 && !RZC_BZ408AlarmRecordActi.mIsFront) {
+                if (value2 != 0) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.biaozhi408.RZC_BZ408AlarmRecordActi");
                     return;
                 } else {
-                    if (value2 == 0 && RZC_BZ408AlarmRecordActi.mIsFront && RZC_BZ408AlarmRecordActi.mInstance != null) {
-                        RZC_BZ408AlarmRecordActi.mInstance.finish();
-                        return;
-                    }
                     return;
                 }
             }

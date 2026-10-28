@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.dj.huangguan.rzc_439_Huangguan_AirControlAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -58,15 +57,12 @@ public class Callback_0439_RZC_TOYOTA_HuangGuan extends CallbackCanbusBase {
         if (updateCode == 80) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (value == 1 && !rzc_439_Huangguan_AirControlAct.mIsFront) {
+            if (value == 1) {
                 //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dj.huangguan.rzc_439_Huangguan_AirControlAct");
                 this.jump = true;
                 return;
             }
             this.jump = false;
-            if (rzc_439_Huangguan_AirControlAct.mIsFront && this.jump && rzc_439_Huangguan_AirControlAct.mInstance != null) {
-                rzc_439_Huangguan_AirControlAct.mInstance.finish();
-            }
         }
     }
 

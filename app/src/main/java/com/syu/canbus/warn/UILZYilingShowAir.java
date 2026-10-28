@@ -11,7 +11,6 @@ import android.widget.PopupWindow;
 
 import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.R;
-import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 import com.syu.util.HandlerUI;
@@ -145,7 +144,7 @@ public class UILZYilingShowAir {
                                         case FinalCanbus.CAR_455_LZ_YL_Toyota_LEUXS_GX /* 3342791 */:
                                         case FinalCanbus.CAR_455_LZ_YL_Toyota_LEUXS_GX_H /* 3408327 */:
                                             if (DataCanbus.DATA[38] == 0) {
-                                                if (!Air_Activity_All_NewAdd_HP.mIsFront) {
+                                                {
                                                     try {
                                                         Intent intent = new Intent("com.syu.canbus.enter.air");
                                                         intent.setPackage(LauncherApplication.getInstance().getPackageName());
@@ -154,15 +153,6 @@ public class UILZYilingShowAir {
                                                     } catch (Exception e) {
                                                         break;
                                                     }
-                                                }
-                                            } else if (Air_Activity_All_NewAdd_HP.mIsFront) {
-                                                try {
-                                                    Intent intent2 = new Intent("com.syu.canbus.enter.air");
-                                                    intent2.setPackage(LauncherApplication.getInstance().getPackageName());
-                                                    LauncherApplication.getInstance().sendBroadcast(intent2);
-                                                    break;
-                                                } catch (Exception e2) {
-                                                    break;
                                                 }
                                             }
                                             break;
@@ -180,7 +170,7 @@ public class UILZYilingShowAir {
                                         case FinalCanbus.CAR_454_LZ_CG_Toyota_Alpha /* 15204806 */:
                                         case FinalCanbus.CAR_454_LZ_CG_Toyota_Alpha_3 /* 16187846 */:
                                             if (DataCanbus.DATA[67] == 0) {
-                                                if (!Air_Activity_All_NewAdd_HP.mIsFront) {
+                                                {
                                                     try {
                                                         Intent intent3 = new Intent("com.syu.canbus.enter.air");
                                                         intent3.setPackage(LauncherApplication.getInstance().getPackageName());
@@ -189,15 +179,6 @@ public class UILZYilingShowAir {
                                                     } catch (Exception e3) {
                                                         break;
                                                     }
-                                                }
-                                            } else if (Air_Activity_All_NewAdd_HP.mIsFront) {
-                                                try {
-                                                    Intent intent4 = new Intent("com.syu.canbus.enter.air");
-                                                    intent4.setPackage(LauncherApplication.getInstance().getPackageName());
-                                                    LauncherApplication.getInstance().sendBroadcast(intent4);
-                                                    break;
-                                                } catch (Exception e4) {
-                                                    break;
                                                 }
                                             }
                                             break;

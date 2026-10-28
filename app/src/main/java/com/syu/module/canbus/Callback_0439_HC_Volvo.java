@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.hc.volvo.IndexAct_Hc_volvo;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -48,11 +47,6 @@ public class Callback_0439_HC_Volvo extends CallbackCanbusBase {
     private void convCarVideo(int updateCode, int[] ints) {
         if (updateCode == 98) {
             int value = ints[0];
-            if (value == 1 && !IndexAct_Hc_volvo.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.hc.volvo.IndexAct_Hc_volvo");
-            } else if (IndexAct_Hc_volvo.mIsFront && IndexAct_Hc_volvo.mInstance != null) {
-                IndexAct_Hc_volvo.mInstance.finish();
-            }
         }
     }
 

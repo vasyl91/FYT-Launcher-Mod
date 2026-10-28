@@ -3,8 +3,6 @@ package com.syu.module.canbus;
 import android.SystemProperties;
 import android.os.RemoteException;
 
-import com.syu.carinfo.dasauto.AirControlPQDZSJ;
-import com.syu.carinfo.dasauto.VwDashBoard_DZSJ;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -42,18 +40,11 @@ public class Callback_0001_WC1_DaZhong extends CallbackCanbusBase {
     Runnable mDismissAirView = new Runnable() { 
         @Override
         public void run() {
-            if (AirControlPQDZSJ.mIsFront && AirControlPQDZSJ.mInstance != null) {
-                AirControlPQDZSJ.mInstance.finish();
-                Callback_0001_WC1_DaZhong.jump = false;
-            }
         }
     };
     Runnable mDismissDasBoardView = new Runnable() { 
         @Override
         public void run() {
-            if (VwDashBoard_DZSJ.mIsFront && VwDashBoard_DZSJ.mInstance != null) {
-                VwDashBoard_DZSJ.mInstance.finish();
-            }
         }
     };
 
@@ -124,10 +115,8 @@ public class Callback_0001_WC1_DaZhong extends CallbackCanbusBase {
     private void showCotrolAir(int updateCode, int[] ints) {
         if (AirHelper.sAirWindowEnable == 1) {
             HandlerCanbus.update(updateCode, ints);
-            if (!AirControlPQDZSJ.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dasauto.AirControlPQDZSJ");
-                jump = true;
-            }
+            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dasauto.AirControlPQDZSJ");
+            jump = true;
             if (jump) {
                 HandlerUI.getInstance().removeCallbacks(this.mDismissAirView);
                 HandlerUI.getInstance().postDelayed(this.mDismissAirView, 5000L);
@@ -140,12 +129,9 @@ public class Callback_0001_WC1_DaZhong extends CallbackCanbusBase {
             if (DataCanbus.DATA[1000] == 131073 || DataCanbus.DATA[1000] == 196609) {
                 HandlerCanbus.update(updateCode, ints);
                 int value = ints[0];
-                if (value == 1 && !VwDashBoard_DZSJ.mIsFront) {
+                if (value == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.dasauto.VwDashBoard_DZSJ");
                     HandlerUI.getInstance().removeCallbacks(this.mDismissDasBoardView);
-                } else if (VwDashBoard_DZSJ.mIsFront && value == 0) {
-                    HandlerUI.getInstance().removeCallbacks(this.mDismissDasBoardView);
-                    HandlerUI.getInstance().postDelayed(this.mDismissDasBoardView, 3000L);
                 }
             }
         }

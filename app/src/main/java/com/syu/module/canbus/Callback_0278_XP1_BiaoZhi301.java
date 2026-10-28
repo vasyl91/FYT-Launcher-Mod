@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.ToolkitMisc;
@@ -53,14 +52,10 @@ public class Callback_0278_XP1_BiaoZhi301 extends CallbackCanbusBase {
             if (updateCode == 154) {
                 HandlerCanbus.update(updateCode, ints);
                 int value = DataCanbus.DATA[154];
-                if (value == 1 && !BZ408OilMileIndexActi.mIsFront) {
+                if (value == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi");
                     return;
                 } else {
-                    if (value == 0 && BZ408OilMileIndexActi.mIsFront && BZ408OilMileIndexActi.mInstance != null) {
-                        BZ408OilMileIndexActi.mInstance.finish();
-                        return;
-                    }
                     return;
                 }
             }

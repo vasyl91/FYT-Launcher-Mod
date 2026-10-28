@@ -5,7 +5,6 @@ import android.os.RemoteException;
 
 import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.R;
-import com.syu.carinfo.byd.hcy.ActivityAirCrtrlBydSirui;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -166,11 +165,6 @@ public class Callback_0439_HuaChengYu_Byd_S7 extends CallbackCanbusBase {
     private void showCotrolAir(int updateCode, int[] ints) {
         if (updateCode == 98) {
             int value = ints[0];
-            if (value == 1 && !ActivityAirCrtrlBydSirui.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.byd.hcy.ActivityAirCrtrlBydSirui");
-            } else if (ActivityAirCrtrlBydSirui.mIsFront && ActivityAirCrtrlBydSirui.mInstance != null) {
-                ActivityAirCrtrlBydSirui.mInstance.finish();
-            }
         }
     }
 }

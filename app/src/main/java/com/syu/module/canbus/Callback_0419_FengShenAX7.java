@@ -5,7 +5,6 @@ import android.os.RemoteException;
 import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
-import com.syu.carinfo.wc.jingyix5.JYCarMaintaneceOptions;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;

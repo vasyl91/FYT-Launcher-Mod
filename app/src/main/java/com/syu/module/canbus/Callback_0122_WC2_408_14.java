@@ -2,8 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.biaozhi408.BZ408AirControlActi;
-import com.syu.carinfo.psa_all.PSAOilMileIndexActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -52,26 +50,18 @@ public class Callback_0122_WC2_408_14 extends CallbackCanbusBase {
             if (updateCode == 115) {
                 HandlerCanbus.update(updateCode, ints);
                 int value = DataCanbus.DATA[115];
-                if (value == 1 && !PSAOilMileIndexActi.mIsFront) {
+                if (value == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi");
                     return;
                 } else {
-                    if (value == 0 && PSAOilMileIndexActi.mIsFront && PSAOilMileIndexActi.mInstance != null) {
-                        PSAOilMileIndexActi.mInstance.finish();
-                        return;
-                    }
                     return;
                 }
             }
             if (updateCode == 166) {
-                if (ints[0] == 1 && !BZ408AirControlActi.mIsFront) {
+                if (ints[0] == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.biaozhi408.BZ408AirControlActi");
                     return;
                 } else {
-                    if (ints[0] == 1 && BZ408AirControlActi.mIsFront && BZ408AirControlActi.mInstance != null) {
-                        BZ408AirControlActi.mInstance.finish();
-                        return;
-                    }
                     return;
                 }
             }

@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.hava.ActivityHavaH7CarCD;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -131,7 +130,7 @@ public class Callback_0244_RZC_XP1_HavalH2 extends CallbackCanbusBase {
         if (updateCode >= 0 && updateCode < 171) {
             switch (updateCode) {
                 case 146:
-                    if (DataCanbus.DATA[updateCode] == 1 && !ActivityHavaH7CarCD.mIsFront) {
+                    if (DataCanbus.DATA[updateCode] == 1) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.hava.ActivityHavaH7CarCD");
                         break;
                     }

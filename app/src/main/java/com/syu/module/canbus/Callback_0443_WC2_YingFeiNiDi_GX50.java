@@ -3,8 +3,6 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.android.launcher66.LauncherApplication;
-import com.syu.carinfo.wc.infeinidi.WcInfinitCarCD;
-import com.syu.carinfo.wc.infeinidi.WcInfinitCarRadio;
 import com.syu.ipc.IModuleCallback;
 import com.syu.module.main.DataMain;
 import com.syu.ui.air.AirHelper;
@@ -176,15 +174,11 @@ public class Callback_0443_WC2_YingFeiNiDi_GX50 extends CallbackCanbusBase {
             switch (value) {
                 case 1:
                 case 4:
-                    if (!WcInfinitCarRadio.isFront) {
-                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.infeinidi.WcInfinitCarRadio");
-                        break;
-                    }
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.infeinidi.WcInfinitCarRadio");
+                    break;
                 case 2:
-                    if (!WcInfinitCarCD.isFront) {
-                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.infeinidi.WcInfinitCarCD");
-                        break;
-                    }
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.infeinidi.WcInfinitCarCD");
+                    break;
             }
         }
     }

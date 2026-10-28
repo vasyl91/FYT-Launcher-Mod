@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.wc.tianlai.ActivityWCTianLaiCarCD;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 //import com.syu.ui.air.Air_0430_wc2_TianLai03;
@@ -47,11 +46,7 @@ public class Callback_0430_WC2_TianLai03_07 extends CallbackCanbusBase {
         if (updateCode >= 0 && updateCode < 112) {
             HandlerCanbus.update(updateCode, ints);
             if (updateCode == 105) {
-                if (!ActivityWCTianLaiCarCD.mIsFront) {
-                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlai.ActivityWCTianLaiCarCD");
-                } else if (ActivityWCTianLaiCarCD.mIsFront && ActivityWCTianLaiCarCD.mInstance != null) {
-                    ActivityWCTianLaiCarCD.mInstance.finish();
-                }
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.tianlai.ActivityWCTianLaiCarCD");
             }
         }
     }

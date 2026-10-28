@@ -7,9 +7,7 @@ import android.widget.PopupWindow;
 
 import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.R;
-import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
 import com.syu.module.canbus.data.ConstAllAirDara;
-import com.syu.carinfo.lz.lexusis.KYCLexusFrontAirControlAct;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
@@ -298,11 +296,8 @@ public class AirHelper implements Runnable {
             AirHelper.this.mTick = 5;
             int i = DataCanbus.DATA[1000];
             if (AirHelper.IsNewAirContl()) {
-                if (!Air_Activity_All_Toyota_prado_HP.mIsFront) {
-                    ConstAllAirDara.JumpNewAir = true;
-                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP");
-                    return;
-                }
+                ConstAllAirDara.JumpNewAir = true;
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP");
                 return;
             }
             if (DataCanbus.DATA[1000] != 6357445 && DataCanbus.DATA[1000] != 6422981 && DataCanbus.DATA[1000] != 6488517 && DataCanbus.DATA[1000] != 6554053 && DataCanbus.DATA[1000] != 6619589 && DataCanbus.DATA[1000] != 6685125 && DataCanbus.DATA[1000] != 6750661 && DataCanbus.DATA[1000] != 6816197) {
@@ -324,9 +319,7 @@ public class AirHelper implements Runnable {
                 }
                 return;
             }
-            if (!KYCLexusFrontAirControlAct.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.KYCLexusFrontAirControlAct");
-            }
+            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.lz.lexusis.KYCLexusFrontAirControlAct");
         }
     };
 
@@ -361,13 +354,7 @@ public class AirHelper implements Runnable {
             this.mTick--;
             if (this.mTick == 0) {
                 if (IsNewAirContl()) {
-                    if (Air_Activity_All_Toyota_prado_HP.mIsFront && ConstAllAirDara.JumpNewAir && Air_Activity_All_Toyota_prado_HP.mInstance != null) {
-                        Air_Activity_All_Toyota_prado_HP.mInstance.finish();
-                    }
                 } else if (DataCanbus.DATA[1000] == 6357445 || DataCanbus.DATA[1000] == 6422981 || DataCanbus.DATA[1000] == 6488517 || DataCanbus.DATA[1000] == 6554053 || DataCanbus.DATA[1000] == 6619589 || DataCanbus.DATA[1000] == 6685125 || DataCanbus.DATA[1000] == 6750661 || DataCanbus.DATA[1000] == 6816197) {
-                    if (KYCLexusFrontAirControlAct.mIsFront && KYCLexusFrontAirControlAct.mInstance != null) {
-                        KYCLexusFrontAirControlAct.mInstance.finish();
-                    }
                 } else {
                     HandlerUI.getInstance().post(this.mHideWindow);
                 }

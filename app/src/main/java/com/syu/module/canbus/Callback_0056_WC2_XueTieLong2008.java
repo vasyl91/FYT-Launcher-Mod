@@ -2,8 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.psa_all.PSAOilMileIndexActi;
-import com.syu.carinfo.psa_all.PsaAllAlarmRecordActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
@@ -64,28 +62,20 @@ public class Callback_0056_WC2_XueTieLong2008 extends CallbackCanbusBase {
             if (updateCode == 115) {
                 HandlerCanbus.update(updateCode, ints);
                 int value = DataCanbus.DATA[115];
-                if (value == 1 && !PSAOilMileIndexActi.mIsFront) {
+                if (value == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.psa.PsaOilMileIndexActi");
                     return;
                 } else {
-                    if (value == 0 && PSAOilMileIndexActi.mIsFront && PSAOilMileIndexActi.mInstance != null) {
-                        PSAOilMileIndexActi.mInstance.finish();
-                        return;
-                    }
                     return;
                 }
             }
             if (updateCode == 116) {
                 HandlerCanbus.update(updateCode, ints);
                 int value2 = DataCanbus.DATA[116];
-                if (value2 == 1 && !PSAOilMileIndexActi.mIsFront) {
+                if (value2 == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.psa.PsaAlarmRecordActi");
                     return;
                 } else {
-                    if (value2 == 0 && PsaAllAlarmRecordActi.mIsFront && PsaAllAlarmRecordActi.mInstance != null) {
-                        PsaAllAlarmRecordActi.mInstance.finish();
-                        return;
-                    }
                     return;
                 }
             }

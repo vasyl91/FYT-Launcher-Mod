@@ -11,7 +11,6 @@ import android.widget.PopupWindow;
 
 import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.R;
-import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 
@@ -77,7 +76,7 @@ public class UIKYCYichangShowAir {
                         UIKYCYichangShowAir.this.windowshownum = 6;
                         int action = event.getAction();
                         if (action == 0) {
-                            if (!Air_Activity_All_Toyota_prado_HP.mIsFront) {
+                            {
                                 try {
                                     Intent intent = new Intent("com.syu.canbus.enter.air");
                                     intent.setPackage(LauncherApplication.getInstance().getPackageName());

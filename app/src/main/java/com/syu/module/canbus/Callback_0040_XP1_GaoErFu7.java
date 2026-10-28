@@ -2,10 +2,7 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.module.canbus.data.ConstGolf;
-import com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti;
-import com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalDrivingInfo1Acti;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -69,9 +66,6 @@ public class Callback_0040_XP1_GaoErFu7 extends CallbackCanbusBase {
     Runnable mDismissFunctionalDrivingInfo1 = new Runnable() { 
         @Override
         public void run() {
-            if (Golf7FunctionalDrivingInfo1Acti.mIsFront && Golf7FunctionalDrivingInfo1Acti.mInstance != null) {
-                Golf7FunctionalDrivingInfo1Acti.mInstance.finish();
-            }
         }
     };
 
@@ -118,12 +112,9 @@ public class Callback_0040_XP1_GaoErFu7 extends CallbackCanbusBase {
                         HandlerCanbus.update(updateCode, ints);
                     }
                     int value = DataCanbus.DATA[80];
-                    if (value == 1 && !Air_Activity_All_NewAdd_HP.mIsFront) {
+                    if (value == 1) {
                         AirHelper.disableAirWindowLocal(true);
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_All_NewAdd_HP");
-                        break;
-                    } else if (value == 0 && Air_Activity_All_NewAdd_HP.mIsFront && Air_Activity_All_NewAdd_HP.mInstance != null) {
-                        Air_Activity_All_NewAdd_HP.mInstance.finish();
                         break;
                     }
                 case 171:
@@ -157,9 +148,6 @@ public class Callback_0040_XP1_GaoErFu7 extends CallbackCanbusBase {
         if (updateCode == 191) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (value == 1 && !Golf7_XP_FunctionalDrivingInfo1Acti.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalDrivingInfo1Acti");
-            }
             HandlerUI.getInstance().removeCallbacks(this.mDismissFunctionalDrivingInfo1);
             HandlerUI.getInstance().postDelayed(this.mDismissFunctionalDrivingInfo1, 100000L);
         }

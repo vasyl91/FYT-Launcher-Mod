@@ -2,10 +2,7 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.golf7.AirControlMQB_RZC_Front;
 import com.syu.module.canbus.data.ConstGolf;
-import com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti;
-import com.syu.carinfo.xp.xiandai.XiandaiSosPage;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -16,9 +13,6 @@ public class Callback_0160_RZC_XP1_DaZhong_GaoErFu7 extends CallbackCanbusBase {
     Runnable mDismissFunctionalDrivingInfo1 = new Runnable() { 
         @Override
         public void run() {
-            if (Golf7FunctionalDrivingInfo1Acti.mIsFront && Golf7FunctionalDrivingInfo1Acti.mInstance != null) {
-                Golf7FunctionalDrivingInfo1Acti.mInstance.finish();
-            }
         }
     };
 
@@ -89,11 +83,8 @@ public class Callback_0160_RZC_XP1_DaZhong_GaoErFu7 extends CallbackCanbusBase {
                 case 80:
                     HandlerCanbus.update(updateCode, ints);
                     int value = DataCanbus.DATA[80];
-                    if (value == 1 && !AirControlMQB_RZC_Front.mIsFront) {
+                    if (value == 1) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.AirControl_TuGuanL_RZC");
-                        break;
-                    } else if (value == 0 && AirControlMQB_RZC_Front.mIsFront && AirControlMQB_RZC_Front.mInstance != null) {
-                        AirControlMQB_RZC_Front.mInstance.finish();
                         break;
                     }
                 case 171:
@@ -127,11 +118,6 @@ public class Callback_0160_RZC_XP1_DaZhong_GaoErFu7 extends CallbackCanbusBase {
         if (updateCode == 460) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (value != 0 && !XiandaiSosPage.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.xiandai.XiandaiSosPage");
-            } else if (value == 0 && XiandaiSosPage.mIsFront && XiandaiSosPage.mInstance != null) {
-                XiandaiSosPage.mInstance.finish();
-            }
         }
     }
 
@@ -140,9 +126,7 @@ public class Callback_0160_RZC_XP1_DaZhong_GaoErFu7 extends CallbackCanbusBase {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
             if (value != 0) {
-                if (!Golf7FunctionalDrivingInfo1Acti.mIsFront) {
-                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti");
-                }
+                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti");
                 HandlerUI.getInstance().removeCallbacks(this.mDismissFunctionalDrivingInfo1);
                 HandlerUI.getInstance().postDelayed(this.mDismissFunctionalDrivingInfo1, 10000L);
             }

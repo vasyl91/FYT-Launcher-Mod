@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.xp.xiandai.XiandaiSosPage;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -84,11 +83,6 @@ public class Callback_0439_XP_SUBURU extends CallbackCanbusBase {
         if (updateCode == 119) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (value != 0 && !XiandaiSosPage.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.xiandai.XiandaiSosPage");
-            } else if (value == 0 && XiandaiSosPage.mIsFront && XiandaiSosPage.mInstance != null) {
-                XiandaiSosPage.mInstance.finish();
-            }
         }
     }
 }

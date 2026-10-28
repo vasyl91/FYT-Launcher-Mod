@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.accord9.xp.XPAccord9BackCarActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -73,14 +72,10 @@ public class Callback_0077_XP1_ACCORD9_H extends CallbackCanbusBase {
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode == 1021) {
             int value = ints[0];
-            if (value == 1 && !XPAccord9BackCarActi.mIsFront) {
+            if (value == 1) {
                 //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.accord9.xp.XPAccord9BackCarActi");
                 return;
             } else {
-                if (value == 0 && XPAccord9BackCarActi.mIsFront && XPAccord9BackCarActi.mInstance != null) {
-                    XPAccord9BackCarActi.mInstance.finish();
-                    return;
-                }
                 return;
             }
         }

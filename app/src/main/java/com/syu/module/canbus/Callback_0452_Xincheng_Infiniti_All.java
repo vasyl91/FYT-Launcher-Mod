@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.xincheng.infiniti.Xincheng_Nissan_Tule_AirControlActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -133,16 +132,9 @@ public class Callback_0452_Xincheng_Infiniti_All extends CallbackCanbusBase {
                 if (5046724 == DataCanbus.DATA[1000] || 5112260 == DataCanbus.DATA[1000]) {
                     int value = ints[0];
                     if (value == 1) {
-                        if (!Xincheng_Nissan_Tule_AirControlActi.mIsFront) {
-                            //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xincheng.infiniti.Xincheng_Nissan_Tule_AirControlActi");
-                            return;
-                        }
+                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xincheng.infiniti.Xincheng_Nissan_Tule_AirControlActi");
                         return;
                     } else {
-                        if (value == 0 && Xincheng_Nissan_Tule_AirControlActi.mIsFront && Xincheng_Nissan_Tule_AirControlActi.mInstance != null) {
-                            Xincheng_Nissan_Tule_AirControlActi.mInstance.finish();
-                            return;
-                        }
                         return;
                     }
                 }

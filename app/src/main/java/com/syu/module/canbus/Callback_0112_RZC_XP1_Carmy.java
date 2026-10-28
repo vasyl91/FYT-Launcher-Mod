@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.camry2012.xp.ToyotaLexusActivityCarCD;
 import com.syu.module.canbus.data.ConstWcToyota;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
@@ -176,9 +175,6 @@ public class Callback_0112_RZC_XP1_Carmy extends CallbackCanbusBase {
         if (updateCode == 181) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (value == 2 && !ToyotaLexusActivityCarCD.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.camry2012.xp.ToyotaLexusActivityCarCD");
-            }
         }
     }
 

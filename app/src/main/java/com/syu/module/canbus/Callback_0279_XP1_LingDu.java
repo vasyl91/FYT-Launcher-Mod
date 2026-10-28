@@ -3,7 +3,6 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.module.canbus.data.ConstGolf;
-import com.syu.carinfo.golf7.Golf7AirActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -53,12 +52,9 @@ public class Callback_0279_XP1_LingDu extends CallbackCanbusBase {
                         HandlerCanbus.update(updateCode, ints);
                     }
                     int value = DataCanbus.DATA[80];
-                    if (value == 1 && !Golf7AirActi.mIsFront) {
+                    if (value == 1) {
                         AirHelper.disableAirWindowLocal(true);
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.golf7.Golf7AirActi");
-                        break;
-                    } else if (value == 0 && Golf7AirActi.mIsFront && Golf7AirActi.mInstance != null) {
-                        Golf7AirActi.mInstance.finish();
                         break;
                     }
                 case 171:

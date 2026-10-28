@@ -2,8 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.daojun.lexus.djLexusCd;
-import com.syu.carinfo.daojun.lexus.djLexusRadio;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -85,12 +83,12 @@ public class Callback_0439_DJ_LEXUS_ES extends CallbackCanbusBase {
             int value = ints[0];
             switch (updateCode) {
                 case 124:
-                    if (value == 1 && !djLexusCd.isFront) {
+                    if (value == 1) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.lexus.djLexusCd");
                         break;
                     }
                 case 125:
-                    if (value == 1 && !djLexusRadio.isFront) {
+                    if (value == 1) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.lexus.djLexusRadio");
                         break;
                     }
