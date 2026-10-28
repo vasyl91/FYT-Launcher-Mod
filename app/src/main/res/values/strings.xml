@@ -47,19 +47,6 @@
     <string name="workspace_scroll_format">Home screen %1$d of %2$d</string>
     <string name="apps_customize_apps_scroll_format">Apps page %1$d of %2$d</string>
     <string name="apps_customize_widgets_scroll_format">Widgets page %1$d of %2$d</string>
-    <string name="first_run_cling_title">Welcome!</string>
-    <string name="first_run_cling_description">Make yourself at home.</string>
-    <string name="first_run_cling_custom_content_hint" />
-    <string name="first_run_cling_search_bar_hint" />
-    <string name="first_run_cling_create_screens_hint">Create more screens for apps and folders</string>
-    <string name="workspace_cling_title">Organize your space</string>
-    <string name="workspace_cling_move_item">Touch &amp; hold background to manage wallpaper, widgets and settings.</string>
-    <string name="all_apps_cling_title">Choose some apps</string>
-    <string name="all_apps_cling_add_item">To add an app to your Home screen, touch &amp; hold it.</string>
-    <string name="folder_cling_title">"Here's a folder"</string>
-    <string name="folder_cling_create_folder">To create one like this, touch &amp; hold an app, then move it over another.</string>
-    <string name="cling_dismiss">OK</string>
-    <string name="dummy_custom_cling_error_message">Error: custom workspace layout passed in but custom cling was not overwritten</string>
     <string name="folder_opened">Folder opened, %1$d by %2$d</string>
     <string name="folder_tap_to_close">Touch to close folder</string>
     <string name="folder_tap_to_rename">Touch to save rename</string>
@@ -100,47 +87,6 @@
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Not connected</string>
     <string name="car_canbus">Canbus</string>
-    <string name="clingmusictitle">Control the music player by voice with Car Assistant</string>
-    <string name="clingvideotitle">Control the video player by voice with Car Assistant</string>
-    <string name="clingnavetitle">Control the navigation app by voice with Car Assistant</string>
-    <string name="clingradiotitle">Control the FM radio by voice with Car Assistant</string>
-    <string name="clingbttitle">Control Bluetooth calls by voice with Car Assistant</string>
-    <string name="clingkuwotitle">Control Kuwo Music by voice with Car Assistant</string>
-    <string name="clingkaolatitle">Control Koala FM by voice with Car Assistant</string>
-    <string name="clingmusictext">"1. Say “Open music / Play music / Play a song / I want to listen to music” to play music.
-2. Say “Play something / Just play something” to play random music.
-3. Say “I want to hear Little Apple / Play The Moon Represents My Heart / I want to hear songs by Wang Feng / Play songs by Eason Chan” to play specific songs.
-4. Say “Previous song / Next song / Play the previous song / Play the next song / Change the song” to control the music.
-5. Say “Close music” to pause the music."</string>
-    <string name="clingvideotext">"1. Say “Open video” to start the video player.
-2. Say “Next / Previous” to switch to the next or previous video.
-3. Say “Play / Pause” to toggle play and pause."</string>
-    <string name="clingnavetext">"1. Say “Open navigation / Start navigation / Back to navigation / Return to navigation / Enter navigation” to start the navigation app.
-2. Say “I want to go to Window of the World / Navigate to Window of the World / How do I get to Zhongshan Park / How do I get to Baishizhou / Take me to Baishizhou” to start navigating.
-3. Say “I want to go home / I want to go to work / Navigate home / Navigate to work / Take me home / Take me to work” or “Change the home/work address to XX” to navigate between home and work.
-4. Say “(Find / Search) nearby restaurants / nearby parking lots / nearby gas stations” to search the surroundings.
-5. Say “I'm hungry / I want to eat / I want a foot massage / I want to go online / I want KFC” to search for nearby businesses.
-6. Say “Stop navigation / End navigation / Close navigation / Cancel navigation / Exit navigation” to close navigation."</string>
-    <string name="clingradiotext">"1. Say “Open radio” to start the radio app.
-2. Say “Previous station / Switch to the previous station / Change to the previous station” to play the previous station.
-3. Say “Next station / Switch to the next station / Change to the next station” to play the next station.
-4. Say “Tune to XX (e.g., tune to 101.1)” to play a specific station.
-5. Say “Close radio” to close the radio."</string>
-    <string name="clingbttext">"1. Say “Open Bluetooth / Open phone” to start the Bluetooth app.
-2. Say “Offline (contacts): Call Zhang San / Call Mom / Call Huang Doudou / Dial Zhang San / Call Li Bing” or “Online (number): Call 110 / Phone 110” to make a call.
-3. Say “The first one / The second one / The Shenzhen one / The Beijing one / The China Telecom one / The China Mobile one (several results in Guangdong, please choose again) / The one at the front / The last one / The top one / The bottom one / Ending in 0580 / Ends with 0580 / Starting with 150 / Landline / Short number / Mobile” to choose a phone number.
-4. Say “Close Bluetooth / Close phone” to close the Bluetooth phone."</string>
-    <string name="clingkuwotext">"1. Say “Open Kuwo Music” to play Kuwo Music.
-2. Say “Play something / Just play something” to play random music.
-3. Say “I want to hear Little Apple / Play The Moon Represents My Heart / I want to hear songs by Wang Feng / Play songs by Eason Chan” to play specific songs.
-4. Say “Previous song / Next song / Play the previous song / Play the next song / Change the song” to control the music.
-5. Say “Close Kuwo Music” to close it."</string>
-    <string name="clingkaolatext">"1. Say “Open Koala FM” to open Koala FM.
-2. Say “Play something / Just play something” to play random music.
-3. Say “I want to hear Little Apple / Play The Moon Represents My Heart / I want to hear songs by Wang Feng / Play songs by Eason Chan” to play specific songs.
-4. Say “Previous song / Next song / Play the previous song / Play the next song / Change the song” to control the music.
-5. Say “Close Koala FM” to close it."</string>
-    <string name="cling_cancel">Cancel</string>
     <string name="car_calculator">Calculator</string>
     <string name="car_guide">Guide</string>
     <string name="skin_ruleless" translatable="false">Lionel</string>

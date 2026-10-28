@@ -6,7 +6,6 @@
     <bool name="allow_rotation">false</bool>
     <bool name="config_useDropTargetDownTransition">false</bool>
     <bool name="config_workspaceFadeAdjacentScreens">false</bool>
-    <bool name="config_useCustomClings">false</bool>
     <bool name="hotseat_transpose_layout_with_orientation">true</bool>
     <bool name="debug_memory_enabled">false</bool>
     <bool name="hotseat_landscape_layout">true</bool>
@@ -36,8 +35,6 @@
     <bool name="wallpaper_show">true</bool>
     <bool name="page_increase">false</bool>
     <bool name="window_isactivation">false</bool>
-    <bool name="close_popwindow">false</bool>
-    <bool name="isdefaultwallpaper">true</bool>
     <bool name="istextPaint_abroad">true</bool>
     <bool name="apps_widget_navi">false</bool>
     <bool name="apps_widget_amauto">false</bool>

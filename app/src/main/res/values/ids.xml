@@ -2,9 +2,6 @@
 <resources>
     <item type="id" name="str_tag" />
     <item type="id" name="syu_app_button" />
-    <item type="id" name="all_apps_cling_title" />
-    <item type="id" name="all_apps_cling_add_item" />
-    <item type="id" name="cling_dismiss" />
     <item type="id" name="application_icon" />
     <item type="id" name="apps_customize_content" />
     <item type="id" name="tabs_container" />
@@ -16,11 +13,6 @@
     <item type="id" name="widget_preview" />
     <item type="id" name="widget_name" />
     <item type="id" name="widget_dims" />
-    <item type="id" name="content" />
-    <item type="id" name="clingtitletext" />
-    <item type="id" name="clingtext" />
-    <item type="id" name="clickapp" />
-    <item type="id" name="clickapp_cancel" />
     <item type="id" name="inactive" />
     <item type="id" name="active" />
     <item type="id" name="rl_left_bar" />
@@ -62,11 +54,6 @@
     <item type="id" name="delete_target_text" />
     <item type="id" name="provider_icon" />
     <item type="id" name="provider" />
-    <item type="id" name="bubble_content" />
-    <item type="id" name="search_bar_hint" />
-    <item type="id" name="custom_content_hint" />
-    <item type="id" name="folder_cling_title" />
-    <item type="id" name="folder_cling_create_folder" />
     <item type="id" name="preview_background" />
     <item type="id" name="folder_icon_name" />
     <item type="id" name="dt_music_layout" />
@@ -94,15 +81,10 @@
     <item type="id" name="hotseat" />
     <item type="id" name="overview_panel" />
     <item type="id" name="qsb_bar" />
-    <item type="id" name="cling_scrim" />
-    <item type="id" name="first_run_cling" />
-    <item type="id" name="workspace_cling" />
-    <item type="id" name="folder_cling" />
     <item type="id" name="voice_button_proxy" />
     <item type="id" name="voice_button" />
     <item type="id" name="apps_customize_pane" />
     <item type="id" name="qqsb_bar" />
-    <item type="id" name="clickapp_cling" />
     <item type="id" name="m_bt_btn" />
     <item type="id" name="ic_hotseat_bt" />
     <item type="id" name="m_eq_btn" />
@@ -140,9 +122,6 @@
     <item type="id" name="wallpaper_image" />
     <item type="id" name="wallpaper_item_label" />
     <item type="id" name="wallpaper_icon" />
-    <item type="id" name="focused_hotseat_app_bubble" />
-    <item type="id" name="focused_hotseat_app_title" />
-    <item type="id" name="focused_hotseat_app_description" />
     <item type="id" name="custom2" />
     <item type="id" name="custom3" />
     <item type="id" name="menu_delete" />

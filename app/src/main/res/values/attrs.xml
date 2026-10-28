@@ -32,12 +32,6 @@
         <attr name="widgetCellHeightGap" format="dimension" />
         <attr name="widgetCountX" format="integer" />
         <attr name="widgetCountY" format="integer" />
-        <attr name="clingFocusedX" format="integer" />
-        <attr name="clingFocusedY" format="integer" />
-    </declare-styleable>
-
-    <declare-styleable name="Cling">
-        <attr name="drawIdentifier" format="string" />
     </declare-styleable>
 
     <declare-styleable name="DrawableStateProxyView">

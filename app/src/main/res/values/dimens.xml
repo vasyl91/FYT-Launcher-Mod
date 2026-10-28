@@ -7,10 +7,6 @@
     <dimen name="wallpaperThumbnailWidth">106.5dip</dimen>
     <dimen name="wallpaperThumbnailHeight">94.5dip</dimen>
     <dimen name="wallpaperItemIconSize">32.0px</dimen>
-    <dimen name="clingPunchThroughGraphicCenterRadius">94.0px</dimen>
-    <dimen name="folderClingMarginTop">20.0px</dimen>
-    <dimen name="cling_text_block_offset_x">0.0px</dimen>
-    <dimen name="cling_text_block_offset_y">0.0px</dimen>
     <dimen name="workspace_max_gap">0.0px</dimen>
     <dimen name="workspace_overscroll_drawable_padding">0.0px</dimen>
     <dimen name="workspace_spring_loaded_page_spacing">15.0px</dimen>
