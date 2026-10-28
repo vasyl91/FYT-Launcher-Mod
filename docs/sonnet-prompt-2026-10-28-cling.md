@@ -6,7 +6,7 @@ Numery linii to stan z `b38f128` i są orientacyjne. Zawsze sprawdzaj je w kodzi
 
 ## 0. Cel i najważniejsza zasada
 
-To czyste usuwanie martwego kodu. Na żadnym urządzeniu (FYT 7862, 8581, 7870, telefony) użytkownik nie może zobaczyć żadnej zmiany. Jedyny wyjątek opisuje krok C1.2: Back przestaje wysyłać `com.syu.cancle_tts`. Nie refaktoryzuj niczego poza tym, co wymienione. Nie „poprawiaj” przy okazji sąsiedniego kodu.
+To czyste usuwanie martwego kodu. Na żadnym urządzeniu (FYT 7862, 8581, 7870, telefony) użytkownik nie może zobaczyć żadnej zmiany. Dotyczy to także Back: nadal ma wysyłać `com.syu.cancle_tts` (krok C1.2). Nie refaktoryzuj niczego poza tym, co wymienione. Nie „poprawiaj” przy okazji sąsiedniego kodu.
 
 Dlaczego ten kod jest martwy (fakty z kodu):
 - **Samouczki pierwszego uruchomienia** (`first_run_cling`, `workspace_cling`, `folder_cling`). `initCling` wywołuje się tylko wtedy, gdy `Launcher.isClingsEnabled()` (≈8803) zwraca `true`, a ta metoda zawsze zwraca `false`. Dlatego zawsze wykonuje się `removeCling(...)`, które wyjmuje widok z `DragLayer`. `showFirstRunCling()` nie ma ani jednego wywołującego.
@@ -40,14 +40,15 @@ Usuń podpowiedź głosową `clickapp_cling` i wszystko, co służy tylko jej.
 
 1. **`Launcher.startActivitySafely`** (≈6907–7021): usuń zmienne `clingTitleText`, `clingText`, `str1` i cały `if/else`. Na końcu metody zostaje samo `success = start(v, intent, tag);` przed `return success;`. Część metody przed ≈6907 (easyconn, carlife, toasty) zostaw bez zmian.
 2. **Callback Back w `onBackPressedX()`** (≈2086–2098). Blok `if (ResValue.getInstance().clickapp_cling > 0) { … }` wykonuje się dziś przy **każdym** Back: identyfikator istnieje, więc warunek jest zawsze prawdziwy. Zrób tak:
-   - usuń ukrycie cling (`findViewById(...)` / `setVisibility(GONE)`) i wywołanie `Launcher.this.stopVoice()`;
-   - dwa pozostałe efekty (`mWaitingForResume.setStayPressed(false)` i `mAppsCustomizeContent.resetDrawableState()`) **zostaw**, z tymi samymi kontrolami null i w tej samej kolejności, ale już bez warunku `clickapp_cling`;
-   - **to jedyna zamierzona zmiana zachowania**: Back przestaje wysyłać do asystenta głosowego intencję `com.syu.cancle_tts`. Ta intencja wyciszała objaśnienie, które czytał `wakeVoice`, a po tej zmianie to objaśnienie już nie istnieje. Opisz to w treści commita.
+   - usuń tylko ukrycie cling (`Cling cling = (Cling) findViewById(...)` i `if (cling != null) cling.setVisibility(GONE)`);
+   - trzy pozostałe efekty **zostaw** w tej samej kolejności i z tymi samymi kontrolami null, ale już bez warunku `clickapp_cling`: `Launcher.this.stopVoice()`, `mWaitingForResume.setStayPressed(false)` i `mAppsCustomizeContent.resetDrawableState()`;
+   - **decyzja właściciela**: Back ma nadal przy każdym naciśnięciu wysyłać do asystenta głosowego FYT intencję `com.syu.cancle_tts` (`stopVoice()`), czyli przerywać jego mowę, tak jak dotąd. Nie usuwaj tego wywołania i nie dodawaj mu żadnego nowego warunku. W treści commita napisz, że `stopVoice()` zostaje celowo, mimo że `wakeVoice` znika.
 3. **Usuń metody**:
    - `showClickappCling()` (≈9045);
    - `dismissClingApp(...)` (≈8823–8889);
-   - `wakeVoice(String)` (≈7025);
-   - `stopVoice()` (≈7032). Przed jej usunięciem potwierdź `rg`, że nie ma innych wywołań.
+   - `wakeVoice(String)` (≈7025).
+
+   Metoda **`stopVoice()` (≈7032) zostaje** bez zmian, bo woła ją Back.
 4. **Usuń pole** `closePop` (≈479).
 5. **`share/ResValue.java`** (≈282–286): usuń pola `clingtitletext`, `clingtext`, `clickapp`, `clickapp_cling`, `clickapp_cancel`.
 6. **`share/Config.java`**: usuń `EXISTVOICE` (po C1.1 nikt go nie czyta). W `AllAppsList.java` usuń trzy bloki `if (… FytPackage.voiceAction) { Config.EXISTVOICE = …; }` (≈70–72, ≈137–139, ≈161–163). `Config.EXISTAMPAUTO` i `FytPackage` zostają bez zmian.
@@ -127,15 +128,16 @@ W `app/src/main/generated/baselineProfiles/baseline-prof.txt` i `startup-prof.tx
 - `HideFromAccessibilityHelper` (klasa i `<init>`);
 - `ScrimView` (klasa i metody);
 - `AppsCustomizePagedView;->showAllAppsCling`;
-- `Launcher;->dismissCling`, `Launcher;->dismissWorkspaceCling`, `Launcher;->stopVoice`.
+- `Launcher;->dismissCling`, `Launcher;->dismissWorkspaceCling`.
 
-Linii `Landroidx/lifecycle/Lifecycling` i `RecyclerView$ViewHolder;->doesTransientStatePreventRecycling` nie ruszaj. Nie regeneruj profili i nie zmieniaj kolejności pozostałych linii.
+Linii `Launcher;->stopVoice()V` (metoda zostaje), `Landroidx/lifecycle/Lifecycling` i `RecyclerView$ViewHolder;->doesTransientStatePreventRecycling` nie ruszaj. Nie regeneruj profili i nie zmieniaj kolejności pozostałych linii.
 
-Kontrola: `rg -n 'launcher66/(Cling|HideFromAccessibilityHelper|ScrimView);|showAllAppsCling|dismissCling|dismissWorkspaceCling|stopVoice' app/src/main/generated` → zero.
+Kontrola: `rg -n 'launcher66/(Cling|HideFromAccessibilityHelper|ScrimView);|showAllAppsCling|dismissCling|dismissWorkspaceCling' app/src/main/generated` → zero, a `rg -c 'Launcher;->stopVoice' app/src/main/generated/baselineProfiles/baseline-prof.txt` → 1.
 
 ## 4. Czego NIE zmieniać
 
 - `setDefaultWallpaper()`, `setDefaultWallpaper(String)`, `setWallpaper`, `getResId` w `Launcher` oraz `SetWallpaperReceiver`.
+- `stopVoice()` i jego wywołanie przy Back (decyzja właściciela, C1.2).
 - `mWaitingForResume`, `resetDrawableState()`, `iconPressed` i logika `onResume`.
 - `getSharedPrefs()` i `mSharedPrefs`. Nie dotyczą cling, nie rozszerzaj zakresu.
 - `FytPackage`, `Config.EXISTAMPAUTO`, `ServiceIntentGate`, `SearchDropTargetBar` (`hideSearchBar`/`showSearchBar` mają innych wywołujących).
@@ -149,7 +151,8 @@ Kontrola: `rg -n 'launcher66/(Cling|HideFromAccessibilityHelper|ScrimView);|show
 1. Po każdym kroku uruchom kontrolę `rg` z sekcji tego kroku i (opcjonalnie) `javac` na zmienionych klasach.
 2. Kontrola końcowa:
    - `rg -n -i 'cling' app/src | rg -v -i 'recycling|lifecycling'` → zero;
-   - `rg -n 'HideFromAccessibilityHelper|ScrimView|EXISTVOICE|closePop|close_popwindow|isdefaultwallpaper|config_useCustomClings|estimateCellPosition|getCellCoordinates|wakeVoice|stopVoice|clickapp' app/src` → zero;
+   - `rg -n 'HideFromAccessibilityHelper|ScrimView|EXISTVOICE|closePop|close_popwindow|isdefaultwallpaper|config_useCustomClings|estimateCellPosition|getCellCoordinates|wakeVoice|clickapp' app/src` → zero;
+   - `rg -n 'stopVoice\(\)' app/src/main/java` → dokładnie dwie linie: definicja i wywołanie w callbacku Back;
    - `git show --stat` każdego commita: C3 i C4 nie dotykają żadnego `.java`; C1 i C2 nie dotykają `values*/`.
 3. **CI rozstrzyga o zasobach.** Po każdym pushu sprawdź run tego commita: `testFytDebugUnitTest`, `assembleFytDebug`, `assembleStandardDebug`. Użyj GitHub MCP (`actions_list`, `get_job_logs`) albo `curl -s "https://api.github.com/repos/vasyl91/FYT-Launcher-Mod/actions/runs?branch=ccr-087eed00-gbqsuz&per_page=1"`. AAPT zgłosi każdy brakujący zasób (`resource … not found`), a javac każde osierocone odwołanie. Czerwoną budowę napraw kolejnym commitem (bez amend i force-push), zanim przejdziesz dalej.
 4. Scenariusze dla właściciela (7862 i 7870), wypisz je w raporcie:
@@ -157,7 +160,7 @@ Kontrola: `rg -n 'launcher66/(Cling|HideFromAccessibilityHelper|ScrimView);|show
    - b) folder: otwarcie i zamknięcie, tap poza folderem zamyka go (`DragLayer`), przeciągnięcie ikony z folderu, zmiana nazwy;
    - c) Wszystkie aplikacje i widgety: otwarcie, przewijanie, powrót przez Back i Home;
    - d) uruchomienie Muzyki, Wideo, Radia, BT, nawigacji, Kuwo i Koala FM z pulpitu i z paska: startują od razu, bez okna podpowiedzi, jak dotąd;
-   - e) Back na pulpicie, w trybie przeglądu i w otwartym folderze działa jak dotąd. Jedyna różnica: Back nie przerywa już mowy asystenta głosowego FYT (zamierzone);
+   - e) Back na pulpicie, w trybie przeglądu i w otwartym folderze działa jak dotąd i nadal przerywa mowę asystenta głosowego FYT;
    - f) strona custom content (jeśli jest włączona) dodaje się i znika bez błędów;
    - g) opcjonalnie TalkBack: ikony pulpitu i Wszystkich aplikacji są nadal czytane.
 
@@ -166,5 +169,5 @@ Kontrola: `rg -n 'launcher66/(Cling|HideFromAccessibilityHelper|ScrimView);|show
 - Lista commitów (hash + temat) i wynik CI każdego z nich.
 - Liczba usuniętych plików (Java / layout / drawable) i bilans linii (`git diff --shortstat b38f128..HEAD`).
 - Każda pozycja z C3, której nie usunięto, razem ze znalezionym użyciem.
-- Potwierdzenie, że jedyna zmiana zachowania to brak `com.syu.cancle_tts` przy Back.
+- Potwierdzenie, że zachowanie się nie zmieniło, w tym że Back nadal woła `stopVoice()`.
 - Scenariusze z pkt 5.4 do sprawdzenia.
