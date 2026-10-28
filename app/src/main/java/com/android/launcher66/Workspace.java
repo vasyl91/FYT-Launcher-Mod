@@ -3757,8 +3757,12 @@ public class Workspace extends SmoothPagedView
                 return; // the callback ends with the scroll
             }
             int scrollX = scrollXForThisFrame();
-            WindowUtil.updatePipPositionsForScroll(scrollX);
+            // The stats first: before Android 14 each window's move is a relayout() the main
+            // thread waits for in its pass, and these passes run in the order they were asked
+            // for. Behind the panes' (a VirtualDisplay each) the stats missed the vsync the page
+            // and the panes were shown in, on the 7862.
             CanbusService.onPagesFrame(scrollX);
+            WindowUtil.updatePipPositionsForScroll(scrollX);
             postPaneFrame();
         }
     };

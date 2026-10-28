@@ -717,7 +717,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     // try to read placeholderX/Y if available
                     int placeholderX = statsTopLeftX;
                     int placeholderY = statsTopLeftY;
-                    int placeholderWLocal = statsWidth;
                     try {
                         View pageView = workspaceRef != null ? workspaceRef.getChildAt(statsScreen) : null;
                         if (pageView instanceof com.android.launcher66.CellLayout) {
@@ -725,7 +724,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             if (pos != null && pos.length >= 4) {
                                 placeholderX = pos[0];
                                 placeholderY = pos[1];
-                                placeholderWLocal = pos[2] > 0 ? pos[2] : placeholderWLocal;
                             }
                         }
                     } catch (Exception ignored) {}
@@ -759,19 +757,20 @@ public class CanbusService extends Service implements PropertyChangeListener {
                         absoluteStats.setTranslationX(desiredScreenX);
                     } else {
                         // Before Android 14 relayout() waits for WindowManager, which places the
-                        // window in the frame it is asked in, as it does the panes. A new frame of
-                        // the stats themselves comes later on the 7862: the process has one render
-                        // thread, and it draws the launcher's frame first. So the window is moved,
-                        // clamped to the screen, the rest by translationX, from the animation
-                        // phase as the panes are (onPagesFrame()).
-                        int viewWidth = Math.max(1, placeholderWLocal);
-                        int maxAnchorX = Math.max(0, pageWidth - viewWidth);
-                        int safeLayoutX = Math.max(0, Math.min(desiredScreenX, maxAnchorX));
-                        statsLayoutParams.x = safeLayoutX;
+                        // window in the frame it is asked in. The stats are moved as the panes
+                        // are: a window of their own size at their place, partly or wholly beside
+                        // the screen as well (FLAG_LAYOUT_NO_LIMITS, which the panes have), from
+                        // the animation phase (onPagesFrame()). Clamped to the screen, as it was,
+                        // the window stopped at the screen's edge and the stats left it by
+                        // translationX, a new frame of their own window: on the 7862 the one
+                        // render thread draws that after the launcher's frame, a vsync after the
+                        // page.
+                        statsLayoutParams.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+                        statsLayoutParams.x = desiredScreenX;
                         statsLayoutParams.y = placeholderY;
 
                         wm.addView(absoluteStats, statsLayoutParams);
-                        absoluteStats.setTranslationX(desiredScreenX - safeLayoutX);
+                        absoluteStats.setTranslationX(0f);
                     }
 
                     // attach listener afterward (same as before)
@@ -917,6 +916,27 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
         // desired Y - make sure to use placeholderY if that was stored in screen coordinates
         int desiredY = placeholderY;
+
+        if ((statsLayoutParams.flags & WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS) != 0) {
+            // A window of the stats' size at their place, moved as a pane is (see addStatsView()).
+            // Beside the screen before and after, it is left where it is: the move would show
+            // nothing and only cost a relayout.
+            try {
+                int width = statsLayoutParams.width > 0 ? statsLayoutParams.width : Math.max(1, placeholderW);
+                int screenWidth = Math.max(pageWidth, getScreenWidth());
+                int oldX = statsLayoutParams.x;
+                boolean moved = oldX != desiredScreenX && !PaneWindows.staysOffScreen(oldX,
+                        oldX + width, desiredScreenX, desiredScreenX + width, true, screenWidth);
+                if ((moved || statsLayoutParams.y != desiredY) && wm != null) {
+                    statsLayoutParams.x = desiredScreenX;
+                    statsLayoutParams.y = desiredY;
+                    wm.updateViewLayout(absoluteStats, statsLayoutParams);
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to update absoluteStats position: " + e.getMessage());
+            }
+            return;
+        }
 
         if (statsHost != null) {
             // The page-wide window stays; only the stats move inside it, see addStatsView().
