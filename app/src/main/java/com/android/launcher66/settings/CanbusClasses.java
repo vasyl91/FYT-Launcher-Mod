@@ -5,501 +5,6 @@ import android.content.SharedPreferences;
 
 import com.android.async.AsyncTask;
 import com.android.launcher66.LauncherApplication;
-import com.syu.carinfo.accord.ActivityAccord7Index;
-import com.syu.carinfo.accord9.wc.Accord9HIndexAct;
-import com.syu.carinfo.accord9.wc.Accord9LowIndexAct;
-import com.syu.carinfo.accord9.xp.XPAccord9IndexActi;
-import com.syu.carinfo.aiying.ziyouguang.JeepIndexAct;
-import com.syu.carinfo.ansheng.mzd6.AnSheng_167_Mzd6_CarCdAct;
-import com.syu.carinfo.b70.BenTeng14B70ClockSet;
-import com.syu.carinfo.b70.BengTeng_RZC_17B70QC_Index;
-import com.syu.carinfo.b70.WCBenTeng14B70ClockSet;
-import com.syu.carinfo.bagoo.aodi.AudiAct;
-import com.syu.carinfo.bagoo.kayan.KaYanAct;
-import com.syu.carinfo.bagu.bmw.BaguBmwIndexAct;
-import com.syu.carinfo.baogu.renault.Baogu_Renault_IndexAct;
-import com.syu.carinfo.bg.fiat.ActivityFiatCarUSB;
-import com.syu.carinfo.bg.fiat.ActivityFiatIndex;
-import com.syu.carinfo.bg.ziyouguang.Bg_DaQieNuoJi_IndexAct;
-import com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_IndexAct;
-import com.syu.carinfo.biaozhi408.BZ408IndexActi;
-import com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi;
-import com.syu.carinfo.biaozhi408.Biaozhi206OilPage;
-import com.syu.carinfo.biaozhi408.HC_Biaozhi206OilPage;
-import com.syu.carinfo.biaozhi408.XpPsa301Acti;
-import com.syu.carinfo.bmw.BMWX1IndexActi;
-import com.syu.carinfo.bnr.Acti_Crow_Amp_Bnr;
-import com.syu.carinfo.bnr.Acti_Nissan_Bnr;
-import com.syu.carinfo.bnr.Acti_Nissan_Sanwu;
-import com.syu.carinfo.bnr.Bnr_255_FengShengax7_Allvideo;
-import com.syu.carinfo.bnr.arrizo.BNR_Arrizo_CarSettingAct;
-import com.syu.carinfo.bnr.ford.Activity_ford_index;
-import com.syu.carinfo.bnr.guanzhi.BnrGuanzhiIndexAct;
-import com.syu.carinfo.bnr.guanzhi.LZFerrariF12CarInfo;
-import com.syu.carinfo.bnr.jeep.ActiIndex_Bnr_117_Functionl;
-import com.syu.carinfo.bnr.tule.BnrTuleIndexAct;
-import com.syu.carinfo.bus.ActivityBusCarCheck;
-import com.syu.carinfo.byd.Act_Byd_Tang_XBS;
-import com.syu.carinfo.byd.RzcBydS6Acti;
-import com.syu.carinfo.byd.hcy.Activity_DaojunSetCrtrl;
-import com.syu.carinfo.byd.hcy.Activity_HCY_BYD_S7;
-import com.syu.carinfo.byd.hcy.Activity_OD_Aiying_BYD_Sirui;
-import com.syu.carinfo.byd.hcy.Activity_OD_BYD_ALL;
-import com.syu.carinfo.byd.hcy.Activity_OD_Zotye_T700;
-import com.syu.carinfo.byd.hcy.Activity_RCW_BYD_S7;
-import com.syu.carinfo.byd.hcy.Activity_XBS_BYD_Song;
-import com.syu.carinfo.byd.hcy.BYDAiyingIndexAct;
-import com.syu.carinfo.camry.luz.CamryIndexAct_LuZ;
-import com.syu.carinfo.camry.luz.ToyotaLexusEQActi_Luz;
-import com.syu.carinfo.camry.zh.CamryIndexAct_ZH;
-import com.syu.carinfo.camry2012.xp.CamryIndexAct;
-import com.syu.carinfo.camry2012.xp.CamryIndexAct_XP;
-import com.syu.carinfo.camry2012.xp.CamryIndexEVAct;
-import com.syu.carinfo.camry2012.xp.LadaSettingsAct;
-import com.syu.carinfo.camry2012.xp.RzcPeroduaIndexAct;
-import com.syu.carinfo.camry2012.xp.ToyotaLexusEQActi;
-import com.syu.carinfo.camry2012.xp.ToyotaLexusIndexActi;
-import com.syu.carinfo.crv.CrvXBSActi;
-import com.syu.carinfo.crv.KangshengXpCrvActi;
-import com.syu.carinfo.crv.WcCrvActi;
-import com.syu.carinfo.crv.XpCrvActi;
-import com.syu.carinfo.daojun.ats.AtsIndexAct;
-import com.syu.carinfo.daojun.b70.DaojunB70CarSettingAct;
-import com.syu.carinfo.daojun.b70.DaojunB70LowCarSettingAct;
-import com.syu.carinfo.daojun.bydm6.DaojunBydM6SetFunc;
-import com.syu.carinfo.daojun.lexus.DJPrado8SetFunc;
-import com.syu.carinfo.daojun.lexus.djLexusIndexAct;
-import com.syu.carinfo.daojun.tianlai.djTianlaiAudio;
-import com.syu.carinfo.daojun.tianlai.djTianlaiIndexAct;
-import com.syu.carinfo.dasauto.DasAutoIndexAct;
-import com.syu.carinfo.dasauto.DasAutoWcAct;
-import com.syu.carinfo.dasauto.DasAutoXpAct;
-import com.syu.carinfo.dasauto.FaultCodeWindow;
-import com.syu.carinfo.dasauto.TuRui_IndexAct;
-import com.syu.carinfo.dasauto.VwDashBoard_DZSJ;
-import com.syu.carinfo.dj.DjAiruize7Setting;
-import com.syu.carinfo.dj.DjBYDG6;
-import com.syu.carinfo.dj.b70.DjB70Act;
-import com.syu.carinfo.dj.dodge.DjDodgeCarSet;
-import com.syu.carinfo.dj.havalh8.Dj_0439_HavalH8_IndexAct;
-import com.syu.carinfo.dj.huangguan.ActivityHuangGuanIndex;
-import com.syu.carinfo.dongjian.ga6.GA6CarSetIndexAct;
-import com.syu.carinfo.dongjian.wc2.ds5.DS5IndexAct;
-import com.syu.carinfo.focus.ActivityIndex_14Festia;
-import com.syu.carinfo.focus.FocusSyncBtActi;
-import com.syu.carinfo.focus.yl.YLFocusIndex;
-import com.syu.carinfo.ford.FordCarSet_RZC;
-import com.syu.carinfo.ford.FordIndexAct;
-import com.syu.carinfo.ford.FordRuijieCDIndexAct;
-import com.syu.carinfo.ford.LZMustangCarEQSet;
-import com.syu.carinfo.ford.MustangIndexAct;
-import com.syu.carinfo.geshitu.wc.WCGeshituIndexActi;
-import com.syu.carinfo.geshitu.wc.WCRenaultIndexActi;
-import com.syu.carinfo.golf7.Golf7IndexAct;
-import com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD;
-import com.syu.carinfo.golf7.Golf7OilMileagePage1LowActi;
-import com.syu.carinfo.golf7.LingDuActi;
-import com.syu.carinfo.golf7_xp.Golf7_XP_IndexAct;
-import com.syu.carinfo.guochan.Acti_BNR_ShengDaFei;
-import com.syu.carinfo.guochan.ActivityBaojun530Info;
-import com.syu.carinfo.guochan.ActivityBiSuT3;
-import com.syu.carinfo.guochan.ActivityHuanSuS6Index;
-import com.syu.carinfo.guochan.ActivityWC20Baojun530Info;
-import com.syu.carinfo.guochan.ActivityZhongHuaH3;
-import com.syu.carinfo.guochan.Activity_RZC_SettingT60;
-import com.syu.carinfo.haozheng.bmw.BmwIndexAct;
-import com.syu.carinfo.hava.ActivityHava18H6Index;
-import com.syu.carinfo.hava.ActivityHava18H6SetAct;
-import com.syu.carinfo.hava.ActivityHavaH2SIndex;
-import com.syu.carinfo.hava.ActivityHavaH3;
-import com.syu.carinfo.hava.BNRActivityHavaH6SetAct;
-import com.syu.carinfo.havah6.HavalH6Acti;
-import com.syu.carinfo.havah6.WC_0320_HavalH9_IndexAct;
-import com.syu.carinfo.havah6.WcHaval17and18H6Acti;
-import com.syu.carinfo.havah6.WcHavalH6Acti;
-import com.syu.carinfo.havah6.WcHavalH6CoupeActi;
-import com.syu.carinfo.hc.accord8.Hc_385_CarCdAct;
-import com.syu.carinfo.hc.chrysler.ChryslerCarEqActi;
-import com.syu.carinfo.hc.elysion.Hc_103_Elysion_IndexAct;
-import com.syu.carinfo.hc.oubao.IndexAct_Hc_14Oubao;
-import com.syu.carinfo.hc.qiyakaizunk7.HCQiyaKaizunK7Audio;
-import com.syu.carinfo.hc.rongwei950.Hc_Rongwei950_IndexAct;
-import com.syu.carinfo.hc.ruijie.XCFordRuijieEQAct;
-import com.syu.carinfo.hc.tianlai.ActivityODRenaultKeleosCD;
-import com.syu.carinfo.hc.tianlai.ActivityTianLaiCarSettings;
-import com.syu.carinfo.hc.tianlai.IndexAct_Hc_03TianLai;
-import com.syu.carinfo.hc.volvo.IndexAct_Hc_volvo;
-import com.syu.carinfo.hechi.fordexplorer.HcFordExplorerIndexAct;
-import com.syu.carinfo.honda.Act_CarCD_AoDeSai;
-import com.syu.carinfo.honda.Act_LEDScreen_AoDeSai_wc;
-import com.syu.carinfo.honda.Act_RZC_CarCD_AoDeSai;
-import com.syu.carinfo.honda.ActivitySiYuIndex;
-import com.syu.carinfo.honda.HondaIndexActi;
-import com.syu.carinfo.honda.RZCSuzukiIndexActi;
-import com.syu.carinfo.huiteng.HuitengIndexAct;
-import com.syu.carinfo.jianianhua_wc.JiaNianHuaMainActivity;
-import com.syu.carinfo.jili.BoyueCarSettingsAct;
-import com.syu.carinfo.jili.BoyueIndexAct;
-import com.syu.carinfo.jili.Dihao19GLECarSettingsAct;
-import com.syu.carinfo.jili.LZJiliBoyueCarSettingsAct;
-import com.syu.carinfo.jili.ODJiliRuilanX3CarSettingsAct;
-import com.syu.carinfo.jili.RZCBoyueCarSettingsAct;
-import com.syu.carinfo.jili.RZCNisaanGuishiCarSettingsAct;
-import com.syu.carinfo.jili.YuanJingX1CarSettingsAct;
-import com.syu.carinfo.jili.YuanjingX3TireAct;
-import com.syu.carinfo.klc.DJGMKopachBasicInfoAct;
-import com.syu.carinfo.klc.KlcIndexAct;
-import com.syu.carinfo.klc.WcGMKopachBasicInfoAct;
-import com.syu.carinfo.ksw.audiq5.KswAudiQ5SetFunc;
-import com.syu.carinfo.ksw.audiq5.LZBmwIndexFunc;
-import com.syu.carinfo.ksw.audiq5.RDWBenzSetFunc;
-import com.syu.carinfo.ksw.audiq5.ZXMZDSetFunc;
-import com.syu.carinfo.ky.ActivityDaMaiX7;
-import com.syu.carinfo.ky.ActivityHaimaS3;
-import com.syu.carinfo.ky.escort.Ky_439_Escort_CarSettingAct;
-import com.syu.carinfo.leinuo.Act_Keleijia_Index;
-import com.syu.carinfo.leinuo.Act_Keleijia_set;
-import com.syu.carinfo.lifan720.LiFan720IndexAct;
-import com.syu.carinfo.luz.binli.BinliIndexAct;
-import com.syu.carinfo.luz.oubao.Luz_Oubao_IndexAct;
-import com.syu.carinfo.lz.infinit.fx35.LuzInfinitF35IndexAct;
-import com.syu.carinfo.lz.jaguar.TDLandRoverIndexAct;
-import com.syu.carinfo.lz.kayan.LuzKayanSetFunc;
-import com.syu.carinfo.lz.landrover.LandRoverIndexAct;
-import com.syu.carinfo.lz.lexusis.LuzLexusISIndexAct;
-import com.syu.carinfo.lz.lexusis.LuzLexusLSClockSetAct;
-import com.syu.carinfo.lz.nissan.gtr.LuzNissanGTRIndexAct;
-import com.syu.carinfo.lz.spirior.Lz_425_Spirior_IndexActi;
-import com.syu.carinfo.mzd.GMCPannelSetActi;
-import com.syu.carinfo.mzd.MzdClockSetActi;
-import com.syu.carinfo.mzd.MzdRZCM3ClockSetActi;
-import com.syu.carinfo.mzd.MzdRZCM6ClockSetActi;
-import com.syu.carinfo.mzd.cx5.ActivityHaiMaSettings;
-import com.syu.carinfo.mzd.cx5.ActivityHaiMaV70Index;
-import com.syu.carinfo.mzd.cx5.CX5Index;
-import com.syu.carinfo.od.bmw.ODBMWMiniIndexAct;
-import com.syu.carinfo.od.dongnanv5.Dongnanv5IndexActi;
-import com.syu.carinfo.od.ford.falcon.FordFalconIndexAct;
-import com.syu.carinfo.od.mazdall.MazdAllIndexAct;
-import com.syu.carinfo.od.mazdall.WCSuzukiAllIndexAct;
-import com.syu.carinfo.od.porsche.ODPorscheIndexAct;
-import com.syu.carinfo.od.tusheng.OD_19Tusheng_CarSettingAct;
-import com.syu.carinfo.od.tusheng.RZC_Xiandai_E_IndexAct;
-import com.syu.carinfo.od.tusheng.XP_19ShengDafei_CarSettingAct;
-import com.syu.carinfo.opel.OPELCarKeyActivity;
-import com.syu.carinfo.opel.WCOPELCarIndexActi;
-import com.syu.carinfo.opel.WCOPELCarKeyActivity;
-import com.syu.carinfo.opel.XP_Opel_Panel_New;
-import com.syu.carinfo.oudi.ActivityCarCD_Oudi_Aodesai;
-import com.syu.carinfo.oudi.ODOpelAdanCarTire;
-import com.syu.carinfo.oudi.ODOpelAdanIndexActi;
-import com.syu.carinfo.oudi.ODWeiChaiU70CarInfo;
-import com.syu.carinfo.oudi.OD_Lamborghini_PanelButton;
-import com.syu.carinfo.oudi.RZC_0314_Dongfeng_Ev3_IndexAct;
-import com.syu.carinfo.oudi.baojun530.ActivityOudiBaojun530Info;
-import com.syu.carinfo.oudi.beiqi.ActivityODBeiqiECIndex;
-import com.syu.carinfo.oudi.bisu.ActivityBiSuT3AndM3;
-import com.syu.carinfo.oudi.changan.OdChanganIndexAct;
-import com.syu.carinfo.oudi.changan.OdChanganSetFunc;
-import com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_IndexAct;
-import com.syu.carinfo.oudi.nazhijieu7.OdNazhijieU7SetFunc;
-import com.syu.carinfo.pardo2014.wc.PardoIndexAct;
-import com.syu.carinfo.pasbiaozhi408.PsasettingActi_HC;
-import com.syu.carinfo.psa.Psa2008IndexActi;
-import com.syu.carinfo.psa.Psa301IndexActi;
-import com.syu.carinfo.psa.PsaDs5lsIndexActi;
-import com.syu.carinfo.psa.PsaOilMileIndexActi;
-import com.syu.carinfo.psa_all.PSAIndexActi;
-import com.syu.carinfo.qirui.ActivityWCAiRuiZe;
-import com.syu.carinfo.qirui.ActivityWCQiruiJietuX70;
-import com.syu.carinfo.qirui.DaojunQiruiCarSet;
-import com.syu.carinfo.qiya.kx7.ActivityKX7CameraSet;
-import com.syu.carinfo.qiya.kx7.ActivityQiYaKaiShenSet;
-import com.syu.carinfo.qiya.kx7.ActivityWCXianDaiAllSet;
-import com.syu.carinfo.rongwei.Wc_416_RongWei_CarSetAct;
-import com.syu.carinfo.rongwei.Wc_416_RongWei_IndexAct;
-import com.syu.carinfo.rzc.andra.GmAndraIndexActi;
-import com.syu.carinfo.rzc.baojun.ODDongnanSetFunc;
-import com.syu.carinfo.rzc.baojun.ODFotonTOANOSetFunc;
-import com.syu.carinfo.rzc.baojun.ODFotonTunlandSetFunc;
-import com.syu.carinfo.rzc.baojun.ODXinteDEV1SetFunc;
-import com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc;
-import com.syu.carinfo.rzc.beiqi.Activity18EU5CarSet;
-import com.syu.carinfo.rzc.beiqi.Activity19EC5Index;
-import com.syu.carinfo.rzc.beiqi.ActivityEC180Index;
-import com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi;
-import com.syu.carinfo.rzc.biaozhi408.RZC_BZ408_Panel_IndexActi;
-import com.syu.carinfo.rzc.changan.ODChanganCS95AllSetAct;
-import com.syu.carinfo.rzc.changan.RzcChanganAllIndexAct;
-import com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70IndexAct;
-import com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70SetFunc;
-import com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70TireAct;
-import com.syu.carinfo.rzc.feiyate.RzcFYTOilMileIndexActi;
-import com.syu.carinfo.rzc.feiyate.RzcFeiyateIndexAct;
-import com.syu.carinfo.rzc.fengshen_ax7.RzcFengshenAx7SetFunc;
-import com.syu.carinfo.rzc.fengshen_ax7.RzcFengshenX37SetFunc;
-import com.syu.carinfo.rzc.fengshen_ax7.RzcFengshenYixuanSetFunc;
-import com.syu.carinfo.rzc.gs4.ActGS4LowSetting;
-import com.syu.carinfo.rzc.gs4.RzcGS4IndexAct;
-import com.syu.carinfo.rzc.gs4.Rzc_Gs8_IndexAct;
-import com.syu.carinfo.rzc.haima.HaimaS5SetFunc;
-import com.syu.carinfo.rzc.haima.ODJianglingSetFunc;
-import com.syu.carinfo.rzc.hantengx5.RZC_0255_FengShenAx7_IndexAct;
-import com.syu.carinfo.rzc.hantengx5.RZC_0255_HanTengX5_IndexAct;
-import com.syu.carinfo.rzc.hantengx5.RZC_0255_HanTengX5_TireAct;
-import com.syu.carinfo.rzc.havalh6.RZC_Oudi_0439_HavalH9_IndexAct;
-import com.syu.carinfo.rzc.jianghuai.RzcJianghuaiIndexAct;
-import com.syu.carinfo.rzc.jingyix5.ActivityJingYiX5;
-import com.syu.carinfo.rzc.keleijia.KeLeiJiaIndexActi;
-import com.syu.carinfo.rzc.keleijia.KeLeiJiaRadarSetting;
-import com.syu.carinfo.rzc.keleijia.KeleiaoCarCD;
-import com.syu.carinfo.rzc.klc.RzcKlcIndex;
-import com.syu.carinfo.rzc.lufengxiaoyao.RZCLufengXiaoyaoIndexAct;
-import com.syu.carinfo.rzc.mazda.Rzc_Mazda_IndexAct;
-import com.syu.carinfo.rzc.mingjueruiteng.Act17RuiTengCarSet;
-import com.syu.carinfo.rzc.mingjueruiteng.Act20ZSIndexAct;
-import com.syu.carinfo.rzc.mingjueruiteng.ActDaojunRongweI5CarSet;
-import com.syu.carinfo.rzc.mingjueruiteng.ActRongwei550CarSet;
-import com.syu.carinfo.rzc.mingjueruiteng.ActRuiTengIndex;
-import com.syu.carinfo.rzc.mingjueruiteng.ActivityBNRRongWeiRX5;
-import com.syu.carinfo.rzc.mingjueruiteng.ActivityRZCRongWeiRX5;
-import com.syu.carinfo.rzc.nissa_tuda.RzcNissanTudaInTireAct;
-import com.syu.carinfo.rzc.qirui.ActivityQiRuiAiRuiZe;
-import com.syu.carinfo.rzc.qirui.ActivityQiRuiXMYCarSet;
-import com.syu.carinfo.rzc.ruifengs3.JhRuiFengR3IndexAct;
-import com.syu.carinfo.rzc.ruifengs3.JhRuiFengS3TireAct;
-import com.syu.carinfo.rzc.sanlin.BNRToyotaAmpCarSet;
-import com.syu.carinfo.rzc.sanlin.DJFordFiestaCarSet;
-import com.syu.carinfo.rzc.sanlin.DJJianghuaiSihaoCarInfo;
-import com.syu.carinfo.rzc.sanlin.DaojunPreviaCarSet;
-import com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet;
-import com.syu.carinfo.rzc.sanlin.KYCZhonghuaCarSet;
-import com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet;
-import com.syu.carinfo.rzc.sanlin.LZCadillacCarSet;
-import com.syu.carinfo.rzc.sanlin.LZFiatInfCarSet;
-import com.syu.carinfo.rzc.sanlin.LZHonda06CivicCarInfo;
-import com.syu.carinfo.rzc.sanlin.LZNissanFugaCarInfo;
-import com.syu.carinfo.rzc.sanlin.LuZAstonMartinCarInfo;
-import com.syu.carinfo.rzc.sanlin.LuZMaserati300CCarSet;
-import com.syu.carinfo.rzc.sanlin.LuzAudioOldCarInfo;
-import com.syu.carinfo.rzc.sanlin.LuzBenzC200CarSet;
-import com.syu.carinfo.rzc.sanlin.LuzJaguarXFCarSet;
-import com.syu.carinfo.rzc.sanlin.LuzTATACarSet;
-import com.syu.carinfo.rzc.sanlin.LuzVolvoCarSet;
-import com.syu.carinfo.rzc.sanlin.NissanJukeCarSet;
-import com.syu.carinfo.rzc.sanlin.NissanXiaokeCarSet;
-import com.syu.carinfo.rzc.sanlin.ODBMWCarInfo;
-import com.syu.carinfo.rzc.sanlin.ODBeiqiBJ30CarSet;
-import com.syu.carinfo.rzc.sanlin.ODBeiqiBJ80CarSet;
-import com.syu.carinfo.rzc.sanlin.ODBeiqiBJ90CarSet;
-import com.syu.carinfo.rzc.sanlin.ODBeiqiEV160CarSet;
-import com.syu.carinfo.rzc.sanlin.ODBentNATCarSet;
-import com.syu.carinfo.rzc.sanlin.ODCHuangWeiET5CarSet;
-import com.syu.carinfo.rzc.sanlin.ODChangChengOulaCarInfo;
-import com.syu.carinfo.rzc.sanlin.ODChanganLuminCarSet;
-import com.syu.carinfo.rzc.sanlin.ODChangfengCS9EVCarInfo;
-import com.syu.carinfo.rzc.sanlin.ODDongfengChenglongH7CarSet;
-import com.syu.carinfo.rzc.sanlin.ODDongfengEVCarInfo;
-import com.syu.carinfo.rzc.sanlin.ODFordNavigatorCarSet;
-import com.syu.carinfo.rzc.sanlin.ODFreeLanderCarInfo;
-import com.syu.carinfo.rzc.sanlin.ODHuachenSWMCarInfo;
-import com.syu.carinfo.rzc.sanlin.ODJianghuaiChaoyueCarSet;
-import com.syu.carinfo.rzc.sanlin.ODKaiyiX3CarSet;
-import com.syu.carinfo.rzc.sanlin.ODLeTinMangguoCarSet;
-import com.syu.carinfo.rzc.sanlin.ODModerninIndexAct;
-import com.syu.carinfo.rzc.sanlin.ODNissanQuystCarSet;
-import com.syu.carinfo.rzc.sanlin.ODQiruiXiaomayiCarInfo;
-import com.syu.carinfo.rzc.sanlin.ODRuichiEC75CarSet;
-import com.syu.carinfo.rzc.sanlin.ODSanlinCarSet;
-import com.syu.carinfo.rzc.sanlin.ODShanqiZHongkaCarSet;
-import com.syu.carinfo.rzc.sanlin.ODSubaruLegacyCarInfo;
-import com.syu.carinfo.rzc.sanlin.ODWeimaEx5IndexAct;
-import com.syu.carinfo.rzc.sanlin.ODYiqiJiefangJ6GCarSet;
-import com.syu.carinfo.rzc.sanlin.ODZhidouD1EVCarInfo;
-import com.syu.carinfo.rzc.sanlin.ODZhidouEVCarInfo;
-import com.syu.carinfo.rzc.sanlin.ODZhonghuaV6CarSet;
-import com.syu.carinfo.rzc.sanlin.ODZhongtaiE200CarInfo;
-import com.syu.carinfo.rzc.sanlin.PANissanAllCarSet;
-import com.syu.carinfo.rzc.sanlin.RZCBeiqiBJ40CarSet;
-import com.syu.carinfo.rzc.sanlin.RZCBeiqiBJ90CarSet;
-import com.syu.carinfo.rzc.sanlin.RZCFengshenEX1CarInfo;
-import com.syu.carinfo.rzc.sanlin.RZCHongqiH5CarSet;
-import com.syu.carinfo.rzc.sanlin.RZCLeTinMangguoCarSet;
-import com.syu.carinfo.rzc.sanlin.RZCMclarenCarSet;
-import com.syu.carinfo.rzc.sanlin.RZCMzd3CarInfo;
-import com.syu.carinfo.rzc.sanlin.RZCNissanAmpCarSet;
-import com.syu.carinfo.rzc.sanlin.RZCNissanJUKECarSet;
-import com.syu.carinfo.rzc.sanlin.RZCShanqiDelongCarInfo;
-import com.syu.carinfo.rzc.sanlin.RZCXiandaiAmpCarSet;
-import com.syu.carinfo.rzc.sanlin.RZCXiandaiRohensCarSet;
-import com.syu.carinfo.rzc.sanlin.RzcBenzCCarSet;
-import com.syu.carinfo.rzc.sanlin.SanlinCarSet;
-import com.syu.carinfo.rzc.sanlin.SanlinIndexAct;
-import com.syu.carinfo.rzc.sanlin.SanwuNissanAllCarSet;
-import com.syu.carinfo.rzc.sanlin.TDPorscheCarSet;
-import com.syu.carinfo.rzc.sanlin.WC2FordMDOCarSeatSet;
-import com.syu.carinfo.rzc.sanlin.WC2IKCOAllCarSetAct;
-import com.syu.carinfo.rzc.sanlin.WC2SanlinCarInfo;
-import com.syu.carinfo.rzc.sanlin.WCJiliAllCarSet;
-import com.syu.carinfo.rzc.sanlin.WCNissanCarSet;
-import com.syu.carinfo.rzc.sanlin.WCOldJeepAmpSet;
-import com.syu.carinfo.rzc.sanlin.WCPeroduaAllCarSet;
-import com.syu.carinfo.rzc.sanlin.WCProtonAllCarSet;
-import com.syu.carinfo.rzc.sanlin.WCSaipaShahinTireAct;
-import com.syu.carinfo.rzc.sanlin.WCUAZPatriotCarSet;
-import com.syu.carinfo.rzc.sanlin.WYBBACarInfo;
-import com.syu.carinfo.rzc.sanlin.XBSNissanCedricCarSet;
-import com.syu.carinfo.rzc.sanlin.XCBenzSmartCarSet;
-import com.syu.carinfo.rzc.sanlin.XCFordEDGECarSet;
-import com.syu.carinfo.rzc.sanlin.XCHondaAmpCarSet;
-import com.syu.carinfo.rzc.sanlin.XPFordF150CarSet;
-import com.syu.carinfo.rzc.sanlin.XPMeganeCarInfo;
-import com.syu.carinfo.rzc.sanlin.XPNissanCarSet;
-import com.syu.carinfo.rzc.sanlin.XPXiandaiCarSet;
-import com.syu.carinfo.rzc.sanlin.ZHToyotaProaceCarSet;
-import com.syu.carinfo.rzc.siwei.ODChangAnRaetonCarSet;
-import com.syu.carinfo.rzc.siwei.RZCSiWeiCarSet;
-import com.syu.carinfo.rzc.siwei.XCXiandaiSuolataCarSet;
-import com.syu.carinfo.rzc.t70.ActivityNaZhiJie;
-import com.syu.carinfo.rzc.t70.BNR_QiChenT70Act;
-import com.syu.carinfo.rzc.t70.QiChenT70Act;
-import com.syu.carinfo.rzc.xima.Acti_Xima_Xfy;
-import com.syu.carinfo.rzc.xima.LZ_NIssanInfinitiIndexAct;
-import com.syu.carinfo.rzc.xima.LZ_Nissan08TeanaIndexAct;
-import com.syu.carinfo.rzc.xima.OD_NissanXimaCarinfoAct;
-import com.syu.carinfo.rzc.xima.OD_NissanXimaIndexAct;
-import com.syu.carinfo.rzc.xima.Rzc_80_DspinfoActi;
-import com.syu.carinfo.rzc.xp.cs75.BnrChanganCX70IndexAct;
-import com.syu.carinfo.rzc.xp.cs75.ChangAnCS75Act;
-import com.syu.carinfo.rzc.xp.cs75.ChangAnOuShangAct;
-import com.syu.carinfo.rzc.yingfeinidi_gx50.DJYage9CarSet;
-import com.syu.carinfo.rzc.yingfeinidi_gx50.RZCBeiqiBj40CarSet;
-import com.syu.carinfo.rzc.yingfeinidi_gx50.RZCBeiqiSuansuS7CarSet;
-import com.syu.carinfo.rzc.yingfeinidi_gx50.Rzc_YingFeiNiDi_GX50_CarSettingAct;
-import com.syu.carinfo.rzc.zhongtai.RzcChanganIndexAct;
-import com.syu.carinfo.rzc.zhongtai.RzcChanganSetFunc;
-import com.syu.carinfo.rzc.zhongtai.RzcChanganTireAct;
-import com.syu.carinfo.rzc.zhongtai.RzcLandRoverIndexAct;
-import com.syu.carinfo.rzc.zhongtai.RzcZhongtaiE200CarInfo;
-import com.syu.carinfo.rzc.ziyouguang.RZC_JeepCarEQSet;
-import com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_IndexAct;
-import com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings;
-import com.syu.carinfo.saiou3.SaiOu3Index;
-import com.syu.carinfo.sbd.ruifengs5.ActivityTireRuiFengS5;
-import com.syu.carinfo.sbd.x80.Dongfeng_FullView_SBDAct;
-import com.syu.carinfo.sbd.x80.TianLai09Act;
-import com.syu.carinfo.sbd.x80.X80Act;
-import com.syu.carinfo.sbd_electric.Sbd_IndexAct;
-import com.syu.carinfo.toyota.tangdu.ToyotaTangduIndexAct;
-import com.syu.carinfo.wc.axela.ActivityMzdAllHUDCarSet;
-import com.syu.carinfo.wc.axela.ActivityMzdAllIndexAct;
-import com.syu.carinfo.wc.benz.WCBenzSprinterCarSet;
-import com.syu.carinfo.wc.bydyuan.BYDYuanCarSettingsAct;
-import com.syu.carinfo.wc.changan.ActivityChangAn17CS75;
-import com.syu.carinfo.wc.changan.ActivityChangAnCS75;
-import com.syu.carinfo.wc.changan.WCChanganAllIndexAct;
-import com.syu.carinfo.wc.changan.WCChanganAllTireAct;
-import com.syu.carinfo.wc.crown.Wc_420_IndexAct;
-import com.syu.carinfo.wc.ecosport18.Wc_21_EcosportSetAct;
-import com.syu.carinfo.wc.feiyate.FYTOilMileIndexActi;
-import com.syu.carinfo.wc.feiyate.WCFeiyateIndexAct;
-import com.syu.carinfo.wc.gs4.GS4CarSettingsAct;
-import com.syu.carinfo.wc.gs4.GS4IndexAct;
-import com.syu.carinfo.wc.gs4.GS4SetAct_Bnr;
-import com.syu.carinfo.wc.infeinidi.WcInfeinidiCarSet;
-import com.syu.carinfo.wc.infeinidi.WcInfeonidiIndexAct;
-import com.syu.carinfo.wc.infeinidi.WcInfinitCarTire;
-import com.syu.carinfo.wc.jianghuai.WcJianghuaiIEV6EIndexAct;
-import com.syu.carinfo.wc.jingyix5.JYIndexAct;
-import com.syu.carinfo.wc.leinuo.DusterOilMileIndexActi;
-import com.syu.carinfo.wc.leinuo.LeinuoGuanjingSetActi;
-import com.syu.carinfo.wc.leinuo.Megane4SetActi;
-import com.syu.carinfo.wc.nissan.Wc_322_DspinfoActi;
-import com.syu.carinfo.wc.nissan.Wc_360_DspinfoActi;
-import com.syu.carinfo.wc.nissan.Wc_443_TianlaiGongjueAct;
-import com.syu.carinfo.wc.ruijie15.Focus19CarSetAct;
-import com.syu.carinfo.wc.ruijie15.RJIndexAct;
-import com.syu.carinfo.wc.ruijie15.RJXpCarSetAct;
-import com.syu.carinfo.wc.ruiteng.MingjueZS_Wc;
-import com.syu.carinfo.wc.ruiteng.RuiTengIndexActi;
-import com.syu.carinfo.wc.sgmws.SgmwsAlarmInfoAct;
-import com.syu.carinfo.wc.tianlai.ActivityWCTianLaiCarCD;
-import com.syu.carinfo.wc.tianlaicd.WC08TianlaiIndexAct;
-import com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi;
-import com.syu.carinfo.wc.ziyouguang.Wc_372_IndexAct;
-import com.syu.carinfo.wc2.ford.WC2FordLincoinCarSettingsAct;
-import com.syu.carinfo.wc2.ford.WC2FordLincoinIndexAct;
-import com.syu.carinfo.wc2.huangguan.WC209HuangguanEQAct;
-import com.syu.carinfo.wc2.nazhijie.WCNazhijieU6CarSet;
-import com.syu.carinfo.wc2.ruiqi.WCNissanRuiqi6IndexAct;
-import com.syu.carinfo.wc2.tata.LZBMWMiniCarSet;
-import com.syu.carinfo.wc2.tata.WC2MHDCarSet;
-import com.syu.carinfo.wc2.tata.WC2TataCarSet;
-import com.syu.carinfo.wccamry.Rav4TripAct;
-import com.syu.carinfo.wccamry.Wc09LexusESEQActi;
-import com.syu.carinfo.wccamry.Wc09LexusESIndexActi;
-import com.syu.carinfo.xbs.accord9.XBSAccord9IndexActi;
-import com.syu.carinfo.xbs.angkesaila.XBS_AngKeSaiLa_Cx4_IndexAct;
-import com.syu.carinfo.xbs.gs3.GS3CarSettingsAct;
-import com.syu.carinfo.xbs.gs3.GS3IndexAct;
-import com.syu.carinfo.xbs.jeep.Activity_XBS_FunctionlActi;
-import com.syu.carinfo.xbs.tianlai.XBS09TianlaiIndexAct;
-import com.syu.carinfo.xbs.tule.XBSTuleDZSJIndexAct;
-import com.syu.carinfo.xbs.tule.XBSTuleIndexAct;
-import com.syu.carinfo.xbs.tule.XBSZTT600CarTire;
-import com.syu.carinfo.xbs.xbshaimam8.XbsHaiMaM8IndexActi;
-import com.syu.carinfo.xbs.yage8.XBS08YageIndexAct;
-import com.syu.carinfo.xc.feiyatefeiyue.XCFeiyateFeiyueSetFunc;
-import com.syu.carinfo.xc.gm.XC_GMandRongweiIndexAct;
-import com.syu.carinfo.xc.lexus.XCLexusIndexAct;
-import com.syu.carinfo.xc.tule.XCTuleCDIndexAct;
-import com.syu.carinfo.xc.tule.XCTuleIndexAct;
-import com.syu.carinfo.xfy.dx7.RzcDx7Settings;
-import com.syu.carinfo.xfy.dx7.XfyDx7HistroyAct;
-import com.syu.carinfo.xfy.dx7.XfyDx7IndexAct;
-import com.syu.carinfo.xfy.dx7.XfyZhV3CarSet;
-import com.syu.carinfo.xfy.guandao.ActivityGuanDaoIndex;
-import com.syu.carinfo.xfy.psa.ActivityPSA3008Index;
-import com.syu.carinfo.xfy.sanlingall.XFYSanLingAllEQAct;
-import com.syu.carinfo.xfy.sr7.ActivitySR7Setting;
-import com.syu.carinfo.xfy.sr7.ActivitySR7Setting_Bnr;
-import com.syu.carinfo.xfy.xc60.Xc60SettingsAct;
-import com.syu.carinfo.xincheng.infiniti.Infiniti_XinCheng_IndexAct;
-import com.syu.carinfo.xincheng.infiniti.Nissan_Xiaoke_XinCheng_CarTire;
-import com.syu.carinfo.xp.SanlinSeries.SanlinXPCarSet;
-import com.syu.carinfo.xp.SanlinSeries.SanlinXPIndexAct;
-import com.syu.carinfo.xp.psa_all.LZPsaAllIndexAct;
-import com.syu.carinfo.xp.psa_all.XpPsaAllIndexActi;
-import com.syu.carinfo.xp.psa_all.XpPsaAllOrinalCarActivity;
-import com.syu.carinfo.xp.suburu.RZCSuburuCarSet;
-import com.syu.carinfo.xp.suburu.SuburuCarSet;
-import com.syu.carinfo.xp.yinglang.DjXp1_ParkAvenue_25to33_info;
-import com.syu.carinfo.xp.yinglang.YLCarSettingsAct;
-import com.syu.carinfo.xp.yinglang.YLIndexAct;
-import com.syu.carinfo.xp.ziyouguang.Activity_287_Engine_Shotdown;
-import com.syu.carinfo.xp.ziyouguang.Activity_424_ClioFuncSet;
-import com.syu.carinfo.xp.ziyouguang.PAFordAllIndexActi;
-import com.syu.carinfo.xp.ziyouguang.PAFord_FunctionlActi;
-import com.syu.carinfo.xp.ziyouguang.PAJeepAllIndexActi;
-import com.syu.carinfo.xp.ziyouguang.PAToyotaAllIndexActi;
-import com.syu.carinfo.xp.ziyouguang.Xp_374_AegeaIndexActi;
-import com.syu.carinfo.xp.ziyouguang.Xp_374_FunctionlActi;
-import com.syu.carinfo.xp.ziyouguang.Xp_374_IndexActi;
-import com.syu.carinfo.xp_angkesailam3.M3CarCD;
-import com.syu.carinfo.zhtd.bmw.LZBenzSmartSetFunc;
-import com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc;
-import com.syu.carinfo.zhtd.bmw.LZNewAllGMCSetFunc;
-import com.syu.carinfo.zhtd.bmw.LZNewAllMazdaSetFunc;
-import com.syu.carinfo.zhtd.bmw.LZNewLandRoverSetFunc;
-import com.syu.carinfo.zhtd.bmw.YL6606NewVinFanAllSetFunc;
-import com.syu.carinfo.zhtd.bmw.ZH2PilotcarCarinfoAct;
-import com.syu.carinfo.zhtd.bmw.ZhtdBmwIndexFunc;
-import com.syu.carinfo.zhtd.bmw.ZhtdBmwSetFunc;
-import com.syu.carinfo.ztt600.IndexAct_Bnr;
-import com.syu.carinfo.ztt600.IndexAct_Luz;
-import com.syu.carinfo.ztt600.IndexAct_RZC;
-import com.syu.carinfo.ztt600.ZTTireAct_Wc;
-import com.syu.carinfo.zx6606.ZX6606HondaIndexActi;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
@@ -531,8 +36,35 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
     }
     
     public void determineClassName() {
-        Class<?> cls = null;
-        switch (DataCanbus.DATA[1000]) {
+        int carId = DataCanbus.DATA[1000];
+        if (carId == 411 || carId == FinalCanbus.CAR_WC2_LandRover_H /* 65947 */) {
+            // These cars have no screen of their own to name: the unit's settings are opened
+            // instead, and nothing is saved.
+            DataCanbus.PROXY.cmd(2, new int[]{241, 255}, null, null);
+            return;
+        }
+        String name = className(carId);
+
+    	SharedPreferences mPrefs = SessionPrefs.get();
+        SharedPreferences.Editor editor = mPrefs.edit();  
+        if (name != null) {
+            // What String.valueOf(Class) gave, which the settings read back: "class " + the name.
+            editor.putString("canbus_class", "class " + name);     
+        } else {
+        	editor.putString("canbus_class", "vehicle_not_exist");    
+        }
+        editor.apply();
+    }
+
+    /**
+     * The name of the class of FYT's canbus app that serves the car, or null if there is none. A
+     * name, not the class: the classes are in decompiled_carinfo and are not part of the build.
+     * They are only what Fuel statistics points to, for the user to look up. The cases that fall
+     * through into the next ones do so on purpose (as they did when this returned a class).
+     */
+    static String className(int carId) {
+        String name = null;
+        switch (carId) {
             case 1:
             case FinalCanbus.CAR_WC1_Benz_Old /* 262145 */:
             case FinalCanbus.CAR_WC1_VW_Golf6_10_12 /* 327681 */:
@@ -565,7 +97,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC1_VW_MAGOTAN_07_10 /* 2097153 */:
             case FinalCanbus.CAR_WC1_VW_MAGOTAN_11_15 /* 2162689 */:
             case FinalCanbus.CAR_WC1_Benz_Smart_17_L /* 2228225 */:
-                cls = DasAutoWcAct.class;
+                name = "com.syu.carinfo.dasauto.DasAutoWcAct";
                 break;
             case 2:
             case FinalCanbus.CAR_XP1_DaZhong_H /* 65538 */:
@@ -593,11 +125,11 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_Audi_A4L_22 /* 4915251 */:
             case FinalCanbus.CAR_RZC_Audi_RS3_17 /* 4980787 */:
             case FinalCanbus.CAR_RZC_Audi_A4L_17 /* 5046323 */:
-                cls = DasAutoIndexAct.class;
+                name = "com.syu.carinfo.dasauto.DasAutoIndexAct";
                 break;
             case 12:
             case 129:
-                cls = Psa301IndexActi.class;
+                name = "com.syu.carinfo.psa.Psa301IndexActi";
                 break;
             case 14:
             case 48:
@@ -610,11 +142,11 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_BNR_Yihu2012_H /* 196656 */:
             case FinalCanbus.CAR_WC2_12BT50 /* 196927 */:
             case FinalCanbus.CAR_CZH_RZC_YiHu2017_H /* 3932494 */:
-                cls = FocusSyncBtActi.class;
+                name = "com.syu.carinfo.focus.FocusSyncBtActi";
                 break;
             case 16:
             case FinalCanbus.CAR_RZC1_LZ_MZD3_5_H /* 131363 */:
-                cls = MzdClockSetActi.class;
+                name = "com.syu.carinfo.mzd.MzdClockSetActi";
                 break;
             case 17:
             case 160:
@@ -717,7 +249,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_MQB_All_360 /* 3670176 */:
             case FinalCanbus.CAR_RZC_MQB_Caddy_22 /* 3735712 */:
             case FinalCanbus.CAR_RZC_MaiTeng_20_H_EC /* 3801248 */:
-                cls = Golf7IndexAct.class;
+                name = "com.syu.carinfo.golf7.Golf7IndexAct";
                 break;
             case 19:
             case 64:
@@ -735,7 +267,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_Honda_17Avancier_NoAmp /* 328001 */:
             case FinalCanbus.CAR_WC2_Honda_17Avancier_Amp /* 393537 */:
             case FinalCanbus.CAR_WC2_Honda_18Accod /* 721217 */:
-                cls = HondaIndexActi.class;
+                name = "com.syu.carinfo.honda.HondaIndexActi";
                 break;
             case 20:
             case FinalCanbus.CAR_XP1_Camry2013_H /* 131092 */:
@@ -761,7 +293,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_XP1_14Prado_M /* 3342356 */:
             case FinalCanbus.CAR_XP1_14Prado_H /* 3407892 */:
             case FinalCanbus.CAR_ZH2_XP1_Toyota_All /* 3473428 */:
-                cls = CamryIndexAct_XP.class;
+                name = "com.syu.carinfo.camry2012.xp.CamryIndexAct_XP";
                 break;
             case 21:
             case FinalCanbus.CAR_WC2_MengDiOuZS2013_M /* 65557 */:
@@ -770,7 +302,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_MengDiOu_KEEP_AIR_PANNEL_M /* 262165 */:
             case FinalCanbus.CAR_WC2_MengDiOu_KEEP_AIR_PANNEL_H /* 327701 */:
             case FinalCanbus.CAR_CZH_WC2_MengDiOuZS2013_M /* 589845 */:
-                cls = WC2FordMDOCarSeatSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.WC2FordMDOCarSeatSet";
                 break;
             case 22:
             case FinalCanbus.CAR_XP1_Ford_KUGA_2013 /* 65558 */:
@@ -781,14 +313,14 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_XP1_Ford_Tourneo_2015 /* 458774 */:
             case FinalCanbus.CAR_XP1_Ford_Transit_2015 /* 524310 */:
             case FinalCanbus.CAR_XP1_Ford_KUGA_2017 /* 589846 */:
-                cls = ActivityIndex_14Festia.class;
+                name = "com.syu.carinfo.focus.ActivityIndex_14Festia";
                 break;
             case 24:
             case 47:
             case FinalCanbus.CAR_RZC_SIYU2012 /* 65560 */:
             case FinalCanbus.CAR_XP1_CRV2012_BNR /* 131119 */:
             case FinalCanbus.CAR_RZC_CRV2012 /* 196655 */:
-                cls = XpCrvActi.class;
+                name = "com.syu.carinfo.crv.XpCrvActi";
                 break;
             case 25:
             case 26:
@@ -819,7 +351,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_DJ_GM_ALL /* 2424857 */:
             case FinalCanbus.CAR_XP1_GM_AJcd650 /* 2490393 */:
             case FinalCanbus.CAR_XP1_GM_Opel_Meriva /* 2621465 */:
-                cls = YLIndexAct.class;
+                name = "com.syu.carinfo.xp.yinglang.YLIndexAct";
                 break;
             case 31:
             case 355:
@@ -849,12 +381,12 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_XP_19QiYa_Sportage_L /* 2097507 */:
             case FinalCanbus.CAR_XP_18KIA_carnival /* 2163043 */:
             case FinalCanbus.CAR_XP_16QiYaKX5_H_Noamp /* 2228579 */:
-                cls = XP_19ShengDafei_CarSettingAct.class;
+                name = "com.syu.carinfo.od.tusheng.XP_19ShengDafei_CarSettingAct";
                 break;
             case 35:
             case 306:
             case FinalCanbus.CAR_RZCexc_Lifan650EV /* 65842 */:
-                cls = LiFan720IndexAct.class;
+                name = "com.syu.carinfo.lifan720.LiFan720IndexAct";
                 break;
             case 36:
             case 254:
@@ -951,11 +483,11 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_GM_ExpressVan_08 /* 5636132 */:
             case FinalCanbus.CAR_WC2_GM_Impala_06 /* 5701668 */:
             case FinalCanbus.CAR_WC2_GM_Avalanch_07 /* 5767204 */:
-                cls = KlcIndexAct.class;
+                name = "com.syu.carinfo.klc.KlcIndexAct";
                 break;
             case 37:
             case FinalCanbus.CAR_WC2_Accord9_H /* 131109 */:
-                cls = Accord9HIndexAct.class;
+                name = "com.syu.carinfo.accord9.wc.Accord9HIndexAct";
                 break;
             case 38:
             case 231:
@@ -1070,7 +602,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZCexc_Feiyate_BRAVO_12_H /* 2555943 */:
             case FinalCanbus.CAR_RZCexc_FeiyateFeixiang_M /* 3014695 */:
             case FinalCanbus.CAR_RZCexc_FeiyateFeixiang_H /* 3080231 */:
-                cls = RzcFYTOilMileIndexActi.class;
+                name = "com.syu.carinfo.rzc.feiyate.RzcFYTOilMileIndexActi";
                 break;
             case 40:
             case FinalCanbus.CAR_XP1_17MaiTeng /* 262184 */:
@@ -1089,7 +621,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_XP_MQB_Seat_Ateca /* 1245224 */:
             case FinalCanbus.CAR_ZH_XP_MQB_T_CROSS /* 1310760 */:
             case FinalCanbus.CAR_XP_TuGuan_L_20_H /* 1376296 */:
-                cls = Golf7_XP_IndexAct.class;
+                name = "com.syu.carinfo.golf7_xp.Golf7_XP_IndexAct";
                 break;
             case 41:
             case 77:
@@ -1098,18 +630,18 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_BNR_ACCORD9_H /* 131149 */:
             case FinalCanbus.CAR_BNR_ACCORD9_L /* 196685 */:
             case FinalCanbus.CAR_BNR_HONDA_Crosstour /* 262221 */:
-                cls = XPAccord9IndexActi.class;
+                name = "com.syu.carinfo.accord9.xp.XPAccord9IndexActi";
                 break;
             case 42:
             case 59:
             case FinalCanbus.CAR_WC2_16_ACCORD9_Lo /* 65578 */:
             case FinalCanbus.CAR_WC2_16_ACCORD9_NotBackCar_Lo /* 131114 */:
-                cls = Accord9LowIndexAct.class;
+                name = "com.syu.carinfo.accord9.wc.Accord9LowIndexAct";
                 break;
             case 44:
             case 45:
             case FinalCanbus.CAR_CYT_GaoErFu7_Lo /* 65580 */:
-                cls = Golf7OilMileagePage1LowActi.class;
+                name = "com.syu.carinfo.golf7.Golf7OilMileagePage1LowActi";
                 break;
             case 51:
             case 261:
@@ -1169,13 +701,13 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_XC_Ford_ForexClub /* 4259891 */:
             case FinalCanbus.CAR_RZC_SSANGYONG_TIVOLAN /* 4325427 */:
             case FinalCanbus.CAR_RZC_JH_All /* 4456499 */:
-                cls = DasAutoXpAct.class;
+                name = "com.syu.carinfo.dasauto.DasAutoXpAct";
                 break;
             case 56:
-                cls = Psa2008IndexActi.class;
+                name = "com.syu.carinfo.psa.Psa2008IndexActi";
                 break;
             case 58:
-                cls = XbsHaiMaM8IndexActi.class;
+                name = "com.syu.carinfo.xbs.xbshaimam8.XbsHaiMaM8IndexActi";
                 break;
             case 61:
             case FinalCanbus.CAR_RZC_XP1_GM_1 /* 65597 */:
@@ -1297,15 +829,15 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_ALL_GM_23Equinox /* 8716349 */:
             case FinalCanbus.CAR_RZC_ALL_GM_23MaiRuiBaoXL /* 8781885 */:
             case FinalCanbus.CAR_RZC_ALL_GM_23ChevroletBlazer /* 8847421 */:
-                cls = RzcKlcIndex.class;
+                name = "com.syu.carinfo.rzc.klc.RzcKlcIndex";
                 break;
             case 67:
             case 76:
-                cls = WcCrvActi.class;
+                name = "com.syu.carinfo.crv.WcCrvActi";
                 break;
             case 68:
             case FinalCanbus.CAR_RZC_XP1_ROEWE550_13_15 /* 65604 */:
-                cls = ActRongwei550CarSet.class;
+                name = "com.syu.carinfo.rzc.mingjueruiteng.ActRongwei550CarSet";
                 break;
             case 70:
             case FinalCanbus.CAR_RZC_XP1_17CHANGANCS75 /* 65606 */:
@@ -1325,11 +857,11 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_16_17CHANGANCS15 /* 1572934 */:
             case FinalCanbus.CAR_RZC_15_17CHANGAN_YD /* 1638470 */:
             case FinalCanbus.CAR_RZC_XP1_17YCHANGANCS55_H /* 1704006 */:
-                cls = ChangAnCS75Act.class;
+                name = "com.syu.carinfo.rzc.xp.cs75.ChangAnCS75Act";
                 break;
             case 79:
             case FinalCanbus.CAR_RZC1_MZD3_5_H /* 65827 */:
-                cls = MzdRZCM3ClockSetActi.class;
+                name = "com.syu.carinfo.mzd.MzdRZCM3ClockSetActi";
                 break;
             case 80:
             case FinalCanbus.CAR_RZC_XP1_QiJun_H /* 131152 */:
@@ -1342,21 +874,21 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_OD_XP1_Nissan_All_H /* 589904 */:
             case FinalCanbus.CAR_RZC_SwMar_17 /* 1441872 */:
             case FinalCanbus.CAR_RZC_SwMar_Amp_17 /* 1507408 */:
-                cls = Rzc_80_DspinfoActi.class;
+                name = "com.syu.carinfo.rzc.xima.Rzc_80_DspinfoActi";
                 break;
             case 86:
-                cls = WCBenTeng14B70ClockSet.class;
+                name = "com.syu.carinfo.b70.WCBenTeng14B70ClockSet";
                 break;
             case 88:
-                cls = BenTeng14B70ClockSet.class;
+                name = "com.syu.carinfo.b70.BenTeng14B70ClockSet";
                 break;
             case 90:
             case FinalCanbus.CAR_WC2_DS5_H /* 65626 */:
-                cls = PsaOilMileIndexActi.class;
+                name = "com.syu.carinfo.psa.PsaOilMileIndexActi";
                 break;
             case 92:
             case FinalCanbus.CAR_WC2_DS5LS_H /* 65628 */:
-                cls = PsaDs5lsIndexActi.class;
+                name = "com.syu.carinfo.psa.PsaDs5lsIndexActi";
                 break;
             case 100:
             case 280:
@@ -1385,7 +917,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_OD_ChuanQiGS4 /* 2097432 */:
             case FinalCanbus.CAR_RZC_XP1_ChuanQiM8_21 /* 2162968 */:
             case FinalCanbus.CAR_RZC_XP1_ChuanQiGS4_TF /* 2294040 */:
-                cls = GS4SetAct_Bnr.class;
+                name = "com.syu.carinfo.wc.gs4.GS4SetAct_Bnr";
                 break;
             case 101:
             case FinalCanbus.CAR_WC1_QiJun_H /* 131173 */:
@@ -1420,16 +952,16 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC1_23Xiaoke /* 2228325 */:
             case FinalCanbus.CAR_WC1_22Serena /* 2293861 */:
             case FinalCanbus.CAR_WC1_23Serena /* 2359397 */:
-                cls = WCNissanCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.WCNissanCarSet";
                 break;
             case 106:
-                cls = RzcBydS6Acti.class;
+                name = "com.syu.carinfo.byd.RzcBydS6Acti";
                 break;
             case 107:
-                cls = DjAiruize7Setting.class;
+                name = "com.syu.carinfo.dj.DjAiruize7Setting";
                 break;
             case 108:
-                cls = WCGeshituIndexActi.class;
+                name = "com.syu.carinfo.geshitu.wc.WCGeshituIndexActi";
                 break;
             case 112:
             case 214:
@@ -1588,18 +1120,18 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_TOYOTA_13Camry /* 8519792 */:
             case FinalCanbus.CAR_RZC_TOYOTA_10AURIS_Auto /* 8585328 */:
             case FinalCanbus.CAR_RZC_TOYOTA_13Avalon_Auto /* 8650864 */:
-                cls = CamryIndexAct.class;
+                name = "com.syu.carinfo.camry2012.xp.CamryIndexAct";
                 break;
             case 115:
             case 293:
-                cls = RJIndexAct.class;
+                name = "com.syu.carinfo.wc.ruijie15.RJIndexAct";
                 break;
             case 118:
             case 122:
             case 185:
             case FinalCanbus.CAR_WC2_408_14_M /* 65658 */:
             case FinalCanbus.CAR_WC2_408_14_H /* 131194 */:
-                cls = BZ408IndexActi.class;
+                name = "com.syu.carinfo.biaozhi408.BZ408IndexActi";
                 break;
             case 121:
             case FinalCanbus.CAR_WC2_14Prado_M /* 65657 */:
@@ -1609,18 +1141,18 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_ShuPing_Prado_M /* 458873 */:
             case FinalCanbus.CAR_WC2_ShuPing_Prado_H /* 524409 */:
             case FinalCanbus.CAR_WC2_ShuPing_14Prado_H_NoAMP /* 721017 */:
-                cls = PardoIndexAct.class;
+                name = "com.syu.carinfo.pardo2014.wc.PardoIndexAct";
                 break;
             case 123:
             case 278:
-                cls = XpPsa301Acti.class;
+                name = "com.syu.carinfo.biaozhi408.XpPsa301Acti";
                 break;
             case 128:
-                cls = ActivityChangAnCS75.class;
+                name = "com.syu.carinfo.wc.changan.ActivityChangAnCS75";
                 break;
             case 131:
             case FinalCanbus.CAR_XFY_Haval_H6_ShuPing /* 131203 */:
-                cls = HavalH6Acti.class;
+                name = "com.syu.carinfo.havah6.HavalH6Acti";
                 break;
             case 143:
             case FinalCanbus.CAR_XP1_QiJun_M /* 65679 */:
@@ -1634,19 +1166,19 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_XP1_Nissan_Qashqai_H /* 917647 */:
             case FinalCanbus.CAR_XP1_Nissan_SYLPHY_20 /* 983183 */:
             case FinalCanbus.CAR_XP1_Nissan_SYLPHY_20_H /* 1048719 */:
-                cls = XPNissanCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.XPNissanCarSet";
                 break;
             case 144:
             case 145:
             case FinalCanbus.CAR_WC1_ZhiNanZhe_H /* 65680 */:
             case FinalCanbus.CAR_WC1_MuMaRen_H /* 65681 */:
-                cls = WCOldJeepAmpSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.WCOldJeepAmpSet";
                 break;
             case 151:
             case FinalCanbus.CAR_DAOJUN_XP1_BYDSurui /* 458903 */:
             case FinalCanbus.CAR_RCW_BYD_6 /* 524439 */:
             case FinalCanbus.CAR_RCW_BYD_12_18Surui /* 589975 */:
-                cls = Activity_DaojunSetCrtrl.class;
+                name = "com.syu.carinfo.byd.hcy.Activity_DaojunSetCrtrl";
                 break;
             case 153:
             case 249:
@@ -1660,7 +1192,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_18Sonata9_H /* 328042 */:
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_All_H /* 524650 */:
             case FinalCanbus.CAR_RZC3_XianDai_Rohens_Coupe_12_H /* 1376618 */:
-                cls = RZCXiandaiAmpCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCXiandaiAmpCarSet";
                 break;
             case 163:
             case 221:
@@ -1669,28 +1201,28 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC4_PSA_4008 /* 65875 */:
             case FinalCanbus.CAR_RZC4_PSA14_408_M /* 131235 */:
             case FinalCanbus.CAR_RZC4_PSA14_408_H /* 196771 */:
-                cls = RZC_BZ408IndexActi.class;
+                name = "com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi";
                 break;
             case 164:
-                cls = JiaNianHuaMainActivity.class;
+                name = "com.syu.carinfo.jianianhua_wc.JiaNianHuaMainActivity";
                 break;
             case 165:
             case FinalCanbus.CAR_XBS_XP1_ChuanQiGS3 /* 65701 */:
-                cls = GS3CarSettingsAct.class;
+                name = "com.syu.carinfo.xbs.gs3.GS3CarSettingsAct";
                 break;
             case 170:
-                cls = M3CarCD.class;
+                name = "com.syu.carinfo.xp_angkesailam3.M3CarCD";
                 break;
             case 175:
             case FinalCanbus.CAR_XP1_MZD_CX5_M /* 65711 */:
             case FinalCanbus.CAR_XP1_MZD_CX5_H /* 131247 */:
-                cls = CX5Index.class;
+                name = "com.syu.carinfo.mzd.cx5.CX5Index";
                 break;
             case 187:
-                cls = BZ408OilMileIndexActi.class;
+                name = "com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi";
                 break;
             case 188:
-                cls = CrvXBSActi.class;
+                name = "com.syu.carinfo.crv.CrvXBSActi";
                 break;
             case 190:
             case 331:
@@ -1733,7 +1265,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_Nissan_TITAN_19_Import_H /* 3014846 */:
             case FinalCanbus.CAR_RZC_Nissan_SENTRA_13_Import /* 3080382 */:
             case FinalCanbus.CAR_RZC_Nissan_SENTRA_13_Import_H /* 3145918 */:
-                cls = NissanXiaokeCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.NissanXiaokeCarSet";
                 break;
             case 217:
             case FinalCanbus.CAR_RZC4_PSA_MPV_Tepee /* 65753 */:
@@ -1743,7 +1275,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC4_PSA_RCZ /* 327897 */:
             case FinalCanbus.CAR_RZC4_PSA_3008_KeepScreen /* 393433 */:
             case FinalCanbus.CAR_RZC4_PSA_ALL_Screen /* 458969 */:
-                cls = RZC_BZ408_Panel_IndexActi.class;
+                name = "com.syu.carinfo.rzc.biaozhi408.RZC_BZ408_Panel_IndexActi";
                 break;
             case 223:
             case FinalCanbus.CAR_RZC_FengGuang18Y580 /* 393530 */:
@@ -1760,18 +1292,18 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC1_BMW_E9X /* 65766 */:
             case FinalCanbus.CAR_WC1_BMW_F30 /* 131302 */:
             case FinalCanbus.CAR_WC1_BMW_CIC /* 196838 */:
-                cls = BMWX1IndexActi.class;
+                name = "com.syu.carinfo.bmw.BMWX1IndexActi";
                 break;
             case 232:
             case FinalCanbus.CAR_XP2_OPEL_Baud19200 /* 65768 */:
             case FinalCanbus.CAR_XP2_LUZ_OPEL_Zafira /* 131304 */:
             case FinalCanbus.CAR_XP2_LUZ_OPEL_Antara /* 196840 */:
             case FinalCanbus.CAR_XP2_LUZ_OPEL_Astra /* 262376 */:
-                cls = OPELCarKeyActivity.class;
+                name = "com.syu.carinfo.opel.OPELCarKeyActivity";
                 break;
             case 237:
             case FinalCanbus.CAR_RZC_XP1_16HAIMAM3 /* 65773 */:
-                cls = ActivityHaiMaSettings.class;
+                name = "com.syu.carinfo.mzd.cx5.ActivityHaiMaSettings";
                 break;
             case 244:
             case FinalCanbus.CAR_RZC_XP1_HavalH2_H /* 65780 */:
@@ -1786,7 +1318,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_XP1_HavalH6_H /* 1573108 */:
             case FinalCanbus.CAR_RZC_Haval_H3_05 /* 1966324 */:
             case FinalCanbus.CAR_RZC_HavalLow_Changchengpao_19_L /* 2294004 */:
-                cls = ActivityHava18H6SetAct.class;
+                name = "com.syu.carinfo.hava.ActivityHava18H6SetAct";
                 break;
             case 252:
             case FinalCanbus.CAR_WC2_PSAALL_1 /* 65788 */:
@@ -1816,7 +1348,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_PSAALL_5008_21 /* 1704188 */:
             case FinalCanbus.CAR_WC2_PSAALL_208_23_SA /* 1769724 */:
             case FinalCanbus.CAR_WC2_PSAALL_C3_22_SA /* 1835260 */:
-                cls = PSAIndexActi.class;
+                name = "com.syu.carinfo.psa_all.PSAIndexActi";
                 break;
             case 260:
             case FinalCanbus.CAR_WC2_ChuanQiGA6_M /* 65796 */:
@@ -1829,14 +1361,14 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_ChuanQiG_AION_19 /* 655649 */:
             case FinalCanbus.CAR_WC2_ChuanQiG_GS8_17 /* 721185 */:
             case FinalCanbus.CAR_WC2_ChuanQiG_AION_22 /* 786721 */:
-                cls = GS4CarSettingsAct.class;
+                name = "com.syu.carinfo.wc.gs4.GS4CarSettingsAct";
                 break;
             case 262:
             case 410:
-                cls = XBSAccord9IndexActi.class;
+                name = "com.syu.carinfo.xbs.accord9.XBSAccord9IndexActi";
                 break;
             case 265:
-                cls = IndexAct_RZC.class;
+                name = "com.syu.carinfo.ztt600.IndexAct_RZC";
                 break;
             case 266:
             case FinalCanbus.CAR_XP1_SoNaTa9_AMP /* 131338 */:
@@ -1844,62 +1376,62 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_XP1_18SoNaTa9_M /* 721162 */:
             case FinalCanbus.CAR_XP1_18SoNaTa9_H /* 786698 */:
             case FinalCanbus.CAR_XP1_19SoNaTa9 /* 852234 */:
-                cls = XPXiandaiCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.XPXiandaiCarSet";
                 break;
             case 270:
             case 279:
-                cls = LingDuActi.class;
+                name = "com.syu.carinfo.golf7.LingDuActi";
                 break;
             case 271:
-                cls = DjB70Act.class;
+                name = "com.syu.carinfo.dj.b70.DjB70Act";
                 break;
             case 272:
             case FinalCanbus.CAR_RZC_XP1_Ruifeng_MiniS2 /* 196880 */:
             case FinalCanbus.CAR_BNR_Jianghuai_Ruifeng_S2 /* 393488 */:
             case FinalCanbus.CAR_BNR_Jianghuai_Ruifeng_S3 /* 459024 */:
-                cls = JhRuiFengS3TireAct.class;
+                name = "com.syu.carinfo.rzc.ruifengs3.JhRuiFengS3TireAct";
                 break;
             case 273:
             case FinalCanbus.CAR_RZC_XP1_Mingjue_17RuiTeng /* 196881 */:
             case FinalCanbus.CAR_RZC_XP1_Mingjue_16RuiTeng /* 524561 */:
             case FinalCanbus.CAR_RZC_MingJue_3 /* 1769745 */:
-                cls = ActRuiTengIndex.class;
+                name = "com.syu.carinfo.rzc.mingjueruiteng.ActRuiTengIndex";
                 break;
             case 274:
             case FinalCanbus.CAR_DJ_XP1_ACCORD7_H /* 65810 */:
                 if (LauncherApplication.getConfiguration() != 1) {
-                    cls = ActivityAccord7Index.class;
+                    name = "com.syu.carinfo.accord.ActivityAccord7Index";
                     break;
                 }
             case 276:
             case 281:
             case FinalCanbus.CAR_BNR_XP1_PsaAll /* 65817 */:
             case FinalCanbus.CAR_XP1_PsaAll_AutoPark /* 262425 */:
-                cls = XpPsaAllIndexActi.class;
+                name = "com.syu.carinfo.xp.psa_all.XpPsaAllIndexActi";
                 break;
             case 282:
             case FinalCanbus.CAR_WC2_17MingJueRuiTeng /* 131354 */:
-                cls = RuiTengIndexActi.class;
+                name = "com.syu.carinfo.wc.ruiteng.RuiTengIndexActi";
                 break;
             case 286:
-                cls = AudiAct.class;
+                name = "com.syu.carinfo.bagoo.aodi.AudiAct";
                 break;
             case 287:
             case FinalCanbus.CAR_XP_JEEP_H /* 65823 */:
             case FinalCanbus.CAR_LUZ_XP_KelaiSile_H /* 196895 */:
             case FinalCanbus.CAR_BNR_JEEP_H /* 327967 */:
             case FinalCanbus.CAR_BNR_Zhinanzhe_14_H /* 459039 */:
-                cls = Activity_287_Engine_Shotdown.class;
+                name = "com.syu.carinfo.xp.ziyouguang.Activity_287_Engine_Shotdown";
                 break;
             case 289:
             case FinalCanbus.CAR_WC2_ChuanQiGS4_M /* 65825 */:
             case FinalCanbus.CAR_WC2_ChuanQiGS4_H /* 131361 */:
             case FinalCanbus.CAR_WC2_17ChuanQiGS4 /* 196897 */:
-                cls = GS4IndexAct.class;
+                name = "com.syu.carinfo.wc.gs4.GS4IndexAct";
                 break;
             case 290:
             case FinalCanbus.CAR_CZH_RZC_QiChenT70 /* 786722 */:
-                cls = QiChenT70Act.class;
+                name = "com.syu.carinfo.rzc.t70.QiChenT70Act";
                 break;
             case 294:
             case FinalCanbus.CAR_WC2_TOYOTA_REIZ /* 65830 */:
@@ -2020,7 +1552,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_TOYOTA_19Levin /* 8126758 */:
             case FinalCanbus.CAR_WC2_TOYOTA_23Altis /* 8192294 */:
             case FinalCanbus.CAR_WC2_TOYOTA_23Altis_H /* 8257830 */:
-                cls = Rav4TripAct.class;
+                name = "com.syu.carinfo.wccamry.Rav4TripAct";
                 break;
             case 298:
             case FinalCanbus.CAR_XP1_2015SIYU_CRV_M /* 65834 */:
@@ -2035,23 +1567,23 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_2014SIYU_CRV_H /* 4456746 */:
             case FinalCanbus.CAR_RZC_2014_CRV_H /* 4522282 */:
             case FinalCanbus.CAR_RZC_SIYU2012_H /* 4587818 */:
-                cls = HondaIndexActi.class;
+                name = "com.syu.carinfo.honda.HondaIndexActi";
                 break;
             case 301:
-                cls = HC_Biaozhi206OilPage.class;
+                name = "com.syu.carinfo.biaozhi408.HC_Biaozhi206OilPage";
                 break;
             case 302:
             case 303:
             case FinalCanbus.CAR_DJ_WC2_DS5LS_H /* 65838 */:
             case FinalCanbus.CAR_DJ_WC2_DS5_H /* 65839 */:
-                cls = DS5IndexAct.class;
+                name = "com.syu.carinfo.dongjian.wc2.ds5.DS5IndexAct";
                 break;
             case 313:
-                cls = Sbd_IndexAct.class;
+                name = "com.syu.carinfo.sbd_electric.Sbd_IndexAct";
                 break;
             case 320:
             case FinalCanbus.CAR_WeiChi2_ChangChengH2_H /* 65856 */:
-                cls = WcHavalH6Acti.class;
+                name = "com.syu.carinfo.havah6.WcHavalH6Acti";
                 break;
             case 321:
             case FinalCanbus.CAR_XP1_2016SIYU /* 196906 */:
@@ -2198,10 +1730,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_HONDA_17URV /* 7012650 */:
             case FinalCanbus.CAR_RZC_HONDA_17URV_H /* 7078186 */:
                 if (LauncherApplication.getConfiguration() == 1) {
-                    cls = HondaIndexActi.class;
+                    name = "com.syu.carinfo.honda.HondaIndexActi";
                     break;
                 } else {
-                    cls = ActivitySiYuIndex.class;
+                    name = "com.syu.carinfo.honda.ActivitySiYuIndex";
                     break;
                 }
             case 326:
@@ -2212,7 +1744,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_XP1_DongNanDX7_Low /* 459081 */:
             case FinalCanbus.CAR_RZC_OD_DongNanDX7_18_20_H /* 655689 */:
             case FinalCanbus.CAR_CZH_OD_DongNanDX7_18_20_H /* 721225 */:
-                cls = XfyDx7IndexAct.class;
+                name = "com.syu.carinfo.xfy.dx7.XfyDx7IndexAct";
                 break;
             case 330:
             case 334:
@@ -2270,11 +1802,11 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_Ford_Transit_22_OS_H /* 5308750 */:
             case FinalCanbus.CAR_RZC_Ford_Puma_22_M /* 5636430 */:
             case FinalCanbus.CAR_RZC_Ford_Puma_22_H /* 5701966 */:
-                cls = FordIndexAct.class;
+                name = "com.syu.carinfo.ford.FordIndexAct";
                 break;
             case 332:
             case FinalCanbus.CAR_SB_GM /* 65868 */:
-                cls = SaiOu3Index.class;
+                name = "com.syu.carinfo.saiou3.SaiOu3Index";
                 break;
             case 339:
             case FinalCanbus.CAR_RZC4_PSA_19_C4L /* 131411 */:
@@ -2302,13 +1834,13 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC4_PSA_C4_OE_L /* 2228563 */:
             case FinalCanbus.CAR_RZC4_PSA_C4_OE_M /* 2294099 */:
             case FinalCanbus.CAR_RZC4_PSA_C4_OE_H /* 2359635 */:
-                cls = RZC_BZ408IndexActi.class;
+                name = "com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi";
                 break;
             case 347:
-                cls = YLFocusIndex.class;
+                name = "com.syu.carinfo.focus.yl.YLFocusIndex";
                 break;
             case 349:
-                cls = KaYanAct.class;
+                name = "com.syu.carinfo.bagoo.kayan.KaYanAct";
                 break;
             case 350:
             case FinalCanbus.CAR_HAOZHENG_XP1_Bmw_X1 /* 65886 */:
@@ -2318,7 +1850,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_HAOZHENG_XP1_Bmw_318i /* 328030 */:
             case FinalCanbus.CAR_HAOZHENG_XP1_Bmw_320i /* 393566 */:
             case FinalCanbus.CAR_HAOZHENG_XP1_Bmw_325i /* 459102 */:
-                cls = BmwIndexAct.class;
+                name = "com.syu.carinfo.haozheng.bmw.BmwIndexAct";
                 break;
             case 352:
             case FinalCanbus.CAR_WC2_RENAULT_KeLeiAo /* 65888 */:
@@ -2334,14 +1866,14 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_RENAULT_16DACIA_SANDERO /* 852320 */:
             case FinalCanbus.CAR_WC2_RENAULT_Symbol /* 917856 */:
             case FinalCanbus.CAR_WC2_RENAULT_CLIO3 /* 2294112 */:
-                cls = Megane4SetActi.class;
+                name = "com.syu.carinfo.wc.leinuo.Megane4SetActi";
                 break;
             case 354:
             case FinalCanbus.CAR_XP1_14SanLinPajero_M /* 65890 */:
-                cls = SanlinXPCarSet.class;
+                name = "com.syu.carinfo.xp.SanlinSeries.SanlinXPCarSet";
                 break;
             case 360:
-                cls = Wc_360_DspinfoActi.class;
+                name = "com.syu.carinfo.wc.nissan.Wc_360_DspinfoActi";
                 break;
             case 362:
             case FinalCanbus.CAR_RZC3_18_Zhipao /* 65898 */:
@@ -2374,17 +1906,17 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC3_XianDai_13Rohens /* 2294122 */:
             case FinalCanbus.CAR_RZC3_XianDai_12GRANDEUR_HG240 /* 2359658 */:
             case FinalCanbus.CAR_RZC3_XianDai_14GENESIS_G330 /* 2425194 */:
-                cls = RZCXiandaiRohensCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCXiandaiRohensCarSet";
                 break;
             case 365:
             case FinalCanbus.CAR_AY1_JeepZiYouGuang_M /* 65901 */:
             case FinalCanbus.CAR_AY1_JeepZiYouGuang_H /* 131437 */:
-                cls = JeepIndexAct.class;
+                name = "com.syu.carinfo.aiying.ziyouguang.JeepIndexAct";
                 break;
             case 371:
             case FinalCanbus.CAR_BoGoo_XP1_Jeep15ZiYouGuang_M /* 65907 */:
             case FinalCanbus.CAR_BoGoo_XP1_Jeep15ZiYouGuang_H /* 131443 */:
-                cls = Bg_ZiYouguang_IndexAct.class;
+                name = "com.syu.carinfo.bg.ziyouguang.Bg_ZiYouguang_IndexAct";
                 break;
             case 372:
             case FinalCanbus.CAR_WC1_Jeep_ZiYouGuang_M /* 65908 */:
@@ -2400,7 +1932,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC1_Jeep_18_Zhihuiguan_H /* 983412 */:
             case FinalCanbus.CAR_WC1_Jeep_15_RAM_H /* 1048948 */:
             case FinalCanbus.CAR_WC1_TMK_BENZ_MPV_ALL /* 1114484 */:
-                cls = Wc_372_IndexAct.class;
+                name = "com.syu.carinfo.wc.ziyouguang.Wc_372_IndexAct";
                 break;
             case 373:
             case FinalCanbus.CAR_RZC_XP1_ZiYouGuang_H /* 65909 */:
@@ -2411,22 +1943,22 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_XP1_ZiYouGuang_19 /* 852341 */:
             case FinalCanbus.CAR_RZC_XP1_ZiYouGuang_19_H /* 917877 */:
             case FinalCanbus.CAR_RZC_Chrysler_300C /* 1048949 */:
-                cls = Rzc_ZiYouguang_IndexAct.class;
+                name = "com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_IndexAct";
                 break;
             case 374:
             case FinalCanbus.CAR_XP1_ZiYouGuang_H /* 65910 */:
                 if (LauncherApplication.getConfiguration() == 1) {
-                    cls = Xp_374_FunctionlActi.class;
+                    name = "com.syu.carinfo.xp.ziyouguang.Xp_374_FunctionlActi";
                     break;
                 } else {
-                    cls = Xp_374_IndexActi.class;
+                    name = "com.syu.carinfo.xp.ziyouguang.Xp_374_IndexActi";
                     break;
                 }
             case 375:
-                cls = X80Act.class;
+                name = "com.syu.carinfo.sbd.x80.X80Act";
                 break;
             case 376:
-                cls = ActivityTireRuiFengS5.class;
+                name = "com.syu.carinfo.sbd.ruifengs5.ActivityTireRuiFengS5";
                 break;
             case 379:
             case FinalCanbus.CAR_BNR_XP1_JunWei /* 459131 */:
@@ -2459,26 +1991,26 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_BNR_RZC_Mairuibao_L /* 2359675 */:
             case FinalCanbus.CAR_BNR_RZC_Mairuibao_H /* 2425211 */:
             case FinalCanbus.CAR_BNR_RZC_Mairuibao_Top /* 2490747 */:
-                cls = YLIndexAct.class;
+                name = "com.syu.carinfo.xp.yinglang.YLIndexAct";
                 break;
             case 380:
-                cls = FocusSyncBtActi.class;
+                name = "com.syu.carinfo.focus.FocusSyncBtActi";
                 break;
             case 385:
-                cls = Hc_385_CarCdAct.class;
+                name = "com.syu.carinfo.hc.accord8.Hc_385_CarCdAct";
                 break;
             case 386:
             case FinalCanbus.CAR_Bagoo_XP1_NewBmwSeries_NoCD /* 65922 */:
-                cls = BaguBmwIndexAct.class;
+                name = "com.syu.carinfo.bagu.bmw.BaguBmwIndexAct";
                 break;
             case 388:
             case FinalCanbus.CAR_XC_08TianLai_LOW /* 65924 */:
             case FinalCanbus.CAR_XP_OLD_9TianLai /* 196996 */:
-                cls = TianLai09Act.class;
+                name = "com.syu.carinfo.sbd.x80.TianLai09Act";
                 break;
             case 390:
             case FinalCanbus.CAR_XBS_XP1_ZhongTaiT600_H /* 65926 */:
-                cls = XBSZTT600CarTire.class;
+                name = "com.syu.carinfo.xbs.tule.XBSZTT600CarTire";
                 break;
             case 402:
             case FinalCanbus.CAR_BSD_XP1_SHUPING_RENAULT_KeLeiAo /* 65938 */:
@@ -2567,13 +2099,13 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_Renault_Dokker_18 /* 6750610 */:
             case FinalCanbus.CAR_RZC_Renault_Dokker_18_H /* 6816146 */:
             case FinalCanbus.CAR_RZC_17LIENUO_L_AUTO /* 6881682 */:
-                cls = KeLeiJiaIndexActi.class;
+                name = "com.syu.carinfo.rzc.keleijia.KeLeiJiaIndexActi";
                 break;
             case 403:
             case FinalCanbus.CAR_BNR_XP1_ShuPingFord_YIHU /* 65939 */:
             case FinalCanbus.CAR_BNR_XP1_ShuPingFord_YIHU_H /* 131475 */:
             case FinalCanbus.CAR_BNR_KX_ShuPingFord_Mengdiou /* 197011 */:
-                cls = Activity_ford_index.class;
+                name = "com.syu.carinfo.bnr.ford.Activity_ford_index";
                 break;
             case 404:
             case FinalCanbus.CAR_RZC_XP1_QiRuiRuiHu7 /* 65940 */:
@@ -2611,21 +2143,17 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_OD_18JieTU_X70_H /* 2752916 */:
             case FinalCanbus.CAR_RZC_OD_19JieTU_X90 /* 2818452 */:
             case FinalCanbus.CAR_RZC_OD_19JieTU_X90_H /* 2883988 */:
-                cls = ActivityQiRuiAiRuiZe.class;
+                name = "com.syu.carinfo.rzc.qirui.ActivityQiRuiAiRuiZe";
                 break;
             case 406:
             case FinalCanbus.CAR_XFY_XP1_ZhongTaiSR7_H /* 131478 */:
-                cls = ActivitySR7Setting.class;
+                name = "com.syu.carinfo.xfy.sr7.ActivitySR7Setting";
                 break;
             case 407:
-                cls = ActGS4LowSetting.class;
+                name = "com.syu.carinfo.rzc.gs4.ActGS4LowSetting";
                 break;
-            case 411:
-            case FinalCanbus.CAR_WC2_LandRover_H /* 65947 */:
-                DataCanbus.PROXY.cmd(2, new int[]{241, 255}, null, null);
-                return;
             case 414:
-                cls = Acti_Xima_Xfy.class;
+                name = "com.syu.carinfo.rzc.xima.Acti_Xima_Xfy";
                 break;
             case 415:
             case FinalCanbus.CAR_WC_Haval_Coupe_H /* 65951 */:
@@ -2633,16 +2161,16 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC_Haval_18Coupe_H /* 197023 */:
             case FinalCanbus.CAR_WC_Haval_18Coupe_TOP /* 262559 */:
             case FinalCanbus.CAR_WC_Haval_Coupe_TOP /* 328095 */:
-                cls = WcHavalH6CoupeActi.class;
+                name = "com.syu.carinfo.havah6.WcHavalH6CoupeActi";
                 break;
             case 416:
             case FinalCanbus.CAR_WC2_17MingJue6 /* 65952 */:
             case FinalCanbus.CAR_WC2_RongWei_I6 /* 197024 */:
             case FinalCanbus.CAR_WC2_RongWei_HS /* 393632 */:
-                cls = Wc_416_RongWei_CarSetAct.class;
+                name = "com.syu.carinfo.rongwei.Wc_416_RongWei_CarSetAct";
                 break;
             case 418:
-                cls = XBS_AngKeSaiLa_Cx4_IndexAct.class;
+                name = "com.syu.carinfo.xbs.angkesaila.XBS_AngKeSaiLa_Cx4_IndexAct";
                 break;
             case 420:
             case FinalCanbus.CAR_WC2_ToYoTa_10_Crown_HY /* 65956 */:
@@ -2655,14 +2183,14 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_ToYoTa_Lexus_08RX350 /* 590244 */:
             case FinalCanbus.CAR_WC2_ToYoTa_Lexus_09IS_Low /* 721316 */:
             case FinalCanbus.CAR_WC2_ToYoTa_Lexus_06LS460 /* 786852 */:
-                cls = Wc_420_IndexAct.class;
+                name = "com.syu.carinfo.wc.crown.Wc_420_IndexAct";
                 break;
             case 425:
             case FinalCanbus.CAR_XFY_ShuPing_Honda_GuanDao_H /* 65961 */:
-                cls = ActivityGuanDaoIndex.class;
+                name = "com.syu.carinfo.xfy.guandao.ActivityGuanDaoIndex";
                 break;
             case 428:
-                cls = Biaozhi206OilPage.class;
+                name = "com.syu.carinfo.biaozhi408.Biaozhi206OilPage";
                 break;
             case 429:
             case FinalCanbus.CAR_DJ_XP1_TOYOTA_12Crown_AMP /* 65965 */:
@@ -2680,17 +2208,17 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_DJ_XC_TOYOTA_08_15LAND_CRUISER /* 983469 */:
             case FinalCanbus.CAR_DJ_XP1_TOYOTA_HIGHLANDER /* 1114541 */:
             case FinalCanbus.CAR_DJ_XP1_TOYOTA_HIGHLANDER_H /* 1180077 */:
-                cls = ActivityHuangGuanIndex.class;
+                name = "com.syu.carinfo.dj.huangguan.ActivityHuangGuanIndex";
                 break;
             case 430:
-                cls = ActivityWCTianLaiCarCD.class;
+                name = "com.syu.carinfo.wc.tianlai.ActivityWCTianLaiCarCD";
                 break;
             case 431:
             case FinalCanbus.CAR_431_BG_PSAALL /* 65967 */:
-                cls = PsasettingActi_HC.class;
+                name = "com.syu.carinfo.pasbiaozhi408.PsasettingActi_HC";
                 break;
             case 434:
-                cls = ActivityFiatCarUSB.class;
+                name = "com.syu.carinfo.bg.fiat.ActivityFiatCarUSB";
                 break;
             case 439:
             case FinalCanbus.CAR_RZC4_PSA_19_408 /* 590163 */:
@@ -2698,7 +2226,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC4_PSA_ALL_NoAir_L /* 2031955 */:
             case FinalCanbus.CAR_RZC4_PSA_ALL_NoAir_M /* 2097491 */:
             case FinalCanbus.CAR_RZC4_PSA_ALL_NoAir_H /* 2163027 */:
-                cls = RZC_BZ408IndexActi.class;
+                name = "com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi";
                 break;
             case 443:
             case FinalCanbus.CAR_443_WC2_OULANDE_H /* 7012795 */:
@@ -2715,7 +2243,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC2_Pajero_23 /* 14418363 */:
             case FinalCanbus.CAR_443_WC2_Xpander_22 /* 14811579 */:
             case FinalCanbus.CAR_443_WC2_Xpander_22_H /* 14877115 */:
-                cls = WC2SanlinCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.WC2SanlinCarInfo";
                 break;
             case 444:
             case FinalCanbus.CAR_444_WC2_Perodua_Aruz_17 /* 65980 */:
@@ -2724,11 +2252,11 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC2_Perodua_ALZA /* 10224059 */:
             case FinalCanbus.CAR_443_WC2_Perodua_ATIVA /* 10289595 */:
             case FinalCanbus.CAR_443_WC2_Perodua_AXIA /* 10355131 */:
-                cls = WCPeroduaAllCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.WCPeroduaAllCarSet";
                 break;
             case 448:
             case FinalCanbus.CAR_448_ZX_Yage10 /* 131520 */:
-                cls = LZBmwIndexFunc.class;
+                name = "com.syu.carinfo.ksw.audiq5.LZBmwIndexFunc";
                 break;
             case 450:
             case FinalCanbus.CAR_450_ZHTD_Benz /* 65986 */:
@@ -2741,19 +2269,19 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_450_ZHTD_Volvo /* 524738 */:
             case FinalCanbus.CAR_450_ZHTD_Lexus_L /* 590274 */:
             case FinalCanbus.CAR_450_ZHTD_Porsche /* 655810 */:
-                cls = ZhtdBmwSetFunc.class;
+                name = "com.syu.carinfo.zhtd.bmw.ZhtdBmwSetFunc";
                 break;
             case FinalCanbus.CAR_XP1_CRV2012_H /* 65583 */:
-                cls = KangshengXpCrvActi.class;
+                name = "com.syu.carinfo.crv.KangshengXpCrvActi";
                 break;
             case FinalCanbus.CAR_RZC_XP1_BenTeng14B70_QC /* 65624 */:
-                cls = BengTeng_RZC_17B70QC_Index.class;
+                name = "com.syu.carinfo.b70.BengTeng_RZC_17B70QC_Index";
                 break;
             case FinalCanbus.CAR_BNR_16ZiYouGuang /* 65653 */:
-                cls = ActiIndex_Bnr_117_Functionl.class;
+                name = "com.syu.carinfo.bnr.jeep.ActiIndex_Bnr_117_Functionl";
                 break;
             case FinalCanbus.CAR_WC2_CHANGANCX7 /* 65664 */:
-                cls = WCChanganAllTireAct.class;
+                name = "com.syu.carinfo.wc.changan.WCChanganAllTireAct";
                 break;
             case FinalCanbus.CAR_DJ_ChuanQiGA6_M /* 65793 */:
             case FinalCanbus.CAR_XP2_LUZ_Audi_A3 /* 65803 */:
@@ -2761,7 +2289,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_XP2_LUZ_Audi_TT /* 196875 */:
             case FinalCanbus.CAR_XP2_LUZ_Audi_A6_97 /* 262411 */:
             case FinalCanbus.CAR_XP2_LUZ_Audi_R8_08 /* 327947 */:
-                cls = LuzAudioOldCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.LuzAudioOldCarInfo";
                 break;
             case FinalCanbus.CAR_RZC_MingjueZS /* 65809 */:
             case FinalCanbus.CAR_RZC_XP1_RongWei_RX3 /* 327953 */:
@@ -2780,29 +2308,29 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_20RongWei_RX5 /* 1704209 */:
             case FinalCanbus.CAR_RZC_MingJue_MG5_21 /* 1835281 */:
             case FinalCanbus.CAR_RZC_MingJue_MG5_21_L /* 2031889 */:
-                cls = Act17RuiTengCarSet.class;
+                name = "com.syu.carinfo.rzc.mingjueruiteng.Act17RuiTengCarSet";
                 break;
             case FinalCanbus.CAR_WC2_MingJueZS /* 65818 */:
-                cls = MingjueZS_Wc.class;
+                name = "com.syu.carinfo.wc.ruiteng.MingjueZS_Wc";
                 break;
             case FinalCanbus.CAR_XFY_CYT_NaZhiJieU6_ShuPin /* 65826 */:
             case FinalCanbus.CAR_XFY_CYT_NaZhiJieU6_ShuPin_H /* 524578 */:
-                cls = ActivityNaZhiJie.class;
+                name = "com.syu.carinfo.rzc.t70.ActivityNaZhiJie";
                 break;
             case FinalCanbus.CAR_RZC_XP1_17ZhongHuaH3 /* 65843 */:
             case FinalCanbus.CAR_RZC_XP1_18ZhongHuaV6 /* 131379 */:
             case FinalCanbus.CAR_RZC_XP1_18ZhongHuaV6_H /* 196915 */:
-                cls = ActivityHavaH3.class;
+                name = "com.syu.carinfo.hava.ActivityHavaH3";
                 break;
             case FinalCanbus.CAR_SBD_WC1_24vW3 /* 65849 */:
             case FinalCanbus.CAR_WC2_14FIESTA /* 65855 */:
-                cls = ActivityIndex_14Festia.class;
+                name = "com.syu.carinfo.focus.ActivityIndex_14Festia";
                 break;
             case FinalCanbus.CAR_HC_OLD_TianLai_H /* 65863 */:
             case FinalCanbus.CAR_HC_OLD_YinFeiNiDi_Fx35 /* 131399 */:
             case FinalCanbus.CAR_452_XC_05_TianLai /* 196935 */:
             case FinalCanbus.CAR_XC_OLD_YinFeiNiDi_Fx35 /* 262471 */:
-                cls = IndexAct_Hc_03TianLai.class;
+                name = "com.syu.carinfo.hc.tianlai.IndexAct_Hc_03TianLai";
                 break;
             case FinalCanbus.CAR_DAOJUN_XP1_ATS_M /* 65884 */:
             case FinalCanbus.CAR_DAOJUN_XP1_ATSL_High /* 328028 */:
@@ -2814,7 +2342,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_GUOCHAN_6 /* 393611 */:
             case FinalCanbus.CAR_WC2_RuiFeng_S2Mini /* 1442187 */:
             case FinalCanbus.CAR_WC2_RUIFENG_M4 /* 1704331 */:
-                cls = ZTTireAct_Wc.class;
+                name = "com.syu.carinfo.ztt600.ZTTireAct_Wc";
                 break;
             case FinalCanbus.CAR_RZC_XP1_BeiQiM50F /* 65932 */:
             case FinalCanbus.CAR_DJ_SHA_BUS /* 65944 */:
@@ -2838,7 +2366,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Auto /* 1442216 */:
             case FinalCanbus.CAR_XP_Renault_23KOLEOS_L_Hand /* 1507752 */:
             case FinalCanbus.CAR_XP_Renault_23KOLEOS_H_Auto /* 1573288 */:
-                cls = Xp_374_AegeaIndexActi.class;
+                name = "com.syu.carinfo.xp.ziyouguang.Xp_374_AegeaIndexActi";
                 break;
             case FinalCanbus.CAR_434_XP_Bravo_11 /* 65970 */:
             case FinalCanbus.CAR_434_XP_Punto_10 /* 131506 */:
@@ -2847,19 +2375,19 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_434_XP_Palio_12 /* 328114 */:
             case FinalCanbus.CAR_434_XP_Fiorino_09 /* 393650 */:
             case FinalCanbus.CAR_434_XP_Dobol_10 /* 459186 */:
-                cls = ActivityFiatIndex.class;
+                name = "com.syu.carinfo.bg.fiat.ActivityFiatIndex";
                 break;
             case FinalCanbus.CAR_442_KSW_ADUI_Q5 /* 65978 */:
-                cls = KswAudiQ5SetFunc.class;
+                name = "com.syu.carinfo.ksw.audiq5.KswAudiQ5SetFunc";
                 break;
             case FinalCanbus.CAR_443_WC2_SgmwS /* 65979 */:
             case FinalCanbus.CAR_443_WC2_KangDi /* 131515 */:
-                cls = SgmwsAlarmInfoAct.class;
+                name = "com.syu.carinfo.wc.sgmws.SgmwsAlarmInfoAct";
                 break;
             case FinalCanbus.CAR_447_OD_RZC_19Tusheng /* 65983 */:
             case FinalCanbus.CAR_447_OD_RZC_19Tusheng_H /* 131519 */:
             case FinalCanbus.CAR_447_OD_RZC_19Tusheng_Top /* 197055 */:
-                cls = OD_19Tusheng_CarSettingAct.class;
+                name = "com.syu.carinfo.od.tusheng.OD_19Tusheng_CarSettingAct";
                 break;
             case FinalCanbus.CAR_448_ZX_MZD /* 65984 */:
             case FinalCanbus.CAR_448_ZX_MZD_360 /* 197056 */:
@@ -2871,14 +2399,14 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_448_ZX_Chuanqi_GS7 /* 590272 */:
             case FinalCanbus.CAR_448_6606_ZX_MAZ /* 655808 */:
             case FinalCanbus.CAR_448_6606_ZX_Honda_CRV_17_RIGHT /* 721344 */:
-                cls = ZXMZDSetFunc.class;
+                name = "com.syu.carinfo.ksw.audiq5.ZXMZDSetFunc";
                 break;
             case FinalCanbus.CAR_452_XC_Tianlai_GJ /* 65988 */:
             case FinalCanbus.CAR_453_XC_Tianlai_GJ /* 1442245 */:
             case FinalCanbus.CAR_439_HC_TianLai_GongJue_CD /* 6488503 */:
             case FinalCanbus.CAR_439_HC_Nissan_Toread /* 7012791 */:
             case FinalCanbus.CAR_439_HC_Nissan_GuiShi /* 7799223 */:
-                cls = ActivityTianLaiCarSettings.class;
+                name = "com.syu.carinfo.hc.tianlai.ActivityTianLaiCarSettings";
                 break;
             case FinalCanbus.CAR_454_Tangdu_Toyota_LAND_CRUISE_05_H /* 65990 */:
             case FinalCanbus.CAR_454_Tangdu_Toyota_LAND_CRUISE_05_M /* 131526 */:
@@ -2890,7 +2418,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_Tangdu_Toyota_LAND_CRUISE_16_TCD /* 524742 */:
             case FinalCanbus.CAR_454_Tangdu_Toyota_LexusGX_13_CD /* 590278 */:
             case FinalCanbus.CAR_454_Tangdu_Toyota_LexusGX_14_CD /* 655814 */:
-                cls = LuzLexusISIndexAct.class;
+                name = "com.syu.carinfo.lz.lexusis.LuzLexusISIndexAct";
                 break;
             case FinalCanbus.CAR_455_LZ_CG_Toyota_4Runner_Auto /* 65991 */:
             case FinalCanbus.CAR_455_LZ_Toyota_Alpha_DH_2 /* 131527 */:
@@ -2912,11 +2440,11 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_LZ_Toyota_FJ_CRUISER_3 /* 16253382 */:
             case FinalCanbus.CAR_454_LZ_6606_Toyota_FJ_CRUISER /* 16318918 */:
             case FinalCanbus.CAR_454_LZ_6606_Toyota_FJ_CRUISER_3 /* 16384454 */:
-                cls = CamryIndexAct_LuZ.class;
+                name = "com.syu.carinfo.camry.luz.CamryIndexAct_LuZ";
                 break;
             case FinalCanbus.CAR_WC1_DaZhong_DZSJ /* 131073 */:
             case FinalCanbus.CAR_WC1_DaZhong_DZSJ1 /* 196609 */:
-                cls = VwDashBoard_DZSJ.class;
+                name = "com.syu.carinfo.dasauto.VwDashBoard_DZSJ";
                 break;
             case FinalCanbus.CAR_RZCexc_Feiyate_TORO /* 131111 */:
             case FinalCanbus.CAR_RZCexc_Feiyate_DOBLO /* 196647 */:
@@ -2945,35 +2473,35 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZCexc_ALFA_ROMEO_GIULIETTA_16_H /* 2818087 */:
             case FinalCanbus.CAR_RZCexc_ALFA_ROMEO_159_09_M /* 2883623 */:
             case FinalCanbus.CAR_RZCexc_ALFA_ROMEO_159_09_H /* 2949159 */:
-                cls = RzcFeiyateIndexAct.class;
+                name = "com.syu.carinfo.rzc.feiyate.RzcFeiyateIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_XP1_OUSHANG /* 131142 */:
-                cls = ChangAnOuShangAct.class;
+                name = "com.syu.carinfo.rzc.xp.cs75.ChangAnOuShangAct";
                 break;
             case FinalCanbus.CAR_HC_HONDA_ELYSION /* 131175 */:
-                cls = Hc_103_Elysion_IndexAct.class;
+                name = "com.syu.carinfo.hc.elysion.Hc_103_Elysion_IndexAct";
                 break;
             case FinalCanbus.CAR_WC2_CHANGAN_17CS75 /* 131200 */:
             case FinalCanbus.CAR_WC2_CHANGAN_18YIDONG /* 196736 */:
             case FinalCanbus.CAR_WC2_20Oushang_X7_M /* 589952 */:
-                cls = ActivityChangAn17CS75.class;
+                name = "com.syu.carinfo.wc.changan.ActivityChangAn17CS75";
                 break;
             case FinalCanbus.CAR_RZC_XP1_YuanJingX6 /* 131211 */:
-                cls = YuanJingX1CarSettingsAct.class;
+                name = "com.syu.carinfo.jili.YuanJingX1CarSettingsAct";
                 break;
             case FinalCanbus.CAR_OUDI_BaoJun530 /* 131214 */:
-                cls = ActivityOudiBaojun530Info.class;
+                name = "com.syu.carinfo.oudi.baojun530.ActivityOudiBaojun530Info";
                 break;
             case FinalCanbus.CAR_XBS_XP1_ChuanQiGS3_H /* 131237 */:
             case FinalCanbus.CAR_XBS_XP1_ChuanQiGE3 /* 196773 */:
-                cls = GS3IndexAct.class;
+                name = "com.syu.carinfo.xbs.gs3.GS3IndexAct";
                 break;
             case FinalCanbus.CAR_XBS_BYD_16S7 /* 131266 */:
             case FinalCanbus.CAR_XBS_XP1_16BYDTang /* 196802 */:
-                cls = Act_Byd_Tang_XBS.class;
+                name = "com.syu.carinfo.byd.Act_Byd_Tang_XBS";
                 break;
             case FinalCanbus.CAR_OuDi_BiSuT3AndM3 /* 131288 */:
-                cls = ActivityBiSuT3AndM3.class;
+                name = "com.syu.carinfo.oudi.bisu.ActivityBiSuT3AndM3";
                 break;
             case FinalCanbus.CAR_RZC_DongFeng_JingYiX5 /* 131299 */:
             case FinalCanbus.CAR_RZC_DongFeng_JingYiX5_H /* 327907 */:
@@ -2984,39 +2512,39 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_DongFeng_Fengxing_M7 /* 1114339 */:
             case FinalCanbus.CAR_RZC_DongFeng_Fengxing_M7_LOW /* 1179875 */:
             case FinalCanbus.CAR_RZC_DongFeng_Fengxing_S60EVE /* 1310947 */:
-                cls = ActivityJingYiX5.class;
+                name = "com.syu.carinfo.rzc.jingyix5.ActivityJingYiX5";
                 break;
             case FinalCanbus.CAR_XBS_XP1_ZhiYouXia /* 131305 */:
             case FinalCanbus.CAR_XBS_XP1_ZhiYouXia_H /* 196841 */:
-                cls = Activity_XBS_FunctionlActi.class;
+                name = "com.syu.carinfo.xbs.jeep.Activity_XBS_FunctionlActi";
                 break;
             case FinalCanbus.CAR_RZC_XP1_16HAIMAMV70 /* 131309 */:
             case FinalCanbus.CAR_RZC_XP1_HAIMA_F5 /* 262381 */:
-                cls = ActivityHaiMaV70Index.class;
+                name = "com.syu.carinfo.mzd.cx5.ActivityHaiMaV70Index";
                 break;
             case FinalCanbus.CAR_DJ_ChuanQiGA6_H /* 131329 */:
-                cls = GA6CarSetIndexAct.class;
+                name = "com.syu.carinfo.dongjian.ga6.GA6CarSetIndexAct";
                 break;
             case FinalCanbus.CAR_KeYuan_FYTA_DaMaiX7 /* 131330 */:
-                cls = ActivityDaMaiX7.class;
+                name = "com.syu.carinfo.ky.ActivityDaMaiX7";
                 break;
             case FinalCanbus.CAR_WC2_DaZhong_TuRui /* 131342 */:
             case FinalCanbus.CAR_HSY_WC2_DaZhong_TuRui /* 196878 */:
             case FinalCanbus.CAR_LZ_WC2_DaZhong_TuRui /* 262414 */:
             case FinalCanbus.CAR_XC_WC2_DaZhong_TuRui /* 327950 */:
-                cls = TuRui_IndexAct.class;
+                name = "com.syu.carinfo.dasauto.TuRui_IndexAct";
                 break;
             case FinalCanbus.CAR_RZC_XP1_RongWei_RX5_NoInternet /* 131345 */:
             case FinalCanbus.CAR_RZC_XP1_RongWei_RX5 /* 262417 */:
             case FinalCanbus.CAR_RZC_17_18RongWei_I6 /* 1179921 */:
-                cls = ActivityRZCRongWeiRX5.class;
+                name = "com.syu.carinfo.rzc.mingjueruiteng.ActivityRZCRongWeiRX5";
                 break;
             case FinalCanbus.CAR_XP1_PsaAll_Berlingo /* 131353 */:
-                cls = XpPsaAllOrinalCarActivity.class;
+                name = "com.syu.carinfo.xp.psa_all.XpPsaAllOrinalCarActivity";
                 break;
             case FinalCanbus.CAR_XP_CYT_ShuPing_YeMa_L /* 131372 */:
             case FinalCanbus.CAR_XP_CYT_ShuPing_YeMa_H /* 196908 */:
-                cls = RJIndexAct.class;
+                name = "com.syu.carinfo.wc.ruijie15.RJIndexAct";
                 break;
             case FinalCanbus.CAR_WeiChi2_17ChangChengH6 /* 131392 */:
             case FinalCanbus.CAR_WeiChi2_18ChangChengH6 /* 196928 */:
@@ -3041,10 +2569,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WeiChi2_ChangCheng_JOLION_21_H /* 1966400 */:
             case FinalCanbus.CAR_WeiChi2_ChangCheng_F7X_19 /* 2031936 */:
             case FinalCanbus.CAR_WeiChi2_ChangCheng_F7X_19_H /* 2097472 */:
-                cls = WcHaval17and18H6Acti.class;
+                name = "com.syu.carinfo.havah6.WcHaval17and18H6Acti";
                 break;
             case FinalCanbus.CAR_XP1_14SanLinPajero_H /* 131426 */:
-                cls = SanlinXPIndexAct.class;
+                name = "com.syu.carinfo.xp.SanlinSeries.SanlinXPIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_XP1_ZiYouXia /* 131445 */:
             case FinalCanbus.CAR_RZC_18MuMaRen /* 393589 */:
@@ -3066,7 +2594,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_Jeep_Patriot_H /* 2228597 */:
             case FinalCanbus.CAR_RZC_10ZhiNanZhe_H /* 2294133 */:
             case FinalCanbus.CAR_RZC_Dodge_JCUV_H /* 2359669 */:
-                cls = Rzc_ZiYouguang_Settings.class;
+                name = "com.syu.carinfo.rzc.ziyouguang.Rzc_ZiYouguang_Settings";
                 break;
             case FinalCanbus.CAR_XP1_ZiYouXia /* 131446 */:
             case FinalCanbus.CAR_XP1_RAM1500 /* 655734 */:
@@ -3074,25 +2602,25 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_BNR_XP1_ZiYouXia /* 1048950 */:
             case FinalCanbus.CAR_XP1_RAM1500_M /* 4063606 */:
             case FinalCanbus.CAR_XP1_RAM1500_H /* 4129142 */:
-                cls = Xp_374_FunctionlActi.class;
+                name = "com.syu.carinfo.xp.ziyouguang.Xp_374_FunctionlActi";
                 break;
             case FinalCanbus.CAR_WC2_RongWei_I5 /* 131488 */:
             case FinalCanbus.CAR_WC2_RongWei_RX3 /* 328096 */:
             case FinalCanbus.CAR_WC2_RongWei_I5_H /* 459168 */:
-                cls = Wc_416_RongWei_IndexAct.class;
+                name = "com.syu.carinfo.rongwei.Wc_416_RongWei_IndexAct";
                 break;
             case FinalCanbus.CAR_RZC_HaiMaS5YOUNG /* 131494 */:
             case FinalCanbus.CAR_RZC_19HaiMaS5 /* 197030 */:
             case FinalCanbus.CAR_RZC_HaiMaS5YOUNG_H /* 262566 */:
-                cls = HaimaS5SetFunc.class;
+                name = "com.syu.carinfo.rzc.haima.HaimaS5SetFunc";
                 break;
             case FinalCanbus.CAR_XFY_VolvoXC60 /* 131497 */:
-                cls = Xc60SettingsAct.class;
+                name = "com.syu.carinfo.xfy.xc60.Xc60SettingsAct";
                 break;
             case FinalCanbus.CAR_KeYuan_Escort /* 131511 */:
             case FinalCanbus.CAR_KeYuan_YingLang /* 197047 */:
             case FinalCanbus.CAR_KeYuan_YARiSL /* 262583 */:
-                cls = Ky_439_Escort_CarSettingAct.class;
+                name = "com.syu.carinfo.ky.escort.Ky_439_Escort_CarSettingAct";
                 break;
             case FinalCanbus.CAR_452_BaoGu_Renault_17Koleos /* 131524 */:
             case FinalCanbus.CAR_452_BaoGu_Renault_18Koleos /* 197060 */:
@@ -3102,7 +2630,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_BaoGu_Renault_18Koleos_L /* 2949572 */:
             case FinalCanbus.CAR_452_BaoGu_Renault_18Koleos_M /* 3015108 */:
             case FinalCanbus.CAR_452_BaoGu_Renault_18Koleos_H /* 3080644 */:
-                cls = Baogu_Renault_IndexAct.class;
+                name = "com.syu.carinfo.baogu.renault.Baogu_Renault_IndexAct";
                 break;
             case FinalCanbus.CAR_RZC_XP1_CX70 /* 196678 */:
             case FinalCanbus.CAR_BNR_CX70 /* 262214 */:
@@ -3111,16 +2639,16 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_BNR_17CX70_M /* 1048646 */:
             case FinalCanbus.CAR_BNR_17CX70_H /* 1114182 */:
             case FinalCanbus.CAR_RZC_17CHANGAN_A800 /* 1769542 */:
-                cls = BnrChanganCX70IndexAct.class;
+                name = "com.syu.carinfo.rzc.xp.cs75.BnrChanganCX70IndexAct";
                 break;
             case FinalCanbus.CAR_RZC1_MZD6 /* 196687 */:
             case FinalCanbus.CAR_RZC1_MZD6_38400 /* 196899 */:
-                cls = MzdRZCM6ClockSetActi.class;
+                name = "com.syu.carinfo.mzd.MzdRZCM6ClockSetActi";
                 break;
             case FinalCanbus.CAR_WC_17Haval_H2S /* 196740 */:
             case FinalCanbus.CAR_RZC_HavalLow_H2S_HongBiao /* 393460 */:
             case FinalCanbus.CAR_RZC_HavalLow_H2S_LanBiao /* 721140 */:
-                cls = ActivityHavaH2SIndex.class;
+                name = "com.syu.carinfo.hava.ActivityHavaH2SIndex";
                 break;
             case FinalCanbus.CAR_RZC_XP1_YuanJingX1 /* 196747 */:
             case FinalCanbus.CAR_RZC_XP1_DiHao_GS /* 589963 */:
@@ -3150,36 +2678,36 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_XP1_BingyuePro_19 /* 2949259 */:
             case FinalCanbus.CAR_RZC_XP1_Bingyue_21_RS /* 3276939 */:
             case FinalCanbus.CAR_RZC_XP1_Dihao_23 /* 3342475 */:
-                cls = YuanJingX1CarSettingsAct.class;
+                name = "com.syu.carinfo.jili.YuanJingX1CarSettingsAct";
                 break;
             case FinalCanbus.CAR_WC2_07_AoDeSai /* 196774 */:
-                cls = Act_LEDScreen_AoDeSai_wc.class;
+                name = "com.syu.carinfo.honda.Act_LEDScreen_AoDeSai_wc";
                 break;
             case FinalCanbus.CAR_ANSHENG_OLD_MZD6 /* 196775 */:
             case FinalCanbus.CAR_ANSHENG_AnKeSeLa /* 262311 */:
-                cls = AnSheng_167_Mzd6_CarCdAct.class;
+                name = "com.syu.carinfo.ansheng.mzd6.AnSheng_167_Mzd6_CarCdAct";
                 break;
             case FinalCanbus.CAR_OuDi_08AoDeSai /* 196811 */:
-                cls = ActivityCarCD_Oudi_Aodesai.class;
+                name = "com.syu.carinfo.oudi.ActivityCarCD_Oudi_Aodesai";
                 break;
             case FinalCanbus.CAR_RZC_BeiQi_EC180 /* 196835 */:
-                cls = ActivityEC180Index.class;
+                name = "com.syu.carinfo.rzc.beiqi.ActivityEC180Index";
                 break;
             case FinalCanbus.CAR_BNR_HuaTai_ShengDaFei /* 196845 */:
-                cls = Acti_BNR_ShengDaFei.class;
+                name = "com.syu.carinfo.guochan.Acti_BNR_ShengDaFei";
                 break;
             case FinalCanbus.CAR_RZC_HanTeng_H /* 196863 */:
             case FinalCanbus.CAR_RZC_HanTeng_X5 /* 524543 */:
-                cls = RZC_0255_HanTengX5_IndexAct.class;
+                name = "com.syu.carinfo.rzc.hantengx5.RZC_0255_HanTengX5_IndexAct";
                 break;
             case FinalCanbus.CAR_RZC_16BoYue /* 196873 */:
             case FinalCanbus.CAR_BNR_BoYue /* 459017 */:
             case FinalCanbus.CAR_BNR_BoYue_H /* 786697 */:
-                cls = BoyueIndexAct.class;
+                name = "com.syu.carinfo.jili.BoyueIndexAct";
                 break;
             case FinalCanbus.CAR_LZ_XP1_PsaAll_CD /* 196889 */:
             case FinalCanbus.CAR_RZC4_PSA_04_407_CD /* 1704275 */:
-                cls = LZPsaAllIndexAct.class;
+                name = "com.syu.carinfo.xp.psa_all.LZPsaAllIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_18BaoJun530 /* 196918 */:
             case FinalCanbus.CAR_RZC_19BaoJun730 /* 393526 */:
@@ -3195,21 +2723,21 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_Wuling_Jiachen_Auto /* 1114422 */:
             case FinalCanbus.CAR_RZC_Wuling_Xingchi /* 1179958 */:
             case FinalCanbus.CAR_RZC_Wuling_Xingchi_Auto /* 1245494 */:
-                cls = RzcBaojunSetFunc.class;
+                name = "com.syu.carinfo.rzc.baojun.RzcBaojunSetFunc";
                 break;
             case FinalCanbus.CAR_WC1_NISSAN_XiMa_L /* 196930 */:
             case FinalCanbus.CAR_WC1_NISSAN_XiMa_H /* 262466 */:
-                cls = Wc_322_DspinfoActi.class;
+                name = "com.syu.carinfo.wc.nissan.Wc_322_DspinfoActi";
                 break;
             case FinalCanbus.CAR_DJ_DongNanDX7_LOW /* 196937 */:
-                cls = XfyDx7HistroyAct.class;
+                name = "com.syu.carinfo.xfy.dx7.XfyDx7HistroyAct";
                 break;
             case FinalCanbus.CAR_BoGoo_XP1_GrdCherokee /* 196979 */:
             case FinalCanbus.CAR_BoGoo_XP1_ShuPing_GrdCherokee_CYT_AIRPANEL /* 262515 */:
-                cls = Bg_DaQieNuoJi_IndexAct.class;
+                name = "com.syu.carinfo.bg.ziyouguang.Bg_DaQieNuoJi_IndexAct";
                 break;
             case FinalCanbus.CAR_WC1_Jeep_ZiYouXia /* 196980 */:
-                cls = Wc_372_FunctionalActi.class;
+                name = "com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi";
                 break;
             case FinalCanbus.CAR_XP1_17ZhiNanZhe /* 196982 */:
             case FinalCanbus.CAR_XP1_17ZhiNanZhe_H /* 262518 */:
@@ -3220,7 +2748,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_BNR_XP1_17ZhiNanZhe /* 1114486 */:
             case FinalCanbus.CAR_BNR_XP1_17ZhiNanZhe_H /* 1180022 */:
             case FinalCanbus.CAR_XP1_RAM1500_H_AUTO /* 4194678 */:
-                cls = Xp_374_IndexActi.class;
+                name = "com.syu.carinfo.xp.ziyouguang.Xp_374_IndexActi";
                 break;
             case FinalCanbus.CAR_RZC_XP1_RENAULT_KaBin /* 197010 */:
             case FinalCanbus.CAR_RZC_Kangoo_Turkey_12 /* 2294162 */:
@@ -3240,18 +2768,18 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_Kiwd_17 /* 3211666 */:
             case FinalCanbus.CAR_RZC_Renault_CLIO3_05 /* 6619538 */:
             case FinalCanbus.CAR_RZC_Renault_L9_05 /* 6685074 */:
-                cls = KeLeiJiaRadarSetting.class;
+                name = "com.syu.carinfo.rzc.keleijia.KeLeiJiaRadarSetting";
                 break;
             case FinalCanbus.CAR_DJ_SHA_BUS_JiuLong /* 197016 */:
-                cls = ActivityBusCarCheck.class;
+                name = "com.syu.carinfo.bus.ActivityBusCarCheck";
                 break;
             case FinalCanbus.CAR_WC2_ToYoTa_10_Crown_ALL /* 197028 */:
             case FinalCanbus.CAR_WC2_ToYoTa_Lexus_NX_SCREEN /* 852388 */:
             case FinalCanbus.CAR_LuZhen_Honda_Spirior /* 197033 */:
-                cls = Lz_425_Spirior_IndexActi.class;
+                name = "com.syu.carinfo.lz.spirior.Lz_425_Spirior_IndexActi";
                 break;
             case FinalCanbus.CAR_443_WC_12ELYSION /* 197051 */:
-                cls = HondaIndexActi.class;
+                name = "com.syu.carinfo.honda.HondaIndexActi";
                 break;
             case FinalCanbus.CAR_444_WC2_Nissan_Yunche_S15_Auto /* 197052 */:
             case FinalCanbus.CAR_444_WC2_Nissan_Yunche_P15_MC_EV /* 262588 */:
@@ -3266,11 +2794,11 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_444_WC2_Nissan_Yunche_S15_ADAS /* 3080636 */:
             case FinalCanbus.CAR_453_OD_Chuangwei_EV /* 197061 */:
             case FinalCanbus.CAR_453_RZC_Chuangwei_EV /* 8651205 */:
-                cls = ODCHuangWeiET5CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODCHuangWeiET5CarSet";
                 break;
             case FinalCanbus.CAR_XP1_DaZhong_L /* 262146 */:
             case FinalCanbus.CAR_LZ_XP1_DaZhong_TuRui_03 /* 327682 */:
-                cls = DasAutoXpAct.class;
+                name = "com.syu.carinfo.dasauto.DasAutoXpAct";
                 break;
             case FinalCanbus.CAR_WC2_CHANGAN_19KeSai /* 262272 */:
             case FinalCanbus.CAR_WC2_CHANGAN_19KeSai_Hand /* 327808 */:
@@ -3279,58 +2807,58 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_18Changan_CS55 /* 524416 */:
             case FinalCanbus.CAR_WC2_20Oushang_X7_H /* 655488 */:
             case FinalCanbus.CAR_WC2_19ChangAn_CS35_PLUS /* 721024 */:
-                cls = WCChanganAllIndexAct.class;
+                name = "com.syu.carinfo.wc.changan.WCChanganAllIndexAct";
                 break;
             case FinalCanbus.CAR_DJ_ShuPing_BYD_G6_H /* 262295 */:
-                cls = DjBYDG6.class;
+                name = "com.syu.carinfo.dj.DjBYDG6";
                 break;
             case FinalCanbus.CAR_KeYuan_FYTA_S3 /* 262402 */:
-                cls = ActivityHaimaS3.class;
+                name = "com.syu.carinfo.ky.ActivityHaimaS3";
                 break;
             case FinalCanbus.CAR_RZC_OD_Ruifeng_R3 /* 262416 */:
             case FinalCanbus.CAR_RZC_OD_Sibalu_XV /* 327952 */:
-                cls = JhRuiFengR3IndexAct.class;
+                name = "com.syu.carinfo.rzc.ruifengs3.JhRuiFengR3IndexAct";
                 break;
             case FinalCanbus.CAR_RZC_XP1_ChuanQiGS8 /* 262424 */:
             case FinalCanbus.CAR_RZC_XP1_ChuanQiGS3 /* 459032 */:
             case FinalCanbus.CAR_RZC_XP1_ChuanQiGS8_H /* 524568 */:
-                cls = Rzc_Gs8_IndexAct.class;
+                name = "com.syu.carinfo.rzc.gs4.Rzc_Gs8_IndexAct";
                 break;
             case FinalCanbus.CAR_XP1_15WeiLang /* 262462 */:
             case FinalCanbus.CAR_XP1_15WeiLang_H /* 327998 */:
-                cls = YLCarSettingsAct.class;
+                name = "com.syu.carinfo.xp.yinglang.YLCarSettingsAct";
                 break;
             case FinalCanbus.CAR_XFY_ZhongHuaV3_H /* 262470 */:
-                cls = XfyZhV3CarSet.class;
+                name = "com.syu.carinfo.xfy.dx7.XfyZhV3CarSet";
                 break;
             case FinalCanbus.CAR_RZC_XP1_DongNanDX5_19 /* 262473 */:
-                cls = RzcDx7Settings.class;
+                name = "com.syu.carinfo.xfy.dx7.RzcDx7Settings";
                 break;
             case FinalCanbus.CAR_WC2_RENAULT_18DUSTER /* 262496 */:
-                cls = DusterOilMileIndexActi.class;
+                name = "com.syu.carinfo.wc.leinuo.DusterOilMileIndexActi";
                 break;
             case FinalCanbus.CAR_WC1_Jeep_17ZhiNanZhe /* 262516 */:
             case FinalCanbus.CAR_WC1_Jeep_17ZhiNanZhe_H /* 328052 */:
                 if (LauncherApplication.getConfiguration() == 1) {
-                    cls = Wc_372_FunctionalActi.class;
+                    name = "com.syu.carinfo.wc.ziyouguang.Wc_372_FunctionalActi";
                     break;
                 } else {
-                    cls = Wc_372_IndexAct.class;
+                    name = "com.syu.carinfo.wc.ziyouguang.Wc_372_IndexAct";
                     break;
                 }
             case FinalCanbus.CAR_RZC_16_QiYaKaiShen /* 262537 */:
-                cls = ActivityQiYaKaiShenSet.class;
+                name = "com.syu.carinfo.qiya.kx7.ActivityQiYaKaiShenSet";
                 break;
             case FinalCanbus.CAR_SBD_DongFeng_FullView /* 262542 */:
-                cls = Dongfeng_FullView_SBDAct.class;
+                name = "com.syu.carinfo.sbd.x80.Dongfeng_FullView_SBDAct";
                 break;
             case FinalCanbus.CAR_412_LZ_GM_GMC /* 262556 */:
             case FinalCanbus.CAR_412_LZ_Cadillac_SLS /* 328092 */:
             case FinalCanbus.CAR_412_LZ_Cadillac_Escalade /* 393628 */:
-                cls = LZCadillacCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.LZCadillacCarSet";
                 break;
             case FinalCanbus.CAR_WC2_RongWei_EI6 /* 262560 */:
-                cls = Act20ZSIndexAct.class;
+                name = "com.syu.carinfo.rzc.mingjueruiteng.Act20ZSIndexAct";
                 break;
             case FinalCanbus.CAR_CYT_YaGe7_38400 /* 262561 */:
             case FinalCanbus.CAR_RCW_BYD_10_11F6 /* 328097 */:
@@ -3342,7 +2870,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_HuanSuS6_H /* 328099 */:
             case FinalCanbus.CAR_OD_WC2_HuanSuS6 /* 1180067 */:
             case FinalCanbus.CAR_OD_WC2_HuanSuS6_H /* 1245603 */:
-                cls = ActivityHuanSuS6Index.class;
+                name = "com.syu.carinfo.guochan.ActivityHuanSuS6Index";
                 break;
             case FinalCanbus.CAR_447_RZC_19IX45 /* 262591 */:
             case FinalCanbus.CAR_447_RZC_19IX45_H /* 328127 */:
@@ -3387,7 +2915,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_KX3_M /* 3277247 */:
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_23Staria /* 3539391 */:
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_23Staria_H /* 3604927 */:
-                cls = OD_19Tusheng_CarSettingAct.class;
+                name = "com.syu.carinfo.od.tusheng.OD_19Tusheng_CarSettingAct";
                 break;
             case FinalCanbus.CAR_452_RZC_ChangAn_CS15_19 /* 262596 */:
             case FinalCanbus.CAR_452_RZC_ChangAn_Yidong_19 /* 393668 */:
@@ -3399,7 +2927,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_439_RZC_ChangAn_18CS75 /* 8257975 */:
             case FinalCanbus.CAR_454_RZC_Changan_Hunter_22_H /* 10092998 */:
             case FinalCanbus.CAR_452_RZC_ChangAn_Oushang_Changxing /* 11469252 */:
-                cls = RzcChanganCX70SetFunc.class;
+                name = "com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70SetFunc";
                 break;
             case FinalCanbus.CAR_453_LZ_BMW_E39 /* 262597 */:
             case FinalCanbus.CAR_453_LZ_BMW_E53 /* 328133 */:
@@ -3407,25 +2935,25 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_453_LZ_BMW_E53_H /* 459205 */:
             case FinalCanbus.CAR_452_LZ_BMW_E46_H /* 13828548 */:
             case FinalCanbus.CAR_439_LZ_BMW_E46 /* 16187831 */:
-                cls = ODBMWMiniIndexAct.class;
+                name = "com.syu.carinfo.od.bmw.ODBMWMiniIndexAct";
                 break;
             case FinalCanbus.CAR_OD_GaoErFu7 /* 327720 */:
             case FinalCanbus.CAR_WC2_17MaiTeng_DZSJ /* 393233 */:
             case FinalCanbus.CAR_OD_TuAnL /* 393256 */:
             case FinalCanbus.CAR_WC2_17MaiTeng_SOS_DZSJ /* 458769 */:
-                cls = Golf7OilMileageIndexActiOD.class;
+                name = "com.syu.carinfo.golf7.Golf7OilMileageIndexActiOD";
                 break;
             case FinalCanbus.CAR_OuDi_XP1_T60 /* 327819 */:
-                cls = BoyueCarSettingsAct.class;
+                name = "com.syu.carinfo.jili.BoyueCarSettingsAct";
                 break;
             case FinalCanbus.CAR_WC2_18BaoJun530 /* 327926 */:
-                cls = ActivityBaojun530Info.class;
+                name = "com.syu.carinfo.guochan.ActivityBaojun530Info";
                 break;
             case FinalCanbus.CAR_BNR_XP1_FengShenAX7_HI /* 327935 */:
-                cls = Bnr_255_FengShengax7_Allvideo.class;
+                name = "com.syu.carinfo.bnr.Bnr_255_FengShengax7_Allvideo";
                 break;
             case FinalCanbus.CAR_LUZ_ZhongTaiT600 /* 327945 */:
-                cls = IndexAct_Luz.class;
+                name = "com.syu.carinfo.ztt600.IndexAct_Luz";
                 break;
             case FinalCanbus.CAR_RZC_XP1_QiChenT90 /* 327970 */:
             case FinalCanbus.CAR_RZC_XP1_QiChenD60 /* 393506 */:
@@ -3433,7 +2961,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_CZH_RZC_QiChenD60 /* 852258 */:
             case FinalCanbus.CAR_CZH_RZC_QiChen18T70 /* 917794 */:
             case FinalCanbus.CAR_BNR_XP1_AoDeSai /* 327978 */:
-                cls = Act_CarCD_AoDeSai.class;
+                name = "com.syu.carinfo.honda.Act_CarCD_AoDeSai";
                 break;
             case FinalCanbus.CAR_WeiChi2_ChangChengH9 /* 328000 */:
             case FinalCanbus.CAR_WeiChi2_ChangChengH9_M /* 393536 */:
@@ -3441,7 +2969,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WeiChi2_ChangChengH8 /* 1573184 */:
             case FinalCanbus.CAR_WeiChi2_ChangChengH8_M /* 1638720 */:
             case FinalCanbus.CAR_WeiChi2_ChangChengH8_H /* 1704256 */:
-                cls = WC_0320_HavalH9_IndexAct.class;
+                name = "com.syu.carinfo.havah6.WC_0320_HavalH9_IndexAct";
                 break;
             case FinalCanbus.CAR_RZC_Focus2019 /* 328014 */:
             case FinalCanbus.CAR_RZC_Jinniu2018 /* 393550 */:
@@ -3463,11 +2991,11 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_Jinniu2019_H /* 4784462 */:
             case FinalCanbus.CAR_RZC_Mustang_NOCD_M /* 5505358 */:
             case FinalCanbus.CAR_RZC_Mustang_NOCD_H /* 5570894 */:
-                cls = FordCarSet_RZC.class;
+                name = "com.syu.carinfo.ford.FordCarSet_RZC";
                 break;
             case FinalCanbus.CAR_XP1_KeLeiAo_L /* 328054 */:
             case FinalCanbus.CAR_XP1_KeLeiAo_H /* 393590 */:
-                cls = Act_Keleijia_Index.class;
+                name = "com.syu.carinfo.leinuo.Act_Keleijia_Index";
                 break;
             case FinalCanbus.CAR_SBD_Ford_LieYing /* 328078 */:
             case FinalCanbus.CAR_438_DJ_YuanJingX1 /* 328118 */:
@@ -3512,7 +3040,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC2_XianDai_All_Santafe /* 10092987 */:
             case FinalCanbus.CAR_443_WC2_XianDai_All_22NIRO /* 10158523 */:
             case FinalCanbus.CAR_443_WC2_XianDai_All_18OPTIMA /* 15073723 */:
-                cls = ActivityWCXianDaiAllSet.class;
+                name = "com.syu.carinfo.qiya.kx7.ActivityWCXianDaiAllSet";
                 break;
             case FinalCanbus.CAR_452_RZC_ChangAn_Oushangx7_20 /* 328132 */:
             case FinalCanbus.CAR_453_RZC_Changan_CS15_EPro_21 /* 3473861 */:
@@ -3521,35 +3049,35 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_439_RZC_ChangAn_OUSAN_KESAI /* 7471543 */:
             case FinalCanbus.CAR_452_RZC_ChangAn_KESAI_Pro_21 /* 11010500 */:
             case FinalCanbus.CAR_439_RZC_Changan_19Yuexiang /* 11469239 */:
-                cls = RzcChanganCX70IndexAct.class;
+                name = "com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70IndexAct";
                 break;
             case FinalCanbus.CAR_WC2_18Ecosport /* 393237 */:
             case FinalCanbus.CAR_WC2_MengDiOuZS2018 /* 458773 */:
-                cls = Wc_21_EcosportSetAct.class;
+                name = "com.syu.carinfo.wc.ecosport18.Wc_21_EcosportSetAct";
                 break;
             case FinalCanbus.CAR_WC2_20BaoJun530_Auto /* 393462 */:
             case FinalCanbus.CAR_WC2_20BaoJun530_Hand /* 458998 */:
-                cls = ActivityWC20Baojun530Info.class;
+                name = "com.syu.carinfo.guochan.ActivityWC20Baojun530Info";
                 break;
             case FinalCanbus.CAR_Oudi_HanTeng_X5 /* 393471 */:
             case FinalCanbus.CAR_Oudi_XiaoYao /* 459007 */:
             case FinalCanbus.CAR_452_OD_Hongqi_H7 /* 12124612 */:
             case FinalCanbus.CAR_454_CZH_OD_Hongqi_EQM5 /* 16515526 */:
-                cls = Oudi_0255_HanTengX5_IndexAct.class;
+                name = "com.syu.carinfo.oudi.hantengx5.Oudi_0255_HanTengX5_IndexAct";
                 break;
             case FinalCanbus.CAR_BNR_ZhongTaiT600 /* 393481 */:
-                cls = IndexAct_Bnr.class;
+                name = "com.syu.carinfo.ztt600.IndexAct_Bnr";
                 break;
             case FinalCanbus.CAR_WC_17KX7_ARM /* 393610 */:
-                cls = ActivityKX7CameraSet.class;
+                name = "com.syu.carinfo.qiya.kx7.ActivityKX7CameraSet";
                 break;
             case FinalCanbus.CAR_OD_Jiangxi_Wushiling_Mux /* 393638 */:
             case FinalCanbus.CAR_OD_Jiangxi_Lingtuo /* 459174 */:
-                cls = ODJianglingSetFunc.class;
+                name = "com.syu.carinfo.rzc.haima.ODJianglingSetFunc";
                 break;
             case FinalCanbus.CAR_439_DJ_XP1_HuiTeng /* 393655 */:
             case FinalCanbus.CAR_439_DJ_XP1_HuiTeng_H /* 459191 */:
-                cls = HuitengIndexAct.class;
+                name = "com.syu.carinfo.huiteng.HuitengIndexAct";
                 break;
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_M6 /* 393659 */:
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_M3 /* 459195 */:
@@ -3559,20 +3087,20 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_M7 /* 852411 */:
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_CX7_L /* 1049019 */:
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_M6_Ruiyi /* 15663547 */:
-                cls = ActivityMzdAllHUDCarSet.class;
+                name = "com.syu.carinfo.wc.axela.ActivityMzdAllHUDCarSet";
                 break;
             case FinalCanbus.CAR_455_LZ_Fiat_500_07 /* 393671 */:
             case FinalCanbus.CAR_455_LZ_Fiat_Bravo_08 /* 459207 */:
             case FinalCanbus.CAR_455_LZ_Alfa_MITO_08 /* 524743 */:
-                cls = LZFiatInfCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.LZFiatInfCarSet";
                 break;
             case FinalCanbus.CAR_RZC_XP1_08_12TianLai /* 458942 */:
-                cls = XBS09TianlaiIndexAct.class;
+                name = "com.syu.carinfo.xbs.tianlai.XBS09TianlaiIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_BeiQi_19EC5 /* 458979 */:
             case FinalCanbus.CAR_RZC_BeiQi_18EU5 /* 786659 */:
             case FinalCanbus.CAR_RZC_BeiQi_20EU5 /* 1376483 */:
-                cls = Activity19EC5Index.class;
+                name = "com.syu.carinfo.rzc.beiqi.Activity19EC5Index";
                 break;
             case FinalCanbus.CAR_WC2_RENAULT_Megane4 /* 459104 */:
             case FinalCanbus.CAR_WC2_RENAULT_Megane4_M /* 983392 */:
@@ -3600,49 +3128,49 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_RENAULT_17KOLEOS_M /* 2687328 */:
             case FinalCanbus.CAR_WC2_RENAULT_17KOLEOS_H /* 2752864 */:
             case FinalCanbus.CAR_WC2_LADA_VESTA /* 2818400 */:
-                cls = WCRenaultIndexActi.class;
+                name = "com.syu.carinfo.geshitu.wc.WCRenaultIndexActi";
                 break;
             case FinalCanbus.CAR_XP1_FAITAEGEA /* 459126 */:
             case FinalCanbus.CAR_XP1_FAITDOBLO /* 524662 */:
             case FinalCanbus.CAR_ZH2_XP1_FAITAEGEA /* 2228598 */:
-                cls = Xp_374_AegeaIndexActi.class;
+                name = "com.syu.carinfo.xp.ziyouguang.Xp_374_AegeaIndexActi";
                 break;
             case FinalCanbus.CAR_WC2_GUOCHAN_7 /* 459147 */:
             case FinalCanbus.CAR_XP1_YearGmcSeries_NoAir /* 459164 */:
-                cls = GMCPannelSetActi.class;
+                name = "com.syu.carinfo.mzd.GMCPannelSetActi";
                 break;
             case FinalCanbus.CAR_452_Oudi_DongnanV5_13_16 /* 459204 */:
             case FinalCanbus.CAR_452_Oudi_DongnanV6_13_16 /* 524740 */:
             case FinalCanbus.CAR_452_Oudi_DongnanA5_20 /* 590276 */:
-                cls = ODDongnanSetFunc.class;
+                name = "com.syu.carinfo.rzc.baojun.ODDongnanSetFunc";
                 break;
             case FinalCanbus.CAR_WC2_MengDiOuZS2021 /* 524309 */:
-                cls = BnrTuleIndexAct.class;
+                name = "com.syu.carinfo.bnr.tule.BnrTuleIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_XP1_YuanJingX3 /* 524427 */:
             case FinalCanbus.CAR_RZC_XP1_15YuanJing /* 1048715 */:
-                cls = YuanjingX3TireAct.class;
+                name = "com.syu.carinfo.jili.YuanjingX3TireAct";
                 break;
             case FinalCanbus.CAR_BNR_SR7 /* 524553 */:
-                cls = ActivitySR7Setting_Bnr.class;
+                name = "com.syu.carinfo.xfy.sr7.ActivitySR7Setting_Bnr";
                 break;
             case FinalCanbus.CAR_RZC_OD_Sibalu_Legacy_20 /* 524560 */:
-                cls = ODSubaruLegacyCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODSubaruLegacyCarInfo";
                 break;
             case FinalCanbus.CAR_RZC_DongFengYiZhi_19EV3 /* 524602 */:
             case FinalCanbus.CAR_RZC_DongFengYiZhi_18E400 /* 721210 */:
             case FinalCanbus.CAR_RZC_FengGuang19E3 /* 1769786 */:
             case FinalCanbus.CAR_RZC_FengGuang_580Pro_20 /* 1835322 */:
             case FinalCanbus.CAR_RZC_FengGuang_580Pro_20_H /* 1900858 */:
-                cls = RZC_0314_Dongfeng_Ev3_IndexAct.class;
+                name = "com.syu.carinfo.oudi.RZC_0314_Dongfeng_Ev3_IndexAct";
                 break;
             case FinalCanbus.CAR_WC2_JingyiX5 /* 524707 */:
             case FinalCanbus.CAR_WC2_17JingyiS50 /* 1114531 */:
-                cls = JYIndexAct.class;
+                name = "com.syu.carinfo.wc.jingyix5.JYIndexAct";
                 break;
             case FinalCanbus.CAR_DJ_XP1_TOYOTA_14Prodo_ShuPing /* 524717 */:
             case FinalCanbus.CAR_439_DJ_14B70 /* 524727 */:
-                cls = DaojunB70LowCarSettingAct.class;
+                name = "com.syu.carinfo.daojun.b70.DaojunB70LowCarSettingAct";
                 break;
             case FinalCanbus.CAR_444_WC2_TD_LandRover_Bose /* 524732 */:
             case FinalCanbus.CAR_444_WC2_TD_LandRover_Haman /* 590268 */:
@@ -3650,35 +3178,35 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_444_WY_Audi_Q4 /* 2818492 */:
             case FinalCanbus.CAR_443_WY_Audi_Q3 /* 7668155 */:
             case FinalCanbus.CAR_443_WY_MZD_All /* 7733691 */:
-                cls = WYBBACarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.WYBBACarInfo";
                 break;
             case FinalCanbus.CAR_453_OD_GuanZhi /* 524741 */:
             case FinalCanbus.CAR_439_BNR_GuanZhi /* 1638839 */:
             case FinalCanbus.CAR_452_DJ_Guanzhi /* 11272644 */:
-                cls = BnrGuanzhiIndexAct.class;
+                name = "com.syu.carinfo.bnr.guanzhi.BnrGuanzhiIndexAct";
                 break;
             case FinalCanbus.CAR_RZC1_MZD3_05 /* 589903 */:
-                cls = RZCMzd3CarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCMzd3CarInfo";
                 break;
             case FinalCanbus.CAR_RZC_XP1_ShangQiDaTongT60 /* 590089 */:
             case FinalCanbus.CAR_RZC_XP1_ShangQiDaTongV80 /* 721161 */:
             case FinalCanbus.CAR_RZC_XP1_ShangQiDaTong19EV30 /* 852233 */:
             case FinalCanbus.CAR_RZC_XP1_ShangQiDaTong19T70 /* 983305 */:
-                cls = Activity_RZC_SettingT60.class;
+                name = "com.syu.carinfo.guochan.Activity_RZC_SettingT60";
                 break;
             case FinalCanbus.CAR_RZC_ChuanQiGS4_18 /* 590104 */:
             case FinalCanbus.CAR_RZC_ChuanQiGE3_18 /* 786712 */:
             case FinalCanbus.CAR_RZC_Qizhi_EV /* 1179928 */:
             case FinalCanbus.CAR_RZC_XP1_ChuanQiGS4_20_EV /* 1966360 */:
             case FinalCanbus.CAR_RZC_OD_AION_EV /* 2228504 */:
-                cls = RzcGS4IndexAct.class;
+                name = "com.syu.carinfo.rzc.gs4.RzcGS4IndexAct";
                 break;
             case FinalCanbus.CAR_439_DJ_14B70_H /* 590263 */:
-                cls = DaojunB70CarSettingAct.class;
+                name = "com.syu.carinfo.daojun.b70.DaojunB70CarSettingAct";
                 break;
             case FinalCanbus.CAR_455_KYC_Toyota_Highlander_15_YC /* 590279 */:
             case FinalCanbus.CAR_455_KYC_Toyota_Highlander_15H_YC /* 655815 */:
-                cls = KYCToyotaAllCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet";
                 break;
             case FinalCanbus.CAR_OD_NISSAN_Qijun_L /* 655440 */:
             case FinalCanbus.CAR_OD_NISSAN_Qijun_H /* 720976 */:
@@ -3686,7 +3214,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_OD_NISSAN_Tianlai_H /* 852048 */:
             case FinalCanbus.CAR_OD_NISSAN_Xuanyi_L /* 917584 */:
             case FinalCanbus.CAR_OD_NISSAN_Xuanyi_H /* 983120 */:
-                cls = OD_NissanXimaCarinfoAct.class;
+                name = "com.syu.carinfo.rzc.xima.OD_NissanXimaCarinfoAct";
                 break;
             case FinalCanbus.CAR_RZC_XP1_HavalH6_18 /* 655604 */:
             case FinalCanbus.CAR_RZC_XP1_HavalH6_16HuanDai /* 852212 */:
@@ -3699,10 +3227,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_Haval_Fengjun5_21 /* 1900788 */:
             case FinalCanbus.CAR_RZC_Haval_Jinggangpao_22 /* 2031860 */:
             case FinalCanbus.CAR_RZC_HavalF7_19_Top /* 2228468 */:
-                cls = ActivityHava18H6Index.class;
+                name = "com.syu.carinfo.hava.ActivityHava18H6Index";
                 break;
             case FinalCanbus.CAR_RZC_FengShenAX7_18H /* 655615 */:
-                cls = RZC_0255_FengShenAx7_IndexAct.class;
+                name = "com.syu.carinfo.rzc.hantengx5.RZC_0255_FengShenAx7_IndexAct";
                 break;
             case FinalCanbus.CAR_WC2_GUOCHAN_10 /* 655755 */:
             case FinalCanbus.CAR_WC2_GUOCHAN_14 /* 917899 */:
@@ -3710,10 +3238,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_WC2_AiRuiZ7 /* 1638795 */:
             case FinalCanbus.CAR_WC2_AiRuiZ_GX /* 1835403 */:
             case FinalCanbus.CAR_WC2_GUOCHAN_Ruihu5X /* 2097547 */:
-                cls = ActivityWCAiRuiZe.class;
+                name = "com.syu.carinfo.qirui.ActivityWCAiRuiZe";
                 break;
             case FinalCanbus.CAR_RZC_XP1_BeiQiBJ40 /* 655756 */:
-                cls = RZCBeiqiBj40CarSet.class;
+                name = "com.syu.carinfo.rzc.yingfeinidi_gx50.RZCBeiqiBj40CarSet";
                 break;
             case FinalCanbus.CAR_452_Oudi_Jianghuai_Ruifeng_S7 /* 655812 */:
             case FinalCanbus.CAR_452_Oudi_Jianghuai_Ruifeng_S7_H /* 721348 */:
@@ -3735,7 +3263,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_KYC_Sanlin_Pajero_20_H /* 10158532 */:
             case FinalCanbus.CAR_452_KYC_Sanlin_Pajero_20_L /* 10224068 */:
             case FinalCanbus.CAR_454_OD_Jianghuai_IC5 /* 15270342 */:
-                cls = JhRuiFengR3IndexAct.class;
+                name = "com.syu.carinfo.rzc.ruifengs3.JhRuiFengR3IndexAct";
                 break;
             case FinalCanbus.CAR_BNR_NISSAN_14QiJun_H /* 721220 */:
             case FinalCanbus.CAR_BNR_NISSAN_14QiJun_L /* 786756 */:
@@ -3747,18 +3275,18 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_BNR_NISSAN_08TianLai_L /* 1179972 */:
             case FinalCanbus.CAR_BNR_NISSAN_11QiDa_H /* 1245508 */:
             case FinalCanbus.CAR_BNR_NISSAN_11QiDa_L /* 1311044 */:
-                cls = Acti_Nissan_Bnr.class;
+                name = "com.syu.carinfo.bnr.Acti_Nissan_Bnr";
                 break;
             case FinalCanbus.CAR_439_OuDi_ZTT500 /* 721335 */:
             case FinalCanbus.CAR_439_OuDi_ZTT600 /* 786871 */:
             case FinalCanbus.CAR_439_OuDi_DMX7 /* 917943 */:
-                cls = OdChanganIndexAct.class;
+                name = "com.syu.carinfo.oudi.changan.OdChanganIndexAct";
                 break;
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_AKSL /* 721339 */:
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_CX5 /* 786875 */:
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_CX4 /* 917947 */:
             case FinalCanbus.CAR_443_WC2_MAZD_ALL_ATZ /* 983483 */:
-                cls = ActivityMzdAllIndexAct.class;
+                name = "com.syu.carinfo.wc.axela.ActivityMzdAllIndexAct";
                 break;
             case FinalCanbus.CAR_453_PA_Ford_F150_10_CD /* 721349 */:
             case FinalCanbus.CAR_PA_Ford_Explorer_19 /* 2883958 */:
@@ -3792,7 +3320,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_PA_Ford_F_Super_duty_16_CD /* 4915574 */:
             case FinalCanbus.CAR_PA_Ford_F_Super_duty_16_Amp /* 4981110 */:
             case FinalCanbus.CAR_453_PA_Ford_Mustang_10_CD /* 5702085 */:
-                cls = PAFordAllIndexActi.class;
+                name = "com.syu.carinfo.xp.ziyouguang.PAFordAllIndexActi";
                 break;
             case FinalCanbus.CAR_454_RZC_Perodua_Alza_22 /* 721350 */:
             case FinalCanbus.CAR_454_RZC_Perodua_Aruz_22 /* 786886 */:
@@ -3800,11 +3328,11 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_RZC_Perodua_Axia_22 /* 917958 */:
             case FinalCanbus.CAR_454_RZC_Perodua_Bezza_22 /* 983494 */:
             case FinalCanbus.CAR_454_RZC_Perodua_Myvi_22 /* 1049030 */:
-                cls = RzcPeroduaIndexAct.class;
+                name = "com.syu.carinfo.camry2012.xp.RzcPeroduaIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_XP1_BeiQi_18HuansuS7 /* 786828 */:
             case FinalCanbus.CAR_RZC_XP1_BeiQi_18HuansuS7_H /* 852364 */:
-                cls = RZCBeiqiSuansuS7CarSet.class;
+                name = "com.syu.carinfo.rzc.yingfeinidi_gx50.RZCBeiqiSuansuS7CarSet";
                 break;
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_Sonata9_E /* 786879 */:
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_19K3_E /* 852415 */:
@@ -3813,55 +3341,55 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_Sonata9H_E /* 1049023 */:
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_ENCINO /* 3342783 */:
             case FinalCanbus.CAR_RZC3_XianDai_Qiya_ENCINO_H /* 3408319 */:
-                cls = RZC_Xiandai_E_IndexAct.class;
+                name = "com.syu.carinfo.od.tusheng.RZC_Xiandai_E_IndexAct";
                 break;
             case FinalCanbus.CAR_452_RZC_LandRover_Discovery_15 /* 786884 */:
             case FinalCanbus.CAR_452_RZC_LandRover_RANGE_12 /* 2163140 */:
-                cls = RzcLandRoverIndexAct.class;
+                name = "com.syu.carinfo.rzc.zhongtai.RzcLandRoverIndexAct";
                 break;
             case FinalCanbus.CAR_455_OD_Zhongtai_E200 /* 786887 */:
-                cls = ODZhongtaiE200CarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODZhongtaiE200CarInfo";
                 break;
             case FinalCanbus.CAR_RZC_Nissan_Tianlai_Gongjue /* 852158 */:
-                cls = RZCNissanAmpCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCNissanAmpCarSet";
                 break;
             case FinalCanbus.CAR_RZC_BeiQi_Shenbao_D50_18 /* 852195 */:
             case FinalCanbus.CAR_RZC_BeiQi_20EX3 /* 1245411 */:
-                cls = Activity18EU5CarSet.class;
+                name = "com.syu.carinfo.rzc.beiqi.Activity18EU5CarSet";
                 break;
             case FinalCanbus.CAR_DAOJUN_OD_ATS /* 852316 */:
             case FinalCanbus.CAR_DAOJUN_OD_SRX_XTS /* 917852 */:
             case FinalCanbus.CAR_DAOJUN_SRX_10 /* 983388 */:
-                cls = AtsIndexAct.class;
+                name = "com.syu.carinfo.daojun.ats.AtsIndexAct";
                 break;
             case FinalCanbus.CAR_WC2_ZhongHua_17H3 /* 852387 */:
-                cls = ActivityZhongHuaH3.class;
+                name = "com.syu.carinfo.guochan.ActivityZhongHuaH3";
                 break;
             case FinalCanbus.CAR_439_OuDi_DMX5 /* 852407 */:
-                cls = OdChanganSetFunc.class;
+                name = "com.syu.carinfo.oudi.changan.OdChanganSetFunc";
                 break;
             case FinalCanbus.CAR_452_RZC_ZHongtai_E200_18 /* 852420 */:
-                cls = RzcZhongtaiE200CarInfo.class;
+                name = "com.syu.carinfo.rzc.zhongtai.RzcZhongtaiE200CarInfo";
                 break;
             case FinalCanbus.CAR_455_XP_Ford_F150_2012 /* 852423 */:
             case FinalCanbus.CAR_455_XP_Ford_F150_2012_Auto /* 917959 */:
-                cls = XPFordF150CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.XPFordF150CarSet";
                 break;
             case FinalCanbus.CAR_RZC_Nissan_JUKE_H /* 917694 */:
-                cls = RZCNissanJUKECarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCNissanJUKECarSet";
                 break;
             case FinalCanbus.CAR_RZC_FengShen19_20AX7 /* 917759 */:
             case FinalCanbus.CAR_RZC_FengShen19_20AX7_H /* 983295 */:
             case FinalCanbus.CAR_RZC_FengShen15AX7 /* 1638655 */:
             case FinalCanbus.CAR_RZC_FengShen19AX7_Hand /* 1704191 */:
             case FinalCanbus.CAR_RZC_FengShen15AX7_View /* 1769727 */:
-                cls = RzcFengshenAx7SetFunc.class;
+                name = "com.syu.carinfo.rzc.fengshen_ax7.RzcFengshenAx7SetFunc";
                 break;
             case FinalCanbus.CAR_RZC_XP1_ShangQiDaTong19G50 /* 917769 */:
             case FinalCanbus.CAR_RZC_XP1_ShangQiDaTong19V90 /* 1048841 */:
             case FinalCanbus.CAR_RZC_XP1_ShangQiDaTong21V90 /* 1179913 */:
             case FinalCanbus.CAR_RZC_XP1_ShangQiDaTong22V90 /* 1245449 */:
-                cls = RzcChanganIndexAct.class;
+                name = "com.syu.carinfo.rzc.zhongtai.RzcChanganIndexAct";
                 break;
             case FinalCanbus.CAR_452_LZ_Toyota_Lexus_Rx /* 917956 */:
             case FinalCanbus.CAR_452_LZ_Toyota_Lexus_Rx_H /* 983492 */:
@@ -3884,7 +3412,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_LZ_CG_Toyota_FJ_CRUISER /* 15139270 */:
             case FinalCanbus.CAR_454_LZ_CG_Toyota_FJ_CRUISER_H /* 15532486 */:
             case FinalCanbus.CAR_454_LZ_CG_Toyota_LEUXS_RX300_H /* 15598022 */:
-                cls = LuzLexusISIndexAct.class;
+                name = "com.syu.carinfo.lz.lexusis.LuzLexusISIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_XP1_98_05Lexus_Rx300 /* 983152 */:
             case FinalCanbus.CAR_RZC_XP1_Lexus_NX200_17 /* 1507440 */:
@@ -3910,12 +3438,12 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_XP1_Lexus_LS460_H /* 5963888 */:
             case FinalCanbus.CAR_RZC_XP1_LC100 /* 6029424 */:
             case FinalCanbus.CAR_RZC_XP1_LC100_H /* 6094960 */:
-                cls = ToyotaLexusIndexActi.class;
+                name = "com.syu.carinfo.camry2012.xp.ToyotaLexusIndexActi";
                 break;
             case FinalCanbus.CAR_RZC_XP1_BeiQiBJ40_21 /* 983436 */:
             case FinalCanbus.CAR_RZC_XP1_BeiQiBJ40_21_H /* 1048972 */:
             case FinalCanbus.CAR_RZC_XP1_BeiQiBJ40_20_H /* 1114508 */:
-                cls = RZCBeiqiBJ40CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCBeiqiBJ40CarSet";
                 break;
             case FinalCanbus.CAR_439_OuDi_Z560 /* 983479 */:
             case FinalCanbus.CAR_455_LZ_Toyota_LAND_CRUISER_11_CD_YL /* 983495 */:
@@ -3933,10 +3461,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_LZ_Toyota_LAND_CRUISER_11_CD_DH /* 16581062 */:
             case FinalCanbus.CAR_454_LZ_Toyota_LAND_CRUISER_11_CD_DH_H /* 16646598 */:
                 if (LauncherApplication.getConfiguration() == 1) {
-                    cls = LuzLexusLSClockSetAct.class;
+                    name = "com.syu.carinfo.lz.lexusis.LuzLexusLSClockSetAct";
                     break;
                 } else {
-                    cls = LuzLexusISIndexAct.class;
+                    name = "com.syu.carinfo.lz.lexusis.LuzLexusISIndexAct";
                     break;
                 }
             case FinalCanbus.CAR_OD_NISSAN_Xima_L /* 1048656 */:
@@ -3946,13 +3474,13 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_OD_NISSAN_Gongjue_L /* 1310800 */:
             case FinalCanbus.CAR_OD_NISSAN_Gongjue_H /* 1376336 */:
             case FinalCanbus.CAR_CZH_OD_NISSAN_22Teana_Top /* 1572944 */:
-                cls = OD_NissanXimaIndexAct.class;
+                name = "com.syu.carinfo.rzc.xima.OD_NissanXimaIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_FengShen_YiXuan /* 1048831 */:
             case FinalCanbus.CAR_RZC_FengShen_YiXuan_H /* 1114367 */:
             case FinalCanbus.CAR_RZC_FengShen_YiXuan_21 /* 1310975 */:
             case FinalCanbus.CAR_RZC_FengShen_YiXuan_H_21 /* 1376511 */:
-                cls = RzcFengshenYixuanSetFunc.class;
+                name = "com.syu.carinfo.rzc.fengshen_ax7.RzcFengshenYixuanSetFunc";
                 break;
             case FinalCanbus.CAR_RZC_19MingjueHS_H /* 1048849 */:
             case FinalCanbus.CAR_RZC_Mingjue_20ZS /* 1376529 */:
@@ -3963,19 +3491,19 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_21RongWei_I5 /* 1900817 */:
             case FinalCanbus.CAR_RZC_21RongWei_I5_H /* 1966353 */:
             case FinalCanbus.CAR_CZH_RZC_19Mingjue_MG6 /* 2097425 */:
-                cls = Act20ZSIndexAct.class;
+                name = "com.syu.carinfo.rzc.mingjueruiteng.Act20ZSIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_Mustang /* 1048910 */:
             case FinalCanbus.CAR_RZC_Mustang_M /* 5374286 */:
             case FinalCanbus.CAR_RZC_Mustang_H /* 5439822 */:
             case FinalCanbus.CAR_452_LZ_Subaru_TRIBECA /* 7078340 */:
-                cls = MustangIndexAct.class;
+                name = "com.syu.carinfo.ford.MustangIndexAct";
                 break;
             case FinalCanbus.CAR_DJ_XC_TOYOTA_LEXUS /* 1049005 */:
-                cls = ActivityHuangGuanIndex.class;
+                name = "com.syu.carinfo.dj.huangguan.ActivityHuangGuanIndex";
                 break;
             case FinalCanbus.CAR_453_OD_Bent_NAT /* 1049029 */:
-                cls = ODBentNATCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODBentNATCarSet";
                 break;
             case FinalCanbus.CAR_RZC_XP1_18YuanJing /* 1114251 */:
             case FinalCanbus.CAR_RZC_Jili_18Dihao /* 1507467 */:
@@ -3987,63 +3515,63 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_OD_Jilie_DihaoS /* 14156230 */:
             case FinalCanbus.CAR_454_OD_Jilie_YuanchengXingzhi /* 14549446 */:
             case FinalCanbus.CAR_453_OD_Jili_Dihao_EV /* 16056773 */:
-                cls = BoyueIndexAct.class;
+                name = "com.syu.carinfo.jili.BoyueIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_BiSuT3 /* 1114377 */:
-                cls = ActivityBiSuT3.class;
+                name = "com.syu.carinfo.guochan.ActivityBiSuT3";
                 break;
             case FinalCanbus.CAR_443_WC2_JiangHuai_IEV6E /* 1114555 */:
             case FinalCanbus.CAR_443_WC2_JiangHuai_T8 /* 5636539 */:
             case FinalCanbus.CAR_443_WC2_JiangHuai_T8_H /* 5702075 */:
             case FinalCanbus.CAR_443_WC2_JiangHuai_ZK /* 5767611 */:
             case FinalCanbus.CAR_443_WC2_JiangHuai_ZK_H /* 5833147 */:
-                cls = WcJianghuaiIEV6EIndexAct.class;
+                name = "com.syu.carinfo.wc.jianghuai.WcJianghuaiIEV6EIndexAct";
                 break;
             case FinalCanbus.CAR_452_XFY_PSA_3008_L /* 1114564 */:
             case FinalCanbus.CAR_452_XFY_PSA_3008_H /* 1180100 */:
-                cls = ActivityPSA3008Index.class;
+                name = "com.syu.carinfo.xfy.psa.ActivityPSA3008Index";
                 break;
             case FinalCanbus.CAR_454_RZC_Mahindra_Thar_21 /* 1114566 */:
             case FinalCanbus.CAR_454_RZC_Mahindra_XUV_16_Hand /* 1180102 */:
             case FinalCanbus.CAR_454_RZC_TATA_NEXON_21_Hand /* 1245638 */:
-                cls = LuzNissanGTRIndexAct.class;
+                name = "com.syu.carinfo.lz.nissan.gtr.LuzNissanGTRIndexAct";
                 break;
             case FinalCanbus.CAR_455_LZ_CG_Toyota_Alpha_Screen /* 1114567 */:
             case FinalCanbus.CAR_455_LZ_CG_Toyota_Alpha_Screen_3 /* 1180103 */:
             case FinalCanbus.CAR_454_LZ_Alpha_35_SCREEN /* 2621894 */:
             case FinalCanbus.CAR_454_LZ_VW_Touareg_Screen /* 9175494 */:
-                cls = LZNewAllBBASetFunc.class;
+                name = "com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc";
                 break;
             case FinalCanbus.CAR_RZC_BoYue /* 1179787 */:
             case FinalCanbus.CAR_RZC_BoYue_H /* 1245323 */:
             case FinalCanbus.CAR_RZC_BoYue_21 /* 2752651 */:
-                cls = RZCBoyueCarSettingsAct.class;
+                name = "com.syu.carinfo.jili.RZCBoyueCarSettingsAct";
                 break;
             case FinalCanbus.CAR_WC2_RENAULT_Jinbei_Guanjing /* 1180000 */:
             case FinalCanbus.CAR_WC2_Benz_Smart_17 /* 1245536 */:
-                cls = LeinuoGuanjingSetActi.class;
+                name = "com.syu.carinfo.wc.leinuo.LeinuoGuanjingSetActi";
                 break;
             case FinalCanbus.CAR_XP1_Meiganna4_TR_HAND /* 1245558 */:
             case FinalCanbus.CAR_XP1_Meiganna4_TR_AUTO /* 1311094 */:
             case FinalCanbus.CAR_XP1_Meiganna4_TR_AUTO_H /* 1769846 */:
-                cls = Act_Keleijia_set.class;
+                name = "com.syu.carinfo.leinuo.Act_Keleijia_set";
                 break;
             case FinalCanbus.CAR_RZC_09_16KeleiAo /* 1245586 */:
-                cls = KeleiaoCarCD.class;
+                name = "com.syu.carinfo.rzc.keleijia.KeleiaoCarCD";
                 break;
             case FinalCanbus.CAR_439_DJ_LEXUS_ES /* 1245623 */:
             case FinalCanbus.CAR_439_DJ_LEXUS_ES_H /* 3801527 */:
-                cls = djLexusIndexAct.class;
+                name = "com.syu.carinfo.daojun.lexus.djLexusIndexAct";
                 break;
             case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7_Hand1 /* 1245628 */:
             case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7_Hand2 /* 1311164 */:
             case FinalCanbus.CAR_452_OD_Toyota_Lexus /* 1245636 */:
             case FinalCanbus.CAR_439_RZC_TOYATO_13HuangGuan /* 6947255 */:
-                cls = ActivityHuangGuanIndex.class;
+                name = "com.syu.carinfo.dj.huangguan.ActivityHuangGuanIndex";
                 break;
             case FinalCanbus.CAR_453_OD_Dongfeng_Xiaohu /* 1245637 */:
             case FinalCanbus.CAR_453_OD_Dongfeng_EX1_Pro /* 1311173 */:
-                cls = ODDongfengEVCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODDongfengEVCarInfo";
                 break;
             case FinalCanbus.CAR_455_LZ_Ford_Mustang_L_CYT /* 1245639 */:
             case FinalCanbus.CAR_454_LZ_Ford_Explorer_L_Hand /* 1311174 */:
@@ -4062,14 +3590,14 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_LZ_Ford_Mustang /* 11403716 */:
             case FinalCanbus.CAR_452_LZ_Ford_Mustang_H /* 14090692 */:
                 if (LauncherApplication.getConfiguration() == 1) {
-                    cls = LZMustangCarEQSet.class;
+                    name = "com.syu.carinfo.ford.LZMustangCarEQSet";
                     break;
                 } else {
-                    cls = MustangIndexAct.class;
+                    name = "com.syu.carinfo.ford.MustangIndexAct";
                     break;
                 }
             case FinalCanbus.CAR_RZC_XP1_CHR_EV /* 1310832 */:
-                cls = CamryIndexEVAct.class;
+                name = "com.syu.carinfo.camry2012.xp.CamryIndexEVAct";
                 break;
             case FinalCanbus.CAR_RZC_HavalH7_19 /* 1310964 */:
             case FinalCanbus.CAR_RZC_HavalH7_19_H /* 1638644 */:
@@ -4079,13 +3607,13 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_Haval_H7Hongbiao_18_H /* 2162932 */:
             case FinalCanbus.CAR_RZC_HavalH7L_17 /* 2359540 */:
             case FinalCanbus.CAR_RZC_HavalH7L_17_H /* 2425076 */:
-                cls = ActivityHava18H6Index.class;
+                name = "com.syu.carinfo.hava.ActivityHava18H6Index";
                 break;
             case FinalCanbus.CAR_XP_Renault_21Duster /* 1311144 */:
-                cls = Activity_424_ClioFuncSet.class;
+                name = "com.syu.carinfo.xp.ziyouguang.Activity_424_ClioFuncSet";
                 break;
             case FinalCanbus.CAR_RZC_Nissan_Tianlai_Amp /* 1376446 */:
-                cls = SanlinIndexAct.class;
+                name = "com.syu.carinfo.rzc.sanlin.SanlinIndexAct";
                 break;
             case FinalCanbus.CAR_PA_dorango_13_18_Low /* 1376630 */:
             case FinalCanbus.CAR_PA_dorango_13_18_H /* 1442166 */:
@@ -4106,7 +3634,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_PA_GrandCherokee_14_22_Amp /* 5308790 */:
             case FinalCanbus.CAR_PA_Gladiator_20_23 /* 5374326 */:
             case FinalCanbus.CAR_PA_Gladiator_20_23_Amp /* 5439862 */:
-                cls = PAJeepAllIndexActi.class;
+                name = "com.syu.carinfo.xp.ziyouguang.PAJeepAllIndexActi";
                 break;
             case FinalCanbus.CAR_WC2_QiChen_T90 /* 1376651 */:
             case FinalCanbus.CAR_WC2_QiChen_D60 /* 1507723 */:
@@ -4129,32 +3657,32 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_OD_Haval_VV5_H /* 16318916 */:
             case FinalCanbus.CAR_452_OD_Haval_VV6_H /* 16384452 */:
             case FinalCanbus.CAR_452_OD_Haval_VV7_H /* 16449988 */:
-                cls = RZC_Oudi_0439_HavalH9_IndexAct.class;
+                name = "com.syu.carinfo.rzc.havalh6.RZC_Oudi_0439_HavalH9_IndexAct";
                 break;
             case FinalCanbus.CAR_443_WC2_TOYOTA_09HG /* 1376699 */:
-                cls = WC209HuangguanEQAct.class;
+                name = "com.syu.carinfo.wc2.huangguan.WC209HuangguanEQAct";
                 break;
             case FinalCanbus.CAR_444_WC2_IKCO_Tara_21 /* 1376700 */:
             case FinalCanbus.CAR_444_WC2_IKCO_Dena_15 /* 1442236 */:
-                cls = WC2IKCOAllCarSetAct.class;
+                name = "com.syu.carinfo.rzc.sanlin.WC2IKCOAllCarSetAct";
                 break;
             case FinalCanbus.CAR_453_LZ_AstonMartin /* 1376709 */:
-                cls = LuZAstonMartinCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.LuZAstonMartinCarInfo";
                 break;
             case FinalCanbus.CAR_RZC_Jili_19Dihao_GL_E /* 1441931 */:
             case FinalCanbus.CAR_Oudi_Jili_Binyue_Pro /* 3211403 */:
-                cls = Dihao19GLECarSettingsAct.class;
+                name = "com.syu.carinfo.jili.Dihao19GLECarSettingsAct";
                 break;
             case FinalCanbus.CAR_RZC_FengShen_X37_21 /* 1442047 */:
             case FinalCanbus.CAR_RZC_FengShen_D27_21 /* 1507583 */:
-                cls = RzcFengshenX37SetFunc.class;
+                name = "com.syu.carinfo.rzc.fengshen_ax7.RzcFengshenX37SetFunc";
                 break;
             case FinalCanbus.CAR_439_DJ_TOYOTA_08Prado_ShuPing_H /* 1442231 */:
-                cls = DJPrado8SetFunc.class;
+                name = "com.syu.carinfo.daojun.lexus.DJPrado8SetFunc";
                 break;
             case FinalCanbus.CAR_439_LUZ_BinLi_H /* 1442244 */:
             case FinalCanbus.CAR_439_LUZ_BinLi /* 9241015 */:
-                cls = BinliIndexAct.class;
+                name = "com.syu.carinfo.luz.binli.BinliIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_HONDA_9Yage /* 1507626 */:
             case FinalCanbus.CAR_RZC_HONDA_9Yage_H /* 1573162 */:
@@ -4163,18 +3691,18 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_HONDA_Crosstour /* 2162986 */:
             case FinalCanbus.CAR_RZC_HONDA_10Yage_H /* 2556202 */:
             case FinalCanbus.CAR_RZC_HONDA_23Yage /* 4260138 */:
-                cls = HondaIndexActi.class;
+                name = "com.syu.carinfo.honda.HondaIndexActi";
                 break;
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_GX50 /* 1507771 */:
                 if (LauncherApplication.getConfiguration() == 1) {
-                    cls = WcInfeinidiCarSet.class;
+                    name = "com.syu.carinfo.wc.infeinidi.WcInfeinidiCarSet";
                     break;
                 } else {
-                    cls = WcInfeonidiIndexAct.class;
+                    name = "com.syu.carinfo.wc.infeinidi.WcInfeonidiIndexAct";
                     break;
                 }
             case FinalCanbus.CAR_439_OD_Qirui_KaiyiX3 /* 1507780 */:
-                cls = ODKaiyiX3CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODKaiyiX3CarSet";
                 break;
             case FinalCanbus.CAR_453_LZ_BMW_Mini_15 /* 1507781 */:
             case FinalCanbus.CAR_439_RZC_Sanlin_19Yige /* 10224055 */:
@@ -4185,39 +3713,39 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_LZ_Maserati_SP /* 12255684 */:
             case FinalCanbus.CAR_454_RZC_Sanlin_LancerEVO_08 /* 15991238 */:
             case FinalCanbus.CAR_454_RZC_Sanlin_Pajero_22_Sport_Top /* 16056774 */:
-                cls = SanlinIndexAct.class;
+                name = "com.syu.carinfo.rzc.sanlin.SanlinIndexAct";
                 break;
             case FinalCanbus.CAR_455_LZ_GMC_Sierra_19_RScreen /* 1507783 */:
             case FinalCanbus.CAR_455_LZ_Chevrolet_Silverado_19_RScreen /* 1573319 */:
             case FinalCanbus.CAR_454_LZ_GMC_Sierra_19_Screen /* 11928006 */:
             case FinalCanbus.CAR_454_LZ_Chevrolet_Silverado_19_Screen /* 11993542 */:
-                cls = LZNewAllGMCSetFunc.class;
+                name = "com.syu.carinfo.zhtd.bmw.LZNewAllGMCSetFunc";
                 break;
             case FinalCanbus.CAR_RZC_Nissan_QUEST_13 /* 1573054 */:
             case FinalCanbus.CAR_RZC_Nissan_QUEST_13_H /* 1638590 */:
             case FinalCanbus.CAR_RZC_Nissan_Tianlai_GJ /* 1835198 */:
-                cls = RZCNisaanGuishiCarSettingsAct.class;
+                name = "com.syu.carinfo.jili.RZCNisaanGuishiCarSettingsAct";
                 break;
             case FinalCanbus.CAR_RZC_FengShen_EX1_21 /* 1573119 */:
-                cls = RZCFengshenEX1CarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCFengshenEX1CarInfo";
                 break;
             case FinalCanbus.CAR_WC_SP_09_Lexus_ES350 /* 1573158 */:
             case FinalCanbus.CAR_WC_SP_09_Lexus_ES350_H /* 1638694 */:
             case FinalCanbus.CAR_WC2_TOYOTA_06ReiZ_KeepAir /* 2883878 */:
             case FinalCanbus.CAR_WC2_TOYOTA_06ReiZ_ChangeAir /* 2949414 */:
                 if (LauncherApplication.getConfiguration() == 1) {
-                    cls = Wc09LexusESEQActi.class;
+                    name = "com.syu.carinfo.wccamry.Wc09LexusESEQActi";
                     break;
                 } else {
-                    cls = Wc09LexusESIndexActi.class;
+                    name = "com.syu.carinfo.wccamry.Wc09LexusESIndexActi";
                     break;
                 }
             case FinalCanbus.CAR_439_OuDi_17DongNanV5 /* 1573303 */:
-                cls = Dongnanv5IndexActi.class;
+                name = "com.syu.carinfo.od.dongnanv5.Dongnanv5IndexActi";
                 break;
             case FinalCanbus.CAR_444_WC2_Saipa_Shahin_20 /* 1573308 */:
             case FinalCanbus.CAR_444_WC2_IKCO_207i_17 /* 1638844 */:
-                cls = WCSaipaShahinTireAct.class;
+                name = "com.syu.carinfo.rzc.sanlin.WCSaipaShahinTireAct";
                 break;
             case FinalCanbus.CAR_452_XinCheng_Infiniti_ESQ /* 1573316 */:
             case FinalCanbus.CAR_452_XinCheng_Infiniti_06FX /* 1638852 */:
@@ -4232,17 +3760,17 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_XinCheng_Infiniti_12JX35 /* 4129220 */:
             case FinalCanbus.CAR_452_XinCheng_Nissan_Tule_L /* 5046724 */:
             case FinalCanbus.CAR_452_XinCheng_Nissan_Tule_H /* 5112260 */:
-                cls = Infiniti_XinCheng_IndexAct.class;
+                name = "com.syu.carinfo.xincheng.infiniti.Infiniti_XinCheng_IndexAct";
                 break;
             case FinalCanbus.CAR_WC2_Honda_12Siyu_CRV /* 1638721 */:
             case FinalCanbus.CAR_WC2_Honda_14Siyu_L /* 1704257 */:
             case FinalCanbus.CAR_WC2_Honda_15CRV_L /* 1769793 */:
             case FinalCanbus.CAR_WC2_Honda_12Siyu /* 1966401 */:
             case FinalCanbus.CAR_WC2_Honda_15CIVIC_OverSea_L /* 3277121 */:
-                cls = ActivitySiYuIndex.class;
+                name = "com.syu.carinfo.honda.ActivitySiYuIndex";
                 break;
             case FinalCanbus.CAR_RZC_XP1_21Xiaomayi_EQ1 /* 1638804 */:
-                cls = ActivityQiRuiXMYCarSet.class;
+                name = "com.syu.carinfo.rzc.qirui.ActivityQiRuiXMYCarSet";
                 break;
             case FinalCanbus.CAR_443_WC2_19Foucs /* 1638843 */:
             case FinalCanbus.CAR_443_WC2_18Ruijie /* 1769915 */:
@@ -4259,13 +3787,13 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC2_Ford_12Focus_Overseas /* 15139259 */:
             case FinalCanbus.CAR_443_WC2_Ford_FIESTA_13 /* 15532475 */:
             case FinalCanbus.CAR_443_WC2_Ford_Tourneo_21 /* 15598011 */:
-                cls = Focus19CarSetAct.class;
+                name = "com.syu.carinfo.wc.ruijie15.Focus19CarSetAct";
                 break;
             case FinalCanbus.CAR_453_RZC_Honda_SPIRIOR_09 /* 1638853 */:
             case FinalCanbus.CAR_452_RZC_09_14_AodeSai /* 3801540 */:
             case FinalCanbus.CAR_452_RZC_Yage8 /* 9175492 */:
             case FinalCanbus.CAR_452_RZC_Crosstour_13 /* 10289604 */:
-                cls = Act_RZC_CarCD_AoDeSai.class;
+                name = "com.syu.carinfo.honda.Act_RZC_CarCD_AoDeSai";
                 break;
             case FinalCanbus.CAR_455_XP_SUBARU_19FORESTER_H /* 1638855 */:
             case FinalCanbus.CAR_439_XP_SUBARU_15_17FORESTER /* 12124599 */:
@@ -4276,31 +3804,31 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_439_XP_SUBARU_17_19EMPREZA /* 12452279 */:
             case FinalCanbus.CAR_439_XP_SUBARU_18_19CROSSTREK /* 12517815 */:
             case FinalCanbus.CAR_439_XP_SUBARU_19FORESTER /* 12583351 */:
-                cls = SuburuCarSet.class;
+                name = "com.syu.carinfo.xp.suburu.SuburuCarSet";
                 break;
             case FinalCanbus.CAR_RZC_XP1_Lexus_ES300_05 /* 1704048 */:
             case FinalCanbus.CAR_RZC_TOYOTA_04Verso_SP /* 7078000 */:
             case FinalCanbus.CAR_RZC_TOYOTA_10Prius_SP /* 7536752 */:
                 if (LauncherApplication.getConfiguration() == 1) {
-                    cls = ToyotaLexusEQActi.class;
+                    name = "com.syu.carinfo.camry2012.xp.ToyotaLexusEQActi";
                     break;
                 } else {
-                    cls = ToyotaLexusIndexActi.class;
+                    name = "com.syu.carinfo.camry2012.xp.ToyotaLexusIndexActi";
                     break;
                 }
             case FinalCanbus.CAR_RZC_Nissan_Ruiqi6_21 /* 1704126 */:
             case FinalCanbus.CAR_RZC_Nissan_Ruiqi6_21_H /* 1769662 */:
-                cls = BoyueIndexAct.class;
+                name = "com.syu.carinfo.jili.BoyueIndexAct";
                 break;
             case FinalCanbus.CAR_443_WC2_Nissan_Ruiqi /* 1704379 */:
             case FinalCanbus.CAR_444_WC2_Dongfeng_Xiaokang_Ix5 /* 1835452 */:
             case FinalCanbus.CAR_443_WC2_Nissan_Ruiqi7 /* 7799227 */:
-                cls = WCNissanRuiqi6IndexAct.class;
+                name = "com.syu.carinfo.wc2.ruiqi.WCNissanRuiqi6IndexAct";
                 break;
             case FinalCanbus.CAR_453_RZC_Hongqi_H5 /* 1704389 */:
             case FinalCanbus.CAR_453_RZC_Hongqi_H5_M /* 9044421 */:
             case FinalCanbus.CAR_453_RZC_Hongqi_H5_H /* 9109957 */:
-                cls = RZCHongqiH5CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCHongqiH5CarSet";
                 break;
             case FinalCanbus.CAR_455_TD_INFINIT_ESQ /* 1704391 */:
             case FinalCanbus.CAR_455_TD_INFINIT_G /* 1769927 */:
@@ -4313,10 +3841,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_439_XBS_NISSAN_TuLe_ALLV /* 3342775 */:
             case FinalCanbus.CAR_454_Tangdu_Nissan_PATROL_L /* 13763014 */:
             case FinalCanbus.CAR_454_Tangdu_Nissan_PATROL_H /* 13828550 */:
-                cls = XBSTuleIndexAct.class;
+                name = "com.syu.carinfo.xbs.tule.XBSTuleIndexAct";
                 break;
             case FinalCanbus.CAR_WC2_18BYD_YUAN /* 1769867 */:
-                cls = BYDYuanCarSettingsAct.class;
+                name = "com.syu.carinfo.wc.bydyuan.BYDYuanCarSettingsAct";
                 break;
             case FinalCanbus.CAR_453_OD_Jiangling_Kaiyun /* 1769925 */:
             case FinalCanbus.CAR_453_OD_Jiangling_Kaiyun_H /* 1835461 */:
@@ -4325,16 +3853,16 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_OD_Ford_PRO_H /* 9241028 */:
             case FinalCanbus.CAR_453_OD_JMC_Energy_Yizhi_EV3 /* 12648901 */:
             case FinalCanbus.CAR_454_OD_Jiangling_Dadao /* 14483910 */:
-                cls = BnrGuanzhiIndexAct.class;
+                name = "com.syu.carinfo.bnr.guanzhi.BnrGuanzhiIndexAct";
                 break;
             case FinalCanbus.CAR_Oudi_Zhongxing_Terralord /* 1835263 */:
             case FinalCanbus.CAR_Oudi_Zhongxing_Terralord_H /* 1900799 */:
-                cls = RZC_0255_HanTengX5_TireAct.class;
+                name = "com.syu.carinfo.rzc.hantengx5.RZC_0255_HanTengX5_TireAct";
                 break;
             case FinalCanbus.CAR_WC2_Honda_14Siyu_H /* 1835329 */:
             case FinalCanbus.CAR_WC2_Honda_15CRV_H /* 1900865 */:
             case FinalCanbus.CAR_WC2_Honda_15CIVIC_OverSea_H /* 3211585 */:
-                cls = HondaIndexActi.class;
+                name = "com.syu.carinfo.honda.HondaIndexActi";
                 break;
             case FinalCanbus.CAR_454_Tangdu_Toyota_LexusIS /* 1835462 */:
             case FinalCanbus.CAR_452_Tangdu_Toyota_All /* 8913348 */:
@@ -4380,27 +3908,27 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_08_M /* 12255685 */:
             case FinalCanbus.CAR_453_Tangdu_Toyota_LAND_CRUISE_16_M /* 12321221 */:
             case FinalCanbus.CAR_453_Tangdu_Toyota_FORTUNER_16_H /* 12386757 */:
-                cls = ToyotaTangduIndexAct.class;
+                name = "com.syu.carinfo.toyota.tangdu.ToyotaTangduIndexAct";
                 break;
             case FinalCanbus.CAR_RZC_Nissan_JUKE_HW /* 1900734 */:
-                cls = NissanJukeCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.NissanJukeCarSet";
                 break;
             case FinalCanbus.CAR_RZC_Ford_Lincoln_navigator /* 1900878 */:
             case FinalCanbus.CAR_RZC_Ford_Lincoln_Continental /* 2031950 */:
-                cls = MustangIndexAct.class;
+                name = "com.syu.carinfo.ford.MustangIndexAct";
                 break;
             case FinalCanbus.CAR_WC2_JieTu_X70 /* 1900939 */:
             case FinalCanbus.CAR_WC2_JieTu_X70_H /* 1966475 */:
             case FinalCanbus.CAR_WC2_JieTu_X70_22 /* 2294155 */:
             case FinalCanbus.CAR_WC2_JieTu_X70_22_H /* 2359691 */:
-                cls = ActivityWCQiruiJietuX70.class;
+                name = "com.syu.carinfo.qirui.ActivityWCQiruiJietuX70";
                 break;
             case FinalCanbus.CAR_439_BNR_LEXUS_ES_H /* 1900983 */:
             case FinalCanbus.CAR_BNR_02_09Toyato_Prado_H /* 7733687 */:
-                cls = BNRToyotaAmpCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.BNRToyotaAmpCarSet";
                 break;
             case FinalCanbus.CAR_443_WC2_Tianlai08_12_GongJue /* 1900987 */:
-                cls = Wc_443_TianlaiGongjueAct.class;
+                name = "com.syu.carinfo.wc.nissan.Wc_443_TianlaiGongjueAct";
                 break;
             case FinalCanbus.CAR_453_XP1_ZH2_Ford_Explorer_13_Hand /* 1900997 */:
             case FinalCanbus.CAR_453_XP1_ZH2_Ford_Explorer_13_Auto /* 1966533 */:
@@ -4418,7 +3946,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_453_XP_Ford_All_RP3_Auto1 /* 13238725 */:
             case FinalCanbus.CAR_453_XP_Ford_All_RP3_Auto2 /* 13304261 */:
             case FinalCanbus.CAR_XP1_ZH2_RUIJIE2015 /* 14680516 */:
-                cls = RJXpCarSetAct.class;
+                name = "com.syu.carinfo.wc.ruijie15.RJXpCarSetAct";
                 break;
             case FinalCanbus.CAR_454_LUZ_KAYAN_MACAN_CD_HP_LOW /* 1900998 */:
             case FinalCanbus.CAR_454_LUZ_KAYAN_LOW /* 2556358 */:
@@ -4426,7 +3954,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_439_LUZ_KAYAN2 /* 6226359 */:
             case FinalCanbus.CAR_439_LUZ_KAYAN_MACAN_CD /* 6291895 */:
             case FinalCanbus.CAR_439_LUZ_KAYAN_MACAN_CD_HP /* 6422967 */:
-                cls = LuzKayanSetFunc.class;
+                name = "com.syu.carinfo.lz.kayan.LuzKayanSetFunc";
                 break;
             case FinalCanbus.CAR_PA_dorango_10 /* 1966454 */:
             case FinalCanbus.CAR_PA_GMC_13 /* 2031990 */:
@@ -4437,10 +3965,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_PA_Ford_F650 /* 2556278 */:
             case FinalCanbus.CAR_PA_Ford_F_Super_duty_08 /* 5046646 */:
             case FinalCanbus.CAR_PA_Ford_F_Super_duty_16_Low /* 5112182 */:
-                cls = Xp_374_FunctionlActi.class;
+                name = "com.syu.carinfo.xp.ziyouguang.Xp_374_FunctionlActi";
                 break;
             case FinalCanbus.CAR_439_LUZ_LANDROVER /* 1966519 */:
-                cls = LandRoverIndexAct.class;
+                name = "com.syu.carinfo.lz.landrover.LandRoverIndexAct";
                 break;
             case FinalCanbus.CAR_454_KYC_Toyota_Lexus_LX570_07_MO /* 1966534 */:
             case FinalCanbus.CAR_454_KYC_Toyota_Lexus_LX570_07_TX /* 2032070 */:
@@ -4466,22 +3994,22 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_453_KYC_Toyota_Alpha_08_MO /* 7733701 */:
             case FinalCanbus.CAR_453_KYC_Toyota_Alpha_15 /* 7799237 */:
             case FinalCanbus.CAR_453_KYC_Toyota_Alpha_15_Top /* 7864773 */:
-                cls = LuzLexusISIndexAct.class;
+                name = "com.syu.carinfo.lz.lexusis.LuzLexusISIndexAct";
                 break;
             case FinalCanbus.CAR_439_OuDi_NaZhiJieU7 /* 2032055 */:
             case FinalCanbus.CAR_439_OuDi_NaZhiJieU5 /* 3932599 */:
             case FinalCanbus.CAR_452_OuDi_NaZhiJieU6 /* 11534788 */:
-                cls = OdNazhijieU7SetFunc.class;
+                name = "com.syu.carinfo.oudi.nazhijieu7.OdNazhijieU7SetFunc";
                 break;
             case FinalCanbus.CAR_RZC_10GrdCherokee_H /* 2097525 */:
-                cls = RZC_JeepCarEQSet.class;
+                name = "com.syu.carinfo.rzc.ziyouguang.RZC_JeepCarEQSet";
                 break;
             case FinalCanbus.CAR_439_OuDi_MZD_ALL /* 2097591 */:
             case FinalCanbus.CAR_439_BNR_MZD_ALL /* 8061367 */:
-                cls = MazdAllIndexAct.class;
+                name = "com.syu.carinfo.od.mazdall.MazdAllIndexAct";
                 break;
             case FinalCanbus.CAR_DJ_XP1_ParkAvenue /* 2162713 */:
-                cls = DjXp1_ParkAvenue_25to33_info.class;
+                name = "com.syu.carinfo.xp.yinglang.DjXp1_ParkAvenue_25to33_info";
                 break;
             case FinalCanbus.CAR_439_RZC_ZhongTaiT500 /* 2163127 */:
             case FinalCanbus.CAR_439_RZC_ZhongTaiT300 /* 2228663 */:
@@ -4489,46 +4017,46 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_439_RZC_ZhongTaiSR9_H /* 2359735 */:
             case FinalCanbus.CAR_452_RZC_ZHongtai_JunmaS70 /* 5571012 */:
             case FinalCanbus.CAR_RZC_ZhongTaiDaMaiX7 /* 14614967 */:
-                cls = RzcChanganIndexAct.class;
+                name = "com.syu.carinfo.rzc.zhongtai.RzcChanganIndexAct";
                 break;
             case FinalCanbus.CAR_453_LZ_GM_Camaro_17 /* 2163141 */:
             case FinalCanbus.CAR_453_LZ_GM_GMC_TERRAIN_17 /* 2228677 */:
             case FinalCanbus.CAR_453_LZ_GM_Equinox_17 /* 2294213 */:
             case FinalCanbus.CAR_454_LZ_GM_Camaro_17_Auto /* 6947270 */:
             case FinalCanbus.CAR_454_LZ_GM_Equinox_17_Auto /* 7012806 */:
-                cls = OD_NissanXimaIndexAct.class;
+                name = "com.syu.carinfo.rzc.xima.OD_NissanXimaIndexAct";
                 break;
             case FinalCanbus.CAR_BNR_12Crown_M /* 2228621 */:
             case FinalCanbus.CAR_BNR_12Crown_H /* 2294157 */:
-                cls = Acti_Crow_Amp_Bnr.class;
+                name = "com.syu.carinfo.bnr.Acti_Crow_Amp_Bnr";
                 break;
             case FinalCanbus.CAR_452_XP_Megane4_SP_L_HAND /* 2228676 */:
             case FinalCanbus.CAR_452_XP_Megane4_SP_L_AUTO /* 2294212 */:
             case FinalCanbus.CAR_452_XP_Megane4_SP_H_AUTO /* 2359748 */:
-                cls = XPMeganeCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.XPMeganeCarInfo";
                 break;
             case FinalCanbus.CAR_455_OD_Dongfeng_Racing_EC75_23H /* 2294215 */:
-                cls = ODRuichiEC75CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODRuichiEC75CarSet";
                 break;
             case FinalCanbus.CAR_453_LZ_Benz_C200 /* 2359749 */:
-                cls = LuzBenzC200CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.LuzBenzC200CarSet";
                 break;
             case FinalCanbus.CAR_455_LZ_MZD_CX30_Sreen /* 2359751 */:
             case FinalCanbus.CAR_455_LZ_MZD_Axela_Sreen /* 2425287 */:
             case FinalCanbus.CAR_455_LZ_MZD_CX5_Sreen /* 2490823 */:
-                cls = LZNewAllMazdaSetFunc.class;
+                name = "com.syu.carinfo.zhtd.bmw.LZNewAllMazdaSetFunc";
                 break;
             case FinalCanbus.CAR_Lada_2019Westa /* 2490388 */:
-                cls = LadaSettingsAct.class;
+                name = "com.syu.carinfo.camry2012.xp.LadaSettingsAct";
                 break;
             case FinalCanbus.CAR_452_HC_Nissan_XiaoKe_H /* 2556356 */:
-                cls = Nissan_Xiaoke_XinCheng_CarTire.class;
+                name = "com.syu.carinfo.xincheng.infiniti.Nissan_Xiaoke_XinCheng_CarTire";
                 break;
             case FinalCanbus.CAR_455_OUDI_Aiying_BYD_ALL /* 2556359 */:
-                cls = BYDAiyingIndexAct.class;
+                name = "com.syu.carinfo.byd.hcy.BYDAiyingIndexAct";
                 break;
             case FinalCanbus.CAR_XP1_TOYOTA_TR1151 /* 2621460 */:
-                cls = CamryIndexAct_ZH.class;
+                name = "com.syu.carinfo.camry.zh.CamryIndexAct_ZH";
                 break;
             case FinalCanbus.CAR_439_RZC_JiangHuai_IEV6 /* 2621879 */:
             case FinalCanbus.CAR_439_RZC_JiangHuai_ALL /* 2687415 */:
@@ -4544,21 +4072,21 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_RZC_Jianghuai_IEV7S_H /* 10944964 */:
             case FinalCanbus.CAR_439_RZC_JiangHuai_IEV6_19Low /* 11338167 */:
             case FinalCanbus.CAR_439_RZC_JiangHuai_IEV6_18Low /* 11403703 */:
-                cls = RzcJianghuaiIndexAct.class;
+                name = "com.syu.carinfo.rzc.jianghuai.RzcJianghuaiIndexAct";
                 break;
             case FinalCanbus.CAR_452_XC_Nissan_Tul /* 2621892 */:
-                cls = XCTuleIndexAct.class;
+                name = "com.syu.carinfo.xc.tule.XCTuleIndexAct";
                 break;
             case FinalCanbus.CAR_452_LZ_Bentley_Bentayga /* 2621893 */:
             case FinalCanbus.CAR_455_LUZ_Nissan_GTR_EN /* 2621895 */:
             case FinalCanbus.CAR_439_LUZ_Nissan_GTR /* 13566391 */:
-                cls = LuzNissanGTRIndexAct.class;
+                name = "com.syu.carinfo.lz.nissan.gtr.LuzNissanGTRIndexAct";
                 break;
             case FinalCanbus.CAR_DJ_GM_Kopach /* 2687001 */:
-                cls = DJGMKopachBasicInfoAct.class;
+                name = "com.syu.carinfo.klc.DJGMKopachBasicInfoAct";
                 break;
             case FinalCanbus.CAR_444_WC2_JMC_Fusun_24 /* 2687420 */:
-                cls = WC2FordLincoinCarSettingsAct.class;
+                name = "com.syu.carinfo.wc2.ford.WC2FordLincoinCarSettingsAct";
                 break;
             case FinalCanbus.CAR_453_LZ_Nissan_Teana_03 /* 2687429 */:
             case FinalCanbus.CAR_453_LZ_Nissan_Teana_03_H /* 2752965 */:
@@ -4578,10 +4106,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_ALL_GM_11CorsaD_CD /* 6225981 */:
             case FinalCanbus.CAR_RZC_ALL_GM_08Combo_CD /* 6291517 */:
             case FinalCanbus.CAR_454_LZ_Nissan_05_Cima /* 9044422 */:
-                cls = GmAndraIndexActi.class;
+                name = "com.syu.carinfo.rzc.andra.GmAndraIndexActi";
                 break;
             case FinalCanbus.CAR_454_OD_Changan_Lumin /* 2687430 */:
-                cls = ODChanganLuminCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODChanganLuminCarSet";
                 break;
             case FinalCanbus.CAR_444_WC2_Nissan_Yunche_Ruiqi7 /* 2752956 */:
             case FinalCanbus.CAR_454_Sanwu_Nissan_TRAIL_2014_Auto /* 2752966 */:
@@ -4595,17 +4123,17 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_Sanwu_Nissan_Tiida_2011_Auto /* 3277254 */:
             case FinalCanbus.CAR_454_Sanwu_Nissan_Tiida_2011_Hand /* 3342790 */:
             case FinalCanbus.CAR_454_Sanwu_Nissan_307Z_2008_Auto /* 3408326 */:
-                cls = Acti_Nissan_Sanwu.class;
+                name = "com.syu.carinfo.bnr.Acti_Nissan_Sanwu";
                 break;
             case FinalCanbus.CAR_439_RZC_ChangAn_ALL_1 /* 2818487 */:
             case FinalCanbus.CAR_439_RZC_ChangAn_ALL_2 /* 2884023 */:
             case FinalCanbus.CAR_439_RZC_ChangAn_ALL_3 /* 2949559 */:
             case FinalCanbus.CAR_439_RZC_ChangAn_ALL_4 /* 3015095 */:
-                cls = RzcChanganAllIndexAct.class;
+                name = "com.syu.carinfo.rzc.changan.RzcChanganAllIndexAct";
                 break;
             case FinalCanbus.CAR_455_XP_ZH2_Pilotcar_P133 /* 2884039 */:
             case FinalCanbus.CAR_455_6606_RZC_VinFast_PLUS_23 /* 2949575 */:
-                cls = YL6606NewVinFanAllSetFunc.class;
+                name = "com.syu.carinfo.zhtd.bmw.YL6606NewVinFanAllSetFunc";
                 break;
             case FinalCanbus.CAR_ZX_6606_HONDA_10Yage /* 3014954 */:
             case FinalCanbus.CAR_ZX_6606_HONDA_10Yage_H /* 3080490 */:
@@ -4618,22 +4146,22 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_CZH_RZC_HONDA_10Yage /* 5701930 */:
             case FinalCanbus.CAR_CZH_RZC_HONDA_Haoying /* 5767466 */:
             case FinalCanbus.CAR_CZH_RZC_HONDA_CRV /* 5833002 */:
-                cls = ZX6606HondaIndexActi.class;
+                name = "com.syu.carinfo.zx6606.ZX6606HondaIndexActi";
                 break;
             case FinalCanbus.CAR_WC2_Honda_17Acura_MDX /* 3014977 */:
             case FinalCanbus.CAR_WC2_CG_Honda_16Civic /* 5505345 */:
             case FinalCanbus.CAR_WC2_CG_Honda_16Civic_H /* 5570881 */:
-                cls = HondaIndexActi.class;
+                name = "com.syu.carinfo.honda.HondaIndexActi";
                 break;
             case FinalCanbus.CAR_RZC_15Ruijie_CD /* 3146062 */:
-                cls = FordRuijieCDIndexAct.class;
+                name = "com.syu.carinfo.ford.FordRuijieCDIndexAct";
                 break;
             case FinalCanbus.CAR_455_LZ_BBA_LUXFT_FN /* 3146183 */:
             case FinalCanbus.CAR_453_LZ_BBA_All /* 5112261 */:
             case FinalCanbus.CAR_454_LZ_Ford_Screen /* 9503174 */:
             case FinalCanbus.CAR_454_LZ_BBA_All /* 9568710 */:
             case FinalCanbus.CAR_454_LZ_BBA_All_LOW /* 16122310 */:
-                cls = ZhtdBmwIndexFunc.class;
+                name = "com.syu.carinfo.zhtd.bmw.ZhtdBmwIndexFunc";
                 break;
             case FinalCanbus.CAR_453_RZC_MZD_3_20 /* 3211717 */:
             case FinalCanbus.CAR_453_RZC_MZD_ATZ_20 /* 3277253 */:
@@ -4647,44 +4175,44 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_RZC_MZD_CX5_19 /* 15073719 */:
             case FinalCanbus.CAR_RZC_MZD_CX5_17_ML /* 15139255 */:
             case FinalCanbus.CAR_RZC_MZD_CX3_15_ML /* 15204791 */:
-                cls = Rzc_Mazda_IndexAct.class;
+                name = "com.syu.carinfo.rzc.mazda.Rzc_Mazda_IndexAct";
                 break;
             case FinalCanbus.CAR_455_OD_ChangAn_CS95_H /* 3277255 */:
             case FinalCanbus.CAR_439_OD_ChangAn_CS95 /* 7930295 */:
-                cls = ODChanganCS95AllSetAct.class;
+                name = "com.syu.carinfo.rzc.changan.ODChanganCS95AllSetAct";
                 break;
             case FinalCanbus.CAR_RZC_LHT_Ford_F150_10 /* 3342670 */:
             case FinalCanbus.CAR_RZC_LHT_Ford_F150_12 /* 3408206 */:
             case FinalCanbus.CAR_RZC_LHT_Ford_F150_10_Auto /* 3473742 */:
             case FinalCanbus.CAR_RZC_LHT_Ford_F150_12_Auto /* 3539278 */:
-                cls = FordCarSet_RZC.class;
+                name = "com.syu.carinfo.ford.FordCarSet_RZC";
                 break;
             case FinalCanbus.CAR_454_Sanwu_Nissan_QX56_2004_Auto /* 3473862 */:
-                cls = SanwuNissanAllCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.SanwuNissanAllCarSet";
                 break;
             case FinalCanbus.CAR_439_HC_CHRYSLER_H /* 3539383 */:
-                cls = ChryslerCarEqActi.class;
+                name = "com.syu.carinfo.hc.chrysler.ChryslerCarEqActi";
                 break;
             case FinalCanbus.CAR_443_WC2_BENZ_19Sprinter /* 3539387 */:
             case FinalCanbus.CAR_443_WC2_BENZ_C200_08 /* 14221755 */:
             case FinalCanbus.CAR_443_WC2_BENZ_C200_08_CD /* 14287291 */:
-                cls = WCBenzSprinterCarSet.class;
+                name = "com.syu.carinfo.wc.benz.WCBenzSprinterCarSet";
                 break;
             case FinalCanbus.CAR_452_RZC_ZhongTaiDaMai_X5 /* 3539396 */:
-                cls = RzcChanganTireAct.class;
+                name = "com.syu.carinfo.rzc.zhongtai.RzcChanganTireAct";
                 break;
             case FinalCanbus.CAR_439_HC_VOLVO /* 3604919 */:
-                cls = IndexAct_Hc_volvo.class;
+                name = "com.syu.carinfo.hc.volvo.IndexAct_Hc_volvo";
                 break;
             case FinalCanbus.CAR_443_WC2_Feiyate_Fiorino /* 3604923 */:
-                cls = FYTOilMileIndexActi.class;
+                name = "com.syu.carinfo.wc.feiyate.FYTOilMileIndexActi";
                 break;
             case FinalCanbus.CAR_452_XC_08_Yage /* 3604932 */:
             case FinalCanbus.CAR_452_XC_Honda_SPIRIOR_09_13 /* 6291908 */:
             case FinalCanbus.CAR_452_XC_Honda_Crosstour_11_12 /* 6357444 */:
             case FinalCanbus.CAR_439_XBS_08_Yage /* 9175479 */:
             case FinalCanbus.CAR_452_WC_Honda_Yage8 /* 12321220 */:
-                cls = XBS08YageIndexAct.class;
+                name = "com.syu.carinfo.xbs.yage8.XBS08YageIndexAct";
                 break;
             case FinalCanbus.CAR_443_WC2_Feiyate_Doblo /* 3670459 */:
             case FinalCanbus.CAR_443_WC2_Feiyate_Egea /* 3735995 */:
@@ -4731,7 +4259,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC2_Feiyate_Panda_15_H /* 13500859 */:
             case FinalCanbus.CAR_443_WC2_Feiyate_500L_15_H /* 13566395 */:
             case FinalCanbus.CAR_443_WC2_Feiyate_All_Brazil /* 14090683 */:
-                cls = WCFeiyateIndexAct.class;
+                name = "com.syu.carinfo.wc.feiyate.WCFeiyateIndexAct";
                 break;
             case FinalCanbus.CAR_452_LZ_Jaguar_XK /* 3670468 */:
             case FinalCanbus.CAR_452_LZ_Jaguar_F_TYPE /* 6881732 */:
@@ -4742,26 +4270,26 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_OD_Nissan_ELGRAND /* 3670470 */:
             case FinalCanbus.CAR_454_OD_Nissan_ELGRAND_H /* 3736006 */:
             case FinalCanbus.CAR_452_OD_Nissan_QUEST /* 5636548 */:
-                cls = ODNissanQuystCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODNissanQuystCarSet";
                 break;
             case FinalCanbus.CAR_439_HCY_BYD_E6_H /* 3735991 */:
             case FinalCanbus.CAR_439_HCY_BYD_S6_H /* 6750647 */:
-                cls = Activity_HCY_BYD_S7.class;
+                name = "com.syu.carinfo.byd.hcy.Activity_HCY_BYD_S7";
                 break;
             case FinalCanbus.CAR_452_OD_WeiCai_U70_20 /* 3736004 */:
-                cls = ODWeiChaiU70CarInfo.class;
+                name = "com.syu.carinfo.oudi.ODWeiChaiU70CarInfo";
                 break;
             case FinalCanbus.CAR_443_WC2_Nazhijie_U6 /* 3801531 */:
-                cls = WCNazhijieU6CarSet.class;
+                name = "com.syu.carinfo.wc2.nazhijie.WCNazhijieU6CarSet";
                 break;
             case FinalCanbus.CAR_452_OD_BMW_Mini_14_20 /* 3867076 */:
-                cls = ODBMWMiniIndexAct.class;
+                name = "com.syu.carinfo.od.bmw.ODBMWMiniIndexAct";
                 break;
             case FinalCanbus.CAR_439_XBS_09Tianlai /* 4063671 */:
-                cls = XBS09TianlaiIndexAct.class;
+                name = "com.syu.carinfo.xbs.tianlai.XBS09TianlaiIndexAct";
                 break;
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_15Q70_All /* 4063675 */:
-                cls = WcInfinitCarTire.class;
+                name = "com.syu.carinfo.wc.infeinidi.WcInfinitCarTire";
                 break;
             case FinalCanbus.CAR_454_OD_Beijing_X3_18 /* 4063686 */:
             case FinalCanbus.CAR_454_OD_Beijing_X5_18 /* 4129222 */:
@@ -4775,23 +4303,23 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_439_OUDI_Beiqi_EC180 /* 14221751 */:
             case FinalCanbus.CAR_439_OUDI_Beiqi_EC220 /* 14287287 */:
             case FinalCanbus.CAR_439_OUDI_Beiqi_EU5 /* 14352823 */:
-                cls = ActivityODBeiqiECIndex.class;
+                name = "com.syu.carinfo.oudi.beiqi.ActivityODBeiqiECIndex";
                 break;
             case FinalCanbus.CAR_WC2_GM_Kopach_12 /* 4128804 */:
-                cls = WcGMKopachBasicInfoAct.class;
+                name = "com.syu.carinfo.klc.WcGMKopachBasicInfoAct";
                 break;
             case FinalCanbus.CAR_439_HC_RongWei950 /* 4129207 */:
-                cls = Hc_Rongwei950_IndexAct.class;
+                name = "com.syu.carinfo.hc.rongwei950.Hc_Rongwei950_IndexAct";
                 break;
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_15Q70 /* 4129211 */:
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_16Q50l_SP /* 5308859 */:
             case FinalCanbus.CAR_443_WC_12Cedric /* 7209403 */:
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_14Q50_L /* 8651195 */:
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_20QX60 /* 15204795 */:
-                cls = WcInfeonidiIndexAct.class;
+                name = "com.syu.carinfo.wc.infeinidi.WcInfeonidiIndexAct";
                 break;
             case FinalCanbus.CAR_439_BNR_ARRIZO /* 4194743 */:
-                cls = BNR_Arrizo_CarSettingAct.class;
+                name = "com.syu.carinfo.bnr.arrizo.BNR_Arrizo_CarSettingAct";
                 break;
             case FinalCanbus.CAR_452_OD_BMW_120 /* 4194756 */:
             case FinalCanbus.CAR_452_OD_BMW_130 /* 4260292 */:
@@ -4801,15 +4329,15 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_OD_BMW_X1 /* 4522436 */:
             case FinalCanbus.CAR_452_OD_BMW_E90 /* 4587972 */:
             case FinalCanbus.CAR_452_OD_BMW_E60 /* 4653508 */:
-                cls = ODBMWMiniIndexAct.class;
+                name = "com.syu.carinfo.od.bmw.ODBMWMiniIndexAct";
                 break;
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_14QX60_SP /* 4260283 */:
             case FinalCanbus.CAR_439_RZC_LufengXiaoyao /* 4325815 */:
-                cls = RZCLufengXiaoyaoIndexAct.class;
+                name = "com.syu.carinfo.rzc.lufengxiaoyao.RZCLufengXiaoyaoIndexAct";
                 break;
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_16Q50l /* 4325819 */:
             case FinalCanbus.CAR_443_WC2_YingFeiNiDi_10G37 /* 4587963 */:
-                cls = WcInfeinidiCarSet.class;
+                name = "com.syu.carinfo.wc.infeinidi.WcInfeinidiCarSet";
                 break;
             case FinalCanbus.CAR_439_RZC_BenzAll /* 4456887 */:
             case FinalCanbus.CAR_439_RZC_BenzAll_H /* 4522423 */:
@@ -4839,39 +4367,39 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_RZC_Benz_SLK200_11 /* 12845508 */:
             case FinalCanbus.CAR_452_RZC_Benz_E260_10 /* 13500868 */:
             case FinalCanbus.CAR_452_RZC_Benz_CLK_06 /* 13566404 */:
-                cls = RzcBenzCCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.RzcBenzCCarSet";
                 break;
             case FinalCanbus.CAR_439_HC_Qiya_KaiZunK7 /* 4719031 */:
-                cls = HCQiyaKaizunK7Audio.class;
+                name = "com.syu.carinfo.hc.qiyakaizunk7.HCQiyaKaizunK7Audio";
                 break;
             case FinalCanbus.CAR_443_WC2_Tianlai08_12_CD /* 4719035 */:
             case FinalCanbus.CAR_443_WC2_Tianlai08_12_CD_HW /* 4915643 */:
-                cls = WC08TianlaiIndexAct.class;
+                name = "com.syu.carinfo.wc.tianlaicd.WC08TianlaiIndexAct";
                 break;
             case FinalCanbus.CAR_453_RZC_SWM_G01_22 /* 4784581 */:
             case FinalCanbus.CAR_453_RZC_SWM_G05Pro_22 /* 5964229 */:
             case FinalCanbus.CAR_452_RZC_SWM_G01_21_Low /* 11338180 */:
             case FinalCanbus.CAR_439_RZC_SWM_G01 /* 13894071 */:
             case FinalCanbus.CAR_439_RZC_SWM_G01_19 /* 15729079 */:
-                cls = RZCSiWeiCarSet.class;
+                name = "com.syu.carinfo.rzc.siwei.RZCSiWeiCarSet";
                 break;
             case FinalCanbus.CAR_439_RZC_CanAdd1 /* 4850103 */:
-                cls = RZC_0255_FengShenAx7_IndexAct.class;
+                name = "com.syu.carinfo.rzc.hantengx5.RZC_0255_FengShenAx7_IndexAct";
                 break;
             case FinalCanbus.CAR_453_OD_BQ_BJ80 /* 4850117 */:
-                cls = ODBeiqiBJ80CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODBeiqiBJ80CarSet";
                 break;
             case FinalCanbus.CAR_439_RZC_TuDa /* 4915639 */:
             case FinalCanbus.CAR_439_RZC_TuDa_Hand /* 11207095 */:
-                cls = RzcNissanTudaInTireAct.class;
+                name = "com.syu.carinfo.rzc.nissa_tuda.RzcNissanTudaInTireAct";
                 break;
             case FinalCanbus.CAR_452_LZ_Jaguar_XF /* 4915652 */:
             case FinalCanbus.CAR_452_LZ_Jaguar_XF_09 /* 6029764 */:
-                cls = LuzJaguarXFCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.LuzJaguarXFCarSet";
                 break;
             case FinalCanbus.CAR_453_RZC_Mclaren_16_560S /* 4915653 */:
             case FinalCanbus.CAR_453_RZC_Mclaren_19_720S /* 4981189 */:
-                cls = RZCMclarenCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCMclarenCarSet";
                 break;
             case FinalCanbus.CAR_439_XFY_SanLing_13Oulande_H /* 4981175 */:
             case FinalCanbus.CAR_439_XFY_SanLing_17Oulande_H /* 5046711 */:
@@ -4879,7 +4407,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_439_XFY_SanLing_13Oulande_Low /* 5177783 */:
             case FinalCanbus.CAR_439_XFY_SanLing_17Oulande_Low /* 5243319 */:
             case FinalCanbus.CAR_439_XFY_SanLing_Tai_Pajieluo_Low /* 5308855 */:
-                cls = XFYSanLingAllEQAct.class;
+                name = "com.syu.carinfo.xfy.sanlingall.XFYSanLingAllEQAct";
                 break;
             case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKZ /* 4981179 */:
             case FinalCanbus.CAR_443_WC2_Ford_Lincoln_MKC /* 5046715 */:
@@ -4901,10 +4429,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC2_Ford_Mustang_18_L /* 16253371 */:
             case FinalCanbus.CAR_443_WC2_Ford_Mustang_18_M /* 16318907 */:
             case FinalCanbus.CAR_443_WC2_Ford_Mustang_18_H /* 16384443 */:
-                cls = WC2FordLincoinIndexAct.class;
+                name = "com.syu.carinfo.wc2.ford.WC2FordLincoinIndexAct";
                 break;
             case FinalCanbus.CAR_452_DJ_Dodge_JCUV /* 4981188 */:
-                cls = DjDodgeCarSet.class;
+                name = "com.syu.carinfo.dj.dodge.DjDodgeCarSet";
                 break;
             case FinalCanbus.CAR_BNR_Toyota_14Tundra /* 5177741 */:
             case FinalCanbus.CAR_BNR_Toyota_14Tundra_AUTO /* 5243277 */:
@@ -4930,10 +4458,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_PA_BNR_Toyota_TACOMA_10_AMP /* 6685069 */:
             case FinalCanbus.CAR_PA_BNR_Toyota_10Tundra_AMP /* 6750605 */:
             case FinalCanbus.CAR_PA_BNR_Toyota_Sequoia_AMP /* 6816141 */:
-                cls = PAToyotaAllIndexActi.class;
+                name = "com.syu.carinfo.xp.ziyouguang.PAToyotaAllIndexActi";
                 break;
             case FinalCanbus.CAR_452_OD_Porsche_15_20 /* 5177796 */:
-                cls = ODPorscheIndexAct.class;
+                name = "com.syu.carinfo.od.porsche.ODPorscheIndexAct";
                 break;
             case FinalCanbus.CAR_453_LZ_NISSAN_patrol /* 5308869 */:
             case FinalCanbus.CAR_453_LZ_YinFeiNiDi_QX60 /* 5374405 */:
@@ -4946,32 +4474,32 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_LZ_Infinite_Qx56_08_H /* 15794630 */:
             case FinalCanbus.CAR_454_LZ_Infinite_Qx56_08_TW /* 15860166 */:
             case FinalCanbus.CAR_454_LZ_Infinite_Qx56_08_H_NP /* 15925702 */:
-                cls = LZ_NIssanInfinitiIndexAct.class;
+                name = "com.syu.carinfo.rzc.xima.LZ_NIssanInfinitiIndexAct";
                 break;
             case FinalCanbus.CAR_443_WC2_TATA_HEXA /* 5374395 */:
             case FinalCanbus.CAR_443_WC2_TATA_NWXON /* 5439931 */:
             case FinalCanbus.CAR_443_WC2_TATA_Altroz /* 11927995 */:
             case FinalCanbus.CAR_443_WC2_TATA_Tiago /* 11993531 */:
-                cls = WC2TataCarSet.class;
+                name = "com.syu.carinfo.wc2.tata.WC2TataCarSet";
                 break;
             case FinalCanbus.CAR_453_LZ_Chrysler_300C_15 /* 5571013 */:
             case FinalCanbus.CAR_453_LZ_Maserati_Levante_18 /* 5636549 */:
             case FinalCanbus.CAR_454_LZ_Chrysler_300C_15_Daohang /* 7078342 */:
-                cls = LuZMaserati300CCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.LuZMaserati300CCarSet";
                 break;
             case FinalCanbus.CAR_452_OD_ChangfengLiebao_CS9 /* 5702084 */:
             case FinalCanbus.CAR_452_OD_ChangfengLiebao_CS9_Auto /* 5833156 */:
             case FinalCanbus.CAR_454_OD_Qichen_D60_EV /* 9961926 */:
             case FinalCanbus.CAR_453_PA_Ford_Mustang_10 /* 5767621 */:
             case FinalCanbus.CAR_452_PA_Ford_F150_10 /* 15598020 */:
-                cls = PAFord_FunctionlActi.class;
+                name = "com.syu.carinfo.xp.ziyouguang.PAFord_FunctionlActi";
                 break;
             case FinalCanbus.CAR_453_DJ_Nissan_NOCD /* 5833157 */:
             case FinalCanbus.CAR_453_DJ_Nissan_NOCD_H /* 5898693 */:
-                cls = djTianlaiAudio.class;
+                name = "com.syu.carinfo.daojun.tianlai.djTianlaiAudio";
                 break;
             case FinalCanbus.CAR_452_LZ_TATA_ALL /* 5898692 */:
-                cls = LuzTATACarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.LuzTATACarSet";
                 break;
             case FinalCanbus.CAR_439_RZC_YinFeiNiDi_QX50 /* 6029751 */:
             case FinalCanbus.CAR_454_RZC_YinFeiNiDi_QX70_13 /* 6685126 */:
@@ -4981,7 +4509,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_RZC_YinFeiNiDi_FX37_13 /* 10224070 */:
             case FinalCanbus.CAR_454_RZC_YinFeiNiDi_QX70_15 /* 10289606 */:
             case FinalCanbus.CAR_454_RZC_YinFeiNiDi_QX37_11 /* 10355142 */:
-                cls = Rzc_YingFeiNiDi_GX50_CarSettingAct.class;
+                name = "com.syu.carinfo.rzc.yingfeinidi_gx50.Rzc_YingFeiNiDi_GX50_CarSettingAct";
                 break;
             case FinalCanbus.CAR_443_WC2_Mahindra_SCORPIO /* 6029755 */:
             case FinalCanbus.CAR_443_WC2_Mahindra_SCORPIO_9 /* 9634235 */:
@@ -4989,34 +4517,34 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC2_Mahindra_TUV300 /* 9765307 */:
             case FinalCanbus.CAR_443_WC2_Mahindra_KUV100 /* 9830843 */:
             case FinalCanbus.CAR_443_WC2_Mahindra_THAR /* 9896379 */:
-                cls = WC2MHDCarSet.class;
+                name = "com.syu.carinfo.wc2.tata.WC2MHDCarSet";
                 break;
             case FinalCanbus.CAR_452_OD_Nissan_Tule_low /* 6095300 */:
-                cls = XCTuleIndexAct.class;
+                name = "com.syu.carinfo.xc.tule.XCTuleIndexAct";
                 break;
             case FinalCanbus.CAR_452_OD_Zhonghua_V6_18 /* 6160836 */:
             case FinalCanbus.CAR_454_OD_Zhonghua_V7 /* 14221766 */:
             case FinalCanbus.CAR_454_OD_Zhonghua_V7_H /* 14287302 */:
-                cls = ODZhonghuaV6CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODZhonghuaV6CarSet";
                 break;
             case FinalCanbus.CAR_453_RZC_LandRover_Discovery_19 /* 6160837 */:
             case FinalCanbus.CAR_454_RZC_LandRover_Discovery_04 /* 9765318 */:
-                cls = TDLandRoverIndexAct.class;
+                name = "com.syu.carinfo.lz.jaguar.TDLandRoverIndexAct";
                 break;
             case FinalCanbus.CAR_452_Xinchi_Dodge_JCUV /* 6226372 */:
             case FinalCanbus.CAR_454_OD_Maserati_Ghibli_14 /* 14025158 */:
             case FinalCanbus.CAR_454_OD_Maserati_Quattroporte_13 /* 14090694 */:
             case FinalCanbus.CAR_439_XC_Feiyate_Feiyue /* 15532471 */:
-                cls = XCFeiyateFeiyueSetFunc.class;
+                name = "com.syu.carinfo.xc.feiyatefeiyue.XCFeiyateFeiyueSetFunc";
                 break;
             case FinalCanbus.CAR_453_OD_WeiMa_EX5 /* 6226373 */:
-                cls = ODWeimaEx5IndexAct.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODWeimaEx5IndexAct";
                 break;
             case FinalCanbus.CAR_453_OD_Zhidou_15 /* 6291909 */:
-                cls = ODZhidouEVCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODZhidouEVCarInfo";
                 break;
             case FinalCanbus.CAR_439_HC_14OUBAO_CD /* 6357431 */:
-                cls = IndexAct_Hc_14Oubao.class;
+                name = "com.syu.carinfo.hc.oubao.IndexAct_Hc_14Oubao";
                 break;
             case FinalCanbus.CAR_453_KYC_Toyota_Lexus_LX570_07_MO /* 6357445 */:
             case FinalCanbus.CAR_453_KYC_Toyota_Lexus_LX570_07_TX /* 6422981 */:
@@ -5026,7 +4554,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_453_KYC_Toyota_Lexus_GX_10_TX /* 6685125 */:
             case FinalCanbus.CAR_453_KYC_Toyota_Lexus_GX_14_MO /* 6750661 */:
             case FinalCanbus.CAR_453_KYC_Toyota_Lexus_GX_14_TX /* 6816197 */:
-                cls = KYCToyotaAllCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet";
                 break;
             case FinalCanbus.CAR_452_XC_Ford_Escape_13_17 /* 6422980 */:
             case FinalCanbus.CAR_452_XC_Ford_edge_11_13 /* 6488516 */:
@@ -5034,44 +4562,44 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_XC_Ford_edge_15_17 /* 6619588 */:
             case FinalCanbus.CAR_452_XC_Ford_Mondeo_13_18 /* 6685124 */:
             case FinalCanbus.CAR_439_HC_Ford_Explorer /* 15335863 */:
-                cls = HcFordExplorerIndexAct.class;
+                name = "com.syu.carinfo.hechi.fordexplorer.HcFordExplorerIndexAct";
                 break;
             case FinalCanbus.CAR_439_AY_BYD_Sirui /* 6619575 */:
-                cls = Activity_OD_Aiying_BYD_Sirui.class;
+                name = "com.syu.carinfo.byd.hcy.Activity_OD_Aiying_BYD_Sirui";
                 break;
             case FinalCanbus.CAR_452_OD_chevrolet_Captiva /* 6750660 */:
-                cls = RzcChanganIndexAct.class;
+                name = "com.syu.carinfo.rzc.zhongtai.RzcChanganIndexAct";
                 break;
             case FinalCanbus.CAR_439_HC_Ruijie /* 6816183 */:
             case FinalCanbus.CAR_439_HC_Ruijie_H /* 6881719 */:
-                cls = XCFordRuijieEQAct.class;
+                name = "com.syu.carinfo.hc.ruijie.XCFordRuijieEQAct";
                 break;
             case FinalCanbus.CAR_452_OD_Zotye_T700 /* 6816196 */:
             case FinalCanbus.CAR_452_OD_Zhongtai_Z700_H /* 12386756 */:
             case FinalCanbus.CAR_452_OD_Zhongtai_Z700 /* 12452292 */:
-                cls = Activity_OD_Zotye_T700.class;
+                name = "com.syu.carinfo.byd.hcy.Activity_OD_Zotye_T700";
                 break;
             case FinalCanbus.CAR_454_RZC_Sprinter_22 /* 6881734 */:
-                cls = SanlinIndexAct.class;
+                name = "com.syu.carinfo.rzc.sanlin.SanlinIndexAct";
                 break;
             case FinalCanbus.CAR_443_WC2_UAZ_Patriot /* 6947259 */:
-                cls = WCUAZPatriotCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.WCUAZPatriotCarSet";
                 break;
             case FinalCanbus.CAR_443_WC_14Aodesai_CD /* 7078331 */:
-                cls = ActivitySiYuIndex.class;
+                name = "com.syu.carinfo.honda.ActivitySiYuIndex";
                 break;
             case FinalCanbus.CAR_452_XBS_Nissan_Cedric /* 7143876 */:
-                cls = XBSNissanCedricCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.XBSNissanCedricCarSet";
                 break;
             case FinalCanbus.CAR_454_OD_Futon_TOANO /* 7143878 */:
-                cls = ODFotonTOANOSetFunc.class;
+                name = "com.syu.carinfo.rzc.baojun.ODFotonTOANOSetFunc";
                 break;
             case FinalCanbus.CAR_DJ_Yage_9 /* 7209399 */:
-                cls = DJYage9CarSet.class;
+                name = "com.syu.carinfo.rzc.yingfeinidi_gx50.DJYage9CarSet";
                 break;
             case FinalCanbus.CAR_452_RZC_Subaru /* 7209412 */:
             case FinalCanbus.CAR_454_RZC_Suburu_OUTBACK_18 /* 8323526 */:
-                cls = RZCSuburuCarSet.class;
+                name = "com.syu.carinfo.xp.suburu.RZCSuburuCarSet";
                 break;
             case FinalCanbus.CAR_443_WC_OPEL_Astra_04 /* 7274939 */:
             case FinalCanbus.CAR_443_WC_OPEL_Zafira_05 /* 7340475 */:
@@ -5085,13 +4613,13 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC_OPEL_Vectra_02_H /* 10617275 */:
             case FinalCanbus.CAR_443_WC_OPEL_Corsa_06_H /* 10682811 */:
             case FinalCanbus.CAR_443_WC_OPEL_Meriva_03_H /* 10748347 */:
-                cls = WCOPELCarIndexActi.class;
+                name = "com.syu.carinfo.opel.WCOPELCarIndexActi";
                 break;
             case FinalCanbus.CAR_452_RZC_Beiqi_BJ90 /* 7274948 */:
-                cls = RZCBeiqiBJ90CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCBeiqiBJ90CarSet";
                 break;
             case FinalCanbus.CAR_454_OD_Xinte_DEV1_H /* 7274950 */:
-                cls = ODXinteDEV1SetFunc.class;
+                name = "com.syu.carinfo.rzc.baojun.ODXinteDEV1SetFunc";
                 break;
             case FinalCanbus.CAR_454_RZC_Racing_EC75_23 /* 7340486 */:
             case FinalCanbus.CAR_454_OD_Dongfeng_Racing_EC75_23 /* 8454598 */:
@@ -5100,62 +4628,62 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_OD_WeiCai_EHPro_24 /* 11469254 */:
             case FinalCanbus.CAR_452_XC_Rongwei_ALl /* 7471556 */:
             case FinalCanbus.CAR_452_XC_GM_ALl /* 7537092 */:
-                cls = XC_GMandRongweiIndexAct.class;
+                name = "com.syu.carinfo.xc.gm.XC_GMandRongweiIndexAct";
                 break;
             case FinalCanbus.CAR_439_RZC_ZhongTaiSR7 /* 7537079 */:
-                cls = RzcChanganSetFunc.class;
+                name = "com.syu.carinfo.rzc.zhongtai.RzcChanganSetFunc";
                 break;
             case FinalCanbus.CAR_452_OD_LandRover_Freelander /* 7799236 */:
-                cls = ODFreeLanderCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODFreeLanderCarInfo";
                 break;
             case FinalCanbus.CAR_452_LZ_OUBao_Andela_CD /* 7864772 */:
-                cls = Luz_Oubao_IndexAct.class;
+                name = "com.syu.carinfo.luz.oubao.Luz_Oubao_IndexAct";
                 break;
             case FinalCanbus.CAR_452_OD_Lamborghini /* 7930308 */:
-                cls = OD_Lamborghini_PanelButton.class;
+                name = "com.syu.carinfo.oudi.OD_Lamborghini_PanelButton";
                 break;
             case FinalCanbus.CAR_453_LZ_ALFA_ROMEO /* 7930309 */:
-                cls = BnrGuanzhiIndexAct.class;
+                name = "com.syu.carinfo.bnr.guanzhi.BnrGuanzhiIndexAct";
                 break;
             case FinalCanbus.CAR_439_BNR_Rongwei_RX5 /* 7995831 */:
             case FinalCanbus.CAR_439_BNR_17_RONGWEI_I6 /* 10813879 */:
-                cls = ActivityBNRRongWeiRX5.class;
+                name = "com.syu.carinfo.rzc.mingjueruiteng.ActivityBNRRongWeiRX5";
                 break;
             case FinalCanbus.CAR_452_LZ_Volvo /* 7995844 */:
             case FinalCanbus.CAR_452_LZ_Volvo_15 /* 16515524 */:
-                cls = LuzVolvoCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.LuzVolvoCarSet";
                 break;
             case FinalCanbus.CAR_453_LZ_Ferrari_F12 /* 7995845 */:
-                cls = LZFerrariF12CarInfo.class;
+                name = "com.syu.carinfo.bnr.guanzhi.LZFerrariF12CarInfo";
                 break;
             case FinalCanbus.CAR_453_OD_BYD_Sirui /* 8061381 */:
             case FinalCanbus.CAR_439_OUDI_BYD_ALL /* 12976567 */:
             case FinalCanbus.CAR_454_CZH_OUDI_BYD_ALL /* 15663558 */:
-                cls = Activity_OD_BYD_ALL.class;
+                name = "com.syu.carinfo.byd.hcy.Activity_OD_BYD_ALL";
                 break;
             case FinalCanbus.CAR_453_LZ_Toyota_Tacoma_11 /* 8126917 */:
             case FinalCanbus.CAR_453_LZ_Toyota_Tacoma_05 /* 8192453 */:
-                cls = ToyotaLexusEQActi_Luz.class;
+                name = "com.syu.carinfo.camry.luz.ToyotaLexusEQActi_Luz";
                 break;
             case FinalCanbus.CAR_454_RZC_Guanzhi3_14 /* 8192454 */:
             case FinalCanbus.CAR_454_RZC_Guanzhi5_16 /* 8257990 */:
-                cls = LZ_Nissan08TeanaIndexAct.class;
+                name = "com.syu.carinfo.rzc.xima.LZ_Nissan08TeanaIndexAct";
                 break;
             case FinalCanbus.CAR_453_XP_OPEL /* 8257989 */:
-                cls = XP_Opel_Panel_New.class;
+                name = "com.syu.carinfo.opel.XP_Opel_Panel_New";
                 break;
             case FinalCanbus.CAR_452_OD_HuaChen_SWM_X7 /* 8323524 */:
             case FinalCanbus.CAR_452_OD_HuaChen_SWM_X7_H /* 8389060 */:
             case FinalCanbus.CAR_454_OD_HuaChen_SWM_Dahu /* 14614982 */:
             case FinalCanbus.CAR_452_OD_HuaChen_SWM_G05 /* 15335876 */:
             case FinalCanbus.CAR_452_OD_HuaChen_SWM_G05_H /* 15401412 */:
-                cls = ODHuachenSWMCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODHuachenSWMCarInfo";
                 break;
             case FinalCanbus.CAR_453_OD_Zhidou_15_D1 /* 8323525 */:
-                cls = ODZhidouD1EVCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODZhidouD1EVCarInfo";
                 break;
             case FinalCanbus.CAR_453_OD_Jili_Panda_Mini /* 8454597 */:
-                cls = ODJiliRuilanX3CarSettingsAct.class;
+                name = "com.syu.carinfo.jili.ODJiliRuilanX3CarSettingsAct";
                 break;
             case FinalCanbus.CAR_452_XC_LEXUS_ES250 /* 8520132 */:
             case FinalCanbus.CAR_452_XC_LEXUS_RX270 /* 8585668 */:
@@ -5163,7 +4691,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_XC_Lexus_CT200 /* 14483908 */:
             case FinalCanbus.CAR_452_XC_Lexus_NX200 /* 14549444 */:
             case FinalCanbus.CAR_452_XC_Lexus_RX350 /* 14614980 */:
-                cls = XCLexusIndexAct.class;
+                name = "com.syu.carinfo.xc.lexus.XCLexusIndexAct";
                 break;
             case FinalCanbus.CAR_454_OD_Shanqi_Delong_M3000S /* 8520134 */:
             case FinalCanbus.CAR_454_OD_Shanqi_Delong_L5000 /* 8585670 */:
@@ -5173,39 +4701,39 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_OD_Shanqi_Xuandeyi_9 /* 8847814 */:
             case FinalCanbus.CAR_454_OD_Shanqi_Zhiyun_E2 /* 8913350 */:
             case FinalCanbus.CAR_453_OD_Shanqi_ZHongka /* 15991237 */:
-                cls = ODShanqiZHongkaCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODShanqiZHongkaCarSet";
                 break;
             case FinalCanbus.CAR_439_XBS_NISSAN_TuLe_DZSJ /* 8716727 */:
-                cls = XBSTuleDZSJIndexAct.class;
+                name = "com.syu.carinfo.xbs.tule.XBSTuleDZSJIndexAct";
                 break;
             case FinalCanbus.CAR_452_XC_Nissan_Tule_CD /* 8716740 */:
-                cls = XCTuleCDIndexAct.class;
+                name = "com.syu.carinfo.xc.tule.XCTuleCDIndexAct";
                 break;
             case FinalCanbus.CAR_453_XC_BenZ_Smart /* 8716741 */:
-                cls = XCBenzSmartCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.XCBenzSmartCarSet";
                 break;
             case FinalCanbus.CAR_439_XBS_BYD_Song /* 8782263 */:
-                cls = Activity_XBS_BYD_Song.class;
+                name = "com.syu.carinfo.byd.hcy.Activity_XBS_BYD_Song";
                 break;
             case FinalCanbus.CAR_453_LZ_Jili_Boyue_18 /* 8782277 */:
             case FinalCanbus.CAR_453_LZ_Jili_Boyue_18_H /* 8847813 */:
-                cls = LZJiliBoyueCarSettingsAct.class;
+                name = "com.syu.carinfo.jili.LZJiliBoyueCarSettingsAct";
                 break;
             case FinalCanbus.CAR_452_ZH_Toyota_Proace /* 8847812 */:
-                cls = ZHToyotaProaceCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ZHToyotaProaceCarSet";
                 break;
             case FinalCanbus.CAR_452_DJ_Ford_Fiesta_09_15 /* 9044420 */:
             case FinalCanbus.CAR_452_DJ_Ford_Kuga_09_15 /* 9109956 */:
-                cls = DJFordFiestaCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.DJFordFiestaCarSet";
                 break;
             case FinalCanbus.CAR_439_OD_Opel_Adan /* 9109943 */:
-                cls = ODOpelAdanCarTire.class;
+                name = "com.syu.carinfo.oudi.ODOpelAdanCarTire";
                 break;
             case FinalCanbus.CAR_453_LZ_LandRover_13_CD /* 9175493 */:
             case FinalCanbus.CAR_453_LZ_LandRover_18_CD /* 9241029 */:
             case FinalCanbus.CAR_453_LZ_Jaguar_12_CD /* 9306565 */:
             case FinalCanbus.CAR_454_LZ_LandRover_CD_Discovery5 /* 13894086 */:
-                cls = LZNewLandRoverSetFunc.class;
+                name = "com.syu.carinfo.zhtd.bmw.LZNewLandRoverSetFunc";
                 break;
             case FinalCanbus.CAR_443_WC2_Proton_X50_22 /* 9306555 */:
             case FinalCanbus.CAR_443_WC2_Proton_X50_22_H /* 9372091 */:
@@ -5216,10 +4744,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC2_Proton_S70_24_H /* 16515515 */:
             case FinalCanbus.CAR_443_WC2_Proton_X90_24 /* 16581051 */:
             case FinalCanbus.CAR_443_WC2_Proton_X90_24_H /* 16646587 */:
-                cls = WCProtonAllCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.WCProtonAllCarSet";
                 break;
             case FinalCanbus.CAR_439_RZC_Sanlin_18Pajieluo_H /* 9634231 */:
-                cls = SanlinCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.SanlinCarSet";
                 break;
             case FinalCanbus.CAR_439_RCW_BYD_12_18Surui /* 9699767 */:
             case FinalCanbus.CAR_439_RCW_BYD_14_15G5 /* 9765303 */:
@@ -5228,16 +4756,16 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_439_RCW_BYD_16_19Song /* 9961911 */:
             case FinalCanbus.CAR_439_RCW_BYD_17_19SongMax /* 10027447 */:
             case FinalCanbus.CAR_439_RCW_BYD_12_17E6 /* 10092983 */:
-                cls = Activity_RCW_BYD_S7.class;
+                name = "com.syu.carinfo.byd.hcy.Activity_RCW_BYD_S7";
                 break;
             case FinalCanbus.CAR_454_RZC_Shanqi_DelongG2 /* 10027462 */:
-                cls = RZCShanqiDelongCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCShanqiDelongCarInfo";
                 break;
             case FinalCanbus.CAR_454_RZC_Changan_BenBen_22 /* 10158534 */:
-                cls = RzcChanganCX70TireAct.class;
+                name = "com.syu.carinfo.rzc.changan_cx70.RzcChanganCX70TireAct";
                 break;
             case FinalCanbus.CAR_452_OD_ChangfengLiebao_CS9_EV /* 10355140 */:
-                cls = ODChangfengCS9EVCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODChangfengCS9EVCarInfo";
                 break;
             case FinalCanbus.CAR_439_DJ_Haval_H8 /* 10420663 */:
             case FinalCanbus.CAR_439_DJ_Haval_H8_H /* 10486199 */:
@@ -5246,26 +4774,26 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_439_DJ_Haval_VV5 /* 15925700 */:
             case FinalCanbus.CAR_439_DJ_Haval_VV6 /* 15991236 */:
             case FinalCanbus.CAR_439_DJ_Haval_VV7 /* 16056772 */:
-                cls = Dj_0439_HavalH8_IndexAct.class;
+                name = "com.syu.carinfo.dj.havalh8.Dj_0439_HavalH8_IndexAct";
                 break;
             case FinalCanbus.CAR_452_DJ_Jianghuai_Sihao /* 10420676 */:
-                cls = DJJianghuaiSihaoCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.DJJianghuaiSihaoCarInfo";
                 break;
             case FinalCanbus.CAR_452_LZ_Nissan_Fuga /* 10551748 */:
-                cls = LZNissanFugaCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.LZNissanFugaCarInfo";
                 break;
             case FinalCanbus.CAR_454_OD_Futon_Dajiangjun /* 10551750 */:
             case FinalCanbus.CAR_439_OD_Futon_Tunland /* 16449975 */:
-                cls = ODFotonTunlandSetFunc.class;
+                name = "com.syu.carinfo.rzc.baojun.ODFotonTunlandSetFunc";
                 break;
             case FinalCanbus.CAR_452_KYC_Zhonghua_All /* 10617284 */:
             case FinalCanbus.CAR_452_KYC_Zhonghua_All_H /* 10682820 */:
             case FinalCanbus.CAR_452_KYC_Zhonghua_All_V7 /* 10748356 */:
             case FinalCanbus.CAR_452_KYC_Zhonghua_All_V7_H /* 10813892 */:
-                cls = KYCZhonghuaCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.KYCZhonghuaCarSet";
                 break;
             case FinalCanbus.CAR_454_OD_Yiqi_Jiefang_J6G_23 /* 10748358 */:
-                cls = ODYiqiJiefangJ6GCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODYiqiJiefangJ6GCarSet";
                 break;
             case FinalCanbus.CAR_443_WC_OPEL_Astra_04_P /* 10813883 */:
             case FinalCanbus.CAR_443_WC_OPEL_Zafira_05_P /* 10879419 */:
@@ -5279,20 +4807,20 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC_OPEL_Vectra_02_H_P /* 11403707 */:
             case FinalCanbus.CAR_443_WC_OPEL_Corsa_06_H_P /* 11469243 */:
             case FinalCanbus.CAR_443_WC_OPEL_Meriva_03_H_P /* 11534779 */:
-                cls = WCOPELCarKeyActivity.class;
+                name = "com.syu.carinfo.opel.WCOPELCarKeyActivity";
                 break;
             case FinalCanbus.CAR_454_OD_Yiqi_Jiefang_J7_23 /* 10813894 */:
             case FinalCanbus.CAR_454_KYC_Ford_Mustang_07_H /* 13631942 */:
             case FinalCanbus.CAR_454_KYC_Ford_Mustang_07_L /* 13697478 */:
             case FinalCanbus.CAR_454_OD_Beiqi_EV160 /* 10879430 */:
-                cls = ODBeiqiEV160CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODBeiqiEV160CarSet";
                 break;
             case FinalCanbus.CAR_439_BNR_Qichen_17T70 /* 10944951 */:
             case FinalCanbus.CAR_439_BNR_Qichen_16T70 /* 11010487 */:
-                cls = BNR_QiChenT70Act.class;
+                name = "com.syu.carinfo.rzc.t70.BNR_QiChenT70Act";
                 break;
             case FinalCanbus.CAR_439_BNR_Haval_H6 /* 11076023 */:
-                cls = BNRActivityHavaH6SetAct.class;
+                name = "com.syu.carinfo.hava.BNRActivityHavaH6SetAct";
                 break;
             case FinalCanbus.CAR_454_Tangdu_Porsche_Cayenne_12_H /* 11076038 */:
             case FinalCanbus.CAR_454_Tangdu_Porsche_Cayenne_16_H /* 11141574 */:
@@ -5302,10 +4830,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_453_Tangdu_Porsche_macan_13 /* 16515525 */:
             case FinalCanbus.CAR_453_Tangdu_Porsche_Cayenne_12 /* 16581061 */:
             case FinalCanbus.CAR_453_Tangdu_Porsche_Cayenne_16 /* 16646597 */:
-                cls = TDPorscheCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.TDPorscheCarSet";
                 break;
             case FinalCanbus.CAR_439_BNR_Nissan_Tule /* 11141559 */:
-                cls = BnrTuleIndexAct.class;
+                name = "com.syu.carinfo.bnr.tule.BnrTuleIndexAct";
                 break;
             case FinalCanbus.CAR_443_WC_Suzuki_S_croos_22_L /* 11600315 */:
             case FinalCanbus.CAR_443_WC_Suzuki_S_croos_22_M /* 11665851 */:
@@ -5316,22 +4844,22 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC2_LeepMotor_T03_22_L /* 14614971 */:
             case FinalCanbus.CAR_443_WC2_LeepMotor_T03_22_M /* 14680507 */:
             case FinalCanbus.CAR_443_WC2_LeepMotor_T03_22_H /* 14746043 */:
-                cls = WCSuzukiAllIndexAct.class;
+                name = "com.syu.carinfo.od.mazdall.WCSuzukiAllIndexAct";
                 break;
             case FinalCanbus.CAR_454_OD_Jianghuai_Xingrui_24 /* 11665862 */:
             case FinalCanbus.CAR_454_OD_Jianghuai_KanglingL3_24 /* 11731398 */:
             case FinalCanbus.CAR_453_OD_Jianghuai_Chaoyue /* 12779973 */:
-                cls = ODJianghuaiChaoyueCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODJianghuaiChaoyueCarSet";
                 break;
             case FinalCanbus.CAR_452_PA_Nissan_XTrail_21 /* 11731396 */:
             case FinalCanbus.CAR_452_PA_Nissan_Loulan_21 /* 11796932 */:
             case FinalCanbus.CAR_452_PA_Nissan_Terra_21 /* 11862468 */:
             case FinalCanbus.CAR_452_PA_Nissan_TITAN /* 11928004 */:
             case FinalCanbus.CAR_452_PA_Infiniti_G37 /* 13894084 */:
-                cls = PANissanAllCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.PANissanAllCarSet";
                 break;
             case FinalCanbus.CAR_452_TZY_UAZ_Patriot /* 11993540 */:
-                cls = FaultCodeWindow.class;
+                name = "com.syu.carinfo.dasauto.FaultCodeWindow";
                 break;
             case FinalCanbus.CAR_454_Tangdu_LR_RangeRover_13_SCREEN /* 12124614 */:
             case FinalCanbus.CAR_454_Tangdu_LR_RangeRover_16_SCREEN /* 12190150 */:
@@ -5380,46 +4908,46 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_453_Tangdu_Jaguar_XJXJL_14 /* 15335877 */:
             case FinalCanbus.CAR_453_Tangdu_Jaguar_XJXJL_16 /* 15401413 */:
             case FinalCanbus.CAR_453_Tangdu_Jaguar_XJXJL /* 15466949 */:
-                cls = TDLandRoverIndexAct.class;
+                name = "com.syu.carinfo.lz.jaguar.TDLandRoverIndexAct";
                 break;
             case FinalCanbus.CAR_453_XC_Honda_Acura_RL /* 12452293 */:
             case FinalCanbus.CAR_452_XC_Honda_Acura_TL /* 12911044 */:
             case FinalCanbus.CAR_452_XC_Honda_Acura_RDX /* 12976580 */:
             case FinalCanbus.CAR_452_XC_Honda_Acura_TLX /* 13042116 */:
-                cls = XCHondaAmpCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.XCHondaAmpCarSet";
                 break;
             case FinalCanbus.CAR_452_OD_Qirui_Xiaomayi /* 12517828 */:
-                cls = ODQiruiXiaomayiCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODQiruiXiaomayiCarInfo";
                 break;
             case FinalCanbus.CAR_452_OD_Ford_Lincoln_navigator /* 12583364 */:
-                cls = ODFordNavigatorCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODFordNavigatorCarSet";
                 break;
             case FinalCanbus.CAR_452_LZ_Toyato_RX450 /* 12648900 */:
                 if (readFile("/sys/fytver/fyt_bin_version").contains("Ls18") || readFile("/sys/fytver/fyt_bin_version").contains("Lt18")) {
-                    cls = LZNewAllBBASetFunc.class;
+                    name = "com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc";
                     break;
                 } else {
-                    cls = CamryIndexAct_LuZ.class;
+                    name = "com.syu.carinfo.camry.luz.CamryIndexAct_LuZ";
                     break;
                 }
             case FinalCanbus.CAR_439_LZ_INFINIT_FX35 /* 12714423 */:
-                cls = LuzInfinitF35IndexAct.class;
+                name = "com.syu.carinfo.lz.infinit.fx35.LuzInfinitF35IndexAct";
                 break;
             case FinalCanbus.CAR_453_OD_Dongfeng_Chenglong_H7 /* 12714437 */:
-                cls = ODDongfengChenglongH7CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODDongfengChenglongH7CarSet";
                 break;
             case FinalCanbus.CAR_439_DJ_Nissan /* 12779959 */:
             case FinalCanbus.CAR_439_DJ_Nissan_H /* 12845495 */:
-                cls = djTianlaiIndexAct.class;
+                name = "com.syu.carinfo.daojun.tianlai.djTianlaiIndexAct";
                 break;
             case FinalCanbus.CAR_453_OD_BQ_BJ30_21 /* 12845509 */:
-                cls = ODBeiqiBJ30CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODBeiqiBJ30CarSet";
                 break;
             case FinalCanbus.CAR_453_OD_BQ_BJ90 /* 12911045 */:
-                cls = ODBeiqiBJ90CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODBeiqiBJ90CarSet";
                 break;
             case FinalCanbus.CAR_453_OD_RENAUL_KOLEOS_05 /* 12976581 */:
-                cls = ActivityODRenaultKeleosCD.class;
+                name = "com.syu.carinfo.hc.tianlai.ActivityODRenaultKeleosCD";
                 break;
             case FinalCanbus.CAR_439_OUDI_Falcon_New_Single /* 13042103 */:
             case FinalCanbus.CAR_439_OUDI_Falcon_New_Double /* 13107639 */:
@@ -5429,11 +4957,11 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_439_OUDI_Territory_Old_Double /* 13369783 */:
             case FinalCanbus.CAR_439_OUDI_Falcon_Old_Single /* 13435319 */:
             case FinalCanbus.CAR_439_OUDI_Falcon_Old_Double /* 13500855 */:
-                cls = FordFalconIndexAct.class;
+                name = "com.syu.carinfo.od.ford.falcon.FordFalconIndexAct";
                 break;
             case FinalCanbus.CAR_452_OD_LeiDing_Mangguo_L /* 13107652 */:
             case FinalCanbus.CAR_452_OD_LeiDing_Mangguo_H /* 13173188 */:
-                cls = ODLeTinMangguoCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODLeTinMangguoCarSet";
                 break;
             case FinalCanbus.CAR_454_RDW_BENZ_ML350_08_T1 /* 13173190 */:
             case FinalCanbus.CAR_454_RDW_BENZ_ML350_08_T2 /* 13238726 */:
@@ -5442,10 +4970,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_454_RDW_BENZ_ML350_12 /* 13435334 */:
             case FinalCanbus.CAR_454_RDW_BENZ_GL450_08 /* 13500870 */:
             case FinalCanbus.CAR_454_RDW_BENZ_GL_12 /* 13566406 */:
-                cls = RDWBenzSetFunc.class;
+                name = "com.syu.carinfo.ksw.audiq5.RDWBenzSetFunc";
                 break;
             case FinalCanbus.CAR_452_LZ_Benz_Smart /* 13435332 */:
-                cls = LZBenzSmartSetFunc.class;
+                name = "com.syu.carinfo.zhtd.bmw.LZBenzSmartSetFunc";
                 break;
             case FinalCanbus.CAR_443_WC2_Jili_GS_18 /* 13631931 */:
             case FinalCanbus.CAR_443_WC2_Jili_GL_18 /* 13697467 */:
@@ -5454,43 +4982,43 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_443_WC2_Jili_Dihao_22 /* 13894075 */:
             case FinalCanbus.CAR_443_WC2_Jili_Binyue_22 /* 13959611 */:
             case FinalCanbus.CAR_443_WC2_Jili_All /* 14025147 */:
-                cls = WCJiliAllCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.WCJiliAllCarSet";
                 break;
             case FinalCanbus.CAR_452_LZ_Volvo_10 /* 13631940 */:
                 if (LauncherApplication.getConfiguration() == 1) {
-                    cls = SanlinIndexAct.class;
+                    name = "com.syu.carinfo.rzc.sanlin.SanlinIndexAct";
                     break;
                 } else {
-                    cls = LuzVolvoCarSet.class;
+                    name = "com.syu.carinfo.rzc.sanlin.LuzVolvoCarSet";
                     break;
                 }
             case FinalCanbus.CAR_452_RZC_Mangguo_LeiDing /* 13697476 */:
-                cls = RZCLeTinMangguoCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.RZCLeTinMangguoCarSet";
                 break;
             case FinalCanbus.CAR_439_DJ_Rongwei_i5 /* 13959607 */:
             case FinalCanbus.CAR_439_DJ_Rongwei_i5_H /* 14025143 */:
-                cls = ActDaojunRongweI5CarSet.class;
+                name = "com.syu.carinfo.rzc.mingjueruiteng.ActDaojunRongweI5CarSet";
                 break;
             case FinalCanbus.CAR_454_XP_ZH2_Pilotcar /* 13959622 */:
-                cls = ZH2PilotcarCarinfoAct.class;
+                name = "com.syu.carinfo.zhtd.bmw.ZH2PilotcarCarinfoAct";
                 break;
             case FinalCanbus.CAR_452_OD_Changcheng_Oula /* 14156228 */:
-                cls = ODChangChengOulaCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODChangChengOulaCarInfo";
                 break;
             case FinalCanbus.CAR_452_KYC_Toyota_Landekuluze /* 14221764 */:
             case FinalCanbus.CAR_452_KYC_Toyota_Runner /* 14287300 */:
             case FinalCanbus.CAR_452_KYC_Toyota_Alpha /* 14352836 */:
-                cls = KYCToyotaAllCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.KYCToyotaAllCarSet";
                 break;
             case FinalCanbus.CAR_454_OD_ChangAn_Raeton /* 14352838 */:
             case FinalCanbus.CAR_454_OD_ChangAn_Raeton_H /* 14418374 */:
-                cls = ODChangAnRaetonCarSet.class;
+                name = "com.syu.carinfo.rzc.siwei.ODChangAnRaetonCarSet";
                 break;
             case FinalCanbus.CAR_439_DJ_BYD_M6 /* 14418359 */:
-                cls = DaojunBydM6SetFunc.class;
+                name = "com.syu.carinfo.daojun.bydm6.DaojunBydM6SetFunc";
                 break;
             case FinalCanbus.CAR_XP1_Daojun_Toyota_PREVIA /* 14746052 */:
-                cls = DaojunPreviaCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.DaojunPreviaCarSet";
                 break;
             case FinalCanbus.CAR_452_Luz_Audi_A4L_Low /* 14811588 */:
             case FinalCanbus.CAR_452_Luz_Audi_A4L_H /* 14877124 */:
@@ -5500,68 +5028,60 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             case FinalCanbus.CAR_452_Luz_Audi_A6L_H /* 15139268 */:
             case FinalCanbus.CAR_452_Luz_Audi_Q7_Low /* 15204804 */:
             case FinalCanbus.CAR_452_Luz_Audi_Q7_H /* 15270340 */:
-                cls = LZAudiQ5CarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.LZAudiQ5CarSet";
                 break;
             case FinalCanbus.CAR_439_LUZ_BMW_MINI /* 15270327 */:
-                cls = LZBMWMiniCarSet.class;
+                name = "com.syu.carinfo.wc2.tata.LZBMWMiniCarSet";
                 break;
             case FinalCanbus.CAR_454_OD_Sanlin_Pajero_18 /* 15335878 */:
             case FinalCanbus.CAR_454_OD_Sanlin_LC200_23 /* 15401414 */:
-                cls = ODSanlinCarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODSanlinCarSet";
                 break;
             case FinalCanbus.CAR_439_XC_Xiandai_Suolantuo_Amp /* 15466935 */:
-                cls = XCXiandaiSuolataCarSet.class;
+                name = "com.syu.carinfo.rzc.siwei.XCXiandaiSuolataCarSet";
                 break;
             case FinalCanbus.CAR_453_LZ_Teana_08_L /* 15532485 */:
             case FinalCanbus.CAR_453_LZ_Teana_08_H /* 15598021 */:
             case FinalCanbus.CAR_453_LZ_Teana_08_TW /* 15663557 */:
-                cls = LZ_Nissan08TeanaIndexAct.class;
+                name = "com.syu.carinfo.rzc.xima.LZ_Nissan08TeanaIndexAct";
                 break;
             case FinalCanbus.CAR_453_LZ_Honda_Civic_06 /* 15729093 */:
             case FinalCanbus.CAR_453_LZ_Honda_Civic_06_H /* 15794629 */:
-                cls = LZHonda06CivicCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.LZHonda06CivicCarInfo";
                 break;
             case FinalCanbus.CAR_439_DJ_Qirui_Airuizhe5 /* 15860151 */:
             case FinalCanbus.CAR_439_DJ_Qirui_Airuizhe7 /* 15925687 */:
             case FinalCanbus.CAR_439_DJ_Qirui_A3 /* 15991223 */:
-                cls = DaojunQiruiCarSet.class;
+                name = "com.syu.carinfo.qirui.DaojunQiruiCarSet";
                 break;
             case FinalCanbus.CAR_453_RZC_VinFast_PLUS_23 /* 15860165 */:
-                cls = SanlinIndexAct.class;
+                name = "com.syu.carinfo.rzc.sanlin.SanlinIndexAct";
                 break;
             case FinalCanbus.CAR_439_OD_Opel_Adan_CD /* 16056759 */:
-                cls = ODOpelAdanIndexActi.class;
+                name = "com.syu.carinfo.oudi.ODOpelAdanIndexActi";
                 break;
             case FinalCanbus.CAR_453_XC_Ford_EDGE_L /* 16122309 */:
             case FinalCanbus.CAR_453_XC_Ford_EDGE_H /* 16187845 */:
-                cls = XCFordEDGECarSet.class;
+                name = "com.syu.carinfo.rzc.sanlin.XCFordEDGECarSet";
                 break;
             case FinalCanbus.CAR_453_RZC_Suzuki_IGNIS_16 /* 16253381 */:
-                cls = RZCSuzukiIndexActi.class;
+                name = "com.syu.carinfo.honda.RZCSuzukiIndexActi";
                 break;
             case FinalCanbus.CAR_439_BNR_HAVAL_H8 /* 16318903 */:
             case FinalCanbus.CAR_439_BNR_HAVAL_H9 /* 16384439 */:
-                cls = RZC_Oudi_0439_HavalH9_IndexAct.class;
+                name = "com.syu.carinfo.rzc.havalh6.RZC_Oudi_0439_HavalH9_IndexAct";
                 break;
             case FinalCanbus.CAR_453_OD_Modernin /* 16384453 */:
-                cls = ODModerninIndexAct.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODModerninIndexAct";
                 break;
             case FinalCanbus.CAR_439_OD_BMW_ALL /* 16646583 */:
-                cls = ODBMWCarInfo.class;
+                name = "com.syu.carinfo.rzc.sanlin.ODBMWCarInfo";
                 break;
         }
-
-    	SharedPreferences mPrefs = SessionPrefs.get();
-        SharedPreferences.Editor editor = mPrefs.edit();  
-        if (cls != null) {
-            editor.putString("canbus_class", String.valueOf(cls));     
-        } else {
-        	editor.putString("canbus_class", "vehicle_not_exist");    
-        }
-        editor.apply();
+        return name;
     }
     
-    private String readFile(String path) {
+    private static String readFile(String path) {
         String strInfo = "";
         try {
             File file = new File(path);
