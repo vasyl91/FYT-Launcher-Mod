@@ -4713,6 +4713,16 @@ public class Workspace extends SmoothPagedView
     public boolean enterOverviewMode() {
         // Do not allow to enter if widget has been long clicked
         if (helpers.isWidgetClickedBool()) return false;
+        // Refused while the pages are held, before anything says the overview is open. Pages
+        // caught again while they snap take the down themselves (TOUCH_STATE_SCROLLING), so the
+        // Workspace's own long press is armed, and holding them fires it. This check used to come
+        // after the flag and OVERVIEW_MODE_OPEN: the overview never opened, yet isInOverviewMode()
+        // stayed true until something else cleared it (the app drawer, a new resume), so
+        // onPageEndMoving() no longer opened the pinned PiP and CanbusService kept the stats
+        // window removed (log 28-10-2026 00:57).
+        if (mTouchState != TOUCH_STATE_REST) {
+            return false;
+        }
 
         helpers.setInOverviewMode(true);
         helpers.setListOpen(false);
@@ -4726,9 +4736,6 @@ public class Workspace extends SmoothPagedView
             helpers.setInRecent(false);
             Intent intentOverviewMode = new Intent(Keys.OVERVIEW_MODE_OPEN);
             SysCalls.sendBroadcast(LauncherApplication.sApp, intentOverviewMode);
-        }
-        if (mTouchState != TOUCH_STATE_REST) {
-            return false;
         }
         if (!LauncherApplication.sApp.getResources().getBoolean(R.bool.wallpaper_show)) {
             return true;
