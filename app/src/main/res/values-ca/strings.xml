@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Lector Canbus</string>
     <string name="display_canbus_reader">Mostra el lector Canbus</string>
     <string name="codes_guide">Guia de Canbus</string>
-    <string name="codes_guide_initial_reading_title">Registrador de codis: lectura inicial</string>
-    <string name="codes_guide_initial_reading_one">El «lector Canbus» pot no funcionar en tots els cotxes! Depèn del codi font proporcionat pel fabricant. \n\nHi ha tres valors essencials per llegir correctament les dades canbus: cmdInt i cmdArr, representats als registres per CMD (menys importants, la majoria de combinacions aleatòries haurien de funcionar) i els codis canbus, representats als registres per CODE (aquests cal determinar-los).</string>
-    <string name="codes_guide_initial_reading_two">La «Lectura inicial» hauria de crear un fitxer txt amb registres que s\'assemblin als anteriors. La part crucial és identificar els codis que representen el consum actual de combustible i l\'autonomia. \n\nPer al consum actual, cerca el codi que té relativament poques sortides: a la captura de pantalla adjunta és el codi 91. \n\nEl codi d\'autonomia sol tenir una única sortida que no canvia ràpidament o canvia a intervals concrets: a la captura de pantalla adjunta és el codi 92. \n\nLa resta de codis són negligibles tret que cerquis una altra cosa.</string>
-    <string name="codes_guide_initial_reading_three">«Finestra de temps»: el temps (en segons) durant el qual el «Registrador de codis» desa les sortides de cada bucle de cmdInt i cmdArr. \n\n«Omet xifres úniques»: ignora les sortides d\'una sola xifra perquè el consum actual i l\'autonomia solen tenir més d\'una xifra. Aquesta opció pot accelerar molt el procés perquè el bucle no s\'entreté en sortides irrellevants. \n\nConsell: per començar a examinar els codis canbus de manera eficient, utilitza un rang estret entre els valors inicial i màxim de cmdInt i cmdArr. Pots definir-los com vulguis sempre que no superin els valors màxims (indicats al diàleg d\'entrada) i el valor inicial no sigui més gran que el màxim. Com més ampli sigui el rang i més llarga la finestra de temps, més durarà el procés.</string>
     <string name="codes_guide_detailed_reading_title">Inspector de codis: lectura detallada</string>
     <string name="codes_guide_detailed_reading">Aquesta part serveix per provar combinacions concretes de cmdInt i cmdArr per revelar els codis que contenen. Com s\'ha dit abans, cmdInt i cmdArr són menys importants i la majoria de combinacions aleatòries haurien de funcionar. Aquest mòdul es va crear abans que ho sabés, però encara pot ser útil per a proves concretes.</string>
     <string name="codes_guide_miscellaneous_title">Diversos</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">S\'ometran els codis següents: %1$s</string>
     <string name="skip_codes_empty_summary">Les dades es llegiran de tot el conjunt de codis.</string>
     <string name="skip_codes_dialog_str">Escriu els codis que cal ometre (separats per comes):</string>
-    <string name="logger_category">Registrador de codis</string>
-    <string name="code_logger_string">Lectura inicial</string>
-    <string name="code_logger_summary">Toca per iniciar el procés</string>
-    <string name="code_logger_summary_working">Treballant… %1$s Toca per cancel·lar</string>
-    <string name="code_logger_data">Dades de la lectura inicial</string>
-    <string name="code_logger_data_summary">Toca per definir les dades de la lectura inicial. \ncmdInt inicial: %1$s, cmdArr inicial: %2$s, cmdInt màx.: %3$s, cmdArr màx.: %4$s, finestra de temps: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt inicial (màx. 1198):</string>
-    <string name="starting_cmd_arr_text">cmdArr inicial (màx. 1198):</string>
-    <string name="max_cmd_int_text">cmdInt màx. (màx. 1199):</string>
-    <string name="max_cmd_arr_text">cmdArr màx. (màx. 1199):</string>
-    <string name="code_logger_timeout_text">Finestra de temps:</string>
-    <string name="omit_digits">Omet xifres úniques</string>
-    <string name="omit_digits_summary">El consum de combustible i l\'autonomia solen tenir més d\'una xifra. Aquesta opció pot accelerar molt el procés.</string>
-    <string name="code_logger_dialog_toast">El valor inicial no pot ser més gran que el valor màxim</string>
-    <string name="code_logger_toast">S\'ha acabat el registre dels codis. Consulta els resultats a Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Inspector de codis</string>
     <string name="code_inspector_string">Lectura detallada</string>

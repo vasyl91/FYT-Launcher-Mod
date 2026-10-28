@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus-Reader</string>
     <string name="display_canbus_reader">Canbus-Reader anzeigen</string>
     <string name="codes_guide">Canbus-Anleitung</string>
-    <string name="codes_guide_initial_reading_title">Codes-Logger – erstes Auslesen</string>
-    <string name="codes_guide_initial_reading_one">Der „Canbus-Reader“ funktioniert möglicherweise nicht bei jedem Auto! Das hängt vom Quellcode des Herstellers ab. \n\nFür das korrekte Auslesen der Canbus-Daten sind drei Werte entscheidend – cmdInt und cmdArr, in den Logs als CMD dargestellt (diese sind weniger wichtig, die meisten zufälligen Kombinationen sollten funktionieren), und die Canbus-Codes, in den Logs als CODE dargestellt (diese müssen ermittelt werden).</string>
-    <string name="codes_guide_initial_reading_two">Beim „Ersten Auslesen“ sollte eine TXT-Datei mit Logs entstehen, die wie die oben aussehen. Entscheidend ist, die Codes für den aktuellen Kraftstoffverbrauch und die Reichweite zu ermitteln. \n\nSuchen Sie für den aktuellen Kraftstoffverbrauch den Code mit eher wenigen Ausgaben – im beigefügten Screenshot ist das der Code 91. \n\nDer Reichweitencode enthält meist nur eine Ausgabe, die sich nicht schnell oder nur in bestimmten Intervallen ändert – im beigefügten Screenshot ist das der Code 92. \n\nDie übrigen Codes sind vernachlässigbar, es sei denn, Sie suchen etwas anderes.</string>
-    <string name="codes_guide_initial_reading_three">„Zeitfenster“ – die Zeit (in Sekunden), in der der „Codes-Logger“ die Ausgaben für jede cmdInt-/cmdArr-Schleife speichert. \n\n„Einstellige Werte auslassen“ – ignoriert einstellige Ausgaben, da aktueller Kraftstoffverbrauch und Reichweite meist aus mehr als einer Ziffer bestehen. Diese Option kann den Vorgang erheblich beschleunigen, weil die Schleife nicht bei irrelevanten Ausgaben verweilt. \n\nTipp – grenzen Sie zu Beginn den Bereich von Start- bis Maximalwert für cmdInt und cmdArr ein. Sie können die Werte frei wählen, solange sie die Maximalwerte (siehe Eingabedialog) nicht überschreiten und der Startwert nicht größer als der Maximalwert ist. Je größer der Bereich und je länger das Zeitfenster, desto länger dauert der Vorgang.</string>
     <string name="codes_guide_detailed_reading_title">Code-Inspektor – detailliertes Auslesen</string>
     <string name="codes_guide_detailed_reading">Dieser Teil dient dazu, bestimmte cmdInt-/cmdArr-Kombinationen zu testen und die darin enthaltenen Codes anzuzeigen. Wie bereits erwähnt, sind cmdInt und cmdArr weniger wichtig und die meisten zufälligen Kombinationen sollten funktionieren. Dieses Modul entstand, bevor ich das wusste, kann aber für gezielte Tests weiterhin nützlich sein.</string>
     <string name="codes_guide_miscellaneous_title">Sonstiges</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Folgende Codes werden übersprungen: %1$s</string>
     <string name="skip_codes_empty_summary">Daten werden aus dem gesamten Codesatz gelesen.</string>
     <string name="skip_codes_dialog_str">Zu überspringende Codes eingeben (durch Kommas getrennt):</string>
-    <string name="logger_category">Codes-Logger</string>
-    <string name="code_logger_string">Erstes Auslesen</string>
-    <string name="code_logger_summary">Tippen, um den Vorgang zu starten</string>
-    <string name="code_logger_summary_working">Läuft… %1$s Tippen zum Abbrechen</string>
-    <string name="code_logger_data">Daten für das erste Auslesen</string>
-    <string name="code_logger_data_summary">Tippen, um die Daten für das erste Auslesen festzulegen. \nStart-cmdInt: %1$s, Start-cmdArr: %2$s, Max. cmdInt: %3$s, Max. cmdArr: %4$s, Zeitfenster: %5$s</string>
-    <string name="starting_cmd_int_text">Start-cmdInt (max. 1198):</string>
-    <string name="starting_cmd_arr_text">Start-cmdArr (max. 1198):</string>
-    <string name="max_cmd_int_text">Max. cmdInt (max. 1199):</string>
-    <string name="max_cmd_arr_text">Max. cmdArr (max. 1199):</string>
-    <string name="code_logger_timeout_text">Zeitfenster:</string>
-    <string name="omit_digits">Einstellige Werte auslassen</string>
-    <string name="omit_digits_summary">Kraftstoffverbrauch und Reichweite bestehen meist aus mehr als einer Ziffer. Diese Option kann den Vorgang erheblich beschleunigen.</string>
-    <string name="code_logger_dialog_toast">Der Startwert darf nicht größer als der Maximalwert sein</string>
-    <string name="code_logger_toast">Protokollierung der Codes abgeschlossen. Ergebnisse siehe Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Code-Inspektor</string>
     <string name="code_inspector_string">Detailliertes Auslesen</string>

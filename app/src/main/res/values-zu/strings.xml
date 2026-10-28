@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Isifundi se-Canbus</string>
     <string name="display_canbus_reader">Bonisa isifundi se-Canbus</string>
     <string name="codes_guide">Umhlahlandlela we-Canbus</string>
-    <string name="codes_guide_initial_reading_title">Isilogi samakhodi – ukufunda kokuqala</string>
-    <string name="codes_guide_initial_reading_one">\"Isifundi se-Canbus\" singase singasebenzi kuyo yonke imoto! Kuya ngekhodi yomthombo enikezwe umkhiqizi. \n\nAmanani amathathu abalulekile ekufundeni kahle idatha ye-canbus: i-cmdInt ne-cmdArr emelelwe kumalogi njenge-CMD (abalulekile kancane, uhlanganiso oluningi olungahleliwe kufanele lusebenze) namakhodi e-canbus amelelwe kumalogi njenge-CODE (lawa abalulekile ukuthi azonywe).</string>
-    <string name="codes_guide_initial_reading_two">\"Ukufunda kokuqala\" kufanele kudale ifayela le-txt eliqukethe amalogi abukeka njengaleyo engenhla. Ingxenye ebalulekile ukuhlonza amakhodi amelela ukusetshenziswa kukaphethiloli kwamanje nebanga. \n\nKokusetshenziswa kukaphethiloli kwamanje, funa ikhodi enemiphumela embalwa kakhulu – esithombeni sesikrini esinamathiselwe yikhodi 91. \n\nIkhodi yebanga ngokuvamile inomphumela owodwa ongashintshi ngokushesha noma oshintsha emahlukaniseni athile – esithombeni sesikrini esinamathiselwe yikhodi 92. \n\nAmanye amakhodi awabalulekile ngaphandle kokuthi useka okunye.</string>
-    <string name="codes_guide_initial_reading_three">\"Iwindi lesikhathi\" – isikhathi (ngemizuzwana) lapho \"Isilogi samakhodi\" sigcina khona imiphumela yomjikelezo ngamunye we-cmdInt ne-cmdArr. \n\n\"Yeqa izinombolo ezinhlamvu eyodwa\" – ayinaki imiphumela enenhlamvu eyodwa ngoba ukusetshenziswa kukaphethiloli kwamanje nebanga ngokuvamile kunezinhlamvu ezingaphezu kweyodwa. Le nketho ingasheshisa inqubo kakhulu ngoba umjikelezo awubambeki emiphumeleni engahambisani. \n\nIseluleko – ukuze uqale ukuhlola amakhodi e-canbus ngokuphumelelayo, sebenzisa ububanzi obuncane phakathi kwenani lokuqala nelinguvulandlela le-cmdInt ne-cmdArr. Ungawasetha ngendlela oyithandayo uma nje engadluli amanani amakhulu kunawo wonke (aboniswe kwibhokisi lokufaka) futhi inani lokuqala lingabi likhulu kunelikhulu kunawo wonke. Uma ububanzi bukhula futhi iwindi lesikhathi lide, inqubo ithatha isikhathi eside.</string>
     <string name="codes_guide_detailed_reading_title">Umhloli wamakhodi – ukufunda ngemininingwane</string>
     <string name="codes_guide_detailed_reading">Le ngxenye iyenzelwe ukuhlola uhlanganiso oluthile lwe-cmdInt ne-cmdArr ukuze kudalulwe amakhodi aqukethwe. Njengoba kushiwo ngaphambili, i-cmdInt ne-cmdArr abalulekile kancane futhi uhlanganiso oluningi olungahleliwe kufanele lusebenze. Leli modyuli lidalwe ngaphambi kokuba ngikwazi lokho, kodwa lingaba usizo ezivivinyweni ezithile.</string>
     <string name="codes_guide_miscellaneous_title">Okuhlukahlukene</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Amakhodi alandelayo ayeqiwe: %1$s</string>
     <string name="skip_codes_empty_summary">Idatha izofundwa kusuka kusethi yonke yamakhodi.</string>
     <string name="skip_codes_dialog_str">Thayipha amakhodi azoyeqwa (ahlukaniswe ngokhefana):</string>
-    <string name="logger_category">Isilogi samakhodi</string>
-    <string name="code_logger_string">Ukufunda kokuqala</string>
-    <string name="code_logger_summary">Thepha ukuze uqale inqubo</string>
-    <string name="code_logger_summary_working">Iyasebenza… %1$s Thepha ukuze ukhansele</string>
-    <string name="code_logger_data">Idatha yokufunda kokuqala</string>
-    <string name="code_logger_data_summary">Thepha ukuze usethe idatha yokufunda kokuqala. \ncmdInt yokuqala: %1$s, cmdArr yokuqala: %2$s, cmdInt ephezulu: %3$s, cmdArr ephezulu: %4$s, iwindi lesikhathi: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt yokuqala (kuze kube ngu-1198):</string>
-    <string name="starting_cmd_arr_text">cmdArr yokuqala (kuze kube ngu-1198):</string>
-    <string name="max_cmd_int_text">cmdInt ephezulu (kuze kube ngu-1199):</string>
-    <string name="max_cmd_arr_text">cmdArr ephezulu (kuze kube ngu-1199):</string>
-    <string name="code_logger_timeout_text">Iwindi lesikhathi:</string>
-    <string name="omit_digits">Yeqa izinombolo ezinhlamvu eyodwa</string>
-    <string name="omit_digits_summary">Ukusetshenziswa kukaphethiloli nebanga ngokuvamile kunezinhlamvu ezingaphezu kweyodwa. Le nketho ingasheshisa inqubo kakhulu.</string>
-    <string name="code_logger_dialog_toast">Inani lokuqala alikwazi ukuba likhulu kunenani eliphakeme</string>
-    <string name="code_logger_toast">Ukulogwa kwamakhodi kuqediwe. Hlola imiphumela ku-Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Umhloli wamakhodi</string>
     <string name="code_inspector_string">Ukufunda ngemininingwane</string>

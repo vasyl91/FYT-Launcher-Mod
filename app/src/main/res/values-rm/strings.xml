@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Lectur Canbus</string>
     <string name="display_canbus_reader">Mussar il lectur Canbus</string>
     <string name="codes_guide">Guida Canbus</string>
-    <string name="codes_guide_initial_reading_title">Logger da codes – emprima lectura</string>
-    <string name="codes_guide_initial_reading_one">Il «lectur Canbus» po betg funcziunar en mintga auto! Quai dependa dal code da funtauna dal producent. \n\nTrais valurs èn essenzialas per leger correctamain las datas canbus: cmdInt e cmdArr, preschentads en ils logs sco CMD (main impurtants, la gronda part da las cumbinaziuns casualas duess funcziunar) e ils codes canbus, preschentads en ils logs sco CODE (quests èn impurtants da determinar).</string>
-    <string name="codes_guide_initial_reading_two">L\'«Emprima lectura» duess crear ina datoteca txt cun logs sumeglients a quels survart. La part decisiva è da identifitgar ils codes che represchentan il consum actual da carburant ed il radius. \n\nPer il consum actual tschertga il code cun relativamain paucs resultats – sin la maletg dal visur agiuntà è quai il code 91. \n\nIl code dal radius ha per ordinari in sulet resultat che na sa mida betg svelt u che sa mida a distanzas definidas – sin la maletg dal visur agiuntà è quai il code 92. \n\nLas autras codes èn negligiablas, sche ti na tschertgas betg insatge auter.</string>
-    <string name="codes_guide_initial_reading_three">«Fanestra da temp» – il temp (en secundas) durant il qual il «Logger da codes» memorisescha ils resultats per mintga luschar cmdInt e cmdArr. \n\n«Sursiglir cifras singulas» – ignorescha resultats d\'ina cifra, perquai che il consum actual ed il radius han per ordinari dapli che ina cifra. Questa opziun po accelerar il process considerablamain, perquai che la luschar na resta betg tar resultats irrelevants. \n\nConsegl – per cumenzar a examinar ils codes canbus effizientamain, utilisescha in spazi stretg tranter la valur initiala e maximala da cmdInt e cmdArr. Ti pos fixar ellas a plaschair, sche ellas na surpassan betg las valurs maximalas (inditgadas en il dialog d\'endataziun) e la valur initiala n\'è betg pli gronda che la maximala. Pli ample il spazi e pli lunga la fanestra da temp, pli lung dura il process.</string>
     <string name="codes_guide_detailed_reading_title">Inspectur da codes – lectura detagliada</string>
     <string name="codes_guide_detailed_reading">Questa part è destinada da testar cumbinaziuns specificas da cmdInt e cmdArr per revelar ils codes ch\'els cuntegnan. Sco menziunà gia, èn cmdInt e cmdArr main impurtants e la gronda part da las cumbinaziuns casualas duess funcziunar. Quest modul è vegnì creà avant che jau hai savì quai, ma el po anc adina esser util per tests specifics.</string>
     <string name="codes_guide_miscellaneous_title">Divers</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Ils suandants codes vegnan sursiglids: %1$s</string>
     <string name="skip_codes_empty_summary">Las datas vegnan legidas da l\'entir set da codes.</string>
     <string name="skip_codes_dialog_str">Scriva ils codes ch\'èn da sursiglir (separads cun vircolas):</string>
-    <string name="logger_category">Logger da codes</string>
-    <string name="code_logger_string">Emprima lectura</string>
-    <string name="code_logger_summary">Tutgar per cumenzar il process</string>
-    <string name="code_logger_summary_working">Al lavur… %1$s Tutgar per interrumper</string>
-    <string name="code_logger_data">Datas da l\'emprima lectura</string>
-    <string name="code_logger_data_summary">Tutgar per fixar las datas da l\'emprima lectura. \ncmdInt initial: %1$s, cmdArr initial: %2$s, cmdInt maximal: %3$s, cmdArr maximal: %4$s, fanestra da temp: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt initial (maximal 1198):</string>
-    <string name="starting_cmd_arr_text">cmdArr initial (maximal 1198):</string>
-    <string name="max_cmd_int_text">cmdInt maximal (maximal 1199):</string>
-    <string name="max_cmd_arr_text">cmdArr maximal (maximal 1199):</string>
-    <string name="code_logger_timeout_text">Fanestra da temp:</string>
-    <string name="omit_digits">Sursiglir cifras singulas</string>
-    <string name="omit_digits_summary">Il consum da carburant ed il radius han per ordinari dapli che ina cifra. Questa opziun po accelerar il process considerablamain.</string>
-    <string name="code_logger_dialog_toast">La valur initiala na dastga betg esser pli gronda che la valur maximala</string>
-    <string name="code_logger_toast">La memorisaziun dals codes è terminada. Controllescha ils resultats en Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Inspectur da codes</string>
     <string name="code_inspector_string">Lectura detagliada</string>

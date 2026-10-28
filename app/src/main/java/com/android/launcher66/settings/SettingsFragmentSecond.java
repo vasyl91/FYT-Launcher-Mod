@@ -107,7 +107,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private boolean colorBgBool = false;
     private boolean displayCanbusReaderBool = false;
     private boolean tickRunnableBool = false;
-    private boolean loggerTickRunnableBool = false;
     private boolean countDownTimerBool = false;
     private Preference startPage;
     private EditText startPageEditText;
@@ -131,12 +130,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private String rpmCodeStr;
     private String horsePowerCodeStr;
     private String vehicleMassCodeStr;
-    private EditText startingInt;
-    private String startingCmdInt;
-    private String startingCmdArr;
-    private String maxCmdInt;
-    private String maxCmdArr;
-    private String codeLoggerTimeoutStr;
     private EditText inspectorInt;
     private String inspectorCmdInt;
     private String inspectorCmdArr;
@@ -153,23 +146,17 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private Preference appStatsCoordinates;
     private Preference codesGuide;
     private Preference skipCodes;
-    private PreferenceCategory loggerCategory;
-    private Preference codeLogger;
-    private Preference codeLoggerData;
-    private Preference omitDigits;
     private PreferenceCategory inspectorCategory;
     private Preference codeInspector;
     private Preference codeInspectorData;
     private CountDownTimer countDownTimer;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private static final Handler loggerTickHandler = new Handler(Looper.getMainLooper());  
     private final Handler handler = new Handler(Looper.getMainLooper());
     private EditText skipCodesEditText;
     private AlertDialog alertPipDialog;
     private AlertDialog alertMarginsDialog;
     private AlertDialog alertCodesDialog;
     private AlertDialog alertExtraCodesDialog;
-    private AlertDialog alertCodesLoggerDialog;
     private AlertDialog alertSkipCodesDialog;
     private AlertDialog alertCodesInspectorDialog;
     private WeakReference<AppListStatsDialogFragment> appListStatsDialog;
@@ -320,16 +307,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         SwitchPreferenceCompat displayCanbusReader = findPreference(Keys.DISPLAY_CANBUS_READER);
         codesGuide = findPreference(Keys.CODES_GUIDE);
-        loggerCategory = findPreference("logger_category");
-        codeLogger = findPreference(Keys.CODE_LOGGER);
-        codeLoggerData = findPreference(Keys.CODE_LOGGER_DATA);
-        startingCmdInt = sharedPrefs.getString(Keys.STARTING_CMD_INT, "0");
-        startingCmdArr = sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0");
-        maxCmdInt = sharedPrefs.getString(Keys.MAX_CMD_INT, "10");
-        maxCmdArr = sharedPrefs.getString(Keys.MAX_CMD_ARR, "10");
-        codeLoggerTimeoutStr = sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1");
         skipCodes = findPreference(Keys.SKIP_CODES);
-        omitDigits = findPreference(Keys.OMIT_DIGITS);
         Set<String> skipCodesSet = sharedPrefs.getStringSet(Keys.SKIP_CODES, Collections.singleton(""));
         String skipCodesStr = skipCodesSet != null ? String.join(", ", skipCodesSet) : "";
         if (skipCodesStr.isEmpty()) {
@@ -616,7 +594,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             displayCanbusReader.setOnPreferenceClickListener(this);
         }
         displayCanbusReaderBool = sharedPrefs.getBoolean(Keys.DISPLAY_CANBUS_READER, false);
-        loggerCategory.setVisible(displayCanbusReaderBool);
         inspectorCategory.setVisible(displayCanbusReaderBool);
         if (codesGuide != null) {
             codesGuide.setVisible(displayCanbusReaderBool);
@@ -625,25 +602,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (skipCodes != null) {
             skipCodes.setVisible(displayCanbusReaderBool);
             skipCodes.setOnPreferenceClickListener(this);
-        }
-        if (codeLogger != null) {
-            codeLogger.setVisible(displayCanbusReaderBool);
-            codeLogger.setOnPreferenceClickListener(this);
-            if (helpers.codeLoggerBoolean()) {
-                setLoggerTickRunnable();
-            } else {
-                codeLogger.setSummary(getString(R.string.code_logger_summary));
-                helpers.setCountDownLogger(0);
-            }
-        }
-        if (codeLoggerData != null) {
-            codeLoggerData.setVisible(displayCanbusReaderBool);
-            codeLoggerData.setOnPreferenceClickListener(this);
-            codeLoggerData.setSummary(getString(R.string.code_logger_data_summary, startingCmdInt, startingCmdArr, maxCmdInt, maxCmdArr, codeLoggerTimeoutStr));
-        }
-        if (omitDigits != null) {
-            omitDigits.setVisible(displayCanbusReaderBool);
-            omitDigits.setOnPreferenceClickListener(this);
         }
         if (codeInspector != null) {
             codeInspector.setVisible(displayCanbusReaderBool);
@@ -897,35 +855,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
                 alertSkipCodesDialog.show();
                 break;
-            case Keys.CODE_LOGGER:
-                if (!helpers.codeLoggerBoolean()) {
-                    // start the service
-                    startLoggerService();
-                    setLoggerTickRunnable();
-                } else {
-                    // stop the service
-                    stopLoggerService();
-                }
-                break;
-            case Keys.CODE_LOGGER_DATA:
-                startingCmdInt = sharedPrefs.getString(Keys.STARTING_CMD_INT, "0");
-                startingCmdArr = sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0");
-                maxCmdInt = sharedPrefs.getString(Keys.MAX_CMD_INT, "10");
-                maxCmdArr = sharedPrefs.getString(Keys.MAX_CMD_ARR, "10");
-                codeLoggerTimeoutStr = sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1");
-
-                alertCodesLoggerDialog = displayCodesLoggerDialog().create();
-
-                alertCodesLoggerDialog.setOnShowListener(dialog -> {
-                    Button negativeLoggerButton = alertCodesLoggerDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    negativeLoggerButton.setLayoutParams(params);
-                    startingInt.requestFocus();
-                    imm.showSoftInput(startingInt, InputMethodManager.SHOW_IMPLICIT);
-                    startingInt.setSelection(startingInt.getText().length());
-                });
-
-                alertCodesLoggerDialog.show();
-                break;
             case Keys.CODE_INSPECTOR:
                 if (!helpers.codeInspectorBoolean()) {
                     // start the service
@@ -1055,10 +984,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         recyclerView = null;
         handler.removeCallbacksAndMessages(null);
         mHandler.removeCallbacksAndMessages(null);
-        loggerTickHandler.removeCallbacksAndMessages(null);
         dismissDialogs();
         removeTickRunnable();
-        removeLoggerTickRunnable();
         cancelCountDownTimer();
         SkinAttribute skinAttribute = SkinUtils.getSkinAttr();
         if (skinAttribute != null) {
@@ -1213,10 +1140,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             alertSkipCodesDialog.dismiss();
             alertSkipCodesDialog = null;
         }
-        if (alertCodesLoggerDialog != null && alertCodesLoggerDialog.isShowing()) {
-            alertCodesLoggerDialog.dismiss();
-            alertCodesLoggerDialog = null;
-        }
         if (alertCodesInspectorDialog != null && alertCodesInspectorDialog.isShowing()) {
             alertCodesInspectorDialog.dismiss();
             alertCodesInspectorDialog = null;
@@ -1354,43 +1277,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
     };
 
-    public void setLoggerTickRunnable() {
-        if (!loggerTickRunnableBool) {
-            loggerTickHandler.postDelayed(loggerTickRunnable, TIMER_DURATION);
-            loggerTickRunnableBool = true;
-        }
-    }
-
-    public void removeLoggerTickRunnable() {
-        if (loggerTickRunnableBool) {
-            loggerTickHandler.removeCallbacks(loggerTickRunnable);
-            loggerTickRunnableBool = false;
-        }
-    }
-
-    private final Runnable loggerTickRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (helpers.returnCountDownLogger() > 0) {
-                int remainingTime = helpers.returnCountDownLogger();
-                int hours = remainingTime / 3600;
-                int remainingSeconds = remainingTime % 3600;
-                int minutes = remainingSeconds / 60;
-                int seconds = remainingSeconds % 60;
-                String timeFormat = String.format(Locale.ROOT, "%02d:%02d:%02d", hours, minutes, seconds);
-                codeLogger.setSummary(getString(
-                        R.string.code_logger_summary_working,
-                        timeFormat
-                ));
-                loggerTickHandler.postDelayed(this, TIMER_DURATION);
-            } else {
-                codeLogger.setSummary(getString(R.string.code_logger_summary));
-                loggerTickRunnableBool = false;
-                loggerTickHandler.removeCallbacks(loggerTickRunnable);
-            }
-        }
-    };
-
     public void startCanbusCodeInspector() {
         Intent intent = new Intent(this.requireContext(), CanbusCodeInspector.class);
         Bundle extras = new Bundle();
@@ -1406,17 +1292,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         removeTickRunnable();
         cancelCountDownTimer();
         codeInspector.setSummary(getString(R.string.code_inspector_summary));
-    }
-
-    private void startLoggerService() {
-        Intent loggerIntent = new Intent(this.requireContext(), CanbusCommandLogger.class);
-        ServiceIntentGate.startIfAvailable(this.requireContext(), loggerIntent, "canbus command logger");
-    }
-
-    private void stopLoggerService() {
-        CanbusCommandLogger.stopLogging();
-        removeLoggerTickRunnable();
-        codeLogger.setSummary(getString(R.string.code_logger_summary));
     }
 
     private void dialogStartPageEditText() {
@@ -1487,32 +1362,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         });
     }
 
-    private void dialogCodesLoggerEditText(EditText codesEditText) {
-        codesEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "1199")});
-        codesEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        codesEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        codesEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                saveLoggerCode(codesEditText);
-                alertCodesLoggerDialog.dismiss();
-            }
-            return false;
-        });
-    }
-
-    private void dialogCodesLoggerTimeoutEditText(EditText codesEditText) {
-        codesEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "5")});
-        codesEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        codesEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        codesEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                saveLoggerCode(codesEditText);
-                alertCodesLoggerDialog.dismiss();
-            }
-            return false;
-        });
-    }
-
     private void dialogCodesInspectorEditText(EditText codesEditText) {
         codesEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "9999")});
         codesEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -1578,10 +1427,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private void displayCanbusReaderSwitch() {
         if (displayCanbusReaderBool) {
             codesGuide.setVisible(true);
-            loggerCategory.setVisible(true);
-            codeLogger.setVisible(true);
-            codeLoggerData.setVisible(true);
-            omitDigits.setVisible(true);
             skipCodes.setVisible(true);
             inspectorCategory.setVisible(true);
             codeInspector.setVisible(true);
@@ -1781,78 +1626,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         return builder;
     }
 
-    private AlertDialog.Builder displayCodesLoggerDialog() {
-        EditText startingArr;
-        EditText maxInt;
-        EditText maxArr;
-        EditText loggerTimeout;
-        LayoutInflater inflater = LayoutInflater.from(this.requireContext());
-        View dialogView = inflater.inflate(R.layout.dialog_logger_codes_layout, null);
-
-        startingInt = dialogView.findViewById(R.id.starting_cmd_int);
-        startingArr = dialogView.findViewById(R.id.starting_cmd_arr);
-        maxInt = dialogView.findViewById(R.id.max_cmd_int);
-        maxArr = dialogView.findViewById(R.id.max_cmd_arr);
-        loggerTimeout = dialogView.findViewById(R.id.code_logger_timeout);
-
-        ConstraintLayout constraintInspector = dialogView.findViewById(R.id.constraint_logger);
-        constraintInspector.setPadding(padding, padding, padding, padding);
-
-        setCalculatedSizes(dialogView, R.id.code_logger_data_title, SettingsActivity.dialogTitle, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.starting_cmd_int_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.starting_cmd_arr_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.max_cmd_int_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.max_cmd_arr_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.code_logger_timeout_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-
-        dialogCodesLoggerEditText(startingInt);
-        dialogCodesLoggerEditText(startingArr);
-        dialogCodesLoggerEditText(maxInt);
-        dialogCodesLoggerEditText(maxArr);
-        dialogCodesLoggerTimeoutEditText(loggerTimeout);
-
-        startingInt.setText(startingCmdInt);
-        startingArr.setText(startingCmdArr);
-        maxInt.setText(maxCmdInt);
-        maxArr.setText(maxCmdArr);
-        loggerTimeout.setText(codeLoggerTimeoutStr);
-
-        startingInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        startingArr.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        maxInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        maxArr.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        loggerTimeout.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
-        builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> {
-                startingCmdInt = startingInt.getText().toString();
-                startingCmdArr = startingArr.getText().toString();
-                maxCmdInt = maxInt.getText().toString();
-                maxCmdArr = maxArr.getText().toString();
-                codeLoggerTimeoutStr = loggerTimeout.getText().toString();
-                saveLoggerCode(startingInt);
-                saveLoggerCode(startingArr);
-                saveLoggerCode(maxInt);
-                saveLoggerCode(maxArr);
-                saveLoggerCode(loggerTimeout);
-            });
-        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
-        builder.setOnCancelListener(dialog -> {
-                startingCmdInt = startingInt.getText().toString();
-                startingCmdArr = startingArr.getText().toString();
-                maxCmdInt = maxInt.getText().toString();
-                maxCmdArr = maxArr.getText().toString();
-                codeLoggerTimeoutStr = loggerTimeout.getText().toString();
-                saveLoggerCode(startingInt);
-                saveLoggerCode(startingArr);
-                saveLoggerCode(maxInt);
-                saveLoggerCode(maxArr);
-                saveLoggerCode(loggerTimeout);
-                dialog.dismiss();
-            });
-        return builder;
-    }
-
     private AlertDialog.Builder displayCodesInspectorDialog() {
         EditText inspectorArr;
         EditText inspectorTimeout;
@@ -1911,7 +1684,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         if (textView.getLayoutParams() instanceof ConstraintLayout.LayoutParams params) {
             if (textViewId == R.id.code_inspector_data_title
-             || textViewId == R.id.code_logger_data_title
              || textViewId == R.id.stats_dialog_title
              || textViewId == R.id.canbus_optional) {
                 params.bottomMargin = margin;
@@ -1993,81 +1765,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         editor.putStringSet(Keys.SKIP_CODES, stringSet);
         editor.apply();
-    }
-
-    private void saveLoggerCode(EditText code) {
-        String codeToSaveStr = code.getResources().getResourceEntryName(code.getId());
-        String valueStr = code.getText().toString();
-        if (valueStr.isEmpty()) valueStr = "0";
-        int codeToSaveVal = Integer.parseInt(valueStr);
-
-        if ((codeToSaveStr.equals(Keys.STARTING_CMD_INT) && codeToSaveVal >= getIntFromPrefs(Keys.MAX_CMD_INT, "10"))
-            || (codeToSaveStr.equals(Keys.MAX_CMD_INT) && codeToSaveVal <= getIntFromPrefs(Keys.STARTING_CMD_INT, "0"))) {
-            editor.putString(code.getResources().getResourceEntryName(code.getId()), "0");
-            editor.putString(Keys.STARTING_CMD_INT, "0");
-            editor.putString(Keys.MAX_CMD_INT, "10");
-            editor.apply();
-            startingCmdInt = "0";
-            maxCmdInt = "10";
-            codeLoggerData.setSummary(getString(R.string.code_logger_data_summary,
-                sharedPrefs.getString(Keys.STARTING_CMD_INT, "0"),
-                sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0"),
-                sharedPrefs.getString(Keys.MAX_CMD_INT, "10"),
-                sharedPrefs.getString(Keys.MAX_CMD_ARR, "10"),
-                sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1")));
-            Toast.makeText(
-                this.requireContext(),
-                R.string.code_logger_dialog_toast,
-                Toast.LENGTH_LONG
-            ).show();
-        } else if ((codeToSaveStr.equals(Keys.STARTING_CMD_ARR) && codeToSaveVal >= getIntFromPrefs(Keys.MAX_CMD_ARR, "10"))
-            || (codeToSaveStr.equals(Keys.MAX_CMD_ARR) && codeToSaveVal <= getIntFromPrefs(Keys.STARTING_CMD_ARR, "0"))) {
-            editor.putString(code.getResources().getResourceEntryName(code.getId()), "0");
-            editor.putString(Keys.STARTING_CMD_ARR, "0");
-            editor.putString(Keys.MAX_CMD_ARR, "10");
-            editor.apply();
-            startingCmdArr = "0";
-            maxCmdArr = "10";
-            codeLoggerData.setSummary(getString(R.string.code_logger_data_summary,
-                sharedPrefs.getString(Keys.STARTING_CMD_INT, "0"),
-                sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0"),
-                sharedPrefs.getString(Keys.MAX_CMD_INT, "10"),
-                sharedPrefs.getString(Keys.MAX_CMD_ARR, "10"),
-                sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1")));
-            Toast.makeText(
-                this.requireContext(),
-                R.string.code_logger_dialog_toast,
-                Toast.LENGTH_LONG
-            ).show();
-        } else if (valueStr.equals("0") && codeToSaveStr.equals(Keys.CODE_LOGGER_TIMEOUT)) {
-            valueStr = "1";
-            editor.putString(code.getResources().getResourceEntryName(code.getId()), valueStr);
-            editor.apply();
-            codeLoggerData.setSummary(getString(R.string.code_logger_data_summary,
-                sharedPrefs.getString(Keys.STARTING_CMD_INT, "0"),
-                sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0"),
-                sharedPrefs.getString(Keys.MAX_CMD_INT, "10"),
-                sharedPrefs.getString(Keys.MAX_CMD_ARR, "10"),
-                sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1")));
-        } else {
-            saveVerifiedLoggerCode(code);
-        }
-    }
-
-    private int getIntFromPrefs(String key, String defaultValue) {
-        String value = sharedPrefs.getString(key, defaultValue);
-        return value.isEmpty() ? Integer.parseInt(defaultValue) : Integer.parseInt(value);
-    }
-
-    private void saveVerifiedLoggerCode(EditText code) {
-        editor.putString(code.getResources().getResourceEntryName(code.getId()), code.getText().toString());
-        editor.apply();
-        codeLoggerData.setSummary(getString(R.string.code_logger_data_summary,
-            sharedPrefs.getString(Keys.STARTING_CMD_INT, "0"),
-            sharedPrefs.getString(Keys.STARTING_CMD_ARR, "0"),
-            sharedPrefs.getString(Keys.MAX_CMD_INT, "10"),
-            sharedPrefs.getString(Keys.MAX_CMD_ARR, "10"),
-            sharedPrefs.getString(Keys.CODE_LOGGER_TIMEOUT, "1")));
     }
 
     private void saveInspectorCode(EditText code) {

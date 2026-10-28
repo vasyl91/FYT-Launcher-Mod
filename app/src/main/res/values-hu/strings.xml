@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus-olvasó</string>
     <string name="display_canbus_reader">Canbus-olvasó megjelenítése</string>
     <string name="codes_guide">Canbus-útmutató</string>
-    <string name="codes_guide_initial_reading_title">Kódnaplózó – kezdeti olvasás</string>
-    <string name="codes_guide_initial_reading_one">A „Canbus-olvasó” nem biztos, hogy minden autón működik! A gyártó által biztosított forráskódtól függ. \n\nA canbus-adatok helyes olvasásához három érték elengedhetetlen: a cmdInt és a cmdArr, amelyeket a naplók CMD-ként jelölnek (kevésbé fontosak, a legtöbb véletlenszerű kombináció működik), valamint a canbus-kódok, amelyeket a naplók CODE-ként jelölnek (ezeket fontos meghatározni).</string>
-    <string name="codes_guide_initial_reading_two">A „Kezdeti olvasásnak” egy txt fájlt kell létrehoznia a fentiekhez hasonló naplókkal. A lényeg a pillanatnyi üzemanyag-fogyasztást és a hatótávolságot jelentő kódok megtalálása. \n\nA pillanatnyi fogyasztáshoz keresse azt a kódot, amelynek viszonylag kevés kimenete van – a mellékelt képernyőképen ez a 91-es kód. \n\nA hatótávolság-kód általában egyetlen kimenetet tartalmaz, amely nem változik gyorsan, vagy meghatározott időközönként változik – a mellékelt képernyőképen ez a 92-es kód. \n\nA többi kód elhanyagolható, hacsak nem valami mást keres.</string>
-    <string name="codes_guide_initial_reading_three">„Időablak” – az az idő (másodpercben), ameddig a „Kódnaplózó” menti a kimeneteket az egyes cmdInt- és cmdArr-ciklusokhoz. \n\n„Egyjegyűek kihagyása” – figyelmen kívül hagyja az egyjegyű kimeneteket, mert a pillanatnyi fogyasztás és a hatótávolság általában egynél több számjegyből áll. Ez a beállítás jelentősen felgyorsíthatja a folyamatot, mert a ciklus nem időzik a lényegtelen kimeneteknél. \n\nTipp – a canbus-kódok hatékony vizsgálatának megkezdéséhez használjon szűk tartományt a cmdInt és cmdArr kezdő- és maximális értéke között. Tetszés szerint beállíthatja őket, ha nem haladják meg a maximális értékeket (a beviteli párbeszédablakban találja), és a kezdőérték nem nagyobb a maximálisnál. Minél szélesebb a tartomány és minél hosszabb az időablak, annál tovább tart a folyamat.</string>
     <string name="codes_guide_detailed_reading_title">Kódvizsgáló – részletes olvasás</string>
     <string name="codes_guide_detailed_reading">Ez a rész bizonyos cmdInt- és cmdArr-kombinációk tesztelésére szolgál, hogy kiderüljön, milyen kódokat tartalmaznak. Ahogy korábban említettük, a cmdInt és a cmdArr kevésbé fontos, és a legtöbb véletlenszerű kombináció működik. Ez a modul azelőtt készült, hogy ezt megtudtam volna, de egyes tesztekhez még hasznos lehet.</string>
     <string name="codes_guide_miscellaneous_title">Egyebek</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">A következő kódok ki lesznek hagyva: %1$s</string>
     <string name="skip_codes_empty_summary">Az adatok a teljes kódkészletből lesznek beolvasva.</string>
     <string name="skip_codes_dialog_str">Írja be a kihagyandó kódokat (vesszővel elválasztva):</string>
-    <string name="logger_category">Kódnaplózó</string>
-    <string name="code_logger_string">Kezdeti olvasás</string>
-    <string name="code_logger_summary">Koppintson a folyamat elindításához</string>
-    <string name="code_logger_summary_working">Folyamatban… %1$s Koppintson a megszakításhoz</string>
-    <string name="code_logger_data">Kezdeti olvasás adatai</string>
-    <string name="code_logger_data_summary">Koppintson a kezdeti olvasás adatainak beállításához. \nKezdő cmdInt: %1$s, kezdő cmdArr: %2$s, max. cmdInt: %3$s, max. cmdArr: %4$s, időablak: %5$s</string>
-    <string name="starting_cmd_int_text">Kezdő cmdInt (legfeljebb 1198):</string>
-    <string name="starting_cmd_arr_text">Kezdő cmdArr (legfeljebb 1198):</string>
-    <string name="max_cmd_int_text">Max. cmdInt (legfeljebb 1199):</string>
-    <string name="max_cmd_arr_text">Max. cmdArr (legfeljebb 1199):</string>
-    <string name="code_logger_timeout_text">Időablak:</string>
-    <string name="omit_digits">Egyjegyűek kihagyása</string>
-    <string name="omit_digits_summary">Az üzemanyag-fogyasztás és a hatótávolság általában egynél több számjegyből áll. Ez a beállítás jelentősen felgyorsíthatja a folyamatot.</string>
-    <string name="code_logger_dialog_toast">A kezdőérték nem lehet nagyobb a maximális értéknél</string>
-    <string name="code_logger_toast">A kódok naplózása befejeződött. Az eredményeket a Download/Launcher66_Canbus mappában találja</string>
 
     <string name="inspector_category">Kódvizsgáló</string>
     <string name="code_inspector_string">Részletes olvasás</string>

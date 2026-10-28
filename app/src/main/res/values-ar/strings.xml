@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">قارئ Canbus</string>
     <string name="display_canbus_reader">عرض قارئ Canbus</string>
     <string name="codes_guide">دليل Canbus</string>
-    <string name="codes_guide_initial_reading_title">مسجّل الرموز – القراءة الأولية</string>
-    <string name="codes_guide_initial_reading_one">قد لا يعمل \"قارئ Canbus\" مع كل سيارة! فهو يعتمد على الشفرة المصدرية التي توفرها الشركة المصنّعة. \n\nهناك ثلاث قيم أساسية لقراءة بيانات canbus بشكل صحيح: cmdInt وcmdArr وتظهر في السجلات باسم CMD (وهما أقل أهمية، ومعظم التركيبات العشوائية يجب أن تعمل)، ورموز canbus وتظهر في السجلات باسم CODE (وهذه مهم تحديدها).</string>
-    <string name="codes_guide_initial_reading_two">يجب أن تُنشئ \"القراءة الأولية\" ملف txt يحتوي على سجلات تشبه الموضحة أعلاه. الجزء الحاسم هو تحديد الرموز التي تمثل استهلاك الوقود الحالي والمدى. \n\nلاستهلاك الوقود الحالي ابحث عن الرمز الذي يحتوي على مخرجات قليلة نسبيًا – في لقطة الشاشة المرفقة هو الرمز 91. \n\nرمز المدى يحمل عادةً مخرجًا واحدًا لا يتغير بسرعة أو يتغير على فترات محددة – في لقطة الشاشة المرفقة هو الرمز 92. \n\nباقي الرموز يمكن تجاهلها ما لم تكن تبحث عن شيء آخر.</string>
-    <string name="codes_guide_initial_reading_three">\"النافذة الزمنية\" – الوقت (بالثواني) الذي يحفظ خلاله \"مسجّل الرموز\" المخرجات لكل دورة من cmdInt وcmdArr. \n\n\"تجاهل الأرقام المفردة\" – يتجاهل المخرجات المكوّنة من رقم واحد لأن استهلاك الوقود الحالي والمدى يتكوّنان عادةً من أكثر من رقم. قد يُسرّع هذا الخيار العملية كثيرًا لأن الحلقة لا تتوقف عند المخرجات غير ذات الصلة. \n\nنصيحة – للبدء بفحص رموز canbus بكفاءة، استخدم نطاقًا ضيقًا بين القيمة الابتدائية والقصوى لـ cmdInt وcmdArr. يمكنك ضبطها كما تشاء بشرط ألا تتجاوز القيم القصوى (الموضحة في مربع الإدخال) وألا تزيد القيمة الابتدائية على القصوى. كلما اتسع النطاق وطالت النافذة الزمنية، طالت العملية.</string>
     <string name="codes_guide_detailed_reading_title">مفتش الرموز – القراءة التفصيلية</string>
     <string name="codes_guide_detailed_reading">هذا الجزء مخصص لاختبار تركيبات محددة من cmdInt وcmdArr لكشف الرموز التي تحملها. كما ذُكر سابقًا، cmdInt وcmdArr أقل أهمية ومعظم التركيبات العشوائية يجب أن تعمل. أنشئت هذه الوحدة قبل أن أعرف ذلك، لكنها قد تظل مفيدة لاختبارات محددة.</string>
     <string name="codes_guide_miscellaneous_title">متنوعة</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">ستُتخطى الرموز التالية: %1$s</string>
     <string name="skip_codes_empty_summary">ستُقرأ البيانات من مجموعة الرموز بأكملها.</string>
     <string name="skip_codes_dialog_str">اكتب الرموز المراد تخطيها (مفصولة بفواصل):</string>
-    <string name="logger_category">مسجّل الرموز</string>
-    <string name="code_logger_string">القراءة الأولية</string>
-    <string name="code_logger_summary">المس لبدء العملية</string>
-    <string name="code_logger_summary_working">جارٍ العمل… %1$s المس للإلغاء</string>
-    <string name="code_logger_data">بيانات القراءة الأولية</string>
-    <string name="code_logger_data_summary">المس لضبط بيانات القراءة الأولية. \ncmdInt الابتدائي: %1$s، cmdArr الابتدائي: %2$s، أقصى cmdInt: %3$s، أقصى cmdArr: %4$s، النافذة الزمنية: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt الابتدائي (الحد الأقصى 1198):</string>
-    <string name="starting_cmd_arr_text">cmdArr الابتدائي (الحد الأقصى 1198):</string>
-    <string name="max_cmd_int_text">أقصى cmdInt (الحد الأقصى 1199):</string>
-    <string name="max_cmd_arr_text">أقصى cmdArr (الحد الأقصى 1199):</string>
-    <string name="code_logger_timeout_text">النافذة الزمنية:</string>
-    <string name="omit_digits">تجاهل الأرقام المفردة</string>
-    <string name="omit_digits_summary">يتكوّن استهلاك الوقود والمدى عادةً من أكثر من رقم. قد يُسرّع هذا الخيار العملية كثيرًا.</string>
-    <string name="code_logger_dialog_toast">لا يمكن أن تكون القيمة الابتدائية أكبر من القيمة القصوى</string>
-    <string name="code_logger_toast">اكتمل تسجيل الرموز. تحقق من النتائج في Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">مفتش الرموز</string>
     <string name="code_inspector_string">القراءة التفصيلية</string>

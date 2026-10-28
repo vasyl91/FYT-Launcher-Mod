@@ -104,16 +104,8 @@ public final class Keys {
     public static final String DISPLAY_CANBUS_READER = "display_canbus_reader";
     public static final String CODES_GUIDE = "codes_guide";
     public static final String SKIP_CODES = "skip_codes";
-    public static final String CODE_LOGGER = "code_logger";
-    public static final String CODE_LOGGER_DATA = "code_logger_data";
     public static final String CMD_INT = "cmdInt_code_int";
     public static final String CMD_ARR = "cmdArr_code_int";
-    public static final String STARTING_CMD_INT = "starting_cmd_int";
-    public static final String STARTING_CMD_ARR = "starting_cmd_arr";
-    public static final String MAX_CMD_INT = "max_cmd_int";
-    public static final String MAX_CMD_ARR = "max_cmd_arr";
-    public static final String CODE_LOGGER_TIMEOUT = "code_logger_timeout";
-    public static final String OMIT_DIGITS = "omit_digits";
     public static final String CODE_INSPECTOR = "code_inspector";
     public static final String CODE_INSPECTOR_DATA = "code_inspector_data";
     public static final String INSPECTOR_CMD_INT = "inspector_cmd_int";

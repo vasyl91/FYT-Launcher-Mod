@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Leitor Canbus</string>
     <string name="display_canbus_reader">Exibir o leitor Canbus</string>
     <string name="codes_guide">Guia do Canbus</string>
-    <string name="codes_guide_initial_reading_title">Registrador de códigos – leitura inicial</string>
-    <string name="codes_guide_initial_reading_one">O \"leitor Canbus\" pode não funcionar em todos os carros! Depende do código-fonte fornecido pelo fabricante. \n\nHá três valores essenciais para ler corretamente os dados do canbus: cmdInt e cmdArr, representados nos logs por CMD (menos importantes, a maioria das combinações aleatórias deve funcionar) e os códigos canbus, representados nos logs por CODE (estes precisam ser determinados).</string>
-    <string name="codes_guide_initial_reading_two">A \"Leitura inicial\" deve criar um arquivo txt com logs parecidos com os acima. O essencial é identificar os códigos que representam o consumo instantâneo e a autonomia. \n\nPara o consumo instantâneo, procure o código que contém poucas saídas – na captura de tela anexa, é o código 91. \n\nO código da autonomia costuma ter uma única saída que não muda rápido ou muda em intervalos específicos – na captura de tela anexa, é o código 92. \n\nOs demais códigos são desprezíveis, a menos que você procure outra coisa.</string>
-    <string name="codes_guide_initial_reading_three">\"Janela de tempo\" – o tempo (em segundos) durante o qual o \"Registrador de códigos\" salvará as saídas de cada ciclo de cmdInt e cmdArr. \n\n\"Omitir números de um dígito\" – ignora saídas de um único dígito, porque o consumo instantâneo e a autonomia costumam ter mais de um dígito. Esta opção pode acelerar bastante o processo, pois o ciclo não se demora em saídas irrelevantes. \n\nDica – para começar a examinar os códigos canbus com eficiência, use um intervalo estreito entre os valores inicial e máximo de cmdInt e cmdArr. Você pode defini-los como quiser, desde que não ultrapassem os valores máximos (informados na caixa de diálogo) e o valor inicial não seja maior que o máximo. Quanto maior o intervalo e mais longa a janela de tempo, mais demorado será o processo.</string>
     <string name="codes_guide_detailed_reading_title">Inspetor de códigos – leitura detalhada</string>
     <string name="codes_guide_detailed_reading">Esta parte serve para testar combinações específicas de cmdInt e cmdArr e revelar os códigos que elas contêm. Como dito antes, cmdInt e cmdArr são menos importantes e a maioria das combinações aleatórias deve funcionar. Este módulo foi criado antes de eu saber disso, mas ainda pode ser útil para testes específicos.</string>
     <string name="codes_guide_miscellaneous_title">Diversos</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Os seguintes códigos serão ignorados: %1$s</string>
     <string name="skip_codes_empty_summary">Os dados serão lidos de todo o conjunto de códigos.</string>
     <string name="skip_codes_dialog_str">Digite os códigos a ignorar (separados por vírgulas):</string>
-    <string name="logger_category">Registrador de códigos</string>
-    <string name="code_logger_string">Leitura inicial</string>
-    <string name="code_logger_summary">Toque para iniciar o processo</string>
-    <string name="code_logger_summary_working">Em andamento… %1$s Toque para cancelar</string>
-    <string name="code_logger_data">Dados da leitura inicial</string>
-    <string name="code_logger_data_summary">Toque para definir os dados da leitura inicial. \ncmdInt inicial: %1$s, cmdArr inicial: %2$s, cmdInt máx.: %3$s, cmdArr máx.: %4$s, janela de tempo: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt inicial (máx. 1198):</string>
-    <string name="starting_cmd_arr_text">cmdArr inicial (máx. 1198):</string>
-    <string name="max_cmd_int_text">cmdInt máx. (máx. 1199):</string>
-    <string name="max_cmd_arr_text">cmdArr máx. (máx. 1199):</string>
-    <string name="code_logger_timeout_text">Janela de tempo:</string>
-    <string name="omit_digits">Omitir números de um dígito</string>
-    <string name="omit_digits_summary">O consumo de combustível e a autonomia costumam ter mais de um dígito. Esta opção pode acelerar bastante o processo.</string>
-    <string name="code_logger_dialog_toast">O valor inicial não pode ser maior que o valor máximo</string>
-    <string name="code_logger_toast">Registro dos códigos concluído. Confira os resultados em Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Inspetor de códigos</string>
     <string name="code_inspector_string">Leitura detalhada</string>

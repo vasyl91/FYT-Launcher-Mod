@@ -100,9 +100,6 @@
     <string name="app_list_dialog">Os apps selecionados mostrarão a janela de estatísticas</string>
 
     <string name="display_canbus_reader">Mostrar o leitor Canbus</string>
-    <string name="codes_guide_initial_reading_two">A \"Leitura inicial\" deve criar um ficheiro txt com logs parecidos com os acima. O essencial é identificar os códigos que representam o consumo instantâneo e a autonomia. \n\nPara o consumo instantâneo, procure o código que contém poucas saídas – na captura de ecrã anexa, é o código 91. \n\nO código da autonomia costuma ter uma única saída que não muda rápido ou muda em intervalos específicos – na captura de ecrã anexa, é o código 92. \n\nOs demais códigos são desprezíveis, a menos que você procure outra coisa.</string>
-    <string name="codes_guide_initial_reading_three">\"Janela de tempo\" – o tempo (em segundos) durante o qual o \"Registrador de códigos\" salvará as saídas de cada ciclo de cmdInt e cmdArr. \n\n\"Omitir números de um dígito\" – ignora saídas de um único dígito, porque o consumo instantâneo e a autonomia costumam ter mais de um dígito. Esta opção pode acelerar bastante o processo, pois o ciclo não se demora em saídas irrelevantes. \n\nDica – para começar a examinar os códigos canbus com eficiência, use um intervalo estreito entre os valores inicial e máximo de cmdInt e cmdArr. Pode defini-los como quiser, desde que não ultrapassem os valores máximos (informados na caixa de diálogo) e o valor inicial não seja maior que o máximo. Quanto maior o intervalo e mais longa a janela de tempo, mais demorado será o processo.</string>
-    <string name="code_logger_summary_working">Em curso… %1$s Toque para cancelar</string>
 
     <string name="code_inspector_summary_working">Em curso… %1$s Toque para cancelar</string>
 

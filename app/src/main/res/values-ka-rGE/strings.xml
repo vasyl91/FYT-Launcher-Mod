@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus წამკითხველი</string>
     <string name="display_canbus_reader">Canbus წამკითხველის ჩვენება</string>
     <string name="codes_guide">Canbus სახელმძღვანელო</string>
-    <string name="codes_guide_initial_reading_title">კოდების ლოგერი – საწყისი წაკითხვა</string>
-    <string name="codes_guide_initial_reading_one">„Canbus წამკითხველმა“ შეიძლება ყველა ავტომობილზე არ იმუშაოს! ეს დამოკიდებულია მწარმოებლის მიერ მოწოდებულ საწყის კოდზე. \n\ncanbus მონაცემების სწორად წასაკითხად მნიშვნელოვანია სამი მნიშვნელობა: cmdInt და cmdArr, რომლებიც ლოგებში CMD-ით არის წარმოდგენილი (ნაკლებად მნიშვნელოვანი, შემთხვევითი კომბინაციების უმეტესობა უნდა მუშაობდეს), და canbus კოდები, რომლებიც ლოგებში CODE-ით არის წარმოდგენილი (ამათი დადგენა მნიშვნელოვანია).</string>
-    <string name="codes_guide_initial_reading_two">„საწყისმა წაკითხვამ“ უნდა შექმნას txt ფაილი ზემოთ მოცემულის მსგავსი ლოგებით. მთავარია იმ კოდების დადგენა, რომლებიც მიმდინარე საწვავის ხარჯსა და დისტანციას წარმოადგენს. \n\nმიმდინარე საწვავის ხარჯისთვის მოძებნეთ კოდი, რომელსაც შედარებით ცოტა გამოსავალი აქვს – თანდართულ ეკრანის სურათზე ეს არის კოდი 91. \n\nდისტანციის კოდს ჩვეულებრივ ერთი გამოსავალი აქვს, რომელიც სწრაფად არ იცვლება ან გარკვეული ინტერვალებით იცვლება – თანდართულ ეკრანის სურათზე ეს არის კოდი 92. \n\nსხვა კოდები უმნიშვნელოა, თუ სხვას არაფერს ეძებთ.</string>
-    <string name="codes_guide_initial_reading_three">„დროის ფანჯარა“ – დრო (წამებში), რომლის განმავლობაშიც „კოდების ლოგერი“ ინახავს გამოსავლებს cmdInt-ისა და cmdArr-ის თითოეული ციკლისთვის. \n\n„ერთნიშნა რიცხვების გამოტოვება“ – უგულებელყოფს ერთნიშნა გამოსავლებს, რადგან მიმდინარე საწვავის ხარჯს და დისტანციას ჩვეულებრივ ერთზე მეტი ციფრი აქვს. ამ პარამეტრმა შეიძლება პროცესი მნიშვნელოვნად დააჩქაროს, რადგან ციკლი არარელევანტურ გამოსავლებზე არ ჩერდება. \n\nრჩევა – canbus კოდების ეფექტურად შესწავლის დასაწყებად გამოიყენეთ ვიწრო დიაპაზონი cmdInt-ისა და cmdArr-ის საწყის და მაქსიმალურ მნიშვნელობებს შორის. შეგიძლიათ ისინი ისე დააყენოთ, როგორც გსურთ, თუ მაქსიმალურ მნიშვნელობებს (მითითებულია შეყვანის დიალოგში) არ აღემატება და საწყისი მნიშვნელობა მაქსიმალურზე დიდი არ არის. რაც უფრო ფართოა დიაპაზონი და უფრო გრძელი დროის ფანჯარა, მით უფრო დიდხანს გრძელდება პროცესი.</string>
     <string name="codes_guide_detailed_reading_title">კოდების ინსპექტორი – დეტალური წაკითხვა</string>
     <string name="codes_guide_detailed_reading">ეს ნაწილი განკუთვნილია cmdInt-ისა და cmdArr-ის კონკრეტული კომბინაციების გასატესტად, რათა გამოვლინდეს მათში არსებული კოდები. როგორც ზემოთ აღინიშნა, cmdInt და cmdArr ნაკლებად მნიშვნელოვანია და შემთხვევითი კომბინაციების უმეტესობა უნდა მუშაობდეს. ეს მოდული შეიქმნა, სანამ ამის შესახებ გავიგებდი, მაგრამ მაინც შეიძლება გამოდგეს კონკრეტული ტესტებისთვის.</string>
     <string name="codes_guide_miscellaneous_title">სხვადასხვა</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">შემდეგი კოდები გამოტოვებული იქნება: %1$s</string>
     <string name="skip_codes_empty_summary">მონაცემები წაიკითხება კოდების მთელი ნაკრებიდან.</string>
     <string name="skip_codes_dialog_str">შეიყვანეთ გამოსატოვებელი კოდები (მძიმეებით გამოყოფილი):</string>
-    <string name="logger_category">კოდების ლოგერი</string>
-    <string name="code_logger_string">საწყისი წაკითხვა</string>
-    <string name="code_logger_summary">შეეხეთ პროცესის დასაწყებად</string>
-    <string name="code_logger_summary_working">მუშაობს… %1$s შეეხეთ გასაუქმებლად</string>
-    <string name="code_logger_data">საწყისი წაკითხვის მონაცემები</string>
-    <string name="code_logger_data_summary">შეეხეთ საწყისი წაკითხვის მონაცემების დასაყენებლად. \nსაწყისი cmdInt: %1$s, საწყისი cmdArr: %2$s, მაქს. cmdInt: %3$s, მაქს. cmdArr: %4$s, დროის ფანჯარა: %5$s</string>
-    <string name="starting_cmd_int_text">საწყისი cmdInt (მაქს. 1198):</string>
-    <string name="starting_cmd_arr_text">საწყისი cmdArr (მაქს. 1198):</string>
-    <string name="max_cmd_int_text">მაქს. cmdInt (მაქს. 1199):</string>
-    <string name="max_cmd_arr_text">მაქს. cmdArr (მაქს. 1199):</string>
-    <string name="code_logger_timeout_text">დროის ფანჯარა:</string>
-    <string name="omit_digits">ერთნიშნა რიცხვების გამოტოვება</string>
-    <string name="omit_digits_summary">საწვავის ხარჯს და დისტანციას ჩვეულებრივ ერთზე მეტი ციფრი აქვს. ამ პარამეტრმა შეიძლება პროცესი მნიშვნელოვნად დააჩქაროს.</string>
-    <string name="code_logger_dialog_toast">საწყისი მნიშვნელობა მაქსიმალურზე დიდი ვერ იქნება</string>
-    <string name="code_logger_toast">კოდების ლოგირება დასრულდა. შედეგები იხილეთ Download/Launcher66_Canbus-ში</string>
 
     <string name="inspector_category">კოდების ინსპექტორი</string>
     <string name="code_inspector_string">დეტალური წაკითხვა</string>

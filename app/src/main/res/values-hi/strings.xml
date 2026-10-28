@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus रीडर</string>
     <string name="display_canbus_reader">Canbus रीडर दिखाएँ</string>
     <string name="codes_guide">Canbus गाइड</string>
-    <string name="codes_guide_initial_reading_title">कोड लॉगर – प्रारंभिक रीडिंग</string>
-    <string name="codes_guide_initial_reading_one">\"Canbus रीडर\" हर कार पर काम नहीं कर सकता! यह निर्माता द्वारा दिए गए सोर्स कोड पर निर्भर करता है। \n\ncanbus डेटा सही पढ़ने के लिए तीन मान ज़रूरी हैं – cmdInt और cmdArr, जो लॉग में CMD के रूप में दिखते हैं (कम महत्वपूर्ण, अधिकतर यादृच्छिक संयोजन काम करने चाहिए) और canbus कोड, जो लॉग में CODE के रूप में दिखते हैं (इन्हें पता करना महत्वपूर्ण है)।</string>
-    <string name="codes_guide_initial_reading_two">\"प्रारंभिक रीडिंग\" को एक txt फ़ाइल बनानी चाहिए जिसमें ऊपर जैसे लॉग हों। मुख्य बात उन कोड की पहचान करना है जो मौजूदा ईंधन खपत और रेंज दर्शाते हैं। \n\nमौजूदा ईंधन खपत के लिए वह कोड खोजें जिसके आउटपुट अपेक्षाकृत कम हों – संलग्न स्क्रीनशॉट में यह कोड 91 है। \n\nरेंज कोड में आमतौर पर एक ही आउटपुट होता है जो जल्दी नहीं बदलता या निश्चित अंतराल पर बदलता है – संलग्न स्क्रीनशॉट में यह कोड 92 है। \n\nबाकी कोड नगण्य हैं, जब तक आप कुछ और न खोज रहे हों।</string>
-    <string name="codes_guide_initial_reading_three">\"समय विंडो\" – वह समय (सेकंड में) जिसके दौरान \"कोड लॉगर\" हर cmdInt और cmdArr लूप के आउटपुट सहेजता है। \n\n\"एकल अंक छोड़ें\" – एक अंक वाले आउटपुट को अनदेखा करता है, क्योंकि मौजूदा ईंधन खपत और रेंज आमतौर पर एक से अधिक अंकों की होती हैं। यह विकल्प प्रक्रिया को काफ़ी तेज़ कर सकता है क्योंकि लूप अप्रासंगिक आउटपुट पर नहीं अटकता। \n\nसुझाव – canbus कोड को कुशलता से जाँचना शुरू करने के लिए cmdInt और cmdArr के प्रारंभिक और अधिकतम मान के बीच संकरी सीमा रखें। आप इन्हें अपनी इच्छा से सेट कर सकते हैं, बशर्ते वे अधिकतम मानों (इनपुट डायलॉग में दिए गए) से अधिक न हों और प्रारंभिक मान अधिकतम से बड़ा न हो। सीमा जितनी चौड़ी और समय विंडो जितनी लंबी होगी, प्रक्रिया उतनी देर चलेगी।</string>
     <string name="codes_guide_detailed_reading_title">कोड इंस्पेक्टर – विस्तृत रीडिंग</string>
     <string name="codes_guide_detailed_reading">यह भाग cmdInt और cmdArr के विशेष संयोजनों को जाँचने के लिए है ताकि उनमें मौजूद कोड सामने आएँ। जैसा पहले बताया गया, cmdInt और cmdArr कम महत्वपूर्ण हैं और अधिकतर यादृच्छिक संयोजन काम करने चाहिए। यह मॉड्यूल मेरे यह जानने से पहले बना था, लेकिन विशेष परीक्षणों के लिए अब भी उपयोगी हो सकता है।</string>
     <string name="codes_guide_miscellaneous_title">विविध</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">ये कोड छोड़ दिए जाएँगे: %1$s</string>
     <string name="skip_codes_empty_summary">डेटा पूरे कोड सेट से पढ़ा जाएगा।</string>
     <string name="skip_codes_dialog_str">छोड़े जाने वाले कोड लिखें (अल्पविराम से अलग करके):</string>
-    <string name="logger_category">कोड लॉगर</string>
-    <string name="code_logger_string">प्रारंभिक रीडिंग</string>
-    <string name="code_logger_summary">प्रक्रिया शुरू करने के लिए टैप करें</string>
-    <string name="code_logger_summary_working">काम चल रहा है… %1$s रद्द करने के लिए टैप करें</string>
-    <string name="code_logger_data">प्रारंभिक रीडिंग का डेटा</string>
-    <string name="code_logger_data_summary">प्रारंभिक रीडिंग का डेटा सेट करने के लिए टैप करें। \nप्रारंभिक cmdInt: %1$s, प्रारंभिक cmdArr: %2$s, अधिकतम cmdInt: %3$s, अधिकतम cmdArr: %4$s, समय विंडो: %5$s</string>
-    <string name="starting_cmd_int_text">प्रारंभिक cmdInt (अधिकतम 1198):</string>
-    <string name="starting_cmd_arr_text">प्रारंभिक cmdArr (अधिकतम 1198):</string>
-    <string name="max_cmd_int_text">अधिकतम cmdInt (अधिकतम 1199):</string>
-    <string name="max_cmd_arr_text">अधिकतम cmdArr (अधिकतम 1199):</string>
-    <string name="code_logger_timeout_text">समय विंडो:</string>
-    <string name="omit_digits">एकल अंक छोड़ें</string>
-    <string name="omit_digits_summary">ईंधन खपत और रेंज आमतौर पर एक से अधिक अंकों की होती हैं। यह विकल्प प्रक्रिया को काफ़ी तेज़ कर सकता है।</string>
-    <string name="code_logger_dialog_toast">प्रारंभिक मान अधिकतम मान से बड़ा नहीं हो सकता</string>
-    <string name="code_logger_toast">कोड की लॉगिंग पूरी हुई। नतीजे Download/Launcher66_Canbus में देखें</string>
 
     <string name="inspector_category">कोड इंस्पेक्टर</string>
     <string name="code_inspector_string">विस्तृत रीडिंग</string>

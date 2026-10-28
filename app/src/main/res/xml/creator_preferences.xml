@@ -238,30 +238,6 @@
             android:maxLines="5"  />
 
         <com.android.launcher66.settings.CustomPreferenceCategory
-            app:key="logger_category"
-            app:title="@string/logger_category"
-            style="@style/PreferenceCategoryStyle" >
-        
-            <com.android.launcher66.settings.CustomPreference
-                android:key="code_logger"
-                android:title="@string/code_logger_string"
-                app:layout="@layout/nested_preference_category_content"  />        
-            <com.android.launcher66.settings.CustomPreference
-                android:key="code_logger_data"
-                android:title="@string/code_logger_data"
-                android:maxLines="5"
-                app:layout="@layout/nested_preference_category_content" />              
-            <com.android.launcher66.settings.CustomSwitchPreference
-                android:key="omit_digits"
-                android:defaultValue="false"
-                android:maxLines="5"
-                android:title="@string/omit_digits"
-                android:summary="@string/omit_digits_summary"
-                app:layout="@layout/nested_preference_category_switch" />
-            
-        </com.android.launcher66.settings.CustomPreferenceCategory>
-
-        <com.android.launcher66.settings.CustomPreferenceCategory
             app:key="inspector_category"
             app:title="@string/inspector_category"
             style="@style/PreferenceCategoryStyle" >

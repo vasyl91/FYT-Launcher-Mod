@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Считыватель Canbus</string>
     <string name="display_canbus_reader">Показывать считыватель Canbus</string>
     <string name="codes_guide">Руководство по Canbus</string>
-    <string name="codes_guide_initial_reading_title">Логгер кодов — первичное считывание</string>
-    <string name="codes_guide_initial_reading_one">«Считыватель Canbus» может работать не на каждом автомобиле! Это зависит от исходного кода, предоставленного производителем. \n\nДля правильного чтения данных canbus важны три значения: cmdInt и cmdArr, обозначаемые в логах как CMD (они менее важны, большинство случайных комбинаций должно работать), и коды canbus, обозначаемые в логах как CODE (их нужно определить).</string>
-    <string name="codes_guide_initial_reading_two">«Первичное считывание» должно создать txt-файл с логами, похожими на показанные выше. Главное — определить коды, соответствующие текущему расходу топлива и запасу хода. \n\nДля текущего расхода ищите код, у которого сравнительно мало значений на выходе — на приложенном скриншоте это код 91. \n\nКод запаса хода обычно содержит одно значение, которое быстро не меняется или меняется через определённые интервалы — на приложенном скриншоте это код 92. \n\nОстальными кодами можно пренебречь, если только вы не ищете что-то другое.</string>
-    <string name="codes_guide_initial_reading_three">«Временное окно» — время (в секундах), в течение которого «Логгер кодов» сохраняет выходные данные для каждого цикла cmdInt и cmdArr. \n\n«Пропускать однозначные числа» — игнорирует однозначные значения, потому что текущий расход и запас хода обычно состоят более чем из одной цифры. Эта опция может сильно ускорить процесс, так как цикл не задерживается на ненужных значениях. \n\nСовет — чтобы эффективно начать изучение кодов canbus, используйте узкий диапазон между начальными и максимальными значениями cmdInt и cmdArr. Вы можете задать их как угодно, если они не превышают максимальные значения (указаны в окне ввода), а начальное значение не больше максимального. Чем шире диапазон и больше временное окно, тем дольше длится процесс.</string>
     <string name="codes_guide_detailed_reading_title">Инспектор кодов — подробное считывание</string>
     <string name="codes_guide_detailed_reading">Эта часть предназначена для проверки конкретных комбинаций cmdInt и cmdArr, чтобы узнать, какие коды они содержат. Как говорилось ранее, cmdInt и cmdArr менее важны, и большинство случайных комбинаций должно работать. Этот модуль был создан до того, как я это узнал, но он всё ещё может пригодиться для отдельных проверок.</string>
     <string name="codes_guide_miscellaneous_title">Прочее</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Следующие коды будут пропущены: %1$s</string>
     <string name="skip_codes_empty_summary">Данные будут считываться из всего набора кодов.</string>
     <string name="skip_codes_dialog_str">Введите коды для пропуска (через запятую):</string>
-    <string name="logger_category">Логгер кодов</string>
-    <string name="code_logger_string">Первичное считывание</string>
-    <string name="code_logger_summary">Нажмите, чтобы начать процесс</string>
-    <string name="code_logger_summary_working">Выполняется… %1$s Нажмите, чтобы отменить</string>
-    <string name="code_logger_data">Данные первичного считывания</string>
-    <string name="code_logger_data_summary">Нажмите, чтобы задать данные первичного считывания. \nНачальный cmdInt: %1$s, начальный cmdArr: %2$s, макс. cmdInt: %3$s, макс. cmdArr: %4$s, временное окно: %5$s</string>
-    <string name="starting_cmd_int_text">Начальный cmdInt (макс. 1198):</string>
-    <string name="starting_cmd_arr_text">Начальный cmdArr (макс. 1198):</string>
-    <string name="max_cmd_int_text">Макс. cmdInt (макс. 1199):</string>
-    <string name="max_cmd_arr_text">Макс. cmdArr (макс. 1199):</string>
-    <string name="code_logger_timeout_text">Временное окно:</string>
-    <string name="omit_digits">Пропускать однозначные числа</string>
-    <string name="omit_digits_summary">Расход топлива и запас хода обычно содержат более одной цифры. Эта опция может сильно ускорить процесс.</string>
-    <string name="code_logger_dialog_toast">Начальное значение не может быть больше максимального</string>
-    <string name="code_logger_toast">Запись кодов завершена. Результаты в Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Инспектор кодов</string>
     <string name="code_inspector_string">Подробное считывание</string>

@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Čtečka Canbus</string>
     <string name="display_canbus_reader">Zobrazit čtečku Canbus</string>
     <string name="codes_guide">Průvodce Canbus</string>
-    <string name="codes_guide_initial_reading_title">Záznamník kódů – počáteční čtení</string>
-    <string name="codes_guide_initial_reading_one">„Čtečka Canbus“ nemusí fungovat v každém voze! Závisí na zdrojovém kódu poskytnutém výrobcem. \n\nPro správné čtení dat canbus jsou nezbytné tři hodnoty: cmdInt a cmdArr, které jsou v protokolech označeny CMD (jsou méně důležité, většina náhodných kombinací by měla fungovat), a kódy canbus, které jsou v protokolech označeny CODE (ty je důležité zjistit).</string>
-    <string name="codes_guide_initial_reading_two">„Počáteční čtení“ by mělo vytvořit soubor txt s protokoly, které vypadají jako výše. Klíčové je určit kódy, které představují aktuální spotřebu paliva a dojezd. \n\nPro aktuální spotřebu paliva hledejte kód, který má poměrně málo výstupů – na přiloženém snímku obrazovky je to kód 91. \n\nKód dojezdu obvykle obsahuje jediný výstup, který se rychle nemění nebo se mění v určitých intervalech – na přiloženém snímku obrazovky je to kód 92. \n\nOstatní kódy jsou zanedbatelné, pokud nehledáte něco jiného.</string>
-    <string name="codes_guide_initial_reading_three">„Časové okno“ – doba (v sekundách), po kterou „Záznamník kódů“ ukládá výstupy pro každou smyčku cmdInt a cmdArr. \n\n„Vynechat jednociferná čísla“ – ignoruje jednociferné výstupy, protože aktuální spotřeba paliva a dojezd mají obvykle více než jednu číslici. Tato volba může proces výrazně urychlit, protože smyčka nezůstává u nepodstatných výstupů. \n\nTip – abyste mohli efektivně začít zkoumat kódy canbus, použijte úzký rozsah mezi počáteční a maximální hodnotou cmdInt a cmdArr. Můžete je nastavit libovolně, pokud nepřekročí maximální hodnoty (uvedené ve vstupním dialogu) a počáteční hodnota nebude větší než maximální. Čím širší rozsah a delší časové okno, tím déle proces trvá.</string>
     <string name="codes_guide_detailed_reading_title">Inspektor kódů – podrobné čtení</string>
     <string name="codes_guide_detailed_reading">Tato část slouží k testování konkrétních kombinací cmdInt a cmdArr, aby se odhalily kódy, které obsahují. Jak bylo řečeno dříve, cmdInt a cmdArr jsou méně důležité a většina náhodných kombinací by měla fungovat. Tento modul vznikl dříve, než jsem to zjistil, ale pro konkrétní testy může být stále užitečný.</string>
     <string name="codes_guide_miscellaneous_title">Různé</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Následující kódy budou přeskočeny: %1$s</string>
     <string name="skip_codes_empty_summary">Data budou čtena z celé sady kódů.</string>
     <string name="skip_codes_dialog_str">Zadejte kódy k přeskočení (oddělené čárkami):</string>
-    <string name="logger_category">Záznamník kódů</string>
-    <string name="code_logger_string">Počáteční čtení</string>
-    <string name="code_logger_summary">Klepnutím spustíte proces</string>
-    <string name="code_logger_summary_working">Pracuje se… %1$s Klepnutím zrušíte</string>
-    <string name="code_logger_data">Data počátečního čtení</string>
-    <string name="code_logger_data_summary">Klepnutím nastavíte data počátečního čtení. \nPočáteční cmdInt: %1$s, počáteční cmdArr: %2$s, max. cmdInt: %3$s, max. cmdArr: %4$s, časové okno: %5$s</string>
-    <string name="starting_cmd_int_text">Počáteční cmdInt (max. 1198):</string>
-    <string name="starting_cmd_arr_text">Počáteční cmdArr (max. 1198):</string>
-    <string name="max_cmd_int_text">Max. cmdInt (max. 1199):</string>
-    <string name="max_cmd_arr_text">Max. cmdArr (max. 1199):</string>
-    <string name="code_logger_timeout_text">Časové okno:</string>
-    <string name="omit_digits">Vynechat jednociferná čísla</string>
-    <string name="omit_digits_summary">Spotřeba paliva a dojezd mají obvykle více než jednu číslici. Tato volba může proces výrazně urychlit.</string>
-    <string name="code_logger_dialog_toast">Počáteční hodnota nesmí být větší než maximální hodnota</string>
-    <string name="code_logger_toast">Zaznamenávání kódů dokončeno. Výsledky zkontrolujte v Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Inspektor kódů</string>
     <string name="code_inspector_string">Podrobné čtení</string>

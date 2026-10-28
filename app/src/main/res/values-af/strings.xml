@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus-leser</string>
     <string name="display_canbus_reader">Wys Canbus-leser</string>
     <string name="codes_guide">Canbus-gids</string>
-    <string name="codes_guide_initial_reading_title">Kodelogger – aanvanklike lesing</string>
-    <string name="codes_guide_initial_reading_one">Die \"Canbus-leser\" werk dalk nie in elke motor nie! Dit hang af van die bronkode wat die vervaardiger verskaf. \n\nDrie waardes is noodsaaklik om die canbus-data behoorlik te lees: cmdInt en cmdArr, in die logboeke as CMD voorgestel (minder belangrik, die meeste ewekansige kombinasies behoort te werk) en die canbus-kodes, in die logboeke as CODE voorgestel (hierdie is belangrik om te bepaal).</string>
-    <string name="codes_guide_initial_reading_two">Die \"Aanvanklike lesing\" behoort \'n txt-lêer met logboeke te skep wat soos hierbo lyk. Die deurslaggewende deel is om die kodes te identifiseer wat die huidige brandstofverbruik en die reikafstand verteenwoordig. \n\nSoek vir die huidige brandstofverbruik na die kode wat relatief min uitsette het – op die aangehegte skermkiekie is dit kode 91. \n\nDie reikafstandkode het gewoonlik \'n enkele uitset wat nie vinnig verander nie of op spesifieke intervalle verander – op die aangehegte skermkiekie is dit kode 92. \n\nDie res van die kodes is weglaatbaar tensy jy iets anders soek.</string>
-    <string name="codes_guide_initial_reading_three">\"Tydvenster\" – die tyd (in sekondes) waartydens die \"Kodelogger\" die uitsette vir elke cmdInt- en cmdArr-lus stoor. \n\n\"Slaan enkelsyfers oor\" – ignoreer enkelsyfer-uitsette omdat die huidige brandstofverbruik en reikafstand gewoonlik uit meer as een syfer bestaan. Hierdie opsie kan die proses aansienlik versnel omdat die lus nie by irrelevante uitsette bly hang nie. \n\nWenk – om die canbus-kodes doeltreffend te begin ondersoek, gebruik \'n nou reeks tussen die begin- en maksimumwaarde van cmdInt en cmdArr. Jy kan hulle stel soos jy wil, mits hulle nie die maksimumwaardes (in die invoerdialoog aangedui) oorskry nie en die beginwaarde nie groter as die maksimumwaarde is nie. Hoe wyer die reeks en hoe langer die tydvenster, hoe langer duur die proses.</string>
     <string name="codes_guide_detailed_reading_title">Kodeinspekteur – gedetailleerde lesing</string>
     <string name="codes_guide_detailed_reading">Hierdie deel is bedoel om spesifieke cmdInt- en cmdArr-kombinasies te toets om die kodes wat hulle bevat te openbaar. Soos vroeër genoem, is cmdInt en cmdArr minder belangrik en die meeste ewekansige kombinasies behoort te werk. Hierdie module is geskep voordat ek dit geweet het, maar dit kan steeds nuttig wees vir spesifieke toetse.</string>
     <string name="codes_guide_miscellaneous_title">Diverse</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Die volgende kodes sal oorgeslaan word: %1$s</string>
     <string name="skip_codes_empty_summary">Data sal uit die hele kodestel gelees word.</string>
     <string name="skip_codes_dialog_str">Tik die kodes in wat oorgeslaan moet word (geskei deur kommas):</string>
-    <string name="logger_category">Kodelogger</string>
-    <string name="code_logger_string">Aanvanklike lesing</string>
-    <string name="code_logger_summary">Tik om die proses te begin</string>
-    <string name="code_logger_summary_working">Besig… %1$s Tik om te kanselleer</string>
-    <string name="code_logger_data">Data vir aanvanklike lesing</string>
-    <string name="code_logger_data_summary">Tik om die data vir aanvanklike lesing te stel. \nBegin-cmdInt: %1$s, begin-cmdArr: %2$s, maks. cmdInt: %3$s, maks. cmdArr: %4$s, tydvenster: %5$s</string>
-    <string name="starting_cmd_int_text">Begin-cmdInt (maks. 1198):</string>
-    <string name="starting_cmd_arr_text">Begin-cmdArr (maks. 1198):</string>
-    <string name="max_cmd_int_text">Maks. cmdInt (maks. 1199):</string>
-    <string name="max_cmd_arr_text">Maks. cmdArr (maks. 1199):</string>
-    <string name="code_logger_timeout_text">Tydvenster:</string>
-    <string name="omit_digits">Slaan enkelsyfers oor</string>
-    <string name="omit_digits_summary">Brandstofverbruik en reikafstand bestaan gewoonlik uit meer as een syfer. Hierdie opsie kan die proses aansienlik versnel.</string>
-    <string name="code_logger_dialog_toast">Die beginwaarde mag nie groter as die maksimumwaarde wees nie</string>
-    <string name="code_logger_toast">Kodes se loging is voltooi. Kyk na die resultate in Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Kodeinspekteur</string>
     <string name="code_inspector_string">Gedetailleerde lesing</string>

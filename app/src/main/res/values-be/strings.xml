@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Счытвальнік Canbus</string>
     <string name="display_canbus_reader">Паказваць счытвальнік Canbus</string>
     <string name="codes_guide">Даведнік па Canbus</string>
-    <string name="codes_guide_initial_reading_title">Лагер кодаў — першаснае счытванне</string>
-    <string name="codes_guide_initial_reading_one">«Счытвальнік Canbus» можа не працаваць на кожным аўтамабілі! Гэта залежыць ад зыходнага кода, прадастаўленага вытворцам. \n\nДля правільнага счытвання даных canbus неабходныя тры значэнні: cmdInt і cmdArr, якія паказваюцца ў логах як CMD (менш важныя, большасць выпадковых спалучэнняў павінна працаваць), і коды canbus, якія паказваюцца ў логах як CODE (іх важна вызначыць).</string>
-    <string name="codes_guide_initial_reading_two">«Першаснае счытванне» павінна стварыць txt-файл з логамі, падобнымі да паказаных вышэй. Галоўнае — вызначыць коды, якія адпавядаюць бягучаму расходу паліва і запасу ходу. \n\nДля бягучага расходу шукайце код, у якога параўнальна мала выхадных значэнняў, — на прыкладзеным здымку экрана гэта код 91. \n\nКод запасу ходу звычайна мае адно выхаднае значэнне, якое не змяняецца хутка або змяняецца праз пэўныя інтэрвалы, — на прыкладзеным здымку экрана гэта код 92. \n\nАстатнімі кодамі можна пагарджаць, калі вы не шукаеце нешта іншае.</string>
-    <string name="codes_guide_initial_reading_three">«Часовае акно» — час (у секундах), на працягу якога «Лагер кодаў» захоўвае вынікі для кожнага цыкла cmdInt і cmdArr. \n\n«Прапускаць аднаразрадныя» — ігнаруе аднаразрадныя вынікі, бо бягучы расход паліва і запас ходу звычайна маюць больш чым адну лічбу. Гэты параметр можа істотна паскорыць працэс, бо цыкл не затрымліваецца на неістотных выніках. \n\nПарада — каб эфектыўна пачаць вывучэнне кодаў canbus, выкарыстоўвайце вузкі дыяпазон паміж пачатковым і максімальным значэннем cmdInt і cmdArr. Вы можаце задаць іх як заўгодна, калі яны не перавышаюць максімальных значэнняў (паказаных у дыялогу ўводу) і пачатковае значэнне не большае за максімальнае. Чым шырэйшы дыяпазон і даўжэйшае часовае акно, тым даўжэй доўжыцца працэс.</string>
     <string name="codes_guide_detailed_reading_title">Інспектар кодаў — падрабязнае счытванне</string>
     <string name="codes_guide_detailed_reading">Гэтая частка прызначана для праверкі пэўных спалучэнняў cmdInt і cmdArr, каб выявіць коды, якія яны змяшчаюць. Як ужо згадвалася, cmdInt і cmdArr менш важныя, і большасць выпадковых спалучэнняў павінна працаваць. Гэты модуль быў створаны, перш чым я пра гэта даведаўся, але ён усё яшчэ можа быць карысным для асобных праверак.</string>
     <string name="codes_guide_miscellaneous_title">Рознае</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Наступныя коды будуць прапушчаны: %1$s</string>
     <string name="skip_codes_empty_summary">Даныя будуць счытвацца з усяго набору кодаў.</string>
     <string name="skip_codes_dialog_str">Увядзіце коды для прапуску (праз коскі):</string>
-    <string name="logger_category">Лагер кодаў</string>
-    <string name="code_logger_string">Першаснае счытванне</string>
-    <string name="code_logger_summary">Націсніце, каб пачаць працэс</string>
-    <string name="code_logger_summary_working">Выконваецца… %1$s Націсніце, каб скасаваць</string>
-    <string name="code_logger_data">Даныя першаснага счытвання</string>
-    <string name="code_logger_data_summary">Націсніце, каб задаць даныя першаснага счытвання. \nПачатковы cmdInt: %1$s, пачатковы cmdArr: %2$s, макс. cmdInt: %3$s, макс. cmdArr: %4$s, часовае акно: %5$s</string>
-    <string name="starting_cmd_int_text">Пачатковы cmdInt (макс. 1198):</string>
-    <string name="starting_cmd_arr_text">Пачатковы cmdArr (макс. 1198):</string>
-    <string name="max_cmd_int_text">Макс. cmdInt (макс. 1199):</string>
-    <string name="max_cmd_arr_text">Макс. cmdArr (макс. 1199):</string>
-    <string name="code_logger_timeout_text">Часовае акно:</string>
-    <string name="omit_digits">Прапускаць аднаразрадныя</string>
-    <string name="omit_digits_summary">Расход паліва і запас ходу звычайна маюць больш чым адну лічбу. Гэты параметр можа істотна паскорыць працэс.</string>
-    <string name="code_logger_dialog_toast">Пачатковае значэнне не можа быць большым за максімальнае</string>
-    <string name="code_logger_toast">Запіс кодаў завершаны. Вынікі глядзіце ў Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Інспектар кодаў</string>
     <string name="code_inspector_string">Падрабязнае счытванне</string>

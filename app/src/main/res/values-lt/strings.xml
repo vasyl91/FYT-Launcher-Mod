@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">„Canbus“ skaitytuvas</string>
     <string name="display_canbus_reader">Rodyti „Canbus“ skaitytuvą</string>
     <string name="codes_guide">„Canbus“ vadovas</string>
-    <string name="codes_guide_initial_reading_title">Kodų žurnalas – pradinis nuskaitymas</string>
-    <string name="codes_guide_initial_reading_one">„Canbus“ skaitytuvas gali veikti ne kiekviename automobilyje! Tai priklauso nuo gamintojo pateikto šaltinio kodo. \n\nNorint tinkamai nuskaityti canbus duomenis, svarbios trys reikšmės: cmdInt ir cmdArr, žurnaluose rodomi kaip CMD (mažiau svarbūs, dauguma atsitiktinių derinių turėtų veikti), ir canbus kodai, žurnaluose rodomi kaip CODE (juos svarbu nustatyti).</string>
-    <string name="codes_guide_initial_reading_two">„Pradinis nuskaitymas“ turėtų sukurti txt failą su žurnalais, panašiais į pateiktus aukščiau. Svarbiausia nustatyti kodus, atitinkančius dabartines degalų sąnaudas ir atstumą. \n\nDabartinėms degalų sąnaudoms ieškokite kodo, turinčio gana mažai išvesčių – pridėtoje ekrano kopijoje tai kodas 91. \n\nAtstumo kodas paprastai turi vieną išvestį, kuri sparčiai nesikeičia arba keičiasi tam tikrais intervalais – pridėtoje ekrano kopijoje tai kodas 92. \n\nKiti kodai nereikšmingi, nebent ieškote ko nors kita.</string>
-    <string name="codes_guide_initial_reading_three">„Laiko langas“ – laikas (sekundėmis), per kurį „Kodų žurnalas“ išsaugo kiekvieno cmdInt ir cmdArr ciklo išvestis. \n\n„Praleisti vienaženklius“ – ignoruoja vienaženkles išvestis, nes dabartinės degalų sąnaudos ir atstumas paprastai turi daugiau nei vieną skaitmenį. Ši parinktis gali gerokai paspartinti procesą, nes ciklas nestringa ties nereikšmingomis išvestimis. \n\nPatarimas – norėdami efektyviai pradėti tikrinti canbus kodus, naudokite siaurą diapazoną tarp pradinės ir didžiausios cmdInt ir cmdArr reikšmių. Galite jas nustatyti kaip norite, jei neviršijate didžiausių reikšmių (nurodytų įvedimo dialoge), o pradinė reikšmė nėra didesnė už didžiausią. Kuo platesnis diapazonas ir ilgesnis laiko langas, tuo ilgiau trunka procesas.</string>
     <string name="codes_guide_detailed_reading_title">Kodų tikrintuvas – išsamus nuskaitymas</string>
     <string name="codes_guide_detailed_reading">Ši dalis skirta tam tikrų cmdInt ir cmdArr derinių išbandymui, kad būtų atskleisti juose esantys kodai. Kaip minėta anksčiau, cmdInt ir cmdArr yra mažiau svarbūs ir dauguma atsitiktinių derinių turėtų veikti. Šis modulis sukurtas man to dar nežinant, bet jis vis tiek gali būti naudingas konkretiems bandymams.</string>
     <string name="codes_guide_miscellaneous_title">Įvairūs</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Šie kodai bus praleisti: %1$s</string>
     <string name="skip_codes_empty_summary">Duomenys bus skaitomi iš viso kodų rinkinio.</string>
     <string name="skip_codes_dialog_str">Įveskite praleistinus kodus (atskirtus kableliais):</string>
-    <string name="logger_category">Kodų žurnalas</string>
-    <string name="code_logger_string">Pradinis nuskaitymas</string>
-    <string name="code_logger_summary">Palieskite, kad pradėtumėte procesą</string>
-    <string name="code_logger_summary_working">Dirbama… %1$s Palieskite, kad atšauktumėte</string>
-    <string name="code_logger_data">Pradinio nuskaitymo duomenys</string>
-    <string name="code_logger_data_summary">Palieskite, kad nustatytumėte pradinio nuskaitymo duomenis. \nPradinis cmdInt: %1$s, pradinis cmdArr: %2$s, didž. cmdInt: %3$s, didž. cmdArr: %4$s, laiko langas: %5$s</string>
-    <string name="starting_cmd_int_text">Pradinis cmdInt (daugiausia 1198):</string>
-    <string name="starting_cmd_arr_text">Pradinis cmdArr (daugiausia 1198):</string>
-    <string name="max_cmd_int_text">Didž. cmdInt (daugiausia 1199):</string>
-    <string name="max_cmd_arr_text">Didž. cmdArr (daugiausia 1199):</string>
-    <string name="code_logger_timeout_text">Laiko langas:</string>
-    <string name="omit_digits">Praleisti vienaženklius</string>
-    <string name="omit_digits_summary">Degalų sąnaudos ir atstumas paprastai turi daugiau nei vieną skaitmenį. Ši parinktis gali gerokai paspartinti procesą.</string>
-    <string name="code_logger_dialog_toast">Pradinė reikšmė negali būti didesnė už didžiausią reikšmę</string>
-    <string name="code_logger_toast">Kodų registravimas baigtas. Rezultatus žr. Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Kodų tikrintuvas</string>
     <string name="code_inspector_string">Išsamus nuskaitymas</string>

@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus-lezer</string>
     <string name="display_canbus_reader">Canbus-lezer tonen</string>
     <string name="codes_guide">Canbus-gids</string>
-    <string name="codes_guide_initial_reading_title">Codelogger – eerste uitlezing</string>
-    <string name="codes_guide_initial_reading_one">De \"Canbus-lezer\" werkt mogelijk niet bij elke auto! Het hangt af van de broncode die de fabrikant levert. \n\nEr zijn drie waarden essentieel om de canbus-gegevens goed uit te lezen: cmdInt en cmdArr, in de logs weergegeven als CMD (minder belangrijk, de meeste willekeurige combinaties zouden moeten werken) en de canbus-codes, in de logs weergegeven als CODE (die moet je bepalen).</string>
-    <string name="codes_guide_initial_reading_two">De \"Eerste uitlezing\" zou een txt-bestand moeten maken met logs zoals hierboven. Het cruciale deel is het bepalen van de codes die het actuele brandstofverbruik en de actieradius vertegenwoordigen. \n\nZoek voor het actuele verbruik de code met relatief weinig uitvoer – op de bijgevoegde schermafbeelding is dat code 91. \n\nDe actieradiuscode bevat meestal één uitvoer die niet snel verandert of met bepaalde tussenpozen verandert – op de bijgevoegde schermafbeelding is dat code 92. \n\nDe overige codes zijn te verwaarlozen, tenzij je iets anders zoekt.</string>
-    <string name="codes_guide_initial_reading_three">\"Tijdvenster\" – de tijd (in seconden) waarin de \"Codelogger\" de uitvoer voor elke cmdInt- en cmdArr-lus opslaat. \n\n\"Eencijferige waarden overslaan\" – negeert eencijferige uitvoer, omdat het actuele verbruik en de actieradius meestal uit meer dan één cijfer bestaan. Deze optie kan het proces sterk versnellen, omdat de lus niet blijft hangen bij irrelevante uitvoer. \n\nTip – gebruik om efficiënt te beginnen met het onderzoeken van canbus-codes een smal bereik tussen de begin- en maximumwaarde van cmdInt en cmdArr. Je kunt ze naar wens instellen, zolang ze de maximumwaarden (vermeld in het invoerdialoogvenster) niet overschrijden en de beginwaarde niet groter is dan de maximumwaarde. Hoe breder het bereik en hoe langer het tijdvenster, hoe langer het proces duurt.</string>
     <string name="codes_guide_detailed_reading_title">Code-inspecteur – gedetailleerde uitlezing</string>
     <string name="codes_guide_detailed_reading">Dit onderdeel is bedoeld om specifieke cmdInt- en cmdArr-combinaties te testen om de codes te onthullen die ze bevatten. Zoals eerder gezegd zijn cmdInt en cmdArr minder belangrijk en zouden de meeste willekeurige combinaties moeten werken. Deze module is gemaakt voordat ik dat wist, maar kan nog steeds nuttig zijn voor specifieke tests.</string>
     <string name="codes_guide_miscellaneous_title">Diversen</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">De volgende codes worden overgeslagen: %1$s</string>
     <string name="skip_codes_empty_summary">Gegevens worden uit de volledige codeset gelezen.</string>
     <string name="skip_codes_dialog_str">Typ de codes die moeten worden overgeslagen (gescheiden door komma\'s):</string>
-    <string name="logger_category">Codelogger</string>
-    <string name="code_logger_string">Eerste uitlezing</string>
-    <string name="code_logger_summary">Tik om het proces te starten</string>
-    <string name="code_logger_summary_working">Bezig… %1$s Tik om te annuleren</string>
-    <string name="code_logger_data">Gegevens eerste uitlezing</string>
-    <string name="code_logger_data_summary">Tik om de gegevens van de eerste uitlezing in te stellen. \nBegin-cmdInt: %1$s, begin-cmdArr: %2$s, max. cmdInt: %3$s, max. cmdArr: %4$s, tijdvenster: %5$s</string>
-    <string name="starting_cmd_int_text">Begin-cmdInt (max. 1198):</string>
-    <string name="starting_cmd_arr_text">Begin-cmdArr (max. 1198):</string>
-    <string name="max_cmd_int_text">Max. cmdInt (max. 1199):</string>
-    <string name="max_cmd_arr_text">Max. cmdArr (max. 1199):</string>
-    <string name="code_logger_timeout_text">Tijdvenster:</string>
-    <string name="omit_digits">Eencijferige waarden overslaan</string>
-    <string name="omit_digits_summary">Brandstofverbruik en actieradius bestaan meestal uit meer dan één cijfer. Deze optie kan het proces sterk versnellen.</string>
-    <string name="code_logger_dialog_toast">De beginwaarde mag niet groter zijn dan de maximumwaarde</string>
-    <string name="code_logger_toast">Loggen van de codes voltooid. Bekijk de resultaten in Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Code-inspecteur</string>
     <string name="code_inspector_string">Gedetailleerde uitlezing</string>

@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus уншигч</string>
     <string name="display_canbus_reader">Canbus уншигчийг харуулах</string>
     <string name="codes_guide">Canbus гарын авлага</string>
-    <string name="codes_guide_initial_reading_title">Кодын бүртгэгч – анхны уншилт</string>
-    <string name="codes_guide_initial_reading_one">\'Canbus уншигч\' бүх машинд ажиллахгүй байж болно! Энэ нь үйлдвэрлэгчийн өгсөн эх кодоос хамаарна. \n\nCanbus өгөгдлийг зөв унших гурван чухал утга байдаг – бүртгэлд CMD-ээр илэрхийлэгдэх cmdInt, cmdArr (эдгээр нь бага чухал, ихэнх санамсаргүй хослол ажиллах ёстой) болон бүртгэлд CODE-оор илэрхийлэгдэх canbus кодууд (эдгээрийг тодорхойлох нь чухал).</string>
-    <string name="codes_guide_initial_reading_two">\'Анхны уншилт\'-ыг ажиллуулснаар дээрхтэй төстэй бүртгэл агуулсан txt файл үүсэх ёстой. Гол нь одоогийн түлшний зарцуулалт болон явах зайг илэрхийлэх кодуудыг тодорхойлох явдал юм. \n\nОдоогийн түлшний зарцуулалтын хувьд харьцангуй цөөн гаралт агуулсан кодыг хайна уу – хавсаргасан дэлгэцийн зураг дээр энэ нь 91 код юм. \n\nЯвах зайн код нь ихэвчлэн хурдан өөрчлөгддөггүй эсвэл тодорхой давтамжтай өөрчлөгддөг ганц гаралттай байдаг – хавсаргасан дэлгэцийн зураг дээр энэ нь 92 код юм. \n\nБусад кодууд нь өөр зүйл хайхгүй л бол үл тоомсорлож болно.</string>
-    <string name="codes_guide_initial_reading_three">\'Хугацааны цонх\' – энэ нь \'Кодын бүртгэгч\' cmdInt болон cmdArr-ийн давталт бүрийн гаралтыг хадгалах хугацаа (секундээр). \n\n\'Нэг оронтой тоог алгасах\' – одоогийн түлшний зарцуулалт болон явах зай нь ихэвчлэн нэгээс олон оронтой тул нэг оронтой гаралтыг үл тоомсорлохыг зорино. Энэ сонголтыг сонговол давталт хамааралгүй гаралт дээр удахгүй тул процесс эрс хурдасч магадгүй. \n\nХэрэгтэй зөвлөгөө – canbus кодуудыг үр дүнтэй шалгаж эхлэхийн тулд cmdInt болон cmdArr-ийн эхлэх–дээд хязгаарыг нарийн авна уу. Тэдгээрийг дээд утгаас хэтрэхгүй, эхлэх цэг нь дээд утгаас их биш байх нөхцөлд хүссэнээрээ тохируулж болно (оруулах цонхыг үзнэ үү). Хүрээ өргөн, хугацааны цонх урт байх тусам процесс удаан үргэлжилнэ.</string>
     <string name="codes_guide_detailed_reading_title">Кодын шалгагч – нарийвчилсан уншилт</string>
     <string name="codes_guide_detailed_reading">Энэ хэсэг нь тодорхой cmdInt болон cmdArr хослолыг турших замаар тэдгээрийн агуулсан кодуудыг илрүүлэх зорилготой. Өмнө дурдсанчлан cmdInt болон cmdArr нь бага чухал бөгөөд ихэнх санамсаргүй хослол ажиллах ёстой. Энэ модулийг би үүнийг мэдэхээсээ өмнө бүтээсэн боловч тодорхой туршилтуудад хэрэгтэй хэвээр байж болно.</string>
     <string name="codes_guide_miscellaneous_title">Төрөл бүрийн</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Дараах кодуудыг алгасна: %1$s</string>
     <string name="skip_codes_empty_summary">Өгөгдлийг бүх кодын олонлогоос уншина.</string>
     <string name="skip_codes_dialog_str">Алгасах кодуудыг бичнэ үү (таслалаар тусгаарлан):</string>
-    <string name="logger_category">Кодын бүртгэгч</string>
-    <string name="code_logger_string">Анхны уншилт</string>
-    <string name="code_logger_summary">Процессыг эхлүүлэхийн тулд товшино уу</string>
-    <string name="code_logger_summary_working">Ажиллаж байна… %1$s Цуцлахын тулд товшино уу</string>
-    <string name="code_logger_data">Анхны уншилтын өгөгдөл</string>
-    <string name="code_logger_data_summary">Анхны уншилтын өгөгдлийг тохируулахын тулд товшино уу. \nЭхлэх cmdInt: %1$s, Эхлэх cmdArr: %2$s, дээд cmdInt: %3$s, дээд cmdArr: %4$s, Хугацааны цонх: %5$s</string>
-    <string name="starting_cmd_int_text">Эхлэх cmdInt (дээд тал нь 1198):</string>
-    <string name="starting_cmd_arr_text">Эхлэх cmdArr (дээд тал нь 1198):</string>
-    <string name="max_cmd_int_text">Дээд cmdInt (дээд тал нь 1199):</string>
-    <string name="max_cmd_arr_text">Дээд cmdArr (дээд тал нь 1199):</string>
-    <string name="code_logger_timeout_text">Хугацааны цонх:</string>
-    <string name="omit_digits">Нэг оронтой тоог алгасах</string>
-    <string name="omit_digits_summary">Түлшний зарцуулалт болон явах зай нь ихэвчлэн нэгээс олон оронтой байдаг. Энэ сонголтыг сонговол процесс эрс хурдасч магадгүй.</string>
-    <string name="code_logger_dialog_toast">Эхлэх утга нь дээд утгаас их байж болохгүй</string>
-    <string name="code_logger_toast">Кодуудыг бүртгэж дууслаа. Үр дүнг Download/Launcher66_Canbus дотор шалгана уу</string>
 
     <string name="inspector_category">Кодын шалгагч</string>
     <string name="code_inspector_string">Нарийвчилсан уншилт</string>

@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Skaner canbus</string>
     <string name="display_canbus_reader">Wyświetlaj opcja skanera</string>
     <string name="codes_guide">Przewodnik</string>
-    <string name="codes_guide_initial_reading_title">Wstępna weryfikacja kodów</string>
-    <string name="codes_guide_initial_reading_one">\'Skaner canbus\' może nie być dostepny dla każdego modelu samochodu. Zależy to od kodu źródłowego radia. \n\nSą trzy istotne wartości potrzebne do prawidłowego odczytu danych - cmdInt, cmdArr reprezntowane w logach przez CMD (mniej ważne, dowolna kombinacja powinna działać) oraz kody canbus  reprezntowane w logach przez CODE (istotne dla prawdiłowego działania).</string>
-    <string name="codes_guide_initial_reading_two">Uruchomienie \'Wstępnej weryfiakcji\' powinno utworzyć plik txt zawierający wyniki jak powyżej. Głównym zadaniem jest ustalenie, który kod odpowiada za odczyt bieżącego spalania, a który za zasięg. \n\nKod dla bieżącego spalania pownien zawierać kilka odczytów (outputs) - na załączonym screenshocie jest to 91. \n\nKod odpowiedzialny za odczyt zasięgu powinien zawierać raczej powtarzające się odczyty (outputs), lub zmieniające się rzadko wg konkretnego interwału - na załączonym screenshocie jest to 92. \n\nPozostała część kodów jest nieistotna, chyba że szukasz czegoś extra.</string>
-    <string name="codes_guide_initial_reading_three">\'Okno czasowe\' - jest to czas (w sekundach) podczas którego \'Wstępna weryfikacja\' będzie zapisywać cmdInt i cmdArr w każdej z pętli. \n\n\'Pomijaj pojedyncze wyniki\' - zaznaczenie tej opcji ma na celu omijanie wyników, ktore są cyframi, ponieważ zarówno bieżące spalanie jak i zasięg są prawie zawsze reprezentowane przez liczby, a nie cyfry. Może to znacząco przyspieszyć czas odczytu. \n\n Przydatna wskazówka - aby efektywnie odczytywać kody canbus ustaw początkowe i max cmdInt i cmdArr w wąskim zakresie. Możesz je oczywiście ustawić tak jak chcesz, jeśli wartości nie są większe od maksymalnych (info w oknie dialogowym) oraz wartość początkowa nie jest większa od max wartości, jednakże im większy zakres i im większe okno czasowe tym dłużej będzie trwał proces odczytu.</string>
     <string name="codes_guide_detailed_reading_title">Szczegółowa weryfikacja kodów</string>
     <string name="codes_guide_detailed_reading">Ten moduł ma za zadanie przetestować konkretną kombinację cmdInt i cmdArr. Jak pisałem wcześniej cmdInt i cmdArr są mniej istotne i dowolna kombinacja powinna działać, jednak jest to coś o czym dowiedziałem się po utworzeniu tego narzędzia. Tak czy siak może się to przydać do bardziej szczegółowych testów.</string>
     <string name="codes_guide_miscellaneous_title">Różne</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Następujące kody zostaną pominięte: %1$s</string>
     <string name="skip_codes_empty_summary">Dane zostana odczytane ze wszystkich kodów.</string>
     <string name="skip_codes_dialog_str">Wpisz kody, które chesz ominąć (oddzielone przecinkiem):</string>
-    <string name="logger_category">Wstępna weryfikacja</string>
-    <string name="code_logger_string">Wstępna weryfikacja kodów</string>
-    <string name="code_logger_summary">Naciśnij, aby rozpocząć</string>
-    <string name="code_logger_summary_working">Trwa odczyt... %1$s Naciśnij tutaj aby zatrzymać</string>
-    <string name="code_logger_data">Dane dla testów wstępnych</string>
-    <string name="code_logger_data_summary">Naciśnij i wprowadź dane dla testów wstępnych. \nPoczątkowy cmdInt: %1$s, Początkowy cmdArr: %2$s, Max cmdInt: %3$s, Max cmdArr: %4$s, Okno czasowe: %5$s</string>
-    <string name="starting_cmd_int_text">Początkowy cmdInt (max. 1198):</string>
-    <string name="starting_cmd_arr_text">Początkowy cmdArr (max. 1198):</string>
-    <string name="max_cmd_int_text">Max cmdInt (max. 1199):</string>
-    <string name="max_cmd_arr_text">Max cmdArr (max. 1199):</string>
-    <string name="code_logger_timeout_text">Okno czasowe:</string>
-    <string name="omit_digits">Pomijaj pojedyncze wyniki</string>
-    <string name="omit_digits_summary">Zużycie paliwa i zasięg są zazwyczaj reprezentowane przez więcej jak jedną cyfrę. Zaznaczenie tej opcji może znacznie przyspieszyć odczyt.</string>
-    <string name="code_logger_dialog_toast">Wartość początkowa nie może być większa od wartości maksymalnej</string>
-    <string name="code_logger_toast">Zakończono wstępny odczyt kodów canbus. Sprawdź wyniki w Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Szczegółowa weryfikacja</string>
     <string name="code_inspector_string">Szczegółowa weryfikacja kodów</string>

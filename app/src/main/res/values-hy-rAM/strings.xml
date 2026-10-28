@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus ընթերցիչ</string>
     <string name="display_canbus_reader">Ցուցադրել Canbus ընթերցիչը</string>
     <string name="codes_guide">Canbus ուղեցույց</string>
-    <string name="codes_guide_initial_reading_title">Կոդերի գրանցիչ՝ սկզբնական ընթերցում</string>
-    <string name="codes_guide_initial_reading_one">«Canbus ընթերցիչը» կարող է չաշխատել յուրաքանչյուր մեքենայում։ Դա կախված է արտադրողի տրամադրած աղբյուրի կոդից։ \n\ncanbus տվյալները ճիշտ կարդալու համար կարևոր են երեք արժեքներ՝ cmdInt և cmdArr, որոնք մատյաններում ներկայացված են որպես CMD (ավելի քիչ կարևոր, պատահական համակցությունների մեծ մասը պետք է աշխատեն), և canbus կոդերը, որոնք մատյաններում ներկայացված են որպես CODE (դրանք կարևոր է որոշել)։</string>
-    <string name="codes_guide_initial_reading_two">«Սկզբնական ընթերցումը» պետք է ստեղծի txt ֆայլ վերը նշվածներին նման մատյաններով։ Կարևորն ընթացիկ վառելիքի ծախսը և հեռավորությունը ներկայացնող կոդերի որոշումն է։ \n\nԸնթացիկ վառելիքի ծախսի համար որոնեք համեմատաբար քիչ ելքեր ունեցող կոդը. կցված սքրինշոթում դա 91 կոդն է։ \n\nՀեռավորության կոդը սովորաբար ունի մեկ ելք, որը արագ չի փոխվում կամ փոխվում է որոշակի ընդմիջումներով. կցված սքրինշոթում դա 92 կոդն է։ \n\nՄնացած կոդերն աննշան են, եթե այլ բան չեք փնտրում։</string>
-    <string name="codes_guide_initial_reading_three">«Ժամանակային պատուհան»՝ ժամանակը (վայրկյաններով), որի ընթացքում «Կոդերի գրանցիչը» պահպանում է ելքերը cmdInt և cmdArr յուրաքանչյուր ցիկլի համար։ \n\n«Բաց թողնել միանիշ թվերը»՝ անտեսում է միանիշ ելքերը, քանի որ ընթացիկ վառելիքի ծախսը և հեռավորությունը սովորաբար ունեն մեկից ավելի թվանշան։ Այս ընտրանքը կարող է զգալիորեն արագացնել գործընթացը, քանի որ ցիկլը չի ձգձգվում անկապ ելքերի վրա։ \n\nՀուշում՝ canbus կոդերը արդյունավետ ուսումնասիրելու համար օգտագործեք նեղ միջակայք cmdInt և cmdArr սկզբնական և առավելագույն արժեքների միջև։ Կարող եք դրանք սահմանել ինչպես ցանկանում եք, եթե չեն գերազանցում առավելագույն արժեքները (նշված են մուտքագրման երկխոսության մեջ) և սկզբնական արժեքը առավելագույնից մեծ չէ։ Որքան լայն է միջակայքը և որքան երկար է ժամանակային պատուհանը, այնքան երկար է տևում գործընթացը։</string>
     <string name="codes_guide_detailed_reading_title">Կոդերի ստուգիչ՝ մանրամասն ընթերցում</string>
     <string name="codes_guide_detailed_reading">Այս մասը նախատեսված է cmdInt և cmdArr որոշակի համակցությունները ստուգելու համար՝ դրանց պարունակած կոդերը բացահայտելու նպատակով։ Ինչպես նշվել է վերևում, cmdInt և cmdArr ավելի քիչ կարևոր են, և պատահական համակցությունների մեծ մասը պետք է աշխատեն։ Այս մոդուլը ստեղծվել է նախքան ես դա իմանալը, բայց այն դեռ կարող է օգտակար լինել առանձին թեստերի համար։</string>
     <string name="codes_guide_miscellaneous_title">Տարբեր</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Հետևյալ կոդերը կբաց թողնվեն՝ %1$s</string>
     <string name="skip_codes_empty_summary">Տվյալները կկարդացվեն կոդերի ամբողջ հավաքածուից։</string>
     <string name="skip_codes_dialog_str">Մուտքագրեք բաց թողնվելիք կոդերը (բաժանված ստորակետերով).</string>
-    <string name="logger_category">Կոդերի գրանցիչ</string>
-    <string name="code_logger_string">Սկզբնական ընթերցում</string>
-    <string name="code_logger_summary">Հպեք՝ գործընթացը սկսելու համար</string>
-    <string name="code_logger_summary_working">Աշխատում է… %1$s Հպեք՝ չեղարկելու համար</string>
-    <string name="code_logger_data">Սկզբնական ընթերցման տվյալներ</string>
-    <string name="code_logger_data_summary">Հպեք՝ սկզբնական ընթերցման տվյալները սահմանելու համար։ \nՍկզբնական cmdInt՝ %1$s, սկզբնական cmdArr՝ %2$s, առավելագույն cmdInt՝ %3$s, առավելագույն cmdArr՝ %4$s, ժամանակային պատուհան՝ %5$s</string>
-    <string name="starting_cmd_int_text">Սկզբնական cmdInt (առավելագույնը՝ 1198).</string>
-    <string name="starting_cmd_arr_text">Սկզբնական cmdArr (առավելագույնը՝ 1198).</string>
-    <string name="max_cmd_int_text">Առավելագույն cmdInt (առավելագույնը՝ 1199).</string>
-    <string name="max_cmd_arr_text">Առավելագույն cmdArr (առավելագույնը՝ 1199).</string>
-    <string name="code_logger_timeout_text">Ժամանակային պատուհան՝</string>
-    <string name="omit_digits">Բաց թողնել միանիշ թվերը</string>
-    <string name="omit_digits_summary">Վառելիքի ծախսը և հեռավորությունը սովորաբար ունեն մեկից ավելի թվանշան։ Այս ընտրանքը կարող է զգալիորեն արագացնել գործընթացը։</string>
-    <string name="code_logger_dialog_toast">Սկզբնական արժեքը չի կարող մեծ լինել առավելագույն արժեքից</string>
-    <string name="code_logger_toast">Կոդերի գրանցումն ավարտվեց։ Արդյունքները տեսեք Download/Launcher66_Canbus-ում</string>
 
     <string name="inspector_category">Կոդերի ստուգիչ</string>
     <string name="code_inspector_string">Մանրամասն ընթերցում</string>

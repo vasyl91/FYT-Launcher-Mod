@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Pembaca Canbus</string>
     <string name="display_canbus_reader">Paparkan pembaca Canbus</string>
     <string name="codes_guide">Panduan Canbus</string>
-    <string name="codes_guide_initial_reading_title">Perekod kod – bacaan awal</string>
-    <string name="codes_guide_initial_reading_one">\"Pembaca Canbus\" mungkin tidak berfungsi pada setiap kereta! Ia bergantung pada kod sumber yang disediakan oleh pengeluar. \n\nTiga nilai penting untuk membaca data canbus dengan betul: cmdInt dan cmdArr yang diwakili dalam log sebagai CMD (kurang penting, kebanyakan gabungan rawak sepatutnya berfungsi) dan kod canbus yang diwakili dalam log sebagai CODE (ini penting untuk ditentukan).</string>
-    <string name="codes_guide_initial_reading_two">\"Bacaan awal\" sepatutnya mencipta fail txt yang mengandungi log seperti di atas. Bahagian penting ialah menentukan kod yang mewakili penggunaan bahan api semasa dan jarak. \n\nUntuk penggunaan bahan api semasa, cari kod yang mempunyai agak sedikit output – pada tangkapan skrin yang dilampirkan ia ialah kod 91. \n\nKod jarak biasanya mempunyai satu output yang tidak berubah dengan cepat atau berubah pada selang tertentu – pada tangkapan skrin yang dilampirkan ia ialah kod 92. \n\nKod lain boleh diabaikan kecuali anda mencari sesuatu yang lain.</string>
-    <string name="codes_guide_initial_reading_three">\"Tetingkap masa\" – masa (dalam saat) semasa \"Perekod kod\" menyimpan output bagi setiap gelung cmdInt dan cmdArr. \n\n\"Langkau angka tunggal\" – mengabaikan output satu digit kerana penggunaan bahan api semasa dan jarak biasanya mempunyai lebih daripada satu digit. Pilihan ini boleh mempercepatkan proses dengan ketara kerana gelung tidak berlengah pada output yang tidak relevan. \n\nTip – untuk mula memeriksa kod canbus dengan cekap, gunakan julat sempit antara nilai permulaan dan maksimum cmdInt dan cmdArr. Anda boleh menetapkannya sesuka hati selagi tidak melebihi nilai maksimum (ditunjukkan dalam dialog input) dan nilai permulaan tidak lebih besar daripada nilai maksimum. Semakin luas julat dan semakin panjang tetingkap masa, semakin lama prosesnya.</string>
     <string name="codes_guide_detailed_reading_title">Pemeriksa kod – bacaan terperinci</string>
     <string name="codes_guide_detailed_reading">Bahagian ini bertujuan untuk menguji gabungan cmdInt dan cmdArr tertentu bagi mendedahkan kod yang terkandung. Seperti yang disebut sebelum ini, cmdInt dan cmdArr kurang penting dan kebanyakan gabungan rawak sepatutnya berfungsi. Modul ini dicipta sebelum saya mengetahuinya, tetapi ia masih boleh berguna untuk ujian tertentu.</string>
     <string name="codes_guide_miscellaneous_title">Pelbagai</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Kod berikut akan dilangkau: %1$s</string>
     <string name="skip_codes_empty_summary">Data akan dibaca daripada keseluruhan set kod.</string>
     <string name="skip_codes_dialog_str">Taip kod yang hendak dilangkau (dipisahkan dengan koma):</string>
-    <string name="logger_category">Perekod kod</string>
-    <string name="code_logger_string">Bacaan awal</string>
-    <string name="code_logger_summary">Ketik untuk memulakan proses</string>
-    <string name="code_logger_summary_working">Sedang berfungsi… %1$s Ketik untuk membatalkan</string>
-    <string name="code_logger_data">Data bacaan awal</string>
-    <string name="code_logger_data_summary">Ketik untuk menetapkan data bacaan awal. \ncmdInt permulaan: %1$s, cmdArr permulaan: %2$s, cmdInt maks.: %3$s, cmdArr maks.: %4$s, tetingkap masa: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt permulaan (maks. 1198):</string>
-    <string name="starting_cmd_arr_text">cmdArr permulaan (maks. 1198):</string>
-    <string name="max_cmd_int_text">cmdInt maks. (maks. 1199):</string>
-    <string name="max_cmd_arr_text">cmdArr maks. (maks. 1199):</string>
-    <string name="code_logger_timeout_text">Tetingkap masa:</string>
-    <string name="omit_digits">Langkau angka tunggal</string>
-    <string name="omit_digits_summary">Penggunaan bahan api dan jarak biasanya mempunyai lebih daripada satu digit. Pilihan ini boleh mempercepatkan proses dengan ketara.</string>
-    <string name="code_logger_dialog_toast">Nilai permulaan tidak boleh lebih besar daripada nilai maksimum</string>
-    <string name="code_logger_toast">Pengelogan kod selesai. Semak hasilnya dalam Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Pemeriksa kod</string>
     <string name="code_inspector_string">Bacaan terperinci</string>

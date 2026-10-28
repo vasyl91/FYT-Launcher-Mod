@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus читач</string>
     <string name="display_canbus_reader">Прикажи Canbus читач</string>
     <string name="codes_guide">Canbus водич</string>
-    <string name="codes_guide_initial_reading_title">Логер кодова – почетно читање</string>
-    <string name="codes_guide_initial_reading_one">„Canbus читач” можда неће радити у сваком аутомобилу! Зависи од изворног кода који је дао произвођач. \n\nТри вредности су битне за исправно читање canbus података: cmdInt и cmdArr, који се у евиденцијама приказују као CMD (мање важни, већина насумичних комбинација требало би да ради), и canbus кодови, који се у евиденцијама приказују као CODE (њих је важно одредити).</string>
-    <string name="codes_guide_initial_reading_two">„Почетно читање” треба да направи txt датотеку са евиденцијама које изгледају као горе. Кључно је одредити кодове који представљају тренутну потрошњу горива и домет. \n\nЗа тренутну потрошњу потражите код који има релативно мало излаза – на приложеном снимку екрана то је код 91. \n\nКод домета обично има један излаз који се не мења брзо или се мења у одређеним интервалима – на приложеном снимку екрана то је код 92. \n\nОстали кодови су занемарљиви осим ако не тражите нешто друго.</string>
-    <string name="codes_guide_initial_reading_three">„Временски прозор” – време (у секундама) током ког „Логер кодова” чува излазе за сваку петљу cmdInt и cmdArr. \n\n„Прескочи једноцифрене” – занемарује једноцифрене излазе јер тренутна потрошња горива и домет обично имају више од једне цифре. Ова опција може знатно да убрза поступак јер се петља не задржава на небитним излазима. \n\nСавет – да бисте ефикасно почели да испитујете canbus кодове, користите узак опсег између почетне и максималне вредности cmdInt и cmdArr. Можете их подесити како желите ако не премашују максималне вредности (наведене у дијалогу за унос) и ако почетна вредност није већа од максималне. Што је опсег шири и временски прозор дужи, то поступак дуже траје.</string>
     <string name="codes_guide_detailed_reading_title">Инспектор кодова – детаљно читање</string>
     <string name="codes_guide_detailed_reading">Овај део служи за тестирање одређених комбинација cmdInt и cmdArr да би се открили кодови које садрже. Као што је раније речено, cmdInt и cmdArr су мање важни и већина насумичних комбинација требало би да ради. Овај модул је настао пре него што сам то сазнао, али и даље може бити користан за посебна тестирања.</string>
     <string name="codes_guide_miscellaneous_title">Разно</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Следећи кодови биће прескочени: %1$s</string>
     <string name="skip_codes_empty_summary">Подаци ће се читати из целог скупа кодова.</string>
     <string name="skip_codes_dialog_str">Унесите кодове које треба прескочити (раздвојене зарезом):</string>
-    <string name="logger_category">Логер кодова</string>
-    <string name="code_logger_string">Почетно читање</string>
-    <string name="code_logger_summary">Додирните да покренете поступак</string>
-    <string name="code_logger_summary_working">Ради се… %1$s Додирните да откажете</string>
-    <string name="code_logger_data">Подаци почетног читања</string>
-    <string name="code_logger_data_summary">Додирните да подесите податке почетног читања. \nПочетни cmdInt: %1$s, почетни cmdArr: %2$s, макс. cmdInt: %3$s, макс. cmdArr: %4$s, временски прозор: %5$s</string>
-    <string name="starting_cmd_int_text">Почетни cmdInt (макс. 1198):</string>
-    <string name="starting_cmd_arr_text">Почетни cmdArr (макс. 1198):</string>
-    <string name="max_cmd_int_text">Макс. cmdInt (макс. 1199):</string>
-    <string name="max_cmd_arr_text">Макс. cmdArr (макс. 1199):</string>
-    <string name="code_logger_timeout_text">Временски прозор:</string>
-    <string name="omit_digits">Прескочи једноцифрене</string>
-    <string name="omit_digits_summary">Потрошња горива и домет обично имају више од једне цифре. Ова опција може знатно да убрза поступак.</string>
-    <string name="code_logger_dialog_toast">Почетна вредност не сме бити већа од максималне вредности</string>
-    <string name="code_logger_toast">Евидентирање кодова је завршено. Резултате проверите у Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Инспектор кодова</string>
     <string name="code_inspector_string">Детаљно читање</string>

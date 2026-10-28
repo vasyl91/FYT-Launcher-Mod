@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus reader</string>
     <string name="display_canbus_reader">Ipakita ang Canbus reader</string>
     <string name="codes_guide">Gabay sa Canbus</string>
-    <string name="codes_guide_initial_reading_title">Code logger – paunang pagbasa</string>
-    <string name="codes_guide_initial_reading_one">Maaaring hindi gumana ang \"Canbus reader\" sa bawat sasakyan! Nakadepende ito sa source code na ibinigay ng manufacturer. \n\nTatlong halaga ang mahalaga para mabasa nang tama ang canbus data: ang cmdInt at cmdArr na kinakatawan sa mga log bilang CMD (mas hindi mahalaga, dapat gumana ang karamihan ng random na kumbinasyon) at ang mga canbus code na kinakatawan sa mga log bilang CODE (mahalagang matukoy ang mga ito).</string>
-    <string name="codes_guide_initial_reading_two">Dapat lumikha ang \"Paunang pagbasa\" ng txt file na may mga log na kamukha ng nasa itaas. Ang mahalagang bahagi ay ang pagtukoy sa mga code na kumakatawan sa kasalukuyang konsumo ng gasolina at saklaw. \n\nPara sa kasalukuyang konsumo ng gasolina, hanapin ang code na may medyo kaunting output – sa nakalakip na screenshot ito ay code 91. \n\nAng code ng saklaw ay karaniwang may iisang output na hindi mabilis magbago o nagbabago sa mga partikular na pagitan – sa nakalakip na screenshot ito ay code 92. \n\nPuwedeng balewalain ang iba pang mga code maliban kung may ibang hinahanap ka.</string>
-    <string name="codes_guide_initial_reading_three">\"Window ng oras\" – ang oras (sa segundo) kung kailan sine-save ng \"Code logger\" ang mga output para sa bawat cmdInt at cmdArr loop. \n\n\"Laktawan ang iisang digit\" – binabalewala ang mga output na iisang digit dahil karaniwang higit sa isang digit ang kasalukuyang konsumo ng gasolina at saklaw. Maaaring lubos nitong mapabilis ang proseso dahil hindi nagtatagal ang loop sa mga walang kaugnayang output. \n\nTip – para epektibong simulan ang pagsusuri sa mga canbus code, gumamit ng makitid na saklaw sa pagitan ng panimula at pinakamataas na halaga ng cmdInt at cmdArr. Maitatakda mo ang mga ito ayon sa gusto mo basta\'t hindi lalampas sa pinakamataas na halaga (nakasaad sa input dialog) at hindi mas malaki ang panimulang halaga sa pinakamataas. Kapag mas malawak ang saklaw at mas mahaba ang window ng oras, mas matagal ang proseso.</string>
     <string name="codes_guide_detailed_reading_title">Code inspector – detalyadong pagbasa</string>
     <string name="codes_guide_detailed_reading">Ang bahaging ito ay para sa pagsubok ng mga partikular na kumbinasyon ng cmdInt at cmdArr upang ihayag ang mga code na laman nito. Gaya ng nabanggit kanina, mas hindi mahalaga ang cmdInt at cmdArr at dapat gumana ang karamihan ng random na kumbinasyon. Ginawa ang module na ito bago ko ito nalaman, ngunit maaari pa rin itong maging kapaki-pakinabang para sa mga partikular na pagsubok.</string>
     <string name="codes_guide_miscellaneous_title">Iba-iba</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Lalaktawan ang mga sumusunod na code: %1$s</string>
     <string name="skip_codes_empty_summary">Babasahin ang data mula sa buong set ng code.</string>
     <string name="skip_codes_dialog_str">I-type ang mga code na lalaktawan (pinaghihiwalay ng kuwit):</string>
-    <string name="logger_category">Code logger</string>
-    <string name="code_logger_string">Paunang pagbasa</string>
-    <string name="code_logger_summary">I-tap para simulan ang proseso</string>
-    <string name="code_logger_summary_working">Gumagana… %1$s I-tap para kanselahin</string>
-    <string name="code_logger_data">Data ng paunang pagbasa</string>
-    <string name="code_logger_data_summary">I-tap para itakda ang data ng paunang pagbasa. \nPanimulang cmdInt: %1$s, panimulang cmdArr: %2$s, max cmdInt: %3$s, max cmdArr: %4$s, window ng oras: %5$s</string>
-    <string name="starting_cmd_int_text">Panimulang cmdInt (max. 1198):</string>
-    <string name="starting_cmd_arr_text">Panimulang cmdArr (max. 1198):</string>
-    <string name="max_cmd_int_text">Max cmdInt (max. 1199):</string>
-    <string name="max_cmd_arr_text">Max cmdArr (max. 1199):</string>
-    <string name="code_logger_timeout_text">Window ng oras:</string>
-    <string name="omit_digits">Laktawan ang iisang digit</string>
-    <string name="omit_digits_summary">Karaniwang higit sa isang digit ang konsumo ng gasolina at saklaw. Maaaring lubos na mapabilis ng opsyong ito ang proseso.</string>
-    <string name="code_logger_dialog_toast">Hindi puwedeng mas malaki ang panimulang halaga kaysa sa pinakamataas na halaga</string>
-    <string name="code_logger_toast">Tapos na ang pag-log ng mga code. Tingnan ang mga resulta sa Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Code inspector</string>
     <string name="code_inspector_string">Detalyadong pagbasa</string>

@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">خواننده Canbus</string>
     <string name="display_canbus_reader">نمایش خواننده Canbus</string>
     <string name="codes_guide">راهنمای Canbus</string>
-    <string name="codes_guide_initial_reading_title">ثبت‌کننده کدها – خواندن اولیه</string>
-    <string name="codes_guide_initial_reading_one">«خواننده Canbus» ممکن است روی همه خودروها کار نکند! این به کد منبعی که سازنده ارائه کرده بستگی دارد. \n\nبرای خواندن درست داده‌های canbus سه مقدار ضروری است: cmdInt و cmdArr که در گزارش‌ها با CMD نشان داده می‌شوند (اهمیت کمتری دارند و بیشتر ترکیب‌های تصادفی باید کار کنند) و کدهای canbus که در گزارش‌ها با CODE نشان داده می‌شوند (تعیین این‌ها مهم است).</string>
-    <string name="codes_guide_initial_reading_two">«خواندن اولیه» باید یک فایل txt شامل گزارش‌هایی شبیه موارد بالا بسازد. بخش مهم، تشخیص کدهایی است که مصرف فعلی سوخت و برد را نشان می‌دهند. \n\nبرای مصرف فعلی سوخت، کدی را پیدا کنید که خروجی‌های نسبتاً کمی دارد – در تصویر پیوست‌شده کد ۹۱ است. \n\nکد برد معمولاً یک خروجی دارد که سریع تغییر نمی‌کند یا در فاصله‌های مشخصی تغییر می‌کند – در تصویر پیوست‌شده کد ۹۲ است. \n\nبقیه کدها، مگر اینکه دنبال چیز دیگری باشید، قابل چشم‌پوشی‌اند.</string>
-    <string name="codes_guide_initial_reading_three">«بازه زمانی» – زمانی (به ثانیه) که «ثبت‌کننده کدها» خروجی‌های هر حلقه cmdInt و cmdArr را ذخیره می‌کند. \n\n«نادیده گرفتن اعداد تک‌رقمی» – خروجی‌های تک‌رقمی را نادیده می‌گیرد، چون مصرف فعلی سوخت و برد معمولاً بیش از یک رقم دارند. این گزینه ممکن است روند را بسیار تسریع کند، چون حلقه روی خروجی‌های بی‌ربط معطل نمی‌شود. \n\nنکته – برای شروع کارآمد بررسی کدهای canbus، بازه کوچکی بین مقدار شروع و حداکثر cmdInt و cmdArr انتخاب کنید. می‌توانید آن‌ها را هر طور که می‌خواهید تنظیم کنید، به شرط آنکه از مقادیر حداکثر (در کادر ورودی آمده) بیشتر نباشند و مقدار شروع از حداکثر بزرگ‌تر نباشد. هرچه بازه گسترده‌تر و بازه زمانی طولانی‌تر باشد، روند بیشتر طول می‌کشد.</string>
     <string name="codes_guide_detailed_reading_title">بازرس کدها – خواندن تفصیلی</string>
     <string name="codes_guide_detailed_reading">این بخش برای آزمودن ترکیب‌های مشخص cmdInt و cmdArr و آشکار کردن کدهایی است که در خود دارند. همان‌طور که پیش‌تر گفته شد، cmdInt و cmdArr اهمیت کمتری دارند و بیشتر ترکیب‌های تصادفی باید کار کنند. این ماژول قبل از آنکه این را بفهمم ساخته شد، اما همچنان برای آزمون‌های مشخص مفید است.</string>
     <string name="codes_guide_miscellaneous_title">متفرقه</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">کدهای زیر رد می‌شوند: %1$s</string>
     <string name="skip_codes_empty_summary">داده‌ها از کل مجموعه کدها خوانده می‌شوند.</string>
     <string name="skip_codes_dialog_str">کدهایی را که باید رد شوند وارد کنید (با ویرگول جدا کنید):</string>
-    <string name="logger_category">ثبت‌کننده کدها</string>
-    <string name="code_logger_string">خواندن اولیه</string>
-    <string name="code_logger_summary">برای شروع فرایند لمس کنید</string>
-    <string name="code_logger_summary_working">در حال کار… %1$s برای لغو لمس کنید</string>
-    <string name="code_logger_data">داده‌های خواندن اولیه</string>
-    <string name="code_logger_data_summary">برای تنظیم داده‌های خواندن اولیه لمس کنید. \ncmdInt شروع: %1$s، cmdArr شروع: %2$s، حداکثر cmdInt: %3$s، حداکثر cmdArr: %4$s، بازه زمانی: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt شروع (حداکثر ۱۱۹۸):</string>
-    <string name="starting_cmd_arr_text">cmdArr شروع (حداکثر ۱۱۹۸):</string>
-    <string name="max_cmd_int_text">حداکثر cmdInt (حداکثر ۱۱۹۹):</string>
-    <string name="max_cmd_arr_text">حداکثر cmdArr (حداکثر ۱۱۹۹):</string>
-    <string name="code_logger_timeout_text">بازه زمانی:</string>
-    <string name="omit_digits">نادیده گرفتن اعداد تک‌رقمی</string>
-    <string name="omit_digits_summary">مصرف سوخت و برد معمولاً بیش از یک رقم دارند. این گزینه ممکن است روند را بسیار تسریع کند.</string>
-    <string name="code_logger_dialog_toast">مقدار شروع نمی‌تواند از مقدار حداکثر بزرگ‌تر باشد</string>
-    <string name="code_logger_toast">ثبت کدها پایان یافت. نتایج را در Download/Launcher66_Canbus ببینید</string>
 
     <string name="inspector_category">بازرس کدها</string>
     <string name="code_inspector_string">خواندن تفصیلی</string>

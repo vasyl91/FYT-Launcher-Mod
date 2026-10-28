@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Kisomaji cha Canbus</string>
     <string name="display_canbus_reader">Onyesha kisomaji cha Canbus</string>
     <string name="codes_guide">Mwongozo wa Canbus</string>
-    <string name="codes_guide_initial_reading_title">Kinasa misimbo – usomaji wa awali</string>
-    <string name="codes_guide_initial_reading_one">\"Kisomaji cha Canbus\" huenda kisifanye kazi kwenye kila gari! Inategemea msimbo chanzo uliotolewa na mtengenezaji. \n\nThamani tatu ni muhimu ili kusoma data ya canbus ipasavyo: cmdInt na cmdArr zinazowakilishwa kwenye kumbukumbu kama CMD (si muhimu sana, michanganyiko mingi nasibu inapaswa kufanya kazi) na misimbo ya canbus inayowakilishwa kwenye kumbukumbu kama CODE (hii ni muhimu kuitambua).</string>
-    <string name="codes_guide_initial_reading_two">\"Usomaji wa awali\" unapaswa kuunda faili ya txt yenye kumbukumbu zinazofanana na zilizo juu. Sehemu muhimu ni kutambua misimbo inayowakilisha matumizi ya sasa ya mafuta na umbali. \n\nKwa matumizi ya sasa ya mafuta, tafuta msimbo wenye matokeo machache kiasi – kwenye picha ya skrini iliyoambatishwa ni msimbo 91. \n\nMsimbo wa umbali kwa kawaida una tokeo moja ambalo halibadiliki haraka au hubadilika kwa vipindi maalum – kwenye picha ya skrini iliyoambatishwa ni msimbo 92. \n\nMisimbo iliyobaki haina umuhimu isipokuwa unatafuta kitu kingine.</string>
-    <string name="codes_guide_initial_reading_three">\"Dirisha la muda\" – muda (kwa sekunde) ambao \"Kinasa misimbo\" huhifadhi matokeo kwa kila mzunguko wa cmdInt na cmdArr. \n\n\"Ruka tarakimu moja\" – hupuuza matokeo ya tarakimu moja kwa sababu matumizi ya sasa ya mafuta na umbali kwa kawaida huwa na zaidi ya tarakimu moja. Chaguo hili linaweza kuharakisha mchakato kwa kiasi kikubwa kwa sababu mzunguko haukawii kwenye matokeo yasiyohusika. \n\nKidokezo – ili kuanza kukagua misimbo ya canbus kwa ufanisi, tumia wigo mwembamba kati ya thamani ya kuanzia na ya juu zaidi ya cmdInt na cmdArr. Unaweza kuziweka upendavyo mradi hazizidi thamani za juu zaidi (zimeonyeshwa kwenye kisanduku cha kuingiza) na thamani ya kuanzia si kubwa kuliko ya juu zaidi. Kadiri wigo unavyopana na dirisha la muda kuwa refu, ndivyo mchakato unavyochukua muda mrefu.</string>
     <string name="codes_guide_detailed_reading_title">Mkaguzi wa misimbo – usomaji wa kina</string>
     <string name="codes_guide_detailed_reading">Sehemu hii inalenga kujaribu michanganyiko maalum ya cmdInt na cmdArr ili kufichua misimbo iliyomo. Kama ilivyotajwa awali, cmdInt na cmdArr si muhimu sana na michanganyiko mingi nasibu inapaswa kufanya kazi. Moduli hii iliundwa kabla sijajua hilo, lakini bado inaweza kuwa na manufaa kwa majaribio maalum.</string>
     <string name="codes_guide_miscellaneous_title">Mbalimbali</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Misimbo ifuatayo itarukwa: %1$s</string>
     <string name="skip_codes_empty_summary">Data itasomwa kutoka kwenye seti nzima ya misimbo.</string>
     <string name="skip_codes_dialog_str">Andika misimbo ya kuruka (itenganishwe kwa koma):</string>
-    <string name="logger_category">Kinasa misimbo</string>
-    <string name="code_logger_string">Usomaji wa awali</string>
-    <string name="code_logger_summary">Gusa ili kuanza mchakato</string>
-    <string name="code_logger_summary_working">Inafanya kazi… %1$s Gusa ili kughairi</string>
-    <string name="code_logger_data">Data ya usomaji wa awali</string>
-    <string name="code_logger_data_summary">Gusa ili kuweka data ya usomaji wa awali. \ncmdInt ya kuanzia: %1$s, cmdArr ya kuanzia: %2$s, cmdInt ya juu: %3$s, cmdArr ya juu: %4$s, dirisha la muda: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt ya kuanzia (juu zaidi 1198):</string>
-    <string name="starting_cmd_arr_text">cmdArr ya kuanzia (juu zaidi 1198):</string>
-    <string name="max_cmd_int_text">cmdInt ya juu (juu zaidi 1199):</string>
-    <string name="max_cmd_arr_text">cmdArr ya juu (juu zaidi 1199):</string>
-    <string name="code_logger_timeout_text">Dirisha la muda:</string>
-    <string name="omit_digits">Ruka tarakimu moja</string>
-    <string name="omit_digits_summary">Matumizi ya mafuta na umbali kwa kawaida huwa na zaidi ya tarakimu moja. Chaguo hili linaweza kuharakisha mchakato kwa kiasi kikubwa.</string>
-    <string name="code_logger_dialog_toast">Thamani ya kuanzia haiwezi kuwa kubwa kuliko thamani ya juu zaidi</string>
-    <string name="code_logger_toast">Uandikaji wa misimbo umekamilika. Angalia matokeo kwenye Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Mkaguzi wa misimbo</string>
     <string name="code_inspector_string">Usomaji wa kina</string>

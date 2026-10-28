@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus okuyucu</string>
     <string name="display_canbus_reader">Canbus okuyucuyu göster</string>
     <string name="codes_guide">Canbus kılavuzu</string>
-    <string name="codes_guide_initial_reading_title">Kod kaydedici – ilk okuma</string>
-    <string name="codes_guide_initial_reading_one">\"Canbus okuyucu\" her araçta çalışmayabilir! Üreticinin sağladığı kaynak koda bağlıdır. \n\nCanbus verilerini doğru okumak için üç değer önemlidir: günlüklerde CMD olarak gösterilen cmdInt ve cmdArr (daha az önemli, rastgele kombinasyonların çoğu çalışmalı) ve günlüklerde CODE olarak gösterilen canbus kodları (bunları belirlemek önemli).</string>
-    <string name="codes_guide_initial_reading_two">\"İlk okuma\" yukarıdakilere benzer günlükler içeren bir txt dosyası oluşturmalıdır. Önemli olan, anlık yakıt tüketimini ve menzili temsil eden kodları belirlemektir. \n\nAnlık yakıt tüketimi için çıktısı nispeten az olan kodu arayın – ekteki ekran görüntüsünde 91 numaralı koddur. \n\nMenzil kodu genellikle tek bir çıktı içerir ve hızlı değişmez ya da belirli aralıklarla değişir – ekteki ekran görüntüsünde 92 numaralı koddur. \n\nBaşka bir şey aramıyorsanız diğer kodlar önemsizdir.</string>
-    <string name="codes_guide_initial_reading_three">\"Zaman penceresi\" – \"Kod kaydedici\"nin her cmdInt ve cmdArr döngüsü için çıktıları kaydedeceği süre (saniye). \n\n\"Tek haneleri atla\" – anlık yakıt tüketimi ve menzil genellikle birden fazla haneden oluştuğu için tek haneli çıktıları yok sayar. Döngü ilgisiz çıktılarda oyalanmadığı için bu seçenek işlemi büyük ölçüde hızlandırabilir. \n\nİpucu – canbus kodlarını verimli incelemeye başlamak için cmdInt ve cmdArr başlangıç-en yüksek değer aralığını dar tutun. Bunları en yüksek değerleri (giriş iletişim kutusunda belirtilir) aşmamak ve başlangıç değeri en yüksek değerden büyük olmamak koşuluyla istediğiniz gibi ayarlayabilirsiniz. Aralık ne kadar geniş ve zaman penceresi ne kadar uzunsa işlem o kadar uzun sürer.</string>
     <string name="codes_guide_detailed_reading_title">Kod denetçisi – ayrıntılı okuma</string>
     <string name="codes_guide_detailed_reading">Bu bölüm, belirli cmdInt ve cmdArr kombinasyonlarını sınayarak içerdikleri kodları ortaya çıkarmak içindir. Daha önce belirtildiği gibi cmdInt ve cmdArr daha az önemlidir ve rastgele kombinasyonların çoğu çalışmalıdır. Bu modül bunu öğrenmeden önce oluşturuldu, ancak belirli testler için yine de işe yarayabilir.</string>
     <string name="codes_guide_miscellaneous_title">Çeşitli</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Şu kodlar atlanacak: %1$s</string>
     <string name="skip_codes_empty_summary">Veriler tüm kod kümesinden okunacak.</string>
     <string name="skip_codes_dialog_str">Atlanacak kodları yazın (virgülle ayırın):</string>
-    <string name="logger_category">Kod kaydedici</string>
-    <string name="code_logger_string">İlk okuma</string>
-    <string name="code_logger_summary">İşlemi başlatmak için dokunun</string>
-    <string name="code_logger_summary_working">Çalışıyor… %1$s İptal etmek için dokunun</string>
-    <string name="code_logger_data">İlk okuma verileri</string>
-    <string name="code_logger_data_summary">İlk okuma verilerini ayarlamak için dokunun. \nBaşlangıç cmdInt: %1$s, başlangıç cmdArr: %2$s, en yüksek cmdInt: %3$s, en yüksek cmdArr: %4$s, zaman penceresi: %5$s</string>
-    <string name="starting_cmd_int_text">Başlangıç cmdInt (en fazla 1198):</string>
-    <string name="starting_cmd_arr_text">Başlangıç cmdArr (en fazla 1198):</string>
-    <string name="max_cmd_int_text">En yüksek cmdInt (en fazla 1199):</string>
-    <string name="max_cmd_arr_text">En yüksek cmdArr (en fazla 1199):</string>
-    <string name="code_logger_timeout_text">Zaman penceresi:</string>
-    <string name="omit_digits">Tek haneleri atla</string>
-    <string name="omit_digits_summary">Yakıt tüketimi ve menzil genellikle birden fazla haneden oluşur. Bu seçenek işlemi büyük ölçüde hızlandırabilir.</string>
-    <string name="code_logger_dialog_toast">Başlangıç değeri en yüksek değerden büyük olamaz</string>
-    <string name="code_logger_toast">Kodların kaydı tamamlandı. Sonuçları Download/Launcher66_Canbus içinde kontrol edin</string>
 
     <string name="inspector_category">Kod denetçisi</string>
     <string name="code_inspector_string">Ayrıntılı okuma</string>

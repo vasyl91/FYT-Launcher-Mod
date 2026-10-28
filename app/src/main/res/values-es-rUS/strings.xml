@@ -43,7 +43,6 @@
     <string name="device_settings">Configuración del dispositivo</string>
     <string name="layout_set">¡Se ha establecido el diseño! Presiona el botón de inicio para ver el resultado.</string>
 
-    <string name="codes_guide_initial_reading_one">¡El \"lector Canbus\" puede no funcionar en todos los autos! Depende del código fuente proporcionado por el fabricante. \n\nHay tres valores esenciales para leer correctamente los datos canbus: cmdInt y cmdArr, representados en los registros por CMD (son menos importantes, la mayoría de las combinaciones aleatorias deberían funcionar), y los códigos canbus, representados en los registros por CODE (estos hay que determinarlos).</string>
 
     <string name="night_mode_lights">Noche según las luces del auto</string>
     <string name="night_mode_lights_summary">Luces encendidas significa noche y luces apagadas significa día, en lugar del amanecer y el atardecer. Solo para autos que encienden las luces automáticamente; en regiones donde la luz diurna es obligatoria, será de noche todo el día.</string>

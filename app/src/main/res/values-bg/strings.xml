@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Четец Canbus</string>
     <string name="display_canbus_reader">Показване на четеца Canbus</string>
     <string name="codes_guide">Ръководство за Canbus</string>
-    <string name="codes_guide_initial_reading_title">Запис на кодове – първоначално четене</string>
-    <string name="codes_guide_initial_reading_one">„Четецът Canbus“ може да не работи при всеки автомобил! Зависи от изходния код, предоставен от производителя. \n\nЗа правилното четене на canbus данните са необходими три стойности: cmdInt и cmdArr, показвани в журналите като CMD (по-малко важни, повечето случайни комбинации трябва да работят), и canbus кодовете, показвани в журналите като CODE (тях е важно да се определят).</string>
-    <string name="codes_guide_initial_reading_two">„Първоначалното четене“ трябва да създаде txt файл с журнали, подобни на показаните по-горе. Най-важното е да се определят кодовете, които представят текущия разход на гориво и запаса на хода. \n\nЗа текущия разход потърсете кода, който има сравнително малко изходи – на приложената снимка на екрана това е кодът 91. \n\nКодът за запас на хода обикновено съдържа един изход, който не се променя бързо или се променя на определени интервали – на приложената снимка на екрана това е кодът 92. \n\nОстаналите кодове са пренебрежими, освен ако не търсите нещо друго.</string>
-    <string name="codes_guide_initial_reading_three">„Времеви прозорец“ – времето (в секунди), през което „Записът на кодове“ запазва изходите за всеки цикъл на cmdInt и cmdArr. \n\n„Пропускане на едноцифрени числа“ – игнорира едноцифрените изходи, защото текущият разход и запасът на хода обикновено имат повече от една цифра. Тази опция може значително да ускори процеса, защото цикълът не се бави на нерелевантни изходи. \n\nСъвет – за да започнете ефективно проучването на canbus кодовете, използвайте тесен диапазон между началната и максималната стойност на cmdInt и cmdArr. Можете да ги зададете както желаете, стига да не надвишават максималните стойности (посочени в диалога за въвеждане) и началната стойност да не е по-голяма от максималната. Колкото по-широк е диапазонът и по-дълъг времевият прозорец, толкова по-дълго трае процесът.</string>
     <string name="codes_guide_detailed_reading_title">Инспектор на кодове – подробно четене</string>
     <string name="codes_guide_detailed_reading">Тази част е предназначена за тестване на конкретни комбинации от cmdInt и cmdArr, за да се разкрият кодовете, които съдържат. Както е казано по-рано, cmdInt и cmdArr са по-малко важни и повечето случайни комбинации трябва да работят. Този модул е създаден, преди да науча това, но все още може да е полезен за конкретни тестове.</string>
     <string name="codes_guide_miscellaneous_title">Разни</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Следните кодове ще бъдат пропуснати: %1$s</string>
     <string name="skip_codes_empty_summary">Данните ще се четат от целия набор от кодове.</string>
     <string name="skip_codes_dialog_str">Въведете кодовете за пропускане (разделени със запетая):</string>
-    <string name="logger_category">Запис на кодове</string>
-    <string name="code_logger_string">Първоначално четене</string>
-    <string name="code_logger_summary">Докоснете, за да стартирате процеса</string>
-    <string name="code_logger_summary_working">Работи се… %1$s Докоснете за отмяна</string>
-    <string name="code_logger_data">Данни за първоначалното четене</string>
-    <string name="code_logger_data_summary">Докоснете, за да зададете данните за първоначалното четене. \nНачален cmdInt: %1$s, начален cmdArr: %2$s, макс. cmdInt: %3$s, макс. cmdArr: %4$s, времеви прозорец: %5$s</string>
-    <string name="starting_cmd_int_text">Начален cmdInt (макс. 1198):</string>
-    <string name="starting_cmd_arr_text">Начален cmdArr (макс. 1198):</string>
-    <string name="max_cmd_int_text">Макс. cmdInt (макс. 1199):</string>
-    <string name="max_cmd_arr_text">Макс. cmdArr (макс. 1199):</string>
-    <string name="code_logger_timeout_text">Времеви прозорец:</string>
-    <string name="omit_digits">Пропускане на едноцифрени числа</string>
-    <string name="omit_digits_summary">Разходът на гориво и запасът на хода обикновено имат повече от една цифра. Тази опция може значително да ускори процеса.</string>
-    <string name="code_logger_dialog_toast">Началната стойност не може да бъде по-голяма от максималната</string>
-    <string name="code_logger_toast">Записът на кодовете приключи. Проверете резултатите в Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Инспектор на кодове</string>
     <string name="code_inspector_string">Подробно четене</string>

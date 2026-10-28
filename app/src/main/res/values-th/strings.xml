@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">ตัวอ่าน Canbus</string>
     <string name="display_canbus_reader">แสดงตัวอ่าน Canbus</string>
     <string name="codes_guide">คู่มือ Canbus</string>
-    <string name="codes_guide_initial_reading_title">ตัวบันทึกรหัส – การอ่านเบื้องต้น</string>
-    <string name="codes_guide_initial_reading_one">\"ตัวอ่าน Canbus\" อาจใช้ไม่ได้กับรถทุกคัน! ขึ้นอยู่กับซอร์สโค้ดที่ผู้ผลิตให้มา \n\nมีสามค่าที่จำเป็นต่อการอ่านข้อมูล canbus อย่างถูกต้อง ได้แก่ cmdInt และ cmdArr ซึ่งแสดงในบันทึกเป็น CMD (สำคัญน้อยกว่า ส่วนใหญ่การจับคู่แบบสุ่มควรใช้ได้) และรหัส canbus ซึ่งแสดงในบันทึกเป็น CODE (ต้องหาให้พบ)</string>
-    <string name="codes_guide_initial_reading_two">\"การอ่านเบื้องต้น\" ควรสร้างไฟล์ txt ที่มีบันทึกหน้าตาแบบด้านบน ส่วนสำคัญคือการระบุรหัสที่แทนอัตราสิ้นเปลืองเชื้อเพลิงปัจจุบันและระยะทางที่วิ่งได้ \n\nสำหรับอัตราสิ้นเปลืองปัจจุบัน ให้มองหารหัสที่มีเอาต์พุตค่อนข้างน้อย – ในภาพหน้าจอที่แนบคือรหัส 91 \n\nรหัสระยะทางที่วิ่งได้มักมีเอาต์พุตเดียวที่ไม่เปลี่ยนเร็วหรือเปลี่ยนเป็นช่วง ๆ – ในภาพหน้าจอที่แนบคือรหัส 92 \n\nรหัสที่เหลือไม่สำคัญ เว้นแต่คุณกำลังมองหาสิ่งอื่น</string>
-    <string name="codes_guide_initial_reading_three">\"ช่วงเวลา\" – เวลา (เป็นวินาที) ที่ \"ตัวบันทึกรหัส\" จะบันทึกเอาต์พุตในแต่ละรอบของ cmdInt และ cmdArr \n\n\"ข้ามตัวเลขหลักเดียว\" – ข้ามเอาต์พุตที่เป็นเลขหลักเดียว เพราะอัตราสิ้นเปลืองปัจจุบันและระยะทางที่วิ่งได้มักมีมากกว่าหนึ่งหลัก ตัวเลือกนี้อาจเร่งกระบวนการได้มากเพราะลูปไม่ติดอยู่กับเอาต์พุตที่ไม่เกี่ยวข้อง \n\nเคล็ดลับ – เพื่อเริ่มตรวจรหัส canbus อย่างมีประสิทธิภาพ ให้ใช้ช่วงแคบระหว่างค่าเริ่มต้นถึงค่าสูงสุดของ cmdInt และ cmdArr ตั้งค่าได้ตามต้องการ ตราบใดที่ไม่เกินค่าสูงสุด (ดูในกล่องโต้ตอบการป้อนข้อมูล) และค่าเริ่มต้นไม่มากกว่าค่าสูงสุด ยิ่งช่วงกว้างและช่วงเวลายาว กระบวนการยิ่งใช้เวลานาน</string>
     <string name="codes_guide_detailed_reading_title">ตัวตรวจสอบรหัส – การอ่านโดยละเอียด</string>
     <string name="codes_guide_detailed_reading">ส่วนนี้ใช้ทดสอบการจับคู่ cmdInt และ cmdArr ที่เจาะจงเพื่อดูรหัสที่อยู่ในนั้น ดังที่กล่าวไว้ก่อนหน้า cmdInt และ cmdArr สำคัญน้อยกว่าและส่วนใหญ่การจับคู่แบบสุ่มควรใช้ได้ โมดูลนี้สร้างขึ้นก่อนที่ฉันจะรู้เรื่องนี้ แต่ก็ยังมีประโยชน์สำหรับการทดสอบเฉพาะ</string>
     <string name="codes_guide_miscellaneous_title">เบ็ดเตล็ด</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">จะข้ามรหัสต่อไปนี้: %1$s</string>
     <string name="skip_codes_empty_summary">จะอ่านข้อมูลจากชุดรหัสทั้งหมด</string>
     <string name="skip_codes_dialog_str">พิมพ์รหัสที่ต้องการข้าม (คั่นด้วยเครื่องหมายจุลภาค):</string>
-    <string name="logger_category">ตัวบันทึกรหัส</string>
-    <string name="code_logger_string">การอ่านเบื้องต้น</string>
-    <string name="code_logger_summary">แตะเพื่อเริ่มกระบวนการ</string>
-    <string name="code_logger_summary_working">กำลังทำงาน… %1$s แตะเพื่อยกเลิก</string>
-    <string name="code_logger_data">ข้อมูลการอ่านเบื้องต้น</string>
-    <string name="code_logger_data_summary">แตะเพื่อตั้งค่าข้อมูลการอ่านเบื้องต้น \ncmdInt เริ่มต้น: %1$s, cmdArr เริ่มต้น: %2$s, cmdInt สูงสุด: %3$s, cmdArr สูงสุด: %4$s, ช่วงเวลา: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt เริ่มต้น (สูงสุด 1198):</string>
-    <string name="starting_cmd_arr_text">cmdArr เริ่มต้น (สูงสุด 1198):</string>
-    <string name="max_cmd_int_text">cmdInt สูงสุด (สูงสุด 1199):</string>
-    <string name="max_cmd_arr_text">cmdArr สูงสุด (สูงสุด 1199):</string>
-    <string name="code_logger_timeout_text">ช่วงเวลา:</string>
-    <string name="omit_digits">ข้ามตัวเลขหลักเดียว</string>
-    <string name="omit_digits_summary">อัตราสิ้นเปลืองเชื้อเพลิงและระยะทางที่วิ่งได้มักมีมากกว่าหนึ่งหลัก ตัวเลือกนี้อาจเร่งกระบวนการได้มาก</string>
-    <string name="code_logger_dialog_toast">ค่าเริ่มต้นต้องไม่มากกว่าค่าสูงสุด</string>
-    <string name="code_logger_toast">บันทึกรหัสเสร็จสิ้น ตรวจสอบผลลัพธ์ที่ Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">ตัวตรวจสอบรหัส</string>
     <string name="code_inspector_string">การอ่านโดยละเอียด</string>

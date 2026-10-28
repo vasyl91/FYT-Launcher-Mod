@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Зчитувач Canbus</string>
     <string name="display_canbus_reader">Показувати зчитувач Canbus</string>
     <string name="codes_guide">Посібник із Canbus</string>
-    <string name="codes_guide_initial_reading_title">Логер кодів — первинне зчитування</string>
-    <string name="codes_guide_initial_reading_one">«Зчитувач Canbus» може працювати не на кожному автомобілі! Це залежить від вихідного коду, наданого виробником. \n\nДля правильного читання даних canbus потрібні три значення: cmdInt і cmdArr, що позначаються в журналах як CMD (вони менш важливі, більшість випадкових комбінацій має працювати), та коди canbus, що позначаються в журналах як CODE (їх потрібно визначити).</string>
-    <string name="codes_guide_initial_reading_two">«Первинне зчитування» має створити txt-файл із журналами, схожими на наведені вище. Головне — визначити коди, що відповідають поточній витраті пального та запасу ходу. \n\nДля поточної витрати шукайте код, у якого порівняно мало значень на виході — на доданому знімку екрана це код 91. \n\nКод запасу ходу зазвичай містить одне значення, яке швидко не змінюється або змінюється через певні проміжки — на доданому знімку екрана це код 92. \n\nРештою кодів можна знехтувати, якщо ви не шукаєте щось інше.</string>
-    <string name="codes_guide_initial_reading_three">«Часове вікно» — час (у секундах), протягом якого «Логер кодів» зберігає вихідні дані для кожного циклу cmdInt і cmdArr. \n\n«Пропускати однозначні числа» — ігнорує однозначні значення, бо поточна витрата й запас ходу зазвичай складаються з кількох цифр. Ця опція може значно пришвидшити процес, адже цикл не затримується на зайвих значеннях. \n\nПорада — щоб ефективно почати вивчати коди canbus, використовуйте вузький діапазон між початковими й максимальними значеннями cmdInt і cmdArr. Ви можете задати їх як завгодно, якщо вони не перевищують максимальних значень (зазначені у вікні введення), а початкове значення не більше за максимальне. Що ширший діапазон і довше часове вікно, то довше триває процес.</string>
     <string name="codes_guide_detailed_reading_title">Інспектор кодів — детальне зчитування</string>
     <string name="codes_guide_detailed_reading">Ця частина призначена для перевірки конкретних комбінацій cmdInt і cmdArr, щоб дізнатися, які коди вони містять. Як сказано раніше, cmdInt і cmdArr менш важливі, і більшість випадкових комбінацій має працювати. Цей модуль створено ще до того, як я це дізнався, але він і досі може бути корисним для окремих перевірок.</string>
     <string name="codes_guide_miscellaneous_title">Різне</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Такі коди буде пропущено: %1$s</string>
     <string name="skip_codes_empty_summary">Дані зчитуватимуться з усього набору кодів.</string>
     <string name="skip_codes_dialog_str">Введіть коди для пропуску (через кому):</string>
-    <string name="logger_category">Логер кодів</string>
-    <string name="code_logger_string">Первинне зчитування</string>
-    <string name="code_logger_summary">Торкніться, щоб почати процес</string>
-    <string name="code_logger_summary_working">Виконується… %1$s Торкніться, щоб скасувати</string>
-    <string name="code_logger_data">Дані первинного зчитування</string>
-    <string name="code_logger_data_summary">Торкніться, щоб задати дані первинного зчитування. \nПочатковий cmdInt: %1$s, початковий cmdArr: %2$s, макс. cmdInt: %3$s, макс. cmdArr: %4$s, часове вікно: %5$s</string>
-    <string name="starting_cmd_int_text">Початковий cmdInt (макс. 1198):</string>
-    <string name="starting_cmd_arr_text">Початковий cmdArr (макс. 1198):</string>
-    <string name="max_cmd_int_text">Макс. cmdInt (макс. 1199):</string>
-    <string name="max_cmd_arr_text">Макс. cmdArr (макс. 1199):</string>
-    <string name="code_logger_timeout_text">Часове вікно:</string>
-    <string name="omit_digits">Пропускати однозначні числа</string>
-    <string name="omit_digits_summary">Витрата пального й запас ходу зазвичай складаються з кількох цифр. Ця опція може значно пришвидшити процес.</string>
-    <string name="code_logger_dialog_toast">Початкове значення не може бути більшим за максимальне</string>
-    <string name="code_logger_toast">Запис кодів завершено. Результати в Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Інспектор кодів</string>
     <string name="code_inspector_string">Детальне зчитування</string>

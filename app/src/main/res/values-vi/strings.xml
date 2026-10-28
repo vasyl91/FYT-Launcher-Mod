@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Trình đọc Canbus</string>
     <string name="display_canbus_reader">Hiển thị trình đọc Canbus</string>
     <string name="codes_guide">Hướng dẫn Canbus</string>
-    <string name="codes_guide_initial_reading_title">Trình ghi mã – đọc ban đầu</string>
-    <string name="codes_guide_initial_reading_one">\"Trình đọc Canbus\" có thể không hoạt động với mọi xe! Nó phụ thuộc vào mã nguồn do nhà sản xuất cung cấp. \n\nCó ba giá trị thiết yếu để đọc đúng dữ liệu canbus: cmdInt và cmdArr, được thể hiện trong nhật ký bằng CMD (ít quan trọng hơn, hầu hết các tổ hợp ngẫu nhiên đều chạy được) và các mã canbus, được thể hiện trong nhật ký bằng CODE (cần xác định các mã này).</string>
-    <string name="codes_guide_initial_reading_two">\"Đọc ban đầu\" sẽ tạo tệp txt chứa nhật ký giống như ở trên. Phần quan trọng là xác định các mã biểu thị mức tiêu thụ nhiên liệu hiện tại và quãng đường còn lại. \n\nVới mức tiêu thụ hiện tại, hãy tìm mã có khá ít đầu ra – trong ảnh chụp màn hình đính kèm là mã 91. \n\nMã quãng đường còn lại thường chỉ có một đầu ra, không đổi nhanh hoặc đổi theo khoảng nhất định – trong ảnh chụp màn hình đính kèm là mã 92. \n\nCác mã còn lại có thể bỏ qua, trừ khi bạn tìm thứ khác.</string>
-    <string name="codes_guide_initial_reading_three">\"Cửa sổ thời gian\" – khoảng thời gian (giây) mà \"Trình ghi mã\" lưu đầu ra cho mỗi vòng lặp cmdInt và cmdArr. \n\n\"Bỏ qua số một chữ số\" – bỏ qua các đầu ra là số một chữ số vì mức tiêu thụ nhiên liệu hiện tại và quãng đường còn lại thường có nhiều hơn một chữ số. Tùy chọn này có thể tăng tốc quá trình đáng kể vì vòng lặp không mắc kẹt ở các đầu ra không liên quan. \n\nMẹo – để bắt đầu khảo sát mã canbus hiệu quả, hãy dùng phạm vi hẹp giữa giá trị bắt đầu và tối đa của cmdInt và cmdArr. Bạn có thể đặt tùy ý miễn là không vượt giá trị tối đa (được nêu trong hộp thoại nhập) và giá trị bắt đầu không lớn hơn giá trị tối đa. Phạm vi càng rộng và cửa sổ thời gian càng dài thì quá trình càng lâu.</string>
     <string name="codes_guide_detailed_reading_title">Trình kiểm tra mã – đọc chi tiết</string>
     <string name="codes_guide_detailed_reading">Phần này dùng để thử các tổ hợp cmdInt và cmdArr cụ thể nhằm tìm ra các mã chúng chứa. Như đã nói, cmdInt và cmdArr ít quan trọng hơn và hầu hết các tổ hợp ngẫu nhiên đều chạy được. Mô-đun này được tạo trước khi tôi biết điều đó, nhưng vẫn có thể hữu ích cho các thử nghiệm cụ thể.</string>
     <string name="codes_guide_miscellaneous_title">Khác</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Các mã sau sẽ bị bỏ qua: %1$s</string>
     <string name="skip_codes_empty_summary">Dữ liệu sẽ được đọc từ toàn bộ tập mã.</string>
     <string name="skip_codes_dialog_str">Nhập các mã cần bỏ qua (ngăn cách bằng dấu phẩy):</string>
-    <string name="logger_category">Trình ghi mã</string>
-    <string name="code_logger_string">Đọc ban đầu</string>
-    <string name="code_logger_summary">Nhấn để bắt đầu quá trình</string>
-    <string name="code_logger_summary_working">Đang chạy… %1$s Nhấn để hủy</string>
-    <string name="code_logger_data">Dữ liệu đọc ban đầu</string>
-    <string name="code_logger_data_summary">Nhấn để đặt dữ liệu đọc ban đầu. \ncmdInt bắt đầu: %1$s, cmdArr bắt đầu: %2$s, cmdInt tối đa: %3$s, cmdArr tối đa: %4$s, Cửa sổ thời gian: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt bắt đầu (tối đa 1198):</string>
-    <string name="starting_cmd_arr_text">cmdArr bắt đầu (tối đa 1198):</string>
-    <string name="max_cmd_int_text">cmdInt tối đa (tối đa 1199):</string>
-    <string name="max_cmd_arr_text">cmdArr tối đa (tối đa 1199):</string>
-    <string name="code_logger_timeout_text">Cửa sổ thời gian:</string>
-    <string name="omit_digits">Bỏ qua số một chữ số</string>
-    <string name="omit_digits_summary">Mức tiêu thụ nhiên liệu và quãng đường còn lại thường có nhiều hơn một chữ số. Tùy chọn này có thể tăng tốc quá trình đáng kể.</string>
-    <string name="code_logger_dialog_toast">Giá trị bắt đầu không được lớn hơn giá trị tối đa</string>
-    <string name="code_logger_toast">Đã ghi xong các mã. Xem kết quả tại Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Trình kiểm tra mã</string>
     <string name="code_inspector_string">Đọc chi tiết</string>

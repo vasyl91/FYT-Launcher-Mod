@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus አንባቢ</string>
     <string name="display_canbus_reader">Canbus አንባቢን አሳይ</string>
     <string name="codes_guide">የCanbus መመሪያ</string>
-    <string name="codes_guide_initial_reading_title">የኮድ መዝጋቢ – የመጀመሪያ ንባብ</string>
-    <string name="codes_guide_initial_reading_one">\"Canbus አንባቢ\" በእያንዳንዱ መኪና ላይ ላይሰራ ይችላል! በአምራቹ በሚሰጠው የምንጭ ኮድ ላይ የተመሰረተ ነው። \n\nየcanbus ውሂብን በትክክል ለማንበብ ሶስት እሴቶች አስፈላጊ ናቸው፦ በምዝግብ ማስታወሻዎች እንደ CMD የሚወከሉት cmdInt እና cmdArr (ብዙም አስፈላጊ አይደሉም፣ አብዛኞቹ የዘፈቀደ ጥምሮች መስራት አለባቸው) እና በምዝግብ ማስታወሻዎች እንደ CODE የሚወከሉት የcanbus ኮዶች (እነዚህን መለየት አስፈላጊ ነው)።</string>
-    <string name="codes_guide_initial_reading_two">\"የመጀመሪያ ንባብ\" ከላይ እንዳሉት የሚመስሉ ምዝግብ ማስታወሻዎችን የያዘ txt ፋይል መፍጠር አለበት። ወሳኙ ክፍል የአሁኑን የነዳጅ ፍጆታ እና ርቀትን የሚወክሉ ኮዶችን መለየት ነው። \n\nለአሁኑ የነዳጅ ፍጆታ፣ በአንጻራዊነት ጥቂት ውጤቶች ያለውን ኮድ ይፈልጉ – በተያያዘው ቅጽበታዊ ገጽ እይታ ላይ ኮድ 91 ነው። \n\nየርቀት ኮዱ በተለምዶ በፍጥነት የማይለወጥ ወይም በተወሰኑ ክፍተቶች የሚለወጥ አንድ ውጤት አለው – በተያያዘው ቅጽበታዊ ገጽ እይታ ላይ ኮድ 92 ነው። \n\nሌላ ነገር ካልፈለጉ በስተቀር የተቀሩት ኮዶች ቸል ሊባሉ ይችላሉ።</string>
-    <string name="codes_guide_initial_reading_three">\"የጊዜ መስኮት\" – \"የኮድ መዝጋቢ\" ለእያንዳንዱ የcmdInt እና cmdArr ዑደት ውጤቶችን የሚያስቀምጥበት ጊዜ (በሰከንድ)። \n\n\"ነጠላ አኃዞችን ዝለል\" – የአሁኑ የነዳጅ ፍጆታ እና ርቀት በተለምዶ ከአንድ በላይ አኃዝ ስላላቸው ባለአንድ አኃዝ ውጤቶችን ቸል ይላል። ዑደቱ ተዛማጅ ባልሆኑ ውጤቶች ላይ ስለማይቆይ ይህ አማራጭ ሂደቱን በከፍተኛ ሁኔታ ሊያፋጥነው ይችላል። \n\nጠቃሚ ምክር – የcanbus ኮዶችን በብቃት መመርመር ለመጀመር በcmdInt እና cmdArr የመነሻ እና ከፍተኛ እሴቶች መካከል ጠባብ ክልል ይጠቀሙ። ከከፍተኛዎቹ እሴቶች (በግብዓት መገናኛው ላይ የተመለከቱ) እስካልበለጡ እና የመነሻው እሴት ከከፍተኛው እስካልበለጠ ድረስ እንደፈለጉ ማቀናበር ይችላሉ። ክልሉ ሰፋ ባለ እና የጊዜ መስኮቱ ረዘም ባለ መጠን ሂደቱ ረዘም ያለ ጊዜ ይወስዳል።</string>
     <string name="codes_guide_detailed_reading_title">የኮድ መርማሪ – ዝርዝር ንባብ</string>
     <string name="codes_guide_detailed_reading">ይህ ክፍል የያዟቸውን ኮዶች ለመግለጥ የተወሰኑ የcmdInt እና cmdArr ጥምሮችን ለመፈተሽ የታሰበ ነው። ቀደም ሲል እንደተጠቀሰው cmdInt እና cmdArr ብዙም አስፈላጊ አይደሉም እና አብዛኞቹ የዘፈቀደ ጥምሮች መስራት አለባቸው። ይህ ሞጁል የተፈጠረው ይህን ከማወቄ በፊት ነው፣ ነገር ግን ለተወሰኑ ፈተናዎች አሁንም ጠቃሚ ሊሆን ይችላል።</string>
     <string name="codes_guide_miscellaneous_title">ልዩ ልዩ</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">የሚከተሉት ኮዶች ይዘለላሉ፦ %1$s</string>
     <string name="skip_codes_empty_summary">ውሂብ ከመላው የኮዶች ስብስብ ይነበባል።</string>
     <string name="skip_codes_dialog_str">የሚዘለሉትን ኮዶች ይተይቡ (በነጠላ ሰረዝ ተለይተው)፦</string>
-    <string name="logger_category">የኮድ መዝጋቢ</string>
-    <string name="code_logger_string">የመጀመሪያ ንባብ</string>
-    <string name="code_logger_summary">ሂደቱን ለመጀመር መታ ያድርጉ</string>
-    <string name="code_logger_summary_working">በመስራት ላይ… %1$s ለመሰረዝ መታ ያድርጉ</string>
-    <string name="code_logger_data">የመጀመሪያ ንባብ ውሂብ</string>
-    <string name="code_logger_data_summary">የመጀመሪያ ንባብ ውሂብን ለማቀናበር መታ ያድርጉ። \nየመነሻ cmdInt፦ %1$s፣ የመነሻ cmdArr፦ %2$s፣ ከፍተኛ cmdInt፦ %3$s፣ ከፍተኛ cmdArr፦ %4$s፣ የጊዜ መስኮት፦ %5$s</string>
-    <string name="starting_cmd_int_text">የመነሻ cmdInt (ከፍተኛ 1198)፦</string>
-    <string name="starting_cmd_arr_text">የመነሻ cmdArr (ከፍተኛ 1198)፦</string>
-    <string name="max_cmd_int_text">ከፍተኛ cmdInt (ከፍተኛ 1199)፦</string>
-    <string name="max_cmd_arr_text">ከፍተኛ cmdArr (ከፍተኛ 1199)፦</string>
-    <string name="code_logger_timeout_text">የጊዜ መስኮት፦</string>
-    <string name="omit_digits">ነጠላ አኃዞችን ዝለል</string>
-    <string name="omit_digits_summary">የነዳጅ ፍጆታ እና ርቀት በተለምዶ ከአንድ በላይ አኃዝ አላቸው። ይህ አማራጭ ሂደቱን በከፍተኛ ሁኔታ ሊያፋጥነው ይችላል።</string>
-    <string name="code_logger_dialog_toast">የመነሻ እሴቱ ከከፍተኛው እሴት መብለጥ አይችልም</string>
-    <string name="code_logger_toast">የኮዶች ምዝገባ ተጠናቋል። ውጤቶቹን በDownload/Launcher66_Canbus ውስጥ ይመልከቱ</string>
 
     <string name="inspector_category">የኮድ መርማሪ</string>
     <string name="code_inspector_string">ዝርዝር ንባብ</string>

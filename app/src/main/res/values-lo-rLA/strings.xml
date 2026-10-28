@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">ຕົວອ່ານ Canbus</string>
     <string name="display_canbus_reader">ສະແດງຕົວອ່ານ Canbus</string>
     <string name="codes_guide">ຄູ່ມື Canbus</string>
-    <string name="codes_guide_initial_reading_title">ຕົວບັນທຶກລະຫັດ – ການອ່ານເບື້ອງຕົ້ນ</string>
-    <string name="codes_guide_initial_reading_one">\'ຕົວອ່ານ Canbus\' ອາດໃຊ້ບໍ່ໄດ້ກັບລົດທຸກຄັນ! ມັນຂຶ້ນກັບໂຄດຕົ້ນສະບັບທີ່ຜູ້ຜະລິດໃຫ້ມາ. \n\nມີສາມຄ່າທີ່ຈຳເປັນເພື່ອອ່ານຂໍ້ມູນ canbus ໃຫ້ຖືກຕ້ອງ – cmdInt, cmdArr ເຊິ່ງສະແດງໃນບັນທຶກດ້ວຍ CMD (ສອງຄ່ານີ້ສຳຄັນໜ້ອຍກວ່າ, ການປະສົມແບບສຸ່ມສ່ວນໃຫຍ່ຄວນໃຊ້ໄດ້) ແລະ ລະຫັດ canbus ເຊິ່ງສະແດງໃນບັນທຶກດ້ວຍ CODE (ອັນນີ້ສຳຄັນໃນການກຳນົດ).</string>
-    <string name="codes_guide_initial_reading_two">ການເຮັດ \'ການອ່ານເບື້ອງຕົ້ນ\' ຄວນສ້າງໄຟລ໌ txt ທີ່ມີບັນທຶກຄືກັບທີ່ສະແດງຂ້າງເທິງ. ສ່ວນສຳຄັນແມ່ນການລະບຸລະຫັດທີ່ແທນການໃຊ້ນ້ຳມັນປັດຈຸບັນ ແລະ ໄລຍະທາງ. \n\nສຳລັບການໃຊ້ນ້ຳມັນປັດຈຸບັນ ໃຫ້ຫາລະຫັດທີ່ມີຜົນອອກຄ່ອນຂ້າງໜ້ອຍ – ໃນພາບໜ້າຈໍທີ່ແນບມາ ແມ່ນລະຫັດ 91. \n\nລະຫັດໄລຍະທາງປົກກະຕິມີຜົນອອກດຽວທີ່ບໍ່ປ່ຽນໄວ ຫຼື ປ່ຽນເປັນໄລຍະ – ໃນພາບໜ້າຈໍທີ່ແນບມາ ແມ່ນລະຫັດ 92. \n\nລະຫັດທີ່ເຫຼືອບໍ່ສຳຄັນ ເວັ້ນເສຍແຕ່ທ່ານກຳລັງຊອກຫາອັນອື່ນ.</string>
-    <string name="codes_guide_initial_reading_three">\'ໜ້າຕ່າງເວລາ\' – ນີ້ແມ່ນເວລາ (ເປັນວິນາທີ) ທີ່ \'ຕົວບັນທຶກລະຫັດ\' ຈະບັນທຶກຜົນອອກສຳລັບແຕ່ລະຮອບຂອງ cmdInt ແລະ cmdArr. \n\n\'ຂ້າມຕົວເລກດຽວ\' – ນີ້ມີຈຸດປະສົງເພື່ອບໍ່ສົນໃຈຜົນອອກທີ່ເປັນຕົວເລກດຽວ ເພາະການໃຊ້ນ້ຳມັນປັດຈຸບັນ ແລະ ໄລຍະທາງປົກກະຕິມີຫຼາຍກວ່າໜຶ່ງຫຼັກ. ການເລືອກຕົວເລືອກນີ້ອາດເຮັດໃຫ້ໄວຂຶ້ນຫຼາຍ ເພາະຮອບການເຮັດວຽກຈະບໍ່ເສຍເວລາກັບຜົນອອກທີ່ບໍ່ກ່ຽວຂ້ອງ. \n\nຄຳແນະນຳທີ່ເປັນປະໂຫຍດ – ເພື່ອເລີ່ມກວດສອບລະຫັດ canbus ຢ່າງມີປະສິດທິພາບ ໃຫ້ໃຊ້ຂອບເຂດແຄບຂອງ cmdInt ແລະ cmdArr ຈາກຄ່າເລີ່ມຕົ້ນເຖິງຄ່າສູງສຸດ. ທ່ານຕັ້ງໄດ້ຕາມຕ້ອງການ ຖ້າບໍ່ໃຫຍ່ກວ່າຄ່າສູງສຸດ (ເບິ່ງກ່ອງປ້ອນຂໍ້ມູນ) ແລະ ຈຸດເລີ່ມຕົ້ນບໍ່ໃຫຍ່ກວ່າຄ່າສູງສຸດ. ຍິ່ງຊ່ວງກວ້າງ ແລະ ໜ້າຕ່າງເວລາຍາວ ຂະບວນການຍິ່ງໃຊ້ເວລາດົນ.</string>
     <string name="codes_guide_detailed_reading_title">ຕົວກວດລະຫັດ – ການອ່ານລະອຽດ</string>
     <string name="codes_guide_detailed_reading">ສ່ວນນີ້ມີຈຸດປະສົງເພື່ອທົດສອບການປະສົມ cmdInt ແລະ cmdArr ສະເພາະເພື່ອເປີດເຜີຍລະຫັດທີ່ພວກມັນມີ. ດັ່ງທີ່ກ່າວມາກ່ອນ cmdInt ແລະ cmdArr ສຳຄັນໜ້ອຍກວ່າ ແລະ ການປະສົມແບບສຸ່ມສ່ວນໃຫຍ່ຄວນໃຊ້ໄດ້. ໂມດູນນີ້ຖືກສ້າງກ່ອນທີ່ຂ້ອຍຈະຮູ້ເລື່ອງນັ້ນ ແຕ່ມັນຍັງມີປະໂຫຍດສຳລັບການທົດສອບສະເພາະ.</string>
     <string name="codes_guide_miscellaneous_title">ເບັດເຕັດ</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">ລະຫັດຕໍ່ໄປນີ້ຈະຖືກຂ້າມ: %1$s</string>
     <string name="skip_codes_empty_summary">ຂໍ້ມູນຈະຖືກອ່ານຈາກຊຸດລະຫັດທັງໝົດ.</string>
     <string name="skip_codes_dialog_str">ພິມລະຫັດທີ່ຕ້ອງການຂ້າມ (ແຍກດ້ວຍຈຸດ):</string>
-    <string name="logger_category">ຕົວບັນທຶກລະຫັດ</string>
-    <string name="code_logger_string">ການອ່ານເບື້ອງຕົ້ນ</string>
-    <string name="code_logger_summary">ແຕະເພື່ອເລີ່ມຂະບວນການ</string>
-    <string name="code_logger_summary_working">ກຳລັງເຮັດວຽກ… %1$s ແຕະເພື່ອຍົກເລີກ</string>
-    <string name="code_logger_data">ຂໍ້ມູນການອ່ານເບື້ອງຕົ້ນ</string>
-    <string name="code_logger_data_summary">ແຕະເພື່ອຕັ້ງຂໍ້ມູນການອ່ານເບື້ອງຕົ້ນ. \ncmdInt ເລີ່ມຕົ້ນ: %1$s, cmdArr ເລີ່ມຕົ້ນ: %2$s, cmdInt ສູງສຸດ: %3$s, cmdArr ສູງສຸດ: %4$s, ໜ້າຕ່າງເວລາ: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt ເລີ່ມຕົ້ນ (ສູງສຸດ 1198):</string>
-    <string name="starting_cmd_arr_text">cmdArr ເລີ່ມຕົ້ນ (ສູງສຸດ 1198):</string>
-    <string name="max_cmd_int_text">cmdInt ສູງສຸດ (ສູງສຸດ 1199):</string>
-    <string name="max_cmd_arr_text">cmdArr ສູງສຸດ (ສູງສຸດ 1199):</string>
-    <string name="code_logger_timeout_text">ໜ້າຕ່າງເວລາ:</string>
-    <string name="omit_digits">ຂ້າມຕົວເລກດຽວ</string>
-    <string name="omit_digits_summary">ການໃຊ້ນ້ຳມັນ ແລະ ໄລຍະທາງປົກກະຕິມີຫຼາຍກວ່າໜຶ່ງຫຼັກ. ການເລືອກຕົວເລືອກນີ້ອາດເຮັດໃຫ້ຂະບວນການໄວຂຶ້ນຫຼາຍ.</string>
-    <string name="code_logger_dialog_toast">ຄ່າເລີ່ມຕົ້ນຕ້ອງບໍ່ໃຫຍ່ກວ່າຄ່າສູງສຸດ</string>
-    <string name="code_logger_toast">ບັນທຶກລະຫັດສຳເລັດແລ້ວ. ກວດຜົນໃນ Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">ຕົວກວດລະຫັດ</string>
     <string name="code_inspector_string">ການອ່ານລະອຽດ</string>

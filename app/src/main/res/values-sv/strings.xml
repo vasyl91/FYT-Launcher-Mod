@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus-läsare</string>
     <string name="display_canbus_reader">Visa Canbus-läsare</string>
     <string name="codes_guide">Canbus-guide</string>
-    <string name="codes_guide_initial_reading_title">Kodloggare – första avläsning</string>
-    <string name="codes_guide_initial_reading_one">\"Canbus-läsaren\" fungerar kanske inte i alla bilar! Det beror på källkoden som tillverkaren tillhandahåller. \n\nTre värden är avgörande för att läsa canbus-data korrekt: cmdInt och cmdArr, som i loggarna visas som CMD (mindre viktiga, de flesta slumpmässiga kombinationer bör fungera), och canbus-koderna, som i loggarna visas som CODE (dessa är viktiga att fastställa).</string>
-    <string name="codes_guide_initial_reading_two">\"Första avläsningen\" bör skapa en txt-fil med loggar som ser ut som ovan. Det avgörande är att hitta koderna för aktuell bränsleförbrukning och räckvidd. \n\nLeta efter aktuell bränsleförbrukning efter koden med relativt få utdata – på den bifogade skärmdumpen är det kod 91. \n\nRäckviddskoden har oftast en enda utdata som inte ändras snabbt eller ändras med vissa intervall – på den bifogade skärmdumpen är det kod 92. \n\nÖvriga koder är försumbara om du inte letar efter något annat.</string>
-    <string name="codes_guide_initial_reading_three">\"Tidsfönster\" – tiden (i sekunder) under vilken \"Kodloggaren\" sparar utdata för varje cmdInt- och cmdArr-loop. \n\n\"Hoppa över ensiffriga värden\" – ignorerar ensiffriga utdata eftersom aktuell bränsleförbrukning och räckvidd oftast har fler än en siffra. Det här alternativet kan göra processen mycket snabbare eftersom loopen inte dröjer sig kvar vid irrelevanta utdata. \n\nTips – för att effektivt börja granska canbus-koderna, använd ett smalt intervall mellan start- och maxvärde för cmdInt och cmdArr. Du kan ställa in dem som du vill, så länge de inte överstiger maxvärdena (anges i inmatningsdialogen) och startvärdet inte är större än maxvärdet. Ju bredare intervall och ju längre tidsfönster, desto längre tar processen.</string>
     <string name="codes_guide_detailed_reading_title">Kodinspektör – detaljerad avläsning</string>
     <string name="codes_guide_detailed_reading">Den här delen är till för att testa specifika kombinationer av cmdInt och cmdArr för att avslöja vilka koder de innehåller. Som nämnts tidigare är cmdInt och cmdArr mindre viktiga och de flesta slumpmässiga kombinationer bör fungera. Den här modulen skapades innan jag visste det, men den kan fortfarande vara användbar för specifika tester.</string>
     <string name="codes_guide_miscellaneous_title">Övrigt</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Följande koder hoppas över: %1$s</string>
     <string name="skip_codes_empty_summary">Data läses från hela kodmängden.</string>
     <string name="skip_codes_dialog_str">Skriv de koder som ska hoppas över (separerade med kommatecken):</string>
-    <string name="logger_category">Kodloggare</string>
-    <string name="code_logger_string">Första avläsning</string>
-    <string name="code_logger_summary">Tryck för att starta processen</string>
-    <string name="code_logger_summary_working">Arbetar… %1$s Tryck för att avbryta</string>
-    <string name="code_logger_data">Data för första avläsning</string>
-    <string name="code_logger_data_summary">Tryck för att ställa in data för första avläsning. \nStart-cmdInt: %1$s, start-cmdArr: %2$s, max cmdInt: %3$s, max cmdArr: %4$s, tidsfönster: %5$s</string>
-    <string name="starting_cmd_int_text">Start-cmdInt (max 1198):</string>
-    <string name="starting_cmd_arr_text">Start-cmdArr (max 1198):</string>
-    <string name="max_cmd_int_text">Max cmdInt (max 1199):</string>
-    <string name="max_cmd_arr_text">Max cmdArr (max 1199):</string>
-    <string name="code_logger_timeout_text">Tidsfönster:</string>
-    <string name="omit_digits">Hoppa över ensiffriga värden</string>
-    <string name="omit_digits_summary">Bränsleförbrukning och räckvidd har oftast fler än en siffra. Det här alternativet kan göra processen mycket snabbare.</string>
-    <string name="code_logger_dialog_toast">Startvärdet får inte vara större än maxvärdet</string>
-    <string name="code_logger_toast">Loggningen av koderna är klar. Se resultaten i Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Kodinspektör</string>
     <string name="code_inspector_string">Detaljerad avläsning</string>

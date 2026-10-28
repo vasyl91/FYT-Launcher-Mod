@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">កម្មវិធីអាន Canbus</string>
     <string name="display_canbus_reader">បង្ហាញកម្មវិធីអាន Canbus</string>
     <string name="codes_guide">មគ្គុទ្ទេសក៍ Canbus</string>
-    <string name="codes_guide_initial_reading_title">កម្មវិធីកត់ត្រាកូដ – ការអានដំបូង</string>
-    <string name="codes_guide_initial_reading_one">\'កម្មវិធីអាន Canbus\' អាចមិនដំណើរការសម្រាប់រថយន្តគ្រប់គ្រឿងទេ! វាអាស្រ័យលើកូដប្រភពដែលផលិតករផ្តល់ឱ្យ។ \n\nមានតម្លៃចំនួនបីដែលចាំបាច់សម្រាប់អានទិន្នន័យ canbus ឱ្យបានត្រឹមត្រូវ – cmdInt, cmdArr ដែលតំណាងដោយ CMD នៅក្នុងកំណត់ហេតុ (ទាំងនេះសំខាន់តិចជាង ការរួមបញ្ចូលគ្នាដោយចៃដន្យភាគច្រើនគួរតែដំណើរការ) និងកូដ canbus ដែលតំណាងដោយ CODE នៅក្នុងកំណត់ហេតុ (ទាំងនេះសំខាន់ក្នុងការកំណត់)។</string>
-    <string name="codes_guide_initial_reading_two">ការដំណើរការ \'ការអានដំបូង\' គួរតែបង្កើតឯកសារ txt ដែលមានកំណត់ហេតុដូចខាងលើ។ ផ្នែកសំខាន់គឺកំណត់អត្តសញ្ញាណកូដដែលតំណាងឱ្យការប្រើប្រាស់ឥន្ធនៈបច្ចុប្បន្ន និងចម្ងាយ។ \n\nសម្រាប់ការប្រើប្រាស់ឥន្ធនៈបច្ចុប្បន្ន សូមរកកូដដែលមានលទ្ធផលតិចតួច – នៅលើរូបថតអេក្រង់ដែលភ្ជាប់មក វាគឺកូដ 91។ \n\nកូដចម្ងាយជាធម្មតាមានលទ្ធផលតែមួយដែលមិនប្តូរលឿន ឬប្តូរតាមចន្លោះពេលជាក់លាក់ – នៅលើរូបថតអេក្រង់ដែលភ្ជាប់មក វាគឺកូដ 92។ \n\nកូដដែលនៅសល់គឺមិនសំខាន់ លុះត្រាតែអ្នកកំពុងរកអ្វីផ្សេង។</string>
-    <string name="codes_guide_initial_reading_three">\'រយៈពេលបង្អួច\' – នេះគឺជាពេលវេលា (គិតជាវិនាទី) ដែល \'កម្មវិធីកត់ត្រាកូដ\' នឹងរក្សាទុកលទ្ធផលសម្រាប់រង្វិលជុំ cmdInt និង cmdArr នីមួយៗ។ \n\n\'រំលងតួលេខតែមួយ\' – នេះមានគោលបំណងមិនអើពើលទ្ធផលដែលជាតួលេខតែមួយ ពីព្រោះការប្រើប្រាស់ឥន្ធនៈបច្ចុប្បន្ន និងចម្ងាយជាធម្មតាតំណាងដោយលេខច្រើនជាងមួយខ្ទង់។ ការជ្រើសរើសជម្រើសនេះអាចពន្លឿនដំណើរការយ៉ាងខ្លាំង ពីព្រោះរង្វិលជុំនឹងមិនស្នាក់នៅលើលទ្ធផលដែលមិនពាក់ព័ន្ធ។ \n\nគន្លឹះមានប្រយោជន៍ – ដើម្បីចាប់ផ្តើមពិនិត្យកូដ canbus ឱ្យមានប្រសិទ្ធភាព សូមប្រើវិសាលភាពតូចចង្អៀតនៃ cmdInt និង cmdArr ពីចាប់ផ្តើមដល់អតិបរមា។ អ្នកអាចកំណត់ពួកវាតាមចិត្ត ដរាបណាពួកវាមិនធំជាងតម្លៃអតិបរមា (មើលប្រអប់បញ្ចូល) ហើយចំណុចចាប់ផ្តើមមិនធំជាងតម្លៃអតិបរមា។ ជួរកាន់តែធំ និងរយៈពេលបង្អួចកាន់តែវែង ដំណើរការកាន់តែចំណាយពេលយូរ។</string>
     <string name="codes_guide_detailed_reading_title">កម្មវិធីត្រួតពិនិត្យកូដ – ការអានលម្អិត</string>
     <string name="codes_guide_detailed_reading">ផ្នែកនេះមានគោលបំណងសាកល្បងការរួមបញ្ចូលគ្នាជាក់លាក់នៃ cmdInt និង cmdArr ដើម្បីបង្ហាញកូដដែលពួកវាកាន់។ ដូចបានលើកឡើងមុននេះ cmdInt និង cmdArr សំខាន់តិចជាង ហើយការរួមបញ្ចូលគ្នាដោយចៃដន្យភាគច្រើនគួរតែដំណើរការ។ ម៉ូឌុលនេះត្រូវបានបង្កើតមុនពេលខ្ញុំដឹងរឿងនោះ ប៉ុន្តែវានៅតែអាចមានប្រយោជន៍សម្រាប់ការសាកល្បងជាក់លាក់។</string>
     <string name="codes_guide_miscellaneous_title">ផ្សេងៗ</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">កូដខាងក្រោមនឹងត្រូវបានរំលង៖ %1$s</string>
     <string name="skip_codes_empty_summary">ទិន្នន័យនឹងត្រូវបានអានពីសំណុំកូដទាំងមូល។</string>
     <string name="skip_codes_dialog_str">វាយកូដដែលត្រូវរំលង (បំបែកដោយសញ្ញាក្បៀស)៖</string>
-    <string name="logger_category">កម្មវិធីកត់ត្រាកូដ</string>
-    <string name="code_logger_string">ការអានដំបូង</string>
-    <string name="code_logger_summary">ប៉ះដើម្បីចាប់ផ្តើមដំណើរការ</string>
-    <string name="code_logger_summary_working">កំពុងដំណើរការ… %1$s ប៉ះដើម្បីបោះបង់</string>
-    <string name="code_logger_data">ទិន្នន័យការអានដំបូង</string>
-    <string name="code_logger_data_summary">ប៉ះដើម្បីកំណត់ទិន្នន័យការអានដំបូង។ \ncmdInt ចាប់ផ្តើម៖ %1$s, cmdArr ចាប់ផ្តើម៖ %2$s, cmdInt អតិបរមា៖ %3$s, cmdArr អតិបរមា៖ %4$s, រយៈពេលបង្អួច៖ %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt ចាប់ផ្តើម (អតិបរមា 1198)៖</string>
-    <string name="starting_cmd_arr_text">cmdArr ចាប់ផ្តើម (អតិបរមា 1198)៖</string>
-    <string name="max_cmd_int_text">cmdInt អតិបរមា (អតិបរមា 1199)៖</string>
-    <string name="max_cmd_arr_text">cmdArr អតិបរមា (អតិបរមា 1199)៖</string>
-    <string name="code_logger_timeout_text">រយៈពេលបង្អួច៖</string>
-    <string name="omit_digits">រំលងតួលេខតែមួយ</string>
-    <string name="omit_digits_summary">ការប្រើប្រាស់ឥន្ធនៈ និងចម្ងាយជាធម្មតាមានច្រើនជាងមួយខ្ទង់។ ការជ្រើសរើសជម្រើសនេះអាចពន្លឿនដំណើរការយ៉ាងខ្លាំង។</string>
-    <string name="code_logger_dialog_toast">តម្លៃចាប់ផ្តើមមិនអាចធំជាងតម្លៃអតិបរមាបានទេ</string>
-    <string name="code_logger_toast">បានបញ្ចប់ការកត់ត្រាកូដ។ ពិនិត្យលទ្ធផលនៅក្នុង Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">កម្មវិធីត្រួតពិនិត្យកូដ</string>
     <string name="code_inspector_string">ការអានលម្អិត</string>

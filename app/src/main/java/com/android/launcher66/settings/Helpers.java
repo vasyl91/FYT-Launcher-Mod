@@ -361,18 +361,6 @@ public class Helpers {
     }
     
 
-    private boolean codeLogger = false;
-    public boolean codeLoggerBoolean() {
-        codeLogger = sharedPrefsSus.getBoolean("codeLogger", false);
-        return codeLogger;
-    }
-    public void setCodeLoggerBoolean(boolean codeLogger) {
-        this.codeLogger = codeLogger;
-        editorSus.putBoolean("codeLogger", codeLogger);
-        editorSus.apply();
-    }
-
-
     private boolean logcatRun = false;
     public boolean logcatRunBoolean() {
         logcatRun = sharedPrefsSus.getBoolean("logcatRun", false);
@@ -454,18 +442,6 @@ public class Helpers {
     public void setCountDownInspector(int countDownInspector) {
         this.countDownInspector = countDownInspector;
         editorSus.putInt("countDownInspector", countDownInspector);
-        editorSus.apply();
-    }
-
-
-    private int countDownLogger = 0;
-    public int returnCountDownLogger() {
-        countDownLogger = sharedPrefsSus.getInt("countDownLogger", 0);
-        return countDownLogger;
-    }
-    public void setCountDownLogger(int countDownLogger) {
-        this.countDownLogger = countDownLogger;
-        editorSus.putInt("countDownLogger", countDownLogger);
         editorSus.apply();
     }
 

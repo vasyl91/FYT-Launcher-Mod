@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbusi lugeja</string>
     <string name="display_canbus_reader">Kuva Canbusi lugejat</string>
     <string name="codes_guide">Canbusi juhend</string>
-    <string name="codes_guide_initial_reading_title">Koodide logija – esmane lugemine</string>
-    <string name="codes_guide_initial_reading_one">„Canbusi lugeja” ei pruugi töötada igas autos! See sõltub tootja antud lähtekoodist. \n\nCanbusi andmete õigeks lugemiseks on olulised kolm väärtust: cmdInt ja cmdArr, mis kuvatakse logides kui CMD (vähem olulised, enamik juhuslikke kombinatsioone peaks töötama) ja canbusi koodid, mis kuvatakse logides kui CODE (need on olulised kindlaks teha).</string>
-    <string name="codes_guide_initial_reading_two">„Esmane lugemine” peaks looma txt-faili logidega, mis näevad välja nagu ülal. Oluline on tuvastada koodid, mis tähistavad praegust kütusekulu ja tööraadiust. \n\nPraeguse kütusekulu jaoks otsige koodi, millel on suhteliselt vähe väljundeid – lisatud ekraanipildil on see kood 91. \n\nTööraadiuse koodil on tavaliselt üks väljund, mis ei muutu kiiresti või muutub kindlate intervallidega – lisatud ekraanipildil on see kood 92. \n\nÜlejäänud koodid on tähtsusetud, kui te just midagi muud ei otsi.</string>
-    <string name="codes_guide_initial_reading_three">„Ajaaken” – aeg (sekundites), mille jooksul „Koodide logija” salvestab väljundid iga cmdInt ja cmdArr tsükli jaoks. \n\n„Jäta ühekohalised vahele” – ignoreerib ühekohalisi väljundeid, sest praegusel kütusekulul ja tööraadiusel on tavaliselt rohkem kui üks number. See valik võib protsessi oluliselt kiirendada, sest tsükkel ei jää kinni ebaoluliste väljundite juurde. \n\nSoovitus – canbusi koodide tõhusaks uurimise alustamiseks kasutage kitsast vahemikku cmdInt ja cmdArr algus- ja maksimumväärtuse vahel. Võite need seada, nagu soovite, kui need ei ületa maksimumväärtusi (näidatud sisestusdialoogis) ja algväärtus pole maksimumist suurem. Mida laiem vahemik ja pikem ajaaken, seda kauem protsess kestab.</string>
     <string name="codes_guide_detailed_reading_title">Koodide inspektor – üksikasjalik lugemine</string>
     <string name="codes_guide_detailed_reading">See osa on mõeldud kindlate cmdInt ja cmdArr kombinatsioonide testimiseks, et avastada nende sisaldatavad koodid. Nagu varem öeldud, on cmdInt ja cmdArr vähem olulised ja enamik juhuslikke kombinatsioone peaks töötama. See moodul loodi enne, kui ma seda teadsin, kuid see võib siiski olla kasulik konkreetsete testide jaoks.</string>
     <string name="codes_guide_miscellaneous_title">Mitmesugust</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Järgmised koodid jäetakse vahele: %1$s</string>
     <string name="skip_codes_empty_summary">Andmeid loetakse kogu koodikomplektist.</string>
     <string name="skip_codes_dialog_str">Sisestage vahelejäetavad koodid (eraldatud komadega):</string>
-    <string name="logger_category">Koodide logija</string>
-    <string name="code_logger_string">Esmane lugemine</string>
-    <string name="code_logger_summary">Puudutage protsessi alustamiseks</string>
-    <string name="code_logger_summary_working">Töötab… %1$s Puudutage tühistamiseks</string>
-    <string name="code_logger_data">Esmase lugemise andmed</string>
-    <string name="code_logger_data_summary">Puudutage esmase lugemise andmete määramiseks. \nAlg-cmdInt: %1$s, alg-cmdArr: %2$s, maks cmdInt: %3$s, maks cmdArr: %4$s, ajaaken: %5$s</string>
-    <string name="starting_cmd_int_text">Alg-cmdInt (maks 1198):</string>
-    <string name="starting_cmd_arr_text">Alg-cmdArr (maks 1198):</string>
-    <string name="max_cmd_int_text">Maks cmdInt (maks 1199):</string>
-    <string name="max_cmd_arr_text">Maks cmdArr (maks 1199):</string>
-    <string name="code_logger_timeout_text">Ajaaken:</string>
-    <string name="omit_digits">Jäta ühekohalised vahele</string>
-    <string name="omit_digits_summary">Kütusekulul ja tööraadiusel on tavaliselt rohkem kui üks number. See valik võib protsessi oluliselt kiirendada.</string>
-    <string name="code_logger_dialog_toast">Algväärtus ei tohi olla suurem kui maksimumväärtus</string>
-    <string name="code_logger_toast">Koodide logimine on lõppenud. Vaadake tulemusi kaustas Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Koodide inspektor</string>
     <string name="code_inspector_string">Üksikasjalik lugemine</string>

@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbusリーダー</string>
     <string name="display_canbus_reader">Canbusリーダーを表示</string>
     <string name="codes_guide">Canbusガイド</string>
-    <string name="codes_guide_initial_reading_title">コードロガー – 初回読み取り</string>
-    <string name="codes_guide_initial_reading_one">「Canbusリーダー」はすべての車で動作するとは限りません。メーカーが提供するソースコードに依存します。\n\ncanbusデータを正しく読み取るには3つの値が重要です。ログでCMDと表示されるcmdIntとcmdArr（重要度は低く、ランダムな組み合わせでもほとんど動作します）と、ログでCODEと表示されるcanbusコード（これを特定することが重要です）です。</string>
-    <string name="codes_guide_initial_reading_two">「初回読み取り」を実行すると、上のようなログを含むtxtファイルが作成されます。重要なのは、現在の燃費と航続距離を表すコードを特定することです。\n\n現在の燃費は、出力が比較的少ないコードを探してください。添付のスクリーンショットではコード91です。\n\n航続距離は、通常は出力が1つで、あまり速く変化しない、または一定の間隔で変化するコードです。添付のスクリーンショットではコード92です。\n\nそれ以外のコードは、ほかのものを探していない限り無視して構いません。</string>
-    <string name="codes_guide_initial_reading_three">「時間枠」– 「コードロガー」がcmdIntとcmdArrの各ループの出力を保存する時間（秒）です。\n\n「1桁を除外」– 現在の燃費と航続距離は通常2桁以上なので、1桁の出力を無視します。ループが無関係な出力に留まらなくなるため、処理が大幅に速くなる場合があります。\n\nヒント – canbusコードを効率よく調べ始めるには、cmdIntとcmdArrの開始値から最大値までの範囲を狭くします。最大値（入力ダイアログに表示）を超えず、開始値が最大値以下であれば、自由に設定できます。範囲が広く時間枠が長いほど、処理に時間がかかります。</string>
     <string name="codes_guide_detailed_reading_title">コードインスペクター – 詳細読み取り</string>
     <string name="codes_guide_detailed_reading">この機能は、特定のcmdIntとcmdArrの組み合わせを試して、含まれるコードを確認するためのものです。前述のとおり、cmdIntとcmdArrは重要度が低く、ランダムな組み合わせでもほとんど動作しますが、このモジュールはそれを知る前に作ったものです。特定のテストには今でも役立ちます。</string>
     <string name="codes_guide_miscellaneous_title">その他</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">次のコードをスキップします: %1$s</string>
     <string name="skip_codes_empty_summary">すべてのコードからデータを読み取ります。</string>
     <string name="skip_codes_dialog_str">スキップするコードを入力してください（カンマ区切り）:</string>
-    <string name="logger_category">コードロガー</string>
-    <string name="code_logger_string">初回読み取り</string>
-    <string name="code_logger_summary">タップして処理を開始</string>
-    <string name="code_logger_summary_working">実行中… %1$s タップしてキャンセル</string>
-    <string name="code_logger_data">初回読み取りデータ</string>
-    <string name="code_logger_data_summary">タップして初回読み取りデータを設定します。\n開始cmdInt: %1$s、開始cmdArr: %2$s、最大cmdInt: %3$s、最大cmdArr: %4$s、時間枠: %5$s</string>
-    <string name="starting_cmd_int_text">開始cmdInt（最大1198）:</string>
-    <string name="starting_cmd_arr_text">開始cmdArr（最大1198）:</string>
-    <string name="max_cmd_int_text">最大cmdInt（最大1199）:</string>
-    <string name="max_cmd_arr_text">最大cmdArr（最大1199）:</string>
-    <string name="code_logger_timeout_text">時間枠:</string>
-    <string name="omit_digits">1桁を除外</string>
-    <string name="omit_digits_summary">燃費と航続距離は通常2桁以上です。このオプションを選ぶと、処理が大幅に速くなる場合があります。</string>
-    <string name="code_logger_dialog_toast">開始値は最大値より大きくできません</string>
-    <string name="code_logger_toast">コードのログ取得が完了しました。結果はDownload/Launcher66_Canbusを確認してください</string>
 
     <string name="inspector_category">コードインスペクター</string>
     <string name="code_inspector_string">詳細読み取り</string>

@@ -257,10 +257,6 @@
     <string name="canbus_reader_category">Canbus reader</string>
     <string name="display_canbus_reader">Display canbus reader</string> 
     <string name="codes_guide">Canbus guide</string> 
-    <string name="codes_guide_initial_reading_title">Codes logger – initial reading</string> 
-    <string name="codes_guide_initial_reading_one">\'Canbus reader\' might not work for every car! It depends on the source code provided by the manufacturer. \n\nThere are three values essential to properly read the canbus data – cmdInt, cmdArr represented in logs by CMD (these are less important, most of the random combinations should work) and the canbus codes represented in logs by CODE (these are important to determine).</string>
-    <string name="codes_guide_initial_reading_two">Running the \'Initial reading\' should create the txt file containing logs that look like the ones above. The crucial part is to identify the codes representing the current fuel consumption and the range. \n\nFor the current fuel consumption, look for the code that contains rather few outputs – on the attached screenshot it is the code 91. \n\nThe range code usually holds a single output that doesn\'t change quickly or changes at specific intervals – on the attached screenshot it is the code 92. \n\nThe rest of the codes are negligible unless you are looking for something else.</string>
-    <string name="codes_guide_initial_reading_three">\'Time window\' – this is the time (in seconds) during which the \'Codes logger\' will save the outputs for each cmdInt and cmdArr loop. \n\n\'Omit single figures\' – this aims to ignore the outputs that are single figures because the current fuel consumption and the mileage are usually represented by more than one digit. Selecting this option might greatly speed up the process because the loop won\'t dwell on the irrelevant outputs. \n\nUseful hint – to efficiently start examining the canbus codes use the narrow scope of starting-max cmdInt and cmdArr. You can set them as you wish provided that they are not greater than the maximum values (see the input dialog) and the starting point is not greater than the max value. The wider the range and the longer the time window, the longer the process takes.</string> 
     <string name="codes_guide_detailed_reading_title">Code inspector – detailed reading</string> 
     <string name="codes_guide_detailed_reading">This part is meant to test specific cmdInt and cmdArr combination to reveal the codes they hold. As mentioned earlier, cmdInt and cmdArr are less important and most random combinations should work. This module was created before I learned that, but it can still be useful for specific tests.</string> 
     <string name="codes_guide_miscellaneous_title">Miscellaneous</string> 
@@ -269,21 +265,6 @@
     <string name="skip_codes_summary">The following codes will be skipped: %1$s</string>
     <string name="skip_codes_empty_summary">Data will be read from the whole codes set.</string>
     <string name="skip_codes_dialog_str">Type the codes to skip (separated by commas):</string>
-    <string name="logger_category">Codes logger</string>
-    <string name="code_logger_string">Initial reading</string>    
-    <string name="code_logger_summary">Tap to start the process</string>
-    <string name="code_logger_summary_working">Working… %1$s Tap to cancel</string>
-    <string name="code_logger_data">Initial reading data</string>
-    <string name="code_logger_data_summary">Tap to set the initial reading data. \nStarting cmdInt: %1$s, Starting cmdArr: %2$s, max cmdInt: %3$s, max cmdArr: %4$s, Time window: %5$s</string>
-    <string name="starting_cmd_int_text">Starting cmdInt (max. 1198):</string>
-    <string name="starting_cmd_arr_text">Starting cmdArr (max. 1198):</string>
-    <string name="max_cmd_int_text">Max cmdInt (max. 1199):</string>
-    <string name="max_cmd_arr_text">Max cmdArr (max. 1199):</string>
-    <string name="code_logger_timeout_text">Time window:</string>
-    <string name="omit_digits">Omit single figures</string>
-    <string name="omit_digits_summary">Fuel consumption and range usually contain more than one digit. Selecting this option might greatly speed up the process.</string>
-    <string name="code_logger_dialog_toast">The starting value cannot be greater than the maximum value</string>
-    <string name="code_logger_toast">Finished logging the codes. Check the results in Download/Launcher66_Canbus</string> 
     
     <string name="inspector_category">Code inspector</string>
     <string name="code_inspector_string">Detailed reading</string>

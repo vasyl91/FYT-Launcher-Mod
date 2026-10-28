@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus lasītājs</string>
     <string name="display_canbus_reader">Rādīt Canbus lasītāju</string>
     <string name="codes_guide">Canbus ceļvedis</string>
-    <string name="codes_guide_initial_reading_title">Kodu reģistrētājs — sākotnējā nolasīšana</string>
-    <string name="codes_guide_initial_reading_one">“Canbus lasītājs” var nedarboties katrā automašīnā! Tas ir atkarīgs no ražotāja nodrošinātā pirmkoda. \n\nCanbus datu pareizai nolasīšanai ir būtiskas trīs vērtības: cmdInt un cmdArr, kas žurnālos tiek rādīti kā CMD (mazāk svarīgi, lielākajai daļai nejaušu kombināciju vajadzētu darboties), un canbus kodi, kas žurnālos tiek rādīti kā CODE (tos ir svarīgi noteikt).</string>
-    <string name="codes_guide_initial_reading_two">“Sākotnējai nolasīšanai” vajadzētu izveidot txt failu ar žurnāliem, kas izskatās kā iepriekš. Svarīgākais ir noteikt kodus, kas atbilst pašreizējam degvielas patēriņam un darbības rādiusam. \n\nPašreizējam degvielas patēriņam meklējiet kodu, kuram ir salīdzinoši maz izvades vērtību — pievienotajā ekrānuzņēmumā tas ir kods 91. \n\nDarbības rādiusa kodam parasti ir viena izvade, kas ātri nemainās vai mainās noteiktos intervālos — pievienotajā ekrānuzņēmumā tas ir kods 92. \n\nPārējie kodi ir nebūtiski, ja vien nemeklējat ko citu.</string>
-    <string name="codes_guide_initial_reading_three">“Laika logs” — laiks (sekundēs), kurā “Kodu reģistrētājs” saglabā izvades katram cmdInt un cmdArr ciklam. \n\n“Izlaist viencipara vērtības” — ignorē viencipara izvades, jo pašreizējam degvielas patēriņam un darbības rādiusam parasti ir vairāk nekā viens cipars. Šī opcija var ievērojami paātrināt procesu, jo cikls neaizkavējas pie nebūtiskām izvadēm. \n\nPadoms — lai efektīvi sāktu canbus kodu pārbaudi, izmantojiet šauru diapazonu starp cmdInt un cmdArr sākuma un maksimālo vērtību. Varat tos iestatīt pēc saviem ieskatiem, ja tie nepārsniedz maksimālās vērtības (norādītas ievades dialoglodziņā) un sākuma vērtība nav lielāka par maksimālo. Jo plašāks diapazons un garāks laika logs, jo ilgāk process ilgst.</string>
     <string name="codes_guide_detailed_reading_title">Kodu pārbaudītājs — detalizēta nolasīšana</string>
     <string name="codes_guide_detailed_reading">Šī daļa ir paredzēta noteiktu cmdInt un cmdArr kombināciju pārbaudei, lai atklātu tajās esošos kodus. Kā minēts iepriekš, cmdInt un cmdArr ir mazāk svarīgi, un lielākajai daļai nejaušu kombināciju vajadzētu darboties. Šis modulis tika izveidots, pirms es to uzzināju, taču tas joprojām var noderēt konkrētiem testiem.</string>
     <string name="codes_guide_miscellaneous_title">Dažādi</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Tiks izlaisti šādi kodi: %1$s</string>
     <string name="skip_codes_empty_summary">Dati tiks nolasīti no visa kodu kopuma.</string>
     <string name="skip_codes_dialog_str">Ievadiet izlaižamos kodus (atdalītus ar komatiem):</string>
-    <string name="logger_category">Kodu reģistrētājs</string>
-    <string name="code_logger_string">Sākotnējā nolasīšana</string>
-    <string name="code_logger_summary">Pieskarieties, lai sāktu procesu</string>
-    <string name="code_logger_summary_working">Darbojas… %1$s Pieskarieties, lai atceltu</string>
-    <string name="code_logger_data">Sākotnējās nolasīšanas dati</string>
-    <string name="code_logger_data_summary">Pieskarieties, lai iestatītu sākotnējās nolasīšanas datus. \nSākuma cmdInt: %1$s, sākuma cmdArr: %2$s, maks. cmdInt: %3$s, maks. cmdArr: %4$s, laika logs: %5$s</string>
-    <string name="starting_cmd_int_text">Sākuma cmdInt (maks. 1198):</string>
-    <string name="starting_cmd_arr_text">Sākuma cmdArr (maks. 1198):</string>
-    <string name="max_cmd_int_text">Maks. cmdInt (maks. 1199):</string>
-    <string name="max_cmd_arr_text">Maks. cmdArr (maks. 1199):</string>
-    <string name="code_logger_timeout_text">Laika logs:</string>
-    <string name="omit_digits">Izlaist viencipara vērtības</string>
-    <string name="omit_digits_summary">Degvielas patēriņam un darbības rādiusam parasti ir vairāk nekā viens cipars. Šī opcija var ievērojami paātrināt procesu.</string>
-    <string name="code_logger_dialog_toast">Sākuma vērtība nedrīkst būt lielāka par maksimālo vērtību</string>
-    <string name="code_logger_toast">Kodu reģistrēšana pabeigta. Rezultātus skatiet mapē Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Kodu pārbaudītājs</string>
     <string name="code_inspector_string">Detalizēta nolasīšana</string>

@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Cititor Canbus</string>
     <string name="display_canbus_reader">Afișează cititorul Canbus</string>
     <string name="codes_guide">Ghid Canbus</string>
-    <string name="codes_guide_initial_reading_title">Logger de coduri – citirea inițială</string>
-    <string name="codes_guide_initial_reading_one">„Cititorul Canbus” poate să nu funcționeze la orice mașină! Depinde de codul sursă furnizat de producător. \n\nTrei valori sunt esențiale pentru citirea corectă a datelor canbus: cmdInt și cmdArr, reprezentate în jurnale prin CMD (mai puțin importante, majoritatea combinațiilor aleatorii ar trebui să funcționeze) și codurile canbus, reprezentate în jurnale prin CODE (acestea trebuie determinate).</string>
-    <string name="codes_guide_initial_reading_two">„Citirea inițială” ar trebui să creeze un fișier txt cu jurnale care arată ca cele de mai sus. Partea esențială este identificarea codurilor care reprezintă consumul curent de combustibil și autonomia. \n\nPentru consumul curent, căutați codul care conține relativ puține ieșiri – în captura de ecran atașată este codul 91. \n\nCodul de autonomie conține de obicei o singură ieșire care nu se schimbă repede sau se schimbă la intervale specifice – în captura de ecran atașată este codul 92. \n\nRestul codurilor sunt neglijabile, dacă nu căutați altceva.</string>
-    <string name="codes_guide_initial_reading_three">„Fereastra de timp” – timpul (în secunde) în care „Loggerul de coduri” salvează ieșirile pentru fiecare buclă cmdInt și cmdArr. \n\n„Omite cifrele singulare” – ignoră ieșirile dintr-o singură cifră, deoarece consumul curent și autonomia au de obicei mai multe cifre. Această opțiune poate accelera mult procesul, fiindcă bucla nu zăbovește pe ieșiri irelevante. \n\nSfat – pentru a începe eficient examinarea codurilor canbus, folosiți un interval îngust între valoarea inițială și cea maximă pentru cmdInt și cmdArr. Le puteți seta cum doriți, cu condiția să nu depășească valorile maxime (indicate în dialogul de introducere) și valoarea inițială să nu fie mai mare decât cea maximă. Cu cât intervalul este mai larg și fereastra de timp mai lungă, cu atât procesul durează mai mult.</string>
     <string name="codes_guide_detailed_reading_title">Inspector de coduri – citire detaliată</string>
     <string name="codes_guide_detailed_reading">Această parte este menită să testeze combinații specifice de cmdInt și cmdArr pentru a dezvălui codurile pe care le conțin. După cum s-a menționat, cmdInt și cmdArr sunt mai puțin importante și majoritatea combinațiilor aleatorii ar trebui să funcționeze. Acest modul a fost creat înainte să aflu asta, dar poate fi totuși util pentru teste specifice.</string>
     <string name="codes_guide_miscellaneous_title">Diverse</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Următoarele coduri vor fi omise: %1$s</string>
     <string name="skip_codes_empty_summary">Datele vor fi citite din întregul set de coduri.</string>
     <string name="skip_codes_dialog_str">Introduceți codurile de omis (separate prin virgulă):</string>
-    <string name="logger_category">Logger de coduri</string>
-    <string name="code_logger_string">Citire inițială</string>
-    <string name="code_logger_summary">Atingeți pentru a porni procesul</string>
-    <string name="code_logger_summary_working">Se lucrează… %1$s Atingeți pentru a anula</string>
-    <string name="code_logger_data">Date pentru citirea inițială</string>
-    <string name="code_logger_data_summary">Atingeți pentru a seta datele citirii inițiale. \ncmdInt inițial: %1$s, cmdArr inițial: %2$s, cmdInt max.: %3$s, cmdArr max.: %4$s, fereastră de timp: %5$s</string>
-    <string name="starting_cmd_int_text">cmdInt inițial (max. 1198):</string>
-    <string name="starting_cmd_arr_text">cmdArr inițial (max. 1198):</string>
-    <string name="max_cmd_int_text">cmdInt max. (max. 1199):</string>
-    <string name="max_cmd_arr_text">cmdArr max. (max. 1199):</string>
-    <string name="code_logger_timeout_text">Fereastră de timp:</string>
-    <string name="omit_digits">Omite cifrele singulare</string>
-    <string name="omit_digits_summary">Consumul de combustibil și autonomia au de obicei mai multe cifre. Această opțiune poate accelera mult procesul.</string>
-    <string name="code_logger_dialog_toast">Valoarea inițială nu poate fi mai mare decât valoarea maximă</string>
-    <string name="code_logger_toast">Înregistrarea codurilor s-a încheiat. Verificați rezultatele în Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Inspector de coduri</string>
     <string name="code_inspector_string">Citire detaliată</string>

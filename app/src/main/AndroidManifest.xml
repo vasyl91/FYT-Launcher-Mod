@@ -274,11 +274,6 @@
             android:exported="false" />
 
         <service
-            android:name="com.android.launcher66.settings.CanbusCommandLogger"
-            android:enabled="true"
-            android:exported="false" />
-
-        <service
             android:name="com.android.launcher66.settings.StateAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="false" >

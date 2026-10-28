@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus-lukija</string>
     <string name="display_canbus_reader">Näytä Canbus-lukija</string>
     <string name="codes_guide">Canbus-opas</string>
-    <string name="codes_guide_initial_reading_title">Koodilogeri – ensilukema</string>
-    <string name="codes_guide_initial_reading_one">\"Canbus-lukija\" ei välttämättä toimi kaikissa autoissa! Se riippuu valmistajan toimittamasta lähdekoodista. \n\nCanbus-tietojen lukemiseen tarvitaan kolme tärkeää arvoa: cmdInt ja cmdArr, jotka näkyvät lokeissa nimellä CMD (vähemmän tärkeitä, useimpien satunnaisten yhdistelmien pitäisi toimia), sekä canbus-koodit, jotka näkyvät lokeissa nimellä CODE (nämä on tärkeää selvittää).</string>
-    <string name="codes_guide_initial_reading_two">\"Ensilukeman\" pitäisi luoda txt-tiedosto, jossa on yllä olevan kaltaisia lokeja. Olennaista on selvittää koodit, jotka kuvaavat nykyistä polttoaineen kulutusta ja toimintamatkaa. \n\nEtsi nykyiselle polttoaineen kulutukselle koodi, jolla on melko vähän tulosteita – liitetyssä kuvakaappauksessa se on koodi 91. \n\nToimintamatkan koodilla on yleensä yksi tuloste, joka ei muutu nopeasti tai muuttuu tietyin välein – liitetyssä kuvakaappauksessa se on koodi 92. \n\nMuut koodit ovat merkityksettömiä, ellet etsi jotain muuta.</string>
-    <string name="codes_guide_initial_reading_three">\"Aikaikkuna\" – aika (sekunteina), jonka \"Koodilogeri\" tallentaa tulosteet jokaiselle cmdInt- ja cmdArr-silmukalle. \n\n\"Ohita yksinumeroiset\" – ohittaa yksinumeroiset tulosteet, koska nykyinen polttoaineen kulutus ja toimintamatka koostuvat yleensä useammasta kuin yhdestä numerosta. Tämä asetus voi nopeuttaa prosessia huomattavasti, koska silmukka ei jää jumiin epäolennaisiin tulosteisiin. \n\nVinkki – aloita canbus-koodien tutkiminen tehokkaasti käyttämällä kapeaa väliä cmdInt- ja cmdArr-arvojen alku- ja enimmäisarvon välillä. Voit asettaa ne haluamallasi tavalla, kunhan ne eivät ylitä enimmäisarvoja (näkyvät syöttöikkunassa) eikä alkuarvo ole enimmäisarvoa suurempi. Mitä laajempi väli ja pidempi aikaikkuna, sitä kauemmin prosessi kestää.</string>
     <string name="codes_guide_detailed_reading_title">Koodintarkastaja – yksityiskohtainen lukeminen</string>
     <string name="codes_guide_detailed_reading">Tämä osa on tarkoitettu tiettyjen cmdInt- ja cmdArr-yhdistelmien testaamiseen niiden sisältämien koodien paljastamiseksi. Kuten aiemmin todettiin, cmdInt ja cmdArr ovat vähemmän tärkeitä ja useimpien satunnaisten yhdistelmien pitäisi toimia. Tämä moduuli tehtiin ennen kuin tiesin sen, mutta se voi silti olla hyödyllinen tietyissä testeissä.</string>
     <string name="codes_guide_miscellaneous_title">Sekalaista</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Seuraavat koodit ohitetaan: %1$s</string>
     <string name="skip_codes_empty_summary">Tiedot luetaan koko koodijoukosta.</string>
     <string name="skip_codes_dialog_str">Kirjoita ohitettavat koodit (pilkuilla erotettuina):</string>
-    <string name="logger_category">Koodilogeri</string>
-    <string name="code_logger_string">Ensilukema</string>
-    <string name="code_logger_summary">Aloita prosessi napauttamalla</string>
-    <string name="code_logger_summary_working">Työskennellään… %1$s Peruuta napauttamalla</string>
-    <string name="code_logger_data">Ensilukeman tiedot</string>
-    <string name="code_logger_data_summary">Napauta asettaaksesi ensilukeman tiedot. \nAlku-cmdInt: %1$s, alku-cmdArr: %2$s, enimmäis-cmdInt: %3$s, enimmäis-cmdArr: %4$s, aikaikkuna: %5$s</string>
-    <string name="starting_cmd_int_text">Alku-cmdInt (enintään 1198):</string>
-    <string name="starting_cmd_arr_text">Alku-cmdArr (enintään 1198):</string>
-    <string name="max_cmd_int_text">Enimmäis-cmdInt (enintään 1199):</string>
-    <string name="max_cmd_arr_text">Enimmäis-cmdArr (enintään 1199):</string>
-    <string name="code_logger_timeout_text">Aikaikkuna:</string>
-    <string name="omit_digits">Ohita yksinumeroiset</string>
-    <string name="omit_digits_summary">Polttoaineen kulutus ja toimintamatka koostuvat yleensä useammasta kuin yhdestä numerosta. Tämä asetus voi nopeuttaa prosessia huomattavasti.</string>
-    <string name="code_logger_dialog_toast">Alkuarvo ei voi olla suurempi kuin enimmäisarvo</string>
-    <string name="code_logger_toast">Koodien kirjaaminen valmis. Tarkista tulokset kansiosta Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Koodintarkastaja</string>
     <string name="code_inspector_string">Yksityiskohtainen lukeminen</string>

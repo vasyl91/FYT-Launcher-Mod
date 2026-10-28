@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus 리더</string>
     <string name="display_canbus_reader">Canbus 리더 표시</string>
     <string name="codes_guide">Canbus 가이드</string>
-    <string name="codes_guide_initial_reading_title">코드 로거 – 초기 읽기</string>
-    <string name="codes_guide_initial_reading_one">\'Canbus 리더\'는 모든 차량에서 작동하지 않을 수 있습니다! 제조사가 제공한 소스 코드에 따라 달라집니다. \n\ncanbus 데이터를 올바르게 읽으려면 세 가지 값이 필요합니다. 로그에 CMD로 표시되는 cmdInt와 cmdArr(덜 중요하며 대부분의 임의 조합이 작동합니다), 그리고 로그에 CODE로 표시되는 canbus 코드(이것을 알아내는 것이 중요합니다)입니다.</string>
-    <string name="codes_guide_initial_reading_two">\'초기 읽기\'를 실행하면 위와 같은 로그가 담긴 txt 파일이 만들어집니다. 핵심은 현재 연료 소비량과 주행 가능 거리를 나타내는 코드를 찾는 것입니다. \n\n현재 연료 소비량은 출력이 비교적 적은 코드를 찾으세요. 첨부한 스크린샷에서는 코드 91입니다. \n\n주행 가능 거리 코드는 보통 출력이 하나이고 빠르게 변하지 않거나 일정한 간격으로 변합니다. 첨부한 스크린샷에서는 코드 92입니다. \n\n다른 것을 찾는 경우가 아니라면 나머지 코드는 무시해도 됩니다.</string>
-    <string name="codes_guide_initial_reading_three">\'시간 창\' – \'코드 로거\'가 cmdInt 및 cmdArr 루프마다 출력을 저장하는 시간(초)입니다. \n\n\'한 자리 숫자 제외\' – 현재 연료 소비량과 주행 가능 거리는 보통 두 자리 이상이므로 한 자리 출력은 무시합니다. 루프가 관련 없는 출력에 머무르지 않아 처리 속도가 크게 빨라질 수 있습니다. \n\n팁 – canbus 코드를 효율적으로 조사하려면 cmdInt와 cmdArr의 시작값~최댓값 범위를 좁게 잡으세요. 최댓값(입력 대화상자에 표시)을 넘지 않고 시작값이 최댓값보다 크지 않다면 자유롭게 설정할 수 있습니다. 범위가 넓고 시간 창이 길수록 처리 시간이 길어집니다.</string>
     <string name="codes_guide_detailed_reading_title">코드 검사기 – 상세 읽기</string>
     <string name="codes_guide_detailed_reading">이 기능은 특정 cmdInt와 cmdArr 조합을 테스트하여 그 안에 담긴 코드를 확인하기 위한 것입니다. 앞서 말했듯이 cmdInt와 cmdArr는 덜 중요하며 대부분의 임의 조합이 작동합니다. 이 모듈은 제가 그 사실을 알기 전에 만든 것이지만 특정 테스트에는 여전히 유용할 수 있습니다.</string>
     <string name="codes_guide_miscellaneous_title">기타</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">다음 코드를 건너뜁니다: %1$s</string>
     <string name="skip_codes_empty_summary">전체 코드 집합에서 데이터를 읽습니다.</string>
     <string name="skip_codes_dialog_str">건너뛸 코드를 입력하세요(쉼표로 구분):</string>
-    <string name="logger_category">코드 로거</string>
-    <string name="code_logger_string">초기 읽기</string>
-    <string name="code_logger_summary">탭하여 작업 시작</string>
-    <string name="code_logger_summary_working">작업 중… %1$s 탭하여 취소</string>
-    <string name="code_logger_data">초기 읽기 데이터</string>
-    <string name="code_logger_data_summary">탭하여 초기 읽기 데이터를 설정합니다. \n시작 cmdInt: %1$s, 시작 cmdArr: %2$s, 최대 cmdInt: %3$s, 최대 cmdArr: %4$s, 시간 창: %5$s</string>
-    <string name="starting_cmd_int_text">시작 cmdInt(최대 1198):</string>
-    <string name="starting_cmd_arr_text">시작 cmdArr(최대 1198):</string>
-    <string name="max_cmd_int_text">최대 cmdInt(최대 1199):</string>
-    <string name="max_cmd_arr_text">최대 cmdArr(최대 1199):</string>
-    <string name="code_logger_timeout_text">시간 창:</string>
-    <string name="omit_digits">한 자리 숫자 제외</string>
-    <string name="omit_digits_summary">연료 소비량과 주행 가능 거리는 보통 두 자리 이상입니다. 이 옵션을 선택하면 처리 속도가 크게 빨라질 수 있습니다.</string>
-    <string name="code_logger_dialog_toast">시작값은 최댓값보다 클 수 없습니다</string>
-    <string name="code_logger_toast">코드 로깅이 완료되었습니다. Download/Launcher66_Canbus에서 결과를 확인하세요</string>
 
     <string name="inspector_category">코드 검사기</string>
     <string name="code_inspector_string">상세 읽기</string>

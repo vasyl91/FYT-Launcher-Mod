@@ -251,10 +251,6 @@
     <string name="canbus_reader_category">Canbus-leser</string>
     <string name="display_canbus_reader">Vis Canbus-leser</string>
     <string name="codes_guide">Canbus-veiledning</string>
-    <string name="codes_guide_initial_reading_title">Kodelogger – første avlesning</string>
-    <string name="codes_guide_initial_reading_one">«Canbus-leseren» fungerer kanskje ikke i alle biler! Det avhenger av kildekoden produsenten har levert. \n\nTre verdier er avgjørende for å lese canbus-data riktig: cmdInt og cmdArr, som vises i loggene som CMD (mindre viktige, de fleste tilfeldige kombinasjoner bør fungere), og canbus-kodene, som vises i loggene som CODE (disse er viktige å finne).</string>
-    <string name="codes_guide_initial_reading_two">«Første avlesning» skal opprette en txt-fil med logger som ser ut som over. Det avgjørende er å finne kodene som representerer gjeldende drivstofforbruk og rekkevidde. \n\nFor gjeldende drivstofforbruk leter du etter koden med relativt få utdata – på det vedlagte skjermbildet er det kode 91. \n\nRekkeviddekoden har vanligvis én enkelt utdata som ikke endrer seg raskt eller endrer seg med bestemte intervaller – på det vedlagte skjermbildet er det kode 92. \n\nResten av kodene kan ignoreres med mindre du leter etter noe annet.</string>
-    <string name="codes_guide_initial_reading_three">«Tidsvindu» – tiden (i sekunder) «Kodeloggeren» lagrer utdata for hver cmdInt- og cmdArr-løkke. \n\n«Hopp over ensifrede verdier» – ignorerer utdata med ett siffer, fordi gjeldende drivstofforbruk og rekkevidde vanligvis har mer enn ett siffer. Dette alternativet kan gjøre prosessen mye raskere fordi løkken ikke blir hengende ved irrelevante utdata. \n\nTips – for å begynne å undersøke canbus-kodene effektivt, bruk et smalt intervall mellom start- og maksverdi for cmdInt og cmdArr. Du kan angi dem som du vil, så lenge de ikke overstiger maksverdiene (oppgitt i inndatadialogen) og startverdien ikke er større enn maksverdien. Jo bredere intervall og jo lengre tidsvindu, desto lenger tar prosessen.</string>
     <string name="codes_guide_detailed_reading_title">Kodeinspektør – detaljert avlesning</string>
     <string name="codes_guide_detailed_reading">Denne delen er ment for å teste bestemte kombinasjoner av cmdInt og cmdArr for å avsløre hvilke koder de inneholder. Som nevnt tidligere er cmdInt og cmdArr mindre viktige, og de fleste tilfeldige kombinasjoner bør fungere. Denne modulen ble laget før jeg visste det, men den kan fortsatt være nyttig for spesifikke tester.</string>
     <string name="codes_guide_miscellaneous_title">Diverse</string>
@@ -263,21 +259,6 @@
     <string name="skip_codes_summary">Følgende koder hoppes over: %1$s</string>
     <string name="skip_codes_empty_summary">Data leses fra hele kodesettet.</string>
     <string name="skip_codes_dialog_str">Skriv inn kodene som skal hoppes over (atskilt med komma):</string>
-    <string name="logger_category">Kodelogger</string>
-    <string name="code_logger_string">Første avlesning</string>
-    <string name="code_logger_summary">Trykk for å starte prosessen</string>
-    <string name="code_logger_summary_working">Jobber… %1$s Trykk for å avbryte</string>
-    <string name="code_logger_data">Data for første avlesning</string>
-    <string name="code_logger_data_summary">Trykk for å angi data for første avlesning. \nStart-cmdInt: %1$s, start-cmdArr: %2$s, maks. cmdInt: %3$s, maks. cmdArr: %4$s, tidsvindu: %5$s</string>
-    <string name="starting_cmd_int_text">Start-cmdInt (maks. 1198):</string>
-    <string name="starting_cmd_arr_text">Start-cmdArr (maks. 1198):</string>
-    <string name="max_cmd_int_text">Maks. cmdInt (maks. 1199):</string>
-    <string name="max_cmd_arr_text">Maks. cmdArr (maks. 1199):</string>
-    <string name="code_logger_timeout_text">Tidsvindu:</string>
-    <string name="omit_digits">Hopp over ensifrede verdier</string>
-    <string name="omit_digits_summary">Drivstofforbruk og rekkevidde har vanligvis mer enn ett siffer. Dette alternativet kan gjøre prosessen mye raskere.</string>
-    <string name="code_logger_dialog_toast">Startverdien kan ikke være større enn maksverdien</string>
-    <string name="code_logger_toast">Loggingen av kodene er fullført. Se resultatene i Download/Launcher66_Canbus</string>
 
     <string name="inspector_category">Kodeinspektør</string>
     <string name="code_inspector_string">Detaljert avlesning</string>
