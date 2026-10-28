@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Slå på DVR-bryteren</string>
     <string name="app_name">Tidtaker</string>
-    <string name="widget_name">Bilwidget</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Ikke tilkoblet</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Velg bakgrunn for nedre felt</string>
     <string name="bar_background_dialog_title">Velg bakgrunn for nedre felt:</string>
     <string name="pick_image_manually">Velg bakgrunn</string>
-    <string name="cancel">Avbryt</string>
     <string name="black_widgets">Tekst- og knappefarge for widgeter</string>
     <string name="black_bar">Tekst- og knappefarge for nedre felt</string>
     <string name="black_color">Svart</string>

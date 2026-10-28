@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Խնդրում ենք միացնել DVR-ի անջատիչը</string>
     <string name="app_name">Ժամանակաչափ</string>
-    <string name="widget_name">Մեքենայի վիջեթ</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Միացված չէ</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Ընտրել ֆոն ներքևի գոտու համար</string>
     <string name="bar_background_dialog_title">Ընտրեք ֆոն ներքևի գոտու համար՝</string>
     <string name="pick_image_manually">Ընտրել պաստառ</string>
-    <string name="cancel">Չեղարկել</string>
     <string name="black_widgets">Վիջեթների տեքստի և կոճակների գույն</string>
     <string name="black_bar">Ներքևի գոտու տեքստի և կոճակների գույն</string>
     <string name="black_color">Սև</string>

@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">โปรดเปิดสวิตช์ DVR</string>
     <string name="app_name">ตัวจับเวลา</string>
-    <string name="widget_name">วิดเจ็ตรถยนต์</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">ไม่ได้เชื่อมต่อ</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">เลือกพื้นหลังสำหรับแถบด้านล่าง</string>
     <string name="bar_background_dialog_title">เลือกพื้นหลังสำหรับแถบด้านล่าง:</string>
     <string name="pick_image_manually">เลือกวอลเปเปอร์</string>
-    <string name="cancel">ยกเลิก</string>
     <string name="black_widgets">สีข้อความและปุ่มของวิดเจ็ต</string>
     <string name="black_bar">สีข้อความและปุ่มของแถบด้านล่าง</string>
     <string name="black_color">ดำ</string>

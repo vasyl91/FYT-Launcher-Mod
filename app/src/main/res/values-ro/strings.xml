@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Activați comutatorul DVR</string>
     <string name="app_name">Cronometru</string>
-    <string name="widget_name">Widget auto</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Neconectat</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Alegeți fundalul pentru bara de jos</string>
     <string name="bar_background_dialog_title">Selectați fundalul pentru bara de jos:</string>
     <string name="pick_image_manually">Alegeți imaginea de fundal</string>
-    <string name="cancel">Anulare</string>
     <string name="black_widgets">Culoarea textului și a butoanelor widgeturilor</string>
     <string name="black_bar">Culoarea textului și a butoanelor barei de jos</string>
     <string name="black_color">Negru</string>

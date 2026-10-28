@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Zapnite prepínač DVR</string>
     <string name="app_name">Časovač</string>
-    <string name="widget_name">Widget vozidla</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Nepripojené</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Vybrať pozadie pre spodný panel</string>
     <string name="bar_background_dialog_title">Vyberte pozadie pre spodný panel:</string>
     <string name="pick_image_manually">Vybrať tapetu</string>
-    <string name="cancel">Zrušiť</string>
     <string name="black_widgets">Farba textu a tlačidiel widgetov</string>
     <string name="black_bar">Farba textu a tlačidiel spodného panela</string>
     <string name="black_color">Čierna</string>

@@ -30,9 +30,7 @@
         <item name="android:fontFamily">sans-serif-condensed</item>
     </style>
     
-    <style name="WorkspaceIcon.Portrait" parent="@style/WorkspaceIcon" />
 
-    <style name="WorkspaceIcon.Landscape" parent="@style/WorkspaceIcon" />
 
     <style name="WorkspaceIcon.AppsCustomize" parent="@style/WorkspaceIcon">
         <item name="android:background">@null</item>
@@ -106,25 +104,8 @@
         <item name="android:paddingEnd">5.0px</item>
     </style>
     
-    <style name="music_btn_style" parent="Theme.MaterialComponents.DayNight.Bridge">
-        <item name="android:layout_width">64.0px</item>
-        <item name="android:layout_height">49.0px</item>
-        <item name="android:onClick">onExtraClick</item>
-    </style>
     
-    <style name="hotseat_layout" parent="Theme.MaterialComponents.DayNight.Bridge">
-        <item name="android:gravity">center</item>
-        <item name="android:layout_width">@dimen/hotseat_layout_width</item>
-        <item name="android:layout_height">fill_parent</item>
-    </style>
     
-    <style name="hotseat_textstyle" parent="Theme.MaterialComponents.DayNight.Bridge">
-        <item name="android:textSize">18.0sp</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
     
     <style name="Translucent" parent="Theme.MaterialComponents.DayNight.Bridge">
         <item name="android:windowBackground">@color/translucent</item>
@@ -197,12 +178,8 @@
         <item name="android:background">#88000000</item>
     </style>
 
-    <style name="ActionBarSetWallpaperStyle" parent="Theme.MaterialComponents.DayNight.Bridge">
-        <item name="android:textColor">#ffffffff</item>
-    </style>
 
     <style name="WidgetTheme" parent="Theme.MaterialComponents.DayNight.Bridge" />
 
-    <style name="ProgressDialogTheme"></style>
 
 </resources>

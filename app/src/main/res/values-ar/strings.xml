@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">يُرجى تشغيل مفتاح DVR</string>
     <string name="app_name">المؤقت</string>
-    <string name="widget_name">عنصر واجهة السيارة</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">غير متصل</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">اختيار خلفية الشريط السفلي</string>
     <string name="bar_background_dialog_title">اختر خلفية الشريط السفلي:</string>
     <string name="pick_image_manually">اختيار خلفية</string>
-    <string name="cancel">إلغاء</string>
     <string name="black_widgets">لون نص وأزرار عناصر الواجهة</string>
     <string name="black_bar">لون نص وأزرار الشريط السفلي</string>
     <string name="black_color">أسود</string>

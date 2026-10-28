@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Lülitage DVR-i lüliti sisse</string>
     <string name="app_name">Taimer</string>
-    <string name="widget_name">Auto vidin</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Ühendus puudub</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Vali alumise riba taust</string>
     <string name="bar_background_dialog_title">Valige alumise riba taust:</string>
     <string name="pick_image_manually">Vali taustapilt</string>
-    <string name="cancel">Tühista</string>
     <string name="black_widgets">Vidinate teksti ja nuppude värv</string>
     <string name="black_bar">Alumise riba teksti ja nuppude värv</string>
     <string name="black_color">Must</string>

@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Моля, включете превключвателя на DVR</string>
     <string name="app_name">Таймер</string>
-    <string name="widget_name">Приспособление за автомобила</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Няма връзка</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Избор на фон за долната лента</string>
     <string name="bar_background_dialog_title">Изберете фон за долната лента:</string>
     <string name="pick_image_manually">Избор на тапет</string>
-    <string name="cancel">Отказ</string>
     <string name="black_widgets">Цвят на текста и бутоните на приспособленията</string>
     <string name="black_bar">Цвят на текста и бутоните на долната лента</string>
     <string name="black_color">Черно</string>

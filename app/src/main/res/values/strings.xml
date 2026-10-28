@@ -82,7 +82,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Please turn on the DVR switch</string>
     <string name="app_name">Timer</string>
-    <string name="widget_name">Car Widget</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Not connected</string>
@@ -412,7 +411,6 @@
     <string name="bar_background_preference">Choose background for bottom bar</string>
     <string name="bar_background_dialog_title">Select background for bottom bar:</string>
     <string name="pick_image_manually">Pick wallpaper</string>
-    <string name="cancel">Cancel</string>
     <string name="black_widgets">Widget text and button color</string>
     <string name="black_bar">Bottom bar text and button color</string>
     <string name="black_color">Black</string>

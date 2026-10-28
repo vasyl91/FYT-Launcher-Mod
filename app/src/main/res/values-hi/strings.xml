@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">कृपया DVR स्विच चालू करें</string>
     <string name="app_name">टाइमर</string>
-    <string name="widget_name">कार विजेट</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">कनेक्ट नहीं है</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">निचले बार के लिए पृष्ठभूमि चुनें</string>
     <string name="bar_background_dialog_title">निचले बार के लिए पृष्ठभूमि चुनें:</string>
     <string name="pick_image_manually">वॉलपेपर चुनें</string>
-    <string name="cancel">रद्द करें</string>
     <string name="black_widgets">विजेट के टेक्स्ट और बटन का रंग</string>
     <string name="black_bar">निचले बार के टेक्स्ट और बटन का रंग</string>
     <string name="black_color">काला</string>

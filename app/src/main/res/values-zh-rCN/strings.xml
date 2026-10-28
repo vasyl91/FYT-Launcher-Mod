@@ -79,7 +79,6 @@
     <string name="pm">下午</string>
     <string name="dvr_switch">请打开内置DVR开关</string>
     <string name="app_name">时间</string>
-    <string name="widget_name">车载控件</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">未连接</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">选择底部栏背景</string>
     <string name="bar_background_dialog_title">为底部栏选择背景：</string>
     <string name="pick_image_manually">选择壁纸</string>
-    <string name="cancel">取消</string>
     <string name="black_widgets">小部件文字和按钮颜色</string>
     <string name="black_bar">底部栏文字和按钮颜色</string>
     <string name="black_color">黑色</string>

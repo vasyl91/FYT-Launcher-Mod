@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Sila hidupkan suis DVR</string>
     <string name="app_name">Pemasa</string>
-    <string name="widget_name">Widget kereta</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Tidak disambungkan</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Pilih latar belakang untuk bar bawah</string>
     <string name="bar_background_dialog_title">Pilih latar belakang untuk bar bawah:</string>
     <string name="pick_image_manually">Pilih kertas dinding</string>
-    <string name="cancel">Batal</string>
     <string name="black_widgets">Warna teks dan butang widget</string>
     <string name="black_bar">Warna teks dan butang bar bawah</string>
     <string name="black_color">Hitam</string>

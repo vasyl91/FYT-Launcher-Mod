@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Включите переключатель видеорегистратора</string>
     <string name="app_name">Таймер</string>
-    <string name="widget_name">Виджет автомобиля</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Не подключено</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Выбрать фон для нижней панели</string>
     <string name="bar_background_dialog_title">Выберите фон для нижней панели:</string>
     <string name="pick_image_manually">Выбрать обои</string>
-    <string name="cancel">Отмена</string>
     <string name="black_widgets">Цвет текста и кнопок виджетов</string>
     <string name="black_bar">Цвет текста и кнопок нижней панели</string>
     <string name="black_color">Чёрный</string>

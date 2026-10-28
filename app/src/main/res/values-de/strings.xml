@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Bitte den DVR-Schalter einschalten</string>
     <string name="app_name">Timer</string>
-    <string name="widget_name">Fahrzeug-Widget</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Nicht verbunden</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Hintergrund für die untere Leiste wählen</string>
     <string name="bar_background_dialog_title">Hintergrund für die untere Leiste auswählen:</string>
     <string name="pick_image_manually">Hintergrund auswählen</string>
-    <string name="cancel">Abbrechen</string>
     <string name="black_widgets">Text- und Tastenfarbe der Widgets</string>
     <string name="black_bar">Text- und Tastenfarbe der unteren Leiste</string>
     <string name="black_color">Schwarz</string>

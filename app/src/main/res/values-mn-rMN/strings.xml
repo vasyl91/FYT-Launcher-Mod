@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">DVR унтраалгыг асаана уу</string>
     <string name="app_name">Таймер</string>
-    <string name="widget_name">Машины виджет</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Холбогдоогүй</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Доод самбарын дэвсгэрийг сонгох</string>
     <string name="bar_background_dialog_title">Доод самбарын дэвсгэрийг сонгоно уу:</string>
     <string name="pick_image_manually">Ханын зураг сонгох</string>
-    <string name="cancel">Цуцлах</string>
     <string name="black_widgets">Виджетийн бичвэр болон товчийн өнгө</string>
     <string name="black_bar">Доод самбарын бичвэр болон товчийн өнгө</string>
     <string name="black_color">Хар</string>

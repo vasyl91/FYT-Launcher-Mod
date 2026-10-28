@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Vui lòng bật công tắc DVR</string>
     <string name="app_name">Hẹn giờ</string>
-    <string name="widget_name">Widget xe</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Chưa kết nối</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Chọn nền cho thanh dưới</string>
     <string name="bar_background_dialog_title">Chọn nền cho thanh dưới:</string>
     <string name="pick_image_manually">Chọn hình nền</string>
-    <string name="cancel">Hủy</string>
     <string name="black_widgets">Màu chữ và nút của widget</string>
     <string name="black_bar">Màu chữ và nút của thanh dưới</string>
     <string name="black_color">Đen</string>

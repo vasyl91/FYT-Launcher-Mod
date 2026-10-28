@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Vklopite stikalo DVR</string>
     <string name="app_name">Časovnik</string>
-    <string name="widget_name">Gradnik vozila</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Ni povezave</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Izberi ozadje za spodnjo vrstico</string>
     <string name="bar_background_dialog_title">Izberite ozadje za spodnjo vrstico:</string>
     <string name="pick_image_manually">Izberi ozadje</string>
-    <string name="cancel">Prekliči</string>
     <string name="black_widgets">Barva besedila in gumbov gradnikov</string>
     <string name="black_bar">Barva besedila in gumbov spodnje vrstice</string>
     <string name="black_color">Črna</string>

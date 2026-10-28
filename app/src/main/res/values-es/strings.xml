@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Activa el interruptor del DVR</string>
     <string name="app_name">Temporizador</string>
-    <string name="widget_name">Widget del vehículo</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">No conectado</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Elegir el fondo de la barra inferior</string>
     <string name="bar_background_dialog_title">Selecciona el fondo de la barra inferior:</string>
     <string name="pick_image_manually">Elegir fondo de pantalla</string>
-    <string name="cancel">Cancelar</string>
     <string name="black_widgets">Color del texto y los botones de los widgets</string>
     <string name="black_bar">Color del texto y los botones de la barra inferior</string>
     <string name="black_color">Negro</string>

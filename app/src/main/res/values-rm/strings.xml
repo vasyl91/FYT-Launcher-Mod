@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Endrizza l\'interrutur da la DVR</string>
     <string name="app_name">Temporisader</string>
-    <string name="widget_name">Widget da l\'auto</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Betg collià</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Tscherner il fund per la bara sutvart</string>
     <string name="bar_background_dialog_title">Tscherna il fund per la bara sutvart:</string>
     <string name="pick_image_manually">Tscherner in maletg dal fund</string>
-    <string name="cancel">Interrumper</string>
     <string name="black_widgets">Colur dal text e dals buttuns dals widgets</string>
     <string name="black_bar">Colur dal text e dals buttuns da la bara sutvart</string>
     <string name="black_color">Nair</string>

@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Uključite prekidač DVR-a</string>
     <string name="app_name">Mjerač vremena</string>
-    <string name="widget_name">Widget vozila</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Nije povezano</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Odaberi pozadinu za donju traku</string>
     <string name="bar_background_dialog_title">Odaberite pozadinu za donju traku:</string>
     <string name="pick_image_manually">Odaberi pozadinu</string>
-    <string name="cancel">Odustani</string>
     <string name="black_widgets">Boja teksta i gumba widgeta</string>
     <string name="black_bar">Boja teksta i gumba donje trake</string>
     <string name="black_color">Crna</string>

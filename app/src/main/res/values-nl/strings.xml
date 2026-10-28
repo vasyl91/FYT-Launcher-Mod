@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Zet de DVR-schakelaar aan</string>
     <string name="app_name">Timer</string>
-    <string name="widget_name">Voertuigwidget</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Niet verbonden</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Achtergrond voor onderbalk kiezen</string>
     <string name="bar_background_dialog_title">Selecteer achtergrond voor onderbalk:</string>
     <string name="pick_image_manually">Achtergrond kiezen</string>
-    <string name="cancel">Annuleren</string>
     <string name="black_widgets">Tekst- en knopkleur van widgets</string>
     <string name="black_bar">Tekst- en knopkleur van onderbalk</string>
     <string name="black_color">Zwart</string>

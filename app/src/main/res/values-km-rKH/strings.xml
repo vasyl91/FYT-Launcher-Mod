@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">សូមបើកកុងតាក់ DVR</string>
     <string name="app_name">កម្មវិធីកំណត់ម៉ោង</string>
-    <string name="widget_name">ធាតុក្រាហ្វិករថយន្ត</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">មិនបានតភ្ជាប់</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់របារខាងក្រោម</string>
     <string name="bar_background_dialog_title">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់របារខាងក្រោម៖</string>
     <string name="pick_image_manually">ជ្រើសរើសផ្ទាំងរូបភាព</string>
-    <string name="cancel">បោះបង់</string>
     <string name="black_widgets">ពណ៌អក្សរ និងប៊ូតុងរបស់ធាតុក្រាហ្វិក</string>
     <string name="black_bar">ពណ៌អក្សរ និងប៊ូតុងរបស់របារខាងក្រោម</string>
     <string name="black_color">ខ្មៅ</string>

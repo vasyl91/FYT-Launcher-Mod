@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Sicela ukuvule iswishi ye-DVR</string>
     <string name="app_name">Isibali sikhathi</string>
-    <string name="widget_name">Iwijethi yemoto</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Akuxhumekile</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Khetha isizinda sebha engezansi</string>
     <string name="bar_background_dialog_title">Khetha isizinda sebha engezansi:</string>
     <string name="pick_image_manually">Khetha isithombe sangemuva</string>
-    <string name="cancel">Khansela</string>
     <string name="black_widgets">Umbala wombhalo nezinkinobho zamawijethi</string>
     <string name="black_bar">Umbala wombhalo nezinkinobho zebha engezansi</string>
     <string name="black_color">Omnyama</string>

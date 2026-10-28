@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">გთხოვთ, ჩართოთ DVR-ის გადამრთველი</string>
     <string name="app_name">ტაიმერი</string>
-    <string name="widget_name">ავტომობილის ვიჯეტი</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">არ არის დაკავშირებული</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">ქვედა ზოლის ფონის არჩევა</string>
     <string name="bar_background_dialog_title">აირჩიეთ ქვედა ზოლის ფონი:</string>
     <string name="pick_image_manually">ფონის არჩევა</string>
-    <string name="cancel">გაუქმება</string>
     <string name="black_widgets">ვიჯეტების ტექსტისა და ღილაკების ფერი</string>
     <string name="black_bar">ქვედა ზოლის ტექსტისა და ღილაკების ფერი</string>
     <string name="black_color">შავი</string>

@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Lūdzu, ieslēdziet DVR slēdzi</string>
     <string name="app_name">Taimeris</string>
-    <string name="widget_name">Auto logrīks</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Nav savienojuma</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Izvēlēties apakšējās joslas fonu</string>
     <string name="bar_background_dialog_title">Atlasiet apakšējās joslas fonu:</string>
     <string name="pick_image_manually">Izvēlēties fona tapeti</string>
-    <string name="cancel">Atcelt</string>
     <string name="black_widgets">Logrīku teksta un pogu krāsa</string>
     <string name="black_bar">Apakšējās joslas teksta un pogu krāsa</string>
     <string name="black_color">Melns</string>

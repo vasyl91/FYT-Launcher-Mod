@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">لطفاً کلید DVR را روشن کنید</string>
     <string name="app_name">تایمر</string>
-    <string name="widget_name">ویجت خودرو</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">متصل نیست</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">انتخاب پس‌زمینه نوار پایین</string>
     <string name="bar_background_dialog_title">پس‌زمینه نوار پایین را انتخاب کنید:</string>
     <string name="pick_image_manually">انتخاب تصویر زمینه</string>
-    <string name="cancel">لغو</string>
     <string name="black_widgets">رنگ متن و دکمه‌های ویجت‌ها</string>
     <string name="black_bar">رنگ متن و دکمه‌های نوار پایین</string>
     <string name="black_color">سیاه</string>

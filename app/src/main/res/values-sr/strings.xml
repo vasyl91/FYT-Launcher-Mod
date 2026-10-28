@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Укључите прекидач DVR-а</string>
     <string name="app_name">Тајмер</string>
-    <string name="widget_name">Виџет возила</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Није повезано</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Изабери позадину за доњу траку</string>
     <string name="bar_background_dialog_title">Изаберите позадину за доњу траку:</string>
     <string name="pick_image_manually">Изабери позадину</string>
-    <string name="cancel">Откажи</string>
     <string name="black_widgets">Боја текста и дугмади виџета</string>
     <string name="black_bar">Боја текста и дугмади доње траке</string>
     <string name="black_color">Црна</string>

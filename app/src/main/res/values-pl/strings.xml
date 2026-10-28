@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Włącz przełącznik DVR</string>
     <string name="app_name">Czas</string>
-    <string name="widget_name">Widżet samochodowy</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Nie połączono</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Wybierz tło dla paska dolnego</string>
     <string name="bar_background_dialog_title">Wybierz tło dla paska dolnego:</string>
     <string name="pick_image_manually">Ustaw tło</string>
-    <string name="cancel">Anuluj</string>
     <string name="black_widgets">Kolor tekstu i przycisków wewnątrz widgetów</string>
     <string name="black_bar">Kolor tekstu i przycisków paska dolnego</string>
     <string name="black_color">Czarny</string>

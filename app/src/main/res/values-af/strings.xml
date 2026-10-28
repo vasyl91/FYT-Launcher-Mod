@@ -79,7 +79,6 @@
     <string name="pm">PM</string>
     <string name="dvr_switch">Skakel asseblief die DVR-skakelaar aan</string>
     <string name="app_name">Tydhouer</string>
-    <string name="widget_name">Voertuiglegstuk</string>
     <string name="car_speed" />
     <string name="car_bt_connected" />
     <string name="car_bt_notconnect">Nie gekoppel nie</string>
@@ -402,7 +401,6 @@
     <string name="bar_background_preference">Kies agtergrond vir onderste balk</string>
     <string name="bar_background_dialog_title">Kies agtergrond vir onderste balk:</string>
     <string name="pick_image_manually">Kies agtergrond</string>
-    <string name="cancel">Kanselleer</string>
     <string name="black_widgets">Legstukke se teks- en knoppiekleur</string>
     <string name="black_bar">Onderste balk se teks- en knoppiekleur</string>
     <string name="black_color">Swart</string>
