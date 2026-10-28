@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.camry2012.xp.CamryData;
-import com.syu.carinfo.wccamry.ConstWcToyota;
+import com.syu.module.canbus.data.ConstWcToyota;
 import com.syu.carinfo.wccamry.Rav4Data;
 import com.syu.carinfo.wccamry.VerticalProgressbar;
 import com.syu.module.IUiNotify;

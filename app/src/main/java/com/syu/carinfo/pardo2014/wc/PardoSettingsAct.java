@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.syu.carinfo.wccamry.ConstWcToyota;
+import com.syu.module.canbus.data.ConstWcToyota;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.CallbackCanbusBase;
 import com.syu.module.canbus.Callback_0121_WC2_14Prado;

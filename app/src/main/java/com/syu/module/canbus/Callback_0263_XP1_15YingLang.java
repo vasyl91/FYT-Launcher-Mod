@@ -3,7 +3,7 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.carinfo.klc.KlcGl8AirControlAct;
-import com.syu.carinfo.xp.yinglang.GmConstData;
+import com.syu.module.canbus.data.GmConstData;
 import com.syu.carinfo.xp.yinglang.KlcGl8_263_AirControlAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;

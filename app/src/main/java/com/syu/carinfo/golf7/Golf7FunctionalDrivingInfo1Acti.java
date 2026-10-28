@@ -23,6 +23,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 
 import java.util.ArrayList;
+import com.syu.module.canbus.data.ConstGolf;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7FunctionalDrivingInfo1Acti extends BaseActivity {

@@ -1,4 +1,4 @@
-package com.syu.carinfo.rzc.addcan;
+package com.syu.module.canbus.data;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class ConstRzcAddData {

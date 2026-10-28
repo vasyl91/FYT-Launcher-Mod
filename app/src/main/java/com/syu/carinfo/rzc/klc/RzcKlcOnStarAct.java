@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.klc.KlcFunc;
-import com.syu.carinfo.xp.yinglang.GmConstData;
+import com.syu.module.canbus.data.GmConstData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 

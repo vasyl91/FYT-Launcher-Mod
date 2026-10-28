@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.syu.canbus.R;
-import com.syu.carinfo.air.ConstAllAirDara;
+import com.syu.module.canbus.data.ConstAllAirDara;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 

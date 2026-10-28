@@ -7,7 +7,7 @@ import android.graphics.Rect;
 import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
+import com.syu.module.canbus.data.ConstRzcAddData;
 import com.syu.module.canbus.Callback_0374_XP1_ZiYouGuang;
 
 @SuppressWarnings({"deprecation", "unchecked"})

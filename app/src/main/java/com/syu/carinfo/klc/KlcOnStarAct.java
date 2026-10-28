@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.syu.canbus.R;
-import com.syu.carinfo.xp.yinglang.GmConstData;
+import com.syu.module.canbus.data.GmConstData;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0036_WC2_GM;
 import com.syu.module.canbus.Callback_0254_WC2_15YingLang;

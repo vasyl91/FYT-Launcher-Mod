@@ -1,4 +1,4 @@
-package com.syu.carinfo.xp.yinglang;
+package com.syu.module.canbus.data;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class GmConstData {

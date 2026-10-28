@@ -8,7 +8,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.carinfo.camry2012.xp.CamryData;
-import com.syu.carinfo.wccamry.ConstWcToyota;
+import com.syu.module.canbus.data.ConstWcToyota;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.Callback_0452_Tangdu_Toyota_All;
 import com.syu.module.canbus.DataCanbus;

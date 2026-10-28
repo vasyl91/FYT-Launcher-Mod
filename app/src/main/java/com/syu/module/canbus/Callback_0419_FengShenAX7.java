@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import com.syu.module.canbus.data.SPreUtils;
 
 public class Callback_0419_FengShenAX7 extends CallbackCanbusBase {
     public static final int C_CMD_LOCK_SET = 3;
@@ -151,27 +152,27 @@ public class Callback_0419_FengShenAX7 extends CallbackCanbusBase {
 
     private void checkMaintanceOfCar() {
         Calendar calendar = Calendar.getInstance(Locale.CHINA);
-        String tag = JYCarMaintaneceOptions.SPreUtils.get(LauncherApplication.getInstance(), "Maintenance_checked", "0");
+        String tag = SPreUtils.get(LauncherApplication.getInstance(), "Maintenance_checked", "0");
         boolean onReminder = Integer.valueOf(tag).intValue() != 0;
         if (onReminder) {
-            String tag2 = JYCarMaintaneceOptions.SPreUtils.get(LauncherApplication.getInstance(), "Maintenance_miles", "0");
+            String tag2 = SPreUtils.get(LauncherApplication.getInstance(), "Maintenance_miles", "0");
             int setMiles = Integer.valueOf(tag2).intValue();
             if (this.bMaintanceWarning && setMiles < DataCanbus.DATA[140]) {
                 FuncMain.tips(LauncherApplication.getInstance().getString(R.string.str_wc_jy_str14));
                 this.bMaintanceWarning = false;
             }
         }
-        String tag3 = JYCarMaintaneceOptions.SPreUtils.get(LauncherApplication.getInstance(), "tire_checked", "0");
+        String tag3 = SPreUtils.get(LauncherApplication.getInstance(), "tire_checked", "0");
         boolean onReminder2 = Integer.valueOf(tag3).intValue() != 0;
         Calendar.getInstance();
         if (onReminder2) {
-            String tag4 = JYCarMaintaneceOptions.SPreUtils.get(LauncherApplication.getInstance(), "tire_miles", "0");
+            String tag4 = SPreUtils.get(LauncherApplication.getInstance(), "tire_miles", "0");
             int setMiles2 = Integer.valueOf(tag4).intValue();
             if (this.bMaintanceWarning && setMiles2 < DataCanbus.DATA[140]) {
                 FuncMain.tips(LauncherApplication.getInstance().getString(R.string.str_wc_jy_str15));
                 this.bMaintanceWarning = false;
             }
-            String tag5 = JYCarMaintaneceOptions.SPreUtils.get(LauncherApplication.getInstance(), "tire_date", "0");
+            String tag5 = SPreUtils.get(LauncherApplication.getInstance(), "tire_date", "0");
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date date = null;
             try {
@@ -188,16 +189,16 @@ public class Callback_0419_FengShenAX7 extends CallbackCanbusBase {
                 this.bMaintanceWarning = false;
             }
         }
-        String tag6 = JYCarMaintaneceOptions.SPreUtils.get(LauncherApplication.getInstance(), "oil_checked", "0");
+        String tag6 = SPreUtils.get(LauncherApplication.getInstance(), "oil_checked", "0");
         boolean onReminder3 = Integer.valueOf(tag6).intValue() != 0;
         if (onReminder3) {
-            String tag7 = JYCarMaintaneceOptions.SPreUtils.get(LauncherApplication.getInstance(), "oil_miles", "0");
+            String tag7 = SPreUtils.get(LauncherApplication.getInstance(), "oil_miles", "0");
             int setMiles3 = Integer.valueOf(tag7).intValue();
             if (this.bMaintanceWarning && setMiles3 < DataCanbus.DATA[140]) {
                 FuncMain.tips(LauncherApplication.getInstance().getString(R.string.str_wc_jy_str17));
                 this.bMaintanceWarning = false;
             }
-            String tag8 = JYCarMaintaneceOptions.SPreUtils.get(LauncherApplication.getInstance(), "oil_date", "0");
+            String tag8 = SPreUtils.get(LauncherApplication.getInstance(), "oil_date", "0");
             DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
             Date date2 = null;
             try {

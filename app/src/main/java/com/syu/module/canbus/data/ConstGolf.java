@@ -1,4 +1,4 @@
-package com.syu.carinfo.golf7;
+package com.syu.module.canbus.data;
 
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;

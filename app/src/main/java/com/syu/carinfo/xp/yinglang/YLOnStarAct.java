@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.data.GmConstData;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class YLOnStarAct extends Activity {

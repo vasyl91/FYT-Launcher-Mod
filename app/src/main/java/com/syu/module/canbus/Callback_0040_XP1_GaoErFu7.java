@@ -3,7 +3,7 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
-import com.syu.carinfo.golf7.ConstGolf;
+import com.syu.module.canbus.data.ConstGolf;
 import com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti;
 import com.syu.carinfo.golf7_xp.Golf7_XP_FunctionalDrivingInfo1Acti;
 import com.syu.ipc.IModuleCallback;

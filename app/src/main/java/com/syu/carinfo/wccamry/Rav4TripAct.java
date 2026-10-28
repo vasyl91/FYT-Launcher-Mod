@@ -14,6 +14,7 @@ import com.syu.carinfo.camry2012.xp.CamryData;
 import com.syu.carinfo.camry2012.xp.CamryicPetrolElectricActi;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.data.ConstWcToyota;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class Rav4TripAct extends BaseActivity {

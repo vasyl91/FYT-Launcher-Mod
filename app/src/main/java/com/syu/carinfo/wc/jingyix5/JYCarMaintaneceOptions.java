@@ -22,6 +22,7 @@ import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.data.SPreUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -278,30 +279,5 @@ public class JYCarMaintaneceOptions extends BaseActivity implements View.OnClick
     
     public boolean isValidateMiles(int miles) {
         return miles > this.mCurrentMiles;
-    }
-
-    public static class SPreUtils {
-        private static SharedPreferences mSp;
-
-        public SPreUtils(Context context) {
-            checkmSp(context);
-        }
-
-        private static void checkmSp(Context context) {
-            if (mSp == null) {
-                mSp = context.getSharedPreferences("wc_jingyix5", 0);
-            }
-        }
-
-        public static String get(Context context, String flag, String defVal) {
-            checkmSp(context);
-            String val = mSp.getString(flag, defVal);
-            return val;
-        }
-
-        public static void set(Context context, String flag, String val) {
-            checkmSp(context);
-            mSp.edit().putString(flag, val).commit();
-        }
     }
 }

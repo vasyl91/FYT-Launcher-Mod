@@ -6,7 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Region;
 
 import com.android.launcher66.LauncherApplication;
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
+import com.syu.module.canbus.data.ConstRzcAddData;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class Air_0452_LZ_Oubao_Andela extends AirBase {

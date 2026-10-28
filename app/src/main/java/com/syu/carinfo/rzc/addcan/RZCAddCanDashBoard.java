@@ -12,6 +12,7 @@ import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.door.DoorHelper;
 import com.syu.util.HandlerUI;
+import com.syu.module.canbus.data.ConstRzcAddData;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class RZCAddCanDashBoard extends Activity {

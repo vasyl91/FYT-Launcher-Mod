@@ -3,7 +3,7 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.carinfo.golf7.AirControlMQB_RZC_Front;
-import com.syu.carinfo.golf7.ConstGolf;
+import com.syu.module.canbus.data.ConstGolf;
 import com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti;
 import com.syu.carinfo.xp.xiandai.XiandaiSosPage;
 import com.syu.ipc.IModuleCallback;

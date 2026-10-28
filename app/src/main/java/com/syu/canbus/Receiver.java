@@ -8,7 +8,7 @@ import com.android.launcher66.LauncherApplication;
 import com.syu.carinfo.air.Air_Activity_All_NewAdd_HP;
 import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
 import com.syu.carinfo.air.Air_Activity_Daohang_Only_HP;
-import com.syu.carinfo.air.ConstAllAirDara;
+import com.syu.module.canbus.data.ConstAllAirDara;
 import com.syu.carinfo.aiying.ziyouguang.JeepCarAirSet;
 import com.syu.carinfo.bg.ziyouguang.Bg_ZiYouGuangAirControlAct;
 import com.syu.carinfo.biaozhi408.BZ408AirControlActi;

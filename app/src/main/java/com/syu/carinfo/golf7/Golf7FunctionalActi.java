@@ -8,6 +8,7 @@ import android.widget.CheckedTextView;
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.data.ConstGolf;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7FunctionalActi extends BaseActivity {

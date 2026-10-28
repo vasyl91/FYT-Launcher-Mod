@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.syu.canbus.R;
-import com.syu.carinfo.air.ConstAllAirDara;
+import com.syu.module.canbus.data.ConstAllAirDara;
 import com.syu.loopview.LoopView;
 import com.syu.loopview.OnItemScrollListener;
 import com.syu.loopview.OnItemSelectedListener;

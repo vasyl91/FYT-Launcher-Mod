@@ -14,6 +14,7 @@ import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.ui.air.AirHelper;
+import com.syu.module.canbus.data.ConstGolf;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class AirControlMaiTengDZSJ extends Activity implements View.OnClickListener {

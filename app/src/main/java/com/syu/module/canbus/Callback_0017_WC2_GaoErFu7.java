@@ -6,7 +6,7 @@ import com.syu.carinfo.golf7.AirControlMQB_WC_Front;
 import com.syu.carinfo.golf7.AirControlMaiTengDZSJ;
 import com.syu.carinfo.golf7.AirControl_DZSJ_ClearAir;
 import com.syu.carinfo.golf7.AirControl_DZSJ_SeatHotBlow;
-import com.syu.carinfo.golf7.ConstGolf;
+import com.syu.module.canbus.data.ConstGolf;
 import com.syu.carinfo.golf7.Golf7DashBoardVW_DZSJ;
 import com.syu.carinfo.golf7.Golf7FunctionalDrivingInfo1Acti;
 import com.syu.carinfo.golf7.Golf7FunctionalEscSystemActiVW_DZSJ;

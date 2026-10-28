@@ -13,6 +13,7 @@ import com.syu.canbus.R;
 import com.syu.ipc.RemoteModuleProxy;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.data.ConstWcToyota;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class CorollaSettingsAct extends BaseActivity {

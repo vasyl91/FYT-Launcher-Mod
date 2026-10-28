@@ -10,6 +10,7 @@ import com.syu.canbus.FuncMain;
 import com.syu.canbus.R;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.data.Const_RZC4_PSA_ALL_DATA;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class RZC_BZ407CarRadio extends Activity implements View.OnTouchListener {

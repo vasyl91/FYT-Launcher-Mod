@@ -1,4 +1,4 @@
-package com.syu.carinfo.rzc.biaozhi408;
+package com.syu.module.canbus.data;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class Const_RZC4_PSA_ALL_DATA {

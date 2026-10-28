@@ -22,6 +22,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
 import java.util.ArrayList;
+import com.syu.module.canbus.data.ConstWcToyota;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class Rav4SettingsAct extends BaseActivity {

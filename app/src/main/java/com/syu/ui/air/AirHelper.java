@@ -8,7 +8,7 @@ import android.widget.PopupWindow;
 import com.android.launcher66.LauncherApplication;
 import com.syu.canbus.R;
 import com.syu.carinfo.air.Air_Activity_All_Toyota_prado_HP;
-import com.syu.carinfo.air.ConstAllAirDara;
+import com.syu.module.canbus.data.ConstAllAirDara;
 import com.syu.carinfo.lz.lexusis.KYCLexusFrontAirControlAct;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;

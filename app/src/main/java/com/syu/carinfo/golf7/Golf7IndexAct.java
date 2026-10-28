@@ -18,6 +18,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
 
 import java.util.ArrayList;
+import com.syu.module.canbus.data.ConstGolf;
 
 @SuppressWarnings({"deprecation", "unchecked"})
 public class Golf7IndexAct extends BaseActivity {

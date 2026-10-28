@@ -7,7 +7,7 @@ import android.graphics.Rect;
 import android.graphics.Region;
 import android.view.MotionEvent;
 
-import com.syu.carinfo.rzc.addcan.ConstRzcAddData;
+import com.syu.module.canbus.data.ConstRzcAddData;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HandlerUI;
 import com.syu.util.ToolkitRes;

@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.syu.canbus.BaseActivity;
 import com.syu.canbus.R;
-import com.syu.carinfo.golf7.ConstGolf;
+import com.syu.module.canbus.data.ConstGolf;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 

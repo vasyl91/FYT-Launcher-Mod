@@ -1,4 +1,4 @@
-package com.syu.carinfo.wccamry;
+package com.syu.module.canbus.data;
 
 import com.syu.canbus.R;
 
