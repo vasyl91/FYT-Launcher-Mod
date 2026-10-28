@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -1032,15 +1031,7 @@ public final class FytRating {
     }
 
     private static void openReleasesPage(Activity activity) {
-        Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(RELEASES_URL));
-        browser.addCategory(Intent.CATEGORY_BROWSABLE);
-        browser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        try {
-            activity.startActivity(browser);
-        } catch (ActivityNotFoundException e) {
-            Log.w(TAG, "No browser to open " + RELEASES_URL, e);
-            Toast.makeText(activity, R.string.fyt_rating_missing, Toast.LENGTH_LONG).show();
-        }
+        ReleasesPage.open(activity, RELEASES_URL, TAG);
     }
 
     /**
