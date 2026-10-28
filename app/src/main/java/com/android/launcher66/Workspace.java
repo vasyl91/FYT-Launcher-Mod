@@ -81,6 +81,7 @@ import com.android.launcher66.Launcher.CustomContentCallbacks;
 import com.android.launcher66.LauncherSettings.Favorites;
 import com.android.launcher66.settings.BottomBarDimensions;
 import com.android.launcher66.settings.CanbusAsyncTask;
+import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.recycler.SimpleDividerDecoration;
@@ -3755,7 +3756,9 @@ public class Workspace extends SmoothPagedView
             if (!isPageMoving() || !isAttachedToWindow()) {
                 return; // the callback ends with the scroll
             }
-            WindowUtil.updatePipPositionsForScroll(scrollXForThisFrame());
+            int scrollX = scrollXForThisFrame();
+            WindowUtil.updatePipPositionsForScroll(scrollX);
+            CanbusService.onPagesFrame(scrollX);
             postPaneFrame();
         }
     };

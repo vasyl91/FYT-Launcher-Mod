@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -83,6 +84,12 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private Helpers helpers = new Helpers();
     private IBinder binder;
     private View absoluteStats;
+    /**
+     * The window of the stats on the home screen: as wide as a page and left where it is while the
+     * pages move, absoluteStats moving inside it (see updateStatsPositionForScroll()). Null for the
+     * stats over a map app, which are a window of their own size.
+     */
+    private FrameLayout statsHost;
     private TextView consumptionTextView;
     private TextView mileageTextView;
     private WindowManager wm;  
@@ -114,6 +121,22 @@ public class CanbusService extends Service implements PropertyChangeListener {
     /** Set for the lifetime of the service; see Launcher.isServiceRunning(). */
     private static volatile boolean sRunning;
 
+    /** The running service, for onPagesFrame(); main thread. */
+    private static CanbusService sInstance;
+
+    /**
+     * Main thread, from Workspace in the animation phase of each frame the pages move in, with the
+     * scroll the pages will be drawn with in that frame. The stats then move in the same frame as
+     * the pages; from the workspace's scroll listener alone they came a frame later, as that runs
+     * in the draw.
+     */
+    public static void onPagesFrame(int scrollX) {
+        CanbusService service = sInstance;
+        if (service != null) {
+            service.updateStatsPositionForScroll(scrollX);
+        }
+    }
+
     public static boolean isRunning() {
         return sRunning;
     }
@@ -123,6 +146,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
     public void onCreate() {
         super.onCreate();
         sRunning = true;
+        sInstance = this;
         Log.d(TAG, "Service created");
         // The application's context: it has the file's path already, this service's would look it up
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -178,6 +202,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
     public void onDestroy() {
         super.onDestroy();
         sRunning = false;
+        if (sInstance == this) {
+            sInstance = null;
+        }
         Log.d(TAG, "Service destroyed");
         removeLocationUpdates();
         unregisterAccessibilityEventListener();
@@ -689,7 +716,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     // try to read placeholderX/Y if available
                     int placeholderX = statsTopLeftX;
                     int placeholderY = statsTopLeftY;
-                    int placeholderWLocal = statsWidth;
                     try {
                         View pageView = workspaceRef != null ? workspaceRef.getChildAt(statsScreen) : null;
                         if (pageView instanceof com.android.launcher66.CellLayout) {
@@ -697,7 +723,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             if (pos != null && pos.length >= 4) {
                                 placeholderX = pos[0];
                                 placeholderY = pos[1];
-                                placeholderWLocal = pos[2] > 0 ? pos[2] : placeholderWLocal;
                             }
                         }
                     } catch (Exception ignored) {}
@@ -714,20 +739,22 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     int pipAbsoluteX = statsAbsoluteBaseX;
                     int desiredScreenX = pipAbsoluteX - currentScroll;
 
-                    // compute safe anchor inside viewport and translation
-                    int viewWidth = Math.max(1, placeholderWLocal);
+                    // The window spans the page and stays where it is; the stats move inside it
+                    // by translationX, in the frame the pages are drawn in, and the window's edges
+                    // are the screen's. It used to be moved with updateViewLayout() on every frame,
+                    // clamped to the screen with the rest by translationX: WindowManager placed it
+                    // a frame or more after the page, on the 7862 without the move animation that
+                    // had smoothed that (4f94b19), and on the A55 behind a queue of the panes'
+                    // relayouts. Not touchable, so its width takes no touch from the home screen.
                     int pageWidth = Math.max(1, statsPageWidth);
-                    int maxAnchorX = Math.max(0, pageWidth - viewWidth);
-                    int safeLayoutX = Math.max(0, Math.min(desiredScreenX, maxAnchorX));
-                    float translationX = (float) (desiredScreenX - safeLayoutX);
-
-                    // assign safe values to layout params BEFORE adding view
-                    statsLayoutParams.x = safeLayoutX;
+                    statsLayoutParams.width = pageWidth;
+                    statsLayoutParams.x = 0;
                     statsLayoutParams.y = placeholderY;
+                    statsHost = new FrameLayout(this);
+                    statsHost.addView(absoluteStats, new FrameLayout.LayoutParams(statsWidth, statsHeight));
 
-                    // add view already anchored for the page, then apply translation to place it exactly
-                    wm.addView(absoluteStats, statsLayoutParams);
-                    absoluteStats.setTranslationX(translationX);
+                    wm.addView(statsHost, statsLayoutParams);
+                    absoluteStats.setTranslationX(desiredScreenX);
 
                     // attach listener afterward (same as before)
                     if (!mapApp && workspaceRef != null) {
@@ -746,7 +773,16 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     Log.w(TAG, "Failed to attach workspace scroll listener or add view: " + e.getMessage());
                     // fallback: ensure the view is added so at least mapApp path works
                     try {
-                        wm.addView(absoluteStats, statsLayoutParams);
+                        if (statsHost == null || statsHost.getParent() == null) {
+                            // The page-wide window did not make it: the stats go in on their own
+                            // and are moved as a window of their size, as before it.
+                            if (statsHost != null) {
+                                statsHost.removeView(absoluteStats);
+                                statsHost = null;
+                                statsLayoutParams.width = statsWidth;
+                            }
+                            wm.addView(absoluteStats, statsLayoutParams);
+                        }
                     } catch (Exception ex) {
                         Log.w(TAG, "Fallback addView failed: " + ex.getMessage());
                     }
@@ -778,12 +814,16 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 if (wm != null) {
                     // reset translation before removing to leave the view in a known state
                     try { absoluteStats.setTranslationX(0f); } catch (Exception ignored) {}
-                    wm.removeView(absoluteStats);
+                    wm.removeView(statsHost != null ? statsHost : absoluteStats);
+                    if (statsHost != null) {
+                        statsHost.removeView(absoluteStats);
+                    }
                 }
             } catch (Exception e) {
                 Log.w(TAG, "Error removing stats view: " + e.getMessage());
             } finally {
                 absoluteStats = null;
+                statsHost = null;
                 statsLayoutParams = null;
                 workspaceRef = null;
                 statsAbsoluteBaseX = 0;
@@ -858,6 +898,24 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
         // desired Y - make sure to use placeholderY if that was stored in screen coordinates
         int desiredY = placeholderY;
+
+        if (statsHost != null) {
+            // The page-wide window stays; only the stats move inside it, see addStatsView().
+            try {
+                if (statsLayoutParams.y != desiredY || statsLayoutParams.width != pageWidth) {
+                    statsLayoutParams.x = 0;
+                    statsLayoutParams.y = desiredY;
+                    statsLayoutParams.width = pageWidth;
+                    wm.updateViewLayout(statsHost, statsLayoutParams);
+                }
+                if (absoluteStats.getTranslationX() != desiredScreenX) {
+                    absoluteStats.setTranslationX(desiredScreenX);
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to update absoluteStats position: " + e.getMessage());
+            }
+            return;
+        }
 
         boolean needUpdateLayout = false;
         if (statsLayoutParams.x != safeLayoutX) {
