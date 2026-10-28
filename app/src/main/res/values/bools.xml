@@ -15,7 +15,6 @@
     <bool name="apps_custom_page">true</bool>
     <bool name="apps_all_disable">false</bool>
     <bool name="apps_add_extarscreen">false</bool>
-    <bool name="apps_thrid_icon">true</bool>
     <bool name="apps_widget_design">false</bool>
     <bool name="apps_hotseat_hide">true</bool>
     <bool name="app_indicator">true</bool>

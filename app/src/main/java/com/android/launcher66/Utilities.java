@@ -59,7 +59,6 @@ public final class Utilities {
     public static int sIconTextureWidth = -1;
     public static int sIconTextureHeight = -1;
     private static int sIconSize = -1;
-    public static int sIconCnt = 0;
 
     private static final Paint sBlurPaint = new Paint();
     private static final Paint sGlowColorPressedPaint = new Paint();
@@ -207,13 +206,11 @@ public final class Utilities {
             int height2 = (int) (height / scale_h);
             int left = (textureWidth - width2) / 2;
             int top = ((textureHeight - height2) / 2) - 2;
-            Drawable micon = SkinUtils.getDrawable(R.drawable.icon_bg + sIconCnt);
-            if (LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_thrid_icon)) {
-                sIconCnt++;
-                if (sIconCnt >= LauncherApplication.sApp.getResources().getInteger(R.integer.utility_minfiy_icon_count)) {
-                    sIconCnt = 0;
-                }
-            }
+            // One plate for every icon. It used to alternate between icon_bg and the drawable
+            // after it (R.drawable.icon_bg + n): ids are sorted by name, so that was whatever
+            // came next alphabetically once icon_bg1 (the same picture) was gone. Never add to
+            // an R.* id.
+            Drawable micon = SkinUtils.getDrawable(R.drawable.icon_bg);
             int mwidth = micon.getIntrinsicWidth();
             int mheight = micon.getIntrinsicHeight();
             micon.setBounds((textureWidth - mwidth) / 2, (textureHeight - mheight) / 2, ((textureWidth - mwidth) / 2) + mwidth, ((textureHeight - mheight) / 2) + mheight);
