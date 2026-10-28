@@ -10,9 +10,10 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceViewHolder;
 
 /**
- * The version category: its summary (how the launcher runs here, and the build) shows line by
- * line, in the title's colour and font, as part of the heading rather than as a row below it.
- * The category's own summary is a single line in a secondary colour.
+ * The version category: its summary (how the launcher runs here, the device and its Android,
+ * and the build) shows line by line, in the title's colour and font, as part of the heading
+ * rather than as a row below it. The category's own summary is a single line in a secondary
+ * colour.
  */
 public class VersionPreferenceCategory extends PreferenceCategory {
 

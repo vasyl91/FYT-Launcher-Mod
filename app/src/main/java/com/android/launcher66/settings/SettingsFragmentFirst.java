@@ -63,6 +63,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.async.AsyncTask;
 import com.android.launcher66.ColdStart;
+import com.android.launcher66.DeviceIdentity;
 import com.android.launcher66.DeviceProfile;
 import com.android.launcher66.LauncherAppState;
 import com.android.launcher66.LauncherApplication;
@@ -516,21 +517,23 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             logcatServiceTimeout.setOnPreferenceClickListener(this);
         }
         if (appVersion != null) {
-            // Under the version: how the launcher runs here, and the build and which of the two
-            // apps it is (the update downloads that one's file).
+            // Under the version: how the launcher runs here, the device and its Android, and the
+            // build and which of the two apps it is (the update downloads that one's file).
+            // The device line is system properties and Build fields only: no disk, no binder.
             String build = getString(com.android.launcher66.BuildConfig.DEBUG
                     ? R.string.build_type_debug : R.string.build_type_release);
             String flavor = getString("fyt".equals(com.android.launcher66.BuildConfig.FLAVOR)
                     ? R.string.build_flavor_fyt : R.string.build_flavor_standard);
             String buildLine = build + " · " + flavor;
-            appVersion.setSummary(buildLine);
+            String deviceLine = DeviceIdentity.deviceLine();
+            appVersion.setSummary(deviceLine + "\n" + buildLine);
             // The root check looks for su files on disk: off the main thread
             final Context appContext = requireContext().getApplicationContext();
             new Thread(() -> {
                 final String appType = appTypeText(appContext);
                 mHandler.post(() -> {
                     if (isAdded() && appVersion != null) {
-                        appVersion.setSummary(appType + "\n" + buildLine);
+                        appVersion.setSummary(appType + "\n" + deviceLine + "\n" + buildLine);
                     }
                 });
             }, "AppTypeText").start();
