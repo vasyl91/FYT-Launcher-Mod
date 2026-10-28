@@ -10,13 +10,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Choreographer;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -1697,18 +1700,45 @@ public class WindowUtil {
                 prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
             }
 
+            lastRequestedScrollOffset = scrollOffset;
+
             // Nothing moved since the last frame, so there is nothing to push to any pane.
             // A fling delivers the same offset repeatedly once it settles, and every one of those
             // frames used to walk all five pane types and their window updates.
             if (!forcePipBoundsUpdate && scrollOffset == lastScrollOffset) return;
-            lastScrollOffset = scrollOffset;
+
+            // Where the panes go, before any of them is moved: how many windows that moves decides
+            // on Android 14+ whether they may be moved in this frame.
+            int windows = 0;
+            for (int i = 0; i < SCROLL_PANE_TYPES.length; i++) {
+                String pipType = SCROLL_PANE_TYPES[i];
+                plannedPaneBounds[i] = isPaneTypeOn(pipType)
+                        ? boundsToApply(workspace, pipType, scrollOffset) : null;
+                if (plannedPaneBounds[i] != null && movesWindow(host, pipType)) windows++;
+            }
+
+            // From Android 14 on these moves do not wait for WindowManager, and on the Galaxy A55
+            // they queued up there until the panes were 0.4-0.5 s behind the pages (see
+            // PaneWindows.relayoutIsAsync()). While the pages move, the windows are moved only as
+            // often as WindowManager keeps up with; onPagesSettled() passes the last place on.
+            if (!forcePipBoundsUpdate && pagesMoving && windows > 0
+                    && PaneWindows.relayoutIsAsync(Build.VERSION.SDK_INT)
+                    && !PaneWindows.withinRelayoutBudget(SystemClock.uptimeMillis(),
+                            lastPaneRelayoutMs, windows, PANE_RELAYOUTS_PER_SECOND,
+                            PANE_RELAYOUT_TOLERANCE_MS)) {
+                return; // lastScrollOffset stays as it is: the next frame tries again
+            }
 
             // Update positions for currently visible PiPs without dismissing them
-            if (dualPip)   updatePipPosition(host, workspace, "dual", scrollOffset);
-            if (firstPip)  updatePipPosition(host, workspace, "first", scrollOffset);
-            if (secondPip) updatePipPosition(host, workspace, "second", scrollOffset);
-            if (thirdPip)  updatePipPosition(host, workspace, "third", scrollOffset);
-            if (fourthPip) updatePipPosition(host, workspace, "fourth", scrollOffset);
+            for (int i = 0; i < SCROLL_PANE_TYPES.length; i++) {
+                Rect bounds = plannedPaneBounds[i];
+                if (bounds == null) continue;
+                plannedPaneBounds[i] = null;
+                updatePipBounds(host, SCROLL_PANE_TYPES[i], bounds);
+                lastPipBounds.put(SCROLL_PANE_TYPES[i], bounds);
+            }
+            if (windows > 0) lastPaneRelayoutMs = SystemClock.uptimeMillis();
+            lastScrollOffset = scrollOffset;
 
             forcePipBoundsUpdate = false;
         } catch (Exception e) {
@@ -1719,6 +1749,50 @@ public class WindowUtil {
     /** Last offset actually pushed to the panes; see updatePipPositionsForScroll(). */
     private static int lastScrollOffset = Integer.MIN_VALUE;
 
+    /** Last offset updatePipPositionsForScroll() was asked for, pushed or held back. Main thread. */
+    private static int lastRequestedScrollOffset = Integer.MIN_VALUE;
+
+    /** The pane types updatePipPositionsForScroll() moves, in that order. */
+    private static final String[] SCROLL_PANE_TYPES = {"dual", "first", "second", "third", "fourth"};
+
+    /** Where updatePipPositionsForScroll() moves each of SCROLL_PANE_TYPES in this frame. */
+    private static final Rect[] plannedPaneBounds = new Rect[SCROLL_PANE_TYPES.length];
+
+    /** When pane windows were last moved (uptime); 0 if not yet. Main thread. */
+    private static long lastPaneRelayoutMs;
+
+    /**
+     * How many pane window moves a second WindowManager is given while the pages move, on Android
+     * 14+. The A55 handled 100-150 relayouts a second in all, 7-10 ms each, so one pane is moved at
+     * 60 Hz there (every second frame at 120 Hz) and two at 40 Hz each. A display of 60 Hz moves one
+     * pane on every frame, as before.
+     */
+    private static final int PANE_RELAYOUTS_PER_SECOND = 80;
+    private static final long PANE_RELAYOUT_TOLERANCE_MS = 2L;
+
+    private static boolean isPaneTypeOn(String pipType) {
+        switch (pipType) {
+            case "dual":   return dualPip;
+            case "first":  return firstPip;
+            case "second": return secondPip;
+            case "third":  return thirdPip;
+            case "fourth": return fourthPip;
+            default:       return false;
+        }
+    }
+
+    /** Whether updatePipBounds() moves a window for this pane type: it is shown and not pinned. */
+    private static boolean movesWindow(WindowHost host, String pipType) {
+        switch (pipType) {
+            case "dual":   return host.isDualVisible();
+            case "first":  return host.isFirstVisible() && !firstPipPinned;
+            case "second": return host.isSecondVisible() && !secondPipPinned;
+            case "third":  return host.isThirdVisible() && !thirdPipPinned;
+            case "fourth": return host.isFourthVisible() && !fourthPipPinned;
+            default:       return false;
+        }
+    }
+
     // What the pane windows did during one scroll of the pages, for one line in the log. Main thread.
     private static boolean pagesMoving;
     private static long pagesMovingSinceMs;
@@ -1727,10 +1801,17 @@ public class WindowUtil {
     private static long paneMoveDelaySumNs;
     private static long paneMoveDelayMaxNs;
 
+    /**
+     * How far to the right a pane window can be seen while the pages move: the display's width,
+     * at least a page; read when they start, as Display.getRealSize() may ask system_server.
+     */
+    private static int paneViewportWidth = Integer.MAX_VALUE;
+
     /** The pages start to scroll: the count of the pane window moves starts over. */
     public static void onPagesBeginMoving() {
         pagesMoving = true;
         pagesMovingSinceMs = SystemClock.uptimeMillis();
+        paneViewportWidth = readPaneViewportWidth();
         paneMoves = 0;
         paneMoveSamples = 0;
         paneMoveDelaySumNs = 0L;
@@ -1740,11 +1821,30 @@ public class WindowUtil {
     /** When the pages last stopped (uptime), for the pinned PiP's start in the log; 0 if never. */
     private static long sPagesStoppedUptimeMs;
 
+    private static int readPaneViewportWidth() {
+        try {
+            Workspace workspace = workspace();
+            Display display = workspace != null ? workspace.getDisplay() : null;
+            if (display == null) return Integer.MAX_VALUE; // only what is left of the screen is skipped
+            Point size = new Point();
+            display.getRealSize(size);
+            return Math.max(size.x, workspace.getViewportWidth());
+        } catch (RuntimeException e) {
+            return Integer.MAX_VALUE;
+        }
+    }
+
     /** The pages have settled. */
     public static void onPagesSettled() {
         sPagesStoppedUptimeMs = SystemClock.uptimeMillis();
         if (!pagesMoving) return;
         pagesMoving = false;
+        // A move held back for WindowManager would otherwise never come: the frames stop with the
+        // pages. Not moving any more, it is not held back again.
+        if (lastRequestedScrollOffset != lastScrollOffset
+                && lastRequestedScrollOffset != Integer.MIN_VALUE) {
+            updatePipPositionsForScroll(lastRequestedScrollOffset);
+        }
         if (paneMoves == 0) return;
         final long durationMs = SystemClock.uptimeMillis() - pagesMovingSinceMs;
         final float avgMs = paneMoveSamples == 0 ? 0f : paneMoveDelaySumNs / 1e6f / paneMoveSamples;
@@ -1765,16 +1865,19 @@ public class WindowUtil {
         if (ns > paneMoveDelayMaxNs) paneMoveDelayMaxNs = ns;
     }
 
-    private static void updatePipPosition(WindowHost host, Workspace workspace,
-                                          String pipType, int scrollOffset) {
+    /**
+     * The bounds the pane of this type gets at this scroll; null if it keeps the ones it has: the
+     * same, or beside the viewport before and after at the same size (PaneWindows.staysOffScreen()).
+     */
+    private static Rect boundsToApply(Workspace workspace, String pipType, int scrollOffset) {
         String screenKey = getScreenKeyForType(pipType);
         int pipHomeScreen = prefs.getInt(screenKey, 1) - 1;
 
         CellLayout pipHomeCellLayout = (CellLayout) workspace.getChildAt(pipHomeScreen);
-        if (pipHomeCellLayout == null) return;
+        if (pipHomeCellLayout == null) return null;
 
         int[] basePos = pipHomeCellLayout.getPipPlaceholderPosition(pipType);
-        if (basePos == null) return;
+        if (basePos == null) return null;
 
         int pageWidth = workspace.getViewportWidth();
         savePlaceholderPosition(pipType, pipHomeScreen, basePos, pageWidth);
@@ -1792,12 +1895,18 @@ public class WindowUtil {
         // If the new bounds are identical to the previously applied ones,
         // skip the update to avoid unnecessary IPC operations.
         Rect last = lastPipBounds.get(pipType);
-        if (!forcePipBoundsUpdate && last != null && last.equals(bounds)) {
-            return;
+        if (!forcePipBoundsUpdate && last != null) {
+            if (last.equals(bounds)) return null;
+            // Beside the viewport and staying there: the move would show nothing. On the A55 a pane
+            // one page further (Fourth) took a third of a swipe's relayouts that way.
+            // Only while the pages move, against the display's width read when they started.
+            boolean sameSize = last.width() == bounds.width() && last.height() == bounds.height();
+            if (pagesMoving && PaneWindows.staysOffScreen(last.left, last.right, bounds.left,
+                    bounds.right, sameSize, paneViewportWidth)) {
+                return null;
+            }
         }
-
-        updatePipBounds(host, pipType, bounds);
-        lastPipBounds.put(pipType, new Rect(bounds));
+        return bounds;
     }
 
     private static void updatePipBounds(WindowHost host, String pipType, Rect bounds) {
