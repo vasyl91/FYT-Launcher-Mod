@@ -35,9 +35,6 @@ import com.android.launcher66.R;
 import com.android.launcher66.ScreenScale;
 import com.fyt.skin.SkinAttribute;
 import com.fyt.skin.SkinUtils;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.lang.ref.WeakReference;
 import java.time.ZoneId;
@@ -464,18 +461,13 @@ public class SettingsActivity extends AppCompatActivity {
             ActivityCompat.checkSelfPermission(LauncherApplication.sApp, 
                 android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            FusedLocationProviderClient fusedLocationClient = 
-                LocationServices.getFusedLocationProviderClient(LauncherApplication.sApp);
-            Executor executor = ContextCompat.getMainExecutor(LauncherApplication.sApp);
-            
-            fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(executor, new LocationSuccessListener());
+            DeviceLocation.lastKnown(LauncherApplication.sApp, new LocationSuccessListener());
         }
     }
 
-    private static class LocationSuccessListener implements OnSuccessListener<Location> {
+    private static class LocationSuccessListener implements DeviceLocation.Receiver {
         @Override
-        public void onSuccess(Location location) {
+        public void onLocation(Location location) {
             SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
             double lat;
             double longt;

@@ -144,7 +144,6 @@ import com.fyt.car.StockTitles;
 import com.fyt.skin.SkinUtils;
 import com.fyt.widget.RadioRuler;
 import com.fyt.widget.TurntableView3;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.syu.car.CarStates;
 import com.syu.log.LogPreview;
 import com.syu.popwindow.PopWindowBright;
@@ -504,7 +503,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     static final int REQUEST_CODE_OVERLAY = 1006;
     static final int REQUEST_CODE_NOTIFICATION_ACCESS = 1007;
     static final int REQUEST_CODE_INSTALL_PACKAGES = 1008;
-    private FusedLocationProviderClient fusedLocationClient;
     Helpers helpers = new Helpers();
     LinearLayout bottomButtons;
     LinearLayout bottomButtonsWidgets;

@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <queries>
+        <!-- DeviceLocation asks whether Google Play services are there (visibility from Android 11) -->
+        <package android:name="com.google.android.gms" />
         <intent>
             <action android:name="android.intent.action.INSTALL_PACKAGE" />
             <data android:mimeType="application/vnd.android.package-archive" />

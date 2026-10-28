@@ -25,8 +25,7 @@ import androidx.preference.PreferenceManager;
 import com.android.async.AsyncTask;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.android.launcher66.settings.DeviceLocation;
 import com.syu.esri.ShapeDB;
 import com.syu.esri.ShapeData;
 import com.syu.esri.ShapeIndex;
@@ -78,7 +77,6 @@ public class WeatherManager {
     private static volatile OkHttpClient sHttpClient;
 
     private boolean locationPermissionRequested = false;
-    private FusedLocationProviderClient fusedLocationClient;
     private SharedPreferences mPrefs;
     public static WeatherManager instance;
     String cityName;
@@ -229,7 +227,6 @@ public class WeatherManager {
         this.inChina = false;
         this.mContext = context.getApplicationContext();
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.mContext);
         SharedPreferences preferences = this.mContext.getSharedPreferences(this.mContext.getPackageName(), 0);
         String string = preferences.getString("city", "");
         this.cityName = string;
@@ -280,16 +277,14 @@ public class WeatherManager {
         }
 
         if (this.mNetworkCheck != null && this.mNetworkCheck.hasNet && !this.isRunning) {
-            // Check permission for fused location
+            // The last position, from the platform first (DeviceLocation)
             if (hasLocationPermission()) {
-                fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                DeviceLocation.lastKnown(this.mContext, location -> {
                     if (location != null) {
                         if (WeatherManager.this.mCurLocation == null) {
                             WeatherManager.this.updateLocation(location);
                         }
                     }
-                }).addOnFailureListener(e -> {
-                    e.printStackTrace();
                 });
             }
 

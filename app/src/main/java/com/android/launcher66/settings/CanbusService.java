@@ -46,12 +46,6 @@ import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.Workspace;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.Priority;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HostAwait;
@@ -75,8 +69,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
     /** The apps the fuel statistics are shown over; read at the start, see LauncherApplication. */
     public static final String APP_STATS_PREFS = "AppStatsPrefs";
     private AccessibilityManager accessibilityManager;
-    private FusedLocationProviderClient fusedLocationClient;
-    private LocationCallback locationCallback;
+    private DeviceLocation.Handle locationUpdates;
     private AccessibilityManager.AccessibilityStateChangeListener accessibilityListener;
     private SharedPreferences prefs;
     /** The last package of a Keys.ACCESIBILITY_SERVICE broadcast; see getCurrentActivityName(). */
@@ -1087,67 +1080,12 @@ public class CanbusService extends Service implements PropertyChangeListener {
      * */    
     private void requestLocationUpdates() {
         removeLocationUpdates();
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        LocationRequest locationRequest = new LocationRequest.Builder(1000)  // Initial interval
-                .setMinUpdateIntervalMillis(500)  
-                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-                .build();
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && 
             ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            
-            locationCallback = new LocationCallback() {
-
-                @Override
-                public void onLocationResult(@NonNull LocationResult locationResult) {
-                    if (locationResult == null) {
-                        return;
-                    }
-                    for (Location location : locationResult.getLocations()) {
-                        float speed = location.getSpeed(); // m/s
-                        velocity = speed * 3.6f; // in km/h
-                        if (estimateOil && userLayout && userStats && absoluteStats != null) {
-                            if (absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
-                                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
-                                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
-                                if (revolutionsPerMinute > -1) {
-                                    // Step 1: 2-second validation sampled every 500ms
-                                    if (velocity > 5) {
-                                        if (!speedValidated) {
-                                            aboveSpeedCounter++;
-                                            if (aboveSpeedCounter >= REQUIRED_SAMPLES) {
-                                                speedValidated = true; // Passed 2-second check once
-                                            }
-                                        }
-                                    } else {
-                                        // Reset validation if it drops below threshold
-                                        aboveSpeedCounter = 0;
-                                        speedValidated = false;
-                                    }
-
-                                    // Step 2: Allow flow only after validation
-                                    if (speedValidated && velocity < 38 && velocity > 5) {
-                                        double fuelConsumption = calculateFuelConsumption(velocity, revolutionsPerMinute, horsePower, vehicleMass);
-                                        if (statsWidthSelector == 2) {
-                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
-                                        } else {
-                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
-                                        }
-                                    } else {
-                                        if (statsWidthSelector == 2) {
-                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
-                                        } else {
-                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
-                                        }
-                                    }
-                                } 
-                            }
-                        }
-                    }
-                }
-            };
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+            // The speed, about every half second: the GPS provider of the platform, Google Play
+            // services only if the unit has none (see DeviceLocation).
+            locationUpdates = DeviceLocation.requestUpdates(this, 500L, this::onLocation, Looper.getMainLooper());
         } else {            
             ActivityCompat.requestPermissions(
                     Launcher.getLauncher(),
@@ -1160,12 +1098,57 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
 
-    private void removeLocationUpdates() {
-        if (fusedLocationClient != null && locationCallback != null) {
-            fusedLocationClient.removeLocationUpdates(locationCallback);
+    /** A fix from the location updates: its speed, and with it the estimated fuel consumption. */
+    private void onLocation(Location location) {
+        if (location == null) {
+            return;
         }
-        locationCallback = null;
-        fusedLocationClient = null;
+        float speed = location.getSpeed(); // m/s
+        velocity = speed * 3.6f; // in km/h
+        if (estimateOil && userLayout && userStats && absoluteStats != null) {
+            if (absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
+                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
+                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
+                if (revolutionsPerMinute > -1) {
+                    // Step 1: 2-second validation sampled every 500ms
+                    if (velocity > 5) {
+                        if (!speedValidated) {
+                            aboveSpeedCounter++;
+                            if (aboveSpeedCounter >= REQUIRED_SAMPLES) {
+                                speedValidated = true; // Passed 2-second check once
+                            }
+                        }
+                    } else {
+                        // Reset validation if it drops below threshold
+                        aboveSpeedCounter = 0;
+                        speedValidated = false;
+                    }
+
+                    // Step 2: Allow flow only after validation
+                    if (speedValidated && velocity < 38 && velocity > 5) {
+                        double fuelConsumption = calculateFuelConsumption(velocity, revolutionsPerMinute, horsePower, vehicleMass);
+                        if (statsWidthSelector == 2) {
+                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
+                        } else {
+                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
+                        }
+                    } else {
+                        if (statsWidthSelector == 2) {
+                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
+                        } else {
+                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
+                        }
+                    }
+                } 
+            }
+        }
+    }
+
+    private void removeLocationUpdates() {
+        if (locationUpdates != null) {
+            locationUpdates.remove();
+        }
+        locationUpdates = null;
     }
 
     private static final double FUEL_DENSITY = 0.74; // kg/L (tune per fuel/vehicle)
