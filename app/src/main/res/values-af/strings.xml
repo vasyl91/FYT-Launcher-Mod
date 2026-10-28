@@ -354,6 +354,7 @@
     <string name="app_version_update">Weergawe: %1$s (nuwer weergawe beskikbaar: %2$s)</string>
     <string name="update_version_button">Tik om die program af te laai en op te dateer</string>
     <string name="install_release_button">Tik om vrystellingsweergawe %1$s af te laai en te installeer</string>
+    <string name="shizuku_download_button">Tik om Shizuku Next af te laai (nodig vir PiP-panele sonder root)</string>
     <string name="confirmation_dialog">Wil jy opdateer na weergawe %1$s?</string>
     <string name="update_btn">OPDATEER</string>
     <string name="update_allow_install">Laat die installering van programme uit hierdie bron toe en tik dan weer OPDATEER</string>

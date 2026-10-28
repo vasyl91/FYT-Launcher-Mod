@@ -354,6 +354,7 @@
     <string name="app_version_update">Verzió: %1$s (újabb verzió érhető el: %2$s)</string>
     <string name="update_version_button">Koppintson az alkalmazás letöltéséhez és frissítéséhez</string>
     <string name="install_release_button">Koppintson a(z) %1$s kiadási verzió letöltéséhez és telepítéséhez</string>
+    <string name="shizuku_download_button">Koppintson a Shizuku Next letöltéséhez (root nélküli PiP-panelekhez szükséges)</string>
     <string name="confirmation_dialog">Frissíteni szeretne a(z) %1$s verzióra?</string>
     <string name="update_btn">FRISSÍTÉS</string>
     <string name="update_allow_install">Engedélyezze az alkalmazások telepítését erről a forrásról, majd koppintson újra a FRISSÍTÉS gombra</string>

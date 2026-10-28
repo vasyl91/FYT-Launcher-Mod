@@ -354,6 +354,7 @@
     <string name="app_version_update">Версія: %1$s (доступна новіша версія: %2$s)</string>
     <string name="update_version_button">Торкніться, щоб завантажити й оновити застосунок</string>
     <string name="install_release_button">Торкніться, щоб завантажити й установити релізну версію %1$s</string>
+    <string name="shizuku_download_button">Торкніться, щоб завантажити Shizuku Next (потрібен для панелей PiP без root)</string>
     <string name="confirmation_dialog">Оновити до версії %1$s?</string>
     <string name="update_btn">ОНОВИТИ</string>
     <string name="update_allow_install">Дозвольте встановлення застосунків із цього джерела, а потім знову торкніться ОНОВИТИ</string>

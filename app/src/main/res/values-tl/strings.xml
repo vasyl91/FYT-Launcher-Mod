@@ -354,6 +354,7 @@
     <string name="app_version_update">Bersyon: %1$s (may mas bagong bersyon: %2$s)</string>
     <string name="update_version_button">I-tap para i-download at i-update ang app</string>
     <string name="install_release_button">I-tap para i-download at i-install ang release version %1$s</string>
+    <string name="shizuku_download_button">I-tap para i-download ang Shizuku Next (kailangan para sa mga PiP pane nang walang root)</string>
     <string name="confirmation_dialog">Gusto mo bang mag-update sa bersyon %1$s?</string>
     <string name="update_btn">I-UPDATE</string>
     <string name="update_allow_install">Payagan ang pag-install ng mga app mula sa pinagmulang ito, pagkatapos ay i-tap muli ang I-UPDATE</string>

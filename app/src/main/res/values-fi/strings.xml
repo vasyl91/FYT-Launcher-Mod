@@ -354,6 +354,7 @@
     <string name="app_version_update">Versio: %1$s (uudempi versio saatavilla: %2$s)</string>
     <string name="update_version_button">Lataa ja päivitä sovellus napauttamalla</string>
     <string name="install_release_button">Lataa ja asenna julkaisuversio %1$s napauttamalla</string>
+    <string name="shizuku_download_button">Lataa Shizuku Next napauttamalla (tarvitaan PiP-paneeleihin ilman root-oikeuksia)</string>
     <string name="confirmation_dialog">Haluatko päivittää versioon %1$s?</string>
     <string name="update_btn">PÄIVITÄ</string>
     <string name="update_allow_install">Salli sovellusten asennus tästä lähteestä ja napauta sitten PÄIVITÄ uudelleen</string>

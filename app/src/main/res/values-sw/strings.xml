@@ -354,6 +354,7 @@
     <string name="app_version_update">Toleo: %1$s (toleo jipya zaidi linapatikana: %2$s)</string>
     <string name="update_version_button">Gusa ili kupakua na kusasisha programu</string>
     <string name="install_release_button">Gusa ili kupakua na kusakinisha toleo la kutolewa %1$s</string>
+    <string name="shizuku_download_button">Gusa ili kupakua Shizuku Next (inahitajika kwa paneli za PiP bila root)</string>
     <string name="confirmation_dialog">Je, unataka kusasisha hadi toleo la %1$s?</string>
     <string name="update_btn">SASISHA</string>
     <string name="update_allow_install">Ruhusu usakinishaji wa programu kutoka chanzo hiki, kisha uguse SASISHA tena</string>

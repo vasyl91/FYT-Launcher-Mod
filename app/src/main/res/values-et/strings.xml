@@ -354,6 +354,7 @@
     <string name="app_version_update">Versioon: %1$s (saadaval on uuem versioon: %2$s)</string>
     <string name="update_version_button">Puudutage rakenduse allalaadimiseks ja värskendamiseks</string>
     <string name="install_release_button">Puudutage väljalaskeversiooni %1$s allalaadimiseks ja installimiseks</string>
+    <string name="shizuku_download_button">Puudutage Shizuku Next allalaadimiseks (vajalik PiP-paneelide jaoks ilma rootita)</string>
     <string name="confirmation_dialog">Kas soovite värskendada versioonile %1$s?</string>
     <string name="update_btn">VÄRSKENDA</string>
     <string name="update_allow_install">Lubage rakenduste installimine sellest allikast ja puudutage uuesti VÄRSKENDA</string>

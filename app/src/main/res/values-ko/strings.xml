@@ -354,6 +354,7 @@
     <string name="app_version_update">버전: %1$s(새 버전 사용 가능: %2$s)</string>
     <string name="update_version_button">탭하여 앱을 다운로드하고 업데이트</string>
     <string name="install_release_button">탭하여 릴리스 버전 %1$s을(를) 다운로드하고 설치</string>
+    <string name="shizuku_download_button">탭하여 Shizuku Next 다운로드 (root 없이 PiP 창을 쓰려면 필요)</string>
     <string name="confirmation_dialog">%1$s 버전으로 업데이트할까요?</string>
     <string name="update_btn">업데이트</string>
     <string name="update_allow_install">이 출처의 앱 설치를 허용한 다음 업데이트를 다시 탭하세요</string>

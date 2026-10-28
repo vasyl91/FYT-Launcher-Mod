@@ -354,6 +354,7 @@
     <string name="app_version_update">Versija: %1$s (pieejama jaunāka versija: %2$s)</string>
     <string name="update_version_button">Pieskarieties, lai lejupielādētu un atjauninātu lietotni</string>
     <string name="install_release_button">Pieskarieties, lai lejupielādētu un instalētu izlaiduma versiju %1$s</string>
+    <string name="shizuku_download_button">Pieskarieties, lai lejupielādētu Shizuku Next (nepieciešams PiP paneļiem bez root)</string>
     <string name="confirmation_dialog">Vai vēlaties atjaunināt uz versiju %1$s?</string>
     <string name="update_btn">ATJAUNINĀT</string>
     <string name="update_allow_install">Atļaujiet lietotņu instalēšanu no šī avota un vēlreiz pieskarieties pie ATJAUNINĀT</string>

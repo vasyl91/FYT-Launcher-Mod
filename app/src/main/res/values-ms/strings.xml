@@ -354,6 +354,7 @@
     <string name="app_version_update">Versi: %1$s (versi lebih baharu tersedia: %2$s)</string>
     <string name="update_version_button">Ketik untuk memuat turun dan mengemas kini apl</string>
     <string name="install_release_button">Ketik untuk memuat turun dan memasang versi keluaran %1$s</string>
+    <string name="shizuku_download_button">Ketik untuk memuat turun Shizuku Next (diperlukan untuk panel PiP tanpa root)</string>
     <string name="confirmation_dialog">Adakah anda mahu mengemas kini kepada versi %1$s?</string>
     <string name="update_btn">KEMAS KINI</string>
     <string name="update_allow_install">Benarkan pemasangan apl daripada sumber ini, kemudian ketik KEMAS KINI semula</string>

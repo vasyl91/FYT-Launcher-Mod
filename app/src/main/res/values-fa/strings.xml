@@ -354,6 +354,7 @@
     <string name="app_version_update">نسخه: %1$s (نسخه جدیدتر موجود است: %2$s)</string>
     <string name="update_version_button">برای دانلود و به‌روزرسانی برنامه لمس کنید</string>
     <string name="install_release_button">برای دانلود و نصب نسخه انتشار %1$s لمس کنید</string>
+    <string name="shizuku_download_button">برای دانلود Shizuku Next لمس کنید (برای پنل‌های PiP بدون روت لازم است)</string>
     <string name="confirmation_dialog">می‌خواهید به نسخه %1$s به‌روزرسانی کنید؟</string>
     <string name="update_btn">به‌روزرسانی</string>
     <string name="update_allow_install">نصب برنامه از این منبع را مجاز کنید و دوباره «به‌روزرسانی» را لمس کنید</string>

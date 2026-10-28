@@ -354,6 +354,7 @@
     <string name="app_version_update">Έκδοση: %1$s (διαθέσιμη νεότερη έκδοση: %2$s)</string>
     <string name="update_version_button">Πατήστε για λήψη και ενημέρωση της εφαρμογής</string>
     <string name="install_release_button">Πατήστε για λήψη και εγκατάσταση της έκδοσης κυκλοφορίας %1$s</string>
+    <string name="shizuku_download_button">Πατήστε για λήψη του Shizuku Next (απαραίτητο για τα παράθυρα PiP χωρίς root)</string>
     <string name="confirmation_dialog">Θέλετε να ενημερώσετε στην έκδοση %1$s;</string>
     <string name="update_btn">ΕΝΗΜΕΡΩΣΗ</string>
     <string name="update_allow_install">Επιτρέψτε την εγκατάσταση εφαρμογών από αυτή την πηγή και πατήστε ξανά ΕΝΗΜΕΡΩΣΗ</string>

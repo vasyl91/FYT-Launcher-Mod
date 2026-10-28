@@ -22,4 +22,5 @@
     <string name="black_bar">Bottom bar text and button colour</string>
     <string name="logcat_names_info">Log file names</string>
     <string name="logcat_names_info_summary">reboot – started with the launcher after the device restarted\nstart – started with the launcher after it restarted on its own (crash, update)\nwake – started when the device woke up\nuser – started by hand with “Logcat service”\nfull – holds all of the device\'s logs\npid – holds the launcher\'s logs only</string>
+    <string name="shizuku_download_button">Tap to download Shizuku Next (needed for PiP panes without root)</string>
 </resources>

@@ -354,6 +354,7 @@
     <string name="app_version_update">Versiun: %1$s (versiun pli nova disponibla: %2$s)</string>
     <string name="update_version_button">Tutgar per telechargiar ed actualisar l\'app</string>
     <string name="install_release_button">Tutgar per telechargiar ed installar la versiun da release %1$s</string>
+    <string name="shizuku_download_button">Tutgar per telechargiar Shizuku Next (necessari per ils panels PiP senza root)</string>
     <string name="confirmation_dialog">Vuls ti actualisar a la versiun %1$s?</string>
     <string name="update_btn">ACTUALISAR</string>
     <string name="update_allow_install">Permetta l\'installaziun d\'apps or da questa funtauna e tutga lura danovamain ACTUALISAR</string>

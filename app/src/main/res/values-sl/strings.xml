@@ -354,6 +354,7 @@
     <string name="app_version_update">Različica: %1$s (na voljo je novejša različica: %2$s)</string>
     <string name="update_version_button">Dotaknite se za prenos in posodobitev aplikacije</string>
     <string name="install_release_button">Dotaknite se za prenos in namestitev izdajne različice %1$s</string>
+    <string name="shizuku_download_button">Dotaknite se za prenos Shizuku Next (potreben za plošče PiP brez roota)</string>
     <string name="confirmation_dialog">Ali želite posodobiti na različico %1$s?</string>
     <string name="update_btn">POSODOBI</string>
     <string name="update_allow_install">Dovolite nameščanje aplikacij iz tega vira in se znova dotaknite POSODOBI</string>

@@ -354,6 +354,7 @@
     <string name="app_version_update">Versiune: %1$s (este disponibilă o versiune mai nouă: %2$s)</string>
     <string name="update_version_button">Atingeți pentru a descărca și actualiza aplicația</string>
     <string name="install_release_button">Atingeți pentru a descărca și instala versiunea de lansare %1$s</string>
+    <string name="shizuku_download_button">Atingeți pentru a descărca Shizuku Next (necesar pentru panourile PiP fără root)</string>
     <string name="confirmation_dialog">Doriți să actualizați la versiunea %1$s?</string>
     <string name="update_btn">ACTUALIZARE</string>
     <string name="update_allow_install">Permiteți instalarea aplicațiilor din această sursă, apoi atingeți din nou ACTUALIZARE</string>

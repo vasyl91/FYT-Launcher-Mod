@@ -354,6 +354,7 @@
     <string name="app_version_update">バージョン: %1$s（新しいバージョンがあります: %2$s）</string>
     <string name="update_version_button">タップしてアプリをダウンロードして更新</string>
     <string name="install_release_button">タップしてリリース版%1$sをダウンロードしてインストール</string>
+    <string name="shizuku_download_button">タップして Shizuku Next をダウンロード（root なしで PiP ペインを使うのに必要）</string>
     <string name="confirmation_dialog">バージョン%1$sに更新しますか？</string>
     <string name="update_btn">更新</string>
     <string name="update_allow_install">この提供元からのアプリのインストールを許可してから、もう一度「更新」をタップしてください</string>

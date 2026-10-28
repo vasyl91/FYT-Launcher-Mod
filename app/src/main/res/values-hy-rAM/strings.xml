@@ -354,6 +354,7 @@
     <string name="app_version_update">Տարբերակ՝ %1$s (հասանելի է ավելի նոր տարբերակ՝ %2$s)</string>
     <string name="update_version_button">Հպեք՝ հավելվածը ներբեռնելու և թարմացնելու համար</string>
     <string name="install_release_button">Հպեք՝ %1$s թողարկման տարբերակը ներբեռնելու և տեղադրելու համար</string>
+    <string name="shizuku_download_button">Հպեք՝ Shizuku Next-ը ներբեռնելու համար (անհրաժեշտ է PiP վահանակների համար առանց Root-ի)</string>
     <string name="confirmation_dialog">Ցանկանո՞ւմ եք թարմացնել մինչև %1$s տարբերակը։</string>
     <string name="update_btn">ԹԱՐՄԱՑՆԵԼ</string>
     <string name="update_allow_install">Թույլատրեք հավելվածների տեղադրումն այս աղբյուրից, ապա նորից հպեք ԹԱՐՄԱՑՆԵԼ</string>

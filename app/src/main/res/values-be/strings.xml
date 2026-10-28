@@ -354,6 +354,7 @@
     <string name="app_version_update">Версія: %1$s (даступна новая версія: %2$s)</string>
     <string name="update_version_button">Націсніце, каб спампаваць і абнавіць праграму</string>
     <string name="install_release_button">Націсніце, каб спампаваць і ўсталяваць рэлізную версію %1$s</string>
+    <string name="shizuku_download_button">Націсніце, каб спампаваць Shizuku Next (патрабуецца для панэляў PiP без root)</string>
     <string name="confirmation_dialog">Абнавіць да версіі %1$s?</string>
     <string name="update_btn">АБНАВІЦЬ</string>
     <string name="update_allow_install">Дазвольце ўсталёўку праграм з гэтай крыніцы, а потым зноў націсніце АБНАВІЦЬ</string>

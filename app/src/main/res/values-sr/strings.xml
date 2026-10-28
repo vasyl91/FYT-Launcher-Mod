@@ -354,6 +354,7 @@
     <string name="app_version_update">Верзија: %1$s (доступна је новија верзија: %2$s)</string>
     <string name="update_version_button">Додирните да преузмете и ажурирате апликацију</string>
     <string name="install_release_button">Додирните да преузмете и инсталирате издање за објављивање %1$s</string>
+    <string name="shizuku_download_button">Додирните да преузмете Shizuku Next (потребан за PiP панеле без root-а)</string>
     <string name="confirmation_dialog">Желите ли да ажурирате на верзију %1$s?</string>
     <string name="update_btn">АЖУРИРАЈ</string>
     <string name="update_allow_install">Дозволите инсталацију апликација из овог извора, па поново додирните АЖУРИРАЈ</string>

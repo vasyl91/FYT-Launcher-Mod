@@ -354,6 +354,7 @@
     <string name="app_version_update">संस्करण: %1$s (नया संस्करण उपलब्ध है: %2$s)</string>
     <string name="update_version_button">ऐप डाउनलोड और अपडेट करने के लिए टैप करें</string>
     <string name="install_release_button">रिलीज़ संस्करण %1$s डाउनलोड और इंस्टॉल करने के लिए टैप करें</string>
+    <string name="shizuku_download_button">Shizuku Next डाउनलोड करने के लिए टैप करें (बिना रूट के PiP पैन के लिए ज़रूरी)</string>
     <string name="confirmation_dialog">क्या आप संस्करण %1$s पर अपडेट करना चाहते हैं?</string>
     <string name="update_btn">अपडेट करें</string>
     <string name="update_allow_install">इस स्रोत से ऐप इंस्टॉल करने की अनुमति दें, फिर दोबारा अपडेट करें पर टैप करें</string>

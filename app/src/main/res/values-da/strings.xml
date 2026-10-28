@@ -354,6 +354,7 @@
     <string name="app_version_update">Version: %1$s (nyere version tilgængelig: %2$s)</string>
     <string name="update_version_button">Tryk for at downloade og opdatere appen</string>
     <string name="install_release_button">Tryk for at downloade og installere release-version %1$s</string>
+    <string name="shizuku_download_button">Tryk for at downloade Shizuku Next (kræves til PiP-paneler uden root)</string>
     <string name="confirmation_dialog">Vil du opdatere til version %1$s?</string>
     <string name="update_btn">OPDATER</string>
     <string name="update_allow_install">Tillad installation af apps fra denne kilde, og tryk derefter på OPDATER igen</string>

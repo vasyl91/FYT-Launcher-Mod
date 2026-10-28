@@ -354,6 +354,7 @@
     <string name="app_version_update">Versija: %1$s (yra naujesnė versija: %2$s)</string>
     <string name="update_version_button">Palieskite, kad atsisiųstumėte ir atnaujintumėte programą</string>
     <string name="install_release_button">Palieskite, kad atsisiųstumėte ir įdiegtumėte išleidimo versiją %1$s</string>
+    <string name="shizuku_download_button">Palieskite, kad atsisiųstumėte Shizuku Next (reikalinga PiP skydeliams be root)</string>
     <string name="confirmation_dialog">Ar norite atnaujinti į versiją %1$s?</string>
     <string name="update_btn">ATNAUJINTI</string>
     <string name="update_allow_install">Leiskite diegti programas iš šio šaltinio ir dar kartą palieskite ATNAUJINTI</string>

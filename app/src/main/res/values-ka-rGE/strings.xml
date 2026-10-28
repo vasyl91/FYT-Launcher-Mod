@@ -354,6 +354,7 @@
     <string name="app_version_update">ვერსია: %1$s (ხელმისაწვდომია უფრო ახალი ვერსია: %2$s)</string>
     <string name="update_version_button">შეეხეთ აპის ჩამოსატვირთად და გასაახლებლად</string>
     <string name="install_release_button">შეეხეთ გამოშვების ვერსიის %1$s ჩამოსატვირთად და დასაინსტალირებლად</string>
+    <string name="shizuku_download_button">შეეხეთ Shizuku Next-ის ჩამოსატვირთად (საჭიროა PiP პანელებისთვის Root-ის გარეშე)</string>
     <string name="confirmation_dialog">გსურთ განახლება ვერსიამდე %1$s?</string>
     <string name="update_btn">განახლება</string>
     <string name="update_allow_install">დაუშვით აპების ინსტალაცია ამ წყაროდან, შემდეგ ისევ შეეხეთ განახლებას</string>

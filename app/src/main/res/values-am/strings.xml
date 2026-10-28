@@ -354,6 +354,7 @@
     <string name="app_version_update">ስሪት፦ %1$s (አዲስ ስሪት አለ፦ %2$s)</string>
     <string name="update_version_button">መተግበሪያውን ለማውረድ እና ለማዘመን መታ ያድርጉ</string>
     <string name="install_release_button">የመለቀቅ ስሪት %1$sን ለማውረድ እና ለመጫን መታ ያድርጉ</string>
+    <string name="shizuku_download_button">Shizuku Next ለማውረድ መታ ያድርጉ (ያለ root ለPiP ፓነሎች ያስፈልጋል)</string>
     <string name="confirmation_dialog">ወደ ስሪት %1$s ማዘመን ይፈልጋሉ?</string>
     <string name="update_btn">አዘምን</string>
     <string name="update_allow_install">ከዚህ ምንጭ መተግበሪያዎችን መጫን ይፍቀዱ፣ ከዚያ አዘምንን እንደገና መታ ያድርጉ</string>

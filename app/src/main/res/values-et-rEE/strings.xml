@@ -22,4 +22,5 @@
     <string name="folder_name_format">Kaust: %1$s</string>
     <string name="logcat_names_info">Logifailide nimed</string>
     <string name="logcat_names_info_summary">reboot – käivitatud koos käivitajaga pärast seadme taaskäivitust\nstart – käivitatud koos käivitajaga pärast selle iseseisvat taaskäivitust (krahh, värskendus)\nwake – käivitatud seadme ärkamisel\nuser – käivitatud käsitsi valikuga „Logcati teenus“\nfull – sisaldab kõiki seadme logisid\npid – sisaldab ainult käivitaja logisid</string>
+    <string name="shizuku_download_button">Puudutage Shizuku Next allalaadimiseks (vajalik PiP-paneelide jaoks ilma rootita)</string>
 </resources>

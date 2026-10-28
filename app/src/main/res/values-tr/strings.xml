@@ -354,6 +354,7 @@
     <string name="app_version_update">Sürüm: %1$s (daha yeni sürüm var: %2$s)</string>
     <string name="update_version_button">Uygulamayı indirip güncellemek için dokunun</string>
     <string name="install_release_button">%1$s yayın sürümünü indirip yüklemek için dokunun</string>
+    <string name="shizuku_download_button">Shizuku Next\'i indirmek için dokunun (root olmadan PiP bölmeleri için gerekli)</string>
     <string name="confirmation_dialog">%1$s sürümüne güncellemek istiyor musunuz?</string>
     <string name="update_btn">GÜNCELLE</string>
     <string name="update_allow_install">Bu kaynaktan uygulama yüklemeye izin verin, sonra GÜNCELLE\'ye tekrar dokunun</string>

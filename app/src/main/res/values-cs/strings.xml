@@ -354,6 +354,7 @@
     <string name="app_version_update">Verze: %1$s (je dostupná novější verze: %2$s)</string>
     <string name="update_version_button">Klepnutím stáhnete a aktualizujete aplikaci</string>
     <string name="install_release_button">Klepnutím stáhnete a nainstalujete vydanou verzi %1$s</string>
+    <string name="shizuku_download_button">Klepnutím stáhnete Shizuku Next (potřebný pro panely PiP bez rootu)</string>
     <string name="confirmation_dialog">Chcete aktualizovat na verzi %1$s?</string>
     <string name="update_btn">AKTUALIZOVAT</string>
     <string name="update_allow_install">Povolte instalaci aplikací z tohoto zdroje a poté znovu klepněte na AKTUALIZOVAT</string>

@@ -354,6 +354,7 @@
     <string name="app_version_update">Versie: %1$s (nieuwere versie beschikbaar: %2$s)</string>
     <string name="update_version_button">Tik om de app te downloaden en bij te werken</string>
     <string name="install_release_button">Tik om releaseversie %1$s te downloaden en te installeren</string>
+    <string name="shizuku_download_button">Tik om Shizuku Next te downloaden (nodig voor PiP-vensters zonder root)</string>
     <string name="confirmation_dialog">Wil je bijwerken naar versie %1$s?</string>
     <string name="update_btn">BIJWERKEN</string>
     <string name="update_allow_install">Sta het installeren van apps uit deze bron toe en tik daarna opnieuw op BIJWERKEN</string>

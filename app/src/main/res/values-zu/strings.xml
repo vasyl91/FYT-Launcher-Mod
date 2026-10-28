@@ -354,6 +354,7 @@
     <string name="app_version_update">Inguqulo: %1$s (kutholakala inguqulo entsha: %2$s)</string>
     <string name="update_version_button">Thepha ukuze ulande futhi ubuyekeze uhlelo lokusebenza</string>
     <string name="install_release_button">Thepha ukuze ulande futhi ufake inguqulo yokukhishwa %1$s</string>
+    <string name="shizuku_download_button">Thepha ukuze ulande i-Shizuku Next (iyadingeka kumaphaneli e-PiP ngaphandle kwe-root)</string>
     <string name="confirmation_dialog">Ingabe ufuna ukubuyekeza uye enguqulweni %1$s?</string>
     <string name="update_btn">BUYEKEZA</string>
     <string name="update_allow_install">Vumela ukufakwa kwezinhlelo zokusebenza kulo mthombo, bese uthepha BUYEKEZA futhi</string>

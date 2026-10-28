@@ -354,6 +354,7 @@
     <string name="app_version_update">Хувилбар: %1$s (шинэ хувилбар байна: %2$s)</string>
     <string name="update_version_button">Аппыг татаж шинэчлэхийн тулд товшино уу</string>
     <string name="install_release_button">%1$s хувилбарыг татаж суулгахын тулд товшино уу</string>
+    <string name="shizuku_download_button">Shizuku Next-ийг татахын тулд товшино уу (root-гүйгээр PiP самбарт шаардлагатай)</string>
     <string name="confirmation_dialog">%1$s хувилбар руу шинэчлэх үү?</string>
     <string name="update_btn">ШИНЭЧЛЭХ</string>
     <string name="update_allow_install">Энэ эх сурвалжаас апп суулгахыг зөвшөөрч, дараа нь ШИНЭЧЛЭХ дээр дахин товшино уу</string>

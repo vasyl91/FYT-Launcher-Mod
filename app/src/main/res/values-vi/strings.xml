@@ -354,6 +354,7 @@
     <string name="app_version_update">Phiên bản: %1$s (có phiên bản mới hơn: %2$s)</string>
     <string name="update_version_button">Nhấn để tải xuống và cập nhật ứng dụng</string>
     <string name="install_release_button">Nhấn để tải xuống và cài đặt bản phát hành %1$s</string>
+    <string name="shizuku_download_button">Nhấn để tải xuống Shizuku Next (cần cho các ngăn PiP khi không có root)</string>
     <string name="confirmation_dialog">Bạn có muốn cập nhật lên phiên bản %1$s không?</string>
     <string name="update_btn">CẬP NHẬT</string>
     <string name="update_allow_install">Cho phép cài đặt ứng dụng từ nguồn này, rồi nhấn CẬP NHẬT lần nữa</string>

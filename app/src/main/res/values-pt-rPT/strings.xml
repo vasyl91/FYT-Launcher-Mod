@@ -125,6 +125,7 @@
     <string name="app_type_user">App do utilizador</string>
     <string name="update_version_button">Toque para transferir e atualizar o app</string>
     <string name="install_release_button">Toque para transferir e instalar a versão de lançamento %1$s</string>
+    <string name="shizuku_download_button">Toque para transferir o Shizuku Next (necessário para os painéis PiP sem root)</string>
     <string name="progress_dialog_str">A transferir %1$s</string>
     <string name="tv_map_str">Bem-vindo ao FYT Launcher Mod!\nCrie o seu próprio layout para mostrar a janela de navegação.\n\nEste launcher permite mostrar apps no modo Picture-in-Picture usando dois métodos diferentes; no entanto, algumas unidades podem não oferecer suporte a nenhum deles. Nesse caso, não conseguirá mostrar o app de navegação no ecrã principal, a menos que instale no dispositivo uma ROM personalizada com suporte (desde que exista uma ROM assim para a sua central multimédia).\nAinda pode usar o launcher, mas terá de desativar o PiP nas definições do launcher (caso contrário, o Google Maps aparecerá sempre que tentar abrir a página inicial – se isso acontecer, limpe os dados do launcher ou reinstale-o).</string>
 

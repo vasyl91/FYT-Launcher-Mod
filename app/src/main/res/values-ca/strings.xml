@@ -354,6 +354,7 @@
     <string name="app_version_update">Versió: %1$s (hi ha una versió més nova disponible: %2$s)</string>
     <string name="update_version_button">Toca per baixar i actualitzar l\'aplicació</string>
     <string name="install_release_button">Toca per baixar i instal·lar la versió de llançament %1$s</string>
+    <string name="shizuku_download_button">Toca per baixar Shizuku Next (necessari per als panells PiP sense root)</string>
     <string name="confirmation_dialog">Vols actualitzar a la versió %1$s?</string>
     <string name="update_btn">ACTUALITZA</string>
     <string name="update_allow_install">Permet instal·lar aplicacions d\'aquesta font i torna a tocar ACTUALITZA</string>
