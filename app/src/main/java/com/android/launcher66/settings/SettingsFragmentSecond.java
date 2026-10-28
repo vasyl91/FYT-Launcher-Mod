@@ -1433,10 +1433,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             codeInspectorData.setVisible(true);
         } else {
             codesGuide.setVisible(false);
-            loggerCategory.setVisible(false);
-            codeLogger.setVisible(false);
-            codeLoggerData.setVisible(false);
-            omitDigits.setVisible(false);
             skipCodes.setVisible(false);
             inspectorCategory.setVisible(false);
             codeInspector.setVisible(false);
