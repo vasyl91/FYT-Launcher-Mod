@@ -3815,6 +3815,7 @@ public class Workspace extends SmoothPagedView
     protected void onPageEndMoving() {
         super.onPageEndMoving(); 
         WindowUtil.onPagesSettled();
+        CanbusService.onPagesSettled(mUnboundedScrollX);
         /*Log.d(TAG, "onPageEndMoving: " + "isInOverviewMode() = " + String.valueOf(helpers.isInOverviewMode())
                                        + "; openedFromOverviewBoolean() = " + String.valueOf(helpers.openedFromOverviewBoolean())
                                        + "; getChildCount() = " + String.valueOf(getChildCount())

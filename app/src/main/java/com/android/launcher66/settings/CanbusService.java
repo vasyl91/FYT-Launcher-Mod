@@ -57,6 +57,7 @@ import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HostAwait;
 import com.syu.util.PaneWindows;
 import com.syu.util.WindowHostVdClient;
+import com.syu.util.WindowSurfaceMover;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -91,6 +92,19 @@ public class CanbusService extends Service implements PropertyChangeListener {
      * for the stats over a map app.
      */
     private FrameLayout statsHost;
+    /**
+     * Before Android 14, where it can be done (the 7862, a system app): moves the stats' surface
+     * straight with the launcher's frames while the pages move; null elsewhere. See addStatsView().
+     */
+    private WindowSurfaceMover statsSurfaceMover;
+    /** Whether the stats' surface was moved past WindowManager since it last placed the window. */
+    private boolean statsSurfaceMoved;
+    /**
+     * What WindowManager adds to LayoutParams.x/y for the window's place on the screen (0 for this
+     * window on the 7862), measured once per window, after its first layout.
+     */
+    private int statsSurfaceDx, statsSurfaceDy;
+    private boolean statsSurfaceOffsetKnown;
     private TextView consumptionTextView;
     private TextView mileageTextView;
     private WindowManager wm;  
@@ -134,6 +148,17 @@ public class CanbusService extends Service implements PropertyChangeListener {
     public static void onPagesFrame(int scrollX) {
         CanbusService service = sInstance;
         if (service != null) {
+            service.updateStatsPositionForScroll(scrollX);
+        }
+    }
+
+    /**
+     * Main thread, from Workspace.onPageEndMoving(): the last place of the stats, which their
+     * surface may have been moved to past WindowManager, is given to WindowManager.
+     */
+    public static void onPagesSettled(int scrollX) {
+        CanbusService service = sInstance;
+        if (service != null && service.statsSurfaceMoved) {
             service.updateStatsPositionForScroll(scrollX);
         }
     }
@@ -771,12 +796,26 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
                         wm.addView(absoluteStats, statsLayoutParams);
                         absoluteStats.setTranslationX(0f);
+
+                        // Moved through WindowManager the stats still trailed the page on the 7862:
+                        // the window's place is applied when WindowManager gets to it, not with the
+                        // frame of the page. While the pages move, the surface is put in place in
+                        // SurfaceFlinger instead, with the launcher's frame, see
+                        // updateStatsPositionForScroll().
+                        statsSurfaceMover = WindowSurfaceMover.create(absoluteStats, workspaceRef);
+                        Log.i(TAG, "stats follow the pages "
+                                + (statsSurfaceMover != null ? "with their surface" : "through WindowManager"));
                     }
 
                     // attach listener afterward (same as before)
                     if (!mapApp && workspaceRef != null) {
                         final Workspace wsFinal = workspaceRef;
                         workspaceScrollListener = () -> {
+                            // While the pages move, onPagesFrame() places the stats in each frame.
+                            // This listener runs in the draw, before computeScroll() has set the
+                            // frame's scroll: during a snap it has the frame before's, and it put
+                            // the stats back by a frame after onPagesFrame() had them right.
+                            if (wsFinal.isPageMoving()) return;
                             int scrollX;
                             try { scrollX = wsFinal.mUnboundedScrollX; } catch (Throwable t) { scrollX = wsFinal.getScrollX(); }
                             updateStatsPositionForScroll(scrollX);
@@ -840,6 +879,12 @@ public class CanbusService extends Service implements PropertyChangeListener {
             } catch (Exception e) {
                 Log.w(TAG, "Error removing stats view: " + e.getMessage());
             } finally {
+                if (statsSurfaceMover != null) {
+                    statsSurfaceMover.cancel();
+                    statsSurfaceMover = null;
+                }
+                statsSurfaceMoved = false;
+                statsSurfaceOffsetKnown = false;
                 absoluteStats = null;
                 statsHost = null;
                 statsLayoutParams = null;
@@ -922,6 +967,38 @@ public class CanbusService extends Service implements PropertyChangeListener {
             // Beside the screen before and after, it is left where it is: the move would show
             // nothing and only cost a relayout.
             try {
+                if (statsSurfaceMover != null && wm != null) {
+                    if (!statsSurfaceOffsetKnown && absoluteStats.isAttachedToWindow()
+                            && !absoluteStats.isLayoutRequested() && !statsSurfaceMoved) {
+                        // Where WindowManager put the window for these LayoutParams.
+                        int[] onScreen = new int[2];
+                        absoluteStats.getLocationOnScreen(onScreen);
+                        statsSurfaceDx = onScreen[0] - statsLayoutParams.x;
+                        statsSurfaceDy = onScreen[1] - statsLayoutParams.y;
+                        statsSurfaceOffsetKnown = true;
+                        Log.i(TAG, "stats surface offset " + statsSurfaceDx + "," + statsSurfaceDy);
+                    }
+                    if (workspaceRef.isPageMoving() && statsSurfaceOffsetKnown
+                            && statsLayoutParams.y == desiredY
+                            && statsSurfaceMover.moveTo(desiredScreenX + statsSurfaceDx,
+                                    desiredY + statsSurfaceDy)) {
+                        statsSurfaceMoved = true;
+                        return;
+                    }
+                    if (statsSurfaceMoved) {
+                        // The pages have stopped (onPagesSettled()), or the surface cannot be moved
+                        // this way now: it goes to its place at once, no moves waiting for a frame
+                        // left, and WindowManager is told. Not left beside the screen as below:
+                        // the surface may be elsewhere than WindowManager's frame says.
+                        statsSurfaceMoved = false;
+                        statsSurfaceMover.moveNow(desiredScreenX + statsSurfaceDx,
+                                desiredY + statsSurfaceDy);
+                        statsLayoutParams.x = desiredScreenX;
+                        statsLayoutParams.y = desiredY;
+                        wm.updateViewLayout(absoluteStats, statsLayoutParams);
+                        return;
+                    }
+                }
                 int width = statsLayoutParams.width > 0 ? statsLayoutParams.width : Math.max(1, placeholderW);
                 int screenWidth = Math.max(pageWidth, getScreenWidth());
                 int oldX = statsLayoutParams.x;
