@@ -1,6 +1,6 @@
 # Launcher Mod: usunięcie pozostałości `Cling` (samouczki pierwszego uruchomienia i podpowiedź głosowa) — instrukcja wykonawcza
 
-Pracujesz w repozytorium `vasyl91/FYT-Launcher-Mod`, na gałęzi `ccr-087eed00-gbqsuz`. Zacznij od `git pull origin ccr-087eed00-gbqsuz`. Masz usunąć klasę `Cling` i wszystko, co istnieje tylko dla niej: kod Java, układy, zasoby w `res/` i wpisy w profilach baseline. Zrób to w czterech commitach, w kolejności C1 → C2 → C3 → C4. **Każdy commit musi się budować samodzielnie.** Wypchnij je na tę gałąź. **Nie twórz pull requesta.**
+Pracujesz w repozytorium `vasyl91/FYT-Launcher-Mod`, na gałęzi `ccr-087eed00-gbqsuz`. Zacznij od `git pull origin ccr-087eed00-gbqsuz`. Masz usunąć klasę `Cling` i wszystko, co istnieje tylko dla niej: kod Java, układy i zasoby w `res/`. Zrób to w trzech commitach, w kolejności C1 → C2 → C3. Profili baseline (`app/src/main/generated/baselineProfiles/`) nie ruszaj, bo właściciel wygeneruje je później na nowo. **Każdy commit musi się budować samodzielnie.** Wypchnij je na tę gałąź. **Nie twórz pull requesta.**
 
 Numery linii to stan z `b38f128` i są orientacyjne. Zawsze sprawdzaj je w kodzie.
 
@@ -26,7 +26,7 @@ Dlaczego ten kod jest martwy (fakty z kodu):
 - **Push**: `git push -u origin ccr-087eed00-gbqsuz`. Przy błędzie sieci ponów do 4 razy z odstępem 2/4/8/16 s. Wypychaj **po każdym commicie** i zanim zaczniesz następny, poczekaj na wynik CI tego commita (patrz §5.3). Workflow ma `cancel-in-progress`, więc tylko tak sprawdzisz, że każdy commit buduje się osobno.
 - **Nie ruszaj commita `57e3600 [BRANCH-ONLY] CI: …` ani plików `.github/workflows/*.yml`.**
 - **Usuwaj dopiero po sprawdzeniu `rg`**, że nie zostaje żadne odwołanie:
-  - szukaj w całym `app/src`, we wszystkich source setach (`main`, `fyt`, `debug`, `release`, `test`), w Javie, Kotlinie i XML;
+  - szukaj w całym `app/src`, we wszystkich source setach (`main`, `fyt`, `debug`, `release`, `test`), w Javie, Kotlinie i XML. Pomijaj `app/src/main/generated/` (`--glob '!**/generated/**'`). Stare wpisy `Cling` w profilach baseline nie są odwołaniami w kodzie i mają zostać do czasu, aż właściciel wygeneruje profile na nowo;
   - repo czyta zasoby także **po nazwie w napisach**, np. `ResValue.getResId("clickapp_cling", R.id.class)` i `ResValue.getInstance().getId("clingmusictitle", "string")`. Szukaj więc samej nazwy zasobu, nie tylko `R.x.nazwa`.
 - Całe pliki usuwaj przez `git rm`. Nie zostawiaj komentarzy typu „removed cling” ani pustych metod-zaślepek.
 - Po każdym kroku usuń importy, które przestały być używane, i tylko te.
@@ -121,21 +121,9 @@ Każdą pozycję usuń dopiero wtedy, gdy `rg -n '<nazwa>' app/src --glob '!**/g
 
 Kontrola po C3: `rg -n -i 'cling' app/src/main/res` → zero.
 
-## C4 — `Baseline profiles: drop entries of the removed classes`
-
-W `app/src/main/generated/baselineProfiles/baseline-prof.txt` i `startup-prof.txt` usuń tylko linie, które odnoszą się do usuniętych klas i metod:
-- `Lcom/android/launcher66/Cling;` i wszystkie jej metody;
-- `HideFromAccessibilityHelper` (klasa i `<init>`);
-- `ScrimView` (klasa i metody);
-- `AppsCustomizePagedView;->showAllAppsCling`;
-- `Launcher;->dismissCling`, `Launcher;->dismissWorkspaceCling`.
-
-Linii `Launcher;->stopVoice()V` (metoda zostaje), `Landroidx/lifecycle/Lifecycling` i `RecyclerView$ViewHolder;->doesTransientStatePreventRecycling` nie ruszaj. Nie regeneruj profili i nie zmieniaj kolejności pozostałych linii.
-
-Kontrola: `rg -n 'launcher66/(Cling|HideFromAccessibilityHelper|ScrimView);|showAllAppsCling|dismissCling|dismissWorkspaceCling' app/src/main/generated` → zero, a `rg -c 'Launcher;->stopVoice' app/src/main/generated/baselineProfiles/baseline-prof.txt` → 1.
-
 ## 4. Czego NIE zmieniać
 
+- `app/src/main/generated/baselineProfiles/` (`baseline-prof.txt`, `startup-prof.txt`): ani nie edytuj, ani nie regeneruj. Właściciel wygeneruje profile na nowo. Wpisy klas, których już nie ma, nie psują budowy.
 - `setDefaultWallpaper()`, `setDefaultWallpaper(String)`, `setWallpaper`, `getResId` w `Launcher` oraz `SetWallpaperReceiver`.
 - `stopVoice()` i jego wywołanie przy Back (decyzja właściciela, C1.2).
 - `mWaitingForResume`, `resetDrawableState()`, `iconPressed` i logika `onResume`.
@@ -150,10 +138,10 @@ Kontrola: `rg -n 'launcher66/(Cling|HideFromAccessibilityHelper|ScrimView);|show
 
 1. Po każdym kroku uruchom kontrolę `rg` z sekcji tego kroku i (opcjonalnie) `javac` na zmienionych klasach.
 2. Kontrola końcowa:
-   - `rg -n -i 'cling' app/src | rg -v -i 'recycling|lifecycling'` → zero;
-   - `rg -n 'HideFromAccessibilityHelper|ScrimView|EXISTVOICE|closePop|close_popwindow|isdefaultwallpaper|config_useCustomClings|estimateCellPosition|getCellCoordinates|wakeVoice|clickapp' app/src` → zero;
+   - `rg -n -i 'cling' app/src --glob '!**/generated/**' | rg -v -i 'recycling|lifecycling'` → zero;
+   - `rg -n 'HideFromAccessibilityHelper|ScrimView|EXISTVOICE|closePop|close_popwindow|isdefaultwallpaper|config_useCustomClings|estimateCellPosition|getCellCoordinates|wakeVoice|clickapp' app/src --glob '!**/generated/**'` → zero;
    - `rg -n 'stopVoice\(\)' app/src/main/java` → dokładnie dwie linie: definicja i wywołanie w callbacku Back;
-   - `git show --stat` każdego commita: C3 i C4 nie dotykają żadnego `.java`; C1 i C2 nie dotykają `values*/`.
+   - `git show --stat` każdego commita: C3 nie dotyka żadnego `.java`, C1 i C2 nie dotykają `values*/`, żaden commit nie dotyka `app/src/main/generated/`.
 3. **CI rozstrzyga o zasobach.** Po każdym pushu sprawdź run tego commita: `testFytDebugUnitTest`, `assembleFytDebug`, `assembleStandardDebug`. Użyj GitHub MCP (`actions_list`, `get_job_logs`) albo `curl -s "https://api.github.com/repos/vasyl91/FYT-Launcher-Mod/actions/runs?branch=ccr-087eed00-gbqsuz&per_page=1"`. AAPT zgłosi każdy brakujący zasób (`resource … not found`), a javac każde osierocone odwołanie. Czerwoną budowę napraw kolejnym commitem (bez amend i force-push), zanim przejdziesz dalej.
 4. Scenariusze dla właściciela (7862 i 7870), wypisz je w raporcie:
    - a) zimny start launchera, także po wyczyszczeniu danych aplikacji: brak jakichkolwiek nakładek, ekran jak dotąd;
