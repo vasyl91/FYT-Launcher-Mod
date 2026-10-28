@@ -59,7 +59,7 @@ public final class PaneWindows {
      * stats), and the panes came to the page's place 0.4-0.5 s after it (log 28-10-2026 01:22).
      * Before Android 14 relayout() waits for WindowManager, so no queue builds up.
      */
-    static boolean relayoutIsAsync(int sdkInt) {
+    public static boolean relayoutIsAsync(int sdkInt) {
         return sdkInt >= 34;
     }
 
@@ -68,7 +68,7 @@ public final class PaneWindows {
      * same size: moving its window would show nothing and only cost WindowManager a relayout. A
      * change of size is always passed on, so the pane does not resize while it comes into view.
      */
-    static boolean staysOffScreen(int oldLeft, int oldRight, int newLeft, int newRight,
+    public static boolean staysOffScreen(int oldLeft, int oldRight, int newLeft, int newRight,
             boolean sameSize, int viewportWidth) {
         return sameSize && isOffScreen(oldLeft, oldRight, viewportWidth)
                 && isOffScreen(newLeft, newRight, viewportWidth);

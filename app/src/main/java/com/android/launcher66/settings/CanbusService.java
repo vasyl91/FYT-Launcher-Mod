@@ -85,9 +85,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private IBinder binder;
     private View absoluteStats;
     /**
-     * The window of the stats on the home screen: as wide as a page and left where it is while the
-     * pages move, absoluteStats moving inside it (see updateStatsPositionForScroll()). Null for the
-     * stats over a map app, which are a window of their own size.
+     * The window of the stats on the home screen from Android 14 on: as wide as a page and left
+     * where it is while the pages move, absoluteStats moving inside it (see addStatsView()). Null
+     * before Android 14, where the stats are a window of their own size moved by WindowManager, and
+     * for the stats over a map app.
      */
     private FrameLayout statsHost;
     private TextView consumptionTextView;
@@ -716,6 +717,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     // try to read placeholderX/Y if available
                     int placeholderX = statsTopLeftX;
                     int placeholderY = statsTopLeftY;
+                    int placeholderWLocal = statsWidth;
                     try {
                         View pageView = workspaceRef != null ? workspaceRef.getChildAt(statsScreen) : null;
                         if (pageView instanceof com.android.launcher66.CellLayout) {
@@ -723,6 +725,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             if (pos != null && pos.length >= 4) {
                                 placeholderX = pos[0];
                                 placeholderY = pos[1];
+                                placeholderWLocal = pos[2] > 0 ? pos[2] : placeholderWLocal;
                             }
                         }
                     } catch (Exception ignored) {}
@@ -739,22 +742,37 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     int pipAbsoluteX = statsAbsoluteBaseX;
                     int desiredScreenX = pipAbsoluteX - currentScroll;
 
-                    // The window spans the page and stays where it is; the stats move inside it
-                    // by translationX, in the frame the pages are drawn in, and the window's edges
-                    // are the screen's. It used to be moved with updateViewLayout() on every frame,
-                    // clamped to the screen with the rest by translationX: WindowManager placed it
-                    // a frame or more after the page, on the 7862 without the move animation that
-                    // had smoothed that (4f94b19), and on the A55 behind a queue of the panes'
-                    // relayouts. Not touchable, so its width takes no touch from the home screen.
                     int pageWidth = Math.max(1, statsPageWidth);
-                    statsLayoutParams.width = pageWidth;
-                    statsLayoutParams.x = 0;
-                    statsLayoutParams.y = placeholderY;
-                    statsHost = new FrameLayout(this);
-                    statsHost.addView(absoluteStats, new FrameLayout.LayoutParams(statsWidth, statsHeight));
+                    if (PaneWindows.relayoutIsAsync(Build.VERSION.SDK_INT)) {
+                        // From Android 14 on a move of the window is a relayoutAsync() that queued
+                        // up behind the panes' on the A55, 0.4-0.5 s. So the window spans the page
+                        // and stays where it is; the stats move inside it by translationX, in the
+                        // frame the pages are drawn in, and the window's edges are the screen's.
+                        // Not touchable, so its width takes no touch from the home screen.
+                        statsLayoutParams.width = pageWidth;
+                        statsLayoutParams.x = 0;
+                        statsLayoutParams.y = placeholderY;
+                        statsHost = new FrameLayout(this);
+                        statsHost.addView(absoluteStats, new FrameLayout.LayoutParams(statsWidth, statsHeight));
 
-                    wm.addView(statsHost, statsLayoutParams);
-                    absoluteStats.setTranslationX(desiredScreenX);
+                        wm.addView(statsHost, statsLayoutParams);
+                        absoluteStats.setTranslationX(desiredScreenX);
+                    } else {
+                        // Before Android 14 relayout() waits for WindowManager, which places the
+                        // window in the frame it is asked in, as it does the panes. A new frame of
+                        // the stats themselves comes later on the 7862: the process has one render
+                        // thread, and it draws the launcher's frame first. So the window is moved,
+                        // clamped to the screen, the rest by translationX, from the animation
+                        // phase as the panes are (onPagesFrame()).
+                        int viewWidth = Math.max(1, placeholderWLocal);
+                        int maxAnchorX = Math.max(0, pageWidth - viewWidth);
+                        int safeLayoutX = Math.max(0, Math.min(desiredScreenX, maxAnchorX));
+                        statsLayoutParams.x = safeLayoutX;
+                        statsLayoutParams.y = placeholderY;
+
+                        wm.addView(absoluteStats, statsLayoutParams);
+                        absoluteStats.setTranslationX(desiredScreenX - safeLayoutX);
+                    }
 
                     // attach listener afterward (same as before)
                     if (!mapApp && workspaceRef != null) {
@@ -773,9 +791,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     Log.w(TAG, "Failed to attach workspace scroll listener or add view: " + e.getMessage());
                     // fallback: ensure the view is added so at least mapApp path works
                     try {
-                        if (statsHost == null || statsHost.getParent() == null) {
-                            // The page-wide window did not make it: the stats go in on their own
-                            // and are moved as a window of their size, as before it.
+                        if (statsHost != null ? statsHost.getParent() == null
+                                : absoluteStats.getParent() == null) {
+                            // The window did not make it: the stats go in on their own and are
+                            // moved as a window of their size.
                             if (statsHost != null) {
                                 statsHost.removeView(absoluteStats);
                                 statsHost = null;
@@ -908,7 +927,13 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     statsLayoutParams.width = pageWidth;
                     wm.updateViewLayout(statsHost, statsLayoutParams);
                 }
-                if (absoluteStats.getTranslationX() != desiredScreenX) {
+                int current = Math.round(absoluteStats.getTranslationX());
+                int width = absoluteStats.getWidth() > 0 ? absoluteStats.getWidth() : statsWidth;
+                // Beside the window before and after: drawn again, the stats would show nothing
+                // (HWUI: "Dirty ... doesn't intersect with 0 0 1080 117", on every frame of a swipe
+                // on the A55, log 28-10-2026 02:01).
+                if (current != desiredScreenX && !PaneWindows.staysOffScreen(current,
+                        current + width, desiredScreenX, desiredScreenX + width, true, pageWidth)) {
                     absoluteStats.setTranslationX(desiredScreenX);
                 }
             } catch (Exception e) {
@@ -931,8 +956,15 @@ public class CanbusService extends Service implements PropertyChangeListener {
             if (needUpdateLayout && wm != null && absoluteStats != null) {
                 wm.updateViewLayout(absoluteStats, statsLayoutParams);
             }
-            // always apply translation; positive or negative allowed
-            if (absoluteStats.getTranslationX() != translationX) {
+            // always apply translation; positive or negative allowed -- unless the window stays
+            // and the stats are beside it before and after: drawn again, they would show nothing
+            int current = Math.round(absoluteStats.getTranslationX());
+            int target = Math.round(translationX);
+            int width = Math.max(1, absoluteStats.getWidth() > 0 ? absoluteStats.getWidth() : viewWidth);
+            int windowWidth = statsLayoutParams.width > 0 ? statsLayoutParams.width : Integer.MAX_VALUE;
+            boolean hidden = !needUpdateLayout && PaneWindows.staysOffScreen(current,
+                    current + width, target, target + width, true, windowWidth);
+            if (absoluteStats.getTranslationX() != translationX && !hidden) {
                 absoluteStats.setTranslationX(translationX);
             }
         } catch (Exception e) {
