@@ -138,6 +138,10 @@ public class LauncherApplication extends Application {
         // Which steps the time goes to, in one line at the end. Android gives the start up to
         // here a time limit ("failed to complete startup"), which a boot can use up.
         StartupSteps steps = new StartupSteps(start);
+        // Which device this is, before anything asks (isFytDevice() has 60+ callers). The default
+        // preferences are being read since attachBaseContext(), so this adds no disk read.
+        DeviceIdentity.init(PreferenceManager.getDefaultSharedPreferences(this));
+        steps.mark("device");
         initData();
         steps.mark("initData");
         // Android 11+ PiP panes: start listening for Shizuku (the lowest-priority pane host).
@@ -789,16 +793,12 @@ public class LauncherApplication extends Application {
         Log.i(TAG, "Pinned PiP is not offered here (" + why + "): the panes are windows again");
     }
 
+    /**
+     * Whether this is an FYT unit. The rule is in FytPlatform; the answer is found once and kept,
+     * see DeviceIdentity.
+     */
     public static boolean isFytDevice() {
-        String board = SystemProperties.get("ro.product.board");
-        String manufacturer = SystemProperties.get("ro.product.manufacturer");
-        String platform = SystemProperties.get("ro.fyt.platform");
-        String displayId = Build.DISPLAY;
-
-        return (board != null && board.toUpperCase().contains("FYT")) ||
-               (manufacturer != null && manufacturer.toUpperCase().contains("FYT")) ||
-               (platform != null && !platform.isEmpty()) ||
-               (displayId != null && displayId.toUpperCase().contains("FYT"));
+        return DeviceIdentity.isFyt();
     }
 
     /**

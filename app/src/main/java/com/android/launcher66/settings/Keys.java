@@ -30,6 +30,8 @@ public final class Keys {
     public static final String OAUTH_FOR_YOUTUBE_REVANCED = "oauth_for_youtube_revanced";
     public static final String YOUTUBE_REVANCED_KIDS = "youtube_revanced_kids";
     public static final String COPY_PATCH_URL = "copy_patch_url";
+    public static final String DEVICE_CHIPSET = "device_chipset";
+    public static final String DEVICE_CHIPSET_RULES = "device_chipset_rules";
     public static final String SPOTIFY_CLIENT_ID = "spotify_client_id";
     public static final String OAUTH_FOR_SPOTIFY = "oauth_for_spotify";
     public static final String SPOTIFY_LOGOUT = "spotify_logout";
