@@ -260,10 +260,6 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
         return n;
     }
 
-    public int[] estimateCellPosition(int x, int y) {
-        return new int[]{getPaddingLeft() + (this.mCellWidth * x) + (this.mWidthGap * x) + (this.mCellWidth / 2), getPaddingTop() + (this.mCellHeight * y) + (this.mHeightGap * y) + (this.mCellHeight / 2)};
-    }
-
     public void calculateCellCount(int width, int height, int maxCellCountX, int maxCellCountY) {
         this.mCellCountX = Math.min(maxCellCountX, estimateCellHSpan(width));
         this.mCellCountY = Math.min(maxCellCountY, estimateCellVSpan(height));

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
@@ -96,20 +95,6 @@ public class Hotseat extends FrameLayout {
 
     public boolean isAllAppsButtonRank(int rank) {
         return !AppsCustomizePagedView.DISABLE_ALL_APPS && rank == this.mAllAppsButtonRank;
-    }
-
-    Rect getCellCoordinates(int cellX, int cellY) {
-        Rect coords = new Rect();
-        this.mContent.cellToRect(cellX, cellY, 1, 1, coords);
-        int[] hotseatInParent = new int[2];
-        Utilities.getDescendantCoordRelativeToParent(this, this.mLauncher.getDragLayer(), hotseatInParent, false);
-        coords.offset(hotseatInParent[0], hotseatInParent[1]);
-        int cWidth = this.mContent.getShortcutsAndWidgets().getCellContentWidth();
-        int cHeight = this.mContent.getShortcutsAndWidgets().getCellContentHeight();
-        int cellPaddingX = (int) Math.max(0.0f, (coords.width() - cWidth) / 2.0f);
-        int cellPaddingY = (int) Math.max(0.0f, (coords.height() - cHeight) / 2.0f);
-        coords.offset(cellPaddingX, cellPaddingY);
-        return coords;
     }
 
     @Override

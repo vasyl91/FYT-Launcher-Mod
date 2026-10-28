@@ -329,7 +329,6 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         if (animated) {
             enableAndBuildHardwareLayer();
         }
-        l.dismissWorkspaceCling(null);
     }
 
     @Override
@@ -344,7 +343,6 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
             setLayerType(View.LAYER_TYPE_NONE, null);
         }
         if (!toWorkspace) {
-            this.mAppsCustomizePane.showAllAppsCling();
             this.mAppsCustomizePane.loadAssociatedPages(this.mAppsCustomizePane.getCurrentPage());
             setVisibilityOfSiblingsWithLowerZOrder(4);
         }

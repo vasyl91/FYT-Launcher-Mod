@@ -1,8 +1,6 @@
 package com.android.launcher66;
 
 import android.SystemProperties;
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -498,7 +496,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             new android.util.SparseArray<>();
     private final ArrayList<Integer> mSynchronouslyBoundPages = new ArrayList<>();
     private Rect mRectForFolderAnimation = new Rect();
-    private HideFromAccessibilityHelper mHideFromAccessibilityHelper = new HideFromAccessibilityHelper();
     SharedPreferences mPrefs;
 	boolean fytData = true;  
     // Request codes of the permission flow, see PermissionStep.
@@ -7048,7 +7045,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 folder.dismissEditingName();
             }
             closeFolder(folder);
-            dismissFolderCling(null);
         }
     }
 
@@ -8672,189 +8668,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    private boolean isClingsEnabled() {
-        return false;
-    }
-
-    private Cling initCling(int clingId, int scrimId, boolean animate, boolean dimNavBarVisibilty) {
-        Cling cling = (Cling) findViewById(clingId);
-        View scrim = null;
-        if (scrimId > 0) {
-            scrim = findViewById(R.id.cling_scrim);
-        }
-        if (cling != null) {
-            cling.init(this, scrim);
-            cling.show(animate, 250);
-            if (dimNavBarVisibilty) {
-                cling.setSystemUiVisibility(cling.getSystemUiVisibility() | 1);
-            }
-        }
-        return cling;
-    }
-
-    private void dismissCling(final Cling cling, final Runnable postAnimationCb,
-                              final String flag, int duration, boolean restoreNavBarVisibilty) {
-        // To catch cases where siblings of top-level views are made invisible, just check whether
-        // the cling is directly set to GONE before dismissing it.
-        if (cling != null && cling.getVisibility() != View.GONE) {
-            final Runnable cleanUpClingCb = new Runnable() {
-                public void run() {
-                    cling.cleanup();
-                    // We should update the shared preferences on a background thread
-                    new Thread("dismissClingThread") {
-                        public void run() {
-                            if (mSharedPrefs == null) {
-                                return;
-                            }
-                            SharedPreferences.Editor editor = mSharedPrefs.edit();
-                            editor.putBoolean(flag, true);
-                            editor.apply();
-                        }
-                    }.start();
-                    if (postAnimationCb != null) {
-                        postAnimationCb.run();
-                    }
-                }
-            };
-            if (duration <= 0) {
-                cleanUpClingCb.run();
-            } else {
-                cling.hide(duration, cleanUpClingCb);
-            }
-            mHideFromAccessibilityHelper.restoreImportantForAccessibility(mDragLayer);
-
-            if (restoreNavBarVisibilty) {
-                cling.setSystemUiVisibility(cling.getSystemUiVisibility() &
-                        ~View.SYSTEM_UI_FLAG_LOW_PROFILE);
-            }
-        }
-    }
-
-    private void removeCling(int id) {
-        final View cling = findViewById(id);
-        if (cling != null) {
-            final ViewGroup parent = (ViewGroup) cling.getParent();
-            parent.post(new Runnable() { 
-                @Override
-                public void run() {
-                    parent.removeView(cling);
-                }
-            });
-            mHideFromAccessibilityHelper.restoreImportantForAccessibility(mDragLayer);
-        }
-    }
-
-    private boolean skipCustomClingIfNoAccounts() {
-        AccountManager mAccountManager;
-        Cling cling = (Cling) findViewById(R.id.workspace_cling);
-        boolean customCling = cling.getDrawIdentifier().equals("workspace_custom");
-        if (!customCling || (mAccountManager = AccountManager.get(this)) == null) {
-            return false;
-        }
-        Account[] accounts = mAccountManager.getAccountsByType("com.google");
-        return accounts.length == 0;
-    }
-
-    public void updateCustomContentHintVisibility() {
-        Cling cling = (Cling) findViewById(R.id.first_run_cling);
-        String ccHintStr = getFirstRunCustomContentHint();
-        if (mWorkspace.hasCustomContent()) {
-            if (cling != null) {
-                setCustomContentHintVisibility(cling, ccHintStr, true, true);
-            }
-        } else if (cling != null) {
-            setCustomContentHintVisibility(cling, ccHintStr, false, true);
-        }
-    }
-
-    private void setCustomContentHintVisibility(Cling cling, String ccHintStr, boolean visible, boolean animate) {
-        final TextView ccHint = (TextView) cling.findViewById(R.id.custom_content_hint);
-        if (ccHint != null) {
-            if (visible && !ccHintStr.isEmpty()) {
-                ccHint.setText(ccHintStr);
-                ccHint.setVisibility(android.view.View.VISIBLE);
-                if (animate) {
-                    ccHint.setAlpha(0.0f);
-                    ccHint.animate().alpha(1.0f).setDuration(250L).start();
-                    return;
-                } else {
-                    ccHint.setAlpha(1.0f);
-                    return;
-                }
-            }
-            if (animate) {
-                ccHint.animate().alpha(0.0f).setDuration(250L).setListener(new AnimatorListenerAdapter() { 
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        ccHint.setVisibility(android.view.View.GONE);
-                    }
-                }).start();
-            } else {
-                ccHint.setAlpha(0.0f);
-                ccHint.setVisibility(android.view.View.GONE);
-            }
-        }
-    }
-
-    public void showFirstRunCling() {
-        if (isClingsEnabled() && !mSharedPrefs.getBoolean("cling_gel.first_run.dismissed", false) && !skipCustomClingIfNoAccounts()) {
-            if (LauncherApplication.sApp.getResources().getBoolean(R.bool.isdefaultwallpaper)) {
-                setDefaultWallpaper();
-            }
-            Cling cling = (Cling) findViewById(R.id.first_run_cling);
-            if (cling != null) {
-                String sbHintStr = getFirstRunClingSearchBarHint();
-                String ccHintStr = getFirstRunCustomContentHint();
-                if (!sbHintStr.isEmpty()) {
-                    TextView sbHint = (TextView) cling.findViewById(R.id.search_bar_hint);
-                    sbHint.setText(sbHintStr);
-                    sbHint.setVisibility(android.view.View.VISIBLE);
-                }
-                setCustomContentHintVisibility(cling, ccHintStr, true, false);
-            }
-            initCling(R.id.first_run_cling, 0, false, true);
-            return;
-        }
-        removeCling(R.id.first_run_cling);
-    }
-
-    protected String getFirstRunClingSearchBarHint() {
-        return "";
-    }
-
-    protected String getFirstRunCustomContentHint() {
-        return "";
-    }
-
-    protected int getFirstRunFocusedHotseatAppDrawableId() {
-        return -1;
-    }
-
-    protected ComponentName getFirstRunFocusedHotseatAppComponentName() {
-        return null;
-    }
-
-    protected int getFirstRunFocusedHotseatAppRank() {
-        return -1;
-    }
-
-    protected String getFirstRunFocusedHotseatAppBubbleTitle() {
-        return "";
-    }
-
-    protected String getFirstRunFocusedHotseatAppBubbleDescription() {
-        return "";
-    }
-
-    public void showFirstRunWorkspaceCling() {
-        if (isClingsEnabled() && !mSharedPrefs.getBoolean("cling_gel.workspace.dismissed", false)) {
-            Cling c = initCling(R.id.workspace_cling, 0, false, true);
-            c.setFocusedHotseatApp(getFirstRunFocusedHotseatAppDrawableId(), getFirstRunFocusedHotseatAppRank(), getFirstRunFocusedHotseatAppComponentName(), getFirstRunFocusedHotseatAppBubbleTitle(), getFirstRunFocusedHotseatAppBubbleDescription());
-        } else {
-            removeCling(R.id.workspace_cling);
-        }
-    }
-
     public void setDefaultWallpaper() {
         WallpaperManager mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
         LauncherApplication.mAppWallPaper = true;
@@ -8911,55 +8724,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public Cling showFirstRunFoldersCling() {
-        if (isClingsEnabled() && !mSharedPrefs.getBoolean("cling_gel.folder.dismissed", false)) {
-            return initCling(R.id.folder_cling, R.id.cling_scrim, true, true);
-        }
-        removeCling(R.id.folder_cling);
-        return null;
-    }
-
     protected SharedPreferences getSharedPrefs() {
         return mSharedPrefs;
-    }
-
-    public boolean isFolderClingVisible() {
-        Cling cling = (Cling) findViewById(R.id.folder_cling);
-        return cling != null && cling.getVisibility() == android.view.View.VISIBLE;
-    }
-
-    public void dismissFirstRunCling(View v) {
-        Cling cling = (Cling) findViewById(R.id.first_run_cling);
-        Runnable cb = new Runnable() { 
-            @Override
-            public void run() {
-                Launcher.this.showFirstRunWorkspaceCling();
-            }
-        };
-        dismissCling(cling, cb, "cling_gel.first_run.dismissed", 200, false);
-        mSearchDropTargetBar.hideSearchBar(true);
-    }
-
-    public void dismissWorkspaceCling(View v) {
-        Cling cling = (Cling) findViewById(R.id.workspace_cling);
-        Runnable cb = null;
-        if (v == null) {
-            cb = new Runnable() { 
-                @Override
-                public void run() {
-                    if (Launcher.this.mWorkspace != null) {
-                        Launcher.this.mWorkspace.enterOverviewMode();
-                    }
-                }
-            };
-        }
-        dismissCling(cling, cb, "cling_gel.workspace.dismissed", 200, true);
-        mSearchDropTargetBar.showSearchBar(true);
-    }
-
-    public void dismissFolderCling(View v) {
-        Cling cling = (Cling) findViewById(R.id.folder_cling);
-        dismissCling(cling, null, "cling_gel.folder.dismissed", 200, true);
     }
 
     public void dumpState() {
