@@ -151,8 +151,8 @@ public class ResValue {
     public int btavbutton_prev = getResId("btavbutton_prev", R.id.class);
     public int btavbutton_next = getResId("btavbutton_next", R.id.class);
     public int btavbutton_playpause = getResId("btavbutton_playpause", R.id.class);
-    public int btav_pause_icon = getResId("btav_pause_icon", R.drawable.class);
-    public int btav_playpause_icon = getResId("btav_playpause_icon", R.drawable.class);
+    public int btav_pause_icon = getResId("music_pause_icon", R.drawable.class);
+    public int btav_playpause_icon = getResId("music_playpause_icon", R.drawable.class);
     public int mBtavView = getResId("btav_widget", R.id.class);
     public int rl_bt = getResId("rl_bt", R.id.class);
     public int mBtavIcon = getResId("btav_widget_info", R.id.class);

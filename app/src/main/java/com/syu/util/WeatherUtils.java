@@ -16,6 +16,11 @@ public class WeatherUtils {
         }
     }
 
+    /** The drawable of a weather icon code such as "10n", see WeatherIcons. */
+    public static int getIconResId(String iconCode) {
+        return getResId(WeatherIcons.name(iconCode));
+    }
+
     private static int getWeatherId(String resName) {
         try {
             Field idField = R.string.class.getDeclaredField(resName);
