@@ -2,7 +2,7 @@
 
 Pracujesz w repozytorium `vasyl91/FYT-Launcher-Mod`, na gałęzi `ccr-087eed00-gbqsuz`. Zacznij od `git pull origin ccr-087eed00-gbqsuz`. Wprowadź zmiany opisane niżej, każdą jako osobny commit, w kolejności D1 → D2 → V → B → S → T → K1 → K2 → K3 → K4 → U1 → U2 → U3. Wypchnij je na tę gałąź. **Nie twórz pull requesta.**
 
-Ta runda następuje po `docs/sonnet-prompt-2026-10-27-pinned-logcat.md` (commity do `998d56f`). Zmian z tamtych rund nie cofaj. Numery linii to stan z `998d56f`, są orientacyjne. Zawsze sprawdzaj je w kodzie.
+Ta runda następuje po `docs/sonnet-prompt-2026-10-28-cling.md` (commity do `d9fc21d`). Zmian z tamtych rund nie cofaj. Numery linii to stan z `d9fc21d`, są orientacyjne. Zawsze sprawdzaj je w kodzie.
 
 ## 0. Urządzenia, mapa platform (zweryfikowana) i najważniejsza zasada
 
@@ -42,7 +42,7 @@ Fakty, na których opiera się mapa (nie zgaduj ponad nie):
 
 ### Najważniejsza zasada (decyzja właściciela)
 - **Po układzie (nowe `DeviceIdentity`)**: czy to FYT (`LauncherApplication.isFytDevice()`), Pinned PiP, minimalna jasność 7870 (`DayNightBrightness`), linia urządzenia w ustawieniach.
-- **Po pakiecie (bez zmian)**: wszystko, co dotyczy muzyki i źródeł widgetu: `StockSources.isSyuMediaUnit()` (rozpoznanie usługi `com.syu.media`), `MusicService`, `SyuMediaClient`, `LauncherMusicWidget`, `DateMusicWidget`/`DateRadioWidget`, `MediaTransportController`, `NotificationListener.kt`, `StockRadioSource`, strony `com.syu.media` w `Launcher` (≈4604, ≈6839), ikony i domyślne aplikacje paska po `isPackageInstalled("com.syu.music")`. Aplikacja trzeciej strony o tej nazwie i tak nic tu nie zmieni, bo musiałaby wysyłać dane, które launcher czyta.
+- **Po pakiecie (bez zmian)**: wszystko, co dotyczy muzyki i źródeł widgetu: `StockSources.isSyuMediaUnit()` (rozpoznanie usługi `com.syu.media`), `MusicService`, `SyuMediaClient`, `LauncherMusicWidget`, `DateMusicWidget`/`DateRadioWidget`, `MediaTransportController`, `NotificationListener.kt`, `StockRadioSource`, strony `com.syu.media` w `Launcher` (≈4606, ≈6846), ikony i domyślne aplikacje paska po `isPackageInstalled("com.syu.music")`. Aplikacja trzeciej strony o tej nazwie i tak nic tu nie zmieni, bo musiałaby wysyłać dane, które launcher czyta.
 - **Pinned PiP jest niedostępne tylko na 7870 i na urządzeniach nie-FYT.** Każda inna platforma FYT (7862, 8581, 9853i i nieznane) je ma.
 
 ## 1. Zasady pracy i konwencje repo (jak w poprzednich rundach)
@@ -120,12 +120,12 @@ Fakty, na których opiera się mapa (nie zgaduj ponad nie):
 - `DayNightBrightness.sendToFyt` (≈191–211) czeka na `StockSources.isProbed()`, a `floorFytLevel(level, StockSources.isSyuMediaUnit())` (≈181–183) podnosi poziom na 7870. To sprawa ekranu, nie muzyki.
 
 ### Implementacja
-1. `PinnedPip.java`: zastąp `supported(boolean fytUnit, boolean syuMediaUnit)` metodą `static boolean supported(FytPlatform.Chipset chipset)` = `chipset != FYT_7870 && chipset != NOT_FYT`. Obejmuje to 7862, 8581, 9853i i `UNKNOWN_FYT`. `mode(...)` zostaje. Javadoc klasy: decyzja właściciela (pinned stack mają wszystkie platformy FYT poza 7870; poza FYT go nie ma). Zaktualizuj `PinnedPipTest` dla wszystkich sześciu wartości enuma.
-2. `supportsPinnedPip()` = `PinnedPip.supported(DeviceIdentity.chipset())`. Przepisz javadoc: wynik znany od startu, bez czekania na `StockSources`.
+1. `PinnedPip.java`: zastąp `supported(boolean fytUnit, boolean syuMediaUnit)` metodą `static boolean supported(FytPlatform.Chipset chipset)` = `chipset != FYT_7870 && chipset != NOT_FYT`. Obejmuje to 7862, 8581, 9853i i `UNKNOWN_FYT`. `mode(...)` zostaje. Javadoc klasy: decyzja właściciela (pinned stack mają wszystkie platformy FYT poza 7870; poza FYT go nie ma). Zaktualizuj `PinnedPipTest` dla wszystkich sześciu wartości enuma (testy `outsideTouchOnOtherApp` zostają).
+2. `supportsPinnedPip()` = `PinnedPip.supported(DeviceIdentity.chipset())`. Przepisz javadoc: wynik znany od startu, bez czekania na `StockSources`. `PinnedPipFocus` (≈164) i `PinnedPip.outsideTouchOnOtherApp` (runda `d9fc21d`) korzystają z tej bramki lub są od niej niezależne, więc zostają bez zmian, a ich testy w `PinnedPipTest` mają przejść.
 3. `onCreate` (≈169–174): zostaje `if (!supportsPinnedPip()) clearPinnedPipModes(prefs, DeviceIdentity.chipset().name());`. Popraw komentarz: teraz obejmuje też 7870, od razu.
 4. `StockSources.onDeviceResolved`: usuń blok z `clearPinnedPipModes` i jego komentarz. Usuń import `PreferenceManager`, jeśli przestał być potrzebny. **Rozpoznania `com.syu.media` w `probeDevice` nie zmieniaj** (to logika muzyczna). Popraw tylko javadoc `isSyuMediaUnit()`: mówi, jakiego odtwarzacza używa jednostka (usługa `com.syu.media`, czyli 7870), i służy kodowi muzycznemu; pytania o urządzenie idą do `DeviceIdentity`.
 5. `DayNightBrightness`: `floorFytLevel(level, DeviceIdentity.is7870())`. Parametr nazwij `is7870` i dopasuj javadoc. Z `sendToFyt` usuń czekanie na `probed` (zostaje ponawianie, gdy `!connected`) i komentarz o „a moment after the start”. Gdy `StockSources.isProbed()` i `sProbed` nie mają już wywołań, usuń je (sprawdź `grep`). `DayNightBrightnessFloorTest` ma przejść; popraw nazwy argumentów, jeśli trzeba.
-6. Komentarze „units only (7862, 8581)” w `WindowUtil` (≈2191, ≈2510) → „every FYT platform but the 7870, see PinnedPip”.
+6. Komentarze „units only (7862, 8581)” w `WindowUtil` (≈2197, ≈2516) → „every FYT platform but the 7870, see PinnedPip”.
 7. `README.MD`:
    - linia 7 i tabela (≈56–60): „on FYT 7862/8581” → „on FYT units except the 7870 (recognised by the chipset)”;
    - linia 13: na 7870 launcher go nie oferuje.
@@ -204,7 +204,7 @@ Fakty, na których opiera się mapa (nie zgaduj ponad nie):
 ### Wymaganie właściciela
 `app/src/main/java/com/syu/carinfo/` pochodzi z innej aplikacji syu. Służy wyłącznie temu, żeby ustawienia (sekcja Fuel statistics) pokazały nazwę klasy obsługującej model samochodu; użytkownik szuka w niej potem kodów ręcznie. Dane Fuel statistics obsługują `settings/CanbusClasses.java` i `settings/CanbusService.java`. **Żadna aktywność z carinfo nie może się uruchomić, żaden jej zasób (tła itp.) nie może być ustawiany ani pobierany, a jej klasy nie mają być nawet ładowane.** Wskazanie klasy w ustawieniach ma działać bez zmian.
 
-### Fakty (stan `998d56f`, sprawdź skryptem)
+### Fakty (stan `d9fc21d`, sprawdź skryptem)
 - Katalog ma 1877 plików `.java` (29 MB). 1814 z nich importuje fałszywe `com.syu.canbus.R`; żaden nie importuje R launchera.
 - Żaden manifest (`app/src/main`, `app/src/fyt`) nie deklaruje komponentu z carinfo. Każde `JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo…")` w żywym kodzie jest zakomentowane. Poza `CanbusClasses` żaden `Intent` ani `Class.forName` nie wskazuje carinfo. **Aktywności carinfo nigdy więc nie powstają.**
 - Żywy kod poza carinfo odwołuje się do niego w 188 plikach: `com/syu/module/canbus` 108, `com/syu/ui/air` 71, `com/syu/ui/parking` 4, `com/syu/canbus/warn` 3, `com/syu/canbus/Receiver.java` 1, `settings/CanbusClasses.java` 1. Rodzaje odwołań:
@@ -256,17 +256,17 @@ Zacznij od skryptu inwentaryzacji (scratchpad). Dla każdego pliku spoza carinfo
 ## U — Porządki w `app/src/main/res` (trzy commity, każdy z zielonym CI przed następnym)
 
 ### Fakty o zasobach (naiwny skan przy planowaniu; to szacunek, a nie lista do usunięcia)
-- 1234 pliki, 24 MB. Bez odwołań może być ~1730 z 1792 `dimen` (w `values`, `values-land`, `values-port`), ~190 z 478 drawable (część to rodziny dynamiczne, patrz niżej), ~17 z 107 layoutów, ~50 stringów/tablic, po kilkanaście `bool`, `integer`, `color`, `style`, 2 animacje i `raw/` (3 pliki).
+- 1161 plików, 24 MB (po rundzie Cling). Bez odwołań może być ~1730 z 1788 `dimen` (w `values`, `values-land`, `values-port`), ~180 z 461 drawable (część to rodziny dynamiczne, patrz niżej), ~15 z 101 layoutów, ~50 stringów/tablic, po kilka–kilkanaście `bool`, `integer`, `color`, `style`, 2 animacje i `raw/` (3 pliki).
 - Po K4 carinfo nie leży już w `app/src`, więc skan go nie widzi (i tak używał tylko fałszywego R).
 - `app/src/main/java/com/syu/canbus/R.java` to **fałszywe R** (20 tys. linii stałych z innej aplikacji). Przed K4 importowało je 1895 plików, po K4 robi to nadal część kodu canbus. Ich `R.x.y` **nie wskazuje** zasobów launchera, więc nie liczy się jako użycie. Liczą się tylko odwołania do R launchera: pliki w pakiecie `com.android.launcher66`, pliki z `import com.android.launcher66.R` (Java/Kotlin) i pełne `com.android.launcher66.R.x.y`. **Samego `com/syu/canbus/R.java` nie ruszaj.**
 - Release ma `isShrinkResources = true`, więc zysk dotyczy repo i buildów debug. Bezpieczeństwo jest ważniejsze niż liczba usuniętych plików.
 - **Wyszukiwanie po nazwie** (tego nie wyłapie budowa, więc to musi zrobić skrypt):
-  - literały w `share/ResValue.java` (379 × `getResId("name", R.x.class)`), `Utils.getNameTo*("…")`, `Utils.getId`, `Widget.getResId`;
+  - literały w `share/ResValue.java` (374 × `getResId("name", R.x.class)`), `Utils.getNameTo*("…")`, `Utils.getId`, `Widget.getResId`;
   - `R.drawable.class.getFields()` + `name.contains(backgrounds)` w `BackgroundSelectorDialog` ≈507: rodziny `bg_custom*` i `app_list_bg*` (`SettingsFragmentSecond` ≈967–1029);
   - layout `name + "_background_selector"` (≈193): `bar_background_selector`, `widgets_background_selector`;
   - nazwy zapisane w preferencjach: `Keys.BAR_SELECTED_BACKGROUND`, `WIDGETS_SELECTED_BACKGROUND` (domyślnie `app_list_bg`), czytane w `Workspace` ≈999/≈1785 i `CellLayout` ≈4349–4373/≈5123;
   - pogoda: `WeatherUtils.getResId("weather" + iconCode)` (`LauncherWeather` ≈117, ≈134);
-  - tapety: `Launcher.setDefaultWallpaper(resName)` ≈9080 i `WallpaperPickerActivity` ≈1022–1024 (`extra`, `extra + "_small"`), nazwy z tablic stringów (`wallpapers`, `wallpapers_n`);
+  - tapety: `Launcher.setDefaultWallpaper(resName)` ≈8711 i `WallpaperPickerActivity` ≈1022–1024 (`extra`, `extra + "_small"`), nazwy z tablic stringów (`wallpapers`, `wallpapers_n`);
   - `LauncherModel` ≈3213/≈3356 (`getIdentifier` nazw z bazy), `Partner` (pakiet zewnętrzny), `SkinResources` (skórki szukają po nazwie zasobów, które launcher ma).
 
   Zrób pełny spis: `grep -rn "getIdentifier(\|getDeclaredField(\|getFields()\|getResId(\|getNameTo\|R\.[a-z]*\.class" app/src/main/java`. Przejrzyj **każde** miejsce, ustal, jakie nazwy może zbudować, i wpisz je (nazwy, prefiksy lub wzorce) do listy „keep” w scratchpadzie z uzasadnieniem.
@@ -298,7 +298,7 @@ Zacznij od skryptu inwentaryzacji (scratchpad). Dla każdego pliku spoza carinfo
    Pełne listy dołącz do raportu, nie do repo.
 
 ### U2 — jedna kopia tam, gdzie kopie z kwalifikatorami były takie same
-1. **Layouty**: 17 par `layout-land/X` = `layout-port/X` (bajt w bajt) bez `layout/X` → `git mv layout-land/X layout/X` + `git rm layout-port/X` (dla każdej orientacji ta sama treść). `fyt_xml_dt_music_widget.xml` i `fyt_xml_dt_time_widget.xml` mają inny `layout/` domyślny, więc je zostaw. Policz pary po U1 od nowa.
+1. **Layouty**: 12 par `layout-land/X` = `layout-port/X` (bajt w bajt) bez `layout/X` → `git mv layout-land/X layout/X` + `git rm layout-port/X` (dla każdej orientacji ta sama treść). `fyt_xml_dt_music_widget.xml` i `fyt_xml_dt_time_widget.xml` mają inny `layout/` domyślny, więc je zostaw. Policz pary po U1 od nowa.
 2. **Wartości land/port**: dla każdej nazwy policz wynik dla `land` (`values-land` albo `values`) i `port`. Usuń nadpisanie albo przenieś identyczną parę do `values/` tylko wtedy, gdy oba wyniki się nie zmieniają.
 3. **Drawable/mipmap o tej samej nazwie**: usuwaj kopię tylko wtedy, gdy **symulacja wyboru zasobu** dowodzi, że żadna konfiguracja nie dostanie czegoś innego. Przykład z repo: `drawable-nodpi/clock_bg.png` = 6 kopii w `drawable-sw*-*dpi`. Kopie z gęstością są skalowane inaczej niż `nodpi`, więc nie wolno ich usunąć „na oko”.
    - Konfiguracje: sw ∈ {320, 360, 411, 480, 533, 600, 640, 720, 800, 960, 1200}, orientacja ∈ {land, port}, gęstość ∈ {120, 160, 213, 240, 320, 480, 640}.
