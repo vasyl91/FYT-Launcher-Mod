@@ -11,7 +11,6 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.MediaFavoriteController;
@@ -90,8 +89,6 @@ public final class StockSources {
     // read from any thread
     private static volatile Kind sShown = Kind.SYU_MUSIC;
     private static volatile boolean sSyuMediaUnit;
-    /** Whether probeDevice() has finished, i.e. whether sSyuMediaUnit means anything yet. */
-    private static volatile boolean sProbed;
     private static volatile int sSyuMediaUid = -1;
     private static volatile ComponentName sRadioAppComponent;
     private static final Map<String, ComponentName> sPages = new ConcurrentHashMap<>();
@@ -130,14 +127,6 @@ public final class StockSources {
 
     /** Off the main thread: package lookups are binder calls. */
     private static void probeDevice() {
-        try {
-            probeDeviceNow();
-        } finally {
-            sProbed = true;
-        }
-    }
-
-    private static void probeDeviceNow() {
         PackageManager pm = sApp.getPackageManager();
         boolean unit = false;
         int uid = -1;
@@ -171,13 +160,6 @@ public final class StockSources {
 
     private static void onDeviceResolved(boolean unit) {
         Log.d(TAG, "device: " + (unit ? "7870 (com.syu.media)" : "com.syu.music unit"));
-        if (unit) {
-            // Pinned PiP is for the com.syu.music units. The reset in LauncherApplication.onCreate()
-            // cannot tell a 7870 yet (this lookup is asynchronous, and the 7862 must not lose the
-            // mode before it ends), so it is done here.
-            LauncherApplication.clearPinnedPipModes(
-                    PreferenceManager.getDefaultSharedPreferences(sApp), "7870");
-        }
         Kind before = sArbiter.shown();
         if (sArbiter.setSyuMediaUnit(unit)) {
             onShownChanged(before, sArbiter.shown(), "device resolved", false, false);
@@ -193,19 +175,12 @@ public final class StockSources {
     }
 
     /**
-     * A 7870: com.syu.media is the stock player. False until the lookup at the start has
-     * answered, i.e. the behavior before 7870 support.
+     * Whether the stock player is com.syu.media (a 7870 has it): what the music code asks, found
+     * by the package. False until the lookup at the start has answered. Questions about the
+     * device itself go to DeviceIdentity.
      */
     public static boolean isSyuMediaUnit() {
         return sSyuMediaUnit;
-    }
-
-    /**
-     * Whether the device lookup has finished. Until then {@link #isSyuMediaUnit()} is false on a
-     * 7870 as well; whoever must not take that for "not a 7870" waits for this.
-     */
-    public static boolean isProbed() {
-        return sProbed;
     }
 
     /** The uid of com.syu.media on a 7870, else -1. */

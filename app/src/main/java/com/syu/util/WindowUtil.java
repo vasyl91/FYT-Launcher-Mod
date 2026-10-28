@@ -2193,8 +2193,8 @@ public class WindowUtil {
 
     public static void openPinnedPip() {
         if (WakeDetection.skipPipWork("openPinnedPip")) return;
-        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): the com.syu.music
-        // units only (7862, 8581), see LauncherApplication.supportsPinnedPip().
+        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): every FYT platform
+        // but the 7870, see PinnedPip and LauncherApplication.supportsPinnedPip().
         if (!LauncherApplication.supportsPinnedPip()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
@@ -2512,8 +2512,8 @@ public class WindowUtil {
     }
 
     public static void removePinnedPip() {
-        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): the com.syu.music
-        // units only (7862, 8581), see LauncherApplication.supportsPinnedPip().
+        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): every FYT platform
+        // but the 7870, see PinnedPip and LauncherApplication.supportsPinnedPip().
         if (!LauncherApplication.supportsPinnedPip()) return;
         if (prefs == null) {
             prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 

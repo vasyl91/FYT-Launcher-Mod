@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class DayNightBrightnessFloorTest {
 
     @Test
-    void the7862KeepsLevelZero() {
+    void anFytUnitBut7870KeepsLevelZero() {
         assertEquals(0, DayNightBrightness.floorFytLevel(0, false));
         assertEquals(37, DayNightBrightness.floorFytLevel(37, false));
     }

@@ -1,22 +1,19 @@
 package com.android.launcher66;
 
 /**
- * Where FYT's pinned PiP is offered. It works on the FYT units whose stock player is
- * com.syu.music (7862, 8581 and the older ones), in the fyt and the standard version alike. The
- * 7870 (com.syu.media) has no pinned stack for the launcher to use, so there every pane is a
- * window. Also how PinnedPipFocus tells a touch on the PiP from one on the launcher. Free of
- * android.* so the rules can be tested.
+ * Where FYT's pinned PiP is offered. Every FYT platform has it (7862, 8581, 9853i and the ones
+ * not known by name) but the 7870, whose pinned stack the launcher has nothing to use (owner's
+ * decision); off FYT units there is none. It works in the fyt and the standard version alike.
+ * Elsewhere every pane is a window. Also how PinnedPipFocus tells a touch on the PiP from one on
+ * the launcher. Free of android.* so the rules can be tested.
  */
 final class PinnedPip {
 
     private PinnedPip() {}
 
-    /**
-     * @param fytUnit an FYT unit at all
-     * @param syuMediaUnit a 7870, whose stock player is com.syu.media
-     */
-    static boolean supported(boolean fytUnit, boolean syuMediaUnit) {
-        return fytUnit && !syuMediaUnit;
+    /** Whether the device has the pinned PiP: an FYT platform, the 7870 excepted. */
+    static boolean supported(FytPlatform.Chipset chipset) {
+        return chipset != FytPlatform.Chipset.FYT_7870 && chipset != FytPlatform.Chipset.NOT_FYT;
     }
 
     /** Whether a pane is the pinned PiP: the user chose it and the device has it. */

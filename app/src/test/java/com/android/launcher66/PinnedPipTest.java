@@ -9,18 +9,24 @@ class PinnedPipTest {
 
     @Test
     void aDeviceThatIsNotAnFytUnitHasNoPinnedPip() {
-        assertFalse(PinnedPip.supported(false, false));
-        assertFalse(PinnedPip.supported(false, true));
+        assertFalse(PinnedPip.supported(FytPlatform.Chipset.NOT_FYT));
     }
 
     @Test
-    void anFytUnitWithTheMusicPlayerHasIt() {
-        assertTrue(PinnedPip.supported(true, false)); // 7862, 8581
+    void theFytPlatformsHaveIt() {
+        assertTrue(PinnedPip.supported(FytPlatform.Chipset.FYT_7862));
+        assertTrue(PinnedPip.supported(FytPlatform.Chipset.FYT_8581));
+        assertTrue(PinnedPip.supported(FytPlatform.Chipset.FYT_9853I));
+    }
+
+    @Test
+    void anFytUnitNotKnownByNameHasIt() {
+        assertTrue(PinnedPip.supported(FytPlatform.Chipset.UNKNOWN_FYT));
     }
 
     @Test
     void the7870DoesNotHaveIt() {
-        assertFalse(PinnedPip.supported(true, true));
+        assertFalse(PinnedPip.supported(FytPlatform.Chipset.FYT_7870));
     }
 
     @Test

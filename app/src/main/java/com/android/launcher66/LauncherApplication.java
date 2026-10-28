@@ -170,11 +170,11 @@ public class LauncherApplication extends Application {
                     .remove(Keys.COVER_SPLASH)
                     .apply();
         }
-        // Pinned PiP exists on the FYT units with com.syu.music only: elsewhere every pane is a
-        // window. Here that means the devices that are not FYT units at all; whether an FYT unit is
-        // a 7870 is not known yet, StockSources.onDeviceResolved() clears it for that one.
+        // Pinned PiP exists on the FYT platforms but the 7870: elsewhere every pane is a window,
+        // and a mode saved as pinned (by an older version, or on another device's backup) is put
+        // back right away, the 7870 included.
         if (!supportsPinnedPip()) {
-            clearPinnedPipModes(prefs, "not an FYT unit");
+            clearPinnedPipModes(prefs, DeviceIdentity.chipset().name());
         }
         if (!showsFytOptions()) {
             // Settings hide what only an FYT unit has, so none of it may stay on.
@@ -755,18 +755,16 @@ public class LauncherApplication extends Application {
     }
 
     /**
-     * Whether a pane can be FYT's pinned PiP instead of a window: on an FYT unit with
-     * com.syu.music (7862, 8581), in the fyt and the standard version alike. Not on the 7870
-     * (com.syu.media), where the launcher has no pinned stack to use (owner's decision). What it
-     * calls that a user app may be refused (system properties, setPinnedStackVisible,
-     * forceStopPackage) is caught, see WindowUtil.
+     * Whether a pane can be FYT's pinned PiP instead of a window: on every FYT platform but the
+     * 7870, in the fyt and the standard version alike (see PinnedPip; the 7870 has no pinned
+     * stack for the launcher to use, owner's decision). What it calls that a user app may be
+     * refused (system properties, setPinnedStackVisible, forceStopPackage) is caught, see
+     * WindowUtil.
      *
-     * Until StockSources has found out which unit this is, an FYT unit answers true, as before:
-     * the 7862 and the 8581 never lose it, and the 7870 gets its saved modes cleared when the
-     * lookup ends (StockSources.onDeviceResolved()).
+     * Known from the start of the process (DeviceIdentity), without waiting for StockSources.
      */
     public static boolean supportsPinnedPip() {
-        return PinnedPip.supported(isFytDevice(), StockSources.isSyuMediaUnit());
+        return PinnedPip.supported(DeviceIdentity.chipset());
     }
 
     /** Whether the pane saved under modeKey is the pinned PiP, which is not where it is unsupported. */

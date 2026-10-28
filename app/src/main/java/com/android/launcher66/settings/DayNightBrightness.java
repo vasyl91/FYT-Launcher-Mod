@@ -11,8 +11,8 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.DeviceIdentity;
 import com.android.launcher66.LauncherApplication;
-import com.fyt.car.StockSources;
 import com.syu.car.CarStates;
 import com.syu.ipc.data.FinalMain;
 import com.syu.remote.RemoteTools;
@@ -177,9 +177,9 @@ public final class DayNightBrightness {
         }
     }
 
-    /** Only the 7870 has a minimum among the FYT units; the 7862 keeps the level as it is. */
-    static int floorFytLevel(int level, boolean syuMediaUnit) {
-        return syuMediaUnit ? Math.max(level, FYT_LEVEL_FLOOR_7870) : level;
+    /** Only the 7870 has a minimum among the FYT units; any other keeps the level as it is. */
+    static int floorFytLevel(int level, boolean is7870) {
+        return is7870 ? Math.max(level, FYT_LEVEL_FLOOR_7870) : level;
     }
 
     /** The lowest value of a phone (not an FYT unit). */
@@ -191,10 +191,7 @@ public final class DayNightBrightness {
     private static void sendToFyt(Context appContext, int level, int attempt) {
         RemoteTools tools = CarStates.getCar(appContext).getTools();
         boolean connected = tools != null && tools.connected();
-        // Which FYT unit this is is found out a moment after the start; a 7870 would be taken for
-        // a 7862 (no minimum) until then
-        boolean probed = StockSources.isProbed();
-        if ((!connected || !probed) && attempt < FYT_MAX_RETRIES) {
+        if (!connected && attempt < FYT_MAX_RETRIES) {
             MAIN_HANDLER.postDelayed(() -> sendToFyt(appContext, level, attempt + 1), FYT_RETRY_DELAY_MS);
             return;
         }
@@ -202,7 +199,7 @@ public final class DayNightBrightness {
             Log.w(TAG, "syu service not connected, FYT brightness level " + level + " not sent");
             return;
         }
-        int sent = probed ? floorFytLevel(level, StockSources.isSyuMediaUnit()) : level;
+        int sent = floorFytLevel(level, DeviceIdentity.is7870());
         if (sent != level) {
             Log.i(TAG, "FYT brightness level " + level + " raised to the minimum " + sent
                     + " of this device (7870)");
