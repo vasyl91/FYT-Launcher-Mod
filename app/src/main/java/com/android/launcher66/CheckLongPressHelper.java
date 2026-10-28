@@ -20,6 +20,10 @@ public class CheckLongPressHelper {
                     "Has window focus: " + String.valueOf(CheckLongPressHelper.this.mView.hasWindowFocus()) + 
                     ", Performed long click: " +  String.valueOf(CheckLongPressHelper.this.mHasPerformedLongPress) + 
                     ", performLongClick(): " + String.valueOf(CheckLongPressHelper.this.mView.performLongClick()));
+                // PinnedPipFocus: hasWindowFocus() is false whenever the pinned PiP is shown, also
+                // after a touch on the launcher (PinnedPipFocus's window has the focus then), as it
+                // was before PinnedPipFocus. The performLongClick() in the log line above runs
+                // regardless.
                 if (CheckLongPressHelper.this.mView.hasWindowFocus() && !CheckLongPressHelper.this.mHasPerformedLongPress && CheckLongPressHelper.this.mView.performLongClick()) {
                     CheckLongPressHelper.this.mView.setPressed(false);
                     CheckLongPressHelper.this.mHasPerformedLongPress = true;

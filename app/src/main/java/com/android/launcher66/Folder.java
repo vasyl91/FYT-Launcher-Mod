@@ -274,6 +274,8 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     public void startEditingFolderName() {
         mFolderName.setHint("");
         // The panes stay: the keyboard comes over them, and they take no focus from it.
+        // The pinned PiP does take it, from the whole launcher window: there PinnedPipFocus's
+        // window has the input method for this field, and this call goes through it.
         mIsEditingName = true;
         mFolderName.postDelayed(new Runnable() {
             @Override
@@ -285,6 +287,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     }
 
     public void dismissEditingName() {
+        // PinnedPipFocus: does nothing while the pinned PiP is shown, the input method's window is
+        // PinnedPipFocus's then, not this one. It closes the keyboard itself when the
+        // requestFocus() in doneEditingFolderName() takes the focus from the name.
         mInputMethodManager.hideSoftInputFromWindow(getWindowToken(), 0);
         doneEditingFolderName(true);
     }

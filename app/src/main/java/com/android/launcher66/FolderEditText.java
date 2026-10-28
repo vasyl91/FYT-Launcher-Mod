@@ -27,6 +27,9 @@ public class FolderEditText extends EditText {
 
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        // While the pinned PiP is shown, Back reaches this only through PinnedPipFocus's window
+        // (its dispatchKeyEventPreIme()), i.e. while that window has the focus: after a touch on
+        // the PiP it is the PiP app's.
         // Catch the back button on the soft keyboard so that we can just close the activity
         if (event.getKeyCode() == android.view.KeyEvent.KEYCODE_BACK) {
             mFolder.doneEditingFolderName(true);

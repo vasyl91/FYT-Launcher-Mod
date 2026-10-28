@@ -37,6 +37,7 @@ import com.android.launcher66.HomeFrontGuard;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.NotificationListener;
+import com.android.launcher66.PinnedPipFocus;
 import com.android.launcher66.R;
 import com.android.launcher66.Workspace;
 import com.android.launcher66.settings.Helpers;
@@ -690,6 +691,9 @@ public class WindowUtil {
                                 Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
                                 Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
                                 setPinnedStackVisibleMethod.invoke(activityManager, false);
+                                // The focus it kept from the launcher's window is the
+                                // window's again.
+                                PinnedPipFocus.release("pinned stack hidden");
                             }
                             Log.i(TAG, "openPip() pane: dismissed");
                         } catch (Throwable t) {
@@ -836,6 +840,8 @@ public class WindowUtil {
                     Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
                     Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
                     setPinnedStackVisibleMethod.invoke(activityManager, false);
+                    // The focus it kept from the launcher's window is the window's again.
+                    PinnedPipFocus.release("pinned stack hidden");
                 }
                 Log.i(TAG, "removePip() pane: dismissed");
             } catch (Throwable t) {
@@ -2543,6 +2549,8 @@ public class WindowUtil {
             Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
             Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
             setPinnedStackVisibleMethod.invoke(activityManager, false);
+            // The focus it kept from the launcher's window is the window's again.
+            PinnedPipFocus.release("pinned stack hidden");
             Log.i(TAG, "removePinnedPip() pane: dismissed");
         } catch (Throwable t) {
             Log.w(TAG, "removePinnedPip() pane: dismiss failed", t);

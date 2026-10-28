@@ -407,6 +407,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                                         // Launcher not running, or mWorkspace not created yet
                                         return;
                                     }
+                                    // PinnedPipFocus: false whenever the pinned PiP is shown,
+                                    // also right after a touch on the launcher (PinnedPipFocus's
+                                    // window has the focus then), as before PinnedPipFocus.
                                     final boolean alreadyOnHome = launcher.mHasFocus;
                                     Folder openFolder = launcher.getWorkspace().getOpenFolder();
                                     // In all these cases, only animate if we're already on home

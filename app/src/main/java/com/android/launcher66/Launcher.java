@@ -2799,6 +2799,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }, 7100); 
         }
 
+        // PinnedPipFocus: false whenever the pinned PiP is shown, also right after the user touched
+        // the launcher (PinnedPipFocus's window has the focus then), as before PinnedPipFocus.
         final boolean alreadyOnHome = mHasFocus;
 
         if (mWorkspace == null) {
@@ -2881,6 +2883,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
         AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
         super.onPause();
+        // Before the early return below: an overlay window, it would keep the focus from the next
+        // activity.
+        PinnedPipFocus.release("launcher paused");
         // The 7870's ROM pauses and resumes the launcher six times in the 16 s after a wake (capture
         // 26-10-2026 19:45:55); this says what took the screen each time. The app is the one
         // ForegroundAppTracker saw last, which needs no query here.
@@ -3007,6 +3012,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         + " (" + ConfigChanges.configChangeNames(changing) + ")"));
         mWallpaperPicker.hideWallpaperPickerIndicator();
         mPermissionFlow.onDestroy();
+        PinnedPipFocus.release("launcher destroyed");
         // Unconditional, and before any field is cleared. onPause() returns early on
         // (mHomeButtonPressed && isOnMainWorkspaceScreen()), so leaving via HOME from the
         // main screen never unregistered the refreshers and the static NOTIFIER_* kept
@@ -4010,6 +4016,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         if (action == MotionEvent.ACTION_DOWN) {
             com.syu.util.WindowHostVdView.noteLauncherInteraction();
+            // FYT's pinned PiP keeps the focus from this window: the keyboard and the keys follow
+            // the touch through PinnedPipFocus's window instead.
+            PinnedPipFocus.onLauncherTouchDown(this);
         }
         return super.dispatchTouchEvent(ev);
     }
@@ -4017,6 +4026,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+        // PinnedPipFocus: while the pinned PiP is shown this window has no focus, whatever the user
+        // touches; PinnedPipFocus's window has it on the launcher's behalf. Not called then, and
+        // mHasFocus stays false, as before PinnedPipFocus.
         mHasFocus = hasFocus;
         if (hasFocus) {
             com.syu.util.WindowHostVdView.noteLauncherInteraction();
@@ -5793,6 +5805,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
 
+            // PinnedPipFocus: mHasFocus is false whenever the pinned PiP is shown, also right after
+            // the user touched the launcher (PinnedPipFocus's window has the focus then).
             final boolean alreadyOnHome = mHasFocus && ((intent.getFlags() &
                     Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
                     != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
@@ -5828,6 +5842,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
             final View v = getWindow().peekDecorView();
             if (v != null && v.getWindowToken() != null) {
+                // PinnedPipFocus: does nothing while PinnedPipFocus's window has the input method
+                // (this window's token is not its). That window closes the keyboard itself once
+                // the folder's name gives its focus up (closeFolder() above, onPause()).
                 InputMethodManager imm = (InputMethodManager)getSystemService(
                         INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -7887,6 +7904,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // launcher has force-stopped it to start it again. That restart must not take the user
             // away from the page the PiP is shown on: its start would then be refused there (log
             // 27-10-2026 23:31: 16.804, 23.633, 32.588, each "not on page 2" later).
+            if ("com.lsec.pipdie".equals(intent.getAction())) {
+                // No pinned PiP to keep the focus from the launcher's window any more.
+                PinnedPipFocus.release("pinned PiP app died");
+            }
             boolean ownPipRestart = "com.lsec.pipdie".equals(intent.getAction())
                     && WindowUtil.pipDieFromOwnForceStop();
             if (ownPipRestart) {

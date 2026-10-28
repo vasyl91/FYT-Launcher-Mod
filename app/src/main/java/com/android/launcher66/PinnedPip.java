@@ -4,7 +4,8 @@ package com.android.launcher66;
  * Where FYT's pinned PiP is offered. It works on the FYT units whose stock player is
  * com.syu.music (7862, 8581 and the older ones), in the fyt and the standard version alike. The
  * 7870 (com.syu.media) has no pinned stack for the launcher to use, so there every pane is a
- * window. Free of android.* so the rule can be tested.
+ * window. Also how PinnedPipFocus tells a touch on the PiP from one on the launcher. Free of
+ * android.* so the rules can be tested.
  */
 final class PinnedPip {
 
@@ -21,5 +22,17 @@ final class PinnedPip {
     /** Whether a pane is the pinned PiP: the user chose it and the device has it. */
     static boolean mode(boolean supported, boolean saved) {
         return supported && saved;
+    }
+
+    /**
+     * Whether the ACTION_OUTSIDE that PinnedPipFocus's window gets comes from a touch on another
+     * app's window: the pinned PiP, or a window pane's app. InputDispatcher zeroes all coordinates
+     * of it, the raw ones included, when the touched window belongs to another uid than the
+     * watching one (FLAG_ZERO_COORDS). A touch on one of the launcher's own windows keeps them, and
+     * one at the screen's very corner would land on the status bar, which is above that window and
+     * sends it nothing.
+     */
+    static boolean outsideTouchOnOtherApp(float rawX, float rawY) {
+        return rawX == 0f && rawY == 0f;
     }
 }
