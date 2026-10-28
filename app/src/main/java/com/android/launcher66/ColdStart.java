@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * The launcher's first start after a device restart (a cold boot), as opposed to a wake from
@@ -555,15 +557,33 @@ public final class ColdStart {
     private static final List<String> TRANSIENT_PACKAGES = Arrays.asList(
             "android", "com.android.systemui", "com.android.launcher3");
 
-    /** From ForegroundAppTracker, main thread. The launcher itself counts as no app. */
+    /** One thread, so that the apps are written in the order they came to the front. */
+    private static final ExecutorService LAST_APP_WRITER = Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "LastAppNote");
+        thread.setDaemon(true);
+        return thread;
+    });
+    private static volatile String sLastNoted;
+
+    /**
+     * From ForegroundAppTracker, main thread. The launcher itself counts as no app. The preferences
+     * are reached from another thread: the first getSharedPreferences() of a context checks its
+     * folder on disk and edit() waits for the file to be read, which StrictMode flags on the main
+     * thread.
+     */
     public static void noteForegroundApp(Context context, String packageName) {
         if (TRANSIENT_PACKAGES.contains(packageName) || HomeFrontGuard.isCameraPackage(packageName)
                 || WakeDetection.isAsleep()) {
             return;
         }
-        String last = packageName.equals(context.getPackageName()) ? "" : packageName;
-        context.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
-                .edit().putString(KEY_LAST_APP, last).apply();
+        final String last = packageName.equals(context.getPackageName()) ? "" : packageName;
+        if (last.equals(sLastNoted)) {
+            return;
+        }
+        sLastNoted = last;
+        final Context app = context.getApplicationContext();
+        LAST_APP_WRITER.execute(() -> app.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
+                .edit().putString(KEY_LAST_APP, last).apply());
     }
 
     /** The app noted last; "" for the home screen, or when nothing has been noted. */
