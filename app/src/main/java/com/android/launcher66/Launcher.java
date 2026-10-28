@@ -476,7 +476,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private State mOnResumeState = State.NONE;
     private SpannableStringBuilder mDefaultKeySsb = null;
     boolean mWorkspaceLoading = true;
-    private boolean closePop = LauncherApplication.sApp.getResources().getBoolean(R.bool.close_popwindow);
     private ArrayList<Runnable> mBindOnResumeCallbacks = new ArrayList<>();
     private ArrayList<Runnable> mOnResumeCallbacks = new ArrayList<>();
     private boolean mUserPresent = true;
@@ -2083,18 +2082,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     mWorkspace.exitWidgetResizeMode();
                     mWorkspace.showOutlinesTemporarily(true);
                 }
-                if (ResValue.getInstance().clickapp_cling > 0) {
-                    Cling cling = (Cling) findViewById(ResValue.getInstance().clickapp_cling);
-                    if (cling != null) {
-                        cling.setVisibility(android.view.View.GONE);
-                    }
-                    Launcher.this.stopVoice();
-                    if (Launcher.this.mWaitingForResume != null) {
-                        Launcher.this.mWaitingForResume.setStayPressed(false);
-                    }
-                    if (Launcher.this.mAppsCustomizeContent != null) {
-                        Launcher.this.mAppsCustomizeContent.resetDrawableState();
-                    }
+                Launcher.this.stopVoice();
+                if (Launcher.this.mWaitingForResume != null) {
+                    Launcher.this.mWaitingForResume.setStayPressed(false);
+                }
+                if (Launcher.this.mAppsCustomizeContent != null) {
+                    Launcher.this.mAppsCustomizeContent.resetDrawableState();
                 }
                 if (Launcher.this.firstLayout != null) {
                     Launcher.this.firstLayout.setVisibility(android.view.View.VISIBLE);
@@ -6904,129 +6897,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 SystemProperties.set("sys.bdcl.enable", "1");
             }
         }
-        TextView clingTitleText = (TextView) findViewById(ResValue.getInstance().clingtitletext);
-        TextView clingText = (TextView) findViewById(ResValue.getInstance().clingtext);
-        String str1 = SystemProperties.get("ro.client.foreign", "false");
-        if (str1.equals("true") || ResValue.getInstance().clickapp_cling <= 0 || intent.getComponent() == null || !Config.EXISTVOICE || !closePop) {
-            success = start(v, intent, tag);
-        } else {
-            if (findViewById(ResValue.getInstance().clickapp) != null) {
-                findViewById(ResValue.getInstance().clickapp).setOnClickListener(arg0 -> {
-                    Cling cling = (Cling) this.findViewById(ResValue.getInstance().clickapp_cling);
-                    Runnable cb = () -> {
-                    };
-                    this.dismissClingApp(cling, cb, intent, 200, true);
-                    this.success = this.start(v, intent, tag);
-                    this.stopVoice();
-                });
-            }
-            findViewById(ResValue.getInstance().clickapp_cancel).setOnClickListener(arg0 -> {
-                Cling cling = (Cling) this.findViewById(ResValue.getInstance().clickapp_cling);
-                Runnable cb = new Runnable() {
-                    @Override
-                    public void run() {
-                    }
-                };
-                this.dismissClingApp(cling, cb, intent, 200, true);
-                this.stopVoice();
-                if (this.mWaitingForResume != null) {
-                    this.mWaitingForResume.setStayPressed(false);
-                }
-                if (this.mAppsCustomizeContent != null) {
-                    this.mAppsCustomizeContent.resetDrawableState();
-                }
-            });
-            if (intent.getComponent().getPackageName().equals("com.syu.music")) {
-                LogPreview.show("SystemProperties" + SystemProperties.getInt("persist.sys.clingmusic", 0));
-                if (SystemProperties.getInt("persist.sys.clingmusic", 0) < 3) {
-                    showClickappCling();
-                    String clingMusicTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingmusictitle", "string"));
-                    String clingMusicText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingmusictext", "string"));
-                    clingTitleText.setText(clingMusicTitle);
-                    clingText.setText(clingMusicText);
-                    wakeVoice(String.valueOf(clingMusicTitle) + clingMusicText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals("com.syu.video")) {
-                LogPreview.show("SystemProperties" + SystemProperties.getInt("persist.fyt.clingvideo", 0));
-                if (SystemProperties.getInt("persist.sys.clingvideo", 0) < 3) {
-                    showClickappCling();
-                    String clingVideoTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingvideotitle", "string"));
-                    String clingVideoText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingvideotext", "string"));
-                    clingTitleText.setText(clingVideoTitle);
-                    clingText.setText(clingVideoText);
-                    wakeVoice(String.valueOf(clingVideoTitle) + clingVideoText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals(FytPackage.GaodeACTION)) {
-                if (SystemProperties.getInt("persist.sys.clinggaode", 0) < 3) {
-                    showClickappCling();
-                    String clingNaveTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingnavetitle", "string"));
-                    String clingNaveText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingnavetext", "string"));
-                    clingTitleText.setText(clingNaveTitle);
-                    clingText.setText(clingNaveText);
-                    wakeVoice(String.valueOf(clingNaveTitle) + clingNaveText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals("com.syu.radio")) {
-                if (SystemProperties.getInt("persist.sys.clingradio", 0) < 3) {
-                    showClickappCling();
-                    String clingRadioTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingradiotitle", "string"));
-                    String clingRadioText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingradiotext", "string"));
-                    clingTitleText.setText(clingRadioTitle);
-                    clingText.setText(clingRadioText);
-                    wakeVoice(String.valueOf(clingRadioTitle) + clingRadioText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals("com.syu.bt")) {
-                if (SystemProperties.getInt("persist.sys.clingbt", 0) < 3) {
-                    showClickappCling();
-                    String clingBtTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingbttitle", "string"));
-                    String clingBtText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingbttext", "string"));
-                    clingTitleText.setText(clingBtTitle);
-                    clingText.setText(clingBtText);
-                    wakeVoice(String.valueOf(clingBtTitle) + clingBtText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals(FytPackage.KWACTION)) {
-                if (SystemProperties.getInt("persist.sys.clingkuwo", 0) < 3) {
-                    showClickappCling();
-                    String clingKuwoTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingkuwotitle", "string"));
-                    String clingKuwoText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingkuwotext", "string"));
-                    clingTitleText.setText(clingKuwoTitle);
-                    clingText.setText(clingKuwoText);
-                    wakeVoice(String.valueOf(clingKuwoTitle) + clingKuwoText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals(FytPackage.KLFMACTION)) {
-                if (SystemProperties.getInt("persist.sys.clingkaola", 0) < 3) {
-                    showClickappCling();
-                    String clingKaoLaTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingkaolatitle", "string"));
-                    String clingKaoLaText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingkaolatext", "string"));
-                    clingTitleText.setText(clingKaoLaTitle);
-                    clingText.setText(clingKaoLaText);
-                    wakeVoice(String.valueOf(clingKaoLaTitle) + clingKaoLaText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else {
-                success = start(v, intent, tag);
-            }
-        }
+        success = start(v, intent, tag);
         return success;
-    }
-
-    public void wakeVoice(String value) {
-        Intent intent = new Intent("com.syu.execute_tts");
-        intent.putExtra("raw_text", value);
-        intent.setPackage(FytPackage.voiceAction);
-        ServiceIntentGate.startIfAvailable(this, intent, "voice execute");
     }
 
     public void stopVoice() {
@@ -8820,74 +8692,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return cling;
     }
 
-    public void dismissClingApp(final Cling cling, final Runnable postAnimationCb, final Intent intent, int duration, boolean restoreNavBarVisibilty) {
-        if (cling != null && cling.getVisibility() != View.GONE) {
-            final Runnable cleanUpClingCb = new Runnable() { 
-                public void run() {
-                    cling.cleanup();
-                    final Intent intent2 = intent;
-                    new Thread("dismissClingThread") { 
-                        public void run() {
-                            if (intent2.getComponent().getPackageName().equals("com.syu.music")) {
-                                int a = SystemProperties.getInt("persist.sys.clingmusic", 0);
-                                String value = new StringBuilder(String.valueOf(a + 1)).toString();
-                                LogPreview.show("dismissClingApp" + value);
-                                SystemProperties.set("persist.sys.clingmusic", value);
-                                return;
-                            }
-                            if (intent2.getComponent().getPackageName().equals("com.syu.video")) {
-                                int a2 = SystemProperties.getInt("persist.sys.clingvideo", 0);
-                                String value2 = new StringBuilder(String.valueOf(a2 + 1)).toString();
-                                LogPreview.show("dismissClingAppvideo" + value2);
-                                SystemProperties.set("persist.sys.clingvideo", value2);
-                                return;
-                            }
-                            if (intent2.getComponent().getPackageName().equals(FytPackage.GaodeACTION)) {
-                                int a3 = SystemProperties.getInt("persist.sys.clinggaode", 0);
-                                String value3 = new StringBuilder(String.valueOf(a3 + 1)).toString();
-                                SystemProperties.set("persist.sys.clinggaode", value3);
-                                return;
-                            }
-                            if (intent2.getComponent().getPackageName().equals("com.syu.radio")) {
-                                int a4 = SystemProperties.getInt("persist.sys.clingradio", 0);
-                                String value4 = new StringBuilder(String.valueOf(a4 + 1)).toString();
-                                SystemProperties.set("persist.sys.clingradio", value4);
-                                return;
-                            }
-                            if (intent2.getComponent().getPackageName().equals("com.syu.bt")) {
-                                int a5 = SystemProperties.getInt("persist.sys.clingbt", 0);
-                                String value5 = new StringBuilder(String.valueOf(a5 + 1)).toString();
-                                SystemProperties.set("persist.sys.clingbt", value5);
-                            } else if (intent2.getComponent().getPackageName().equals(FytPackage.KWACTION)) {
-                                int a6 = SystemProperties.getInt("persist.sys.clingkuwo", 0);
-                                String value6 = new StringBuilder(String.valueOf(a6 + 1)).toString();
-                                SystemProperties.set("persist.sys.clingkuwo", value6);
-                            } else if (intent2.getComponent().getPackageName().equals(FytPackage.KLFMACTION)) {
-                                int a7 = SystemProperties.getInt("persist.sys.clingkaola", 0);
-                                String value7 = new StringBuilder(String.valueOf(a7 + 1)).toString();
-                                SystemProperties.set("persist.sys.clingkaola", value7);
-                            }
-                        }
-                    }.start();
-                    if (postAnimationCb != null) {
-                        postAnimationCb.run();
-                    }
-                }
-            };
-            if (duration <= 0) {
-                cleanUpClingCb.run();
-            } else {
-                cling.hide(duration, cleanUpClingCb);
-            }
-            mHideFromAccessibilityHelper.restoreImportantForAccessibility(mDragLayer);
-
-            if (restoreNavBarVisibilty) {
-                cling.setSystemUiVisibility(cling.getSystemUiVisibility() &
-                        ~View.SYSTEM_UI_FLAG_LOW_PROFILE);
-            }
-        }
-    }
-
     private void dismissCling(final Cling cling, final Runnable postAnimationCb,
                               final String flag, int duration, boolean restoreNavBarVisibilty) {
         // To catch cases where siblings of top-level views are made invisible, just check whether
@@ -9040,13 +8844,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     protected String getFirstRunFocusedHotseatAppBubbleDescription() {
         return "";
-    }
-
-    public void showClickappCling() {
-        if (ResValue.getInstance().clickapp_cling > 0) {
-            Cling c = initCling(ResValue.getInstance().clickapp_cling, 0, false, true);
-            c.setFocusedHotseatApp(getFirstRunFocusedHotseatAppDrawableId(), getFirstRunFocusedHotseatAppRank(), getFirstRunFocusedHotseatAppComponentName(), getFirstRunFocusedHotseatAppBubbleTitle(), getFirstRunFocusedHotseatAppBubbleDescription());
-        }
     }
 
     public void showFirstRunWorkspaceCling() {

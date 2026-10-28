@@ -73,12 +73,5 @@
             android:layout_height="fill_parent"
             android:layout_marginBottom="0.0px"
             layout="@layout/apps_customize_pane" />
-
-        <include
-            android:id="@+id/clickapp_cling"
-            android:visibility="gone"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            layout="@layout/clickapp_cling" />
     </com.android.launcher66.DragLayer>
 </FrameLayout>
