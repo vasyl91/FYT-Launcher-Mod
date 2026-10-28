@@ -354,18 +354,49 @@ Na razie bez zmiany zachowania: generator, asset i parser z testami.
    - drugie wywołanie w poście z `finishOnce()` (≈1846) na wypadek końca bez drenażu. Słuchacze muszą być idempotentni;
    - `public boolean isManualCapture()` → `running && !draining && trigger == Trigger.MANUAL`;
    - istniejący `StateListener` zostaje bez zmian.
-2. **`FabOverlayService`**: wydziel `static int fabSizePx(Context)` z `computeFabSizePx()` (ta sama formuła: 8% krótszego boku
-   z `getResources().getDisplayMetrics()`, min. 40 dp). Metoda instancji ma ją wołać, bez zmiany zachowania.
-   `BACKGROUND_ALPHA` zrób package-private.
+2. **`FabOverlayService`**: bez zmiany zachowania wydziel to, czego potrzebuje przycisk.
+   - `static int fabSizePx(Context)` z `computeFabSizePx()`. Ta sama formuła: 8% krótszego boku z `getResources().getDisplayMetrics()`,
+     min. 40 dp. Metoda instancji ma ją wołać.
+   - `static int statusBarHeightPx(Context)` z `getStatusBarHeight()` (≈806). Metoda instancji ma ją wołać.
+   - `excludeFromSystemGestures(View)` (≈404) i `BACKGROUND_ALPHA` zrób package-private.
+   - Obsługi dotyku (`attachTouchHandler`/`trackFinger`/`onDragFinished`) **nie refaktoryzuj** i nie wydzielaj do wspólnej klasy.
+     Przycisk ma własną kopię tej logiki (pkt 3).
 3. **Nowa klasa `settings/LogcatStopButton`** (singleton, wątek główny, bez `Service` i bez wpisu w manifeście; okno należy do procesu launchera jak sam logcat):
    - `show(Context app)`:
      - nic nie rób, gdy `!LogcatWorker.get().isManualCapture()`, gdy przycisk już jest albo gdy `!Settings.canDrawOverlays(app)` (wtedy `Log.w`);
      - inaczej dodaj okno przez `WindowManager` z kontekstu aplikacji:
-       - `TYPE_APPLICATION_OVERLAY`, `FLAG_NOT_FOCUSABLE | FLAG_NOT_TOUCH_MODAL | FLAG_LAYOUT_IN_SCREEN`, `PixelFormat.TRANSLUCENT`;
-       - `gravity = TOP|LEFT`, wysokość `h = FabOverlayService.fabSizePx(app)`, szerokość `2*h`;
-       - `x = (szerokośćEkranu - 2h)/2`, `y` = wysokość paska stanu (wyśrodkowany u góry, stała `TOP_MARGIN_PX = 0`);
+       - flagi jak w `FabOverlayService.createLayoutParams()` (≈377): `TYPE_APPLICATION_OVERLAY`,
+         `FLAG_NOT_FOCUSABLE | FLAG_NOT_TOUCH_MODAL | FLAG_LAYOUT_IN_SCREEN | FLAG_LAYOUT_NO_LIMITS`, `PixelFormat.TRANSLUCENT`;
+       - `gravity = TOP|LEFT`, wysokość `h = FabOverlayService.fabSizePx(app)`, szerokość `w = 2*h`;
+       - pozycja według pkt „Pozycja” niżej, ustalona **przed** `addView()`, żeby przycisk nie przeskakiwał;
        - `FLAG_NOT_FOCUSABLE` jest konieczne: okno nie może zabrać fokusu launcherowi (`PinnedPipFocus`, `HomeFrontGuard`);
-     - zarejestruj się jako `CaptureEndListener`.
+       - na API 29+ `FabOverlayService.excludeFromSystemGestures(view)`, jak przy przyciskach PiP;
+     - zarejestruj się jako `CaptureEndListener`;
+     - zarejestruj `ComponentCallbacks` na kontekście aplikacji (pkt „Zmiana konfiguracji”).
+   - **Pozycja** (te same zasady co `FabOverlayService.resolvePosition`/`applySavedPosition`/`clampX`/`clampY`, ≈426–475):
+     - nowe klucze w `Keys`: `LOGCAT_STOP_X = "logcat_stop_button_x"`, `LOGCAT_STOP_Y = "logcat_stop_button_y"`,
+       `LOGCAT_STOP_SAVED = "logcat_stop_button_saved"`, w domyślnych `SharedPreferences` (jak `FabOverlayService`, ≈149);
+     - x i y zapisuj jako `float`, odczytuj z `try/catch ClassCastException`. Wartość ujemna albo NaN to brak pozycji;
+     - zapisana i poprawna pozycja → użyj jej po `clamp`;
+     - brak pozycji → domyślnie wyśrodkowany u góry: `x = (szerokośćEkranu - w)/2`, `y` = wysokość paska stanu
+       (`FabOverlayService.statusBarHeightPx(app)`);
+     - `clampX(x) = max(0, min(x, szerokośćEkranu - w))`, `clampY(y) = max(pasekStanu, min(y, wysokośćEkranu - h))`.
+       Wymiary ekranu z `getResources().getDisplayMetrics()` kontekstu aplikacji.
+   - **Przeciąganie, jak w `FabOverlayService`** (`attachTouchHandler`/`trackFinger`/`onDragFinished`, ≈523–611). Skopiuj tę logikę
+     do `LogcatStopButton` z tymi samymi regułami i krótkimi komentarzami „dlaczego”:
+     - `ACTION_DOWN` zapamiętuje `getRawX/Y` i `params.x/y`, `dragging = false`;
+     - przeciąganie zaczyna się dopiero po przekroczeniu `ViewConfiguration.getScaledTouchSlop()`, bo drgnięcie palca przy tapie
+       (zwłaszcza w jadącym aucie) nie może przesunąć przycisku;
+     - pozycja liczona względem punktu `DOWN`, przez `clampX/clampY`, `updateViewLayout` tylko przy zmianie;
+     - `ACTION_POINTER_DOWN`/`ACTION_POINTER_UP` ustawiają nowy punkt odniesienia (`reanchor`), żeby przycisk nie skakał
+       przy dołożeniu albo podniesieniu drugiego palca;
+     - `ACTION_UP` najpierw uwzględnia ostatnią pozycję palca. Po przeciąganiu zapisuje pozycję. Bez przeciągania i krócej niż
+       `ViewConfiguration.getLongPressTimeout()` woła `performClick()`. Długie przytrzymanie bez ruchu nie robi nic;
+     - `ACTION_CANCEL` kończy przeciąganie i zapisuje pozycję;
+     - pozycja zapisuje się **tylko** po przeciągnięciu, nigdy po tapie.
+   - **Zmiana konfiguracji** (jak `FabOverlayService.onConfigurationChanged`, ≈220–238): przelicz `h`, `w` i wymiary ekranu.
+     W trakcie przeciągania tylko `clamp` bieżącej pozycji, w innym razie ustal pozycję od nowa (zapisana albo domyślna).
+     Potem `updateViewLayout` w `try/catch IllegalArgumentException`.
    - Widok: `TextView` z nowym stringiem `logcat_stop_button` („Stop logcat”):
      - wyśrodkowany (`Gravity.CENTER`), jedna linia, pogrubiony;
      - kolor nowy `@color/logcat_stop_text` = `#FFF44336`;
@@ -378,7 +409,8 @@ Na razie bez zmiany zachowania: generator, asset i parser z testami.
      2. `LogcatWorker.get().stop(true, app)`, dokładnie jak `stopLogcatRun()` w ustawieniach.
 
      Przycisk znika przez `onCaptureEnded`.
-   - `hide()`: `removeViewImmediate` w `try/catch`, wyrejestrowanie słuchacza, wyzerowanie pól.
+   - `hide()`: `removeViewImmediate` w `try/catch`, wyrejestrowanie `CaptureEndListener` i `ComponentCallbacks`, wyzerowanie pól.
+     Trwające przeciąganie po prostu się kończy, bez zapisu pozycji.
      `onCaptureEnded()` woła `hide()`, więc przycisk **znika sam przy planowym końcu czasu**.
 4. **`SettingsFragmentFirst`**:
    - w `startLogcatRun()` (≈1146), po `start(…, Trigger.MANUAL)`, wołaj `LogcatStopButton.show(requireContext().getApplicationContext())`.
@@ -388,7 +420,7 @@ Na razie bez zmiany zachowania: generator, asset i parser z testami.
    - zarejestruj `CaptureEndListener` fragmentu tam, gdzie `setStateListener` (≈510), i wyrejestruj tam, gdzie `clearStateListener` (≈1035).
      Wywołuje on `showLogcatStoppedUi()` przy `isAdded()`, żeby zatrzymanie z przycisku wyglądało w otwartych ustawieniach
      tak samo jak z preferencji.
-5. Stringi i kolor tylko w `values/`: `logcat_stop_button` i `logcat_stop_text`.
+5. Stringi i kolor tylko w `values/`: `logcat_stop_button` i `logcat_stop_text`. Klucze pozycji tylko w `Keys` (bez migracji).
 
 ## C7 — `README: fuel statistics without the command logger`
 
@@ -405,7 +437,8 @@ Na razie bez zmiany zachowania: generator, asset i parser z testami.
 - `CanbusClasses` (tylko czytasz `className`).
 - Logikę statystyk (fuel/range/rpm, okna, położenie).
 - `LogcatWorker` poza §C6.1: czas, drenaż, nazwy plików, wybudzenie i `StateListener`.
-- `FabOverlayService` poza wydzieleniem rozmiaru i widocznością stałej.
+- `FabOverlayService` poza wydzieleniem `fabSizePx`/`statusBarHeightPx` i widocznością `excludeFromSystemGestures`/`BACKGROUND_ALPHA`.
+  Jego obsługa dotyku, pozycje i klucze zostają bez zmian.
 - Profile baseline, workflow CI, `decompiled_carinfo/com/**`, `decompiled_FYT_jars/`, `fuel_stats_example/`.
 - Tłumaczenia poza usuwaniem nieużywanych kluczy.
 
@@ -432,7 +465,9 @@ Na razie bez zmiany zachowania: generator, asset i parser z testami.
      - reset przywraca tabelę wbudowaną;
      - ponowny import dokłada się do poprzedniego;
    - e) logcat:
-     - „Tap to start logging” → przycisk „Stop logcat” u góry nad każdą aplikacją;
+     - „Tap to start logging” → przycisk „Stop logcat” nad każdą aplikacją, za pierwszym razem wyśrodkowany u góry;
+     - przeciągnięcie przesuwa przycisk (w granicach ekranu, poniżej paska stanu) i go nie zatrzymuje. Drgnięcie palca przy tapie
+       nie przesuwa. Długie przytrzymanie nic nie robi. Przy następnym ręcznym logcacie przycisk wraca na przesuniętą pozycję;
      - tap zatrzymuje jak preferencja (toast z plikiem, w otwartych ustawieniach opis jak po zatrzymaniu);
      - bez tapu przycisk znika sam po ustawionym czasie;
      - logcat przy zimnym starcie i po wybudzeniu nie pokazuje przycisku;
