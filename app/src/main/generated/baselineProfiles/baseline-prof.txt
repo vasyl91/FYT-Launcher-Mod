@@ -9064,8 +9064,7 @@ HSPLcom/syu/car/CarStates$2;->onRefresh(I[I[F[Ljava/lang/String;)V
 Lcom/syu/car/CustomFilter;
 HSPLcom/syu/car/CustomFilter;-><init>()V
 HSPLcom/syu/car/CustomFilter;->shouldShowApp(Landroid/content/ComponentName;)Z
-Lcom/syu/carinfo/psa_all/PSAOilMileIndexActi;
-Lcom/syu/carinfo/rzc/biaozhi408/Const_RZC4_PSA_ALL_DATA;
+Lcom/syu/module/canbus/data/Const_RZC4_PSA_ALL_DATA;
 Lcom/syu/ipc/RemoteModuleProxy;
 HSPLcom/syu/ipc/RemoteModuleProxy;->$r8$lambda$BgHNRt_lGRaxNz69ZbTMw_hsrbQ(Lcom/syu/ipc/RemoteModuleProxy;I[I[F[Ljava/lang/String;)V
 HSPLcom/syu/ipc/RemoteModuleProxy;-><init>()V

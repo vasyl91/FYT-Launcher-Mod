@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <lint>
-    <issue id="deprecation" severity="ignore">
-        <ignore path="app/src/main/java/com/syu/carinfo/" />
-    </issue>
-    <issue id="unchecked" severity="ignore">
-        <ignore path="app/src/main/java/com/syu/carinfo/" />
-    </issue>
+    <issue id="deprecation" severity="ignore" />
+    <issue id="unchecked" severity="ignore" />
 </lint>
