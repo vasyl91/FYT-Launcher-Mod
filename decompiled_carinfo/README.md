@@ -10,3 +10,5 @@ the screen sends by hand.
 
 The data classes the canbus callbacks share used to be here and are now in
 `app/src/main/java/com/syu/module/canbus/data`.
+
+The library built into the launcher (`app/src/main/assets/canbus_library.txt`) is made from `CanbusClasses.java` and these classes with `canbus_library/build_canbus_library.py --launcher .`.

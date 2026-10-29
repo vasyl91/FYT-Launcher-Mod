@@ -193,7 +193,9 @@ Releases are tagged `v<version>` (e.g. `v1.2.2`): the updater reads the version 
 
 ## Fuel statistics
 
-To get it working, you have to find the CAN bus codes. Without them, the enabled widget will show 0 by default. You can do this with the help of the CAN bus logging tool (check the guide in the launcher's settings) or look for the codes manually in the source code as described below.
+To get it working, you have to find the CAN bus codes. Without them, the enabled widget will show 0 by default. The easiest way is the Canbus reader (Settings > Layout creator > Canbus reader, check the guide there): it records every code your unit sends for a few minutes while you drive and, at the beginning of the file, **guesses** which codes are the fuel consumption, the range, the RPM and the speed. The guesses may be wrong, but they tell you where to look. The reader sends your car no random commands. The other way is to look for the codes manually in the source code, as described below.
+
+Most CAN boxes send the fuel consumption and the range on their own. Only some wait for a request, the one the original fuel screen of the CAN bus app sends when it opens (`cmdInt` and `cmdArr`, see step 8). The launcher knows such cars from its **canbus library**: for them (and only for them) the *Canbus codes* window shows the cmdInt / cmdArr fields, and leaving them empty sends the requests of the car's first fuel screen. A car that is not in the library gets no request at all. If your car is missing or is newer than the library, build a library from your own decompiled `com.syu.canbus` (steps 10-12 below) with [`canbus_library/build_canbus_library.bat`](canbus_library/README.md) and import it in the launcher.
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_stats.gif)
 
@@ -280,6 +282,8 @@ That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexAct
 
     `Fuel: 102, Range: 103, cmdInt: 70, cmdArr: 51`
 
+    The cmdInt / cmdArr fields are shown only for the cars that need a request (the library knows them), and this car is one of them; the example is here to show what they mean. For such a car you can leave them empty. A car whose request has two numbers is written with a comma, e.g. `74,3`.
+
  If you have trouble identifying these codes, look in the containing folder for a file that holds the general code list for that particular car (it might NOT be available for every car! In my case, it's [`com.syu.carinfo.rzc.biaozhi408.Const_RZC4_PSA_ALL_DATA.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/Const_RZC4_PSA_ALL_DATA.java)).
 
 9. If the widget still shows `0.0 L/100Km` and `0 Km`, or the readings are bizarre and inaccurate, your device probably uses different codes than the ones provided in this library. To get these codes, you'll have to unpack the CAN bus app installed on your head unit. 
@@ -289,6 +293,8 @@ That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexAct
 11. To unpack the extracted APK, use the [APKRepatcher](https://github.com/vasyl91/APKRepatcher/releases/tag/Update2024) tool. Download it, then inside the APKRepatcher folder hold Shift, right-click an empty area, and open Command Prompt from the context menu. In Command Prompt, paste `java -jar APKRepatcher.jar` and press Enter. (Install Java on your PC if needed — just google it.)
 
 12. In APKRepatcher, go to File > Open APK, select your `com.syu.canbus.apk`, and wait until it finishes. Then go to the directory `APKRepatcher\Projects\com.syu.canbus.apk\javaCode\classes.dex\sources\com\syu` and repeat step 2.
+
+    The same `sources` folder can be given to the canbus library script ([`canbus_library`](canbus_library/README.md)), which builds a file with the screen class and the requests of every car of your version of the app; import it in the launcher (*Import a canbus library*) and the class named under Fuel statistics follows it.
 
 
 In my case, the CAN bus stops sending fuel consumption data when the speed drops below 40 km/h, so I added a function that attempts to ROUGHLY estimate fuel consumption, to provide some insight even though it's admittedly an inaccurate calculation. To use this, you'll need to find one additional code representing RPM — `U_ENGINE_SPEED = 148;` — found in [`Const_RZC4_PSA_ALL_DATA.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/Const_RZC4_PSA_ALL_DATA.java) mentioned earlier, and provide your car's details in the app settings.
