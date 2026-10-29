@@ -17,6 +17,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.net.Uri;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -31,10 +32,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -145,6 +149,17 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private Preference appStatsCoordinates;
     private Preference codesGuide;
     private Preference skipCodes;
+    private Preference canbusLibraryImport;
+    private Preference canbusLibraryReset;
+    /** The import in progress (main thread); null when there is none. */
+    private CanbusLibraryImport.Job libraryImportJob;
+    private AlertDialog libraryImportDialog;
+    private AlertDialog libraryImportDoneDialog;
+    private AlertDialog libraryResetDialog;
+    private TextView libraryImportStatus;
+    private ProgressBar libraryImportBar;
+    /** The user chose "Run in background", or the screen is gone: the result comes as a toast. */
+    private boolean libraryImportBackground;
     private PreferenceCategory inspectorCategory;
     private Preference codeInspector;
     private Preference codeInspectorData;
@@ -308,6 +323,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         SwitchPreferenceCompat displayCanbusReader = findPreference(Keys.DISPLAY_CANBUS_READER);
         codesGuide = findPreference(Keys.CODES_GUIDE);
         skipCodes = findPreference(Keys.SKIP_CODES);
+        canbusLibraryImport = findPreference(Keys.CANBUS_LIBRARY_IMPORT);
+        canbusLibraryReset = findPreference(Keys.CANBUS_LIBRARY_RESET);
         Set<String> skipCodesSet = sharedPrefs.getStringSet(Keys.SKIP_CODES, Collections.singleton(""));
         String skipCodesStr = skipCodesSet != null ? String.join(", ", skipCodesSet) : "";
         if (skipCodesStr.isEmpty()) {
@@ -607,6 +624,19 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             skipCodes.setVisible(displayCanbusReaderBool);
             skipCodes.setOnPreferenceClickListener(this);
         }
+        if (canbusLibraryImport != null) {
+            canbusLibraryImport.setOnPreferenceClickListener(this);
+        }
+        if (canbusLibraryReset != null) {
+            canbusLibraryReset.setOnPreferenceClickListener(this);
+        }
+        updateCanbusLibraryPrefs();
+        // The library loads in the background: its numbers join the summary when it is there
+        CanbusLibrary.whenLoaded(requireContext(), () -> {
+            if (isAdded()) {
+                updateCanbusLibraryPrefs();
+            }
+        });
         if (codeInspector != null) {
             codeInspector.setVisible(displayCanbusReaderBool);
             codeInspector.setOnPreferenceClickListener(this);
@@ -859,6 +889,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
                 alertSkipCodesDialog.show();
                 break;
+            case Keys.CANBUS_LIBRARY_IMPORT:
+                if (libraryImportJob == null) {
+                    canbusLibraryPicker.launch(new String[]{"text/plain", "application/octet-stream", "*/*"});
+                }
+                break;
+            case Keys.CANBUS_LIBRARY_RESET:
+                confirmCanbusLibraryReset();
+                break;
             case Keys.CODE_INSPECTOR:
                 if (!helpers.codeInspectorBoolean()) {
                     // start the service
@@ -1095,6 +1133,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     private void dismissDialogs() {
+        if (libraryImportDialog != null && libraryImportDialog.isShowing()) {
+            // The work goes on without this screen: its result comes as a toast
+            libraryImportBackground = true;
+            libraryImportDialog.dismiss();
+        }
+        libraryImportDialog = null;
+        if (libraryImportDoneDialog != null && libraryImportDoneDialog.isShowing()) {
+            libraryImportDoneDialog.dismiss();
+        }
+        libraryImportDoneDialog = null;
+        if (libraryResetDialog != null && libraryResetDialog.isShowing()) {
+            libraryResetDialog.dismiss();
+        }
+        libraryResetDialog = null;
         if (alertPipDialog != null && alertPipDialog.isShowing()) {
             alertPipDialog.dismiss();
             alertPipDialog = null;
@@ -1455,6 +1507,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             codeInspector.setVisible(false);
             codeInspectorData.setVisible(false);
         }
+        updateCanbusLibraryPrefs();
     }
 
     private boolean statsBackgroundBool() {
@@ -1505,6 +1558,177 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveMargin());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;
+    }
+
+    // ---- Canbus library: import and reset ---------------------------------------------------
+
+    private final ActivityResultLauncher<String[]> canbusLibraryPicker =
+            registerForActivityResult(new ActivityResultContracts.OpenDocument(), this::onCanbusLibraryPicked);
+
+    /** The numbers in the summary of the import, whether the reset is there, and both off while an import runs. */
+    private void updateCanbusLibraryPrefs() {
+        if (canbusLibraryImport == null || canbusLibraryReset == null) {
+            return;
+        }
+        CanbusLibrary.Library effective = CanbusLibrary.cached();
+        CanbusLibrary.Library overlay = CanbusLibrary.overlayCached();
+        canbusLibraryImport.setVisible(displayCanbusReaderBool);
+        canbusLibraryImport.setEnabled(libraryImportJob == null);
+        if (effective != null && overlay != null) {
+            canbusLibraryImport.setSummary(getString(R.string.canbus_library_import_summary,
+                    effective.carsWithClass(), effective.carsWithRequest(), overlay.recordCount()));
+        }
+        canbusLibraryReset.setVisible(displayCanbusReaderBool && overlay != null && !overlay.isEmpty());
+        canbusLibraryReset.setEnabled(libraryImportJob == null);
+        if (statsCodes != null) {
+            statsCodes.setSummary(statsCodesSummary());
+        }
+    }
+
+    private void onCanbusLibraryPicked(Uri uri) {
+        if (uri == null || libraryImportJob != null || !isAdded()) {
+            return;
+        }
+        libraryImportBackground = false;
+        showCanbusLibraryImportDialog();
+        libraryImportJob = CanbusLibraryImport.start(requireContext(), uri, canbusLibraryImportListener);
+        updateCanbusLibraryPrefs();
+    }
+
+    private void showCanbusLibraryImportDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_canbus_library_import, null);
+        libraryImportStatus = dialogView.findViewById(R.id.canbus_library_import_status);
+        libraryImportBar = dialogView.findViewById(R.id.canbus_library_import_progress);
+        ConstraintLayout constraint = dialogView.findViewById(R.id.constraint_library_import);
+        constraint.setPadding(padding, padding, padding, padding);
+        setCalculatedSizes(dialogView, R.id.canbus_library_import_title, SettingsActivity.dialogTitle, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.canbus_library_import_status, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        builder.setView(dialogView)
+                .setCancelable(false)
+                .setNegativeButton(R.string.canbus_library_cancel, null)
+                .setNeutralButton(R.string.canbus_library_background, null);
+        libraryImportDialog = builder.create();
+        libraryImportDialog.setCanceledOnTouchOutside(false);
+        libraryImportDialog.setOnShowListener(dialog -> {
+            // Their own click handlers: the dialog stays until the work reports back
+            final Button cancel = libraryImportDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+            cancel.setOnClickListener(v -> {
+                if (libraryImportJob != null) {
+                    libraryImportJob.cancel();
+                    cancel.setEnabled(false);
+                }
+            });
+            libraryImportDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(v -> {
+                libraryImportBackground = true;
+                dismissCanbusLibraryImportDialog();
+            });
+        });
+        libraryImportDialog.show();
+    }
+
+    private void dismissCanbusLibraryImportDialog() {
+        if (libraryImportDialog != null && libraryImportDialog.isShowing()) {
+            libraryImportDialog.dismiss();
+        }
+        libraryImportDialog = null;
+    }
+
+    private final CanbusLibraryImport.Listener canbusLibraryImportListener = new CanbusLibraryImport.Listener() {
+        @Override
+        public void onProgress(int phase, int percent, int line, int totalLines) {
+            if (!isAdded() || libraryImportDialog == null || !libraryImportDialog.isShowing()) {
+                return;
+            }
+            if (percent >= 0) {
+                libraryImportBar.setProgress(percent);
+            }
+            switch (phase) {
+                case CanbusLibraryImport.PHASE_READ:
+                    libraryImportStatus.setText(R.string.canbus_library_phase_read);
+                    break;
+                case CanbusLibraryImport.PHASE_VALIDATE:
+                    libraryImportStatus.setText(getString(R.string.canbus_library_phase_validate,
+                            line, Math.max(totalLines, line)));
+                    break;
+                case CanbusLibraryImport.PHASE_MERGE:
+                    libraryImportStatus.setText(R.string.canbus_library_phase_merge);
+                    break;
+                default:
+                    libraryImportStatus.setText(R.string.canbus_library_phase_save);
+                    break;
+            }
+        }
+
+        @Override
+        public void onSaving() {
+            if (libraryImportDialog != null && libraryImportDialog.isShowing()) {
+                libraryImportDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(false);
+            }
+        }
+
+        @Override
+        public void onFinished(CanbusLibraryImport.Outcome outcome) {
+            onCanbusLibraryImportFinished(outcome);
+        }
+    };
+
+    private void onCanbusLibraryImportFinished(CanbusLibraryImport.Outcome outcome) {
+        libraryImportJob = null;
+        final Context app = LauncherApplication.sApp;
+        // A screen that is gone behaves as "Run in background"
+        final boolean showDialog = !libraryImportBackground && isAdded() && libraryImportDialog != null;
+        dismissCanbusLibraryImportDialog();
+        if (isAdded()) {
+            updateCanbusLibraryPrefs();
+            initUserStats();
+        }
+        if (outcome.kind == CanbusLibraryImport.Kind.CANCELLED) {
+            Toast.makeText(app, R.string.canbus_library_cancelled, Toast.LENGTH_LONG).show();
+            return;
+        }
+        final boolean success = outcome.kind == CanbusLibraryImport.Kind.SUCCESS;
+        if (showDialog) {
+            String report = outcome.reportPath() != null ? outcome.reportPath()
+                    : getString(R.string.canbus_library_report_not_saved);
+            String message = success
+                    ? getString(R.string.canbus_library_import_done, outcome.added, outcome.duplicates, outcome.replaced, report)
+                    : getString(R.string.canbus_library_import_failed, outcome.firstError, report);
+            libraryImportDoneDialog = new AlertDialog.Builder(requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert)
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+        } else {
+            int text;
+            if (outcome.reportFolder != null) {
+                text = success ? R.string.canbus_library_toast_success : R.string.canbus_library_toast_failed;
+                Toast.makeText(app, app.getString(text, outcome.reportFolder), Toast.LENGTH_LONG).show();
+            } else {
+                text = success ? R.string.canbus_library_toast_success_no_report : R.string.canbus_library_toast_failed_no_report;
+                Toast.makeText(app, text, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void confirmCanbusLibraryReset() {
+        if (libraryImportJob != null) {
+            return;
+        }
+        libraryResetDialog = new AlertDialog.Builder(requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert)
+                .setMessage(R.string.canbus_library_reset_confirm)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    final Context app = LauncherApplication.sApp;
+                    CanbusLibraryImport.reset(requireContext(), () -> {
+                        Toast.makeText(app, R.string.canbus_library_reset_done, Toast.LENGTH_LONG).show();
+                        if (isAdded()) {
+                            updateCanbusLibraryPrefs();
+                            initUserStats();
+                        }
+                    });
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     private AlertDialog.Builder displayCodesDialog() {
@@ -1692,6 +1916,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         if (textView.getLayoutParams() instanceof ConstraintLayout.LayoutParams params) {
             if (textViewId == R.id.code_inspector_data_title
+             || textViewId == R.id.canbus_library_import_title
              || textViewId == R.id.stats_dialog_title
              || textViewId == R.id.canbus_optional) {
                 params.bottomMargin = margin;

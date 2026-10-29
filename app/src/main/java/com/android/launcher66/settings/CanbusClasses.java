@@ -44,12 +44,31 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
     
     public void determineClassName() {
         int carId = DataCanbus.DATA[1000];
-        if (carId == 411 || carId == FinalCanbus.CAR_WC2_LandRover_H /* 65947 */) {
+        if (hasNoScreenOfItsOwn(carId)) {
             // These cars have no screen of their own to name: the unit's settings are opened
             // instead, and nothing is saved.
             DataCanbus.PROXY.cmd(2, new int[]{241, 255}, null, null);
             return;
         }
+        saveClassName(carId);
+    }
+
+    /**
+     * The name again after the library changed (an import, a reset), without opening the unit's settings
+     * for the cars that have no screen of their own. Off the main thread.
+     */
+    static void refresh() {
+        int carId = DataCanbus.DATA[1000];
+        if (!hasNoScreenOfItsOwn(carId)) {
+            new CanbusClasses().saveClassName(carId);
+        }
+    }
+
+    private static boolean hasNoScreenOfItsOwn(int carId) {
+        return carId == 411 || carId == FinalCanbus.CAR_WC2_LandRover_H /* 65947 */;
+    }
+
+    private void saveClassName(int carId) {
         // Not the switch below: the library may have been replaced by one built from a newer canbus app.
         // Off the main thread, as the AsyncTask runs it: the library reads its files.
         String name = CanbusLibrary.loadBlocking(LauncherApplication.sApp)

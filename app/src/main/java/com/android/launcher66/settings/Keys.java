@@ -104,6 +104,8 @@ public final class Keys {
     public static final String DISPLAY_CANBUS_READER = "display_canbus_reader";
     public static final String CODES_GUIDE = "codes_guide";
     public static final String SKIP_CODES = "skip_codes";
+    public static final String CANBUS_LIBRARY_IMPORT = "canbus_library_import";
+    public static final String CANBUS_LIBRARY_RESET = "canbus_library_reset";
     public static final String CMD_INT = "cmdInt_code_int";
     public static final String CMD_ARR = "cmdArr_code_int";
     public static final String CODE_INSPECTOR = "code_inspector";

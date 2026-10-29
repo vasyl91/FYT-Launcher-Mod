@@ -215,6 +215,10 @@ public final class CanbusLibrary {
     public interface ProgressSink {
         /** Bytes of the file read so far, and its total size (-1 when unknown). */
         void onBytes(long read, long total);
+
+        /** The number of the line being read; called at the same pace as {@link #onBytes}. */
+        default void onLine(int line) {
+        }
     }
 
     public interface CancelToken {
@@ -709,6 +713,7 @@ public final class CanbusLibrary {
                         throw new CancelledException();
                     }
                     if (progress != null) {
+                        progress.onLine(lineNo);
                         progress.onBytes(bytes, sizeBytes);
                     }
                 }
@@ -1087,6 +1092,18 @@ public final class CanbusLibrary {
             sEffective = builtIn.mergedWith(overlay).library;
             return sEffective;
         }
+    }
+
+    /** The libraries the user imported (merged into one), loaded if needed; empty if there are none. Not on the main thread. */
+    static Library overlayBlocking(Context context) {
+        loadBlocking(context);
+        Library overlay = sOverlay;
+        return overlay == null ? Library.EMPTY : overlay;
+    }
+
+    /** The libraries the user imported, or null while they are not loaded yet. Never reads a file. */
+    static Library overlayCached() {
+        return sOverlay;
     }
 
     /** After an import or a reset: the next {@link #loadBlocking} reads the files again. */

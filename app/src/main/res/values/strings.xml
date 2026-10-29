@@ -278,6 +278,26 @@
     <string name="code_inspector_data_summary_time">Tap to set the recording time. \nTimeout: %1$s</string>
     <string name="code_inspector_timeout_text">Timeout:</string>
     <string name="code_inspector_toast">Finished inspecting the codes. Check the results in Download/Launcher66_Canbus</string> 
+    <string name="canbus_library_import">Import a canbus library</string>
+    <string name="canbus_library_import_summary">Cars with a class: %1$d, with a request: %2$d (imported records: %3$d). How to build one: canbus_library/README.md</string>
+    <string name="canbus_library_reset">Remove the imported libraries</string>
+    <string name="canbus_library_reset_confirm">Remove all imported canbus libraries and use the built-in one?</string>
+    <string name="canbus_library_reset_done">Canbus: The imported libraries were removed</string>
+    <string name="canbus_library_import_title">Importing the canbus library</string>
+    <string name="canbus_library_cancel">Cancel</string>
+    <string name="canbus_library_background">Run in background</string>
+    <string name="canbus_library_phase_read">Reading the file…</string>
+    <string name="canbus_library_phase_validate">Checking the file: line %1$d of %2$d</string>
+    <string name="canbus_library_phase_merge">Merging with the library…</string>
+    <string name="canbus_library_phase_save">Saving…</string>
+    <string name="canbus_library_cancelled">Canbus: Import cancelled, the library is unchanged</string>
+    <string name="canbus_library_import_done">Library imported.\nNew records: %1$d\nSkipped duplicates: %2$d\nReplaced (the file won): %3$d\n\nReport: %4$s</string>
+    <string name="canbus_library_import_failed">Import failed, the library is unchanged.\n%1$s\n\nReport: %2$s</string>
+    <string name="canbus_library_report_not_saved">the report could not be saved</string>
+    <string name="canbus_library_toast_success">Canbus: Success, report saved in %1$s</string>
+    <string name="canbus_library_toast_failed">Canbus: Failed, report saved in %1$s</string>
+    <string name="canbus_library_toast_success_no_report">Canbus: Success, the report could not be saved</string>
+    <string name="canbus_library_toast_failed_no_report">Canbus: Failed, the report could not be saved</string>
 
     <string name="cancel_btn">CANCEL</string>
     <string name="set_btn">SUBMIT</string>
