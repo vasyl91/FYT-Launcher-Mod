@@ -250,9 +250,7 @@
     <string name="display_canbus_reader">نمایش خواننده Canbus</string>
     <string name="codes_guide">راهنمای Canbus</string>
     <string name="codes_guide_detailed_reading_title">بازرس کدها – خواندن تفصیلی</string>
-    <string name="codes_guide_detailed_reading">این بخش برای آزمودن ترکیب‌های مشخص cmdInt و cmdArr و آشکار کردن کدهایی است که در خود دارند. همان‌طور که پیش‌تر گفته شد، cmdInt و cmdArr اهمیت کمتری دارند و بیشتر ترکیب‌های تصادفی باید کار کنند. این ماژول قبل از آنکه این را بفهمم ساخته شد، اما همچنان برای آزمون‌های مشخص مفید است.</string>
     <string name="codes_guide_miscellaneous_title">متفرقه</string>
-    <string name="codes_guide_miscellaneous">رد کردن کدها – همان‌طور که از نامش پیداست، این بخش خواندن کدهای مشخص‌شده را نادیده می‌گیرد. هم برای «ثبت‌کننده کدها» و هم «بازرس کدها» کار می‌کند. احتمالاً روند را سریع‌تر نمی‌کند، اما گزارش‌ها شامل خروجی‌هایی که برایتان مهم نیست نخواهند بود.</string>
     <string name="skip_codes">رد کردن کدها</string>
     <string name="skip_codes_summary">کدهای زیر رد می‌شوند: %1$s</string>
     <string name="skip_codes_empty_summary">داده‌ها از کل مجموعه کدها خوانده می‌شوند.</string>
@@ -263,9 +261,6 @@
     <string name="code_inspector_summary">برای شروع فرایند لمس کنید</string>
     <string name="code_inspector_summary_working">در حال کار… %1$s برای لغو لمس کنید</string>
     <string name="code_inspector_data">داده‌های خواندن تفصیلی</string>
-    <string name="code_inspector_data_summary">برای تنظیم داده‌های خواندن تفصیلی لمس کنید. \ncmdInt: %1$s، cmdArr: %2$s، مهلت: %3$s</string>
-    <string name="inspector_cmd_int_text">cmdInt (حداکثر ۱۱۹۸):</string>
-    <string name="inspector_cmd_arr_text">cmdArr (حداکثر ۱۱۹۹):</string>
     <string name="code_inspector_timeout_text">مهلت:</string>
     <string name="code_inspector_toast">بازرسی کدها پایان یافت. نتایج را در Download/Launcher66_Canbus ببینید</string>
 

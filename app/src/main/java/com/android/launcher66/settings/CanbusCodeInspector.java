@@ -2,9 +2,12 @@ package com.android.launcher66.settings;
 
 import static com.android.launcher66.settings.Keys.CODE_INSPECTOR_TIMEOUT;
 
+import android.Manifest;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
@@ -14,21 +17,30 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.async.AsyncTask;
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
-import com.syu.module.IUiNotify;
+import com.syu.ipc.IModuleCallback;
+import com.syu.module.canbus.CallbackCanbusBase;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.ModuleCallbackCanbusProxy;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,14 +49,47 @@ import java.util.concurrent.TimeUnit;
 
 public class CanbusCodeInspector extends Service {
 
-    /** Service that saves canbus codes' messages ranging from 0 to 1199 and saves them for 30 seconds to the text file 
-     *  marked with the timestamp in dir Download/CanbusCodes.
-     *  This feature might be helpful in deciphering the codes that are not included in the canbus framework within this app.
+    /**
+     * The canbus code reader. It registers for the codes 0..1199 straight with com.syu.ms (not through
+     * DataCanbus.NOTIFY_EVENTS, which knows only the codes the callback of the car registered, and for a car
+     * the launcher has no callback for only code 0), records every update of every code with its time for
+     * the time set, and writes them to Download/Launcher66_Canbus. The file starts with guesses of what the
+     * codes are (see {@link CanbusCodeEstimator}). It sends the car nothing but the request its fuel screen
+     * sends when it opens, and only if the library knows the car.
      */
     private static final String TAG = "CanbusCodeInspector";
     private static final int BATCH_SIZE = 50;
-    private final SparseArray<String[]> codeData = new SparseArray<>();
+    private static final int CODES = 1200;
+    private static final int MAX_EVENTS_PER_CODE = 5000;
+    private static final int MAX_EVENTS = 200_000;
+
+    /** One update of a code: its time, ints[0] if there was one, and the rest of the payload as text. */
+    private static final class Event {
+        final long t;
+        final boolean hasInt;
+        final int v;
+        final String extra;
+
+        Event(long t, boolean hasInt, int v, String extra) {
+            this.t = t;
+            this.hasInt = hasInt;
+            this.v = v;
+            this.extra = extra;
+        }
+
+        boolean sameAs(Event o) {
+            return hasInt == o.hasInt && v == o.v && extra.equals(o.extra);
+        }
+    }
+
+    private final Object lock = new Object();
+    /** Code -> its events, in order; guarded by lock. */
+    private final SparseArray<ArrayList<Event>> events = new SparseArray<>();
+    private int totalEvents;
+    private int droppedEvents;
+    private volatile boolean recording;
     private volatile long startTime;
+    private volatile String requestDescription = CanbusLibrary.NONE;
     private int codeInspectorServiceTimeout;
     private AsyncTask<Void, Void, Void> schedulerTask;
     private final Helpers helpers = new Helpers();
@@ -54,24 +99,26 @@ public class CanbusCodeInspector extends Service {
     private volatile boolean isDataWritten = false; // Track if data has been saved
     private SharedPreferences sharedPrefs;
     private Set<Integer> skipCodes;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    /** The GPS speed during the recording; filled on the main thread. */
+    private final List<CanbusCodeEstimator.GpsFix> gpsFixes = Collections.synchronizedList(new ArrayList<>());
+    private volatile DeviceLocation.Handle locationUpdates;
+    private volatile boolean gpsRecorded;
+
+    private final IModuleCallback.Stub rawCallback = new IModuleCallback.Stub() {
+        @Override
+        public void update(int updateCode, int[] ints, float[] flts, String[] strs) {
+            record(updateCode, ints, flts, strs);
+        }
+    };
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "Service created");
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        codeInspectorServiceTimeout = Integer.parseInt(sharedPrefs.getString(CODE_INSPECTOR_TIMEOUT, "30"));
+        codeInspectorServiceTimeout = Integer.parseInt(sharedPrefs.getString(CODE_INSPECTOR_TIMEOUT, "300"));
         skipCodes = getSkipCodes();
-
-        // Initialize data structure for codes
-        for (int code = 0; code <= 1199; code++) {
-            codeData.put(code, new String[codeInspectorServiceTimeout]);
-        }
-
-        // Register listeners for all codes
-        for (int code = 0; code <= 1199; code++) {
-            addNotify(code);
-        }
     }
 
     @Override
@@ -85,41 +132,36 @@ public class CanbusCodeInspector extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "Service destroyed");
-        
+
         // Shutdown components in optimized order
         shutdownScheduler();
         cancelCountdownTimer();
         cancelSchedulerTask();
-        
+        stopGps();
+
         // Save data if not already written
         if (!isDataWritten) {
             freezeAndSaveData();
         }
-        
+
         helpers.setCodeInspectorBoolean(false);
         helpers.setCountDownInspector(0);
-        
-        // Unregister listeners in batches off main thread
-        unregisterListenersInBatches();
+
+        // Unregister the callback off the main thread
+        unregisterCodesInBatches();
     }
 
     private void freezeAndSaveData() {
-        // Unregister listeners first to prevent new data
-        unregisterListenersImmediately();
-        
+        // No more data from now on
+        recording = false;
+
         // Save data in background
         batchExecutor.execute(() -> {
             writeDataToFile();
-            new Handler(Looper.getMainLooper()).post(() -> 
+            mainHandler.post(() ->
                 Toast.makeText(this, R.string.code_inspector_toast, Toast.LENGTH_SHORT).show()
             );
         });
-    }
-
-    private void unregisterListenersImmediately() {
-        for (int code = 0; code <= 1199; code++) {
-            removeNotify(code);
-        }
     }
 
     private void shutdownScheduler() {
@@ -134,18 +176,12 @@ public class CanbusCodeInspector extends Service {
         }
     }
 
-    private void unregisterListenersInBatches() {
+    private void unregisterCodesInBatches() {
         batchExecutor.execute(() -> {
-            for (int start = 0; start <= 1199; start += BATCH_SIZE) {
-                final int batchStart = start;
-                final int batchEnd = Math.min(start + BATCH_SIZE, 1200);
-                
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    for (int code = batchStart; code < batchEnd; code++) {
-                        removeNotify(code);
-                    }
-                });
-                
+            for (int start = 0; start < CODES; start += BATCH_SIZE) {
+                for (int code = start; code < Math.min(start + BATCH_SIZE, CODES); code++) {
+                    DataCanbus.PROXY.unregister(rawCallback, code);
+                }
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
@@ -156,7 +192,94 @@ public class CanbusCodeInspector extends Service {
         });
     }
 
+    /** Binder thread: every update of a registered code is recorded with the time it came. */
+    private void record(int code, int[] ints, float[] flts, String[] strs) {
+        if (!recording || code < 0 || code >= CODES) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        boolean hasInt = ints != null && ints.length > 0;
+        Event event = new Event(now, hasInt, hasInt ? ints[0] : 0, describeExtra(ints, flts, strs));
+        synchronized (lock) {
+            if (!recording) {
+                return;
+            }
+            if (totalEvents >= MAX_EVENTS) {
+                droppedEvents++;
+                return;
+            }
+            ArrayList<Event> list = events.get(code);
+            if (list == null) {
+                list = new ArrayList<>();
+                events.put(code, list);
+            }
+            if (list.size() >= MAX_EVENTS_PER_CODE) {
+                droppedEvents++;
+                return;
+            }
+            list.add(event);
+            totalEvents++;
+        }
+    }
+
+    /** What the update carried besides ints[0]: {@code ints=68,1; flts=...; strs=...}, or an empty text. */
+    private static String describeExtra(int[] ints, float[] flts, String[] strs) {
+        StringBuilder sb = new StringBuilder();
+        if (ints != null && ints.length > 1) {
+            sb.append("ints=");
+            for (int i = 0; i < ints.length; i++) {
+                if (i > 0) {
+                    sb.append(',');
+                }
+                sb.append(ints[i]);
+            }
+        }
+        if (flts != null && flts.length > 0) {
+            if (sb.length() > 0) {
+                sb.append("; ");
+            }
+            sb.append("flts=");
+            for (int i = 0; i < flts.length; i++) {
+                if (i > 0) {
+                    sb.append(',');
+                }
+                sb.append(flts[i]);
+            }
+        }
+        if (strs != null && strs.length > 0) {
+            if (sb.length() > 0) {
+                sb.append("; ");
+            }
+            sb.append("strs=");
+            for (int i = 0; i < strs.length; i++) {
+                if (i > 0) {
+                    sb.append('|');
+                }
+                sb.append(strs[i]);
+            }
+        }
+        return sb.toString();
+    }
+
     private void writeDataToFile() {
+        // A stable copy: from here on nothing is added
+        SparseArray<ArrayList<Event>> snapshot = new SparseArray<>();
+        int total;
+        int dropped;
+        synchronized (lock) {
+            recording = false;
+            for (int i = 0; i < events.size(); i++) {
+                snapshot.put(events.keyAt(i), new ArrayList<>(events.valueAt(i)));
+            }
+            total = totalEvents;
+            dropped = droppedEvents;
+        }
+        stopGps();
+        List<CanbusCodeEstimator.GpsFix> fixes;
+        synchronized (gpsFixes) {
+            fixes = new ArrayList<>(gpsFixes);
+        }
+
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
         String fileName = "CanbusCodes" + timestamp + ".txt";
         File directory = new File(Environment.getExternalStoragePublicDirectory(
@@ -169,29 +292,72 @@ public class CanbusCodeInspector extends Service {
 
         File file = new File(directory, fileName);
 
-        try (FileWriter writer = new FileWriter(file)) {
-            for (int code = 0; code <= 1199; code++) {
+        // What the codes look like, for the guesses
+        Map<Integer, List<CanbusCodeEstimator.Sample>> samples = new HashMap<>();
+        int withData = 0;
+        int unchanged = 0;
+        for (int i = 0; i < snapshot.size(); i++) {
+            int code = snapshot.keyAt(i);
+            ArrayList<Event> list = snapshot.valueAt(i);
+            if (list.isEmpty()) {
+                continue;
+            }
+            withData++;
+            if (isUnchanged(list)) {
+                unchanged++;
+            }
+            List<CanbusCodeEstimator.Sample> s = new ArrayList<>();
+            for (Event e : list) {
+                if (e.hasInt) {
+                    s.add(new CanbusCodeEstimator.Sample(e.t, e.v));
+                }
+            }
+            samples.put(code, s);
+        }
+        CanbusCodeEstimator.Result guesses;
+        try {
+            guesses = CanbusCodeEstimator.estimate(samples, fixes);
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Could not guess the meaning of the codes", e);
+            guesses = null;
+        }
+
+        SimpleDateFormat lineTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("Canbus reader, " + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US)
+                    .format(new Date(startTime)) + ", " + codeInspectorServiceTimeout + " s\n");
+            writer.write(carLine() + "\n");
+            writer.write(gpsRecorded
+                    ? "GPS speed: " + fixes.size() + " fixes\n"
+                    : "GPS speed: not recorded (no location permission)\n");
+            writer.write("Codes with data: " + withData + " (unchanged: " + unchanged + "); events: " + total
+                    + "; dropped: " + dropped + "\n");
+            writer.write("\nLikely meanings (best guesses, may be wrong):\n");
+            if (guesses != null) {
+                for (CanbusCodeEstimator.Guess g : guesses.guesses) {
+                    writer.write(g + "\n");
+                }
+                String notFound = guesses.notFoundLine();
+                if (!notFound.isEmpty()) {
+                    writer.write(notFound + "\n");
+                }
+            }
+            writer.write("\n");
+
+            for (int code = 0; code < CODES; code++) {
                 if (skipCodes.contains(code)) {
                     continue;
                 }
-                String[] messages = codeData.get(code);
-                boolean codeHasData = false;
-
-                for (int sec = 0; sec < codeInspectorServiceTimeout; sec++) {
-                    if (messages != null && messages[sec] != null && !messages[sec].isEmpty()) {
-                        codeHasData = true;
-                        break;
-                    }
+                ArrayList<Event> list = snapshot.get(code);
+                if (list == null || list.isEmpty()) {
+                    continue;
                 }
-
-                if (!codeHasData) continue;
-
-                writer.write("Code " + code + ":\n");
-                for (int sec = 1; sec <= codeInspectorServiceTimeout; sec++) {
-                    if (messages == null) continue;
-                    String msg = messages[sec - 1];
-                    if (msg != null && !msg.isEmpty()) {
-                        writer.write(sec + ": " + msg + "\n");
+                writer.write("CODE: " + code + "\n");
+                if (isUnchanged(list)) {
+                    writer.write(eventLine(lineTime, list.get(0)) + "\n");
+                } else {
+                    for (Event e : list) {
+                        writer.write(eventLine(lineTime, e) + "\n");
                     }
                 }
                 writer.write("\n");
@@ -200,34 +366,88 @@ public class CanbusCodeInspector extends Service {
         } catch (IOException e) {
             Log.e(TAG, "File write failed", e);
         }
-    } 
+    }
+
+    private static boolean isUnchanged(List<Event> list) {
+        Event first = list.get(0);
+        for (int i = 1; i < list.size(); i++) {
+            if (!first.sameAs(list.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static String eventLine(SimpleDateFormat format, Event e) {
+        String time = format.format(new Date(e.t));
+        String value = e.hasInt ? String.valueOf(e.v) : "-";
+        return time + ": " + value + (e.extra.isEmpty() ? "" : " [" + e.extra + "]");
+    }
+
+    /** {@code Car: id 163 (protocol 163, car 0), class ..., callback Callback_0163_..., request: 70:51; 29:0} */
+    private String carLine() {
+        int id = DataCanbus.DATA[1000];
+        String className = "-";
+        try {
+            String name = CanbusLibrary.loadBlocking(this).classNameFor(id, LauncherApplication.isPortrait(),
+                    CanbusClasses.readFile("/sys/fytver/fyt_bin_version"));
+            if (name != null) {
+                className = name;
+            }
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Could not look the class of the car up", e);
+        }
+        CallbackCanbusBase callback = ModuleCallbackCanbusProxy.getInstance().getCallbackCanbus();
+        return "Car: id " + id + " (protocol " + (id & 0xFFFF) + ", car " + (id >>> 16) + "), class " + className
+                + ", callback " + (callback == null ? "none" : callback.getClass().getSimpleName())
+                + ", request: " + requestDescription;
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
-    private final IUiNotify mNotifyCanbus = (updateCode, ints, flts, strs) -> {
-        if (updateCode < 0 || updateCode > 1199) return;
-
-        long currentTime = System.currentTimeMillis();
-        int second = (int) ((currentTime - startTime) / 1000) + 1;
-
-        if (second < 1 || second > codeInspectorServiceTimeout) return;
-
-        String message = String.valueOf(DataCanbus.DATA[updateCode]);
-        String[] secondsArray = codeData.get(updateCode);
-        if (secondsArray != null) {
-            secondsArray[second - 1] = message;
+    /** The request of the car's fuel screen, if the library has one for it; "none" otherwise. */
+    private String sendRequest() {
+        try {
+            return CanbusLibrary.sendForCar(getApplicationContext(), DataCanbus.DATA[1000]).get(5, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            Log.w(TAG, "The request of the car was not sent", e);
+            return CanbusLibrary.NONE;
         }
-    };
-
-    private void addNotify(int code) {
-        DataCanbus.NOTIFY_EVENTS[code].addNotify(mNotifyCanbus, 1);
     }
 
-    private void removeNotify(int code) {
-        DataCanbus.NOTIFY_EVENTS[code].removeNotify(mNotifyCanbus);
+    private void registerCodes() {
+        for (int code = 0; code < CODES; code++) {
+            if (!skipCodes.contains(code)) {
+                DataCanbus.PROXY.register(rawCallback, code, 1);
+            }
+        }
+    }
+
+    /** The GPS speed during the recording, if the permission is there already (it is not asked for). */
+    private void startGps() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        gpsRecorded = true;
+        locationUpdates = DeviceLocation.requestUpdates(this, 1000L, this::onLocation, Looper.getMainLooper());
+    }
+
+    private void onLocation(Location location) {
+        if (location != null && location.hasSpeed()) {
+            gpsFixes.add(new CanbusCodeEstimator.GpsFix(System.currentTimeMillis(), location.getSpeed() * 3.6f));
+        }
+    }
+
+    private void stopGps() {
+        final DeviceLocation.Handle handle = locationUpdates;
+        locationUpdates = null;
+        if (handle != null) {
+            mainHandler.post(handle::remove);
+        }
     }
 
     public void runSchedulerTask(Intent intent) {
@@ -242,12 +462,14 @@ public class CanbusCodeInspector extends Service {
             protected Void doInBackground(Void... params) {
                 if (intent != null) {
                     helpers.setCodeInspectorBoolean(true);
-                    int cmdInt = intent.getIntExtra("cmdInt", 0);
-                    int cmdArr = intent.getIntExtra("cmdArr", 0);
-                    DataCanbus.PROXY.cmd(cmdInt, new int[]{cmdArr}, null, null);
                     startTime = System.currentTimeMillis();
+                    // The request first: a car that waits for it reports its fuel and range only after
+                    requestDescription = sendRequest();
+                    recording = true;
+                    registerCodes();
+                    mainHandler.post(CanbusCodeInspector.this::startGps);
 
-                    new Handler(Looper.getMainLooper()).post(() -> {
+                    mainHandler.post(() -> {
                         countDownTimer = new CountDownTimer(((long)codeInspectorServiceTimeout * 1000), 1000) {
                             public void onTick(long millisUntilFinished) {
                                 int remainingSeconds = (int) (millisUntilFinished / 1000);
@@ -282,7 +504,7 @@ public class CanbusCodeInspector extends Service {
     }
 
     private void stopScheduler() {
-        new Handler(Looper.getMainLooper()).post(() -> {
+        mainHandler.post(() -> {
             if (countDownTimer != null) {
                 countDownTimer.cancel();
             }
@@ -293,14 +515,14 @@ public class CanbusCodeInspector extends Service {
 
     public void cancelSchedulerTask() {
         if (schedulerTask != null && !schedulerTask.isCancelled()) {
-            schedulerTask.cancel(true); 
+            schedulerTask.cancel(true);
         }
     }
 
     private Set<Integer> getSkipCodes() {
         Set<String> defaultSet = Collections.emptySet();
         Set<String> stringSet = sharedPrefs.getStringSet("skip_codes", defaultSet);
-        
+
         Set<Integer> skipCodesSet = new HashSet<>();
         for (String codeStr : stringSet) {
             try {

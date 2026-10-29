@@ -108,8 +108,6 @@ public final class Keys {
     public static final String CMD_ARR = "cmdArr_code_int";
     public static final String CODE_INSPECTOR = "code_inspector";
     public static final String CODE_INSPECTOR_DATA = "code_inspector_data";
-    public static final String INSPECTOR_CMD_INT = "inspector_cmd_int";
-    public static final String INSPECTOR_CMD_ARR = "inspector_cmd_arr";
     public static final String CODE_INSPECTOR_TIMEOUT = "code_inspector_timeout";
     public static final String LEFT_BAR = "left_bar";
     public static final String WIDGET_BAR = "widget_bar";

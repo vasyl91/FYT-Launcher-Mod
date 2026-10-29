@@ -250,9 +250,7 @@
     <string name="display_canbus_reader">Onyesha kisomaji cha Canbus</string>
     <string name="codes_guide">Mwongozo wa Canbus</string>
     <string name="codes_guide_detailed_reading_title">Mkaguzi wa misimbo – usomaji wa kina</string>
-    <string name="codes_guide_detailed_reading">Sehemu hii inalenga kujaribu michanganyiko maalum ya cmdInt na cmdArr ili kufichua misimbo iliyomo. Kama ilivyotajwa awali, cmdInt na cmdArr si muhimu sana na michanganyiko mingi nasibu inapaswa kufanya kazi. Moduli hii iliundwa kabla sijajua hilo, lakini bado inaweza kuwa na manufaa kwa majaribio maalum.</string>
     <string name="codes_guide_miscellaneous_title">Mbalimbali</string>
-    <string name="codes_guide_miscellaneous">Ruka misimbo – kama jina linavyosema, sehemu hii inalenga kupuuza usomaji wa misimbo iliyotolewa. Inafanya kazi kwa \"Kinasa misimbo\" na \"Mkaguzi wa misimbo\". Pengine haitaharakisha mchakato, lakini kumbukumbu hazitakuwa na matokeo usiyoyapenda.</string>
     <string name="skip_codes">Ruka misimbo</string>
     <string name="skip_codes_summary">Misimbo ifuatayo itarukwa: %1$s</string>
     <string name="skip_codes_empty_summary">Data itasomwa kutoka kwenye seti nzima ya misimbo.</string>
@@ -263,9 +261,6 @@
     <string name="code_inspector_summary">Gusa ili kuanza mchakato</string>
     <string name="code_inspector_summary_working">Inafanya kazi… %1$s Gusa ili kughairi</string>
     <string name="code_inspector_data">Data ya usomaji wa kina</string>
-    <string name="code_inspector_data_summary">Gusa ili kuweka data ya usomaji wa kina. \ncmdInt: %1$s, cmdArr: %2$s, muda wa kuisha: %3$s</string>
-    <string name="inspector_cmd_int_text">cmdInt (juu zaidi 1198):</string>
-    <string name="inspector_cmd_arr_text">cmdArr (juu zaidi 1199):</string>
     <string name="code_inspector_timeout_text">Muda wa kuisha:</string>
     <string name="code_inspector_toast">Ukaguzi wa misimbo umekamilika. Angalia matokeo kwenye Download/Launcher66_Canbus</string>
 

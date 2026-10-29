@@ -250,9 +250,7 @@
     <string name="display_canbus_reader">Canbus წამკითხველის ჩვენება</string>
     <string name="codes_guide">Canbus სახელმძღვანელო</string>
     <string name="codes_guide_detailed_reading_title">კოდების ინსპექტორი – დეტალური წაკითხვა</string>
-    <string name="codes_guide_detailed_reading">ეს ნაწილი განკუთვნილია cmdInt-ისა და cmdArr-ის კონკრეტული კომბინაციების გასატესტად, რათა გამოვლინდეს მათში არსებული კოდები. როგორც ზემოთ აღინიშნა, cmdInt და cmdArr ნაკლებად მნიშვნელოვანია და შემთხვევითი კომბინაციების უმეტესობა უნდა მუშაობდეს. ეს მოდული შეიქმნა, სანამ ამის შესახებ გავიგებდი, მაგრამ მაინც შეიძლება გამოდგეს კონკრეტული ტესტებისთვის.</string>
     <string name="codes_guide_miscellaneous_title">სხვადასხვა</string>
-    <string name="codes_guide_miscellaneous">კოდების გამოტოვება – როგორც სახელი გვეუბნება, ეს განყოფილება განკუთვნილია მითითებული კოდების წაკითხვის უგულებელსაყოფად. მუშაობს როგორც „კოდების ლოგერისთვის“, ისე „კოდების ინსპექტორისთვის“. სავარაუდოდ, პროცესს არ დააჩქარებს, მაგრამ ლოგებში არ იქნება გამოსავლები, რომლებიც არ გაინტერესებთ.</string>
     <string name="skip_codes">კოდების გამოტოვება</string>
     <string name="skip_codes_summary">შემდეგი კოდები გამოტოვებული იქნება: %1$s</string>
     <string name="skip_codes_empty_summary">მონაცემები წაიკითხება კოდების მთელი ნაკრებიდან.</string>
@@ -263,9 +261,6 @@
     <string name="code_inspector_summary">შეეხეთ პროცესის დასაწყებად</string>
     <string name="code_inspector_summary_working">მუშაობს… %1$s შეეხეთ გასაუქმებლად</string>
     <string name="code_inspector_data">დეტალური წაკითხვის მონაცემები</string>
-    <string name="code_inspector_data_summary">შეეხეთ დეტალური წაკითხვის მონაცემების დასაყენებლად. \ncmdInt: %1$s, cmdArr: %2$s, დროის ლიმიტი: %3$s</string>
-    <string name="inspector_cmd_int_text">cmdInt (მაქს. 1198):</string>
-    <string name="inspector_cmd_arr_text">cmdArr (მაქს. 1199):</string>
     <string name="code_inspector_timeout_text">დროის ლიმიტი:</string>
     <string name="code_inspector_toast">კოდების შემოწმება დასრულდა. შედეგები იხილეთ Download/Launcher66_Canbus-ში</string>
 

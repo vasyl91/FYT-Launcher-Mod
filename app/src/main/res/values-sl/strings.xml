@@ -250,9 +250,7 @@
     <string name="display_canbus_reader">Prikaži bralnik Canbus</string>
     <string name="codes_guide">Vodnik po Canbusu</string>
     <string name="codes_guide_detailed_reading_title">Pregledovalnik kod – podrobno branje</string>
-    <string name="codes_guide_detailed_reading">Ta del je namenjen preizkušanju določenih kombinacij cmdInt in cmdArr, da se razkrijejo kode, ki jih vsebujejo. Kot rečeno prej, sta cmdInt in cmdArr manj pomembna in večina naključnih kombinacij bi morala delovati. Ta modul je nastal, preden sem to izvedel, vendar je lahko še vedno uporaben za posebne preizkuse.</string>
     <string name="codes_guide_miscellaneous_title">Razno</string>
-    <string name="codes_guide_miscellaneous">Preskoči kode – kot pove ime, ta razdelek prezre branje podanih kod. Deluje za »Beleženje kod« in »Pregledovalnik kod«. Verjetno postopka ne pospeši, vendar dnevniki ne bodo vsebovali izhodov, ki vas ne zanimajo.</string>
     <string name="skip_codes">Preskoči kode</string>
     <string name="skip_codes_summary">Naslednje kode bodo preskočene: %1$s</string>
     <string name="skip_codes_empty_summary">Podatki bodo prebrani iz celotnega nabora kod.</string>
@@ -263,9 +261,6 @@
     <string name="code_inspector_summary">Dotaknite se za začetek postopka</string>
     <string name="code_inspector_summary_working">Delovanje… %1$s Dotaknite se za preklic</string>
     <string name="code_inspector_data">Podatki podrobnega branja</string>
-    <string name="code_inspector_data_summary">Dotaknite se za nastavitev podatkov podrobnega branja. \ncmdInt: %1$s, cmdArr: %2$s, časovna omejitev: %3$s</string>
-    <string name="inspector_cmd_int_text">cmdInt (največ 1198):</string>
-    <string name="inspector_cmd_arr_text">cmdArr (največ 1199):</string>
     <string name="code_inspector_timeout_text">Časovna omejitev:</string>
     <string name="code_inspector_toast">Pregled kod je končan. Rezultate preverite v Download/Launcher66_Canbus</string>
 

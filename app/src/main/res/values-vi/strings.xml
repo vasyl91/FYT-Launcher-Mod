@@ -250,9 +250,7 @@
     <string name="display_canbus_reader">Hiển thị trình đọc Canbus</string>
     <string name="codes_guide">Hướng dẫn Canbus</string>
     <string name="codes_guide_detailed_reading_title">Trình kiểm tra mã – đọc chi tiết</string>
-    <string name="codes_guide_detailed_reading">Phần này dùng để thử các tổ hợp cmdInt và cmdArr cụ thể nhằm tìm ra các mã chúng chứa. Như đã nói, cmdInt và cmdArr ít quan trọng hơn và hầu hết các tổ hợp ngẫu nhiên đều chạy được. Mô-đun này được tạo trước khi tôi biết điều đó, nhưng vẫn có thể hữu ích cho các thử nghiệm cụ thể.</string>
     <string name="codes_guide_miscellaneous_title">Khác</string>
-    <string name="codes_guide_miscellaneous">Bỏ qua mã – đúng như tên gọi, mục này bỏ qua việc đọc các mã đã cho. Nó hoạt động với cả \"Trình ghi mã\" và \"Trình kiểm tra mã\". Có lẽ nó không tăng tốc quá trình, nhưng nhật ký sẽ không chứa các đầu ra bạn không quan tâm.</string>
     <string name="skip_codes">Bỏ qua mã</string>
     <string name="skip_codes_summary">Các mã sau sẽ bị bỏ qua: %1$s</string>
     <string name="skip_codes_empty_summary">Dữ liệu sẽ được đọc từ toàn bộ tập mã.</string>
@@ -263,9 +261,6 @@
     <string name="code_inspector_summary">Nhấn để bắt đầu quá trình</string>
     <string name="code_inspector_summary_working">Đang chạy… %1$s Nhấn để hủy</string>
     <string name="code_inspector_data">Dữ liệu đọc chi tiết</string>
-    <string name="code_inspector_data_summary">Nhấn để đặt dữ liệu đọc chi tiết. \ncmdInt: %1$s, cmdArr: %2$s, Thời gian chờ: %3$s</string>
-    <string name="inspector_cmd_int_text">cmdInt (tối đa 1198):</string>
-    <string name="inspector_cmd_arr_text">cmdArr (tối đa 1199):</string>
     <string name="code_inspector_timeout_text">Thời gian chờ:</string>
     <string name="code_inspector_toast">Đã kiểm tra xong các mã. Xem kết quả tại Download/Launcher66_Canbus</string>
 

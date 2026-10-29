@@ -131,9 +131,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private String rpmCodeStr;
     private String horsePowerCodeStr;
     private String vehicleMassCodeStr;
-    private EditText inspectorInt;
-    private String inspectorCmdInt;
-    private String inspectorCmdArr;
+    private EditText inspectorTimeoutEdit;
     private String codeInspectorTimeoutStr;
     private SwitchPreferenceCompat mainScreenStats;
     private SwitchPreferenceCompat bgDrawable;
@@ -321,9 +319,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         inspectorCategory = findPreference("inspector_category");
         codeInspector = findPreference(Keys.CODE_INSPECTOR);
         codeInspectorData = findPreference(Keys.CODE_INSPECTOR_DATA);
-        inspectorCmdInt = sharedPrefs.getString(Keys.INSPECTOR_CMD_INT, "0");
-        inspectorCmdArr = sharedPrefs.getString(Keys.INSPECTOR_CMD_ARR, "0");
-        codeInspectorTimeoutStr = sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30");
+        codeInspectorTimeoutStr = sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "300");
 
         Preference widgetsBackground = findPreference(Keys.WIDGETS_BACKGROUND);
         Preference barBackground = findPreference(Keys.BAR_BACKGROUND);
@@ -615,7 +611,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             codeInspector.setVisible(displayCanbusReaderBool);
             codeInspector.setOnPreferenceClickListener(this);
             if (helpers.codeInspectorBoolean()) {
-                int inspectorTimeout = Integer.parseInt(sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30")) * 1000;
+                int inspectorTimeout = Integer.parseInt(sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "300")) * 1000;
                 setCountDownTimer(inspectorTimeout);
                 setTickRunnable(inspectorTimeout + 1000);
             } else {
@@ -626,7 +622,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (codeInspectorData != null) {
             codeInspectorData.setVisible(displayCanbusReaderBool);
             codeInspectorData.setOnPreferenceClickListener(this);
-            codeInspectorData.setSummary(getString(R.string.code_inspector_data_summary, inspectorCmdInt, inspectorCmdArr, codeInspectorTimeoutStr));
+            codeInspectorData.setSummary(getString(R.string.code_inspector_data_summary_time, codeInspectorTimeoutStr));
         }
     }
 
@@ -866,7 +862,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             case Keys.CODE_INSPECTOR:
                 if (!helpers.codeInspectorBoolean()) {
                     // start the service
-                    int inspectorTimeout = Integer.parseInt(sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30")) * 1000;
+                    int inspectorTimeout = Integer.parseInt(sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "300")) * 1000;
                     startCanbusCodeInspector();
                     setCountDownTimer(inspectorTimeout);
                     setTickRunnable(inspectorTimeout + 1000);
@@ -876,18 +872,16 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 }
                 break;
             case Keys.CODE_INSPECTOR_DATA:
-                inspectorCmdInt = sharedPrefs.getString(Keys.INSPECTOR_CMD_INT, "0");
-                inspectorCmdArr = sharedPrefs.getString(Keys.INSPECTOR_CMD_ARR, "0");
-                codeInspectorTimeoutStr = sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30");
+                codeInspectorTimeoutStr = sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "300");
 
                 alertCodesInspectorDialog = displayCodesInspectorDialog().create();
 
                 alertCodesInspectorDialog.setOnShowListener(dialog -> {
                     Button negativeInspectorButtonI = alertCodesInspectorDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
                     negativeInspectorButtonI.setLayoutParams(params);
-                    inspectorInt.requestFocus();
-                    imm.showSoftInput(inspectorInt, InputMethodManager.SHOW_IMPLICIT);
-                    inspectorInt.setSelection(inspectorInt.getText().length());
+                    inspectorTimeoutEdit.requestFocus();
+                    imm.showSoftInput(inspectorTimeoutEdit, InputMethodManager.SHOW_IMPLICIT);
+                    inspectorTimeoutEdit.setSelection(inspectorTimeoutEdit.getText().length());
                 });
 
                 alertCodesInspectorDialog.show();
@@ -1287,10 +1281,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
     public void startCanbusCodeInspector() {
         Intent intent = new Intent(this.requireContext(), CanbusCodeInspector.class);
-        Bundle extras = new Bundle();
-        extras.putInt("cmdInt", Integer.parseInt(sharedPrefs.getString(Keys.CMD_INT, "0")));
-        extras.putInt("cmdArr", Integer.parseInt(sharedPrefs.getString(Keys.CMD_ARR, "0")));
-        intent.putExtras(extras);
         ServiceIntentGate.startIfAvailable(this.requireContext(), intent, "canbus code inspector");
     }
 
@@ -1667,52 +1657,30 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     private AlertDialog.Builder displayCodesInspectorDialog() {
-        EditText inspectorArr;
-        EditText inspectorTimeout;
         LayoutInflater inflater = LayoutInflater.from(this.requireContext());
         View dialogView = inflater.inflate(R.layout.dialog_inspector_codes_layout, null);
 
-        inspectorInt = dialogView.findViewById(R.id.inspector_cmd_int);
-        inspectorArr = dialogView.findViewById(R.id.inspector_cmd_arr);
-        inspectorTimeout = dialogView.findViewById(R.id.code_inspector_timeout);
+        inspectorTimeoutEdit = dialogView.findViewById(R.id.code_inspector_timeout);
 
         ConstraintLayout constraintInspector = dialogView.findViewById(R.id.constraint_inspector);
         constraintInspector.setPadding(padding, padding, padding, padding);
 
         setCalculatedSizes(dialogView, R.id.code_inspector_data_title, SettingsActivity.dialogTitle, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.inspector_cmd_int_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.inspector_cmd_arr_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
         setCalculatedSizes(dialogView, R.id.code_inspector_timeout_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
 
-        dialogCodesInspectorEditText(inspectorInt);
-        dialogCodesInspectorEditText(inspectorArr);
-        dialogCodesInspectorEditText(inspectorTimeout);
-
-        inspectorInt.setText(inspectorCmdInt);
-        inspectorArr.setText(inspectorCmdArr);
-        inspectorTimeout.setText(codeInspectorTimeoutStr);
-
-        inspectorInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        inspectorArr.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        inspectorTimeout.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        dialogCodesInspectorEditText(inspectorTimeoutEdit);
+        inspectorTimeoutEdit.setText(codeInspectorTimeoutStr);
+        inspectorTimeoutEdit.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> {
-                inspectorCmdInt = inspectorInt.getText().toString();
-                inspectorCmdArr = inspectorArr.getText().toString();
-                codeInspectorTimeoutStr = inspectorTimeout.getText().toString();
-                saveInspectorCode(inspectorInt);
-                saveInspectorCode(inspectorArr);
-                saveInspectorCode(inspectorTimeout);
+                codeInspectorTimeoutStr = inspectorTimeoutEdit.getText().toString();
+                saveInspectorCode(inspectorTimeoutEdit);
             });
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         builder.setOnCancelListener(dialog -> {
-                inspectorCmdInt = inspectorInt.getText().toString();
-                inspectorCmdArr = inspectorArr.getText().toString();
-                codeInspectorTimeoutStr = inspectorTimeout.getText().toString();
-                saveInspectorCode(inspectorInt);
-                saveInspectorCode(inspectorArr);
-                saveInspectorCode(inspectorTimeout);
+                codeInspectorTimeoutStr = inspectorTimeoutEdit.getText().toString();
+                saveInspectorCode(inspectorTimeoutEdit);
                 dialog.dismiss();
             });
         return builder;
@@ -1853,16 +1821,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         String codeToSaveStr = code.getResources().getResourceEntryName(code.getId());
         String valueStr = code.getText().toString();
         if ((valueStr.isEmpty() || valueStr.equals("0")) && codeToSaveStr.equals(Keys.CODE_INSPECTOR_TIMEOUT)) {
-            valueStr = "30";
+            valueStr = "300";
         } else if (valueStr.isEmpty()) {
             valueStr = "0";
         }
         editor.putString(code.getResources().getResourceEntryName(code.getId()), valueStr);
         editor.apply();
-        codeInspectorData.setSummary(getString(R.string.code_inspector_data_summary,
-            sharedPrefs.getString(Keys.INSPECTOR_CMD_INT, "0"),
-            sharedPrefs.getString(Keys.INSPECTOR_CMD_ARR, "0"),
-            sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "30")));
+        codeInspectorData.setSummary(getString(R.string.code_inspector_data_summary_time,
+            sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "300")));
     }
 
     /**

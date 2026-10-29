@@ -250,9 +250,7 @@
     <string name="display_canbus_reader">Tampilkan pembaca Canbus</string>
     <string name="codes_guide">Panduan Canbus</string>
     <string name="codes_guide_detailed_reading_title">Inspektur kode – pembacaan terperinci</string>
-    <string name="codes_guide_detailed_reading">Bagian ini dimaksudkan untuk menguji kombinasi cmdInt dan cmdArr tertentu guna mengungkap kode yang dikandungnya. Seperti disebutkan sebelumnya, cmdInt dan cmdArr kurang penting dan kebanyakan kombinasi acak seharusnya berfungsi. Modul ini dibuat sebelum saya mengetahuinya, tetapi masih bisa berguna untuk pengujian tertentu.</string>
     <string name="codes_guide_miscellaneous_title">Lain-lain</string>
-    <string name="codes_guide_miscellaneous">Lewati kode – seperti namanya, bagian ini bertujuan mengabaikan pembacaan kode yang diberikan. Berfungsi untuk \"Pencatat kode\" maupun \"Inspektur kode\". Kemungkinan tidak mempercepat proses, tetapi log tidak akan berisi keluaran yang tidak Anda minati.</string>
     <string name="skip_codes">Lewati kode</string>
     <string name="skip_codes_summary">Kode berikut akan dilewati: %1$s</string>
     <string name="skip_codes_empty_summary">Data akan dibaca dari seluruh kumpulan kode.</string>
@@ -263,9 +261,6 @@
     <string name="code_inspector_summary">Ketuk untuk memulai proses</string>
     <string name="code_inspector_summary_working">Bekerja… %1$s Ketuk untuk membatalkan</string>
     <string name="code_inspector_data">Data pembacaan terperinci</string>
-    <string name="code_inspector_data_summary">Ketuk untuk mengatur data pembacaan terperinci. \ncmdInt: %1$s, cmdArr: %2$s, batas waktu: %3$s</string>
-    <string name="inspector_cmd_int_text">cmdInt (maks. 1198):</string>
-    <string name="inspector_cmd_arr_text">cmdArr (maks. 1199):</string>
     <string name="code_inspector_timeout_text">Batas waktu:</string>
     <string name="code_inspector_toast">Pemeriksaan kode selesai. Periksa hasilnya di Download/Launcher66_Canbus</string>
 

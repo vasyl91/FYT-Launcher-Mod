@@ -250,9 +250,7 @@
     <string name="display_canbus_reader">Canbus-olvasó megjelenítése</string>
     <string name="codes_guide">Canbus-útmutató</string>
     <string name="codes_guide_detailed_reading_title">Kódvizsgáló – részletes olvasás</string>
-    <string name="codes_guide_detailed_reading">Ez a rész bizonyos cmdInt- és cmdArr-kombinációk tesztelésére szolgál, hogy kiderüljön, milyen kódokat tartalmaznak. Ahogy korábban említettük, a cmdInt és a cmdArr kevésbé fontos, és a legtöbb véletlenszerű kombináció működik. Ez a modul azelőtt készült, hogy ezt megtudtam volna, de egyes tesztekhez még hasznos lehet.</string>
     <string name="codes_guide_miscellaneous_title">Egyebek</string>
-    <string name="codes_guide_miscellaneous">Kódok kihagyása – ahogy a neve is mutatja, ez a rész a megadott kódok olvasásának mellőzésére szolgál. Működik a „Kódnaplózónál” és a „Kódvizsgálónál” is. Valószínűleg nem gyorsítja fel a folyamatot, de a naplók nem tartalmaznak olyan kimeneteket, amelyek nem érdeklik.</string>
     <string name="skip_codes">Kódok kihagyása</string>
     <string name="skip_codes_summary">A következő kódok ki lesznek hagyva: %1$s</string>
     <string name="skip_codes_empty_summary">Az adatok a teljes kódkészletből lesznek beolvasva.</string>
@@ -263,9 +261,6 @@
     <string name="code_inspector_summary">Koppintson a folyamat elindításához</string>
     <string name="code_inspector_summary_working">Folyamatban… %1$s Koppintson a megszakításhoz</string>
     <string name="code_inspector_data">Részletes olvasás adatai</string>
-    <string name="code_inspector_data_summary">Koppintson a részletes olvasás adatainak beállításához. \ncmdInt: %1$s, cmdArr: %2$s, időtúllépés: %3$s</string>
-    <string name="inspector_cmd_int_text">cmdInt (legfeljebb 1198):</string>
-    <string name="inspector_cmd_arr_text">cmdArr (legfeljebb 1199):</string>
     <string name="code_inspector_timeout_text">Időtúllépés:</string>
     <string name="code_inspector_toast">A kódok vizsgálata befejeződött. Az eredményeket a Download/Launcher66_Canbus mappában találja</string>
 
