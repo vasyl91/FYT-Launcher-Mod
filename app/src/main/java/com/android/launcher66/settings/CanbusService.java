@@ -95,22 +95,30 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private boolean userLayout = false;
     private boolean userStats = false;
     private int statsWidthSelector;
-    private boolean estimateOil = false;
-    /** The codes of the settings; 0 = not set, the library's code is used then. */
+    /** The codes of the settings; 0 = not set, the library's code (fuel, range) or the reader's (speed) is used then. */
     private volatile int fuel = 0;
     private volatile int range = 0;
     private volatile int rpm = 0;
+    private volatile int speed = 0;
     /** The codes in use: those of the settings, else those the library knows for the car, else 0. */
     private volatile int fuelCode = 0;
     private volatile int rangeCode = 0;
+    /** The speed code in use: that of the settings, else the one the code reader found, else 0 (the GPS). */
+    private volatile int speedCode = 0;
     /** The last values of the codes above, from the update of com.syu.ms (binder thread). */
     private volatile int fuelValue = 0;
     private volatile int rangeValue = 0;
     private volatile int rpmValue = 0;
-    private double velocity = 0;
-    private int horsePower = 0;
-    private int vehicleMass = 0;
-    private int revolutionsPerMinute = 0;
+    private volatile int speedValue = 0;
+    /**
+     * The estimate of the consumption where the car gives none, learned from its own values; null without a
+     * fuel code (no estimate then). Main thread.
+     */
+    private FuelModel fuelModel;
+    private String fuelModelKey;
+    private long fuelModelSavedAt;
+    private FuelModel.SpeedScale speedScale = new FuelModel.SpeedScale(0);
+    private static final long FUEL_MODEL_SAVE_MS = 60_000L;
 
     private Workspace workspaceRef = null;
     private ViewTreeObserver.OnScrollChangedListener workspaceScrollListener = null;
@@ -155,8 +163,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
         userStats = prefs.getBoolean(Keys.USER_STATS, false);
-        horsePower = Integer.parseInt(prefs.getString("horse_power_code_int", "0"));
-        vehicleMass = Integer.parseInt(prefs.getString("vehicle_mass_code_int", "0")); // in kg
         helpers = new Helpers();
         CanbusLibrary.preload(getApplicationContext());
         accessibilityManager = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
@@ -193,6 +199,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             fuel = intent.getIntExtra("fuel", 0);
             range = intent.getIntExtra("range", 0);
             rpm = intent.getIntExtra("rpm", 0);
+            speed = intent.getIntExtra("speed", 0);
             // Until the library says otherwise (mNotifyCar) the codes of the settings are the ones in use
             fuelCode = fuel;
             rangeCode = range;
@@ -209,6 +216,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         if (sInstance == this) {
             sInstance = null;
         }
+        saveFuelModel();
         Log.d(TAG, "Service destroyed");
         removeLocationUpdates();
         unregisterAccessibilityEventListener();
@@ -363,6 +371,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 rpmValue = value;
                 uiHandler.post(CanbusService.this::mUpdaterRPM);
             }
+            if (updateCode == speedCode) {
+                speedValue = value;
+                uiHandler.post(CanbusService.this::onSpeedCode);
+            }
         }
     };
 
@@ -389,6 +401,12 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 }
                 fuelCode = fuel > 0 ? fuel : codes != null && codes.fuel > 0 ? codes.fuel : 0;
                 rangeCode = range > 0 ? range : codes != null && codes.range > 0 ? codes.range : 0;
+                // The speed for the estimate: the code of the settings, else the one the code reader found
+                // (it followed the GPS, and its scale is known), else the GPS
+                ReaderGuesses reader = ReaderGuesses.parse(prefs.getString(ReaderGuesses.key(carId), null));
+                speedCode = speed > 0 ? speed : reader != null && reader.speed > 0 ? reader.speed : 0;
+                speedScale = new FuelModel.SpeedScale(reader != null && speedCode == reader.speed ? reader.speedScale : 0);
+                loadFuelModel(carId);
                 registerStatsCodes();
             });
         });
@@ -1072,7 +1090,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
     private void registerStatsCodes() {
         unregisterStatsCodes();
-        for (int code : new int[]{fuelCode, rangeCode, rpm}) {
+        for (int code : new int[]{fuelCode, rangeCode, rpm, speedCode}) {
             if (code > 0 && statsCodesRegistered.add(code)) {
                 DataCanbus.PROXY.unregister(statsCallback, code);
                 DataCanbus.PROXY.register(statsCallback, code, 1);
@@ -1106,30 +1124,93 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
 
     public void mUpdaterOilExpend() {
+        int value = fuelValue;
+        if (fuelModel != null) {
+            long now = System.currentTimeMillis();
+            fuelModel.onFuel(now, value);
+            if (now - fuelModelSavedAt > FUEL_MODEL_SAVE_MS) {
+                saveFuelModel();        // what it learned survives a restart, now and then
+            }
+        }
         if (userLayout && userStats && absoluteStats != null) {
-            int value = fuelValue;
             if (absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
                 if (value > 0 && value < 3001) {
-                    estimateOil = false;
                     if (statsWidthSelector == 2) {
                         consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, String.format(Locale.getDefault(), "%d.%d", value / 10, value % 10)));
                     } else {
                         consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%d.%d", value / 10, value % 10)));   
                     }
-                } else {
-                    if (horsePower > 0 && vehicleMass > 0) {
-                        estimateOil = true;
+                } else if (!showFuelEstimate()) {
+                    // No value from the car, and no estimate (none learned yet, or no fuel code)
+                    if (statsWidthSelector == 2) {
+                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
                     } else {
-                        if (statsWidthSelector == 2) {
-                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
-                        } else {
-                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));  
-                        }
+                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
                     }
                 }
-            }         
+            }
+        }
+    }
+
+    /**
+     * The estimate in the widget, where the car gives no value and the model has learned enough of the car's
+     * own values; false (nothing shown) otherwise. Main thread.
+     */
+    private boolean showFuelEstimate() {
+        FuelModel.Estimate e = fuelModel != null ? fuelModel.estimate(System.currentTimeMillis()) : null;
+        if (e == null || consumptionTextView == null) {
+            return false;
+        }
+        boolean mini = statsWidthSelector == 2;
+        int text = e.perHour
+                ? (mini ? R.string.instantaneous_consumption_idle_mini : R.string.instantaneous_consumption_idle)
+                : (mini ? R.string.instantaneous_consumption_estimated_mini : R.string.instantaneous_consumption_estimated);
+        consumptionTextView.setText(consumptionTextView.getContext().getString(text, e.text()));
+        return true;
+    }
+
+    /** After a new speed: the estimate follows it while the car gives no value. Main thread. */
+    private void refreshFuelEstimate() {
+        if (fuelModel == null || !fuelModel.carGivesNoValue(System.currentTimeMillis())) {
+            return;
+        }
+        if (userLayout && userStats && absoluteStats != null
+                && absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
+            showFuelEstimate();
+        }
+    }
+
+    /** The model of the car and its fuel code, from the settings; none without a fuel code. Main thread. */
+    private void loadFuelModel(int carId) {
+        saveFuelModel();
+        if (fuelCode <= 0) {
+            fuelModel = null;
+            fuelModelKey = null;
+            return;
+        }
+        String key = FuelModel.key(carId, fuelCode);
+        if (!key.equals(fuelModelKey)) {
+            fuelModel = FuelModel.parse(prefs.getString(key, null));
+            fuelModelKey = key;
+        }
+    }
+
+    private void saveFuelModel() {
+        fuelModelSavedAt = System.currentTimeMillis();
+        if (fuelModel != null && fuelModelKey != null && prefs != null) {
+            prefs.edit().putString(fuelModelKey, fuelModel.serialize()).apply();
+        }
+    }
+
+    /** A value of the speed code: km/h once its scale is known. Main thread. */
+    private void onSpeedCode() {
+        speedScale.onValue(speedValue);
+        int scale = speedScale.scale();
+        if (scale > 0 && fuelModel != null) {
+            fuelModel.onSpeed(System.currentTimeMillis(), speedValue / (double) scale, true);
+            refreshFuelEstimate();
         }
     }
 
@@ -1157,19 +1238,15 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
 
     public void mUpdaterRPM() {
-        if (userLayout && userStats) {
-            revolutionsPerMinute = rpmValue;          
+        if (fuelModel != null) {
+            fuelModel.onRpm(rpmValue);
         }
     }
 
-    private int aboveSpeedCounter = 0;
-    private boolean speedValidated = false;
-    private static final int REQUIRED_SAMPLES = 4; // 2s / 0.5s = 4
-        
     /**
-     * In my case canbus stops sending the fuel consumption when the speed drops below ~40km/h.
-     * This is an attemp to ROUGHLY estimate the fuel consumption to provide some insight even though it undoubtedly is an inaccurate calculation.
-     * */    
+     * The GPS speed, for the estimate of the consumption where the car gives none (FuelModel), when there is
+     * no speed code, and to find the scale of the speed code.
+     */
     private void requestLocationUpdates() {
         removeLocationUpdates();
 
@@ -1190,49 +1267,19 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
 
-    /** A fix from the location updates: its speed, and with it the estimated fuel consumption. */
+    /** A fix from the location updates: its speed, for the estimate and for the scale of the speed code. */
     private void onLocation(Location location) {
-        if (location == null) {
+        if (location == null || !location.hasSpeed()) {
             return;
         }
-        float speed = location.getSpeed(); // m/s
-        velocity = speed * 3.6f; // in km/h
-        if (estimateOil && userLayout && userStats && absoluteStats != null) {
-            if (absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
-                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
-                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
-                if (revolutionsPerMinute > -1) {
-                    // Step 1: 2-second validation sampled every 500ms
-                    if (velocity > 5) {
-                        if (!speedValidated) {
-                            aboveSpeedCounter++;
-                            if (aboveSpeedCounter >= REQUIRED_SAMPLES) {
-                                speedValidated = true; // Passed 2-second check once
-                            }
-                        }
-                    } else {
-                        // Reset validation if it drops below threshold
-                        aboveSpeedCounter = 0;
-                        speedValidated = false;
-                    }
-
-                    // Step 2: Allow flow only after validation
-                    if (speedValidated && velocity < 38 && velocity > 5) {
-                        double fuelConsumption = calculateFuelConsumption(velocity, revolutionsPerMinute, horsePower, vehicleMass);
-                        if (statsWidthSelector == 2) {
-                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
-                        } else {
-                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
-                        }
-                    } else {
-                        if (statsWidthSelector == 2) {
-                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
-                        } else {
-                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
-                        }
-                    }
-                } 
-            }
+        double kmh = location.getSpeed() * 3.6;
+        if (speedCode > 0) {
+            speedScale.onGps(kmh);
+        }
+        // The speed code, once its scale is known, is the better speed: faster, and exactly 0 at a stop
+        if (fuelModel != null && (speedCode <= 0 || speedScale.scale() == 0)) {
+            fuelModel.onSpeed(System.currentTimeMillis(), kmh, false);
+            refreshFuelEstimate();
         }
     }
 
@@ -1241,132 +1288,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
             locationUpdates.remove();
         }
         locationUpdates = null;
-    }
-
-    private static final double FUEL_DENSITY = 0.74; // kg/L (tune per fuel/vehicle)
-    private static final double AIR_DENSITY = 1.225; // kg/m^3
-    private static final double DEFAULT_BSFC = 0.28; // kg/kWh (≈280 g/kWh) - tune per vehicle
-    private static final double DEFAULT_CdA = 0.66; // Cd * frontal area (m^2) - tune per vehicle
-    private static final double DEFAULT_CRR = 0.015; // rolling resistance coefficient - tune per tyres/surface
-    private static final double G = 9.81;
-    private static final double RPM_TO_SPEED_RATIO = 40.0; // fallback mapping rpm := speed * ratio (km/h -> rpm)
-    private static final double IDLE_FUEL_L_PER_H = 1.1; // typical idle fuel consumption (L/h) - tune as needed
-    private static final double MIN_SPEED_FOR_CONVERSION_KMH = 5.0; // below this we use a safe conversion floor
-    private static final double MAX_REASONABLE_L_PER_100KM = 200.0; // hard cap to avoid absurd display
-
-    // --- Smoothing state (keeps method backward-compatible; internal smoothing only) ---
-    private static double smoothedLPer100km = Double.NaN;
-    // Tune these: lower values => smoother/slower. Use larger rise alpha to show spikes quickly.
-    private static final double SMOOTH_ALPHA_RISE = 0.35; // reacts faster when consumption increases
-    private static final double SMOOTH_ALPHA_FALL = 0.12; // reacts slower when consumption decreases
-
-    // --- Decreasing detection state for the "3 second decrease => show 0.8 L/100km" rule ---
-    private static double lastSpeedForDecrease = Double.NaN;
-    private static long decreaseStartTimeMs = -1;
-    private static final long DECREASE_HOLD_MS = 3000; // 3 seconds
-    private static final double DECREASE_EPS_KMH = 0.5; // tolerance to ignore tiny jitter
-    private static final double FORCED_DISPLAY_ON_LONG_DECAY_L100 = 0.8; // value to show after 5s decreasing
-
-    public static double calculateFuelConsumption(double speedVal, int rpmInput, int horsePowerVal, int vehicleMassVal) {
-        long now = System.currentTimeMillis();
-
-        // Defensive bounds
-        if (speedVal < 0) speedVal = 0;
-        if (vehicleMassVal <= 0) vehicleMassVal = 1200; // fallback mass
-        if (horsePowerVal < 0) horsePowerVal = 0;
-
-        // --- detect sustained decreasing speed ---
-        if (Double.isNaN(lastSpeedForDecrease)) {
-            lastSpeedForDecrease = speedVal;
-            decreaseStartTimeMs = -1;
-        } else {
-            if (speedVal < lastSpeedForDecrease - DECREASE_EPS_KMH) {
-                // speed decreased beyond epsilon
-                if (decreaseStartTimeMs == -1) decreaseStartTimeMs = now;
-            } else if (speedVal > lastSpeedForDecrease + DECREASE_EPS_KMH) {
-                // speed increased -> reset decreasing detection
-                decreaseStartTimeMs = -1;
-            }
-            lastSpeedForDecrease = speedVal;
-        }
-
-        // If decreasing lasted longer than threshold, force the display to 0.8 L/100km
-        if (decreaseStartTimeMs != -1 && (now - decreaseStartTimeMs) >= DECREASE_HOLD_MS) {
-            smoothedLPer100km = FORCED_DISPLAY_ON_LONG_DECAY_L100;
-            // return rounded to 1 decimal
-            return Math.round(smoothedLPer100km * 10.0) / 10.0;
-        }
-
-        // 1) Estimate rpm if not available
-        double rpmVal;
-        if (rpmInput <= 0) {
-            rpmVal = (speedVal > 0.1) ? (speedVal * RPM_TO_SPEED_RATIO) : 900.0; // assume idle ~900 rpm if stationary
-        } else {
-            rpmVal = rpmInput;
-        }
-
-        // 2) Speed in m/s
-        double v = speedVal / 3.6;
-
-        // 3) Aerodynamic power (Watts): 0.5 * rho * CdA * v^3
-        double cdA = DEFAULT_CdA; // could be tuned externally if available
-        double aeroPowerW = 0.5 * AIR_DENSITY * cdA * v * v * v;
-
-        // 4) Rolling resistance power (Watts): Crr * m * g * v
-        double crr = DEFAULT_CRR;
-        double rollingPowerW = crr * vehicleMassVal * G * v;
-
-        // 5) Slope/acceleration unknown here; we can use a small extra baseline to account for auxiliaries
-        double auxiliaryPowerW = 400.0; // ~400 W for ancillaries (fan, electrics); tweak as needed
-
-        // 6) Tractive power needed (Watts) to overcome resistances
-        double tractivePowerW = aeroPowerW + rollingPowerW;
-
-        // 7) Estimate available engine power at current rpm as fraction of peak hp (very approximate)
-        double assumedMaxRpm = 6000.0;
-        double rpmFraction = Math.min(1.0, Math.max(0.05, rpmVal / assumedMaxRpm));
-        double engineMaxPowerW = horsePowerVal * 745.7; // convert HP to Watts (peak)
-        double approxEnginePowerW = engineMaxPowerW * rpmFraction * 0.85; // reflect driveline losses/partial load
-
-        // 8) Ensure mechanicalPowerW is reasonable (prevents tiny numbers)
-        double mechanicalPowerW = Math.max(tractivePowerW + auxiliaryPowerW, approxEnginePowerW * 0.25);
-
-        // 9) Detect likely mountain / heavy-load scenario: high RPM but low vehicle speed => engine working hard without speed increase.
-        double bsfcMultiplier = 1.0;
-        if (rpmVal > 2500 && speedVal < 30 && rpmInput > 0) {
-            bsfcMultiplier = 1.25; // tune between 1.1..1.5 if needed
-        }
-
-        // 10) Convert mechanicalPowerW to kW and compute fuel mass rate using BSFC
-        double powerKW = Math.max(0.0, mechanicalPowerW) / 1000.0;
-        double bsfc = DEFAULT_BSFC * bsfcMultiplier; // kg / kWh
-        double fuelKgPerHour = powerKW * bsfc;
-
-        // Ensure we at least account for idle fuel
-        double idleKgPerHour = IDLE_FUEL_L_PER_H * FUEL_DENSITY;
-        if (fuelKgPerHour < idleKgPerHour) fuelKgPerHour = idleKgPerHour;
-
-        // Convert to L/h
-        double fuelLPerHour = fuelKgPerHour / FUEL_DENSITY;
-
-        // 11) Convert to L/100km for display. Avoid dividing by very small speeds.
-        double speedForConversion = Math.max(speedVal, MIN_SPEED_FOR_CONVERSION_KMH);
-        double lPer100kmRaw = (fuelLPerHour / speedForConversion) * 100.0;
-
-        // 12) Apply some sanity clamps
-        if (Double.isNaN(lPer100kmRaw) || Double.isInfinite(lPer100kmRaw)) lPer100kmRaw = IDLE_FUEL_L_PER_H * 100.0 / Math.max(speedForConversion, 1.0);
-        lPer100kmRaw = Math.max(0.0, Math.min(MAX_REASONABLE_L_PER_100KM, lPer100kmRaw));
-
-        // --- Smoothing: asymmetric EMA (rise quicker than fall) ---
-        if (Double.isNaN(smoothedLPer100km)) {
-            smoothedLPer100km = lPer100kmRaw;
-        } else {
-            double alpha = (lPer100kmRaw > smoothedLPer100km) ? SMOOTH_ALPHA_RISE : SMOOTH_ALPHA_FALL;
-            smoothedLPer100km = alpha * lPer100kmRaw + (1.0 - alpha) * smoothedLPer100km;
-        }
-
-        // return rounded to 1 decimal place
-        return Math.round(smoothedLPer100km * 10.0) / 10.0;
     }
 
     public static class PropertyChangeClass {

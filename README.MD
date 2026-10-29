@@ -297,7 +297,7 @@ That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexAct
     The same `sources` folder can be given to the canbus library script ([`canbus_library`](canbus_library/README.md)), which builds a file with the screen class and the requests of every car of your version of the app; import it in the launcher (*Import a canbus library*) and the class named under Fuel statistics follows it.
 
 
-In my case, the CAN bus stops sending fuel consumption data when the speed drops below 40 km/h, so I added a function that attempts to ROUGHLY estimate fuel consumption, to provide some insight even though it's admittedly an inaccurate calculation. To use this, you'll need to find one additional code representing RPM — `U_ENGINE_SPEED = 148;` — found in [`Const_RZC4_PSA_ALL_DATA.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/Const_RZC4_PSA_ALL_DATA.java) mentioned earlier, and provide your car's details in the app settings.
+Many cars report the fuel consumption only above some speed (mine below ~30 km/h gives "no value"). Where the car gives none, the widget shows an estimate, marked `≈` (`≈4.2 L/100km`, and `≈0.9 L/h` at a stop). It is a fallback only: it is learned from the car's own values (the speed, how hard the car speeds up or slows down, and the RPM if the car reports it) and shown only after a few minutes of driving with values from the car; a car without a fuel code never gets one. It is better with the speed of the CAN bus than with the GPS: set the *Speed code* in the *Canbus codes* window, or leave it empty to use the speed code the Canbus reader found (shown as the hint). The *RPM code* there is optional.
 
 </details>
 
