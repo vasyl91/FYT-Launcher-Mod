@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -246,5 +247,159 @@ class CanbusFramesTest {
         for (CanbusCodeEstimator.Guess g : r.guesses) {
             assertTrue(g.code != 1019, g.toString());
         }
+    }
+
+    // ---- matching at the end of the frame, bits, rare and constant fields
+
+    private static Map<Integer, List<Event>> on1019(List<Event> events) {
+        Map<Integer, List<Event>> m = new HashMap<>();
+        m.put(1019, events);
+        return m;
+    }
+
+    @Test
+    void inTheCityTheCodeIsTakenWhenTheFrameIsCompleteNotLater() {
+        // speed frames every 200 ms, each finished by a separate update of its checksum, and code 510 updated
+        // the moment the frame is complete: 300 ms after the start of a frame the next one is already there
+        Random rnd = new Random(7);
+        List<Event> events = new ArrayList<>();
+        List<Sample> speed = new ArrayList<>();
+        int kmh = 20;
+        for (int i = 0; i < 300; i++) {
+            long t = 10_000L + i * 200L;
+            kmh = Math.max(0, Math.min(45, kmh + rnd.nextInt(5) - 2));
+            int value = kmh * 100;
+            int[] f = frame(0x7D, 3, value & 0xFF, value >> 8, 0, 0);
+            events.add(new Event(t, Arrays.copyOfRange(f, 0, f.length - 1)));
+            events.add(new Event(t + 6, new int[]{f[f.length - 1]}));
+            speed.add(new Sample(t + 6, value));
+        }
+        Channel c = CanbusFrames.assemble(1019, events);
+        assertEquals(300, c.frames.size());
+        assertEquals(10_006L, c.frames.get(0).t);
+        Map<Integer, List<Sample>> codes = new HashMap<>();
+        codes.put(510, speed);
+        String text = String.join("\n", CanbusFrames.report(CanbusFrames.detect(on1019(events)), codes));
+        assertTrue(text.matches("(?s).*data\\[1\\.\\.2\\] LE16: \\d+-\\d+ = code 510.*"), text);
+    }
+
+    @Test
+    void aFrameFinishedByAnUpdateOfOneNumberIsAssembled() {
+        int[] f = frame(0x7D, 3, 184, 11, 0, 0);
+        List<Event> events = new ArrayList<>();
+        events.add(new Event(0, Arrays.copyOfRange(f, 0, 8)));
+        events.add(new Event(7, new int[]{f[8]}));
+        Channel c = CanbusFrames.assemble(1019, events);
+        assertEquals(1, c.frames.size());
+        assertTrue(c.frames.get(0).checksumOk);
+        assertEquals(7, c.frames.get(0).t);
+    }
+
+    @Test
+    void theBitsOfAByteEqualTheSwitches() {
+        // 0x7D/01: data[1] = 0xC0 with bit 4 for the left and bit 3 for the right turn signal
+        List<Event> events = new ArrayList<>();
+        List<Sample> left = new ArrayList<>();
+        List<Sample> right = new ArrayList<>();
+        for (int i = 0; i < 60; i++) {
+            long t = i * 400L;
+            int l = i >= 10 && i < 20 ? i % 2 : 0;
+            int r = i >= 40 && i < 50 ? i % 2 : 0;
+            events.add(new Event(t, frame(0x7D, 1, 0xC0 | (l << 4) | (r << 3))));
+            left.add(new Sample(t + 3, l));
+            right.add(new Sample(t + 3, r));
+        }
+        // and a frame of another length, so that 0x7D has sub-commands
+        for (int i = 0; i < 30; i++) {
+            events.add(new Event(i * 400L + 200, frame(0x7D, 8, i & 7, 0)));
+        }
+        events.sort((a, b) -> Long.compare(a.t, b.t));
+        Map<Integer, List<Sample>> codes = new HashMap<>();
+        codes.put(505, left);
+        codes.put(506, right);
+        String text = String.join("\n", CanbusFrames.report(CanbusFrames.detect(on1019(events)), codes));
+        assertTrue(text.contains("  data[1] bit 4 = code 505"), text);
+        assertTrue(text.contains("  data[1] bit 3 = code 506"), text);
+        // every bit of the byte that changes is explained: no line for the byte itself
+        String block = text.substring(text.indexOf("Frame 0x7D/01"));
+        block = block.substring(0, block.indexOf("\nFrame ") > 0 ? block.indexOf("\nFrame ") : block.length());
+        assertFalse(block.contains("  data[1]: "), block);
+    }
+
+    @Test
+    void aFewFramesOfTheMileageStillEqualItsCode() {
+        for (int frames : new int[]{1, 8}) {
+            List<Event> events = new ArrayList<>();
+            List<Sample> mileage = new ArrayList<>();
+            mileage.add(new Sample(0, 108858));
+            // enough other frames for a channel
+            for (int i = 0; i < 40; i++) {
+                events.add(new Event(i * 1000L + 500, frame(0x7D, 8, i & 7, 0)));
+            }
+            for (int i = 0; i < frames; i++) {
+                int km = 108859 + i;
+                long t = 1000L + i * 4000L;
+                events.add(new Event(t, frame(0x7D, 4, km & 0xFF, (km >> 8) & 0xFF, km >> 16)));
+                mileage.add(new Sample(t + 5, km));
+            }
+            events.sort((a, b) -> Long.compare(a.t, b.t));
+            Map<Integer, List<Sample>> codes = new HashMap<>();
+            codes.put(512, mileage);
+            String text = String.join("\n", CanbusFrames.report(CanbusFrames.detect(on1019(events)), codes));
+            assertTrue(text.matches("(?s).*data\\[1\\.\\.3\\] LE24: 108859(-\\d+)? = code 512.*"), frames + " frames: " + text);
+        }
+    }
+
+    @Test
+    void aFewFramesOfSmallNumbersDoNotEqualACodeByChance() {
+        List<Event> events = new ArrayList<>();
+        List<Sample> small = new ArrayList<>();
+        for (int i = 0; i < 40; i++) {
+            events.add(new Event(i * 1000L, frame(0x7D, 8, i & 7, 0)));
+        }
+        for (int i = 0; i < 3; i++) {
+            events.add(new Event(i * 1000L + 500, frame(0x36, 9 + i, 0)));
+            small.add(new Sample(i * 1000L + 505, (9 + i) << 8));      // BE16 of data[0..1]: 2304..2816
+        }
+        events.sort((a, b) -> Long.compare(a.t, b.t));
+        Map<Integer, List<Sample>> codes = new HashMap<>();
+        codes.put(300, small);
+        String text = String.join("\n", CanbusFrames.report(CanbusFrames.detect(on1019(events)), codes));
+        // a field of at least 256 in all of the few frames does match
+        assertTrue(text.contains("= code 300"), text);
+
+        List<Sample> tiny = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            tiny.add(new Sample(i * 1000L + 505, 9 + i));
+        }
+        codes.put(300, tiny);
+        text = String.join("\n", CanbusFrames.report(CanbusFrames.detect(on1019(events)), codes));
+        assertFalse(text.contains("= code 300"), text);
+    }
+
+    @Test
+    void aConstantFieldEqualsTheOnlyConstantCodeOfItsValue() {
+        List<Event> events = new ArrayList<>();
+        List<Sample> fuel = new ArrayList<>();
+        Random rnd = new Random(8);
+        for (int i = 0; i < 50; i++) {
+            long t = i * 1000L;
+            int f = 40 + rnd.nextInt(60);
+            events.add(new Event(t, frame(0x33, 0, f, 300 >> 8, 300 & 0xFF, 0, 0, 0, 0, 0)));
+            fuel.add(new Sample(t + 5, f));
+        }
+        Map<Integer, List<Sample>> codes = new HashMap<>();
+        codes.put(91, fuel);
+        codes.put(92, Collections.singletonList(new Sample(0, 300)));
+        codes.put(103, Collections.singletonList(new Sample(0, 62)));       // too small to tell
+        String text = String.join("\n", CanbusFrames.report(CanbusFrames.detect(on1019(events)), codes));
+        assertTrue(text.contains("  data[2..3] BE16: 300 = code 92 (both constant)"), text);
+        assertTrue(text.contains("= code 91"), text);
+        assertFalse(text.contains("code 103"), text);
+
+        // two constant codes of that value: no telling which
+        codes.put(400, Collections.singletonList(new Sample(0, 300)));
+        text = String.join("\n", CanbusFrames.report(CanbusFrames.detect(on1019(events)), codes));
+        assertFalse(text.contains("(both constant)"), text);
     }
 }

@@ -334,15 +334,23 @@ public class CanbusCodeInspector extends Service {
         try {
             Map<Integer, List<CanbusFrames.Event>> frameEvents = new HashMap<>();
             for (int i = 0; i < snapshot.size(); i++) {
+                boolean payloads = false;
+                for (Event e : snapshot.valueAt(i)) {
+                    payloads |= e.ints != null;
+                }
+                if (!payloads) {
+                    continue;       // only codes with updates of several numbers can carry frames
+                }
+                // An update of one number is part of a frame too: often just its checksum
                 List<CanbusFrames.Event> list = new ArrayList<>();
                 for (Event e : snapshot.valueAt(i)) {
                     if (e.ints != null) {
                         list.add(new CanbusFrames.Event(e.t, e.ints));
+                    } else if (e.hasInt && e.extra.isEmpty()) {
+                        list.add(new CanbusFrames.Event(e.t, new int[]{e.v}));
                     }
                 }
-                if (!list.isEmpty()) {
-                    frameEvents.put(snapshot.keyAt(i), list);
-                }
+                frameEvents.put(snapshot.keyAt(i), list);
             }
             channels.putAll(CanbusFrames.detect(frameEvents));
         } catch (RuntimeException e) {

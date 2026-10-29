@@ -27,8 +27,16 @@ public final class CanbusFrames {
     private static final int START = 0xFD;
     /** A frame goes on in an update that comes at most this long after the previous one. */
     private static final long CONTINUATION_MS = 50L;
-    /** A code follows its frame by this much: the value of the code at the time of the frame + this. */
+    /**
+     * com.syu.ms updates a code as soon as the frame that carries it is complete: the value of a code for a frame
+     * is its first update from a little before the end of the frame to this long after it.
+     */
     private static final long CODE_FOLLOWS_MS = 300L;
+    private static final long CODE_EARLY_MS = 20L;
+    /** A field compared on fewer frames than {@link #MIN_COMPARED} must match all of them and be at least this. */
+    private static final int RARE_MIN_VALUE = 256;
+    /** A constant field equals a constant code only from this value on (0, 1 and small numbers are everywhere). */
+    private static final int CONSTANT_MIN_VALUE = 100;
     private static final int MIN_FRAMES = 20;
     private static final double MIN_SHARE = 0.8;
     static final int MAX_TYPES = 30;
@@ -51,6 +59,7 @@ public final class CanbusFrames {
     }
 
     public static final class Frame {
+        /** The time of the update that completed the frame. */
         public final long t;
         public final int cmd;
         public final int len;
@@ -103,7 +112,6 @@ public final class CanbusFrames {
         List<Frame> frames = new ArrayList<>();
         int[] buf = new int[512];
         int n = 0;
-        long bufT = 0;
         long lastT = 0;
         int okCount = 0;
         int longEvents = 0;
@@ -132,7 +140,6 @@ public final class CanbusFrames {
             }
             if (ints[0] == START) {
                 n = 0;
-                bufT = e.t;
             } else if (n > 0 && e.t - lastT <= CONTINUATION_MS) {
                 // the rest of a frame
             } else {
@@ -146,8 +153,8 @@ public final class CanbusFrames {
             System.arraycopy(ints, 0, buf, n, ints.length);
             n += ints.length;
 
+            // A frame is complete with this update: that is its time, the time its codes are updated
             int pos = 0;
-            long frameT = bufT;
             while (n - pos >= 2) {
                 if (buf[pos] != START) {
                     pos++;
@@ -171,14 +178,12 @@ public final class CanbusFrames {
                 if (ok) {
                     okCount++;
                 }
-                frames.add(new Frame(frameT, cmd, len, data, ok));
-                frameT = e.t;
+                frames.add(new Frame(e.t, cmd, len, data, ok));
                 pos += len + 1;
             }
             if (pos > 0) {
                 System.arraycopy(buf, pos, buf, 0, n - pos);
                 n -= pos;
-                bufT = e.t;
             }
         }
         return new Channel(code, frames, okCount, longEvents, starting);
@@ -210,11 +215,47 @@ public final class CanbusFrames {
         final int code;
         final long[] t;
         final int[] v;
+        final boolean changes;
+        /** Only the values 0 and 1: a switch, for the bits of the frames. */
+        final boolean binary;
 
         CodeSeries(int code, long[] t, int[] v) {
             this.code = code;
             this.t = t;
             this.v = v;
+            boolean ch = false;
+            boolean bin = true;
+            for (int i = 0; i < v.length; i++) {
+                if (i > 0 && v[i] != v[i - 1]) {
+                    ch = true;
+                }
+                if (v[i] != 0 && v[i] != 1) {
+                    bin = false;
+                }
+            }
+            this.changes = ch;
+            this.binary = bin;
+        }
+
+        /**
+         * The value of the code for a frame completed at {@code frameT}: its first update from a little before the
+         * frame to {@link #CODE_FOLLOWS_MS} after it, else the last one before the frame; Integer.MIN_VALUE if none.
+         */
+        int valueFor(long frameT) {
+            int lo = 0;
+            int hi = t.length;
+            while (lo < hi) {
+                int mid = (lo + hi) >>> 1;
+                if (t[mid] < frameT - CODE_EARLY_MS) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid;
+                }
+            }
+            if (lo < t.length && t[lo] <= frameT + CODE_FOLLOWS_MS) {
+                return v[lo];
+            }
+            return valueAt(frameT);
         }
 
         /** The last value at or before the time, or Integer.MIN_VALUE if the code had none yet. */
@@ -241,7 +282,7 @@ public final class CanbusFrames {
             return out;
         }
         for (Map.Entry<Integer, List<Sample>> e : new TreeMap<>(series).entrySet()) {
-            if (exclude.contains(e.getKey()) || e.getValue() == null || e.getValue().size() < 2) {
+            if (exclude.contains(e.getKey()) || e.getValue() == null || e.getValue().isEmpty()) {
                 continue;
             }
             List<Sample> list = new ArrayList<>(e.getValue());
@@ -253,25 +294,21 @@ public final class CanbusFrames {
             });
             long[] t = new long[list.size()];
             int[] v = new int[list.size()];
-            boolean changes = false;
             for (int i = 0; i < t.length; i++) {
                 t[i] = list.get(i).t;
                 v[i] = list.get(i).v;
-                if (i > 0 && v[i] != v[i - 1]) {
-                    changes = true;
-                }
             }
-            if (changes) {
-                out.add(new CodeSeries(e.getKey(), t, v));
-            }
+            out.add(new CodeSeries(e.getKey(), t, v));
         }
         return out;
     }
 
     /**
-     * The lines of the section for every channel: the types of frames, and in each the bytes and the fields
-     * that change. A field that equals an ordinary code (one that changed at least once) in at least 90 % of
-     * the frames, the code taken 300 ms after the frame, is marked {@code = code N}.
+     * The lines of the section for every channel: the types of frames, and in each the bytes, the fields and the
+     * bits that change. A field that equals an ordinary code that changed in at least 90 % of the frames (all of
+     * them when there are fewer than 10), the code taken when the frame is complete, is marked {@code = code N};
+     * a bit that equals a switch (a code of 0 and 1) {@code data[1] bit 4 = code N}; a constant field that equals
+     * the only constant code of that value {@code = code N (both constant)}.
      *
      * @param series the recorded values per code, with the channels of frames left out
      */
@@ -407,56 +444,108 @@ public final class CanbusFrames {
         List<String> out = new ArrayList<>();
         boolean[] covered = new boolean[n];
 
-        // 1. the fields that equal a code: the narrowest first, then the others of the same code are redundant
+        // 1. the fields that equal a code: the narrowest first, then the others of the same code are redundant.
+        // A field that does not change is a candidate when there are few frames (it may change between them) and
+        // for a constant code.
+        boolean rare = frames.size() < MIN_COMPARED;
         List<int[]> candidates = new ArrayList<>();      // {width, endianness (0 LE, 1 BE), start}
         for (int width = 2; width <= 3; width++) {
             for (int i = first; i + width <= n; i++) {
-                boolean any = false;
-                for (int j = i; j < i + width; j++) {
-                    any |= varies[j];
-                }
-                if (!any) {
-                    continue;
-                }
                 candidates.add(new int[]{width, 0, i});
                 if (width == 2) {
                     candidates.add(new int[]{width, 1, i});
                 }
             }
         }
-        List<int[]> matchedFields = new ArrayList<>();      // {width, endianness, start, code, signed}
+        List<int[]> matchedFields = new ArrayList<>();      // {width, endianness, start, code, signed, constant}
         Set<Integer> codesTaken = new HashSet<>();
         for (int[] cand : candidates) {
+            boolean any = false;
+            boolean overlaps = false;
+            for (int j = cand[2]; j < cand[2] + cand[0]; j++) {
+                any |= varies[j];
+                overlaps |= covered[j];
+            }
+            if (overlaps) {
+                continue;       // the bytes of a field already named
+            }
             int[] values = fieldValues(col, cand[0], cand[1], cand[2], false);
-            int code = matchCode(values, times, codes, codesTaken);
+            int code = -1;
             boolean signed = false;
-            if (code < 0 && cand[0] == 2 && anyAbove(values, 0x8000)) {
-                values = fieldValues(col, cand[0], cand[1], cand[2], true);
-                code = matchCode(values, times, codes, codesTaken);
-                signed = code >= 0;
+            boolean constant = false;
+            if (any || rare) {
+                code = matchCode(values, times, codes, codesTaken, false);
+                if (code < 0 && cand[0] == 2 && anyAbove(values, 0x8000)) {
+                    int[] s = fieldValues(col, cand[0], cand[1], cand[2], true);
+                    code = matchCode(s, times, codes, codesTaken, false);
+                    signed = code >= 0;
+                }
+            }
+            if (code < 0 && !any) {
+                code = matchConstant(values[0], codes, codesTaken);
+                constant = code >= 0;
             }
             if (code >= 0) {
                 codesTaken.add(code);
-                matchedFields.add(new int[]{cand[0], cand[1], cand[2], code, signed ? 1 : 0});
+                matchedFields.add(new int[]{cand[0], cand[1], cand[2], code, signed ? 1 : 0, constant ? 1 : 0});
+                for (int j = cand[2]; j < cand[2] + cand[0]; j++) {
+                    covered[j] = true;
+                }
             }
         }
+        // in the order of the bytes
+        Collections.sort(matchedFields, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] a, int[] b) {
+                return a[2] - b[2];
+            }
+        });
         for (int[] m : matchedFields) {
             int[] values = fieldValues(col, m[0], m[1], m[2], m[4] == 1);
-            out.add(fieldLine(m[0], m[1], m[2], m[4] == 1, values) + " = code " + m[3]);
-            for (int j = m[2]; j < m[2] + m[0]; j++) {
-                covered[j] = true;
-            }
+            out.add(fieldLine(m[0], m[1], m[2], m[4] == 1, values) + " = code " + m[3]
+                    + (m[5] == 1 ? " (both constant)" : ""));
         }
 
-        // 2. the other fields whose bytes all change, and 3. the single bytes that change and are in no field
+        // 2. the bits that equal a switch, in the bytes that change and are in no field
+        boolean[] bitsExplained = new boolean[n];
         for (int i = first; i < n; i++) {
-            if (covered[i]) {
+            if (covered[i] || !varies[i]) {
+                continue;
+            }
+            int unexplained = 0;
+            for (int bit = 7; bit >= 0; bit--) {
+                int[] bits = new int[frames.size()];
+                boolean on = false;
+                boolean off = false;
+                for (int k = 0; k < bits.length; k++) {
+                    bits[k] = (col[i][k] >> bit) & 1;
+                    on |= bits[k] == 1;
+                    off |= bits[k] == 0;
+                }
+                if (!on || !off) {
+                    continue;       // the bit does not change
+                }
+                int code = matchCode(bits, times, codes, codesTaken, true);
+                if (code >= 0) {
+                    codesTaken.add(code);
+                    out.add(String.format(Locale.ROOT, "  data[%d] bit %d = code %d", i, bit, code));
+                } else {
+                    unexplained++;
+                }
+            }
+            bitsExplained[i] = unexplained == 0;
+        }
+
+        // 3. the other fields whose bytes all change, and 4. the single bytes that change and are in no field
+        for (int i = first; i < n; i++) {
+            if (covered[i] || bitsExplained[i]) {
                 continue;
             }
             int width = 1;
-            if (i + 2 < n && varies[i] && varies[i + 1] && varies[i + 2] && !covered[i + 1] && !covered[i + 2]) {
+            if (i + 2 < n && varies[i] && varies[i + 1] && varies[i + 2] && !covered[i + 1] && !covered[i + 2]
+                    && !bitsExplained[i + 1] && !bitsExplained[i + 2]) {
                 width = 3;
-            } else if (i + 1 < n && varies[i] && varies[i + 1] && !covered[i + 1]) {
+            } else if (i + 1 < n && varies[i] && varies[i + 1] && !covered[i + 1] && !bitsExplained[i + 1]) {
                 width = 2;
             }
             if (width == 1) {
@@ -561,29 +650,38 @@ public final class CanbusFrames {
     }
 
     /**
-     * The code (not one of {@code taken}) whose value, 300 ms after each frame, equals the field in at least 90 %
-     * of the frames it can be compared on (at least 10 of them); -1 if none. The fewest differences win.
+     * The code (not one of {@code taken}, one that changed) that equals the field in at least 90 % of the frames it
+     * can be compared on, at least 10 of them; with fewer, in all of them and only for a field of at least
+     * {@link #RARE_MIN_VALUE}. {@code bits}: only the switches (codes of 0 and 1), and a bit of the field. The
+     * value of the code for a frame is the one {@link CodeSeries#valueFor} gives. The fewest differences win; -1 if
+     * none.
      */
-    private static int matchCode(int[] values, long[] times, List<CodeSeries> codes, Set<Integer> taken) {
+    private static int matchCode(int[] values, long[] times, List<CodeSeries> codes, Set<Integer> taken,
+                                 boolean bits) {
+        int max = Integer.MIN_VALUE;
+        for (int v : values) {
+            max = Math.max(max, v);
+        }
         int best = -1;
         int bestBad = Integer.MAX_VALUE;
         for (CodeSeries cs : codes) {
-            if (taken.contains(cs.code)) {
+            if (taken.contains(cs.code) || !cs.changes || bits != cs.binary) {
                 continue;
             }
             int comparable = 0;
             for (long t : times) {
-                if (t + CODE_FOLLOWS_MS >= cs.t[0]) {
+                if (cs.valueFor(t) != Integer.MIN_VALUE) {
                     comparable++;
                 }
             }
-            if (comparable < MIN_COMPARED) {
+            if (comparable == 0 || (comparable < MIN_COMPARED && !bits && max < RARE_MIN_VALUE)) {
                 continue;
             }
-            int allowed = (int) Math.floor((1 - MATCH_SHARE) * comparable + 1e-9);
+            int allowed = comparable < MIN_COMPARED ? 0
+                    : (int) Math.floor((1 - MATCH_SHARE) * comparable + 1e-9);
             int bad = 0;
             for (int k = 0; k < values.length && bad <= allowed; k++) {
-                int v = cs.valueAt(times[k] + CODE_FOLLOWS_MS);
+                int v = cs.valueFor(times[k]);
                 if (v == Integer.MIN_VALUE) {
                     continue;
                 }
@@ -597,5 +695,26 @@ public final class CanbusFrames {
             }
         }
         return best;
+    }
+
+    /**
+     * The code that never changed and is the only one (not taken) with this value, for a field that never changed;
+     * -1 if there is none or more than one, or the value is too small to say anything.
+     */
+    private static int matchConstant(int value, List<CodeSeries> codes, Set<Integer> taken) {
+        if (value < CONSTANT_MIN_VALUE) {
+            return -1;
+        }
+        int found = -1;
+        for (CodeSeries cs : codes) {
+            if (cs.changes || taken.contains(cs.code) || cs.v[0] != value) {
+                continue;
+            }
+            if (found >= 0) {
+                return -1;      // two codes with this value: no telling which
+            }
+            found = cs.code;
+        }
+        return found;
     }
 }
