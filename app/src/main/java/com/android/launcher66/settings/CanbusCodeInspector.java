@@ -366,6 +366,19 @@ public class CanbusCodeInspector extends Service {
             Log.w(TAG, "Could not guess the meaning of the codes", e);
             guesses = null;
         }
+        // What the library says of this car, against what the recording shows; and the guesses, for the window
+        String libraryLine = "";
+        int carId = DataCanbus.DATA[1000];
+        try {
+            CanbusLibrary.CarCodes libraryCodes = CanbusLibrary.loadBlocking(this).codesFor(carId);
+            if (libraryCodes != null) {
+                libraryLine = CanbusCodeEstimator.libraryCodesLine(libraryCodes.fuel, libraryCodes.range, samples,
+                        guesses);
+            }
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Could not compare the codes of the library", e);
+        }
+        saveGuesses(carId, guesses);
         List<String> frameLines = new ArrayList<>();
         try {
             frameLines = CanbusFrames.report(channels, samples);
@@ -378,12 +391,21 @@ public class CanbusCodeInspector extends Service {
             writer.write("Canbus reader, " + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US)
                     .format(new Date(startTime)) + ", " + codeInspectorServiceTimeout + " s\n");
             writer.write(carLine() + "\n");
+            int withBearing = 0;
+            for (CanbusCodeEstimator.GpsFix f : fixes) {
+                if (!Float.isNaN(f.bearing)) {
+                    withBearing++;
+                }
+            }
             writer.write(gpsRecorded
-                    ? "GPS speed: " + fixes.size() + " fixes\n"
+                    ? "GPS speed: " + fixes.size() + " fixes, with bearing: " + withBearing + "\n"
                     : "GPS speed: not recorded (no location permission)\n");
             writer.write("Codes with data: " + withData + " (unchanged: " + unchanged
                     + (skipZeroCodes ? "; " + onlyZero + " sent only 0 and are left out" : "")
                     + "); events: " + total + "; dropped: " + dropped + "\n");
+            if (!libraryLine.isEmpty()) {
+                writer.write(libraryLine + "\n");
+            }
             writer.write("\nLikely meanings (best guesses, may be wrong):\n");
             if (guesses != null) {
                 for (CanbusCodeEstimator.Guess g : guesses.guesses) {
@@ -443,6 +465,20 @@ public class CanbusCodeInspector extends Service {
             }
         }
         return true;
+    }
+
+    /** The best guesses for the Canbus codes window, over the ones of an earlier reading. Off the main thread. */
+    private void saveGuesses(int carId, CanbusCodeEstimator.Result guesses) {
+        if (carId == 0 || guesses == null) {
+            return;
+        }
+        ReaderGuesses found = ReaderGuesses.of(guesses, startTime);
+        if (found.isEmpty()) {
+            return;
+        }
+        String key = ReaderGuesses.key(carId);
+        ReaderGuesses older = ReaderGuesses.parse(sharedPrefs.getString(key, null));
+        sharedPrefs.edit().putString(key, found.over(older).serialize()).apply();
     }
 
     /** Every update of the code was 0 with nothing else in it. An update without ints is not a 0. */
@@ -515,7 +551,8 @@ public class CanbusCodeInspector extends Service {
 
     private void onLocation(Location location) {
         if (location != null && location.hasSpeed()) {
-            gpsFixes.add(new CanbusCodeEstimator.GpsFix(System.currentTimeMillis(), location.getSpeed() * 3.6f));
+            gpsFixes.add(new CanbusCodeEstimator.GpsFix(System.currentTimeMillis(), location.getSpeed() * 3.6f,
+                    location.hasBearing() ? location.getBearing() : Float.NaN));
         }
     }
 

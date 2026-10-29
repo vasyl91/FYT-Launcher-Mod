@@ -402,4 +402,99 @@ class CanbusCodeEstimatorTest {
         Result none = CanbusCodeEstimator.estimate(one(7, left), null);
         assertTrue(none.addOnLines.isEmpty());
     }
+
+    // ---- the heading, and a scaled speed without the GPS
+
+    /** A direction of travel that turns now and then, sampled every second; degrees 0..359. */
+    private static List<Sample> heading(Random rnd, int start, int seconds) {
+        List<Sample> s = new ArrayList<>();
+        double h = start;
+        double turn = 0;
+        for (int sec = 0; sec < seconds; sec++) {
+            if (sec % 25 == 0) {
+                turn = rnd.nextInt(3) == 0 ? 0 : (rnd.nextBoolean() ? 1 : -1) * (3 + rnd.nextInt(6));
+            }
+            h = (h + turn + rnd.nextInt(3) - 1 + 360) % 360;
+            s.add(new Sample(sec * 1000L, (int) Math.round(h) % 360));
+        }
+        return s;
+    }
+
+    @Test
+    void aDirectionThatGoesRoundIsTheHeadingNotTheConsumption() {
+        // like code 1033 of the owner's car: 14..329, which the old guesses took for 1.4-32.9 L/100 km
+        List<Sample> s = heading(new Random(21), 330, 300);
+        Guess g = guessFor(CanbusCodeEstimator.estimate(one(1033, s), null), 1033);
+        assertNotNull(g);
+        assertEquals(Category.HEADING, g.category);
+        assertTrue(g.reason.contains("goes round 359-0"), g.reason);
+    }
+
+    @Test
+    void aDirectionThatFollowsTheGpsIsTheHeadingWithoutGoingRound() {
+        Random rnd = new Random(22);
+        List<Sample> s = new ArrayList<>();
+        List<GpsFix> gps = new ArrayList<>();
+        double h = 95;
+        for (int sec = 0; sec < 300; sec++) {
+            h = Math.max(88, Math.min(130, h + rnd.nextInt(5) - 2));
+            s.add(new Sample(sec * 1000L, (int) Math.round(h)));
+            gps.add(new GpsFix(sec * 1000L, 100f, (float) (h + rnd.nextInt(7) - 3)));
+        }
+        Result r = CanbusCodeEstimator.estimate(one(1033, s), gps);
+        Guess g = guessFor(r, 1033);
+        assertNotNull(g, r.guesses.toString());
+        assertEquals(Category.HEADING, g.category);
+        assertTrue(g.reason.contains("follows the GPS direction"), g.reason);
+        // the same series without the GPS direction is not a heading
+        Guess none = guessFor(CanbusCodeEstimator.estimate(one(1033, s), null), 1033);
+        assertTrue(none == null || none.category != Category.HEADING, String.valueOf(none));
+        // the heading is not something to look for
+        assertFalse(r.notFoundLine().contains("heading"));
+    }
+
+    @Test
+    void aSpeedInHundredthsOnTheMotorwayIsASpeedWithoutTheGps() {
+        Random rnd = new Random(23);
+        List<Sample> s = new ArrayList<>();
+        double v = 100;
+        for (int sec = 0; sec < 300; sec++) {
+            v = Math.max(84, Math.min(124, v + rnd.nextInt(7) - 3));
+            s.add(new Sample(sec * 1000L, (int) Math.round(v) * 100));
+        }
+        Guess g = guessFor(CanbusCodeEstimator.estimate(one(510, s), null), 510);
+        assertNotNull(g);
+        assertEquals(Category.SPEED, g.category);
+        assertEquals(100, g.scale);
+        assertTrue(g.reason.contains("as value/100, steps of 1 km/h"), g.reason);
+    }
+
+    @Test
+    void theLibraryCodesThatSaidNothingAreNamedWithTheGuesses() {
+        Random rnd = new Random(24);
+        Map<Integer, List<Sample>> m = new HashMap<>();
+        List<Sample> fuel = new ArrayList<>();
+        for (int i = 0; i < 200; i++) {
+            fuel.add(new Sample(i * 1000L, 40 + rnd.nextInt(80)));
+        }
+        m.put(91, fuel);
+        List<Sample> range = new ArrayList<>();
+        for (int sec = 0; sec <= 300; sec++) {
+            range.add(new Sample(sec * 1000L, sec < 120 ? 310 : sec < 250 ? 300 : 290));
+        }
+        m.put(92, range);
+        List<Sample> zero = new ArrayList<>();
+        zero.add(new Sample(0, 0));
+        m.put(102, zero);       // 103 sent nothing at all
+        Result r = CanbusCodeEstimator.estimate(m, null);
+        assertEquals("Library codes for this car: fuel 102 (no data in this recording, the guess is 91), "
+                + "range 103 (no data in this recording, the guess is 92)",
+                CanbusCodeEstimator.libraryCodesLine(102, 103, m, r));
+        // the codes of the library that are right, or that sent data, say nothing
+        assertEquals("", CanbusCodeEstimator.libraryCodesLine(91, 92, m, r));
+        assertEquals("", CanbusCodeEstimator.libraryCodesLine(-1, -1, m, r));
+        m.put(102, fuel);
+        assertEquals("Library codes for this car: range 103 (no data in this recording, the guess is 92)",
+                CanbusCodeEstimator.libraryCodesLine(102, 103, m, r));
+    }
 }

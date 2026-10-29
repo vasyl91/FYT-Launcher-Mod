@@ -37,6 +37,7 @@ public final class CanbusCodeEstimator {
         OUTSIDE_TEMPERATURE("outside temperature"),
         FUEL_LEVEL("fuel level"),
         ODOMETER("mileage"),
+        HEADING("heading, degrees"),
         SWITCH("switch or state");
 
         public final String label;
@@ -61,10 +62,17 @@ public final class CanbusCodeEstimator {
     public static final class GpsFix {
         public final long t;
         public final float kmh;
+        /** The direction of travel, degrees 0..360; NaN when the fix has none. */
+        public final float bearing;
 
         public GpsFix(long t, float kmh) {
+            this(t, kmh, Float.NaN);
+        }
+
+        public GpsFix(long t, float kmh, float bearing) {
             this.t = t;
             this.kmh = kmh;
+            this.bearing = bearing;
         }
     }
 
@@ -74,12 +82,19 @@ public final class CanbusCodeEstimator {
         public final double score;
         /** What the value looked like, for the line {@code Code 91 - <label> (<reason>)}. */
         public final String reason;
+        /** For a speed: the value is km/h times this (1, 10 or 100); 1 otherwise. */
+        public final int scale;
 
         Guess(int code, Category category, double score, String reason) {
+            this(code, category, score, reason, 1);
+        }
+
+        Guess(int code, Category category, double score, String reason, int scale) {
             this.code = code;
             this.category = category;
             this.score = score;
             this.reason = reason;
+            this.scale = scale;
         }
 
         /** {@code Code 91 - fuel consumption, instant (4.1-12.8 L/100 km as value/10, 62 changes)} */
@@ -92,7 +107,10 @@ public final class CanbusCodeEstimator {
     public static final class Result {
         /** By category in the order of {@link Category}, then the best first. */
         public final List<Guess> guesses;
-        /** Categories without a candidate that are worth looking for (not the switches: every car has many). */
+        /**
+         * Categories without a candidate that are worth looking for (not the switches: every car has many; not the
+         * heading: the statistics do not need it).
+         */
         public final List<Category> notFound;
         /**
          * The block of the add-on codes 500-559 that changed, with the names from the canbus app; empty if none did.
@@ -283,6 +301,8 @@ public final class CanbusCodeEstimator {
             Stats whole = compute(clean);
             s.changes = whole.changes;
             s.distinct = whole.distinct;
+            s.min = whole.min;
+            s.max = whole.max;
         }
         return s;
     }
@@ -643,11 +663,93 @@ public final class CanbusCodeEstimator {
         if (!Double.isNaN(gpsCorr) && gpsCorr >= 0.5) {
             return new Scored(0.7, range + ", partly follows the GPS speed");
         }
+        // Without the GPS: a value in tens or hundreds that moves in whole km/h is hardly anything else
+        if (scale >= 10 && s.resolution % scale == 0 && s.max / scale >= 20 && s.changes >= 20) {
+            return new Scored(0.6, range + ", steps of 1 km/h");
+        }
         // Without the GPS: it returns to 0 and moves in steps of a few km/h
         if (s.zeroAfterNonzero && s.max / scale >= 20 && s.meanAbsStep / scale <= 15) {
             return new Scored(0.5, range + ", returns to 0");
         }
         return null;
+    }
+
+    /** The difference of two directions, degrees -180..180. */
+    static double angleDiff(double a, double b) {
+        double d = (a - b) % 360.0;
+        if (d > 180) {
+            d -= 360;
+        } else if (d < -180) {
+            d += 360;
+        }
+        return d;
+    }
+
+    /**
+     * A direction in degrees 0..359 (a compass): it moves in small steps, and either goes round through north
+     * (359 to 0, or a quick turn across it) or agrees with the direction of the GPS.
+     */
+    private static Scored heading(Stats s, List<GpsFix> gps) {
+        if (s.min < 0 || s.max > 359 || s.changes < 20) {
+            return null;
+        }
+        int small = 0;
+        boolean crosses = false;
+        int high = 0;
+        int low = 0;
+        for (int i = 0; i < s.events; i++) {
+            if (s.v[i] > 180) {
+                high++;
+            } else if (s.v[i] < 90) {
+                low++;
+            }
+            if (i == 0) {
+                continue;
+            }
+            int d = s.v[i] - s.v[i - 1];
+            if (d == 0) {
+                continue;
+            }
+            double turn = angleDiff(s.v[i], s.v[i - 1]);
+            // the shorter way round is across north: 357 -> 5, or 19 -> 260 in a turn
+            if (Math.abs(d) > 180 && Math.abs(turn) <= 135) {
+                crosses = true;
+            }
+            if (Math.abs(turn) <= 20) {
+                small++;
+            }
+        }
+        if (small < 0.8 * s.changes) {
+            return null;
+        }
+        // A value that only crosses between a few small and a few large numbers is not a compass: a compass that
+        // goes round north spends its time on both sides of it
+        boolean wraps = crosses && high >= 0.2 * s.events && low >= 0.1 * s.events;
+        // The agreement with the direction of the GPS, where the car moves
+        double sum = 0;
+        int n = 0;
+        if (gps != null) {
+            for (GpsFix f : gps) {
+                if (Float.isNaN(f.bearing) || f.kmh <= 10 || f.t < s.t[0]) {
+                    continue;
+                }
+                int i = 0;
+                while (i + 1 < s.events && s.t[i + 1] <= f.t) {
+                    i++;
+                }
+                sum += Math.abs(angleDiff(s.v[i], f.bearing));
+                n++;
+            }
+        }
+        boolean agrees = n >= 10 && sum / n < 25;
+        if (!wraps && !agrees) {
+            return null;        // a smooth value of 0..359 is many things
+        }
+        String how = wraps && agrees ? "goes round 359-0 and follows the GPS direction"
+                : wraps ? "goes round 359-0" : "follows the GPS direction";
+        return new Scored(wraps && agrees ? 0.95 : 0.9, s.min + "-" + s.max + " degrees, " + how
+                + (n >= 10 ? String.format(Locale.ROOT, " (mean difference %.0f\u00b0)", sum / n) : "")
+                + ", " + s.changes + " changes");
     }
 
     private static Scored coolant(Stats s) {
@@ -845,9 +947,13 @@ public final class CanbusCodeEstimator {
             double g = gpsCorr.get(code);
             double rc = rpmSeries != null && rpmSeries != s && s.changes >= 10 ? correlation(s, rpmSeries) : Double.NaN;
             Scored[] scored = new Scored[Category.values().length];
+            Scored compass = s.onlySmall ? null : heading(s, gps);
             if (s.onlySmall) {
                 // Only 0, 1 and 2: a switch or a state, nothing else
                 scored[Category.SWITCH.ordinal()] = switchOrState(s);
+            } else if (compass != null) {
+                // A direction that goes round 359-0 or follows the GPS is that, whatever else its values look like
+                scored[Category.HEADING.ordinal()] = compass;
             } else {
                 scored[Category.FUEL_INSTANT.ordinal()] = fuelInstant(s, g, rc, speedSource);
                 scored[Category.FUEL_AVERAGE.ordinal()] = fuelAverage(s);
@@ -871,7 +977,8 @@ public final class CanbusCodeEstimator {
             if (best >= 0 && scored[best].score >= MIN_SCORE) {
                 Category c = Category.values()[best];
                 String reason = scored[best].reason + (s.noValue > 0 ? ", " + s.noValueText : "");
-                byCategory.get(c).add(new Guess(code, c, scored[best].score, reason));
+                byCategory.get(c).add(new Guess(code, c, scored[best].score, reason,
+                        c == Category.SPEED ? Math.max(1, speedScale(s)) : 1));
             }
         }
 
@@ -887,7 +994,7 @@ public final class CanbusCodeEstimator {
                 }
             });
             if (list.isEmpty()) {
-                if (c != Category.SWITCH) {
+                if (c != Category.SWITCH && c != Category.HEADING) {
                     notFound.add(c);
                 }
             } else {
@@ -907,5 +1014,61 @@ public final class CanbusCodeEstimator {
             addOn.add(0, "Add-on data block 500-559 (names from the canbus app, ConstRzcAddData; may not apply to every CAN box):");
         }
         return new Result(guesses, notFound, addOn);
+    }
+
+    /**
+     * A line for the codes the library gives this car that said nothing in the recording (no update, never a
+     * change, or only 0 and "no value") when the guesses point elsewhere:
+     * {@code Library codes for this car: fuel 102 (no data in this recording, the guess is 91), ...}. An empty
+     * text when there is nothing to say. -1 = the library has no such code.
+     */
+    static String libraryCodesLine(int libraryFuel, int libraryRange, Map<Integer, List<Sample>> events,
+                                   Result result) {
+        StringBuilder sb = new StringBuilder();
+        appendLibraryCode(sb, "fuel", libraryFuel, events, best(result, Category.FUEL_INSTANT));
+        appendLibraryCode(sb, "range", libraryRange, events, best(result, Category.RANGE));
+        return sb.length() == 0 ? "" : "Library codes for this car: " + sb;
+    }
+
+    private static int best(Result result, Category c) {
+        if (result != null) {
+            for (Guess g : result.guesses) {
+                if (g.category == c) {
+                    return g.code;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private static void appendLibraryCode(StringBuilder sb, String name, int code, Map<Integer, List<Sample>> events,
+                                          int guess) {
+        if (code < 0 || guess < 0 || guess == code || saysSomething(events == null ? null : events.get(code))) {
+            return;
+        }
+        if (sb.length() > 0) {
+            sb.append(", ");
+        }
+        sb.append(name).append(' ').append(code).append(" (no data in this recording, the guess is ")
+                .append(guess).append(')');
+    }
+
+    /** At least two different values other than 0 and "no value". */
+    private static boolean saysSomething(List<Sample> samples) {
+        if (samples == null) {
+            return false;
+        }
+        Integer first = null;
+        for (Sample s : samples) {
+            if (s.v == 0 || isNoValue(s.v)) {
+                continue;
+            }
+            if (first == null) {
+                first = s.v;
+            } else if (first != s.v) {
+                return true;
+            }
+        }
+        return false;
     }
 }
