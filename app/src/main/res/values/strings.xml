@@ -345,6 +345,7 @@
     <string name="boot_logcat">Include boot logs</string>
     <string name="logcat_service_run">Logcat service</string>
     <string name="logcat_service_run_summary">Tap to start logging</string>
+    <string name="logcat_stop_button">Stop logcat</string>
     <string name="logcat_service_saving">Saving the log…</string>
     <string name="logcat_service_run_working">Working… %1$s Tap to cancel</string>
     <string name="logcat_service_run_toast">Finished logging. Check the results in Download/Launcher66_Logs</string>

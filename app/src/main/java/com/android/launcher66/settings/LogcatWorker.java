@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -88,6 +89,14 @@ public final class LogcatWorker {
     /** Notifies the UI when the capture ended, no matter why. Called on the main thread. */
     public interface StateListener {
         void onLogcatStopped(boolean success, String message);
+    }
+
+    /**
+     * Told, on the main thread, as soon as a capture has ended, no matter why: the time limit, stop(), and
+     * once more when the file is finished. A listener must cope with being told twice.
+     */
+    public interface CaptureEndListener {
+        void onCaptureEnded();
     }
 
     /** How much of the log buffer ends up in the file. */
@@ -267,6 +276,7 @@ public final class LogcatWorker {
 
     private CountDownTimer countDownTimer; // main thread only
     private StateListener listener;        // main thread only
+    private final CopyOnWriteArrayList<CaptureEndListener> captureEndListeners = new CopyOnWriteArrayList<>();
     /** A wake came while the capture before it was ending; see startForWake(). Guarded by lock. */
     private boolean wakeStartPending;
 
@@ -325,6 +335,29 @@ public final class LogcatWorker {
 
     public void clearStateListener(StateListener l) {
         if (listener == l) listener = null;
+    }
+
+    public void addCaptureEndListener(CaptureEndListener l) {
+        if (l != null) captureEndListeners.addIfAbsent(l);
+    }
+
+    public void removeCaptureEndListener(CaptureEndListener l) {
+        captureEndListeners.remove(l);
+    }
+
+    /** Main thread. */
+    private void notifyCaptureEnded() {
+        for (CaptureEndListener l : captureEndListeners) {
+            l.onCaptureEnded();
+        }
+    }
+
+    /**
+     * A capture started by hand (the run button in the settings) that is still going on, i.e. one the
+     * user can end with the stop logcat button; not one that has begun to write its last lines.
+     */
+    public boolean isManualCapture() {
+        return running && !draining && trigger == Trigger.MANUAL;
     }
 
     /** Captures what the buffer holds, i.e. from application start; coldStart: the first start after a boot. */
@@ -1789,6 +1822,7 @@ public final class LogcatWorker {
         mainHandler.post(() -> {
             cancelCountdown();
             helpers.setCountDownLogcat(0);
+            notifyCaptureEnded();
         });
         mainHandler.postDelayed(drainWatch, DRAIN_POLL_MS);
     }
@@ -1844,6 +1878,7 @@ public final class LogcatWorker {
             cancelCountdown();
             helpers.setLogcatRunBoolean(false);
             helpers.setCountDownLogcat(0);
+            notifyCaptureEnded();
 
             if (message != null && ctx != null) {
                 Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();

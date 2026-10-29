@@ -69,7 +69,7 @@ public class FabOverlayService extends Service {
     // ---- Look ------------------------------------------------------------------------------
 
     /** Opacity of the black button background (0..1). */
-    private static final float BACKGROUND_ALPHA = 0.5f;
+    static final float BACKGROUND_ALPHA = 0.5f;
 
     // ---- Click blocking --------------------------------------------------------------------
 
@@ -303,9 +303,16 @@ public class FabOverlayService extends Service {
      * density 1.5). Taking the shorter side directly does not depend on the orientation.
      */
     private int computeFabSizePx() {
-        int shorterSide = Math.min(screenWidth, screenHeight);
+        return fabSizePx(this);
+    }
+
+    /** {@link #computeFabSizePx()} for any context: the size of the floating buttons, and of the stop logcat button. */
+    static int fabSizePx(Context context) {
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        float density = dm.density > 0f ? dm.density : 1f;
+        int shorterSide = Math.min(dm.widthPixels, dm.heightPixels);
         int size = Math.round(shorterSide * FAB_SIZE_SCREEN_FRACTION);
-        return Math.max(dpToPx(FAB_MIN_SIZE_DP), size);
+        return Math.max(Math.round(FAB_MIN_SIZE_DP * density), size);
     }
 
     // ---- Overlay creation ------------------------------------------------------------------
@@ -401,7 +408,7 @@ public class FabOverlayService extends Service {
      * else changes in that case.
      */
     @RequiresApi(Build.VERSION_CODES.Q)
-    private static void excludeFromSystemGestures(View view) {
+    static void excludeFromSystemGestures(View view) {
         view.addOnLayoutChangeListener((v, left, top, right, bottom,
                                         oldLeft, oldTop, oldRight, oldBottom) ->
                 v.setSystemGestureExclusionRects(Collections.singletonList(
@@ -805,9 +812,14 @@ public class FabOverlayService extends Service {
 
     @SuppressLint({"DiscouragedApi", "InternalInsetResource"})
     public int getStatusBarHeight() {
+        return statusBarHeightPx(this);
+    }
+
+    @SuppressLint({"DiscouragedApi", "InternalInsetResource"})
+    static int statusBarHeightPx(Context context) {
         // There is no public API for the status bar height before a window is attached.
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        return resourceId > 0 ? getResources().getDimensionPixelSize(resourceId) : 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        return resourceId > 0 ? context.getResources().getDimensionPixelSize(resourceId) : 0;
     }
 
     private int dpToPx(float dp) {

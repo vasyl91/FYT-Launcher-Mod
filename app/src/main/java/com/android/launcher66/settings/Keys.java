@@ -72,6 +72,10 @@ public final class Keys {
     public static final String BOOT_LOGCAT = "boot_logcat";
     public static final String LOGCAT_SERVICE_WAKE = "logcat_service_wake";
     public static final String LOGCAT_SERVICE_RUN = "logcat_service_run";
+    /** Where the user left the stop logcat button, see LogcatStopButton. */
+    public static final String LOGCAT_STOP_X = "logcat_stop_button_x";
+    public static final String LOGCAT_STOP_Y = "logcat_stop_button_y";
+    public static final String LOGCAT_STOP_SAVED = "logcat_stop_button_saved";
     public static final String LOGCAT_SERVICE_TIMEOUT = "logcat_service_timeout";
     public static final String APP_VERSION_UPDATE = "app_version_update";
     public static final String SHIZUKU_DOWNLOAD = "shizuku_download";

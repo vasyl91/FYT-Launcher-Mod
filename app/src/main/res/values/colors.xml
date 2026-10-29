@@ -18,6 +18,7 @@
     <color name="colorAccent">#ff4285f4</color>
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
+    <color name="logcat_stop_text">#FFF44336</color>
     <color name="dark_secondary">#0D47A1</color> 
     <color name="dark_surface">#202020</color> 
     <color name="gray_medium">#BBBBBB</color>

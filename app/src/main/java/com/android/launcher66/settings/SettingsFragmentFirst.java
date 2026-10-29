@@ -188,6 +188,16 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
     }; 
 
+    /**
+     * A capture ended without this screen asking for it: by the time limit, or by the stop button over the
+     * screens (LogcatStopButton). Told twice (when it ends and when the file is finished).
+     */
+    private final LogcatWorker.CaptureEndListener logcatCaptureEndListener = () -> {
+        if (isAdded() && logcatRun != null) {
+            showLogcatStoppedUi();
+        }
+    };
+
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -508,6 +518,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (logcatRun != null) {
             logcatRun.setOnPreferenceClickListener(this);
             LogcatWorker.get().setStateListener(logcatStateListener);
+            LogcatWorker.get().addCaptureEndListener(logcatCaptureEndListener);
             int delay = (int) LogcatWorker.get().getRemainingMillis();
             if (LogcatWorker.get().isActive() && delay > 0) {
                 setCountDownTimer(delay);
@@ -1033,6 +1044,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         removeTickRunnable();
         cancelCountDownTimer();
         LogcatWorker.get().clearStateListener(logcatStateListener);
+        LogcatWorker.get().removeCaptureEndListener(logcatCaptureEndListener);
         dismissDialogs();
         mPropertyChangeClass.deleteObserver(Keys.DOWNLOAD_PERCENTAGE, this);
         
@@ -1145,10 +1157,16 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
     public void startLogcatRun() {
         LogcatWorker.get().start(requireContext(), LogcatWorker.Mode.FROM_NOW, LogcatWorker.Trigger.MANUAL);
+        // A capture started by hand only: the stop button over the screens the user goes on to try
+        LogcatStopButton.show(requireContext().getApplicationContext());
     }
 
     public void stopLogcatRun() {
         LogcatWorker.get().stop(true, requireContext());
+        showLogcatStoppedUi();
+    }
+
+    private void showLogcatStoppedUi() {
         removeTickRunnable();
         cancelCountDownTimer();
         if (LogcatWorker.get().isSaving()) {
