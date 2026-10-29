@@ -231,6 +231,7 @@
     <string name="stats_window_summary_vehicle_not_exist">Original vehicle equipment does not exist. Try using the Canbus reader; however, it might not find the codes.</string>
     <string name="stats_codes_summary_request">Tap to set the canbus codes. \nFuel: %1$s, Range: %2$s, Request: %3$s</string>
     <string name="stats_codes_summary_no_request">Tap to set the canbus codes. \nFuel: %1$s, Range: %2$s</string>
+    <string name="stats_codes_library_code">%1$s (library)</string>
     <string name="stats_codes_request_auto">%1$s (first screen)</string>
     <string name="stats_codes_known_requests">Requests of this car\'s screens (empty fields send those of the first one):\n%1$s</string>
     <string name="stats_codes_cmd_invalid">cmdInt must be a number and cmdArr numbers separated by commas</string>

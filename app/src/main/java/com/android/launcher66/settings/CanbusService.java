@@ -96,9 +96,13 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private boolean userStats = false;
     private int statsWidthSelector;
     private boolean estimateOil = false;
+    /** The codes of the settings; 0 = not set, the library's code is used then. */
     private volatile int fuel = 0;
     private volatile int range = 0;
     private volatile int rpm = 0;
+    /** The codes in use: those of the settings, else those the library knows for the car, else 0. */
+    private volatile int fuelCode = 0;
+    private volatile int rangeCode = 0;
     /** The last values of the codes above, from the update of com.syu.ms (binder thread). */
     private volatile int fuelValue = 0;
     private volatile int rangeValue = 0;
@@ -189,6 +193,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
             fuel = intent.getIntExtra("fuel", 0);
             range = intent.getIntExtra("range", 0);
             rpm = intent.getIntExtra("rpm", 0);
+            // Until the library says otherwise (mNotifyCar) the codes of the settings are the ones in use
+            fuelCode = fuel;
+            rangeCode = range;
             addStatsViewMainScreen();
             addNotify();
         }
@@ -344,11 +351,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 return;
             }
             int value = ints[0];
-            if (updateCode == fuel) {
+            if (updateCode == fuelCode) {
                 fuelValue = value;
                 uiHandler.post(CanbusService.this::mUpdaterOilExpend);
             }
-            if (updateCode == range) {
+            if (updateCode == rangeCode) {
                 rangeValue = value;
                 uiHandler.post(CanbusService.this::mUpdaterDrivingMileage);
             }
@@ -365,14 +372,27 @@ public class CanbusService extends Service implements PropertyChangeListener {
     /**
      * The car is known (it is zeroed when the connection to com.syu.ms drops, and set again when it
      * is back): register the codes, and send the car the request of its fuel screen if it has one.
+     * The fuel and range codes are those of the settings; where none is set, those of the library.
      */
     private final IUiNotify mNotifyCar = (updateCode, ints, flts, strs) -> {
         int carId = DataCanbus.DATA[1000];
         if (carId == 0) {
             return;
         }
-        registerStatsCodes();
-        CanbusLibrary.sendForCar(getApplicationContext(), carId);
+        final Context app = getApplicationContext();
+        // The library may still be loading, and loading reads files: not on this thread
+        CanbusLibrary.executor().execute(() -> {
+            CanbusLibrary.CarCodes codes = CanbusLibrary.loadBlocking(app).codesFor(carId);
+            uiHandler.post(() -> {
+                if (sInstance != this) {
+                    return;
+                }
+                fuelCode = fuel > 0 ? fuel : codes != null && codes.fuel > 0 ? codes.fuel : 0;
+                rangeCode = range > 0 ? range : codes != null && codes.range > 0 ? codes.range : 0;
+                registerStatsCodes();
+            });
+        });
+        CanbusLibrary.sendForCar(app, carId);
     };
 
     private final BroadcastReceiver pipReceiver = new BroadcastReceiver() {
@@ -1052,7 +1072,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
     private void registerStatsCodes() {
         unregisterStatsCodes();
-        for (int code : new int[]{fuel, range, rpm}) {
+        for (int code : new int[]{fuelCode, rangeCode, rpm}) {
             if (code > 0 && statsCodesRegistered.add(code)) {
                 DataCanbus.PROXY.unregister(statsCallback, code);
                 DataCanbus.PROXY.register(statsCallback, code, 1);

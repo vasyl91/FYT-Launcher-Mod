@@ -1756,8 +1756,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         dialogCodesEditText(fuelCodeInt);
         dialogCodesEditText(rangeCodeInt);
 
-        fuelCodeInt.setText(fuelCodeStr);
-        rangeCodeInt.setText(rangeCodeStr);
+        // Nothing written (or "0") means the code of the library: empty field, the code as the hint
+        showCode(fuelCodeInt, fuelCodeStr, libraryCode(true));
+        showCode(rangeCodeInt, rangeCodeStr, libraryCode(false));
         fuelCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
         rangeCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
 
@@ -1958,9 +1959,38 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         return library != null && carId != 0 && !library.pagesFor(carId).isEmpty();
     }
 
+    /** Whether a saved code is not set: empty or "0" (the library's code is used then). */
+    private static boolean codeUnset(String saved) {
+        return saved == null || saved.trim().isEmpty() || saved.trim().equals("0");
+    }
+
+    /** The code the library knows for this car, fuel or range, or -1. */
+    private static int libraryCode(boolean fuel) {
+        CanbusLibrary.Library library = CanbusLibrary.cached();
+        int carId = DataCanbus.DATA[1000];
+        CanbusLibrary.CarCodes codes = library == null || carId == 0 ? null : library.codesFor(carId);
+        return codes == null ? -1 : fuel ? codes.fuel : codes.range;
+    }
+
+    private void showCode(EditText field, String saved, int libraryCode) {
+        if (codeUnset(saved) && libraryCode >= 0) {
+            field.setText("");
+            field.setHint(String.valueOf(libraryCode));
+        } else {
+            field.setText(saved);
+        }
+    }
+
+    /** The saved code for the summary; "91 (library)" when none is set and the library knows one. */
+    private String codeForSummary(String saved, boolean fuel) {
+        int fromLibrary = libraryCode(fuel);
+        return codeUnset(saved) && fromLibrary >= 0
+                ? getString(R.string.stats_codes_library_code, String.valueOf(fromLibrary)) : saved;
+    }
+
     private String statsCodesSummary() {
-        String fuel = sharedPrefs.getString("fuel_code_int", "0");
-        String range = sharedPrefs.getString("range_code_int", "0");
+        String fuel = codeForSummary(sharedPrefs.getString("fuel_code_int", "0"), true);
+        String range = codeForSummary(sharedPrefs.getString("range_code_int", "0"), false);
         if (!carNeedsRequest()) {
             return getString(R.string.stats_codes_summary_no_request, fuel, range);
         }
