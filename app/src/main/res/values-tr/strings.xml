@@ -223,14 +223,12 @@
     <string name="stats_codes">İstatistik kodları</string>
     <string name="stats_window_summary"><![CDATA[Canbus okuyucuyu kullanın veya gerekli canbus kodlarını <b>%1$s</b> sınıfında ve alt sınıflarında arayın (README.md dosyasına bakın)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Orijinal araç donanımı yok. Canbus okuyucuyu deneyin; ancak kodları bulamayabilir.</string>
-    <string name="stats_codes_summary">Canbus kodlarını ayarlamak için dokunun. \nYakıt: %1$s, Menzil: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Ek istatistik verileri <b>(isteğe bağlı)</b></string>
     <string name="extra_stats_codes_summary">Yaklaşık yakıt tüketimi için ek araç bilgilerini ayarlamak üzere dokunun. \nDevir canbus kodu: %1$s, Beygir gücü: %2$s, Araç kütlesi: %3$s</string>
     <string name="stats_dialog_title">Canbus kodları:</string>
     <string name="fuel_code_text">Yakıt kodu:</string>
     <string name="range_code_text">Menzil kodu:</string>
     <string name="cmdInt_code_text">cmdInt kodu:</string>
-    <string name="cmdArr_code_text">cmdArr kodu:</string>
     <string name="canbus_optional"><b>İsteğe bağlı veriler (kullanılmıyorsa 0 olmalı):</b></string>
     <string name="canbus_optional_description">Canbus\'ınız belirli bir hızın altında olduğu gibi durumlarda yakıt tüketimi verisi göndermeyi bırakırsa bunu kullanın.</string>
     <string name="rpm_code_text">Devir canbus kodu:</string>

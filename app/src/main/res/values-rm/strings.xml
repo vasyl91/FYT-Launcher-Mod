@@ -223,14 +223,12 @@
     <string name="stats_codes">Codes da las statisticas</string>
     <string name="stats_window_summary"><![CDATA[Utilisescha il lectur Canbus u tschertga ils codes canbus necessaris en la classa <b>%1$s</b> e sias sutclassas (vesair README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">L\'equipament original dal vehichel n\'exista betg. Emprova il lectur Canbus; ma el na chatta forsa betg ils codes.</string>
-    <string name="stats_codes_summary">Tutgar per fixar ils codes canbus. \nCarburant: %1$s, Radius: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Datas supplementaras da statistica <b>(opziunal)</b></string>
     <string name="extra_stats_codes_summary">Tutgar per fixar infurmaziuns supplementaras da l\'auto per il consum approximativ da carburant. \nCode canbus da las revoluziuns: %1$s, Chaval-vapur: %2$s, Massa dal vehichel: %3$s</string>
     <string name="stats_dialog_title">Codes canbus:</string>
     <string name="fuel_code_text">Code dal carburant:</string>
     <string name="range_code_text">Code dal radius:</string>
     <string name="cmdInt_code_text">Code cmdInt:</string>
-    <string name="cmdArr_code_text">Code cmdArr:</string>
     <string name="canbus_optional"><b>Datas opziunalas (duain esser 0, sch\'ellas na vegnan betg duvradas):</b></string>
     <string name="canbus_optional_description">Utilisescha quai, sche tes canbus smetta da trametter datas dal consum da carburant, p.ex. sut ina certa sveltezza.</string>
     <string name="rpm_code_text">Code canbus da las revoluziuns:</string>

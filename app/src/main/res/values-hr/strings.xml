@@ -223,14 +223,12 @@
     <string name="stats_codes">Kodovi statistike</string>
     <string name="stats_window_summary"><![CDATA[Koristite Canbus čitač ili potražite potrebne canbus kodove u klasi <b>%1$s</b> i njezinim potklasama (vidi README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Izvorna oprema vozila ne postoji. Isprobajte Canbus čitač; međutim, možda neće pronaći kodove.</string>
-    <string name="stats_codes_summary">Dodirnite za postavljanje canbus kodova. \nGorivo: %1$s, Doseg: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Dodatni statistički podaci <b>(neobavezno)</b></string>
     <string name="extra_stats_codes_summary">Dodirnite za postavljanje dodatnih podataka o vozilu za približnu potrošnju goriva. \nCanbus kod okretaja: %1$s, Konjske snage: %2$s, Masa vozila: %3$s</string>
     <string name="stats_dialog_title">Canbus kodovi:</string>
     <string name="fuel_code_text">Kod goriva:</string>
     <string name="range_code_text">Kod dosega:</string>
     <string name="cmdInt_code_text">cmdInt kod:</string>
-    <string name="cmdArr_code_text">cmdArr kod:</string>
     <string name="canbus_optional"><b>Neobavezni podaci (trebaju biti 0 ako se ne koriste):</b></string>
     <string name="canbus_optional_description">Koristite ako canbus prestane slati podatke o potrošnji goriva, primjerice ispod određene brzine.</string>
     <string name="rpm_code_text">Canbus kod okretaja:</string>

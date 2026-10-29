@@ -223,14 +223,12 @@
     <string name="stats_codes">Mã thống kê</string>
     <string name="stats_window_summary"><![CDATA[Dùng trình đọc Canbus hoặc tìm các mã canbus cần thiết trong lớp <b>%1$s</b> và các lớp con của nó (xem README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Không có thiết bị gốc của xe. Hãy thử trình đọc Canbus; tuy nhiên nó có thể không tìm thấy mã.</string>
-    <string name="stats_codes_summary">Nhấn để đặt các mã canbus. \nNhiên liệu: %1$s, Quãng đường còn lại: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Dữ liệu thống kê bổ sung <b>(tùy chọn)</b></string>
     <string name="extra_stats_codes_summary">Nhấn để đặt thông tin xe bổ sung nhằm ước tính mức tiêu thụ nhiên liệu. \nMã canbus vòng tua: %1$s, Mã lực: %2$s, Khối lượng xe: %3$s</string>
     <string name="stats_dialog_title">Mã canbus:</string>
     <string name="fuel_code_text">Mã nhiên liệu:</string>
     <string name="range_code_text">Mã quãng đường còn lại:</string>
     <string name="cmdInt_code_text">Mã cmdInt:</string>
-    <string name="cmdArr_code_text">Mã cmdArr:</string>
     <string name="canbus_optional"><b>Dữ liệu tùy chọn (nên là 0 nếu không dùng):</b></string>
     <string name="canbus_optional_description">Dùng khi canbus của bạn ngừng gửi dữ liệu tiêu thụ nhiên liệu, ví dụ dưới một tốc độ nhất định.</string>
     <string name="rpm_code_text">Mã canbus vòng tua:</string>

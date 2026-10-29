@@ -312,6 +312,8 @@ public final class WakeDetection implements WakeSignals.Listener {
         if (logcatBoolean) {
             LogcatWorker.get().startForWake(LauncherApplication.sApp);
         }
+        // The car may have lost the request its fuel screen needs
+        CanbusService.resendRequestAfterWake();
         lastDisplayOnHandledMs = now;
         sWakeElapsedMs = now;
         sAsleep = false;

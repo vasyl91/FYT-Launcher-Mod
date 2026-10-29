@@ -46,6 +46,7 @@ import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.Workspace;
+import com.syu.ipc.IModuleCallback;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.util.HostAwait;
@@ -95,9 +96,13 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private boolean userStats = false;
     private int statsWidthSelector;
     private boolean estimateOil = false;
-    private int fuel = 0;
-    private int range = 0;
-    private int rpm = 0;
+    private volatile int fuel = 0;
+    private volatile int range = 0;
+    private volatile int rpm = 0;
+    /** The last values of the codes above, from the update of com.syu.ms (binder thread). */
+    private volatile int fuelValue = 0;
+    private volatile int rangeValue = 0;
+    private volatile int rpmValue = 0;
     private double velocity = 0;
     private int horsePower = 0;
     private int vehicleMass = 0;
@@ -149,6 +154,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         horsePower = Integer.parseInt(prefs.getString("horse_power_code_int", "0"));
         vehicleMass = Integer.parseInt(prefs.getString("vehicle_mass_code_int", "0")); // in kg
         helpers = new Helpers();
+        CanbusLibrary.preload(getApplicationContext());
         accessibilityManager = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
         registerAccessibilityEventListener();
         requestLocationUpdates();
@@ -183,9 +189,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
             fuel = intent.getIntExtra("fuel", 0);
             range = intent.getIntExtra("range", 0);
             rpm = intent.getIntExtra("rpm", 0);
-            int cmdInt = intent.getIntExtra("cmdInt", 0);
-            int cmdArr = intent.getIntExtra("cmdArr", 0);
-            DataCanbus.PROXY.cmd(cmdInt, new int[]{cmdArr}, null, null);
             addStatsViewMainScreen();
             addNotify();
         }
@@ -327,14 +330,49 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
     
-    private final IUiNotify mNotifyCanbus = (updateCode, ints, flts, strs) -> {
-        if (updateCode == fuel) {
-            mUpdaterOilExpend();
-        } else if (updateCode == range) {
-            mUpdaterDrivingMileage();
-        } else if (updateCode == rpm) {
-            mUpdaterRPM();
+    private final Handler uiHandler = new Handler(Looper.getMainLooper());
+
+    /**
+     * The codes are read the way the code reader reads them: straight from com.syu.ms, whatever the
+     * callback of the car (Callback_XXXX) registered. DataCanbus.DATA and NOTIFY_EVENTS only know the
+     * codes that callback registered, and for a car the launcher has no callback for, only code 0.
+     */
+    private final IModuleCallback.Stub statsCallback = new IModuleCallback.Stub() {
+        @Override
+        public void update(int updateCode, int[] ints, float[] flts, String[] strs) {
+            if (ints == null || ints.length == 0) {
+                return;
+            }
+            int value = ints[0];
+            if (updateCode == fuel) {
+                fuelValue = value;
+                uiHandler.post(CanbusService.this::mUpdaterOilExpend);
+            }
+            if (updateCode == range) {
+                rangeValue = value;
+                uiHandler.post(CanbusService.this::mUpdaterDrivingMileage);
+            }
+            if (updateCode == rpm) {
+                rpmValue = value;
+                uiHandler.post(CanbusService.this::mUpdaterRPM);
+            }
         }
+    };
+
+    /** The codes registered with statsCallback; main thread. */
+    private final Set<Integer> statsCodesRegistered = new HashSet<>();
+
+    /**
+     * The car is known (it is zeroed when the connection to com.syu.ms drops, and set again when it
+     * is back): register the codes, and send the car the request of its fuel screen if it has one.
+     */
+    private final IUiNotify mNotifyCar = (updateCode, ints, flts, strs) -> {
+        int carId = DataCanbus.DATA[1000];
+        if (carId == 0) {
+            return;
+        }
+        registerStatsCodes();
+        CanbusLibrary.sendForCar(getApplicationContext(), carId);
     };
 
     private final BroadcastReceiver pipReceiver = new BroadcastReceiver() {
@@ -1002,20 +1040,54 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[fuel].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[range].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[rpm].addNotify(this.mNotifyCanbus, 1);
+        // The codes may differ from those of the last start
+        unregisterStatsCodes();
+        DataCanbus.NOTIFY_EVENTS[1000].addNotify(this.mNotifyCar, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[fuel].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[range].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[rpm].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[1000].removeNotify(this.mNotifyCar);
+        unregisterStatsCodes();
+    }
+
+    private void registerStatsCodes() {
+        unregisterStatsCodes();
+        for (int code : new int[]{fuel, range, rpm}) {
+            if (code > 0 && statsCodesRegistered.add(code)) {
+                DataCanbus.PROXY.unregister(statsCallback, code);
+                DataCanbus.PROXY.register(statsCallback, code, 1);
+            }
+        }
+    }
+
+    private void unregisterStatsCodes() {
+        for (int code : statsCodesRegistered) {
+            DataCanbus.PROXY.unregister(statsCallback, code);
+        }
+        statsCodesRegistered.clear();
+    }
+
+    /**
+     * After a wake the car may have lost its request (the canbus connection does not always drop and
+     * come back, which is what sends it again): once more, when the unit has had a moment to settle.
+     * Any thread.
+     */
+    public static void resendRequestAfterWake() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            CanbusService service = sInstance;
+            if (service == null) {
+                return;
+            }
+            int carId = DataCanbus.DATA[1000];
+            if (carId != 0) {
+                CanbusLibrary.sendForCar(service.getApplicationContext(), carId);
+            }
+        }, 3000L);
     }
 
     public void mUpdaterOilExpend() {
         if (userLayout && userStats && absoluteStats != null) {
-            int value = DataCanbus.DATA[fuel];
+            int value = fuelValue;
             if (absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
                 ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
@@ -1043,7 +1115,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
     public void mUpdaterDrivingMileage() {
         if (userLayout && userStats && absoluteStats != null) {
-            int value = DataCanbus.DATA[range];
+            int value = rangeValue;
             if (absoluteStats.findViewById(R.id.driving_mileage_val) != null) {
                 ((TextView) absoluteStats.findViewById(R.id.driving_mileage_str)).setTextColor(Color.parseColor(textColor));
                 ((TextView) absoluteStats.findViewById(R.id.driving_mileage_val)).setTextColor(Color.parseColor(textColor));
@@ -1066,7 +1138,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
     public void mUpdaterRPM() {
         if (userLayout && userStats) {
-            revolutionsPerMinute = DataCanbus.DATA[rpm];          
+            revolutionsPerMinute = rpmValue;          
         }
     }
 

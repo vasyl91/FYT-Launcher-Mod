@@ -223,14 +223,12 @@
     <string name="stats_codes">รหัสสถิติ</string>
     <string name="stats_window_summary"><![CDATA[ใช้ตัวอ่าน Canbus หรือค้นหารหัส canbus ที่จำเป็นในคลาส <b>%1$s</b> และคลาสย่อย (ดู README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">ไม่มีอุปกรณ์ดั้งเดิมของรถ ลองใช้ตัวอ่าน Canbus แต่อาจหารหัสไม่พบ</string>
-    <string name="stats_codes_summary">แตะเพื่อตั้งค่ารหัส canbus \nเชื้อเพลิง: %1$s, ระยะทางที่วิ่งได้: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">ข้อมูลสถิติเพิ่มเติม <b>(ไม่บังคับ)</b></string>
     <string name="extra_stats_codes_summary">แตะเพื่อตั้งค่าข้อมูลรถเพิ่มเติมสำหรับประมาณการสิ้นเปลืองเชื้อเพลิง \nรหัส canbus ของรอบเครื่องยนต์: %1$s, แรงม้า: %2$s, มวลรถ: %3$s</string>
     <string name="stats_dialog_title">รหัส Canbus:</string>
     <string name="fuel_code_text">รหัสเชื้อเพลิง:</string>
     <string name="range_code_text">รหัสระยะทางที่วิ่งได้:</string>
     <string name="cmdInt_code_text">รหัส cmdInt:</string>
-    <string name="cmdArr_code_text">รหัส cmdArr:</string>
     <string name="canbus_optional"><b>ข้อมูลที่ไม่บังคับ (ควรเป็น 0 หากไม่ใช้):</b></string>
     <string name="canbus_optional_description">ใช้เมื่อ canbus ของคุณหยุดส่งข้อมูลการสิ้นเปลืองเชื้อเพลิง เช่น เมื่อต่ำกว่าความเร็วระดับหนึ่ง</string>
     <string name="rpm_code_text">รหัส canbus ของรอบเครื่องยนต์:</string>

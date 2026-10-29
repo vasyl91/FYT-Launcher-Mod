@@ -1,7 +1,19 @@
 package com.android.launcher66.settings;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Looper;
+import android.util.Log;
+
+import androidx.preference.PreferenceManager;
+
+import com.syu.module.canbus.DataCanbus;
+
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -13,6 +25,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
@@ -63,6 +78,18 @@ public final class CanbusLibrary {
 
         public int[] ints() {
             return ints.clone();
+        }
+
+        /** The numbers as a cmdArr field has them: {@code 74,3}; empty if there are none. */
+        public String intsText() {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < ints.length; i++) {
+                if (i > 0) {
+                    sb.append(',');
+                }
+                sb.append(ints[i]);
+            }
+            return sb.toString();
         }
 
         @Override
@@ -994,6 +1021,212 @@ public final class CanbusLibrary {
             }
             return new Object[]{ids, null};
         }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // On the device: the built-in library, the user's one, and the request of the car
+    // ---------------------------------------------------------------------------------------------
+
+    private static final String TAG = "CanbusLibrary";
+    static final String ASSET_NAME = "canbus_library.txt";
+    static final String USER_FILE_NAME = "canbus_library_user.txt";
+    /** What {@link #sendForCar} reports when it sent nothing. */
+    static final String NONE = "none";
+
+    private static final Object LOAD_LOCK = new Object();
+    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "CanbusLibrary");
+        t.setDaemon(true);
+        return t;
+    });
+    private static volatile Library sBuiltIn;
+    private static volatile Library sOverlay;
+    private static volatile Library sEffective;
+
+    /** The single thread the files are read and written on, and the requests are sent from. */
+    static ExecutorService executor() {
+        return EXECUTOR;
+    }
+
+    /** Reads the library on the executor, so that the first use does not wait for the files. */
+    public static void preload(Context context) {
+        final Context app = context.getApplicationContext();
+        EXECUTOR.execute(() -> loadBlocking(app));
+    }
+
+    /** The library in use (built-in merged with the user's), or null while it is not loaded yet. Never reads a file. */
+    public static Library cached() {
+        return sEffective;
+    }
+
+    /** The library in use, loaded if needed. Not on the main thread (it reads the asset and a file). */
+    public static Library loadBlocking(Context context) {
+        Library ready = sEffective;
+        if (ready != null) {
+            return ready;
+        }
+        Looper main = Looper.getMainLooper();
+        if (main != null && Looper.myLooper() == main) {
+            throw new IllegalStateException("CanbusLibrary.loadBlocking() on the main thread");
+        }
+        synchronized (LOAD_LOCK) {
+            if (sEffective != null) {
+                return sEffective;
+            }
+            Context app = context.getApplicationContext();
+            Library builtIn = sBuiltIn;
+            if (builtIn == null) {
+                builtIn = readAsset(app);
+                sBuiltIn = builtIn;
+            }
+            Library overlay = sOverlay;
+            if (overlay == null) {
+                overlay = readUserFile(app);
+                sOverlay = overlay;
+            }
+            sEffective = builtIn.mergedWith(overlay).library;
+            return sEffective;
+        }
+    }
+
+    /** After an import or a reset: the next {@link #loadBlocking} reads the files again. */
+    static void invalidate() {
+        synchronized (LOAD_LOCK) {
+            sOverlay = null;
+            sEffective = null;
+        }
+    }
+
+    static File userFile(Context context) {
+        return new File(context.getApplicationContext().getFilesDir(), USER_FILE_NAME);
+    }
+
+    private static Library readAsset(Context app) {
+        try (InputStream in = app.getAssets().open(ASSET_NAME);
+             InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+            ParseResult r = parse(reader, -1, null, null);
+            if (r.ok()) {
+                return r.library;
+            }
+            Log.e(TAG, "The built-in library is not valid: " + r.errors.get(0));
+        } catch (IOException | RuntimeException e) {
+            Log.e(TAG, "Could not read the built-in library", e);
+        }
+        return Library.EMPTY;
+    }
+
+    private static Library readUserFile(Context app) {
+        File file = userFile(app);
+        if (!file.isFile()) {
+            return Library.EMPTY;
+        }
+        try (InputStream in = new java.io.FileInputStream(file);
+             InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+            ParseResult r = parse(reader, file.length(), null, null);
+            if (r.ok()) {
+                return r.library;
+            }
+            Log.w(TAG, "The imported library is not valid, ignored: " + r.errors.get(0));
+        } catch (IOException | RuntimeException e) {
+            Log.w(TAG, "Could not read the imported library, ignored", e);
+        }
+        return Library.EMPTY;
+    }
+
+    /**
+     * The request the user wrote in the Canbus codes window, or null if there is none. Empty fields, or
+     * "0" and "0" (what saving the window used to write for an empty field), mean none.
+     */
+    static Request userRequest(SharedPreferences prefs) {
+        String cmd = prefs.getString(Keys.CMD_INT, "").trim();
+        String arr = prefs.getString(Keys.CMD_ARR, "").trim();
+        if ((cmd.isEmpty() || cmd.equals("0")) && (arr.isEmpty() || arr.equals("0"))) {
+            return null;
+        }
+        try {
+            int c = Integer.parseInt(cmd.isEmpty() ? "0" : cmd);
+            int[] ints = parseInts(arr);
+            if (ints == null || c < 0 || c > 9999) {
+                Log.w(TAG, "The request in the settings is not valid: cmdInt \"" + cmd + "\", cmdArr \"" + arr + "\"");
+                return null;
+            }
+            return new Request(c, ints);
+        } catch (NumberFormatException e) {
+            Log.w(TAG, "The request in the settings is not valid: cmdInt \"" + cmd + "\", cmdArr \"" + arr + "\"");
+            return null;
+        }
+    }
+
+    /**
+     * Sends the car the request its fuel screen sends when it opens, on the executor: nothing for a car
+     * that needs none (and nothing is sent to it at all), the user's own request if there is one, else
+     * all requests of the car's main fuel page, in order. The result is a description of what was sent,
+     * {@link #NONE} if nothing.
+     */
+    public static Future<String> sendForCar(Context context, int carId) {
+        final Context app = context.getApplicationContext();
+        return EXECUTOR.submit(() -> {
+            try {
+                return sendForCarNow(app, carId);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Could not send the request of car " + carId, e);
+                return NONE;
+            }
+        });
+    }
+
+    private static String sendForCarNow(Context app, int carId) {
+        if (carId == 0) {
+            return NONE;
+        }
+        List<Page> pages = loadBlocking(app).pagesFor(carId);
+        if (pages.isEmpty()) {
+            Log.i(TAG, "Car " + carId + " needs no request, nothing sent");
+            return NONE;
+        }
+        Request user = userRequest(PreferenceManager.getDefaultSharedPreferences(app));
+        if (user != null) {
+            send(user);
+            Log.i(TAG, "Car " + carId + ": sent the request from the settings, " + user);
+            return user.toString();
+        }
+        Page main = pages.get(0);
+        for (Request r : main.requests) {
+            send(r);
+        }
+        Log.i(TAG, "Car " + carId + ": sent the requests of " + main.simpleName() + ", " + main.requestsText());
+        return main.requestsText();
+    }
+
+    private static void send(Request r) {
+        DataCanbus.PROXY.cmd(r.cmd, r.ints(), null, null);
+    }
+
+    /** The first request of the car's main page, for the hint of the fields, or null if the car has none. */
+    static Request firstRequest(Library library, int carId) {
+        List<Page> pages = library.pagesFor(carId);
+        return pages.isEmpty() || pages.get(0).requests.isEmpty() ? null : pages.get(0).requests.get(0);
+    }
+
+    /** Runs {@code onMainThread} on the main thread once the library is loaded (loading it on the executor if needed). */
+    static void whenLoaded(Context context, Runnable onMainThread) {
+        final Context app = context.getApplicationContext();
+        EXECUTOR.execute(() -> {
+            loadBlocking(app);
+            new android.os.Handler(Looper.getMainLooper()).post(onMainThread);
+        });
+    }
+
+    /** One line per page of the car, {@code OilMilePage1Acti: 70:51; 29:0}; empty if the car has none. */
+    static String knownRequestsText(Library library, int carId) {
+        StringBuilder sb = new StringBuilder();
+        for (Page p : library.pagesFor(carId)) {
+            if (sb.length() > 0) {
+                sb.append('\n');
+            }
+            sb.append(p.simpleName()).append(": ").append(p.requestsText());
+        }
+        return sb.toString();
     }
 
     // ---------------------------------------------------------------------------------------------

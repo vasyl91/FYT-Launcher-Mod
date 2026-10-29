@@ -84,7 +84,7 @@
             android:id="@+id/cmdArr_code_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cmdArr_code_text"
+            android:text="@string/cmdArr_list_code_text"
             app:layout_constraintTop_toBottomOf="@id/cmdInt_code_text"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -94,7 +94,17 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/guideline_codes"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@id/cmdArr_code_text"
+            app:layout_constraintBaseline_toBaselineOf="@id/cmdArr_code_text" />
+
+        <!-- The requests of the screens of this car, as the library knows them -->
+        <TextView
+            android:id="@+id/known_requests_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true"
+            app:layout_constraintTop_toBottomOf="@id/cmdArr_code_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -223,14 +223,12 @@
     <string name="stats_codes">Кодове на статистиката</string>
     <string name="stats_window_summary"><![CDATA[Използвайте четеца Canbus или потърсете необходимите canbus кодове в класа <b>%1$s</b> и неговите подкласове (вижте README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Оригиналното оборудване на автомобила не съществува. Опитайте четеца Canbus; той обаче може да не намери кодовете.</string>
-    <string name="stats_codes_summary">Докоснете, за да зададете canbus кодовете. \nГориво: %1$s, Запас на хода: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Допълнителни статистически данни <b>(по избор)</b></string>
     <string name="extra_stats_codes_summary">Докоснете, за да зададете допълнителна информация за автомобила за приблизителния разход на гориво. \nCanbus код за оборотите: %1$s, Конски сили: %2$s, Маса на автомобила: %3$s</string>
     <string name="stats_dialog_title">Canbus кодове:</string>
     <string name="fuel_code_text">Код за гориво:</string>
     <string name="range_code_text">Код за запас на хода:</string>
     <string name="cmdInt_code_text">Код cmdInt:</string>
-    <string name="cmdArr_code_text">Код cmdArr:</string>
     <string name="canbus_optional"><b>Незадължителни данни (трябва да са 0, ако не се използват):</b></string>
     <string name="canbus_optional_description">Използвайте, ако canbus спре да изпраща данни за разхода на гориво, например под определена скорост.</string>
     <string name="rpm_code_text">Canbus код за оборотите:</string>

@@ -223,14 +223,12 @@
     <string name="stats_codes">統計コード</string>
     <string name="stats_window_summary"><![CDATA[Canbusリーダーを使うか、必要なcanbusコードをクラス<b>%1$s</b>とそのサブクラスから探してください（README.mdを参照）]]></string>
     <string name="stats_window_summary_vehicle_not_exist">純正の車両装備が存在しません。Canbusリーダーをお試しください。ただし、コードが見つからない場合があります。</string>
-    <string name="stats_codes_summary">タップしてcanbusコードを設定します。\n燃料: %1$s、航続距離: %2$s、cmdInt: %3$s、cmdArr: %4$s</string>
     <string name="extra_stats_codes">追加の統計データ<b>（任意）</b></string>
     <string name="extra_stats_codes_summary">タップして、おおよその燃費計算のための追加の車両情報を設定します。\nRPM canbusコード: %1$s、馬力: %2$s、車両質量: %3$s</string>
     <string name="stats_dialog_title">Canbusコード:</string>
     <string name="fuel_code_text">燃料コード:</string>
     <string name="range_code_text">航続距離コード:</string>
     <string name="cmdInt_code_text">cmdIntコード:</string>
-    <string name="cmdArr_code_text">cmdArrコード:</string>
     <string name="canbus_optional"><b>任意のデータ（使用しない場合は0）:</b></string>
     <string name="canbus_optional_description">特定の速度を下回るなど、canbusが燃費データを送信しなくなる場合に使用します。</string>
     <string name="rpm_code_text">RPM canbusコード:</string>

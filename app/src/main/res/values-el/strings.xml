@@ -223,14 +223,12 @@
     <string name="stats_codes">Κωδικοί στατιστικών</string>
     <string name="stats_window_summary"><![CDATA[Χρησιμοποιήστε τον αναγνώστη Canbus ή αναζητήστε τους απαραίτητους κωδικούς canbus στην κλάση <b>%1$s</b> και στις υποκλάσεις της (βλ. README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Ο αρχικός εξοπλισμός του οχήματος δεν υπάρχει. Δοκιμάστε τον αναγνώστη Canbus· ωστόσο, ενδέχεται να μην βρει τους κωδικούς.</string>
-    <string name="stats_codes_summary">Πατήστε για να ορίσετε τους κωδικούς canbus. \nΚαύσιμο: %1$s, Αυτονομία: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Πρόσθετα στατιστικά δεδομένα <b>(προαιρετικά)</b></string>
     <string name="extra_stats_codes_summary">Πατήστε για να ορίσετε πρόσθετα στοιχεία του αυτοκινήτου για την κατά προσέγγιση κατανάλωση καυσίμου. \nΚωδικός canbus στροφών: %1$s, Ίπποι: %2$s, Μάζα οχήματος: %3$s</string>
     <string name="stats_dialog_title">Κωδικοί Canbus:</string>
     <string name="fuel_code_text">Κωδικός καυσίμου:</string>
     <string name="range_code_text">Κωδικός αυτονομίας:</string>
     <string name="cmdInt_code_text">Κωδικός cmdInt:</string>
-    <string name="cmdArr_code_text">Κωδικός cmdArr:</string>
     <string name="canbus_optional"><b>Προαιρετικά δεδομένα (να είναι 0 αν δεν χρησιμοποιούνται):</b></string>
     <string name="canbus_optional_description">Χρησιμοποιήστε το αν το canbus σταματά να στέλνει δεδομένα κατανάλωσης καυσίμου, π.χ. κάτω από μια ορισμένη ταχύτητα.</string>
     <string name="rpm_code_text">Κωδικός canbus στροφών:</string>

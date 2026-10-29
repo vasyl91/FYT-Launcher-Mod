@@ -59,6 +59,7 @@ import com.android.launcher66.colorpicker.ColorPicker;
 import com.android.launcher66.colorpicker.ColorPickerCallback;
 import com.fyt.skin.SkinAttribute;
 import com.fyt.skin.SkinUtils;
+import com.syu.module.canbus.DataCanbus;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -253,6 +254,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        CanbusLibrary.preload(requireContext());
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.requireContext());
         editor = sharedPrefs.edit();
         addPreferencesFromResource(R.xml.creator_preferences);
@@ -538,7 +540,13 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             statsScreen.setVisible(userStatsBool);
         }
         if (statsCodes != null) {
-            statsCodes.setSummary(getString(R.string.stats_codes_summary, fuelCodeStr, rangeCodeStr, cmdIntCodeStr, cmdArrCodeStr));
+            statsCodes.setSummary(statsCodesSummary());
+            // The library loads in the background: the request of the car joins the summary when it is there
+            CanbusLibrary.whenLoaded(requireContext(), () -> {
+                if (isAdded() && statsCodes != null) {
+                    statsCodes.setSummary(statsCodesSummary());
+                }
+            });
             statsCodes.setOnPreferenceClickListener(this);
             statsCodes.setVisible(userStatsBool);
         }
@@ -1335,6 +1343,25 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         });
     }
 
+    /** A cmd field of the Canbus codes window: cmdInt is a number, cmdArr numbers separated by commas. */
+    private void dialogCmdEditText(EditText field, EditText cmdInt, EditText cmdArr, boolean list) {
+        if (list) {
+            field.setInputType(InputType.TYPE_CLASS_TEXT);
+            field.setKeyListener(DigitsKeyListener.getInstance("0123456789,-"));
+        } else {
+            field.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "9999")});
+            field.setInputType(InputType.TYPE_CLASS_NUMBER);
+        }
+        field.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        field.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                saveCmdFields(cmdInt, cmdArr);
+                alertCodesDialog.dismiss();
+            }
+            return false;
+        });
+    }
+
     private void dialogExtraCodesEditText(EditText codesEditText) {
         codesEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "9999")});
         codesEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -1510,43 +1537,60 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         setCalculatedSizes(dialogView, R.id.range_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
         setCalculatedSizes(dialogView, R.id.cmdInt_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
         setCalculatedSizes(dialogView, R.id.cmdArr_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.known_requests_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
 
         dialogCodesEditText(fuelCodeInt);
         dialogCodesEditText(rangeCodeInt);
-        dialogCodesEditText(cmdIntCodeInt);
-        dialogCodesEditText(cmdArrCodeInt);
 
         fuelCodeInt.setText(fuelCodeStr);
         rangeCodeInt.setText(rangeCodeStr);
-        cmdIntCodeInt.setText(cmdIntCodeStr);
-        cmdArrCodeInt.setText(cmdArrCodeStr);
-
         fuelCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
         rangeCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        cmdIntCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        cmdArrCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+
+        // The cmd fields are for the cars whose original fuel screen sends a request when it opens (the
+        // library knows them); for any other car they are not there, and nothing is sent to it.
+        final boolean needsRequest = carNeedsRequest();
+        final View[] cmdViews = {
+                dialogView.findViewById(R.id.cmdInt_code_text), cmdIntCodeInt,
+                dialogView.findViewById(R.id.cmdArr_code_text), cmdArrCodeInt,
+                dialogView.findViewById(R.id.known_requests_text)};
+        for (View v : cmdViews) {
+            v.setVisibility(needsRequest ? View.VISIBLE : View.GONE);
+        }
+        if (needsRequest) {
+            CanbusLibrary.Library library = CanbusLibrary.cached();
+            int carId = DataCanbus.DATA[1000];
+            dialogCmdEditText(cmdIntCodeInt, cmdIntCodeInt, cmdArrCodeInt, false);
+            dialogCmdEditText(cmdArrCodeInt, cmdIntCodeInt, cmdArrCodeInt, true);
+            // Nothing written (or the old "0" and "0") shows empty fields with the first request as the hint
+            boolean written = CanbusLibrary.userRequest(sharedPrefs) != null;
+            cmdIntCodeInt.setText(written ? cmdIntCodeStr : "");
+            cmdArrCodeInt.setText(written ? cmdArrCodeStr : "");
+            CanbusLibrary.Request first = CanbusLibrary.firstRequest(library, carId);
+            if (first != null) {
+                cmdIntCodeInt.setHint(String.valueOf(first.cmd));
+                cmdArrCodeInt.setHint(first.intsText());
+            }
+            cmdIntCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+            cmdArrCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+            ((TextView) dialogView.findViewById(R.id.known_requests_text)).setText(
+                    getString(R.string.stats_codes_known_requests, CanbusLibrary.knownRequestsText(library, carId)));
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
-        builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> {
+        final Runnable save = () -> {
                 fuelCodeStr = fuelCodeInt.getText().toString();
                 rangeCodeStr = rangeCodeInt.getText().toString();
-                cmdIntCodeStr = cmdIntCodeInt.getText().toString();
-                cmdArrCodeStr = cmdArrCodeInt.getText().toString();
                 saveCode(fuelCodeInt);
                 saveCode(rangeCodeInt);
-                saveCode(cmdIntCodeInt);
-                saveCode(cmdArrCodeInt);
-            });
+                if (needsRequest) {
+                    saveCmdFields(cmdIntCodeInt, cmdArrCodeInt);
+                }
+            };
+        builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> save.run());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         builder.setOnCancelListener(dialog -> {
-                fuelCodeStr = fuelCodeInt.getText().toString();
-                rangeCodeStr = rangeCodeInt.getText().toString();
-                cmdIntCodeStr = cmdIntCodeInt.getText().toString();
-                cmdArrCodeStr = cmdArrCodeInt.getText().toString();
-                saveCode(fuelCodeInt);
-                saveCode(rangeCodeInt);
-                saveCode(cmdIntCodeInt);
-                saveCode(cmdArrCodeInt);
+                save.run();
                 dialog.dismiss();
             });
         return builder;
@@ -1711,11 +1755,53 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (valueStr.isEmpty()) valueStr = "0";
         editor.putString(code.getResources().getResourceEntryName(code.getId()), valueStr);
         editor.apply();
-        statsCodes.setSummary(getString(R.string.stats_codes_summary,
-            sharedPrefs.getString("fuel_code_int", "0"),
-            sharedPrefs.getString("range_code_int", "0"),
-            sharedPrefs.getString(Keys.CMD_INT, "0"),
-            sharedPrefs.getString(Keys.CMD_ARR, "0")));
+        statsCodes.setSummary(statsCodesSummary());
+    }
+
+    /** Whether the library says this car needs a request: the cmd fields are for such cars only. */
+    private boolean carNeedsRequest() {
+        CanbusLibrary.Library library = CanbusLibrary.cached();
+        int carId = DataCanbus.DATA[1000];
+        return library != null && carId != 0 && !library.pagesFor(carId).isEmpty();
+    }
+
+    private String statsCodesSummary() {
+        String fuel = sharedPrefs.getString("fuel_code_int", "0");
+        String range = sharedPrefs.getString("range_code_int", "0");
+        if (!carNeedsRequest()) {
+            return getString(R.string.stats_codes_summary_no_request, fuel, range);
+        }
+        CanbusLibrary.Request user = CanbusLibrary.userRequest(sharedPrefs);
+        String request = user != null ? user.toString()
+                : getString(R.string.stats_codes_request_auto,
+                        CanbusLibrary.firstRequest(CanbusLibrary.cached(), DataCanbus.DATA[1000]));
+        return getString(R.string.stats_codes_summary_request, fuel, range, request);
+    }
+
+    /**
+     * Saves the cmd fields of the Canbus codes window: empty stays empty (the first screen's request is
+     * sent), cmdArr is written as plain numbers ("74,3"). A bad text is not saved, with a toast.
+     */
+    private void saveCmdFields(EditText cmdInt, EditText cmdArr) {
+        String cmd = cmdInt.getText().toString().trim();
+        int[] ints = CanbusLibrary.parseInts(cmdArr.getText().toString());
+        if (ints == null || (!cmd.isEmpty() && !cmd.matches("[0-9]{1,4}"))) {
+            Toast.makeText(this.requireContext(), R.string.stats_codes_cmd_invalid, Toast.LENGTH_LONG).show();
+            return;
+        }
+        StringBuilder arr = new StringBuilder();
+        for (int i = 0; i < ints.length; i++) {
+            if (i > 0) {
+                arr.append(',');
+            }
+            arr.append(ints[i]);
+        }
+        editor.putString(Keys.CMD_INT, cmd);
+        editor.putString(Keys.CMD_ARR, arr.toString());
+        editor.apply();
+        cmdIntCodeStr = cmd;
+        cmdArrCodeStr = arr.toString();
+        statsCodes.setSummary(statsCodesSummary());
     }
 
     private void saveExtraCode(EditText code) {

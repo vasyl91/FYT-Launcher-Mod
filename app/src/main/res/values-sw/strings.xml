@@ -223,14 +223,12 @@
     <string name="stats_codes">Misimbo ya takwimu</string>
     <string name="stats_window_summary"><![CDATA[Tumia kisomaji cha Canbus au tafuta misimbo ya canbus inayohitajika kwenye darasa <b>%1$s</b> na madarasa yake madogo (angalia README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Vifaa asili vya gari havipo. Jaribu kisomaji cha Canbus; hata hivyo, huenda kisipate misimbo.</string>
-    <string name="stats_codes_summary">Gusa ili kuweka misimbo ya canbus. \nMafuta: %1$s, Umbali: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Data ya ziada ya takwimu <b>(si lazima)</b></string>
     <string name="extra_stats_codes_summary">Gusa ili kuweka maelezo ya ziada ya gari kwa matumizi ya mafuta ya makadirio. \nMsimbo wa canbus wa RPM: %1$s, Nguvu za farasi: %2$s, Uzito wa gari: %3$s</string>
     <string name="stats_dialog_title">Misimbo ya canbus:</string>
     <string name="fuel_code_text">Msimbo wa mafuta:</string>
     <string name="range_code_text">Msimbo wa umbali:</string>
     <string name="cmdInt_code_text">Msimbo wa cmdInt:</string>
-    <string name="cmdArr_code_text">Msimbo wa cmdArr:</string>
     <string name="canbus_optional"><b>Data ya hiari (inapaswa kuwa 0 ikiwa haitumiki):</b></string>
     <string name="canbus_optional_description">Tumia hii ikiwa canbus yako itaacha kutuma data ya matumizi ya mafuta, kwa mfano chini ya kasi fulani.</string>
     <string name="rpm_code_text">Msimbo wa canbus wa RPM:</string>

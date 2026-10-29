@@ -223,14 +223,12 @@
     <string name="stats_codes">Коди статистики</string>
     <string name="stats_window_summary"><![CDATA[Скористайтеся зчитувачем Canbus або знайдіть потрібні коди canbus у класі <b>%1$s</b> та його підкласах (див. README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Оригінального обладнання автомобіля немає. Спробуйте зчитувач Canbus; однак він може не знайти коди.</string>
-    <string name="stats_codes_summary">Торкніться, щоб задати коди canbus. \nПальне: %1$s, Запас ходу: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Додаткові дані статистики <b>(необов’язково)</b></string>
     <string name="extra_stats_codes_summary">Торкніться, щоб задати додаткові дані про автомобіль для приблизного розрахунку витрати пального. \nCanbus-код обертів: %1$s, Потужність: %2$s, Маса автомобіля: %3$s</string>
     <string name="stats_dialog_title">Коди canbus:</string>
     <string name="fuel_code_text">Код пального:</string>
     <string name="range_code_text">Код запасу ходу:</string>
     <string name="cmdInt_code_text">Код cmdInt:</string>
-    <string name="cmdArr_code_text">Код cmdArr:</string>
     <string name="canbus_optional"><b>Необов’язкові дані (0, якщо не використовуються):</b></string>
     <string name="canbus_optional_description">Використовуйте, якщо ваш canbus перестає передавати дані про витрату пального, наприклад нижче певної швидкості.</string>
     <string name="rpm_code_text">Canbus-код обертів:</string>

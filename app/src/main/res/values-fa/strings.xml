@@ -223,14 +223,12 @@
     <string name="stats_codes">کدهای آمار</string>
     <string name="stats_window_summary"><![CDATA[از خواننده Canbus استفاده کنید یا کدهای canbus لازم را در کلاس <b>%1$s</b> و زیرکلاس‌های آن پیدا کنید (به README.md مراجعه کنید)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">تجهیزات اصلی خودرو وجود ندارد. خواننده Canbus را امتحان کنید؛ البته ممکن است کدها را پیدا نکند.</string>
-    <string name="stats_codes_summary">برای تنظیم کدهای canbus لمس کنید. \nسوخت: %1$s، برد: %2$s، cmdInt: %3$s، cmdArr: %4$s</string>
     <string name="extra_stats_codes">داده‌های آماری اضافی <b>(اختیاری)</b></string>
     <string name="extra_stats_codes_summary">برای تنظیم اطلاعات اضافی خودرو جهت برآورد مصرف سوخت لمس کنید. \nکد canbus دور موتور: %1$s، اسب بخار: %2$s، جرم خودرو: %3$s</string>
     <string name="stats_dialog_title">کدهای Canbus:</string>
     <string name="fuel_code_text">کد سوخت:</string>
     <string name="range_code_text">کد برد:</string>
     <string name="cmdInt_code_text">کد cmdInt:</string>
-    <string name="cmdArr_code_text">کد cmdArr:</string>
     <string name="canbus_optional"><b>داده‌های اختیاری (در صورت استفاده‌نشدن باید ۰ باشد):</b></string>
     <string name="canbus_optional_description">اگر canbus شما داده‌های مصرف سوخت را ارسال نمی‌کند، مثلاً زیر یک سرعت مشخص، از این استفاده کنید.</string>
     <string name="rpm_code_text">کد canbus دور موتور:</string>

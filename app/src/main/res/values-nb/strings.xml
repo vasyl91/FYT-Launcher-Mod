@@ -223,14 +223,12 @@
     <string name="stats_codes">Statistikkoder</string>
     <string name="stats_window_summary"><![CDATA[Bruk Canbus-leseren, eller finn de nødvendige canbus-kodene i klassen <b>%1$s</b> og underklassene (se README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Originalt kjøretøyutstyr finnes ikke. Prøv Canbus-leseren, men den finner kanskje ikke kodene.</string>
-    <string name="stats_codes_summary">Trykk for å angi canbus-kodene. \nDrivstoff: %1$s, Rekkevidde: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Ekstra statistikkdata <b>(valgfritt)</b></string>
     <string name="extra_stats_codes_summary">Trykk for å angi ekstra bilinformasjon for omtrentlig drivstofforbruk. \nTurtalls-canbus-kode: %1$s, Hestekrefter: %2$s, Kjøretøyets masse: %3$s</string>
     <string name="stats_dialog_title">Canbus-koder:</string>
     <string name="fuel_code_text">Drivstoffkode:</string>
     <string name="range_code_text">Rekkevidde-kode:</string>
     <string name="cmdInt_code_text">cmdInt-kode:</string>
-    <string name="cmdArr_code_text">cmdArr-kode:</string>
     <string name="canbus_optional"><b>Valgfrie data (skal være 0 hvis de ikke brukes):</b></string>
     <string name="canbus_optional_description">Bruk dette hvis canbus slutter å sende data om drivstofforbruk, for eksempel under en viss hastighet.</string>
     <string name="rpm_code_text">Turtalls-canbus-kode:</string>

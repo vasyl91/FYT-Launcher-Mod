@@ -223,14 +223,12 @@
     <string name="stats_codes">Kod statistik</string>
     <string name="stats_window_summary"><![CDATA[Gunakan pembaca Canbus atau cari kod canbus yang diperlukan dalam kelas <b>%1$s</b> dan subkelasnya (lihat README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Kelengkapan asal kenderaan tidak wujud. Cuba pembaca Canbus; namun, ia mungkin tidak menemui kod.</string>
-    <string name="stats_codes_summary">Ketik untuk menetapkan kod canbus. \nBahan api: %1$s, Jarak: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Data statistik tambahan <b>(pilihan)</b></string>
     <string name="extra_stats_codes_summary">Ketik untuk menetapkan maklumat kereta tambahan bagi anggaran penggunaan bahan api. \nKod canbus RPM: %1$s, Kuasa kuda: %2$s, Jisim kenderaan: %3$s</string>
     <string name="stats_dialog_title">Kod canbus:</string>
     <string name="fuel_code_text">Kod bahan api:</string>
     <string name="range_code_text">Kod jarak:</string>
     <string name="cmdInt_code_text">Kod cmdInt:</string>
-    <string name="cmdArr_code_text">Kod cmdArr:</string>
     <string name="canbus_optional"><b>Data pilihan (hendaklah 0 jika tidak digunakan):</b></string>
     <string name="canbus_optional_description">Gunakan ini jika canbus anda berhenti menghantar data penggunaan bahan api, contohnya di bawah kelajuan tertentu.</string>
     <string name="rpm_code_text">Kod canbus RPM:</string>

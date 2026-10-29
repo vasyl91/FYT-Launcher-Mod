@@ -223,14 +223,12 @@
     <string name="stats_codes">Statistikkoder</string>
     <string name="stats_window_summary"><![CDATA[Använd Canbus-läsaren eller leta efter de canbus-koder som behövs i klassen <b>%1$s</b> och dess underklasser (se README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Originalutrustning för fordonet finns inte. Prova Canbus-läsaren, men den kanske inte hittar koderna.</string>
-    <string name="stats_codes_summary">Tryck för att ställa in canbus-koderna. \nBränsle: %1$s, Räckvidd: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">Ytterligare statistikdata <b>(valfritt)</b></string>
     <string name="extra_stats_codes_summary">Tryck för att ställa in ytterligare bilinformation för ungefärlig bränsleförbrukning. \nVarvtals-canbus-kod: %1$s, Hästkrafter: %2$s, Fordonsmassa: %3$s</string>
     <string name="stats_dialog_title">Canbus-koder:</string>
     <string name="fuel_code_text">Bränslekod:</string>
     <string name="range_code_text">Räckviddskod:</string>
     <string name="cmdInt_code_text">cmdInt-kod:</string>
-    <string name="cmdArr_code_text">cmdArr-kod:</string>
     <string name="canbus_optional"><b>Valfria data (ska vara 0 om de inte används):</b></string>
     <string name="canbus_optional_description">Använd detta om din canbus slutar skicka bränsleförbrukningsdata, till exempel under en viss hastighet.</string>
     <string name="rpm_code_text">Varvtals-canbus-kod:</string>

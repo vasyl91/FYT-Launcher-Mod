@@ -69,8 +69,6 @@ public class CanbusAsyncTask extends AsyncTask<Void, Void, Void> {
 	        extras.putInt("fuel", Integer.parseInt(mPrefs.getString("fuel_code_int", "0")));
 	        extras.putInt("range", Integer.parseInt(mPrefs.getString("range_code_int", "0")));
 	        extras.putInt("rpm", Integer.parseInt(mPrefs.getString("rpm_code_int", "0")));
-	        extras.putInt("cmdInt", Integer.parseInt(mPrefs.getString("cmdInt_code_int", "0")));
-	        extras.putInt("cmdArr", Integer.parseInt(mPrefs.getString("cmdArr_code_int", "0")));
 	        intent.putExtras(extras);
 	        ServiceIntentGate.startIfAvailable(this.mContext, intent, "async canbus");
         }, 1000);

@@ -223,14 +223,12 @@
     <string name="stats_codes">आँकड़ों के कोड</string>
     <string name="stats_window_summary"><![CDATA[Canbus रीडर इस्तेमाल करें या ज़रूरी canbus कोड क्लास <b>%1$s</b> और उसकी उपक्लासों में खोजें (README.md देखें)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">वाहन का मूल उपकरण मौजूद नहीं है। Canbus रीडर आज़माएँ; हालाँकि हो सकता है कि वह कोड न खोज पाए।</string>
-    <string name="stats_codes_summary">canbus कोड सेट करने के लिए टैप करें। \nईंधन: %1$s, रेंज: %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">अतिरिक्त आँकड़ों का डेटा <b>(वैकल्पिक)</b></string>
     <string name="extra_stats_codes_summary">अनुमानित ईंधन खपत के लिए कार की अतिरिक्त जानकारी सेट करने के लिए टैप करें। \nRPM canbus कोड: %1$s, हॉर्सपावर: %2$s, वाहन का द्रव्यमान: %3$s</string>
     <string name="stats_dialog_title">Canbus कोड:</string>
     <string name="fuel_code_text">ईंधन कोड:</string>
     <string name="range_code_text">रेंज कोड:</string>
     <string name="cmdInt_code_text">cmdInt कोड:</string>
-    <string name="cmdArr_code_text">cmdArr कोड:</string>
     <string name="canbus_optional"><b>वैकल्पिक डेटा (उपयोग न होने पर 0 होना चाहिए):</b></string>
     <string name="canbus_optional_description">इसका उपयोग तब करें जब आपका canbus ईंधन खपत का डेटा भेजना बंद कर दे, जैसे किसी निश्चित गति से नीचे।</string>
     <string name="rpm_code_text">RPM canbus कोड:</string>

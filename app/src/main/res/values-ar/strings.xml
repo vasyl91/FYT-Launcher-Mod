@@ -223,14 +223,12 @@
     <string name="stats_codes">رموز الإحصاءات</string>
     <string name="stats_window_summary"><![CDATA[استخدم قارئ Canbus أو ابحث عن رموز canbus اللازمة في الفئة <b>%1$s</b> وفئاتها الفرعية (راجع README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">معدات المركبة الأصلية غير موجودة. جرّب قارئ Canbus؛ لكن قد لا يعثر على الرموز.</string>
-    <string name="stats_codes_summary">المس لضبط رموز canbus. \nالوقود: %1$s، المدى: %2$s، cmdInt: %3$s، cmdArr: %4$s</string>
     <string name="extra_stats_codes">بيانات إحصائية إضافية <b>(اختياري)</b></string>
     <string name="extra_stats_codes_summary">المس لضبط معلومات إضافية عن السيارة لحساب استهلاك الوقود التقريبي. \nرمز canbus لعدد الدورات: %1$s، القدرة الحصانية: %2$s، كتلة المركبة: %3$s</string>
     <string name="stats_dialog_title">رموز Canbus:</string>
     <string name="fuel_code_text">رمز الوقود:</string>
     <string name="range_code_text">رمز المدى:</string>
     <string name="cmdInt_code_text">رمز cmdInt:</string>
-    <string name="cmdArr_code_text">رمز cmdArr:</string>
     <string name="canbus_optional"><b>بيانات اختيارية (يجب أن تكون 0 إذا لم تُستخدم):</b></string>
     <string name="canbus_optional_description">استخدم هذا إذا توقف canbus عن إرسال بيانات استهلاك الوقود، مثلًا دون سرعة معينة.</string>
     <string name="rpm_code_text">رمز canbus لعدد الدورات:</string>

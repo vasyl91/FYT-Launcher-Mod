@@ -223,14 +223,12 @@
     <string name="stats_codes">កូដស្ថិតិ</string>
     <string name="stats_window_summary"><![CDATA[ប្រើកម្មវិធីអាន Canbus ឬរកកូដ canbus ដែលត្រូវការនៅក្នុងថ្នាក់ <b>%1$s</b> និងថ្នាក់រងរបស់វា (មើល README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">មិនមានឧបករណ៍ដើមរបស់រថយន្តទេ។ សូមសាកល្បងប្រើកម្មវិធីអាន Canbus ប៉ុន្តែវាអាចរកមិនឃើញកូដ។</string>
-    <string name="stats_codes_summary">ប៉ះដើម្បីកំណត់កូដ canbus។ \nឥន្ធនៈ៖ %1$s, ចម្ងាយ៖ %2$s, cmdInt: %3$s, cmdArr: %4$s</string>
     <string name="extra_stats_codes">ទិន្នន័យស្ថិតិបន្ថែម <b>(ស្រេចចិត្ត)</b></string>
     <string name="extra_stats_codes_summary">ប៉ះដើម្បីកំណត់ព័ត៌មានរថយន្តបន្ថែមសម្រាប់ការប៉ាន់ស្មានការប្រើប្រាស់ឥន្ធនៈ។ \nកូដ canbus RPM៖ %1$s, កម្លាំងសេះ៖ %2$s, ម៉ាសរថយន្ត៖ %3$s</string>
     <string name="stats_dialog_title">កូដ canbus៖</string>
     <string name="fuel_code_text">កូដឥន្ធនៈ៖</string>
     <string name="range_code_text">កូដចម្ងាយ៖</string>
     <string name="cmdInt_code_text">កូដ cmdInt៖</string>
-    <string name="cmdArr_code_text">កូដ cmdArr៖</string>
     <string name="canbus_optional"><b>ទិន្នន័យស្រេចចិត្ត (គួរតែជា 0 ប្រសិនបើមិនប្រើ)៖</b></string>
     <string name="canbus_optional_description">ប្រើវាប្រសិនបើ canbus របស់អ្នកឈប់ផ្ញើទិន្នន័យការប្រើប្រាស់ឥន្ធនៈ ឧទាហរណ៍ ក្រោមល្បឿនជាក់លាក់។</string>
     <string name="rpm_code_text">កូដ canbus RPM៖</string>
