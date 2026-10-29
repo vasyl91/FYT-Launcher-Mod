@@ -223,17 +223,11 @@
     <string name="stats_codes">Statistikkoder</string>
     <string name="stats_window_summary"><![CDATA[Använd Canbus-läsaren eller leta efter de canbus-koder som behövs i klassen <b>%1$s</b> och dess underklasser (se README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Originalutrustning för fordonet finns inte. Prova Canbus-läsaren, men den kanske inte hittar koderna.</string>
-    <string name="extra_stats_codes">Ytterligare statistikdata <b>(valfritt)</b></string>
-    <string name="extra_stats_codes_summary">Tryck för att ställa in ytterligare bilinformation för ungefärlig bränsleförbrukning. \nVarvtals-canbus-kod: %1$s, Hästkrafter: %2$s, Fordonsmassa: %3$s</string>
     <string name="stats_dialog_title">Canbus-koder:</string>
     <string name="fuel_code_text">Bränslekod:</string>
     <string name="range_code_text">Räckviddskod:</string>
     <string name="cmdInt_code_text">cmdInt-kod:</string>
-    <string name="canbus_optional"><b>Valfria data (ska vara 0 om de inte används):</b></string>
-    <string name="canbus_optional_description">Använd detta om din canbus slutar skicka bränsleförbrukningsdata, till exempel under en viss hastighet.</string>
     <string name="rpm_code_text">Varvtals-canbus-kod:</string>
-    <string name="horse_power_code_text">Hästkrafter:</string>
-    <string name="vehicle_mass_code_text">Fordonsmassa (i kg):</string>
     <string name="main_screen_stats_window">Visa bränslestatistiken på huvudskärmen</string>
     <string name="color_picker">Textfärg för statistik</string>
     <string name="stats_bg">Bakgrund för statistik</string>

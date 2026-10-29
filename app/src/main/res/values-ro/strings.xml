@@ -223,17 +223,11 @@
     <string name="stats_codes">Coduri de statistici</string>
     <string name="stats_window_summary"><![CDATA[Folosiți cititorul Canbus sau căutați codurile canbus necesare în clasa <b>%1$s</b> și în subclasele sale (vezi README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Echipamentul original al vehiculului nu există. Încercați cititorul Canbus; cu toate acestea, este posibil să nu găsească codurile.</string>
-    <string name="extra_stats_codes">Date statistice suplimentare <b>(opțional)</b></string>
-    <string name="extra_stats_codes_summary">Atingeți pentru a seta informații suplimentare despre mașină pentru consumul aproximativ de combustibil. \nCod canbus turație: %1$s, Cai putere: %2$s, Masa vehiculului: %3$s</string>
     <string name="stats_dialog_title">Coduri canbus:</string>
     <string name="fuel_code_text">Cod combustibil:</string>
     <string name="range_code_text">Cod autonomie:</string>
     <string name="cmdInt_code_text">Cod cmdInt:</string>
-    <string name="canbus_optional"><b>Date opționale (trebuie să fie 0 dacă nu se folosesc):</b></string>
-    <string name="canbus_optional_description">Folosiți dacă canbusul dvs. nu mai trimite date despre consumul de combustibil, de exemplu sub o anumită viteză.</string>
     <string name="rpm_code_text">Cod canbus turație:</string>
-    <string name="horse_power_code_text">Cai putere:</string>
-    <string name="vehicle_mass_code_text">Masa vehiculului (în kg):</string>
     <string name="main_screen_stats_window">Afișează statisticile de combustibil pe ecranul principal</string>
     <string name="color_picker">Culoarea textului statisticilor</string>
     <string name="stats_bg">Fundalul statisticilor</string>

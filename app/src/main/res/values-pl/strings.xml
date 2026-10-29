@@ -223,17 +223,11 @@
     <string name="stats_codes">Kody canbus</string>
     <string name="stats_window_summary"><![CDATA[Aby znaleźć niezbędne kody użyj skanera canbus lub przeszukaj klasę <b>%1$s</b> i jej subklasy (zapoznaj się z README.MD)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Brak odpowiednich plików dla tego samochodu. Spróbuj użyć czytnika CAN bus, jednak może on nie znaleźć kodów.</string>
-    <string name="extra_stats_codes">Dodatkowe dane <b>(opcjonalne)</b></string>
-    <string name="extra_stats_codes_summary">Naciśnij i wprowadź dodatkowe dane dla przybliżonych obliczeń spalania paliwa \nRPM kod canbus: %1$s, Konie mechaniczne: %2$s, Masa pojazdu: %3$s</string>
     <string name="stats_dialog_title">Kody canbus:</string>
     <string name="fuel_code_text">Kod paliwa:</string>
     <string name="range_code_text">Kod zasięgu:</string>
     <string name="cmdInt_code_text">cmdInt:</string>
-    <string name="canbus_optional"><b>Dodatkowe dane (zostaw 0 jesli nie używasz tej sekcji):</b></string>
-    <string name="canbus_optional_description">Używaj w przypadku gdy canbus przestaje wysyłać dane dotyczące spalania paliwa np. poniżej określonej prędkości</string>
     <string name="rpm_code_text">RPM kod canbus:</string>
-    <string name="horse_power_code_text">Konie mechaniczne:</string>
-    <string name="vehicle_mass_code_text">Masa pojazdu (kg):</string>
     <string name="main_screen_stats_window">Wyświetlaj statystyki na ekranie głównym</string>
     <string name="color_picker">Kolor tekstu</string>
     <string name="stats_bg">Wyświetlaj tło</string>

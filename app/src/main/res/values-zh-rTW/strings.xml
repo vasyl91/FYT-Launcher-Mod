@@ -223,17 +223,11 @@
     <string name="stats_codes">統計代碼</string>
     <string name="stats_window_summary"><![CDATA[使用 CAN 匯流排讀取器，或在類 <b>%1$s</b> 及其子類中查詢所需的 CAN 匯流排代碼（請參閱 README.MD）]]></string>
     <string name="stats_window_summary_vehicle_not_exist">未偵測到原車裝置。請嘗試使用 CAN 匯流排讀取器，但可能無法找到相關代碼。</string>
-    <string name="extra_stats_codes">附加統計資料<b>（可選）</b></string>
-    <string name="extra_stats_codes_summary">點選此選項設定用於估算油耗的附加車輛資訊。\nRPM CAN 代碼: %1$s, 馬力: %2$s, 車重: %3$s</string>
     <string name="stats_dialog_title">CAN 匯流排代碼：</string>
     <string name="fuel_code_text">油耗代碼：</string>
     <string name="range_code_text">續航代碼：</string>
     <string name="cmdInt_code_text">cmdInt 代碼：</string>
-    <string name="canbus_optional"><b>可選資料（不使用請填 0）：</b></string>
-    <string name="canbus_optional_description">當 CAN 匯流排在某個速度以下停止傳送油耗資料時使用。</string>
     <string name="rpm_code_text">RPM CAN 代碼：</string>
-    <string name="horse_power_code_text">馬力：</string>
-    <string name="vehicle_mass_code_text">車重（公斤）：</string>
     <string name="main_screen_stats_window">在主螢幕顯示油耗統計</string>
     <string name="color_picker">統計文字顏色</string>
     <string name="stats_bg">統計背景</string>

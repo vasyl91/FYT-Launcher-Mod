@@ -223,17 +223,11 @@
     <string name="stats_codes">Statistiekcodes</string>
     <string name="stats_window_summary"><![CDATA[Gebruik de Canbus-lezer of zoek de benodigde canbus-codes in de klasse <b>%1$s</b> en de subklassen ervan (zie README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Originele voertuiguitrusting bestaat niet. Probeer de Canbus-lezer; mogelijk vindt die de codes echter niet.</string>
-    <string name="extra_stats_codes">Aanvullende statistiekgegevens <b>(optioneel)</b></string>
-    <string name="extra_stats_codes_summary">Tik om aanvullende voertuiggegevens in te stellen voor een geschat brandstofverbruik. \nToerental-canbus-code: %1$s, Vermogen (pk): %2$s, Voertuigmassa: %3$s</string>
     <string name="stats_dialog_title">Canbus-codes:</string>
     <string name="fuel_code_text">Brandstofcode:</string>
     <string name="range_code_text">Actieradiuscode:</string>
     <string name="cmdInt_code_text">cmdInt-code:</string>
-    <string name="canbus_optional"><b>Optionele gegevens (moeten 0 zijn als ze niet worden gebruikt):</b></string>
-    <string name="canbus_optional_description">Gebruik dit als je canbus geen brandstofverbruiksgegevens meer verstuurt, bijvoorbeeld onder een bepaalde snelheid.</string>
     <string name="rpm_code_text">Toerental-canbus-code:</string>
-    <string name="horse_power_code_text">Vermogen (pk):</string>
-    <string name="vehicle_mass_code_text">Voertuigmassa (in kg):</string>
     <string name="main_screen_stats_window">De brandstofstatistieken op het hoofdscherm tonen</string>
     <string name="color_picker">Tekstkleur van statistieken</string>
     <string name="stats_bg">Achtergrond van statistieken</string>

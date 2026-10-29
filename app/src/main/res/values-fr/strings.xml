@@ -223,17 +223,11 @@
     <string name="stats_codes">Codes des statistiques</string>
     <string name="stats_window_summary"><![CDATA[Utilisez le lecteur Canbus ou recherchez les codes canbus nécessaires dans la classe <b>%1$s</b> et ses sous-classes (voir README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">L\'équipement d\'origine du véhicule n\'existe pas. Essayez le lecteur Canbus ; il se peut toutefois qu\'il ne trouve pas les codes.</string>
-    <string name="extra_stats_codes">Données statistiques supplémentaires <b>(facultatif)</b></string>
-    <string name="extra_stats_codes_summary">Appuyez pour définir des informations supplémentaires sur le véhicule pour estimer la consommation. \nCode canbus du régime : %1$s, Puissance : %2$s, Masse du véhicule : %3$s</string>
     <string name="stats_dialog_title">Codes canbus :</string>
     <string name="fuel_code_text">Code du carburant :</string>
     <string name="range_code_text">Code de l\'autonomie :</string>
     <string name="cmdInt_code_text">Code cmdInt :</string>
-    <string name="canbus_optional"><b>Données facultatives (0 si non utilisées) :</b></string>
-    <string name="canbus_optional_description">À utiliser si votre canbus cesse d\'envoyer les données de consommation, par exemple en dessous d\'une certaine vitesse.</string>
     <string name="rpm_code_text">Code canbus du régime :</string>
-    <string name="horse_power_code_text">Puissance :</string>
-    <string name="vehicle_mass_code_text">Masse du véhicule (en kg) :</string>
     <string name="main_screen_stats_window">Afficher les statistiques de carburant sur l\'écran principal</string>
     <string name="color_picker">Couleur du texte des statistiques</string>
     <string name="stats_bg">Arrière-plan des statistiques</string>

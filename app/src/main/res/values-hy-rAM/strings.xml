@@ -223,17 +223,11 @@
     <string name="stats_codes">Վիճակագրության կոդեր</string>
     <string name="stats_window_summary"><![CDATA[Օգտագործեք Canbus ընթերցիչը կամ որոնեք անհրաժեշտ canbus կոդերը <b>%1$s</b> դասում և նրա ենթադասերում (տե՛ս README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Մեքենայի սկզբնական սարքավորումը գոյություն չունի։ Փորձեք Canbus ընթերցիչը. սակայն այն կարող է չգտնել կոդերը։</string>
-    <string name="extra_stats_codes">Լրացուցիչ վիճակագրական տվյալներ <b>(ըստ ցանկության)</b></string>
-    <string name="extra_stats_codes_summary">Հպեք՝ վառելիքի մոտավոր ծախսի համար մեքենայի լրացուցիչ տվյալներ սահմանելու համար։ \nՊտույտների canbus կոդ՝ %1$s, Ձիաուժ՝ %2$s, Մեքենայի զանգված՝ %3$s</string>
     <string name="stats_dialog_title">Canbus կոդեր՝</string>
     <string name="fuel_code_text">Վառելիքի կոդ՝</string>
     <string name="range_code_text">Հեռավորության կոդ՝</string>
     <string name="cmdInt_code_text">cmdInt կոդ՝</string>
-    <string name="canbus_optional"><b>Ըստ ցանկության տվյալներ (չօգտագործվելու դեպքում պետք է լինեն 0).</b></string>
-    <string name="canbus_optional_description">Օգտագործեք սա, եթե ձեր canbus-ը դադարում է ուղարկել վառելիքի ծախսի տվյալներ, օրինակ՝ որոշակի արագությունից ցածր։</string>
     <string name="rpm_code_text">Պտույտների canbus կոդ՝</string>
-    <string name="horse_power_code_text">Ձիաուժ՝</string>
-    <string name="vehicle_mass_code_text">Մեքենայի զանգված (կգ).</string>
     <string name="main_screen_stats_window">Ցուցադրել վառելիքի վիճակագրությունը գլխավոր էկրանին</string>
     <string name="color_picker">Վիճակագրության տեքստի գույն</string>
     <string name="stats_bg">Վիճակագրության ֆոն</string>

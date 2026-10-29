@@ -223,17 +223,11 @@
     <string name="stats_codes">Kódy štatistík</string>
     <string name="stats_window_summary"><![CDATA[Použite čítačku Canbus alebo vyhľadajte potrebné kódy canbus v triede <b>%1$s</b> a jej podtriedach (pozri README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Pôvodná výbava vozidla neexistuje. Skúste čítačku Canbus; môže však kódy nenájsť.</string>
-    <string name="extra_stats_codes">Ďalšie štatistické údaje <b>(voliteľné)</b></string>
-    <string name="extra_stats_codes_summary">Klepnutím nastavíte ďalšie údaje o aute pre približnú spotrebu paliva. \nKód canbus otáčok: %1$s, Výkon (k): %2$s, Hmotnosť vozidla: %3$s</string>
     <string name="stats_dialog_title">Kódy canbus:</string>
     <string name="fuel_code_text">Kód paliva:</string>
     <string name="range_code_text">Kód dojazdu:</string>
     <string name="cmdInt_code_text">Kód cmdInt:</string>
-    <string name="canbus_optional"><b>Voliteľné údaje (ak sa nepoužívajú, majú byť 0):</b></string>
-    <string name="canbus_optional_description">Použite, ak váš canbus prestane odosielať údaje o spotrebe paliva, napríklad pod určitou rýchlosťou.</string>
     <string name="rpm_code_text">Kód canbus otáčok:</string>
-    <string name="horse_power_code_text">Výkon (k):</string>
-    <string name="vehicle_mass_code_text">Hmotnosť vozidla (v kg):</string>
     <string name="main_screen_stats_window">Zobraziť štatistiky paliva na hlavnej obrazovke</string>
     <string name="color_picker">Farba textu štatistík</string>
     <string name="stats_bg">Pozadie štatistík</string>

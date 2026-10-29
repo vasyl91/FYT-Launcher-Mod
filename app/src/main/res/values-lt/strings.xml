@@ -223,17 +223,11 @@
     <string name="stats_codes">Statistikos kodai</string>
     <string name="stats_window_summary"><![CDATA[Naudokite „Canbus“ skaitytuvą arba ieškokite reikalingų canbus kodų klasėje <b>%1$s</b> ir jos poklasiuose (žr. README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Originali transporto priemonės įranga neegzistuoja. Išbandykite „Canbus“ skaitytuvą; tačiau jis gali nerasti kodų.</string>
-    <string name="extra_stats_codes">Papildomi statistikos duomenys <b>(neprivaloma)</b></string>
-    <string name="extra_stats_codes_summary">Palieskite, kad nustatytumėte papildomą automobilio informaciją apytiksliam degalų sunaudojimui. \nSūkių canbus kodas: %1$s, Arklio galios: %2$s, Transporto priemonės masė: %3$s</string>
     <string name="stats_dialog_title">Canbus kodai:</string>
     <string name="fuel_code_text">Degalų kodas:</string>
     <string name="range_code_text">Atstumo kodas:</string>
     <string name="cmdInt_code_text">cmdInt kodas:</string>
-    <string name="canbus_optional"><b>Neprivalomi duomenys (turi būti 0, jei nenaudojami):</b></string>
-    <string name="canbus_optional_description">Naudokite, jei jūsų canbus nustoja siųsti degalų sąnaudų duomenis, pavyzdžiui, žemiau tam tikro greičio.</string>
     <string name="rpm_code_text">Sūkių canbus kodas:</string>
-    <string name="horse_power_code_text">Arklio galios:</string>
-    <string name="vehicle_mass_code_text">Transporto priemonės masė (kg):</string>
     <string name="main_screen_stats_window">Rodyti degalų statistiką pagrindiniame ekrane</string>
     <string name="color_picker">Statistikos teksto spalva</string>
     <string name="stats_bg">Statistikos fonas</string>

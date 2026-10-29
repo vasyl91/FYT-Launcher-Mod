@@ -223,17 +223,11 @@
     <string name="stats_codes">Коды статыстыкі</string>
     <string name="stats_window_summary"><![CDATA[Выкарыстоўвайце счытвальнік Canbus або шукайце патрэбныя коды canbus у класе <b>%1$s</b> і яго падкласах (гл. README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Арыгінальнае абсталяванне аўтамабіля адсутнічае. Паспрабуйце счытвальнік Canbus; аднак ён можа не знайсці коды.</string>
-    <string name="extra_stats_codes">Дадатковыя даныя статыстыкі <b>(неабавязкова)</b></string>
-    <string name="extra_stats_codes_summary">Націсніце, каб задаць дадатковыя даныя аўтамабіля для прыблізнага расходу паліва. \nCanbus-код абаротаў: %1$s, Конскія сілы: %2$s, Маса аўтамабіля: %3$s</string>
     <string name="stats_dialog_title">Коды Canbus:</string>
     <string name="fuel_code_text">Код паліва:</string>
     <string name="range_code_text">Код запасу ходу:</string>
     <string name="cmdInt_code_text">Код cmdInt:</string>
-    <string name="canbus_optional"><b>Неабавязковыя даныя (павінны быць 0, калі не выкарыстоўваюцца):</b></string>
-    <string name="canbus_optional_description">Выкарыстоўвайце, калі ваш canbus перастае перадаваць даныя пра расход паліва, напрыклад, ніжэй пэўнай хуткасці.</string>
     <string name="rpm_code_text">Canbus-код абаротаў:</string>
-    <string name="horse_power_code_text">Конскія сілы:</string>
-    <string name="vehicle_mass_code_text">Маса аўтамабіля (у кг):</string>
     <string name="main_screen_stats_window">Паказваць статыстыку паліва на галоўным экране</string>
     <string name="color_picker">Колер тэксту статыстыкі</string>
     <string name="stats_bg">Фон статыстыкі</string>

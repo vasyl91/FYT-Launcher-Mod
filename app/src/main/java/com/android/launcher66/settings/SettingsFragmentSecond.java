@@ -130,11 +130,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private String rangeCodeStr;
     private String cmdIntCodeStr;
     private String cmdArrCodeStr;
-    private Preference extraStatsCodes;
-    private EditText rpmCodeInt;
+    private String speedCodeStr;
     private String rpmCodeStr;
-    private String horsePowerCodeStr;
-    private String vehicleMassCodeStr;
+    /** Saves every field of the Canbus codes window; set while the window is open. */
+    private Runnable saveCodesWindow;
     private EditText inspectorTimeoutEdit;
     private String codeInspectorTimeoutStr;
     private SwitchPreferenceCompat mainScreenStats;
@@ -171,7 +170,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private AlertDialog alertPipDialog;
     private AlertDialog alertMarginsDialog;
     private AlertDialog alertCodesDialog;
-    private AlertDialog alertExtraCodesDialog;
     private AlertDialog alertSkipCodesDialog;
     private AlertDialog alertCodesInspectorDialog;
     private WeakReference<AppListStatsDialogFragment> appListStatsDialog;
@@ -305,10 +303,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         rangeCodeStr = sharedPrefs.getString("range_code_int", "0");
         cmdIntCodeStr = sharedPrefs.getString(Keys.CMD_INT, "0");
         cmdArrCodeStr = sharedPrefs.getString(Keys.CMD_ARR, "0");
-        extraStatsCodes = findPreference(Keys.EXTRA_STATS_CODES);
+        speedCodeStr = sharedPrefs.getString(Keys.SPEED_CODE, "0");
         rpmCodeStr = sharedPrefs.getString("rpm_code_int", "0");
-        horsePowerCodeStr = sharedPrefs.getString("horse_power_code_int", "0");
-        vehicleMassCodeStr = sharedPrefs.getString("vehicle_mass_code_int", "0");
 
         mainScreenStats = findPreference(Keys.MAIN_SCREEN_STATS);
         colorPickerPref = findPreference(Keys.COLOR_PICKER);
@@ -565,11 +561,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             statsCodes.setOnPreferenceClickListener(this);
             statsCodes.setVisible(userStatsBool);
         }
-        if (extraStatsCodes != null) {
-            extraStatsCodes.setSummary(getString(R.string.extra_stats_codes_summary, rpmCodeStr, horsePowerCodeStr, vehicleMassCodeStr));
-            extraStatsCodes.setOnPreferenceClickListener(this);
-            extraStatsCodes.setVisible(userStatsBool);
-        }
         if (mainScreenStats != null) {
             mainScreenStats.setOnPreferenceClickListener(this);
             mainScreenStats.setVisible(userStatsBool);
@@ -761,6 +752,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 rangeCodeStr = sharedPrefs.getString("range_code_int", "0");
                 cmdIntCodeStr = sharedPrefs.getString(Keys.CMD_INT, "0");
                 cmdArrCodeStr = sharedPrefs.getString(Keys.CMD_ARR, "0");
+                speedCodeStr = sharedPrefs.getString(Keys.SPEED_CODE, "0");
+                rpmCodeStr = sharedPrefs.getString("rpm_code_int", "0");
 
                 alertCodesDialog = displayCodesDialog().create();
 
@@ -773,23 +766,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 });
 
                 alertCodesDialog.show();
-                break;
-            case Keys.EXTRA_STATS_CODES:
-                rpmCodeStr = sharedPrefs.getString("rpm_code_int", "0");
-                horsePowerCodeStr = sharedPrefs.getString("horse_power_code_int", "0");
-                vehicleMassCodeStr = sharedPrefs.getString("vehicle_mass_code_int", "0");
-
-                alertExtraCodesDialog = displayExtraCodesDialog().create();
-
-                alertExtraCodesDialog.setOnShowListener(dialog -> {
-                    Button negativeExtraCodesButton = alertExtraCodesDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    negativeExtraCodesButton.setLayoutParams(params);
-                    rpmCodeInt.requestFocus();
-                    imm.showSoftInput(rpmCodeInt, InputMethodManager.SHOW_IMPLICIT);
-                    rpmCodeInt.setSelection(rpmCodeInt.getText().length());
-                });
-
-                alertExtraCodesDialog.show();
+                fitDialogWindow(alertCodesDialog);
                 break;
             case Keys.COLOR_PICKER:
                 ColorPicker picker = ColorPicker.newInstance(defaultColorR, defaultColorG, defaultColorB);
@@ -1160,10 +1137,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             alertCodesDialog.dismiss();
             alertCodesDialog = null;
         }
-        if (alertExtraCodesDialog != null && alertExtraCodesDialog.isShowing()) {
-            alertExtraCodesDialog.dismiss();
-            alertExtraCodesDialog = null;
-        }
         if (colorPicker != null) {
             ColorPicker dialog = colorPicker.get();
             if (dialog != null && dialog.isAdded()) {
@@ -1383,7 +1356,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         codesEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         codesEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                saveCode(codesEditText);
+                // Every field, not only this one: Done closes the window
+                if (saveCodesWindow != null) {
+                    saveCodesWindow.run();
+                } else {
+                    saveCode(codesEditText);
+                }
                 alertCodesDialog.dismiss();
             }
             return false;
@@ -1404,19 +1382,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 saveCmdFields(cmdInt, cmdArr);
                 alertCodesDialog.dismiss();
-            }
-            return false;
-        });
-    }
-
-    private void dialogExtraCodesEditText(EditText codesEditText) {
-        codesEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "9999")});
-        codesEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        codesEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        codesEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                saveExtraCode(codesEditText);
-                alertExtraCodesDialog.dismiss();
             }
             return false;
         });
@@ -1453,7 +1418,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (userStatsBool) {
             statsScreen.setVisible(true);
             statsCodes.setVisible(true);
-            extraStatsCodes.setVisible(true);
             mainScreenStats.setVisible(true);
             colorPickerPref.setVisible(true);
             statsBg.setVisible(true);
@@ -1484,7 +1448,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         } else {
             statsScreen.setVisible(false);
             statsCodes.setVisible(false);
-            extraStatsCodes.setVisible(false);
             mainScreenStats.setVisible(false);
             colorPickerPref.setVisible(false);
             statsBg.setVisible(false);
@@ -1603,7 +1566,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     private void showCanbusLibraryImportDialog() {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_canbus_library_import, null);
+        AlertDialog.Builder builder = lightDialog();
+        View dialogView = LayoutInflater.from(builder.getContext()).inflate(R.layout.dialog_canbus_library_import, null);
         libraryImportStatus = dialogView.findViewById(R.id.canbus_library_import_status);
         libraryImportBar = dialogView.findViewById(R.id.canbus_library_import_progress);
         ConstraintLayout constraint = dialogView.findViewById(R.id.constraint_library_import);
@@ -1611,7 +1575,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         setCalculatedSizes(dialogView, R.id.canbus_library_import_title, SettingsActivity.dialogTitle, SettingsActivity.dialogMargin);
         setCalculatedSizes(dialogView, R.id.canbus_library_import_status, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setView(dialogView)
                 .setCancelable(false)
                 .setNegativeButton(R.string.canbus_library_cancel, null)
@@ -1742,11 +1705,16 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         EditText cmdArrCodeInt;
         EditText cmdIntCodeInt;
         EditText rangeCodeInt;
-        LayoutInflater inflater = LayoutInflater.from(this.requireContext());
-        View dialogView = inflater.inflate(R.layout.dialog_codes_layout, null);
+        EditText speedCodeInt;
+        EditText rpmCodeInt;
+        AlertDialog.Builder builder = lightDialog();
+        // With the dialog's theme: the text is dark on its light background (with the settings' one it was white)
+        View dialogView = LayoutInflater.from(builder.getContext()).inflate(R.layout.dialog_codes_layout, null);
 
         fuelCodeInt = dialogView.findViewById(R.id.fuel_code_int);
         rangeCodeInt = dialogView.findViewById(R.id.range_code_int);
+        speedCodeInt = dialogView.findViewById(R.id.speed_code_int);
+        rpmCodeInt = dialogView.findViewById(R.id.rpm_code_int);
         cmdIntCodeInt = dialogView.findViewById(R.id.cmdInt_code_int);
         cmdArrCodeInt = dialogView.findViewById(R.id.cmdArr_code_int);
 
@@ -1754,20 +1722,35 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         constraintInspector.setPadding(padding, padding, padding, padding);
 
         setCalculatedSizes(dialogView, R.id.stats_dialog_title, SettingsActivity.dialogTitle, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.fuel_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.range_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.cmdInt_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.cmdArr_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+        // A label may wrap; it takes at most a part of the window and the field the rest
+        int labelWidth = Math.round(dialogWidth() * 0.4f);
+        for (int id : new int[]{R.id.fuel_code_text, R.id.range_code_text, R.id.speed_code_text, R.id.rpm_code_text,
+                R.id.cmdInt_code_text, R.id.cmdArr_code_text}) {
+            setCalculatedSizes(dialogView, id, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+            ((TextView) dialogView.findViewById(id)).setMaxWidth(labelWidth);
+        }
         setCalculatedSizes(dialogView, R.id.known_requests_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.codes_info_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
 
         dialogCodesEditText(fuelCodeInt);
         dialogCodesEditText(rangeCodeInt);
+        dialogCodesEditText(speedCodeInt);
+        dialogCodesEditText(rpmCodeInt);
 
-        // Nothing written (or "0") means the code of the library: empty field, the code as the hint
+        // Nothing written (or "0") means the code of the library (fuel, range) or of the code reader (speed):
+        // empty field, that code as the hint
+        ReaderGuesses reader = readerGuesses();
         showCode(fuelCodeInt, fuelCodeStr, libraryCode(true));
         showCode(rangeCodeInt, rangeCodeStr, libraryCode(false));
-        fuelCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        rangeCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        showCode(speedCodeInt, speedCodeStr, reader != null ? reader.speed : -1);
+        if (codeUnset(speedCodeStr) && (reader == null || reader.speed < 0)) {
+            speedCodeInt.setHint(R.string.speed_code_gps);
+        }
+        rpmCodeInt.setText(codeUnset(rpmCodeStr) ? "" : rpmCodeStr);
+        for (EditText field : new EditText[]{fuelCodeInt, rangeCodeInt, speedCodeInt, rpmCodeInt}) {
+            field.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        }
+        ((TextView) dialogView.findViewById(R.id.codes_info_text)).setText(codesInfoText(reader));
 
         // The cmd fields are for the cars whose original fuel screen sends a request when it opens (the
         // library knows them); for any other car they are not there, and nothing is sent to it.
@@ -1799,77 +1782,62 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     getString(R.string.stats_codes_known_requests, CanbusLibrary.knownRequestsText(library, carId)));
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         final Runnable save = () -> {
                 fuelCodeStr = fuelCodeInt.getText().toString();
                 rangeCodeStr = rangeCodeInt.getText().toString();
+                speedCodeStr = speedCodeInt.getText().toString();
+                rpmCodeStr = rpmCodeInt.getText().toString();
                 saveCode(fuelCodeInt);
                 saveCode(rangeCodeInt);
+                saveCode(speedCodeInt);
+                saveCode(rpmCodeInt);
                 if (needsRequest) {
                     saveCmdFields(cmdIntCodeInt, cmdArrCodeInt);
                 }
             };
+        saveCodesWindow = save;
         builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> save.run());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         builder.setOnCancelListener(dialog -> {
                 save.run();
                 dialog.dismiss();
             });
+        builder.setOnDismissListener(dialog -> saveCodesWindow = null);
         return builder;
     }
 
-    private AlertDialog.Builder displayExtraCodesDialog() {
-        EditText vehicleMassCodeInt;
-        EditText horsePowerCodeInt;
-        LayoutInflater inflater = LayoutInflater.from(this.requireContext());
-        View dialogView = inflater.inflate(R.layout.dialog_extra_codes_layout, null);
+    /** A light dialog, as every window of these settings; inflate its view with {@code builder.getContext()}. */
+    private AlertDialog.Builder lightDialog() {
+        return new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+    }
 
-        rpmCodeInt = dialogView.findViewById(R.id.rpm_code_int);
-        horsePowerCodeInt = dialogView.findViewById(R.id.horse_power_code_int);
-        vehicleMassCodeInt = dialogView.findViewById(R.id.vehicle_mass_code_int);
+    /** The width the codes window gets: most of the screen, so that a label and its field fit side by side. */
+    private int dialogWidth() {
+        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        boolean landscape = dm.widthPixels > dm.heightPixels;
+        return Math.round(dm.widthPixels * (landscape ? 0.85f : 0.95f));
+    }
 
-        ConstraintLayout constraintInspector = dialogView.findViewById(R.id.constraint_extra);
-        constraintInspector.setPadding(padding, padding, padding, padding);
+    /** After show(): the window takes {@link #dialogWidth()}; its height follows the content (it scrolls). */
+    private void fitDialogWindow(AlertDialog dialog) {
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(dialogWidth(), ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+    }
 
-        setCalculatedSizes(dialogView, R.id.canbus_optional, SettingsActivity.dialogTitle, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.canbus_optional_description, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.rpm_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.horse_power_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.vehicle_mass_code_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+    /** The codes the code reader found for this car, or null. */
+    private ReaderGuesses readerGuesses() {
+        int carId = DataCanbus.DATA[1000];
+        return carId == 0 ? null : ReaderGuesses.parse(sharedPrefs.getString(ReaderGuesses.key(carId), null));
+    }
 
-        dialogExtraCodesEditText(rpmCodeInt);
-        dialogExtraCodesEditText(horsePowerCodeInt);
-        dialogExtraCodesEditText(vehicleMassCodeInt);
-
-        rpmCodeInt.setText(rpmCodeStr);
-        horsePowerCodeInt.setText(horsePowerCodeStr);
-        vehicleMassCodeInt.setText(vehicleMassCodeStr);
-
-        rpmCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        horsePowerCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        vehicleMassCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
-        builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> {
-                rpmCodeStr = rpmCodeInt.getText().toString();
-                horsePowerCodeStr = horsePowerCodeInt.getText().toString();
-                vehicleMassCodeStr = vehicleMassCodeInt.getText().toString();
-                saveExtraCode(rpmCodeInt);
-                saveExtraCode(horsePowerCodeInt);
-                saveExtraCode(vehicleMassCodeInt);
-                dialog.dismiss();
-            });
-        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
-        builder.setOnCancelListener(dialog -> {
-                rpmCodeStr = rpmCodeInt.getText().toString();
-                horsePowerCodeStr = horsePowerCodeInt.getText().toString();
-                vehicleMassCodeStr = vehicleMassCodeInt.getText().toString();
-                saveExtraCode(rpmCodeInt);
-                saveExtraCode(horsePowerCodeInt);
-                saveExtraCode(vehicleMassCodeInt);
-                dialog.dismiss();
-            });
-        return builder;
+    /** What an empty field uses, and the codes the reader found for this car. */
+    private String codesInfoText(ReaderGuesses reader) {
+        String text = getString(R.string.stats_codes_empty_fields);
+        if (reader != null && !reader.codesText().isEmpty()) {
+            text += "\n" + getString(R.string.stats_codes_reader_line, reader.dateText(), reader.codesText());
+        }
+        return text;
     }
 
     private AlertDialog.Builder displaySkipCodesDialog() {
@@ -1889,8 +1857,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     private AlertDialog.Builder displayCodesInspectorDialog() {
-        LayoutInflater inflater = LayoutInflater.from(this.requireContext());
-        View dialogView = inflater.inflate(R.layout.dialog_inspector_codes_layout, null);
+        AlertDialog.Builder builder = lightDialog();
+        View dialogView = LayoutInflater.from(builder.getContext()).inflate(R.layout.dialog_inspector_codes_layout, null);
 
         inspectorTimeoutEdit = dialogView.findViewById(R.id.code_inspector_timeout);
 
@@ -1904,7 +1872,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         inspectorTimeoutEdit.setText(codeInspectorTimeoutStr);
         inspectorTimeoutEdit.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> {
                 codeInspectorTimeoutStr = inspectorTimeoutEdit.getText().toString();
                 saveInspectorCode(inspectorTimeoutEdit);
@@ -1925,8 +1892,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (textView.getLayoutParams() instanceof ConstraintLayout.LayoutParams params) {
             if (textViewId == R.id.code_inspector_data_title
              || textViewId == R.id.canbus_library_import_title
-             || textViewId == R.id.stats_dialog_title
-             || textViewId == R.id.canbus_optional) {
+             || textViewId == R.id.stats_dialog_title) {
                 params.bottomMargin = margin;
             } else {
                 params.topMargin = margin;
@@ -1979,10 +1945,13 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         return codes == null ? -1 : fuel ? codes.fuel : codes.range;
     }
 
-    private void showCode(EditText field, String saved, int libraryCode) {
-        if (codeUnset(saved) && libraryCode >= 0) {
+    /** A saved code in its field; none (or "0") leaves the field empty, with the code used then as the hint. */
+    private void showCode(EditText field, String saved, int automaticCode) {
+        if (codeUnset(saved)) {
             field.setText("");
-            field.setHint(String.valueOf(libraryCode));
+            if (automaticCode >= 0) {
+                field.setHint(String.valueOf(automaticCode));
+            }
         } else {
             field.setText(saved);
         }
@@ -1998,14 +1967,29 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private String statsCodesSummary() {
         String fuel = codeForSummary(sharedPrefs.getString("fuel_code_int", "0"), true);
         String range = codeForSummary(sharedPrefs.getString("range_code_int", "0"), false);
+        String speedAndRpm = getString(R.string.stats_codes_summary_speed_rpm, speedForSummary(),
+                codeUnset(sharedPrefs.getString("rpm_code_int", "0")) ? getString(R.string.stats_codes_not_set)
+                        : sharedPrefs.getString("rpm_code_int", "0"));
         if (!carNeedsRequest()) {
-            return getString(R.string.stats_codes_summary_no_request, fuel, range);
+            return getString(R.string.stats_codes_summary_no_request, fuel, range) + speedAndRpm;
         }
         CanbusLibrary.Request user = CanbusLibrary.userRequest(sharedPrefs);
         String request = user != null ? user.toString()
                 : getString(R.string.stats_codes_request_auto,
                         CanbusLibrary.firstRequest(CanbusLibrary.cached(), DataCanbus.DATA[1000]));
-        return getString(R.string.stats_codes_summary_request, fuel, range, request);
+        return getString(R.string.stats_codes_summary_request, fuel, range, request) + speedAndRpm;
+    }
+
+    /** The speed code for the summary: the one written, else the code reader's ("510 (reader)"), else the GPS. */
+    private String speedForSummary() {
+        String saved = sharedPrefs.getString(Keys.SPEED_CODE, "0");
+        if (!codeUnset(saved)) {
+            return saved;
+        }
+        ReaderGuesses reader = readerGuesses();
+        return reader != null && reader.speed >= 0
+                ? getString(R.string.stats_codes_reader_code, String.valueOf(reader.speed))
+                : getString(R.string.speed_code_gps);
     }
 
     /**
@@ -2032,17 +2016,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         cmdIntCodeStr = cmd;
         cmdArrCodeStr = arr.toString();
         statsCodes.setSummary(statsCodesSummary());
-    }
-
-    private void saveExtraCode(EditText code) {
-        String valueStr = code.getText().toString();
-        if (valueStr.isEmpty()) valueStr = "0";
-        editor.putString(code.getResources().getResourceEntryName(code.getId()), valueStr);
-        editor.apply();
-        extraStatsCodes.setSummary(getString(R.string.extra_stats_codes_summary,
-            sharedPrefs.getString("rpm_code_int", "0"),
-            sharedPrefs.getString("horse_power_code_int", "0"),
-            sharedPrefs.getString("vehicle_mass_code_int", "0")));
     }
 
     private void saveSkipCodes() {

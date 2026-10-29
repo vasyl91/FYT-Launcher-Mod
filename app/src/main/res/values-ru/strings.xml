@@ -223,17 +223,11 @@
     <string name="stats_codes">Коды статистики</string>
     <string name="stats_window_summary"><![CDATA[Используйте считыватель Canbus или найдите нужные коды canbus в классе <b>%1$s</b> и его подклассах (см. README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Оригинальное оборудование автомобиля отсутствует. Попробуйте считыватель Canbus; однако он может не найти коды.</string>
-    <string name="extra_stats_codes">Дополнительные данные статистики <b>(необязательно)</b></string>
-    <string name="extra_stats_codes_summary">Нажмите, чтобы задать дополнительные данные об автомобиле для приблизительного расчёта расхода топлива. \nCanbus-код оборотов: %1$s, Мощность: %2$s, Масса автомобиля: %3$s</string>
     <string name="stats_dialog_title">Коды canbus:</string>
     <string name="fuel_code_text">Код топлива:</string>
     <string name="range_code_text">Код запаса хода:</string>
     <string name="cmdInt_code_text">Код cmdInt:</string>
-    <string name="canbus_optional"><b>Необязательные данные (0, если не используются):</b></string>
-    <string name="canbus_optional_description">Используйте, если ваш canbus перестаёт передавать данные о расходе топлива, например ниже определённой скорости.</string>
     <string name="rpm_code_text">Canbus-код оборотов:</string>
-    <string name="horse_power_code_text">Мощность:</string>
-    <string name="vehicle_mass_code_text">Масса автомобиля (в кг):</string>
     <string name="main_screen_stats_window">Показывать статистику расхода топлива на главном экране</string>
     <string name="color_picker">Цвет текста статистики</string>
     <string name="stats_bg">Фон статистики</string>

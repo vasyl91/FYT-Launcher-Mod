@@ -34,6 +34,7 @@ public class ServiceRestarter extends BroadcastReceiver {
         extras.putInt("fuel", Integer.parseInt(mPrefs.getString("fuel_code_int", "0")));
         extras.putInt("range", Integer.parseInt(mPrefs.getString("range_code_int", "0")));
         extras.putInt("rpm", Integer.parseInt(mPrefs.getString("rpm_code_int", "0")));
+        extras.putInt("speed", Integer.parseInt(mPrefs.getString(Keys.SPEED_CODE, "0")));
         intent.putExtras(extras);
         ServiceIntentGate.startIfAvailable(context, intent, "service restarter canbus");
     }

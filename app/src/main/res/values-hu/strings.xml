@@ -223,17 +223,11 @@
     <string name="stats_codes">Statisztikai kódok</string>
     <string name="stats_window_summary"><![CDATA[Használja a Canbus-olvasót, vagy keresse meg a szükséges canbus-kódokat a <b>%1$s</b> osztályban és annak alosztályaiban (lásd: README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Az eredeti járműfelszerelés nem létezik. Próbálja ki a Canbus-olvasót; előfordulhat azonban, hogy nem találja meg a kódokat.</string>
-    <string name="extra_stats_codes">További statisztikai adatok <b>(opcionális)</b></string>
-    <string name="extra_stats_codes_summary">Koppintson további autóadatok beállításához a hozzávetőleges üzemanyag-fogyasztáshoz. \nFordulatszám canbus-kódja: %1$s, Lóerő: %2$s, Jármű tömege: %3$s</string>
     <string name="stats_dialog_title">Canbus-kódok:</string>
     <string name="fuel_code_text">Üzemanyagkód:</string>
     <string name="range_code_text">Hatótávolság-kód:</string>
     <string name="cmdInt_code_text">cmdInt kód:</string>
-    <string name="canbus_optional"><b>Opcionális adatok (0 legyen, ha nincs használatban):</b></string>
-    <string name="canbus_optional_description">Használja, ha a canbus leáll az üzemanyag-fogyasztási adatok küldésével, például egy bizonyos sebesség alatt.</string>
     <string name="rpm_code_text">Fordulatszám canbus-kódja:</string>
-    <string name="horse_power_code_text">Lóerő:</string>
-    <string name="vehicle_mass_code_text">Jármű tömege (kg):</string>
     <string name="main_screen_stats_window">Az üzemanyag-statisztika megjelenítése a főképernyőn</string>
     <string name="color_picker">Statisztika szövegszíne</string>
     <string name="stats_bg">Statisztika háttere</string>

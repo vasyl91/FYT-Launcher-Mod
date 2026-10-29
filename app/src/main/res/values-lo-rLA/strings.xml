@@ -223,17 +223,11 @@
     <string name="stats_codes">ລະຫັດສະຖິຕິ</string>
     <string name="stats_window_summary"><![CDATA[ໃຊ້ຕົວອ່ານ Canbus ຫຼື ຊອກຫາລະຫັດ canbus ທີ່ຈຳເປັນໃນຄລາດ <b>%1$s</b> ແລະ ຄລາດຍ່ອຍຂອງມັນ (ເບິ່ງ README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">ບໍ່ມີອຸປະກອນຕົ້ນສະບັບຂອງລົດ. ລອງໃຊ້ຕົວອ່ານ Canbus; ແຕ່ມັນອາດຫາລະຫັດບໍ່ພົບ.</string>
-    <string name="extra_stats_codes">ຂໍ້ມູນສະຖິຕິເພີ່ມເຕີມ <b>(ທາງເລືອກ)</b></string>
-    <string name="extra_stats_codes_summary">ແຕະເພື່ອຕັ້ງຂໍ້ມູນລົດເພີ່ມເຕີມສຳລັບການຄາດຄະເນການໃຊ້ນ້ຳມັນ. \nລະຫັດ canbus RPM: %1$s, ແຮງມ້າ: %2$s, ມວນລົດ: %3$s</string>
     <string name="stats_dialog_title">ລະຫັດ Canbus:</string>
     <string name="fuel_code_text">ລະຫັດນ້ຳມັນ:</string>
     <string name="range_code_text">ລະຫັດໄລຍະທາງ:</string>
     <string name="cmdInt_code_text">ລະຫັດ cmdInt:</string>
-    <string name="canbus_optional"><b>ຂໍ້ມູນທາງເລືອກ (ຄວນເປັນ 0 ຖ້າບໍ່ໃຊ້):</b></string>
-    <string name="canbus_optional_description">ໃຊ້ອັນນີ້ຖ້າ canbus ຂອງທ່ານຢຸດສົ່ງຂໍ້ມູນການໃຊ້ນ້ຳມັນ ເຊັ່ນ: ເມື່ອຄວາມໄວຕ່ຳກວ່າຄ່າໜຶ່ງ.</string>
     <string name="rpm_code_text">ລະຫັດ canbus RPM:</string>
-    <string name="horse_power_code_text">ແຮງມ້າ:</string>
-    <string name="vehicle_mass_code_text">ມວນລົດ (ເປັນ kg):</string>
     <string name="main_screen_stats_window">ສະແດງສະຖິຕິນ້ຳມັນໃນໜ້າຈໍຫຼັກ</string>
     <string name="color_picker">ສີຂໍ້ຄວາມສະຖິຕິ</string>
     <string name="stats_bg">ພື້ນຫຼັງສະຖິຕິ</string>

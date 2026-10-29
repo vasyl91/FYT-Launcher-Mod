@@ -223,17 +223,11 @@
     <string name="stats_codes">የስታቲስቲክስ ኮዶች</string>
     <string name="stats_window_summary"><![CDATA[Canbus አንባቢን ይጠቀሙ ወይም አስፈላጊ የcanbus ኮዶችን በ<b>%1$s</b> ክፍል እና በንዑስ ክፍሎቹ ውስጥ ይፈልጉ (README.mdን ይመልከቱ)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">የተሽከርካሪው ኦሪጅናል መሳሪያ የለም። Canbus አንባቢን ይሞክሩ፤ ሆኖም ኮዶቹን ላያገኝ ይችላል።</string>
-    <string name="extra_stats_codes">ተጨማሪ የስታቲስቲክስ ውሂብ <b>(አማራጭ)</b></string>
-    <string name="extra_stats_codes_summary">ለግምታዊ የነዳጅ ፍጆታ ተጨማሪ የመኪና መረጃ ለማቀናበር መታ ያድርጉ። \nየRPM canbus ኮድ፦ %1$s፣ የፈረስ ጉልበት፦ %2$s፣ የተሽከርካሪ ክብደት፦ %3$s</string>
     <string name="stats_dialog_title">የCanbus ኮዶች፦</string>
     <string name="fuel_code_text">የነዳጅ ኮድ፦</string>
     <string name="range_code_text">የርቀት ኮድ፦</string>
     <string name="cmdInt_code_text">የcmdInt ኮድ፦</string>
-    <string name="canbus_optional"><b>አማራጭ ውሂብ (ጥቅም ላይ ካልዋለ 0 መሆን አለበት)፦</b></string>
-    <string name="canbus_optional_description">canbusዎ የነዳጅ ፍጆታ ውሂብ መላክ ካቆመ ይህን ይጠቀሙ፣ ለምሳሌ ከተወሰነ ፍጥነት በታች።</string>
     <string name="rpm_code_text">የRPM canbus ኮድ፦</string>
-    <string name="horse_power_code_text">የፈረስ ጉልበት፦</string>
-    <string name="vehicle_mass_code_text">የተሽከርካሪ ክብደት (በኪግ)፦</string>
     <string name="main_screen_stats_window">የነዳጅ ስታቲስቲክሱን በዋናው ማያ ገጽ ላይ አሳይ</string>
     <string name="color_picker">የስታቲስቲክስ ጽሑፍ ቀለም</string>
     <string name="stats_bg">የስታቲስቲክስ ዳራ</string>

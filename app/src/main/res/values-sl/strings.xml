@@ -223,17 +223,11 @@
     <string name="stats_codes">Kode statistike</string>
     <string name="stats_window_summary"><![CDATA[Uporabite bralnik Canbus ali poiščite potrebne kode canbus v razredu <b>%1$s</b> in njegovih podrazredih (glejte README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Izvirna oprema vozila ne obstaja. Poskusite bralnik Canbus; vendar kod morda ne bo našel.</string>
-    <string name="extra_stats_codes">Dodatni statistični podatki <b>(izbirno)</b></string>
-    <string name="extra_stats_codes_summary">Dotaknite se za nastavitev dodatnih podatkov o vozilu za približno porabo goriva. \nKoda canbus vrtljajev: %1$s, Konjske moči: %2$s, Masa vozila: %3$s</string>
     <string name="stats_dialog_title">Kode canbus:</string>
     <string name="fuel_code_text">Koda goriva:</string>
     <string name="range_code_text">Koda dosega:</string>
     <string name="cmdInt_code_text">Koda cmdInt:</string>
-    <string name="canbus_optional"><b>Izbirni podatki (naj bodo 0, če se ne uporabljajo):</b></string>
-    <string name="canbus_optional_description">Uporabite, če vaš canbus preneha pošiljati podatke o porabi goriva, na primer pod določeno hitrostjo.</string>
     <string name="rpm_code_text">Koda canbus vrtljajev:</string>
-    <string name="horse_power_code_text">Konjske moči:</string>
-    <string name="vehicle_mass_code_text">Masa vozila (v kg):</string>
     <string name="main_screen_stats_window">Prikaži statistiko goriva na glavnem zaslonu</string>
     <string name="color_picker">Barva besedila statistike</string>
     <string name="stats_bg">Ozadje statistike</string>

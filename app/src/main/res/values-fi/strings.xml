@@ -223,17 +223,11 @@
     <string name="stats_codes">Tilastokoodit</string>
     <string name="stats_window_summary"><![CDATA[Käytä Canbus-lukijaa tai etsi tarvittavat canbus-koodit luokasta <b>%1$s</b> ja sen aliluokista (katso README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Auton alkuperäisiä varusteita ei ole. Kokeile Canbus-lukijaa, mutta se ei välttämättä löydä koodeja.</string>
-    <string name="extra_stats_codes">Lisätilastotiedot <b>(valinnainen)</b></string>
-    <string name="extra_stats_codes_summary">Napauta asettaaksesi lisätietoja autosta arvioitua polttoaineen kulutusta varten. \nKierrosluvun canbus-koodi: %1$s, Hevosvoimat: %2$s, Ajoneuvon massa: %3$s</string>
     <string name="stats_dialog_title">Canbus-koodit:</string>
     <string name="fuel_code_text">Polttoainekoodi:</string>
     <string name="range_code_text">Toimintamatkakoodi:</string>
     <string name="cmdInt_code_text">cmdInt-koodi:</string>
-    <string name="canbus_optional"><b>Valinnaiset tiedot (pitäisi olla 0, jos ei käytetä):</b></string>
-    <string name="canbus_optional_description">Käytä tätä, jos canbus lakkaa lähettämästä polttoaineenkulutustietoja, esimerkiksi tietyn nopeuden alapuolella.</string>
     <string name="rpm_code_text">Kierrosluvun canbus-koodi:</string>
-    <string name="horse_power_code_text">Hevosvoimat:</string>
-    <string name="vehicle_mass_code_text">Ajoneuvon massa (kg):</string>
     <string name="main_screen_stats_window">Näytä polttoainetilastot pääruudulla</string>
     <string name="color_picker">Tilastojen tekstin väri</string>
     <string name="stats_bg">Tilastojen tausta</string>

@@ -223,17 +223,11 @@
     <string name="stats_codes">Statistikakoodid</string>
     <string name="stats_window_summary"><![CDATA[Kasutage Canbusi lugejat või otsige vajalikke canbusi koode klassist <b>%1$s</b> ja selle alamklassidest (vt README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Sõiduki algvarustust ei ole. Proovige Canbusi lugejat; see ei pruugi siiski koode leida.</string>
-    <string name="extra_stats_codes">Täiendavad statistikaandmed <b>(valikuline)</b></string>
-    <string name="extra_stats_codes_summary">Puudutage auto lisateabe määramiseks ligikaudse kütusekulu jaoks. \nPöörete canbusi kood: %1$s, Hobujõud: %2$s, Sõiduki mass: %3$s</string>
     <string name="stats_dialog_title">Canbusi koodid:</string>
     <string name="fuel_code_text">Kütusekood:</string>
     <string name="range_code_text">Tööraadiuse kood:</string>
     <string name="cmdInt_code_text">cmdInt kood:</string>
-    <string name="canbus_optional"><b>Valikulised andmed (peaksid olema 0, kui neid ei kasutata):</b></string>
-    <string name="canbus_optional_description">Kasutage seda, kui teie canbus lõpetab kütusekulu andmete saatmise, näiteks teatud kiirusest allpool.</string>
     <string name="rpm_code_text">Pöörete canbusi kood:</string>
-    <string name="horse_power_code_text">Hobujõud:</string>
-    <string name="vehicle_mass_code_text">Sõiduki mass (kg):</string>
     <string name="main_screen_stats_window">Kuva kütusestatistikat põhiekraanil</string>
     <string name="color_picker">Statistika teksti värv</string>
     <string name="stats_bg">Statistika taust</string>

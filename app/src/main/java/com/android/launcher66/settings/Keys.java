@@ -93,7 +93,8 @@ public final class Keys {
     public static final String STATS_WIDTH = "stats_width";
     public static final String STATS_WIDTH_SELECTOR = "stats_width_selector";
     public static final String STATS_CODES = "stats_codes";
-    public static final String EXTRA_STATS_CODES = "extra_stats_codes";
+    /** The canbus code of the speed for the fuel estimate; "0" or none = the code reader's, else the GPS. */
+    public static final String SPEED_CODE = "speed_code_int";
     public static final String MAIN_SCREEN_STATS = "main_screen_stats";
     public static final String COLOR_PICKER = "color_picker";
     public static final String STATS_BG = "stats_bg";

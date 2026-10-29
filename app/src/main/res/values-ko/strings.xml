@@ -223,17 +223,11 @@
     <string name="stats_codes">통계 코드</string>
     <string name="stats_window_summary"><![CDATA[Canbus 리더를 사용하거나 필요한 canbus 코드를 클래스 <b>%1$s</b> 및 그 하위 클래스에서 찾아보세요(README.md 참조)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">순정 차량 장비가 없습니다. Canbus 리더를 사용해 보세요. 다만 코드를 찾지 못할 수도 있습니다.</string>
-    <string name="extra_stats_codes">추가 통계 데이터 <b>(선택 사항)</b></string>
-    <string name="extra_stats_codes_summary">탭하여 대략적인 연료 소비량 계산을 위한 추가 차량 정보를 설정합니다. \nRPM canbus 코드: %1$s, 마력: %2$s, 차량 질량: %3$s</string>
     <string name="stats_dialog_title">Canbus 코드:</string>
     <string name="fuel_code_text">연료 코드:</string>
     <string name="range_code_text">주행 가능 거리 코드:</string>
     <string name="cmdInt_code_text">cmdInt 코드:</string>
-    <string name="canbus_optional"><b>선택 데이터(사용하지 않으면 0):</b></string>
-    <string name="canbus_optional_description">특정 속도 이하 등에서 canbus가 연료 소비 데이터를 보내지 않을 때 사용하세요.</string>
     <string name="rpm_code_text">RPM canbus 코드:</string>
-    <string name="horse_power_code_text">마력:</string>
-    <string name="vehicle_mass_code_text">차량 질량(kg):</string>
     <string name="main_screen_stats_window">메인 화면에 연료 통계 표시</string>
     <string name="color_picker">통계 글자 색상</string>
     <string name="stats_bg">통계 배경</string>

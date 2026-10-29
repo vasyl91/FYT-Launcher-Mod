@@ -223,17 +223,11 @@
     <string name="stats_codes">სტატისტიკის კოდები</string>
     <string name="stats_window_summary"><![CDATA[გამოიყენეთ Canbus წამკითხველი ან მოძებნეთ საჭირო canbus კოდები კლასში <b>%1$s</b> და მის ქვეკლასებში (იხ. README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">ავტომობილის ორიგინალური აღჭურვილობა არ არსებობს. სცადეთ Canbus წამკითხველი; თუმცა, შეიძლება კოდები ვერ იპოვოს.</string>
-    <string name="extra_stats_codes">დამატებითი სტატისტიკური მონაცემები <b>(არასავალდებულო)</b></string>
-    <string name="extra_stats_codes_summary">შეეხეთ ავტომობილის დამატებითი ინფორმაციის დასაყენებლად საწვავის სავარაუდო ხარჯისთვის. \nბრუნვების canbus კოდი: %1$s, ცხენის ძალა: %2$s, ავტომობილის მასა: %3$s</string>
     <string name="stats_dialog_title">Canbus კოდები:</string>
     <string name="fuel_code_text">საწვავის კოდი:</string>
     <string name="range_code_text">დისტანციის კოდი:</string>
     <string name="cmdInt_code_text">cmdInt კოდი:</string>
-    <string name="canbus_optional"><b>არასავალდებულო მონაცემები (თუ არ გამოიყენება, უნდა იყოს 0):</b></string>
-    <string name="canbus_optional_description">გამოიყენეთ ეს, თუ თქვენი canbus საწვავის ხარჯის მონაცემების გაგზავნას წყვეტს, მაგალითად, გარკვეულ სიჩქარეზე ქვემოთ.</string>
     <string name="rpm_code_text">ბრუნვების canbus კოდი:</string>
-    <string name="horse_power_code_text">ცხენის ძალა:</string>
-    <string name="vehicle_mass_code_text">ავტომობილის მასა (კგ-ში):</string>
     <string name="main_screen_stats_window">საწვავის სტატისტიკის ჩვენება მთავარ ეკრანზე</string>
     <string name="color_picker">სტატისტიკის ტექსტის ფერი</string>
     <string name="stats_bg">სტატისტიკის ფონი</string>

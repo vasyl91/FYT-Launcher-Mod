@@ -223,17 +223,11 @@
     <string name="stats_codes">Статистикийн кодууд</string>
     <string name="stats_window_summary"><![CDATA[Canbus уншигч ашиглах эсвэл шаардлагатай canbus кодуудыг <b>%1$s</b> класс болон түүний дэд классуудаас хайна уу (README.md-г үзнэ үү)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Машины анхдагч тоног төхөөрөмж байхгүй байна. Canbus уншигч ашиглаж үзнэ үү; гэхдээ кодуудыг олохгүй байж болно.</string>
-    <string name="extra_stats_codes">Нэмэлт статистик өгөгдөл <b>(заавал биш)</b></string>
-    <string name="extra_stats_codes_summary">Түлшний зарцуулалтыг ойролцоогоор тооцоолох нэмэлт машины мэдээллийг тохируулахын тулд товшино уу. \nRPM canbus код: %1$s, Морьны хүч: %2$s, Машины жин: %3$s</string>
     <string name="stats_dialog_title">Canbus кодууд:</string>
     <string name="fuel_code_text">Түлшний код:</string>
     <string name="range_code_text">Явах зайн код:</string>
     <string name="cmdInt_code_text">cmdInt код:</string>
-    <string name="canbus_optional"><b>Нэмэлт өгөгдөл (ашиглахгүй бол 0 байх ёстой):</b></string>
-    <string name="canbus_optional_description">Таны canbus түлшний зарцуулалтын өгөгдөл илгээхээ зогсоосон тохиолдолд, жишээлбэл тодорхой хурдаас доош, үүнийг ашиглана уу.</string>
     <string name="rpm_code_text">RPM canbus код:</string>
-    <string name="horse_power_code_text">Морьны хүч:</string>
-    <string name="vehicle_mass_code_text">Машины жин (кг-аар):</string>
     <string name="main_screen_stats_window">Түлшний статистикийг үндсэн дэлгэц дээр харуулах</string>
     <string name="color_picker">Статистикийн бичвэрийн өнгө</string>
     <string name="stats_bg">Статистикийн дэвсгэр</string>
