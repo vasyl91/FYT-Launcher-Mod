@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -63,18 +64,23 @@ public class CanbusCodeInspector extends Service {
     private static final int MAX_EVENTS_PER_CODE = 5000;
     private static final int MAX_EVENTS = 200_000;
 
-    /** One update of a code: its time, ints[0] if there was one, and the rest of the payload as text. */
+    /**
+     * One update of a code: its time, ints[0] if there was one, and the rest of the payload as text. The
+     * whole of ints too, when there is more than one number (the raw frames of a CAN box are decoded from it).
+     */
     private static final class Event {
         final long t;
         final boolean hasInt;
         final int v;
         final String extra;
+        final int[] ints;
 
-        Event(long t, boolean hasInt, int v, String extra) {
+        Event(long t, boolean hasInt, int v, String extra, int[] ints) {
             this.t = t;
             this.hasInt = hasInt;
             this.v = v;
             this.extra = extra;
+            this.ints = ints;
         }
 
         boolean sameAs(Event o) {
@@ -202,7 +208,8 @@ public class CanbusCodeInspector extends Service {
         }
         long now = System.currentTimeMillis();
         boolean hasInt = ints != null && ints.length > 0;
-        Event event = new Event(now, hasInt, hasInt ? ints[0] : 0, describeExtra(ints, flts, strs));
+        Event event = new Event(now, hasInt, hasInt ? ints[0] : 0, describeExtra(ints, flts, strs),
+                ints != null && ints.length > 1 ? ints.clone() : null);
         synchronized (lock) {
             if (!recording) {
                 return;
@@ -321,12 +328,41 @@ public class CanbusCodeInspector extends Service {
             }
             samples.put(code, s);
         }
+        // The codes that carry the raw frames of a CAN box (found by what they hold, whatever their number) are
+        // not values: their ints[0] is a frame header. They leave the guesses and get a section of their own.
+        Map<Integer, CanbusFrames.Channel> channels = new TreeMap<>();
+        try {
+            Map<Integer, List<CanbusFrames.Event>> frameEvents = new HashMap<>();
+            for (int i = 0; i < snapshot.size(); i++) {
+                List<CanbusFrames.Event> list = new ArrayList<>();
+                for (Event e : snapshot.valueAt(i)) {
+                    if (e.ints != null) {
+                        list.add(new CanbusFrames.Event(e.t, e.ints));
+                    }
+                }
+                if (!list.isEmpty()) {
+                    frameEvents.put(snapshot.keyAt(i), list);
+                }
+            }
+            channels.putAll(CanbusFrames.detect(frameEvents));
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Could not look for raw frames", e);
+        }
+        for (Integer code : channels.keySet()) {
+            samples.remove(code);
+        }
         CanbusCodeEstimator.Result guesses;
         try {
             guesses = CanbusCodeEstimator.estimate(samples, fixes);
         } catch (RuntimeException e) {
             Log.w(TAG, "Could not guess the meaning of the codes", e);
             guesses = null;
+        }
+        List<String> frameLines = new ArrayList<>();
+        try {
+            frameLines = CanbusFrames.report(channels, samples);
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Could not describe the raw frames", e);
         }
 
         SimpleDateFormat lineTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
@@ -349,8 +385,20 @@ public class CanbusCodeInspector extends Service {
                 if (!notFound.isEmpty()) {
                     writer.write(notFound + "\n");
                 }
+                if (!guesses.addOnLines.isEmpty()) {
+                    writer.write("\n");
+                    for (String line : guesses.addOnLines) {
+                        writer.write(line + "\n");
+                    }
+                }
             }
             writer.write("\n");
+            if (!frameLines.isEmpty()) {
+                for (String line : frameLines) {
+                    writer.write(line + "\n");
+                }
+                writer.write("\n");
+            }
 
             for (int code = 0; code < CODES; code++) {
                 if (skipCodes.contains(code)) {
@@ -360,7 +408,7 @@ public class CanbusCodeInspector extends Service {
                 if (list == null || list.isEmpty()) {
                     continue;
                 }
-                if (skipZeroCodes && sentOnlyZero(list)) {
+                if (skipZeroCodes && !channels.containsKey(code) && sentOnlyZero(list)) {
                     continue;
                 }
                 writer.write("CODE: " + code + "\n");

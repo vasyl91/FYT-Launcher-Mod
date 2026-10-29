@@ -195,4 +195,211 @@ class CanbusCodeEstimatorTest {
                     || (a.category == b.category && a.score >= b.score));
         }
     }
+
+    // ---- series like the ones of the owner's drives
+
+    /** A drive of 300 s: stands, accelerates in the city, a few stops; the speed in km/h per second. */
+    private static double[] cityDrive(Random rnd) {
+        double[] kmh = new double[300];
+        double v = 0;
+        for (int sec = 0; sec < kmh.length; sec++) {
+            double target = (sec / 40) % 2 == 0 ? 43 : 0;
+            v += Math.max(-8, Math.min(6, target - v)) + rnd.nextInt(3) - 1;
+            v = Math.max(0, v);
+            kmh[sec] = v;
+        }
+        return kmh;
+    }
+
+    @Test
+    void instantConsumptionWithNoValueMarkersBelowFortyKmh() {
+        Random rnd = new Random(11);
+        double[] kmh = cityDrive(rnd);
+        List<Sample> s = new ArrayList<>();
+        List<GpsFix> gps = new ArrayList<>();
+        int markers = 0;
+        for (int sec = 0; sec < kmh.length; sec++) {
+            gps.add(new GpsFix(sec * 1000L, (float) kmh[sec]));
+            if (kmh[sec] < 40) {
+                s.add(new Sample(sec * 1000L, 65535));
+                markers++;
+            } else {
+                s.add(new Sample(sec * 1000L, 60 + rnd.nextInt(60)));
+            }
+        }
+        Result r = CanbusCodeEstimator.estimate(one(91, s), gps);
+        Guess g = guessFor(r, 91);
+        assertNotNull(g, r.guesses.toString());
+        assertEquals(Category.FUEL_INSTANT, g.category);
+        assertTrue(g.reason.contains("65535 = no value " + markers + "×"), g.reason);
+    }
+
+    @Test
+    void speedInHundredthsOfKmhIsASpeedNotTheRpm() {
+        Random rnd = new Random(12);
+        double[] kmh = cityDrive(rnd);
+        List<Sample> s = new ArrayList<>();
+        List<GpsFix> gps = new ArrayList<>();
+        for (int sec = 0; sec < kmh.length; sec++) {
+            s.add(new Sample(sec * 1000L, (int) Math.round(kmh[sec]) * 100));
+            gps.add(new GpsFix(sec * 1000L, (float) Math.round(kmh[sec])));
+        }
+        Result r = CanbusCodeEstimator.estimate(one(510, s), gps);
+        Guess g = guessFor(r, 510);
+        assertNotNull(g, r.guesses.toString());
+        assertEquals(Category.SPEED, g.category);
+        assertTrue(g.reason.contains("km/h as value/100"), g.reason);
+        assertTrue(g.reason.contains("follows the GPS speed"), g.reason);
+        assertTrue(g.score >= 0.9);
+
+        // the same series without the GPS is not the RPM either
+        Guess noGps = guessFor(CanbusCodeEstimator.estimate(one(510, s), null), 510);
+        assertTrue(noGps == null || noGps.category != Category.RPM, String.valueOf(noGps));
+    }
+
+    @Test
+    void speedOnTheMotorwayInHundredthsHasAScale() {
+        Random rnd = new Random(13);
+        List<Sample> s = new ArrayList<>();
+        List<GpsFix> gps = new ArrayList<>();
+        double v = 100;
+        for (int sec = 0; sec < 300; sec++) {
+            v = Math.max(84, Math.min(124, v + rnd.nextInt(7) - 3));
+            s.add(new Sample(sec * 1000L, (int) Math.round(v) * 100));
+            gps.add(new GpsFix(sec * 1000L, (float) Math.round(v)));
+        }
+        Guess g = guessFor(CanbusCodeEstimator.estimate(one(510, s), gps), 510);
+        assertNotNull(g);
+        assertEquals(Category.SPEED, g.category);
+    }
+
+    @Test
+    void rangeThatMovesInTensIsARangeInTenKmSteps() {
+        List<Sample> s = new ArrayList<>();
+        for (int sec = 0; sec <= 300; sec++) {
+            s.add(new Sample(sec * 1000L, sec < 120 ? 310 : sec < 250 ? 300 : 290));
+        }
+        Guess g = guessFor(CanbusCodeEstimator.estimate(one(92, s), null), 92);
+        assertNotNull(g);
+        assertEquals(Category.RANGE, g.category);
+        assertTrue(g.reason.contains("in 10 km steps"), g.reason);
+        assertTrue(g.reason.contains("290-310 km"), g.reason);
+    }
+
+    @Test
+    void rangeThatWentUpOnceAfterGoingDown() {
+        List<Sample> s = new ArrayList<>();
+        int[] steps = {310, 300, 290, 300, 290};
+        for (int sec = 0; sec <= 300; sec++) {
+            s.add(new Sample(sec * 1000L, steps[Math.min(4, sec / 60)]));
+        }
+        Guess g = guessFor(CanbusCodeEstimator.estimate(one(92, s), null), 92);
+        assertNotNull(g);
+        assertEquals(Category.RANGE, g.category);
+    }
+
+    @Test
+    void mileageWithALeadingZeroAndStepsOfOne() {
+        List<Sample> s = new ArrayList<>();
+        s.add(new Sample(0, 0));
+        int km = 108782;
+        for (int sec = 1; sec <= 300; sec++) {
+            if (sec % 40 == 0) {
+                km++;
+            }
+            s.add(new Sample(sec * 1000L, km));
+        }
+        Guess g = guessFor(CanbusCodeEstimator.estimate(one(512, s), null), 512);
+        assertNotNull(g);
+        assertEquals(Category.ODOMETER, g.category);
+        assertTrue(g.score >= 0.8, String.valueOf(g.score));
+        assertTrue(g.reason.contains("every step +1"), g.reason);
+        assertTrue(g.reason.startsWith("108782-"), g.reason);
+    }
+
+    @Test
+    void zerosAndOnesWithFewChangesAreASwitchNotATemperature() {
+        List<Sample> s = new ArrayList<>();
+        for (int sec = 0; sec < 300; sec++) {
+            s.add(new Sample(sec * 1000L, sec < 100 || sec >= 200 ? 0 : 1));
+        }
+        List<Sample> late = new ArrayList<>();
+        for (int sec = 0; sec < 300; sec++) {
+            late.add(new Sample(sec * 1000L, sec < 100 ? 0 : 1));
+        }
+        Map<Integer, List<Sample>> m = new HashMap<>();
+        m.put(518, s);
+        m.put(99, late);
+        Result r = CanbusCodeEstimator.estimate(m, null);
+        assertEquals(Category.SWITCH, guessFor(r, 518).category);
+        assertEquals(Category.SWITCH, guessFor(r, 99).category);
+        for (Guess g : r.guesses) {
+            assertTrue(g.category == Category.SWITCH, g.toString());
+        }
+    }
+
+    @Test
+    void aSmoothSeriesOfStepsOfOneIsTheAverageConsumption() {
+        Random rnd = new Random(14);
+        List<Sample> s = new ArrayList<>();
+        int v = 150;
+        for (int sec = 0; sec < 300; sec++) {
+            if (sec % 4 == 0) {
+                v = Math.max(119, Math.min(179, v + (rnd.nextBoolean() ? 1 : -1)));
+            }
+            s.add(new Sample(sec * 1000L, v));
+        }
+        Guess g = guessFor(CanbusCodeEstimator.estimate(one(1033, s), null), 1033);
+        assertNotNull(g);
+        assertEquals(Category.FUEL_AVERAGE, g.category);
+    }
+
+    @Test
+    void aJumpySeriesIsNotTheAverageConsumption() {
+        Random rnd = new Random(15);
+        List<Sample> s = new ArrayList<>();
+        for (int sec = 0; sec < 300; sec++) {
+            s.add(new Sample(sec * 1000L, 40 + rnd.nextInt(200)));
+        }
+        Guess g = guessFor(CanbusCodeEstimator.estimate(one(1033, s), null), 1033);
+        assertNotNull(g);
+        assertEquals(Category.FUEL_INSTANT, g.category);
+    }
+
+    @Test
+    void anIdleRpmWithoutSpeedKeepsBeingTheRpm() {
+        // 750 at idle and then up to 2500: the idle cluster says it is an engine, with or without the GPS
+        Random rnd = new Random(16);
+        List<Sample> s = new ArrayList<>();
+        long t = 0;
+        for (int i = 0; i < 150; i++, t += 1000) {
+            s.add(new Sample(t, 740 + rnd.nextInt(30)));
+        }
+        for (int i = 0; i < 60; i++, t += 1000) {
+            s.add(new Sample(t, 900 + rnd.nextInt(1600)));
+        }
+        Guess g = guessFor(CanbusCodeEstimator.estimate(one(524, s), null), 524);
+        assertNotNull(g);
+        assertEquals(Category.RPM, g.category);
+    }
+
+    @Test
+    void theAddOnBlockListsTheCodesThatChanged() {
+        Map<Integer, List<Sample>> m = new HashMap<>();
+        List<Sample> left = new ArrayList<>();
+        List<Sample> rpm = new ArrayList<>();
+        for (int sec = 0; sec < 100; sec++) {
+            left.add(new Sample(sec * 1000L, (sec / 5) % 2));
+            rpm.add(new Sample(sec * 1000L, 0));
+        }
+        m.put(505, left);
+        m.put(524, rpm);
+        Result r = CanbusCodeEstimator.estimate(m, null);
+        assertTrue(r.addOnLines.get(0).startsWith("Add-on data block 500-559 (names from the canbus app, ConstRzcAddData"),
+                r.addOnLines.toString());
+        assertEquals(2, r.addOnLines.size());
+        assertEquals("Code 505 - left turn signal (19 changes)", r.addOnLines.get(1));
+        Result none = CanbusCodeEstimator.estimate(one(7, left), null);
+        assertTrue(none.addOnLines.isEmpty());
+    }
 }
