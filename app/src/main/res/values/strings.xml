@@ -276,6 +276,8 @@
     <string name="code_inspector_summary">Tap to start the process</string>
     <string name="code_inspector_summary_working">Working… %1$s Tap to cancel</string>
     <string name="code_inspector_data">Detailed reading data</string>
+    <string name="skip_zero_codes">Leave out the codes that only sent 0</string>
+    <string name="skip_zero_codes_summary">Codes whose every value was 0 are not written to the file; the header counts them.</string>
     <string name="code_inspector_data_summary_time">Tap to set the recording time. \nTimeout: %1$s</string>
     <string name="code_inspector_timeout_text">Timeout:</string>
     <string name="code_inspector_toast">Finished inspecting the codes. Check the results in Download/Launcher66_Canbus</string> 

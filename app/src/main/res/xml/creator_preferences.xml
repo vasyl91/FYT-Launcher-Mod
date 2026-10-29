@@ -259,6 +259,12 @@
                 android:title="@string/code_inspector_data"
                 android:maxLines="5"
                 app:layout="@layout/nested_preference_category_content" />
+            <com.android.launcher66.settings.CustomSwitchPreference
+                android:key="skip_zero_codes"
+                android:defaultValue="true"
+                android:title="@string/skip_zero_codes"
+                app:summary="@string/skip_zero_codes_summary"
+                app:layout="@layout/nested_preference_category_switch" />
             
         </com.android.launcher66.settings.CustomPreferenceCategory>
         <Preference

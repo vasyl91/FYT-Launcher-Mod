@@ -99,6 +99,8 @@ public class CanbusCodeInspector extends Service {
     private volatile boolean isDataWritten = false; // Track if data has been saved
     private SharedPreferences sharedPrefs;
     private Set<Integer> skipCodes;
+    /** Leave the codes that only sent 0 out of the file (the setting; read when the reader starts). */
+    private boolean skipZeroCodes = true;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     /** The GPS speed during the recording; filled on the main thread. */
     private final List<CanbusCodeEstimator.GpsFix> gpsFixes = Collections.synchronizedList(new ArrayList<>());
@@ -119,6 +121,7 @@ public class CanbusCodeInspector extends Service {
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         codeInspectorServiceTimeout = Integer.parseInt(sharedPrefs.getString(CODE_INSPECTOR_TIMEOUT, "300"));
         skipCodes = getSkipCodes();
+        skipZeroCodes = sharedPrefs.getBoolean(Keys.SKIP_ZERO_CODES, true);
     }
 
     @Override
@@ -296,6 +299,7 @@ public class CanbusCodeInspector extends Service {
         Map<Integer, List<CanbusCodeEstimator.Sample>> samples = new HashMap<>();
         int withData = 0;
         int unchanged = 0;
+        int onlyZero = 0;
         for (int i = 0; i < snapshot.size(); i++) {
             int code = snapshot.keyAt(i);
             ArrayList<Event> list = snapshot.valueAt(i);
@@ -305,6 +309,9 @@ public class CanbusCodeInspector extends Service {
             withData++;
             if (isUnchanged(list)) {
                 unchanged++;
+            }
+            if (sentOnlyZero(list)) {
+                onlyZero++;
             }
             List<CanbusCodeEstimator.Sample> s = new ArrayList<>();
             for (Event e : list) {
@@ -330,8 +337,9 @@ public class CanbusCodeInspector extends Service {
             writer.write(gpsRecorded
                     ? "GPS speed: " + fixes.size() + " fixes\n"
                     : "GPS speed: not recorded (no location permission)\n");
-            writer.write("Codes with data: " + withData + " (unchanged: " + unchanged + "); events: " + total
-                    + "; dropped: " + dropped + "\n");
+            writer.write("Codes with data: " + withData + " (unchanged: " + unchanged
+                    + (skipZeroCodes ? "; " + onlyZero + " sent only 0 and are left out" : "")
+                    + "); events: " + total + "; dropped: " + dropped + "\n");
             writer.write("\nLikely meanings (best guesses, may be wrong):\n");
             if (guesses != null) {
                 for (CanbusCodeEstimator.Guess g : guesses.guesses) {
@@ -350,6 +358,9 @@ public class CanbusCodeInspector extends Service {
                 }
                 ArrayList<Event> list = snapshot.get(code);
                 if (list == null || list.isEmpty()) {
+                    continue;
+                }
+                if (skipZeroCodes && sentOnlyZero(list)) {
                     continue;
                 }
                 writer.write("CODE: " + code + "\n");
@@ -372,6 +383,16 @@ public class CanbusCodeInspector extends Service {
         Event first = list.get(0);
         for (int i = 1; i < list.size(); i++) {
             if (!first.sameAs(list.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Every update of the code was 0 with nothing else in it. An update without ints is not a 0. */
+    private static boolean sentOnlyZero(List<Event> list) {
+        for (Event e : list) {
+            if (!e.hasInt || e.v != 0 || !e.extra.isEmpty()) {
                 return false;
             }
         }

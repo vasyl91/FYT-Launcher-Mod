@@ -163,6 +163,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private PreferenceCategory inspectorCategory;
     private Preference codeInspector;
     private Preference codeInspectorData;
+    private Preference skipZeroCodes;
     private CountDownTimer countDownTimer;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -336,6 +337,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         inspectorCategory = findPreference("inspector_category");
         codeInspector = findPreference(Keys.CODE_INSPECTOR);
         codeInspectorData = findPreference(Keys.CODE_INSPECTOR_DATA);
+        skipZeroCodes = findPreference(Keys.SKIP_ZERO_CODES);
         codeInspectorTimeoutStr = sharedPrefs.getString(Keys.CODE_INSPECTOR_TIMEOUT, "300");
 
         Preference widgetsBackground = findPreference(Keys.WIDGETS_BACKGROUND);
@@ -653,6 +655,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             codeInspectorData.setVisible(displayCanbusReaderBool);
             codeInspectorData.setOnPreferenceClickListener(this);
             codeInspectorData.setSummary(getString(R.string.code_inspector_data_summary_time, codeInspectorTimeoutStr));
+        }
+        if (skipZeroCodes != null) {
+            skipZeroCodes.setVisible(displayCanbusReaderBool);
         }
     }
 
@@ -1500,12 +1505,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             inspectorCategory.setVisible(true);
             codeInspector.setVisible(true);
             codeInspectorData.setVisible(true);
+            skipZeroCodes.setVisible(true);
         } else {
             codesGuide.setVisible(false);
             skipCodes.setVisible(false);
             inspectorCategory.setVisible(false);
             codeInspector.setVisible(false);
             codeInspectorData.setVisible(false);
+            skipZeroCodes.setVisible(false);
         }
         updateCanbusLibraryPrefs();
     }
