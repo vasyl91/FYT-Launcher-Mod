@@ -1,0 +1,1444 @@
+#!/usr/bin/env python3
+"""Builds a canbus library for the FYT launcher: the screen class of every car and the requests of its
+fuel/range screens.
+
+    py build_canbus_library.py <src> [--out FILE] [--mapping FILE]   from a decompiled com.syu.canbus
+    py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher
+    py build_canbus_library.py --seal FILE                           recomputes the footer of an edited file
+    py build_canbus_library.py --check FILE                          validates a file like the launcher does
+
+The file format (version 1) is described in README.md next to this script. Python 3.8+, standard library only.
+Exit code: 0 success, 1 bad input, 2 an invalid file in --check.
+"""
+import argparse
+import collections
+import datetime
+import itertools
+import pathlib
+import re
+import sys
+import zlib
+
+HEADER = 'canbus_library 1'
+MAX_BYTES = 2 * 1024 * 1024
+MAX_LINES = 200000
+MAX_ERRORS = 200
+MAX_IDS_PER_LINE = 5000
+MAX_PAGES_PER_ID = 10
+MAX_REQS_PER_LINE = 8
+MAX_INTS = 8
+CLASS_RE = re.compile(r'com\.syu(\.[A-Za-z_$][A-Za-z0-9_$]*)+')
+TOKEN_RE_FYTVER = re.compile(r'[A-Za-z0-9]{1,16}')
+PAGE_NAME_RE = re.compile(r'(?i)(oil|mile|trip|fuel|consum|drivinginfo)')
+FYTVER_PATH = '/sys/fytver/fyt_bin_version'
+
+
+# --------------------------------------------------------------------------------------------------
+# Java lexer
+# --------------------------------------------------------------------------------------------------
+
+TOKEN_RE = re.compile(r'''
+    (?P<ws>\s+)
+  | (?P<lc>//[^\n]*)
+  | (?P<bc>/\*.*?\*/)
+  | (?P<str>"(?:\\.|[^"\\\n])*")
+  | (?P<chr>'(?:\\.|[^'\\\n])*')
+  | (?P<num>0[xX][0-9a-fA-F]+[lL]?|[0-9]+[lL]?)
+  | (?P<id>[A-Za-z_$][A-Za-z0-9_$]*)
+  | (?P<op>->|==|!=|<=|>=|&&|\|\||[^\s])
+''', re.X | re.S)
+
+
+class Tok:
+    __slots__ = ('kind', 'text', 'line')
+
+    def __init__(self, kind, text, line):
+        self.kind = kind
+        self.text = text
+        self.line = line
+
+    def __repr__(self):
+        return '%s:%r@%d' % (self.kind, self.text, self.line)
+
+
+def lex(text):
+    """Tokens of a Java source: no whitespace and no line comments; block comments are kept (the car ids
+    of the case labels are in them)."""
+    out = []
+    line = 1
+    pos = 0
+    n = len(text)
+    while pos < n:
+        m = TOKEN_RE.match(text, pos)
+        if m is None:
+            pos += 1
+            continue
+        kind = m.lastgroup
+        chunk = m.group(0)
+        if kind not in ('ws', 'lc'):
+            out.append(Tok(kind, chunk, line))
+        line += chunk.count('\n')
+        pos = m.end()
+    return out
+
+
+def mask_java(text):
+    """The source with comments and the insides of strings and chars blanked out (same length, newlines
+    kept), so that braces and parentheses can be counted."""
+    out = []
+    pos = 0
+    n = len(text)
+    while pos < n:
+        m = TOKEN_RE.match(text, pos)
+        if m is None:
+            out.append(text[pos])
+            pos += 1
+            continue
+        kind = m.lastgroup
+        chunk = m.group(0)
+        if kind in ('lc', 'bc'):
+            out.append(re.sub(r'[^\n]', ' ', chunk))
+        elif kind in ('str', 'chr'):
+            out.append(chunk[0] + re.sub(r'[^\n]', ' ', chunk[1:-1]) + chunk[-1])
+        else:
+            out.append(chunk)
+        pos = m.end()
+    return ''.join(out)
+
+
+def parse_java_int(text):
+    t = text.strip()
+    m = re.fullmatch(r'(-?)(0[xX][0-9a-fA-F]+|[0-9]+)[lL]?', t)
+    if not m:
+        return None
+    v = int(m.group(2), 16) if m.group(2)[:2] in ('0x', '0X') else int(m.group(2))
+    return -v if m.group(1) else v
+
+
+# --------------------------------------------------------------------------------------------------
+# The switch: tokens -> statements
+# --------------------------------------------------------------------------------------------------
+
+class Stmt:
+    __slots__ = ('kind', 'value', 'line', 'then', 'orelse', 'cond', 'label')
+
+    def __init__(self, kind, line, value=None, label=None, cond=None, then=None, orelse=None):
+        self.kind = kind          # case, default, assign, break, return, if, block, other
+        self.line = line
+        self.value = value        # case: the id (or None); assign: (what, value)
+        self.label = label        # case: the text of the label
+        self.cond = cond          # if: the tokens of the condition
+        self.then = then
+        self.orelse = orelse
+
+
+class SwitchParser:
+    def __init__(self, toks, consts, warn):
+        self.t = toks
+        self.i = 0
+        self.consts = consts
+        self.warn = warn
+
+    def peek(self, k=0):
+        j = self.i + k
+        return self.t[j] if j < len(self.t) else None
+
+    def is_op(self, tok, text):
+        return tok is not None and tok.kind == 'op' and tok.text == text
+
+    def skip_comments(self):
+        while self.peek() is not None and self.peek().kind == 'bc':
+            self.i += 1
+
+    def parse_list(self, until_close=True):
+        out = []
+        while True:
+            self.skip_comments()
+            tok = self.peek()
+            if tok is None:
+                break
+            if until_close and self.is_op(tok, '}'):
+                break
+            out.append(self.parse_stmt())
+        return out
+
+    def parse_body_or_stmt(self):
+        self.skip_comments()
+        if self.is_op(self.peek(), '{'):
+            self.i += 1
+            body = self.parse_list()
+            self.skip_comments()
+            if self.is_op(self.peek(), '}'):
+                self.i += 1
+            return body
+        return [self.parse_stmt()]
+
+    def collect_until(self, stop_ops):
+        """Tokens up to (not including) a stop op at nesting depth 0; the stop is not consumed."""
+        out = []
+        depth = 0
+        while True:
+            tok = self.peek()
+            if tok is None:
+                return out
+            if tok.kind == 'op':
+                if depth == 0 and tok.text in stop_ops:
+                    return out
+                if tok.text in '({[':
+                    depth += 1
+                elif tok.text in ')}]':
+                    depth -= 1
+            out.append(tok)
+            self.i += 1
+
+    def parse_stmt(self):
+        tok = self.peek()
+        line = tok.line
+        if tok.kind == 'id' and tok.text == 'case':
+            self.i += 1
+            label = self.collect_until((':',))
+            if self.is_op(self.peek(), ':'):
+                self.i += 1
+            return Stmt('case', line, value=self.case_value(label), label=' '.join(x.text for x in label))
+        if tok.kind == 'id' and tok.text == 'default':
+            self.i += 1
+            if self.is_op(self.peek(), ':'):
+                self.i += 1
+            return Stmt('default', line)
+        if tok.kind == 'id' and tok.text == 'if':
+            self.i += 1
+            cond = []
+            if self.is_op(self.peek(), '('):
+                self.i += 1
+                cond = self.collect_until((')',))
+                if self.is_op(self.peek(), ')'):
+                    self.i += 1
+            then = self.parse_body_or_stmt()
+            orelse = None
+            self.skip_comments()
+            nxt = self.peek()
+            if nxt is not None and nxt.kind == 'id' and nxt.text == 'else':
+                self.i += 1
+                orelse = self.parse_body_or_stmt()
+            return Stmt('if', line, cond=cond, then=then, orelse=orelse)
+        if self.is_op(tok, '{'):
+            return Stmt('block', line, then=self.parse_body_or_stmt())
+        if tok.kind == 'id' and tok.text == 'break':
+            self.collect_until((';',))
+            self.i += 1
+            return Stmt('break', line)
+        if tok.kind == 'id' and tok.text == 'return':
+            self.collect_until((';',))
+            self.i += 1
+            return Stmt('return', line)
+        if tok.kind == 'id' and tok.text in ('cls', 'name') and self.is_op(self.peek(1), '=') \
+                and not self.is_op(self.peek(2), '='):
+            self.i += 2
+            rhs = self.collect_until((';',))
+            if self.is_op(self.peek(), ';'):
+                self.i += 1
+            return Stmt('assign', line, value=self.assign_value(tok.text, rhs, line))
+        # anything else: up to the end of the statement (with its blocks)
+        self.collect_until((';', '{'))
+        nxt = self.peek()
+        if self.is_op(nxt, '{'):
+            self.i += 1
+            self.parse_list()
+            if self.is_op(self.peek(), '}'):
+                self.i += 1
+        elif self.is_op(nxt, ';'):
+            self.i += 1
+        else:
+            self.i += 1
+        return Stmt('other', line)
+
+    def case_value(self, label):
+        for tok in label:
+            if tok.kind == 'bc':
+                m = re.fullmatch(r'/\*\s*(-?\d+)\s*\*/', tok.text)
+                if m:
+                    return int(m.group(1))
+        ids = [x for x in label if x.kind != 'bc']
+        if len(ids) == 1 and ids[0].kind == 'num':
+            return parse_java_int(ids[0].text)
+        if len(ids) == 2 and self.is_op(ids[0], '-') and ids[1].kind == 'num':
+            v = parse_java_int(ids[1].text)
+            return -v if v is not None else None
+        if ids and ids[-1].kind == 'id':
+            name = ids[-1].text
+            if name in self.consts:
+                return self.consts[name]
+        self.warn(label[0].line if label else 0, 'unresolved case label "%s"' % ' '.join(x.text for x in label))
+        return None
+
+    def assign_value(self, var, rhs, line):
+        rhs = [x for x in rhs if x.kind != 'bc']
+        if len(rhs) == 1 and rhs[0].kind == 'str':
+            return ('name', bytes(rhs[0].text[1:-1], 'utf-8').decode('unicode_escape'))
+        # (Class<?>) a.b.X.class or X.class
+        j = 0
+        if rhs and self.is_op(rhs[0], '('):
+            depth = 0
+            while j < len(rhs):
+                if self.is_op(rhs[j], '('):
+                    depth += 1
+                elif self.is_op(rhs[j], ')'):
+                    depth -= 1
+                    if depth == 0:
+                        j += 1
+                        break
+                j += 1
+        rest = rhs[j:]
+        if len(rest) >= 3 and rest[-1].kind == 'id' and rest[-1].text == 'class' and self.is_op(rest[-2], '.'):
+            parts = [x.text for x in rest[:-2]]
+            if parts and all((k % 2 == 0 and rest[k].kind == 'id') or (k % 2 == 1 and rest[k].text == '.')
+                             for k in range(len(parts))):
+                return ('class', ''.join(parts))
+        return ('other', None)
+
+
+# --------------------------------------------------------------------------------------------------
+# Conditions
+# --------------------------------------------------------------------------------------------------
+
+class CondEval:
+    """Evaluates the conditions of the switch for one combination (portrait, fytver matches)."""
+
+    PORTRAIT_RE = re.compile(r'(?:\w+\.)*(?:TheApp|LauncherApplication)\.getConfiguration\(\)(==|!=)1')
+    PORTRAIT2_RE = re.compile(r'(?:\w+\.)*isPortrait\(\)')
+    FYTVER_RE = re.compile(r'readFile\("' + re.escape(FYTVER_PATH) + r'"\)\.contains\("([^"]*)"\)')
+
+    def __init__(self, warn):
+        self.warn = warn
+        self.tokens = []
+
+    def evaluate(self, cond, portrait, fytver):
+        self.toks = [x for x in cond if x.kind != 'bc']
+        self.p = 0
+        self.portrait = portrait
+        self.fytver = fytver
+        self.line = self.toks[0].line if self.toks else 0
+        value = self.parse_or()
+        return value
+
+    def peek(self):
+        return self.toks[self.p] if self.p < len(self.toks) else None
+
+    def parse_or(self):
+        v = self.parse_and()
+        while self.peek() is not None and self.peek().text == '||':
+            self.p += 1
+            r = self.parse_and()
+            v = v or r
+        return v
+
+    def parse_and(self):
+        v = self.parse_not()
+        while self.peek() is not None and self.peek().text == '&&':
+            self.p += 1
+            r = self.parse_not()
+            v = v and r
+        return v
+
+    def parse_not(self):
+        tok = self.peek()
+        if tok is not None and tok.kind == 'op' and tok.text == '!':
+            self.p += 1
+            return not self.parse_not()
+        if tok is not None and tok.kind == 'op' and tok.text == '(':
+            # a parenthesised group, or the start of an atom such as (x).foo()
+            start = self.p
+            depth = 0
+            j = self.p
+            while j < len(self.toks):
+                if self.toks[j].text == '(':
+                    depth += 1
+                elif self.toks[j].text == ')':
+                    depth -= 1
+                    if depth == 0:
+                        break
+                j += 1
+            inner = self.toks[start + 1:j]
+            after = self.toks[j + 1] if j + 1 < len(self.toks) else None
+            if after is None or after.text in ('||', '&&', ')'):
+                self.p = j + 1
+                sub = CondEval(self.warn)
+                sub.tokens = self.tokens
+                v = sub.evaluate(inner, self.portrait, self.fytver)
+                return v
+        return self.parse_atom()
+
+    def parse_atom(self):
+        depth = 0
+        start = self.p
+        while self.p < len(self.toks):
+            t = self.toks[self.p]
+            if t.text == '(':
+                depth += 1
+            elif t.text == ')':
+                if depth == 0:
+                    break
+                depth -= 1
+            elif depth == 0 and t.text in ('||', '&&'):
+                break
+            self.p += 1
+        atom = self.toks[start:self.p]
+        text = ''.join(x.text for x in atom)
+        m = self.PORTRAIT_RE.fullmatch(text)
+        if m:
+            return self.portrait if m.group(1) == '==' else not self.portrait
+        if self.PORTRAIT2_RE.fullmatch(text):
+            return self.portrait
+        m = self.FYTVER_RE.fullmatch(text)
+        if m:
+            tok = m.group(1)
+            if tok not in self.tokens:
+                self.tokens.append(tok)
+            return self.fytver
+        self.warn(atom[0].line if atom else self.line, 'unrecognised condition "%s" taken as false' % text)
+        return False
+
+
+# --------------------------------------------------------------------------------------------------
+# Mapping: the switch of ActivityLauncher.launchCanbus() / CanbusClasses.className()
+# --------------------------------------------------------------------------------------------------
+
+def read_text(path):
+    return pathlib.Path(path).read_text(encoding='utf-8', errors='replace')
+
+
+def find_matching(toks, i, open_op, close_op):
+    depth = 0
+    for j in range(i, len(toks)):
+        if toks[j].kind == 'op':
+            if toks[j].text == open_op:
+                depth += 1
+            elif toks[j].text == close_op:
+                depth -= 1
+                if depth == 0:
+                    return j
+    return None
+
+
+def find_switches(toks):
+    """(index of the header's first token, index of the opening brace, index of the closing brace, header text)."""
+    out = []
+    for i, t in enumerate(toks):
+        if t.kind == 'id' and t.text == 'switch' and i + 1 < len(toks) and toks[i + 1].text == '(':
+            j = find_matching(toks, i + 1, '(', ')')
+            if j is None or j + 1 >= len(toks) or toks[j + 1].text != '{':
+                continue
+            k = find_matching(toks, j + 1, '{', '}')
+            if k is None:
+                continue
+            header = ''.join(x.text for x in toks[i + 2:j])
+            out.append((i, j + 1, k, header))
+    return out
+
+
+def count_pairs(toks, a, b):
+    """Case labels followed by an assignment of a class: the size of a mapping switch."""
+    n = 0
+    for i in range(a, b):
+        t = toks[i]
+        if t.kind == 'id' and t.text in ('cls', 'name') and i + 1 < b and toks[i + 1].text == '=':
+            n += 1
+    return n
+
+
+def load_constants(final_canbus_path):
+    consts = {}
+    if final_canbus_path and pathlib.Path(final_canbus_path).is_file():
+        for m in re.finditer(r'public\s+static\s+final\s+int\s+(\w+)\s*=\s*(-?(?:0[xX][0-9a-fA-F]+|[0-9]+))\s*;',
+                             read_text(final_canbus_path)):
+            consts[m.group(1)] = parse_java_int(m.group(2))
+    return consts
+
+
+class Mapping:
+    """ids -> {(portrait, fytver): class reference}, as simulated from the switch."""
+
+    def __init__(self):
+        self.source = ''
+        self.method = ''
+        self.results = {}       # id -> {(portrait, fytver): ('class'|'name', value) or None}
+        self.fytver_tokens = {}  # id -> [tokens]
+        self.warnings = []
+        self.unresolved = 0
+
+
+def build_mapping(path, mode, consts, label):
+    """mode 'launcher': the switch of className(int) in CanbusClasses; otherwise the best switch of the file
+    (the one on DataCanbus.DATA[1000] if there is one)."""
+    text = read_text(path)
+    toks = lex(text)
+    switches = find_switches(toks)
+    chosen = None
+    if mode == 'launcher':
+        idx = None
+        for i, t in enumerate(toks):
+            if t.kind == 'id' and t.text == 'className' and i + 1 < len(toks) and toks[i + 1].text == '(':
+                idx = i
+                break
+        if idx is None:
+            return None
+        for sw in switches:
+            if sw[0] > idx:
+                chosen = sw
+                break
+        method = 'className'
+    else:
+        best = -1
+        for sw in switches:
+            score = count_pairs(toks, sw[1], sw[2])
+            if 'DataCanbus.DATA[1000]' in sw[3]:
+                score += 1000000
+            if score > best and count_pairs(toks, sw[1], sw[2]) > 0:
+                best = score
+                chosen = sw
+        method = None
+        if chosen is not None:
+            for i in range(chosen[0], 0, -1):
+                t = toks[i]
+                if t.kind == 'id' and i + 1 < len(toks) and toks[i + 1].text == '(' and i > 0 \
+                        and toks[i - 1].kind == 'id' and toks[i - 1].text in ('void', 'String', 'int', 'Class', 'boolean'):
+                    method = t.text
+                    break
+    if chosen is None:
+        return None
+    m = Mapping()
+    m.source = label
+    m.method = method or '?'
+
+    def warn(line, msg):
+        m.warnings.append('%s:%d: %s' % (label, line, msg))
+
+    body = toks[chosen[1] + 1:chosen[2]]
+    parser = SwitchParser(body, consts, warn)
+    stmts = parser.parse_list(until_close=False)
+    labels = collections.OrderedDict()
+    for idx, s in enumerate(stmts):
+        if s.kind == 'case' and s.value is not None:
+            if s.value in labels:
+                warn(s.line, 'id %d appears twice in the switch' % s.value)
+            else:
+                labels[s.value] = idx
+
+    seen_warn = set()
+
+    def warn_once(line, msg):
+        key = (line, msg)
+        if key not in seen_warn:
+            seen_warn.add(key)
+            warn(line, msg)
+
+    for cid, start in labels.items():
+        per = {}
+        tokens = []
+        for portrait, fytver in itertools.product((False, True), (False, True)):
+            ev = CondEval(warn_once)
+            ev.tokens = tokens
+            state = {'value': None}
+
+            def run(seq, from_index=0):
+                for s in seq[from_index:]:
+                    kind = s.kind
+                    if kind == 'assign':
+                        what, value = s.value
+                        if what != 'other':
+                            state['value'] = (what, value)
+                    elif kind == 'break' or kind == 'return':
+                        return True
+                    elif kind == 'if':
+                        if ev.evaluate(s.cond, portrait, fytver):
+                            if run(s.then):
+                                return True
+                        elif s.orelse is not None:
+                            if run(s.orelse):
+                                return True
+                    elif kind == 'block':
+                        if run(s.then):
+                            return True
+                return False
+
+            run(stmts, start + 1)
+            per[(portrait, fytver)] = state['value']
+        m.results[cid] = per
+        m.fytver_tokens[cid] = list(tokens)
+    m.warnings = list(dict.fromkeys(m.warnings))
+    return m
+
+
+# --------------------------------------------------------------------------------------------------
+# Sources: classes, references and the requests of the fuel pages
+# --------------------------------------------------------------------------------------------------
+
+class Source:
+    def __init__(self, fqcn, path):
+        self.fqcn = fqcn
+        self.path = path
+        self._text = None
+        self._masked = None
+        self._package = None
+        self._imports = None
+        self._refs = None
+        self._requests = None
+
+    @property
+    def text(self):
+        if self._text is None:
+            self._text = read_text(self.path)
+        return self._text
+
+    @property
+    def masked(self):
+        if self._masked is None:
+            self._masked = mask_java(self.text)
+        return self._masked
+
+    @property
+    def simple(self):
+        return self.fqcn.rsplit('.', 1)[-1]
+
+    @property
+    def package(self):
+        return self.fqcn.rsplit('.', 1)[0] if '.' in self.fqcn else ''
+
+    @property
+    def imports(self):
+        if self._imports is None:
+            single, wild = {}, []
+            for m in re.finditer(r'^\s*import\s+(?:static\s+)?([\w.]+?)(\.\*)?\s*;', self.masked, re.M):
+                if m.group(2):
+                    wild.append(m.group(1))
+                else:
+                    single[m.group(1).rsplit('.', 1)[-1]] = m.group(1)
+            self._imports = (single, wild)
+        return self._imports
+
+
+class SourceIndex:
+    def __init__(self, root):
+        self.root = pathlib.Path(root)
+        self.by_fqcn = {}
+        self.by_simple = collections.defaultdict(list)
+        for p in sorted(self.root.rglob('*.java')):
+            rel = p.relative_to(self.root).as_posix()
+            parts = rel[:-5].split('/')
+            if 'com' in parts:
+                fq = '.'.join(parts[parts.index('com'):])
+            else:
+                fq = '.'.join(parts)
+            if fq in self.by_fqcn:
+                continue
+            src = Source(fq, p)
+            self.by_fqcn[fq] = src
+            self.by_simple[src.simple].append(src)
+        self.refs_cache = {}
+
+    def resolve(self, name, context):
+        """The Source for a class reference `name` (simple or qualified) seen in `context`, or None."""
+        if '.' in name:
+            if name in self.by_fqcn:
+                return self.by_fqcn[name]
+            name = name.rsplit('.', 1)[-1]
+        single, wild = context.imports
+        if name in single and single[name] in self.by_fqcn:
+            return self.by_fqcn[single[name]]
+        same = context.package + '.' + name
+        if same in self.by_fqcn:
+            return self.by_fqcn[same]
+        for w in wild:
+            if w + '.' + name in self.by_fqcn:
+                return self.by_fqcn[w + '.' + name]
+        cands = self.by_simple.get(name, [])
+        if len(cands) == 1:
+            return cands[0]
+        return None
+
+    def ambiguous(self, name, context):
+        return len(self.by_simple.get(name, [])) > 1
+
+    def refs(self, src):
+        """Classes of the sources that `src` refers to with X.class."""
+        if src.fqcn in self.refs_cache:
+            return self.refs_cache[src.fqcn]
+        out = []
+        for m in re.finditer(r'\b((?:[a-z]\w*\.)*[A-Z]\w*)\.class\b', src.masked):
+            target = self.resolve(m.group(1), src)
+            if target is not None and target.fqcn != src.fqcn and target.fqcn not in out:
+                out.append(target.fqcn)
+        self.refs_cache[src.fqcn] = out
+        return out
+
+
+def match_close(masked, open_pos, open_ch, close_ch):
+    depth = 0
+    for i in range(open_pos, len(masked)):
+        c = masked[i]
+        if c == open_ch:
+            depth += 1
+        elif c == close_ch:
+            depth -= 1
+            if depth == 0:
+                return i
+    return -1
+
+
+def blank_nested(body):
+    """The method body without anonymous classes and lambdas (replaced by spaces)."""
+    chars = list(body)
+    n = len(body)
+
+    def blank(a, b):
+        for k in range(a, b):
+            if chars[k] != '\n':
+                chars[k] = ' '
+
+    # anonymous classes: new X(...) { ... }
+    for m in re.finditer(r'\bnew\s+[\w.]+(?:<[^>()]*>)?\s*\(', body):
+        op = m.end() - 1
+        cl = match_close(body, op, '(', ')')
+        if cl < 0:
+            continue
+        j = cl + 1
+        while j < n and body[j].isspace():
+            j += 1
+        if j < n and body[j] == '{':
+            end = match_close(body, j, '{', '}')
+            if end > 0:
+                blank(j, end + 1)
+    text = ''.join(chars)
+    chars = list(text)
+    # lambdas: ... -> { ... }  or  ... -> expression
+    for m in re.finditer(r'->', text):
+        j = m.end()
+        while j < n and text[j].isspace():
+            j += 1
+        if j < n and text[j] == '{':
+            end = match_close(text, j, '{', '}')
+            if end > 0:
+                blank(j, end + 1)
+        else:
+            depth = 0
+            k = j
+            while k < n:
+                c = text[k]
+                if c in '({[':
+                    depth += 1
+                elif c in ')}]':
+                    if depth == 0:
+                        break
+                    depth -= 1
+                elif c in ',;' and depth == 0:
+                    break
+                k += 1
+            blank(j, k)
+    return ''.join(chars)
+
+
+def split_args(text):
+    out, depth, cur = [], 0, []
+    for c in text:
+        if c in '({[':
+            depth += 1
+        elif c in ')}]':
+            depth -= 1
+        if c == ',' and depth == 0:
+            out.append(''.join(cur).strip())
+            cur = []
+        else:
+            cur.append(c)
+    last = ''.join(cur).strip()
+    if last or out:
+        out.append(last)
+    return out
+
+
+class Stats:
+    def __init__(self):
+        self.skipped_calls = []     # (class, method, text)
+        self.dropped_dups = 0
+        self.truncated = 0
+        self.other_module = 0
+
+
+def extract_requests(src, stats):
+    """The requests a page sends directly in onCreate, onStart and onResume, in that order."""
+    if src._requests is not None:
+        return src._requests
+    masked = src.masked
+    depth_at = {}
+    depth = 0
+    # depth of the class body: the position of each '{' decides
+    methods = {}
+    for m in re.finditer(r'\b(onCreate|onStart|onResume)\s*\(([^()]*)\)\s*(?:throws\s+[\w.,\s]+)?\{', masked):
+        # the depth at the start of the match
+        pre = masked[:m.start()]
+        d = pre.count('{') - pre.count('}')
+        if d != 1:
+            continue
+        brace = m.end() - 1
+        end = match_close(masked, brace, '{', '}')
+        if end < 0:
+            continue
+        methods.setdefault(m.group(1), (brace, end))
+    reqs = []
+    for name in ('onCreate', 'onStart', 'onResume'):
+        if name not in methods:
+            continue
+        a, b = methods[name]
+        body = blank_nested(masked[a:b + 1])
+        for m in re.finditer(r'((?:\w+\s*\.\s*)*)\bPROXY\s*\.\s*cmd\s*\(', body):
+            prefix = re.sub(r'\s+', '', m.group(1))
+            if prefix not in ('', 'DataCanbus.'):
+                stats.other_module += 1
+                continue
+            op = m.end() - 1
+            cl = match_close(body, op, '(', ')')
+            if cl < 0:
+                continue
+            args = split_args(body[op + 1:cl])
+            parsed = parse_cmd_args(args)
+            if parsed is None:
+                stats.skipped_calls.append((src.fqcn, name, 'cmd(' + ', '.join(args) + ')'))
+                continue
+            reqs.append(parsed)
+    uniq = []
+    for r in reqs:
+        if r in uniq:
+            stats.dropped_dups += 1
+        else:
+            uniq.append(r)
+    if len(uniq) > MAX_REQS_PER_LINE:
+        stats.truncated += 1
+        uniq = uniq[:MAX_REQS_PER_LINE]
+    src._requests = uniq
+    return uniq
+
+
+def parse_cmd_args(args):
+    """(cmd, (ints...)) for the forms the library has, or None for a call it cannot represent."""
+    if not args or not args[0]:
+        return None
+    cmd = parse_java_int(args[0])
+    if cmd is None or not 0 <= cmd <= 9999:
+        return None
+    n = len(args)
+    ints = None
+    if n == 1:
+        ints = ()
+    elif n == 4:
+        if args[2] != 'null' or args[3] != 'null':
+            return None
+        a = args[1]
+        if a == 'null':
+            ints = ()
+        else:
+            m = re.fullmatch(r'new\s+int\s*\[\s*\]\s*\{(.*)\}', a, re.S)
+            if m:
+                inner = m.group(1).strip()
+                items = split_args(inner) if inner else []
+                if items and items[-1] == '':
+                    items = items[:-1]
+                vals = [parse_java_int(x) for x in items]
+                if any(v is None for v in vals):
+                    return None
+                ints = tuple(vals)
+            else:
+                m = re.fullmatch(r'new\s+int\s*\[\s*([0-9]+)\s*\]', a)
+                if not m:
+                    return None
+                ints = (0,) * int(m.group(1))
+    elif n == 2:
+        v = parse_java_int(args[1])
+        if v is None:
+            return None
+        ints = (v,)
+    elif n == 3:
+        a, b = parse_java_int(args[1]), parse_java_int(args[2])
+        if a is None or b is None:
+            return None
+        ints = (a, b)
+    else:
+        return None
+    if len(ints) > MAX_INTS or any(not -65536 <= v <= 65536 for v in ints):
+        return None
+    return (cmd, ints)
+
+
+def req_text(req):
+    cmd, ints = req
+    if not ints:
+        return str(cmd)
+    return '%d:%s' % (cmd, ','.join(str(v) for v in ints))
+
+
+# --------------------------------------------------------------------------------------------------
+# The library: records, text, validation
+# --------------------------------------------------------------------------------------------------
+
+def crc_of_lines(lines):
+    crc = 0
+    for ln in lines:
+        crc = zlib.crc32((ln + '\n').encode('utf-8'), crc)
+    return crc & 0xFFFFFFFF
+
+
+def seal_lines(lines):
+    """`lines` (header ... last record, no footer) plus the footer."""
+    records = sum(1 for ln in lines if ln[:2] in ('C ', 'R ', 'N '))
+    return lines + ['end %d %08x' % (records, crc_of_lines(lines))]
+
+
+def parse_ids(text):
+    if not re.fullmatch(r'\s*[0-9]+(\s*,\s*[0-9]+)*\s*', text):
+        return None, 'ids must be decimal numbers separated by commas'
+    ids = [int(x) for x in text.split(',')]
+    if len(ids) > MAX_IDS_PER_LINE:
+        return None, 'more than %d ids' % MAX_IDS_PER_LINE
+    if any(not 1 <= v <= 2147483647 for v in ids):
+        return None, 'an id outside 1..2147483647'
+    if len(set(ids)) != len(ids):
+        return None, 'an id repeated in the line'
+    return ids, None
+
+
+def parse_request(text):
+    m = re.fullmatch(r'\s*([0-9]{1,6})(?::\s*(-?[0-9]+(?:\s*,\s*-?[0-9]+)*))?\s*', text)
+    if not m:
+        return None, 'bad request "%s"' % text.strip()
+    cmd = int(m.group(1))
+    if cmd > 9999:
+        return None, 'cmd %d outside 0..9999' % cmd
+    ints = ()
+    if m.group(2) is not None:
+        ints = tuple(int(x) for x in m.group(2).split(','))
+        if len(ints) > MAX_INTS:
+            return None, 'more than %d numbers in a request' % MAX_INTS
+        if any(not -65536 <= v <= 65536 for v in ints):
+            return None, 'a number outside -65536..65536'
+    return (cmd, ints), None
+
+
+class Checked:
+    def __init__(self):
+        self.errors = []          # (line, reason)
+        self.classes = {}         # id -> (class, alt, cond, tokens)
+        self.pages = {}           # id -> OrderedDict(page -> reqs)
+        self.no_request = set()
+        self.records = 0
+        self.dups = 0
+        self.declared = None
+        self.crc = None
+
+    def err(self, line, reason):
+        if len(self.errors) < MAX_ERRORS:
+            self.errors.append((line, reason))
+
+
+def check_text(raw):
+    """Validates the file the way the launcher does. `raw` is bytes."""
+    res = Checked()
+    if len(raw) > MAX_BYTES:
+        res.err(0, 'file larger than %d bytes' % MAX_BYTES)
+        return res
+    text = raw.decode('utf-8', errors='replace')
+    if text.startswith('﻿'):
+        text = text[1:]
+    lines = text.split('\n')
+    if lines and lines[-1] == '':
+        lines.pop()
+    if len(lines) > MAX_LINES:
+        res.err(0, 'more than %d lines' % MAX_LINES)
+        return res
+    lines = [ln[:-1] if ln.endswith('\r') else ln for ln in lines]
+    header_at = None
+    footer_at = None
+    for no, ln in enumerate(lines, 1):
+        s = ln.strip()
+        if footer_at is not None:
+            if s:
+                res.err(no, 'content after the footer')
+            continue
+        if not s or s.startswith('#'):
+            continue
+        if header_at is None:
+            header_at = no
+            if not re.fullmatch(r'canbus_library\s+1', s):
+                res.err(no, 'missing or unsupported header (expected "%s")' % HEADER)
+                return res
+            continue
+        m = re.fullmatch(r'end\s+([0-9]+)\s+([0-9a-f]{8})', s)
+        if m:
+            footer_at = no
+            res.declared = int(m.group(1))
+            res.crc = m.group(2)
+            continue
+        if re.match(r'end\b', s):
+            res.err(no, 'bad footer (expected "end <records> <crc32>")')
+            footer_at = no
+            continue
+        kind = s[0]
+        if kind not in 'CRN' or (len(s) > 1 and not s[1].isspace()):
+            res.err(no, 'unknown record "%s"' % s[:20])
+            continue
+        res.records += 1
+        fields = [f.strip() for f in s[1:].split('|')]
+        ids, why = parse_ids(fields[0]) if fields else (None, 'missing ids')
+        if why:
+            res.err(no, why)
+            continue
+        if kind == 'N':
+            if len(fields) != 1:
+                res.err(no, 'N takes only ids')
+                continue
+            for i in ids:
+                if i in res.pages:
+                    res.err(no, 'id %d has both N and R records' % i)
+                elif i in res.no_request:
+                    res.dups += 1
+                else:
+                    res.no_request.add(i)
+            continue
+        if kind == 'C':
+            if len(fields) not in (2, 4):
+                res.err(no, 'C takes "ids | class" or "ids | class | alt | condition"')
+                continue
+            cls = fields[1]
+            if not (CLASS_RE.fullmatch(cls) and len(cls) <= 200):
+                res.err(no, 'bad class name "%s"' % cls[:60])
+                continue
+            alt, cond, toks = None, 'NONE', ()
+            if len(fields) == 4:
+                alt = fields[2]
+                if alt != '-' and not (CLASS_RE.fullmatch(alt) and len(alt) <= 200):
+                    res.err(no, 'bad alternative class "%s"' % alt[:60])
+                    continue
+                if alt == '-':
+                    alt = ''
+                c = fields[3]
+                if c == 'portrait':
+                    cond = 'PORTRAIT'
+                elif c.startswith('fytver:'):
+                    toks = tuple(x.strip() for x in c[7:].split(','))
+                    if not 1 <= len(toks) <= 8 or any(not TOKEN_RE_FYTVER.fullmatch(x) for x in toks):
+                        res.err(no, 'bad fytver tokens "%s"' % c[7:][:60])
+                        continue
+                    cond = 'FYTVER'
+                else:
+                    res.err(no, 'bad condition "%s" (portrait or fytver:tokens)' % c[:40])
+                    continue
+            rec = (cls, alt, cond, toks)
+            for i in ids:
+                old = res.classes.get(i)
+                if old is None:
+                    res.classes[i] = rec
+                elif old == rec:
+                    res.dups += 1
+                else:
+                    res.err(no, 'id %d has two different C records' % i)
+            continue
+        # R
+        if len(fields) != 3:
+            res.err(no, 'R takes "ids | page | requests"')
+            continue
+        page = fields[1]
+        if not (CLASS_RE.fullmatch(page) and len(page) <= 200):
+            res.err(no, 'bad page class "%s"' % page[:60])
+            continue
+        parts = fields[2].split(';')
+        if not 1 <= len(parts) <= MAX_REQS_PER_LINE:
+            res.err(no, 'R takes 1 to %d requests' % MAX_REQS_PER_LINE)
+            continue
+        reqs, bad = [], False
+        for p in parts:
+            r, why = parse_request(p)
+            if why:
+                res.err(no, why)
+                bad = True
+                break
+            reqs.append(r)
+        if bad:
+            continue
+        reqs = tuple(reqs)
+        for i in ids:
+            if i in res.no_request:
+                res.err(no, 'id %d has both N and R records' % i)
+                continue
+            pages = res.pages.setdefault(i, collections.OrderedDict())
+            if page in pages:
+                if pages[page] == reqs:
+                    res.dups += 1
+                else:
+                    res.err(no, 'id %d page %s has two different request lists' % (i, page.rsplit('.', 1)[-1]))
+            elif len(pages) >= MAX_PAGES_PER_ID:
+                res.err(no, 'id %d has more than %d pages' % (i, MAX_PAGES_PER_ID))
+            else:
+                pages[page] = reqs
+    if header_at is None:
+        res.err(0, 'empty file: missing header "%s"' % HEADER)
+    elif footer_at is None:
+        res.err(len(lines), 'missing footer "end <records> <crc32>"')
+    elif res.declared is not None:
+        body = [ln for ln in lines[header_at - 1:footer_at - 1]]
+        if res.declared != res.records:
+            res.err(footer_at, 'footer says %d records, the file has %d' % (res.declared, res.records))
+        actual = '%08x' % crc_of_lines(body)
+        if actual != res.crc:
+            res.err(footer_at, 'CRC32 mismatch: footer %s, computed %s' % (res.crc, actual))
+    return res
+
+
+# --------------------------------------------------------------------------------------------------
+# Building
+# --------------------------------------------------------------------------------------------------
+
+def classify(per, tokens, cid, warn):
+    """(class, alt, condition) for the 4 results of one id; condition 'NONE', 'PORTRAIT' or 'FYTVER'.
+    class/alt None = no class."""
+    ff, ft, tf, tt = per[(False, False)], per[(False, True)], per[(True, False)], per[(True, True)]
+    if ff == ft == tf == tt:
+        return ff, None, 'NONE'
+    by_orientation = ff == ft and tf == tt
+    by_fytver = ff == tf and ft == tt
+    if by_orientation:
+        return ff, tf, 'PORTRAIT'
+    if by_fytver:
+        return ff, ft, 'FYTVER'
+    warn('id %d depends on both the orientation and the firmware; the library keeps the portrait alternative' % cid)
+    return ff, tf, 'PORTRAIT'
+
+
+def build(args, root, mapping_path, mode, consts, label, index, out_path, log):
+    mapping = build_mapping(mapping_path, mode, consts, label)
+    if mapping is None:
+        log('error: no switch with class assignments found in %s' % mapping_path)
+        return 1
+    log('Mapping: %s (method %s)' % (mapping.source, mapping.method))
+    warnings = list(mapping.warnings)
+
+    def warn(msg):
+        warnings.append(msg)
+
+    # resolve the class references
+    def resolve_ref(ref, cid):
+        if ref is None:
+            return None
+        what, value = ref
+        if what == 'name':
+            if CLASS_RE.fullmatch(value) and len(value) <= 200:
+                return value
+            warn('id %d: class name "%s" is not a com.syu class, skipped' % (cid, value))
+            return None
+        src = index.resolve(value, ctx_src)
+        if src is None:
+            warn('id %d: cannot resolve %s.class, skipped' % (cid, value))
+            return None
+        if not (CLASS_RE.fullmatch(src.fqcn) and len(src.fqcn) <= 200):
+            warn('id %d: %s is not a com.syu class, skipped' % (cid, src.fqcn))
+            return None
+        return src.fqcn
+
+    # X.class references are resolved in the context of the file that holds the switch
+    pkg = re.search(r'^\s*package\s+([\w.]+)\s*;', read_text(mapping_path), re.M)
+    ctx_src = Source((pkg.group(1) if pkg else '') + '.' + pathlib.Path(mapping_path).stem, mapping_path)
+    class_records = {}   # id -> (cls, alt, cond, tokens)
+    cond_counts = collections.Counter()
+    for cid in sorted(mapping.results):
+        per = {k: resolve_ref(v, cid) for k, v in mapping.results[cid].items()}
+        cls, alt, cond = classify(per, mapping.fytver_tokens.get(cid, []), cid, warn)
+        if cls is None:
+            if alt is not None:
+                warn('id %d: no class in the default combination but one in an alternative, no C record' % cid)
+            continue
+        toks = ()
+        if cond == 'FYTVER':
+            toks = tuple(mapping.fytver_tokens.get(cid, []))
+            if not 1 <= len(toks) <= 8 or any(not TOKEN_RE_FYTVER.fullmatch(t) for t in toks):
+                warn('id %d: unusable firmware tokens %r, condition dropped' % (cid, toks))
+                alt, cond, toks = None, 'NONE', ()
+        class_records[cid] = (cls, alt or '', cond, toks) if cond != 'NONE' else (cls, '', 'NONE', ())
+        cond_counts[cond] += 1
+
+    # pages and requests
+    stats = Stats()
+    reach_cache = {}
+
+    def reach(fq):
+        if fq in reach_cache:
+            return reach_cache[fq]
+        depth = {}
+        src0 = index.by_fqcn.get(fq)
+        if src0 is not None:
+            depth[fq] = 0
+            frontier = [fq]
+            for d in range(1, 4):
+                nxt = []
+                for cur in frontier:
+                    for ref in index.refs(index.by_fqcn[cur]):
+                        if ref not in depth:
+                            depth[ref] = d
+                            nxt.append(ref)
+                frontier = nxt
+        reach_cache[fq] = depth
+        return depth
+
+    pages_of = {}
+    page_keys = {}
+    for cid, (cls, alt, cond, toks) in class_records.items():
+        depth = {}
+        for fq in (cls, alt):
+            if fq:
+                for k, d in reach(fq).items():
+                    if k not in depth or d < depth[k]:
+                        depth[k] = d
+        found = []
+        for fq, d in depth.items():
+            src = index.by_fqcn[fq]
+            if not PAGE_NAME_RE.search(src.simple):
+                continue
+            reqs = extract_requests(src, stats)
+            if reqs:
+                found.append((fq, d, reqs))
+        if not found:
+            continue
+        low = cid & 0xFFFF
+
+        def key(item):
+            simple = item[0].rsplit('.', 1)[-1]
+            return (('_%d_' % low) not in simple, 'Page1' not in simple, 'Index' not in simple, item[1], simple)
+
+        found.sort(key=key)
+        if len(found) > MAX_PAGES_PER_ID:
+            warn('id %d: %d fuel pages, only the first %d kept' % (cid, len(found), MAX_PAGES_PER_ID))
+            found = found[:MAX_PAGES_PER_ID]
+        pages_of[cid] = [(fq, tuple(reqs)) for fq, d, reqs in found]
+        page_keys[cid] = [key(it) for it in found]
+
+    # groups: ids with an identical list of pages
+    groups = collections.OrderedDict()
+    for cid in sorted(pages_of):
+        sig = tuple(pages_of[cid])
+        groups.setdefault(sig, []).append(cid)
+
+    ambiguous_groups = []
+    for sig, ids in groups.items():
+        keys = page_keys[ids[0]]
+        if len(keys) > 1 and keys[0][:3] == keys[1][:3]:
+            tied = [sig[i][0].rsplit('.', 1)[-1] for i in range(len(keys)) if keys[i][:3] == keys[0][:3]]
+            ambiguous_groups.append((ids, tied))
+
+    # text
+    out = [HEADER,
+           '# Canbus library: the screen class of each car id and the requests of its fuel screens.',
+           '# Source: %s (method %s)' % (mapping.source, mapping.method),
+           '# C: car ids and the class of their screen (optionally another class for a portrait screen or for a firmware).',
+           '# R: car ids and a fuel page with the requests it sends when it opens, in order.',
+           '# Cars with a class: %d, with a request: %d, request groups: %d' % (
+               len(class_records), sum(len(v) for v in groups.values()), len(groups))]
+
+    def chunks(ids):
+        for i in range(0, len(ids), MAX_IDS_PER_LINE):
+            yield ids[i:i + MAX_IDS_PER_LINE]
+
+    by_rec = collections.OrderedDict()
+    for cid in sorted(class_records):
+        by_rec.setdefault(class_records[cid], []).append(cid)
+    c_lines = 0
+    for rec, ids in sorted(by_rec.items(), key=lambda kv: kv[1][0]):
+        cls, alt, cond, toks = rec
+        for part in chunks(ids):
+            ids_txt = ','.join(str(i) for i in part)
+            if cond == 'NONE':
+                out.append('C %s | %s' % (ids_txt, cls))
+            elif cond == 'PORTRAIT':
+                out.append('C %s | %s | %s | portrait' % (ids_txt, cls, alt or '-'))
+            else:
+                out.append('C %s | %s | %s | fytver:%s' % (ids_txt, cls, alt or '-', ','.join(toks)))
+            c_lines += 1
+    r_lines = 0
+    page_names = set()
+    for sig, ids in sorted(groups.items(), key=lambda kv: kv[1][0]):
+        for fq, reqs in sig:
+            page_names.add(fq)
+            for part in chunks(ids):
+                out.append('R %s | %s | %s' % (','.join(str(i) for i in part), fq, '; '.join(req_text(r) for r in reqs)))
+                r_lines += 1
+    sealed = seal_lines(out)
+    pathlib.Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
+        f.write('\n'.join(sealed) + '\n')
+
+    # the same checks as the launcher
+    chk = check_text(pathlib.Path(out_path).read_bytes())
+    log('IDs in the mapping: %d' % len(mapping.results))
+    log('C records: %d lines for %d ids with a class (portrait: %d, firmware: %d)' % (
+        c_lines, len(class_records), cond_counts['PORTRAIT'], cond_counts['FYTVER']))
+    log('R records: %d lines; ids with a request: %d; groups: %d; pages: %d' % (
+        r_lines, sum(len(v) for v in groups.values()), len(groups), len(page_names)))
+    log('Requests: %d calls skipped (not literal or not representable), %d duplicate requests dropped, '
+        '%d pages cut to %d requests, %d calls on other modules ignored' % (
+            len(stats.skipped_calls), stats.dropped_dups, stats.truncated, MAX_REQS_PER_LINE, stats.other_module))
+    for cls, method, text in stats.skipped_calls[:50]:
+        log('  skipped in %s.%s: %s' % (cls.rsplit('.', 1)[-1], method, text[:100]))
+    if len(stats.skipped_calls) > 50:
+        log('  ... and %d more' % (len(stats.skipped_calls) - 50))
+    log('Groups with an ambiguous main page: %d' % len(ambiguous_groups))
+    for ids, tied in ambiguous_groups:
+        log('  ids %s...: %s' % (','.join(str(i) for i in ids[:4]), ' / '.join(tied)))
+    warnings = list(dict.fromkeys(warnings))
+    log('Warnings: %d' % len(warnings))
+    for w in warnings[:200]:
+        log('  ' + w)
+    if len(warnings) > 200:
+        log('  ... and %d more' % (len(warnings) - 200))
+    if chk.errors:
+        log('error: the file written does not validate:')
+        for ln, why in chk.errors[:20]:
+            log('  line %d: %s' % (ln, why))
+        return 1
+    log('Written: %s (%d records, footer ok)' % (pathlib.Path(out_path).resolve(), chk.records))
+    return 0
+
+
+def cmd_check(path, log):
+    p = pathlib.Path(path)
+    if not p.is_file():
+        log('error: %s is not a file' % path)
+        return 1
+    res = check_text(p.read_bytes())
+    if res.errors:
+        log('INVALID %s: %d error(s)' % (path, len(res.errors)))
+        for ln, why in res.errors:
+            log('  line %d: %s' % (ln, why))
+        return 2
+    log('OK %s: %d records, %d cars with a class, %d with a request, %d duplicates' % (
+        path, res.records, len(res.classes), len(res.pages), res.dups))
+    return 0
+
+
+def cmd_seal(path, log):
+    p = pathlib.Path(path)
+    if not p.is_file():
+        log('error: %s is not a file' % path)
+        return 1
+    text = p.read_text(encoding='utf-8', errors='replace')
+    if text.startswith('﻿'):
+        text = text[1:]
+    lines = [ln.rstrip('\r') for ln in text.split('\n')]
+    while lines and lines[-1] == '':
+        lines.pop()
+    # drop an old footer (the last significant line, if it is one)
+    for k in range(len(lines) - 1, -1, -1):
+        s = lines[k].strip()
+        if not s:
+            continue
+        if re.match(r'end\b', s):
+            lines = lines[:k]
+        break
+    first = next((k for k, ln in enumerate(lines) if ln.strip() and not ln.strip().startswith('#')), None)
+    if first is None or not re.fullmatch(r'canbus_library\s+1', lines[first].strip()):
+        log('error: no "%s" header' % HEADER)
+        return 1
+    body = lines[first:]
+    sealed = seal_lines([ln.rstrip() for ln in body])
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        f.write('\n'.join(sealed) + '\n')
+    log('Sealed %s: %s' % (path, sealed[-1]))
+    return cmd_check(path, log)
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description='Builds, validates and seals a canbus library for the FYT launcher.')
+    ap.add_argument('src', nargs='?', help='a decompiled com.syu.canbus: the "sources" folder or any folder above it')
+    ap.add_argument('--out', help='the file to write')
+    ap.add_argument('--mapping', help='the java file that holds the switch on the car id (default: found in <src>)')
+    ap.add_argument('--launcher', metavar='REPO', help='build the library built into the launcher from REPO')
+    ap.add_argument('--seal', metavar='FILE', help='recompute the footer of FILE')
+    ap.add_argument('--check', metavar='FILE', help='validate FILE like the launcher')
+    args = ap.parse_args(argv)
+
+    def log(msg):
+        try:
+            print(msg)
+        except UnicodeEncodeError:
+            print(msg.encode('ascii', 'replace').decode('ascii'))
+
+    if args.check:
+        return cmd_check(args.check, log)
+    if args.seal:
+        return cmd_seal(args.seal, log)
+
+    if args.launcher:
+        repo = pathlib.Path(args.launcher)
+        mapping_path = repo / 'app/src/main/java/com/android/launcher66/settings/CanbusClasses.java'
+        final_path = repo / 'app/src/main/java/com/syu/module/canbus/FinalCanbus.java'
+        sources = repo / 'decompiled_carinfo'
+        if not mapping_path.is_file():
+            log('error: %s not found' % mapping_path)
+            return 1
+        if not sources.is_dir():
+            log('error: %s not found' % sources)
+            return 1
+        out = args.out or str(repo / 'app/src/main/assets/canbus_library.txt')
+        index = SourceIndex(sources)
+        log('Sources: %s (%d classes)' % (sources, len(index.by_fqcn)))
+        return build(args, repo, mapping_path, 'launcher', load_constants(final_path),
+                     'app/src/main/java/com/android/launcher66/settings/CanbusClasses.java', index, out, log)
+
+    if not args.src:
+        ap.print_usage()
+        return 1
+    root = pathlib.Path(args.src)
+    if not root.is_dir():
+        log('error: %s is not a folder' % args.src)
+        return 1
+    index = SourceIndex(root)
+    log('Sources: %s (%d classes)' % (root, len(index.by_fqcn)))
+    if not index.by_fqcn:
+        log('error: no .java files under %s' % root)
+        return 1
+    final = None
+    for p in root.rglob('FinalCanbus.java'):
+        final = p
+        break
+    if args.mapping:
+        mapping_path = pathlib.Path(args.mapping)
+        if not mapping_path.is_file():
+            log('error: %s not found' % args.mapping)
+            return 1
+    else:
+        mapping_path = None
+        for p in root.rglob('ActivityLauncher.java'):
+            if p.as_posix().endswith('com/syu/canbus/ActivityLauncher.java') \
+                    and 'switch (DataCanbus.DATA[1000])' in read_text(p):
+                mapping_path = p
+                break
+        if mapping_path is None:
+            best, best_n = None, 0
+            for p in root.rglob('*.java'):
+                text = read_text(p)
+                if 'DATA[1000]' not in text or 'switch' not in text:
+                    continue
+                toks = lex(text)
+                for sw in find_switches(toks):
+                    if 'DataCanbus.DATA[1000]' in sw[3]:
+                        n = count_pairs(toks, sw[1], sw[2])
+                        if n > best_n:
+                            best, best_n = p, n
+            mapping_path = best
+        if mapping_path is None:
+            log('error: mapping not found: no switch (DataCanbus.DATA[1000]) with class assignments under %s. '
+                'Pass the file with --mapping, e.g. --mapping ...\\com\\syu\\canbus\\ActivityLauncher.java' % root)
+            return 1
+    try:
+        label = mapping_path.relative_to(root).as_posix()
+    except ValueError:
+        label = mapping_path.name
+    out = args.out or ('canbus_library_%s.txt' % datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+    return build(args, root, mapping_path, 'any', load_constants(final), label, index, out, log)
+
+
+if __name__ == '__main__':
+    sys.exit(main())

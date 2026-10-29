@@ -4,3 +4,6 @@
 # Magisk module scripts run under /system/bin/sh: CRLF line endings would break them.
 vdhost/magisk/** text eol=lf
 vdhost/tools/*.sh text eol=lf
+
+# The canbus library build script for Windows: a batch file with LF endings misbehaves in cmd.exe.
+canbus_library/*.bat text eol=crlf
