@@ -550,7 +550,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 final String appType = appTypeText(appContext);
                 mHandler.post(() -> {
                     if (isAdded() && appVersion != null) {
-                        appVersion.setSummary(appType + "\n" + deviceLine + "\n" + buildLine);
+                        appVersion.setSummary(appType + "\n" + buildLine + "\n" + deviceLine);
                     }
                 });
             }, "AppTypeText").start();
