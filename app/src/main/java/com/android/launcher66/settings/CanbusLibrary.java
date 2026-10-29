@@ -34,15 +34,18 @@ import java.util.zip.CRC32;
 
 /**
  * The canbus library: for each car id the class of the screen FYT's canbus app opens and, for the cars that
- * need one, the requests (canbus commands) its fuel screens send when they open. The format (version 1) is
- * described in canbus_library/README.md, which also holds the script that builds a file of it.
+ * need one, the requests (canbus commands) its fuel screens send when they open and the codes of its fuel
+ * consumption and range. The format (version 2; version 1 files are still read) is described in
+ * canbus_library/README.md, which also holds the script that builds a file of it.
  *
  * Everything in here is plain Java (no android.*), so that the parser, the merge and the checks run in JVM
  * tests. A {@link Library} never changes; a merge makes a new one.
  */
 public final class CanbusLibrary {
 
-    public static final String HEADER = "canbus_library 1";
+    public static final String HEADER = "canbus_library 2";
+    /** The highest code the canbus module can report (FinalCanbus.U_CNT_MAX - 1). */
+    static final int MAX_CODE = 1199;
     public static final long MAX_BYTES = 2L * 1024 * 1024;
     public static final int MAX_LINES = 200_000;
     public static final int MAX_ERRORS = 200;
@@ -57,7 +60,7 @@ public final class CanbusLibrary {
     private static final Pattern REQUEST = Pattern.compile("\\s*([0-9]{1,6})(?::\\s*(-?[0-9]+(?:\\s*,\\s*-?[0-9]+)*))?\\s*");
     private static final Pattern FOOTER = Pattern.compile("end\\s+([0-9]+)\\s+([0-9a-f]{8})");
     private static final Pattern FOOTER_LIKE = Pattern.compile("end\\b.*");
-    private static final Pattern HEADER_LINE = Pattern.compile("canbus_library\\s+1");
+    private static final Pattern HEADER_LINE = Pattern.compile("canbus_library\\s+([12])");
 
     private CanbusLibrary() {
     }
@@ -208,6 +211,33 @@ public final class CanbusLibrary {
         }
     }
 
+    /** The codes a car reports its fuel consumption and its range under (DataCanbus.DATA indices); -1 = unknown. */
+    public static final class CarCodes {
+        public final int fuel;
+        public final int range;
+
+        public CarCodes(int fuel, int range) {
+            this.fuel = fuel;
+            this.range = range;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof CarCodes && ((CarCodes) o).fuel == fuel && ((CarCodes) o).range == range;
+        }
+
+        @Override
+        public int hashCode() {
+            return fuel * 31 + range;
+        }
+
+        /** The record text after the ids: {@code fuel | range}, {@code -} for an unknown code. */
+        @Override
+        public String toString() {
+            return (fuel < 0 ? "-" : String.valueOf(fuel)) + " | " + (range < 0 ? "-" : String.valueOf(range));
+        }
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Progress, cancellation, results
     // ---------------------------------------------------------------------------------------------
@@ -287,7 +317,7 @@ public final class CanbusLibrary {
 
     /** A record of the file that replaced a different one of the base. */
     public static final class Replacement {
-        /** 'C', 'R' or 'N'. */
+        /** 'C', 'R', 'N' or 'S'. */
         public final char kind;
         public final int id;
         /** The page of an R record, else null. */
@@ -315,6 +345,7 @@ public final class CanbusLibrary {
         public final Counts classes = new Counts();
         public final Counts requests = new Counts();
         public final Counts noRequest = new Counts();
+        public final Counts codes = new Counts();
         public final List<Replacement> replacements = new ArrayList<>();
 
         MergeResult(Library library) {
@@ -322,15 +353,15 @@ public final class CanbusLibrary {
         }
 
         public int added() {
-            return classes.added + requests.added + noRequest.added;
+            return classes.added + requests.added + noRequest.added + codes.added;
         }
 
         public int duplicates() {
-            return classes.duplicate + requests.duplicate + noRequest.duplicate;
+            return classes.duplicate + requests.duplicate + noRequest.duplicate + codes.duplicate;
         }
 
         public int replaced() {
-            return classes.replaced + requests.replaced + noRequest.replaced;
+            return classes.replaced + requests.replaced + noRequest.replaced + codes.replaced;
         }
     }
 
@@ -340,16 +371,24 @@ public final class CanbusLibrary {
 
     public static final class Library {
         public static final Library EMPTY = new Library(new TreeMap<Integer, CarClass>(),
-                new TreeMap<Integer, List<Page>>(), new TreeSet<Integer>());
+                new TreeMap<Integer, List<Page>>(), new TreeSet<Integer>(), new TreeMap<Integer, CarCodes>());
 
         private final TreeMap<Integer, CarClass> classes;
         private final TreeMap<Integer, List<Page>> pages;
         private final TreeSet<Integer> noRequest;
+        private final TreeMap<Integer, CarCodes> codes;
 
-        Library(TreeMap<Integer, CarClass> classes, TreeMap<Integer, List<Page>> pages, TreeSet<Integer> noRequest) {
+        Library(TreeMap<Integer, CarClass> classes, TreeMap<Integer, List<Page>> pages, TreeSet<Integer> noRequest,
+                TreeMap<Integer, CarCodes> codes) {
             this.classes = classes;
             this.pages = pages;
             this.noRequest = noRequest;
+            this.codes = codes;
+        }
+
+        /** The fuel and range codes of a car, or null if the library has none for it. */
+        public CarCodes codesFor(int id) {
+            return codes.get(id);
         }
 
         /** The fuel pages of a car and their requests, main page first; empty = the car needs no request. */
@@ -400,9 +439,9 @@ public final class CanbusLibrary {
             return pages.size();
         }
 
-        /** Records the way a merge counts them: C per car, R per car and page, N per car. */
+        /** Records the way a merge counts them: C per car, R per car and page, N per car, S per car. */
         public int recordCount() {
-            int n = classes.size() + noRequest.size();
+            int n = classes.size() + noRequest.size() + codes.size();
             for (List<Page> p : pages.values()) {
                 n += p.size();
             }
@@ -410,7 +449,7 @@ public final class CanbusLibrary {
         }
 
         public boolean isEmpty() {
-            return classes.isEmpty() && pages.isEmpty() && noRequest.isEmpty();
+            return classes.isEmpty() && pages.isEmpty() && noRequest.isEmpty() && codes.isEmpty();
         }
 
         /** {@code base.mergedWith(file)}: the file wins where both have a record for the same car (and page). */
@@ -418,11 +457,13 @@ public final class CanbusLibrary {
             TreeMap<Integer, CarClass> c = new TreeMap<>(classes);
             TreeMap<Integer, List<Page>> p = new TreeMap<>(pages);
             TreeSet<Integer> n = new TreeSet<>(noRequest);
+            TreeMap<Integer, CarCodes> k = new TreeMap<>(codes);
             MergeResult res;
             List<Replacement> replacements = new ArrayList<>();
             Counts cc = new Counts();
             Counts rc = new Counts();
             Counts nc = new Counts();
+            Counts kc = new Counts();
 
             for (Map.Entry<Integer, CarClass> e : file.classes.entrySet()) {
                 CarClass old = c.get(e.getKey());
@@ -493,10 +534,24 @@ public final class CanbusLibrary {
                 p.remove(id);
             }
 
-            res = new MergeResult(new Library(c, p, n));
+            for (Map.Entry<Integer, CarCodes> e : file.codes.entrySet()) {
+                CarCodes old = k.get(e.getKey());
+                if (old == null) {
+                    kc.added++;
+                } else if (old.equals(e.getValue())) {
+                    kc.duplicate++;
+                } else {
+                    kc.replaced++;
+                    replacements.add(new Replacement('S', e.getKey(), null, old.toString(), e.getValue().toString()));
+                }
+                k.put(e.getKey(), e.getValue());
+            }
+
+            res = new MergeResult(new Library(c, p, n, k));
             copy(cc, res.classes);
             copy(rc, res.requests);
             copy(nc, res.noRequest);
+            copy(kc, res.codes);
             res.replacements.addAll(replacements);
             return res;
         }
@@ -561,6 +616,21 @@ public final class CanbusLibrary {
                     body.append("N ").append(ids).append('\n');
                 }
             }
+
+            Map<CarCodes, List<Integer>> byCodes = new LinkedHashMap<>();
+            for (Map.Entry<Integer, CarCodes> e : codes.entrySet()) {
+                List<Integer> ids = byCodes.get(e.getValue());
+                if (ids == null) {
+                    ids = new ArrayList<>();
+                    byCodes.put(e.getValue(), ids);
+                }
+                ids.add(e.getKey());
+            }
+            for (Map.Entry<CarCodes, List<Integer>> e : byCodes.entrySet()) {
+                for (String ids : idChunks(e.getValue())) {
+                    body.append("S ").append(ids).append(" | ").append(e.getKey()).append('\n');
+                }
+            }
             return seal(body.toString());
         }
 
@@ -599,7 +669,7 @@ public final class CanbusLibrary {
         while (start < body.length()) {
             int nl = body.indexOf('\n', start);
             String line = body.substring(start, nl);
-            if (line.startsWith("C ") || line.startsWith("R ") || line.startsWith("N ")) {
+            if (line.startsWith("C ") || line.startsWith("R ") || line.startsWith("N ") || line.startsWith("S ")) {
                 records++;
             }
             crc.update((line + "\n").getBytes(StandardCharsets.UTF_8));
@@ -637,6 +707,8 @@ public final class CanbusLibrary {
         private final TreeMap<Integer, CarClass> classes = new TreeMap<>();
         private final TreeMap<Integer, List<Page>> pages = new TreeMap<>();
         private final TreeSet<Integer> noRequest = new TreeSet<>();
+        private final TreeMap<Integer, CarCodes> codes = new TreeMap<>();
+        private int version;
         private int recordLines;
         private int duplicates;
 
@@ -734,10 +806,12 @@ public final class CanbusLibrary {
                 if (!headerSeen) {
                     headerSeen = true;
                     headerLine = lineNo;
-                    if (!HEADER_LINE.matcher(s).matches()) {
-                        err(lineNo, "missing or unsupported header (expected \"" + HEADER + "\")");
+                    Matcher hm = HEADER_LINE.matcher(s);
+                    if (!hm.matches()) {
+                        err(lineNo, "missing or unsupported header (expected \"canbus_library 1\" or \"" + HEADER + "\")");
                         return result(-1, null, null);
                     }
+                    version = Integer.parseInt(hm.group(1));
                     crc.update(raw);
                     continue;
                 }
@@ -767,7 +841,7 @@ public final class CanbusLibrary {
                 progress.onBytes(bytes, sizeBytes);
             }
             if (!headerSeen) {
-                err(0, "empty file: missing header \"" + HEADER + "\"");
+                err(0, "empty file: missing header \"canbus_library 1\" or \"" + HEADER + "\"");
             } else if (!footerSeen) {
                 err(lineNo, "missing footer \"end <records> <crc32>\"");
             } else if (declared >= 0) {
@@ -788,7 +862,7 @@ public final class CanbusLibrary {
                 for (Map.Entry<Integer, List<Page>> e : pages.entrySet()) {
                     frozen.put(e.getKey(), Collections.unmodifiableList(new ArrayList<>(e.getValue())));
                 }
-                lib = new Library(new TreeMap<>(classes), frozen, new TreeSet<>(noRequest));
+                lib = new Library(new TreeMap<>(classes), frozen, new TreeSet<>(noRequest), new TreeMap<>(codes));
             }
             return new ParseResult(lib, new ArrayList<>(errors), duplicates, recordLines,
                     declared, declaredCrc, computedCrc);
@@ -796,7 +870,7 @@ public final class CanbusLibrary {
 
         private void record(int no, String s) {
             char kind = s.charAt(0);
-            if ((kind != 'C' && kind != 'R' && kind != 'N') || (s.length() > 1 && !Character.isWhitespace(s.charAt(1)))) {
+            if ((kind != 'C' && kind != 'R' && kind != 'N' && kind != 'S') || (s.length() > 1 && !Character.isWhitespace(s.charAt(1)))) {
                 err(no, "unknown record \"" + (s.length() > 20 ? s.substring(0, 20) : s) + "\"");
                 return;
             }
@@ -818,6 +892,9 @@ public final class CanbusLibrary {
                     break;
                 case 'C':
                     classRecord(no, f, ids);
+                    break;
+                case 'S':
+                    codesRecord(no, f, ids);
                     break;
                 default:
                     pageRecord(no, f, ids);
@@ -897,6 +974,44 @@ public final class CanbusLibrary {
                     duplicates++;
                 } else {
                     err(no, "id " + id + " has two different C records");
+                }
+            }
+        }
+
+        private void codesRecord(int no, String[] f, int[] ids) {
+            if (version < 2) {
+                err(no, "S records need version 2");
+                return;
+            }
+            if (f.length != 3) {
+                err(no, "S takes \"ids | fuel code | range code\"");
+                return;
+            }
+            int[] pair = new int[2];
+            for (int i = 0; i < 2; i++) {
+                String t = f[i + 1];
+                if (t.equals("-")) {
+                    pair[i] = -1;
+                } else if (t.matches("[0-9]{1,4}") && Integer.parseInt(t) <= MAX_CODE) {
+                    pair[i] = Integer.parseInt(t);
+                } else {
+                    err(no, "bad code \"" + clip(t) + "\" (0.." + MAX_CODE + " or -)");
+                    return;
+                }
+            }
+            if (pair[0] < 0 && pair[1] < 0) {
+                err(no, "S with nothing to say (\"- | -\")");
+                return;
+            }
+            CarCodes rec = new CarCodes(pair[0], pair[1]);
+            for (int id : ids) {
+                CarCodes old = codes.get(id);
+                if (old == null) {
+                    codes.put(id, rec);
+                } else if (old.equals(rec)) {
+                    duplicates++;
+                } else {
+                    err(no, "id " + id + " has two different S records");
                 }
             }
         }

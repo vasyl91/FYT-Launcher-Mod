@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Builds a canbus library for the FYT launcher: the screen class of every car and the requests of its
-fuel/range screens.
+"""Builds a canbus library for the FYT launcher: the screen class of every car, the requests of its
+fuel/range screens and the codes of its fuel consumption and range.
 
     py build_canbus_library.py <src> [--out FILE] [--mapping FILE]   from a decompiled com.syu.canbus
     py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher
@@ -8,7 +8,16 @@ fuel/range screens.
     py build_canbus_library.py --seal FILE                           recomputes the footer of an edited file
     py build_canbus_library.py --check FILE                          validates a file like the launcher does
 
-The file format (version 1) is described in README.md next to this script. Python 3.8+, standard library only.
+Format (version 2; version 1 files, without S records, are still read; the full description is in README.md next to this script):
+
+    canbus_library 2
+    C <ids> | <class> [| <alt> | portrait | fytver:<tok>,...]     screen class of the cars
+    R <ids> | <page> | <cmd>[:<i>,...]; ...                        a fuel page and the requests it sends
+    N <ids>                                                        the cars need no request
+    S <ids> | <fuel> | <range>                                     codes 0..1199 or "-": fuel consumption and range
+    end <records> <crc32>
+
+Python 3.8+, standard library only.
 Exit code: 0 success, 1 bad input, 2 an invalid file in --check.
 """
 import argparse
@@ -20,7 +29,8 @@ import re
 import sys
 import zlib
 
-HEADER = 'canbus_library 1'
+HEADER = 'canbus_library 2'
+MAX_CODE = 1199
 MAX_BYTES = 2 * 1024 * 1024
 MAX_LINES = 200000
 MAX_ERRORS = 200
@@ -32,6 +42,14 @@ CLASS_RE = re.compile(r'com\.syu(\.[A-Za-z_$][A-Za-z0-9_$]*)+')
 TOKEN_RE_FYTVER = re.compile(r'[A-Za-z0-9]{1,16}')
 PAGE_NAME_RE = re.compile(r'(?i)(oil|mile|trip|fuel|consum|drivinginfo)')
 FYTVER_PATH = '/sys/fytver/fyt_bin_version'
+# the role of a method of a fuel page, decided by its name: the fuel consumption now and the range
+FUEL_NAME_RE = re.compile(r'(?i)(oil|fuel).*(expend|consum|cost)|consum.*(oil|fuel)|cur.*oil')
+FUEL_NOT_RE = re.compile(r'(?i)ave|avg|average|history|total|trip|unit|max|min|mark')
+RANGE_NAME_RE = re.compile(r'(?i)driving.?mile|drivable|drivenable|remain|endurance|range|last.?mile|can.?run')
+RANGE_NOT_RE = re.compile(r'(?i)total|trip|unit|history|dived|driven')
+DATA_CODE_RE = re.compile(r'\bDATA\s*\[\s*([0-9]+)\s*\]')
+METHOD_RE = re.compile(r'\b(\w+)\s*\(([^()]*)\)\s*(?:throws\s+[\w.,\s]+)?\{')
+NOT_METHODS = frozenset(('if', 'for', 'while', 'switch', 'catch', 'synchronized', 'try', 'return', 'new', 'else'))
 
 
 # --------------------------------------------------------------------------------------------------
@@ -569,6 +587,7 @@ class Source:
         self._imports = None
         self._refs = None
         self._requests = None
+        self._codes = None
 
     @property
     def text(self):
@@ -803,6 +822,44 @@ def extract_requests(src, stats):
     return uniq
 
 
+def extract_codes(src):
+    """The fuel and range codes of a page, by the names of its methods: {'fuel': [(code, method)...], 'range': [...]}.
+    The code of a method is the first DataCanbus.DATA[n] with n < 1000 in its body (1000 and above are general
+    codes, such as the car id)."""
+    if src._codes is not None:
+        return src._codes
+    masked = src.masked
+    out = {'fuel': [], 'range': []}
+    depth = 0
+    last = 0
+    for m in METHOD_RE.finditer(masked):
+        name = m.group(1)
+        if name in NOT_METHODS:
+            continue
+        depth += masked.count('{', last, m.start()) - masked.count('}', last, m.start())
+        last = m.start()
+        if depth != 1:
+            continue
+        brace = m.end() - 1
+        end = match_close(masked, brace, '{', '}')
+        if end < 0:
+            continue
+        # "drivenable" holds "driven", which the range rule leaves out
+        role = None
+        if FUEL_NAME_RE.search(name) and not FUEL_NOT_RE.search(name):
+            role = 'fuel'
+        elif RANGE_NAME_RE.search(name) and not RANGE_NOT_RE.search(re.sub(r'(?i)drivenable', '', name)):
+            role = 'range'
+        if role is None:
+            continue
+        for c in DATA_CODE_RE.finditer(masked, brace, end):
+            if int(c.group(1)) < 1000:
+                out[role].append((int(c.group(1)), name))
+                break
+    src._codes = out
+    return out
+
+
 def parse_cmd_args(args):
     """(cmd, (ints...)) for the forms the library has, or None for a call it cannot represent."""
     if not args or not args[0]:
@@ -873,7 +930,7 @@ def crc_of_lines(lines):
 
 def seal_lines(lines):
     """`lines` (header ... last record, no footer) plus the footer."""
-    records = sum(1 for ln in lines if ln[:2] in ('C ', 'R ', 'N '))
+    records = sum(1 for ln in lines if ln[:2] in ('C ', 'R ', 'N ', 'S '))
     return lines + ['end %d %08x' % (records, crc_of_lines(lines))]
 
 
@@ -913,6 +970,8 @@ class Checked:
         self.classes = {}         # id -> (class, alt, cond, tokens)
         self.pages = {}           # id -> OrderedDict(page -> reqs)
         self.no_request = set()
+        self.codes = {}           # id -> (fuel, range), None = unknown
+        self.version = 0
         self.records = 0
         self.dups = 0
         self.declared = None
@@ -951,9 +1010,11 @@ def check_text(raw):
             continue
         if header_at is None:
             header_at = no
-            if not re.fullmatch(r'canbus_library\s+1', s):
-                res.err(no, 'missing or unsupported header (expected "%s")' % HEADER)
+            hm = re.fullmatch(r'canbus_library\s+([12])', s)
+            if not hm:
+                res.err(no, 'missing or unsupported header (expected "canbus_library 1" or "canbus_library 2")')
                 return res
+            res.version = int(hm.group(1))
             continue
         m = re.fullmatch(r'end\s+([0-9]+)\s+([0-9a-f]{8})', s)
         if m:
@@ -966,7 +1027,7 @@ def check_text(raw):
             footer_at = no
             continue
         kind = s[0]
-        if kind not in 'CRN' or (len(s) > 1 and not s[1].isspace()):
+        if kind not in 'CRNS' or (len(s) > 1 and not s[1].isspace()):
             res.err(no, 'unknown record "%s"' % s[:20])
             continue
         res.records += 1
@@ -1025,6 +1086,38 @@ def check_text(raw):
                 else:
                     res.err(no, 'id %d has two different C records' % i)
             continue
+        if kind == 'S':
+            if res.version < 2:
+                res.err(no, 'S records need version 2')
+                continue
+            if len(fields) != 3:
+                res.err(no, 'S takes "ids | fuel code | range code"')
+                continue
+            pair, bad = [], False
+            for f in fields[1:]:
+                if f == '-':
+                    pair.append(None)
+                elif re.fullmatch(r'[0-9]{1,4}', f) and int(f) <= MAX_CODE:
+                    pair.append(int(f))
+                else:
+                    res.err(no, 'bad code "%s" (0..%d or -)' % (f[:20], MAX_CODE))
+                    bad = True
+                    break
+            if bad:
+                continue
+            if pair[0] is None and pair[1] is None:
+                res.err(no, 'S with nothing to say ("- | -")')
+                continue
+            pair = tuple(pair)
+            for i in ids:
+                old = res.codes.get(i)
+                if old is None:
+                    res.codes[i] = pair
+                elif old == pair:
+                    res.dups += 1
+                else:
+                    res.err(no, 'id %d has two different S records' % i)
+            continue
         # R
         if len(fields) != 3:
             res.err(no, 'R takes "ids | page | requests"')
@@ -1063,7 +1156,7 @@ def check_text(raw):
             else:
                 pages[page] = reqs
     if header_at is None:
-        res.err(0, 'empty file: missing header "%s"' % HEADER)
+        res.err(0, 'empty file: missing header "canbus_library 1" or "canbus_library 2"')
     elif footer_at is None:
         res.err(len(lines), 'missing footer "end <records> <crc32>"')
     elif res.declared is not None:
@@ -1190,32 +1283,44 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
 
     pages_of = {}
     page_keys = {}
+    codes_of = {}    # id -> (fuel, range), None = unknown
     for cid, (cls, alt, cond, toks) in class_records.items():
-        if cid in no_request:
-            continue
         depth = {}
         for fq in (cls, alt):
             if fq:
                 for k, d in reach(fq).items():
                     if k not in depth or d < depth[k]:
                         depth[k] = d
-        found = []
-        for fq, d in depth.items():
-            src = index.by_fqcn[fq]
-            if not PAGE_NAME_RE.search(src.simple):
-                continue
-            reqs = extract_requests(src, stats)
-            if reqs:
-                found.append((fq, d, reqs))
-        if not found:
-            continue
         low = cid & 0xFFFF
 
         def key(item):
             simple = item[0].rsplit('.', 1)[-1]
             return (('_%d_' % low) not in simple, 'Page1' not in simple, 'Index' not in simple, item[1], simple)
 
-        found.sort(key=key)
+        candidates = [(fq, d) for fq, d in depth.items() if PAGE_NAME_RE.search(index.by_fqcn[fq].simple)]
+        candidates.sort(key=key)
+        # the codes: from the first page that gives each of them, whether or not it sends a request
+        pair = [None, None]
+        for fq, d in candidates:
+            found_codes = extract_codes(index.by_fqcn[fq])
+            for slot, role in ((0, 'fuel'), (1, 'range')):
+                if pair[slot] is None and found_codes[role]:
+                    pair[slot] = found_codes[role][0][0]
+                    if len({c for c, _ in found_codes[role]}) > 1:
+                        warn('%s: several %s codes %s, the first (%s) is used' % (
+                            fq.rsplit('.', 1)[-1], role, ', '.join('%d (%s)' % cm for cm in found_codes[role]),
+                            found_codes[role][0][1]))
+        if pair != [None, None]:
+            codes_of[cid] = tuple(pair)
+        if cid in no_request:
+            continue
+        found = []
+        for fq, d in candidates:
+            reqs = extract_requests(index.by_fqcn[fq], stats)
+            if reqs:
+                found.append((fq, d, reqs))
+        if not found:
+            continue
         if len(found) > MAX_PAGES_PER_ID:
             warn('id %d: %d fuel pages, only the first %d kept' % (cid, len(found), MAX_PAGES_PER_ID))
             found = found[:MAX_PAGES_PER_ID]
@@ -1241,8 +1346,9 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
            source_line,
            '# C: car ids and the class of their screen (optionally another class for a portrait screen or for a firmware).',
            '# R: car ids and a fuel page with the requests it sends when it opens, in order.',
-           '# Cars with a class: %d, with a request: %d, request groups: %d' % (
-               len(class_records), sum(len(v) for v in groups.values()), len(groups))]
+           '# S: car ids and the codes of their fuel consumption and range (DataCanbus.DATA indices, - = unknown).',
+           '# Cars with a class: %d, with a request: %d, request groups: %d, with fuel/range codes: %d' % (
+               len(class_records), sum(len(v) for v in groups.values()), len(groups), len(codes_of))]
 
     def chunks(ids):
         for i in range(0, len(ids), MAX_IDS_PER_LINE):
@@ -1275,6 +1381,15 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
             for part in chunks(ids):
                 out.append('R %s | %s | %s' % (','.join(str(i) for i in part), fq, '; '.join(req_text(r) for r in reqs)))
                 r_lines += 1
+    s_lines = 0
+    by_codes = collections.OrderedDict()
+    for cid in sorted(codes_of):
+        by_codes.setdefault(codes_of[cid], []).append(cid)
+    for pair, ids in sorted(by_codes.items(), key=lambda kv: kv[1][0]):
+        for part in chunks(ids):
+            out.append('S %s | %s | %s' % (','.join(str(i) for i in part),
+                                           '-' if pair[0] is None else pair[0], '-' if pair[1] is None else pair[1]))
+            s_lines += 1
     sealed = seal_lines(out)
     pathlib.Path(out_path).parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
@@ -1290,6 +1405,9 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
         c_lines, len(class_records), cond_counts['PORTRAIT'], cond_counts['FYTVER']))
     log('R records: %d lines; ids with a request: %d; groups: %d; pages: %d' % (
         r_lines, sum(len(v) for v in groups.values()), len(groups), len(page_names)))
+    log('S records: %d lines; ids with both codes: %d, only fuel: %d, only range: %d' % (
+        s_lines, sum(1 for v in codes_of.values() if None not in v),
+        sum(1 for v in codes_of.values() if v[1] is None), sum(1 for v in codes_of.values() if v[0] is None)))
     log('Requests: %d calls skipped (not literal or not representable), %d duplicate requests dropped, '
         '%d pages cut to %d requests, %d calls on other modules ignored' % (
             len(stats.skipped_calls), stats.dropped_dups, stats.truncated, MAX_REQS_PER_LINE, stats.other_module))
@@ -1326,8 +1444,8 @@ def cmd_check(path, log):
         for ln, why in res.errors:
             log('  line %d: %s' % (ln, why))
         return 2
-    log('OK %s: %d records, %d cars with a class, %d with a request, %d duplicates' % (
-        path, res.records, len(res.classes), len(res.pages), res.dups))
+    log('OK %s (version %d): %d records, %d cars with a class, %d with a request, %d with fuel/range codes, '
+        '%d duplicates' % (path, res.version, res.records, len(res.classes), len(res.pages), len(res.codes), res.dups))
     return 0
 
 
@@ -1351,8 +1469,8 @@ def cmd_seal(path, log):
             lines = lines[:k]
         break
     first = next((k for k, ln in enumerate(lines) if ln.strip() and not ln.strip().startswith('#')), None)
-    if first is None or not re.fullmatch(r'canbus_library\s+1', lines[first].strip()):
-        log('error: no "%s" header' % HEADER)
+    if first is None or not re.fullmatch(r'canbus_library\s+[12]', lines[first].strip()):
+        log('error: no "canbus_library 1" or "canbus_library 2" header')
         return 1
     body = lines[first:]
     sealed = seal_lines([ln.rstrip() for ln in body])

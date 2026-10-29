@@ -87,9 +87,9 @@ py build_canbus_library.py --check FILE                          validate a file
 
 Exit code: 0 success, 1 bad input, 2 an invalid file in `--check`.
 
-## 6. File format (version 1)
+## 6. File format (version 2)
 
-A UTF-8 text file. The first significant line is `canbus_library 1`. Empty lines and lines starting with `#` are ignored
+A UTF-8 text file. The first significant line is `canbus_library 2`. Files in version 1 (`canbus_library 1`, without `S` records) are still read, by the launcher and by `--check`. Empty lines and lines starting with `#` are ignored
 (a BOM at the start is allowed). Records (fields are separated by `|`, spaces around fields are allowed):
 
 ```
@@ -98,6 +98,7 @@ C <ids> | <class> | <alt> | portrait                   <alt> when the screen is 
 C <ids> | <class> | <alt> | fytver:<tok>[,<tok>...]    <alt> when /sys/fytver/fyt_bin_version contains one of the tokens
 R <ids> | <page> | <req>[; <req>...]                   a fuel page and the requests it sends, in order
 N <ids>                                                the car needs no request (switches off a false match)
+S <ids> | <fuel> | <range>                             version 2 only: the codes of the car's fuel consumption and range
 end <records> <crc32>                                  footer, the last significant line
 ```
 
@@ -108,14 +109,19 @@ end <records> <crc32>                                  footer, the last signific
 * `<req>`: `cmd` or `cmd:i,i,...`; `cmd` is 0..9999, each `i` is -65536..65536, at most 8 numbers. At most 8 requests in an `R` line.
   A request is what the original screen sends with `DataCanbus.PROXY.cmd(cmd, new int[]{i, ...}, null, null)`.
 
+* `<fuel>`, `<range>`: the `DataCanbus.DATA` index the car reports the momentary fuel consumption and the range under,
+  `0..1199` (the whole canbus module), or `-` if unknown. `S 5 | - | -` is an error ("nothing to say"). In a version 1 file an `S` is an error
+  (`S records need version 2`).
+
 **Consistency inside one file**
 
 * one car id has at most one `C` record;
 * `R` pages are unique per (id, page), at most 10 pages per id;
 * `N` and `R` for the same id exclude each other;
+* one car id has at most one `S` record;
 * an identical record repeated is a *duplicate* (skipped and counted), a contradicting one is an error.
 
-**Footer.** `<records>` is the number of `C`/`R`/`N` lines. `<crc32>` is 8 lowercase hex digits: the CRC-32
+**Footer.** `<records>` is the number of `C`/`R`/`N`/`S` lines. `<crc32>` is 8 lowercase hex digits: the CRC-32
 (Java `java.util.zip.CRC32` = Python `zlib.crc32`) over the UTF-8 bytes of all lines from the header line up to and including the line
 before `end`, each line without its `\r`/`\n` and followed by one `\n` (a BOM is not counted). Only empty lines may follow `end`.
 
@@ -130,18 +136,20 @@ as *new*, *duplicate* or *replaced*:
   with the pages of the file first (in the file's order), then the pages of the base that the file does not mention.
   If the base has `N` for that id, the `N` is dropped.
 * `N`, per id: the base has `N` = duplicate; the base has `R` pages = replaced (the pages are dropped); otherwise new.
+* `S`, per car id: not in the base = new; identical = duplicate; different = replaced (the file wins; the report shows the old and the new value).
 * Records for different car ids never affect each other.
 
 Example (the footer values are only an example; the script computes the real ones):
 
 ```
-canbus_library 1
+canbus_library 2
 C 163,221 | com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi
 C 274 | com.syu.carinfo.accord.ActivityAccord7Index | com.syu.carinfo.xp.psa_all.XpPsaAllIndexActi | portrait
 R 163,221 | com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti | 70:51; 29:0
 R 19 | com.syu.carinfo.honda.HondaTripActi | 100:1; 100:3
 N 1
-end 5 1a2b3c4d
+S 163,221 | 102 | 103
+end 6 1a2b3c4d
 ```
 
 ## 7. How the script decides
@@ -157,4 +165,13 @@ end 5 1a2b3c4d
 * **Pages.** Starting from the car's class it follows `X.class` references (3 levels). A class whose name contains `oil`, `mile`, `trip`, `fuel`, `consum`
   or `drivinginfo` and that sends `DataCanbus.PROXY.cmd(...)` directly in `onCreate`, `onStart` or `onResume` is a fuel page. Calls inside click listeners,
   anonymous classes and lambdas are not requests of the page. Pages are ordered: name with `_<id & 0xFFFF>_`, then `Page1`, then `Index`, then the shallower, then by name.
+* **Fuel and range codes (`S`).** The candidate pages are the ones of the `R` rule (same search, same order) but they do not have to send a request:
+  most cars report their values without one. In each page the script reads the methods of the class and decides the role by the method's name:
+  *fuel* = `(oil|fuel).*(expend|consum|cost)`, `consum.*(oil|fuel)` or `cur.*oil`, but not a name with `ave`, `avg`, `average`, `history`, `total`, `trip`, `unit`, `max`, `min` or `mark`;
+  *range* = `driving.?mile`, `drivable`, `drivenable`, `remain`, `endurance`, `range`, `last.?mile` or `can.?run`, but not `total`, `trip`, `unit`, `history`, `dived` or `driven`
+  (`drivenable` is read as a range name although it contains `driven`). The code of a method is the first `DataCanbus.DATA[n]` with `n < 1000` in its body
+  (1000 and above are general codes, such as the car id). A car gets the fuel code from the first page that has one and the range code from the first page that has one,
+  independently. Two methods of the same role in one page with different codes: the first in the source is used and the script warns.
+  The codes are those of the source: the library built from `decompiled_carinfo` knows `102 | 103` for the PSA CAN box (`RZC_BZ408OilMilePage1Acti`),
+  the one built from your `com.syu.canbus` knows `91 | 92`.
 * The same repeated request in one page is kept once; a page with more than 8 requests is cut to the first 8.

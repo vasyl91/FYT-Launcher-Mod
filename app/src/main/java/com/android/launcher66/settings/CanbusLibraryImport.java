@@ -326,6 +326,7 @@ final class CanbusLibraryImport {
             appendCounts(sb, "C (screen classes, per car)", merged.classes);
             appendCounts(sb, "R (fuel pages, per car and page)", merged.requests);
             appendCounts(sb, "N (no request, per car)", merged.noRequest);
+            appendCounts(sb, "S (fuel and range codes, per car)", merged.codes);
             sb.append('\n');
         }
         if (before != null) {

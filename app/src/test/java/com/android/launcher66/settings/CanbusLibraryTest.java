@@ -120,7 +120,7 @@ class CanbusLibraryTest {
         assertError("C 1 | com.syu.a.B\nend 1 00000000\n", 1, "header");
         assertError("", 0, "missing header");
         assertError("# only a comment\n", 0, "missing header");
-        assertError("canbus_library 2\nend 0 00000000\n", 1, "header");
+        assertError("canbus_library 3\nend 0 00000000\n", 1, "header");
     }
 
     @Test
@@ -364,6 +364,90 @@ class CanbusLibraryTest {
         int footerAt = text.lastIndexOf("\nend ") + 1;
         assertTrue(footerAt > 0);
         assertEquals(text, CanbusLibrary.seal(text.substring(0, footerAt)));
+    }
+
+    // ---- S records: the fuel and range codes of a car (version 2)
+
+    @Test
+    void version1ParsesWithoutCodesAndVersion2WithThem() {
+        Library v1 = lib("canbus_library 1\nC 1 | com.syu.a.One\n");
+        assertNull(v1.codesFor(1));
+        Library v2 = lib("canbus_library 2\nC 1 | com.syu.a.One\nS 1,5 | 102 | 103\nS 7 | 91 | -\nS 8 | - | 92\n");
+        assertEquals(new CanbusLibrary.CarCodes(102, 103), v2.codesFor(1));
+        assertEquals(new CanbusLibrary.CarCodes(102, 103), v2.codesFor(5));
+        assertEquals(91, v2.codesFor(7).fuel);
+        assertEquals(-1, v2.codesFor(7).range);
+        assertEquals(-1, v2.codesFor(8).fuel);
+        assertEquals("91 | -", v2.codesFor(7).toString());
+        assertNull(v2.codesFor(2));
+        assertEquals(1 + 4, v2.recordCount());
+    }
+
+    @Test
+    void anSRecordInVersion1IsAnError() {
+        assertError(CanbusLibrary.seal("canbus_library 1\nS 1 | 102 | 103\n"), 2, "S records need version 2");
+    }
+
+    @Test
+    void badFieldsOfAnSRecord() {
+        assertError(CanbusLibrary.seal("canbus_library 2\nS 1 | 1200 | 103\n"), 2, "bad code");
+        assertError(CanbusLibrary.seal("canbus_library 2\nS 1 | 102 | x\n"), 2, "bad code");
+        assertError(CanbusLibrary.seal("canbus_library 2\nS 1 | -1 | 103\n"), 2, "bad code");
+        assertError(CanbusLibrary.seal("canbus_library 2\nS 5 | - | -\n"), 2, "nothing to say");
+        assertError(CanbusLibrary.seal("canbus_library 2\nS 1 | 102\n"), 2, "S takes");
+        assertError(CanbusLibrary.seal("canbus_library 2\nS 1 | 102 | 103 | 104\n"), 2, "S takes");
+        assertError(CanbusLibrary.seal("canbus_library 2\nS 0 | 102 | 103\n"), 2, "outside 1..2147483647");
+    }
+
+    @Test
+    void twoDifferentSRecordsForOneIdAreAnErrorAndAnIdenticalOneIsADuplicate() {
+        assertError(CanbusLibrary.seal("canbus_library 2\nS 1 | 102 | 103\nS 1 | 91 | 92\n"), 3, "two different S records");
+        ParseResult r = parse(CanbusLibrary.seal("canbus_library 2\nS 1 | 102 | 103\nS 1,2 | 102 | 103\n"));
+        assertTrue(r.ok(), r.errors.toString());
+        assertEquals(1, r.duplicatesInFile);
+        assertEquals(2, r.library.recordCount());
+    }
+
+    @Test
+    void mergeCountsNewDuplicateAndReplacedForCodes() {
+        Library base = lib("canbus_library 2\nS 1,2 | 102 | 103\nS 3 | 98 | -\nS 9 | 5 | 6\n");
+        Library file = lib("canbus_library 2\nS 1 | 91 | 92\nS 2 | 102 | 103\nS 4 | - | 77\n");
+        MergeResult m = base.mergedWith(file);
+        assertEquals(1, m.codes.added);
+        assertEquals(1, m.codes.duplicate);
+        assertEquals(1, m.codes.replaced);
+        assertEquals(new CanbusLibrary.CarCodes(91, 92), m.library.codesFor(1));
+        assertEquals(new CanbusLibrary.CarCodes(102, 103), m.library.codesFor(2));
+        assertEquals(new CanbusLibrary.CarCodes(98, -1), m.library.codesFor(3));
+        assertEquals(new CanbusLibrary.CarCodes(-1, 77), m.library.codesFor(4));
+        assertEquals(new CanbusLibrary.CarCodes(5, 6), m.library.codesFor(9));
+        assertEquals(1, m.replacements.size());
+        assertEquals('S', m.replacements.get(0).kind);
+        assertEquals("102 | 103", m.replacements.get(0).oldValue);
+        assertEquals("91 | 92", m.replacements.get(0).newValue);
+        assertEquals(3, m.added() + m.duplicates() + m.replaced());
+        // the base is not changed
+        assertEquals(new CanbusLibrary.CarCodes(102, 103), base.codesFor(1));
+    }
+
+    @Test
+    void codesSurviveSerializeAndParse() {
+        Library l = lib("canbus_library 2\nC 1 | com.syu.a.One\nS 1,5 | 102 | 103\nS 7 | 91 | -\n");
+        String text = l.serialize();
+        assertTrue(text.startsWith("canbus_library 2\n"));
+        ParseResult r = parse(text);
+        assertTrue(r.ok(), r.errors.toString());
+        assertEquals(text, r.library.serialize());
+        assertEquals(new CanbusLibrary.CarCodes(91, -1), r.library.codesFor(7));
+        assertEquals(l.recordCount(), r.library.recordCount());
+    }
+
+    @Test
+    void theAssetHasTheCodesOfThePsaCar() throws IOException {
+        Library l = asset();
+        assertEquals(new CanbusLibrary.CarCodes(102, 103), l.codesFor(163));
+        assertEquals(new CanbusLibrary.CarCodes(98, 103), l.codesFor(19));
+        assertNull(l.codesFor(1));
     }
 
     // ---- cancel and progress
