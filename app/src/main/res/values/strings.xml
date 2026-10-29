@@ -227,7 +227,7 @@
     <string name="stats_resize">Double-tap the widget to resize</string>
     <string name="stats_window">Fuel statistics</string>
     <string name="stats_codes">Statistics codes</string>
-    <string name="stats_window_summary"><![CDATA[Use the Canbus reader or look for the necessary canbus codes in the class <b>%1$s</b> and its subclasses (see README.md)]]></string>
+    <string name="stats_window_summary"><![CDATA[Use the Canbus reader (recommended) or look for the necessary canbus codes in the class <b>%1$s</b> and its subclasses (see README.md)]]></string>
     <string name="stats_window_summary_vehicle_not_exist">Original vehicle equipment does not exist. Try using the Canbus reader; however, it might not find the codes.</string>
     <string name="stats_codes_summary_request">Tap to set the canbus codes. \nFuel: %1$s, Range: %2$s, Request: %3$s</string>
     <string name="stats_codes_summary_no_request">Tap to set the canbus codes. \nFuel: %1$s, Range: %2$s</string>

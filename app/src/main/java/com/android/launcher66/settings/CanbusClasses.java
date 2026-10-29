@@ -12,6 +12,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+/**
+ * Finds the class of FYT's canbus app that serves the user's car, for Fuel statistics to name. While the
+ * launcher runs the name comes from {@link CanbusLibrary} (the built-in library with the one the user
+ * imported merged in). The switch in {@link #className(int)} is what the built-in library is built from
+ * (canbus_library/build_canbus_library.py --launcher) and what CanbusClassesTest checks it against.
+ */
 public class CanbusClasses extends AsyncTask<Void, Void, Void> {
 
 	// Checks if there is an existing class for user's car model
@@ -32,7 +38,8 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onBackgroundError(Exception e) {
-    	determineClassName();
+        // Posted to the main thread, where the library must not be read: once more on its own thread
+        CanbusLibrary.executor().execute(this::determineClassName);
     }
     
     public void determineClassName() {
@@ -43,7 +50,10 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
             DataCanbus.PROXY.cmd(2, new int[]{241, 255}, null, null);
             return;
         }
-        String name = className(carId);
+        // Not the switch below: the library may have been replaced by one built from a newer canbus app.
+        // Off the main thread, as the AsyncTask runs it: the library reads its files.
+        String name = CanbusLibrary.loadBlocking(LauncherApplication.sApp)
+                .classNameFor(carId, LauncherApplication.isPortrait(), readFile("/sys/fytver/fyt_bin_version"));
 
     	SharedPreferences mPrefs = SessionPrefs.get();
         SharedPreferences.Editor editor = mPrefs.edit();  
@@ -5081,7 +5091,7 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
         return name;
     }
     
-    private static String readFile(String path) {
+    static String readFile(String path) {
         String strInfo = "";
         try {
             File file = new File(path);
