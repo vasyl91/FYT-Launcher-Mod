@@ -80,7 +80,7 @@ Other modes of the script (`py build_canbus_library.py ...`):
 
 ```
 py build_canbus_library.py <src> [--out FILE] [--mapping FILE]   from a decompiled com.syu.canbus
-py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher (CanbusClasses.java + decompiled_carinfo/)
+py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher (its asset for the classes + decompiled_carinfo/)
 py build_canbus_library.py --seal FILE                           recompute the footer of an edited file
 py build_canbus_library.py --check FILE                          validate a file like the launcher does
 ```
@@ -146,7 +146,12 @@ end 5 1a2b3c4d
 
 ## 7. How the script decides
 
-* **Classes.** It finds the `switch (DataCanbus.DATA[1000])` of `ActivityLauncher.launchCanbus()` and runs it for every car id, with fall-through,
+* **The launcher's own library (`--launcher`).** The classes are not simulated: the `C` and `N` records are taken, unchanged, from
+  `app/src/main/assets/canbus_library.txt` (validated like `--check`; a missing or invalid asset ends with exit code 1). Only the pages (`R`)
+  are computed again, from `decompiled_carinfo/`, with the rules below. The result overwrites the asset by default.
+  **To add a car to the built-in library**: add its `C` line in the asset, then run `py build_canbus_library.py --seal app/src/main/assets/canbus_library.txt`
+  (or `--launcher .` to compute its pages as well).
+* **Classes (from a decompiled `com.syu.canbus`).** It finds the `switch (DataCanbus.DATA[1000])` of `ActivityLauncher.launchCanbus()` and runs it for every car id, with fall-through,
   for the four combinations (portrait yes/no, firmware matches yes/no). A result that depends on the orientation becomes `| alt | portrait`,
   one that depends on `/sys/fytver/fyt_bin_version` becomes `| alt | fytver:...`. Conditions it does not know are treated as false and listed as warnings.
 * **Pages.** Starting from the car's class it follows `X.class` references (3 levels). A class whose name contains `oil`, `mile`, `trip`, `fuel`, `consum`

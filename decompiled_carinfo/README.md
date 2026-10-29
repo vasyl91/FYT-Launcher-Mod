@@ -4,11 +4,11 @@ The `com.syu.carinfo` package of FYT's canbus app, decompiled: the screens (acti
 settings of one car model each. It is **not part of the build** and the launcher does not load any of it.
 
 It is kept for one purpose. In the launcher's settings, Fuel statistics shows the name of the class that serves
-the car (`CanbusClasses.className()`, saved as `canbus_class`). That name leads to a file here, e.g.
+the car (from the canbus library, saved as `canbus_class`). That name leads to a file here, e.g.
 `com.syu.carinfo.dasauto.DasAutoWcAct` is `com/syu/carinfo/dasauto/DasAutoWcAct.java`, for looking up the codes
 the screen sends by hand.
 
 The data classes the canbus callbacks share used to be here and are now in
 `app/src/main/java/com/syu/module/canbus/data`.
 
-The library built into the launcher (`app/src/main/assets/canbus_library.txt`) is made from `CanbusClasses.java` and these classes with `canbus_library/build_canbus_library.py --launcher .`.
+The library built into the launcher (`app/src/main/assets/canbus_library.txt`) keeps the classes of its cars in its own records; the pages and requests are computed from these classes with `canbus_library/build_canbus_library.py --launcher .`.

@@ -1,6 +1,6 @@
 canbus_library 1
 # Canbus library: the screen class of each car id and the requests of its fuel screens.
-# Source: app/src/main/java/com/android/launcher66/settings/CanbusClasses.java (method className)
+# Source: app/src/main/assets/canbus_library.txt (classes) + decompiled_carinfo (pages)
 # C: car ids and the class of their screen (optionally another class for a portrait screen or for a firmware).
 # R: car ids and a fuel page with the requests it sends when it opens, in order.
 # Cars with a class: 3864, with a request: 595, request groups: 15
@@ -545,4 +545,4 @@ R 1114564,1180100 | com.syu.carinfo.xfy.psa.PSA3008OilMilePage2Acti | 1:81
 R 1114564,1180100 | com.syu.carinfo.xfy.psa.PSA3008OilMilePage3Acti | 1:82
 R 2687429,2752965,3866685,3932221,3997757,4653117,4718653,5636157,5701693,5832765,5898301,5963837,6029373,6094909,6160445,6225981,6291517,9044422 | com.syu.carinfo.rzc.andra.GmAndraCarInfoTripA | 11:74,3
 R 2687429,2752965,3866685,3932221,3997757,4653117,4718653,5636157,5701693,5832765,5898301,5963837,6029373,6094909,6160445,6225981,6291517,9044422 | com.syu.carinfo.rzc.andra.GmAndraCarInfoTripB | 11:74,3
-end 541 4fb850a0
+end 541 8bc94d0c

@@ -4,6 +4,7 @@ fuel/range screens.
 
     py build_canbus_library.py <src> [--out FILE] [--mapping FILE]   from a decompiled com.syu.canbus
     py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher
+                                                                     (classes from its asset, pages from decompiled_carinfo/)
     py build_canbus_library.py --seal FILE                           recomputes the footer of an edited file
     py build_canbus_library.py --check FILE                          validates a file like the launcher does
 
@@ -400,7 +401,7 @@ class CondEval:
 
 
 # --------------------------------------------------------------------------------------------------
-# Mapping: the switch of ActivityLauncher.launchCanbus() / CanbusClasses.className()
+# Mapping: the switch of ActivityLauncher.launchCanbus()
 # --------------------------------------------------------------------------------------------------
 
 def read_text(path):
@@ -467,43 +468,28 @@ class Mapping:
         self.unresolved = 0
 
 
-def build_mapping(path, mode, consts, label):
-    """mode 'launcher': the switch of className(int) in CanbusClasses; otherwise the best switch of the file
-    (the one on DataCanbus.DATA[1000] if there is one)."""
+def build_mapping(path, consts, label):
+    """The best switch of the file (the one on DataCanbus.DATA[1000] if there is one)."""
     text = read_text(path)
     toks = lex(text)
     switches = find_switches(toks)
     chosen = None
-    if mode == 'launcher':
-        idx = None
-        for i, t in enumerate(toks):
-            if t.kind == 'id' and t.text == 'className' and i + 1 < len(toks) and toks[i + 1].text == '(':
-                idx = i
+    best = -1
+    for sw in switches:
+        score = count_pairs(toks, sw[1], sw[2])
+        if 'DataCanbus.DATA[1000]' in sw[3]:
+            score += 1000000
+        if score > best and count_pairs(toks, sw[1], sw[2]) > 0:
+            best = score
+            chosen = sw
+    method = None
+    if chosen is not None:
+        for i in range(chosen[0], 0, -1):
+            t = toks[i]
+            if t.kind == 'id' and i + 1 < len(toks) and toks[i + 1].text == '(' and i > 0 \
+                    and toks[i - 1].kind == 'id' and toks[i - 1].text in ('void', 'String', 'int', 'Class', 'boolean'):
+                method = t.text
                 break
-        if idx is None:
-            return None
-        for sw in switches:
-            if sw[0] > idx:
-                chosen = sw
-                break
-        method = 'className'
-    else:
-        best = -1
-        for sw in switches:
-            score = count_pairs(toks, sw[1], sw[2])
-            if 'DataCanbus.DATA[1000]' in sw[3]:
-                score += 1000000
-            if score > best and count_pairs(toks, sw[1], sw[2]) > 0:
-                best = score
-                chosen = sw
-        method = None
-        if chosen is not None:
-            for i in range(chosen[0], 0, -1):
-                t = toks[i]
-                if t.kind == 'id' and i + 1 < len(toks) and toks[i + 1].text == '(' and i > 0 \
-                        and toks[i - 1].kind == 'id' and toks[i - 1].text in ('void', 'String', 'int', 'Class', 'boolean'):
-                    method = t.text
-                    break
     if chosen is None:
         return None
     m = Mapping()
@@ -1110,13 +1096,22 @@ def classify(per, tokens, cid, warn):
     return ff, tf, 'PORTRAIT'
 
 
-def build(args, root, mapping_path, mode, consts, label, index, out_path, log):
-    mapping = build_mapping(mapping_path, mode, consts, label)
-    if mapping is None:
-        log('error: no switch with class assignments found in %s' % mapping_path)
-        return 1
-    log('Mapping: %s (method %s)' % (mapping.source, mapping.method))
-    warnings = list(mapping.warnings)
+def build(args, root, mapping_path, consts, label, index, out_path, log, asset=None):
+    """`asset`: a Checked of the library built into the launcher. Its C and N records are taken as they are and
+    only the pages are computed; otherwise the classes are simulated from the switch in `mapping_path`."""
+    if asset is None:
+        mapping = build_mapping(mapping_path, consts, label)
+        if mapping is None:
+            log('error: no switch with class assignments found in %s' % mapping_path)
+            return 1
+        log('Mapping: %s (method %s)' % (mapping.source, mapping.method))
+        warnings = list(mapping.warnings)
+        source_line = '# Source: %s (method %s)' % (mapping.source, mapping.method)
+    else:
+        mapping = None
+        warnings = []
+        log('Classes: %s' % label)
+        source_line = '# Source: %s (classes) + decompiled_carinfo (pages)' % label
 
     def warn(msg):
         warnings.append(msg)
@@ -1141,11 +1136,20 @@ def build(args, root, mapping_path, mode, consts, label, index, out_path, log):
         return src.fqcn
 
     # X.class references are resolved in the context of the file that holds the switch
-    pkg = re.search(r'^\s*package\s+([\w.]+)\s*;', read_text(mapping_path), re.M)
-    ctx_src = Source((pkg.group(1) if pkg else '') + '.' + pathlib.Path(mapping_path).stem, mapping_path)
+    ctx_src = None
+    if mapping is not None:
+        pkg = re.search(r'^\s*package\s+([\w.]+)\s*;', read_text(mapping_path), re.M)
+        ctx_src = Source((pkg.group(1) if pkg else '') + '.' + pathlib.Path(mapping_path).stem, mapping_path)
     class_records = {}   # id -> (cls, alt, cond, tokens)
     cond_counts = collections.Counter()
-    for cid in sorted(mapping.results):
+    no_request = set()
+    if asset is not None:
+        for cid in sorted(asset.classes):
+            cls, alt, cond, toks = asset.classes[cid]
+            class_records[cid] = (cls, alt or '', cond, tuple(toks)) if cond != 'NONE' else (cls, '', 'NONE', ())
+            cond_counts[cond] += 1
+        no_request = set(asset.no_request)
+    for cid in sorted(mapping.results if mapping is not None else ()):
         per = {k: resolve_ref(v, cid) for k, v in mapping.results[cid].items()}
         cls, alt, cond = classify(per, mapping.fytver_tokens.get(cid, []), cid, warn)
         if cls is None:
@@ -1187,6 +1191,8 @@ def build(args, root, mapping_path, mode, consts, label, index, out_path, log):
     pages_of = {}
     page_keys = {}
     for cid, (cls, alt, cond, toks) in class_records.items():
+        if cid in no_request:
+            continue
         depth = {}
         for fq in (cls, alt):
             if fq:
@@ -1232,7 +1238,7 @@ def build(args, root, mapping_path, mode, consts, label, index, out_path, log):
     # text
     out = [HEADER,
            '# Canbus library: the screen class of each car id and the requests of its fuel screens.',
-           '# Source: %s (method %s)' % (mapping.source, mapping.method),
+           source_line,
            '# C: car ids and the class of their screen (optionally another class for a portrait screen or for a firmware).',
            '# R: car ids and a fuel page with the requests it sends when it opens, in order.',
            '# Cars with a class: %d, with a request: %d, request groups: %d' % (
@@ -1257,6 +1263,10 @@ def build(args, root, mapping_path, mode, consts, label, index, out_path, log):
             else:
                 out.append('C %s | %s | %s | fytver:%s' % (ids_txt, cls, alt or '-', ','.join(toks)))
             c_lines += 1
+    n_lines = 0
+    for part in chunks(sorted(no_request)):
+        out.append('N %s' % ','.join(str(i) for i in part))
+        n_lines += 1
     r_lines = 0
     page_names = set()
     for sig, ids in sorted(groups.items(), key=lambda kv: kv[1][0]):
@@ -1272,7 +1282,10 @@ def build(args, root, mapping_path, mode, consts, label, index, out_path, log):
 
     # the same checks as the launcher
     chk = check_text(pathlib.Path(out_path).read_bytes())
-    log('IDs in the mapping: %d' % len(mapping.results))
+    if mapping is not None:
+        log('IDs in the mapping: %d' % len(mapping.results))
+    else:
+        log('IDs in the library: %d with a class, %d marked N' % (len(class_records), len(no_request)))
     log('C records: %d lines for %d ids with a class (portrait: %d, firmware: %d)' % (
         c_lines, len(class_records), cond_counts['PORTRAIT'], cond_counts['FYTVER']))
     log('R records: %d lines; ids with a request: %d; groups: %d; pages: %d' % (
@@ -1372,20 +1385,24 @@ def main(argv=None):
 
     if args.launcher:
         repo = pathlib.Path(args.launcher)
-        mapping_path = repo / 'app/src/main/java/com/android/launcher66/settings/CanbusClasses.java'
-        final_path = repo / 'app/src/main/java/com/syu/module/canbus/FinalCanbus.java'
+        asset_path = repo / 'app/src/main/assets/canbus_library.txt'
         sources = repo / 'decompiled_carinfo'
-        if not mapping_path.is_file():
-            log('error: %s not found' % mapping_path)
+        if not asset_path.is_file():
+            log('error: %s not found' % asset_path)
             return 1
         if not sources.is_dir():
             log('error: %s not found' % sources)
             return 1
-        out = args.out or str(repo / 'app/src/main/assets/canbus_library.txt')
+        asset = check_text(asset_path.read_bytes())
+        if asset.errors:
+            log('error: %s does not validate:' % asset_path)
+            for ln, why in asset.errors[:20]:
+                log('  line %d: %s' % (ln, why))
+            return 1
+        out = args.out or str(asset_path)
         index = SourceIndex(sources)
         log('Sources: %s (%d classes)' % (sources, len(index.by_fqcn)))
-        return build(args, repo, mapping_path, 'launcher', load_constants(final_path),
-                     'app/src/main/java/com/android/launcher66/settings/CanbusClasses.java', index, out, log)
+        return build(args, repo, None, {}, 'app/src/main/assets/canbus_library.txt', index, out, log, asset=asset)
 
     if not args.src:
         ap.print_usage()
@@ -1437,7 +1454,7 @@ def main(argv=None):
     except ValueError:
         label = mapping_path.name
     out = args.out or ('canbus_library_%s.txt' % datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-    return build(args, root, mapping_path, 'any', load_constants(final), label, index, out, log)
+    return build(args, root, mapping_path, load_constants(final), label, index, out, log)
 
 
 if __name__ == '__main__':

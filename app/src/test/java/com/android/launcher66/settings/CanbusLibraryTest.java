@@ -3,7 +3,6 @@ package com.android.launcher66.settings;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -422,12 +421,12 @@ class CanbusLibraryTest {
     }
 
     @Test
-    void theAssetAgreesWithCanbusClasses() throws IOException {
+    void theAssetHasTheKnownClasses() throws IOException {
         Library l = asset();
-        assertEquals(CanbusClasses.className(1), l.classNameFor(1, false, ""));
-        assertEquals(CanbusClasses.className(273), l.classNameFor(273, false, ""));
-        assertEquals(CanbusClasses.className(16384453), l.classNameFor(16384453, false, ""));
-        assertEquals(CanbusClasses.className(16646583), l.classNameFor(16646583, false, ""));
+        assertEquals("com.syu.carinfo.dasauto.DasAutoWcAct", l.classNameFor(1, false, ""));
+        assertEquals("com.syu.carinfo.rzc.mingjueruiteng.ActRuiTengIndex", l.classNameFor(273, false, ""));
+        assertEquals("com.syu.carinfo.rzc.sanlin.ODModerninIndexAct", l.classNameFor(16384453, false, ""));
+        assertEquals("com.syu.carinfo.rzc.sanlin.ODBMWCarInfo", l.classNameFor(16646583, false, ""));
         assertEquals("com.syu.carinfo.dasauto.DasAutoWcAct", l.classNameFor(1, true, "anything"));
         assertNull(l.classNameFor(999999999, false, ""));
         assertTrue(l.carsWithClass() > 3000);
@@ -438,8 +437,7 @@ class CanbusLibraryTest {
         Library l = asset();
         // 274: the screen of the car in landscape, and the one the case falls through to in portrait
         assertEquals("com.syu.carinfo.accord.ActivityAccord7Index", l.classNameFor(274, false, ""));
-        assertEquals(CanbusClasses.className(276), l.classNameFor(274, true, ""));
-        assertNotNull(CanbusClasses.className(276));
+        assertEquals("com.syu.carinfo.xp.psa_all.XpPsaAllIndexActi", l.classNameFor(274, true, ""));
         // 12648900: by the firmware
         assertEquals("com.syu.carinfo.camry.luz.CamryIndexAct_LuZ", l.classNameFor(12648900, false, ""));
         assertEquals("com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc", l.classNameFor(12648900, false, "xLs18x"));
