@@ -94,7 +94,7 @@ Other modes of the script (`py build_canbus_library.py ...`):
 
 ```
 py build_canbus_library.py <src> [--out FILE] [--mapping FILE]   from a decompiled com.syu.canbus
-py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher (its asset for the classes + decompiled_carinfo/)
+py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher, from the newer and the older com.syu.canbus and decompiled_carinfo/
 py build_canbus_library.py --seal FILE                           recompute the footer of an edited file
 py build_canbus_library.py --check FILE                          validate a file like the launcher does
 py build_canbus_library.py --diff A B [--ids 1507667,163]        what differs between two library files
@@ -184,11 +184,18 @@ end 6 1a2b3c4d
 
 ## 7. How the script decides
 
-* **The launcher's own library (`--launcher`).** The classes are not simulated: the `C` and `N` records are taken, unchanged, from
-  `app/src/main/assets/canbus_library.txt` (validated like `--check`; a missing or invalid asset ends with exit code 1). Only the pages (`R`)
-  are computed again, from `decompiled_carinfo/`, with the rules below. The result overwrites the asset by default.
-  **To add a car to the built-in library**: add its `C` line in the asset, then run `py build_canbus_library.py --seal app/src/main/assets/canbus_library.txt`
-  (or `--launcher .` to compute its pages as well).
+* **The launcher's own library (`--launcher`).** It is built from three sources, the newest first (the folders are constants in the script):
+  `decompiled_com.syu.canbus/classes.dex.new/sources`, `decompiled_com.syu.canbus/classes.dex/sources` and `decompiled_carinfo/`.
+  * **`C`, `R` and `N` of a car come from the newest source that knows its id**: the `switch` of that source's `ActivityLauncher` gives the class, and the pages and
+    requests are searched in the same source. A car that only the older source knows keeps the older source's record. A car that none of the canbus sources knows
+    keeps its class and its `N` from the current asset (its pages are then searched in `decompiled_carinfo/`). The `N` records of the asset are always kept.
+  * **`S`: the pairs of all three sources**, in that order, without repeats, at most 4 (a car the newer source gives `102 | 103` and the older one `91 | 92` ends with
+    `S ... | 102 | 103 | 91 | 92`). `decompiled_carinfo/` gives its pair for the class the car has in the library.
+  * The asset is read only for the classes of the cars the canbus sources do not know and for `N`; its `R` and `S` records are not used, so running the command twice
+    in a row writes the same file. The file is version 3 as long as a car has more than one pair. The result overwrites the asset by default.
+
+  **To add a car to the built-in library**: add it to the `ActivityLauncher` of a source (or its `C` line to the asset, if no source knows it) and run
+  `py build_canbus_library.py --launcher .`; `--seal` is for a file edited by hand.
 * **Classes (from a decompiled `com.syu.canbus`).** It finds the `switch (DataCanbus.DATA[1000])` of `ActivityLauncher.launchCanbus()` and runs it for every car id, with fall-through,
   for the four combinations (portrait yes/no, firmware matches yes/no). A result that depends on the orientation becomes `| alt | portrait`,
   one that depends on `/sys/fytver/fyt_bin_version` becomes `| alt | fytver:...`. Conditions it does not know are treated as false and listed as warnings.

@@ -446,9 +446,46 @@ class CanbusLibraryTest {
     @Test
     void theAssetHasTheCodesOfThePsaCar() throws IOException {
         Library l = asset();
+        // the newer module (102/103) first, then the older (91/92): the radio is not known to have the newer one
+        List<CanbusLibrary.CarCodes> psa = java.util.Arrays.asList(
+                new CanbusLibrary.CarCodes(102, 103), new CanbusLibrary.CarCodes(91, 92));
+        assertEquals(psa, l.codePairsFor(163));
+        assertEquals(psa, l.codePairsFor(1507667));
         assertEquals(new CanbusLibrary.CarCodes(102, 103), l.codesFor(163));
+        assertEquals(java.util.Arrays.asList(new CanbusLibrary.CarCodes(98, 103), new CanbusLibrary.CarCodes(0, 5)),
+                l.codePairsFor(19));
         assertEquals(new CanbusLibrary.CarCodes(98, 103), l.codesFor(19));
         assertNull(l.codesFor(1));
+        assertTrue(l.codePairsFor(1).isEmpty());
+    }
+
+    @Test
+    void theCarOfTheOwnerStartsWithTheFuelScreenNotTheElectricOne() throws IOException {
+        Library l = asset();
+        assertEquals(P408 + "RZC_BZ408IndexActi", l.classNameFor(1507667, false, ""));
+        List<Page> pages = l.pagesFor(1507667);
+        assertEquals(P408 + "RZC_BZ408OilMilePage1Acti", pages.get(0).fqcn);
+        assertEquals("70:51; 29:0", pages.get(0).requestsText());
+        assertEquals("71:52; 29:1", pages.get(1).requestsText());
+        // the electric car's screens (70:80..83) are there, after the fuel ones
+        boolean ev = false;
+        for (Page p : pages.subList(1, pages.size())) {
+            ev |= p.fqcn.endsWith("RZC_BZ408EVMilePage1Acti") && p.requestsText().equals("70:80");
+        }
+        assertTrue(ev);
+        for (Page p : pages) {
+            if (p.fqcn.contains("EVMile")) {
+                assertTrue(pages.indexOf(p) > 0);
+            }
+        }
+    }
+
+    @Test
+    void theAssetIsWrittenAsVersion3BecauseSomeCarsHaveSeveralPairs() throws IOException {
+        String text = new String(Files.readAllBytes(new File("src/main/assets/canbus_library.txt").toPath()),
+                StandardCharsets.UTF_8);
+        assertTrue(text.startsWith("canbus_library 3\n"));
+        assertTrue(text.contains("| 102 | 103 | 91 | 92\n"));
     }
 
     // ---- cancel and progress
@@ -521,8 +558,9 @@ class CanbusLibraryTest {
     void theAssetHandlesTheOrientationAndTheFirmware() throws IOException {
         Library l = asset();
         // 274: the screen of the car in landscape, and the one the case falls through to in portrait
+        // (in portrait both the older and the newer ActivityLauncher open the air diagnosis, the asset had another class)
         assertEquals("com.syu.carinfo.accord.ActivityAccord7Index", l.classNameFor(274, false, ""));
-        assertEquals("com.syu.carinfo.xp.psa_all.XpPsaAllIndexActi", l.classNameFor(274, true, ""));
+        assertEquals("com.syu.carinfo.accord.ActivityAccord7AirDiagnosis", l.classNameFor(274, true, ""));
         // 12648900: by the firmware
         assertEquals("com.syu.carinfo.camry.luz.CamryIndexAct_LuZ", l.classNameFor(12648900, false, ""));
         assertEquals("com.syu.carinfo.zhtd.bmw.LZNewAllBBASetFunc", l.classNameFor(12648900, false, "xLs18x"));

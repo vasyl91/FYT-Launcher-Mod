@@ -3,8 +3,8 @@
 fuel/range screens and the codes of its fuel consumption and range.
 
     py build_canbus_library.py <src> [--out FILE] [--mapping FILE]   from a decompiled com.syu.canbus
-    py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher
-                                                                     (classes from its asset, pages from decompiled_carinfo/)
+    py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher, from the newer
+                                                                     and the older com.syu.canbus and decompiled_carinfo/
     py build_canbus_library.py --seal FILE                           recomputes the footer of an edited file
     py build_canbus_library.py --check FILE                          validates a file like the launcher does
     py build_canbus_library.py --diff A B [--ids 1507667,163]        what differs between two library files
@@ -1272,25 +1272,15 @@ def classify(per, tokens, cid, warn):
     return ff, tf, 'PORTRAIT'
 
 
-def build(args, root, mapping_path, consts, label, index, out_path, log, asset=None):
-    """`asset`: a Checked of the library built into the launcher. Its C and N records are taken as they are and
-    only the pages are computed; otherwise the classes are simulated from the switch in `mapping_path`."""
-    if asset is None:
-        mapping = build_mapping(mapping_path, consts, label)
-        if mapping is None:
-            log('error: no switch with class assignments found in %s' % mapping_path)
-            return 1
-        log('Mapping: %s (method %s)' % (mapping.source, mapping.method))
-        warnings = list(mapping.warnings)
-        source_line = '# Source: %s (method %s)' % (mapping.source, mapping.method)
-    else:
-        mapping = None
-        warnings = []
-        log('Classes: %s' % label)
-        source_line = '# Source: %s (classes) + decompiled_carinfo (pages)' % label
-
-    def warn(msg):
-        warnings.append(msg)
+def mapping_classes(mapping_path, consts, label, index, warn, log):
+    """The class records of a decompiled com.syu.canbus, simulated from the switch on the car id in `mapping_path`:
+    (mapping, {id: (class, alt, condition, tokens)}, Counter of the conditions), or None if there is no switch."""
+    mapping = build_mapping(mapping_path, consts, label)
+    if mapping is None:
+        log('error: no switch with class assignments found in %s' % mapping_path)
+        return None
+    for w in mapping.warnings:
+        warn(w)
 
     # resolve the class references
     def resolve_ref(ref, cid):
@@ -1312,20 +1302,11 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
         return src.fqcn
 
     # X.class references are resolved in the context of the file that holds the switch
-    ctx_src = None
-    if mapping is not None:
-        pkg = re.search(r'^\s*package\s+([\w.]+)\s*;', read_text(mapping_path), re.M)
-        ctx_src = Source((pkg.group(1) if pkg else '') + '.' + pathlib.Path(mapping_path).stem, mapping_path)
+    pkg = re.search(r'^\s*package\s+([\w.]+)\s*;', read_text(mapping_path), re.M)
+    ctx_src = Source((pkg.group(1) if pkg else '') + '.' + pathlib.Path(mapping_path).stem, mapping_path)
     class_records = {}   # id -> (cls, alt, cond, tokens)
     cond_counts = collections.Counter()
-    no_request = set()
-    if asset is not None:
-        for cid in sorted(asset.classes):
-            cls, alt, cond, toks = asset.classes[cid]
-            class_records[cid] = (cls, alt or '', cond, tuple(toks)) if cond != 'NONE' else (cls, '', 'NONE', ())
-            cond_counts[cond] += 1
-        no_request = set(asset.no_request)
-    for cid in sorted(mapping.results if mapping is not None else ()):
+    for cid in sorted(mapping.results):
         per = {k: resolve_ref(v, cid) for k, v in mapping.results[cid].items()}
         cls, alt, cond = classify(per, mapping.fytver_tokens.get(cid, []), cid, warn)
         if cls is None:
@@ -1340,9 +1321,13 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
                 alt, cond, toks = None, 'NONE', ()
         class_records[cid] = (cls, alt or '', cond, toks) if cond != 'NONE' else (cls, '', 'NONE', ())
         cond_counts[cond] += 1
+    return mapping, class_records, cond_counts
 
-    # pages and requests
-    stats = Stats()
+
+def find_pages(class_records, no_request, index, warn, stats):
+    """The fuel pages with their requests and the fuel/range codes of the cars, from the sources in `index`:
+    (pages_of, page_keys, moved, codes_of). `pages_of`: id -> [(page, requests)], main page first; `codes_of`: id ->
+    ((fuel, range),) with None for an unknown code; `moved`: id -> (the main page by the old key, the main page now)."""
     reach_cache = {}
 
     def reach(fq):
@@ -1366,8 +1351,8 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
 
     pages_of = {}
     page_keys = {}
-    moved = {}       # id -> (the main page by the old key, the main page now)
-    codes_of = {}    # id -> ((fuel, range),), None = unknown
+    moved = {}
+    codes_of = {}
     for cid, (cls, alt, cond, toks) in class_records.items():
         depth = {}
         for fq in (cls, alt):
@@ -1418,7 +1403,12 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
             moved[cid] = (old_first.rsplit('.', 1)[-1], found[0][0].rsplit('.', 1)[-1])
         pages_of[cid] = [(fq, tuple(reqs)) for fq, d, reqs in found]
         page_keys[cid] = [key(it) for it in found]
+    return pages_of, page_keys, moved, codes_of
 
+
+def emit(out_path, log, source_lines, ids_line, class_records, no_request, pages_of, page_keys, moved, codes_of,
+         cond_counts, stats, warnings):
+    """Writes the library, checks it like the launcher does and tells what is in it. Returns the exit code."""
     # groups: ids with an identical list of pages
     groups = collections.OrderedDict()
     for cid in sorted(pages_of):
@@ -1434,11 +1424,11 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
 
     # text
     out = [header_for(codes_of),
-           '# Canbus library: the screen class of each car id and the requests of its fuel screens.',
-           source_line,
+           '# Canbus library: the screen class of each car id and the requests of its fuel screens.'] + source_lines + [
            '# C: car ids and the class of their screen (optionally another class for a portrait screen or for a firmware).',
            '# R: car ids and a fuel page with the requests it sends when it opens, in order.',
-           '# S: car ids and the codes of their fuel consumption and range (DataCanbus.DATA indices, - = unknown).',
+           '# S: car ids and the codes of their fuel consumption and range (DataCanbus.DATA indices, - = unknown);',
+           '#    several pairs: one for each version of the canbus module, the newest first.',
            '# Cars with a class: %d, with a request: %d, request groups: %d, with fuel/range codes: %d' % (
                len(class_records), sum(len(v) for v in groups.values()), len(groups), len(codes_of))]
 
@@ -1451,17 +1441,15 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
 
     # the same checks as the launcher
     chk = check_text(pathlib.Path(out_path).read_bytes())
-    if mapping is not None:
-        log('IDs in the mapping: %d' % len(mapping.results))
-    else:
-        log('IDs in the library: %d with a class, %d marked N' % (len(class_records), len(no_request)))
+    log(ids_line)
     log('C records: %d lines for %d ids with a class (portrait: %d, firmware: %d)' % (
         c_lines, len(class_records), cond_counts['PORTRAIT'], cond_counts['FYTVER']))
     log('R records: %d lines; ids with a request: %d; groups: %d; pages: %d' % (
         r_lines, sum(len(v) for v in groups.values()), len(groups), len(page_names)))
-    log('S records: %d lines; ids with both codes: %d, only fuel: %d, only range: %d' % (
+    log('S records: %d lines; ids with both codes: %d, only fuel: %d, only range: %d; ids with several pairs: %d' % (
         s_lines, sum(1 for v in codes_of.values() if None not in v[0]),
-        sum(1 for v in codes_of.values() if v[0][1] is None), sum(1 for v in codes_of.values() if v[0][0] is None)))
+        sum(1 for v in codes_of.values() if v[0][1] is None), sum(1 for v in codes_of.values() if v[0][0] is None),
+        sum(1 for v in codes_of.values() if len(v) > 1)))
     log('Requests: %d calls skipped (not literal or not representable), %d duplicate requests dropped, '
         '%d pages cut to %d requests, %d calls on other modules ignored' % (
             len(stats.skipped_calls), stats.dropped_dups, stats.truncated, MAX_REQS_PER_LINE, stats.other_module))
@@ -1497,6 +1485,151 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
         return 1
     log('Written: %s (%d records, footer ok)' % (pathlib.Path(out_path).resolve(), chk.records))
     return 0
+
+
+def build(args, root, mapping_path, consts, label, index, out_path, log):
+    """The library of one decompiled com.syu.canbus: the classes simulated from the switch in `mapping_path`, the
+    pages and the codes from the sources next to it."""
+    warnings = []
+    result = mapping_classes(mapping_path, consts, label, index, warnings.append, log)
+    if result is None:
+        return 1
+    mapping, class_records, cond_counts = result
+    log('Mapping: %s (method %s)' % (mapping.source, mapping.method))
+    stats = Stats()
+    pages_of, page_keys, moved, codes_of = find_pages(class_records, set(), index, warnings.append, stats)
+    return emit(out_path, log, ['# Source: %s (method %s)' % (mapping.source, mapping.method)],
+                'IDs in the mapping: %d' % len(mapping.results), class_records, set(), pages_of, page_keys, moved,
+                codes_of, cond_counts, stats, warnings)
+
+
+# The sources of the library built into the launcher, the newest first: the folder in the repository, a name for
+# the log and the header, and whether it holds the switch on the car id (ActivityLauncher).
+LAUNCHER_SOURCES = (
+    ('decompiled_com.syu.canbus/classes.dex.new/sources', 'newer com.syu.canbus', True),
+    ('decompiled_com.syu.canbus/classes.dex/sources', 'older com.syu.canbus', True),
+    ('decompiled_carinfo', 'decompiled_carinfo', False),
+)
+LAUNCHER_ASSET = 'app/src/main/assets/canbus_library.txt'
+
+
+def build_launcher(repo, out_path, log):
+    """The library built into the launcher, from all the sources in LAUNCHER_SOURCES:
+
+    * C, R and N of a car come from the newest source that knows its id (the switch of its ActivityLauncher); a car none
+      of the canbus sources knows keeps the class and the N of the current asset, its pages come from decompiled_carinfo;
+    * S: the pairs of fuel and range codes of all the sources, in their order, without repeats, at most MAX_PAIRS.
+      decompiled_carinfo gives its pair for the class the car has in the library.
+
+    The asset is read for the classes of the cars the canbus sources do not know and for N; its R and S records are not
+    used, so running this twice gives the same file."""
+    repo = pathlib.Path(repo)
+    asset_path = repo / LAUNCHER_ASSET
+    if not asset_path.is_file():
+        log('error: %s not found' % asset_path)
+        return 1
+    asset = check_text(asset_path.read_bytes())
+    if asset.errors:
+        log('error: %s does not validate:' % asset_path)
+        for ln, why in asset.errors[:20]:
+            log('  line %d: %s' % (ln, why))
+        return 1
+    warnings = []
+    stats = Stats()
+    indexes = []          # (name, index, class records or None)
+    for rel, name, has_switch in LAUNCHER_SOURCES:
+        folder = repo / rel
+        if not folder.is_dir():
+            log('error: %s not found' % folder)
+            return 1
+        index = SourceIndex(folder)
+        log('Sources: %s (%d classes) - %s' % (rel, len(index.by_fqcn), name))
+        records, counts = None, collections.Counter()
+        if has_switch:
+            mapping_path = find_mapping_file(folder)
+            if mapping_path is None:
+                log('error: no switch on the car id (ActivityLauncher) under %s' % folder)
+                return 1
+            final = next(iter(folder.rglob('FinalCanbus.java')), None)
+
+            def warn(msg, name=name):
+                warnings.append('[%s] %s' % (name, msg))
+
+            result = mapping_classes(mapping_path, load_constants(final), mapping_path.name, index, warn, log)
+            if result is None:
+                return 1
+            records, counts = result[1], result[2]
+            log('  %d ids with a class' % len(records))
+        indexes.append((name, index, records, counts))
+
+    # the class of each car: the newest canbus source that knows it, else the asset's
+    class_records, owner, cond_counts = {}, {}, collections.Counter()
+    for cid in sorted(set(asset.classes) | set(i for _, _, r, _ in indexes if r for i in r)):
+        for k, (name, index, records, counts) in enumerate(indexes):
+            if records is not None and cid in records:
+                class_records[cid], owner[cid] = records[cid], k
+                break
+        else:
+            cls, alt, cond, toks = asset.classes[cid]
+            class_records[cid] = (cls, alt or '', cond, tuple(toks)) if cond != 'NONE' else (cls, '', 'NONE', ())
+            owner[cid] = len(indexes) - 1
+    for rec in class_records.values():
+        cond_counts[rec[2]] += 1
+    no_request = set(asset.no_request)
+    by_owner = collections.Counter(owner.values())
+    for k, (name, _, _, _) in enumerate(indexes):
+        log('Classes of %s: %d ids (the others of the library: %d)' % (
+            name, by_owner[k], len(class_records) - by_owner[k]))
+
+    # the pages and the codes of each source; the pages of the owner, the codes of all
+    pages_of, page_keys, moved = {}, {}, {}
+    pairs_of = collections.defaultdict(list)
+    for k, (name, index, records, counts) in enumerate(indexes):
+        own = records if records is not None else class_records
+
+        def warn(msg, name=name):
+            warnings.append('[%s] %s' % (name, msg))
+
+        pages, keys, mv, codes = find_pages(own, no_request, index, warn, stats)
+        for cid, pairs in codes.items():
+            for pair in pairs:
+                if pair not in pairs_of[cid] and len(pairs_of[cid]) < MAX_PAIRS:
+                    pairs_of[cid].append(pair)
+        for cid in pages:
+            if owner.get(cid) == k:
+                pages_of[cid], page_keys[cid] = pages[cid], keys[cid]
+                if cid in mv:
+                    moved[cid] = mv[cid]
+        log('  %s: pages for %d ids, codes for %d ids' % (name, len(pages), len(codes)))
+    codes_of = {cid: tuple(pairs) for cid, pairs in pairs_of.items()}
+
+    source_lines = ['# Sources, the newest first (the classes and the pages of a car come from the first that knows it, the codes from all):']
+    for rel, name, has_switch in LAUNCHER_SOURCES:
+        source_lines.append('#   %s (%s)' % (rel, name))
+    source_lines.append('#   cars none of the canbus sources knows keep their class from the previous library.')
+    return emit(out_path, log, source_lines,
+                'IDs in the library: %d with a class, %d marked N' % (len(class_records), len(no_request)),
+                class_records, no_request, pages_of, page_keys, moved, codes_of, cond_counts, stats, warnings)
+
+
+def find_mapping_file(root):
+    """The java file of `root` that holds the switch on the car id, or None."""
+    for p in root.rglob('ActivityLauncher.java'):
+        if p.as_posix().endswith('com/syu/canbus/ActivityLauncher.java') \
+                and 'switch (DataCanbus.DATA[1000])' in read_text(p):
+            return p
+    best, best_n = None, 0
+    for p in root.rglob('*.java'):
+        text = read_text(p)
+        if 'DATA[1000]' not in text or 'switch' not in text:
+            continue
+        toks = lex(text)
+        for sw in find_switches(toks):
+            if 'DataCanbus.DATA[1000]' in sw[3]:
+                n = count_pairs(toks, sw[1], sw[2])
+                if n > best_n:
+                    best, best_n = p, n
+    return best
 
 
 # --------------------------------------------------------------------------------------------------
@@ -1829,25 +1962,7 @@ def main(argv=None):
         return cmd_merge(args.merge[0], args.merge[1], args.out, log)
 
     if args.launcher:
-        repo = pathlib.Path(args.launcher)
-        asset_path = repo / 'app/src/main/assets/canbus_library.txt'
-        sources = repo / 'decompiled_carinfo'
-        if not asset_path.is_file():
-            log('error: %s not found' % asset_path)
-            return 1
-        if not sources.is_dir():
-            log('error: %s not found' % sources)
-            return 1
-        asset = check_text(asset_path.read_bytes())
-        if asset.errors:
-            log('error: %s does not validate:' % asset_path)
-            for ln, why in asset.errors[:20]:
-                log('  line %d: %s' % (ln, why))
-            return 1
-        out = args.out or str(asset_path)
-        index = SourceIndex(sources)
-        log('Sources: %s (%d classes)' % (sources, len(index.by_fqcn)))
-        return build(args, repo, None, {}, 'app/src/main/assets/canbus_library.txt', index, out, log, asset=asset)
+        return build_launcher(args.launcher, args.out or str(pathlib.Path(args.launcher) / LAUNCHER_ASSET), log)
 
     if not args.src:
         ap.print_usage()
@@ -1871,25 +1986,7 @@ def main(argv=None):
             log('error: %s not found' % args.mapping)
             return 1
     else:
-        mapping_path = None
-        for p in root.rglob('ActivityLauncher.java'):
-            if p.as_posix().endswith('com/syu/canbus/ActivityLauncher.java') \
-                    and 'switch (DataCanbus.DATA[1000])' in read_text(p):
-                mapping_path = p
-                break
-        if mapping_path is None:
-            best, best_n = None, 0
-            for p in root.rglob('*.java'):
-                text = read_text(p)
-                if 'DATA[1000]' not in text or 'switch' not in text:
-                    continue
-                toks = lex(text)
-                for sw in find_switches(toks):
-                    if 'DataCanbus.DATA[1000]' in sw[3]:
-                        n = count_pairs(toks, sw[1], sw[2])
-                        if n > best_n:
-                            best, best_n = p, n
-            mapping_path = best
+        mapping_path = find_mapping_file(root)
         if mapping_path is None:
             log('error: mapping not found: no switch (DataCanbus.DATA[1000]) with class assignments under %s. '
                 'Pass the file with --mapping, e.g. --mapping ...\\com\\syu\\canbus\\ActivityLauncher.java' % root)

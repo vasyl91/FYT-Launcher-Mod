@@ -213,6 +213,33 @@ R stara → nowa (138 różnych): to głównie dodane zapytania, np. `HondaTripA
 | 5 | Przy aktualizacji assetu zachować `--diff stary nowy` w opisie commita; od teraz każda zmiana biblioteki ma dowód w liczbach | proces | brak |
 | 6 | Pętla niezależna od aplikacji canbus: nie opierać się na `Callback_0339` ani na blokach 500–560 (p. 4.3), tylko na kodach z pary wybranej przez launcher | CanbusService | niskie |
 
-## 8. Asset: stary → nowy
+## 8. Asset: stary → nowy (commit G5)
 
-Zostanie dopisane w commicie G5 (tabela `--diff` starego assetu z nowym).
+`py canbus_library/build_canbus_library.py --launcher .` buduje teraz asset z trzech źródeł, od najnowszego: `classes.dex.new`, `classes.dex`, `decompiled_carinfo`.
+C, R i N auta bierze z najnowszego źródła, które zna jego car id, a S składa z par wszystkich źródeł (najwyżej 4, bez powtórzeń, nowa wersja pierwsza).
+Dwa uruchomienia z rzędu dają identyczny plik (sprawdzone `cmp`). `--check` przechodzi: wersja 3, 649 rekordów.
+
+`--diff` stary asset → nowy asset:
+
+| rodzaj | tylko w starym | tylko w nowym | różne |
+|---|---|---|---|
+| C (id) | 0 | 1086 | 242 |
+| R (id, strona) | 381 | 504 | 48 |
+| N (id) | 0 | 0 | 0 |
+| S (id) | 110 | 373 | 731 |
+| R: strona główna / kolejność (id) | 0 | 0 | 105 |
+
+Liczby aut: z klasą 3864 → 4950, z zapytaniem 595 → 625, z kodami spalania/zasięgu 1158 → 1421; w 743 autach są co najmniej dwie pary kodów.
+
+**Auto 1507667** (`--ids 1507667`): klasa `RZC_BZ408IndexActi`, pierwsza strona `RZC_BZ408OilMilePage1Acti` z `70:51; 29:0`, dalej `OilMilePage2` (`71:52; 29:1`), `OilMilePage3` (`72:53; 29:2`) i cztery strony `EVMile` (`70:80`..`70:83`) na końcu. Kody S: **`102 | 103 | 91 | 92`**. Zapytanie wysyłane autu się nie zmienia.
+
+Co jeszcze się zmienia, i dlaczego:
+
+- **C, 1086 nowych id i 242 zmienionych.** Zmienione to głównie auta, dla których oba `ActivityLauncher` (nowy i stary) wskazują inną klasę niż stary asset: 92 id miało w assecie `RzcFYTOilMileIndexActi` (ekran paliwa Fiata), a obie wersje aplikacji otwierają dla nich ekran klimatyzacji (`Air_Activity_All_NewAdd_HP | ActivityNewAir | portrait`, np. id 38, 231, 327); 24 id `LuzLexusISIndexAct` dostaje tylko ekran na pionowy układ (`KYCToyotaAllCarSet | portrait`); 14 id `Megane4SetActi` → `Megane4SetIndexActi`; 11 id `BMWX1IndexActi` → `Air_Activity_All_Toyota_prado_HP`. Id 274 (Accord) ma teraz w pionie `ActivityAccord7AirDiagnosis`; obie wersje aplikacji mają tak samo.
+- **R, 97 aut traci wszystkie strony, 127 je zyskuje, u 148 zmienia się lista lub kolejność.** Tracą te auta, których klasa się zmieniła (ekran klimatyzacji nie wysyła zapytań paliwa): 92 id z `RzcFYT...`, id 274, 276 i 65810 (miały strony `BZ408OilMile*` przez ekran `XpPsaAllIndexActi`, którego te auta nie otwierają w żadnej z dwóch wersji aplikacji), 65932 i 65944 (`Xp_374_OilDisplayActi`). Zyskują auta nowe w bibliotece. U 69 aut rodziny 408 i 101 aut Golf7 zmienia się kolejność stron (p. 5.2).
+- **S, 110 aut traci kody:** to te same auta, które straciły strony (kody liczone z klasy). 109 aut zmienia pierwszą parę (101 Golf7: zasięg 306 → 98; 8 aut z PSA 10|11 → 101|102 itd.). W 947 z 1048 wspólnych aut stara para została, ale jako druga lub kolejna.
+- **N:** brak, tak jak w starym.
+
+Gdzie asset nie zmienia się wcale: 3622 z 3864 klas i 1086 z 1515 stron (id, strona) jest identycznych.
+
+Radio ze starym `com.syu.ms` czyta z tego assetu kody `91 | 92` dzięki wyborowi pary z G4, bez niego launcher używałby tylko pierwszej pary (`codesFor`).
