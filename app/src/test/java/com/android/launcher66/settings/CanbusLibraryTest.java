@@ -120,7 +120,7 @@ class CanbusLibraryTest {
         assertError("C 1 | com.syu.a.B\nend 1 00000000\n", 1, "header");
         assertError("", 0, "missing header");
         assertError("# only a comment\n", 0, "missing header");
-        assertError("canbus_library 3\nend 0 00000000\n", 1, "header");
+        assertError("canbus_library 4\nend 0 00000000\n", 1, "header");
     }
 
     @Test
@@ -424,7 +424,8 @@ class CanbusLibraryTest {
         assertEquals(1, m.replacements.size());
         assertEquals('S', m.replacements.get(0).kind);
         assertEquals("102 | 103", m.replacements.get(0).oldValue);
-        assertEquals("91 | 92", m.replacements.get(0).newValue);
+        // the pair of the file first, the base's pair after it (the radio may have the older module)
+        assertEquals("91 | 92 | 102 | 103", m.replacements.get(0).newValue);
         assertEquals(3, m.added() + m.duplicates() + m.replaced());
         // the base is not changed
         assertEquals(new CanbusLibrary.CarCodes(102, 103), base.codesFor(1));
@@ -611,7 +612,8 @@ class CanbusLibraryTest {
         Library l = asset().mergedWith(lib(OVERLAY_BODY)).library;
         String text = CanbusLibrary.exportText(l, 1_761_785_794_000L);
         String[] lines = text.split("\n");
-        assertEquals(CanbusLibrary.HEADER, lines[0]);
+        // the overlay gave car 19 a second pair of codes: version 3
+        assertEquals(CanbusLibrary.HEADER_3, lines[0]);
         assertTrue(lines[1].startsWith("# Exported by the launcher on 2025-"), lines[1]);
         assertTrue(lines[1].contains(l.recordCount() + " records"), lines[1]);
         ParseResult r = parse(text);
@@ -638,5 +640,101 @@ class CanbusLibraryTest {
     void theExportIsNamedLikeTheFilesOfTheScript() {
         String name = CanbusLibrary.exportFileName(1_761_785_794_000L);
         assertTrue(name.matches("canbus_library_export_\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}\\.txt"), name);
+    }
+
+    // ---- version 3: several fuel/range pairs for a car
+
+    private static final String V3_BODY =
+            "canbus_library 3\n"
+            + "C 163 | com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi\n"
+            + "S 163 | 102 | 103 | 91 | 92\n"
+            + "S 7 | - | 77 | 5 | -\n"
+            + "S 9 | 1 | 2\n";
+
+    @Test
+    void version3HoldsSeveralPairsInOrderAndReadsThemBack() {
+        Library l = lib(V3_BODY);
+        assertEquals(java.util.Arrays.asList(new CanbusLibrary.CarCodes(102, 103), new CanbusLibrary.CarCodes(91, 92)),
+                l.codePairsFor(163));
+        assertEquals(new CanbusLibrary.CarCodes(102, 103), l.codesFor(163));
+        assertEquals(java.util.Arrays.asList(new CanbusLibrary.CarCodes(-1, 77), new CanbusLibrary.CarCodes(5, -1)),
+                l.codePairsFor(7));
+        assertEquals(1, l.codePairsFor(9).size());
+        assertTrue(l.codePairsFor(1).isEmpty());
+        assertNull(l.codesFor(1));
+        assertEquals(3, l.recordCount() - 1);   // the class and three cars with codes
+        String text = l.serialize();
+        assertTrue(text.startsWith("canbus_library 3\n"), text);
+        assertTrue(text.contains("S 163 | 102 | 103 | 91 | 92\n"), text);
+        ParseResult r = parse(text);
+        assertTrue(r.ok(), r.errors.toString());
+        assertEquals(text, r.library.serialize());
+        assertEquals(l.codePairsFor(7), r.library.codePairsFor(7));
+    }
+
+    @Test
+    void aLibraryWithOnePairPerCarIsWrittenAsVersion2() {
+        Library l = lib("canbus_library 3\nS 9 | 1 | 2\n");
+        assertTrue(l.serialize().startsWith("canbus_library 2\n"));
+        assertTrue(parse(l.serialize()).ok());
+    }
+
+    @Test
+    void severalPairsInAVersion2FileAreAnError() {
+        assertError(CanbusLibrary.seal("canbus_library 2\nS 5 | 1 | 2 | 3 | 4\n"), 2, "several code pairs need version 3");
+        assertTrue(parse(CanbusLibrary.seal("canbus_library 3\nS 5 | 1 | 2 | 3 | 4\n")).ok());
+    }
+
+    @Test
+    void badSRecordsOfVersion3() {
+        assertError(CanbusLibrary.seal("canbus_library 3\nS 5 | 1 | 2 | - | -\n"), 2, "nothing to say");
+        assertError(CanbusLibrary.seal("canbus_library 3\nS 5 | 1 | 2 | 1 | 2\n"), 2, "repeated");
+        assertError(CanbusLibrary.seal("canbus_library 3\nS 5 | 1 | 2 | 3\n"), 2, "S takes");
+        assertError(CanbusLibrary.seal("canbus_library 3\nS 5 | 1\n"), 2, "S takes");
+        assertError(CanbusLibrary.seal("canbus_library 3\nS 5 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10\n"), 2, "more than 4");
+        assertError(CanbusLibrary.seal("canbus_library 3\nS 5 | 1 | 2 | 3 | 4000\n"), 2, "bad code");
+        assertError(CanbusLibrary.seal("canbus_library 1\nS 5 | 1 | 2\n"), 2, "S records need version 2");
+        assertTrue(parse(CanbusLibrary.seal("canbus_library 3\nS 5 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8\n")).ok());
+        // the same pairs in another order are another record
+        assertError(CanbusLibrary.seal("canbus_library 3\nS 5 | 1 | 2 | 3 | 4\nS 5 | 3 | 4 | 1 | 2\n"), 3, "two different S records");
+        // an identical record is a duplicate
+        ParseResult dup = parse(CanbusLibrary.seal("canbus_library 3\nS 5 | 1 | 2 | 3 | 4\nS 5 | 1 | 2 | 3 | 4\n"));
+        assertTrue(dup.ok(), dup.errors.toString());
+        assertEquals(1, dup.duplicatesInFile);
+    }
+
+    @Test
+    void mergingPairsPutsThoseOfTheFileFirstAndKeepsTheOthersOfTheBase() {
+        Library base = lib("canbus_library 3\nS 1 | 91 | 92\nS 2 | 5 | 6 | 7 | 8\nS 3 | 1 | 2 | 3 | 4\nS 4 | 10 | 11\n");
+        Library file = lib("canbus_library 3\nS 1 | 102 | 103 | 91 | 92\nS 2 | 7 | 8\nS 3 | 1 | 2 | 3 | 4\n"
+                + "S 4 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27\nS 5 | 9 | 9\n");
+        MergeResult m = base.mergedWith(file);
+        assertEquals(1, m.codes.added);        // 5
+        assertEquals(1, m.codes.duplicate);    // 3
+        assertEquals(3, m.codes.replaced);     // 1, 2, 4
+        assertEquals(java.util.Arrays.asList(new CanbusLibrary.CarCodes(102, 103), new CanbusLibrary.CarCodes(91, 92)),
+                m.library.codePairsFor(1));
+        // the pair of the file first, then the base's others
+        assertEquals(java.util.Arrays.asList(new CanbusLibrary.CarCodes(7, 8), new CanbusLibrary.CarCodes(5, 6)),
+                m.library.codePairsFor(2));
+        assertEquals(base.codePairsFor(3), m.library.codePairsFor(3));
+        // at most four: the four of the file, and nothing of the base's one
+        assertEquals(4, m.library.codePairsFor(4).size());
+        assertEquals(new CanbusLibrary.CarCodes(20, 21), m.library.codesFor(4));
+        assertFalse(m.library.codePairsFor(4).contains(new CanbusLibrary.CarCodes(10, 11)));
+        String replaced = m.replacements.toString();
+        assertTrue(replaced.contains("S 1: 91 | 92 -> 102 | 103 | 91 | 92"), replaced);
+        // the merge reads back
+        assertTrue(parse(m.library.serialize()).ok());
+    }
+
+    @Test
+    void mergingTheAssetWithAVersion3FileKeepsTheAssetsOtherPair() throws IOException {
+        Library base = asset();
+        CanbusLibrary.CarCodes first = base.codesFor(163);
+        Library file = lib("canbus_library 3\nS 163 | 91 | 92 | 102 | 103\n");
+        Library merged = base.mergedWith(file).library;
+        assertEquals(new CanbusLibrary.CarCodes(91, 92), merged.codesFor(163));
+        assertEquals(java.util.Arrays.asList(new CanbusLibrary.CarCodes(91, 92), first), merged.codePairsFor(163));
     }
 }

@@ -251,6 +251,9 @@
     <string name="stats_codes_not_set">not set</string>
     <string name="stats_codes_summary_speed_rpm">\nSpeed: %1$s, RPM: %2$s</string>
     <string name="stats_codes_empty_fields">An empty field uses the code of the canbus library (fuel, range) or of the canbus reader (speed; without one, the GPS). A code you type always wins. Speed and RPM are optional: the speed improves the estimate of the consumption where the car shows none.</string>
+    <string name="stats_codes_pairs_line">Library: %1$s — in use: %2$s (%3$s)</string>
+    <string name="stats_codes_pair_confirmed">confirmed</string>
+    <string name="stats_codes_pair_unconfirmed">not confirmed yet</string>
     <string name="stats_codes_reader_line">Codes the canbus reader found on %1$s: %2$s</string>
     <string name="main_screen_stats_window">Display the fuel statistics on the main screen</string>
     <string name="color_picker">Statistics text color</string>

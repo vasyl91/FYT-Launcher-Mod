@@ -110,9 +110,9 @@ Exit code: 0 success, 1 bad input, 2 an invalid file in `--check`, `--diff` or `
 * **`--merge BASE FILE`** writes `BASE` merged with `FILE` exactly like the import in the launcher (section 6, *Merging*), sealed, and prints how many
   records of each kind were new, duplicate and replaced. The default `--out` is `canbus_library_merged_<date>_<time>.txt`.
 
-## 6. File format (version 2)
+## 6. File format (version 3)
 
-A UTF-8 text file. The first significant line is `canbus_library 2`. Files in version 1 (`canbus_library 1`, without `S` records) are still read, by the launcher and by `--check`. Empty lines and lines starting with `#` are ignored
+A UTF-8 text file. The first significant line is `canbus_library 3` (`canbus_library 2` when no car has more than one pair of fuel/range codes; the script and the launcher write the lower version then). Files in version 1 (`canbus_library 1`, without `S` records) and in version 2 (one pair of codes per car) are still read, by the launcher and by `--check`. Empty lines and lines starting with `#` are ignored
 (a BOM at the start is allowed). Records (fields are separated by `|`, spaces around fields are allowed):
 
 ```
@@ -121,7 +121,7 @@ C <ids> | <class> | <alt> | portrait                   <alt> when the screen is 
 C <ids> | <class> | <alt> | fytver:<tok>[,<tok>...]    <alt> when /sys/fytver/fyt_bin_version contains one of the tokens
 R <ids> | <page> | <req>[; <req>...]                   a fuel page and the requests it sends, in order
 N <ids>                                                the car needs no request (switches off a false match)
-S <ids> | <fuel> | <range>                             version 2 only: the codes of the car's fuel consumption and range
+S <ids> | <fuel> | <range> [| <fuel> | <range>]...    the codes of the car's fuel consumption and range, up to 4 pairs (version 2: one)
 end <records> <crc32>                                  footer, the last significant line
 ```
 
@@ -133,15 +133,20 @@ end <records> <crc32>                                  footer, the last signific
   A request is what the original screen sends with `DataCanbus.PROXY.cmd(cmd, new int[]{i, ...}, null, null)`.
 
 * `<fuel>`, `<range>`: the `DataCanbus.DATA` index the car reports the momentary fuel consumption and the range under,
-  `0..1199` (the whole canbus module), or `-` if unknown. `S 5 | - | -` is an error ("nothing to say"). In a version 1 file an `S` is an error
+  `0..1199` (the whole canbus module), or `-` if unknown. A pair `- | -` is an error ("nothing to say"). In a version 1 file an `S` is an error
   (`S records need version 2`).
+* **Several pairs.** The numbers of the codes are not the same in every version of FYT's `com.syu.ms` and `com.syu.canbus`
+  (the fuel consumption of the 408 is 91 in the older and 102 in the newer one), and the launcher cannot tell which one a radio has. A car can
+  therefore have up to 4 pairs, `S 163 | 102 | 103 | 91 | 92`, **in order of preference, the newest version first**. The launcher listens to all of them and uses the pair
+  the radio really reports. A pair is never repeated in a record. A version 2 file with more than one pair in a record is an error
+  (`several code pairs need version 3`).
 
 **Consistency inside one file**
 
 * one car id has at most one `C` record;
 * `R` pages are unique per (id, page), at most 10 pages per id;
 * `N` and `R` for the same id exclude each other;
-* one car id has at most one `S` record;
+* one car id has at most one `S` record (the same pairs in another order are another record, so a contradiction);
 * an identical record repeated is a *duplicate* (skipped and counted), a contradicting one is an error.
 
 **Footer.** `<records>` is the number of `C`/`R`/`N`/`S` lines. `<crc32>` is 8 lowercase hex digits: the CRC-32
@@ -159,19 +164,21 @@ as *new*, *duplicate* or *replaced*:
   with the pages of the file first (in the file's order), then the pages of the base that the file does not mention.
   If the base has `N` for that id, the `N` is dropped.
 * `N`, per id: the base has `N` = duplicate; the base has `R` pages = replaced (the pages are dropped); otherwise new.
-* `S`, per car id: not in the base = new; identical = duplicate; different = replaced (the file wins; the report shows the old and the new value).
+* `S`, per car id: not in the base = new; the same list of pairs = duplicate; a different list = replaced. The pairs of the file come first, in the file's order, then the
+  pairs of the base that the file does not have, at most 4 in all (the report shows the old and the new list). So an import of a library for the newer module puts its codes
+  first and keeps the older module's codes behind them.
 * Records for different car ids never affect each other.
 
 Example (the footer values are only an example; the script computes the real ones):
 
 ```
-canbus_library 2
+canbus_library 3
 C 163,221 | com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi
 C 274 | com.syu.carinfo.accord.ActivityAccord7Index | com.syu.carinfo.xp.psa_all.XpPsaAllIndexActi | portrait
 R 163,221 | com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti | 70:51; 29:0
 R 19 | com.syu.carinfo.honda.HondaTripActi | 100:1; 100:3
 N 1
-S 163,221 | 102 | 103
+S 163,221 | 102 | 103 | 91 | 92
 end 6 1a2b3c4d
 ```
 
@@ -196,7 +203,8 @@ end 6 1a2b3c4d
   (1000 and above are general codes, such as the car id). A car gets the fuel code from the first page that has one and the range code from the first page that has one,
   independently. Two methods of the same role in one page with different codes: the first in the source is used and the script warns.
   The codes are those of the source: the library built from `decompiled_carinfo` knows `102 | 103` for the PSA CAN box (`RZC_BZ408OilMilePage1Acti`),
-  the one built from your `com.syu.canbus` knows `91 | 92`.
+  the one built from an older `com.syu.canbus` knows `91 | 92`. A source gives one pair per car; the pairs of several sources are joined by the built-in library
+  (section 7, *The launcher's own library*) and by an import (section 6, *Merging*).
 * **The main page.** The launcher sends only the requests of the first page of a car. Among the pages of a car the first is: a page named after the car
   (`_<id & 0xFFFF>_`); then a page from which the script reads a fuel or range code; then a page whose name has no electric-car word (`EV`, `Electric` or `Battery`
   as a whole CamelCase word: `EVMile` yes, `Level` no); then `Page1`, then `Index`, then the shallower, then by name. The first two steps stop the screen of an electric

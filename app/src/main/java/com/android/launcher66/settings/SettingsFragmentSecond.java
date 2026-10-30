@@ -1867,6 +1867,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     /** What an empty field uses, and the codes the reader found for this car. */
     private String codesInfoText(ReaderGuesses reader) {
         String text = getString(R.string.stats_codes_empty_fields);
+        CodePairChooser.Status pairs = libraryPairs();
+        if (pairs != null) {
+            text += "\n" + getString(R.string.stats_codes_pairs_line, pairs.pairsText(),
+                    CodePairChooser.pairText(pairs.pair()),
+                    getString(pairs.confirmed ? R.string.stats_codes_pair_confirmed : R.string.stats_codes_pair_unconfirmed));
+        }
         if (reader != null && !reader.codesText().isEmpty()) {
             text += "\n" + getString(R.string.stats_codes_reader_line, reader.dateText(), reader.codesText());
         }
@@ -1970,12 +1976,37 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         return saved == null || saved.trim().isEmpty() || saved.trim().equals("0");
     }
 
-    /** The code the library knows for this car, fuel or range, or -1. */
-    private static int libraryCode(boolean fuel) {
+    /**
+     * The code the library gives this car, fuel or range, or -1: that of the pair the radio reports when the library
+     * has several (the choice of CanbusService, else the one saved, else the first).
+     */
+    private int libraryCode(boolean fuel) {
+        CodePairChooser.Status status = libraryPairs();
+        if (status == null) {
+            return -1;
+        }
+        CanbusLibrary.CarCodes codes = status.pair();
+        return fuel ? codes.fuel : codes.range;
+    }
+
+    /** The pairs of the library for this car and the one in use; null if the library has none. */
+    private CodePairChooser.Status libraryPairs() {
         CanbusLibrary.Library library = CanbusLibrary.cached();
         int carId = DataCanbus.DATA[1000];
-        CanbusLibrary.CarCodes codes = library == null || carId == 0 ? null : library.codesFor(carId);
-        return codes == null ? -1 : fuel ? codes.fuel : codes.range;
+        if (library == null || carId == 0) {
+            return null;
+        }
+        CodePairChooser.Status running = CanbusService.pairStatus(carId);
+        if (running != null) {
+            return running;
+        }
+        List<CanbusLibrary.CarCodes> pairs = library.codePairsFor(carId);
+        if (pairs.isEmpty()) {
+            return null;
+        }
+        CanbusLibrary.CarCodes saved = CodePairChooser.decode(sharedPrefs.getString(CodePairChooser.key(carId), null));
+        int at = saved == null ? -1 : pairs.indexOf(saved);
+        return new CodePairChooser.Status(pairs, Math.max(at, 0), at >= 0);
     }
 
     /** A saved code in its field; none (or "0") leaves the field empty, with the code used then as the hint. */

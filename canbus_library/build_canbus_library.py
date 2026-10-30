@@ -10,13 +10,14 @@ fuel/range screens and the codes of its fuel consumption and range.
     py build_canbus_library.py --diff A B [--ids 1507667,163]        what differs between two library files
     py build_canbus_library.py --merge BASE FILE [--out OUT]         BASE merged with FILE like the launcher's import
 
-Format (version 2; version 1 files, without S records, are still read; the full description is in README.md next to this script):
+Format (version 3; versions 1 and 2 are still read; the full description is in README.md next to this script):
 
-    canbus_library 2
+    canbus_library 3
     C <ids> | <class> [| <alt> | portrait | fytver:<tok>,...]     screen class of the cars
     R <ids> | <page> | <cmd>[:<i>,...]; ...                        a fuel page and the requests it sends
     N <ids>                                                        the cars need no request
-    S <ids> | <fuel> | <range>                                     codes 0..1199 or "-": fuel consumption and range
+    S <ids> | <fuel> | <range> [| <fuel> | <range>]...             codes 0..1199 or "-": fuel consumption and range,
+                                                                   up to 4 pairs (a file with only one pair per car is version 2)
     end <records> <crc32>
 
 Python 3.8+, standard library only.
@@ -32,6 +33,8 @@ import sys
 import zlib
 
 HEADER = 'canbus_library 2'
+HEADER3 = 'canbus_library 3'
+MAX_PAIRS = 4
 MAX_CODE = 1199
 MAX_BYTES = 2 * 1024 * 1024
 MAX_LINES = 200000
@@ -1028,9 +1031,10 @@ def check_text(raw):
             continue
         if header_at is None:
             header_at = no
-            hm = re.fullmatch(r'canbus_library\s+([12])', s)
+            hm = re.fullmatch(r'canbus_library\s+([123])', s)
             if not hm:
-                res.err(no, 'missing or unsupported header (expected "canbus_library 1" or "canbus_library 2")')
+                res.err(no, 'missing or unsupported header (expected "canbus_library 1", "canbus_library 2" or '
+                            '"canbus_library 3")')
                 return res
             res.version = int(hm.group(1))
             continue
@@ -1108,25 +1112,35 @@ def check_text(raw):
             if res.version < 2:
                 res.err(no, 'S records need version 2')
                 continue
-            if len(fields) != 3:
-                res.err(no, 'S takes "ids | fuel code | range code"')
+            n_codes = len(fields) - 1
+            if n_codes < 2 or n_codes % 2:
+                res.err(no, 'S takes "ids | fuel code | range code [| fuel code | range code]..."')
                 continue
-            pair, bad = [], False
+            if n_codes > 2 and res.version < 3:
+                res.err(no, 'several code pairs need version 3')
+                continue
+            if n_codes // 2 > MAX_PAIRS:
+                res.err(no, 'more than %d code pairs' % MAX_PAIRS)
+                continue
+            codes, bad = [], False
             for f in fields[1:]:
                 if f == '-':
-                    pair.append(None)
+                    codes.append(None)
                 elif re.fullmatch(r'[0-9]{1,4}', f) and int(f) <= MAX_CODE:
-                    pair.append(int(f))
+                    codes.append(int(f))
                 else:
                     res.err(no, 'bad code "%s" (0..%d or -)' % (f[:20], MAX_CODE))
                     bad = True
                     break
             if bad:
                 continue
-            if pair[0] is None and pair[1] is None:
+            pairs = tuple((codes[k], codes[k + 1]) for k in range(0, len(codes), 2))
+            if any(p == (None, None) for p in pairs):
                 res.err(no, 'S with nothing to say ("- | -")')
                 continue
-            pairs = (tuple(pair),)
+            if len(set(pairs)) != len(pairs):
+                res.err(no, 'a code pair repeated in the record')
+                continue
             for i in ids:
                 old = res.codes.get(i)
                 if old is None:
@@ -1174,7 +1188,7 @@ def check_text(raw):
             else:
                 pages[page] = reqs
     if header_at is None:
-        res.err(0, 'empty file: missing header "canbus_library 1" or "canbus_library 2"')
+        res.err(0, 'empty file: missing header "canbus_library 1", "canbus_library 2" or "canbus_library 3"')
     elif footer_at is None:
         res.err(len(lines), 'missing footer "end <records> <crc32>"')
     elif res.declared is not None:
@@ -1419,7 +1433,7 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
             ambiguous_groups.append((ids, tied))
 
     # text
-    out = [HEADER,
+    out = [header_for(codes_of),
            '# Canbus library: the screen class of each car id and the requests of its fuel screens.',
            source_line,
            '# C: car ids and the class of their screen (optionally another class for a portrait screen or for a firmware).',
@@ -1685,17 +1699,24 @@ def merge_libraries(base, fil):
         pages.pop(i, None)
     for i in sorted(fil.codes):
         old = codes.get(i)
+        # the pairs of the file first, then those of the base the file does not have, at most MAX_PAIRS
+        merged_pairs = tuple(list(fil.codes[i]) + [p for p in (old or ()) if p not in fil.codes[i]])[:MAX_PAIRS]
         if tally('S', old, fil.codes[i]):
-            replaced.append(('S', i, None, pairs_text(old), pairs_text(fil.codes[i])))
-        codes[i] = fil.codes[i]
+            replaced.append(('S', i, None, pairs_text(old), pairs_text(merged_pairs)))
+        codes[i] = merged_pairs
     return classes, pages, no_request, codes, counts, replaced
+
+
+def header_for(codes):
+    """The header of a library: version 3 only when a car has several code pairs."""
+    return HEADER3 if any(len(p) > 1 for p in codes.values()) else HEADER
 
 
 def library_lines(classes, pages, no_request, codes, comments):
     """The sealed lines of a library held as `merge_libraries` returns it."""
     pages_of = {i: [(pg, tuple(r)) for pg, r in p.items()] for i, p in pages.items()}
     body = record_lines(classes, no_request, pages_of, codes)[0]
-    out = [HEADER] + comments + body
+    out = [header_for(codes)] + comments + body
     return seal_lines(out)
 
 
@@ -1768,8 +1789,8 @@ def cmd_seal(path, log):
             lines = lines[:k]
         break
     first = next((k for k, ln in enumerate(lines) if ln.strip() and not ln.strip().startswith('#')), None)
-    if first is None or not re.fullmatch(r'canbus_library\s+[12]', lines[first].strip()):
-        log('error: no "canbus_library 1" or "canbus_library 2" header')
+    if first is None or not re.fullmatch(r'canbus_library\s+[123]', lines[first].strip()):
+        log('error: no "canbus_library 1", "canbus_library 2" or "canbus_library 3" header')
         return 1
     body = lines[first:]
     sealed = seal_lines([ln.rstrip() for ln in body])

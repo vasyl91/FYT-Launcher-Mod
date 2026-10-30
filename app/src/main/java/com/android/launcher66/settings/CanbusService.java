@@ -56,13 +56,17 @@ import com.syu.util.WindowHostVdClient;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CanbusService extends Service implements PropertyChangeListener {
 
@@ -105,6 +109,16 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private volatile int rangeCode = 0;
     /** The speed code in use: that of the settings, else the one the code reader found, else 0 (the GPS). */
     private volatile int speedCode = 0;
+    /**
+     * Which pair of the library's fuel and range codes the radio reports (the codes moved between the versions of
+     * the canbus module); null for a car the library has no pair for. The codes of the settings come before it.
+     */
+    private volatile CodePairChooser pairChooser;
+    private int pairCarId;
+    /** The choice last written to the settings, to write only a change. Main thread. */
+    private String pairSaved = "";
+    /** The last value of each code the service listens to, to show the values of a pair that has just been chosen. */
+    private final Map<Integer, Integer> lastCodeValues = new ConcurrentHashMap<>();
     /** The last values of the codes above, from the update of com.syu.ms (binder thread). */
     private volatile int fuelValue = 0;
     private volatile int rangeValue = 0;
@@ -119,6 +133,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private long fuelModelSavedAt;
     private FuelModel.SpeedScale speedScale = new FuelModel.SpeedScale(0);
     private static final long FUEL_MODEL_SAVE_MS = 60_000L;
+    /** Above this speed (km/h) the car counts as driving, for the choice of the pair of codes. */
+    private static final double DRIVING_KMH = 5.0;
 
     private Workspace workspaceRef = null;
     private ViewTreeObserver.OnScrollChangedListener workspaceScrollListener = null;
@@ -131,6 +147,25 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
     /** Set for the lifetime of the service; see Launcher.isServiceRunning(). */
     private static volatile boolean sRunning;
+
+    /** The pair of codes in use for a car, for the settings. */
+    private static final class PairInfo {
+        final int carId;
+        final CodePairChooser.Status status;
+
+        PairInfo(int carId, CodePairChooser.Status status) {
+            this.carId = carId;
+            this.status = status;
+        }
+    }
+
+    private static volatile PairInfo sPairInfo;
+
+    /** The pair of fuel and range codes in use for the car (confirmed or not), from the running service; else null. */
+    static CodePairChooser.Status pairStatus(int carId) {
+        PairInfo info = sPairInfo;
+        return info != null && info.carId == carId ? info.status : null;
+    }
 
     /** The running service, for onPagesFrame(); main thread. */
     private static CanbusService sInstance;
@@ -215,6 +250,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         sRunning = false;
         if (sInstance == this) {
             sInstance = null;
+            sPairInfo = null;
         }
         saveFuelModel();
         Log.d(TAG, "Service destroyed");
@@ -359,6 +395,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 return;
             }
             int value = ints[0];
+            lastCodeValues.put(updateCode, value);
+            CodePairChooser chooser = pairChooser;
+            if (chooser != null && chooser.onValue(updateCode, value)) {
+                uiHandler.post(CanbusService.this::onPairChanged);
+            }
             if (updateCode == fuelCode) {
                 fuelValue = value;
                 uiHandler.post(CanbusService.this::mUpdaterOilExpend);
@@ -394,13 +435,13 @@ public class CanbusService extends Service implements PropertyChangeListener {
         final Context app = getApplicationContext();
         // The library may still be loading, and loading reads files: not on this thread
         CanbusLibrary.executor().execute(() -> {
-            CanbusLibrary.CarCodes codes = CanbusLibrary.loadBlocking(app).codesFor(carId);
+            List<CanbusLibrary.CarCodes> pairs = CanbusLibrary.loadBlocking(app).codePairsFor(carId);
             uiHandler.post(() -> {
                 if (sInstance != this) {
                     return;
                 }
-                fuelCode = fuel > 0 ? fuel : codes != null && codes.fuel > 0 ? codes.fuel : 0;
-                rangeCode = range > 0 ? range : codes != null && codes.range > 0 ? codes.range : 0;
+                setUpPairs(carId, pairs);
+                applyPairCodes();
                 // The speed for the estimate: the code of the settings, else the one the code reader found
                 // (it followed the GPS, and its scale is known), else the GPS
                 ReaderGuesses reader = ReaderGuesses.parse(prefs.getString(ReaderGuesses.key(carId), null));
@@ -1090,11 +1131,94 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
     private void registerStatsCodes() {
         unregisterStatsCodes();
-        for (int code : new int[]{fuelCode, rangeCode, rpm, speedCode}) {
+        // the codes of all the library's pairs: which one the radio reports is found out from their values
+        Set<Integer> wanted = new LinkedHashSet<>(Arrays.asList(fuelCode, rangeCode, rpm, speedCode));
+        CodePairChooser chooser = pairChooser;
+        if (chooser != null) {
+            wanted.addAll(chooser.codes());
+        }
+        for (int code : wanted) {
             if (code > 0 && statsCodesRegistered.add(code)) {
                 DataCanbus.PROXY.unregister(statsCallback, code);
                 DataCanbus.PROXY.register(statsCallback, code, 1);
             }
+        }
+    }
+
+    /** The pairs of the library for the car: a new chooser, or the one that is there if nothing changed. Main thread. */
+    private void setUpPairs(int carId, List<CanbusLibrary.CarCodes> pairs) {
+        CodePairChooser chooser = pairChooser;
+        if (chooser != null && pairCarId == carId && chooser.status().pairs.equals(pairs)) {
+            return;
+        }
+        pairCarId = carId;
+        lastCodeValues.clear();
+        if (pairs.isEmpty()) {
+            pairChooser = null;
+            sPairInfo = null;
+            return;
+        }
+        chooser = new CodePairChooser(pairs);
+        String saved = prefs.getString(CodePairChooser.key(carId), null);
+        pairSaved = saved == null ? "" : saved;
+        CanbusLibrary.CarCodes before = CodePairChooser.decode(saved);
+        if (before != null) {
+            chooser.restore(before);
+        }
+        pairChooser = chooser;
+        sPairInfo = new PairInfo(carId, chooser.status());
+    }
+
+    /**
+     * The fuel and range codes in use: those of the settings, else those of the pair in use, else 0. Returns whether
+     * the fuel code changed, which is another model of the estimate. Main thread.
+     */
+    private boolean applyPairCodes() {
+        CodePairChooser chooser = pairChooser;
+        CanbusLibrary.CarCodes pair = chooser == null ? null : chooser.status().pair();
+        int newFuel = fuel > 0 ? fuel : pair != null && pair.fuel > 0 ? pair.fuel : 0;
+        int newRange = range > 0 ? range : pair != null && pair.range > 0 ? pair.range : 0;
+        boolean fuelChanged = newFuel != fuelCode;
+        boolean rangeChanged = newRange != rangeCode;
+        fuelCode = newFuel;
+        rangeCode = newRange;
+        if (fuelChanged) {
+            Integer v = lastCodeValues.get(newFuel);
+            fuelValue = v == null ? 0 : v;
+        }
+        if (rangeChanged) {
+            Integer v = lastCodeValues.get(newRange);
+            rangeValue = v == null ? 0 : v;
+        }
+        return fuelChanged;
+    }
+
+    /** The pair in use changed (a value confirmed one, or the chosen one has been silent for long). Main thread. */
+    private void onPairChanged() {
+        CodePairChooser chooser = pairChooser;
+        if (chooser == null || sInstance != this) {
+            return;
+        }
+        CodePairChooser.Status status = chooser.status();
+        sPairInfo = new PairInfo(pairCarId, status);
+        boolean fuelChanged = applyPairCodes();
+        if (fuelChanged) {
+            loadFuelModel(pairCarId);
+        }
+        if (status.confirmed) {
+            final String text = CodePairChooser.encode(status.index, status.pair());
+            if (!text.equals(pairSaved)) {
+                pairSaved = text;
+                final String key = CodePairChooser.key(pairCarId);
+                // apply() writes in the background, but it also takes the editor's lock: not here
+                CanbusLibrary.executor().execute(() -> prefs.edit().putString(key, text).apply());
+            }
+        }
+        if (fuelChanged && lastCodeValues.containsKey(fuelCode)) {
+            mUpdaterOilExpend();
+        }
+        if (lastCodeValues.containsKey(rangeCode)) {
+            mUpdaterDrivingMileage();
         }
     }
 
@@ -1208,6 +1332,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private void onSpeedCode() {
         speedScale.onValue(speedValue);
         int scale = speedScale.scale();
+        if (scale > 0) {
+            onDriving(speedValue / (double) scale);
+        }
         if (scale > 0 && fuelModel != null) {
             fuelModel.onSpeed(System.currentTimeMillis(), speedValue / (double) scale, true);
             refreshFuelEstimate();
@@ -1267,12 +1394,21 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
 
+    /** The speed (km/h) from either source: driving time for the choice of the pair of codes. Main thread. */
+    private void onDriving(double kmh) {
+        CodePairChooser chooser = pairChooser;
+        if (chooser != null && chooser.onDriving(System.currentTimeMillis(), kmh > DRIVING_KMH)) {
+            onPairChanged();
+        }
+    }
+
     /** A fix from the location updates: its speed, for the estimate and for the scale of the speed code. */
     private void onLocation(Location location) {
         if (location == null || !location.hasSpeed()) {
             return;
         }
         double kmh = location.getSpeed() * 3.6;
+        onDriving(kmh);
         if (speedCode > 0) {
             speedScale.onGps(kmh);
         }

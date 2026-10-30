@@ -370,10 +370,18 @@ public class CanbusCodeInspector extends Service {
         String libraryLine = "";
         int carId = DataCanbus.DATA[1000];
         try {
-            CanbusLibrary.CarCodes libraryCodes = CanbusLibrary.loadBlocking(this).codesFor(carId);
-            if (libraryCodes != null) {
-                libraryLine = CanbusCodeEstimator.libraryCodesLine(libraryCodes.fuel, libraryCodes.range, samples,
+            // The library may have a pair for each version of the canbus module: nothing to say if one of them
+            // agrees with the recording, else what the first one does not
+            for (CanbusLibrary.CarCodes libraryCodes : CanbusLibrary.loadBlocking(this).codePairsFor(carId)) {
+                String line = CanbusCodeEstimator.libraryCodesLine(libraryCodes.fuel, libraryCodes.range, samples,
                         guesses);
+                if (line.isEmpty()) {
+                    libraryLine = "";
+                    break;
+                }
+                if (libraryLine.isEmpty()) {
+                    libraryLine = line;
+                }
             }
         } catch (RuntimeException e) {
             Log.w(TAG, "Could not compare the codes of the library", e);

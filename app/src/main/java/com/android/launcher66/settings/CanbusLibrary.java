@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,8 @@ import java.util.zip.CRC32;
 /**
  * The canbus library: for each car id the class of the screen FYT's canbus app opens and, for the cars that
  * need one, the requests (canbus commands) its fuel screens send when they open and the codes of its fuel
- * consumption and range. The format (version 2; version 1 files are still read) is described in
+ * consumption and range (several pairs of them, for the different versions of the canbus module). The format (version 3;
+ * versions 1 and 2 are still read) is described in
  * canbus_library/README.md, which also holds the script that builds a file of it.
  *
  * Everything in here is plain Java (no android.*), so that the parser, the merge and the checks run in JVM
@@ -43,7 +45,11 @@ import java.util.zip.CRC32;
  */
 public final class CanbusLibrary {
 
+    /** The header of a file with at most one code pair per car; {@link #HEADER_3} when a car has several. */
     public static final String HEADER = "canbus_library 2";
+    public static final String HEADER_3 = "canbus_library 3";
+    /** The most fuel/range pairs a car can have in a version 3 file. */
+    public static final int MAX_CODE_PAIRS = 4;
     /** The highest code the canbus module can report (FinalCanbus.U_CNT_MAX - 1). */
     static final int MAX_CODE = 1199;
     public static final long MAX_BYTES = 2L * 1024 * 1024;
@@ -60,7 +66,7 @@ public final class CanbusLibrary {
     private static final Pattern REQUEST = Pattern.compile("\\s*([0-9]{1,6})(?::\\s*(-?[0-9]+(?:\\s*,\\s*-?[0-9]+)*))?\\s*");
     private static final Pattern FOOTER = Pattern.compile("end\\s+([0-9]+)\\s+([0-9a-f]{8})");
     private static final Pattern FOOTER_LIKE = Pattern.compile("end\\b.*");
-    private static final Pattern HEADER_LINE = Pattern.compile("canbus_library\\s+([12])");
+    private static final Pattern HEADER_LINE = Pattern.compile("canbus_library\\s+([123])");
 
     private CanbusLibrary() {
     }
@@ -371,24 +377,32 @@ public final class CanbusLibrary {
 
     public static final class Library {
         public static final Library EMPTY = new Library(new TreeMap<Integer, CarClass>(),
-                new TreeMap<Integer, List<Page>>(), new TreeSet<Integer>(), new TreeMap<Integer, CarCodes>());
+                new TreeMap<Integer, List<Page>>(), new TreeSet<Integer>(), new TreeMap<Integer, List<CarCodes>>());
 
         private final TreeMap<Integer, CarClass> classes;
         private final TreeMap<Integer, List<Page>> pages;
         private final TreeSet<Integer> noRequest;
-        private final TreeMap<Integer, CarCodes> codes;
+        /** The pairs of a car in order of preference, the newest version of the canbus module first. */
+        private final TreeMap<Integer, List<CarCodes>> codes;
 
         Library(TreeMap<Integer, CarClass> classes, TreeMap<Integer, List<Page>> pages, TreeSet<Integer> noRequest,
-                TreeMap<Integer, CarCodes> codes) {
+                TreeMap<Integer, List<CarCodes>> codes) {
             this.classes = classes;
             this.pages = pages;
             this.noRequest = noRequest;
             this.codes = codes;
         }
 
-        /** The fuel and range codes of a car, or null if the library has none for it. */
+        /** The first (preferred) fuel and range codes of a car, or null if the library has none for it. */
         public CarCodes codesFor(int id) {
-            return codes.get(id);
+            List<CarCodes> pairs = codes.get(id);
+            return pairs == null ? null : pairs.get(0);
+        }
+
+        /** All the fuel and range pairs of a car, the preferred first; empty if the library has none for it. */
+        public List<CarCodes> codePairsFor(int id) {
+            List<CarCodes> pairs = codes.get(id);
+            return pairs == null ? Collections.<CarCodes>emptyList() : pairs;
         }
 
         /** The fuel pages of a car and their requests, main page first; empty = the car needs no request. */
@@ -457,7 +471,7 @@ public final class CanbusLibrary {
             TreeMap<Integer, CarClass> c = new TreeMap<>(classes);
             TreeMap<Integer, List<Page>> p = new TreeMap<>(pages);
             TreeSet<Integer> n = new TreeSet<>(noRequest);
-            TreeMap<Integer, CarCodes> k = new TreeMap<>(codes);
+            TreeMap<Integer, List<CarCodes>> k = new TreeMap<>(codes);
             MergeResult res;
             List<Replacement> replacements = new ArrayList<>();
             Counts cc = new Counts();
@@ -534,17 +548,26 @@ public final class CanbusLibrary {
                 p.remove(id);
             }
 
-            for (Map.Entry<Integer, CarCodes> e : file.codes.entrySet()) {
-                CarCodes old = k.get(e.getKey());
+            for (Map.Entry<Integer, List<CarCodes>> e : file.codes.entrySet()) {
+                List<CarCodes> old = k.get(e.getKey());
+                // the pairs of the file first, then those of the base the file does not have, at most MAX_CODE_PAIRS
+                List<CarCodes> merged = new ArrayList<>(e.getValue());
+                if (old != null) {
+                    for (CarCodes pair : old) {
+                        if (!merged.contains(pair) && merged.size() < MAX_CODE_PAIRS) {
+                            merged.add(pair);
+                        }
+                    }
+                }
                 if (old == null) {
                     kc.added++;
                 } else if (old.equals(e.getValue())) {
                     kc.duplicate++;
                 } else {
                     kc.replaced++;
-                    replacements.add(new Replacement('S', e.getKey(), null, old.toString(), e.getValue().toString()));
+                    replacements.add(new Replacement('S', e.getKey(), null, pairsText(old), pairsText(merged)));
                 }
-                k.put(e.getKey(), e.getValue());
+                k.put(e.getKey(), Collections.unmodifiableList(merged));
             }
 
             res = new MergeResult(new Library(c, p, n, k));
@@ -554,6 +577,17 @@ public final class CanbusLibrary {
             copy(kc, res.codes);
             res.replacements.addAll(replacements);
             return res;
+        }
+
+        private static String pairsText(List<CarCodes> pairs) {
+            StringBuilder sb = new StringBuilder();
+            for (CarCodes pair : pairs) {
+                if (sb.length() > 0) {
+                    sb.append(" | ");
+                }
+                sb.append(pair);
+            }
+            return sb.toString();
         }
 
         private static String pagesText(List<Page> pages) {
@@ -583,7 +617,11 @@ public final class CanbusLibrary {
          * They are part of the checksum like any line of the body, and no record.
          */
         public String serialize(List<String> comments) {
-            StringBuilder body = new StringBuilder(HEADER).append('\n');
+            boolean several = false;
+            for (List<CarCodes> pairs : codes.values()) {
+                several |= pairs.size() > 1;
+            }
+            StringBuilder body = new StringBuilder(several ? HEADER_3 : HEADER).append('\n');
             for (String comment : comments) {
                 body.append("# ").append(comment.replace('\r', ' ').replace('\n', ' ')).append('\n');
             }
@@ -628,8 +666,8 @@ public final class CanbusLibrary {
                 }
             }
 
-            Map<CarCodes, List<Integer>> byCodes = new LinkedHashMap<>();
-            for (Map.Entry<Integer, CarCodes> e : codes.entrySet()) {
+            Map<List<CarCodes>, List<Integer>> byCodes = new LinkedHashMap<>();
+            for (Map.Entry<Integer, List<CarCodes>> e : codes.entrySet()) {
                 List<Integer> ids = byCodes.get(e.getValue());
                 if (ids == null) {
                     ids = new ArrayList<>();
@@ -637,9 +675,9 @@ public final class CanbusLibrary {
                 }
                 ids.add(e.getKey());
             }
-            for (Map.Entry<CarCodes, List<Integer>> e : byCodes.entrySet()) {
+            for (Map.Entry<List<CarCodes>, List<Integer>> e : byCodes.entrySet()) {
                 for (String ids : idChunks(e.getValue())) {
-                    body.append("S ").append(ids).append(" | ").append(e.getKey()).append('\n');
+                    body.append("S ").append(ids).append(" | ").append(pairsText(e.getKey())).append('\n');
                 }
             }
             return seal(body.toString());
@@ -744,7 +782,7 @@ public final class CanbusLibrary {
         private final TreeMap<Integer, CarClass> classes = new TreeMap<>();
         private final TreeMap<Integer, List<Page>> pages = new TreeMap<>();
         private final TreeSet<Integer> noRequest = new TreeSet<>();
-        private final TreeMap<Integer, CarCodes> codes = new TreeMap<>();
+        private final TreeMap<Integer, List<CarCodes>> codes = new TreeMap<>();
         private int version;
         private int recordLines;
         private int duplicates;
@@ -845,7 +883,7 @@ public final class CanbusLibrary {
                     headerLine = lineNo;
                     Matcher hm = HEADER_LINE.matcher(s);
                     if (!hm.matches()) {
-                        err(lineNo, "missing or unsupported header (expected \"canbus_library 1\" or \"" + HEADER + "\")");
+                        err(lineNo, "missing or unsupported header (expected \"canbus_library 1\", \"" + HEADER + "\" or \"" + HEADER_3 + "\")");
                         return result(-1, null, null);
                     }
                     version = Integer.parseInt(hm.group(1));
@@ -878,7 +916,7 @@ public final class CanbusLibrary {
                 progress.onBytes(bytes, sizeBytes);
             }
             if (!headerSeen) {
-                err(0, "empty file: missing header \"canbus_library 1\" or \"" + HEADER + "\"");
+                err(0, "empty file: missing header \"canbus_library 1\", \"" + HEADER + "\" or \"" + HEADER_3 + "\"");
             } else if (!footerSeen) {
                 err(lineNo, "missing footer \"end <records> <crc32>\"");
             } else if (declared >= 0) {
@@ -1020,29 +1058,46 @@ public final class CanbusLibrary {
                 err(no, "S records need version 2");
                 return;
             }
-            if (f.length != 3) {
-                err(no, "S takes \"ids | fuel code | range code\"");
+            int count = f.length - 1;
+            if (count < 2 || count % 2 != 0) {
+                err(no, "S takes \"ids | fuel code | range code [| fuel code | range code]...\"");
                 return;
             }
-            int[] pair = new int[2];
-            for (int i = 0; i < 2; i++) {
+            if (count > 2 && version < 3) {
+                err(no, "several code pairs need version 3");
+                return;
+            }
+            if (count / 2 > MAX_CODE_PAIRS) {
+                err(no, "more than " + MAX_CODE_PAIRS + " code pairs");
+                return;
+            }
+            int[] values = new int[count];
+            for (int i = 0; i < count; i++) {
                 String t = f[i + 1];
                 if (t.equals("-")) {
-                    pair[i] = -1;
+                    values[i] = -1;
                 } else if (t.matches("[0-9]{1,4}") && Integer.parseInt(t) <= MAX_CODE) {
-                    pair[i] = Integer.parseInt(t);
+                    values[i] = Integer.parseInt(t);
                 } else {
                     err(no, "bad code \"" + clip(t) + "\" (0.." + MAX_CODE + " or -)");
                     return;
                 }
             }
-            if (pair[0] < 0 && pair[1] < 0) {
-                err(no, "S with nothing to say (\"- | -\")");
+            List<CarCodes> pairs = new ArrayList<>();
+            for (int i = 0; i < count; i += 2) {
+                if (values[i] < 0 && values[i + 1] < 0) {
+                    err(no, "S with nothing to say (\"- | -\")");
+                    return;
+                }
+                pairs.add(new CarCodes(values[i], values[i + 1]));
+            }
+            if (new HashSet<>(pairs).size() != pairs.size()) {
+                err(no, "a code pair repeated in the record");
                 return;
             }
-            CarCodes rec = new CarCodes(pair[0], pair[1]);
+            List<CarCodes> rec = Collections.unmodifiableList(pairs);
             for (int id : ids) {
-                CarCodes old = codes.get(id);
+                List<CarCodes> old = codes.get(id);
                 if (old == null) {
                     codes.put(id, rec);
                 } else if (old.equals(rec)) {
