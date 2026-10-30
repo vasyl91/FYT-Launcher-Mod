@@ -349,7 +349,7 @@ public class LauncherApplication extends Application {
      * them in memory (StrictMode caught each of them on it at a start).
      */
     private void warmUpOffMainThread() {
-        BarRows.preload(LauncherAppBars.MAX_LEFT);
+        BarRows.preload(BarCapacity.LEFT_MEMORY);
         // Its own thread: the main thread needs the screens about a second from now, when
         // Workspace is inflated. Opens the workspace's database (LauncherProvider) on the way.
         new Thread(() -> {

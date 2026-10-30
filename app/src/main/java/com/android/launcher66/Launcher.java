@@ -8799,18 +8799,61 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Widget.widgetUpdate(LauncherApplication.sApp, DateMusicProvider.class);
     }
 
+    /**
+     * The left bar's layout manager: spreads at most maxItems items evenly over the recycler's
+     * height, and works out how many items that height has room for (BarCapacity.leftCapacity()),
+     * telling its listener when the answer changes.
+     */
     public static class EvenVerticalLayoutManager extends LinearLayoutManager {
         static final String LM_TAG = "EvenVerticalLM";
         static final String LM_PREFS = "LauncherPrefs";
-        private static final String KEY_ITEM_HEIGHT = "left_bar_item_height";
+        // The height of an item depends on the orientation (item_left_app_list.xml is 1:1.7 in
+        // portrait and 1:1 in landscape), so each has its own value. The old key held one height
+        // for both and is not read any more; invalidateItemMetrics() removes it.
+        private static final String KEY_ITEM_HEIGHT_LEGACY = "left_bar_item_height";
+        private static final String KEY_ITEM_HEIGHT_PORT = "left_bar_item_height_port";
+        private static final String KEY_ITEM_HEIGHT_LAND = "left_bar_item_height_land";
+        // The capacity last worked out, per orientation: where the bar starts from before it is measured.
+        private static final String KEY_CAPACITY_PORT = "left_bar_capacity_port";
+        private static final String KEY_CAPACITY_LAND = "left_bar_capacity_land";
 
-        private static int sCachedNaturalItemHeight = -1;
+        private static int sCachedNaturalItemHeightPort = -1;
+        private static int sCachedNaturalItemHeightLand = -1;
 
-        private final int mMaxItems;
+        /** Told, on the main thread and never from inside a layout pass, that the capacity changed. */
+        public interface CapacityListener {
+            void onLeftCapacityChanged(int capacity);
+        }
+
+        private int mMaxItems;
         private final Context mAppContext;
         private RecyclerView mHost;
         private int mNaturalItemHeight = -1;
         private int mSlotHeight = -1;
+        private CapacityListener mCapacityListener;
+        private boolean mCapacityCheckPending;
+
+        /** Looks at the settled height of the recycler, not at the size of one measure pass. */
+        private final Runnable mCapacityCheck = new Runnable() {
+            @Override
+            public void run() {
+                mCapacityCheckPending = false;
+                if (mHost == null || mNaturalItemHeight <= 0 || mHost.getHeight() <= 0) {
+                    return;
+                }
+                int capacity = BarCapacity.leftCapacity(mHost.getHeight(), mNaturalItemHeight);
+                if (capacity == mMaxItems) {
+                    return;
+                }
+                Log.d(LM_TAG, "capacity " + mMaxItems + " -> " + capacity + " (H=" + mHost.getHeight()
+                        + " h=" + mNaturalItemHeight + ")");
+                setMaxItems(capacity);
+                storeCapacity(capacity);
+                if (mCapacityListener != null) {
+                    mCapacityListener.onLeftCapacityChanged(capacity);
+                }
+            }
+        };
 
         public EvenVerticalLayoutManager(Context context, int maxItems) {
             super(context, RecyclerView.VERTICAL, false);
@@ -8819,16 +8862,66 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mNaturalItemHeight = loadNaturalItemHeight();
         }
 
+        public void setMaxItems(int maxItems) {
+            int next = Math.max(1, maxItems);
+            if (next == mMaxItems) {
+                return;
+            }
+            mMaxItems = next;
+            requestLayout();
+        }
+
+        public void setCapacityListener(CapacityListener listener) {
+            mCapacityListener = listener;
+        }
+
+        private static boolean isPortrait(Context context) {
+            return context.getResources().getConfiguration().orientation
+                    == Configuration.ORIENTATION_PORTRAIT;
+        }
+
+        /** The capacity stored for the orientation; BarCapacity.MIN_LEFT_SLOTS before the first measure. */
+        static int loadCapacity(Context context, boolean portrait) {
+            try {
+                int stored = context.getApplicationContext()
+                        .getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
+                        .getInt(portrait ? KEY_CAPACITY_PORT : KEY_CAPACITY_LAND, BarCapacity.MIN_LEFT_SLOTS);
+                return Math.max(BarCapacity.MIN_LEFT_SLOTS, Math.min(BarCapacity.LEFT_MEMORY, stored));
+            } catch (Exception e) {
+                return BarCapacity.MIN_LEFT_SLOTS;
+            }
+        }
+
+        private void storeCapacity(int capacity) {
+            try {
+                mAppContext.getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
+                        .edit().putInt(isPortrait(hostContext()) ? KEY_CAPACITY_PORT : KEY_CAPACITY_LAND,
+                                capacity).apply();
+            } catch (Exception ignored) {
+            }
+        }
+
+        /** The context whose configuration says which way the screen is turned now. */
+        private Context hostContext() {
+            return mHost != null ? mHost.getContext() : mAppContext;
+        }
+
         private int loadNaturalItemHeight() {
-            if (sCachedNaturalItemHeight > 0) {
-                return sCachedNaturalItemHeight;
+            boolean portrait = isPortrait(hostContext());
+            int cached = portrait ? sCachedNaturalItemHeightPort : sCachedNaturalItemHeightLand;
+            if (cached > 0) {
+                return cached;
             }
             try {
                 int stored = mAppContext
                         .getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
-                        .getInt(KEY_ITEM_HEIGHT, -1);
+                        .getInt(portrait ? KEY_ITEM_HEIGHT_PORT : KEY_ITEM_HEIGHT_LAND, -1);
                 if (stored > 0) {
-                    sCachedNaturalItemHeight = stored;
+                    if (portrait) {
+                        sCachedNaturalItemHeightPort = stored;
+                    } else {
+                        sCachedNaturalItemHeightLand = stored;
+                    }
                 }
                 return stored;
             } catch (Exception e) {
@@ -8837,10 +8930,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         private void storeNaturalItemHeight(int height) {
-            sCachedNaturalItemHeight = height;
+            boolean portrait = isPortrait(hostContext());
+            if (portrait) {
+                sCachedNaturalItemHeightPort = height;
+            } else {
+                sCachedNaturalItemHeightLand = height;
+            }
             try {
                 mAppContext.getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
-                        .edit().putInt(KEY_ITEM_HEIGHT, height).apply();
+                        .edit().putInt(portrait ? KEY_ITEM_HEIGHT_PORT : KEY_ITEM_HEIGHT_LAND, height).apply();
             } catch (Exception ignored) {
             }
         }
@@ -8854,6 +8952,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override
         public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
             super.onDetachedFromWindow(view, recycler);
+            view.removeCallbacks(mCapacityCheck);
+            mCapacityCheckPending = false;
             mHost = null;
         }
 
@@ -8868,6 +8968,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (mNaturalItemHeight <= 0) {
                 mNaturalItemHeight = loadNaturalItemHeight();
             }
+            checkCapacity(total);
             int count = Math.min(getItemCount(), mMaxItems);
             if (total <= 0 || count <= 0 || mNaturalItemHeight <= 0) {
                 return false;
@@ -8890,6 +8991,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mHost.setPadding(mHost.getPaddingLeft(), edge, mHost.getPaddingRight(), edge);
             }
             return true;
+        }
+
+        /**
+         * Compares what this height has room for with the capacity in use. A different answer is
+         * not acted on here (this runs inside measure and layout passes, whose heights can be
+         * transient): one check is posted, and that one reads the height the recycler ended up with.
+         */
+        private void checkCapacity(int total) {
+            if (mHost == null || mCapacityCheckPending || total <= 0 || mNaturalItemHeight <= 0) {
+                return;
+            }
+            if (BarCapacity.leftCapacity(total, mNaturalItemHeight) != mMaxItems) {
+                mCapacityCheckPending = true;
+                mHost.post(mCapacityCheck);
+            }
         }
 
         @Override
@@ -8925,13 +9041,23 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             applySpacing(getHeight());
         }
 
+        @Override
+        public void onLayoutCompleted(RecyclerView.State state) {
+            super.onLayoutCompleted(state);
+            // The first item measured fixes the natural height, usually while the recycler still has
+            // no height of its own; the capacity can only be told once both are known.
+            checkCapacity(getHeight());
+        }
+
         public void invalidateItemMetrics() {
             mNaturalItemHeight = -1;
             mSlotHeight = -1;
-            sCachedNaturalItemHeight = -1;
+            sCachedNaturalItemHeightPort = -1;
+            sCachedNaturalItemHeightLand = -1;
             try {
                 mAppContext.getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
-                        .edit().remove(KEY_ITEM_HEIGHT).apply();
+                        .edit().remove(KEY_ITEM_HEIGHT_LEGACY).remove(KEY_ITEM_HEIGHT_PORT)
+                        .remove(KEY_ITEM_HEIGHT_LAND).apply();
             } catch (Exception ignored) {
             }
             requestLayout();

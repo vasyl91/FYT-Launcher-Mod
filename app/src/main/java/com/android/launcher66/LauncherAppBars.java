@@ -64,7 +64,8 @@ final class LauncherAppBars {
         mLauncher = launcher;
     }
 
-    static final int MAX_LEFT = 5;
+    /** Guards the check-and-insert of the extra bottom rows; see ensureBottomRows(). */
+    private static final Object BOTTOM_ROWS_LOCK = new Object();
 
     static final long POST_RESUME_APP_DATA_REFRESH_THROTTLE_MS = 1200L;
 
@@ -160,6 +161,55 @@ final class LauncherAppBars {
     long mLastAppListSourceSignature = Long.MIN_VALUE;
 
     long mLastLeftAppListSourceSignature = Long.MIN_VALUE;
+
+    /** Slots the left bar has room for; -1 until first asked, then kept up to date by its layout manager. */
+    int mLeftCapacity = -1;
+
+    /**
+     * Slots the left bar shows: what its height has room for, as the layout manager last worked it
+     * out. Before the first measure of a run it is the value stored for this orientation.
+     */
+    int leftCapacity() {
+        if (mLeftCapacity < 0) {
+            mLeftCapacity = Launcher.EvenVerticalLayoutManager.loadCapacity(
+                    mLauncher.getApplicationContext(),
+                    mLauncher.orientation == Configuration.ORIENTATION_PORTRAIT);
+        }
+        return mLeftCapacity;
+    }
+
+    Launcher.EvenVerticalLayoutManager newLeftLayoutManager() {
+        Launcher.EvenVerticalLayoutManager layoutManager =
+                new Launcher.EvenVerticalLayoutManager(mLauncher.getApplicationContext(), leftCapacity());
+        layoutManager.setCapacityListener(this::onLeftCapacityChanged);
+        return layoutManager;
+    }
+
+    /**
+     * The left bar's room changed (a turn of the screen, a lower or higher bottom bar): the list is
+     * built again so that it has as many apps as fit now, from the apps the database remembers.
+     */
+    void onLeftCapacityChanged(int capacity) {
+        if (capacity == mLeftCapacity) {
+            return;
+        }
+        Log.d(Launcher.TAG, "Left bar capacity " + mLeftCapacity + " -> " + capacity);
+        mLeftCapacity = capacity;
+        mLastLeftAppListSourceSignature = Long.MIN_VALUE;
+        if (AllAppsList.data == null || AllAppsList.data.isEmpty()) {
+            return; // the first real build is still to come and will use the new capacity
+        }
+        refreshLeftBar(null);
+    }
+
+    /**
+     * Slots the bottom bar shows with these settings: what fits at the icon size, never fewer than
+     * the bar showed before. Pure, so it can be asked before anything is measured.
+     */
+    int bottomCapacity(boolean currentUserLayout, boolean currentWidgetBar) {
+        return BarCapacity.bottomCapacity(mLauncher.mPrefs, mLauncher.orientation,
+                currentUserLayout, currentWidgetBar);
+    }
 
     boolean shouldUseLeftRecycler() {
         SharedPreferences prefs = mLauncher.mPrefs != null
@@ -319,8 +369,10 @@ final class LauncherAppBars {
         mPostResumeAppDataDirty = false;
         mLastPostResumeAppDataRefreshMs = SystemClock.uptimeMillis();
         mLauncher.bg.execute(() -> {
-            List<AppMultiple> data = BarRows.bottom();
-            List<LeftAppMultiple> left = BarRows.left(MAX_LEFT);
+            int capacity = bottomCapacity(mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false),
+                    mLauncher.mPrefs.getBoolean(Keys.WIDGET_BAR, false));
+            List<AppMultiple> data = ensureBottomRows(BarRows.bottom(), capacity);
+            List<LeftAppMultiple> left = BarRows.left(BarCapacity.LEFT_MEMORY);
             mLauncher.runOnUiThread(() -> {
                 refreshCycle(data);
                 refreshLeftBar(left);
@@ -649,9 +701,13 @@ final class LauncherAppBars {
             mLeftAppListAdapter = new LeftAppListAdapter(mLauncher, Collections.emptyList());
         }
 
-        if (!(mLeftRecyclerView.getLayoutManager() instanceof Launcher.EvenVerticalLayoutManager)) {
-            mLeftRecyclerView.setLayoutManager(
-                    new Launcher.EvenVerticalLayoutManager(mLauncher.getApplicationContext(), MAX_LEFT));
+        if (mLeftRecyclerView.getLayoutManager() instanceof Launcher.EvenVerticalLayoutManager) {
+            Launcher.EvenVerticalLayoutManager existing =
+                    (Launcher.EvenVerticalLayoutManager) mLeftRecyclerView.getLayoutManager();
+            existing.setCapacityListener(this::onLeftCapacityChanged);
+            existing.setMaxItems(leftCapacity());
+        } else {
+            mLeftRecyclerView.setLayoutManager(newLeftLayoutManager());
         }
 
         if (mLeftRecyclerView.getAdapter() != mLeftAppListAdapter) {
@@ -717,11 +773,13 @@ final class LauncherAppBars {
         return AllAppsList.data == null ? 0 : AllAppsList.data.size();
     }
 
-    long calculateAppRowsSignature(List<AppMultiple> rows, boolean currentUserLayout, boolean currentWidgetBar) {
+    long calculateAppRowsSignature(List<AppMultiple> rows, boolean currentUserLayout,
+                                   boolean currentWidgetBar, int capacity) {
         long signature = 1125899906842597L;
         signature = (signature * 31L) + (currentUserLayout ? 1L : 0L);
         signature = (signature * 31L) + (currentWidgetBar ? 1L : 0L);
         signature = (signature * 31L) + mLauncher.orientation;
+        signature = (signature * 31L) + capacity;
         signature = (signature * 31L) + getAllAppsDataSize();
         if (rows == null) {
             return signature;
@@ -741,10 +799,11 @@ final class LauncherAppBars {
         return signature;
     }
 
-    long calculateLeftAppRowsSignature(List<LeftAppMultiple> rows) {
+    long calculateLeftAppRowsSignature(List<LeftAppMultiple> rows, int capacity) {
         long signature = 1469598103934665603L;
         signature = (signature * 31L) + (mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false) ? 1L : 0L);
         signature = (signature * 31L) + (mLauncher.mPrefs.getBoolean(Keys.LEFT_BAR, false) ? 1L : 0L);
+        signature = (signature * 31L) + capacity;
         signature = (signature * 31L) + getAllAppsDataSize();
         if (rows == null) {
             return signature;
@@ -769,8 +828,9 @@ final class LauncherAppBars {
             applyLeftBarSnapshot();
             return;
         }
-        List<LeftAppMultiple> leftAppData = BarRows.left(MAX_LEFT);
-        long sourceSignature = calculateLeftAppRowsSignature(leftAppData);
+        final int capacity = leftCapacity();
+        List<LeftAppMultiple> leftAppData = BarRows.left(BarCapacity.LEFT_MEMORY);
+        long sourceSignature = calculateLeftAppRowsSignature(leftAppData, capacity);
         if (sourceSignature == mLastLeftAppListSourceSignature
                 && mLeftAppListAdapter != null
                 && mLeftAppListAdapter.getItemCount() > 0
@@ -805,6 +865,9 @@ final class LauncherAppBars {
         
         if (leftAppData != null && !leftAppData.isEmpty()) {
             for (LeftAppMultiple multiple : leftAppData) {
+                if (nextLeftAppListData.size() >= capacity) {
+                    break; // the rest of the remembered apps do not fit
+                }
                 if (TextUtils.isEmpty(multiple.packageName)
                         || TextUtils.isEmpty(multiple.name)
                         || !isPackageInstalledCached(installCache, multiple.packageName)) {
@@ -847,7 +910,7 @@ final class LauncherAppBars {
             mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
             mLastLeftAppListSourceSignature = sourceSignature;
             Log.d(Launcher.TAG, "Left app data initialized with " + mLeftAppListData.size() + " items");
-            saveLeftBarSnapshot(leftAppData, leftSnapshot);
+            saveLeftBarSnapshot(leftAppData, capacity, leftSnapshot);
         }
     }
 
@@ -887,6 +950,10 @@ final class LauncherAppBars {
         final boolean currentWidgetBar = mLauncher.mPrefs.getBoolean(Keys.WIDGET_BAR, false);
         final boolean currentLeftBar = mLauncher.mPrefs.getBoolean(Keys.LEFT_BAR, false);
         final int currentOrientation = mLauncher.orientation;
+        // On the main thread, before the thread starts: both read the preferences and the screen
+        // size the way the bars will when they are built.
+        final int currentBottomCapacity = bottomCapacity(currentUserLayout, currentWidgetBar);
+        final int currentLeftCapacity = leftCapacity();
         Thread prefetch = new Thread(() -> {
             List<AppMultiple> bottomRows = null;
             List<LeftAppMultiple> leftRows = null;
@@ -896,13 +963,14 @@ final class LauncherAppBars {
                 bottomRows = queryBottomAppRows();
                 BarSnapshotStore.Snapshot s = BarSnapshotStore.load(appContext, BarSnapshotStore.BOTTOM);
                 if (s != null && bottomRows != null && s.signature == bottomBarSnapshotSignature(
-                        bottomRows, currentUserLayout, currentWidgetBar, currentOrientation)) {
+                        bottomRows, currentUserLayout, currentWidgetBar, currentOrientation,
+                        currentBottomCapacity)) {
                     bottom = s;
                 }
-                leftRows = BarRows.left(MAX_LEFT);
+                leftRows = BarRows.left(BarCapacity.LEFT_MEMORY);
                 s = BarSnapshotStore.load(appContext, BarSnapshotStore.LEFT);
                 if (s != null && leftRows != null && s.signature == leftBarSnapshotSignature(
-                        leftRows, currentUserLayout, currentLeftBar)) {
+                        leftRows, currentUserLayout, currentLeftBar, currentLeftCapacity)) {
                     left = s;
                 }
             } catch (RuntimeException e) {
@@ -1072,13 +1140,14 @@ final class LauncherAppBars {
 
     /** Saves the bottom bar as just built, unless it is the same as the last one saved. */
     void saveBottomBarSnapshot(List<AppMultiple> rows, boolean currentUserLayout,
-                                       boolean currentWidgetBar, BarSnapshotCollector snapshot) {
+                                       boolean currentWidgetBar, int capacity, BarSnapshotCollector snapshot) {
         if (rows == null || snapshot == null || snapshot.usedFallbackIcon
                 || !LauncherApplication.isFytDevice()
                 || AllAppsList.data == null || AllAppsList.data.isEmpty()) {
             return; // only a bar built from the real app list is worth showing next time
         }
-        long signature = bottomBarSnapshotSignature(rows, currentUserLayout, currentWidgetBar, mLauncher.orientation);
+        long signature = bottomBarSnapshotSignature(rows, currentUserLayout, currentWidgetBar,
+                mLauncher.orientation, capacity);
         if (mLauncher.mBottomBarSnapshotSaved && signature == mLauncher.mSavedBottomBarSnapshotSignature) {
             return;
         }
@@ -1088,14 +1157,14 @@ final class LauncherAppBars {
     }
 
     /** Saves the left bar as just built, unless it is the same as the last one saved. */
-    void saveLeftBarSnapshot(List<LeftAppMultiple> rows, BarSnapshotCollector snapshot) {
+    void saveLeftBarSnapshot(List<LeftAppMultiple> rows, int capacity, BarSnapshotCollector snapshot) {
         if (rows == null || snapshot == null || snapshot.usedFallbackIcon
                 || !LauncherApplication.isFytDevice()
                 || AllAppsList.data == null || AllAppsList.data.isEmpty()) {
             return;
         }
         long signature = leftBarSnapshotSignature(rows, mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false),
-                mLauncher.mPrefs.getBoolean(Keys.LEFT_BAR, false));
+                mLauncher.mPrefs.getBoolean(Keys.LEFT_BAR, false), capacity);
         if (mLeftBarSnapshotSaved && signature == mSavedLeftBarSnapshotSignature) {
             return;
         }
@@ -1110,11 +1179,13 @@ final class LauncherAppBars {
      * only while this is unchanged. Pure; also used off the main thread.
      */
     long bottomBarSnapshotSignature(List<AppMultiple> rows, boolean currentUserLayout,
-                                            boolean currentWidgetBar, int currentOrientation) {
+                                            boolean currentWidgetBar, int currentOrientation,
+                                            int capacity) {
         long signature = 7046029254386353131L;
         signature = (signature * 31L) + (currentUserLayout ? 1L : 0L);
         signature = (signature * 31L) + (currentWidgetBar ? 1L : 0L);
         signature = (signature * 31L) + currentOrientation;
+        signature = (signature * 31L) + capacity;
         if (rows == null) {
             return signature;
         }
@@ -1135,10 +1206,11 @@ final class LauncherAppBars {
 
     /** As bottomBarSnapshotSignature(), for the left bar. */
     long leftBarSnapshotSignature(List<LeftAppMultiple> rows, boolean currentUserLayout,
-                                          boolean currentLeftBar) {
+                                          boolean currentLeftBar, int capacity) {
         long signature = -3750763034362895579L;
         signature = (signature * 31L) + (currentUserLayout ? 1L : 0L);
         signature = (signature * 31L) + (currentLeftBar ? 1L : 0L);
+        signature = (signature * 31L) + capacity;
         if (rows == null) {
             return signature;
         }
@@ -1184,29 +1256,6 @@ final class LauncherAppBars {
     // BOTTOM BAR - single source of truth for row -> bean mapping
     // =====================================================================================
 
-    /**
-     * Visibility rule for one bottom-bar slot.
-     *
-     * IMPORTANT: {@code slot} is {@link AppMultiple#index} - the logical slot of the row -
-     * NOT the position of the row inside the query result and NOT the adapter position.
-     * The visible list is compacted, so those three numbers do not match once widgetBar
-     * hides some slots.
-     */
-    boolean isBottomSlotVisible(int slot, boolean currentUserLayout, boolean currentWidgetBar) {
-        if (!(currentUserLayout && currentWidgetBar)) {
-            if (mLauncher.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                // portrait -> visible slots: 1, 2, 3 4, 5, 6, 7
-                return !(slot == 0);
-            } else return true; // landscape -> all slots visible
-        }
-        if (mLauncher.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // landscape + widget -> visible slots: 1, 4, 5, 6, 7
-            return !(slot == 0 || slot == 2 || slot == 3);
-        }
-        // portrait + widget -> visible slots: 1, 5, 6, 7
-        return !(slot == 0 || slot == 2 || slot == 3 || slot == 4);
-    }
-
     List<AppMultiple> queryBottomAppRows() {
         try {
             return BarRows.bottom();
@@ -1217,26 +1266,76 @@ final class LauncherAppBars {
     }
 
     /**
+     * Makes sure the database has a row for every slot the bar has room for. The first eight come
+     * with createDefaultAppEntries(); a bar that holds more gets the rest here, empty ("+"), the
+     * first time it is asked for them. Whether a slot is there is told by its index, not by the
+     * number of rows (index is not unique). A row is never removed: when the bar gets lower again
+     * or turned, the extra slots come back with the apps they were given.
+     *
+     * Returns the rows to build from: the ones passed in, or all of them read again after a write.
+     * May run off the main thread; the lock keeps two callers from adding the same slot twice.
+     */
+    List<AppMultiple> ensureBottomRows(List<AppMultiple> rows, int capacity) {
+        if (rows == null || rows.isEmpty() || missingBottomSlots(rows, capacity).isEmpty()) {
+            return rows;
+        }
+        synchronized (BOTTOM_ROWS_LOCK) {
+            // Read again under the lock: the rows in hand may predate another caller's write.
+            List<AppMultiple> current = queryBottomAppRows();
+            if (current == null || current.isEmpty()) {
+                return rows;
+            }
+            List<Integer> missing = missingBottomSlots(current, capacity);
+            if (missing.isEmpty()) {
+                return current;
+            }
+            for (int slot : missing) {
+                new AppMultiple(slot, "", FytPackage.AddAction, "").save();
+            }
+            BarRows.invalidate();
+            Log.d(Launcher.TAG, "ensureBottomRows: added slots " + missing + " for capacity " + capacity);
+            List<AppMultiple> reread = queryBottomAppRows();
+            return reread != null && !reread.isEmpty() ? reread : current;
+        }
+    }
+
+    /** Slots from the default rows up to the capacity that no row has as its index. */
+    private List<Integer> missingBottomSlots(List<AppMultiple> rows, int capacity) {
+        List<Integer> missing = new ArrayList<>();
+        if (capacity <= BarCapacity.DEFAULT_BOTTOM_ROWS) {
+            return missing;
+        }
+        boolean[] present = new boolean[capacity];
+        for (AppMultiple row : rows) {
+            if (row != null && row.index >= 0 && row.index < capacity) {
+                present[row.index] = true;
+            }
+        }
+        for (int slot = BarCapacity.DEFAULT_BOTTOM_ROWS; slot < capacity; slot++) {
+            if (!present[slot]) {
+                missing.add(slot);
+            }
+        }
+        return missing;
+    }
+
+    /**
      * The ONLY place where AppMultiple rows are turned into AppListBeans.
      * Every bean carries the rowId and slot of the row it came from, so neither the
      * adapter nor the picker dialog ever has to reverse-engineer a database index from
      * a list position.
+     *
+     * IMPORTANT: a slot is {@link AppMultiple#index} - the logical slot of the row - NOT the
+     * position of the row inside the query result and NOT the adapter position. The visible list
+     * is compacted, so those three numbers do not match once the capacity hides some slots
+     * (BarCapacity.isBottomSlotVisible()).
+     *
+     * {@code snapshot}, if given, records each entry as it is shown.
      */
     List<AppListBean> buildBottomAppBeans(List<AppMultiple> rows,
                                                   Map<String, AppInfo> appInfoLookup,
                                                   Map<String, Boolean> installCache,
-                                                  boolean currentUserLayout,
-                                                  boolean currentWidgetBar) {
-        return buildBottomAppBeans(rows, appInfoLookup, installCache, currentUserLayout,
-                currentWidgetBar, null);
-    }
-
-    /** As above; {@code snapshot}, if given, records each entry as it is shown. */
-    List<AppListBean> buildBottomAppBeans(List<AppMultiple> rows,
-                                                  Map<String, AppInfo> appInfoLookup,
-                                                  Map<String, Boolean> installCache,
-                                                  boolean currentUserLayout,
-                                                  boolean currentWidgetBar,
+                                                  int capacity,
                                                   BarSnapshotCollector snapshot) {
         List<AppListBean> beans = new ArrayList<AppListBean>();
         if (rows == null || rows.isEmpty()) {
@@ -1244,7 +1343,7 @@ final class LauncherAppBars {
         }
 
         for (AppMultiple row : rows) {
-            if (row == null || !isBottomSlotVisible(row.index, currentUserLayout, currentWidgetBar)) {
+            if (row == null || !BarCapacity.isBottomSlotVisible(row.index, capacity)) {
                 continue;
             }
 
@@ -1292,14 +1391,13 @@ final class LauncherAppBars {
     /** Installed, real (non-placeholder) rows that SHOULD be visible in the current layout. */
     int countInstalledBottomRows(List<AppMultiple> rows,
                                          Map<String, Boolean> installCache,
-                                         boolean currentUserLayout,
-                                         boolean currentWidgetBar) {
+                                         int capacity) {
         if (rows == null) {
             return 0;
         }
         int installed = 0;
         for (AppMultiple row : rows) {
-            if (row == null || !isBottomSlotVisible(row.index, currentUserLayout, currentWidgetBar)) {
+            if (row == null || !BarCapacity.isBottomSlotVisible(row.index, capacity)) {
                 continue;
             }
             if (!FytPackage.AddAction.equals(row.packageName)
@@ -1335,12 +1433,16 @@ final class LauncherAppBars {
         }
         Log.d(Launcher.TAG, "initializeAppList");
 
-        List<AppMultiple> appData = queryBottomAppRows();
-
         mLauncher.userLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         mLauncher.widgetBar = mLauncher.mPrefs.getBoolean(Keys.WIDGET_BAR, false);
 
-        long sourceSignature = calculateAppRowsSignature(appData, mLauncher.userLayout, mLauncher.widgetBar);
+        // Worked out once for this rebuild: the rows to add, the visible slots, the regression
+        // guard and the signatures all go by the same number.
+        final int capacity = bottomCapacity(mLauncher.userLayout, mLauncher.widgetBar);
+        List<AppMultiple> appData = ensureBottomRows(queryBottomAppRows(), capacity);
+
+        long sourceSignature = calculateAppRowsSignature(appData, mLauncher.userLayout,
+                mLauncher.widgetBar, capacity);
         if (sourceSignature == mLastAppListSourceSignature && hasCurrentAppListData()) {
             Log.d(Launcher.TAG, "initializeAppList: unchanged, skipping rebuild");
             finishAppListInitialization();
@@ -1361,17 +1463,15 @@ final class LauncherAppBars {
             mAppListData = new ArrayList<AppListBean>();
             createDefaultAppEntries();
 
-            // Read the freshly inserted rows back instead of trusting the beans that
-            // createDefaultAppEntries() built by hand: only the query gives us real
-            // rowIds, and it also fixes the old bug where the widgetBar branch always
-            // produced the 5-slot landscape list even in portrait.
-            appData = queryBottomAppRows();
+            // Read the freshly inserted rows back: only the query gives us real rowIds.
+            appData = ensureBottomRows(queryBottomAppRows(), capacity);
             if (appData == null || appData.isEmpty()) {
                 Log.e(Launcher.TAG, "initializeAppList: defaults written but cannot be read back");
                 finishAppListInitialization();
                 return;
             }
-            sourceSignature = calculateAppRowsSignature(appData, mLauncher.userLayout, mLauncher.widgetBar);
+            sourceSignature = calculateAppRowsSignature(appData, mLauncher.userLayout,
+                    mLauncher.widgetBar, capacity);
             hasExistingAppListData = false;
         }
 
@@ -1380,16 +1480,14 @@ final class LauncherAppBars {
 
         BarSnapshotCollector bottomSnapshot = new BarSnapshotCollector();
         List<AppListBean> nextAppListData =
-                buildBottomAppBeans(appData, appInfoLookup, installCache, mLauncher.userLayout, mLauncher.widgetBar,
-                        bottomSnapshot);
+                buildBottomAppBeans(appData, appInfoLookup, installCache, capacity, bottomSnapshot);
 
         // Regression guard: if the new list has fewer real-app entries than the DB rows
         // that are actually installed, AllAppsList.data was transiently incomplete
         // (e.g. during a package update). Keep the current list to avoid wiping the bar.
         boolean safeToUpdate = true;
         if (hasExistingAppListData) {
-            int installedDbCount =
-                    countInstalledBottomRows(appData, installCache, mLauncher.userLayout, mLauncher.widgetBar);
+            int installedDbCount = countInstalledBottomRows(appData, installCache, capacity);
             int newRealCount = countRealBeans(nextAppListData);
             if (newRealCount < installedDbCount) {
                 Log.w(Launcher.TAG, "initializeAppList: new list (" + newRealCount
@@ -1403,7 +1501,7 @@ final class LauncherAppBars {
             mAppListData = nextAppListData;
             mAppListAdapter.notifyDataSetChanged(mAppListData);
             mLastAppListSourceSignature = sourceSignature;
-            saveBottomBarSnapshot(appData, mLauncher.userLayout, mLauncher.widgetBar, bottomSnapshot);
+            saveBottomBarSnapshot(appData, mLauncher.userLayout, mLauncher.widgetBar, capacity, bottomSnapshot);
         } else if (!safeToUpdate) {
             scheduleAppListInitializationRetry("incompleteAllAppsList");
         }
@@ -1442,6 +1540,7 @@ final class LauncherAppBars {
         }
         if (mRecyclerView != null && mAppListAdapter != null) {
             mAppListAdapter.notifyDataSetChanged();
+            rebuildBottomBarForCapacity();
         }
         
         // Refresh left recycler view
@@ -1455,11 +1554,30 @@ final class LauncherAppBars {
         }
     }
 
+    /**
+     * The room for the bottom bar's slots may have changed without the rows having done so (the
+     * bar height, the widget bar, a turn of the screen): rebuilds the list when the capacity is no
+     * longer the one it was built for. refreshCycle() compares signatures, which include the
+     * capacity, so nothing is rebuilt - and nothing loops - while the capacity stays the same.
+     */
+    void rebuildBottomBarForCapacity() {
+        if (!hasCurrentAppListData()) {
+            return; // nothing built yet; the first build uses the current capacity
+        }
+        List<AppMultiple> rows = queryBottomAppRows();
+        if (rows != null && !rows.isEmpty()) {
+            refreshCycle(rows);
+        }
+    }
+
     public void refreshCycle(List<AppMultiple> data) {
         mLauncher.userLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         mLauncher.widgetBar = mLauncher.mPrefs.getBoolean(Keys.WIDGET_BAR, false);
 
-        long sourceSignature = calculateAppRowsSignature(data, mLauncher.userLayout, mLauncher.widgetBar);
+        final int capacity = bottomCapacity(mLauncher.userLayout, mLauncher.widgetBar);
+        data = ensureBottomRows(data, capacity);
+        long sourceSignature = calculateAppRowsSignature(data, mLauncher.userLayout,
+                mLauncher.widgetBar, capacity);
         if (sourceSignature == mLastAppListSourceSignature && hasCurrentAppListData()) {
             Log.d(Launcher.TAG, "refreshCycle: unchanged, skipping adapter rebuild");
             return;
@@ -1484,15 +1602,13 @@ final class LauncherAppBars {
 
         BarSnapshotCollector bottomSnapshot = new BarSnapshotCollector();
         List<AppListBean> nextAppListData =
-                buildBottomAppBeans(data, appInfoLookup, installCache, mLauncher.userLayout, mLauncher.widgetBar,
-                        bottomSnapshot);
+                buildBottomAppBeans(data, appInfoLookup, installCache, capacity, bottomSnapshot);
 
         // Same regression guard as initializeAppList(): only swap the list in when it is
         // at least as complete as the database says it should be.
         boolean safeToUpdate = true;
         if (hasExistingAppListData) {
-            int installedDbCount =
-                    countInstalledBottomRows(data, installCache, mLauncher.userLayout, mLauncher.widgetBar);
+            int installedDbCount = countInstalledBottomRows(data, installCache, capacity);
             int newRealCount = countRealBeans(nextAppListData);
             if (newRealCount < installedDbCount) {
                 Log.w(Launcher.TAG, "refreshCycle: new list (" + newRealCount
@@ -1506,7 +1622,7 @@ final class LauncherAppBars {
             mAppListData = nextAppListData;
             mAppListAdapter.notifyDataSetChanged(mAppListData);
             mLastAppListSourceSignature = sourceSignature;
-            saveBottomBarSnapshot(data, mLauncher.userLayout, mLauncher.widgetBar, bottomSnapshot);
+            saveBottomBarSnapshot(data, mLauncher.userLayout, mLauncher.widgetBar, capacity, bottomSnapshot);
         } else if (!safeToUpdate) {
             scheduleAppListInitializationRetry("refreshCycleIncompleteAllAppsList");
         }
@@ -1539,9 +1655,10 @@ final class LauncherAppBars {
         // Get all physical rows from database
         List<LeftAppMultiple> physical = LitePal.order("id asc").find(LeftAppMultiple.class);
         
-        // Ensure we have enough placeholder rows
-        if (physical.size() < MAX_LEFT) {
-            int need = MAX_LEFT - physical.size();
+        // Ensure we have enough placeholder rows: the bar remembers LEFT_MEMORY apps, installs from
+        // before that held fewer rows and get the rest here, after the ones they have (id order).
+        if (physical.size() < BarCapacity.LEFT_MEMORY) {
+            int need = BarCapacity.LEFT_MEMORY - physical.size();
             for (int i = 0; i < need; i++) {
                 new LeftAppMultiple(0, "", "", "").save();
             }
@@ -1572,22 +1689,22 @@ final class LauncherAppBars {
         }
         
         // Create new desired order: new app at position 0, then existing apps
-        List<LeftAppMultiple> desired = new ArrayList<>(MAX_LEFT);
+        List<LeftAppMultiple> desired = new ArrayList<>(BarCapacity.LEFT_MEMORY);
         desired.add(new LeftAppMultiple(0, bean.name, bean.packageName, bean.className));
         
-        // Add existing installed apps until we reach MAX_LEFT
+        // Add existing installed apps until we reach BarCapacity.LEFT_MEMORY
         for (LeftAppMultiple existing : currentInstalled) {
-            if (desired.size() >= MAX_LEFT) break;
+            if (desired.size() >= BarCapacity.LEFT_MEMORY) break;
             desired.add(existing);
         }
         
         // Fill remaining slots with empty placeholders if needed
-        while (desired.size() < MAX_LEFT) {
+        while (desired.size() < BarCapacity.LEFT_MEMORY) {
             desired.add(new LeftAppMultiple(0, "", "", ""));
         }
         
         // Update database with new order
-        for (int i = 0; i < MAX_LEFT; i++) {
+        for (int i = 0; i < BarCapacity.LEFT_MEMORY; i++) {
             LeftAppMultiple src = desired.get(i);
             LeftAppMultiple dst = physical.get(i);
             
@@ -1599,7 +1716,7 @@ final class LauncherAppBars {
             BarRows.invalidate();
         }
         
-        return BarRows.left(MAX_LEFT);
+        return BarRows.left(BarCapacity.LEFT_MEMORY);
     }
 
     public void refreshLeftBar(@Nullable List<LeftAppMultiple> leftAppData) {
@@ -1609,10 +1726,11 @@ final class LauncherAppBars {
 
         Log.d(Launcher.TAG, "--------------->>>   refreshLeftBar");
 
+        final int capacity = leftCapacity();
         final List<LeftAppMultiple> src = (leftAppData != null && !leftAppData.isEmpty())
                 ? leftAppData
-                : BarRows.left(MAX_LEFT);
-        long sourceSignature = calculateLeftAppRowsSignature(src);
+                : BarRows.left(BarCapacity.LEFT_MEMORY);
+        long sourceSignature = calculateLeftAppRowsSignature(src, capacity);
         if (sourceSignature == mLastLeftAppListSourceSignature
                 && mLeftAppListAdapter != null
                 && mLeftAppListAdapter.getItemCount() > 0
@@ -1637,7 +1755,7 @@ final class LauncherAppBars {
 
         int added = 0;
         for (LeftAppMultiple row : src) {
-            if (added == MAX_LEFT) break;
+            if (added >= capacity) break;
             if (!isPackageInstalledCached(installCache, row.packageName)) continue;
 
             AppListBean bean = null;
@@ -1685,7 +1803,7 @@ final class LauncherAppBars {
             mLeftAppListData = nextLeftAppListData;
             mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
             mLastLeftAppListSourceSignature = sourceSignature;
-            saveLeftBarSnapshot(src, leftSnapshot);
+            saveLeftBarSnapshot(src, capacity, leftSnapshot);
         }
     }
 
@@ -1842,6 +1960,10 @@ final class LauncherAppBars {
         return true;
     }
 
+    /**
+     * Writes the first eight rows of the bottom bar. Only the rows matter: initializeAppList()
+     * reads them back (BarRows) and builds the beans from them, for whatever capacity the bar has.
+     */
     void createDefaultAppEntries() {
         String appName1 = Utils.getNameToStr("car_navi");
         String appName2 = Utils.getNameToStr("car_music");
@@ -1851,94 +1973,47 @@ final class LauncherAppBars {
         String appName6 = Utils.getNameToStr("car_eq");
         String appName7 = Utils.getNameToStr("car_settings");
         String appName8 = Utils.getNameToStr("");
-        
-        Bitmap icon1 = loadAppIconFromPackageManager(FytPackage.naviAction, "com.syu.onekeynavi.MainActivity");
-        Bitmap icon2 = loadAppIconFromPackageManager("com.syu.music", "com.syu.app.Activity_All");
-        Bitmap icon3 = loadAppIconFromPackageManager("com.syu.video", "com.syu.video.main.VideoListActivity");
-        Bitmap icon4 = loadAppIconFromPackageManager("com.syu.radio", "com.syu.radio.Launch");
-        Bitmap icon5 = loadAppIconFromPackageManager("com.syu.bt", "com.syu.bt.BtAct");
-        Bitmap icon6 = BitmapFactory.decodeResource(mLauncher.getResources(), R.drawable.icon_settings);
-        Bitmap icon7 = loadAppIconFromPackageManager("com.syu.settings", "com.syu.settings.MainActivity");
-        Bitmap icon8 = BitmapFactory.decodeResource(mLauncher.getResources(), R.drawable.icon_add);
 
-        // AppListBean entries for UI
-        AppListBean ab1, ab22, ab32, ab42, ab5, ab6, ab7, ab8;
-        
         if (mLauncher.helpers.isPackageInstalled(FytPackage.naviAction)) {
-            ab1 = new AppListBean(appName1, icon1, FytPackage.naviAction, "com.syu.onekeynavi.MainActivity");
             new AppMultiple(0, appName1, FytPackage.naviAction, "com.syu.onekeynavi.MainActivity").save();
         } else {
-            ab1 = new AppListBean("", BitmapFactory.decodeResource(mLauncher.getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
             new AppMultiple(0, "", FytPackage.AddAction, "").save();
         }
-        
+
         if (mLauncher.helpers.isPackageInstalled("com.syu.music")) {
-            ab22 = new AppListBean(appName2, icon2, "com.syu.music", "com.syu.app.Activity_All");
             new AppMultiple(1, appName2, "com.syu.music", "com.syu.app.Activity_All").save();
         } else {
-            ab22 = new AppListBean("", BitmapFactory.decodeResource(mLauncher.getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
             new AppMultiple(1, "", FytPackage.AddAction, "").save();
         }
-        
+
         if (mLauncher.helpers.isPackageInstalled("com.syu.video")) {
-            ab32 = new AppListBean(appName3, icon3, "com.syu.video", "com.syu.video.main.VideoListActivity");
             new AppMultiple(2, appName3, "com.syu.video", "com.syu.video.main.VideoListActivity").save();
         } else {
-            ab32 = new AppListBean("", BitmapFactory.decodeResource(mLauncher.getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
             new AppMultiple(2, "", FytPackage.AddAction, "").save();
         }
-        
+
         if (mLauncher.helpers.isPackageInstalled("com.syu.radio")) {
-            ab42 = new AppListBean(appName4, icon4, "com.syu.radio", "com.syu.radio.Launch");
             new AppMultiple(3, appName4, "com.syu.radio", "com.syu.radio.Launch").save();
         } else {
-            ab42 = new AppListBean("", BitmapFactory.decodeResource(mLauncher.getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
             new AppMultiple(3, "", FytPackage.AddAction, "").save();
         }
 
         if (mLauncher.helpers.isPackageInstalled("com.syu.bt")) {
-            ab5 = new AppListBean(appName5, icon5, "com.syu.bt", "com.syu.bt.BtAct");
             new AppMultiple(4, appName5, "com.syu.bt", "com.syu.bt.BtAct").save();
         } else {
-            ab5 = new AppListBean("", BitmapFactory.decodeResource(mLauncher.getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
             new AppMultiple(4, "", FytPackage.AddAction, "").save();
         }
 
         if (mLauncher.helpers.isPackageInstalled("com.android.launcher66")) {
-            ab6 = new AppListBean(appName6, icon6, "com.android.launcher66", "com.android.launcher66.settings.SettingsActivity");
             new AppMultiple(5, appName6, "com.android.launcher66", "com.android.launcher66.settings.SettingsActivity").save();
         } else {
-            ab6 = new AppListBean("", BitmapFactory.decodeResource(mLauncher.getResources(), R.drawable.icon_add), FytPackage.AddAction, "");
             new AppMultiple(5, "", FytPackage.AddAction, "").save();
         }
-        
-        ab7 = new AppListBean(appName7, icon7, "com.syu.settings", "com.syu.settings.MainActivity");
+
         new AppMultiple(6, appName7, "com.syu.settings", "com.syu.settings.MainActivity").save();
 
-        ab8 = new AppListBean(appName8, icon8, FytPackage.AddAction, "");
         new AppMultiple(7, appName8, FytPackage.AddAction, "").save();
         BarRows.invalidate();
-        
-        mLauncher.userLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);   
-        mLauncher.widgetBar = mLauncher.mPrefs.getBoolean(Keys.WIDGET_BAR, false);
-
-        // Add all beans to the list
-        if (mLauncher.userLayout && mLauncher.widgetBar) {
-            mAppListData.add(ab22);
-            mAppListData.add(ab5);
-            mAppListData.add(ab6);
-            mAppListData.add(ab7);
-            mAppListData.add(ab8); 
-        } else {
-            mAppListData.add(ab1);
-            mAppListData.add(ab22);
-            mAppListData.add(ab32);
-            mAppListData.add(ab42);
-            mAppListData.add(ab5);
-            mAppListData.add(ab6);
-            mAppListData.add(ab7);
-            mAppListData.add(ab8);            
-        }
     }
 
     public void enableRecycler() {
