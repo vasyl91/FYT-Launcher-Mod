@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 class FuelModelTest {
@@ -58,6 +60,170 @@ class FuelModelTest {
             }
         }
         return t;
+    }
+
+    /** What the car gives at a speed (km/h) and an acceleration (m/s²): L/100 km × 10, or 65535 for no value. */
+    private interface Car {
+        int value(double kmh, double accel);
+    }
+
+    /** The estimates and the car's values of a ride. */
+    private static final class Log {
+        final List<Double> estimates = new ArrayList<>();
+        double lastCarL100 = Double.NaN;
+        double firstCarL100 = Double.NaN;
+        double estimateBeforeTheCar = Double.NaN;
+    }
+
+    /** A car that gives its value (the true one plus {@code extraLph}) above 30 km/h only. */
+    private static Car aboveThirty(double coastLph, double extraLph) {
+        return (kmh, accel) -> kmh > 30
+                ? (int) Math.round((trueLph(kmh, accel, coastLph) + extraLph) / kmh * 1000) : 65535;
+    }
+
+    /**
+     * Rides from {@code kmh[0]} with an acceleration until {@code endKmh} or {@code seconds}: a speed every 200 ms,
+     * the car's value every second, an estimate (L/100 km) every 200 ms. Returns the time; {@code kmh[0]} is the speed.
+     */
+    private static long ride(FuelModel m, long t, double[] kmh, double accel, double endKmh, int seconds, Car car, Log log) {
+        for (int step = 0; step < seconds * 5; step++, t += 200) {
+            if (accel > 0 ? kmh[0] >= endKmh : accel < 0 && kmh[0] <= endKmh) {
+                break;
+            }
+            kmh[0] = Math.max(0, kmh[0] + accel * 3.6 * 0.2);
+            m.onSpeed(t, kmh[0], true);
+            if (step % 5 == 0) {
+                int value = car.value(kmh[0], accel);
+                m.onFuel(t, value);
+                if (value != 65535) {
+                    log.lastCarL100 = value / 10.0;
+                    if (Double.isNaN(log.firstCarL100) && !log.estimates.isEmpty()) {
+                        log.firstCarL100 = value / 10.0;
+                        log.estimateBeforeTheCar = log.estimates.get(log.estimates.size() - 1);
+                    }
+                }
+            }
+            FuelModel.Estimate e = m.estimate(t);
+            if (e != null && !e.perHour) {
+                log.estimates.add(e.value);
+            }
+        }
+        return t;
+    }
+
+    @Test
+    void slowingDownTheEstimateStartsFromTheCarsLastValue() {
+        FuelModel m = new FuelModel();
+        long t = drive(m, new Random(1), 0, 900, 30, 0.9);
+        double[] kmh = {35};
+        Car car = aboveThirty(0.9, -0.5);
+        t = ride(m, t, kmh, 0, 0, 6, car, new Log());
+        Log log = new Log();
+        ride(m, t, kmh, -0.8, 10, 60, car, log);
+        assertFalse(log.estimates.isEmpty());
+        assertEquals(log.lastCarL100, log.estimates.get(0), 0.1);
+        for (double e : log.estimates) {
+            assertTrue(e <= log.lastCarL100 + 1e-9, e + " above " + log.lastCarL100);
+        }
+    }
+
+    @Test
+    void aCarThatCutsTheFuelShowsZeroUntilItSpeedsUp() {
+        FuelModel m = new FuelModel();
+        long t = drive(m, new Random(1), 0, 900, 30, 0.0);
+        double[] kmh = {45};
+        // 0 once it has been slowing down for a while (the model measures the acceleration over 2 s)
+        Car car = (v, a) -> v > 30 ? (a < -0.3 && v < 37 ? 0 : (int) Math.round(trueLph(v, a, 0.9) / v * 1000)) : 65535;
+        t = ride(m, t, kmh, 0, 0, 6, car, new Log());
+        Log down = new Log();
+        t = ride(m, t, kmh, -0.8, 12, 60, car, down);
+        assertEquals(0.0, down.lastCarL100, 0);
+        assertFalse(down.estimates.isEmpty());
+        for (double e : down.estimates) {
+            assertEquals(0.0, e, 1e-9);
+        }
+        Log up = new Log();
+        ride(m, t, kmh, 0.8, 20, 10, car, up);
+        assertTrue(up.estimates.get(up.estimates.size() - 1) > 0);
+    }
+
+    @Test
+    void theDifferenceToTheModelFadesAway() {
+        FuelModel m = new FuelModel();
+        long t = drive(m, new Random(1), 0, 900, 30, 0.9);
+        double[] kmh = {28};
+        // the car gives a value 0.5 L/h above the model's for 6 s at 28 km/h, then none
+        Car gives = (v, a) -> (int) Math.round((trueLph(v, a, 0.9) + 0.5) / v * 1000);
+        t = ride(m, t, kmh, 0, 0, 6, gives, new Log());
+        Log log = new Log();
+        t = ride(m, t, kmh, 0, 0, 60, (v, a) -> 65535, log);
+        double withoutTheShift = m.litresPerHour(t - 200) / 28 * 100;
+        assertEquals(withoutTheShift, log.estimates.get(log.estimates.size() - 1), 0.1);
+        // and at first it is the car's last value, well above the model
+        assertTrue(log.estimates.get(0) - m.litresPerHour(t) / 28 * 100 > 0.8, "" + log.estimates.get(0));
+    }
+
+    /** One crossing of the threshold while speeding up, 20 → 35 km/h, the car burning 1 L/h more there: the jump. */
+    private static double speedUpJump(FuelModel m, long[] clock) {
+        double[] kmh = {20};
+        Car car = aboveThirty(0.9, 1.0);
+        Log silent = new Log();
+        long t = ride(m, clock[0], kmh, 0, 0, 30, car, silent);     // long enough for an earlier handover to fade
+        Log log = new Log();
+        t = ride(m, t, kmh, 0.8, 35, 20, car, log);
+        t = ride(m, t, kmh, 0, 0, 3, aboveThirty(0.9, 0), new Log());
+        t = ride(m, t, kmh, -1.0, 20, 20, aboveThirty(0.9, 0), new Log());
+        clock[0] = t;
+        return log.firstCarL100 - log.estimateBeforeTheCar;
+    }
+
+    @Test
+    void speedingUpTheJumpShrinksAsTheEdgeIsLearned() {
+        FuelModel m = new FuelModel();
+        long[] clock = {drive(m, new Random(1), 0, 900, 30, 0.9)};
+        double first = speedUpJump(m, clock);
+        double last = 0;
+        for (int i = 1; i < 20; i++) {
+            double jump = speedUpJump(m, clock);
+            if (i >= 15) {
+                last += jump / 5;
+            }
+        }
+        assertTrue(first > 1, "the first jump " + first);
+        assertTrue(last < first * 0.5, "the first jump " + first + ", the last ones " + last);
+    }
+
+    @Test
+    void theEdgeCorrectionReadsBack() {
+        FuelModel m = new FuelModel();
+        long[] clock = {drive(m, new Random(1), 0, 900, 30, 0.9)};
+        for (int i = 0; i < 6; i++) {
+            speedUpJump(m, clock);
+        }
+        String text = m.serialize();
+        assertTrue(text.startsWith("2;"));
+        assertFalse(text.endsWith(";0.0;0"), text);
+        FuelModel back = FuelModel.parse(text);
+        assertEquals(text, back.serialize());
+        // the same ride from the same state: the same jump, and a smaller one than with no correction
+        double withEdge = speedUpJump(FuelModel.parse(text), new long[]{clock[0]});
+        assertEquals(withEdge, speedUpJump(back, new long[]{clock[0]}), 1e-9);
+
+        // the text of the first format: no correction
+        String[] f = text.split(";", -1);
+        StringBuilder old = new StringBuilder("1");
+        for (int i = 1; i < f.length - 2; i++) {
+            old.append(';').append(f[i]);
+        }
+        FuelModel v1 = FuelModel.parse(old.toString());
+        assertTrue(v1.calibrated());
+        assertTrue(v1.serialize().startsWith("2;") && v1.serialize().endsWith(";0.0;0"), v1.serialize());
+        assertEquals(old.substring(1), v1.serialize().substring(1, v1.serialize().length() - ";0.0;0".length()));
+        assertTrue(speedUpJump(v1, new long[]{clock[0]}) > withEdge + 0.3);
+        // an unknown format, a cut text and a bad correction: a new model
+        assertFalse(FuelModel.parse("3" + text.substring(1)).calibrated());
+        assertFalse(FuelModel.parse(text.substring(0, text.lastIndexOf(';'))).calibrated());
+        assertFalse(FuelModel.parse(text.substring(0, text.length() - 1) + "x").calibrated());
     }
 
     @Test

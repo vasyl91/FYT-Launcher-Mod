@@ -22,6 +22,11 @@ import java.util.Locale;
  * is needed. On the owner's six recordings (each one predicted from the others), at up to 45 km/h, the error
  * is 0.48 L/h against 0.70 L/h for a constant.
  *
+ * The handover: when the car stops giving values, the first estimate is the car's last value, and its difference
+ * to the model fades away with a time constant of 15 s; while slowing down the result stays at or below the
+ * car's last value; and when the car speeds up past its threshold, the model learns how much it falls short
+ * just below it (the "edge"), so that the jump to the car's value shrinks with time.
+ *
  * Plain Java (no android.*), so that it runs in JVM tests. Not thread-safe: the service uses it on the main
  * thread.
  */
@@ -47,6 +52,18 @@ public final class FuelModel {
     static final double DEFAULT_THRESHOLD_KMH = 30.0;
     static final double WEIGHT_SCALE_KMH = 20.0;
     static final double MAX_L_PER_100KM = 200.0;
+    /** The time constant (ms) of the fading of the difference between the car's last value and the model. */
+    static final long HANDOVER_TAU_MS = 15_000L;
+    /** The speed (km/h) above the lowest one since the handover that ends the "no higher than the car's last value". */
+    static final double HANDOVER_SPEEDUP_KMH = 2.0;
+    /** The acceleration (m/s²) that ends it as well: the driver speeds up. */
+    static final double HANDOVER_SPEEDUP_ACCEL = 0.3;
+    /** The edge correction: the car's values to average, the limit (L/h) and how fast it fades below the threshold. */
+    static final int EDGE_MEMORY = 10;
+    static final double EDGE_LIMIT_LPH = 1.5;
+    static final double EDGE_SCALE_KMH = 10.0;
+    /** The car's value must come back within this time (ms) of the last estimate to teach the edge. */
+    static final long EDGE_RETURN_MS = 3000L;
     private static final double SMOOTH_RISE = 0.35;
     private static final double SMOOTH_FALL = 0.12;
     private static final long ACCEL_WINDOW_MS = 2000L;
@@ -165,6 +182,9 @@ public final class FuelModel {
     private long drivingMs;
     private double thresholdKmh = DEFAULT_THRESHOLD_KMH;
     private boolean rpmSeen;
+    /** How much the model falls short of the car's values when speeding up just under the threshold, L/h. */
+    private double edgeUpLph;
+    private int edgeUpCount;
 
     // the moment, not saved
     private final ArrayDeque<double[]> speeds = new ArrayDeque<>();      // {t, km/h}
@@ -173,6 +193,16 @@ public final class FuelModel {
     private boolean fuelSaysNothing;
     private double rpm = -1;
     private double smoothedLph = Double.NaN;
+    private long lastCarT = -1;
+    private double lastCarL100;
+    private double lastCarLph;
+    private double handoverOffset;
+    private long handoverT;
+    private double handoverMinKmh;
+    private boolean slowingSinceHandover;
+    private long lastEstimateT = -1;
+    private double lastEstimateLph;
+    private double lastEdgeApplied;
 
     // ---------------------------------------------------------------------------------------------
     // Input
@@ -216,7 +246,15 @@ public final class FuelModel {
         boolean slowing = !Double.isNaN(a) && a < COAST_ACCEL;
         if ((value > 0 && value < 3001) || (value == 0 && moving && slowing)) {
             fuelSaysNothing = false;
-            smoothedLph = Double.NaN;       // the next estimate starts afresh
+            if (moving) {
+                double carLph = value / 10.0 * kmh() / 100.0;
+                learnEdge(t, carLph);
+                lastCarT = t;
+                lastCarL100 = value / 10.0;
+                lastCarLph = carLph;
+            }
+            smoothedLph = Double.NaN;       // the next estimate starts afresh, from the car's last value
+            slowingSinceHandover = false;
             if (moving) {
                 learn(t, value / 10.0 * kmh() / 100.0);
             }
@@ -232,6 +270,20 @@ public final class FuelModel {
                 thresholdKmh = Math.max(5, Math.min(150, thresholdKmh));
             }
         }
+    }
+
+    /** The car's value is back while speeding up, soon after an estimate: how far the model was below it. */
+    private void learnEdge(long t, double carLph) {
+        double a = accel(t);
+        if (lastEstimateT < 0 || t - lastEstimateT > EDGE_RETURN_MS || Double.isNaN(a) || a <= 0) {
+            return;
+        }
+        // against the model alone: what the correction added to the last estimate is not the model's
+        double r = carLph - (lastEstimateLph - lastEdgeApplied);
+        edgeUpCount = Math.min(edgeUpCount + 1, EDGE_MEMORY);
+        edgeUpLph += (r - edgeUpLph) / edgeUpCount;
+        edgeUpLph = Math.max(-EDGE_LIMIT_LPH, Math.min(EDGE_LIMIT_LPH, edgeUpLph));
+        lastEstimateT = -1;     // one return, one sample
     }
 
     private void learn(long t, double lph) {
@@ -273,17 +325,66 @@ public final class FuelModel {
         if (!calibrated() || !carGivesNoValue(now) || speeds.isEmpty()) {
             return null;
         }
-        double lph = litresPerHour(now);
+        boolean moving = isMoving();
+        double model = modelWithEdge(now);
         if (Double.isNaN(smoothedLph)) {
-            smoothedLph = lph;
-        } else {
-            double alpha = lph > smoothedLph ? SMOOTH_RISE : SMOOTH_FALL;
-            smoothedLph = alpha * lph + (1 - alpha) * smoothedLph;
+            handoverOffset = 0;
+            slowingSinceHandover = false;
+            smoothedLph = model;
+            if (moving && lastCarT >= 0 && now - lastCarT <= NO_UPDATE_MS) {
+                // the car has just gone silent: start from its last value, the way back to the model is gradual
+                handoverOffset = lastCarLph - model;
+                handoverT = now;
+                smoothedLph = lastCarLph;
+                handoverMinKmh = kmh();
+                double a = accel(now);
+                slowingSinceHandover = !Double.isNaN(a) && a < 0;
+            }
         }
-        if (!isMoving()) {
+        double lph = model;
+        if (moving) {
+            lph = Math.max(0, model + handoverOffset * Math.exp(-(now - handoverT) / (double) HANDOVER_TAU_MS));
+        }
+        double alpha = lph > smoothedLph ? SMOOTH_RISE : SMOOTH_FALL;
+        smoothedLph = alpha * lph + (1 - alpha) * smoothedLph;
+        if (!moving) {
+            lastEstimateT = -1;
+            slowingSinceHandover = false;
             return new Estimate(smoothedLph, true);
         }
-        return new Estimate(Math.min(MAX_L_PER_100KM, smoothedLph / kmh() * 100.0), false);
+        if (slowingSinceHandover) {
+            handoverMinKmh = Math.min(handoverMinKmh, kmh());
+            double a = accel(now);
+            if (kmh() > handoverMinKmh + HANDOVER_SPEEDUP_KMH || (!Double.isNaN(a) && a > HANDOVER_SPEEDUP_ACCEL)) {
+                slowingSinceHandover = false;
+            }
+        }
+        double value = Math.min(MAX_L_PER_100KM, smoothedLph / kmh() * 100.0);
+        if (slowingSinceHandover) {
+            value = Math.min(value, lastCarL100);
+        }
+        lastEstimateT = now;
+        lastEstimateLph = value * kmh() / 100.0;
+        return new Estimate(value, false);
+    }
+
+    /** The model's L/h now, with the edge correction when speeding up. */
+    private double modelWithEdge(long now) {
+        double edge = edgeLph(now);
+        lastEdgeApplied = edge;
+        return Math.max(0, litresPerHour(now) + edge);
+    }
+
+    /** Speeding up just under the threshold: the learned shortfall, full at the threshold, fading below it. */
+    private double edgeLph(long now) {
+        if (!isMoving() || edgeUpLph == 0) {
+            return 0;
+        }
+        double a = accel(now);
+        if (Double.isNaN(a) || a < COAST_ACCEL || a <= 0) {
+            return 0;
+        }
+        return edgeUpLph * Math.exp(-Math.max(0, thresholdKmh - kmh()) / EDGE_SCALE_KMH);
     }
 
     /** The model's L/h now. */
@@ -476,20 +577,22 @@ public final class FuelModel {
 
     /** What the model learned, for the settings. */
     public String serialize() {
-        StringBuilder sb = new StringBuilder("1;");
+        StringBuilder sb = new StringBuilder("2;");
         sb.append(samples).append(';').append(drivingMs).append(';').append(thresholdKmh).append(';')
                 .append(rpmSeen ? 1 : 0);
         drive.write(sb);
         coast.write(sb);
+        sb.append(';').append(edgeUpLph).append(';').append(edgeUpCount);
         return sb.toString();
     }
 
     /** A model from {@link #serialize()}'s text; a new one for nothing or a text it does not know. */
     public static FuelModel parse(String text) {
         FuelModel m = new FuelModel();
-        if (text == null || !text.startsWith("1;")) {
+        if (text == null || !(text.startsWith("1;") || text.startsWith("2;"))) {
             return m;
         }
+        boolean v2 = text.startsWith("2;");
         String[] f = text.split(";", -1);
         try {
             m.samples = Integer.parseInt(f[1]);
@@ -498,6 +601,13 @@ public final class FuelModel {
             m.rpmSeen = "1".equals(f[4]);
             int at = m.drive.read(f, 5);
             at = m.coast.read(f, at);
+            if (v2) {
+                m.edgeUpLph = Double.parseDouble(f[at++]);
+                m.edgeUpCount = Integer.parseInt(f[at++]);
+                if (Double.isNaN(m.edgeUpLph) || Math.abs(m.edgeUpLph) > EDGE_LIMIT_LPH || m.edgeUpCount < 0) {
+                    return new FuelModel();
+                }
+            }
             if (at != f.length) {
                 return new FuelModel();
             }
