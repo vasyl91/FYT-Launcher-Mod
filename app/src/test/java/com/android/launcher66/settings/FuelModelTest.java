@@ -121,10 +121,14 @@ class FuelModelTest {
         Log log = new Log();
         ride(m, t, kmh, -0.8, 10, 60, car, log);
         assertFalse(log.estimates.isEmpty());
-        assertEquals(log.lastCarL100, log.estimates.get(0), 0.1);
+        // the car's last value, a little lower: the speed has fallen since it
+        assertEquals(log.lastCarL100, log.estimates.get(0), 0.2);
         for (double e : log.estimates) {
             assertTrue(e <= log.lastCarL100 + 1e-9, e + " above " + log.lastCarL100);
         }
+        // and it falls with the speed, not stays at the car's last value
+        assertTrue(log.estimates.get(log.estimates.size() - 1) < 0.5 * log.estimates.get(0),
+                log.estimates.get(0) + " -> " + log.estimates.get(log.estimates.size() - 1));
     }
 
     @Test

@@ -24,8 +24,9 @@ import java.util.Locale;
  *
  * The handover: when the car stops giving values, the first estimate is the car's last value, and its difference
  * to the model fades away with a time constant of 15 s; while slowing down the result stays at or below the
- * car's last value; and when the car speeds up past its threshold, the model learns how much it falls short
- * just below it (the "edge"), so that the jump to the car's value shrinks with time.
+ * car's last value in proportion to the speed (so it falls as the car slows down); and when the car speeds up
+ * past its threshold, the model learns how much it falls short just below it (the "edge"), so that the jump to
+ * the car's value shrinks with time.
  *
  * Plain Java (no android.*), so that it runs in JVM tests. Not thread-safe: the service uses it on the main
  * thread.
@@ -195,6 +196,7 @@ public final class FuelModel {
     private double smoothedLph = Double.NaN;
     private long lastCarT = -1;
     private double lastCarL100;
+    private double lastCarKmh;
     private double lastCarLph;
     private double handoverOffset;
     private long handoverT;
@@ -251,6 +253,7 @@ public final class FuelModel {
                 learnEdge(t, carLph);
                 lastCarT = t;
                 lastCarL100 = value / 10.0;
+                lastCarKmh = kmh();
                 lastCarLph = carLph;
             }
             smoothedLph = Double.NaN;       // the next estimate starts afresh, from the car's last value
@@ -360,8 +363,9 @@ public final class FuelModel {
             }
         }
         double value = Math.min(MAX_L_PER_100KM, smoothedLph / kmh() * 100.0);
-        if (slowingSinceHandover) {
-            value = Math.min(value, lastCarL100);
+        if (slowingSinceHandover && lastCarKmh > 0) {
+            // the ceiling falls with the speed: the car's last value at its speed, in proportion to the speed now
+            value = Math.min(value, lastCarL100 * Math.min(1.0, kmh() / lastCarKmh));
         }
         lastEstimateT = now;
         lastEstimateLph = value * kmh() / 100.0;
