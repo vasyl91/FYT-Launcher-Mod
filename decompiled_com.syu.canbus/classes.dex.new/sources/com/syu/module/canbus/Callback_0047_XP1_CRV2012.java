@@ -1,0 +1,79 @@
+package com.syu.module.canbus;
+
+import android.os.RemoteException;
+import com.syu.canbus.JumpPage;
+import com.syu.carinfo.crv.XpCrvActi;
+import com.syu.ipc.IModuleCallback;
+import com.syu.ui.door.DoorHelper;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.canbus.apk\dexFile\classes.dex */
+public class Callback_0047_XP1_CRV2012 extends CallbackCanbusBase {
+    public static final int U_AIR_TEMP_OUT = 121;
+    public static final int U_BATTERY_VOLTAGE = 114;
+    public static final int U_CLEAN_FLUIT_WARN = 111;
+    public static final int U_CNT_MAX = 123;
+    public static final int U_COMPASS_ANGLE = 107;
+    public static final int U_COMPASS_AREA = 106;
+    public static final int U_COMPASS_CALIBRATION = 105;
+    public static final int U_CUR_OIL_EXPEND = 122;
+    public static final int U_CUR_SPEED = 118;
+    public static final int U_DRIVE_MILE = 115;
+    public static final int U_ENGINE_SPEED = 119;
+    public static final int U_HANDLE_BRAKE_WARN = 112;
+    public static final int U_LIFE_BELT_WARN = 110;
+    public static final int U_LOW_BATTERY_WARN = 109;
+    public static final int U_LOW_OIL_WARN = 108;
+    public static final int U_MISC_END = 123;
+    public static final int U_OUT_TEMP = 120;
+    public static final int U_PARK = 116;
+    public static final int U_PLAYER_FOLDER = 103;
+    public static final int U_PLAYER_PROGRESS = 104;
+    public static final int U_PLAYER_TIME = 100;
+    public static final int U_PLAYER_TOTAL_TRACK = 102;
+    public static final int U_PLAYER_TRACK = 101;
+    public static final int U_RADAR_MUTE = 117;
+    public static final int U_RESIDUAL_OIL = 113;
+    public static final int U_USB_STATES = 98;
+    public static final int U_USB_TYPE = 99;
+
+    @Override // com.syu.module.canbus.CallbackCanbusBase
+    public void in() {
+        IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
+        for (int i = 0; i < 123; i++) {
+            DataCanbus.PROXY.register(callback, i, 1);
+        }
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
+        DoorHelper.getInstance().buildUi();
+        for (int i2 = 0; i2 < 6; i2++) {
+            DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
+        }
+    }
+
+    @Override // com.syu.module.canbus.CallbackCanbusBase
+    public void out() {
+        for (int i = 0; i < 6; i++) {
+            DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
+        }
+        DoorHelper.getInstance().destroyUi();
+    }
+
+    @Override // com.syu.ipc.IModuleCallback
+    public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
+        if (updateCode >= 0 && updateCode < 123) {
+            HandlerCanbus.update(updateCode, ints);
+        }
+        if (updateCode == 98) {
+            int value = DataCanbus.DATA[98];
+            if (value == 3 && !XpCrvActi.mIsFront) {
+                JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.crv.XpCrvActi");
+            } else if (value == 2 && XpCrvActi.mIsFront && XpCrvActi.mInstance != null) {
+                XpCrvActi.mInstance.finish();
+            }
+        }
+    }
+}

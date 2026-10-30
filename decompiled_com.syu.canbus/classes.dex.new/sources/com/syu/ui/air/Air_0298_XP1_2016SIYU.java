@@ -1,0 +1,167 @@
+package com.syu.ui.air;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.Region;
+import android.os.SystemProperties;
+import com.syu.canbus.TheApp;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.canbus.apk\dexFile\classes.dex */
+public class Air_0298_XP1_2016SIYU extends AirBase {
+    public Air_0298_XP1_2016SIYU(Context context) {
+        super(context);
+    }
+
+    @Override // com.syu.ui.air.AirBase
+    protected void initSize() {
+        this.mContentWidth = 1024;
+        this.mContentHeight = 260;
+    }
+
+    @Override // com.syu.ui.air.AirBase
+    protected void initDrawable() {
+        this.mPathNormal = "0298_xp1_2015siyu_crv/air_xp1_2016siyu_crv_n.webp";
+        this.mPathHighlight = "0298_xp1_2015siyu_crv/air_xp1_2016siyu_crv_p.webp";
+    }
+
+    @Override // android.view.View
+    protected void onDraw(Canvas canvas) {
+        Canvas c = this.mContentCanvas;
+        c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
+        c.drawColor(0, PorterDuff.Mode.CLEAR);
+        c.save();
+        this.mPath.reset();
+        this.srPath.reset();
+        c.clipRect(this.mRectDrawable);
+        if (this.DATA[14] != 0) {
+            this.srPath.addRect(739.0f, 20.0f, 847.0f, 74.0f, Path.Direction.CW);
+        }
+        if (this.DATA[11] != 0) {
+            this.srPath.addRect(202.0f, 21.0f, 300.0f, 78.0f, Path.Direction.CW);
+        }
+        if (this.DATA[65] != 0) {
+            this.srPath.addRect(195.0f, 91.0f, 320.0f, 161.0f, Path.Direction.CW);
+        }
+        if (this.DATA[12] == 0) {
+            this.srPath.addRect(531.0f, 16.0f, 677.0f, 75.0f, Path.Direction.CW);
+        }
+        if (this.DATA[13] != 0) {
+            this.srPath.addRect(892.0f, 18.0f, 1008.0f, 73.0f, Path.Direction.CW);
+        }
+        if (this.DATA[18] != 0) {
+            this.srPath.addRect(352.0f, 11.0f, 445.0f, 73.0f, Path.Direction.CW);
+        }
+        if (this.DATA[19] != 0) {
+            this.srPath.addRect(387.0f, 85.0f, 451.0f, 115.0f, Path.Direction.CW);
+        }
+        if (this.DATA[20] != 0) {
+            this.srPath.addRect(359.0f, 112.0f, 409.0f, 151.0f, Path.Direction.CW);
+        }
+        if (this.DATA[10] != 0) {
+            this.srPath.addRect(13.0f, 17.0f, 163.0f, 75.0f, Path.Direction.CW);
+        }
+        if (this.DATA[16] != 0) {
+            this.srPath.addRect(733.0f, 94.0f, 855.0f, 151.0f, Path.Direction.CW);
+        }
+        if (this.DATA[37] == 1 || SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
+            this.srPath.addRect(124.0f, 113.0f, 169.0f, 161.0f, Path.Direction.CW);
+            this.srPath.addRect(970.0f, 107.0f, 1017.0f, 161.0f, Path.Direction.CW);
+            this.srPath.addRect(360.0f, 203.0f, 400.0f, 250.0f, Path.Direction.CW);
+        }
+        int value = this.DATA[21];
+        if (value < 0) {
+            value = 0;
+        } else if (value > 7) {
+            value = 7;
+        }
+        this.srPath.addRect(548.0f, 95.0f, (value * 20) + 548, 161.0f, Path.Direction.CW);
+        if (this.DATA[67] != 0) {
+            this.srPath.addRect(47.0f, 175.0f, 168.0f, 250.0f, Path.Direction.CW);
+        }
+        if (this.DATA[48] != 0) {
+            this.srPath.addRect(472.0f, 169.0f, 524.0f, 208.0f, Path.Direction.CW);
+        }
+        if (this.DATA[46] != 0) {
+            this.srPath.addRect(486.0f, 208.0f, 533.0f, 226.0f, Path.Direction.CW);
+        }
+        if (this.DATA[47] != 0) {
+            this.srPath.addRect(472.0f, 224.0f, 506.0f, 253.0f, Path.Direction.CW);
+        }
+        if (this.DATA[43] != 0) {
+            this.srPath.addRect(870.0f, 184.0f, 986.0f, 241.0f, Path.Direction.CW);
+        }
+        int valueRear = this.DATA[44];
+        if (valueRear < 0) {
+            valueRear = 0;
+        } else if (valueRear > 7) {
+            valueRear = 7;
+        }
+        this.srPath.addRect(660.0f, 182.0f, (valueRear * 20) + 660, 250.0f, Path.Direction.CW);
+        this.mPath.op(this.srPath, Path.Op.UNION);
+        c.clipPath(this.mPath);
+        this.mDrawableHighlight.draw(c);
+        c.restore();
+        this.srPath.reset();
+        this.srPath.addRect(this.mRectDrawable, Path.Direction.CW);
+        this.mPath.op(this.srPath, Path.Op.XOR);
+        c.clipRect(this.mRectDrawable);
+        c.clipPath(this.mPath);
+        this.mDrawableNormal.draw(c);
+        this.mPaint.setTextSize(30.0f);
+        int temp = this.DATA[27];
+        if (temp == -1) {
+            c.drawText("NO", 65.0f, 135.0f, this.mPaint);
+        } else if (temp == -2) {
+            c.drawText("LOW", 65.0f, 135.0f, this.mPaint);
+        } else if (temp == -3) {
+            c.drawText("HIGH", 65.0f, 135.0f, this.mPaint);
+        } else if (this.DATA[37] == 1) {
+            c.drawText(new StringBuilder().append(temp).toString(), 65.0f, 135.0f, this.mPaint);
+        } else if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
+            c.drawText(new StringBuilder().append(((temp * 9) / 10) + 32).toString(), 65.0f, 135.0f, this.mPaint);
+        } else {
+            c.drawText(new StringBuilder().append(temp / 2.0f).toString(), 65.0f, 135.0f, this.mPaint);
+        }
+        int temp2 = this.DATA[28];
+        if (temp2 == -1) {
+            c.drawText("NO", 930.0f, 135.0f, this.mPaint);
+        } else if (temp2 == -2) {
+            c.drawText("LOW", 930.0f, 135.0f, this.mPaint);
+        } else if (temp2 == -3) {
+            c.drawText("HIGH", 930.0f, 135.0f, this.mPaint);
+        } else if (this.DATA[37] == 1) {
+            c.drawText(new StringBuilder().append(temp2).toString(), 930.0f, 135.0f, this.mPaint);
+        } else if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
+            c.drawText(new StringBuilder().append(((temp2 * 9) / 10) + 32).toString(), 930.0f, 135.0f, this.mPaint);
+        } else {
+            c.drawText(new StringBuilder().append(temp2 / 2.0f).toString(), 930.0f, 135.0f, this.mPaint);
+        }
+        int temp3 = this.DATA[40];
+        if (temp3 == -1) {
+            c.drawText("NO", 304.0f, 230.0f, this.mPaint);
+        } else if (temp3 == -2) {
+            c.drawText("LOW", 304.0f, 230.0f, this.mPaint);
+        } else if (temp3 == -3) {
+            c.drawText("HIGH", 304.0f, 230.0f, this.mPaint);
+        } else if (this.DATA[37] == 1) {
+            c.drawText(new StringBuilder().append(temp3).toString(), 304.0f, 230.0f, this.mPaint);
+        } else if (SystemProperties.getInt("persist.fyt.temperature", 0) == 1) {
+            c.drawText(new StringBuilder().append(((temp3 * 9) / 10) + 32).toString(), 304.0f, 230.0f, this.mPaint);
+        } else {
+            c.drawText(new StringBuilder().append(temp3 / 2.0f).toString(), 304.0f, 230.0f, this.mPaint);
+        }
+        canvas.save();
+        if (TheApp.getConfiguration() == 1) {
+            canvas.scale(TheApp.getScreenWidth() / 1024.0f, TheApp.getScreenWidth() / 1024.0f);
+        } else {
+            canvas.scale(TheApp.getScreenWidth() / 1024.0f, TheApp.getScreenHeight() / 600.0f);
+        }
+        canvas.drawBitmap(this.mContent, 0.0f, 0.0f, this.mPaint);
+        canvas.restore();
+        if (0 != 0) {
+            invalidate();
+        }
+    }
+}

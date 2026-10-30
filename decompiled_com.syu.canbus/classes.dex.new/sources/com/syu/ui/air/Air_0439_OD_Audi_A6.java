@@ -1,0 +1,139 @@
+package com.syu.ui.air;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.Region;
+import com.syu.canbus.TheApp;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.canbus.apk\dexFile\classes.dex */
+public class Air_0439_OD_Audi_A6 extends AirBase {
+    public Air_0439_OD_Audi_A6(Context context) {
+        super(context);
+    }
+
+    @Override // com.syu.ui.air.AirBase
+    protected void initSize() {
+        this.mContentWidth = 1024;
+        this.mContentHeight = 173;
+    }
+
+    @Override // com.syu.ui.air.AirBase
+    protected void initDrawable() {
+        this.mPathNormal = "0439_oudi_audia6/air_od_audi_a6_n.webp";
+        this.mPathHighlight = "0439_oudi_audia6/air_od_audi_a6_p.webp";
+    }
+
+    @Override // android.view.View
+    protected void onDraw(Canvas canvas) {
+        Canvas c = this.mContentCanvas;
+        c.clipRect(this.mRectDrawable, Region.Op.REPLACE);
+        c.drawColor(0, PorterDuff.Mode.CLEAR);
+        c.save();
+        this.mPath.reset();
+        this.srPath.reset();
+        c.clipRect(this.mRectDrawable);
+        if (this.DATA[10] != 0) {
+            this.srPath.addRect(358.0f, 103.0f, 477.0f, 151.0f, Path.Direction.CW);
+        }
+        if (this.DATA[13] != 0) {
+            this.srPath.addRect(134.0f, 26.0f, 226.0f, 65.0f, Path.Direction.CW);
+        }
+        if (this.DATA[11] != 0) {
+            this.srPath.addRect(509.0f, 105.0f, 555.0f, 140.0f, Path.Direction.CW);
+        }
+        if (this.DATA[19] != 0) {
+            this.srPath.addRect(265.0f, 73.0f, 297.0f, 85.0f, Path.Direction.CW);
+        }
+        if (this.DATA[18] != 0) {
+            this.srPath.addRect(261.0f, 36.0f, 306.0f, 74.0f, Path.Direction.CW);
+        }
+        if (this.DATA[20] != 0) {
+            this.srPath.addRect(258.0f, 84.0f, 285.0f, 106.0f, Path.Direction.CW);
+        }
+        if (this.DATA[49] != 0) {
+            this.srPath.addRect(264.0f, 110.0f, 322.0f, 134.0f, Path.Direction.CW);
+        }
+        if (this.DATA[23] != 0) {
+            this.srPath.addRect(706.0f, 71.0f, 742.0f, 87.0f, Path.Direction.CW);
+        }
+        if (this.DATA[22] != 0) {
+            this.srPath.addRect(702.0f, 38.0f, 748.0f, 74.0f, Path.Direction.CW);
+        }
+        if (this.DATA[24] != 0) {
+            this.srPath.addRect(701.0f, 85.0f, 728.0f, 108.0f, Path.Direction.CW);
+        }
+        if (this.DATA[50] != 0) {
+            this.srPath.addRect(708.0f, 111.0f, 766.0f, 135.0f, Path.Direction.CW);
+        }
+        if (this.DATA[33] != 0) {
+            this.srPath.addRect(38.0f, 142.0f, 91.0f, 162.0f, Path.Direction.CW);
+            this.srPath.addRect(940.0f, 143.0f, 992.0f, 161.0f, Path.Direction.CW);
+        }
+        if (this.DATA[12] == 0) {
+            this.srPath.addRect(398.0f, 17.0f, 506.0f, 70.0f, Path.Direction.CW);
+        }
+        if (this.DATA[14] != 0) {
+            this.srPath.addRect(591.0f, 103.0f, 665.0f, 144.0f, Path.Direction.CW);
+        }
+        if (this.DATA[15] != 0) {
+            this.srPath.addRect(587.0f, 18.0f, 674.0f, 76.0f, Path.Direction.CW);
+        }
+        if (this.DATA[16] != 0) {
+            this.srPath.addRect(809.0f, 27.0f, 887.0f, 65.0f, Path.Direction.CW);
+        }
+        int value = this.DATA[29];
+        this.srPath.addRect(184.0f, 132.0f, (value * 14) + 184, 147.0f, Path.Direction.CW);
+        int value2 = this.DATA[30];
+        this.srPath.addRect(845 - (value2 * 14), 135.0f, 845.0f, 151.0f, Path.Direction.CW);
+        this.mPath.op(this.srPath, Path.Op.UNION);
+        c.clipPath(this.mPath);
+        this.mDrawableHighlight.draw(c);
+        c.restore();
+        this.srPath.reset();
+        this.srPath.addRect(this.mRectDrawable, Path.Direction.CW);
+        this.mPath.op(this.srPath, Path.Op.XOR);
+        c.clipRect(this.mRectDrawable);
+        c.clipPath(this.mPath);
+        this.mDrawableNormal.draw(c);
+        this.mPaint.setTextSize(30.0f);
+        int value3 = this.DATA[21];
+        c.drawText(new StringBuilder(String.valueOf(value3)).toString(), 64.0f, 135.0f, this.mPaint);
+        int value4 = this.DATA[25];
+        c.drawText(new StringBuilder(String.valueOf(value4)).toString(), 962.0f, 135.0f, this.mPaint);
+        int temp = this.DATA[27];
+        if (temp == -1) {
+            c.drawText("NO", 43.0f, 61.0f, this.mPaint);
+        } else if (temp == -2) {
+            c.drawText("LOW", 43.0f, 61.0f, this.mPaint);
+        } else if (temp == -3) {
+            c.drawText("HI", 43.0f, 61.0f, this.mPaint);
+        } else {
+            int temp2 = (temp * 5) + 155;
+            c.drawText(String.valueOf(temp2 / 10) + "." + (temp2 % 10), 43.0f, 61.0f, this.mPaint);
+        }
+        int temp3 = this.DATA[28];
+        if (temp3 == -1) {
+            c.drawText("NO", 945.0f, 61.0f, this.mPaint);
+        } else if (temp3 == -2) {
+            c.drawText("LOW", 945.0f, 61.0f, this.mPaint);
+        } else if (temp3 == -3) {
+            c.drawText("HI", 945.0f, 61.0f, this.mPaint);
+        } else {
+            int temp4 = (temp3 * 5) + 155;
+            c.drawText(String.valueOf(temp4 / 10) + "." + (temp4 % 10), 945.0f, 61.0f, this.mPaint);
+        }
+        canvas.save();
+        if (TheApp.getConfiguration() == 1) {
+            canvas.scale(TheApp.getScreenWidth() / 1024.0f, TheApp.getScreenWidth() / 1024.0f);
+        } else {
+            canvas.scale(TheApp.getScreenWidth() / 1024.0f, TheApp.getScreenHeight() / 600.0f);
+        }
+        canvas.drawBitmap(this.mContent, 0.0f, 0.0f, this.mPaint);
+        canvas.restore();
+        if (0 != 0) {
+            invalidate();
+        }
+    }
+}
