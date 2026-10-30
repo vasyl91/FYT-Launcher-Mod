@@ -45,6 +45,7 @@ as duplicates, and for the same car id **your file wins**.
    | `R records` | car ids that have fuel pages with requests, groups of cars sharing the same pages, distinct pages |
    | `Requests` | calls it could not represent (not a literal number) and were skipped |
    | `Groups with an ambiguous main page` | groups where two pages looked equally like the first one; the first of them is used |
+   | `main page changed by the fuel rule` | groups of cars whose first page is another one because of the fuel and electric-car rules (section 7) |
    | `Warnings` | conditions it did not understand (treated as false) and labels it could not resolve |
 
 4. The result is `canbus_library_<date>_<time>.txt` in the folder you ran the file from; the last line printed
@@ -83,9 +84,18 @@ py build_canbus_library.py <src> [--out FILE] [--mapping FILE]   from a decompil
 py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher (its asset for the classes + decompiled_carinfo/)
 py build_canbus_library.py --seal FILE                           recompute the footer of an edited file
 py build_canbus_library.py --check FILE                          validate a file like the launcher does
+py build_canbus_library.py --diff A B [--ids 1507667,163]        what differs between two library files
+py build_canbus_library.py --merge BASE FILE [--out OUT]         BASE merged with FILE the way the launcher's import does
 ```
 
-Exit code: 0 success, 1 bad input, 2 an invalid file in `--check`.
+Exit code: 0 success, 1 bad input, 2 an invalid file in `--check`, `--diff` or `--merge`, 3 differences found by `--diff`.
+
+* **`--diff A B`** checks both files like `--check`, then lists per car id what is only in A, only in B and different (A to B): `C` per car id,
+  `R` per car id and page, `N` and `S` per car id, and the ids whose first page or order of pages differs. It prints the numbers, then
+  up to 50 examples of each kind. `--ids 1507667,163` also prints the whole state of those cars (class, pages in order, codes) from A and from B.
+  Use it to compare two libraries, for example the one you built with the built-in one, before importing.
+* **`--merge BASE FILE`** writes `BASE` merged with `FILE` exactly like the import in the launcher (section 6, *Merging*), sealed, and prints how many
+  records of each kind were new, duplicate and replaced. The default `--out` is `canbus_library_merged_<date>_<time>.txt`.
 
 ## 6. File format (version 2)
 
@@ -164,7 +174,7 @@ end 6 1a2b3c4d
   one that depends on `/sys/fytver/fyt_bin_version` becomes `| alt | fytver:...`. Conditions it does not know are treated as false and listed as warnings.
 * **Pages.** Starting from the car's class it follows `X.class` references (3 levels). A class whose name contains `oil`, `mile`, `trip`, `fuel`, `consum`
   or `drivinginfo` and that sends `DataCanbus.PROXY.cmd(...)` directly in `onCreate`, `onStart` or `onResume` is a fuel page. Calls inside click listeners,
-  anonymous classes and lambdas are not requests of the page. Pages are ordered: name with `_<id & 0xFFFF>_`, then `Page1`, then `Index`, then the shallower, then by name.
+  anonymous classes and lambdas are not requests of the page. Pages are ordered as described under *The main page* below.
 * **Fuel and range codes (`S`).** The candidate pages are the ones of the `R` rule (same search, same order) but they do not have to send a request:
   most cars report their values without one. In each page the script reads the methods of the class and decides the role by the method's name:
   *fuel* = `(oil|fuel).*(expend|consum|cost)`, `consum.*(oil|fuel)` or `cur.*oil`, but not a name with `ave`, `avg`, `average`, `history`, `total`, `trip`, `unit`, `max`, `min` or `mark`;
@@ -174,4 +184,9 @@ end 6 1a2b3c4d
   independently. Two methods of the same role in one page with different codes: the first in the source is used and the script warns.
   The codes are those of the source: the library built from `decompiled_carinfo` knows `102 | 103` for the PSA CAN box (`RZC_BZ408OilMilePage1Acti`),
   the one built from your `com.syu.canbus` knows `91 | 92`.
+* **The main page.** The launcher sends only the requests of the first page of a car. Among the pages of a car the first is: a page named after the car
+  (`_<id & 0xFFFF>_`); then a page from which the script reads a fuel or range code; then a page whose name has no electric-car word (`EV`, `Electric` or `Battery`
+  as a whole CamelCase word: `EVMile` yes, `Level` no); then `Page1`, then `Index`, then the shallower, then by name. The first two steps stop the screen of an electric
+  car (`..EVMilePage1..`) from being the first page of a combustion car. The summary lists the groups of cars whose main page changed because of them
+  (`main page changed by the fuel rule`).
 * The same repeated request in one page is kept once; a page with more than 8 requests is cut to the first 8.

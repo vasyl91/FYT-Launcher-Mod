@@ -7,6 +7,8 @@ fuel/range screens and the codes of its fuel consumption and range.
                                                                      (classes from its asset, pages from decompiled_carinfo/)
     py build_canbus_library.py --seal FILE                           recomputes the footer of an edited file
     py build_canbus_library.py --check FILE                          validates a file like the launcher does
+    py build_canbus_library.py --diff A B [--ids 1507667,163]        what differs between two library files
+    py build_canbus_library.py --merge BASE FILE [--out OUT]         BASE merged with FILE like the launcher's import
 
 Format (version 2; version 1 files, without S records, are still read; the full description is in README.md next to this script):
 
@@ -18,7 +20,7 @@ Format (version 2; version 1 files, without S records, are still read; the full 
     end <records> <crc32>
 
 Python 3.8+, standard library only.
-Exit code: 0 success, 1 bad input, 2 an invalid file in --check.
+Exit code: 0 success, 1 bad input, 2 an invalid file in --check, --diff or --merge, 3 differences found by --diff.
 """
 import argparse
 import collections
@@ -49,6 +51,7 @@ RANGE_NAME_RE = re.compile(r'(?i)driving.?mile|drivable|drivenable|remain|endura
 RANGE_NOT_RE = re.compile(r'(?i)total|trip|unit|history|dived|driven')
 DATA_CODE_RE = re.compile(r'\bDATA\s*\[\s*([0-9]+)\s*\]')
 METHOD_RE = re.compile(r'\b(\w+)\s*\(([^()]*)\)\s*(?:throws\s+[\w.,\s]+)?\{')
+ELECTRIC_WORDS = frozenset(('ev', 'electric', 'battery'))
 NOT_METHODS = frozenset(('if', 'for', 'while', 'switch', 'catch', 'synchronized', 'try', 'return', 'new', 'else'))
 
 
@@ -822,6 +825,13 @@ def extract_requests(src, stats):
     return uniq
 
 
+def is_electric_name(simple):
+    """Whether a class name has an electric-car word: `EV`, `Electric` or `Battery` as a whole CamelCase word
+    (`EVMile` yes, `Level` no)."""
+    words = re.findall(r'[A-Z]+(?![a-z])|[A-Z][a-z]+|[a-z]+|[0-9]+', simple)
+    return any(w.lower() in ELECTRIC_WORDS for w in words)
+
+
 def extract_codes(src):
     """The fuel and range codes of a page, by the names of its methods: {'fuel': [(code, method)...], 'range': [...]}.
     The code of a method is the first DataCanbus.DATA[n] with n < 1000 in its body (1000 and above are general
@@ -910,6 +920,14 @@ def parse_cmd_args(args):
     return (cmd, ints)
 
 
+def pair_text(pair):
+    return '%s | %s' % tuple('-' if c is None else c for c in pair)
+
+
+def pairs_text(pairs):
+    return ' | '.join(pair_text(p) for p in pairs)
+
+
 def req_text(req):
     cmd, ints = req
     if not ints:
@@ -970,7 +988,7 @@ class Checked:
         self.classes = {}         # id -> (class, alt, cond, tokens)
         self.pages = {}           # id -> OrderedDict(page -> reqs)
         self.no_request = set()
-        self.codes = {}           # id -> (fuel, range), None = unknown
+        self.codes = {}           # id -> (pair, ...) in order of preference, a pair is (fuel, range), None = unknown
         self.version = 0
         self.records = 0
         self.dups = 0
@@ -1108,12 +1126,12 @@ def check_text(raw):
             if pair[0] is None and pair[1] is None:
                 res.err(no, 'S with nothing to say ("- | -")')
                 continue
-            pair = tuple(pair)
+            pairs = (tuple(pair),)
             for i in ids:
                 old = res.codes.get(i)
                 if old is None:
-                    res.codes[i] = pair
-                elif old == pair:
+                    res.codes[i] = pairs
+                elif old == pairs:
                     res.dups += 1
                 else:
                     res.err(no, 'id %d has two different S records' % i)
@@ -1172,6 +1190,57 @@ def check_text(raw):
 # --------------------------------------------------------------------------------------------------
 # Building
 # --------------------------------------------------------------------------------------------------
+
+def id_chunks(ids):
+    for i in range(0, len(ids), MAX_IDS_PER_LINE):
+        yield ids[i:i + MAX_IDS_PER_LINE]
+
+
+def record_lines(class_records, no_request, pages_of, codes_of):
+    """The C, N, R and S lines of a library, in the order the script writes them. `class_records`: id -> (class, alt,
+    condition, tokens), `pages_of`: id -> [(page, requests)], `codes_of`: id -> (pair, ...), a pair is (fuel, range), None = unknown.
+    Returns (lines, C lines, N lines, R lines, the pages used, S lines)."""
+    out = []
+    by_rec = collections.OrderedDict()
+    for cid in sorted(class_records):
+        by_rec.setdefault(class_records[cid], []).append(cid)
+    c_lines = 0
+    for rec, ids in sorted(by_rec.items(), key=lambda kv: kv[1][0]):
+        cls, alt, cond, toks = rec
+        for part in id_chunks(ids):
+            ids_txt = ','.join(str(i) for i in part)
+            if cond == 'NONE':
+                out.append('C %s | %s' % (ids_txt, cls))
+            elif cond == 'PORTRAIT':
+                out.append('C %s | %s | %s | portrait' % (ids_txt, cls, alt or '-'))
+            else:
+                out.append('C %s | %s | %s | fytver:%s' % (ids_txt, cls, alt or '-', ','.join(toks)))
+            c_lines += 1
+    n_lines = 0
+    for part in id_chunks(sorted(no_request)):
+        out.append('N %s' % ','.join(str(i) for i in part))
+        n_lines += 1
+    r_lines = 0
+    page_names = set()
+    groups = collections.OrderedDict()
+    for cid in sorted(pages_of):
+        groups.setdefault(tuple(pages_of[cid]), []).append(cid)
+    for sig, ids in sorted(groups.items(), key=lambda kv: kv[1][0]):
+        for fq, reqs in sig:
+            page_names.add(fq)
+            for part in id_chunks(ids):
+                out.append('R %s | %s | %s' % (','.join(str(i) for i in part), fq, '; '.join(req_text(r) for r in reqs)))
+                r_lines += 1
+    s_lines = 0
+    by_codes = collections.OrderedDict()
+    for cid in sorted(codes_of):
+        by_codes.setdefault(codes_of[cid], []).append(cid)
+    for pairs, ids in sorted(by_codes.items(), key=lambda kv: kv[1][0]):
+        for part in id_chunks(ids):
+            out.append('S %s | %s' % (','.join(str(i) for i in part), pairs_text(pairs)))
+            s_lines += 1
+    return out, c_lines, n_lines, r_lines, page_names, s_lines
+
 
 def classify(per, tokens, cid, warn):
     """(class, alt, condition) for the 4 results of one id; condition 'NONE', 'PORTRAIT' or 'FYTVER'.
@@ -1283,7 +1352,8 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
 
     pages_of = {}
     page_keys = {}
-    codes_of = {}    # id -> (fuel, range), None = unknown
+    moved = {}       # id -> (the main page by the old key, the main page now)
+    codes_of = {}    # id -> ((fuel, range),), None = unknown
     for cid, (cls, alt, cond, toks) in class_records.items():
         depth = {}
         for fq in (cls, alt):
@@ -1295,7 +1365,11 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
 
         def key(item):
             simple = item[0].rsplit('.', 1)[-1]
-            return (('_%d_' % low) not in simple, 'Page1' not in simple, 'Index' not in simple, item[1], simple)
+            found_codes = extract_codes(index.by_fqcn[item[0]])
+            # the page named after the car first (as before), then the pages that give a fuel or range code, then the
+            # pages of a combustion car, then the rest of the old rule
+            return (('_%d_' % low) not in simple, not (found_codes['fuel'] or found_codes['range']),
+                    is_electric_name(simple), 'Page1' not in simple, 'Index' not in simple, item[1], simple)
 
         candidates = [(fq, d) for fq, d in depth.items() if PAGE_NAME_RE.search(index.by_fqcn[fq].simple)]
         candidates.sort(key=key)
@@ -1311,7 +1385,7 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
                             fq.rsplit('.', 1)[-1], role, ', '.join('%d (%s)' % cm for cm in found_codes[role]),
                             found_codes[role][0][1]))
         if pair != [None, None]:
-            codes_of[cid] = tuple(pair)
+            codes_of[cid] = (tuple(pair),)
         if cid in no_request:
             continue
         found = []
@@ -1324,6 +1398,10 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
         if len(found) > MAX_PAGES_PER_ID:
             warn('id %d: %d fuel pages, only the first %d kept' % (cid, len(found), MAX_PAGES_PER_ID))
             found = found[:MAX_PAGES_PER_ID]
+        # the main page by the old key, without the fuel and the electric rules
+        old_first = min(found, key=lambda it: key(it)[:1] + key(it)[3:])[0]
+        if old_first != found[0][0]:
+            moved[cid] = (old_first.rsplit('.', 1)[-1], found[0][0].rsplit('.', 1)[-1])
         pages_of[cid] = [(fq, tuple(reqs)) for fq, d, reqs in found]
         page_keys[cid] = [key(it) for it in found]
 
@@ -1336,8 +1414,8 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
     ambiguous_groups = []
     for sig, ids in groups.items():
         keys = page_keys[ids[0]]
-        if len(keys) > 1 and keys[0][:3] == keys[1][:3]:
-            tied = [sig[i][0].rsplit('.', 1)[-1] for i in range(len(keys)) if keys[i][:3] == keys[0][:3]]
+        if len(keys) > 1 and keys[0][:5] == keys[1][:5]:
+            tied = [sig[i][0].rsplit('.', 1)[-1] for i in range(len(keys)) if keys[i][:5] == keys[0][:5]]
             ambiguous_groups.append((ids, tied))
 
     # text
@@ -1350,46 +1428,8 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
            '# Cars with a class: %d, with a request: %d, request groups: %d, with fuel/range codes: %d' % (
                len(class_records), sum(len(v) for v in groups.values()), len(groups), len(codes_of))]
 
-    def chunks(ids):
-        for i in range(0, len(ids), MAX_IDS_PER_LINE):
-            yield ids[i:i + MAX_IDS_PER_LINE]
-
-    by_rec = collections.OrderedDict()
-    for cid in sorted(class_records):
-        by_rec.setdefault(class_records[cid], []).append(cid)
-    c_lines = 0
-    for rec, ids in sorted(by_rec.items(), key=lambda kv: kv[1][0]):
-        cls, alt, cond, toks = rec
-        for part in chunks(ids):
-            ids_txt = ','.join(str(i) for i in part)
-            if cond == 'NONE':
-                out.append('C %s | %s' % (ids_txt, cls))
-            elif cond == 'PORTRAIT':
-                out.append('C %s | %s | %s | portrait' % (ids_txt, cls, alt or '-'))
-            else:
-                out.append('C %s | %s | %s | fytver:%s' % (ids_txt, cls, alt or '-', ','.join(toks)))
-            c_lines += 1
-    n_lines = 0
-    for part in chunks(sorted(no_request)):
-        out.append('N %s' % ','.join(str(i) for i in part))
-        n_lines += 1
-    r_lines = 0
-    page_names = set()
-    for sig, ids in sorted(groups.items(), key=lambda kv: kv[1][0]):
-        for fq, reqs in sig:
-            page_names.add(fq)
-            for part in chunks(ids):
-                out.append('R %s | %s | %s' % (','.join(str(i) for i in part), fq, '; '.join(req_text(r) for r in reqs)))
-                r_lines += 1
-    s_lines = 0
-    by_codes = collections.OrderedDict()
-    for cid in sorted(codes_of):
-        by_codes.setdefault(codes_of[cid], []).append(cid)
-    for pair, ids in sorted(by_codes.items(), key=lambda kv: kv[1][0]):
-        for part in chunks(ids):
-            out.append('S %s | %s | %s' % (','.join(str(i) for i in part),
-                                           '-' if pair[0] is None else pair[0], '-' if pair[1] is None else pair[1]))
-            s_lines += 1
+    body, c_lines, n_lines, r_lines, page_names, s_lines = record_lines(class_records, no_request, pages_of, codes_of)
+    out.extend(body)
     sealed = seal_lines(out)
     pathlib.Path(out_path).parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
@@ -1406,8 +1446,8 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
     log('R records: %d lines; ids with a request: %d; groups: %d; pages: %d' % (
         r_lines, sum(len(v) for v in groups.values()), len(groups), len(page_names)))
     log('S records: %d lines; ids with both codes: %d, only fuel: %d, only range: %d' % (
-        s_lines, sum(1 for v in codes_of.values() if None not in v),
-        sum(1 for v in codes_of.values() if v[1] is None), sum(1 for v in codes_of.values() if v[0] is None)))
+        s_lines, sum(1 for v in codes_of.values() if None not in v[0]),
+        sum(1 for v in codes_of.values() if v[0][1] is None), sum(1 for v in codes_of.values() if v[0][0] is None)))
     log('Requests: %d calls skipped (not literal or not representable), %d duplicate requests dropped, '
         '%d pages cut to %d requests, %d calls on other modules ignored' % (
             len(stats.skipped_calls), stats.dropped_dups, stats.truncated, MAX_REQS_PER_LINE, stats.other_module))
@@ -1418,6 +1458,18 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
     log('Groups with an ambiguous main page: %d' % len(ambiguous_groups))
     for ids, tied in ambiguous_groups:
         log('  ids %s...: %s' % (','.join(str(i) for i in ids[:4]), ' / '.join(tied)))
+    moved_groups = []
+    for sig, ids in groups.items():
+        changed = [i for i in ids if i in moved]
+        if changed:
+            moved_groups.append((ids, changed))
+    log('main page changed by the fuel rule: %d groups (%d ids)' % (
+        len(moved_groups), sum(len(c) for _, c in moved_groups)))
+    for ids, changed in moved_groups:
+        by_move = collections.Counter(moved[i] for i in changed)
+        for (was, now), n in sorted(by_move.items()):
+            log('  group of ids %s... (%d of %d ids): %s -> %s' % (
+                ','.join(str(i) for i in ids[:3]), n, len(ids), was, now))
     warnings = list(dict.fromkeys(warnings))
     log('Warnings: %d' % len(warnings))
     for w in warnings[:200]:
@@ -1429,6 +1481,253 @@ def build(args, root, mapping_path, consts, label, index, out_path, log, asset=N
         for ln, why in chk.errors[:20]:
             log('  line %d: %s' % (ln, why))
         return 1
+    log('Written: %s (%d records, footer ok)' % (pathlib.Path(out_path).resolve(), chk.records))
+    return 0
+
+
+# --------------------------------------------------------------------------------------------------
+# Comparing and merging libraries
+# --------------------------------------------------------------------------------------------------
+
+DIFF_EXAMPLES = 50
+MERGE_EXAMPLES = 20
+EXIT_DIFFERENT = 3
+
+
+def load_checked(path, log):
+    """The Checked of a library file, or (None, exit code)."""
+    p = pathlib.Path(path)
+    if not p.is_file():
+        log('error: %s is not a file' % path)
+        return None, 1
+    res = check_text(p.read_bytes())
+    if res.errors:
+        log('INVALID %s: %d error(s)' % (path, len(res.errors)))
+        for ln, why in res.errors[:20]:
+            log('  line %d: %s' % (ln, why))
+        return None, 2
+    return res, 0
+
+
+def class_text(rec):
+    cls, alt, cond, toks = rec
+    if cond == 'NONE':
+        return cls
+    if cond == 'PORTRAIT':
+        return '%s | %s | portrait' % (cls, alt or '-')
+    return '%s | %s | fytver:%s' % (cls, alt or '-', ','.join(toks))
+
+
+def requests_text(reqs):
+    return '; '.join(req_text(r) for r in reqs)
+
+
+def page_name(fq):
+    return fq.rsplit('.', 1)[-1]
+
+
+def diff_libraries(a, b):
+    """The differences of two Checked libraries: {kind: {'a': [(key, value)], 'b': [...], 'diff': [(key, va, vb)]}}.
+    Kinds: C (key = id), R (key = (id, page)), N, S (key = id) and `order` (key = id; the ids that have pages in both
+    and keep a different main page or a different order of the pages they share)."""
+    out = {}
+
+    def compare(kind, ma, mb):
+        only_a = sorted((k, ma[k]) for k in ma if k not in mb)
+        only_b = sorted((k, mb[k]) for k in mb if k not in ma)
+        changed = sorted((k, ma[k], mb[k]) for k in ma if k in mb and ma[k] != mb[k])
+        out[kind] = {'a': only_a, 'b': only_b, 'diff': changed}
+
+    compare('C', {i: class_text(r) for i, r in a.classes.items()}, {i: class_text(r) for i, r in b.classes.items()})
+    compare('R', {(i, pg): requests_text(r) for i, ps in a.pages.items() for pg, r in ps.items()},
+            {(i, pg): requests_text(r) for i, ps in b.pages.items() for pg, r in ps.items()})
+    compare('N', {i: 'no request' for i in a.no_request}, {i: 'no request' for i in b.no_request})
+    compare('S', {i: pairs_text(p) for i, p in a.codes.items()}, {i: pairs_text(p) for i, p in b.codes.items()})
+    order = []
+    for i in sorted(set(a.pages) & set(b.pages)):
+        pa, pb = list(a.pages[i]), list(b.pages[i])
+        common_a = [x for x in pa if x in b.pages[i]]
+        common_b = [x for x in pb if x in a.pages[i]]
+        if common_a != common_b or pa[0] != pb[0]:
+            order.append((i, ' / '.join(page_name(x) for x in pa), ' / '.join(page_name(x) for x in pb)))
+    out['order'] = {'a': [], 'b': [], 'diff': order}
+    return out
+
+
+def key_text(kind, key):
+    if kind == 'R':
+        return '%d %s' % (key[0], page_name(key[1]))
+    return str(key)
+
+
+def state_of(res, cid):
+    """The lines that describe one car id in a library."""
+    lines = []
+    rec = res.classes.get(cid)
+    lines.append('C  %s' % (class_text(rec) if rec else '(none)'))
+    if cid in res.no_request:
+        lines.append('N  no request')
+    pages = res.pages.get(cid)
+    if pages:
+        for n, (pg, reqs) in enumerate(pages.items(), 1):
+            lines.append('R%d %s | %s' % (n, pg, requests_text(reqs)))
+    elif cid not in res.no_request:
+        lines.append('R  (none)')
+    codes = res.codes.get(cid)
+    lines.append('S  %s' % (pairs_text(codes) if codes else '(none)'))
+    return lines
+
+
+def cmd_diff(path_a, path_b, ids_text, log):
+    ids = []
+    if ids_text:
+        ids, why = parse_ids(ids_text)
+        if why:
+            log('error: --ids: %s' % why)
+            return 1
+    a, rc = load_checked(path_a, log)
+    if a is None:
+        return rc
+    b, rc = load_checked(path_b, log)
+    if b is None:
+        return rc
+    d = diff_libraries(a, b)
+    log('A: %s (version %d)' % (path_a, a.version))
+    log('B: %s (version %d)' % (path_b, b.version))
+    total = 0
+    log('%-22s %9s %9s %9s' % ('', 'only in A', 'only in B', 'different'))
+    names = (('C', 'C classes (ids)'), ('R', 'R pages (id, page)'), ('N', 'N no request (ids)'),
+             ('S', 'S codes (ids)'), ('order', 'R main page / order'))
+    for kind, title in names:
+        e = d[kind]
+        total += len(e['a']) + len(e['b']) + len(e['diff'])
+        log('%-22s %9d %9d %9d' % (title, len(e['a']), len(e['b']), len(e['diff'])))
+    for kind, title in names:
+        e = d[kind]
+        for label, rows in (('only in A', e['a']), ('only in B', e['b'])):
+            if not rows:
+                continue
+            log('')
+            log('%s, %s: %d' % (title, label, len(rows)))
+            for k, v in rows[:DIFF_EXAMPLES]:
+                log('  %s: %s' % (key_text(kind, k), v))
+            if len(rows) > DIFF_EXAMPLES:
+                log('  ... and %d more' % (len(rows) - DIFF_EXAMPLES))
+        if e['diff']:
+            log('')
+            log('%s, different (A -> B): %d' % (title, len(e['diff'])))
+            for row in e['diff'][:DIFF_EXAMPLES]:
+                log('  %s: %s -> %s' % (key_text(kind, row[0]), row[1], row[2]))
+            if len(e['diff']) > DIFF_EXAMPLES:
+                log('  ... and %d more' % (len(e['diff']) - DIFF_EXAMPLES))
+    for cid in ids:
+        for tag, res in (('A', a), ('B', b)):
+            log('')
+            log('id %d in %s:' % (cid, tag))
+            for ln in state_of(res, cid):
+                log('  ' + ln)
+    log('')
+    log('%s' % ('No differences.' if total == 0 else 'Differences: %d.' % total))
+    return 0 if total == 0 else EXIT_DIFFERENT
+
+
+def merge_libraries(base, fil):
+    """`base` merged with `fil` the way the launcher does (README section 6). Returns (classes, pages, no_request, codes,
+    counts, replaced): the records as a library holds them, {kind: [new, duplicate, replaced]} and the replaced records
+    as (kind, id, page or None, old, new)."""
+    classes = dict(base.classes)
+    pages = {i: collections.OrderedDict(p) for i, p in base.pages.items()}
+    no_request = set(base.no_request)
+    codes = dict(base.codes)
+    counts = {k: [0, 0, 0] for k in 'CRNS'}
+    replaced = []
+
+    def tally(kind, old, new):
+        if old is None:
+            counts[kind][0] += 1
+        elif old == new:
+            counts[kind][1] += 1
+        else:
+            counts[kind][2] += 1
+            return True
+        return False
+
+    for i in sorted(fil.classes):
+        old = classes.get(i)
+        if tally('C', old, fil.classes[i]):
+            replaced.append(('C', i, None, class_text(old), class_text(fil.classes[i])))
+        classes[i] = fil.classes[i]
+    for i in sorted(fil.pages):
+        base_pages = pages.get(i)
+        merged = collections.OrderedDict()
+        for pg, reqs in fil.pages[i].items():
+            old = base_pages.get(pg) if base_pages else None
+            if tally('R', old, reqs):
+                replaced.append(('R', i, pg, requests_text(old), requests_text(reqs)))
+            merged[pg] = reqs
+        if base_pages:
+            for pg, reqs in base_pages.items():
+                if pg not in fil.pages[i] and len(merged) < MAX_PAGES_PER_ID:
+                    merged[pg] = reqs
+        pages[i] = merged
+        no_request.discard(i)
+    for i in sorted(fil.no_request):
+        if i in no_request:
+            counts['N'][1] += 1
+        elif i in pages:
+            counts['N'][2] += 1
+            gone = pages.pop(i)
+            replaced.append(('N', i, None, ' / '.join('%s %s' % (page_name(pg), requests_text(r))
+                                                       for pg, r in gone.items()), 'no request'))
+        else:
+            counts['N'][0] += 1
+        no_request.add(i)
+        pages.pop(i, None)
+    for i in sorted(fil.codes):
+        old = codes.get(i)
+        if tally('S', old, fil.codes[i]):
+            replaced.append(('S', i, None, pairs_text(old), pairs_text(fil.codes[i])))
+        codes[i] = fil.codes[i]
+    return classes, pages, no_request, codes, counts, replaced
+
+
+def library_lines(classes, pages, no_request, codes, comments):
+    """The sealed lines of a library held as `merge_libraries` returns it."""
+    pages_of = {i: [(pg, tuple(r)) for pg, r in p.items()] for i, p in pages.items()}
+    body = record_lines(classes, no_request, pages_of, codes)[0]
+    out = [HEADER] + comments + body
+    return seal_lines(out)
+
+
+def cmd_merge(base_path, file_path, out_path, log):
+    base, rc = load_checked(base_path, log)
+    if base is None:
+        return rc
+    fil, rc = load_checked(file_path, log)
+    if fil is None:
+        return rc
+    classes, pages, no_request, codes, counts, replaced = merge_libraries(base, fil)
+    out_path = out_path or 'canbus_library_merged_%s.txt' % datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    comments = ['# Canbus library: %s merged with %s (the second one wins).' % (
+        pathlib.Path(base_path).name, pathlib.Path(file_path).name)]
+    sealed = library_lines(classes, pages, no_request, codes, comments)
+    pathlib.Path(out_path).resolve().parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
+        f.write('\n'.join(sealed) + '\n')
+    chk = check_text(pathlib.Path(out_path).read_bytes())
+    if chk.errors:
+        log('error: the file written does not validate:')
+        for ln, why in chk.errors[:20]:
+            log('  line %d: %s' % (ln, why))
+        return 1
+    log('Merged %s with %s' % (base_path, file_path))
+    log('%-4s %8s %10s %9s' % ('', 'new', 'duplicate', 'replaced'))
+    for kind in 'CRNS':
+        log('%-4s %8d %10d %9d' % ((kind,) + tuple(counts[kind])))
+    for kind, i, pg, old, new in replaced[:MERGE_EXAMPLES]:
+        log('  replaced %s %d%s: %s -> %s' % (kind, i, ' ' + page_name(pg) if pg else '', old, new))
+    if len(replaced) > MERGE_EXAMPLES:
+        log('  ... and %d more (--diff BASE OUT lists them)' % (len(replaced) - MERGE_EXAMPLES))
     log('Written: %s (%d records, footer ok)' % (pathlib.Path(out_path).resolve(), chk.records))
     return 0
 
@@ -1488,6 +1787,9 @@ def main(argv=None):
     ap.add_argument('--launcher', metavar='REPO', help='build the library built into the launcher from REPO')
     ap.add_argument('--seal', metavar='FILE', help='recompute the footer of FILE')
     ap.add_argument('--check', metavar='FILE', help='validate FILE like the launcher')
+    ap.add_argument('--diff', nargs=2, metavar=('A', 'B'), help='what differs between two library files')
+    ap.add_argument('--ids', help='with --diff: car ids (comma separated) whose full state is printed from both files')
+    ap.add_argument('--merge', nargs=2, metavar=('BASE', 'FILE'), help='BASE merged with FILE the way the launcher does')
     args = ap.parse_args(argv)
 
     def log(msg):
@@ -1500,6 +1802,10 @@ def main(argv=None):
         return cmd_check(args.check, log)
     if args.seal:
         return cmd_seal(args.seal, log)
+    if args.diff:
+        return cmd_diff(args.diff[0], args.diff[1], args.ids, log)
+    if args.merge:
+        return cmd_merge(args.merge[0], args.merge[1], args.out, log)
 
     if args.launcher:
         repo = pathlib.Path(args.launcher)
