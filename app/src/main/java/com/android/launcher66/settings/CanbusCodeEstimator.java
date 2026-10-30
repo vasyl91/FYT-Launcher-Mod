@@ -27,8 +27,8 @@ public final class CanbusCodeEstimator {
     public static final int MAX_PER_CATEGORY = 3;
 
     public enum Category {
-        FUEL_INSTANT("fuel consumption, instant"),
-        FUEL_AVERAGE("fuel consumption, average"),
+        FUEL_INSTANT("fuel consumption (instant)"),
+        FUEL_AVERAGE("fuel consumption (average)"),
         RANGE("range"),
         RPM("RPM"),
         SPEED("speed"),
@@ -37,7 +37,7 @@ public final class CanbusCodeEstimator {
         OUTSIDE_TEMPERATURE("outside temperature"),
         FUEL_LEVEL("fuel level"),
         ODOMETER("mileage"),
-        HEADING("heading, degrees"),
+        HEADING("heading (degrees)"),
         SWITCH("switch or state");
 
         public final String label;
@@ -80,7 +80,7 @@ public final class CanbusCodeEstimator {
         public final int code;
         public final Category category;
         public final double score;
-        /** What the value looked like, for the line {@code Code 91 - <label> (<reason>)}. */
+        /** What the value looked like, for the line {@code Code 91 - <label>: <reason>}. */
         public final String reason;
         /** For a speed: the value is km/h times this (1, 10 or 100); 1 otherwise. */
         public final int scale;
@@ -97,10 +97,10 @@ public final class CanbusCodeEstimator {
             this.scale = scale;
         }
 
-        /** {@code Code 91 - fuel consumption, instant (4.1-12.8 L/100 km as value/10, 62 changes)} */
+        /** {@code Code 91 - fuel consumption (instant): 4.1-12.8 L/100 km as value/10, 62 changes} */
         @Override
         public String toString() {
-            return "Code " + code + " - " + category.label + " (" + reason + ")";
+            return "Code " + code + " - " + category.label + ": " + reason;
         }
     }
 
@@ -124,7 +124,7 @@ public final class CanbusCodeEstimator {
             this.addOnLines = Collections.unmodifiableList(addOnLines);
         }
 
-        /** {@code Not found: fuel consumption, average}, or an empty string if everything was found. */
+        /** {@code Not found: fuel consumption (average)}, or an empty string if everything was found. */
         public String notFoundLine() {
             if (notFound.isEmpty()) {
                 return "";
@@ -830,11 +830,11 @@ public final class CanbusCodeEstimator {
         String[][] names = {
                 {"501", "body number (VIN)"}, {"502", "position lights"}, {"503", "low beam"}, {"504", "high beam"},
                 {"505", "left turn signal"}, {"506", "right turn signal"}, {"507", "front fog lights"},
-                {"508", "rear fog light"}, {"509", "wipers"}, {"510", "speed, value/100 km/h"},
-                {"511", "average speed"}, {"512", "mileage"}, {"513", "range, value/10 km"},
+                {"508", "rear fog light"}, {"509", "wipers"}, {"510", "speed (value/100 km/h)"},
+                {"511", "average speed"}, {"512", "mileage"}, {"513", "range (value/10 km)"},
                 {"514", "driver's seat belt"}, {"515", "passenger's seat belt"}, {"516", "ACC"}, {"517", "lights"},
-                {"518", "reverse gear"}, {"519", "handbrake"}, {"520", "fuel consumption, instant"},
-                {"521", "fuel consumption, average"}, {"522", "coolant temperature"}, {"523", "oil temperature"},
+                {"518", "reverse gear"}, {"519", "handbrake"}, {"520", "fuel consumption (instant)"},
+                {"521", "fuel consumption (average)"}, {"522", "coolant temperature"}, {"523", "oil temperature"},
                 {"524", "engine RPM"}, {"525", "voltage"}, {"553", "door: bonnet"}, {"554", "door: front left"},
                 {"555", "door: front right"}, {"556", "door: rear left"}, {"557", "door: rear right"},
                 {"558", "door: boot"}, {"559", "speed unit"}};
@@ -1007,13 +1007,66 @@ public final class CanbusCodeEstimator {
             String name = ADD_ON_NAMES.get(e.getKey());
             Stats s = e.getValue();
             if (name != null && s.changes >= 1) {
-                addOn.add("Code " + e.getKey() + " - " + name + " (" + s.changes + " changes)");
+                addOn.add("Code " + e.getKey() + " - " + name + ": " + s.changes + " changes"
+                        + addOnNote(e.getKey(), s));
             }
         }
         if (!addOn.isEmpty()) {
             addOn.add(0, "Add-on data block 500-559 (names from the canbus app, ConstRzcAddData; may not apply to every CAN box):");
         }
         return new Result(guesses, notFound, addOn);
+    }
+
+    /** The code the canbus app names the range (ConstRzcAddData). */
+    private static final int ADD_ON_RANGE = 513;
+    /** A value this far from the median of the recording is an outlier of a counter. */
+    private static final int ADD_ON_OUTLIER = 1000;
+    /** A step this big is not a range that is being used up. */
+    private static final int ADD_ON_JUMP = 2000;
+
+    /**
+     * A remark for an add-on code whose values do not look like its name; empty text if they do (or if the name is
+     * not checked). Only the range is: some cars send a trip counter there, which rises by 1 with the mileage.
+     */
+    static String addOnNote(int code, Stats s) {
+        if (code != ADD_ON_RANGE || s.events < 2) {
+            return "";
+        }
+        boolean counter = true;
+        boolean rises = false;
+        boolean jumps = false;
+        int prev = 0;
+        boolean havePrev = false;
+        int last = 0;
+        boolean haveLast = false;
+        // Outliers since the last value kept: each one stands where a +1 step may have been
+        int skipped = 0;
+        for (int x : s.v) {
+            if (haveLast && Math.abs((long) x - last) > ADD_ON_JUMP) {
+                jumps = true;
+            }
+            last = x;
+            haveLast = true;
+            if (Math.abs(x - s.median) > ADD_ON_OUTLIER) {
+                skipped++;
+                continue;
+            }
+            if (havePrev) {
+                int d = x - prev;
+                if (d > 0 && d <= 1 + skipped) {
+                    rises = true;
+                } else if (d != 0) {
+                    counter = false;
+                }
+            }
+            skipped = 0;
+            prev = x;
+            havePrev = true;
+        }
+        if (counter && rises) {
+            return " (not like a range: rises by 1 with the mileage)";
+        }
+        return jumps ? " (not like a range: values jump, e.g. " + s.max + ")" : "";
     }
 
     /**

@@ -293,9 +293,11 @@ public final class CanbusLibrary {
         public final int declaredRecords;
         public final String declaredCrc;
         public final String computedCrc;
+        /** The version of the header of the file (1, 2 or 3); 0 when there was no valid header. */
+        public final int version;
 
         ParseResult(Library library, List<Error> errors, int duplicatesInFile, int recordLines,
-                    int declaredRecords, String declaredCrc, String computedCrc) {
+                    int declaredRecords, String declaredCrc, String computedCrc, int version) {
             this.library = library;
             this.errors = Collections.unmodifiableList(errors);
             this.duplicatesInFile = duplicatesInFile;
@@ -303,6 +305,7 @@ public final class CanbusLibrary {
             this.declaredRecords = declaredRecords;
             this.declaredCrc = declaredCrc;
             this.computedCrc = computedCrc;
+            this.version = version;
         }
 
         public boolean ok() {
@@ -714,15 +717,22 @@ public final class CanbusLibrary {
     }
 
     /**
-     * The file to export: the library as it is used, with a comment after the header that tells how many records
+     * The file to export: the library as it is used, with a comment after the header that tells how many record lines
      * and cars it has and when it was written. Reading it gives the library back.
      */
     public static String exportText(Library library, long timeMillis) {
         String when = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US)
                 .format(new java.util.Date(timeMillis));
+        // The lines the footer counts, not the records of the library (those are per car and page)
+        int recordLines = 0;
+        for (String line : library.serialize().split("\n")) {
+            if (line.startsWith("C ") || line.startsWith("R ") || line.startsWith("N ") || line.startsWith("S ")) {
+                recordLines++;
+            }
+        }
         return library.serialize(Collections.singletonList("Exported by the launcher on " + when + ": "
-                + library.recordCount() + " records, " + library.carsWithClass() + " cars with a class, "
-                + library.carsWithRequest() + " with a request."));
+                + recordLines + " record lines (" + library.recordCount() + " records per car), "
+                + library.carsWithClass() + " cars with a class, " + library.carsWithRequest() + " with a request."));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -940,7 +950,7 @@ public final class CanbusLibrary {
                 lib = new Library(new TreeMap<>(classes), frozen, new TreeSet<>(noRequest), new TreeMap<>(codes));
             }
             return new ParseResult(lib, new ArrayList<>(errors), duplicates, recordLines,
-                    declared, declaredCrc, computedCrc);
+                    declared, declaredCrc, computedCrc, version);
         }
 
         private void record(int no, String s) {

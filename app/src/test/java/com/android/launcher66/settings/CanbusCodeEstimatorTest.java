@@ -51,7 +51,7 @@ class CanbusCodeEstimatorTest {
         assertEquals(Category.FUEL_INSTANT, g.category);
         assertTrue(g.score >= 0.5);
         assertTrue(g.reason.contains("L/100 km as value/10"), g.reason);
-        assertTrue(g.toString().startsWith("Code 91 - fuel consumption, instant ("));
+        assertTrue(g.toString().startsWith("Code 91 - fuel consumption (instant): "));
     }
 
     @Test
@@ -143,7 +143,7 @@ class CanbusCodeEstimatorTest {
         }
         Result r = CanbusCodeEstimator.estimate(one(5, s), null);
         assertTrue(r.guesses.isEmpty(), r.guesses.toString());
-        assertTrue(r.notFoundLine().startsWith("Not found: fuel consumption, instant, fuel consumption, average"),
+        assertTrue(r.notFoundLine().startsWith("Not found: fuel consumption (instant), fuel consumption (average)"),
                 r.notFoundLine());
         assertFalse(r.notFoundLine().contains("switch"));
     }
@@ -398,9 +398,37 @@ class CanbusCodeEstimatorTest {
         assertTrue(r.addOnLines.get(0).startsWith("Add-on data block 500-559 (names from the canbus app, ConstRzcAddData"),
                 r.addOnLines.toString());
         assertEquals(2, r.addOnLines.size());
-        assertEquals("Code 505 - left turn signal (19 changes)", r.addOnLines.get(1));
+        assertEquals("Code 505 - left turn signal: 19 changes", r.addOnLines.get(1));
         Result none = CanbusCodeEstimator.estimate(one(7, left), null);
         assertTrue(none.addOnLines.isEmpty());
+    }
+
+    private static List<Sample> series(int... values) {
+        List<Sample> list = new ArrayList<>();
+        for (int i = 0; i < values.length; i++) {
+            list.add(new Sample(i * 1000L, values[i]));
+        }
+        return list;
+    }
+
+    @Test
+    void aRangeCodeThatIsATripCounterGetsARemark() {
+        Result r = CanbusCodeEstimator.estimate(one(513, series(118, 1399, 120, 121, 122, 123, 124, 125, 46462)), null);
+        assertEquals("Code 513 - range (value/10 km): 8 changes (not like a range: rises by 1 with the mileage)",
+                r.addOnLines.get(1));
+    }
+
+    @Test
+    void aRangeCodeWithJumpsGetsARemark() {
+        Result r = CanbusCodeEstimator.estimate(one(513, series(300, 5000, 290, 46462, 280)), null);
+        assertEquals("Code 513 - range (value/10 km): 4 changes (not like a range: values jump, e.g. 46462)",
+                r.addOnLines.get(1));
+    }
+
+    @Test
+    void aRangeThatFallsInTensGetsNoRemark() {
+        Result r = CanbusCodeEstimator.estimate(one(513, series(310, 300, 290)), null);
+        assertEquals("Code 513 - range (value/10 km): 2 changes", r.addOnLines.get(1));
     }
 
     // ---- the heading, and a scaled speed without the GPS

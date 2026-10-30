@@ -223,10 +223,10 @@
     <string name="instantaneous_consumption_val">%1$s L/100km\u0020</string>
     <string name="driving_mileage_val">%1$s km\u0020</string>
     <string name="instantaneous_consumption_val_mini">%1$s\u0020</string>
-    <string name="instantaneous_consumption_estimated">≈%1$s L/100km\u0020</string>
-    <string name="instantaneous_consumption_estimated_mini">≈%1$s\u0020</string>
-    <string name="instantaneous_consumption_idle">≈%1$s L/h\u0020</string>
-    <string name="instantaneous_consumption_idle_mini">≈%1$s L/h\u0020</string>
+    <string name="instantaneous_consumption_estimated">~%1$s L/100km\u0020</string>
+    <string name="instantaneous_consumption_estimated_mini">~%1$s\u0020</string>
+    <string name="instantaneous_consumption_idle">~%1$s L/h\u0020</string>
+    <string name="instantaneous_consumption_idle_mini">~%1$s L/h\u0020</string>
     <string name="driving_mileage_val_mini">%1$s\u0020</string>
     <string name="stats_resize">Double-tap the widget to resize</string>
     <string name="stats_window">Fuel statistics</string>

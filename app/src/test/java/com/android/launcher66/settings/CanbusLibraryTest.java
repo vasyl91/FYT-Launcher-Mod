@@ -653,14 +653,23 @@ class CanbusLibraryTest {
         // the overlay gave car 19 a second pair of codes: version 3
         assertEquals(CanbusLibrary.HEADER_3, lines[0]);
         assertTrue(lines[1].startsWith("# Exported by the launcher on 2025-"), lines[1]);
-        assertTrue(lines[1].contains(l.recordCount() + " records"), lines[1]);
         ParseResult r = parse(text);
         assertTrue(r.ok(), r.errors.toString());
+        assertTrue(lines[1].contains(r.recordLines + " record lines (" + l.recordCount() + " records per car)"), lines[1]);
+        assertTrue(text.contains("\nend " + r.recordLines + " "), text);
         // the comment is no record, but it is in the checksum: the footer agrees with the parser
         assertEquals(recordLinesOf(text), r.recordLines);
         assertEquals(r.declaredCrc, r.computedCrc);
         assertEquals(l.serialize(), r.library.serialize());
         assertEquals(text, CanbusLibrary.seal(text.substring(0, text.lastIndexOf("\nend ") + 1)));
+    }
+
+    @Test
+    void theParseResultHasTheVersionOfTheHeader() {
+        assertEquals(1, parse(CanbusLibrary.seal("canbus_library 1\nC 1 | com.syu.x.Y\n")).version);
+        assertEquals(2, parse(CanbusLibrary.seal("canbus_library 2\nC 1 | com.syu.x.Y\n")).version);
+        assertEquals(3, parse(CanbusLibrary.seal("canbus_library 3\nC 1 | com.syu.x.Y\n")).version);
+        assertEquals(0, parse("").version);
     }
 
     @Test

@@ -167,7 +167,8 @@ final class CanbusLibraryImport {
             fileName = String.valueOf(uri.getLastPathSegment());
         }
         final String shownName = fileName;
-        final long fileSize = size;
+        // Some document providers report 0 for a file that is not empty
+        final long fileSize = size > 0 ? size : -1;
 
         post(listener, PHASE_READ, 0, 0, 0);
         CanbusLibrary.Library effectiveBefore = CanbusLibrary.loadBlocking(app);
@@ -205,7 +206,7 @@ final class CanbusLibraryImport {
             Log.w(TAG, "Could not read the file", e);
             List<CanbusLibrary.Error> errors = new ArrayList<>();
             errors.add(new CanbusLibrary.Error(0, "could not read the file: " + e.getMessage()));
-            parsed = new CanbusLibrary.ParseResult(null, errors, 0, 0, -1, null, null);
+            parsed = new CanbusLibrary.ParseResult(null, errors, 0, 0, -1, null, null, 0);
         }
         if (job.isCancelled()) {
             outcome.kind = Kind.CANCELLED;
@@ -253,7 +254,7 @@ final class CanbusLibraryImport {
             errors.add(new CanbusLibrary.Error(0, outcome.firstError));
             writeReport(app, outcome, false, started, shownName, fileSize,
                     new CanbusLibrary.ParseResult(null, errors, parsed.duplicatesInFile, parsed.recordLines,
-                            parsed.declaredRecords, parsed.declaredCrc, parsed.computedCrc),
+                            parsed.declaredRecords, parsed.declaredCrc, parsed.computedCrc, parsed.version),
                     null, effectiveBefore, null);
             return outcome;
         }
@@ -308,12 +309,12 @@ final class CanbusLibraryImport {
         SimpleDateFormat time = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
         sb.append("Canbus library import - ").append(success ? "success" : "failed").append('\n');
         sb.append("Time: ").append(time.format(new Date(now))).append('\n');
-        sb.append("File: ").append(fileName).append(" (").append(fileSize >= 0 ? fileSize + " bytes" : "size unknown").append(")\n");
+        sb.append("File: ").append(fileName).append(" (").append(fileSize > 0 ? fileSize + " bytes" : "size unknown").append(")\n");
         sb.append("Result: ").append(success ? "success, the library was updated"
                 : "failed, the library is unchanged").append('\n');
         sb.append("Duration: ").append(now - started).append(" ms\n\n");
 
-        sb.append("Header: ").append(CanbusLibrary.HEADER).append('\n');
+        sb.append("Header: ").append(parsed.version > 0 ? "canbus_library " + parsed.version : "none").append('\n');
         sb.append("Footer: declared ").append(parsed.declaredRecords >= 0 ? parsed.declaredRecords + " records" : "none")
                 .append(parsed.declaredCrc != null ? ", CRC32 " + parsed.declaredCrc : "")
                 .append("; counted ").append(parsed.recordLines).append(" records")
