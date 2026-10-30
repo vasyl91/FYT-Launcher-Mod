@@ -355,28 +355,53 @@ final class CanbusLibraryImport {
             }
         }
 
-        File dir = LogcatWorker.usablePublicDir(app);
-        boolean publicDir = dir != null;
-        if (dir == null) {
-            dir = LogcatWorker.resolveFallbackDir(app);
-        }
-        if (dir == null) {
+        OutputDir out = outputDir(app);
+        if (out == null) {
             return;
         }
         String stamp = new SimpleDateFormat(LogFileName.NAME_PATTERN, Locale.US).format(new Date(now));
-        String base = "canbus_library_" + (success ? "success" : "failed") + "_" + stamp;
-        File file = new File(dir, base + LogFileName.TXT);
-        for (int n = 1; file.exists() && n < 1000; n++) {
-            file = new File(dir, base + "_" + n + LogFileName.TXT);
-        }
+        File file = uniqueFile(out.dir, "canbus_library_" + (success ? "success" : "failed") + "_" + stamp);
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             writer.write(sb.toString());
         } catch (IOException e) {
             Log.w(TAG, "Could not save the report", e);
             return;
         }
-        outcome.reportFolder = publicDir ? "Download/" + dir.getName() : dir.getAbsolutePath();
+        outcome.reportFolder = out.shown;
         outcome.reportFile = file.getName();
+    }
+
+    /** The folder the reports and the exports go to, and how it is shown to the user. */
+    static final class OutputDir {
+        final File dir;
+        final String shown;
+
+        OutputDir(File dir, String shown) {
+            this.dir = dir;
+            this.shown = shown;
+        }
+    }
+
+    /** Download/Launcher66_Logs when it is usable, else the app's own folder; null if there is none. */
+    static OutputDir outputDir(Context app) {
+        File dir = LogcatWorker.usablePublicDir(app);
+        boolean publicDir = dir != null;
+        if (dir == null) {
+            dir = LogcatWorker.resolveFallbackDir(app);
+        }
+        if (dir == null) {
+            return null;
+        }
+        return new OutputDir(dir, publicDir ? "Download/" + dir.getName() : dir.getAbsolutePath());
+    }
+
+    /** {@code <base>.txt} in {@code dir}, or {@code <base>_N.txt} if that exists. */
+    static File uniqueFile(File dir, String base) {
+        File file = new File(dir, base + LogFileName.TXT);
+        for (int n = 1; file.exists() && n < 1000; n++) {
+            file = new File(dir, base + "_" + n + LogFileName.TXT);
+        }
+        return file;
     }
 
     private static void appendCounts(StringBuilder sb, String label, CanbusLibrary.Counts c) {

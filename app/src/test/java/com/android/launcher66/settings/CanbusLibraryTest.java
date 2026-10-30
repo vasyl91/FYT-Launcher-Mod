@@ -564,4 +564,79 @@ class CanbusLibraryTest {
         assertEquals(l.recordCount(), r.library.recordCount());
         assertEquals(l.serialize(), r.library.serialize());
     }
+
+    // ---- export
+
+    private static int recordLinesOf(String text) {
+        int n = 0;
+        for (String line : text.split("\n")) {
+            if (line.startsWith("C ") || line.startsWith("R ") || line.startsWith("N ") || line.startsWith("S ")) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    /** An import with a record of every kind: new and replaced classes and codes, a new page, an N that drops pages. */
+    private static final String OVERLAY_BODY =
+            "canbus_library 2\n"
+            + "C 999000001 | com.syu.test.NewIndex | com.syu.test.NewPortrait | portrait\n"
+            + "C 19 | com.syu.test.ReplacedIndex\n"
+            + "R 999000001 | com.syu.test.NewPage | 1:2; 3\n"
+            + "N 163\n"
+            + "S 999000001 | 5 | 6\n"
+            + "S 19 | 1 | -\n";
+
+    @Test
+    void theAssetMergedWithAnOverlayOfEveryRecordKindSerializesAndReadsBack() throws IOException {
+        Library base = asset();
+        MergeResult merged = base.mergedWith(lib(OVERLAY_BODY));
+        assertEquals(1, merged.noRequest.added + merged.noRequest.replaced);
+        assertTrue(merged.codes.added >= 1 && merged.codes.replaced >= 1);
+        Library l = merged.library;
+        String text = l.serialize();
+        ParseResult r = parse(text);
+        assertTrue(r.ok(), r.errors.toString());
+        assertEquals(text, r.library.serialize());
+        assertEquals(l.recordCount(), r.library.recordCount());
+        assertEquals("com.syu.test.NewPortrait", r.library.classNameFor(999000001, true, ""));
+        assertEquals("com.syu.test.ReplacedIndex", r.library.classNameFor(19, false, ""));
+        assertEquals("1:2; 3", r.library.pagesFor(999000001).get(0).requestsText());
+        assertTrue(r.library.pagesFor(163).isEmpty());
+        assertEquals(new CanbusLibrary.CarCodes(1, -1), r.library.codesFor(19));
+    }
+
+    @Test
+    void theExportHasACommentAfterTheHeaderAndReadsBackAsTheSameLibrary() throws IOException {
+        Library l = asset().mergedWith(lib(OVERLAY_BODY)).library;
+        String text = CanbusLibrary.exportText(l, 1_761_785_794_000L);
+        String[] lines = text.split("\n");
+        assertEquals(CanbusLibrary.HEADER, lines[0]);
+        assertTrue(lines[1].startsWith("# Exported by the launcher on 2025-"), lines[1]);
+        assertTrue(lines[1].contains(l.recordCount() + " records"), lines[1]);
+        ParseResult r = parse(text);
+        assertTrue(r.ok(), r.errors.toString());
+        // the comment is no record, but it is in the checksum: the footer agrees with the parser
+        assertEquals(recordLinesOf(text), r.recordLines);
+        assertEquals(r.declaredCrc, r.computedCrc);
+        assertEquals(l.serialize(), r.library.serialize());
+        assertEquals(text, CanbusLibrary.seal(text.substring(0, text.lastIndexOf("\nend ") + 1)));
+    }
+
+    @Test
+    void aCommentOfTheExportCannotBreakTheFile() {
+        Library l = lib(EXAMPLE_BODY);
+        String text = l.serialize(java.util.Arrays.asList("a\nC 5 | com.syu.x.Y", "end 0 00000000"));
+        ParseResult r = parse(text);
+        assertTrue(r.ok(), r.errors.toString());
+        assertEquals(recordLinesOf(text), r.recordLines);
+        assertEquals(5, r.recordLines);
+        assertNull(r.library.carClassFor(5));
+    }
+
+    @Test
+    void theExportIsNamedLikeTheFilesOfTheScript() {
+        String name = CanbusLibrary.exportFileName(1_761_785_794_000L);
+        assertTrue(name.matches("canbus_library_export_\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}\\.txt"), name);
+    }
 }

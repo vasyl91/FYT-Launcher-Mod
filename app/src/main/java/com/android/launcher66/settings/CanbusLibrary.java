@@ -575,7 +575,18 @@ public final class CanbusLibrary {
 
         /** The library as a file of the format, footer included. Parsing it gives the same library. */
         public String serialize() {
+            return serialize(Collections.<String>emptyList());
+        }
+
+        /**
+         * {@link #serialize()} with comment lines (each one is written as {@code # <text>}) right after the header.
+         * They are part of the checksum like any line of the body, and no record.
+         */
+        public String serialize(List<String> comments) {
             StringBuilder body = new StringBuilder(HEADER).append('\n');
+            for (String comment : comments) {
+                body.append("# ").append(comment.replace('\r', ' ').replace('\n', ' ')).append('\n');
+            }
 
             Map<CarClass, List<Integer>> byClass = new LinkedHashMap<>();
             for (Map.Entry<Integer, CarClass> e : classes.entrySet()) {
@@ -648,6 +659,32 @@ public final class CanbusLibrary {
             }
             return out;
         }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Export
+    // ---------------------------------------------------------------------------------------------
+
+    /** The time stamp of an export's name, the one the script's files have: {@code 2026-10-30_00-56-34}. */
+    static final String EXPORT_STAMP_PATTERN = "yyyy-MM-dd_HH-mm-ss";
+
+    /** {@code canbus_library_export_2026-10-30_00-56-34.txt}. */
+    static String exportFileName(long timeMillis) {
+        return "canbus_library_export_"
+                + new java.text.SimpleDateFormat(EXPORT_STAMP_PATTERN, java.util.Locale.US).format(new java.util.Date(timeMillis))
+                + ".txt";
+    }
+
+    /**
+     * The file to export: the library as it is used, with a comment after the header that tells how many records
+     * and cars it has and when it was written. Reading it gives the library back.
+     */
+    public static String exportText(Library library, long timeMillis) {
+        String when = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US)
+                .format(new java.util.Date(timeMillis));
+        return library.serialize(Collections.singletonList("Exported by the launcher on " + when + ": "
+                + library.recordCount() + " records, " + library.carsWithClass() + " cars with a class, "
+                + library.carsWithRequest() + " with a request."));
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -288,6 +288,10 @@
     <string name="code_inspector_toast">Finished inspecting the codes. Check the results in Download/Launcher66_Canbus</string> 
     <string name="canbus_library_import">Import a canbus library</string>
     <string name="canbus_library_import_summary">Cars with a class: %1$d, with a request: %2$d (imported records: %3$d). How to build one: canbus_library/README.md</string>
+    <string name="canbus_library_export">Export the canbus library</string>
+    <string name="canbus_library_export_summary">Saves the library the launcher uses now (the built-in one with the imported ones) to Download/Launcher66_Logs, to compare it with another one</string>
+    <string name="canbus_library_export_done">Canbus: Library exported to %1$s</string>
+    <string name="canbus_library_export_failed">Canbus: The export failed (%1$s)</string>
     <string name="canbus_library_reset">Remove the imported libraries</string>
     <string name="canbus_library_reset_confirm">Remove all imported canbus libraries and use the built-in one?</string>
     <string name="canbus_library_reset_done">Canbus: The imported libraries were removed</string>

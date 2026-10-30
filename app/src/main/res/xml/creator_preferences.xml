@@ -237,6 +237,11 @@
             android:title="@string/canbus_library_import"
             android:maxLines="5" />
         <Preference
+            android:key="canbus_library_export"
+            android:title="@string/canbus_library_export"
+            android:summary="@string/canbus_library_export_summary"
+            android:maxLines="5" />
+        <Preference
             android:key="canbus_library_reset"
             android:title="@string/canbus_library_reset"
             android:maxLines="5" />

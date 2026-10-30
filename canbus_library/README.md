@@ -67,6 +67,19 @@ file, every error with its line number.
 
 A file is accepted only as a whole: if a single line is wrong, nothing is imported. **Remove the imported libraries** returns to the built-in one.
 
+**Export a library.** *Export the canbus library* (the same group) saves the library the launcher really uses, the built-in one merged with everything
+imported, to `Download/Launcher66_Logs` as `canbus_library_export_<date>_<time>.txt` (a toast shows the full path, or the reason it failed). It is a valid
+library file (a comment after the header says when it was written), so `--check` accepts it and it can be imported on another radio.
+
+To compare it with another library, for example the built-in one of a newer launcher, copy the export to the PC and run
+
+```
+py build_canbus_library.py --diff canbus_library_export_....txt app/src/main/assets/canbus_library.txt --ids 1507667
+```
+
+(*only in A* is what only the radio has, *only in B* what only the other library has, *different* what both have but not the same; `--ids` prints the whole state of a car in both).
+To see what an import would do before you do it, `--merge <base> <file>` gives the result and the numbers of new, duplicate and replaced records.
+
 ## 5. Troubleshooting
 
 * **`mapping not found`**: the script could not find `ActivityLauncher.java` with `switch (DataCanbus.DATA[1000])`. Point it at the file:

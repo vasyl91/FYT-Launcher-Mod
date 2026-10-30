@@ -149,6 +149,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private Preference codesGuide;
     private Preference skipCodes;
     private Preference canbusLibraryImport;
+    private Preference canbusLibraryExport;
     private Preference canbusLibraryReset;
     /** The import in progress (main thread); null when there is none. */
     private CanbusLibraryImport.Job libraryImportJob;
@@ -321,6 +322,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         codesGuide = findPreference(Keys.CODES_GUIDE);
         skipCodes = findPreference(Keys.SKIP_CODES);
         canbusLibraryImport = findPreference(Keys.CANBUS_LIBRARY_IMPORT);
+        canbusLibraryExport = findPreference(Keys.CANBUS_LIBRARY_EXPORT);
         canbusLibraryReset = findPreference(Keys.CANBUS_LIBRARY_RESET);
         Set<String> skipCodesSet = sharedPrefs.getStringSet(Keys.SKIP_CODES, Collections.singleton(""));
         String skipCodesStr = skipCodesSet != null ? String.join(", ", skipCodesSet) : "";
@@ -620,6 +622,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (canbusLibraryImport != null) {
             canbusLibraryImport.setOnPreferenceClickListener(this);
         }
+        if (canbusLibraryExport != null) {
+            canbusLibraryExport.setOnPreferenceClickListener(this);
+        }
         if (canbusLibraryReset != null) {
             canbusLibraryReset.setOnPreferenceClickListener(this);
         }
@@ -875,6 +880,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 if (libraryImportJob == null) {
                     canbusLibraryPicker.launch(new String[]{"text/plain", "application/octet-stream", "*/*"});
                 }
+                break;
+            case Keys.CANBUS_LIBRARY_EXPORT:
+                exportCanbusLibrary();
                 break;
             case Keys.CANBUS_LIBRARY_RESET:
                 confirmCanbusLibraryReset();
@@ -1550,9 +1558,34 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         canbusLibraryReset.setVisible(displayCanbusReaderBool && overlay != null && !overlay.isEmpty());
         canbusLibraryReset.setEnabled(libraryImportJob == null);
+        if (canbusLibraryExport != null) {
+            canbusLibraryExport.setVisible(displayCanbusReaderBool);
+            canbusLibraryExport.setEnabled(libraryImportJob == null && !libraryExportRunning);
+        }
         if (statsCodes != null) {
             statsCodes.setSummary(statsCodesSummary());
         }
+    }
+
+    /** The export runs on the library's thread; the preference is off until it reports back. Main thread. */
+    private boolean libraryExportRunning = false;
+
+    private void exportCanbusLibrary() {
+        if (libraryImportJob != null || libraryExportRunning) {
+            return;
+        }
+        libraryExportRunning = true;
+        updateCanbusLibraryPrefs();
+        final Context app = LauncherApplication.sApp;
+        CanbusLibraryExport.start(requireContext(), result -> {
+            libraryExportRunning = false;
+            if (isAdded()) {
+                updateCanbusLibraryPrefs();
+            }
+            Toast.makeText(app, result.ok()
+                    ? app.getString(R.string.canbus_library_export_done, result.path())
+                    : app.getString(R.string.canbus_library_export_failed, result.error), Toast.LENGTH_LONG).show();
+        });
     }
 
     private void onCanbusLibraryPicked(Uri uri) {
