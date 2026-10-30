@@ -13,8 +13,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Saves the library the launcher really uses (the built-in one merged with the imported ones) to a file in
- * Download/Launcher66_Logs, where the import's reports go, so that it can be compared with another library
- * (canbus_library/README.md, section 4). It runs on the library's own thread; the listener is called on the
+ * Download/Launcher66_Canbus, where the import's reports go (canbus_library/README.md, section 4). It runs on the library's own thread; the listener is called on the
  * main thread.
  */
 final class CanbusLibraryExport {

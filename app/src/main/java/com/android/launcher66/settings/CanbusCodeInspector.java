@@ -293,7 +293,7 @@ public class CanbusCodeInspector extends Service {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
         String fileName = "CanbusCodes" + timestamp + ".txt";
         File directory = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), "Launcher66_Canbus");
+                Environment.DIRECTORY_DOWNLOADS), CanbusLibraryImport.CANBUS_DIR_NAME);
 
         if (!directory.exists() && !directory.mkdirs()) {
             Log.e(TAG, "Failed to create directory");

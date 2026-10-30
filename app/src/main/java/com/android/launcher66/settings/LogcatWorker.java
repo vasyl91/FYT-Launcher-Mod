@@ -1304,10 +1304,15 @@ public final class LogcatWorker {
 
     /** Public Downloads/Launcher66_Logs when it can be written right now, otherwise null. */
     static File usablePublicDir(Context ctx) {
+        return usablePublicDir(ctx, LOG_DIR_NAME);
+    }
+
+    /** Public Downloads/{@code dirName} when it can be written right now, otherwise null. */
+    static File usablePublicDir(Context ctx, String dirName) {
         try {
             if (!mayUsePublicStorage(ctx)) return null;
             if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) return null;
-            File pub = publicLogDir();
+            File pub = publicDir(dirName);
             return isUsable(pub) ? pub : null;
         } catch (Throwable t) {
             Log.w(TAG, "Public Downloads check failed: " + t);
@@ -1315,11 +1320,15 @@ public final class LogcatWorker {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private static File publicLogDir() {
+        return publicDir(LOG_DIR_NAME);
+    }
+
+    @SuppressWarnings("deprecation")
+    private static File publicDir(String dirName) {
         return new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                LOG_DIR_NAME);
+                dirName);
     }
 
     private static boolean isPublicDir(File dir) {
@@ -1351,6 +1360,11 @@ public final class LogcatWorker {
      * (as at boot, before shared storage is mounted). Neither needs a runtime permission.
      */
     static File resolveFallbackDir(Context ctx) {
+        return resolveFallbackDir(ctx, LOG_DIR_NAME);
+    }
+
+    /** {@link #resolveFallbackDir(Context)} with the folder named {@code dirName}. */
+    static File resolveFallbackDir(Context ctx, String dirName) {
         File ext = null;
         try {
             ext = ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
@@ -1358,10 +1372,10 @@ public final class LogcatWorker {
             Log.w(TAG, "App-specific external folder not available: " + t);
         }
         if (ext != null) {
-            File dir = new File(ext, LOG_DIR_NAME);
+            File dir = new File(ext, dirName);
             if (isUsable(dir)) return dir;
         }
-        File internal = new File(ctx.getFilesDir(), LOG_DIR_NAME);
+        File internal = new File(ctx.getFilesDir(), dirName);
         return isUsable(internal) ? internal : null;
     }
 

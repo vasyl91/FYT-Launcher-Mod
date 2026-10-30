@@ -60,7 +60,7 @@ In the launcher open *Settings > Layout creator > Canbus reader* (the group appe
 being read. **Cancel** stops the import without changing anything (until saving starts, then the button is disabled);
 **Run in background** closes the window and shows a toast when it is finished. A dialog (or the toast) tells you the result and where the report is.
 
-The report is saved to `Download/Launcher66_Logs` as `canbus_library_success_<date>.txt` or `canbus_library_failed_<date>.txt`
+The report is saved to `Download/Launcher66_Canbus` as `canbus_library_success_<date>.txt` or `canbus_library_failed_<date>.txt`
 (if that folder is not available, the full path is shown). It lists the file, the result, how many records were new,
 skipped as duplicates or replaced (with the old and the new value), the numbers of cars before and after and, for a rejected
 file, every error with its line number.
@@ -68,7 +68,7 @@ file, every error with its line number.
 A file is accepted only as a whole: if a single line is wrong, nothing is imported. **Remove the imported libraries** returns to the built-in one.
 
 **Export a library.** *Export the canbus library* (the same group) saves the library the launcher really uses, the built-in one merged with everything
-imported, to `Download/Launcher66_Logs` as `canbus_library_export_<date>_<time>.txt` (a toast shows the full path, or the reason it failed). It is a valid
+imported, to `Download/Launcher66_Canbus` as `canbus_library_export_<date>_<time>.txt` (a toast shows the full path, or the reason it failed). It is a valid
 library file (a comment after the header says when it was written), so `--check` accepts it and it can be imported on another radio.
 
 To compare it with another library, for example the built-in one of a newer launcher, copy the export to the PC and run
@@ -85,7 +85,7 @@ To see what an import would do before you do it, `--merge <base> <file>` gives t
 * **`mapping not found`**: the script could not find `ActivityLauncher.java` with `switch (DataCanbus.DATA[1000])`. Point it at the file:
   `build_canbus_library.bat "<sources>" --mapping "<sources>\com\syu\canbus\ActivityLauncher.java"`.
 * **Python was not found**: install it from python.org (see section 2) and run the file again. If only the Microsoft Store stub is present, install the real Python.
-* **Import rejected**: open the report in `Download/Launcher66_Logs`; it lists the errors with line numbers. Check the file on the PC with
+* **Import rejected**: open the report in `Download/Launcher66_Canbus`; it lists the errors with line numbers. Check the file on the PC with
   `build_canbus_library.bat --check canbus_library_....txt` (exit code 2 = invalid, the same rules as the launcher).
 * **You edited the file by hand** (for example to add `N 123` for a car that must not get a request, or to fix a class name): run
   `build_canbus_library.bat --seal canbus_library_....txt` to recompute the footer (record count and CRC32), then import it.

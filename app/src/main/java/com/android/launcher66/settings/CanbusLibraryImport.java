@@ -27,7 +27,7 @@ import java.util.Locale;
 /**
  * Imports a canbus library file the user built (canbus_library/README.md): reads and checks it as a whole,
  * merges it into the library the user has imported so far (the file wins a conflict), saves the result and
- * writes a report to Download/Launcher66_Logs. It runs on the library's own thread; the listener is called
+ * writes a report to Download/Launcher66_Canbus. It runs on the library's own thread; the listener is called
  * on the main thread. A cancel before saving starts leaves everything as it was.
  */
 final class CanbusLibraryImport {
@@ -383,12 +383,15 @@ final class CanbusLibraryImport {
         }
     }
 
-    /** Download/Launcher66_Logs when it is usable, else the app's own folder; null if there is none. */
+    /** The folder of the canbus files: the reports, the export and the code reader's recordings. */
+    static final String CANBUS_DIR_NAME = "Launcher66_Canbus";
+
+    /** Download/Launcher66_Canbus when it is usable, else the app's own folder; null if there is none. */
     static OutputDir outputDir(Context app) {
-        File dir = LogcatWorker.usablePublicDir(app);
+        File dir = LogcatWorker.usablePublicDir(app, CANBUS_DIR_NAME);
         boolean publicDir = dir != null;
         if (dir == null) {
-            dir = LogcatWorker.resolveFallbackDir(app);
+            dir = LogcatWorker.resolveFallbackDir(app, CANBUS_DIR_NAME);
         }
         if (dir == null) {
             return null;
