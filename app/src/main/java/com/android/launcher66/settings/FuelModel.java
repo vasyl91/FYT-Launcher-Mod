@@ -852,9 +852,13 @@ public final class FuelModel {
 
     /**
      * The scale of a speed code: km/h times 1, 10 or 100. From the GPS when there is one (the ratio of the
-     * code to the GPS speed), else from the values (multiples of 100 or 10 that pass 260). 0 until it is known.
+     * code to the GPS speed), else from the values (multiples of 100 or 10 that pass 260). 0 until it is known, and
+     * when the code does not follow the GPS (then the service uses the GPS).
      */
     public static final class SpeedScale {
+        /** The comparisons with the GPS needed to judge the code, and how far off the scale (ln) it may be: 25 %. */
+        private static final int MIN_RATIOS = 10;
+        private static final double MAX_RATIO_OFF = Math.log(1.25);
         private int fixed;
         private int gcd;
         private int max;
@@ -885,11 +889,23 @@ public final class FuelModel {
             }
         }
 
+        /**
+         * The scale, or 0 while it is not known or the code does not follow the GPS: after 10 comparisons a ratio
+         * more than 25 % off the chosen scale (a known one too) means this is not the speed.
+         */
         public int scale() {
+            int chosen = chosen();
+            if (chosen > 0 && ratios >= MIN_RATIOS && Math.abs(Math.log(ratioSum / ratios / chosen)) > MAX_RATIO_OFF) {
+                return 0;
+            }
+            return chosen;
+        }
+
+        private int chosen() {
             if (fixed > 0) {
                 return fixed;
             }
-            if (ratios >= 10) {
+            if (ratios >= MIN_RATIOS) {
                 double r = ratioSum / ratios;
                 int best = 1;
                 for (int s : new int[]{10, 100}) {

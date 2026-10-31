@@ -109,6 +109,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private volatile int rangeCode = 0;
     /** The speed code in use: that of the settings, else the one the code reader found, else 0 (the GPS). */
     private volatile int speedCode = 0;
+    /** The RPM code in use: that of the settings, else the one the code reader found, else 0 (no RPM). */
+    private volatile int rpmCode = 0;
     /**
      * Which pair of the library's fuel and range codes the radio reports (the codes moved between the versions of
      * the canbus module); null for a car the library has no pair for. The codes of the settings come before it.
@@ -408,7 +410,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 rangeValue = value;
                 uiHandler.post(CanbusService.this::mUpdaterDrivingMileage);
             }
-            if (updateCode == rpm) {
+            if (updateCode == rpmCode) {
                 rpmValue = value;
                 uiHandler.post(CanbusService.this::mUpdaterRPM);
             }
@@ -447,6 +449,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 ReaderGuesses reader = ReaderGuesses.parse(prefs.getString(ReaderGuesses.key(carId), null));
                 speedCode = speed > 0 ? speed : reader != null && reader.speed > 0 ? reader.speed : 0;
                 speedScale = new FuelModel.SpeedScale(reader != null && speedCode == reader.speed ? reader.speedScale : 0);
+                // and the RPM the same way: the model checks that the values look like revs
+                rpmCode = rpm > 0 ? rpm : reader != null && reader.rpm > 0 ? reader.rpm : 0;
                 loadFuelModel(carId);
                 registerStatsCodes();
             });
@@ -1132,7 +1136,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private void registerStatsCodes() {
         unregisterStatsCodes();
         // the codes of all the library's pairs: which one the radio reports is found out from their values
-        Set<Integer> wanted = new LinkedHashSet<>(Arrays.asList(fuelCode, rangeCode, rpm, speedCode));
+        Set<Integer> wanted = new LinkedHashSet<>(Arrays.asList(fuelCode, rangeCode, rpmCode, speedCode));
         CodePairChooser chooser = pairChooser;
         if (chooser != null) {
             wanted.addAll(chooser.codes());
@@ -1251,6 +1255,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         int value = fuelValue;
         if (fuelModel != null) {
             long now = System.currentTimeMillis();
+            touchRpm(now);
             fuelModel.onFuel(now, value);
             if (now - fuelModelSavedAt > FUEL_MODEL_SAVE_MS) {
                 saveFuelModel();        // what it learned survives a restart, now and then
@@ -1336,7 +1341,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
             onDriving(speedValue / (double) scale);
         }
         if (scale > 0 && fuelModel != null) {
-            fuelModel.onSpeed(System.currentTimeMillis(), speedValue / (double) scale, true);
+            long now = System.currentTimeMillis();
+            fuelModel.onSpeed(now, speedValue / (double) scale, true);
+            touchRpm(now);
             refreshFuelEstimate();
         }
     }
@@ -1366,7 +1373,17 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
     public void mUpdaterRPM() {
         if (fuelModel != null) {
-            fuelModel.onRpm(rpmValue);
+            fuelModel.onRpm(System.currentTimeMillis(), rpmValue);
+        }
+    }
+
+    /**
+     * The RPM is only reported when it changes, and the model takes a value older than 5 s as unknown: with each
+     * new speed or fuel value the last one is given again (at a stop with the engine off it stays 0). Main thread.
+     */
+    private void touchRpm(long now) {
+        if (fuelModel != null && rpmCode > 0 && lastCodeValues.containsKey(rpmCode)) {
+            fuelModel.onRpm(now, rpmValue);
         }
     }
 
@@ -1414,7 +1431,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
         // The speed code, once its scale is known, is the better speed: faster, and exactly 0 at a stop
         if (fuelModel != null && (speedCode <= 0 || speedScale.scale() == 0)) {
-            fuelModel.onSpeed(System.currentTimeMillis(), kmh, false);
+            long now = System.currentTimeMillis();
+            fuelModel.onSpeed(now, kmh, false);
+            touchRpm(now);
             refreshFuelEstimate();
         }
     }

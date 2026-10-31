@@ -760,4 +760,102 @@ class FuelModelTest {
         driveRpm(good, new Random(13), 0, 300, 30);
         assertTrue(good.rpmValid());
     }
+
+    @Test
+    void aSpeedCodeThatDoesNotFollowTheGpsIsDropped() {
+        // the revs (700-3000) against a GPS speed of 30-90 km/h: not a speed, whatever scale it would have
+        FuelModel.SpeedScale revs = new FuelModel.SpeedScale(0);
+        FuelModel.SpeedScale known = new FuelModel.SpeedScale(100);
+        for (int i = 0; i < 30; i++) {
+            double gps = 30 + 2 * i;
+            int rpm = 700 + 80 * i;
+            revs.onValue(rpm);
+            revs.onGps(gps);
+            known.onValue(rpm);
+            known.onGps(gps);
+            if (i == 8) {
+                // too early to judge: the known scale stands, the unknown one is not known yet
+                assertEquals(100, known.scale());
+                assertEquals(0, revs.scale());
+            }
+        }
+        assertEquals(0, revs.scale());
+        assertEquals(0, known.scale());
+        // a code that follows it, 100 times the speed within 20 %, stays; 30 % off does not
+        FuelModel.SpeedScale good = new FuelModel.SpeedScale(100);
+        FuelModel.SpeedScale off = new FuelModel.SpeedScale(100);
+        for (int i = 0; i < 30; i++) {
+            double gps = 30 + 2 * i;
+            good.onValue((int) Math.round(gps * 100 * (i % 2 == 0 ? 1.1 : 0.9)));
+            good.onGps(gps);
+            off.onValue((int) Math.round(gps * 100 * 1.3));
+            off.onGps(gps);
+        }
+        assertEquals(100, good.scale());
+        assertEquals(0, off.scale());
+        // and the scale found from the GPS is the one of a code that follows it, as before
+        FuelModel.SpeedScale tens = new FuelModel.SpeedScale(0);
+        for (int i = 0; i < 30; i++) {
+            tens.onValue((30 + i) * 10);
+            tens.onGps(30 + i);
+        }
+        assertEquals(10, tens.scale());
+    }
+
+    @Test
+    void theRpmChecksFollowTheRanges() {
+        // at a stop (3 s and more): 0 or 450-1500; 1800 revs standing still fail
+        FuelModel standing = new FuelModel();
+        long t = 0;
+        for (int i = 0; i < 80; i++, t += 200) {
+            standing.onSpeed(t, 0, true);
+            standing.onRpm(t, i < 15 ? 3000 : 1800);      // the first 3 s are not checked
+        }
+        assertFalse(standing.rpmValid());
+        FuelModel idle = new FuelModel();
+        t = 0;
+        for (int i = 0; i < 80; i++, t += 200) {
+            idle.onSpeed(t, 0, true);
+            idle.onRpm(t, i % 3 == 0 ? 0 : 450 + i);
+        }
+        assertTrue(idle.rpmValid());
+        // above 20 km/h: 600-7000; 300 is not revs
+        FuelModel slow = new FuelModel();
+        FuelModel fast = new FuelModel();
+        t = 0;
+        for (int i = 0; i < 80; i++, t += 200) {
+            slow.onSpeed(t, 40, true);
+            slow.onRpm(t, 300);
+            fast.onSpeed(t, 40, true);
+            fast.onRpm(t, 600 + 80 * i);
+        }
+        assertFalse(slow.rpmValid());
+        assertTrue(fast.rpmValid());
+        // under 20 km/h there is nothing to check it against: not valid yet
+        FuelModel creeping = new FuelModel();
+        t = 0;
+        for (int i = 0; i < 80; i++, t += 200) {
+            creeping.onSpeed(t, 10, true);
+            creeping.onRpm(t, 1500);
+        }
+        assertFalse(creeping.rpmValid());
+        // 80 % of the first 30 must pass: 24 do, 23 do not
+        for (int passing : new int[]{24, 23}) {
+            FuelModel m = new FuelModel();
+            t = 0;
+            for (int i = 0; i < 30; i++, t += 200) {
+                m.onSpeed(t, 40, true);
+                m.onRpm(t, i < passing ? 2000 : 100);
+            }
+            assertEquals(passing == 24, m.rpmValid(), passing + " of 30");
+        }
+        // out of 0-8000 fails anywhere
+        FuelModel wild = new FuelModel();
+        t = 0;
+        for (int i = 0; i < 40; i++, t += 200) {
+            wild.onSpeed(t, 40, true);
+            wild.onRpm(t, i % 2 == 0 ? 9000 : 2000);
+        }
+        assertFalse(wild.rpmValid());
+    }
 }

@@ -1779,7 +1779,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (codeUnset(speedCodeStr) && (reader == null || reader.speed < 0)) {
             speedCodeInt.setHint(R.string.speed_code_gps);
         }
-        rpmCodeInt.setText(codeUnset(rpmCodeStr) ? "" : rpmCodeStr);
+        showCode(rpmCodeInt, rpmCodeStr, reader != null ? reader.rpm : -1);
         for (EditText field : new EditText[]{fuelCodeInt, rangeCodeInt, speedCodeInt, rpmCodeInt}) {
             field.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
         }
@@ -2032,8 +2032,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         String fuel = codeForSummary(sharedPrefs.getString("fuel_code_int", "0"), true);
         String range = codeForSummary(sharedPrefs.getString("range_code_int", "0"), false);
         String speedAndRpm = getString(R.string.stats_codes_summary_speed_rpm, speedForSummary(),
-                codeUnset(sharedPrefs.getString("rpm_code_int", "0")) ? getString(R.string.stats_codes_not_set)
-                        : sharedPrefs.getString("rpm_code_int", "0"));
+                rpmForSummary());
         if (!carNeedsRequest()) {
             return getString(R.string.stats_codes_summary_no_request, fuel, range) + speedAndRpm;
         }
@@ -2042,6 +2041,18 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 : getString(R.string.stats_codes_request_auto,
                         CanbusLibrary.firstRequest(CanbusLibrary.cached(), DataCanbus.DATA[1000]));
         return getString(R.string.stats_codes_summary_request, fuel, range, request) + speedAndRpm;
+    }
+
+    /** The RPM code for the summary: the one written, else the code reader's ("513 (reader)"), else not set. */
+    private String rpmForSummary() {
+        String saved = sharedPrefs.getString("rpm_code_int", "0");
+        if (!codeUnset(saved)) {
+            return saved;
+        }
+        ReaderGuesses reader = readerGuesses();
+        return reader != null && reader.rpm >= 0
+                ? getString(R.string.stats_codes_reader_code, String.valueOf(reader.rpm))
+                : getString(R.string.stats_codes_not_set);
     }
 
     /** The speed code for the summary: the one written, else the code reader's ("510 (reader)"), else the GPS. */
