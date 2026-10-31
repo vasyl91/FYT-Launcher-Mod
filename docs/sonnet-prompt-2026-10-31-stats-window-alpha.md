@@ -100,19 +100,31 @@ static LimitAction limitAction(boolean windowShown, boolean raisedByUs, String c
   - Przy `TRUSTED` woła `setTrustedOverlay` refleksją.
   - Gdy refleksja zawiedzie, a `WRITE_SECURE_SETTINGS` jest przyznane (system je ma), dalej działa jak `WRITE_DIRECT`.
   - Przy udanym `TRUSTED` limitu **nie ruszaj wcale**.
-- **`static void onWindowShown(Context, Runnable onRaised)`** i **`static void onWindowHidden(Context)`**:
-  - ustawiają żądany stan (`volatile boolean desiredShown`) i zlecają pracę jednemu **jednowątkowemu** executorowi w tle (wywołania hosta i `su` blokują);
-  - zadanie executora czyta **bieżący** żądany stan (wygrywa ostatni), bieżącą wartość ustawienia i znacznik, liczy `limitAction(...)` i wykonuje:
-    - `RAISE` → zapisz w prefs (4.2), ustaw `1` trasą z `route(...)`. Potem sprawdź `InputManager.getMaximumObscuringOpacityForTouch()` ≥ 1 i na wątku głównym uruchom `onRaised`;
+- **`static void onWindowShown(Context, Runnable onRaised)`**, **`static void onWindowHidden(Context)`** i **`static void onWindowHiddenNow(Context)`**. Kolejność w każdej z nich jest wiążąca:
+  - **`onWindowShown`:**
+    1. `removeCallbacks(hideTask)`: anuluje przywrócenie, które czeka;
+    2. `desiredShown = true`;
+    3. zleca zadanie executorowi.
+  - **`onWindowHidden`:** **tylko** `postDelayed(hideTask, 3000)` na wątku głównym. **Nie** zmienia `desiredShown`.
+    - Robi to dopiero `hideTask`: `desiredShown = false`, potem zleca zadanie executorowi.
+    - `addStatsView()` robi `removeView()` i od razu dodaje okno (przełączenie main/app), więc limit nie ma skakać.
+  - **`onWindowHiddenNow`** (`onDestroy`, sprzątanie w `onCreate`): `removeCallbacks(hideTask)`, `desiredShown = false`, zadanie od razu.
+  - **Executor:** jeden, **jednowątkowy**, w tle (wywołania hosta i `su` blokują). Zadanie czyta **bieżący** `desiredShown` (wygrywa ostatni), bieżącą wartość ustawienia i znacznik, liczy `limitAction(...)` i wykonuje:
+    - `RAISE` → zapisz w prefs (4.2), ustaw `1` trasą z `route(...)`. Potem sprawdź `InputManager.getMaximumObscuringOpacityForTouch()` ≥ 1 i na wątku głównym uruchom `onRaised` (`updateViewLayout`);
     - `RESTORE` → przywróć oryginał tą samą trasą, wyczyść prefs;
-    - `FORGET` → wyczyść prefs.
-  - **`onWindowHidden` z opóźnieniem 3 s:** zlecaj `postDelayed` na wątku głównym i anuluj, gdy w tym czasie przyjdzie `onWindowShown`. `addStatsView()` robi `removeView()` i od razu dodaje okno (przełączenie main/app), więc limit nie ma skakać.
+    - `FORGET` → wyczyść prefs;
+    - `NOTHING` → nic, także bez `onRaised`. Okno dodane, gdy limit już wynosi 1, ma pełną alphę od razu.
+  - **Scenariusze, które muszą działać** (sprawdź je w logach i w testach `HideDebounce`, rozdz. 5):
+    - **okno znika i wraca po 1 s:** przywrócenie anulowane, żadnego zapisu ustawienia (w logu brak RESTORE i RAISE), limit cały czas 1;
+    - **okno wraca tuż po 3 s, gdy RESTORE już trwa na executorze:** następne zadanie widzi `desiredShown = true` → `RAISE` → `updateViewLayout`. Okno może przez ułamek sekundy mieć 0,8;
+    - **pokaż → ukryj → pokaż → ukryj w ciągu 3 s:** dokładnie jedno RESTORE, 3 s po **ostatnim** ukryciu.
+  - **Czas oczekiwania:** licz go czystą klasą `HideDebounce` (czas podawany z zewnątrz, bez `android.*`): `onHidden(long now)`, `onShown(long now)`, `boolean due(long now)` (true: wykonaj ukrycie, raz). `Handler` jest tylko w cienkiej warstwie: `hideTask` sprawdza `due(SystemClock.uptimeMillis())`.
 - **Trasy zapisu** (dla podniesienia i przywrócenia te same, z wartością albo z „delete”):
   - `WRITE_DIRECT` → `Settings.Global.putString(cr, KEY, value)` (null przy przywróceniu nieistniejącego ustawienia);
   - `HOST` → nowe `WindowHostVdClient.setObscuringOpacityLimit(pkg, value)` (4.4). Gdy zwróci null albo rzuci wyjątek, a `hasRoot()` jest prawdą, przejdź do `SU`;
   - `SU` → `su -c "settings put global maximum_obscuring_opacity_for_touch <v>"` albo `su -c "settings delete global maximum_obscuring_opacity_for_touch"`;
   - `UNAVAILABLE` → nic, tylko log.
-- **Sprzątanie po awarii lub restarcie:** w `CanbusService.onCreate` (przed jakimkolwiek oknem) wołaj `onWindowHidden(this)`, bez opóźnienia. Jeśli znacznik został z poprzedniego procesu (proces zabity bez `onDestroy`), limit wraca do oryginału.
+- **Sprzątanie po awarii lub restarcie:** w `CanbusService.onCreate` (przed jakimkolwiek oknem) wołaj `onWindowHiddenNow(this)`. Jeśli znacznik został z poprzedniego procesu (proces zabity bez `onDestroy`), limit wraca do oryginału.
 - **Shizuku wstaje później:** zarejestruj jednorazowo `WindowHostVdClient.addListener`. Gdy host stanie się dostępny, ponów zadanie executora **raz**; ono samo zdecyduje, czy podnieść, czy przywrócić.
 - **Bieżący limit okna** czytaj przez `InputManager.getMaximumObscuringOpacityForTouch()` w `try`; przy błędzie przyjmij 0,8.
 - **Log:** `Log.i("StatsOverlayAlpha", …)` z trasą, akcją, wartością przed i po, oryginałem i wynikiem hosta lub `su`.
@@ -136,7 +148,7 @@ static LimitAction limitAction(boolean windowShown, boolean raisedByUs, String c
   - `mapApp`.
 - **Po udanym `addView`:** `StatsOverlayAlpha.onWindowShown(this, () -> …)`. W callbacku `wm.updateViewLayout(v, statsLayoutParams)`, gdzie `v` to widok, który faktycznie jest w oknie: `statsHost`, a gdy go nie ma, `absoluteStats`. Tylko gdy `v.getParent() != null` i `statsLayoutParams != null`, w `try`.
 - **W `removeView()`**, gdy okno było dodane: `StatsOverlayAlpha.onWindowHidden(this)`, z opóźnieniem 3 s (4.3).
-- **W `onDestroy()`:** `removeView()` już tam jest. Dodatkowo wołaj przywrócenie **bez opóźnienia**, np. `onWindowHidden(this, true)`, bo po `onDestroy` opóźnione zadanie może nie dojść do skutku.
+- **W `onDestroy()`:** `removeView()` już tam jest. Po nim wołaj `StatsOverlayAlpha.onWindowHiddenNow(this)`, bo po `onDestroy` opóźnione zadanie może nie dojść do skutku.
 - Nie zmieniaj flag ani `alpha` w `statsLayoutParams`. `bgAlpha` z ustawień (`shape.setAlpha`) to wybór użytkownika i zostaje.
 
 ### 4.6 Co napisać w commicie i raporcie
@@ -156,6 +168,11 @@ static LimitAction limitAction(boolean windowShown, boolean raisedByUs, String c
   - ukryte, znacznik jest, `"0.7"` → `FORGET`;
   - ukryte bez znacznika, przy każdej wartości → `NOTHING`.
 - **`parseLimit`:** null, `""`, `"abc"` → 0,8; `"1"` → 1; `"0.75"` → 0,75.
+- **`HideDebounce`** (czas w ms podawany w teście):
+  - `onHidden(0)`, `onShown(1000)` → `due(3000)` i `due(10000)` fałsz: powrót w ciągu 3 s, żadnego przywrócenia;
+  - `onHidden(0)` → `due(2999)` fałsz, `due(3000)` prawda, potem `due(3001)` fałsz: przywrócenie raz;
+  - `onShown(0)`, `onHidden(500)`, `onShown(1000)`, `onHidden(2000)` → `due(4999)` fałsz, `due(5000)` prawda: jedno przywrócenie, 3 s po ostatnim ukryciu;
+  - `onHidden(0)`, `due(3000)` prawda, `onShown(3100)` → `due` fałsz, a `limitAction(true, …)` daje `RAISE`: powrót tuż po przywróceniu.
 - **Uruchamianie lokalne:** Gradle tu nie działa, użyj `javac` + JUnit console standalone 1.10.2 z `app/`.
   - classpath `../android_jar/android-36.jar`;
   - `-sourcepath <stuby>:src/main/java`;
@@ -175,6 +192,7 @@ static LimitAction limitAction(boolean windowShown, boolean raisedByUs, String c
   - sprzątanie w `onCreate`.
 - Host zmienia tylko klucz `maximum_obscuring_opacity_for_touch` i tylko na wartość z [0, 1] albo „delete”.
 - Żadnych operacji na ustawieniach ani wywołań hosta i `su` na wątku głównym.
+- `desiredShown = false` ustawiają **tylko** `hideTask` i `onWindowHiddenNow`, nigdy samo `onWindowHidden`. `onWindowShown` zaczyna od `removeCallbacks(hideTask)`.
 
 ## 7. Commit
 `Stats window: full alpha of the window and its text as system, with root or Shizuku, only while it is shown; the touches still go through`
