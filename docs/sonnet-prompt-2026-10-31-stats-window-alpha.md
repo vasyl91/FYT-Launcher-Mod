@@ -28,6 +28,9 @@ To **jedyny** wyjątek od zasady „bez force-push”, na wyraźne polecenie wł
    - root;
    - Shizuku.
 2. Dotyk **zawsze** przechodzi pod okno. `FLAG_NOT_TOUCHABLE` zostaje we wszystkich ścieżkach. Nie zmieniaj flag dotyku i nie zmniejszaj `params.alpha`.
+3. Podniesiony limit (`maximum_obscuring_opacity_for_touch`, rozdz. 2) obowiązuje **tylko wtedy, gdy okno statystyk jest widoczne**:
+   - podnoszony razem z dodaniem okna;
+   - przywracany do poprzedniej wartości, gdy okno znika.
 
 ## 2. Przyczyna (Android 12+)
 - `DisplayPolicy.adjustWindowParamsLw` sprawdza okno typu SAW (`TYPE_APPLICATION_OVERLAY` też do nich należy). Gdy okno ma `FLAG_NOT_TOUCHABLE` i nie ma `PRIVATE_FLAG_TRUSTED_OVERLAY`, dostaje:
@@ -72,47 +75,87 @@ static Route route(int sdk, boolean systemUid, boolean internalSystemWindow, boo
 - `root` → `SU`;
 - w przeciwnym razie → `UNAVAILABLE`.
 
-### 4.2 Cienka warstwa z `Context` (w tej samej klasie)
+### 4.2 Czysta decyzja o limicie (w tej samej klasie, bez `android.*`)
+Limit ma być podniesiony tylko na czas widoczności okna. Stan zapisuj w domyślnych SharedPreferences (nowe klucze w `Keys`):
+```java
+public static final String STATS_OBSCURING_RAISED = "stats_obscuring_raised";     // boolean: to my podnieśliśmy limit
+public static final String STATS_OBSCURING_ORIGINAL = "stats_obscuring_original"; // String: wartość sprzed podniesienia, brak klucza = ustawienie nie istniało
+```
+- **Zapamiętana wartość:** `Settings.Global.getString(cr, "maximum_obscuring_opacity_for_touch")` może zwrócić null, czyli ustawienie nie istniało. Wtedy zapisz null jako brak klucza `STATS_OBSCURING_ORIGINAL`.
+- **Funkcja:**
+```java
+enum LimitAction { NOTHING, RAISE, RESTORE, FORGET }
+static LimitAction limitAction(boolean windowShown, boolean raisedByUs, String currentValue)
+```
+  - `windowShown`, a `currentValue` nie jest ≥ 1 (null lub nieliczbowa wartość < 1) → `RAISE`;
+  - `!windowShown && raisedByUs && currentValue` ≥ 1 → `RESTORE`;
+  - `!windowShown && raisedByUs`, a `currentValue` < 1 → `FORGET`: ktoś inny zmienił ustawienie, nie ruszaj go, tylko wyczyść znacznik;
+  - w pozostałych przypadkach → `NOTHING`.
+- **Parsowanie** wartości tekstowej w osobnej czystej metodzie `static float parseLimit(String value)`: null, pusta albo błędna → 0,8.
+- **Kolejność przy `RAISE`:** wartość sprzed podniesienia zapamiętaj **tylko** wtedy, gdy znacznika `STATS_OBSCURING_RAISED` jeszcze nie ma. Nie nadpiszesz wtedy oryginału naszą jedynką po awarii. Najpierw zapisz `ORIGINAL` i `RAISED=true` (jedno `edit()…apply()`), potem dopiero zmieniaj ustawienie.
+- **Przy `RESTORE`:** gdy oryginał nie istniał, to `delete`; w przeciwnym razie `put` z oryginałem. Po sukcesie usuń oba klucze z prefs.
+
+### 4.3 Cienka warstwa z `Context` (w tej samej klasie)
 - **`static void applyBeforeAdd(Context, WindowManager.LayoutParams)`**: wątek główny, bez I/O.
   - Przy `TRUSTED` woła `setTrustedOverlay` refleksją.
-  - Gdy refleksja zawiedzie, a `WRITE_SECURE_SETTINGS` jest przyznane (system je ma), to trasa `WRITE_DIRECT` z 4.2.
-- **`static void raiseLimitAsync(Context, Runnable onRaised)`**: praca na wątku tła (wywołania hosta i `su` blokują).
-  - `WRITE_DIRECT` → `Settings.Global.putFloat(cr, "maximum_obscuring_opacity_for_touch", 1f)`;
-  - `HOST` → nowe `WindowHostVdClient.allowOpaqueOverlays(pkg)` (4.3). Gdy zwróci null albo rzuci wyjątek, a `hasRoot()` jest prawdą, to `SU`;
-  - `SU` → `su -c "settings put global maximum_obscuring_opacity_for_touch 1"`.
-  - Po każdej udanej próbie odczytaj `InputManager.getMaximumObscuringOpacityForTouch()` (publiczne API 31). Gdy jest ≥ 1, uruchom `onRaised` na wątku głównym.
-- **Bieżący limit** czytaj przez `InputManager.getMaximumObscuringOpacityForTouch()` w `try`; przy błędzie przyjmij 0,8.
-- **Shizuku wstaje później:** zarejestruj jednorazowo `WindowHostVdClient.addListener`. Gdy host stanie się dostępny, a limit nadal jest < 1, ponów `raiseLimitAsync` **raz**.
-- **Log:** `Log.i("StatsOverlayAlpha", …)` z trasą, limitem przed i po oraz wynikiem hosta lub `su`.
+  - Gdy refleksja zawiedzie, a `WRITE_SECURE_SETTINGS` jest przyznane (system je ma), dalej działa jak `WRITE_DIRECT`.
+  - Przy udanym `TRUSTED` limitu **nie ruszaj wcale**.
+- **`static void onWindowShown(Context, Runnable onRaised)`** i **`static void onWindowHidden(Context)`**:
+  - ustawiają żądany stan (`volatile boolean desiredShown`) i zlecają pracę jednemu **jednowątkowemu** executorowi w tle (wywołania hosta i `su` blokują);
+  - zadanie executora czyta **bieżący** żądany stan (wygrywa ostatni), bieżącą wartość ustawienia i znacznik, liczy `limitAction(...)` i wykonuje:
+    - `RAISE` → zapisz w prefs (4.2), ustaw `1` trasą z `route(...)`. Potem sprawdź `InputManager.getMaximumObscuringOpacityForTouch()` ≥ 1 i na wątku głównym uruchom `onRaised`;
+    - `RESTORE` → przywróć oryginał tą samą trasą, wyczyść prefs;
+    - `FORGET` → wyczyść prefs.
+  - **`onWindowHidden` z opóźnieniem 3 s:** zlecaj `postDelayed` na wątku głównym i anuluj, gdy w tym czasie przyjdzie `onWindowShown`. `addStatsView()` robi `removeView()` i od razu dodaje okno (przełączenie main/app), więc limit nie ma skakać.
+- **Trasy zapisu** (dla podniesienia i przywrócenia te same, z wartością albo z „delete”):
+  - `WRITE_DIRECT` → `Settings.Global.putString(cr, KEY, value)` (null przy przywróceniu nieistniejącego ustawienia);
+  - `HOST` → nowe `WindowHostVdClient.setObscuringOpacityLimit(pkg, value)` (4.4). Gdy zwróci null albo rzuci wyjątek, a `hasRoot()` jest prawdą, przejdź do `SU`;
+  - `SU` → `su -c "settings put global maximum_obscuring_opacity_for_touch <v>"` albo `su -c "settings delete global maximum_obscuring_opacity_for_touch"`;
+  - `UNAVAILABLE` → nic, tylko log.
+- **Sprzątanie po awarii lub restarcie:** w `CanbusService.onCreate` (przed jakimkolwiek oknem) wołaj `onWindowHidden(this)`, bez opóźnienia. Jeśli znacznik został z poprzedniego procesu (proces zabity bez `onDestroy`), limit wraca do oryginału.
+- **Shizuku wstaje później:** zarejestruj jednorazowo `WindowHostVdClient.addListener`. Gdy host stanie się dostępny, ponów zadanie executora **raz**; ono samo zdecyduje, czy podnieść, czy przywrócić.
+- **Bieżący limit okna** czytaj przez `InputManager.getMaximumObscuringOpacityForTouch()` w `try`; przy błędzie przyjmij 0,8.
+- **Log:** `Log.i("StatsOverlayAlpha", …)` z trasą, akcją, wartością przed i po, oryginałem i wynikiem hosta lub `su`.
 
-### 4.3 Host (`vdhost/shared`)
-- **`VdHostProtocol`:** `static final int TX_ALLOW_OPAQUE_OVERLAYS = IBinder.FIRST_CALL_TRANSACTION + 16;` oraz `Proxy.allowOpaqueOverlays(String pkg)` przez `packageCall`.
-- **`VdHostStub`:** dopisz `TX_ALLOW_OPAQUE_OVERLAYS` do case'u z `TX_ALLOW_WRITE_SETTINGS`, z `clearCallingIdentity`, i woła `mServices.allowOpaqueOverlays(uid, pkg)`.
-- **`HostServices.allowOpaqueOverlays(int callerUid, String pkg)`:**
-  - ta sama kontrola `isPackageOfUid` co w `allowWriteSettings`;
-  - potem `VdHostCore.runCommand(null, "/system/bin/settings", "put", "global", "maximum_obscuring_opacity_for_touch", "1")`;
-  - `Log.i` i zwrot wyniku.
-- **`WindowHostVdClient.allowOpaqueOverlays(pkg)`:** jak `allowWriteSettings`, null bez hosta.
+### 4.4 Host (`vdhost/shared`)
+- **`VdHostProtocol`:** `static final int TX_SET_OBSCURING_LIMIT = IBinder.FIRST_CALL_TRANSACTION + 16;` oraz `Proxy.setObscuringOpacityLimit(String pkg, String value)`. Napisz to jak `packageCall`, z drugim `writeString`; `value == null` oznacza „usuń ustawienie”.
+- **`VdHostStub`:** nowy case z `clearCallingIdentity`, czyta `pkg` i `value`, woła `mServices.setObscuringOpacityLimit(uid, pkg, value)`.
+- **`HostServices.setObscuringOpacityLimit(int callerUid, String pkg, String value)`:**
+  - kontrola `isPackageOfUid` jak w `allowWriteSettings`;
+  - `value == null` → `VdHostCore.runCommand(null, "/system/bin/settings", "delete", "global", "maximum_obscuring_opacity_for_touch")`;
+  - w przeciwnym razie `Float.parseFloat(value)` w zakresie [0, 1], inaczej `IllegalArgumentException`. Potem `runCommand(... "put", "global", "maximum_obscuring_opacity_for_touch", value)`;
+  - wolno zmieniać **tylko ten jeden klucz**. `Log.i` i zwrot wyniku.
+- **`WindowHostVdClient.setObscuringOpacityLimit(pkg, value)`:** jak `allowWriteSettings`, null bez hosta.
 - Lista dozwolonych komend `exec()` zostaje **bez zmian**.
 
-### 4.4 `CanbusService` (tworzenie okna ≈ l. 819–960)
-- Po zbudowaniu `statsLayoutParams`, przed każdym `addView`, wołaj `StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams)`. Ścieżki `addView`:
-  - Android 14+ z `statsHost` (okno na szerokość strony);
+### 4.5 `CanbusService` (tworzenie okna ≈ l. 819–960, `removeView()` ≈ l. 973, `onDestroy()` ≈ l. 267)
+- **Przed każdym `addView`** wołaj `StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams)`. Ścieżki `addView`:
+  - Android 14+ z `statsHost`;
   - starsza z `FLAG_LAYOUT_NO_LIMITS`;
   - fallback;
   - `mapApp`.
-- Po dodaniu okna: `StatsOverlayAlpha.raiseLimitAsync(this, () -> …)`. W callbacku `wm.updateViewLayout(v, statsLayoutParams)`, gdzie `v` to widok, który faktycznie jest w oknie: `statsHost`, a gdy go nie ma, `absoluteStats`. Tylko gdy `v.getParent() != null`, w `try`.
+- **Po udanym `addView`:** `StatsOverlayAlpha.onWindowShown(this, () -> …)`. W callbacku `wm.updateViewLayout(v, statsLayoutParams)`, gdzie `v` to widok, który faktycznie jest w oknie: `statsHost`, a gdy go nie ma, `absoluteStats`. Tylko gdy `v.getParent() != null` i `statsLayoutParams != null`, w `try`.
+- **W `removeView()`**, gdy okno było dodane: `StatsOverlayAlpha.onWindowHidden(this)`, z opóźnieniem 3 s (4.3).
+- **W `onDestroy()`:** `removeView()` już tam jest. Dodatkowo wołaj przywrócenie **bez opóźnienia**, np. `onWindowHidden(this, true)`, bo po `onDestroy` opóźnione zadanie może nie dojść do skutku.
 - Nie zmieniaj flag ani `alpha` w `statsLayoutParams`. `bgAlpha` z ustawień (`shape.setAlpha`) to wybór użytkownika i zostaje.
 
-### 4.5 Skutek uboczny (napisz w commicie i w raporcie)
-- `maximum_obscuring_opacity_for_touch` to ustawienie **globalne**: limit 1,0 dotyczy nakładek wszystkich aplikacji (ochrona przed tapjackingiem jest słabsza).
-- Nie przywracamy go, bo okno statystyk działa stale.
-- Na UID systemowym przy udanym `setTrustedOverlay` ustawienie nie jest zmieniane.
+### 4.6 Co napisać w commicie i raporcie
+- `maximum_obscuring_opacity_for_touch` to ustawienie **globalne**. Na czas widoczności okna limit 1,0 dotyczy nakładek wszystkich aplikacji.
+- Po zniknięciu okna (po 3 s) albo przy zatrzymaniu serwisu wraca wartość sprzed podniesienia, a gdy jej nie było, ustawienie jest usuwane.
+- Gdy proces zginie bez `onDestroy`, przywrócenie nastąpi przy następnym starcie serwisu.
+- Na UID systemowym z udanym `setTrustedOverlay` ustawienie nie jest zmieniane.
 
 ## 5. Testy (`StatsOverlayAlphaTest`, czyste, JVM)
-- **Każda trasa**, w tym `UNAVAILABLE`, gdy nic nie ma.
-- **Priorytety:** system > `WRITE_SECURE_SETTINGS` > host > `su`, np. system + host + root → `TRUSTED`; host + root → `HOST`.
-- **`NOT_NEEDED`:** sdk 30 przy wszystkim przyznanym, oraz limit 1,0 przy sdk 34.
+- **`route`:**
+  - każda trasa, w tym `UNAVAILABLE`, gdy nic nie ma;
+  - priorytety: system > `WRITE_SECURE_SETTINGS` > host > `su`, np. system + host + root → `TRUSTED`; host + root → `HOST`;
+  - `NOT_NEEDED` przy sdk 30, oraz przy limicie 1,0 i sdk 34.
+- **`limitAction`:**
+  - okno widoczne i wartości null, `"0.8"`, `"0.5"` → `RAISE`; widoczne i `"1"` / `"1.0"` → `NOTHING`;
+  - ukryte, znacznik jest, `"1"` → `RESTORE`;
+  - ukryte, znacznik jest, `"0.7"` → `FORGET`;
+  - ukryte bez znacznika, przy każdej wartości → `NOTHING`.
+- **`parseLimit`:** null, `""`, `"abc"` → 0,8; `"1"` → 1; `"0.75"` → 0,75.
 - **Uruchamianie lokalne:** Gradle tu nie działa, użyj `javac` + JUnit console standalone 1.10.2 z `app/`.
   - classpath `../android_jar/android-36.jar`;
   - `-sourcepath <stuby>:src/main/java`;
@@ -126,25 +169,33 @@ static Route route(int sdk, boolean systemUid, boolean internalSystemWindow, boo
 - `OverlayTouchMode` nie istnieje nigdzie.
 - `VdHostProtocol.VERSION` bez zmian.
 - `setTrustedOverlay` wołane tylko przy `TRUSTED`.
+- **Każde podniesienie ma swoje przywrócenie:**
+  - `onWindowShown` po każdym udanym `addView`;
+  - `onWindowHidden` w `removeView()` i natychmiastowe w `onDestroy()`;
+  - sprzątanie w `onCreate`.
+- Host zmienia tylko klucz `maximum_obscuring_opacity_for_touch` i tylko na wartość z [0, 1] albo „delete”.
+- Żadnych operacji na ustawieniach ani wywołań hosta i `su` na wątku głównym.
 
 ## 7. Commit
-`Stats window: full alpha of the window and its text as system, with root or Shizuku; the touches still go through`
+`Stats window: full alpha of the window and its text as system, with root or Shizuku, only while it is shown; the touches still go through`
 
 W treści commita:
 - przyczyna (limit 0,8 z `DisplayPolicy`);
 - trzy trasy;
+- podniesienie limitu tylko na czas widoczności okna i przywrócenie poprzedniej wartości;
 - nowa transakcja hosta bez zmiany `VERSION` (stary daemon → `su`);
-- skutek uboczny z 4.5.
+- treść z 4.6.
 
 Trailery sesji, bez nazwy modelu. Push, potem obserwuj CI. Czerwony build naprawiasz nowym commitem.
 
 ## 8. Raport dla właściciela (po polsku)
 - **Wyniki:** numer runu CI i wynik testów.
 - **W aucie:**
-  - `logcat -s StatsOverlayAlpha`: trasa i limit;
-  - `settings get global maximum_obscuring_opacity_for_touch` daje `1` (trasy root, Shizuku i bezpośredni zapis);
+  - `logcat -s StatsOverlayAlpha`: trasa, akcja, wartości;
+  - przy widocznym oknie `settings get global maximum_obscuring_opacity_for_touch` daje `1`;
+  - po wyłączeniu statystyk albo zatrzymaniu serwisu (po ok. 3 s) wraca poprzednia wartość, zwykle `null`;
   - tło i tekst w pełni kryjące, dotyk przechodzi pod okno.
 - **Zastrzeżenia:**
   - bez UID systemowego, roota i Shizuku zostaje 0,8 i nie da się tego obejść bez blokowania dotyku;
-  - Shizuku przez ADB nie przetrwa restartu, ale samo ustawienie zostaje zapisane;
+  - gdy Shizuku przez ADB zniknie (restart), przywrócenie nastąpi, gdy host wróci albo przez `su`;
   - przy starej wersji modułu Magisk zadziała `su`; nowa wersja modułu obsłuży to przez hosta.
