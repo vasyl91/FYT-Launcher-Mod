@@ -105,14 +105,14 @@ Exit code: 0 success, 1 bad input, 2 an invalid file in `--check`, `--diff` or `
 
 * **`--diff A B`** checks both files like `--check`, then lists per car id what is only in A, only in B and different (A to B): `C` per car id,
   `R` per car id and page, `N` and `S` per car id, and the ids whose first page or order of pages differs. It prints the numbers, then
-  up to 50 examples of each kind. `--ids 1507667,163` also prints the whole state of those cars (class, pages in order, codes) from A and from B.
+  up to 50 examples of each kind (`U` per car id too). `--ids 1507667,163` also prints the whole state of those cars (class, pages in order, codes) from A and from B.
   Use it to compare two libraries, for example the one you built with the built-in one, before importing.
 * **`--merge BASE FILE`** writes `BASE` merged with `FILE` exactly like the import in the launcher (section 6, *Merging*), sealed, and prints how many
   records of each kind were new, duplicate and replaced. The default `--out` is `canbus_library_merged_<date>_<time>.txt`.
 
-## 6. File format (version 3)
+## 6. File format (version 4)
 
-A UTF-8 text file. The first significant line is `canbus_library 3` (`canbus_library 2` when no car has more than one pair of fuel/range codes; the script and the launcher write the lower version then). Files in version 1 (`canbus_library 1`, without `S` records) and in version 2 (one pair of codes per car) are still read, by the launcher and by `--check`. Empty lines and lines starting with `#` are ignored
+A UTF-8 text file. The first significant line is `canbus_library 4` when the file has a `U` record, else `canbus_library 3` when a car has more than one pair of fuel/range codes, else `canbus_library 2` (the script and the launcher write the lowest version that fits). Files in version 1 (`canbus_library 1`, without `S` records), in version 2 (one pair of codes per car) and in version 3 (without `U` records) are still read, by the launcher and by `--check`. Empty lines and lines starting with `#` are ignored
 (a BOM at the start is allowed). Records (fields are separated by `|`, spaces around fields are allowed):
 
 ```
@@ -122,6 +122,9 @@ C <ids> | <class> | <alt> | fytver:<tok>[,<tok>...]    <alt> when /sys/fytver/fy
 R <ids> | <page> | <req>[; <req>...]                   a fuel page and the requests it sends, in order
 N <ids>                                                the car needs no request (switches off a false match)
 S <ids> | <fuel> | <range> [| <fuel> | <range>]...    the codes of the car's fuel consumption and range, up to 4 pairs (version 2: one)
+U <ids> | code <x> | <v>=<unit>,...[,*=<unit>]         the unit of the instantaneous consumption is in the code x (version 4)
+U <ids> | bit <b> | mask <m> | 0=<unit>,1=<unit>       ... in bit b of the consumption code, whose value is `& m`
+U <ids> | fixed <unit>                                 ... always the same
 end <records> <crc32>                                  footer, the last significant line
 ```
 
@@ -141,15 +144,29 @@ end <records> <crc32>                                  footer, the last signific
   the radio really reports. A pair is never repeated in a record. A version 2 file with more than one pair in a record is an error
   (`several code pairs need version 3`).
 
+* **`U`: the unit of the instantaneous consumption.** Some canbus protocols tell the radio whether the car shows litres per 100 km or litres per hour,
+  and the launcher then shows the value in the unit the car reports (it does not convert it). `<unit>` is `L100` (L/100 km), `LH` (L/h) or `OTHER` (gallons,
+  mpg, km/L: the unit is then not used).
+  * `code <x> | <v>=<unit>,...`: the unit is the value of the code `x` (`0..1199`, a code of its own, not the consumption code): the value `v` means that unit,
+    `*` is every other value (up to 16 entries; a unit that is not listed is unknown).
+  * `bit <b> | mask <m> | 0=<unit>,1=<unit>`: the unit is bit `b` (0..30) of the consumption code itself, and the consumption is the code `& m` (1..65535).
+    Both `0` and `1` are required.
+  * `fixed <unit>`: the car always shows that unit. The script writes it only for `LH`: a page that shows L/100 km only says nothing (the car does not
+    report that unit at a low speed, and the launcher still has to convert it there).
+
+  `U` needs version 4. The code `x` of the newest module is the one written: in an older module the same page may use another code
+  (the script reads each car from the newest source that knows it), and a radio with the older module does not report what the record expects.
+
 **Consistency inside one file**
 
 * one car id has at most one `C` record;
 * `R` pages are unique per (id, page), at most 10 pages per id;
 * `N` and `R` for the same id exclude each other;
 * one car id has at most one `S` record (the same pairs in another order are another record, so a contradiction);
+* one car id has at most one `U` record;
 * an identical record repeated is a *duplicate* (skipped and counted), a contradicting one is an error.
 
-**Footer.** `<records>` is the number of `C`/`R`/`N`/`S` lines. `<crc32>` is 8 lowercase hex digits: the CRC-32
+**Footer.** `<records>` is the number of `C`/`R`/`N`/`S`/`U` lines. `<crc32>` is 8 lowercase hex digits: the CRC-32
 (Java `java.util.zip.CRC32` = Python `zlib.crc32`) over the UTF-8 bytes of all lines from the header line up to and including the line
 before `end`, each line without its `\r`/`\n` and followed by one `\n` (a BOM is not counted). Only empty lines may follow `end`.
 
@@ -167,19 +184,22 @@ as *new*, *duplicate* or *replaced*:
 * `S`, per car id: not in the base = new; the same list of pairs = duplicate; a different list = replaced. The pairs of the file come first, in the file's order, then the
   pairs of the base that the file does not have, at most 4 in all (the report shows the old and the new list). So an import of a library for the newer module puts its codes
   first and keeps the older module's codes behind them.
+* `U`, per car id: not in the base = new; the same record = duplicate; a different one = replaced (the file wins).
 * Records for different car ids never affect each other.
 
 Example (the footer values are only an example; the script computes the real ones):
 
 ```
-canbus_library 3
+canbus_library 4
 C 163,221 | com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi
 C 274 | com.syu.carinfo.accord.ActivityAccord7Index | com.syu.carinfo.xp.psa_all.XpPsaAllIndexActi | portrait
 R 163,221 | com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti | 70:51; 29:0
 R 19 | com.syu.carinfo.honda.HondaTripActi | 100:1; 100:3
 N 1
 S 163,221 | 102 | 103 | 91 | 92
-end 6 1a2b3c4d
+U 13042103 | bit 5 | mask 31 | 0=L100,1=LH
+U 1704391 | code 129 | 1=L100,*=LH
+end 8 1a2b3c4d
 ```
 
 ## 7. How the script decides
@@ -192,7 +212,7 @@ end 6 1a2b3c4d
   * **`S`: the pairs of all three sources**, in that order, without repeats, at most 4 (a car the newer source gives `102 | 103` and the older one `91 | 92` ends with
     `S ... | 102 | 103 | 91 | 92`). `decompiled_carinfo/` gives its pair for the class the car has in the library.
   * The asset is read only for the classes of the cars the canbus sources do not know and for `N`; its `R` and `S` records are not used, so running the command twice
-    in a row writes the same file. The file is version 3 as long as a car has more than one pair. The result overwrites the asset by default.
+    in a row writes the same file. The file is version 4 as long as a car has a `U` record. The result overwrites the asset by default.
 
   **To add a car to the built-in library**: add it to the `ActivityLauncher` of a source (or its `C` line to the asset, if no source knows it) and run
   `py build_canbus_library.py --launcher .`; `--seal` is for a file edited by hand.
@@ -212,6 +232,15 @@ end 6 1a2b3c4d
   The codes are those of the source: the library built from `decompiled_carinfo` knows `102 | 103` for the PSA CAN box (`RZC_BZ408OilMilePage1Acti`),
   the one built from an older `com.syu.canbus` knows `91 | 92`. A source gives one pair per car; the pairs of several sources are joined by the built-in library
   (section 7, *The launcher's own library*) and by an import (section 6, *Merging*).
+* **The unit of the consumption (`U`).** The pages reached from the car's class (the same 3 levels, any name) are searched for the methods that show
+  `L/H` (or `l/h`, `L/h`) in a `setText`, because only the instantaneous consumption can be shown in litres per hour. In such a method:
+  a variable that is `int unit = DataCanbus.DATA[x];` and decides with `switch (unit)` or `if (unit == n)` which literal is shown (`L/H`, `L/100km`, and
+  `gal/h`, `mpg`, `km/L` and the like are `OTHER`) gives `code x`, the last plain `else` being `*`; the same with `int unit = (DataCanbus.DATA[x] >> b) & 1;`,
+  where the value is `int v = DataCanbus.DATA[x] & m;`, gives `bit b | mask m`; a method whose only unit literal is `L/H` gives `fixed LH`. A car gets the record
+  of the nearest page that has one, from the newest source that knows the car; two such pages at the same depth that say different things leave the car without
+  one (a warning). The summary of a build lists the `U` records by class. The classes of the protocols that report the unit are, among others,
+  `FordFalconCarInfo` (bit 5 of the codes 115 and 116), `GmAndraCarInfo` (code 184), `Infiniti_XinCheng_CarInfo` (code 109), `TdTuleCarInfo` (code 129),
+  `WCOPELCarInfoActivity` (the Opel Antara, code 108), `KlcOilMileCarInfo` (code 237) and `ActFuel_GM_SiBo` (always L/H).
 * **The main page.** The launcher sends only the requests of the first page of a car. Among the pages of a car the first is: a page named after the car
   (`_<id & 0xFFFF>_`); then a page from which the script reads a fuel or range code; then a page whose name has no electric-car word (`EV`, `Electric` or `Battery`
   as a whole CamelCase word: `EVMile` yes, `Level` no); then `Page1`, then `Index`, then the shallower, then by name. The first two steps stop the screen of an electric

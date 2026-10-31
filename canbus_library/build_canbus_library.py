@@ -10,14 +10,18 @@ fuel/range screens and the codes of its fuel consumption and range.
     py build_canbus_library.py --diff A B [--ids 1507667,163]        what differs between two library files
     py build_canbus_library.py --merge BASE FILE [--out OUT]         BASE merged with FILE like the launcher's import
 
-Format (version 3; versions 1 and 2 are still read; the full description is in README.md next to this script):
+Format (version 4; versions 1 to 3 are still read; the full description is in README.md next to this script):
 
-    canbus_library 3
+    canbus_library 4
     C <ids> | <class> [| <alt> | portrait | fytver:<tok>,...]     screen class of the cars
     R <ids> | <page> | <cmd>[:<i>,...]; ...                        a fuel page and the requests it sends
     N <ids>                                                        the cars need no request
     S <ids> | <fuel> | <range> [| <fuel> | <range>]...             codes 0..1199 or "-": fuel consumption and range,
                                                                    up to 4 pairs (a file with only one pair per car is version 2)
+    U <ids> | code <x> | <v>=<unit>,...[,*=<unit>]                  the unit of the consumption: in the code x
+    U <ids> | bit <b> | mask <m> | 0=<unit>,1=<unit>               ... in bit b of the consumption code (the value is & m)
+    U <ids> | fixed <unit>                                         ... always the same (units: LH, L100, OTHER); a file
+                                                                   with any U is version 4
     end <records> <crc32>
 
 Python 3.8+, standard library only.
@@ -34,6 +38,7 @@ import zlib
 
 HEADER = 'canbus_library 2'
 HEADER3 = 'canbus_library 3'
+HEADER4 = 'canbus_library 4'
 MAX_PAIRS = 4
 MAX_CODE = 1199
 MAX_BYTES = 2 * 1024 * 1024
@@ -594,6 +599,7 @@ class Source:
         self._refs = None
         self._requests = None
         self._codes = None
+        self._units = None
 
     @property
     def text(self):
@@ -873,6 +879,172 @@ def extract_codes(src):
     return out
 
 
+# --------------------------------------------------------------------------------------------------
+# The unit of the instantaneous consumption
+# --------------------------------------------------------------------------------------------------
+
+UNIT_LH, UNIT_L100, UNIT_OTHER = 'LH', 'L100', 'OTHER'
+UNIT_NAMES = (UNIT_LH, UNIT_L100, UNIT_OTHER)
+STRING_RE = re.compile(r'"((?:\\.|[^"\\\n])*)"')
+DATA_ANY = r'(?:\w+\s*\.\s*)*DATA\s*\[\s*([0-9]+)\s*\]'
+
+
+def literal_unit(lit):
+    """The unit a string literal shows: LH (`L/H`, `l/h`), L100 (`L/100km`), OTHER (`gal/h`, `mpg`, `km/L`...) or None
+    when it is not a unit. A leading "----" (the car has no value) does not matter."""
+    t = re.sub(r'\s+', '', lit).lower().lstrip('-.')
+    if t in ('l/h', 'l/hr'):
+        return UNIT_LH
+    if t in ('l/100km', 'l/100'):
+        return UNIT_L100
+    if len(t) <= 10 and re.search(r'gal|mpg|km/l|mi/|mile', t):
+        return UNIT_OTHER
+    return None
+
+
+def unit_literals(masked, text, a, b):
+    """[(position, unit)] of the unit literals of text[a:b]; a literal in a comment is not one."""
+    out = []
+    for m in STRING_RE.finditer(text, a, b):
+        if masked[m.start()] != '"':
+            continue
+        u = literal_unit(m.group(1))
+        if u:
+            out.append((m.start(), u))
+    return out
+
+
+def first_unit(lits, a, b):
+    for pos, u in lits:
+        if a <= pos < b:
+            return u
+    return None
+
+
+def case_bodies(masked, a, b):
+    """The (labels, start, end) of the cases of the switch block masked[a:b]; labels are numbers or '*'
+    (default). A case without a body falls through to the next one."""
+    labels = []
+    depth = 0
+    i = a
+    while i < b:
+        c = masked[i]
+        if c == '{':
+            depth += 1
+        elif c == '}':
+            depth -= 1
+        elif depth == 0:
+            m = re.compile(r'(?:case\s+(-?[0-9]+)|(default))\s*:').match(masked, i)
+            if m and (i == a or not (masked[i - 1].isalnum() or masked[i - 1] == '_')):
+                labels.append((m.group(1) if m.group(1) is not None else '*', m.start(), m.end()))
+                i = m.end()
+                continue
+        i += 1
+    out = []
+    pending = []
+    for k, (label, start, end) in enumerate(labels):
+        pending.append(label)
+        stop = labels[k + 1][1] if k + 1 < len(labels) else b
+        if masked[end:stop].strip():
+            out.append((pending, end, stop))
+            pending = []
+    return out
+
+
+def branch_units(masked, text, lits, a, b, name):
+    """{value or '*': unit} of the branches on the variable `name` in masked[a:b]: its `switch` and its `if (name == n)`
+    chain (the last plain `else` is '*')."""
+    out = {}
+    for m in re.finditer(r'\bswitch\s*\(\s*%s\s*\)\s*\{' % re.escape(name), masked[a:b]):
+        sa = a + m.end() - 1
+        sb = match_close(masked, sa, '{', '}')
+        if sb < 0:
+            continue
+        for labels, ca, cb in case_bodies(masked, sa + 1, sb):
+            u = first_unit(lits, ca, cb)
+            if u:
+                for label in labels:
+                    out[label] = u
+    for m in re.finditer(r'\bif\s*\(\s*%s\s*==\s*(-?[0-9]+)\s*\)' % re.escape(name), masked[a:b]):
+        k = a + m.end()
+        while k < b and masked[k].isspace():
+            k += 1
+        if k < b and masked[k] == '{':
+            e = match_close(masked, k, '{', '}')
+            if e < 0:
+                continue
+            e += 1
+        else:
+            e = masked.find(';', k)
+            if e < 0:
+                continue
+            e += 1
+        u = first_unit(lits, k, e)
+        if u:
+            out[m.group(1)] = u
+        j = e
+        while j < b and masked[j].isspace():
+            j += 1
+        em = re.compile(r'else\b\s*').match(masked, j)
+        if em and not re.compile(r'if\b').match(masked, em.end()):
+            k2 = em.end()
+            if k2 < b and masked[k2] == '{':
+                e2 = match_close(masked, k2, '{', '}') + 1
+            else:
+                e2 = masked.find(';', k2) + 1
+            u2 = first_unit(lits, k2, e2) if e2 > k2 else None
+            if u2:
+                out['*'] = u2
+    return out
+
+
+def extract_units(src):
+    """How the page of a car shows the unit of its instantaneous consumption, when it can show litres per hour:
+    a set of specs, each one `('code', x, ((value, unit), ...), default unit or None)` (the unit is in another
+    DataCanbus.DATA[x]), `('bit', bit, mask, (unit when 0, unit when 1))` (a bit of the consumption code itself,
+    the value is `& mask`) or `('fixed', unit)` (the page shows one unit, litres per hour; one in L/100 km is the
+    usual case and says nothing). Units are LH, L100 and OTHER (gallons, mpg...). Empty when the page has no L/H."""
+    if src._units is not None:
+        return src._units
+    masked, text = src.masked, src.text
+    found = set()
+    for m in METHOD_RE.finditer(masked):
+        if m.group(1) in NOT_METHODS:
+            continue
+        a = m.end() - 1
+        b = match_close(masked, a, '{', '}')
+        if b < 0:
+            continue
+        lits = unit_literals(masked, text, a, b)
+        if not any(u == UNIT_LH for _, u in lits):
+            continue
+        specs = set()
+        # the variables of the unit: `int unit = DataCanbus.DATA[x];` or `int unit = (DataCanbus.DATA[x] >> bit) & 1;`
+        for d in re.finditer(r'\bint\s+(\w+)\s*=\s*(\(?\s*)' + DATA_ANY + r'\s*(?:>>\s*([0-9]+)\s*\)?\s*&\s*1\s*)?;', masked[a:b]):
+            name, x, bit = d.group(1), int(d.group(3)), d.group(4)
+            branches = branch_units(masked, text, lits, a, b, name)
+            if len({u for u in branches.values()}) < 2 and not (UNIT_LH in branches.values()):
+                continue
+            if bit is not None:
+                # the value is the same code, masked
+                vm = [w for w in re.finditer(r'\bint\s+\w+\s*=\s*' + DATA_ANY + r'\s*&\s*([0-9]+)\s*;', masked[a:b])
+                      if int(w.group(1)) == x]
+                if not vm or '0' not in branches or '1' not in branches:
+                    continue
+                specs.add(('bit', int(bit), int(vm[0].group(2)), (branches['0'], branches['1'])))
+            else:
+                values = tuple(sorted((int(k), u) for k, u in branches.items() if k != '*'))
+                specs.add(('code', x, values, branches.get('*')))
+        if not specs and all(u == UNIT_LH for _, u in lits):
+            specs.add(('fixed', UNIT_LH))
+        found |= specs
+    # a spec that says more wins over one that says "always L/h"
+    if any(sp[0] != 'fixed' for sp in found):
+        found = {sp for sp in found if sp[0] != 'fixed'}
+    src._units = found
+    return found
+
+
 def parse_cmd_args(args):
     """(cmd, (ints...)) for the forms the library has, or None for a call it cannot represent."""
     if not args or not args[0]:
@@ -951,7 +1123,7 @@ def crc_of_lines(lines):
 
 def seal_lines(lines):
     """`lines` (header ... last record, no footer) plus the footer."""
-    records = sum(1 for ln in lines if ln[:2] in ('C ', 'R ', 'N ', 'S '))
+    records = sum(1 for ln in lines if ln[:2] in ('C ', 'R ', 'N ', 'S ', 'U '))
     return lines + ['end %d %08x' % (records, crc_of_lines(lines))]
 
 
@@ -985,6 +1157,70 @@ def parse_request(text):
     return (cmd, ints), None
 
 
+def unit_text(spec):
+    """The text of a unit record after the ids, from `extract_units`' spec."""
+    kind = spec[0]
+    if kind == 'code':
+        parts = ['%d=%s' % (v, u) for v, u in spec[2]]
+        if spec[3]:
+            parts.append('*=' + spec[3])
+        return 'code %d | %s' % (spec[1], ','.join(parts))
+    if kind == 'bit':
+        return 'bit %d | mask %d | 0=%s,1=%s' % (spec[1], spec[2], spec[3][0], spec[3][1])
+    return 'fixed %s' % spec[1]
+
+
+def parse_unit(fields):
+    """(the unit record as canonical text, None) or (None, why) for the fields after the ids of a U line."""
+    def units(text):
+        out, star = [], False
+        for part in text.split(','):
+            m = re.fullmatch(r'\s*(-?[0-9]{1,6}|\*)\s*=\s*([A-Z0-9]+)\s*', part)
+            if not m or m.group(2) not in UNIT_NAMES:
+                return None, 'bad unit "%s" (value=LH, value=L100 or value=OTHER; value is a number or *)' % part.strip()[:30]
+            out.append((m.group(1), m.group(2)))
+        return out, None
+
+    if not fields:
+        return None, 'U takes "ids | code x | map", "ids | bit b | mask m | 0=unit,1=unit" or "ids | fixed unit"'
+    head = fields[0].split()
+    if head and head[0] == 'fixed':
+        if len(fields) != 1 or len(head) != 2 or head[1] not in UNIT_NAMES:
+            return None, 'U fixed takes one unit (%s)' % ', '.join(UNIT_NAMES)
+        return 'fixed %s' % head[1], None
+    if head and head[0] == 'code':
+        if len(fields) != 2 or len(head) != 2 or not re.fullmatch(r'[0-9]{1,4}', head[1]) or int(head[1]) > MAX_CODE:
+            return None, 'U code takes "code x | map" with x in 0..%d' % MAX_CODE
+        pairs, why = units(fields[1])
+        if why:
+            return None, why
+        keys = [k for k, _ in pairs]
+        if len(set(keys)) != len(keys):
+            return None, 'a value repeated in the unit map'
+        if len(pairs) > 16:
+            return None, 'more than 16 values in the unit map'
+        numbered = sorted((int(k), u) for k, u in pairs if k != '*')
+        star = [u for k, u in pairs if k == '*']
+        if len({u for _, u in pairs}) < 1 or (not numbered and not star):
+            return None, 'an empty unit map'
+        text = ','.join(['%d=%s' % kv for kv in numbered] + (['*=%s' % star[0]] if star else []))
+        return 'code %d | %s' % (int(head[1]), text), None
+    if head and head[0] == 'bit':
+        if len(fields) != 3 or len(head) != 2 or not re.fullmatch(r'[0-9]{1,2}', head[1]) or int(head[1]) > 30:
+            return None, 'U bit takes "bit b | mask m | 0=unit,1=unit" with b in 0..30'
+        mk = fields[1].split()
+        if len(mk) != 2 or mk[0] != 'mask' or not re.fullmatch(r'[0-9]{1,6}', mk[1]) or not 1 <= int(mk[1]) <= 65535:
+            return None, 'U bit takes "mask m" with m in 1..65535'
+        pairs, why = units(fields[2])
+        if why:
+            return None, why
+        if sorted(k for k, _ in pairs) != ['0', '1']:
+            return None, 'U bit takes exactly 0=unit and 1=unit'
+        by = dict(pairs)
+        return 'bit %d | mask %d | 0=%s,1=%s' % (int(head[1]), int(mk[1]), by['0'], by['1']), None
+    return None, 'U takes "ids | code x | map", "ids | bit b | mask m | 0=unit,1=unit" or "ids | fixed unit"'
+
+
 class Checked:
     def __init__(self):
         self.errors = []          # (line, reason)
@@ -992,6 +1228,7 @@ class Checked:
         self.pages = {}           # id -> OrderedDict(page -> reqs)
         self.no_request = set()
         self.codes = {}           # id -> (pair, ...) in order of preference, a pair is (fuel, range), None = unknown
+        self.units = {}           # id -> the unit record as text (unit_text), e.g. "bit 5 | mask 31 | 0=L100,1=LH"
         self.version = 0
         self.records = 0
         self.dups = 0
@@ -1031,10 +1268,9 @@ def check_text(raw):
             continue
         if header_at is None:
             header_at = no
-            hm = re.fullmatch(r'canbus_library\s+([123])', s)
+            hm = re.fullmatch(r'canbus_library\s+([1234])', s)
             if not hm:
-                res.err(no, 'missing or unsupported header (expected "canbus_library 1", "canbus_library 2" or '
-                            '"canbus_library 3")')
+                res.err(no, 'missing or unsupported header (expected "canbus_library 1" to "canbus_library 4")')
                 return res
             res.version = int(hm.group(1))
             continue
@@ -1049,7 +1285,7 @@ def check_text(raw):
             footer_at = no
             continue
         kind = s[0]
-        if kind not in 'CRNS' or (len(s) > 1 and not s[1].isspace()):
+        if kind not in 'CRNSU' or (len(s) > 1 and not s[1].isspace()):
             res.err(no, 'unknown record "%s"' % s[:20])
             continue
         res.records += 1
@@ -1150,6 +1386,23 @@ def check_text(raw):
                 else:
                     res.err(no, 'id %d has two different S records' % i)
             continue
+        if kind == 'U':
+            if res.version < 4:
+                res.err(no, 'U records need version 4')
+                continue
+            unit, why = parse_unit(fields[1:])
+            if why:
+                res.err(no, why)
+                continue
+            for i in ids:
+                old = res.units.get(i)
+                if old is None:
+                    res.units[i] = unit
+                elif old == unit:
+                    res.dups += 1
+                else:
+                    res.err(no, 'id %d has two different U records' % i)
+            continue
         # R
         if len(fields) != 3:
             res.err(no, 'R takes "ids | page | requests"')
@@ -1188,7 +1441,7 @@ def check_text(raw):
             else:
                 pages[page] = reqs
     if header_at is None:
-        res.err(0, 'empty file: missing header "canbus_library 1", "canbus_library 2" or "canbus_library 3"')
+        res.err(0, 'empty file: missing header "canbus_library 1" to "canbus_library 4"')
     elif footer_at is None:
         res.err(len(lines), 'missing footer "end <records> <crc32>"')
     elif res.declared is not None:
@@ -1210,10 +1463,11 @@ def id_chunks(ids):
         yield ids[i:i + MAX_IDS_PER_LINE]
 
 
-def record_lines(class_records, no_request, pages_of, codes_of):
+def record_lines(class_records, no_request, pages_of, codes_of, units_of=None):
     """The C, N, R and S lines of a library, in the order the script writes them. `class_records`: id -> (class, alt,
     condition, tokens), `pages_of`: id -> [(page, requests)], `codes_of`: id -> (pair, ...), a pair is (fuel, range), None = unknown.
-    Returns (lines, C lines, N lines, R lines, the pages used, S lines)."""
+    `units_of`: id -> the text of its U record (unit_text). Returns (lines, C lines, N lines, R lines, the pages used,
+    S lines, U lines)."""
     out = []
     by_rec = collections.OrderedDict()
     for cid in sorted(class_records):
@@ -1253,7 +1507,15 @@ def record_lines(class_records, no_request, pages_of, codes_of):
         for part in id_chunks(ids):
             out.append('S %s | %s' % (','.join(str(i) for i in part), pairs_text(pairs)))
             s_lines += 1
-    return out, c_lines, n_lines, r_lines, page_names, s_lines
+    u_lines = 0
+    by_unit = collections.OrderedDict()
+    for cid in sorted(units_of or {}):
+        by_unit.setdefault(units_of[cid], []).append(cid)
+    for text, ids in sorted(by_unit.items(), key=lambda kv: kv[1][0]):
+        for part in id_chunks(ids):
+            out.append('U %s | %s' % (','.join(str(i) for i in part), text))
+            u_lines += 1
+    return out, c_lines, n_lines, r_lines, page_names, s_lines, u_lines
 
 
 def classify(per, tokens, cid, warn):
@@ -1406,8 +1668,61 @@ def find_pages(class_records, no_request, index, warn, stats):
     return pages_of, page_keys, moved, codes_of
 
 
+def find_units(class_records, index, warn):
+    """The unit of the instantaneous consumption of the cars, from the pages their screen class reaches (as the pages of
+    the requests are found): id -> unit record text. The nearest page that can show litres per hour decides; two such
+    pages that say different things leave the car without one. A page that shows L/100 km only says nothing."""
+    reach_cache = {}
+
+    def reach(fq):
+        if fq not in reach_cache:
+            depth = {}
+            if fq in index.by_fqcn:
+                depth[fq] = 0
+                frontier = [fq]
+                for d in range(1, 4):
+                    nxt = []
+                    for cur in frontier:
+                        for ref in index.refs(index.by_fqcn[cur]):
+                            if ref not in depth:
+                                depth[ref] = d
+                                nxt.append(ref)
+                    frontier = nxt
+            reach_cache[fq] = depth
+        return reach_cache[fq]
+
+    units_of = {}
+    for cid, (cls, alt, cond, toks) in class_records.items():
+        depth = {}
+        for fq in (cls, alt):
+            if fq:
+                for k, d in reach(fq).items():
+                    if k not in depth or d < depth[k]:
+                        depth[k] = d
+        best = None
+        for fq, d in sorted(depth.items(), key=lambda kv: (kv[1], kv[0])):
+            specs = {sp for sp in extract_units(index.by_fqcn[fq])}
+            specs = {sp for sp in specs if sp != ('fixed', UNIT_L100)}
+            if not specs:
+                continue
+            if best is None:
+                best = (d, specs, [fq])
+            elif d == best[0] and specs != best[1]:
+                best[2].append(fq)
+                best = (d, best[1] | specs, best[2])
+        if best is None:
+            continue
+        specs = best[1]
+        if len(specs) > 1:
+            warn('id %d: the pages %s say different things about the unit (%s), none is used' % (
+                cid, ', '.join(f.rsplit('.', 1)[-1] for f in best[2]), '; '.join(sorted(unit_text(sp) for sp in specs))))
+            continue
+        units_of[cid] = unit_text(next(iter(specs)))
+    return units_of
+
+
 def emit(out_path, log, source_lines, ids_line, class_records, no_request, pages_of, page_keys, moved, codes_of,
-         cond_counts, stats, warnings):
+         cond_counts, stats, warnings, units_of=None):
     """Writes the library, checks it like the launcher does and tells what is in it. Returns the exit code."""
     # groups: ids with an identical list of pages
     groups = collections.OrderedDict()
@@ -1423,16 +1738,20 @@ def emit(out_path, log, source_lines, ids_line, class_records, no_request, pages
             ambiguous_groups.append((ids, tied))
 
     # text
-    out = [header_for(codes_of),
+    units_of = units_of or {}
+    out = [header_for(codes_of, units_of),
            '# Canbus library: the screen class of each car id and the requests of its fuel screens.'] + source_lines + [
            '# C: car ids and the class of their screen (optionally another class for a portrait screen or for a firmware).',
            '# R: car ids and a fuel page with the requests it sends when it opens, in order.',
            '# S: car ids and the codes of their fuel consumption and range (DataCanbus.DATA indices, - = unknown);',
            '#    several pairs: one for each version of the canbus module, the newest first.',
+           '# U: car ids and where the unit of the instantaneous consumption (L/100 km or L/h) is: in a code (the code of the',
+           '#    car\'s screen of the newest module), in a bit of the consumption code, or the same always.',
            '# Cars with a class: %d, with a request: %d, request groups: %d, with fuel/range codes: %d' % (
                len(class_records), sum(len(v) for v in groups.values()), len(groups), len(codes_of))]
 
-    body, c_lines, n_lines, r_lines, page_names, s_lines = record_lines(class_records, no_request, pages_of, codes_of)
+    body, c_lines, n_lines, r_lines, page_names, s_lines, u_lines = record_lines(
+        class_records, no_request, pages_of, codes_of, units_of)
     out.extend(body)
     sealed = seal_lines(out)
     pathlib.Path(out_path).parent.mkdir(parents=True, exist_ok=True)
@@ -1450,6 +1769,12 @@ def emit(out_path, log, source_lines, ids_line, class_records, no_request, pages
         s_lines, sum(1 for v in codes_of.values() if None not in v[0]),
         sum(1 for v in codes_of.values() if v[0][1] is None), sum(1 for v in codes_of.values() if v[0][0] is None),
         sum(1 for v in codes_of.values() if len(v) > 1)))
+    log('U records: %d lines for %d ids (code: %d, bit: %d, fixed: %d)' % (
+        u_lines, len(units_of), sum(1 for t in units_of.values() if t.startswith('code')),
+        sum(1 for t in units_of.values() if t.startswith('bit')), sum(1 for t in units_of.values() if t.startswith('fixed'))))
+    by_class = collections.Counter((t, class_records[i][0].rsplit('.', 1)[-1]) for i, t in units_of.items())
+    for (t, cls), n in sorted(by_class.items(), key=lambda kv: (-kv[1], kv[0]))[:30]:
+        log('  %5d ids: %s (%s)' % (n, t, cls))
     log('Requests: %d calls skipped (not literal or not representable), %d duplicate requests dropped, '
         '%d pages cut to %d requests, %d calls on other modules ignored' % (
             len(stats.skipped_calls), stats.dropped_dups, stats.truncated, MAX_REQS_PER_LINE, stats.other_module))
@@ -1498,9 +1823,10 @@ def build(args, root, mapping_path, consts, label, index, out_path, log):
     log('Mapping: %s (method %s)' % (mapping.source, mapping.method))
     stats = Stats()
     pages_of, page_keys, moved, codes_of = find_pages(class_records, set(), index, warnings.append, stats)
+    units_of = find_units(class_records, index, warnings.append)
     return emit(out_path, log, ['# Source: %s (method %s)' % (mapping.source, mapping.method)],
                 'IDs in the mapping: %d' % len(mapping.results), class_records, set(), pages_of, page_keys, moved,
-                codes_of, cond_counts, stats, warnings)
+                codes_of, cond_counts, stats, warnings, units_of)
 
 
 # The sources of the library built into the launcher, the newest first: the folder in the repository, a name for
@@ -1583,6 +1909,7 @@ def build_launcher(repo, out_path, log):
 
     # the pages and the codes of each source; the pages of the owner, the codes of all
     pages_of, page_keys, moved = {}, {}, {}
+    units_of = {}
     pairs_of = collections.defaultdict(list)
     for k, (name, index, records, counts) in enumerate(indexes):
         own = records if records is not None else class_records
@@ -1600,6 +1927,10 @@ def build_launcher(repo, out_path, log):
                 pages_of[cid], page_keys[cid] = pages[cid], keys[cid]
                 if cid in mv:
                     moved[cid] = mv[cid]
+        # the unit of a car comes from its owner, the newest source that knows it (its code differs between versions)
+        for cid, text in find_units(own, index, warn).items():
+            if owner.get(cid) == k:
+                units_of[cid] = text
         log('  %s: pages for %d ids, codes for %d ids' % (name, len(pages), len(codes)))
     codes_of = {cid: tuple(pairs) for cid, pairs in pairs_of.items()}
 
@@ -1609,7 +1940,7 @@ def build_launcher(repo, out_path, log):
     source_lines.append('#   cars none of the canbus sources knows keep their class from the previous library.')
     return emit(out_path, log, source_lines,
                 'IDs in the library: %d with a class, %d marked N' % (len(class_records), len(no_request)),
-                class_records, no_request, pages_of, page_keys, moved, codes_of, cond_counts, stats, warnings)
+                class_records, no_request, pages_of, page_keys, moved, codes_of, cond_counts, stats, warnings, units_of)
 
 
 def find_mapping_file(root):
@@ -1675,7 +2006,7 @@ def page_name(fq):
 
 def diff_libraries(a, b):
     """The differences of two Checked libraries: {kind: {'a': [(key, value)], 'b': [...], 'diff': [(key, va, vb)]}}.
-    Kinds: C (key = id), R (key = (id, page)), N, S (key = id) and `order` (key = id; the ids that have pages in both
+    Kinds: C (key = id), R (key = (id, page)), N, S, U (key = id) and `order` (key = id; the ids that have pages in both
     and keep a different main page or a different order of the pages they share)."""
     out = {}
 
@@ -1690,6 +2021,7 @@ def diff_libraries(a, b):
             {(i, pg): requests_text(r) for i, ps in b.pages.items() for pg, r in ps.items()})
     compare('N', {i: 'no request' for i in a.no_request}, {i: 'no request' for i in b.no_request})
     compare('S', {i: pairs_text(p) for i, p in a.codes.items()}, {i: pairs_text(p) for i, p in b.codes.items()})
+    compare('U', dict(a.units), dict(b.units))
     order = []
     for i in sorted(set(a.pages) & set(b.pages)):
         pa, pb = list(a.pages[i]), list(b.pages[i])
@@ -1722,6 +2054,7 @@ def state_of(res, cid):
         lines.append('R  (none)')
     codes = res.codes.get(cid)
     lines.append('S  %s' % (pairs_text(codes) if codes else '(none)'))
+    lines.append('U  %s' % (res.units.get(cid) or '(none)'))
     return lines
 
 
@@ -1744,7 +2077,7 @@ def cmd_diff(path_a, path_b, ids_text, log):
     total = 0
     log('%-22s %9s %9s %9s' % ('', 'only in A', 'only in B', 'different'))
     names = (('C', 'C classes (ids)'), ('R', 'R pages (id, page)'), ('N', 'N no request (ids)'),
-             ('S', 'S codes (ids)'), ('order', 'R main page / order'))
+             ('S', 'S codes (ids)'), ('U', 'U units (ids)'), ('order', 'R main page / order'))
     for kind, title in names:
         e = d[kind]
         total += len(e['a']) + len(e['b']) + len(e['diff'])
@@ -1780,13 +2113,14 @@ def cmd_diff(path_a, path_b, ids_text, log):
 
 def merge_libraries(base, fil):
     """`base` merged with `fil` the way the launcher does (README section 6). Returns (classes, pages, no_request, codes,
-    counts, replaced): the records as a library holds them, {kind: [new, duplicate, replaced]} and the replaced records
-    as (kind, id, page or None, old, new)."""
+    units, counts, replaced): the records as a library holds them, {kind: [new, duplicate, replaced]} and the replaced
+    records as (kind, id, page or None, old, new)."""
     classes = dict(base.classes)
     pages = {i: collections.OrderedDict(p) for i, p in base.pages.items()}
     no_request = set(base.no_request)
     codes = dict(base.codes)
-    counts = {k: [0, 0, 0] for k in 'CRNS'}
+    units = dict(base.units)
+    counts = {k: [0, 0, 0] for k in 'CRNSU'}
     replaced = []
 
     def tally(kind, old, new):
@@ -1837,19 +2171,26 @@ def merge_libraries(base, fil):
         if tally('S', old, fil.codes[i]):
             replaced.append(('S', i, None, pairs_text(old), pairs_text(merged_pairs)))
         codes[i] = merged_pairs
-    return classes, pages, no_request, codes, counts, replaced
+    for i in sorted(fil.units):
+        old = units.get(i)
+        if tally('U', old, fil.units[i]):
+            replaced.append(('U', i, None, old, fil.units[i]))
+        units[i] = fil.units[i]
+    return classes, pages, no_request, codes, units, counts, replaced
 
 
-def header_for(codes):
-    """The header of a library: version 3 only when a car has several code pairs."""
+def header_for(codes, units=None):
+    """The header of a library: version 4 when a car has a unit record, else 3 when a car has several code pairs."""
+    if units:
+        return HEADER4
     return HEADER3 if any(len(p) > 1 for p in codes.values()) else HEADER
 
 
-def library_lines(classes, pages, no_request, codes, comments):
+def library_lines(classes, pages, no_request, codes, units, comments):
     """The sealed lines of a library held as `merge_libraries` returns it."""
     pages_of = {i: [(pg, tuple(r)) for pg, r in p.items()] for i, p in pages.items()}
-    body = record_lines(classes, no_request, pages_of, codes)[0]
-    out = [header_for(codes)] + comments + body
+    body = record_lines(classes, no_request, pages_of, codes, units)[0]
+    out = [header_for(codes, units)] + comments + body
     return seal_lines(out)
 
 
@@ -1860,11 +2201,11 @@ def cmd_merge(base_path, file_path, out_path, log):
     fil, rc = load_checked(file_path, log)
     if fil is None:
         return rc
-    classes, pages, no_request, codes, counts, replaced = merge_libraries(base, fil)
+    classes, pages, no_request, codes, units, counts, replaced = merge_libraries(base, fil)
     out_path = out_path or 'canbus_library_merged_%s.txt' % datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     comments = ['# Canbus library: %s merged with %s (the second one wins).' % (
         pathlib.Path(base_path).name, pathlib.Path(file_path).name)]
-    sealed = library_lines(classes, pages, no_request, codes, comments)
+    sealed = library_lines(classes, pages, no_request, codes, units, comments)
     pathlib.Path(out_path).resolve().parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
         f.write('\n'.join(sealed) + '\n')
@@ -1876,7 +2217,7 @@ def cmd_merge(base_path, file_path, out_path, log):
         return 1
     log('Merged %s with %s' % (base_path, file_path))
     log('%-4s %8s %10s %9s' % ('', 'new', 'duplicate', 'replaced'))
-    for kind in 'CRNS':
+    for kind in 'CRNSU':
         log('%-4s %8d %10d %9d' % ((kind,) + tuple(counts[kind])))
     for kind, i, pg, old, new in replaced[:MERGE_EXAMPLES]:
         log('  replaced %s %d%s: %s -> %s' % (kind, i, ' ' + page_name(pg) if pg else '', old, new))
@@ -1898,7 +2239,8 @@ def cmd_check(path, log):
             log('  line %d: %s' % (ln, why))
         return 2
     log('OK %s (version %d): %d records, %d cars with a class, %d with a request, %d with fuel/range codes, '
-        '%d duplicates' % (path, res.version, res.records, len(res.classes), len(res.pages), len(res.codes), res.dups))
+        '%d with a consumption unit, %d duplicates' % (path, res.version, res.records, len(res.classes), len(res.pages),
+                                                       len(res.codes), len(res.units), res.dups))
     return 0
 
 
@@ -1922,8 +2264,8 @@ def cmd_seal(path, log):
             lines = lines[:k]
         break
     first = next((k for k, ln in enumerate(lines) if ln.strip() and not ln.strip().startswith('#')), None)
-    if first is None or not re.fullmatch(r'canbus_library\s+[123]', lines[first].strip()):
-        log('error: no "canbus_library 1", "canbus_library 2" or "canbus_library 3" header')
+    if first is None or not re.fullmatch(r'canbus_library\s+[1234]', lines[first].strip()):
+        log('error: no "canbus_library 1" to "canbus_library 4" header')
         return 1
     body = lines[first:]
     sealed = seal_lines([ln.rstrip() for ln in body])

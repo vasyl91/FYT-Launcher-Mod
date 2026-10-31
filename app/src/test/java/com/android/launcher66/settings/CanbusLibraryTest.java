@@ -120,7 +120,7 @@ class CanbusLibraryTest {
         assertError("C 1 | com.syu.a.B\nend 1 00000000\n", 1, "header");
         assertError("", 0, "missing header");
         assertError("# only a comment\n", 0, "missing header");
-        assertError("canbus_library 4\nend 0 00000000\n", 1, "header");
+        assertError("canbus_library 5\nend 0 00000000\n", 1, "header");
     }
 
     @Test
@@ -481,10 +481,10 @@ class CanbusLibraryTest {
     }
 
     @Test
-    void theAssetIsWrittenAsVersion3BecauseSomeCarsHaveSeveralPairs() throws IOException {
+    void theAssetIsWrittenAsVersion4BecauseSomeCarsHaveAUnitAndSeveralPairs() throws IOException {
         String text = new String(Files.readAllBytes(new File("src/main/assets/canbus_library.txt").toPath()),
                 StandardCharsets.UTF_8);
-        assertTrue(text.startsWith("canbus_library 3\n"));
+        assertTrue(text.startsWith("canbus_library 4\n"));
         assertTrue(text.contains("| 102 | 103 | 91 | 92\n"));
     }
 
@@ -609,7 +609,8 @@ class CanbusLibraryTest {
     private static int recordLinesOf(String text) {
         int n = 0;
         for (String line : text.split("\n")) {
-            if (line.startsWith("C ") || line.startsWith("R ") || line.startsWith("N ") || line.startsWith("S ")) {
+            if (line.startsWith("C ") || line.startsWith("R ") || line.startsWith("N ") || line.startsWith("S ")
+                    || line.startsWith("U ")) {
                 n++;
             }
         }
@@ -650,8 +651,8 @@ class CanbusLibraryTest {
         Library l = asset().mergedWith(lib(OVERLAY_BODY)).library;
         String text = CanbusLibrary.exportText(l, 1_761_785_794_000L);
         String[] lines = text.split("\n");
-        // the overlay gave car 19 a second pair of codes: version 3
-        assertEquals(CanbusLibrary.HEADER_3, lines[0]);
+        // the asset has U records: version 4 (the overlay gave car 19 a second pair of codes, which version 3 would hold)
+        assertEquals(CanbusLibrary.HEADER_4, lines[0]);
         assertTrue(lines[1].startsWith("# Exported by the launcher on 2025-"), lines[1]);
         ParseResult r = parse(text);
         assertTrue(r.ok(), r.errors.toString());
@@ -669,6 +670,7 @@ class CanbusLibraryTest {
         assertEquals(1, parse(CanbusLibrary.seal("canbus_library 1\nC 1 | com.syu.x.Y\n")).version);
         assertEquals(2, parse(CanbusLibrary.seal("canbus_library 2\nC 1 | com.syu.x.Y\n")).version);
         assertEquals(3, parse(CanbusLibrary.seal("canbus_library 3\nC 1 | com.syu.x.Y\n")).version);
+        assertEquals(4, parse(CanbusLibrary.seal("canbus_library 4\nC 1 | com.syu.x.Y\n")).version);
         assertEquals(0, parse("").version);
     }
 
@@ -783,5 +785,134 @@ class CanbusLibraryTest {
         Library merged = base.mergedWith(file).library;
         assertEquals(new CanbusLibrary.CarCodes(91, 92), merged.codesFor(163));
         assertEquals(java.util.Arrays.asList(new CanbusLibrary.CarCodes(91, 92), first), merged.codePairsFor(163));
+    }
+
+    // ---- version 4: the unit of the consumption
+
+    private static final String V4_BODY =
+            "canbus_library 4\n"
+            + "C 13042103,13107639 | com.syu.carinfo.od.ford.falcon.FordFalconIndexAct\n"
+            + "C 2687429 | com.syu.carinfo.rzc.andra.GmAndraIndexActi\n"
+            + "C 332 | com.syu.carinfo.saiou3.SaiOu3Index\n"
+            + "U 13042103,13107639 | bit 5 | mask 31 | 0=L100,1=LH\n"
+            + "U 2687429 | code 184 | 1=L100,2=OTHER,3=OTHER,*=LH\n"
+            + "U 332 | fixed LH\n";
+
+    @Test
+    void theUnitOfTheConsumptionIsReadOfEveryKind() {
+        Library l = lib(V4_BODY);
+        FuelUnit bit = l.unitFor(13042103);
+        assertEquals(FuelUnit.Kind.BIT, bit.kind);
+        assertEquals(5, bit.bit);
+        assertEquals(31, bit.mask);
+        assertEquals(bit, l.unitFor(13107639));
+        FuelUnit code = l.unitFor(2687429);
+        assertEquals(FuelUnit.Kind.CODE, code.kind);
+        assertEquals(184, code.unitCode());
+        assertEquals(FuelUnit.Kind.FIXED, l.unitFor(332).kind);
+        assertNull(l.unitFor(1));
+        assertEquals(4, parse(CanbusLibrary.seal(V4_BODY)).version);
+    }
+
+    @Test
+    void theUnitIsDecodedFromTheCodesOfTheProtocol() {
+        Library l = lib(V4_BODY);
+        // a bit of the consumption code, the consumption is the code & 31: 5.7 L/h or 5.7 L/100 km
+        FuelUnit falcon = l.unitFor(13042103);
+        int perHour = (1 << 5) | 57 - 32 + 32;
+        assertEquals(FuelUnit.Unit.LH, falcon.unitNow(null, (1 << 5) | 25));
+        assertEquals(FuelUnit.Unit.L100, falcon.unitNow(null, 25));
+        assertEquals(25, falcon.consumption((1 << 5) | 25));
+        assertEquals(perHour & 31, falcon.consumption(perHour));
+        // the unit in a code of its own: a value that is listed, the others, and a code that was never reported
+        FuelUnit andra = l.unitFor(2687429);
+        assertEquals(FuelUnit.Unit.L100, andra.unitNow(1, 57));
+        assertEquals(FuelUnit.Unit.LH, andra.unitNow(0, 57));
+        assertEquals(FuelUnit.Unit.LH, andra.unitNow(77, 57));
+        assertNull(andra.unitNow(2, 57));       // gal/h: not used
+        assertNull(andra.unitNow(null, 57));
+        assertEquals(57, andra.consumption(57));
+        // the same always
+        assertEquals(FuelUnit.Unit.LH, l.unitFor(332).unitNow(null, 57));
+        // a code with no "otherwise": every other value is unknown
+        FuelUnit infiniti = lib("canbus_library 4\nC 1 | com.syu.x.Y\nU 1 | code 109 | 0=LH,1=L100\n").unitFor(1);
+        assertEquals(FuelUnit.Unit.LH, infiniti.unitNow(0, 5));
+        assertNull(infiniti.unitNow(5, 5));
+    }
+
+    @Test
+    void theUnitRecordsSerializeAndReadBackInTheTextOfTheScript() {
+        Library l = lib(V4_BODY);
+        String text = l.serialize();
+        assertTrue(text.startsWith("canbus_library 4\n"), text);
+        assertTrue(text.contains("U 13042103,13107639 | bit 5 | mask 31 | 0=L100,1=LH\n"), text);
+        assertTrue(text.contains("U 2687429 | code 184 | 1=L100,2=OTHER,3=OTHER,*=LH\n"), text);
+        assertTrue(text.contains("U 332 | fixed LH\n"), text);
+        ParseResult r = parse(text);
+        assertTrue(r.ok(), r.errors.toString());
+        assertEquals(text, r.library.serialize());
+        assertEquals(l.recordCount(), r.library.recordCount());
+        assertEquals(recordLinesOf(text), r.recordLines);
+        // written in another order, with spaces: the same record
+        assertEquals(l.unitFor(2687429), lib("canbus_library 4\nC 1 | com.syu.x.Y\nU 2687429 | code 184 | *=LH, 3=OTHER, 2=OTHER, 1=L100\n")
+                .unitFor(2687429));
+        // a file without U is not version 4
+        assertTrue(lib(EXAMPLE_BODY).serialize().startsWith("canbus_library 2"));
+    }
+
+    @Test
+    void aBadUnitRecordIsAnError() {
+        String head = "canbus_library 4\n";
+        assertError(CanbusLibrary.seal("canbus_library 3\nU 1 | fixed LH\n"), 2, "U records need version 4");
+        assertError(CanbusLibrary.seal(head + "U 1 | fixed GAL\n"), 2, "unit");
+        assertError(CanbusLibrary.seal(head + "U 1 | fixed\n"), 2, "U fixed");
+        assertError(CanbusLibrary.seal(head + "U 1 | code 2000 | 0=LH\n"), 2, "U code");
+        assertError(CanbusLibrary.seal(head + "U 1 | code 5 | 0=LH,0=L100\n"), 2, "repeated");
+        assertError(CanbusLibrary.seal(head + "U 1 | code 5 | LH\n"), 2, "bad unit");
+        assertError(CanbusLibrary.seal(head + "U 1 | bit 5 | mask 31 | 0=LH\n"), 2, "exactly");
+        assertError(CanbusLibrary.seal(head + "U 1 | bit 5 | mask 0 | 0=LH,1=L100\n"), 2, "mask");
+        assertError(CanbusLibrary.seal(head + "U 1 | bit 31 | mask 3 | 0=LH,1=L100\n"), 2, "U bit");
+        assertError(CanbusLibrary.seal(head + "U 1 | wheel 3\n"), 2, "U takes");
+        assertError(CanbusLibrary.seal(head + "U 1 | fixed LH\nU 1 | fixed L100\n"), 3, "two different U records");
+        // an identical one is a duplicate, not an error
+        ParseResult dup = parse(CanbusLibrary.seal(head + "U 1,2 | fixed LH\nU 2 | fixed LH\n"));
+        assertTrue(dup.ok(), dup.errors.toString());
+        assertEquals(1, dup.duplicatesInFile);
+    }
+
+    @Test
+    void theUnitRecordsMergeLikeTheOthers() {
+        Library base = lib("canbus_library 4\nC 1,2,3 | com.syu.x.Y\nU 1 | fixed LH\nU 2 | code 109 | 0=LH,1=L100\n");
+        Library file = lib("canbus_library 4\nU 1 | fixed LH\nU 2 | code 109 | 0=L100,1=LH\nU 3 | bit 5 | mask 31 | 0=L100,1=LH\n");
+        MergeResult m = base.mergedWith(file);
+        assertEquals(1, m.units.added);
+        assertEquals(1, m.units.duplicate);
+        assertEquals(1, m.units.replaced);
+        assertEquals(file.unitFor(2), m.library.unitFor(2));
+        assertEquals(file.unitFor(3), m.library.unitFor(3));
+        assertEquals(base.unitFor(1), m.library.unitFor(1));
+        assertEquals("U", String.valueOf(m.replacements.get(0).kind));
+        // merging it again changes nothing
+        MergeResult again = m.library.mergedWith(file);
+        assertEquals(0, again.added());
+        assertEquals(0, again.replaced());
+        assertEquals(3, again.duplicates());
+        assertEquals(m.library.serialize(), again.library.serialize());
+    }
+
+    @Test
+    void theAssetHasTheUnitsOfTheProtocolsThatReportThem() throws IOException {
+        Library l = asset();
+        // Ford Falcon: bit 5 of the codes 115 and 116; GM Andra: code 184; Infiniti: code 109; Tule: code 129; Opel: 108
+        assertEquals(FuelUnit.Kind.BIT, l.unitFor(13042103).kind);
+        assertEquals(184, l.unitFor(2687429).unitCode());
+        assertEquals(109, l.unitFor(1573316).unitCode());
+        assertEquals(129, l.unitFor(1704391).unitCode());
+        assertEquals(108, l.unitFor(7274939).unitCode());
+        assertEquals(FuelUnit.Kind.FIXED, l.unitFor(332).kind);
+        // the owner's PSA reports none
+        assertNull(l.unitFor(1507667));
+        assertNull(l.unitFor(163));
+        assertTrue(parse(l.serialize()).ok());
     }
 }

@@ -328,6 +328,7 @@ final class CanbusLibraryImport {
             appendCounts(sb, "R (fuel pages, per car and page)", merged.requests);
             appendCounts(sb, "N (no request, per car)", merged.noRequest);
             appendCounts(sb, "S (fuel and range codes, per car)", merged.codes);
+            appendCounts(sb, "U (consumption units, per car)", merged.units);
             sb.append('\n');
         }
         if (before != null) {

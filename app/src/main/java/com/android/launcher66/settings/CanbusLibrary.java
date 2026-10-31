@@ -36,8 +36,8 @@ import java.util.zip.CRC32;
 /**
  * The canbus library: for each car id the class of the screen FYT's canbus app opens and, for the cars that
  * need one, the requests (canbus commands) its fuel screens send when they open and the codes of its fuel
- * consumption and range (several pairs of them, for the different versions of the canbus module). The format (version 3;
- * versions 1 and 2 are still read) is described in
+ * consumption and range (several pairs of them, for the different versions of the canbus module) and where its protocol
+ * reports the unit of the instantaneous consumption. The format (version 4; versions 1 to 3 are still read) is described in
  * canbus_library/README.md, which also holds the script that builds a file of it.
  *
  * Everything in here is plain Java (no android.*), so that the parser, the merge and the checks run in JVM
@@ -48,6 +48,8 @@ public final class CanbusLibrary {
     /** The header of a file with at most one code pair per car; {@link #HEADER_3} when a car has several. */
     public static final String HEADER = "canbus_library 2";
     public static final String HEADER_3 = "canbus_library 3";
+    /** The header of a file with a {@code U} record (the unit of the consumption). */
+    public static final String HEADER_4 = "canbus_library 4";
     /** The most fuel/range pairs a car can have in a version 3 file. */
     public static final int MAX_CODE_PAIRS = 4;
     /** The highest code the canbus module can report (FinalCanbus.U_CNT_MAX - 1). */
@@ -66,7 +68,7 @@ public final class CanbusLibrary {
     private static final Pattern REQUEST = Pattern.compile("\\s*([0-9]{1,6})(?::\\s*(-?[0-9]+(?:\\s*,\\s*-?[0-9]+)*))?\\s*");
     private static final Pattern FOOTER = Pattern.compile("end\\s+([0-9]+)\\s+([0-9a-f]{8})");
     private static final Pattern FOOTER_LIKE = Pattern.compile("end\\b.*");
-    private static final Pattern HEADER_LINE = Pattern.compile("canbus_library\\s+([123])");
+    private static final Pattern HEADER_LINE = Pattern.compile("canbus_library\\s+([1234])");
 
     private CanbusLibrary() {
     }
@@ -288,12 +290,12 @@ public final class CanbusLibrary {
         public final List<Error> errors;
         /** Records of the file that repeated an identical record (per car id / per id and page). */
         public final int duplicatesInFile;
-        /** Lines C/R/N in the file. */
+        /** Lines C/R/N/S/U in the file. */
         public final int recordLines;
         public final int declaredRecords;
         public final String declaredCrc;
         public final String computedCrc;
-        /** The version of the header of the file (1, 2 or 3); 0 when there was no valid header. */
+        /** The version of the header of the file (1 to 4); 0 when there was no valid header. */
         public final int version;
 
         ParseResult(Library library, List<Error> errors, int duplicatesInFile, int recordLines,
@@ -326,7 +328,7 @@ public final class CanbusLibrary {
 
     /** A record of the file that replaced a different one of the base. */
     public static final class Replacement {
-        /** 'C', 'R', 'N' or 'S'. */
+        /** 'C', 'R', 'N', 'S' or 'U'. */
         public final char kind;
         public final int id;
         /** The page of an R record, else null. */
@@ -355,6 +357,7 @@ public final class CanbusLibrary {
         public final Counts requests = new Counts();
         public final Counts noRequest = new Counts();
         public final Counts codes = new Counts();
+        public final Counts units = new Counts();
         public final List<Replacement> replacements = new ArrayList<>();
 
         MergeResult(Library library) {
@@ -362,15 +365,15 @@ public final class CanbusLibrary {
         }
 
         public int added() {
-            return classes.added + requests.added + noRequest.added + codes.added;
+            return classes.added + requests.added + noRequest.added + codes.added + units.added;
         }
 
         public int duplicates() {
-            return classes.duplicate + requests.duplicate + noRequest.duplicate + codes.duplicate;
+            return classes.duplicate + requests.duplicate + noRequest.duplicate + codes.duplicate + units.duplicate;
         }
 
         public int replaced() {
-            return classes.replaced + requests.replaced + noRequest.replaced + codes.replaced;
+            return classes.replaced + requests.replaced + noRequest.replaced + codes.replaced + units.replaced;
         }
     }
 
@@ -380,20 +383,29 @@ public final class CanbusLibrary {
 
     public static final class Library {
         public static final Library EMPTY = new Library(new TreeMap<Integer, CarClass>(),
-                new TreeMap<Integer, List<Page>>(), new TreeSet<Integer>(), new TreeMap<Integer, List<CarCodes>>());
+                new TreeMap<Integer, List<Page>>(), new TreeSet<Integer>(), new TreeMap<Integer, List<CarCodes>>(),
+                new TreeMap<Integer, FuelUnit>());
 
         private final TreeMap<Integer, CarClass> classes;
         private final TreeMap<Integer, List<Page>> pages;
         private final TreeSet<Integer> noRequest;
         /** The pairs of a car in order of preference, the newest version of the canbus module first. */
         private final TreeMap<Integer, List<CarCodes>> codes;
+        /** Where the protocol of a car reports the unit of the instantaneous consumption. */
+        private final TreeMap<Integer, FuelUnit> units;
 
         Library(TreeMap<Integer, CarClass> classes, TreeMap<Integer, List<Page>> pages, TreeSet<Integer> noRequest,
-                TreeMap<Integer, List<CarCodes>> codes) {
+                TreeMap<Integer, List<CarCodes>> codes, TreeMap<Integer, FuelUnit> units) {
             this.classes = classes;
             this.pages = pages;
             this.noRequest = noRequest;
             this.codes = codes;
+            this.units = units;
+        }
+
+        /** Where the car's protocol reports the unit of the consumption, or null if the library does not say. */
+        public FuelUnit unitFor(int id) {
+            return units.get(id);
         }
 
         /** The first (preferred) fuel and range codes of a car, or null if the library has none for it. */
@@ -456,9 +468,9 @@ public final class CanbusLibrary {
             return pages.size();
         }
 
-        /** Records the way a merge counts them: C per car, R per car and page, N per car, S per car. */
+        /** Records the way a merge counts them: C per car, R per car and page, N per car, S per car, U per car. */
         public int recordCount() {
-            int n = classes.size() + noRequest.size() + codes.size();
+            int n = classes.size() + noRequest.size() + codes.size() + units.size();
             for (List<Page> p : pages.values()) {
                 n += p.size();
             }
@@ -466,7 +478,7 @@ public final class CanbusLibrary {
         }
 
         public boolean isEmpty() {
-            return classes.isEmpty() && pages.isEmpty() && noRequest.isEmpty() && codes.isEmpty();
+            return classes.isEmpty() && pages.isEmpty() && noRequest.isEmpty() && codes.isEmpty() && units.isEmpty();
         }
 
         /** {@code base.mergedWith(file)}: the file wins where both have a record for the same car (and page). */
@@ -475,12 +487,14 @@ public final class CanbusLibrary {
             TreeMap<Integer, List<Page>> p = new TreeMap<>(pages);
             TreeSet<Integer> n = new TreeSet<>(noRequest);
             TreeMap<Integer, List<CarCodes>> k = new TreeMap<>(codes);
+            TreeMap<Integer, FuelUnit> u = new TreeMap<>(units);
             MergeResult res;
             List<Replacement> replacements = new ArrayList<>();
             Counts cc = new Counts();
             Counts rc = new Counts();
             Counts nc = new Counts();
             Counts kc = new Counts();
+            Counts uc = new Counts();
 
             for (Map.Entry<Integer, CarClass> e : file.classes.entrySet()) {
                 CarClass old = c.get(e.getKey());
@@ -573,11 +587,25 @@ public final class CanbusLibrary {
                 k.put(e.getKey(), Collections.unmodifiableList(merged));
             }
 
-            res = new MergeResult(new Library(c, p, n, k));
+            for (Map.Entry<Integer, FuelUnit> e : file.units.entrySet()) {
+                FuelUnit old = u.get(e.getKey());
+                if (old == null) {
+                    uc.added++;
+                } else if (old.equals(e.getValue())) {
+                    uc.duplicate++;
+                } else {
+                    uc.replaced++;
+                    replacements.add(new Replacement('U', e.getKey(), null, old.toString(), e.getValue().toString()));
+                }
+                u.put(e.getKey(), e.getValue());
+            }
+
+            res = new MergeResult(new Library(c, p, n, k, u));
             copy(cc, res.classes);
             copy(rc, res.requests);
             copy(nc, res.noRequest);
             copy(kc, res.codes);
+            copy(uc, res.units);
             res.replacements.addAll(replacements);
             return res;
         }
@@ -624,7 +652,7 @@ public final class CanbusLibrary {
             for (List<CarCodes> pairs : codes.values()) {
                 several |= pairs.size() > 1;
             }
-            StringBuilder body = new StringBuilder(several ? HEADER_3 : HEADER).append('\n');
+            StringBuilder body = new StringBuilder(!units.isEmpty() ? HEADER_4 : several ? HEADER_3 : HEADER).append('\n');
             for (String comment : comments) {
                 body.append("# ").append(comment.replace('\r', ' ').replace('\n', ' ')).append('\n');
             }
@@ -683,6 +711,21 @@ public final class CanbusLibrary {
                     body.append("S ").append(ids).append(" | ").append(pairsText(e.getKey())).append('\n');
                 }
             }
+
+            Map<FuelUnit, List<Integer>> byUnit = new LinkedHashMap<>();
+            for (Map.Entry<Integer, FuelUnit> e : units.entrySet()) {
+                List<Integer> ids = byUnit.get(e.getValue());
+                if (ids == null) {
+                    ids = new ArrayList<>();
+                    byUnit.put(e.getValue(), ids);
+                }
+                ids.add(e.getKey());
+            }
+            for (Map.Entry<FuelUnit, List<Integer>> e : byUnit.entrySet()) {
+                for (String ids : idChunks(e.getValue())) {
+                    body.append("U ").append(ids).append(" | ").append(e.getKey()).append('\n');
+                }
+            }
             return seal(body.toString());
         }
 
@@ -726,7 +769,8 @@ public final class CanbusLibrary {
         // The lines the footer counts, not the records of the library (those are per car and page)
         int recordLines = 0;
         for (String line : library.serialize().split("\n")) {
-            if (line.startsWith("C ") || line.startsWith("R ") || line.startsWith("N ") || line.startsWith("S ")) {
+            if (line.startsWith("C ") || line.startsWith("R ") || line.startsWith("N ") || line.startsWith("S ")
+                    || line.startsWith("U ")) {
                 recordLines++;
             }
         }
@@ -754,7 +798,8 @@ public final class CanbusLibrary {
         while (start < body.length()) {
             int nl = body.indexOf('\n', start);
             String line = body.substring(start, nl);
-            if (line.startsWith("C ") || line.startsWith("R ") || line.startsWith("N ") || line.startsWith("S ")) {
+            if (line.startsWith("C ") || line.startsWith("R ") || line.startsWith("N ") || line.startsWith("S ")
+                    || line.startsWith("U ")) {
                 records++;
             }
             crc.update((line + "\n").getBytes(StandardCharsets.UTF_8));
@@ -793,6 +838,7 @@ public final class CanbusLibrary {
         private final TreeMap<Integer, List<Page>> pages = new TreeMap<>();
         private final TreeSet<Integer> noRequest = new TreeSet<>();
         private final TreeMap<Integer, List<CarCodes>> codes = new TreeMap<>();
+        private final TreeMap<Integer, FuelUnit> units = new TreeMap<>();
         private int version;
         private int recordLines;
         private int duplicates;
@@ -893,7 +939,7 @@ public final class CanbusLibrary {
                     headerLine = lineNo;
                     Matcher hm = HEADER_LINE.matcher(s);
                     if (!hm.matches()) {
-                        err(lineNo, "missing or unsupported header (expected \"canbus_library 1\", \"" + HEADER + "\" or \"" + HEADER_3 + "\")");
+                        err(lineNo, "missing or unsupported header (expected \"canbus_library 1\" to \"canbus_library 4\")");
                         return result(-1, null, null);
                     }
                     version = Integer.parseInt(hm.group(1));
@@ -926,7 +972,7 @@ public final class CanbusLibrary {
                 progress.onBytes(bytes, sizeBytes);
             }
             if (!headerSeen) {
-                err(0, "empty file: missing header \"canbus_library 1\", \"" + HEADER + "\" or \"" + HEADER_3 + "\"");
+                err(0, "empty file: missing header \"canbus_library 1\" to \"canbus_library 4\"");
             } else if (!footerSeen) {
                 err(lineNo, "missing footer \"end <records> <crc32>\"");
             } else if (declared >= 0) {
@@ -947,7 +993,8 @@ public final class CanbusLibrary {
                 for (Map.Entry<Integer, List<Page>> e : pages.entrySet()) {
                     frozen.put(e.getKey(), Collections.unmodifiableList(new ArrayList<>(e.getValue())));
                 }
-                lib = new Library(new TreeMap<>(classes), frozen, new TreeSet<>(noRequest), new TreeMap<>(codes));
+                lib = new Library(new TreeMap<>(classes), frozen, new TreeSet<>(noRequest), new TreeMap<>(codes),
+                        new TreeMap<>(units));
             }
             return new ParseResult(lib, new ArrayList<>(errors), duplicates, recordLines,
                     declared, declaredCrc, computedCrc, version);
@@ -955,7 +1002,7 @@ public final class CanbusLibrary {
 
         private void record(int no, String s) {
             char kind = s.charAt(0);
-            if ((kind != 'C' && kind != 'R' && kind != 'N' && kind != 'S') || (s.length() > 1 && !Character.isWhitespace(s.charAt(1)))) {
+            if ((kind != 'C' && kind != 'R' && kind != 'N' && kind != 'S' && kind != 'U') || (s.length() > 1 && !Character.isWhitespace(s.charAt(1)))) {
                 err(no, "unknown record \"" + (s.length() > 20 ? s.substring(0, 20) : s) + "\"");
                 return;
             }
@@ -980,6 +1027,9 @@ public final class CanbusLibrary {
                     break;
                 case 'S':
                     codesRecord(no, f, ids);
+                    break;
+                case 'U':
+                    unitRecord(no, f, ids);
                     break;
                 default:
                     pageRecord(no, f, ids);
@@ -1114,6 +1164,30 @@ public final class CanbusLibrary {
                     duplicates++;
                 } else {
                     err(no, "id " + id + " has two different S records");
+                }
+            }
+        }
+
+        private void unitRecord(int no, String[] f, int[] ids) {
+            if (version < 4) {
+                err(no, "U records need version 4");
+                return;
+            }
+            FuelUnit unit;
+            try {
+                unit = FuelUnit.parse(f, 1);
+            } catch (IllegalArgumentException e) {
+                err(no, e.getMessage());
+                return;
+            }
+            for (int id : ids) {
+                FuelUnit old = units.get(id);
+                if (old == null) {
+                    units.put(id, unit);
+                } else if (old.equals(unit)) {
+                    duplicates++;
+                } else {
+                    err(no, "id " + id + " has two different U records");
                 }
             }
         }

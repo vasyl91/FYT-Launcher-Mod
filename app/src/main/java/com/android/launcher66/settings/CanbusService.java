@@ -121,7 +121,13 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private String pairSaved = "";
     /** The last value of each code the service listens to, to show the values of a pair that has just been chosen. */
     private final Map<Integer, Integer> lastCodeValues = new ConcurrentHashMap<>();
+    /**
+     * Where the protocol of the car reports the unit of the instantaneous consumption (the U record of the canbus
+     * library), or null: the library does not say, and the unit is then not known.
+     */
+    private volatile FuelUnit fuelUnit;
     /** The last values of the codes above, from the update of com.syu.ms (binder thread). */
+    private volatile int fuelRaw = 0;
     private volatile int fuelValue = 0;
     private volatile int rangeValue = 0;
     private volatile int rpmValue = 0;
@@ -403,7 +409,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 uiHandler.post(CanbusService.this::onPairChanged);
             }
             if (updateCode == fuelCode) {
-                fuelValue = value;
+                fuelRaw = value;
+                fuelValue = fuelFromRaw(value);
                 uiHandler.post(CanbusService.this::mUpdaterOilExpend);
             }
             if (updateCode == rangeCode) {
@@ -437,11 +444,15 @@ public class CanbusService extends Service implements PropertyChangeListener {
         final Context app = getApplicationContext();
         // The library may still be loading, and loading reads files: not on this thread
         CanbusLibrary.executor().execute(() -> {
-            List<CanbusLibrary.CarCodes> pairs = CanbusLibrary.loadBlocking(app).codePairsFor(carId);
+            CanbusLibrary.Library library = CanbusLibrary.loadBlocking(app);
+            List<CanbusLibrary.CarCodes> pairs = library.codePairsFor(carId);
+            FuelUnit unit = library.unitFor(carId);
             uiHandler.post(() -> {
                 if (sInstance != this) {
                     return;
                 }
+                fuelUnit = unit;
+                fuelValue = fuelFromRaw(fuelRaw);
                 setUpPairs(carId, pairs);
                 applyPairCodes();
                 // The speed for the estimate: the code of the settings, else the one the code reader found
@@ -1137,6 +1148,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
         unregisterStatsCodes();
         // the codes of all the library's pairs: which one the radio reports is found out from their values
         Set<Integer> wanted = new LinkedHashSet<>(Arrays.asList(fuelCode, rangeCode, rpmCode, speedCode));
+        FuelUnit unit = fuelUnit;
+        if (unit != null && unit.unitCode() >= 0) {
+            wanted.add(unit.unitCode());
+        }
         CodePairChooser chooser = pairChooser;
         if (chooser != null) {
             wanted.addAll(chooser.codes());
@@ -1188,7 +1203,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
         rangeCode = newRange;
         if (fuelChanged) {
             Integer v = lastCodeValues.get(newFuel);
-            fuelValue = v == null ? 0 : v;
+            fuelRaw = v == null ? 0 : v;
+            fuelValue = fuelFromRaw(fuelRaw);
         }
         if (rangeChanged) {
             Integer v = lastCodeValues.get(newRange);
@@ -1249,6 +1265,24 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 CanbusLibrary.sendForCar(service.getApplicationContext(), carId);
             }
         }, 3000L);
+    }
+
+    /** The consumption in the raw value of the fuel code: masked where the protocol keeps the unit in a bit of it. */
+    private int fuelFromRaw(int raw) {
+        FuelUnit unit = fuelUnit;
+        return unit != null ? unit.consumption(raw) : raw;
+    }
+
+    /**
+     * The unit of the consumption the protocol reports now: L/100 km or L/h, or null when the library does not say, the
+     * code of the unit has not been reported yet, or it is a unit the launcher does not use (gallons, mpg).
+     */
+    private FuelUnit.Unit protocolUnit() {
+        FuelUnit unit = fuelUnit;
+        if (unit == null) {
+            return null;
+        }
+        return unit.unitNow(unit.unitCode() >= 0 ? lastCodeValues.get(unit.unitCode()) : null, fuelRaw);
     }
 
     public void mUpdaterOilExpend() {
