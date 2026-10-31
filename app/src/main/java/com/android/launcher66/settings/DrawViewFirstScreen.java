@@ -1220,24 +1220,14 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     private void saveStatsPrefs(int widthSelector) {
         SharedPreferences.Editor e = sharedPrefs.edit();
 
-        // Determine desired width from the statsWidth selector
-        int desiredWidth;
-        switch (widthSelector) {
-            case 1:
-                desiredWidth = (SettingsActivity.calculatedStatsWidth / 3) * 2;
-                break;
-            case 2:
-                desiredWidth = SettingsActivity.calculatedStatsWidth / 4;
-                break;
-            case 0:
-            default:
-                desiredWidth = SettingsActivity.calculatedStatsWidth;
-                break;
-        }
-
         // Screen width and allowed width considering margins
         int screenWidth = android.content.res.Resources.getSystem().getDisplayMetrics().widthPixels;
         int allowedWidth = Math.max(0, screenWidth - 2 * margin);
+
+        // The share of the screen of the size, longer where its widest text needs it: the window on the screen has the
+        // same width, and the font is the same in the three sizes
+        int desiredWidth = StatsWindowSize.widthFor(getContext(), widthSelector, SettingsActivity.calculatedStatsWidth,
+                screenWidth, margin);
 
         // Clamp desired width to not exceed available space
         if (desiredWidth > allowedWidth) desiredWidth = allowedWidth;

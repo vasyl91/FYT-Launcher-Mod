@@ -730,13 +730,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
             wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
             LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             int leftBarSize = Launcher.calculatedLeftBarWidth;
-            if (mapApp) {
-                statsWidthSelector = prefs.getInt(Keys.APP_STATS_WIDTH_SELECTOR, 0);
-                statsWidth = prefs.getInt(Keys.APP_STATS_WIDTH, Launcher.calculatedStatsWidth);
-            } else {
-                statsWidthSelector = prefs.getInt(Keys.STATS_WIDTH_SELECTOR, 0);
-                statsWidth = prefs.getInt(Keys.STATS_WIDTH, Launcher.calculatedStatsWidth);
-            }
+            statsWidthSelector = prefs.getInt(mapApp ? Keys.APP_STATS_WIDTH_SELECTOR : Keys.STATS_WIDTH_SELECTOR, 0);
+            // From the size, not from the width saved: the share of the screen, longer where the widest text of the size
+            // needs it (the editor does the same sum, so that the old saves are right too)
+            statsWidth = StatsWindowSize.widthFor(this, statsWidthSelector, Launcher.calculatedStatsWidth,
+                    getScreenWidth(), margin);
             statsHeight = Launcher.calculatedStatsHeight;
 
             if (getResources().getDisplayMetrics().widthPixels <= 1024
@@ -749,7 +747,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
             } 
             if (mapApp) {
                 int maxBorderX = getScreenWidth();
-                statsTopLeftX = prefs.getInt("appStatsTopLeftX", maxBorderX - statsWidth - margin);
+                statsTopLeftX = Math.max(0, Math.min(prefs.getInt("appStatsTopLeftX", maxBorderX - statsWidth - margin),
+                        maxBorderX - statsWidth - margin));
                 statsTopLeftY = prefs.getInt("appStatsTopLeftY", margin + getStatusBarHeight()) + getStatusBarHeight();
             } else {
                 if (leftBar) {
@@ -788,7 +787,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
             
             consumptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic); 
             mileageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
-            fitStatsText(statsWidth, statsHeight, consumptionTV, consumptionTextView, mileageTV, mileageTextView);
+            // The font is worked out once, here, for the widest text of the size (the unit and the value change with
+            // the speed): nothing else sets the size of these views
+            fitStatsText(statsWidth, statsHeight, consumptionTV, consumptionTextView, mileageTV, mileageTextView,
+                    StatsWindowSize.consumptionVariants(getResources(), statsWidthSelector),
+                    StatsWindowSize.rangeVariants(getResources(), statsWidthSelector));
             if (background) {
                 if (drawableBg) {
                     absoluteStats.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_custom));
@@ -861,6 +864,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             }
                         }
                     } catch (Exception ignored) {}
+
+                    // the window is longer than its saved place when the text needs it: it stays on the screen
+                    placeholderX = Math.max(0, Math.min(placeholderX, statsPageWidth - margin - statsWidth));
 
                     // compute base absolute X
                     statsAbsoluteBaseX = (statsScreen * Math.max(1, statsPageWidth)) + placeholderX;
@@ -1561,20 +1567,23 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
 
     /**
-     * Fits the two rows (label + value each) into the window, which is a share of the screen:
-     * Launcher.textSizeBasic stays as it is where they fit, as on the FYT units the sizes come
-     * from, and shrinks where a sp is a larger share of the screen (a phone) or the window is
-     * narrow. The values are measured two digits longer than they start.
+     * Fits the two rows (label + value each) into the window, which is a share of the screen (longer where the text needs
+     * it, see StatsWindowSize): Launcher.textSizeBasic stays as it is where they fit, as on the FYT units the sizes come
+     * from, and shrinks where a sp is a larger share of the screen (a phone) or the window is narrow. The values are
+     * measured at their widest, in every unit they are shown in, so that the font is the same whatever the unit and the
+     * value, and the same in the three sizes.
      */
     private static void fitStatsText(int width, int height, TextView consumptionLabel,
-            TextView consumptionValue, TextView mileageLabel, TextView mileageValue) {
+            TextView consumptionValue, TextView mileageLabel, TextView mileageValue,
+            String[] consumptionVariants, String[] mileageVariants) {
         if (width <= 0 || height <= 0) return;
         float px = consumptionValue.getTextSize();
         if (px <= 0f) return;
         android.graphics.Paint.FontMetrics fm = consumptionValue.getPaint().getFontMetrics();
         float lineHeight = fm.bottom - fm.top;
         float rowWidth = Math.max(
-                rowWidth(consumptionLabel, consumptionValue), rowWidth(mileageLabel, mileageValue));
+                rowWidth(consumptionLabel, consumptionValue, consumptionVariants),
+                rowWidth(mileageLabel, mileageValue, mileageVariants));
         float scale = 1f;
         // Some room to spare: two rows exactly as tall as the window lost a pixel to rounding,
         // and the column then wrapped the second row out of the window (the narrowest window,
@@ -1587,9 +1596,12 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
 
-    private static float rowWidth(TextView label, TextView value) {
-        return label.getPaint().measureText(label.getText().toString())
-                + value.getPaint().measureText(value.getText() + "88");
+    private static float rowWidth(TextView label, TextView value, String[] variants) {
+        float widest = 0f;
+        for (String variant : variants) {
+            widest = Math.max(widest, value.getPaint().measureText(variant));
+        }
+        return label.getPaint().measureText(label.getText().toString()) + widest;
     }
 
 }
