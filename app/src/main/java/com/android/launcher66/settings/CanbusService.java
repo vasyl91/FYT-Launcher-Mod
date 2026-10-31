@@ -793,11 +793,13 @@ public class CanbusService extends Service implements PropertyChangeListener {
             
             consumptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic); 
             mileageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
-            // The font is worked out once, here, for the widest text of the size (the unit and the value change with
-            // the speed): nothing else sets the size of these views
+            // The font is worked out once, here: nothing else sets the size of these views. The large window measures the
+            // widest text of its size (the unit and the value change with the speed; the window grows for it); the medium
+            // and the small one, which do not grow, as they always did: the current text and two digits more
+            boolean large = statsWidthSelector == 0;
             fitStatsText(statsWidth, statsHeight, consumptionTV, consumptionTextView, mileageTV, mileageTextView,
-                    StatsWindowSize.consumptionVariants(getResources(), statsWidthSelector),
-                    StatsWindowSize.rangeVariants(getResources(), statsWidthSelector));
+                    large ? StatsWindowSize.consumptionVariants(getResources(), statsWidthSelector) : null,
+                    large ? StatsWindowSize.rangeVariants(getResources(), statsWidthSelector) : null);
             if (background) {
                 if (drawableBg) {
                     absoluteStats.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_custom));
@@ -1663,8 +1665,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
      * Fits the two rows (label + value each) into the window, which is a share of the screen (longer where the text needs
      * it, see StatsWindowSize): Launcher.textSizeBasic stays as it is where they fit, as on the FYT units the sizes come
      * from, and shrinks where a sp is a larger share of the screen (a phone) or the window is narrow. The values are
-     * measured at their widest, in every unit they are shown in, so that the font is the same whatever the unit and the
-     * value, and the same in the three sizes.
+     * measured at their widest, in every unit they are shown in, in the large window (the variants), so that its font is
+     * the same whatever the unit and the value; without variants (the medium and the small window) as the current text and
+     * two digits more.
      */
     private static void fitStatsText(int width, int height, TextView consumptionLabel,
             TextView consumptionValue, TextView mileageLabel, TextView mileageValue,
@@ -1691,8 +1694,12 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
     private static float rowWidth(TextView label, TextView value, String[] variants) {
         float widest = 0f;
-        for (String variant : variants) {
-            widest = Math.max(widest, value.getPaint().measureText(variant));
+        if (variants == null) {
+            widest = value.getPaint().measureText(value.getText() + "88");
+        } else {
+            for (String variant : variants) {
+                widest = Math.max(widest, value.getPaint().measureText(variant));
+            }
         }
         return label.getPaint().measureText(label.getText().toString()) + widest;
     }

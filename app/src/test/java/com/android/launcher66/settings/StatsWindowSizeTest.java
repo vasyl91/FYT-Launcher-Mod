@@ -15,24 +15,42 @@ class StatsWindowSizeTest {
 
     @Test
     void whatTheTextNeedsBetweenTheShareAndTheLimitIsWhatItNeeds() {
-        assertEquals(450, StatsWindowSize.windowWidth(400, 450, 1280, 5));
-        assertEquals(540, StatsWindowSize.windowWidth(400, 540, 1280, 5));
+        assertEquals(430, StatsWindowSize.windowWidth(400, 430, 1280, 5));
+        assertEquals(460, StatsWindowSize.windowWidth(400, 460, 1280, 5));
     }
 
     @Test
-    void whatTheTextNeedsBeyondThirtyFivePercentIsThatLimit() {
-        assertEquals(540, StatsWindowSize.windowWidth(400, 541, 1280, 5));
-        assertEquals(540, StatsWindowSize.windowWidth(400, 900, 1280, 5));
-        assertEquals(135, StatsWindowSize.windowWidth(100, 900, 1280, 5));
+    void whatTheTextNeedsBeyondFifteenPercentIsThatLimit() {
+        assertEquals(460, StatsWindowSize.windowWidth(400, 461, 1280, 5));
+        assertEquals(460, StatsWindowSize.windowWidth(400, 900, 1280, 5));
+        assertEquals(115, StatsWindowSize.windowWidth(100, 900, 1280, 5));
     }
 
     @Test
     void aNarrowScreenLimitsTheWindowToTheScreenLessTheMargins() {
-        // 1.35 x 400 = 540, but the screen is 500 wide
-        assertEquals(480, StatsWindowSize.windowWidth(400, 540, 500, 10));
+        // 1.15 x 400 = 460, but the screen is 450 wide
+        assertEquals(430, StatsWindowSize.windowWidth(400, 460, 450, 10));
         // and the share itself is wider than the screen allows
         assertEquals(380, StatsWindowSize.windowWidth(400, 100, 400, 10));
         assertEquals(0, StatsWindowSize.windowWidth(400, 100, 10, 10));
+    }
+
+    @Test
+    void theMediumAndTheSmallWindowAreExactlyTheirShareWhateverTheTextNeeds() {
+        for (int required : new int[]{0, 100, 280, 1000, 5000}) {
+            assertEquals(280, StatsWindowSize.widthForSize(1, 420, required, 1280, 5));
+            assertEquals(105, StatsWindowSize.widthForSize(2, 420, required, 1280, 5));
+        }
+        // within the margins of a narrow screen
+        assertEquals(180, StatsWindowSize.widthForSize(1, 420, 1000, 200, 10));
+        assertEquals(105, StatsWindowSize.widthForSize(2, 420, 1000, 200, 10));
+    }
+
+    @Test
+    void theLargeWindowGrowsByAtMostFifteenPercent() {
+        assertEquals(420, StatsWindowSize.widthForSize(0, 420, 100, 1280, 5));
+        assertEquals(450, StatsWindowSize.widthForSize(0, 420, 450, 1280, 5));
+        assertEquals(483, StatsWindowSize.widthForSize(0, 420, 1000, 1280, 5));
     }
 
     @Test

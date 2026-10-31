@@ -16,9 +16,10 @@ import com.android.launcher66.R;
 
 /**
  * The width of the statistics window (consumption and range) in its three sizes: large, medium (short labels) and small
- * (no labels). A size is a share of the screen, and grows by up to 35 % when its widest text does not fit in the
- * standard font, so that the font is the same in the three sizes and does not change with the unit or the value (L/100 km
- * and L/h are different texts). The editors and the window use the same widths. The arithmetic is plain, for JVM tests.
+ * (no labels). A size is a share of the screen. Only the large window grows, by at most 15 %, when its widest text does not
+ * fit in the standard font, so that its font does not change with the unit or the value (L/100 km and L/h are different
+ * texts); the medium and the small window are exactly their share of the screen. The editors and the window use the same
+ * widths. The arithmetic is plain, for JVM tests.
  */
 public final class StatsWindowSize {
 
@@ -29,7 +30,7 @@ public final class StatsWindowSize {
     /** The widest text must take no more than this share of the window. */
     static final double ROW_FILL = 0.95;
     /** A window grows by at most this much of its share of the screen. */
-    static final double MAX_GROWTH = 1.35;
+    static final double MAX_GROWTH = 1.15;
     /** The numbers that make the widest text of each kind of value. */
     static final String WIDEST_PER_100_KM = "188.8";
     static final String WIDEST_PER_HOUR = "88.8";
@@ -52,8 +53,8 @@ public final class StatsWindowSize {
     }
 
     /**
-     * The window: the share of the screen, longer where the text needs it, by up to 35 %, and never wider than the screen
-     * less the margins.
+     * The large window: the share of the screen, longer where the text needs it, by up to 15 %, and never wider than the
+     * screen less the margins.
      *
      * @param baseWidth   the share of the screen of the size
      * @param requiredPx  the width the widest text needs
@@ -216,8 +217,21 @@ public final class StatsWindowSize {
                 .apply();
     }
 
+    /**
+     * The width of a window: the large one (0) is its share of the screen, longer where its text needs it (up to 15 %); the
+     * medium (1) and the small one (2) are exactly their share, within the margins, whatever the text.
+     */
+    static int widthForSize(int selector, int fullWidth, int requiredPx, int screenWidth, int margin) {
+        int base = baseWidth(selector, fullWidth);
+        if (selector == 1 || selector == 2) {
+            return Math.min(Math.max(0, screenWidth - 2 * margin), base);
+        }
+        return windowWidth(base, requiredPx, screenWidth, margin);
+    }
+
     /** The width of the window of a size on this screen. */
     static int widthFor(Context context, int selector, int fullWidth, int screenWidth, int margin) {
-        return windowWidth(baseWidth(selector, fullWidth), requiredWidthPx(context, selector), screenWidth, margin);
+        int required = selector == 1 || selector == 2 ? 0 : requiredWidthPx(context, selector);
+        return widthForSize(selector, fullWidth, required, screenWidth, margin);
     }
 }
