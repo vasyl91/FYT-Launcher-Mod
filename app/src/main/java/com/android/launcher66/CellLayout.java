@@ -4963,6 +4963,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
             int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
 
+            // the saved rectangle as wide as the window (its size and the text it needs), which the cells are reserved from
+            com.android.launcher66.settings.StatsWindowSize.syncSavedRectangle(getContext(), prefs, false);
             int leftBarWidth = mLauncher.calculatedLeftBarWidth;
             int statsWidth = mLauncher.calculatedStatsWidth;
             int statsHeight = mLauncher.calculatedStatsHeight;

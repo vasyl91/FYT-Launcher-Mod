@@ -49,4 +49,21 @@ class StatsWindowSizeTest {
         assertEquals(14, StatsWindowSize.textSizeSp(1280));
         assertEquals(0, StatsWindowSize.textSizeSp(0));
     }
+
+    @Test
+    void theSavedRectangleTakesTheWidthOfTheWindowAndStaysOnTheScreen() {
+        // room on the right: the left edge stays
+        assertEquals(100, StatsWindowSize.fitRectangle(100, 540, 1280, 5)[0]);
+        assertEquals(640, StatsWindowSize.fitRectangle(100, 540, 1280, 5)[1]);
+        // against the right edge: it grows to the left
+        int[] edge = StatsWindowSize.fitRectangle(1000, 540, 1280, 5);
+        assertEquals(1275, edge[1]);
+        assertEquals(735, edge[0]);
+        // narrower than before: the right edge follows
+        assertEquals(380, StatsWindowSize.fitRectangle(100, 280, 1280, 5)[1]);
+        // never left of the margin
+        int[] wide = StatsWindowSize.fitRectangle(0, 400, 420, 10);
+        assertEquals(10, wide[0]);
+        assertEquals(410, wide[1]);
+    }
 }

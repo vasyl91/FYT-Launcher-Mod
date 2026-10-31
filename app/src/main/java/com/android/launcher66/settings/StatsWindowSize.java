@@ -65,6 +65,24 @@ public final class StatsWindowSize {
         return Math.min(limit, Math.max(baseWidth, requiredPx));
     }
 
+    /**
+     * The saved rectangle of a window (its left and right edge) made as wide as the window is, keeping its left edge where
+     * it can and the whole of it on the screen, within the margins: {left, right}.
+     */
+    static int[] fitRectangle(int left, int width, int screenWidth, int margin) {
+        int right = left + width;
+        int most = screenWidth - margin;
+        if (right > most) {
+            right = most;
+            left = right - width;
+        }
+        if (left < margin) {
+            left = margin;
+            right = left + width;
+        }
+        return new int[]{left, right};
+    }
+
     /** The text size (sp) of the statistics, as the launcher calculates it for the screen dimension that decides. */
     static int textSizeSp(int orientationDimension) {
         return orientationDimension <= 0 ? 0 : (int) (18 * Math.pow(orientationDimension / 2000.0, 0.5));
@@ -162,6 +180,40 @@ public final class StatsWindowSize {
                 rowWidth(paint, label(res, selector, true), consumptionVariants(res, selector)),
                 rowWidth(paint, label(res, selector, false), rangeVariants(res, selector)));
         return (int) Math.ceil(row / ROW_FILL) + backgroundPadding(context);
+    }
+
+    /**
+     * Makes the rectangle saved for the statistics window as wide as the window: the editors draw it and the home screen
+     * reserves its place from these corners, and the window takes its width from its size, so that all three agree (the
+     * saved rectangles of before are mended on first use). {@code app} is the window over an app. Does nothing without a saved
+     * rectangle.
+     */
+    public static void syncSavedRectangle(Context context, android.content.SharedPreferences prefs, boolean app) {
+        String key = app ? "appStats" : "stats";
+        if (!prefs.contains(key + "TopLeftX") || !prefs.contains(key + "TopRightX")) {
+            return;
+        }
+        int selector = prefs.getInt(app ? Keys.APP_STATS_WIDTH_SELECTOR : Keys.STATS_WIDTH_SELECTOR, 0);
+        int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+        int margin;
+        try {
+            margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
+        } catch (NumberFormatException e) {
+            margin = 5;
+        }
+        int width = widthFor(context, selector, SettingsActivity.calculatedStatsWidth > 0
+                ? SettingsActivity.calculatedStatsWidth : Launcher.calculatedStatsWidth, screenWidth, margin);
+        int left = prefs.getInt(key + "TopLeftX", margin);
+        int right = prefs.getInt(key + "TopRightX", left + width);
+        if (width <= 0 || right - left == width) {
+            return;
+        }
+        int[] fitted = fitRectangle(left, width, screenWidth, margin);
+        prefs.edit()
+                .putInt(key + "TopLeftX", fitted[0]).putInt(key + "BottomLeftX", fitted[0])
+                .putInt(key + "TopRightX", fitted[1]).putInt(key + "BottomRightX", fitted[1])
+                .putInt(app ? Keys.APP_STATS_WIDTH : Keys.STATS_WIDTH, width)
+                .apply();
     }
 
     /** The width of the window of a size on this screen. */

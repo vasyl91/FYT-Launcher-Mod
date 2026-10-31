@@ -272,6 +272,8 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     }
 
     private void initUi(View rootView) {
+        // the saved rectangle of the statistics as wide as the window is, whatever the text of its size needs
+        StatsWindowSize.syncSavedRectangle(getContext(), sharedPrefs, false);
         helpers = new Helpers();
         helpers.checkAndResetIfOverlappingOnScreen(-1); 
         helpers.setUserOpenedCreator(true);

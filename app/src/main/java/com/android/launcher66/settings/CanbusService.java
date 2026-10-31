@@ -736,6 +736,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
             LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             int leftBarSize = Launcher.calculatedLeftBarWidth;
+            StatsWindowSize.syncSavedRectangle(this, prefs, mapApp);
             statsWidthSelector = prefs.getInt(mapApp ? Keys.APP_STATS_WIDTH_SELECTOR : Keys.STATS_WIDTH_SELECTOR, 0);
             // From the size, not from the width saved: the share of the screen, longer where the widest text of the size
             // needs it (the editor does the same sum, so that the old saves are right too)
@@ -753,8 +754,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             } 
             if (mapApp) {
                 int maxBorderX = getScreenWidth();
-                statsTopLeftX = Math.max(0, Math.min(prefs.getInt("appStatsTopLeftX", maxBorderX - statsWidth - margin),
-                        maxBorderX - statsWidth - margin));
+                statsTopLeftX = prefs.getInt("appStatsTopLeftX", maxBorderX - statsWidth - margin);
                 statsTopLeftY = prefs.getInt("appStatsTopLeftY", margin + getStatusBarHeight()) + getStatusBarHeight();
             } else {
                 if (leftBar) {
@@ -870,9 +870,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             }
                         }
                     } catch (Exception ignored) {}
-
-                    // the window is longer than its saved place when the text needs it: it stays on the screen
-                    placeholderX = Math.max(0, Math.min(placeholderX, statsPageWidth - margin - statsWidth));
 
                     // compute base absolute X
                     statsAbsoluteBaseX = (statsScreen * Math.max(1, statsPageWidth)) + placeholderX;
