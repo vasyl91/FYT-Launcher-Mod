@@ -858,4 +858,76 @@ class FuelModelTest {
         }
         assertFalse(wild.rpmValid());
     }
+
+    /** Feeds 40 s at a speed with altitudes along a road of a given grade (fix every 1 s, σ 0.5 m, a barometer); returns the time. */
+    private static long onTheRoad(FuelModel m, long t0, double kmh, double grade) {
+        long t = t0;
+        double metres = 0;
+        for (int i = 0; i < 40 * 5; i++, t += 200) {
+            m.onSpeed(t, kmh, true);
+            metres += kmh / 3.6 * 0.2;
+            if (i % 5 == 0) {
+                m.onBarometer(t, 300 + grade * metres);
+            }
+        }
+        return t;
+    }
+
+    @Test
+    void uphillAtASteadySpeedBurnsMoreThanOnTheFlat() {
+        FuelModel m = new FuelModel();
+        long t = drive(m, new Random(1), 0, 900, 30, 0.9);
+        FuelModel flat = FuelModel.parse(m.serialize());
+        FuelModel hill = FuelModel.parse(m.serialize());
+        double onTheFlat = flat.litresPerHour(onTheRoad(flat, t + 100_000, 20, 0) - 200);
+        double uphill = hill.litresPerHour(onTheRoad(hill, t + 100_000, 20, 0.06) - 200);
+        // 6 % at 20 km/h is a lift of 0.59 m/s², an acceleration as far as the engine goes: 0.1·0.59·5.6 = 0.33 L/h more
+        // in this car
+        assertEquals(onTheFlat + 0.33, uphill, 0.1);
+    }
+
+    @Test
+    void aSteepDescentAtASteadySpeedIsOverrun() {
+        FuelModel cut = new FuelModel();
+        long t = drive(cut, new Random(1), 0, 900, 30, 0.0);
+        FuelModel flat = FuelModel.parse(cut.serialize());
+        FuelModel down = FuelModel.parse(cut.serialize());
+        double onTheFlat = flat.litresPerHour(onTheRoad(flat, t + 100_000, 25, 0) - 200);
+        double downhill = down.litresPerHour(onTheRoad(down, t + 100_000, 25, -0.06) - 200);
+        // -6 % at 25 km/h is -0.59 m/s² with no braking at all: the engine brakes, and the fuel is cut
+        assertTrue(onTheFlat > 1.0, "flat " + onTheFlat);
+        assertTrue(downhill < onTheFlat - 0.7, onTheFlat + " -> " + downhill);
+        // and without altitudes the same drive is just steady
+        FuelModel none = FuelModel.parse(cut.serialize());
+        long end = t + 100_000;
+        for (int i = 0; i < 200; i++, end += 200) {
+            none.onSpeed(end, 25, true);
+        }
+        assertEquals(onTheFlat, none.litresPerHour(end - 200), 0.05);
+    }
+
+    @Test
+    void theBarometerReplacesTheGpsAltitudeAndIsReplacedByItOnceItIsGone() {
+        FuelModel m = new FuelModel();
+        long t = drive(m, new Random(1), 0, 900, 30, 0.9) + 100_000;
+        // a barometer on a 6 % climb; a GPS altitude on a flat road 4 s later is not taken into the regression
+        t = onTheRoad(m, t, 20, 0.06);
+        double withBaro = m.litresPerHour(t - 200);
+        for (int i = 0; i < 20; i++, t += 200) {
+            m.onSpeed(t, 20, true);
+            m.onAltitude(t, 50, 10);        // nothing like the barometer's level, and σ of 10 m
+        }
+        assertEquals(withBaro, m.litresPerHour(t - 200), 0.2);
+        // 6 s without the barometer: the GPS goes on from a clean start (a flat road, noisy): no grade
+        t += 6000;
+        for (int i = 0; i < 300; i++, t += 200) {
+            m.onSpeed(t, 20, true);
+            if (i % 5 == 0) {
+                m.onAltitude(t, 50 + ((i / 5) % 2 == 0 ? 2 : -2), 10);
+            }
+        }
+        FuelModel flat = FuelModel.parse(m.serialize());
+        long ft = onTheRoad(flat, 50_000_000L, 20, 0);
+        assertEquals(flat.litresPerHour(ft - 200), m.litresPerHour(t - 200), 0.3);
+    }
 }

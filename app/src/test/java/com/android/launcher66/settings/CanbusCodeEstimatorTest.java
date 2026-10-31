@@ -525,4 +525,20 @@ class CanbusCodeEstimatorTest {
         assertEquals("Library codes for this car: range 103 (no data in this recording, the guess is 92)",
                 CanbusCodeEstimator.libraryCodesLine(102, 103, m, r));
     }
+
+    @Test
+    void aGpsFixIsALineWithTheAltitudeAndNoPosition() {
+        java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", java.util.Locale.US);
+        format.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        long t = 1_793_438_102_120L;
+        assertEquals("2026-10-31 09:15:02.120: 41.3 km/h, 272°, 312.4 m ±3.0 m",
+                CanbusCodeEstimator.gpsLine(format, new CanbusCodeEstimator.GpsFix(t, 41.3f, 272f, 312.4, 3.0f)));
+        // no altitude, no accuracy, no bearing: dashes; the older constructors give a fix with no altitude
+        assertEquals("2026-10-31 09:15:02.120: 0.0 km/h, -, -",
+                CanbusCodeEstimator.gpsLine(format, new CanbusCodeEstimator.GpsFix(t, 0f)));
+        assertEquals("2026-10-31 09:15:02.120: 12.0 km/h, 90°, -",
+                CanbusCodeEstimator.gpsLine(format, new CanbusCodeEstimator.GpsFix(t, 12f, 90f)));
+        assertEquals("2026-10-31 09:15:02.120: 12.0 km/h, -, 5.0 m",
+                CanbusCodeEstimator.gpsLine(format, new CanbusCodeEstimator.GpsFix(t, 12f, Float.NaN, 5.0, Float.NaN)));
+    }
 }

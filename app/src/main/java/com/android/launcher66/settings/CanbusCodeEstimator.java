@@ -64,16 +64,37 @@ public final class CanbusCodeEstimator {
         public final float kmh;
         /** The direction of travel, degrees 0..360; NaN when the fix has none. */
         public final float bearing;
+        /** The altitude (m) and its accuracy (m, 68 %); NaN when the fix has none. */
+        public final double altitude;
+        public final float accuracy;
 
         public GpsFix(long t, float kmh) {
             this(t, kmh, Float.NaN);
         }
 
         public GpsFix(long t, float kmh, float bearing) {
+            this(t, kmh, bearing, Double.NaN, Float.NaN);
+        }
+
+        public GpsFix(long t, float kmh, float bearing, double altitude, float accuracy) {
             this.t = t;
             this.kmh = kmh;
             this.bearing = bearing;
+            this.altitude = altitude;
+            this.accuracy = accuracy;
         }
+    }
+
+    /**
+     * A fix as a line of the reader's file: {@code 2026-10-31 09:15:02.120: 41.3 km/h, 272°, 312.4 m ±3.0 m}; what the
+     * fix does not have is a dash. No latitude or longitude: where the car was is nobody else's business.
+     */
+    public static String gpsLine(java.text.SimpleDateFormat format, GpsFix f) {
+        String bearing = Float.isNaN(f.bearing) ? "-" : String.format(java.util.Locale.US, "%.0f°", f.bearing);
+        String altitude = Double.isNaN(f.altitude) ? "-" : String.format(java.util.Locale.US, "%.1f m", f.altitude)
+                + (Float.isNaN(f.accuracy) ? "" : String.format(java.util.Locale.US, " ±%.1f m", f.accuracy));
+        return format.format(new java.util.Date(f.t)) + ": " + String.format(java.util.Locale.US, "%.1f km/h", f.kmh) + ", "
+                + bearing + ", " + altitude;
     }
 
     public static final class Guess {

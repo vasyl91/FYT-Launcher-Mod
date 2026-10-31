@@ -45,6 +45,9 @@ import java.util.Locale;
  * slowing down is 0.82 and 0.84 L/h at 10 and 20 km/h against 0.46 and 0.65, and the error at the moment the car
  * goes silent falls from 0.58 to 0.52 L/h.
  *
+ * <p>The road grade: the altitudes of the GPS (with their accuracy) or of a barometer give sin θ over the last 150 m
+ * ({@link RoadGrade}); the car also climbs, so the acceleration in every mode and feature is a + g·sin θ.
+ *
  * <p>Plain Java (no android.*), so that it runs in JVM tests. Not thread-safe: the service uses it on the main
  * thread.
  */
@@ -121,6 +124,9 @@ public final class FuelModel {
     static final int MAX_MASS_KG = 4000;
     static final int MIN_DISPLACEMENT_CC = 600;
     static final int MAX_DISPLACEMENT_CC = 8000;
+    /** The barometer's altitudes: the σ (m), and how old (ms) the last one may be to replace the GPS's. */
+    static final double BARO_SIGMA_M = 0.5;
+    static final long BARO_FRESH_MS = 5_000L;
     /** The starting values: L/h per W of the power at the wheels (Akçelik's 0.09 mL/kJ), a car of 1300 kg. */
     static final double BETA = 3.24e-4;
     static final double DEFAULT_MASS_KG = 1300.0;
@@ -270,6 +276,13 @@ public final class FuelModel {
 
     // the moment, not saved
     private final ArrayDeque<double[]> speeds = new ArrayDeque<>();      // {t, km/h}
+    /** The road: the distance travelled (m), the grade from the altitudes, and where they come from. */
+    private final RoadGrade roadGrade = new RoadGrade();
+    private double distanceM;
+    private long lastBaroT = -1;
+    private long gradeAtT = Long.MIN_VALUE;
+    private double gradeAtDistance = Double.NaN;
+    private double gradeNow;
     private boolean speedFromCan;
     private boolean lowSpeed;
     private long lastSeenT;
@@ -344,6 +357,10 @@ public final class FuelModel {
         lastSeenT = Math.max(lastSeenT, t);
         speedFromCan = fromCan;
         double v = Math.max(0, kmh);
+        if (last != null) {
+            // the road travelled, from the speed: the altitudes are placed on it
+            distanceM += (v + last[1]) / 2 / 3.6 * Math.min(2000L, t - (long) last[0]) / 1000.0;
+        }
         speeds.addLast(new double[]{t, v});
         while (speeds.size() > 2 && t - (long) speeds.peekFirst()[0] > 3 * ACCEL_WINDOW_MS) {
             speeds.pollFirst();
@@ -419,6 +436,32 @@ public final class FuelModel {
         } else {
             idleRpm += IDLE_RPM_ALPHA * (value - idleRpm);
         }
+    }
+
+    /**
+     * An altitude from the GPS (m) with its vertical accuracy (m, as a standard deviation). Not used while the barometer
+     * gives altitudes (a few seconds old at most): the two do not agree on the level.
+     */
+    public void onAltitude(long t, double altitudeM, double sigmaM) {
+        lastSeenT = Math.max(lastSeenT, t);
+        if (lastBaroT >= 0 && t - lastBaroT <= BARO_FRESH_MS) {
+            return;
+        }
+        if (lastBaroT >= 0) {
+            lastBaroT = -1;
+            roadGrade.reset();      // the barometer's altitudes were another level
+        }
+        roadGrade.onAltitude(t, distanceM, altitudeM, sigmaM);
+    }
+
+    /** An altitude from the barometer (m), averaged over about a second: it is exact to 0.5 m and replaces the GPS's. */
+    public void onBarometer(long t, double altitudeM) {
+        lastSeenT = Math.max(lastSeenT, t);
+        if (lastBaroT < 0) {
+            roadGrade.reset();      // the GPS's altitudes were another level
+        }
+        lastBaroT = t;
+        roadGrade.onAltitude(t, distanceM, altitudeM, BARO_SIGMA_M);
     }
 
     /**
@@ -587,9 +630,23 @@ public final class FuelModel {
         return Mode.DRIVING;
     }
 
-    /** m/s²: the acceleration with the grade (sin θ = 0 until the road grade is known). NaN without enough speeds. */
+    /** m/s²: the acceleration plus g·sin θ of the road (the engine also lifts the car). NaN without enough speeds. */
     private double aEff(long now) {
-        return accel(now);
+        double a = accel(now);
+        if (Double.isNaN(a)) {
+            return a;
+        }
+        return a + GRAVITY * grade(now);
+    }
+
+    /** sin θ of the road now; 0 where the altitudes do not tell. */
+    private double grade(long now) {
+        if (now != gradeAtT || distanceM != gradeAtDistance) {
+            gradeNow = roadGrade.grade(now, distanceM);
+            gradeAtT = now;
+            gradeAtDistance = distanceM;
+        }
+        return gradeNow;
     }
 
     // ---------------------------------------------------------------------------------------------

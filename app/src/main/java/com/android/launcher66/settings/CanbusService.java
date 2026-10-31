@@ -17,6 +17,10 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.GradientDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
@@ -213,6 +217,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         accessibilityManager = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
         registerAccessibilityEventListener();
         requestLocationUpdates();
+        registerBarometer();
         
         mPropertyChangeClass.addObserver(Keys.ALLAPPS, this);
         mPropertyChangeClass.addObserver(Keys.FUELSTATS, this);
@@ -265,6 +270,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         saveFuelModel();
         Log.d(TAG, "Service destroyed");
         removeLocationUpdates();
+        unregisterBarometer();
         unregisterAccessibilityEventListener();
         if (hostWait != null) {
             hostWait.cancel();
@@ -1544,10 +1550,70 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
 
-    /** A fix from the location updates: its speed, for the estimate and for the scale of the speed code. */
+    /**
+     * The barometer, if the unit has one: its altitude (about every second, exact to 0.5 m) gives the grade of the road
+     * better than the GPS's; the model takes no altitude from the GPS while it is fresh. The readings are given on the
+     * main thread.
+     */
+    private SensorManager sensorManager;
+    private final SensorEventListener pressureListener = new SensorEventListener() {
+        private double sum;
+        private int count;
+        private long since;
+
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            long now = System.currentTimeMillis();
+            sum += SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, event.values[0]);
+            count++;
+            if (since == 0) {
+                since = now;
+            }
+            if (now - since >= 1000L) {
+                if (fuelModel != null) {
+                    fuelModel.onBarometer(now, sum / count);
+                }
+                sum = 0;
+                count = 0;
+                since = now;
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+
+    private void registerBarometer() {
+        if (sensorManager != null) {
+            return;
+        }
+        SensorManager manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Sensor pressure = manager == null ? null : manager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        if (pressure == null) {
+            return;
+        }
+        if (manager.registerListener(pressureListener, pressure, SensorManager.SENSOR_DELAY_NORMAL, uiHandler)) {
+            sensorManager = manager;
+        }
+    }
+
+    private void unregisterBarometer() {
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(pressureListener);
+            sensorManager = null;
+        }
+    }
+
+    /** A fix from the location updates: its speed, for the estimate and for the scale of the speed code, and its altitude. */
     private void onLocation(Location location) {
         if (location == null || !location.hasSpeed()) {
             return;
+        }
+        if (fuelModel != null && location.hasAltitude()) {
+            // for the grade of the road, also where the speed comes from a code
+            fuelModel.onAltitude(System.currentTimeMillis(), location.getAltitude(),
+                    location.hasVerticalAccuracy() ? location.getVerticalAccuracyMeters() : 10.0);
         }
         double kmh = location.getSpeed() * 3.6;
         onDriving(kmh);

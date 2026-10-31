@@ -400,13 +400,18 @@ public class CanbusCodeInspector extends Service {
                     .format(new Date(startTime)) + ", " + codeInspectorServiceTimeout + " s\n");
             writer.write(carLine() + "\n");
             int withBearing = 0;
+            int withAltitude = 0;
             for (CanbusCodeEstimator.GpsFix f : fixes) {
                 if (!Float.isNaN(f.bearing)) {
                     withBearing++;
                 }
+                if (!Double.isNaN(f.altitude)) {
+                    withAltitude++;
+                }
             }
             writer.write(gpsRecorded
-                    ? "GPS speed: " + fixes.size() + " fixes, with bearing: " + withBearing + "\n"
+                    ? "GPS speed: " + fixes.size() + " fixes, with bearing: " + withBearing + ", with altitude: "
+                            + withAltitude + "\n"
                     : "GPS speed: not recorded (no location permission)\n");
             writer.write("Codes with data: " + withData + " (unchanged: " + unchanged
                     + (skipZeroCodes ? "; " + onlyZero + " sent only 0 and are left out" : "")
@@ -456,6 +461,14 @@ public class CanbusCodeInspector extends Service {
                     for (Event e : list) {
                         writer.write(eventLine(lineTime, e) + "\n");
                     }
+                }
+                writer.write("\n");
+            }
+            // The fixes, to check the grade of the road on the next recordings; no latitude or longitude
+            if (gpsRecorded && !fixes.isEmpty()) {
+                writer.write("GPS:\n");
+                for (CanbusCodeEstimator.GpsFix f : fixes) {
+                    writer.write(CanbusCodeEstimator.gpsLine(lineTime, f) + "\n");
                 }
                 writer.write("\n");
             }
@@ -560,7 +573,9 @@ public class CanbusCodeInspector extends Service {
     private void onLocation(Location location) {
         if (location != null && location.hasSpeed()) {
             gpsFixes.add(new CanbusCodeEstimator.GpsFix(System.currentTimeMillis(), location.getSpeed() * 3.6f,
-                    location.hasBearing() ? location.getBearing() : Float.NaN));
+                    location.hasBearing() ? location.getBearing() : Float.NaN,
+                    location.hasAltitude() ? location.getAltitude() : Double.NaN,
+                    location.hasVerticalAccuracy() ? location.getVerticalAccuracyMeters() : Float.NaN));
         }
     }
 
