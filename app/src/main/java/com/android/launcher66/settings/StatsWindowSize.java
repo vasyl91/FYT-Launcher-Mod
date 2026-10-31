@@ -35,6 +35,21 @@ public final class StatsWindowSize {
     static final String WIDEST_PER_100_KM = "188.8";
     static final String WIDEST_PER_HOUR = "88.8";
     static final String WIDEST_RANGE = "8888";
+    /** The unit of a value in the large and the medium window is this share of the size of the rest of the text. */
+    static final float UNIT_SCALE = 0.75f;
+
+    /**
+     * Where the unit of a formatted value starts: the index of the first character after the number, or -1 when the number
+     * is not in the text. All that follows is the unit (the separator, the unit and the trailing space); a tilde before the
+     * number is not. An index equal to the length means no unit.
+     */
+    static int unitStart(String formatted, String number) {
+        if (formatted == null || number == null || number.isEmpty()) {
+            return -1;
+        }
+        int at = formatted.indexOf(number);
+        return at < 0 ? -1 : at + number.length();
+    }
 
     // ---------------------------------------------------------------------------------------------
     // The arithmetic
@@ -106,16 +121,17 @@ public final class StatsWindowSize {
 
     /** Every text of the consumption value of a size, with its widest number: L/100 km, the estimate, litres per hour. */
     static String[] consumptionVariants(Resources res, int selector) {
-        boolean mini = selector == 2;
+        if (selector == 2) {
+            // no unit in the small window, whatever the unit of the value
+            return new String[]{
+                    res.getString(R.string.instantaneous_consumption_val_mini, WIDEST_PER_100_KM),
+                    res.getString(R.string.instantaneous_consumption_estimated_mini, WIDEST_PER_100_KM)};
+        }
         return new String[]{
-                res.getString(mini ? R.string.instantaneous_consumption_val_mini : R.string.instantaneous_consumption_val,
-                        WIDEST_PER_100_KM),
-                res.getString(mini ? R.string.instantaneous_consumption_estimated_mini : R.string.instantaneous_consumption_estimated,
-                        WIDEST_PER_100_KM),
-                res.getString(mini ? R.string.instantaneous_consumption_idle_mini : R.string.instantaneous_consumption_idle,
-                        WIDEST_PER_HOUR),
-                res.getString(mini ? R.string.instantaneous_consumption_per_hour_mini : R.string.instantaneous_consumption_per_hour,
-                        WIDEST_PER_HOUR)};
+                res.getString(R.string.instantaneous_consumption_val, WIDEST_PER_100_KM),
+                res.getString(R.string.instantaneous_consumption_estimated, WIDEST_PER_100_KM),
+                res.getString(R.string.instantaneous_consumption_idle, WIDEST_PER_HOUR),
+                res.getString(R.string.instantaneous_consumption_per_hour, WIDEST_PER_HOUR)};
     }
 
     /** The text of the range value of a size, with its widest number. */

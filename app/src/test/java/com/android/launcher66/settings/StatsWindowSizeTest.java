@@ -84,4 +84,38 @@ class StatsWindowSizeTest {
         assertEquals(10, wide[0]);
         assertEquals(410, wide[1]);
     }
+
+    @Test
+    void theUnitStartsRightAfterTheNumber() {
+        assertEquals(3, StatsWindowSize.unitStart("4.5 L/100km ", "4.5"));
+        assertEquals(4, StatsWindowSize.unitStart("~4.5 L/100km ", "4.5"));
+        assertEquals(2, StatsWindowSize.unitStart("12 km ", "12"));
+        assertEquals(4, StatsWindowSize.unitStart("~0.9 L/h ", "0.9"));
+        assertEquals(3, StatsWindowSize.unitStart("-.- km ", "-.-"));
+    }
+
+    @Test
+    void theUnitStartsAfterTheNumberInOtherLanguages() {
+        // Polish (values-pl), Greek (values-el) and Arabic (values-ar, right to left)
+        assertEquals(3, StatsWindowSize.unitStart("4,5 L/100km\u0020", "4,5"));
+        assertEquals(3, StatsWindowSize.unitStart("4.5 \u03bb./100 \u03c7\u03bb\u03bc.\u0020", "4.5"));
+        String arabic = "4.5 \u0644\u062a\u0631/100 \u0643\u0645\u0020";
+        assertEquals(3, StatsWindowSize.unitStart(arabic, "4.5"));
+        assertEquals(" \u0644\u062a\u0631/100 \u0643\u0645\u0020", arabic.substring(3));
+    }
+
+    @Test
+    void noNumberMeansNoUnit() {
+        assertEquals(-1, StatsWindowSize.unitStart("L/100km", "4.5"));
+        assertEquals(-1, StatsWindowSize.unitStart("", "4.5"));
+        assertEquals(-1, StatsWindowSize.unitStart(null, "4.5"));
+        assertEquals(-1, StatsWindowSize.unitStart("4.5", ""));
+    }
+
+    @Test
+    void aTextThatEndsWithTheNumberHasNoUnit() {
+        assertEquals(4, StatsWindowSize.unitStart("~4.5", "4.5"));
+        assertEquals("~4.5".length(), StatsWindowSize.unitStart("~4.5", "4.5"));
+        assertEquals("8888".length(), StatsWindowSize.unitStart("8888", "8888"));
+    }
 }

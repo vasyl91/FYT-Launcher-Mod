@@ -28,6 +28,9 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -40,6 +43,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Lifecycle;
@@ -784,11 +788,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
             mileageTextView = absoluteStats.findViewById(R.id.driving_mileage_val);
 
             if (statsWidthSelector == 2) {
-                consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
-                mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val_mini, "-.-"));      
+                setValueText(consumptionTextView, R.string.instantaneous_consumption_val_mini, "0.0");
+                setValueText(mileageTextView, R.string.driving_mileage_val_mini, "-.-");
             } else {
-                consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
-                mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, "-.-"));                
+                setValueText(consumptionTextView, R.string.instantaneous_consumption_val, "0.0");
+                setValueText(mileageTextView, R.string.driving_mileage_val, "-.-");
             }
             
             consumptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic); 
@@ -1386,29 +1390,28 @@ public class CanbusService extends Service implements PropertyChangeListener {
     /** A value in between the estimate and the car's (L/100 km): shown like the estimate, with a tilde. */
     private void setFuelBlendedText(double l100) {
         boolean mini = statsWidthSelector == 2;
-        Context context = consumptionTextView.getContext();
         fuelShownPerHour = false;
-        consumptionTextView.setText(context.getString(
+        setValueText(consumptionTextView,
                 mini ? R.string.instantaneous_consumption_estimated_mini : R.string.instantaneous_consumption_estimated,
-                String.format(Locale.ROOT, "%.1f", l100)));
+                String.format(Locale.ROOT, "%.1f", l100));
     }
 
     /** The text of a value of the car: {@code raw} as L/100 km (× 10) unless {@code shown} says litres per hour. */
     private void setFuelText(int raw, ConsumptionUnits.Shown shown) {
         boolean mini = statsWidthSelector == 2;
-        Context context = consumptionTextView.getContext();
         fuelShownPerHour = shown != null && shown.unit == ConsumptionUnits.Unit.LH;
         if (fuelShownPerHour) {
-            consumptionTextView.setText(context.getString(
-                    mini ? R.string.instantaneous_consumption_per_hour_mini : R.string.instantaneous_consumption_per_hour,
-                    String.format(Locale.ROOT, "%.1f", shown.value)));
+            // the small window shows no unit at all: the number only, as for L/100 km
+            setValueText(consumptionTextView,
+                    mini ? R.string.instantaneous_consumption_val_mini : R.string.instantaneous_consumption_per_hour,
+                    String.format(Locale.ROOT, "%.1f", shown.value));
             return;
         }
         // L/100 km: the value of the car (of the protocol: its own decimal), as it was
         int tenths = shown != null ? (int) Math.round(shown.value * 10) : raw;
-        consumptionTextView.setText(context.getString(
+        setValueText(consumptionTextView,
                 mini ? R.string.instantaneous_consumption_val_mini : R.string.instantaneous_consumption_val,
-                String.format(Locale.getDefault(), "%d.%d", tenths / 10, tenths % 10)));
+                String.format(Locale.getDefault(), "%d.%d", tenths / 10, tenths % 10));
     }
 
     /**
@@ -1421,11 +1424,28 @@ public class CanbusService extends Service implements PropertyChangeListener {
             return false;
         }
         boolean mini = statsWidthSelector == 2;
-        int text = e.perHour
-                ? (mini ? R.string.instantaneous_consumption_idle_mini : R.string.instantaneous_consumption_idle)
-                : (mini ? R.string.instantaneous_consumption_estimated_mini : R.string.instantaneous_consumption_estimated);
-        consumptionTextView.setText(consumptionTextView.getContext().getString(text, e.text()));
+        // the small window has no unit, the tilde alone says it is an estimate
+        int text = mini ? R.string.instantaneous_consumption_estimated_mini
+                : e.perHour ? R.string.instantaneous_consumption_idle : R.string.instantaneous_consumption_estimated;
+        setValueText(consumptionTextView, text, e.text());
         return true;
+    }
+
+    /**
+     * Sets the text of a value from a string resource with the number: in the large and the medium window the unit (all that
+     * follows the number) is {@link StatsWindowSize#UNIT_SCALE} of the size of the rest; the small window has no unit.
+     */
+    private void setValueText(TextView view, @StringRes int resId, String number) {
+        String text = view.getContext().getString(resId, number);
+        int unit = StatsWindowSize.unitStart(text, number);
+        if (statsWidthSelector <= 1 && unit >= 0 && unit < text.length()) {
+            SpannableString span = new SpannableString(text);
+            span.setSpan(new RelativeSizeSpan(StatsWindowSize.UNIT_SCALE), unit, text.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            view.setText(span);
+        } else {
+            view.setText(text);
+        }
     }
 
     /**
@@ -1501,19 +1521,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
             if (absoluteStats.findViewById(R.id.driving_mileage_val) != null) {
                 ((TextView) absoluteStats.findViewById(R.id.driving_mileage_str)).setTextColor(Color.parseColor(textColor));
                 ((TextView) absoluteStats.findViewById(R.id.driving_mileage_val)).setTextColor(Color.parseColor(textColor));
-                if (value > -1 && value < 2001) {
-                    if (statsWidthSelector == 2) {
-                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val_mini, String.valueOf(value)));
-                    } else {
-                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, String.valueOf(value)));              
-                    }
-                } else {
-                    if (statsWidthSelector == 2) {
-                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val_mini, "-.-")); 
-                    } else {
-                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, "-.-"));               
-                    }
-                }
+                boolean known = value > -1 && value < 2001;
+                setValueText(mileageTextView,
+                        statsWidthSelector == 2 ? R.string.driving_mileage_val_mini : R.string.driving_mileage_val,
+                        known ? String.valueOf(value) : "-.-");
             }
         }
     }
