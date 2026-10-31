@@ -157,6 +157,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private Workspace workspaceRef = null;
     private ViewTreeObserver.OnScrollChangedListener workspaceScrollListener = null;
     private WindowManager.LayoutParams statsLayoutParams = null;
+    /** The stats window is in the WindowManager (StatsOverlayAlpha has been told). */
+    private boolean statsWindowAdded;
     private int statsAbsoluteBaseX = 0; // absolute X in pixels (page index * pageWidth + local offset)
     private int statsPageWidth = 0;
     int statsWidth;
@@ -212,6 +214,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
         sRunning = true;
         sInstance = this;
         Log.d(TAG, "Service created");
+        // A limit raised by a process that died without onDestroy goes back now
+        StatsOverlayAlpha.onWindowHiddenNow(this);
         // The application's context: it has the file's path already, this service's would look it up
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
@@ -290,6 +294,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
         removeNotify();
         removeView();
+        StatsOverlayAlpha.onWindowHiddenNow(this);
         Intent broadcastIntent = new Intent(this, ServiceRestarter.class);
         SysCalls.sendBroadcast(CanbusService.this, broadcastIntent);
     }
@@ -900,7 +905,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                         statsHost = new FrameLayout(this);
                         statsHost.addView(absoluteStats, new FrameLayout.LayoutParams(statsWidth, statsHeight));
 
+                        StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
                         wm.addView(statsHost, statsLayoutParams);
+                        onStatsWindowAdded();
                         absoluteStats.setTranslationX(desiredScreenX);
                     } else {
                         // Before Android 14 relayout() waits for WindowManager, which places the
@@ -916,7 +923,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                         statsLayoutParams.x = desiredScreenX;
                         statsLayoutParams.y = placeholderY;
 
+                        StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
                         wm.addView(absoluteStats, statsLayoutParams);
+                        onStatsWindowAdded();
                         absoluteStats.setTranslationX(0f);
                     }
 
@@ -946,7 +955,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                                 statsHost = null;
                                 statsLayoutParams.width = statsWidth;
                             }
+                            StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
                             wm.addView(absoluteStats, statsLayoutParams);
+                            onStatsWindowAdded();
                         }
                     } catch (Exception ex) {
                         Log.w(TAG, "Fallback addView failed: " + ex.getMessage());
@@ -955,7 +966,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
             } else {
                 // mapApp case (no workspace anchoring) — add as before
                 try {
+                    StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
                     wm.addView(absoluteStats, statsLayoutParams);
+                    onStatsWindowAdded();
                 } catch (Exception e) {
                     Log.w(TAG, "addView(mapApp) failed: " + e.getMessage());
                 }
@@ -966,6 +979,20 @@ public class CanbusService extends Service implements PropertyChangeListener {
             mUpdaterDrivingMileage();
             mUpdaterRPM();
         }
+    }
+
+    /** The stats window is in: its limit of obscuring opacity goes to 1, then the window is laid out again. */
+    private void onStatsWindowAdded() {
+        statsWindowAdded = true;
+        StatsOverlayAlpha.onWindowShown(this, () -> {
+            View v = statsHost != null ? statsHost : absoluteStats;
+            if (v == null || v.getParent() == null || statsLayoutParams == null || wm == null) return;
+            try {
+                wm.updateViewLayout(v, statsLayoutParams);
+            } catch (Exception e) {
+                Log.w(TAG, "updateViewLayout after the limit failed: " + e.getMessage());
+            }
+        });
     }
 
     public void removeView() {
@@ -987,6 +1014,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
             } catch (Exception e) {
                 Log.w(TAG, "Error removing stats view: " + e.getMessage());
             } finally {
+                if (statsWindowAdded) {
+                    statsWindowAdded = false;
+                    StatsOverlayAlpha.onWindowHidden(this);
+                }
                 absoluteStats = null;
                 statsHost = null;
                 statsLayoutParams = null;

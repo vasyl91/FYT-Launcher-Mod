@@ -48,6 +48,7 @@ public final class VdHostProtocol {
     static final int TX_SEND_BOOT_COMPLETED = IBinder.FIRST_CALL_TRANSACTION + 13;
     static final int TX_WATCH_FOREGROUND = IBinder.FIRST_CALL_TRANSACTION + 14;
     static final int TX_ALLOW_WRITE_SETTINGS = IBinder.FIRST_CALL_TRANSACTION + 15;
+    static final int TX_SET_OBSCURING_LIMIT = IBinder.FIRST_CALL_TRANSACTION + 16;
 
     /** The handle exec() returns: waitFor() (blocking, the exit code), destroy(). */
     static final int EXEC_WAIT_FOR = IBinder.FIRST_CALL_TRANSACTION;
@@ -295,6 +296,27 @@ public final class VdHostProtocol {
         /** Lets the caller's package write the system settings (the WRITE_SETTINGS app op). */
         public String allowWriteSettings(String packageName) throws RemoteException {
             return packageCall(TX_ALLOW_WRITE_SETTINGS, packageName);
+        }
+
+        /**
+         * Sets Settings.Global maximum_obscuring_opacity_for_touch to value ("0" to "1"), or
+         * deletes it when value is null. An old daemon does not know the call and answers false:
+         * the reply is then null.
+         */
+        public String setObscuringOpacityLimit(String packageName, String value) throws RemoteException {
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(DESCRIPTOR);
+                data.writeString(packageName);
+                data.writeString(value);
+                mRemote.transact(TX_SET_OBSCURING_LIMIT, data, reply, 0);
+                reply.readException();
+                return reply.readString();
+            } finally {
+                reply.recycle();
+                data.recycle();
+            }
         }
 
         /**

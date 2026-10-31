@@ -164,6 +164,20 @@ public class VdHostStub extends Binder {
                     reply.writeString(res);
                     return true;
                 }
+                case VdHostProtocol.TX_SET_OBSCURING_LIMIT: {
+                    String pkg = data.readString();
+                    String value = data.readString();
+                    String res;
+                    long ident = Binder.clearCallingIdentity();
+                    try {
+                        res = mServices.setObscuringOpacityLimit(uid, pkg, value);
+                    } finally {
+                        Binder.restoreCallingIdentity(ident);
+                    }
+                    reply.writeNoException();
+                    reply.writeString(res);
+                    return true;
+                }
                 case VdHostProtocol.TX_WATCH_FOREGROUND: {
                     IBinder callback = data.readStrongBinder();
                     long ident = Binder.clearCallingIdentity();

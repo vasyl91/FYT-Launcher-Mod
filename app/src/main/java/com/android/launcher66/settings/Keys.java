@@ -105,6 +105,10 @@ public final class Keys {
     public static final String MAIN_SCREEN_STATS = "main_screen_stats";
     public static final String COLOR_PICKER = "color_picker";
     public static final String STATS_BG = "stats_bg";
+    /** boolean: we raised maximum_obscuring_opacity_for_touch for the stats window (StatsOverlayAlpha) */
+    public static final String STATS_OBSCURING_RAISED = "stats_obscuring_raised";
+    /** String: the limit before we raised it; no key = the setting did not exist */
+    public static final String STATS_OBSCURING_ORIGINAL = "stats_obscuring_original";
     public static final String BG_DRAWABLE = "bg_drawable";
     public static final String BG_COLOR = "bg_color";
     public static final String BG_COLOR_PICKER = "bg_color_picker";

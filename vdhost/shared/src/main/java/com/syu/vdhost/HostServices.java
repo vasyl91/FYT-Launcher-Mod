@@ -262,6 +262,39 @@ final class HostServices {
     }
 
     // ---------------------------------------------------------------------------------------
+    // Obscuring opacity limit
+    // ---------------------------------------------------------------------------------------
+
+    private static final String OBSCURING_KEY = "maximum_obscuring_opacity_for_touch";
+
+    /**
+     * Sets Settings.Global maximum_obscuring_opacity_for_touch (the alpha above which the system
+     * caps a not-touchable overlay window) to value, 0 to 1, or deletes it for null. Only that key.
+     */
+    String setObscuringOpacityLimit(int callerUid, String pkg, String value) {
+        if (pkg == null || !VdHostCore.isPackageOfUid(pkg, callerUid)) {
+            throw new SecurityException(pkg + " is not a package of uid " + callerUid);
+        }
+        String result;
+        if (value == null) {
+            result = VdHostCore.runCommand(null, "/system/bin/settings", "delete", "global", OBSCURING_KEY);
+        } else {
+            float f;
+            try {
+                f = Float.parseFloat(value);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("not a number: " + value);
+            }
+            if (!(f >= 0f && f <= 1f)) {
+                throw new IllegalArgumentException("out of [0, 1]: " + value);
+            }
+            result = VdHostCore.runCommand(null, "/system/bin/settings", "put", "global", OBSCURING_KEY, value);
+        }
+        Log.i(TAG, OBSCURING_KEY + " = " + value + " for " + pkg + ": " + result);
+        return result;
+    }
+
+    // ---------------------------------------------------------------------------------------
     // Foreground app
     // ---------------------------------------------------------------------------------------
 

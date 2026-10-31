@@ -199,6 +199,15 @@ public final class WindowHostVdClient {
         return host != null ? host.allowWriteSettings(pkg) : null;
     }
 
+    /**
+     * See VdHostProtocol.Proxy.setObscuringOpacityLimit(). Blocking.
+     * @return the report, null without a host or from a daemon that does not know the call
+     */
+    public static String setObscuringOpacityLimit(String pkg, String value) throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        return host != null ? host.setObscuringOpacityLimit(pkg, value) : null;
+    }
+
     /** See VdHostProtocol.Proxy.watchForeground(). @return false without a host */
     public static boolean watchForeground(IBinder callback) throws RemoteException {
         VdHostProtocol.Proxy host = privilegedHost();
