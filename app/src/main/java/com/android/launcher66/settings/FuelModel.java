@@ -110,6 +110,13 @@ public final class FuelModel {
     static final double EDGE_SCALE_KMH = 10.0;
     /** The car's value must come back within this time (ms) of the last estimate to teach the edge. */
     static final long EDGE_RETURN_MS = 3000L;
+    /**
+     * The car's value back after an estimate: a jump of this much (L/100 km) or more from the value shown is shown in steps
+     * (half way each time), at most this many, and for at most this long (ms) from the first one.
+     */
+    static final double BLEND_MIN_STEP_L100 = 2.5;
+    static final int BLEND_MAX_STEPS = 3;
+    static final long BLEND_MAX_MS = 5_000L;
     /** The RPM: older than this (ms) it is unknown; the idle RPM until it is learned; the weight of each stop. */
     static final long RPM_FRESH_MS = 5_000L;
     static final double DEFAULT_IDLE_RPM = 800.0;
@@ -309,6 +316,14 @@ public final class FuelModel {
     private long biasOverrunT = -1;
     private long lastEstimateT = -1;
     private double lastEstimateLph;
+    /** The last estimate shown while driving, in L/100 km (also when it was shown in L/h), for the steps back to the car's value. */
+    private double lastEstimateL100 = Double.NaN;
+    /** The value in between shown instead of the car's (L/100 km); NaN = the car's own. Only for display. */
+    private double blendL100 = Double.NaN;
+    private int blendSteps;
+    private long blendStartT;
+    /** An estimate was shown and the car's value has not come back since: one way back per estimate. */
+    private boolean blendArmed;
     private double lastEdgeApplied;
 
     public FuelModel() {
@@ -478,10 +493,15 @@ public final class FuelModel {
             fuelSaysNothing = false;
             double carLph = value / 10.0 * kmh() / 100.0;
             if (moving) {
+                // before learnEdge(), which forgets when the estimate was shown
+                blend(t, value / 10.0);
                 learnEdge(t, carLph);
                 learnBias(t, carLph, a);
                 lastCarT = t;
                 lastCarLph = carLph;
+            }
+            if (!moving) {
+                blendL100 = Double.NaN;
             }
             smoothedLph = Double.NaN;       // the next estimate starts afresh, from the car's last value
             slowing = false;
@@ -490,7 +510,9 @@ public final class FuelModel {
             }
         } else if (value == 0 && !moving) {
             fuelSaysNothing = false;        // 0 at a stop: the car's own value
+            blendL100 = Double.NaN;
         } else {
+            blendL100 = Double.NaN;
             // "no value" (65535 and the like), 0 while driving, or a value the widget would not show
             fuelSaysNothing = true;
             if (moving) {
@@ -503,6 +525,41 @@ public final class FuelModel {
                 thresholdKmh = Math.max(5, Math.min(150, thresholdKmh));
             }
         }
+    }
+
+    /**
+     * The car's value is back soon after an estimate: a jump of 2.5 L/100 km or more from the value shown (the estimate, then
+     * each value in between) is shown half way, for at most 3 values and 5 s. Only the display: the model learns from the
+     * car's own value.
+     */
+    private void blend(long t, double carL100) {
+        boolean going = !Double.isNaN(blendL100);
+        boolean estimateJustShown = blendArmed && lastEstimateT >= 0 && t - lastEstimateT <= EDGE_RETURN_MS
+                && !Double.isNaN(lastEstimateL100);
+        blendArmed = false;
+        if (!going && !estimateJustShown) {
+            return;
+        }
+        double prev = going ? blendL100 : lastEstimateL100;
+        if (!going) {
+            blendSteps = 0;
+            blendStartT = t;
+        }
+        if (Math.abs(carL100 - prev) >= BLEND_MIN_STEP_L100 && blendSteps < BLEND_MAX_STEPS
+                && t - blendStartT <= BLEND_MAX_MS) {
+            blendL100 = (prev + carL100) / 2;
+            blendSteps++;
+        } else {
+            blendL100 = Double.NaN;
+        }
+    }
+
+    /**
+     * The value in between (L/100 km) to show instead of the car's last one while it comes back from an estimate in steps;
+     * NaN = show the car's own value.
+     */
+    public double blendedCarL100() {
+        return blendL100;
     }
 
     /** The car's value is back while speeding up, soon after an estimate: how far the model was below it. */
@@ -683,6 +740,7 @@ public final class FuelModel {
         if (kmh > thresholdKmh + NO_ESTIMATE_ABOVE_KMH) {
             return null;
         }
+        blendL100 = Double.NaN;     // the estimate is shown: the way back starts afresh
         boolean moving = isMoving();
         double a = aEff(now);
         Mode mode = mode(now, a);
@@ -714,11 +772,13 @@ public final class FuelModel {
             return new Estimate(smoothedLph, true);
         }
         lastEstimateT = now;
+        blendArmed = true;
+        lastEstimateL100 = Math.min(MAX_L_PER_100KM, smoothedLph / kmh * 100.0);
         if (slowing || lowSpeed) {
             lastEstimateLph = smoothedLph;
             return new Estimate(smoothedLph, true);
         }
-        double value = Math.min(MAX_L_PER_100KM, smoothedLph / kmh * 100.0);
+        double value = lastEstimateL100;
         lastEstimateLph = value * kmh / 100.0;
         return new Estimate(value, false);
     }

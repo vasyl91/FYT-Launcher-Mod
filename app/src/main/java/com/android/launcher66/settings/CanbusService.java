@@ -1356,7 +1356,14 @@ public class CanbusService extends Service implements PropertyChangeListener {
         ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
         ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
         if (value > 0 && value < 3001) {
-            setFuelText(value, carValueShown(value));
+            ConsumptionUnits.Shown shown = carValueShown(value);
+            double blended = fuelModel != null ? fuelModel.blendedCarL100() : Double.NaN;
+            if (!Double.isNaN(blended) && (shown == null || shown.unit != ConsumptionUnits.Unit.LH)) {
+                // coming back from the estimate by a large jump: a value in between, with a tilde as the estimate has
+                setFuelBlendedText(blended);
+            } else {
+                setFuelText(value, shown);
+            }
         } else if (!showFuelEstimate()) {
             // No value from the car, and no estimate (none learned yet, or no fuel code)
             setFuelText(0, value == 0 ? carValueShown(0) : null);
@@ -1374,6 +1381,16 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
         return ConsumptionUnits.forCarValue(value, protocol, model.thresholdCar(), model.lowSpeed(),
                 model.speedKnown(System.currentTimeMillis()), model.speedKmh(), model.isMoving());
+    }
+
+    /** A value in between the estimate and the car's (L/100 km): shown like the estimate, with a tilde. */
+    private void setFuelBlendedText(double l100) {
+        boolean mini = statsWidthSelector == 2;
+        Context context = consumptionTextView.getContext();
+        fuelShownPerHour = false;
+        consumptionTextView.setText(context.getString(
+                mini ? R.string.instantaneous_consumption_estimated_mini : R.string.instantaneous_consumption_estimated,
+                String.format(Locale.ROOT, "%.1f", l100)));
     }
 
     /** The text of a value of the car: {@code raw} as L/100 km (× 10) unless {@code shown} says litres per hour. */

@@ -321,6 +321,166 @@ class FuelModelTest {
         assertTrue(last < first * 0.5, "the first jump " + first + ", the last ones " + last);
     }
 
+    // ---- the car's value back after an estimate: a large jump is shown in steps ----
+
+    /** A calibrated model that shows an estimate at a steady 33 km/h; {t, estimate in L/100 km}. */
+    private static final class Steady {
+        final FuelModel m = new FuelModel();
+        long t;
+        double estimate;
+
+        Steady() {
+            t = drive(m, new Random(1), 0, 900, 30, 0.9);
+            // speeding up to 33 km/h and staying there (above 13 km/h, in L/100 km), the car silent: the estimate
+            FuelModel.Estimate e = null;
+            double kmh = 15;
+            for (int i = 0; i < 100; i++, t += 200) {
+                kmh = Math.min(33, kmh + 0.3);
+                m.onSpeed(t, kmh, true);
+                if (i % 5 == 0) {
+                    m.onFuel(t, 65535);
+                }
+                e = m.estimate(t);
+            }
+            assertNotNull(e);
+            assertFalse(e.perHour);
+            estimate = e.value;
+        }
+
+        /** The car's value (L/100 km) arrives {@code afterMs} later at the same speed; the value to show instead, or NaN. */
+        double car(double l100, long afterMs) {
+            t += afterMs;
+            m.onSpeed(t, 33, true);
+            m.onFuel(t, (int) Math.round(l100 * 10));
+            return m.blendedCarL100();
+        }
+    }
+
+    @Test
+    void aLargeJumpBackToTheCarsValueIsShownInSteps() {
+        Steady s = new Steady();
+        double e = s.estimate;
+        // the estimate, then three values of the car while speeding up across the threshold
+        double first = s.car(e + 3.6, 200);
+        assertEquals(e + 1.8, first, 0.06);
+        double second = s.car(e + 5.6, 1000);       // |5.6 - 1.8| = 3.8
+        assertEquals((first + e + 5.6) / 2, second, 0.06);
+        assertTrue(second > first);
+        // |5.9 - 3.7| = 2.2 < 2.5: the car's value
+        assertTrue(Double.isNaN(s.car(e + 5.9, 1000)));
+    }
+
+    @Test
+    void theStepsGoDownAsWellAsUp() {
+        Steady s = new Steady();
+        double e = s.estimate;
+        double first = s.car(e + 6.0, 200);
+        assertEquals(e + 3.0, first, 0.06);
+        // the car's value falls below the value shown: the same, the other way
+        double down = s.car(e - 0.4, 1000);
+        assertEquals((first + e - 0.4) / 2, down, 0.06);
+        assertTrue(down < first);
+    }
+
+    @Test
+    void aSmallJumpIsTheCarsValueAtOnce() {
+        Steady s = new Steady();
+        assertTrue(Double.isNaN(s.car(s.estimate + 2.4, 200)));
+        // and once the car's value is shown, a later jump is not the estimate's business
+        assertTrue(Double.isNaN(s.car(s.estimate + 8.0, 1000)));
+    }
+
+    @Test
+    void aCarThatKeepsTalkingHasNoSteps() {
+        FuelModel m = new FuelModel();
+        long t = drive(m, new Random(1), 0, 900, 30, 0.9);
+        // no estimate was shown before: a value far from anything is the car's value
+        m.onSpeed(t + 200, 40, true);
+        m.onFuel(t + 200, 150);
+        assertTrue(Double.isNaN(m.blendedCarL100()));
+        m.onSpeed(t + 1200, 40, true);
+        m.onFuel(t + 1200, 300);
+        assertTrue(Double.isNaN(m.blendedCarL100()));
+    }
+
+    @Test
+    void anOldEstimateIsNotSteppedBackFrom() {
+        Steady s = new Steady();
+        // the car's value comes back more than 3 s after the estimate (EDGE_RETURN_MS)
+        assertTrue(Double.isNaN(s.car(s.estimate + 6, FuelModel.EDGE_RETURN_MS + 500)));
+    }
+
+    @Test
+    void theStepsStopAfterThree() {
+        Steady s = new Steady();
+        double e = s.estimate;
+        double car = e;
+        // the car's value grows by 6 L/100 km every second: 3 values in between, then its own
+        for (int i = 1; i <= 3; i++) {
+            car += 6;
+            assertFalse(Double.isNaN(s.car(car, i == 1 ? 200 : 1000)), "step " + i);
+        }
+        car += 6;
+        assertTrue(Double.isNaN(s.car(car, 1000)), "the fourth is the car's");
+    }
+
+    @Test
+    void theStepsStopAfterFiveSeconds() {
+        Steady s = new Steady();
+        double e = s.estimate;
+        assertFalse(Double.isNaN(s.car(e + 6, 200)));
+        assertFalse(Double.isNaN(s.car(e + 12, 2500)));
+        // 5.2 s after the first one
+        assertTrue(Double.isNaN(s.car(e + 18, 2600)));
+    }
+
+    @Test
+    void noValueOrACutOffEndTheSteps() {
+        Steady s = new Steady();
+        assertFalse(Double.isNaN(s.car(s.estimate + 6, 200)));
+        s.t += 300;
+        s.m.onSpeed(s.t, 33, true);
+        s.m.onFuel(s.t, 65535);
+        assertTrue(Double.isNaN(s.m.blendedCarL100()));
+
+        Steady z = new Steady();
+        assertFalse(Double.isNaN(z.car(z.estimate + 6, 200)));
+        // the fuel is cut while slowing down: the car's own 0
+        z.t += 1000;
+        z.m.onSpeed(z.t - 200, 36, true);
+        z.m.onSpeed(z.t, 33, true);
+        z.m.onFuel(z.t, 0);
+        assertTrue(Double.isNaN(z.m.blendedCarL100()));
+    }
+
+    @Test
+    void anEstimateInLitresPerHourIsSteppedBackFromInLitresPer100Km() {
+        FuelModel m = new FuelModel();
+        DoubleUnaryOperator owner = k -> 0.9 + 0.03 * (k - 30);
+        long t = drive(m, new Random(2), 0, 900, 30, owner);
+        double[] kmh = {35};
+        Car car = aboveThirty(owner, 0);
+        t = ride(m, t, kmh, 0, 0, 6, car, new Log());
+        // slowing down below the threshold: the estimate is in L/h, the car silent
+        for (int i = 0; kmh[0] > 22; i++, t += 200) {
+            kmh[0] -= 0.8 * 3.6 * 0.2;
+            m.onSpeed(t, kmh[0], true);
+            if (i % 5 == 0) {
+                m.onFuel(t, car.value(kmh[0], -0.8));
+            }
+        }
+        FuelModel.Estimate e = m.estimate(t);
+        assertNotNull(e);
+        assertTrue(e.perHour);
+        double shownSpeed = kmh[0];
+        double expected = e.value / shownSpeed * 100.0;
+        // speeding up past the threshold: the car's value is back, 8 L/100 km above that of the estimate
+        t += 200;
+        m.onSpeed(t, shownSpeed, true);
+        m.onFuel(t, (int) Math.round((expected + 8) * 10));
+        assertEquals(expected + 4, m.blendedCarL100(), 0.1);
+    }
+
     @Test
     void theEdgeCorrectionReadsBack() {
         FuelModel m = new FuelModel();
