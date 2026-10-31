@@ -301,6 +301,8 @@ public class SettingsActivity extends AppCompatActivity {
         adaptiveNameTextSize = !proportional ? calculateAdaptiveTextSize(orientationDimension, 40)
                 : Math.round(calculateAdaptiveTextSize(ScreenScale.REFERENCE_LONG_SIDE_PX, 40)
                         * orientationDimension / (float) ScreenScale.REFERENCE_LONG_SIDE_PX);
+        // The font and the widths of the statistics window: the settings may run on their own, before the launcher
+        StatsWindowSize.ensureSaved(this, PreferenceManager.getDefaultSharedPreferences(this));
     }
 
     public int calculateDimension(int dimension, double percentage) {

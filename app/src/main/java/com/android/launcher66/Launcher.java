@@ -1878,6 +1878,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         textSizeTitle = calculateAdaptiveTextSize(orientationDimension, 22);
         textSizeArtist = calculateAdaptiveTextSize(orientationDimension, 16);
         textSizeWorkspace = calculateAdaptiveTextSize(orientationDimension, 32);
+        // The font and the widths of the statistics window, worked out once for this language and screen
+        if (mPrefs != null) {
+            com.android.launcher66.settings.StatsWindowSize.ensureSaved(this, mPrefs);
+        }
 
         // RecyclerView
         leftBarIconMargin = calculateDimension(screenHeight, 3.2);

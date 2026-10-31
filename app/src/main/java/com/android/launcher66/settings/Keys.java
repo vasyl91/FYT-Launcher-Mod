@@ -91,6 +91,13 @@ public final class Keys {
     public static final String RADIO_SCREEN = "radio_screen";
     public static final String STATS_SCREEN = "stats_screen";
     public static final String STATS_WIDTH = "stats_width";
+    /** The text size (px, float) of the statistics window, the same in its three sizes, worked out once. */
+    public static final String STATS_FONT_PX = "stats_font_px";
+    /** The width (px, int) of the large and the medium statistics window, worked out once. */
+    public static final String STATS_WIDTH_LARGE_PX = "stats_width_large_px";
+    public static final String STATS_WIDTH_MEDIUM_PX = "stats_width_medium_px";
+    /** What the three values above were worked out for (language, screen, font scale); they change with it. */
+    public static final String STATS_GEOMETRY_TAG = "stats_geometry_tag";
     public static final String STATS_WIDTH_SELECTOR = "stats_width_selector";
     public static final String STATS_CODES = "stats_codes";
     /** The canbus code of the speed for the fuel estimate; "0" or none = the code reader's, else the GPS. */

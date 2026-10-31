@@ -1,40 +1,50 @@
 package com.android.launcher66.settings;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Launcher;
 import com.android.launcher66.R;
 
+import java.util.Locale;
+
 /**
- * The width of the statistics window (consumption and range) in its three sizes: large, medium (short labels) and small
- * (no labels). A size is a share of the screen. Only the large window grows, by at most 15 %, when its widest text does not
- * fit in the standard font, so that its font does not change with the unit or the value (L/100 km and L/h are different
- * texts); the medium and the small window are exactly their share of the screen. The editors and the window use the same
- * widths. The arithmetic is plain, for JVM tests.
+ * The font and the width of the statistics window (consumption and range) in its three sizes: large, medium (short labels)
+ * and small (no labels, no units). The font is one for the three windows and comes from the small one, which has the least
+ * room (never larger than the launcher's standard text size). The large and the medium window are as wide as their longer
+ * line needs: the label, two spaces (one is room for a comma or a fourth digit), three digits and the longest unit of the
+ * line (the units are {@link #UNIT_SCALE} of the size of the rest). The small window is 5 % narrower than a quarter of the
+ * screen. The font and the two widths are worked out once, saved in the preferences, and worked out again only when the
+ * language, the screen or the system font scale change; the editors and the window use the same values. The arithmetic is
+ * plain, for JVM tests; only the measuring of the text needs a Context.
  */
 public final class StatsWindowSize {
+
+    private static final String TAG = "StatsWindowSize";
 
     private StatsWindowSize() {
         throw new AssertionError("No instances.");
     }
 
-    /** The widest text must take no more than this share of the window. */
+    /** The widest text of the small window must take no more than this share of the window. */
     static final double ROW_FILL = 0.95;
-    /** A window grows by at most this much of its share of the screen. */
-    static final double MAX_GROWTH = 1.15;
-    /** The numbers that make the widest text of each kind of value. */
-    static final String WIDEST_PER_100_KM = "188.8";
-    static final String WIDEST_PER_HOUR = "88.8";
-    static final String WIDEST_RANGE = "8888";
+    /** The small window is this share of a quarter of the screen. */
+    static final double SMALL_FACTOR = 0.95;
+    /** The rule of the saved widths changes: raise it to have them worked out again. */
+    static final String TAG_VERSION = "v1";
     /** The unit of a value in the large and the medium window is this share of the size of the rest of the text. */
     static final float UNIT_SCALE = 0.75f;
 
@@ -50,6 +60,7 @@ public final class StatsWindowSize {
         int at = formatted.indexOf(number);
         return at < 0 ? -1 : at + number.length();
     }
+
 
     // ---------------------------------------------------------------------------------------------
     // The arithmetic
@@ -67,18 +78,60 @@ public final class StatsWindowSize {
         }
     }
 
+    /** The small window: 5 % narrower than a quarter of the screen. */
+    static int smallWidth(int fullWidth) {
+        return (int) Math.round(baseWidth(2, fullWidth) * SMALL_FACTOR);
+    }
+
     /**
-     * The large window: the share of the screen, longer where the text needs it, by up to 15 %, and never wider than the
-     * screen less the margins.
-     *
-     * @param baseWidth   the share of the screen of the size
-     * @param requiredPx  the width the widest text needs
-     * @param screenWidth the width of the screen
-     * @param margin      the margin on each side
+     * How much the text of a font has to shrink to fit a window: the width of its widest line (px, at the font measured) must
+     * take no more than {@code fill} of the window less the background, and two lines of it no more than 90 % of the
+     * height. 1 where it fits; a divisor of 0 or less leaves that condition out.
      */
-    static int windowWidth(int baseWidth, int requiredPx, int screenWidth, int margin) {
-        int limit = Math.min(Math.max(0, screenWidth - 2 * margin), (int) Math.round(MAX_GROWTH * baseWidth));
-        return Math.min(limit, Math.max(baseWidth, requiredPx));
+    static float fitScale(float widestPx, double fill, int width, int padding, float lineHeightPx, int height) {
+        float scale = 1f;
+        // Some room to spare: two rows exactly as tall as the window lost a pixel to rounding, and the column then wrapped
+        // the second row out of the window (the narrowest window, where the height decides).
+        if (lineHeightPx > 0f) scale = Math.min(scale, (float) (0.9 * height / 2 / lineHeightPx));
+        if (widestPx > 0f) scale = Math.min(scale, (float) (fill * (width - padding) / widestPx));
+        return scale;
+    }
+
+    /**
+     * The scale of the standard font that fits the small window: its widest line ("~88.8 " or "8888 ", px at the standard
+     * font) in {@link #ROW_FILL} of the window less the background, two lines in 90 % of the height; never above 1.
+     */
+    static float fontScale(float widestSmallPx, float lineHeightPx, int smallWidth, int padding, int statsHeight) {
+        return fitScale(widestSmallPx, ROW_FILL, smallWidth, padding, lineHeightPx, statsHeight);
+    }
+
+    /**
+     * The width of a line of the large or the medium window (px): the label, a space between it and the value, the room for
+     * a comma or a fourth digit (a space, or the width of that character where it is wider: a range of up to 2000 km has
+     * four digits, wider than two spaces and three digits), the tilde, three digits, and the unit at {@link #UNIT_SCALE}.
+     */
+    static float lineWidth(float labelPx, float spacePx, float reservePx, float tildePx, float digitsPx, float unitPx) {
+        return labelPx + spacePx + Math.max(spacePx, reservePx) + tildePx + digitsPx + UNIT_SCALE * unitPx;
+    }
+
+    /** The width of a window from its longer line, with the background. */
+    static int textWidth(float consumptionLine, float rangeLine, int padding) {
+        return (int) Math.ceil(Math.max(consumptionLine, rangeLine)) + padding;
+    }
+
+    /** A width within the screen less the margins on both sides. */
+    static int clampToScreen(int width, int screenWidth, int margin) {
+        return Math.min(width, Math.max(0, screenWidth - 2 * margin));
+    }
+
+    /** What the saved values depend on: they are worked out again when it changes. */
+    static String geometryTag(String languageTag, int orientationDimension, int statsHeight, int densityDpi, float fontScale) {
+        return TAG_VERSION + "|" + languageTag + "|" + orientationDimension + "|" + statsHeight + "|" + densityDpi + "|" + fontScale;
+    }
+
+    /** Whether the saved values are missing or were worked out for another geometry. */
+    static boolean needsRecompute(boolean hasFont, boolean hasLarge, boolean hasMedium, String savedTag, String tag) {
+        return !hasFont || !hasLarge || !hasMedium || savedTag == null || !savedTag.equals(tag);
     }
 
     /**
@@ -119,63 +172,34 @@ public final class StatsWindowSize {
         return res.getString(selector == 1 ? R.string.driving_mileage_mini : R.string.driving_mileage);
     }
 
-    /** Every text of the consumption value of a size, with its widest number: L/100 km, the estimate, litres per hour. */
-    static String[] consumptionVariants(Resources res, int selector) {
-        if (selector == 2) {
-            // no unit in the small window, whatever the unit of the value
-            return new String[]{
-                    res.getString(R.string.instantaneous_consumption_val_mini, WIDEST_PER_100_KM),
-                    res.getString(R.string.instantaneous_consumption_estimated_mini, WIDEST_PER_100_KM)};
-        }
-        return new String[]{
-                res.getString(R.string.instantaneous_consumption_val, WIDEST_PER_100_KM),
-                res.getString(R.string.instantaneous_consumption_estimated, WIDEST_PER_100_KM),
-                res.getString(R.string.instantaneous_consumption_idle, WIDEST_PER_HOUR),
-                res.getString(R.string.instantaneous_consumption_per_hour, WIDEST_PER_HOUR)};
-    }
-
-    /** The text of the range value of a size, with its widest number. */
-    static String[] rangeVariants(Resources res, int selector) {
-        return new String[]{res.getString(selector == 2 ? R.string.driving_mileage_val_mini : R.string.driving_mileage_val,
-                WIDEST_RANGE)};
-    }
-
-    /** All the texts of the values of a size: the consumption ones, then the range one. */
-    static String[] valueVariants(Resources res, int selector) {
-        String[] consumption = consumptionVariants(res, selector);
-        String[] range = rangeVariants(res, selector);
-        String[] all = new String[consumption.length + range.length];
-        System.arraycopy(consumption, 0, all, 0, consumption.length);
-        System.arraycopy(range, 0, all, consumption.length, range.length);
-        return all;
-    }
-
-    /** The width of a row: its label and the widest of the texts of its value. */
-    static float rowWidth(TextPaint paint, String label, String[] variants) {
-        float widest = 0f;
-        for (String v : variants) {
-            widest = Math.max(widest, paint.measureText(v));
-        }
-        return paint.measureText(label) + widest;
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    // The width in a window
-    // ---------------------------------------------------------------------------------------------
-
     /** The text size (sp) of the window: the launcher's, else (the settings run alone) calculated the same way. */
     static int textSizeSp() {
         return Launcher.textSizeBasic > 0 ? Launcher.textSizeBasic : textSizeSp(SettingsActivity.orientationDimension);
     }
 
-    /** The paint of the values of the window at the standard text size: the typeface of its layout. */
-    private static TextPaint measuringPaint(Context context) {
-        Resources res = context.getResources();
+    private static int fullWidth() {
+        return SettingsActivity.calculatedStatsWidth > 0 ? SettingsActivity.calculatedStatsWidth : Launcher.calculatedStatsWidth;
+    }
+
+    private static int statsHeight() {
+        return SettingsActivity.calculatedStatsHeight > 0 ? SettingsActivity.calculatedStatsHeight : Launcher.calculatedStatsHeight;
+    }
+
+    private static int orientationDimension() {
+        return Launcher.orientationDimension > 0 ? Launcher.orientationDimension : SettingsActivity.orientationDimension;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // The measuring (needs a Context)
+    // ---------------------------------------------------------------------------------------------
+
+    /** The paint of the values of the window at a text size (px): the typeface of its layout. */
+    private static TextPaint measuringPaint(Context context, float px) {
         TextView value = (TextView) LayoutInflater.from(context).inflate(R.layout.absolute_stats, null)
                 .findViewById(R.id.instantaneous_consumption_val);
         TextPaint paint = new TextPaint();
         paint.set(value.getPaint());
-        paint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSizeSp(), res.getDisplayMetrics()));
+        paint.setTextSize(px);
         return paint;
     }
 
@@ -186,17 +210,122 @@ public final class StatsWindowSize {
         return background != null && background.getPadding(padding) ? padding.left + padding.right : 0;
     }
 
-    /** The width the widest row of a size needs at the standard text size, to fill 95 % of the window, with the background. */
-    static int requiredWidthPx(Context context, int selector) {
-        if (textSizeSp() <= 0) {
-            return 0;
-        }
+    /** The unit of a value: all that follows the number in its text (with the separator and the trailing space). */
+    private static String unitOf(Resources res, int resId) {
+        String text = res.getString(resId, "888");
+        int start = unitStart(text, "888");
+        return start < 0 ? "" : text.substring(start);
+    }
+
+    /** The widest line of the small window at a text size (px): the estimate with its tilde, or the range of four digits. */
+    private static float smallTextWidth(Context context, TextPaint paint) {
         Resources res = context.getResources();
-        TextPaint paint = measuringPaint(context);
-        float row = Math.max(
-                rowWidth(paint, label(res, selector, true), consumptionVariants(res, selector)),
-                rowWidth(paint, label(res, selector, false), rangeVariants(res, selector)));
-        return (int) Math.ceil(row / ROW_FILL) + backgroundPadding(context);
+        return Math.max(paint.measureText(res.getString(R.string.instantaneous_consumption_estimated_mini, "88.8")),
+                paint.measureText(res.getString(R.string.driving_mileage_val_mini, "8888")));
+    }
+
+    /**
+     * The widths (px) of the two lines of the large (0) or the medium (1) window at a text size (px): {consumption, range},
+     * each with its label, the room for the value and its longest unit. The window and the saved widths measure the same way.
+     */
+    static float[] lineWidths(Context context, int selector, float fontPx) {
+        Resources res = context.getResources();
+        TextPaint paint = measuringPaint(context, fontPx);
+        float space = paint.measureText("\u0020");
+        float digits = paint.measureText("888");
+        float consumptionUnit = Math.max(
+                paint.measureText(unitOf(res, R.string.instantaneous_consumption_val)),
+                paint.measureText(unitOf(res, R.string.instantaneous_consumption_per_hour)));
+        float rangeUnit = paint.measureText(unitOf(res, R.string.driving_mileage_val));
+        float consumption = lineWidth(paint.measureText(label(res, selector, true)), space, paint.measureText("."),
+                paint.measureText("~"), digits, consumptionUnit);
+        float range = lineWidth(paint.measureText(label(res, selector, false)), space, paint.measureText("8"), 0f, digits,
+                rangeUnit);
+        return new float[]{consumption, range};
+    }
+
+    /**
+     * The scale that makes the text of a window at the text size {@code fontPx} fit it, 1 if it fits: the safety of the
+     * window, for a width cut to the screen or a margin changed since the widths were saved. The same rules as the saved
+     * widths come from (the small window keeps its margin from the background).
+     */
+    static float fitScaleOfWindow(Context context, int selector, float fontPx, int width, int height) {
+        TextPaint paint = measuringPaint(context, fontPx);
+        Paint.FontMetrics fm = paint.getFontMetrics();
+        float lineHeight = fm.bottom - fm.top;
+        int padding = backgroundPadding(context);
+        if (selector == 2) {
+            return fitScale(smallTextWidth(context, paint), ROW_FILL, width, padding, lineHeight, height);
+        }
+        float[] lines = lineWidths(context, selector, fontPx);
+        return fitScale(Math.max(lines[0], lines[1]), 1.0, width, padding, lineHeight, height);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // The saved values
+    // ---------------------------------------------------------------------------------------------
+
+    private static String currentTag(Context context) {
+        Configuration c = context.getResources().getConfiguration();
+        return geometryTag(Locale.getDefault().toLanguageTag(), orientationDimension(), statsHeight(), c.densityDpi,
+                c.fontScale);
+    }
+
+    /**
+     * Works out the font and the widths of the large and the medium window and saves them, unless they are saved for this
+     * language and screen. Quick when they are (a few reads of the preferences). Main thread; the measuring has no I/O and
+     * the save is an apply().
+     */
+    public static void ensureSaved(Context context, SharedPreferences prefs) {
+        if (context == null || prefs == null) {
+            return;
+        }
+        Context app = context.getApplicationContext() != null ? context.getApplicationContext() : context;
+        String tag = currentTag(app);
+        if (!needsRecompute(prefs.contains(Keys.STATS_FONT_PX), prefs.contains(Keys.STATS_WIDTH_LARGE_PX),
+                prefs.contains(Keys.STATS_WIDTH_MEDIUM_PX), prefs.getString(Keys.STATS_GEOMETRY_TAG, null), tag)) {
+            return;
+        }
+        int full = fullWidth();
+        int height = statsHeight();
+        if (textSizeSp() <= 0 || full <= 0 || height <= 0) {
+            return; // the dimensions are not calculated yet: nothing to save
+        }
+        int padding = backgroundPadding(app);
+        float basePx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSizeSp(), app.getResources().getDisplayMetrics());
+        TextPaint paint = measuringPaint(app, basePx);
+        Paint.FontMetrics fm = paint.getFontMetrics();
+        float fontPx = basePx * fontScale(smallTextWidth(app, paint), fm.bottom - fm.top, smallWidth(full), padding, height);
+        float[] large = lineWidths(app, 0, fontPx);
+        float[] medium = lineWidths(app, 1, fontPx);
+        int largeWidth = textWidth(large[0], large[1], padding);
+        int mediumWidth = textWidth(medium[0], medium[1], padding);
+        prefs.edit()
+                .putFloat(Keys.STATS_FONT_PX, fontPx)
+                .putInt(Keys.STATS_WIDTH_LARGE_PX, largeWidth)
+                .putInt(Keys.STATS_WIDTH_MEDIUM_PX, mediumWidth)
+                .putString(Keys.STATS_GEOMETRY_TAG, tag)
+                .apply();
+        Log.i(TAG, "font " + fontPx + " px (standard " + basePx + "), large " + largeWidth + ", medium " + mediumWidth
+                + ", small " + smallWidth(full) + " px, padding " + padding + ", " + tag);
+    }
+
+    private static SharedPreferences defaultPrefs(Context context) {
+        Context app = context.getApplicationContext() != null ? context.getApplicationContext() : context;
+        return PreferenceManager.getDefaultSharedPreferences(app);
+    }
+
+    /** The text size (px) of the three windows; 0 where it cannot be worked out yet. */
+    public static float fontPx(Context context, SharedPreferences prefs) {
+        ensureSaved(context, prefs);
+        return prefs.getFloat(Keys.STATS_FONT_PX, 0f);
+    }
+
+    /** The saved width of the large (0) or the medium (1) window; its share of the screen where it is not saved. */
+    static int savedWidth(Context context, SharedPreferences prefs, int selector) {
+        ensureSaved(context, prefs);
+        int saved = prefs.getInt(selector == 1 ? Keys.STATS_WIDTH_MEDIUM_PX : Keys.STATS_WIDTH_LARGE_PX, 0);
+        return saved > 0 ? saved : baseWidth(selector, fullWidth());
     }
 
     /**
@@ -234,20 +363,11 @@ public final class StatsWindowSize {
     }
 
     /**
-     * The width of a window: the large one (0) is its share of the screen, longer where its text needs it (up to 15 %); the
-     * medium (1) and the small one (2) are exactly their share, within the margins, whatever the text.
+     * The width of the window of a size on this screen: the saved width of the large (0) and the medium (1) window, a
+     * quarter of the screen less 5 % for the small one (2), within the margins of the screen.
      */
-    static int widthForSize(int selector, int fullWidth, int requiredPx, int screenWidth, int margin) {
-        int base = baseWidth(selector, fullWidth);
-        if (selector == 1 || selector == 2) {
-            return Math.min(Math.max(0, screenWidth - 2 * margin), base);
-        }
-        return windowWidth(base, requiredPx, screenWidth, margin);
-    }
-
-    /** The width of the window of a size on this screen. */
     static int widthFor(Context context, int selector, int fullWidth, int screenWidth, int margin) {
-        int required = selector == 1 || selector == 2 ? 0 : requiredWidthPx(context, selector);
-        return widthForSize(selector, fullWidth, required, screenWidth, margin);
+        int width = selector == 2 ? smallWidth(fullWidth) : savedWidth(context, defaultPrefs(context), selector);
+        return clampToScreen(width, screenWidth, margin);
     }
 }

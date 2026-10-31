@@ -1,56 +1,137 @@
 package com.android.launcher66.settings;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 class StatsWindowSizeTest {
 
     @Test
-    void whatTheTextNeedsLessThanTheShareIsTheShare() {
-        assertEquals(400, StatsWindowSize.windowWidth(400, 380, 1280, 5));
-        assertEquals(400, StatsWindowSize.windowWidth(400, 0, 1280, 5));
-        assertEquals(400, StatsWindowSize.windowWidth(400, 400, 1280, 5));
+    void theSmallWindowIsFivePercentNarrowerThanAQuarter() {
+        assertEquals(66, StatsWindowSize.smallWidth(278)); // 69 * 0.95 = 65.55
+        assertEquals(100, StatsWindowSize.smallWidth(420)); // 105 * 0.95 = 99.75
+        assertEquals(0, StatsWindowSize.smallWidth(0));
     }
 
     @Test
-    void whatTheTextNeedsBetweenTheShareAndTheLimitIsWhatItNeeds() {
-        assertEquals(430, StatsWindowSize.windowWidth(400, 430, 1280, 5));
-        assertEquals(460, StatsWindowSize.windowWidth(400, 460, 1280, 5));
+    void theFontNeverGrowsAboveTheStandardOne() {
+        // 40 px of text in a window of 200 px, 20 px lines in 100 px
+        assertEquals(1f, StatsWindowSize.fontScale(40f, 20f, 200, 10, 100), 0f);
+        assertEquals(1f, StatsWindowSize.fontScale(1f, 1f, 5000, 0, 5000), 0f);
     }
 
     @Test
-    void whatTheTextNeedsBeyondFifteenPercentIsThatLimit() {
-        assertEquals(460, StatsWindowSize.windowWidth(400, 461, 1280, 5));
-        assertEquals(460, StatsWindowSize.windowWidth(400, 900, 1280, 5));
-        assertEquals(115, StatsWindowSize.windowWidth(100, 900, 1280, 5));
+    void aTextTooWideShrinksTheFontToNinetyFivePercentOfTheWindow() {
+        // (66 - 6) * 0.95 / 76 = 0.75
+        assertEquals(0.75f, StatsWindowSize.fontScale(76f, 10f, 66, 6, 100), 1e-6f);
     }
 
     @Test
-    void aNarrowScreenLimitsTheWindowToTheScreenLessTheMargins() {
-        // 1.15 x 400 = 460, but the screen is 450 wide
-        assertEquals(430, StatsWindowSize.windowWidth(400, 460, 450, 10));
-        // and the share itself is wider than the screen allows
-        assertEquals(380, StatsWindowSize.windowWidth(400, 100, 400, 10));
-        assertEquals(0, StatsWindowSize.windowWidth(400, 100, 10, 10));
+    void aWindowTooLowShrinksTheFontToTwoLinesInNinetyPercentOfTheHeight() {
+        // 0.9 * 40 / 2 / 24 = 0.75
+        assertEquals(0.75f, StatsWindowSize.fontScale(10f, 24f, 200, 0, 40), 1e-6f);
     }
 
     @Test
-    void theMediumAndTheSmallWindowAreExactlyTheirShareWhateverTheTextNeeds() {
-        for (int required : new int[]{0, 100, 280, 1000, 5000}) {
-            assertEquals(280, StatsWindowSize.widthForSize(1, 420, required, 1280, 5));
-            assertEquals(105, StatsWindowSize.widthForSize(2, 420, required, 1280, 5));
-        }
-        // within the margins of a narrow screen
-        assertEquals(180, StatsWindowSize.widthForSize(1, 420, 1000, 200, 10));
-        assertEquals(105, StatsWindowSize.widthForSize(2, 420, 1000, 200, 10));
+    void theSmallerOfTheTwoScalesWins() {
+        // width: 0.5, height: 0.75
+        assertEquals(0.5f, StatsWindowSize.fontScale(380f, 24f, 200, 0, 40), 1e-6f);
+        // width: 0.95 * 100 / 80 = 1.19 -> 1, height: 0.6
+        assertEquals(0.6f, StatsWindowSize.fontScale(80f, 30f, 100, 0, 40), 1e-6f);
     }
 
     @Test
-    void theLargeWindowGrowsByAtMostFifteenPercent() {
-        assertEquals(420, StatsWindowSize.widthForSize(0, 420, 100, 1280, 5));
-        assertEquals(450, StatsWindowSize.widthForSize(0, 420, 450, 1280, 5));
-        assertEquals(483, StatsWindowSize.widthForSize(0, 420, 1000, 1280, 5));
+    void aDivisorOfZeroLeavesThatConditionOut() {
+        assertEquals(1f, StatsWindowSize.fontScale(0f, 20f, 200, 10, 100), 0f);
+        assertEquals(1f, StatsWindowSize.fontScale(40f, 0f, 200, 10, 100), 0f);
+        assertEquals(0.5f, StatsWindowSize.fontScale(0f, 40f, 200, 10, 40), 0.1f);
+        assertEquals(1f, StatsWindowSize.fontScale(0f, 0f, 0, 0, 0), 0f);
+    }
+
+    @Test
+    void aLineIsTheLabelTwoSpacesThreeDigitsAndTheUnitAtThreeQuarters() {
+        assertEquals(176f, StatsWindowSize.lineWidth(100, 5, 3, 9, 27, 40), 1e-4f);
+    }
+
+    @Test
+    void theRoomAfterTheSpaceIsAtLeastAsWideAsTheCharacterItIsFor() {
+        // the character (a digit) is wider than a space
+        assertEquals(164f, StatsWindowSize.lineWidth(100, 5, 11, 0, 33, 20), 1e-4f);
+    }
+
+    @Test
+    void theLongerLineDecidesTheWidthRoundedUpWithTheBackground() {
+        assertEquals(210, StatsWindowSize.textWidth(200f, 150f, 10));
+        // the range longer than the consumption, as in Bulgarian
+        assertEquals(231, StatsWindowSize.textWidth(150f, 220.2f, 10));
+        assertEquals(10 + 100, StatsWindowSize.textWidth(100f, 100f, 10));
+        assertEquals(101 + 4, StatsWindowSize.textWidth(100.01f, 90f, 4));
+    }
+
+    @Test
+    void aWidthIsWithinTheScreenLessTheMargins() {
+        assertEquals(430, StatsWindowSize.clampToScreen(500, 450, 10));
+        assertEquals(300, StatsWindowSize.clampToScreen(300, 450, 10));
+        assertEquals(0, StatsWindowSize.clampToScreen(300, 10, 10));
+        assertEquals(0, StatsWindowSize.clampToScreen(300, 15, 10));
+    }
+
+    @Test
+    void theValuesAreWorkedOutAgainOnlyWhenTheGeometryChanges() {
+        String tag = StatsWindowSize.geometryTag("pl-PL", 1280, 64, 160, 1.0f);
+        assertEquals(tag, StatsWindowSize.geometryTag("pl-PL", 1280, 64, 160, 1.0f));
+        assertFalse(StatsWindowSize.needsRecompute(true, true, true, tag, tag));
+        assertTrue(StatsWindowSize.needsRecompute(true, true, true, StatsWindowSize.geometryTag("bg-BG", 1280, 64, 160, 1.0f), tag));
+        assertTrue(StatsWindowSize.needsRecompute(true, true, true, StatsWindowSize.geometryTag("pl-PL", 1920, 64, 160, 1.0f), tag));
+        assertTrue(StatsWindowSize.needsRecompute(true, true, true, StatsWindowSize.geometryTag("pl-PL", 1280, 96, 160, 1.0f), tag));
+        assertTrue(StatsWindowSize.needsRecompute(true, true, true, StatsWindowSize.geometryTag("pl-PL", 1280, 64, 240, 1.0f), tag));
+        assertTrue(StatsWindowSize.needsRecompute(true, true, true, StatsWindowSize.geometryTag("pl-PL", 1280, 64, 160, 1.3f), tag));
+    }
+
+    @Test
+    void aMissingValueOrNoTagMeansWorkingThemOut() {
+        String tag = StatsWindowSize.geometryTag("pl-PL", 1280, 64, 160, 1.0f);
+        assertTrue(StatsWindowSize.needsRecompute(false, true, true, tag, tag));
+        assertTrue(StatsWindowSize.needsRecompute(true, false, true, tag, tag));
+        assertTrue(StatsWindowSize.needsRecompute(true, true, false, tag, tag));
+        assertTrue(StatsWindowSize.needsRecompute(true, true, true, null, tag));
+    }
+
+    // The proportions of Roboto Bold in em: a digit 0.56, a dot 0.27, a tilde 0.59, a space 0.25
+    private static final float DIGIT = 0.56f, DOT = 0.27f, TILDE = 0.59f, SPACE = 0.25f;
+
+    @Test
+    void anEstimateOfTheConsumptionFitsItsLine() {
+        float label = 7.5f; // "Fuel consumption:" in em
+        float unit = 4.2f; // " L/100km " in em
+        float line = StatsWindowSize.lineWidth(label, SPACE, DOT, TILDE, 3 * DIGIT, unit);
+        // "~18.8": the tilde, three digits and the dot
+        float value = TILDE + 3 * DIGIT + DOT;
+        assertTrue(line >= label + SPACE + value + StatsWindowSize.UNIT_SCALE * unit, "line " + line);
+    }
+
+    @Test
+    void aRangeOfFourDigitsFitsItsLine() {
+        float label = 7.0f;
+        float unit = 2.0f;
+        float line = StatsWindowSize.lineWidth(label, SPACE, DIGIT, 0f, 3 * DIGIT, unit);
+        // "1999": without the room being as wide as a digit, two spaces and three digits would be narrower than four digits
+        assertTrue(line >= label + SPACE + 4 * DIGIT + StatsWindowSize.UNIT_SCALE * unit, "line " + line);
+        float twoSpaces = label + 2 * SPACE + 3 * DIGIT + StatsWindowSize.UNIT_SCALE * unit;
+        assertTrue(twoSpaces < label + SPACE + 4 * DIGIT + StatsWindowSize.UNIT_SCALE * unit);
+    }
+
+    @Test
+    void aWindowAtItsSavedWidthNeedsNoShrinking() {
+        // the safety of the window: the saved width is the longer line rounded up, plus the background, so the scale is 1
+        float consumption = 213.37f, range = 241.9f;
+        int padding = 12;
+        int width = StatsWindowSize.textWidth(consumption, range, padding);
+        assertEquals(1f, StatsWindowSize.fitScale(Math.max(consumption, range), 1.0, width, padding, 20f, 100), 0f);
+        // and a window cut by 10 % does
+        assertTrue(StatsWindowSize.fitScale(Math.max(consumption, range), 1.0, (int) (width * 0.9), padding, 20f, 100) < 1f);
     }
 
     @Test

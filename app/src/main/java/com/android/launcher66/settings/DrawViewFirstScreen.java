@@ -914,11 +914,11 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             if (cand.left < minBorderX) cand = null;
 
         } else if (viewId == R.id.left_to_right) {
-            float newLeft = Math.min(r.right - cfg.minWidth, r.left + STEP);
+            float newLeft = Math.min(r.right - stepMinWidth(cfg, r), r.left + STEP);
             cand = new RectF(newLeft, r.top, r.right, r.bottom);
 
         } else if (viewId == R.id.right_to_left) {
-            float newRight = Math.max(r.left + cfg.minWidth, r.right - STEP);
+            float newRight = Math.max(r.left + stepMinWidth(cfg, r), r.right - STEP);
             cand = new RectF(r.left, r.top, newRight, r.bottom);
 
         } else if (viewId == R.id.right_to_right) {
@@ -1358,4 +1358,12 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         }
     }
 
+
+    /**
+     * The width a step of an edge keeps: the minimum of the rectangle, but never more than it is now. The statistics window
+     * takes its width from its size (it can be narrower than the full share the minimum is), so a step must not widen it.
+     */
+    private static float stepMinWidth(RectangleConfig cfg, RectF r) {
+        return Math.min(cfg.minWidth, r.width());
+    }
 }

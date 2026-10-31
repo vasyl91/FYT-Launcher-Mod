@@ -742,8 +742,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
             int leftBarSize = Launcher.calculatedLeftBarWidth;
             StatsWindowSize.syncSavedRectangle(this, prefs, mapApp);
             statsWidthSelector = prefs.getInt(mapApp ? Keys.APP_STATS_WIDTH_SELECTOR : Keys.STATS_WIDTH_SELECTOR, 0);
-            // From the size, not from the width saved: the share of the screen, longer where the widest text of the size
-            // needs it (the editor does the same sum, so that the old saves are right too)
+            // From the size, not from the width saved: the saved widths of the large and the medium window (from their
+            // longer line), the small one a quarter of the screen less 5 % (the editor does the same sum, so that the old
+            // saves are right too)
             statsWidth = StatsWindowSize.widthFor(this, statsWidthSelector, Launcher.calculatedStatsWidth,
                     getScreenWidth(), margin);
             statsHeight = Launcher.calculatedStatsHeight;
@@ -781,8 +782,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 consumptionTV.setText("");
                 mileageTV.setText(""); 
             }
-            consumptionTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
-            mileageTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
+            // One font for the three windows, worked out from the small one (never above the standard size)
+            float fontPx = StatsWindowSize.fontPx(this, prefs);
+            applyStatsTextSize(fontPx, consumptionTV, mileageTV);
 
             consumptionTextView = absoluteStats.findViewById(R.id.instantaneous_consumption_val);
             mileageTextView = absoluteStats.findViewById(R.id.driving_mileage_val);
@@ -794,16 +796,12 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 setValueText(consumptionTextView, R.string.instantaneous_consumption_val, "0.0");
                 setValueText(mileageTextView, R.string.driving_mileage_val, "-.-");
             }
-            
-            consumptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic); 
-            mileageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
-            // The font is worked out once, here: nothing else sets the size of these views. The large window measures the
-            // widest text of its size (the unit and the value change with the speed; the window grows for it); the medium
-            // and the small one, which do not grow, as they always did: the current text and two digits more
-            boolean large = statsWidthSelector == 0;
-            fitStatsText(statsWidth, statsHeight, consumptionTV, consumptionTextView, mileageTV, mileageTextView,
-                    large ? StatsWindowSize.consumptionVariants(getResources(), statsWidthSelector) : null,
-                    large ? StatsWindowSize.rangeVariants(getResources(), statsWidthSelector) : null);
+
+            applyStatsTextSize(fontPx, consumptionTextView, mileageTextView);
+            // The saved widths and the font fit each other: this only shrinks the font where the window is cut to the screen
+            // (or the margin changed since), the same measuring as the saved widths
+            fitStatsText(this, statsWidthSelector, statsWidth, statsHeight, consumptionTV, consumptionTextView, mileageTV,
+                    mileageTextView);
             if (background) {
                 if (drawableBg) {
                     absoluteStats.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_custom));
@@ -1689,47 +1687,34 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
 
+    /** The text size of the window: the saved one (px), else the launcher's standard (sp). */
+    private static void applyStatsTextSize(float fontPx, TextView... views) {
+        for (TextView view : views) {
+            if (fontPx > 0f) {
+                view.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontPx);
+            } else {
+                // not worked out yet: the standard size of the launcher
+                view.setTextSize(TypedValue.COMPLEX_UNIT_PX, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                        Launcher.textSizeBasic, view.getResources().getDisplayMetrics()));
+            }
+        }
+    }
+
     /**
-     * Fits the two rows (label + value each) into the window, which is a share of the screen (longer where the text needs
-     * it, see StatsWindowSize): Launcher.textSizeBasic stays as it is where they fit, as on the FYT units the sizes come
-     * from, and shrinks where a sp is a larger share of the screen (a phone) or the window is narrow. The values are
-     * measured at their widest, in every unit they are shown in, in the large window (the variants), so that its font is
-     * the same whatever the unit and the value; without variants (the medium and the small window) as the current text and
-     * two digits more.
+     * Only a safety: the font and the widths are saved to fit each other (StatsWindowSize), but the window can be cut to the
+     * screen or the margin changed after that. Shrinks the font of the four fields where the window is too narrow or too
+     * low for the text, by the same measuring as the saved widths; does nothing where it fits.
      */
-    private static void fitStatsText(int width, int height, TextView consumptionLabel,
-            TextView consumptionValue, TextView mileageLabel, TextView mileageValue,
-            String[] consumptionVariants, String[] mileageVariants) {
+    private static void fitStatsText(Context context, int selector, int width, int height, TextView consumptionLabel,
+            TextView consumptionValue, TextView mileageLabel, TextView mileageValue) {
         if (width <= 0 || height <= 0) return;
         float px = consumptionValue.getTextSize();
         if (px <= 0f) return;
-        android.graphics.Paint.FontMetrics fm = consumptionValue.getPaint().getFontMetrics();
-        float lineHeight = fm.bottom - fm.top;
-        float rowWidth = Math.max(
-                rowWidth(consumptionLabel, consumptionValue, consumptionVariants),
-                rowWidth(mileageLabel, mileageValue, mileageVariants));
-        float scale = 1f;
-        // Some room to spare: two rows exactly as tall as the window lost a pixel to rounding,
-        // and the column then wrapped the second row out of the window (the narrowest window,
-        // where the height decides).
-        if (lineHeight > 0f) scale = Math.min(scale, (height * 0.9f / 2f) / lineHeight);
-        if (rowWidth > 0f) scale = Math.min(scale, width * 0.95f / rowWidth);
+        float scale = StatsWindowSize.fitScaleOfWindow(context, selector, px, width, height);
         if (scale >= 1f) return;
         for (TextView view : new TextView[]{ consumptionLabel, consumptionValue, mileageLabel, mileageValue }) {
             view.setTextSize(TypedValue.COMPLEX_UNIT_PX, px * scale);
         }
-    }
-
-    private static float rowWidth(TextView label, TextView value, String[] variants) {
-        float widest = 0f;
-        if (variants == null) {
-            widest = value.getPaint().measureText(value.getText() + "88");
-        } else {
-            for (String variant : variants) {
-                widest = Math.max(widest, value.getPaint().measureText(variant));
-            }
-        }
-        return label.getPaint().measureText(label.getText().toString()) + widest;
     }
 
 }
