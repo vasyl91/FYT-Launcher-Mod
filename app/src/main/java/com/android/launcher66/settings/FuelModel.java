@@ -34,8 +34,9 @@ import java.util.Locale;
  *
  * <p>The bias of the last values: the difference between the car's values and the model (separately for driving
  * and slowing down, at most 1 L/h) is followed and fades away with a time constant of 60 s once the car goes
- * silent. The first estimate is the car's last value, and its difference to the target fades with 3 s. When the
- * car speeds up past its threshold, the model learns how much it falls short just below it (the "edge").
+ * silent. The first estimate is the car's last value (also after a silence of the car with no "no value", up to 10 s
+ * of it), and it goes to the target in a straight line over 3.5 s, whatever the last value and the mode, with RPM or
+ * without. When the car speeds up past its threshold, the model learns how much it falls short just below it (the "edge").
  *
  * <p>The unit: litres per hour at a stop, while slowing down and below 10 km/h (back to L/100 km above 13 km/h);
  * L/100 km otherwise.
@@ -85,8 +86,10 @@ public final class FuelModel {
     static final double DEFAULT_THRESHOLD_KMH = 30.0;
     static final double WEIGHT_SCALE_KMH = 20.0;
     static final double MAX_L_PER_100KM = 200.0;
-    /** The time constant (ms) of the fading of the difference between the car's last value and the target. */
-    static final long HANDOVER_TAU_MS = 3_000L;
+    /** The way from the car's last value to the target: a straight line over this long (ms)... */
+    static final long HANDOVER_MS = 3_500L;
+    /** ...which starts if the car's last value is no older than this (ms): the car often just stops sending a value. */
+    static final long HANDOVER_WINDOW_MS = NO_UPDATE_MS + 5_000L;
     /** The bias of the last values: the gain of each value, the limit (L/h) and the time constant (ms) of its fading. */
     static final double BIAS_GAIN = 0.15;
     static final double BIAS_LIMIT_LPH = 1.0;
@@ -751,8 +754,9 @@ public final class FuelModel {
             handoverOffset = 0;
             slowing = false;
             smoothedLph = target;
-            if (moving && lastCarT >= 0 && now - lastCarT <= NO_UPDATE_MS) {
-                // the car has just gone silent: start from its last value, the way to the target is gradual
+            if (moving && lastCarT >= 0 && now - lastCarT <= HANDOVER_WINDOW_MS) {
+                // the car has just gone silent (or stopped sending a value, and was noticed after 5 s): start from its last
+                // value, the way to the target is a straight line
                 handoverOffset = lastCarLph - target;
                 handoverT = now;
                 smoothedLph = lastCarLph;
@@ -761,11 +765,18 @@ public final class FuelModel {
             }
         }
         double lph = target;
-        if (moving) {
-            lph = Math.max(0, target + handoverOffset * Math.exp(-(now - handoverT) / (double) HANDOVER_TAU_MS));
+        boolean ramp = false;
+        if (moving && handoverOffset != 0) {
+            double left = Math.max(0, 1 - (now - handoverT) / (double) HANDOVER_MS);
+            ramp = left > 0;
+            lph = Math.max(0, target + handoverOffset * left);
         }
-        double alpha = lph > smoothedLph ? SMOOTH_RISE : SMOOTH_FALL;
-        smoothedLph = alpha * lph + (1 - alpha) * smoothedLph;
+        if (ramp) {
+            smoothedLph = lph;      // the shown value is the ramp; the smoothing goes on from where it ends
+        } else {
+            double alpha = lph > smoothedLph ? SMOOTH_RISE : SMOOTH_FALL;
+            smoothedLph = alpha * lph + (1 - alpha) * smoothedLph;
+        }
         updateSlowing(moving, kmh, a);
         if (!moving) {
             lastEstimateT = -1;

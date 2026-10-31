@@ -481,6 +481,129 @@ class FuelModelTest {
         assertEquals(expected + 4, m.blendedCarL100(), 0.1);
     }
 
+    // ---- from the car's last value to the estimate: a straight line over 3.5 s, whenever the car stops ----
+
+    /** The estimates (L/h, whatever their unit) of a slowing down in which the car just stops sending its value. */
+    private static final class Fade {
+        final List<Long> at = new ArrayList<>();
+        final List<Double> lph = new ArrayList<>();
+        double lastCarLph = Double.NaN;
+        long lastCarT;
+        long end;
+
+        /** The estimate {@code ms} after the first one. */
+        double after(long ms) {
+            for (int i = 0; i < at.size(); i++) {
+                if (at.get(i) - at.get(0) >= ms) {
+                    return lph.get(i);
+                }
+            }
+            throw new AssertionError("no estimate " + ms + " ms after the first");
+        }
+    }
+
+    /**
+     * Slows down from {@code kmh} at {@code accel} to {@code endKmh}: a speed every 200 ms, the RPM if {@code rpm}, the
+     * car's value every second above 30 km/h and nothing at all below it (no "no value"); the estimate every 200 ms.
+     */
+    private static Fade slowDownAndGoSilent(FuelModel m, long t, double kmh, double accel, double endKmh, boolean rpm,
+            Car car, DoubleUnaryOperator rpmCarLph) {
+        Fade f = new Fade();
+        for (int step = 0; kmh > endKmh; step++, t += 200) {
+            kmh = Math.max(0, kmh + accel * 3.6 * 0.2);
+            if (rpm) {
+                m.onRpm(t, (int) (800 + 28 * kmh));
+            }
+            m.onSpeed(t, kmh, true);
+            if (step % 5 == 0 && kmh > 30) {
+                int value = rpm ? (int) Math.round(rpmCarLph.applyAsDouble(kmh) / kmh * 1000) : car.value(kmh, accel);
+                m.onFuel(t, value);
+                f.lastCarLph = value / 10.0 * kmh / 100.0;
+                f.lastCarT = t;
+            }
+            FuelModel.Estimate e = m.estimate(t);
+            if (e != null) {
+                f.at.add(t);
+                f.lph.add(lph(e, kmh));
+            }
+        }
+        f.end = t;
+        return f;
+    }
+
+    @Test
+    void slowingDownWhileTheCarJustStopsSendingGoesToTheTargetInAStraightLine() {
+        FuelModel m = new FuelModel();
+        DoubleUnaryOperator owner = k -> 0.9 + 0.03 * (k - 30);
+        long t = drive(m, new Random(2), 0, 900, 30, owner);
+        Car car = aboveThirty(owner, 1.5);      // the car burns more than the model thinks: the line has a length
+        double[] kmh = {35};
+        t = ride(m, t, kmh, 0, 0, 6, car, new Log());
+        Fade f = slowDownAndGoSilent(m, t, 35, -0.8, 3, false, car, null);
+        assertTrue(f.at.get(0) - f.lastCarT > FuelModel.NO_UPDATE_MS, "the first estimate comes after 5 s of silence");
+        assertFalse(Double.isNaN(f.lastCarLph));
+        // the first estimate is the car's last value in L/h, not the target
+        assertEquals(f.lastCarLph, f.after(0), 0.1);
+        double target = f.after(3_500);
+        assertTrue(Math.abs(f.lastCarLph - target) > 0.3, "car " + f.lastCarLph + ", target " + target);
+        // half way after half the time
+        assertEquals((f.lastCarLph + target) / 2, f.after(1_750), 0.1);
+        // and nothing jumps: the steps of the line are small
+        for (int i = 1; i < f.lph.size() && f.at.get(i) - f.at.get(0) <= 3_500; i++) {
+            assertTrue(Math.abs(f.lph.get(i) - f.lph.get(i - 1)) < 0.15,
+                    "a step of " + (f.lph.get(i) - f.lph.get(i - 1)) + " at " + (f.at.get(i) - f.at.get(0)) + " ms");
+        }
+        // the line is straight: the thirds are about equally far apart
+        double third = f.lastCarLph - f.after(1_167);
+        assertEquals(third, f.after(1_167) - f.after(2_333), 0.12);
+    }
+
+    @Test
+    void engineBrakingWithTheRpmIsTheSameRamp() {
+        FuelModel m = new FuelModel();
+        long t = driveRpm(m, new Random(11), 0, 1800, 30);
+        assertTrue(m.rpmValid());
+        // in gear at a high RPM, slowing down: the car gives 0 (the fuel is cut) and then, below 30 km/h, nothing
+        Fade f = slowDownAndGoSilent(m, t + 1000, 45, -0.4, 3, true, null, k -> 0.0);
+        assertFalse(Double.isNaN(f.lastCarLph));
+        assertEquals(f.lastCarLph, f.after(0), 0.1);
+        assertEquals(0.0, f.lastCarLph, 1e-9);
+        assertTrue(f.after(3_500) < 0.3, "engine braking after 3.5 s: " + f.after(3_500));
+        for (int i = 0; i < f.lph.size() && f.at.get(i) - f.at.get(0) <= 3_500; i++) {
+            assertTrue(f.lph.get(i) < 0.3, "engine braking at " + (f.at.get(i) - f.at.get(0)) + " ms: " + f.lph.get(i));
+        }
+    }
+
+    @Test
+    void aLongSilenceStartsFromTheTarget() {
+        FuelModel m = new FuelModel();
+        DoubleUnaryOperator owner = k -> 0.9 + 0.03 * (k - 30);
+        long t = drive(m, new Random(2), 0, 900, 30, owner);
+        Car car = aboveThirty(owner, 0);
+        double[] kmh = {40};
+        Log log = new Log();
+        t = ride(m, t, kmh, 0, 0, 6, car, log);
+        // a high value from the car at 40 km/h
+        long lastCar = t;
+        m.onFuel(t, 100);
+        // and then 12 s at 27 km/h with no value at all and nobody asking for the estimate
+        double speed = 27;
+        for (int i = 0; i < 60; i++, t += 200) {
+            m.onSpeed(t, speed, true);
+        }
+        assertTrue(t - lastCar > FuelModel.HANDOVER_WINDOW_MS);
+        FuelModel.Estimate first = m.estimate(t);
+        assertNotNull(first);
+        double firstLph = lph(first, speed);
+        double carLph = 10.0 * 40 / 100.0;
+        assertTrue(Math.abs(firstLph - carLph) > 0.8, "the target, not the car: " + firstLph + " vs " + carLph);
+        // no ramp: three seconds on, the same
+        for (int i = 0; i < 15; i++, t += 200) {
+            m.onSpeed(t, speed, true);
+        }
+        assertEquals(firstLph, lph(m.estimate(t), speed), 0.15);
+    }
+
     @Test
     void theEdgeCorrectionReadsBack() {
         FuelModel m = new FuelModel();
