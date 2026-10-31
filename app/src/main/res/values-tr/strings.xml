@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">onaylandı</string>
     <string name="stats_codes_pair_unconfirmed">henüz onaylanmadı</string>
     <string name="stats_codes_reader_line">Canbus okuyucusunun %1$s üzerinde bulduğu kodlar: %2$s</string>
+    <string name="extra_stats_codes">Ek istatistik verileri <b>(isteğe bağlı)</b></string>
+    <string name="canbus_optional"><b>İsteğe bağlı veriler (kullanılmıyorsa 0 olmalı):</b></string>
+    <string name="canbus_optional_description">Canbus\'ınız belirli bir hızın altında olduğu gibi durumlarda yakıt tüketimi verisi göndermeyi bırakırsa bunu kullanın.</string>
+    <string name="vehicle_mass_code_text">Araç kütlesi (kg):</string>
+    <string name="engine_displacement_code_text">Motor hacmi (cm³):</string>
+    <string name="extra_stats_codes_summary">Aracın yakıt tahmini için verileri, araç hiçbir değer göstermediğinde kullanılır. Kütle: %1$s, motor hacmi: %2$s</string>
+    <string name="car_data_source">İkisi de ruhsatta yazar: yola hazır araç kütlesi (G alanı) ve motor hacmi (P.1 alanı).</string>
     <string name="codes_guide_inspector">Kod okuyucu, ünitenin aracınız hakkında gönderdiği her şeyi – 0 ile 1199 arasındaki her canbus kodunu – ayarladığınız süre boyunca (varsayılan 5 dakika) kaydeder ve Download/Launcher66_Canbus klasörüne kaydeder. Araca rastgele komut göndermez. Her kodun her değişimi zamanıyla yazılır ve dosyanın başında kodların ne anlama geldiğine dair tahminler bulunur (yakıt tüketimi, menzil, devir, hız ve daha fazlası). Bunlar yalnızca tahmindir ve yanlış olabilir, ancak iyi bir başlangıç noktasıdır. En iyi sonuç için kayıt sırasında birkaç dakika araç kullanın, rölantide bir duruş yapın. Aracınız yakıt tüketimini ve menzili bildirmeden önce bir istek gerektiriyorsa ve canbus kütüphanesi aracı tanıyorsa, okuyucu önce bu isteği gönderir. Konum izni zaten verilmişse GPS hızı da kaydedilir, bu da hız kodunu bulmaya yardımcı olur.</string>
     <string name="codes_guide_skip_codes">Atlanan kodlar – adından anlaşılacağı gibi bu bölüm belirtilen kodları yok saymak içindir. Kod okuyucu bunları kaydetmez, bu nedenle dosyada ilgilenmediğiniz çıktı bulunmaz.</string>
     <string name="skip_zero_codes">Yalnızca 0 gönderen kodları dışarıda bırak</string>

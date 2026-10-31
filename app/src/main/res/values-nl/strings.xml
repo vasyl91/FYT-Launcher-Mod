@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">bevestigd</string>
     <string name="stats_codes_pair_unconfirmed">nog niet bevestigd</string>
     <string name="stats_codes_reader_line">Codes die de canbus-reader vond op %1$s: %2$s</string>
+    <string name="extra_stats_codes">Aanvullende statistiekgegevens <b>(optioneel)</b></string>
+    <string name="canbus_optional"><b>Optionele gegevens (moeten 0 zijn als ze niet worden gebruikt):</b></string>
+    <string name="canbus_optional_description">Gebruik dit als je canbus geen brandstofverbruiksgegevens meer verstuurt, bijvoorbeeld onder een bepaalde snelheid.</string>
+    <string name="vehicle_mass_code_text">Voertuigmassa (in kg):</string>
+    <string name="engine_displacement_code_text">Cilinderinhoud (in cm³):</string>
+    <string name="extra_stats_codes_summary">Voertuiggegevens voor de brandstofschatting waar het voertuig niets toont. Massa: %1$s, cilinderinhoud: %2$s</string>
+    <string name="car_data_source">Beide staan in het kentekenbewijs: de massa rijklaar (veld G) en de cilinderinhoud (veld P.1).</string>
     <string name="codes_guide_inspector">De codereader legt alles vast wat de unit over uw auto verstuurt – elke canbus-code van 0 tot 1199 – gedurende de ingestelde tijd (standaard 5 minuten) en slaat het op in Download/Launcher66_Canbus. Hij stuurt de auto geen willekeurige commando’s. Elke wijziging van elke code wordt met de tijd weggeschreven en het begin van het bestand bevat gissingen over wat de codes betekenen (verbruik, bereik, toeren, snelheid en meer). Het zijn slechts gissingen en ze kunnen fout zijn, maar ze zijn een goed beginpunt. Voor het beste resultaat rijdt u tijdens de opname een paar minuten, met een stop in stationair. Als uw auto een verzoek nodig heeft voordat hij verbruik en bereik meldt en de canbus-bibliotheek de auto kent, stuurt de reader dat verzoek eerst. Als de locatietoestemming al is verleend, wordt ook de GPS-snelheid vastgelegd, wat helpt om de snelheidscode te vinden.</string>
     <string name="codes_guide_skip_codes">Codes overslaan – zoals de naam zegt, dient deze sectie om bepaalde codes te negeren. De codereader legt ze niet vast, dus het bestand bevat geen uitvoer waarin u niet geïnteresseerd bent.</string>
     <string name="skip_zero_codes">Codes weglaten die alleen 0 verstuurden</string>

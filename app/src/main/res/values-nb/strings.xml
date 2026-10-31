@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">bekreftet</string>
     <string name="stats_codes_pair_unconfirmed">ikke bekreftet ennå</string>
     <string name="stats_codes_reader_line">Koder canbus-leseren fant på %1$s: %2$s</string>
+    <string name="extra_stats_codes">Ekstra statistikkdata <b>(valgfritt)</b></string>
+    <string name="canbus_optional"><b>Valgfrie data (skal være 0 hvis de ikke brukes):</b></string>
+    <string name="canbus_optional_description">Bruk dette hvis canbus slutter å sende data om drivstofforbruk, for eksempel under en viss hastighet.</string>
+    <string name="vehicle_mass_code_text">Kjøretøyets masse (i kg):</string>
+    <string name="engine_displacement_code_text">Slagvolum (i cm³):</string>
+    <string name="extra_stats_codes_summary">Bildata til drivstoffestimatet der bilen ikke viser noe. Masse: %1$s, slagvolum: %2$s</string>
+    <string name="car_data_source">Begge står i vognkortet: egenvekten (felt G) og slagvolumet (felt P.1).</string>
     <string name="codes_guide_inspector">Kodeleseren tar opp alt enheten sender om bilen din – hver canbus-kode fra 0 til 1199 – i den innstilte tiden (som standard 5 minutter) og lagrer det i Download/Launcher66_Canbus. Den sender ingen tilfeldige kommandoer til bilen. Hver endring av hver kode skrives med tidspunkt, og begynnelsen av filen inneholder gjetninger om hva kodene betyr (drivstofforbruk, rekkevidde, turtall, hastighet og mer). Det er bare gjetninger og de kan være feil, men de er et godt utgangspunkt. For best resultat bør du kjøre noen minutter under opptaket, med et stopp på tomgang. Hvis bilen din trenger en forespørsel før den melder forbruk og rekkevidde, og canbus-biblioteket kjenner bilen, sender leseren den forespørselen først. Hvis posisjonstillatelsen allerede er gitt, tas GPS-hastigheten også opp, noe som hjelper med å finne hastighetskoden.</string>
     <string name="codes_guide_skip_codes">Hopp over koder – som navnet sier, brukes denne delen til å ignorere bestemte koder. Kodeleseren tar dem ikke opp, så filen inneholder ikke utdata du ikke er interessert i.</string>
     <string name="skip_zero_codes">Utelat kodene som bare sendte 0</string>

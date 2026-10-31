@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">potrjeno</string>
     <string name="stats_codes_pair_unconfirmed">še ni potrjeno</string>
     <string name="stats_codes_reader_line">Kode, ki jih je bralnik canbus našel na %1$s: %2$s</string>
+    <string name="extra_stats_codes">Dodatni statistični podatki <b>(izbirno)</b></string>
+    <string name="canbus_optional"><b>Izbirni podatki (naj bodo 0, če se ne uporabljajo):</b></string>
+    <string name="canbus_optional_description">Uporabite, če vaš canbus preneha pošiljati podatke o porabi goriva, na primer pod določeno hitrostjo.</string>
+    <string name="vehicle_mass_code_text">Masa vozila (v kg):</string>
+    <string name="engine_displacement_code_text">Delovna prostornina motorja (v cm³):</string>
+    <string name="extra_stats_codes_summary">Podatki o vozilu za oceno porabe tam, kjer je vozilo ne prikazuje. Masa: %1$s, delovna prostornina: %2$s</string>
+    <string name="car_data_source">Oboje je v prometnem dovoljenju: masa vozila, pripravljenega za vožnjo (polje G), in delovna prostornina motorja (polje P.1).</string>
     <string name="codes_guide_inspector">Bralnik kod beleži vse, kar enota pošilja o vašem avtomobilu – vsako kodo canbus od 0 do 1199 – v nastavljenem času (privzeto 5 minut) in to shrani v Download/Launcher66_Canbus. Avtomobilu ne pošilja naključnih ukazov. Vsaka sprememba vsake kode se zapiše s časom, začetek datoteke pa vsebuje domneve, kaj kode pomenijo (poraba, doseg, vrtljaji, hitrost in drugo). To so le domneve in so lahko napačne, a so dobro izhodišče. Za najboljši rezultat med snemanjem vozite nekaj minut, s postankom v prostem teku. Če vaš avtomobil potrebuje zahtevo, preden sporoči porabo in doseg, in knjižnica canbus avtomobil pozna, bralnik najprej pošlje to zahtevo. Če je dovoljenje za lokacijo že odobreno, se beleži tudi hitrost GPS, kar pomaga najti kodo hitrosti.</string>
     <string name="codes_guide_skip_codes">Preskok kod – kot pove ime, ta razdelek služi za prezrtje navedenih kod. Bralnik kod jih ne beleži, zato datoteka ne vsebuje izpisa, ki vas ne zanima.</string>
     <string name="skip_zero_codes">Izpusti kode, ki so poslale samo 0</string>

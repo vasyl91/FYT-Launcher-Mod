@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">vahvistettu</string>
     <string name="stats_codes_pair_unconfirmed">ei vielä vahvistettu</string>
     <string name="stats_codes_reader_line">Canbus-lukijan löytämät koodit kohteessa %1$s: %2$s</string>
+    <string name="extra_stats_codes">Lisätilastotiedot <b>(valinnainen)</b></string>
+    <string name="canbus_optional"><b>Valinnaiset tiedot (pitäisi olla 0, jos ei käytetä):</b></string>
+    <string name="canbus_optional_description">Käytä tätä, jos canbus lakkaa lähettämästä polttoaineenkulutustietoja, esimerkiksi tietyn nopeuden alapuolella.</string>
+    <string name="vehicle_mass_code_text">Ajoneuvon massa (kg):</string>
+    <string name="engine_displacement_code_text">Moottorin iskutilavuus (cm³):</string>
+    <string name="extra_stats_codes_summary">Auton tiedot polttoainearviota varten silloin, kun auto ei näytä mitään. Massa: %1$s, iskutilavuus: %2$s</string>
+    <string name="car_data_source">Molemmat löytyvät rekisteriotteesta: ajoneuvon omamassa (kenttä G) ja moottorin iskutilavuus (kenttä P.1).</string>
     <string name="codes_guide_inspector">Koodinlukija tallentaa kaiken, mitä laite lähettää autostasi – jokaisen canbus-koodin väliltä 0–1199 – asetetun ajan (oletuksena 5 minuuttia) ja tallentaa sen kansioon Download/Launcher66_Canbus. Se ei lähetä autolle satunnaisia komentoja. Jokainen jokaisen koodin muutos kirjoitetaan aikoineen, ja tiedoston alussa on arvauksia siitä, mitä koodit tarkoittavat (polttoaineenkulutus, toimintamatka, kierrokset, nopeus ja muuta). Ne ovat vain arvauksia ja voivat olla vääriä, mutta ne ovat hyvä lähtökohta. Parhaan tuloksen saat ajamalla tallennuksen aikana muutaman minuutin, pysähdyksellä joutokäynnillä. Jos autosi tarvitsee pyynnön ennen kuin se ilmoittaa kulutuksen ja toimintamatkan ja canbus-kirjasto tuntee auton, lukija lähettää sen pyynnön ensin. Jos sijaintilupa on jo myönnetty, myös GPS-nopeus tallennetaan, mikä auttaa löytämään nopeuskoodin.</string>
     <string name="codes_guide_skip_codes">Ohitettavat koodit – kuten nimi kertoo, tämä osio on tarkoitettu annettujen koodien ohittamiseen. Koodinlukija ei tallenna niitä, joten tiedostossa ei ole tulostetta, josta et ole kiinnostunut.</string>
     <string name="skip_zero_codes">Jätä pois koodit, jotka lähettivät vain 0</string>

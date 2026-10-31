@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">ተረጋግጧል</string>
     <string name="stats_codes_pair_unconfirmed">ገና አልተረጋገጠም</string>
     <string name="stats_codes_reader_line">የcanbus አንባቢ በ%1$s ላይ ያገኛቸው ኮዶች፦ %2$s</string>
+    <string name="extra_stats_codes">ተጨማሪ የስታቲስቲክስ ውሂብ <b>(አማራጭ)</b></string>
+    <string name="canbus_optional"><b>አማራጭ ውሂብ (ጥቅም ላይ ካልዋለ 0 መሆን አለበት)፦</b></string>
+    <string name="canbus_optional_description">canbusዎ የነዳጅ ፍጆታ ውሂብ መላክ ካቆመ ይህን ይጠቀሙ፣ ለምሳሌ ከተወሰነ ፍጥነት በታች።</string>
+    <string name="vehicle_mass_code_text">የተሽከርካሪ ክብደት (በኪግ)፦</string>
+    <string name="engine_displacement_code_text">የሞተር መጠን (በ cm³)፦</string>
+    <string name="extra_stats_codes_summary">መኪናው ምንም በማያሳይበት ጊዜ ለነዳጅ ግምት የሚያገለግል የመኪና ውሂብ። ክብደት፦ %1$s፣ የሞተር መጠን፦ %2$s</string>
+    <string name="car_data_source">ሁለቱም በምዝገባ የምስክር ወረቀቱ ውስጥ ይገኛሉ፦ የተሽከርካሪው ክብደት (መስክ G) እና የሞተር መጠን (መስክ P.1)።</string>
     <string name="codes_guide_inspector">ኮድ አንባቢው ክፍሉ ስለ መኪናዎ የሚልከውን ሁሉ — ከ0 እስከ 1199 ያለውን እያንዳንዱን የcanbus ኮድ — ለተቀመጠው ጊዜ (በነባሪ 5 ደቂቃ) ይመዘግባል እና በDownload/Launcher66_Canbus ውስጥ ያስቀምጣል። ለመኪናው ምንም በዘፈቀደ ትዕዛዝ አይልክም። የእያንዳንዱ ኮድ እያንዳንዱ ለውጥ ከጊዜው ጋር ይጻፋል፣ የፋይሉ መጀመሪያም ኮዶቹ ምን ማለት እንደሆኑ ግምቶችን (የነዳጅ ፍጆታ፣ ርቀት፣ RPM፣ ፍጥነት እና ሌሎች) ይይዛል። እነዚህ ግምቶች ብቻ ናቸው እና ስህተት ሊሆኑ ይችላሉ፣ ነገር ግን ጥሩ መነሻ ናቸው። ለተሻለ ውጤት በሚመዘገብበት ጊዜ ጥቂት ደቂቃዎች ያሽከርክሩ፣ በስራ ፈት ቆመው። መኪናዎ ፍጆታና ርቀት ከማሳወቁ በፊት ጥያቄ ቢፈልግ እና የcanbus ቤተ-መጽሐፍት መኪናውን ቢያውቅ አንባቢው መጀመሪያ ያንን ጥያቄ ይልካል። የአካባቢ ፈቃድ አስቀድሞ ከተሰጠ የGPS ፍጥነትም ይመዘገባል፣ ይህም የፍጥነት ኮዱን ለማግኘት ይረዳል።</string>
     <string name="codes_guide_skip_codes">ኮዶችን መዝለል — ስሙ እንደሚለው ይህ ክፍል የተሰጡ ኮዶችን ችላ ለማለት ነው። ኮድ አንባቢው አይመዘግባቸውም፣ ስለዚህ ፋይሉ የማይፈልጉትን ውጤት አልያዘም።</string>
     <string name="skip_zero_codes">0 ብቻ የላኩ ኮዶችን ተው</string>

@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">potvrđeno</string>
     <string name="stats_codes_pair_unconfirmed">još nije potvrđeno</string>
     <string name="stats_codes_reader_line">Kodovi koje je canbus čitač pronašao na %1$s: %2$s</string>
+    <string name="extra_stats_codes">Dodatni statistički podaci <b>(neobavezno)</b></string>
+    <string name="canbus_optional"><b>Neobavezni podaci (trebaju biti 0 ako se ne koriste):</b></string>
+    <string name="canbus_optional_description">Koristite ako canbus prestane slati podatke o potrošnji goriva, primjerice ispod određene brzine.</string>
+    <string name="vehicle_mass_code_text">Masa vozila (u kg):</string>
+    <string name="engine_displacement_code_text">Radni obujam motora (u cm³):</string>
+    <string name="extra_stats_codes_summary">Podaci o vozilu za procjenu potrošnje tamo gdje je vozilo ne prikazuje. Masa: %1$s, radni obujam: %2$s</string>
+    <string name="car_data_source">Oboje je u prometnoj dozvoli: masa vozila spremnog za vožnju (polje G) i radni obujam motora (polje P.1).</string>
     <string name="codes_guide_inspector">Čitač kodova bilježi sve što jedinica šalje o vašem automobilu – svaki canbus kod od 0 do 1199 – tijekom postavljenog vremena (prema zadanim postavkama 5 minuta) i sprema to u Download/Launcher66_Canbus. Ne šalje automobilu nasumične naredbe. Svaka promjena svakog koda zapisuje se s vremenom, a početak datoteke sadrži pretpostavke o značenju kodova (potrošnja, domet, okretaji, brzina i drugo). To su samo pretpostavke i mogu biti pogrešne, ali su dobro polazište. Za najbolji rezultat vozite nekoliko minuta tijekom snimanja, uz zaustavljanje u praznom hodu. Ako vaš automobil treba zahtjev prije nego javi potrošnju i domet, a canbus biblioteka poznaje automobil, čitač prvo šalje taj zahtjev. Ako je dopuštenje za lokaciju već odobreno, bilježi se i GPS brzina, što pomaže pronaći kod brzine.</string>
     <string name="codes_guide_skip_codes">Preskakanje kodova – kao što naziv kaže, ovaj odjeljak služi za zanemarivanje zadanih kodova. Čitač kodova ih ne bilježi pa datoteka ne sadrži izlaz koji vas ne zanima.</string>
     <string name="skip_zero_codes">Izostavi kodove koji su slali samo 0</string>

@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">potvrdené</string>
     <string name="stats_codes_pair_unconfirmed">zatiaľ nepotvrdené</string>
     <string name="stats_codes_reader_line">Kódy, ktoré čítačka canbus našla pre %1$s: %2$s</string>
+    <string name="extra_stats_codes">Ďalšie štatistické údaje <b>(voliteľné)</b></string>
+    <string name="canbus_optional"><b>Voliteľné údaje (ak sa nepoužívajú, majú byť 0):</b></string>
+    <string name="canbus_optional_description">Použite, ak váš canbus prestane odosielať údaje o spotrebe paliva, napríklad pod určitou rýchlosťou.</string>
+    <string name="vehicle_mass_code_text">Hmotnosť vozidla (v kg):</string>
+    <string name="engine_displacement_code_text">Objem motora (v cm³):</string>
+    <string name="extra_stats_codes_summary">Údaje o vozidle na odhad spotreby tam, kde ju vozidlo nezobrazuje. Hmotnosť: %1$s, objem motora: %2$s</string>
+    <string name="car_data_source">Oboje je v osvedčení o evidencii: pohotovostná hmotnosť (pole G) a zdvihový objem motora (pole P.1).</string>
     <string name="codes_guide_inspector">Čítačka kódov zaznamenáva všetko, čo jednotka o vašom aute posiela – každý kód canbus od 0 do 1199 – po nastavený čas (predvolene 5 minút) a ukladá to do Download/Launcher66_Canbus. Neposiela autu žiadne náhodné príkazy. Každá zmena každého kódu sa zapisuje s časom a začiatok súboru obsahuje odhady, čo kódy znamenajú (spotreba, dojazd, otáčky, rýchlosť a ďalšie). Sú to iba odhady a môžu byť nesprávne, ale sú dobrým začiatkom. Pre najlepší výsledok počas záznamu niekoľko minút jazdite, so zastavením na voľnobeh. Ak vaše auto potrebuje požiadavku, kým nahlási spotrebu a dojazd, a knižnica canbus auto pozná, čítačka túto požiadavku pošle ako prvú. Ak je oprávnenie na polohu už udelené, zaznamenáva sa aj rýchlosť z GPS, čo pomáha nájsť kód rýchlosti.</string>
     <string name="codes_guide_skip_codes">Preskočené kódy – ako naznačuje názov, táto sekcia slúži na ignorovanie zadaných kódov. Čítačka kódov ich nezaznamenáva, takže súbor neobsahuje výstup, ktorý vás nezaujíma.</string>
     <string name="skip_zero_codes">Vynechať kódy, ktoré poslali iba 0</string>

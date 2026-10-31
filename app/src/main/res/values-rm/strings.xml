@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">confermà</string>
     <string name="stats_codes_pair_unconfirmed">anc betg confermà</string>
     <string name="stats_codes_reader_line">Codes che il lectur canbus ha chattà sin %1$s: %2$s</string>
+    <string name="extra_stats_codes">Datas supplementaras da statistica <b>(opziunal)</b></string>
+    <string name="canbus_optional"><b>Datas opziunalas (duain esser 0, sch\'ellas na vegnan betg duvradas):</b></string>
+    <string name="canbus_optional_description">Utilisescha quai, sche tes canbus smetta da trametter datas dal consum da carburant, p.ex. sut ina certa sveltezza.</string>
+    <string name="vehicle_mass_code_text">Massa dal vehichel (en kg):</string>
+    <string name="engine_displacement_code_text">Cilinder dal motor (en cm³):</string>
+    <string name="extra_stats_codes_summary">Datas da l’auto per l’appreziaziun da la consumaziun nua che l’auto na mussa nagut. Massa: %1$s, cilinder: %2$s</string>
+    <string name="car_data_source">Tuts dus èn en il permiss da circulaziun: la massa pronta da viagiar (champ G) e la grondezza dal motor (champ P.1).</string>
     <string name="codes_guide_inspector">Il lectur da codes registrescha tut quai che l’unitad trametta davart tia auto – mintga code canbus da 0 fin 1199 – per il temp definì (5 minutas per standard) e memorisescha quai en Download/Launcher66_Canbus. El na trametta naginas cumondas casualas a l’auto. Mintga midada da mintga code vegn scritta cun sia ura, e il cumenzament da la datoteca cuntegna supposiziuns davart il senn dals codes (consum da surpli, reichadad, RPM, sveltezza e dapli). Quai èn be supposiziuns e pon esser fauss, ma èn in bun punct da partenza. Per il meglier resultat va cun l’auto per intgins minutas durant la registraziun, cun ina fermada en lieut. Sche tia auto basegna ina dumonda avant ch’ella rapportescha consum e reichadad e la biblioteca canbus enconuscha l’auto, trametta il lectur emprim questa dumonda. Sche la permissiun da la posiziun è gia concedida, vegn registrada era la sveltezza GPS, quai che gida da chattar il code da la sveltezza.</string>
     <string name="codes_guide_skip_codes">Sursilir codes – sco il num di, serva questa secziun per ignorar ils codes dads. Il lectur da codes na als registrescha betg, uschia che la datoteca na cuntegna nagina emissiun che na t’interessescha betg.</string>
     <string name="skip_zero_codes">Laschar davent ils codes che han be tramess 0</string>

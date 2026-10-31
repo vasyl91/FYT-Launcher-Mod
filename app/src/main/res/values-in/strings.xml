@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">dikonfirmasi</string>
     <string name="stats_codes_pair_unconfirmed">belum dikonfirmasi</string>
     <string name="stats_codes_reader_line">Kode yang ditemukan pembaca canbus pada %1$s: %2$s</string>
+    <string name="extra_stats_codes">Data statistik tambahan <b>(opsional)</b></string>
+    <string name="canbus_optional"><b>Data opsional (harus 0 jika tidak digunakan):</b></string>
+    <string name="canbus_optional_description">Gunakan jika canbus Anda berhenti mengirim data konsumsi bahan bakar, misalnya di bawah kecepatan tertentu.</string>
+    <string name="vehicle_mass_code_text">Massa kendaraan (dalam kg):</string>
+    <string name="engine_displacement_code_text">Kapasitas mesin (dalam cm³):</string>
+    <string name="extra_stats_codes_summary">Data mobil untuk perkiraan konsumsi bahan bakar saat mobil tidak menampilkannya. Massa: %1$s, kapasitas mesin: %2$s</string>
+    <string name="car_data_source">Keduanya ada di surat registrasi kendaraan: massa kosong (kolom G) dan kapasitas mesin (kolom P.1).</string>
     <string name="codes_guide_inspector">Pembaca kode merekam semua yang dikirim unit tentang mobil Anda – setiap kode canbus dari 0 sampai 1199 – selama waktu yang diatur (default 5 menit) dan menyimpannya ke Download/Launcher66_Canbus. Ia tidak mengirim perintah acak ke mobil. Setiap perubahan setiap kode ditulis beserta waktunya, dan awal berkas berisi dugaan arti kode (konsumsi BBM, jangkauan, RPM, kecepatan, dan lainnya). Itu hanya dugaan dan bisa salah, tetapi merupakan titik awal yang baik. Untuk hasil terbaik, berkendaralah beberapa menit selama merekam, dengan berhenti saat idle. Jika mobil Anda memerlukan permintaan sebelum melaporkan konsumsi dan jangkauan, dan pustaka canbus mengenal mobil itu, pembaca mengirim permintaan tersebut lebih dulu. Jika izin lokasi sudah diberikan, kecepatan GPS juga direkam, yang membantu menemukan kode kecepatan.</string>
     <string name="codes_guide_skip_codes">Lewati kode – seperti namanya, bagian ini bertujuan mengabaikan kode yang diberikan. Pembaca kode tidak merekamnya, sehingga berkas tidak berisi keluaran yang tidak Anda perlukan.</string>
     <string name="skip_zero_codes">Abaikan kode yang hanya mengirim 0</string>

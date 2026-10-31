@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">confirmat</string>
     <string name="stats_codes_pair_unconfirmed">encara sense confirmar</string>
     <string name="stats_codes_reader_line">Codis que el lector canbus ha trobat a %1$s: %2$s</string>
+    <string name="extra_stats_codes">Dades estadístiques addicionals <b>(opcional)</b></string>
+    <string name="canbus_optional"><b>Dades opcionals (han de ser 0 si no s\'utilitzen):</b></string>
+    <string name="canbus_optional_description">Utilitza-ho si el teu canbus deixa d\'enviar dades de consum de combustible, per exemple per sota d\'una certa velocitat.</string>
+    <string name="vehicle_mass_code_text">Massa del vehicle (en kg):</string>
+    <string name="engine_displacement_code_text">Cilindrada del motor (en cm³):</string>
+    <string name="extra_stats_codes_summary">Dades del cotxe per a l’estimació del consum on el cotxe no en mostra. Massa: %1$s, cilindrada: %2$s</string>
+    <string name="car_data_source">Totes dues són al permís de circulació: la massa en ordre de marxa (camp G) i la cilindrada del motor (camp P.1).</string>
     <string name="codes_guide_inspector">El lector de codis registra tot el que la unitat envia sobre el vostre cotxe – cada codi canbus del 0 al 1199 – durant el temps definit (5 minuts per defecte) i ho desa a Download/Launcher66_Canbus. No envia al cotxe ordres aleatòries. Cada canvi de cada codi s’escriu amb la seva hora, i l’inici del fitxer conté suposicions sobre el significat dels codis (consum, autonomia, RPM, velocitat i més). Són només suposicions i poden ser errònies, però són un bon punt de partida. Per obtenir el millor resultat, conduïu uns minuts mentre grava, amb una parada al ralentí. Si el vostre cotxe necessita una sol·licitud abans d’informar del consum i l’autonomia, i la biblioteca canbus coneix el cotxe, el lector envia primer aquesta sol·licitud. Si el permís d’ubicació ja està concedit, també es registra la velocitat GPS, cosa que ajuda a trobar el codi de velocitat.</string>
     <string name="codes_guide_skip_codes">Omet codis – com indica el nom, aquesta secció serveix per ignorar els codis indicats. El lector de codis no els registra, de manera que el fitxer no conté sortida que no us interessa.</string>
     <string name="skip_zero_codes">Omet els codis que només han enviat 0</string>

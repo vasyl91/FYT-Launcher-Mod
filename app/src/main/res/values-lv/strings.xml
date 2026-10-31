@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">apstiprināts</string>
     <string name="stats_codes_pair_unconfirmed">vēl nav apstiprināts</string>
     <string name="stats_codes_reader_line">Canbus lasītāja atrastie kodi uz %1$s: %2$s</string>
+    <string name="extra_stats_codes">Papildu statistikas dati <b>(neobligāti)</b></string>
+    <string name="canbus_optional"><b>Neobligāti dati (jābūt 0, ja netiek izmantoti):</b></string>
+    <string name="canbus_optional_description">Izmantojiet, ja jūsu canbus pārstāj sūtīt degvielas patēriņa datus, piemēram, zem noteikta ātruma.</string>
+    <string name="vehicle_mass_code_text">Transportlīdzekļa masa (kg):</string>
+    <string name="engine_displacement_code_text">Dzinēja darba tilpums (cm³):</string>
+    <string name="extra_stats_codes_summary">Automašīnas dati degvielas patēriņa novērtējumam, kur automašīna neko nerāda. Masa: %1$s, darba tilpums: %2$s</string>
+    <string name="car_data_source">Abi ir reģistrācijas apliecībā: pašmasa (lauks G) un dzinēja darba tilpums (lauks P.1).</string>
     <string name="codes_guide_inspector">Kodu lasītājs ieraksta visu, ko ierīce sūta par jūsu auto — katru canbus kodu no 0 līdz 1199 — iestatīto laiku (pēc noklusējuma 5 minūtes) un saglabā to mapē Download/Launcher66_Canbus. Tas nesūta auto nejaušas komandas. Katra koda katra izmaiņa tiek ierakstīta ar savu laiku, un faila sākumā ir pieņēmumi par kodu nozīmi (degvielas patēriņš, nobraukums, apgriezieni, ātrums un citi). Tie ir tikai pieņēmumi un var būt kļūdaini, taču tie ir labs sākumpunkts. Labākam rezultātam ieraksta laikā braucieniet dažas minūtes, ar apstāšanos brīvgaitā. Ja jūsu auto nepieciešams pieprasījums, pirms tas ziņo patēriņu un nobraukumu, un canbus bibliotēka auto pazīst, lasītājs vispirms nosūta šo pieprasījumu. Ja atrašanās vietas atļauja jau ir piešķirta, tiek ierakstīts arī GPS ātrums, kas palīdz atrast ātruma kodu.</string>
     <string name="codes_guide_skip_codes">Izlaižamie kodi — kā norāda nosaukums, šī sadaļa paredzēta norādīto kodu ignorēšanai. Kodu lasītājs tos neieraksta, tāpēc failā nav izvades, kas jūs neinteresē.</string>
     <string name="skip_zero_codes">Izlaist kodus, kas sūtīja tikai 0</string>

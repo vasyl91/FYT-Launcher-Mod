@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">確認済み</string>
     <string name="stats_codes_pair_unconfirmed">未確認</string>
     <string name="stats_codes_reader_line">CANBUSリーダーが%1$sで見つけたコード: %2$s</string>
+    <string name="extra_stats_codes">追加の統計データ<b>（任意）</b></string>
+    <string name="canbus_optional"><b>任意のデータ（使用しない場合は0）:</b></string>
+    <string name="canbus_optional_description">特定の速度を下回るなど、canbusが燃費データを送信しなくなる場合に使用します。</string>
+    <string name="vehicle_mass_code_text">車両質量（kg）:</string>
+    <string name="engine_displacement_code_text">排気量（cm³）：</string>
+    <string name="extra_stats_codes_summary">車が何も表示しない場合の燃費推定用の車両データ。質量：%1$s、排気量：%2$s</string>
+    <string name="car_data_source">どちらも車両の登録証明書に記載されています：車両質量（G欄）と排気量（P.1欄）。</string>
     <string name="codes_guide_inspector">コードリーダーは、ユニットが車について送信するすべて（0〜1199のすべてのCANBUSコード）を設定した時間（既定は5分）記録し、Download/Launcher66_Canbusに保存します。車にランダムなコマンドは送信しません。各コードのすべての変化が時刻とともに書き込まれ、ファイルの先頭にはコードの意味の推測（燃費、航続距離、回転数、速度など）が含まれます。これは推測にすぎず間違っている場合もありますが、よい手がかりになります。最良の結果を得るには、記録中に数分間走行し、アイドリングで停車してください。燃費と航続距離を報告する前にリクエストが必要な車で、CANBUSライブラリがその車を知っている場合、リーダーは最初にそのリクエストを送信します。位置情報の権限がすでに許可されていれば、GPS速度も記録され、速度コードの特定に役立ちます。</string>
     <string name="codes_guide_skip_codes">スキップするコード – その名のとおり、このセクションは指定したコードを無視するためのものです。コードリーダーはそれらを記録しないため、ファイルに不要な出力は含まれません。</string>
     <string name="skip_zero_codes">0しか送信しなかったコードを除外</string>

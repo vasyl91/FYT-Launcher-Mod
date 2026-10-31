@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">confirmado</string>
     <string name="stats_codes_pair_unconfirmed">aún sin confirmar</string>
     <string name="stats_codes_reader_line">Códigos que el lector canbus encontró en %1$s: %2$s</string>
+    <string name="extra_stats_codes">Datos estadísticos adicionales <b>(opcional)</b></string>
+    <string name="canbus_optional"><b>Datos opcionales (deben ser 0 si no se usan):</b></string>
+    <string name="canbus_optional_description">Úsalo si tu canbus deja de enviar datos de consumo, por ejemplo por debajo de cierta velocidad.</string>
+    <string name="vehicle_mass_code_text">Masa del vehículo (en kg):</string>
+    <string name="engine_displacement_code_text">Cilindrada del motor (en cm³):</string>
+    <string name="extra_stats_codes_summary">Datos del coche para la estimación del consumo donde el coche no muestra ninguno. Masa: %1$s, cilindrada: %2$s</string>
+    <string name="car_data_source">Ambos están en el permiso de circulación: la masa en orden de marcha (campo G) y la cilindrada del motor (campo P.1).</string>
     <string name="codes_guide_inspector">El lector de códigos registra todo lo que la unidad envía sobre tu coche – cada código canbus del 0 al 1199 – durante el tiempo que establezcas (5 minutos por defecto) y lo guarda en Download/Launcher66_Canbus. No envía al coche comandos aleatorios. Cada cambio de cada código se escribe con su hora, y el principio del archivo contiene suposiciones sobre lo que significan los códigos (consumo, autonomía, RPM, velocidad y más). Son solo suposiciones y pueden ser erróneas, pero son un buen punto de partida. Para un mejor resultado conduce unos minutos, con una parada al ralentí, mientras graba. Si tu coche necesita una solicitud antes de informar del consumo y la autonomía, y la biblioteca canbus conoce el coche, el lector envía primero esa solicitud. Si el permiso de ubicación ya está concedido, también se registra la velocidad GPS, lo que ayuda a encontrar el código de velocidad.</string>
     <string name="codes_guide_skip_codes">Omitir códigos – como indica el nombre, esta sección sirve para ignorar los códigos indicados. El lector de códigos no los registra, así que el archivo no contiene datos que no te interesan.</string>
     <string name="skip_zero_codes">Omitir los códigos que solo enviaron 0</string>

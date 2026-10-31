@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">confirmat</string>
     <string name="stats_codes_pair_unconfirmed">încă neconfirmat</string>
     <string name="stats_codes_reader_line">Coduri găsite de cititorul canbus pe %1$s: %2$s</string>
+    <string name="extra_stats_codes">Date statistice suplimentare <b>(opțional)</b></string>
+    <string name="canbus_optional"><b>Date opționale (trebuie să fie 0 dacă nu se folosesc):</b></string>
+    <string name="canbus_optional_description">Folosiți dacă canbusul dvs. nu mai trimite date despre consumul de combustibil, de exemplu sub o anumită viteză.</string>
+    <string name="vehicle_mass_code_text">Masa vehiculului (în kg):</string>
+    <string name="engine_displacement_code_text">Capacitatea cilindrică (în cm³):</string>
+    <string name="extra_stats_codes_summary">Datele mașinii pentru estimarea consumului acolo unde mașina nu afișează nimic. Masă: %1$s, capacitate cilindrică: %2$s</string>
+    <string name="car_data_source">Ambele se află în certificatul de înmatriculare: masa în stare de mers (câmpul G) și capacitatea cilindrică (câmpul P.1).</string>
     <string name="codes_guide_inspector">Cititorul de coduri înregistrează tot ce trimite unitatea despre mașina dumneavoastră – fiecare cod canbus de la 0 la 1199 – în timpul setat (implicit 5 minute) și salvează în Download/Launcher66_Canbus. Nu trimite mașinii comenzi aleatorii. Fiecare schimbare a fiecărui cod este scrisă cu ora ei, iar începutul fișierului conține presupuneri despre ce înseamnă codurile (consum, autonomie, turație, viteză și altele). Sunt doar presupuneri și pot fi greșite, dar sunt un bun punct de plecare. Pentru cel mai bun rezultat, conduceți câteva minute în timpul înregistrării, cu o oprire la ralanti. Dacă mașina dumneavoastră are nevoie de o cerere înainte de a raporta consumul și autonomia, iar biblioteca canbus cunoaște mașina, cititorul trimite mai întâi acea cerere. Dacă permisiunea de locație este deja acordată, se înregistrează și viteza GPS, ceea ce ajută la găsirea codului de viteză.</string>
     <string name="codes_guide_skip_codes">Coduri omise – după cum spune numele, această secțiune servește la ignorarea codurilor date. Cititorul de coduri nu le înregistrează, deci fișierul nu conține date care nu vă interesează.</string>
     <string name="skip_zero_codes">Omite codurile care au trimis doar 0</string>

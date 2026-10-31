@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">patvirtinta</string>
     <string name="stats_codes_pair_unconfirmed">dar nepatvirtinta</string>
     <string name="stats_codes_reader_line">Canbus skaitytuvo rasti kodai %1$s: %2$s</string>
+    <string name="extra_stats_codes">Papildomi statistikos duomenys <b>(neprivaloma)</b></string>
+    <string name="canbus_optional"><b>Neprivalomi duomenys (turi būti 0, jei nenaudojami):</b></string>
+    <string name="canbus_optional_description">Naudokite, jei jūsų canbus nustoja siųsti degalų sąnaudų duomenis, pavyzdžiui, žemiau tam tikro greičio.</string>
+    <string name="vehicle_mass_code_text">Transporto priemonės masė (kg):</string>
+    <string name="engine_displacement_code_text">Variklio darbinis tūris (cm³):</string>
+    <string name="extra_stats_codes_summary">Automobilio duomenys kuro sąnaudų įvertinimui ten, kur automobilis nieko nerodo. Masė: %1$s, darbinis tūris: %2$s</string>
+    <string name="car_data_source">Abu yra registracijos liudijime: paruošto važiuoti automobilio masė (laukas G) ir variklio darbinis tūris (laukas P.1).</string>
     <string name="codes_guide_inspector">Kodų skaitytuvas įrašo viską, ką įrenginys siunčia apie jūsų automobilį – kiekvieną canbus kodą nuo 0 iki 1199 – nustatytą laiką (pagal numatytuosius nustatymus 5 minutes) ir išsaugo Download/Launcher66_Canbus. Jis nesiunčia automobiliui atsitiktinių komandų. Kiekvienas kiekvieno kodo pokytis įrašomas su laiku, o failo pradžioje pateikiamos prielaidos, ką kodai reiškia (degalų sąnaudos, atstumas, apsukos, greitis ir kt.). Tai tik prielaidos ir jos gali būti klaidingos, bet tai gera pradžia. Geriausiam rezultatui įrašymo metu pavažinėkite kelias minutes, sustodami laisva eiga. Jei jūsų automobiliui reikia užklausos, kad praneštų sąnaudas ir atstumą, o canbus biblioteka automobilį pažįsta, skaitytuvas pirmiausia išsiunčia tą užklausą. Jei vietos leidimas jau suteiktas, įrašomas ir GPS greitis, o tai padeda rasti greičio kodą.</string>
     <string name="codes_guide_skip_codes">Praleidžiami kodai – kaip rodo pavadinimas, šis skyrius skirtas nurodytiems kodams ignoruoti. Kodų skaitytuvas jų neįrašo, todėl faile nėra išvesties, kuri jūsų nedomina.</string>
     <string name="skip_zero_codes">Praleisti kodus, kurie siuntė tik 0</string>

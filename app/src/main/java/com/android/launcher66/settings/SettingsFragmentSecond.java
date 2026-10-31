@@ -125,6 +125,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private SwitchPreferenceCompat userStats;
     private CustomWidgetPreference statsScreen;
     private Preference statsCodes;
+    private Preference extraStatsCodes;
     private EditText fuelCodeInt;
     private String fuelCodeStr;
     private String rangeCodeStr;
@@ -134,6 +135,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private String rpmCodeStr;
     /** Saves every field of the Canbus codes window; set while the window is open. */
     private Runnable saveCodesWindow;
+    private Runnable saveExtraCodesWindow;
     private EditText inspectorTimeoutEdit;
     private String codeInspectorTimeoutStr;
     private SwitchPreferenceCompat mainScreenStats;
@@ -171,6 +173,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private AlertDialog alertPipDialog;
     private AlertDialog alertMarginsDialog;
     private AlertDialog alertCodesDialog;
+    private AlertDialog alertExtraCodesDialog;
     private AlertDialog alertSkipCodesDialog;
     private AlertDialog alertCodesInspectorDialog;
     private WeakReference<AppListStatsDialogFragment> appListStatsDialog;
@@ -300,6 +303,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         userStats = findPreference(Keys.USER_STATS);
         statsScreen = findPreference(Keys.STATS_DISPLAY);
         statsCodes = findPreference(Keys.STATS_CODES);
+        extraStatsCodes = findPreference(Keys.EXTRA_STATS_CODES);
         fuelCodeStr = sharedPrefs.getString("fuel_code_int", "0");
         rangeCodeStr = sharedPrefs.getString("range_code_int", "0");
         cmdIntCodeStr = sharedPrefs.getString(Keys.CMD_INT, "0");
@@ -563,6 +567,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             statsCodes.setOnPreferenceClickListener(this);
             statsCodes.setVisible(userStatsBool);
         }
+        if (extraStatsCodes != null) {
+            extraStatsCodes.setSummary(extraStatsCodesSummary());
+            extraStatsCodes.setOnPreferenceClickListener(this);
+            extraStatsCodes.setVisible(userStatsBool);
+        }
         if (mainScreenStats != null) {
             mainScreenStats.setOnPreferenceClickListener(this);
             mainScreenStats.setVisible(userStatsBool);
@@ -772,6 +781,17 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
                 alertCodesDialog.show();
                 fitDialogWindow(alertCodesDialog);
+                break;
+            case Keys.EXTRA_STATS_CODES:
+                alertExtraCodesDialog = displayExtraCodesDialog().create();
+
+                alertExtraCodesDialog.setOnShowListener(dialog -> {
+                    Button negativeExtraCodesButton = alertExtraCodesDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    negativeExtraCodesButton.setLayoutParams(params);
+                });
+
+                alertExtraCodesDialog.show();
+                fitDialogWindow(alertExtraCodesDialog);
                 break;
             case Keys.COLOR_PICKER:
                 ColorPicker picker = ColorPicker.newInstance(defaultColorR, defaultColorG, defaultColorB);
@@ -1052,6 +1072,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         userStats = null;
         statsScreen = null;
         statsCodes = null;
+        extraStatsCodes = null;
         autoHidePreference = null;
         autoHideSeekBar = null;
         resizableBarPreference = null;
@@ -1144,6 +1165,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (alertCodesDialog != null && alertCodesDialog.isShowing()) {
             alertCodesDialog.dismiss();
             alertCodesDialog = null;
+        }
+        if (alertExtraCodesDialog != null && alertExtraCodesDialog.isShowing()) {
+            alertExtraCodesDialog.dismiss();
+            alertExtraCodesDialog = null;
         }
         if (colorPicker != null) {
             ColorPicker dialog = colorPicker.get();
@@ -1426,6 +1451,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (userStatsBool) {
             statsScreen.setVisible(true);
             statsCodes.setVisible(true);
+            extraStatsCodes.setVisible(true);
             mainScreenStats.setVisible(true);
             colorPickerPref.setVisible(true);
             statsBg.setVisible(true);
@@ -1456,6 +1482,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         } else {
             statsScreen.setVisible(false);
             statsCodes.setVisible(false);
+            extraStatsCodes.setVisible(false);
             mainScreenStats.setVisible(false);
             colorPickerPref.setVisible(false);
             statsBg.setVisible(false);
@@ -1837,6 +1864,100 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             });
         builder.setOnDismissListener(dialog -> saveCodesWindow = null);
         return builder;
+    }
+
+    /**
+     * The car's mass and engine displacement, optional: with them the estimate of the consumption starts from a car like
+     * this one and is shown sooner. Built like the Canbus codes window.
+     */
+    private AlertDialog.Builder displayExtraCodesDialog() {
+        AlertDialog.Builder builder = lightDialog();
+        View dialogView = LayoutInflater.from(builder.getContext()).inflate(R.layout.dialog_extra_codes_layout, null);
+
+        EditText vehicleMassInt = dialogView.findViewById(R.id.vehicle_mass_code_int);
+        EditText engineDisplacementInt = dialogView.findViewById(R.id.engine_displacement_code_int);
+
+        ConstraintLayout constraintExtra = dialogView.findViewById(R.id.constraint_extra);
+        constraintExtra.setPadding(padding, padding, padding, padding);
+
+        setCalculatedSizes(dialogView, R.id.canbus_optional, SettingsActivity.dialogTitle, SettingsActivity.dialogMargin);
+        // A label may wrap; it takes at most a part of the window and the field the rest
+        int labelWidth = Math.round(dialogWidth() * 0.4f);
+        for (int id : new int[]{R.id.vehicle_mass_code_text, R.id.engine_displacement_code_text}) {
+            setCalculatedSizes(dialogView, id, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+            ((TextView) dialogView.findViewById(id)).setMaxWidth(labelWidth);
+        }
+        setCalculatedSizes(dialogView, R.id.canbus_optional_description, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.car_data_source, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+
+        dialogExtraCodesEditText(vehicleMassInt);
+        dialogExtraCodesEditText(engineDisplacementInt);
+        vehicleMassInt.setText(carDataUnset(Keys.VEHICLE_MASS) ? "" : sharedPrefs.getString(Keys.VEHICLE_MASS, ""));
+        engineDisplacementInt.setText(carDataUnset(Keys.ENGINE_DISPLACEMENT) ? "" : sharedPrefs.getString(Keys.ENGINE_DISPLACEMENT, ""));
+        vehicleMassInt.setHint("1300");
+        engineDisplacementInt.setHint("1598");
+        vehicleMassInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        engineDisplacementInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+
+        final Runnable save = () -> {
+            saveExtraCode(vehicleMassInt);
+            saveExtraCode(engineDisplacementInt);
+            // the model of the car takes the new values at once
+            CanbusService.carDataChanged();
+        };
+        saveExtraCodesWindow = save;
+        builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> save.run());
+        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
+        builder.setOnCancelListener(dialog -> {
+                save.run();
+                dialog.dismiss();
+            });
+        builder.setOnDismissListener(dialog -> saveExtraCodesWindow = null);
+        return builder;
+    }
+
+    /** A number field of the car data window: Done saves both fields and closes the window. */
+    private void dialogExtraCodesEditText(EditText field) {
+        field.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "99999")});
+        field.setInputType(InputType.TYPE_CLASS_NUMBER);
+        field.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        field.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (saveExtraCodesWindow != null) {
+                    saveExtraCodesWindow.run();
+                } else {
+                    saveExtraCode(field);
+                    CanbusService.carDataChanged();
+                }
+                alertExtraCodesDialog.dismiss();
+            }
+            return false;
+        });
+    }
+
+    /** Saved under the name of the field's id, like the codes; empty is 0 (not given). */
+    private void saveExtraCode(EditText field) {
+        String valueStr = field.getText().toString().trim();
+        if (valueStr.isEmpty()) valueStr = "0";
+        editor.putString(field.getResources().getResourceEntryName(field.getId()), valueStr);
+        editor.apply();
+        if (extraStatsCodes != null) {
+            extraStatsCodes.setSummary(extraStatsCodesSummary());
+        }
+    }
+
+    /** Nothing, empty or 0 was given for a car datum. */
+    private boolean carDataUnset(String key) {
+        String saved = sharedPrefs.getString(key, "0");
+        return saved == null || saved.trim().isEmpty() || saved.trim().equals("0");
+    }
+
+    private String extraStatsCodesSummary() {
+        String notSet = getString(R.string.stats_codes_not_set);
+        String mass = carDataUnset(Keys.VEHICLE_MASS) ? notSet : sharedPrefs.getString(Keys.VEHICLE_MASS, "").trim() + " kg";
+        String displacement = carDataUnset(Keys.ENGINE_DISPLACEMENT) ? notSet
+                : sharedPrefs.getString(Keys.ENGINE_DISPLACEMENT, "").trim() + " cm³";
+        return getString(R.string.extra_stats_codes_summary, mass, displacement);
     }
 
     /** A light dialog, as every window of these settings; inflate its view with {@code builder.getContext()}. */

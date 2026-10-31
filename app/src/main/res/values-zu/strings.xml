@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">kuqinisekisiwe</string>
     <string name="stats_codes_pair_unconfirmed">akukaqinisekiswa</string>
     <string name="stats_codes_reader_line">Amakhodi atholwe isifundi se-canbus ku-%1$s: %2$s</string>
+    <string name="extra_stats_codes">Idatha eyengeziwe yezibalo <b>(akuphoqelekile)</b></string>
+    <string name="canbus_optional"><b>Idatha ekhethwayo (kufanele ibe ngu-0 uma ingasetshenziswa):</b></string>
+    <string name="canbus_optional_description">Sebenzisa lokhu uma i-canbus yakho iyeka ukuthumela idatha yokusetshenziswa kukaphethiloli, isibonelo ngezansi kwejubane elithile.</string>
+    <string name="vehicle_mass_code_text">Isisindo semoto (nge-kg):</string>
+    <string name="engine_displacement_code_text">Usayizi wenjini (nge-cm³):</string>
+    <string name="extra_stats_codes_summary">Idatha yemoto yokulinganisa ukusetshenziswa kukaphethiloli lapho imoto ingakhombisi lutho. Isisindo: %1$s, usayizi wenjini: %2$s</string>
+    <string name="car_data_source">Zombili ziku-sitifikethi sokubhalisa: isisindo semoto elungele ukuhamba (inkundla G) nosayizi wenjini (inkundla P.1).</string>
     <string name="codes_guide_inspector">Isifundi samakhodi sirekhoda konke iyunithi eyikhipha ngemoto yakho – ikhodi ngayinye ye-canbus kusuka ku-0 kuya ku-1199 – isikhathi osisethile (imizuzu emi-5 ngokuzenzakalelayo) futhi sikulondoloze ku-Download/Launcher66_Canbus. Asithumeli imiyalo engahleliwe emotweni. Ushintsho ngalunye lwekhodi ngayinye lubhalwa nesikhathi salo, futhi ukuqala kwefayela kunokucatshangwa ngokushiwo amakhodi (ukusetshenziswa kwamafutha, ibanga, i-RPM, ijubane nokunye). Ukucabanga nje futhi kungase kungalungile, kodwa kuyindawo enhle yokuqala. Ukuze uthole umphumela ongcono, shayela imizuzu embalwa ngenkathi kurekhoda, umile ku-idle. Uma imoto yakho idinga isicelo ngaphambi kokubika ukusetshenziswa nebanga, futhi umtapo we-canbus uyayazi imoto, isifundi sithumela kuqala lesosicelo. Uma imvume yendawo isinikeziwe, ijubane le-GPS nalo liyarekhodwa, okusiza ukuthola ikhodi yejubane.</string>
     <string name="codes_guide_skip_codes">Eqa amakhodi – njengoba igama lisho, lesi sigaba sihlose ukungawanaki amakhodi anikeziwe. Isifundi samakhodi asiwarekhodi, ngakho ifayela alinawo umphumela ongawufuni.</string>
     <string name="skip_zero_codes">Shiya amakhodi athumele u-0 kuphela</string>

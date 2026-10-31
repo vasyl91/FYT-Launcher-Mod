@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">已確認</string>
     <string name="stats_codes_pair_unconfirmed">尚未確認</string>
     <string name="stats_codes_reader_line">canbus 讀取器在 %1$s 上找到的代碼：%2$s</string>
+    <string name="extra_stats_codes">附加統計資料<b>（可選）</b></string>
+    <string name="canbus_optional"><b>可選資料（不使用請填 0）：</b></string>
+    <string name="canbus_optional_description">當 CAN 匯流排在某個速度以下停止傳送油耗資料時使用。</string>
+    <string name="vehicle_mass_code_text">車重（公斤）：</string>
+    <string name="engine_displacement_code_text">引擎排氣量（cm³）：</string>
+    <string name="extra_stats_codes_summary">用於在車輛不顯示油耗時估算油耗的車輛資料。車重：%1$s，引擎排氣量：%2$s</string>
+    <string name="car_data_source">兩者都在行車執照上：整備質量（G 欄）與引擎排氣量（P.1 欄）。</string>
     <string name="codes_guide_inspector">代碼讀取器會在設定的時間內（預設 5 分鐘）記錄裝置傳送的有關您車輛的一切——從 0 到 1199 的每個 canbus 代碼——並儲存到 Download/Launcher66_Canbus。它不會向車輛傳送隨機指令。每個代碼的每次變化都會連同時間一起寫入，檔案開頭包含對代碼意義的猜測（油耗、續航里程、轉速、車速等）。這些只是猜測，可能有誤，但是很好的起點。為獲得最佳效果，請在記錄期間行駛幾分鐘，並在怠速時停一下。如果您的車輛需要先傳送要求才會回報油耗和續航里程，且 canbus 資料庫認得該車，讀取器會先傳送該要求。如果已授予位置權限，也會記錄 GPS 車速，有助於找到車速代碼。</string>
     <string name="codes_guide_skip_codes">略過代碼 – 顧名思義，此區段用於忽略指定的代碼。代碼讀取器不會記錄它們，因此檔案中不會包含您不關心的輸出。</string>
     <string name="skip_zero_codes">排除只傳送過 0 的代碼</string>

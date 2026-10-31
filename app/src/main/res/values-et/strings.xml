@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">kinnitatud</string>
     <string name="stats_codes_pair_unconfirmed">pole veel kinnitatud</string>
     <string name="stats_codes_reader_line">Canbus-lugeja leitud koodid autol %1$s: %2$s</string>
+    <string name="extra_stats_codes">Täiendavad statistikaandmed <b>(valikuline)</b></string>
+    <string name="canbus_optional"><b>Valikulised andmed (peaksid olema 0, kui neid ei kasutata):</b></string>
+    <string name="canbus_optional_description">Kasutage seda, kui teie canbus lõpetab kütusekulu andmete saatmise, näiteks teatud kiirusest allpool.</string>
+    <string name="vehicle_mass_code_text">Sõiduki mass (kg):</string>
+    <string name="engine_displacement_code_text">Mootori töömaht (cm³):</string>
+    <string name="extra_stats_codes_summary">Auto andmed kütusekulu hinnangu jaoks seal, kus auto seda ei näita. Mass: %1$s, töömaht: %2$s</string>
+    <string name="car_data_source">Mõlemad on registreerimistunnistusel: sõiduki sõidukorras mass (väli G) ja mootori töömaht (väli P.1).</string>
     <string name="codes_guide_inspector">Koodilugeja salvestab kõik, mida seade teie auto kohta saadab – iga canbus-koodi vahemikus 0–1199 – määratud aja jooksul (vaikimisi 5 minutit) ja salvestab selle kausta Download/Launcher66_Canbus. See ei saada autole juhuslikke käske. Iga koodi iga muutus kirjutatakse koos ajaga ning faili algus sisaldab oletusi, mida koodid tähendavad (kütusekulu, sõiduulatus, pöörded, kiirus ja muu). Need on vaid oletused ja võivad olla valed, kuid need on hea lähtepunkt. Parima tulemuse saamiseks sõitke salvestamise ajal mõni minut, koos peatusega tühikäigul. Kui teie auto vajab päringut enne kütusekulu ja sõiduulatuse teatamist ning canbus-teek tunneb autot, saadab lugeja selle päringu esimesena. Kui asukohaluba on juba antud, salvestatakse ka GPS-kiirus, mis aitab leida kiirusekoodi.</string>
     <string name="codes_guide_skip_codes">Koodide vahelejätmine – nagu nimi ütleb, on see jaotis antud koodide eiramiseks. Koodilugeja neid ei salvesta, nii et fail ei sisalda väljundit, mis teid ei huvita.</string>
     <string name="skip_zero_codes">Jäta välja koodid, mis saatsid ainult 0</string>

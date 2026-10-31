@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">confermato</string>
     <string name="stats_codes_pair_unconfirmed">non ancora confermato</string>
     <string name="stats_codes_reader_line">Codici trovati dal lettore canbus su %1$s: %2$s</string>
+    <string name="extra_stats_codes">Dati statistici aggiuntivi <b>(facoltativo)</b></string>
+    <string name="canbus_optional"><b>Dati facoltativi (devono essere 0 se non usati):</b></string>
+    <string name="canbus_optional_description">Usalo se il tuo canbus smette di inviare i dati sul consumo, ad esempio sotto una certa velocità.</string>
+    <string name="vehicle_mass_code_text">Massa del veicolo (in kg):</string>
+    <string name="engine_displacement_code_text">Cilindrata del motore (in cm³):</string>
+    <string name="extra_stats_codes_summary">Dati dell’auto per la stima del consumo dove l’auto non ne mostra. Massa: %1$s, cilindrata: %2$s</string>
+    <string name="car_data_source">Entrambi sono nella carta di circolazione: la massa in ordine di marcia (campo G) e la cilindrata (campo P.1).</string>
     <string name="codes_guide_inspector">Il lettore di codici registra tutto ciò che l’unità invia sulla tua auto – ogni codice canbus da 0 a 1199 – per il tempo impostato (5 minuti per impostazione predefinita) e lo salva in Download/Launcher66_Canbus. Non invia all’auto comandi casuali. Ogni cambiamento di ogni codice viene scritto con la sua ora e l’inizio del file contiene ipotesi sul significato dei codici (consumo, autonomia, giri, velocità e altro). Sono solo ipotesi e possono essere sbagliate, ma sono un buon punto di partenza. Per un risultato migliore guida per qualche minuto, con una sosta al minimo, durante la registrazione. Se la tua auto ha bisogno di una richiesta prima di comunicare consumo e autonomia e la libreria canbus conosce l’auto, il lettore invia prima quella richiesta. Se l’autorizzazione alla posizione è già concessa, viene registrata anche la velocità GPS, utile per trovare il codice della velocità.</string>
     <string name="codes_guide_skip_codes">Codici da saltare – come dice il nome, questa sezione serve a ignorare determinati codici. Il lettore di codici non li registra, quindi il file non contiene dati che non ti interessano.</string>
     <string name="skip_zero_codes">Escludi i codici che hanno inviato solo 0</string>

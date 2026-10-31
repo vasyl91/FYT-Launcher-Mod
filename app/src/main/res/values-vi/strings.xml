@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">đã xác nhận</string>
     <string name="stats_codes_pair_unconfirmed">chưa xác nhận</string>
     <string name="stats_codes_reader_line">Các mã trình đọc canbus tìm thấy trên %1$s: %2$s</string>
+    <string name="extra_stats_codes">Dữ liệu thống kê bổ sung <b>(tùy chọn)</b></string>
+    <string name="canbus_optional"><b>Dữ liệu tùy chọn (nên là 0 nếu không dùng):</b></string>
+    <string name="canbus_optional_description">Dùng khi canbus của bạn ngừng gửi dữ liệu tiêu thụ nhiên liệu, ví dụ dưới một tốc độ nhất định.</string>
+    <string name="vehicle_mass_code_text">Khối lượng xe (kg):</string>
+    <string name="engine_displacement_code_text">Dung tích động cơ (cm³):</string>
+    <string name="extra_stats_codes_summary">Dữ liệu xe để ước tính mức tiêu thụ nhiên liệu ở nơi xe không hiển thị. Khối lượng: %1$s, dung tích động cơ: %2$s</string>
+    <string name="car_data_source">Cả hai đều có trong giấy đăng ký xe: khối lượng sẵn sàng chạy (mục G) và dung tích động cơ (mục P.1).</string>
     <string name="codes_guide_inspector">Trình đọc mã ghi lại mọi thứ thiết bị gửi về xe của bạn – mọi mã canbus từ 0 đến 1199 – trong khoảng thời gian bạn đặt (mặc định 5 phút) và lưu vào Download/Launcher66_Canbus. Nó không gửi lệnh ngẫu nhiên cho xe. Mọi thay đổi của mọi mã đều được ghi cùng thời điểm, và phần đầu tệp chứa các phỏng đoán về ý nghĩa của mã (mức tiêu thụ nhiên liệu, quãng đường, vòng tua, tốc độ và hơn thế nữa). Đây chỉ là phỏng đoán và có thể sai, nhưng là điểm khởi đầu tốt. Để có kết quả tốt nhất, hãy lái xe vài phút trong khi ghi, có một lần dừng ở chế độ không tải. Nếu xe cần một yêu cầu trước khi báo mức tiêu thụ và quãng đường, và thư viện canbus biết xe đó, trình đọc sẽ gửi yêu cầu đó trước. Nếu quyền vị trí đã được cấp, tốc độ GPS cũng được ghi, giúp tìm mã tốc độ.</string>
     <string name="codes_guide_skip_codes">Bỏ qua mã – đúng như tên gọi, phần này dùng để bỏ qua các mã đã cho. Trình đọc mã không ghi chúng, nên tệp không chứa đầu ra mà bạn không quan tâm.</string>
     <string name="skip_zero_codes">Bỏ qua các mã chỉ gửi 0</string>

@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">bevestig</string>
     <string name="stats_codes_pair_unconfirmed">nog nie bevestig nie</string>
     <string name="stats_codes_reader_line">Kodes wat die canbus-leser op %1$s gevind het: %2$s</string>
+    <string name="extra_stats_codes">Bykomende statistiekdata <b>(opsioneel)</b></string>
+    <string name="canbus_optional"><b>Opsionele data (moet 0 wees indien nie gebruik nie):</b></string>
+    <string name="canbus_optional_description">Gebruik dit as jou canbus ophou om brandstofverbruikdata te stuur, byvoorbeeld onder \'n sekere spoed.</string>
+    <string name="vehicle_mass_code_text">Voertuigmassa (in kg):</string>
+    <string name="engine_displacement_code_text">Enjinverplasing (in cm³):</string>
+    <string name="extra_stats_codes_summary">Voertuigdata vir die brandstofskatting waar die voertuig niks wys nie. Massa: %1$s, enjinverplasing: %2$s</string>
+    <string name="car_data_source">Albei is in die registrasiesertifikaat: die massa in ry-gereedheid (veld G) en die enjinkapasiteit (veld P.1).</string>
     <string name="codes_guide_inspector">Die kodeleser neem alles op wat die eenheid oor jou motor stuur – elke canbus-kode van 0 tot 1199 – vir die tyd wat jy stel (5 minute by verstek) en stoor dit in Download/Launcher66_Canbus. Dit stuur geen ewekansige opdragte na die motor nie. Elke verandering van elke kode word met sy tyd geskryf, en die begin van die lêer bevat raaiskote oor wat die kodes beteken (brandstofverbruik, reikafstand, omwentelinge, spoed en meer). Dit is net raaiskote en kan verkeerd wees, maar dit is ’n goeie beginpunt. Vir die beste resultaat, ry ’n paar minute terwyl dit opneem, met ’n stop in ledige toestand. As jou motor ’n versoek nodig het voordat dit verbruik en reikafstand rapporteer en die canbus-biblioteek die motor ken, stuur die leser eers daardie versoek. As die ligging-toestemming reeds toegestaan is, word die GPS-spoed ook opgeneem, wat help om die spoedkode te vind.</string>
     <string name="codes_guide_skip_codes">Slaan kodes oor – soos die naam sê, is hierdie afdeling bedoel om gegewe kodes te ignoreer. Die kodeleser neem hulle nie op nie, so die lêer bevat geen uitvoer waarin jy nie belangstel nie.</string>
     <string name="skip_zero_codes">Los kodes uit wat net 0 gestuur het</string>

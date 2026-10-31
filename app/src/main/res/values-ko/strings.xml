@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">확인됨</string>
     <string name="stats_codes_pair_unconfirmed">아직 확인되지 않음</string>
     <string name="stats_codes_reader_line">canbus 리더가 %1$s에서 찾은 코드: %2$s</string>
+    <string name="extra_stats_codes">추가 통계 데이터 <b>(선택 사항)</b></string>
+    <string name="canbus_optional"><b>선택 데이터(사용하지 않으면 0):</b></string>
+    <string name="canbus_optional_description">특정 속도 이하 등에서 canbus가 연료 소비 데이터를 보내지 않을 때 사용하세요.</string>
+    <string name="vehicle_mass_code_text">차량 질량(kg):</string>
+    <string name="engine_displacement_code_text">배기량(cm³):</string>
+    <string name="extra_stats_codes_summary">차량이 값을 표시하지 않는 구간의 연료 소비 추정을 위한 차량 데이터. 질량: %1$s, 배기량: %2$s</string>
+    <string name="car_data_source">둘 다 자동차등록증에 있습니다: 공차 중량(G 항목)과 배기량(P.1 항목).</string>
     <string name="codes_guide_inspector">코드 리더는 장치가 차량에 대해 보내는 모든 것(0부터 1199까지의 모든 canbus 코드)을 설정한 시간(기본 5분) 동안 기록하여 Download/Launcher66_Canbus에 저장합니다. 차량에 임의의 명령을 보내지 않습니다. 모든 코드의 모든 변화가 시각과 함께 기록되며, 파일 시작 부분에는 코드의 의미에 대한 추측(연비, 주행 가능 거리, RPM, 속도 등)이 있습니다. 추측일 뿐이라 틀릴 수 있지만 좋은 출발점입니다. 최상의 결과를 위해 기록하는 동안 몇 분간 주행하고 공회전 상태로 정차하세요. 차량이 연비와 주행 가능 거리를 보고하기 전에 요청이 필요하고 canbus 라이브러리가 해당 차량을 알고 있다면 리더가 먼저 그 요청을 보냅니다. 위치 권한이 이미 허용된 경우 GPS 속도도 기록되어 속도 코드를 찾는 데 도움이 됩니다.</string>
     <string name="codes_guide_skip_codes">건너뛸 코드 – 이름 그대로 이 섹션은 지정한 코드를 무시하기 위한 것입니다. 코드 리더가 해당 코드를 기록하지 않으므로 파일에 관심 없는 출력이 포함되지 않습니다.</string>
     <string name="skip_zero_codes">0만 보낸 코드 제외</string>

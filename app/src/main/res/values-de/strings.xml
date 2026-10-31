@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">bestätigt</string>
     <string name="stats_codes_pair_unconfirmed">noch nicht bestätigt</string>
     <string name="stats_codes_reader_line">Vom Canbus-Reader gefundene Codes für %1$s: %2$s</string>
+    <string name="extra_stats_codes">Zusätzliche Statistikdaten <b>(optional)</b></string>
+    <string name="canbus_optional"><b>Optionale Daten (0, falls nicht verwendet):</b></string>
+    <string name="canbus_optional_description">Verwenden Sie dies, wenn Ihr Canbus keine Verbrauchsdaten mehr sendet, z. B. unterhalb einer bestimmten Geschwindigkeit.</string>
+    <string name="vehicle_mass_code_text">Fahrzeugmasse (in kg):</string>
+    <string name="engine_displacement_code_text">Hubraum (in cm³):</string>
+    <string name="extra_stats_codes_summary">Fahrzeugdaten für die Verbrauchsschätzung, wo das Fahrzeug nichts anzeigt. Masse: %1$s, Hubraum: %2$s</string>
+    <string name="car_data_source">Beides steht in der Zulassungsbescheinigung: die Masse des fahrbereiten Fahrzeugs (Feld G) und der Hubraum (Feld P.1).</string>
     <string name="codes_guide_inspector">Der Code-Reader zeichnet alles auf, was das Gerät über Ihr Fahrzeug sendet – jeden Canbus-Code von 0 bis 1199 – für die eingestellte Zeit (standardmäßig 5 Minuten) und speichert es in Download/Launcher66_Canbus. Er sendet dem Fahrzeug keine zufälligen Befehle. Jede Änderung jedes Codes wird mit ihrer Zeit geschrieben, und am Anfang der Datei stehen Vermutungen, was die Codes bedeuten (Verbrauch, Reichweite, Drehzahl, Geschwindigkeit und mehr). Es sind nur Vermutungen und sie können falsch sein, aber sie sind ein guter Ausgangspunkt. Für das beste Ergebnis fahren Sie während der Aufzeichnung einige Minuten, mit einem Halt im Leerlauf. Wenn Ihr Fahrzeug eine Anfrage braucht, bevor es Verbrauch und Reichweite meldet, und die Canbus-Bibliothek das Fahrzeug kennt, sendet der Reader diese Anfrage zuerst. Ist die Standortberechtigung bereits erteilt, wird auch die GPS-Geschwindigkeit aufgezeichnet, was hilft, den Geschwindigkeitscode zu finden.</string>
     <string name="codes_guide_skip_codes">Codes überspringen – wie der Name sagt, dient dieser Bereich dazu, bestimmte Codes zu ignorieren. Der Code-Reader zeichnet sie nicht auf, sodass die Datei keine Ausgaben enthält, die Sie nicht interessieren.</string>
     <string name="skip_zero_codes">Codes auslassen, die nur 0 gesendet haben</string>

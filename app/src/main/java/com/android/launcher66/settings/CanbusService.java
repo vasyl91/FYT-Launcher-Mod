@@ -1262,6 +1262,35 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
 
     /**
+     * The car's mass or engine displacement changed in the settings: the model of the estimate starts from the new values
+     * at once, no restart. Any thread.
+     */
+    public static void carDataChanged() {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            CanbusService service = sInstance;
+            if (service != null) {
+                service.applyCarData();
+            }
+        });
+    }
+
+    /** The mass and engine displacement of the settings to the model of the estimate. Main thread. */
+    private void applyCarData() {
+        if (fuelModel != null && prefs != null) {
+            fuelModel.setCar(carDatum(Keys.VEHICLE_MASS), carDatum(Keys.ENGINE_DISPLACEMENT));
+        }
+    }
+
+    /** A number of the settings: empty, 0 or not a number is 0 (not given). */
+    private int carDatum(String key) {
+        try {
+            return Integer.parseInt(prefs.getString(key, "0").trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    /**
      * After a wake the car may have lost its request (the canbus connection does not always drop and
      * come back, which is what sends it again): once more, when the unit has had a moment to settle.
      * Any thread.
@@ -1418,6 +1447,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         if (!key.equals(fuelModelKey)) {
             fuelModel = FuelModel.parse(prefs.getString(key, null));
             fuelModelKey = key;
+            applyCarData();
         }
     }
 

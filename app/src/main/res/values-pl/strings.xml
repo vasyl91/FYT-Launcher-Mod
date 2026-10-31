@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">potwierdzone</string>
     <string name="stats_codes_pair_unconfirmed">jeszcze niepotwierdzone</string>
     <string name="stats_codes_reader_line">Kody znalezione przez czytnik canbus dla %1$s: %2$s</string>
+    <string name="extra_stats_codes">Dodatkowe dane <b>(opcjonalne)</b></string>
+    <string name="canbus_optional"><b>Dodatkowe dane (zostaw 0 jesli nie używasz tej sekcji):</b></string>
+    <string name="canbus_optional_description">Używaj w przypadku gdy canbus przestaje wysyłać dane dotyczące spalania paliwa np. poniżej określonej prędkości</string>
+    <string name="vehicle_mass_code_text">Masa pojazdu (kg):</string>
+    <string name="engine_displacement_code_text">Pojemność silnika (cm³):</string>
+    <string name="extra_stats_codes_summary">Dane auta do szacowania spalania tam, gdzie auto go nie podaje. Masa: %1$s, pojemność silnika: %2$s</string>
+    <string name="car_data_source">Obie wartości są w dowodzie rejestracyjnym: masa własna (pole G) i pojemność silnika (pole P.1).</string>
     <string name="codes_guide_inspector">Czytnik kodów zapisuje wszystko, co urządzenie wysyła o Twoim aucie – każdy kod canbus od 0 do 1199 – przez ustawiony czas (domyślnie 5 minut) i zapisuje to w Download/Launcher66_Canbus. Nie wysyła do auta przypadkowych poleceń. Każda zmiana każdego kodu jest zapisywana z czasem, a początek pliku zawiera domysły, co oznaczają kody (spalanie, zasięg, obroty, prędkość i więcej). To tylko domysły i mogą być błędne, ale są dobrym punktem wyjścia. Aby uzyskać najlepszy wynik, jedź podczas nagrywania kilka minut, z postojem na biegu jałowym. Jeśli auto wymaga zapytania, zanim poda spalanie i zasięg, a biblioteka canbus zna to auto, czytnik najpierw wysyła to zapytanie. Jeśli uprawnienie do lokalizacji jest już przyznane, zapisywana jest też prędkość GPS, co pomaga znaleźć kod prędkości.</string>
     <string name="codes_guide_skip_codes">Pomijane kody – jak sama nazwa wskazuje, ta sekcja służy do ignorowania podanych kodów. Czytnik kodów ich nie zapisuje, więc plik nie zawiera danych, które Cię nie interesują.</string>
     <string name="skip_zero_codes">Pomijaj kody, które wysłały tylko 0</string>

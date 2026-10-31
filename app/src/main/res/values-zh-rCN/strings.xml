@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">已确认</string>
     <string name="stats_codes_pair_unconfirmed">尚未确认</string>
     <string name="stats_codes_reader_line">canbus 读取器在 %1$s 上找到的代码：%2$s</string>
+    <string name="extra_stats_codes">附加统计数据<b>（可选）</b></string>
+    <string name="canbus_optional"><b>可选数据（不使用请填 0）：</b></string>
+    <string name="canbus_optional_description">当 CAN 总线在某个速度以下停止发送油耗数据时使用。</string>
+    <string name="vehicle_mass_code_text">车重（公斤）：</string>
+    <string name="engine_displacement_code_text">发动机排量（cm³）：</string>
+    <string name="extra_stats_codes_summary">用于在车辆不显示油耗时估算油耗的车辆数据。车重：%1$s，发动机排量：%2$s</string>
+    <string name="car_data_source">两者都在机动车行驶证上：整备质量（G 栏）和发动机排量（P.1 栏）。</string>
     <string name="codes_guide_inspector">代码读取器会在设定的时间内（默认 5 分钟）记录设备发送的有关您车辆的一切——从 0 到 1199 的每个 canbus 代码——并保存到 Download/Launcher66_Canbus。它不会向车辆发送随机命令。每个代码的每次变化都会连同时间一起写入，文件开头包含对代码含义的猜测（油耗、续航里程、转速、车速等）。这些只是猜测，可能有误，但是很好的起点。为获得最佳效果，请在记录期间行驶几分钟，并在怠速时停一下。如果您的车辆需要先发送请求才会报告油耗和续航里程，且 canbus 库认识该车，读取器会先发送该请求。如果已授予位置权限，还会记录 GPS 车速，有助于找到车速代码。</string>
     <string name="codes_guide_skip_codes">跳过代码 – 顾名思义，此部分用于忽略指定的代码。代码读取器不会记录它们，因此文件中不会包含您不关心的输出。</string>
     <string name="skip_zero_codes">排除只发送过 0 的代码</string>

@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">bekräftad</string>
     <string name="stats_codes_pair_unconfirmed">inte bekräftad än</string>
     <string name="stats_codes_reader_line">Koder som canbus-läsaren hittade på %1$s: %2$s</string>
+    <string name="extra_stats_codes">Ytterligare statistikdata <b>(valfritt)</b></string>
+    <string name="canbus_optional"><b>Valfria data (ska vara 0 om de inte används):</b></string>
+    <string name="canbus_optional_description">Använd detta om din canbus slutar skicka bränsleförbrukningsdata, till exempel under en viss hastighet.</string>
+    <string name="vehicle_mass_code_text">Fordonsmassa (i kg):</string>
+    <string name="engine_displacement_code_text">Slagvolym (i cm³):</string>
+    <string name="extra_stats_codes_summary">Bildata för bränsleuppskattningen där bilen inte visar något. Massa: %1$s, slagvolym: %2$s</string>
+    <string name="car_data_source">Båda finns i registreringsbeviset: tjänstevikten (fält G) och slagvolymen (fält P.1).</string>
     <string name="codes_guide_inspector">Kodläsaren spelar in allt som enheten skickar om din bil – varje canbus-kod från 0 till 1199 – under den inställda tiden (som standard 5 minuter) och sparar det i Download/Launcher66_Canbus. Den skickar inga slumpmässiga kommandon till bilen. Varje ändring av varje kod skrivs med sin tid, och början av filen innehåller gissningar om vad koderna betyder (bränsleförbrukning, räckvidd, varvtal, hastighet och mer). Det är bara gissningar och de kan vara fel, men de är en bra startpunkt. För bästa resultat bör du köra några minuter under inspelningen, med ett stopp på tomgång. Om din bil behöver en förfrågan innan den rapporterar förbrukning och räckvidd, och canbus-biblioteket känner till bilen, skickar läsaren den förfrågan först. Om platsbehörigheten redan är beviljad spelas även GPS-hastigheten in, vilket hjälper till att hitta hastighetskoden.</string>
     <string name="codes_guide_skip_codes">Hoppa över koder – som namnet säger används det här avsnittet för att ignorera angivna koder. Kodläsaren spelar inte in dem, så filen innehåller inga utdata du inte är intresserad av.</string>
     <string name="skip_zero_codes">Utelämna koder som bara skickade 0</string>

@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">bekræftet</string>
     <string name="stats_codes_pair_unconfirmed">endnu ikke bekræftet</string>
     <string name="stats_codes_reader_line">Koder canbus-læseren fandt på %1$s: %2$s</string>
+    <string name="extra_stats_codes">Yderligere statistikdata <b>(valgfrit)</b></string>
+    <string name="canbus_optional"><b>Valgfrie data (skal være 0, hvis de ikke bruges):</b></string>
+    <string name="canbus_optional_description">Brug dette, hvis din canbus holder op med at sende data om brændstofforbrug, f.eks. under en bestemt hastighed.</string>
+    <string name="vehicle_mass_code_text">Køretøjets masse (i kg):</string>
+    <string name="engine_displacement_code_text">Motorens slagvolumen (i cm³):</string>
+    <string name="extra_stats_codes_summary">Bildata til brændstofestimatet, hvor bilen ikke viser noget. Masse: %1$s, slagvolumen: %2$s</string>
+    <string name="car_data_source">Begge dele står i registreringsattesten: massen i køreklar stand (felt G) og motorens slagvolumen (felt P.1).</string>
     <string name="codes_guide_inspector">Kodelæseren optager alt, hvad enheden sender om din bil – hver canbus-kode fra 0 til 1199 – i den indstillede tid (som standard 5 minutter) og gemmer det i Download/Launcher66_Canbus. Den sender ingen tilfældige kommandoer til bilen. Hver ændring af hver kode skrives med sit tidspunkt, og begyndelsen af filen indeholder gæt på, hvad koderne betyder (brændstofforbrug, rækkevidde, omdrejninger, hastighed og mere). Det er kun gæt og kan være forkerte, men de er et godt udgangspunkt. For det bedste resultat bør du køre i nogle minutter under optagelsen, med et stop i tomgang. Hvis din bil kræver en anmodning, før den melder forbrug og rækkevidde, og canbus-biblioteket kender bilen, sender læseren den anmodning først. Hvis lokalitetstilladelsen allerede er givet, optages GPS-hastigheden også, hvilket hjælper med at finde hastighedskoden.</string>
     <string name="codes_guide_skip_codes">Spring koder over – som navnet antyder, bruges dette afsnit til at ignorere bestemte koder. Kodelæseren optager dem ikke, så filen indeholder ikke output, du ikke er interesseret i.</string>
     <string name="skip_zero_codes">Udelad koder, der kun sendte 0</string>

@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">megerősítve</string>
     <string name="stats_codes_pair_unconfirmed">még nincs megerősítve</string>
     <string name="stats_codes_reader_line">A canbus-olvasó által talált kódok itt: %1$s: %2$s</string>
+    <string name="extra_stats_codes">További statisztikai adatok <b>(opcionális)</b></string>
+    <string name="canbus_optional"><b>Opcionális adatok (0 legyen, ha nincs használatban):</b></string>
+    <string name="canbus_optional_description">Használja, ha a canbus leáll az üzemanyag-fogyasztási adatok küldésével, például egy bizonyos sebesség alatt.</string>
+    <string name="vehicle_mass_code_text">Jármű tömege (kg):</string>
+    <string name="engine_displacement_code_text">Hengerűrtartalom (cm³):</string>
+    <string name="extra_stats_codes_summary">Autóadatok a fogyasztásbecsléshez ott, ahol az autó nem mutat értéket. Tömeg: %1$s, hengerűrtartalom: %2$s</string>
+    <string name="car_data_source">Mindkettő szerepel a forgalmi engedélyben: a saját tömeg (G mező) és a hengerűrtartalom (P.1 mező).</string>
     <string name="codes_guide_inspector">A kódolvasó rögzít mindent, amit az egység az autóról küld – minden canbus-kódot 0-tól 1199-ig – a beállított ideig (alapértelmezetten 5 percig), és elmenti a Download/Launcher66_Canbus mappába. Nem küld az autónak véletlenszerű parancsokat. Minden kód minden változása az idejével együtt kerül a fájlba, a fájl eleje pedig találgatásokat tartalmaz arról, mit jelentenek a kódok (fogyasztás, hatótávolság, fordulatszám, sebesség és más). Ezek csak találgatások és tévesek lehetnek, de jó kiindulópontot adnak. A legjobb eredményhez vezessen néhány percet a rögzítés alatt, üresjáratban is megállva. Ha az autónak kérésre van szüksége, mielőtt jelenti a fogyasztást és a hatótávolságot, és a canbus-könyvtár ismeri az autót, az olvasó először ezt a kérést küldi el. Ha a helymeghatározási engedély már meg van adva, a GPS-sebességet is rögzíti, ami segít megtalálni a sebességkódot.</string>
     <string name="codes_guide_skip_codes">Kihagyott kódok – ahogy a neve is mutatja, ez a rész a megadott kódok figyelmen kívül hagyására szolgál. A kódolvasó nem rögzíti őket, így a fájlban nincs olyan kimenet, amely nem érdekli.</string>
     <string name="skip_zero_codes">Csak 0-t küldő kódok kihagyása</string>

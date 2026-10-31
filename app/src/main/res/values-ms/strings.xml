@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">disahkan</string>
     <string name="stats_codes_pair_unconfirmed">belum disahkan</string>
     <string name="stats_codes_reader_line">Kod yang ditemui pembaca canbus pada %1$s: %2$s</string>
+    <string name="extra_stats_codes">Data statistik tambahan <b>(pilihan)</b></string>
+    <string name="canbus_optional"><b>Data pilihan (hendaklah 0 jika tidak digunakan):</b></string>
+    <string name="canbus_optional_description">Gunakan ini jika canbus anda berhenti menghantar data penggunaan bahan api, contohnya di bawah kelajuan tertentu.</string>
+    <string name="vehicle_mass_code_text">Jisim kenderaan (dalam kg):</string>
+    <string name="engine_displacement_code_text">Sesaran enjin (dalam cm³):</string>
+    <string name="extra_stats_codes_summary">Data kereta untuk anggaran penggunaan bahan api apabila kereta tidak memaparkannya. Jisim: %1$s, sesaran enjin: %2$s</string>
+    <string name="car_data_source">Kedua-duanya terdapat dalam geran pendaftaran: jisim sedia bergerak (medan G) dan sesaran enjin (medan P.1).</string>
     <string name="codes_guide_inspector">Pembaca kod merakam semua yang dihantar unit tentang kereta anda – setiap kod canbus dari 0 hingga 1199 – selama masa yang ditetapkan (lalai 5 minit) dan menyimpannya ke Download/Launcher66_Canbus. Ia tidak menghantar arahan rawak kepada kereta. Setiap perubahan setiap kod ditulis bersama masanya, dan permulaan fail mengandungi andaian maksud kod (penggunaan bahan api, jarak, RPM, kelajuan dan lain-lain). Ia hanya andaian dan mungkin salah, tetapi ia titik permulaan yang baik. Untuk hasil terbaik, pandu beberapa minit semasa merakam, dengan berhenti semasa idle. Jika kereta anda memerlukan permintaan sebelum melaporkan penggunaan dan jarak, dan pustaka canbus mengenali kereta itu, pembaca menghantar permintaan itu dahulu. Jika kebenaran lokasi telah diberikan, kelajuan GPS turut dirakam, yang membantu mencari kod kelajuan.</string>
     <string name="codes_guide_skip_codes">Langkau kod – seperti namanya, bahagian ini bertujuan mengabaikan kod yang diberikan. Pembaca kod tidak merakamnya, jadi fail tidak mengandungi output yang tidak anda minati.</string>
     <string name="skip_zero_codes">Abaikan kod yang hanya menghantar 0</string>

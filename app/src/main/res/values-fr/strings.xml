@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">confirmé</string>
     <string name="stats_codes_pair_unconfirmed">pas encore confirmé</string>
     <string name="stats_codes_reader_line">Codes trouvés par le lecteur canbus sur %1$s : %2$s</string>
+    <string name="extra_stats_codes">Données statistiques supplémentaires <b>(facultatif)</b></string>
+    <string name="canbus_optional"><b>Données facultatives (0 si non utilisées) :</b></string>
+    <string name="canbus_optional_description">À utiliser si votre canbus cesse d\'envoyer les données de consommation, par exemple en dessous d\'une certaine vitesse.</string>
+    <string name="vehicle_mass_code_text">Masse du véhicule (en kg) :</string>
+    <string name="engine_displacement_code_text">Cylindrée du moteur (en cm³) :</string>
+    <string name="extra_stats_codes_summary">Données du véhicule pour l’estimation de la consommation là où le véhicule n’en indique pas. Masse : %1$s, cylindrée : %2$s</string>
+    <string name="car_data_source">Les deux figurent sur le certificat d’immatriculation : la masse en ordre de marche (champ G) et la cylindrée (champ P.1).</string>
     <string name="codes_guide_inspector">Le lecteur de codes enregistre tout ce que l’unité envoie sur votre voiture – chaque code canbus de 0 à 1199 – pendant la durée définie (5 minutes par défaut) et l’enregistre dans Download/Launcher66_Canbus. Il n’envoie aucune commande aléatoire à la voiture. Chaque changement de chaque code est écrit avec son heure, et le début du fichier contient des hypothèses sur la signification des codes (consommation, autonomie, régime, vitesse et plus). Ce ne sont que des hypothèses et elles peuvent être fausses, mais c’est un bon point de départ. Pour un meilleur résultat, roulez quelques minutes, avec un arrêt au ralenti, pendant l’enregistrement. Si votre voiture a besoin d’une requête avant d’indiquer la consommation et l’autonomie, et que la bibliothèque canbus connaît la voiture, le lecteur envoie d’abord cette requête. Si l’autorisation de localisation est déjà accordée, la vitesse GPS est aussi enregistrée, ce qui aide à trouver le code de vitesse.</string>
     <string name="codes_guide_skip_codes">Codes ignorés – comme son nom l’indique, cette section sert à ignorer certains codes. Le lecteur de codes ne les enregistre pas, le fichier ne contient donc aucune sortie qui ne vous intéresse pas.</string>
     <string name="skip_zero_codes">Ignorer les codes qui n’ont envoyé que 0</string>

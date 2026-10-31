@@ -112,6 +112,10 @@ public final class Keys {
     public static final String CANBUS_LIBRARY_IMPORT = "canbus_library_import";
     public static final String CANBUS_LIBRARY_EXPORT = "canbus_library_export";
     public static final String CANBUS_LIBRARY_RESET = "canbus_library_reset";
+    public static final String EXTRA_STATS_CODES = "extra_stats_codes";
+    /** The car's mass (kg) and engine displacement (cm³) for the estimate of the consumption; the names of their fields. */
+    public static final String VEHICLE_MASS = "vehicle_mass_code_int";
+    public static final String ENGINE_DISPLACEMENT = "engine_displacement_code_int";
     public static final String CMD_INT = "cmdInt_code_int";
     public static final String CMD_ARR = "cmdArr_code_int";
     public static final String CODE_INSPECTOR = "code_inspector";

@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">kumpirmado</string>
     <string name="stats_codes_pair_unconfirmed">hindi pa kumpirmado</string>
     <string name="stats_codes_reader_line">Mga code na nakita ng canbus reader sa %1$s: %2$s</string>
+    <string name="extra_stats_codes">Karagdagang data ng istatistika <b>(opsyonal)</b></string>
+    <string name="canbus_optional"><b>Opsyonal na data (dapat 0 kung hindi ginagamit):</b></string>
+    <string name="canbus_optional_description">Gamitin ito kung hihinto ang iyong canbus sa pagpapadala ng data ng konsumo ng gasolina, halimbawa sa ibaba ng isang partikular na bilis.</string>
+    <string name="vehicle_mass_code_text">Bigat ng sasakyan (sa kg):</string>
+    <string name="engine_displacement_code_text">Displacement ng makina (sa cm³):</string>
+    <string name="extra_stats_codes_summary">Datos ng sasakyan para sa pagtataya ng konsumo ng gasolina kung saan walang ipinapakita ang sasakyan. Bigat: %1$s, displacement ng makina: %2$s</string>
+    <string name="car_data_source">Parehong nasa rehistro ng sasakyan: ang bigat ng sasakyang handa nang gamitin (field G) at ang displacement ng makina (field P.1).</string>
     <string name="codes_guide_inspector">Itinatala ng code reader ang lahat ng ipinapadala ng unit tungkol sa iyong sasakyan – bawat canbus code mula 0 hanggang 1199 – sa itinakdang oras (5 minuto bilang default) at sine-save ito sa Download/Launcher66_Canbus. Hindi ito nagpapadala ng mga random na command sa sasakyan. Bawat pagbabago ng bawat code ay isinusulat kasama ang oras nito, at ang simula ng file ay may mga hula kung ano ang ibig sabihin ng mga code (konsumo ng gasolina, saklaw, RPM, bilis at iba pa). Mga hula lang ang mga ito at maaaring mali, pero magandang panimula. Para sa pinakamagandang resulta, magmaneho ng ilang minuto habang nagre-record, na may isang paghinto sa idle. Kung kailangan ng sasakyan mo ng kahilingan bago nito iulat ang konsumo at saklaw, at kilala ng canbus library ang sasakyan, ipinapadala muna ng reader ang kahilingang iyon. Kung naibigay na ang pahintulot sa lokasyon, itinatala rin ang bilis ng GPS, na nakakatulong sa paghahanap ng speed code.</string>
     <string name="codes_guide_skip_codes">Laktawan ang mga code – gaya ng sinasabi ng pangalan, ang seksyong ito ay para balewalain ang mga ibinigay na code. Hindi ito itinatala ng code reader, kaya walang output sa file na hindi mo kailangan.</string>
     <string name="skip_zero_codes">Huwag isama ang mga code na 0 lang ang ipinadala</string>

@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">مؤكد</string>
     <string name="stats_codes_pair_unconfirmed">غير مؤكد بعد</string>
     <string name="stats_codes_reader_line">الرموز التي وجدها قارئ canbus على %1$s: %2$s</string>
+    <string name="extra_stats_codes">بيانات إحصائية إضافية <b>(اختياري)</b></string>
+    <string name="canbus_optional"><b>بيانات اختيارية (يجب أن تكون 0 إذا لم تُستخدم):</b></string>
+    <string name="canbus_optional_description">استخدم هذا إذا توقف canbus عن إرسال بيانات استهلاك الوقود، مثلًا دون سرعة معينة.</string>
+    <string name="vehicle_mass_code_text">كتلة المركبة (بالكيلوغرام):</string>
+    <string name="engine_displacement_code_text">سعة المحرك (بالسنتيمتر المكعب):</string>
+    <string name="extra_stats_codes_summary">بيانات السيارة لتقدير استهلاك الوقود حيث لا تعرض السيارة أي قيمة. الكتلة: %1$s، سعة المحرك: %2$s</string>
+    <string name="car_data_source">كلاهما موجود في شهادة التسجيل: كتلة السيارة جاهزة للسير (الحقل G) وسعة المحرك (الحقل P.1).</string>
     <string name="codes_guide_inspector">يسجّل قارئ الرموز كل ما ترسله الوحدة عن سيارتك – كل رمز canbus من 0 إلى 1199 – طوال الوقت الذي تحدده (5 دقائق افتراضياً) ويحفظه في Download/Launcher66_Canbus. لا يرسل إلى السيارة أوامر عشوائية. يُكتب كل تغيّر لكل رمز مع وقته، ويحتوي مطلع الملف على تخمينات لمعنى الرموز (استهلاك الوقود، المدى، الدورات، السرعة وغيرها). هذه مجرد تخمينات وقد تكون خاطئة، لكنها نقطة انطلاق جيدة. للحصول على أفضل نتيجة، قُد السيارة بضع دقائق أثناء التسجيل مع التوقف في وضع الخمول. إذا كانت سيارتك تحتاج إلى طلب قبل أن تبلّغ عن الاستهلاك والمدى، وكانت مكتبة canbus تعرف السيارة، فإن القارئ يرسل هذا الطلب أولاً. إذا كان إذن الموقع ممنوحاً بالفعل، تُسجَّل سرعة GPS أيضاً، مما يساعد في العثور على رمز السرعة.</string>
     <string name="codes_guide_skip_codes">تخطي الرموز – كما يدل الاسم، يهدف هذا القسم إلى تجاهل الرموز المحددة. لا يسجّلها قارئ الرموز، فلا يحتوي الملف على مخرجات لا تهمك.</string>
     <string name="skip_zero_codes">استبعاد الرموز التي أرسلت 0 فقط</string>

@@ -462,6 +462,13 @@
     <string name="stats_codes_pair_confirmed">imethibitishwa</string>
     <string name="stats_codes_pair_unconfirmed">bado haijathibitishwa</string>
     <string name="stats_codes_reader_line">Misimbo iliyopatikana na kisomaji cha canbus kwenye %1$s: %2$s</string>
+    <string name="extra_stats_codes">Data ya ziada ya takwimu <b>(si lazima)</b></string>
+    <string name="canbus_optional"><b>Data ya hiari (inapaswa kuwa 0 ikiwa haitumiki):</b></string>
+    <string name="canbus_optional_description">Tumia hii ikiwa canbus yako itaacha kutuma data ya matumizi ya mafuta, kwa mfano chini ya kasi fulani.</string>
+    <string name="vehicle_mass_code_text">Uzito wa gari (kwa kg):</string>
+    <string name="engine_displacement_code_text">Ujazo wa injini (kwa cm³):</string>
+    <string name="extra_stats_codes_summary">Data ya gari kwa makadirio ya matumizi ya mafuta pale gari halionyeshi chochote. Uzito: %1$s, ujazo wa injini: %2$s</string>
+    <string name="car_data_source">Yote mawili yako kwenye kadi ya usajili: uzito wa gari lililo tayari kwa safari (sehemu G) na ujazo wa injini (sehemu P.1).</string>
     <string name="codes_guide_inspector">Kisomaji cha misimbo hurekodi kila kitu ambacho kitengo hutuma kuhusu gari lako – kila msimbo wa canbus kutoka 0 hadi 1199 – kwa muda uliouweka (dakika 5 kwa chaguo-msingi) na kuuhifadhi kwenye Download/Launcher66_Canbus. Hakitumi amri za nasibu kwa gari. Kila badiliko la kila msimbo huandikwa pamoja na wakati wake, na mwanzo wa faili una makadirio ya maana ya misimbo (matumizi ya mafuta, umbali, RPM, kasi na mengineyo). Ni makadirio tu na yanaweza kuwa makosa, lakini ni mahali pazuri pa kuanzia. Kwa matokeo bora, endesha kwa dakika chache wakati wa kurekodi, ukisimama kwenye idle. Ikiwa gari lako linahitaji ombi kabla ya kuripoti matumizi na umbali, na maktaba ya canbus inalijua gari, kisomaji hutuma ombi hilo kwanza. Ikiwa ruhusa ya eneo imeshatolewa, kasi ya GPS pia hurekodiwa, jambo linalosaidia kupata msimbo wa kasi.</string>
     <string name="codes_guide_skip_codes">Ruka misimbo – kama jina linavyosema, sehemu hii inalenga kupuuza misimbo iliyotolewa. Kisomaji cha misimbo hakiirekodi, kwa hivyo faili haina matokeo usiyoyahitaji.</string>
     <string name="skip_zero_codes">Acha misimbo iliyotuma 0 pekee</string>

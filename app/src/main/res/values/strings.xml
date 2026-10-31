@@ -257,6 +257,13 @@
     <string name="stats_codes_pair_confirmed">confirmed</string>
     <string name="stats_codes_pair_unconfirmed">not confirmed yet</string>
     <string name="stats_codes_reader_line">Codes the canbus reader found on %1$s: %2$s</string>
+    <string name="extra_stats_codes">Additional statistics data <b>(optional)</b></string>
+    <string name="canbus_optional"><b>Optional data (should be 0 if not used):</b></string>
+    <string name="canbus_optional_description">Use that if your canbus stops sending fuel consumption data, e.g., below a certain speed.</string>
+    <string name="vehicle_mass_code_text">Vehicle mass (in kg):</string>
+    <string name="engine_displacement_code_text">Engine displacement (in cm³):</string>
+    <string name="extra_stats_codes_summary">Car data for the fuel estimate where the car shows none. Mass: %1$s, engine displacement: %2$s</string>
+    <string name="car_data_source">Both are in the registration certificate: the mass in running order (field G) and the engine capacity (field P.1).</string>
     <string name="main_screen_stats_window">Display the fuel statistics on the main screen</string>
     <string name="color_picker">Statistics text color</string>
     <string name="stats_bg">Statistics background</string>
