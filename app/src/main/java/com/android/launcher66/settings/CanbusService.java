@@ -126,6 +126,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
      * library), or null: the library does not say, and the unit is then not known.
      */
     private volatile FuelUnit fuelUnit;
+    /** The widget shows the car's value in litres per hour now (it must change back when the speed rises). Main thread. */
+    private boolean fuelShownPerHour;
     /** The last values of the codes above, from the update of com.syu.ms (binder thread). */
     private volatile int fuelRaw = 0;
     private volatile int fuelValue = 0;
@@ -412,6 +414,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 fuelRaw = value;
                 fuelValue = fuelFromRaw(value);
                 uiHandler.post(CanbusService.this::mUpdaterOilExpend);
+            }
+            FuelUnit unit = fuelUnit;
+            if (unit != null && unit.unitCode() == updateCode) {
+                uiHandler.post(CanbusService.this::onFuelUnitChanged);
             }
             if (updateCode == rangeCode) {
                 rangeValue = value;
@@ -1286,35 +1292,66 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
 
     public void mUpdaterOilExpend() {
-        int value = fuelValue;
         if (fuelModel != null) {
             long now = System.currentTimeMillis();
             touchRpm(now);
-            fuelModel.onFuel(now, value);
+            fuelModel.onFuel(now, fuelValue);
             if (now - fuelModelSavedAt > FUEL_MODEL_SAVE_MS) {
                 saveFuelModel();        // what it learned survives a restart, now and then
             }
         }
-        if (userLayout && userStats && absoluteStats != null) {
-            if (absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
-                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
-                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
-                if (value > 0 && value < 3001) {
-                    if (statsWidthSelector == 2) {
-                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, String.format(Locale.getDefault(), "%d.%d", value / 10, value % 10)));
-                    } else {
-                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%d.%d", value / 10, value % 10)));   
-                    }
-                } else if (!showFuelEstimate()) {
-                    // No value from the car, and no estimate (none learned yet, or no fuel code)
-                    if (statsWidthSelector == 2) {
-                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
-                    } else {
-                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
-                    }
-                }
-            }
+        showFuel();
+    }
+
+    /**
+     * The consumption in the widget: the car's value in the unit {@link ConsumptionUnits} says (the unit of the protocol, or
+     * litres per hour at a low speed), the estimate where the car gives none, else 0. Main thread.
+     */
+    private void showFuel() {
+        if (!(userLayout && userStats && absoluteStats != null)
+                || absoluteStats.findViewById(R.id.instantaneous_consumption_val) == null) {
+            return;
         }
+        int value = fuelValue;
+        ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
+        ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
+        if (value > 0 && value < 3001) {
+            setFuelText(value, carValueShown(value));
+        } else if (!showFuelEstimate()) {
+            // No value from the car, and no estimate (none learned yet, or no fuel code)
+            setFuelText(0, value == 0 ? carValueShown(0) : null);
+        }
+    }
+
+    /** What {@link ConsumptionUnits} makes of the car's value now; null = as it was shown before (L/100 km). */
+    private ConsumptionUnits.Shown carValueShown(int value) {
+        FuelModel model = fuelModel;
+        FuelUnit.Unit reported = protocolUnit();
+        ConsumptionUnits.Unit protocol = reported == null ? null
+                : reported == FuelUnit.Unit.LH ? ConsumptionUnits.Unit.LH : ConsumptionUnits.Unit.L100;
+        if (model == null) {
+            return ConsumptionUnits.forCarValue(value, protocol, false, false, false, 0, false);
+        }
+        return ConsumptionUnits.forCarValue(value, protocol, model.thresholdCar(), model.lowSpeed(),
+                model.speedKnown(System.currentTimeMillis()), model.speedKmh(), model.isMoving());
+    }
+
+    /** The text of a value of the car: {@code raw} as L/100 km (× 10) unless {@code shown} says litres per hour. */
+    private void setFuelText(int raw, ConsumptionUnits.Shown shown) {
+        boolean mini = statsWidthSelector == 2;
+        Context context = consumptionTextView.getContext();
+        fuelShownPerHour = shown != null && shown.unit == ConsumptionUnits.Unit.LH;
+        if (fuelShownPerHour) {
+            consumptionTextView.setText(context.getString(
+                    mini ? R.string.instantaneous_consumption_per_hour_mini : R.string.instantaneous_consumption_per_hour,
+                    String.format(Locale.ROOT, "%.1f", shown.value)));
+            return;
+        }
+        // L/100 km: the value of the car (of the protocol: its own decimal), as it was
+        int tenths = shown != null ? (int) Math.round(shown.value * 10) : raw;
+        consumptionTextView.setText(context.getString(
+                mini ? R.string.instantaneous_consumption_val_mini : R.string.instantaneous_consumption_val,
+                String.format(Locale.getDefault(), "%d.%d", tenths / 10, tenths % 10)));
     }
 
     /**
@@ -1334,14 +1371,32 @@ public class CanbusService extends Service implements PropertyChangeListener {
         return true;
     }
 
-    /** After a new speed: the estimate follows it while the car gives no value. Main thread. */
+    /**
+     * After a new speed: the estimate follows it while the car gives no value, and the car's own value changes its unit
+     * at a low speed (litres per hour under 10 km/h, back to L/100 km above 13). Main thread.
+     */
     private void refreshFuelEstimate() {
-        if (fuelModel == null || !fuelModel.carGivesNoValue(System.currentTimeMillis())) {
+        if (fuelModel == null) {
+            return;
+        }
+        if (!fuelModel.carGivesNoValue(System.currentTimeMillis())) {
+            if (fuelModel.lowSpeed() || fuelShownPerHour) {
+                showFuel();
+            }
             return;
         }
         if (userLayout && userStats && absoluteStats != null
                 && absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
             showFuelEstimate();
+        }
+    }
+
+    /** The code of the unit changed (the car, or its screen, switched between L/100 km and L/h). Main thread. */
+    private void onFuelUnitChanged() {
+        if (fuelModel != null && fuelModel.carGivesNoValue(System.currentTimeMillis())) {
+            refreshFuelEstimate();
+        } else {
+            showFuel();
         }
     }
 

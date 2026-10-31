@@ -443,6 +443,8 @@
     <string name="instantaneous_consumption_estimated_mini">~%1$s\u0020</string>
     <string name="instantaneous_consumption_idle">~%1$s L/h\u0020</string>
     <string name="instantaneous_consumption_idle_mini">~%1$s L/h\u0020</string>
+    <string name="instantaneous_consumption_per_hour">%1$s L/h\u0020</string>
+    <string name="instantaneous_consumption_per_hour_mini">%1$s L/h\u0020</string>
     <string name="stats_codes_summary_request">Tocca per impostare i codici canbus. \nCarburante: %1$s, Autonomia: %2$s, Richiesta: %3$s</string>
     <string name="stats_codes_summary_no_request">Tocca per impostare i codici canbus. \nCarburante: %1$s, Autonomia: %2$s</string>
     <string name="stats_codes_library_code">%1$s (libreria)</string>

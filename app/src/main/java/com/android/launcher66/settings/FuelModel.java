@@ -808,6 +808,17 @@ public final class FuelModel {
         return last == null ? 0 : last[1];
     }
 
+    /** The latest speed, km/h; 0 when there is none. */
+    public double speedKmh() {
+        return kmh();
+    }
+
+    /** There is a speed, and it is not older than 5 s. */
+    public boolean speedKnown(long now) {
+        double[] last = speeds.peekLast();
+        return last != null && now - (long) last[0] <= NO_UPDATE_MS;
+    }
+
     /** Above 1 km/h from a canbus code, 5 km/h from the GPS. */
     public boolean isMoving() {
         return kmh() > (speedFromCan ? 1.0 : 5.0);

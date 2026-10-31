@@ -443,6 +443,8 @@
     <string name="instantaneous_consumption_estimated_mini">~%1$s\u0020</string>
     <string name="instantaneous_consumption_idle">~%1$s L/h\u0020</string>
     <string name="instantaneous_consumption_idle_mini">~%1$s L/h\u0020</string>
+    <string name="instantaneous_consumption_per_hour">%1$s L/h\u0020</string>
+    <string name="instantaneous_consumption_per_hour_mini">%1$s L/h\u0020</string>
     <string name="stats_codes_summary_request">点按以设置 canbus 代码。 \n油耗：%1$s，续航里程：%2$s，请求：%3$s</string>
     <string name="stats_codes_summary_no_request">点按以设置 canbus 代码。 \n油耗：%1$s，续航里程：%2$s</string>
     <string name="stats_codes_library_code">%1$s（库）</string>
