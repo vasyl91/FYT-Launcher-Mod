@@ -4451,8 +4451,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     width = topRightX - topLeftX;
                     height = bottomLeftY - topLeftY;
 
-                    setCalculatedTextSizeAndColor(widgetView, R.id.tv_unit, mLauncher.textSizeBasic);
-                    setCalculatedTextSizeAndColor(widgetView, R.id.tv_band, mLauncher.textSizeBasic);
+                    setCalculatedTextSizeAndColor(widgetView, R.id.tv_unit, mLauncher.widgetTextSizeBasic);
+                    setCalculatedTextSizeAndColor(widgetView, R.id.tv_band, mLauncher.widgetTextSizeBasic);
                     setCalculatedTextSizeAndColor(widgetView, R.id.tv_freq, mLauncher.radioTextFrequency);
                     setCalculatedButtonSizes(widgetView, R.id.radio_btn_prev, mLauncher.radioButtonWidth, mLauncher.radioButtonHeight);
                     setCalculatedButtonSizes(widgetView, R.id.radio_btn_next, mLauncher.radioButtonWidth, mLauncher.radioButtonHeight);

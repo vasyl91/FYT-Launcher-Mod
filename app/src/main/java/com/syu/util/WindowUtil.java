@@ -2062,10 +2062,11 @@ public class WindowUtil {
             }
             if (!packageName.equals(currentPackage) || checkIfMapSizeChanged(pipKey)) {
                 // save previous values
-                editor.putInt("prevPinnedPipTopLeftX", prefs.getInt(pipKey + "TopLeftX", 107));  
-                editor.putInt("prevPinnedPipTopLeftY", prefs.getInt(pipKey + "TopLeftY", 57));  
-                editor.putInt("prevPinnedPipBottomRightX", prefs.getInt(pipKey + "BottomRightX", 687));   
-                editor.putInt("prevPinnedPipBottomRightY", prefs.getInt(pipKey + "BottomRightY", 513));
+                int[] def = defaultPipRect();
+                editor.putInt("prevPinnedPipTopLeftX", prefs.getInt(pipKey + "TopLeftX", def[0]));
+                editor.putInt("prevPinnedPipTopLeftY", prefs.getInt(pipKey + "TopLeftY", def[1]));
+                editor.putInt("prevPinnedPipBottomRightX", prefs.getInt(pipKey + "BottomRightX", def[2]));
+                editor.putInt("prevPinnedPipBottomRightY", prefs.getInt(pipKey + "BottomRightY", def[3]));
                 editor.apply();
 
                 setPinnedPipBounds(pipKey, screenKey);         
@@ -2142,15 +2143,18 @@ public class WindowUtil {
     }
 
     private static boolean checkIfMapSizeChanged(String pipKey) {
-        int prevPinnedPipTopLeftX = prefs.getInt("prevPinnedPipTopLeftX", 107);
-        int prevPinnedPipTopLeftY = prefs.getInt("prevPinnedPipTopLeftY", 57);
-        int prevPinnedPipBottomRightX = prefs.getInt("prevPinnedPipBottomRightX", 687);
-        int prevPinnedPipBottomRightY = prefs.getInt("prevPinnedPipBottomRightY", 513);
+        // Same defaults on both sides, otherwise a PiP without saved bounds always looks "changed"
+        // and the pinned app gets restarted on every open.
+        int[] def = defaultPipRect();
+        int prevPinnedPipTopLeftX = prefs.getInt("prevPinnedPipTopLeftX", def[0]);
+        int prevPinnedPipTopLeftY = prefs.getInt("prevPinnedPipTopLeftY", def[1]);
+        int prevPinnedPipBottomRightX = prefs.getInt("prevPinnedPipBottomRightX", def[2]);
+        int prevPinnedPipBottomRightY = prefs.getInt("prevPinnedPipBottomRightY", def[3]);
 
-        int curMapTopLeftX = prefs.getInt(pipKey + "TopLeftX", 107);
-        int curMapTopLeftY = prefs.getInt(pipKey + "TopLeftY", 57);
-        int curMapBottomRightX = prefs.getInt(pipKey + "BottomRightX", 687);
-        int curMapBottomRightY = prefs.getInt(pipKey + "BottomRightY", 513);
+        int curMapTopLeftX = prefs.getInt(pipKey + "TopLeftX", def[0]);
+        int curMapTopLeftY = prefs.getInt(pipKey + "TopLeftY", def[1]);
+        int curMapBottomRightX = prefs.getInt(pipKey + "BottomRightX", def[2]);
+        int curMapBottomRightY = prefs.getInt(pipKey + "BottomRightY", def[3]);
 
         return prevPinnedPipTopLeftX != curMapTopLeftX
                 || prevPinnedPipTopLeftY != curMapTopLeftY
@@ -2184,7 +2188,6 @@ public class WindowUtil {
         if (launcher == null) return;
         boolean leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
         int pipScreen = prefs.getInt(screenKey, 1) - 1;
-        int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
         int mapTopLeftX, mapBottomRightX; 
 
         // Get the specific key for the PiP
@@ -2193,24 +2196,37 @@ public class WindowUtil {
         String bottomRightXKey = pipKey + "BottomRightX";
         String bottomRightYKey = pipKey + "BottomRightY";
 
-        int mapMinWidth = Launcher.calculatedPipMinWidth / countEnabledPips();
+        int[] def = defaultPipRect();
 
         if (leftBar && pipScreen == 0) {
-            mapTopLeftX = prefs.getInt(topLeftXKey, margin) + Launcher.calculatedLeftBarWidth;
-            mapBottomRightX = prefs.getInt(bottomRightXKey, margin + mapMinWidth) + Launcher.calculatedLeftBarWidth;
+            mapTopLeftX = prefs.getInt(topLeftXKey, def[0]) + Launcher.calculatedLeftBarWidth;
+            mapBottomRightX = prefs.getInt(bottomRightXKey, def[2]) + Launcher.calculatedLeftBarWidth;
         } else {
-            mapTopLeftX = prefs.getInt(topLeftXKey, margin);
-            mapBottomRightX = prefs.getInt(bottomRightXKey, margin + mapMinWidth);
+            mapTopLeftX = prefs.getInt(topLeftXKey, def[0]);
+            mapBottomRightX = prefs.getInt(bottomRightXKey, def[2]);
         }
 
-        int mapTopLeftY = prefs.getInt(topLeftYKey, margin + Launcher.calculatedDateMinHeight + margin)
-                + launcher.getStatusBarHeight();
-        int mapBottomRightY = prefs.getInt(bottomRightYKey,
-                margin + Launcher.calculatedDateMinHeight + margin + Launcher.calculatedPipMinHeight)
-                + launcher.getStatusBarHeight();
+        int mapTopLeftY = prefs.getInt(topLeftYKey, def[1]) + launcher.getStatusBarHeight();
+        int mapBottomRightY = prefs.getInt(bottomRightYKey, def[3]) + launcher.getStatusBarHeight();
 
         // top-left x, top left y, bottom right x, bottom right y
         SystemProperties.set("sys.lsec.pip_rect", mapTopLeftX + " " + mapTopLeftY + " " + mapBottomRightX + " " + mapBottomRightY);
+    }
+
+    /**
+     * Default PiP rectangle {left, top, right, bottom} in widget-area coordinates (no left bar, no
+     * status bar), used when no bounds were saved yet. Derived from the minimums so it follows the
+     * screen size; setPinnedPipBounds() and the pinned-PiP change detection must share it.
+     */
+    private static int[] defaultPipRect() {
+        int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
+        int top = margin + Launcher.calculatedDateMinHeight + margin;
+        return new int[] {
+                margin,
+                top,
+                margin + Launcher.calculatedPipMinWidth / countEnabledPips(),
+                top + Launcher.calculatedPipMinHeight
+        };
     }
 
     // Never returns 0, max value is 2

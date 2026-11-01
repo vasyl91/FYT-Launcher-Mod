@@ -980,9 +980,9 @@ public class Workspace extends SmoothPagedView
             TextView naviTextSize = workspaceView.findViewById(R.id.tv_map);
             naviTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeTitle);
             TextView dateTextSize = workspaceView.findViewById(R.id.date);
-            dateTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
+            dateTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.widgetTextSizeBasic);
             TextView weekTextSize = workspaceView.findViewById(R.id.curWeek);
-            weekTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
+            weekTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.widgetTextSizeBasic);
             TextView titleTextSize = workspaceView.findViewById(R.id.tv_musicName);
             titleTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeTitle);
             TextView artistTextSize = workspaceView.findViewById(R.id.tv_artist);
