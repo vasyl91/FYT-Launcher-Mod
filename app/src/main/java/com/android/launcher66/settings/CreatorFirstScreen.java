@@ -278,7 +278,7 @@ public class CreatorFirstScreen extends Fragment {
         if (leftBar) {
             leftBarWidth = com.android.launcher66.Launcher.calculatedLeftBarWidth > 0
                     ? com.android.launcher66.Launcher.calculatedLeftBarWidth
-                    : (int) ((portrait ? rootHeight - legacyBarHeight : rootWidth) * 0.071f);
+                    : (int) BottomBarDimensions.computeLeftBarWidth(portrait, rootWidth, rootHeight, legacyBarHeight);
         }
         int workspaceWidth = rootWidth - leftBarWidth;
         // With auto-hide the workspace keeps the full height; only the collapsed button is reserved.

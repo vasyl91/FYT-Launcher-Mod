@@ -114,6 +114,7 @@ import com.android.async.AsyncTask;
 import com.android.launcher66.settings.AppListPipDialogFragment;
 import com.android.launcher66.settings.AppListStatsDialogFragment;
 import com.android.launcher66.settings.BottomBarDimensions;
+import com.android.launcher66.settings.WidgetMetrics;
 import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.FabOverlayService;
@@ -583,6 +584,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public static int screenWidth;
     public static int screenHeight;
     public static int textSizeBasic;
+    public static int widgetTextSizeBasic;
     public static int textSizeTitle;
     public static int textSizeArtist;
     public static int textSizeWorkspace;
@@ -1864,19 +1866,25 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         calculatedStatsWidth = calculateDimension(orientationDimension, 21.75);
         calculatedStatsHeight = calculateDimension(orientationDimension, 5.0);
-        calculatedPipMinHeight = calculateDimension(orientationDimension, 18.0);
-        calculatedPipMinWidth = calculateDimension(orientedWidth, 44.0);
-        calculatedDateMinHeight = calculateDimension(orientationDimension, 7.2);
-        calculatedDateMinWidth = calculateDimension(orientedWidth, 44.0);
-        calculatedMusicMinHeight = calculateDimension(orientationDimension, 18.0);
-        calculatedMusicMinWidth = calculateDimension(orientedWidth, 25.1);
-        calculatedRadioMinHeight = calculateDimension(orientationDimension, 7.2);
-        calculatedRadioMinWidth = calculateDimension(orientedWidth, 25.1);    
-        
+        // Minimum PiP / widget sizes and the widget content scale from the short edge, so the
+        // result does not depend on the orientation (SettingsActivity uses the same class).
+        WidgetMetrics.Metrics wm = WidgetMetrics.compute(screenWidth, screenHeight);
+        calculatedPipMinHeight = wm.pipMinHeight;
+        calculatedPipMinWidth = wm.pipMinWidth;
+        calculatedDateMinHeight = wm.dateMinHeight;
+        calculatedDateMinWidth = wm.dateMinWidth;
+        calculatedMusicMinHeight = wm.musicMinHeight;
+        calculatedMusicMinWidth = wm.musicMinWidth;
+        calculatedRadioMinHeight = wm.radioMinHeight;
+        calculatedRadioMinWidth = wm.radioMinWidth;
+
         // Text size
+        // textSizeBasic also feeds All Apps (DynamicGrid) and the stats widget, which keep the
+        // long-edge scale; the date/radio widgets use widgetTextSizeBasic.
         textSizeBasic = calculateAdaptiveTextSize(orientationDimension, 18);
-        textSizeTitle = calculateAdaptiveTextSize(orientationDimension, 22);
-        textSizeArtist = calculateAdaptiveTextSize(orientationDimension, 16);
+        widgetTextSizeBasic = wm.textSizeBasic;
+        textSizeTitle = wm.textSizeTitle;
+        textSizeArtist = wm.textSizeArtist;
         textSizeWorkspace = calculateAdaptiveTextSize(orientationDimension, 32);
         // The font and the widths of the statistics window, worked out once for this language and screen
         if (mPrefs != null) {
@@ -1888,17 +1896,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         bottomBarIconMargin = calculateDimension(screenWidth, 2.0);
 
         // Radio widget
-        radioButtonHeight = calculateDimension(orientationDimension, 3.5);
-        radioButtonWidth = calculateDimension(orientationDimension, 3.0);      
-        radioTextFrequency = calculateAdaptiveTextSize(orientationDimension, 30);
+        radioButtonHeight = wm.radioButtonHeight;
+        radioButtonWidth = wm.radioButtonWidth;
+        radioTextFrequency = wm.radioTextFrequency;
 
         // Integers
-        analogwidth = calculateDimension(orientationDimension, 13.8);
-        analogheight = calculateDimension(orientationDimension, 13.8);
-        digit_clock_width = calculateDimension(orientationDimension, 4.1);
-        digit_clock_height = calculateDimension(orientationDimension, 5.5);
-        dot_clock_width = calculateDimension(orientationDimension, 2.6);
-        dot_clock_height = calculateDimension(orientationDimension, 5.5);
+        analogwidth = wm.analogWidth;
+        analogheight = wm.analogHeight;
+        digit_clock_width = wm.digitClockWidth;
+        digit_clock_height = wm.digitClockHeight;
+        dot_clock_width = wm.dotClockWidth;
+        dot_clock_height = wm.dotClockHeight;
 
         // Dimens
         app_icon_size = calculateDimension(orientationDimension, 6.6);
@@ -2410,10 +2418,20 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // and PiPs, and this moves them out of it. Restarting first would re-create the PiP windows
         // at the old positions and the corrected ones would only appear after the next restart.
         helpers.checkAndResetIfOverlappingOnScreen(-1);
-        if (currentUserLayout && displayPip && !atomicOnCreate.get()
-                && (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator())) {
-            Log.i("Recreate page", "user layout");
-            WindowUtil.restartPinnedPipApp();
+        if (currentUserLayout && displayPip && !atomicOnCreate.get()) {
+            if (helpers.hasLayoutTypeChanged()) {
+                // The panes are rebuilt from scratch for a different layout type anyway.
+                Log.i("Recreate page", "user layout, layout type changed");
+                WindowUtil.releasePaneHost();
+                WindowUtil.restartPinnedPipApp();
+            }
+            if (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator()) {
+                // Only the geometry may have changed. Rebuild the panes the non-destructive way so
+                // their apps keep running (a released host would kill e.g. the Maps route). A pinned
+                // PiP notices a changed rectangle itself in openAsPinnedPip().
+                Log.i("Recreate page", "user layout, PiP geometry may have changed");
+                WindowUtil.onPipGeometryChanged();
+            }
         }
 
         if (mPrefs.getBoolean(Keys.NIGHT_MODE, false)) {

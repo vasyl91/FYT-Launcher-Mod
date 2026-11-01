@@ -2318,10 +2318,11 @@ public class WindowUtil {
                             + DefaultDisplayTask.windowingMode(strayTask) + "), restarting it first");
                 }
                 // save previous values
-                editor.putInt("prevPinnedPipTopLeftX", prefs.getInt(pipKey + "TopLeftX", 107));  
-                editor.putInt("prevPinnedPipTopLeftY", prefs.getInt(pipKey + "TopLeftY", 57));  
-                editor.putInt("prevPinnedPipBottomRightX", prefs.getInt(pipKey + "BottomRightX", 687));   
-                editor.putInt("prevPinnedPipBottomRightY", prefs.getInt(pipKey + "BottomRightY", 513));
+                int[] def = defaultPipRect();
+                editor.putInt("prevPinnedPipTopLeftX", prefs.getInt(pipKey + "TopLeftX", def[0]));
+                editor.putInt("prevPinnedPipTopLeftY", prefs.getInt(pipKey + "TopLeftY", def[1]));
+                editor.putInt("prevPinnedPipBottomRightX", prefs.getInt(pipKey + "BottomRightX", def[2]));
+                editor.putInt("prevPinnedPipBottomRightY", prefs.getInt(pipKey + "BottomRightY", def[3]));
                 editor.apply();
 
                 setPinnedPipBounds(pipKey, screenKey);         
@@ -2445,30 +2446,28 @@ public class WindowUtil {
         }, delay);
     }
 
+    /**
+     * Restarts the app in the pinned PiP (force-stop, except Google Maps). Deliberately leaves the
+     * WindowHost alone: the pinned PiP is not hosted there, and releasing the host destroys the
+     * ActivityViews (and with them the apps) of every ordinary pane. See releasePaneHost() for the
+     * rare case where that is wanted.
+     */
     public static void restartPinnedPipApp() {
         if (!LauncherApplication.canHostPips()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
-        final WindowHost host = host();
-        if (host != null) {
-            launcher.handler.post(() -> {
-                host.cleanup();
-                setHost(null);
-            });
-        }
-        // The panes above are rebuilt everywhere; the pinned PiP app below exists on the
-        // com.syu.music units only.
+        // The pinned PiP app exists on the com.syu.music units only.
         if (!LauncherApplication.supportsPinnedPip()) return;
         forceStopPinnedPipApp();
     }
 
     /**
      * Force-stops the pinned PiP app, so that its next force_pip start makes a fresh pinned stack.
-     * What openAsPinnedPip() calls: the window panes are not its business. Within openPip() they
-     * are dismissed and built again anyway, but openAsPinnedPip() also runs from onPageEndMoving()
-     * and the app list, where nothing builds them again, and restartPinnedPipApp()'s cleanup left
-     * them gone (log 27-10-2026 23:31: removed at 23.430, and the openPip() com.lsec.pipdie brings
-     * found pipsAdded() still true at 23.914).
+     * What openAsPinnedPip() and restartPinnedPipApp() call: the window panes are not its business
+     * (releasePaneHost() is). openAsPinnedPip() also runs from onPageEndMoving() and the app list,
+     * where nothing builds the panes again, and a host cleanup there left them gone (log 27-10-2026
+     * 23:31: removed at 23.430, and the openPip() com.lsec.pipdie brings found pipsAdded() still
+     * true at 23.914).
      *
      * <p>The time is noted for the com.lsec.pipdie the death brings: the launcher stays on its page
      * for it, see pipDieFromOwnForceStop().
@@ -2494,16 +2493,52 @@ public class WindowUtil {
         }
     }
 
-    private static boolean checkIfMapSizeChanged(String pipKey) {
-        int prevPinnedPipTopLeftX = prefs.getInt("prevPinnedPipTopLeftX", 107);
-        int prevPinnedPipTopLeftY = prefs.getInt("prevPinnedPipTopLeftY", 57);
-        int prevPinnedPipBottomRightX = prefs.getInt("prevPinnedPipBottomRightX", 687);
-        int prevPinnedPipBottomRightY = prefs.getInt("prevPinnedPipBottomRightY", 513);
+    /**
+     * Releases the ordinary PiP panes for good: ActivityViews and their VirtualDisplays go, and
+     * with them the tasks inside - e.g. the Google Maps route. Only for a change that rebuilds the
+     * panes from scratch anyway (a different layout type). A mere geometry change must use
+     * onPipGeometryChanged(), which keeps the tasks.
+     */
+    public static void releasePaneHost() {
+        if (!LauncherApplication.canHostPips()) return;
+        final Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        final WindowHost host = host();
+        if (host != null) {
+            launcher.handler.post(() -> {
+                host.cleanup();
+                setHost(null);
+            });
+        }
+    }
 
-        int curMapTopLeftX = prefs.getInt(pipKey + "TopLeftX", 107);
-        int curMapTopLeftY = prefs.getInt(pipKey + "TopLeftY", 57);
-        int curMapBottomRightX = prefs.getInt(pipKey + "BottomRightX", 687);
-        int curMapBottomRightY = prefs.getInt(pipKey + "BottomRightY", 513);
+    /**
+     * The PiP positions or sizes saved in the preferences changed (creator, bottom bar, left bar).
+     * Does not touch the running panes: it only makes the next openPip() rebuild them through the
+     * regular path - a new host takes over the existing tasks and the old host's ActivityViews are
+     * retired once that happened - with the new bounds read from the preferences. Without the
+     * invalidation the open-PiP debounce would call the old layout current, because its signature
+     * has no geometry in it (a return within STOP_REMOVE_PIP_GRACE_MS finds the panes still up).
+     */
+    public static void onPipGeometryChanged() {
+        lastPipBounds.clear();
+        forcePipBoundsUpdate = true;
+        invalidateOpenPipDebounce();
+    }
+
+    private static boolean checkIfMapSizeChanged(String pipKey) {
+        // Same defaults on both sides, otherwise a PiP without saved bounds always looks "changed"
+        // and the pinned app gets restarted on every open.
+        int[] def = defaultPipRect();
+        int prevPinnedPipTopLeftX = prefs.getInt("prevPinnedPipTopLeftX", def[0]);
+        int prevPinnedPipTopLeftY = prefs.getInt("prevPinnedPipTopLeftY", def[1]);
+        int prevPinnedPipBottomRightX = prefs.getInt("prevPinnedPipBottomRightX", def[2]);
+        int prevPinnedPipBottomRightY = prefs.getInt("prevPinnedPipBottomRightY", def[3]);
+
+        int curMapTopLeftX = prefs.getInt(pipKey + "TopLeftX", def[0]);
+        int curMapTopLeftY = prefs.getInt(pipKey + "TopLeftY", def[1]);
+        int curMapBottomRightX = prefs.getInt(pipKey + "BottomRightX", def[2]);
+        int curMapBottomRightY = prefs.getInt(pipKey + "BottomRightY", def[3]);
 
         return prevPinnedPipTopLeftX != curMapTopLeftX
                 || prevPinnedPipTopLeftY != curMapTopLeftY
@@ -2574,7 +2609,6 @@ public class WindowUtil {
         if (launcher == null) return;
         boolean leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
         int pipScreen = prefs.getInt(screenKey, 1) - 1;
-        int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
         int mapTopLeftX, mapBottomRightX; 
 
         // Get the specific key for the PiP
@@ -2583,24 +2617,37 @@ public class WindowUtil {
         String bottomRightXKey = pipKey + "BottomRightX";
         String bottomRightYKey = pipKey + "BottomRightY";
 
-        int mapMinWidth = Launcher.calculatedPipMinWidth / countEnabledPips();
+        int[] def = defaultPipRect();
 
         if (leftBar && pipScreen == 0) {
-            mapTopLeftX = prefs.getInt(topLeftXKey, margin) + Launcher.calculatedLeftBarWidth;
-            mapBottomRightX = prefs.getInt(bottomRightXKey, margin + mapMinWidth) + Launcher.calculatedLeftBarWidth;
+            mapTopLeftX = prefs.getInt(topLeftXKey, def[0]) + Launcher.calculatedLeftBarWidth;
+            mapBottomRightX = prefs.getInt(bottomRightXKey, def[2]) + Launcher.calculatedLeftBarWidth;
         } else {
-            mapTopLeftX = prefs.getInt(topLeftXKey, margin);
-            mapBottomRightX = prefs.getInt(bottomRightXKey, margin + mapMinWidth);
+            mapTopLeftX = prefs.getInt(topLeftXKey, def[0]);
+            mapBottomRightX = prefs.getInt(bottomRightXKey, def[2]);
         }
 
-        int mapTopLeftY = prefs.getInt(topLeftYKey, margin + Launcher.calculatedDateMinHeight + margin)
-                + launcher.getStatusBarHeight();
-        int mapBottomRightY = prefs.getInt(bottomRightYKey,
-                margin + Launcher.calculatedDateMinHeight + margin + Launcher.calculatedPipMinHeight)
-                + launcher.getStatusBarHeight();
+        int mapTopLeftY = prefs.getInt(topLeftYKey, def[1]) + launcher.getStatusBarHeight();
+        int mapBottomRightY = prefs.getInt(bottomRightYKey, def[3]) + launcher.getStatusBarHeight();
 
         // top-left x, top left y, bottom right x, bottom right y
         SystemProperties.set("sys.lsec.pip_rect", mapTopLeftX + " " + mapTopLeftY + " " + mapBottomRightX + " " + mapBottomRightY);
+    }
+
+    /**
+     * Default PiP rectangle {left, top, right, bottom} in widget-area coordinates (no left bar, no
+     * status bar), used when no bounds were saved yet. Derived from the minimums so it follows the
+     * screen size; setPinnedPipBounds() and the pinned-PiP change detection must share it.
+     */
+    private static int[] defaultPipRect() {
+        int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
+        int top = margin + Launcher.calculatedDateMinHeight + margin;
+        return new int[] {
+                margin,
+                top,
+                margin + Launcher.calculatedPipMinWidth / countEnabledPips(),
+                top + Launcher.calculatedPipMinHeight
+        };
     }
 
     // Never returns 0, max value is 2

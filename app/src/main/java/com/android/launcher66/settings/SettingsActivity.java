@@ -238,6 +238,12 @@ public class SettingsActivity extends AppCompatActivity {
         statusBarHeight = getStatusBarHeight();
         screenWidth = LauncherApplication.getScreenWidth(); 
         screenHeight = LauncherApplication.getScreenHeight(); 
+        if (screenWidth <= 0 || screenHeight <= 0) {
+            // calculateDimension() throws for a zero size; the display metrics always have one.
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            screenWidth = metrics.widthPixels;
+            screenHeight = metrics.heightPixels;
+        }
 
         orientation = getResources().getConfiguration().orientation;
         // Static, so it has to be set both ways: it stayed true after a single portrait start.
@@ -254,15 +260,17 @@ public class SettingsActivity extends AppCompatActivity {
 
         calculatedStatsWidth = calculateDimension(orientationDimension, 21.75);
         calculatedStatsHeight = calculateDimension(orientationDimension, 5.0);
-        calculatedPipMinHeight = calculateDimension(orientationDimension, 18.0);
-        calculatedPipMinWidth = calculateDimension(orientedWidth, 44.0);
-        calculatedDateMinHeight = calculateDimension(orientationDimension, 7.2);
-        calculatedDateMinWidth = calculateDimension(orientedWidth, 44.0);
-        calculatedMusicMinHeight = calculateDimension(orientationDimension, 18.0);
-        calculatedMusicMinWidth = calculateDimension(orientedWidth, 25.1);
-        calculatedRadioMinHeight = calculateDimension(orientationDimension, 7.2);
-        calculatedRadioMinWidth = calculateDimension(orientedWidth, 25.1);    
-        
+        // Same short-edge based minimums as Launcher, from one shared class.
+        WidgetMetrics.Metrics wm = WidgetMetrics.compute(screenWidth, screenHeight);
+        calculatedPipMinHeight = wm.pipMinHeight;
+        calculatedPipMinWidth = wm.pipMinWidth;
+        calculatedDateMinHeight = wm.dateMinHeight;
+        calculatedDateMinWidth = wm.dateMinWidth;
+        calculatedMusicMinHeight = wm.musicMinHeight;
+        calculatedMusicMinWidth = wm.musicMinWidth;
+        calculatedRadioMinHeight = wm.radioMinHeight;
+        calculatedRadioMinWidth = wm.radioMinWidth;
+
         arrowLongDim = calculateDimension(orientationDimension, 8.5);
         arrowShortDim = calculateDimension(orientationDimension, 3.5);
         // Text sizes in sp, which the scaled density already makes a share of the screen on

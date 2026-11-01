@@ -166,7 +166,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         switch (key) {
             case "pipDual":
                 if (compareScreens(Keys.PIP_DUAL_SCREEN)) {
-                    minWidth = SettingsActivity.calculatedPipMinWidth;
+                    minWidth = pipMinWidthFor(key);
                     minHeight = SettingsActivity.calculatedPipMinHeight;
                     if (pip && dualPip && !firstPip && !secondPip) {
                         enabled = true;
@@ -175,7 +175,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 break;
             case "pipFirst":
                 if (compareScreens(Keys.PIP_FIRST_SCREEN)) {
-                    minWidth = SettingsActivity.calculatedPipMinWidth / countEnabledPips();
+                    minWidth = pipMinWidthFor(key);
                     minHeight = SettingsActivity.calculatedPipMinHeight;
                     if (pip && firstPip && !dualPip) {
                         enabled = true;
@@ -184,7 +184,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 break;
             case "pipSecond":
                 if (compareScreens(Keys.PIP_SECOND_SCREEN)) {
-                    minWidth = SettingsActivity.calculatedPipMinWidth / countEnabledPips();
+                    minWidth = pipMinWidthFor(key);
                     minHeight = SettingsActivity.calculatedPipMinHeight;
                     if (pip && secondPip && !dualPip) {
                         enabled = true;
@@ -193,7 +193,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 break;
             case "pipThird":
                 if (compareScreens(Keys.PIP_THIRD_SCREEN)) {
-                    minWidth = SettingsActivity.calculatedPipMinWidth / countEnabledPips();
+                    minWidth = pipMinWidthFor(key);
                     minHeight = SettingsActivity.calculatedPipMinHeight;                
                     if (pip && thirdPip) {
                         enabled = true;
@@ -202,7 +202,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 break;
             case "pipFourth":
                 if (compareScreens(Keys.PIP_FOURTH_SCREEN)) {
-                    minWidth = SettingsActivity.calculatedPipMinWidth / countEnabledPips();
+                    minWidth = pipMinWidthFor(key);
                     minHeight = SettingsActivity.calculatedPipMinHeight;
                     if (pip && fourthPip) {
                         enabled = true;
@@ -261,14 +261,10 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         invalidate();
     }
 
-    // Never returns 0, max value is 2
-    private static int countEnabledPips() {
-        int count = 0;
-        if (firstPip) count++;
-        if (secondPip) count++;
-        if (thirdPip) count++;
-        if (fourthPip) count++;
-        return Math.min(Math.max(1, count), 2);
+    // Same minimum Helpers cuts PiPs back to (PipEdgeTrim.pipMinWidth), so both agree on it.
+    private static int pipMinWidthFor(String key) {
+        return PipEdgeTrim.pipMinWidth(key, SettingsActivity.calculatedPipMinWidth,
+                firstPip, secondPip, thirdPip, fourthPip);
     }
 
     private void initUi(View rootView) {
@@ -519,6 +515,17 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
     /** The same rectangle moved (and if needed shrunk, never below its minimum) into the canvas. */
     private RectF fitIntoCanvas(RectF r, RectangleConfig cfg) {
+        if (PipEdgeTrim.isPipKey(cfg.key)) {
+            // A PiP that only sticks out at the right or bottom is cut back, keeping its top left
+            // corner, as Helpers does for the real bars. Only when that would go below the minimum
+            // does it fall through to the move-and-shrink below.
+            int[] cut = PipEdgeTrim.trim((int) r.left, (int) r.top, (int) r.right, (int) r.bottom,
+                    getWidth() - margin, PipEdgeTrim.maxBottom(getHeight(), margin),
+                    cfg.minWidth, cfg.minHeight);
+            if (cut != null) {
+                r = new RectF(cut[0], cut[1], cut[2], cut[3]);
+            }
+        }
         float maxRight = getWidth() - margin;
         float maxBottom = getHeight() - margin;
         float width = Math.min(r.width(), Math.max(cfg.minWidth, maxRight - margin));

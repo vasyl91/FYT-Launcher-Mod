@@ -102,7 +102,7 @@ public class Date extends AppCompatTextView implements SharedPreferences.OnShare
 
     public void setDate() {
         String mText = TimeUtil.getDateOfToday(this.mContext, getDateStringFormat(LauncherApplication.sApp.getResources().getInteger(R.integer.apps_timewidget_show)));
-        float targetSize = Launcher.textSizeBasic;
+        float targetSize = Launcher.widgetTextSizeBasic;
         
         setText(mText);
         
