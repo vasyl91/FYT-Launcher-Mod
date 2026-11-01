@@ -1333,6 +1333,7 @@ final class LauncherAppBars {
         Log.d(Launcher.TAG, "initializeAppList");
 
         List<AppMultiple> appData = queryBottomAppRows();
+        migrateMissingSyuSettingsRow(appData);
 
         mLauncher.userLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         mLauncher.widgetBar = mLauncher.mPrefs.getBoolean(Keys.WIDGET_BAR, false);
@@ -1820,6 +1821,65 @@ final class LauncherAppBars {
         return true;
     }
 
+    private static final String SYU_SETTINGS_CLASS = "com.syu.settings.MainActivity";
+
+    /**
+     * What the "settings" tile should open on this device: the FYT settings app when it is
+     * installed, otherwise the stock Android settings (com.android.settings or a variant of that
+     * name, see FytPackage.resolveSystemSettingsComponent).
+     *
+     * @return {package, class}, or null if the device has neither
+     */
+    private String[] resolveSettingsTile() {
+        if (mLauncher.helpers.isPackageInstalled(FytPackage.settingAction)) {
+            return new String[] {FytPackage.settingAction, SYU_SETTINGS_CLASS};
+        }
+        ComponentName fallback = FytPackage.resolveSystemSettingsComponent(mLauncher);
+        if (fallback == null) {
+            return null;
+        }
+        Log.i(Launcher.TAG, "resolveSettingsTile: " + FytPackage.settingAction
+                + " not installed, using " + fallback.flattenToShortString());
+        return new String[] {fallback.getPackageName(), fallback.getClassName()};
+    }
+
+    /**
+     * Bars saved before the fallback existed still hold the FYT settings in their slot even though
+     * the app is missing, which shows as a "+". Point such a row at the stock Android settings.
+     * Rows are only changed when the FYT app is really not installed, and only on the main thread
+     * from initializeAppList().
+     */
+    private void migrateMissingSyuSettingsRow(List<AppMultiple> rows) {
+        if (rows == null) {
+            return;
+        }
+        String[] target = null;
+        boolean resolved = false;
+        for (AppMultiple row : rows) {
+            if (row == null || !FytPackage.settingAction.equals(row.packageName)) {
+                continue;
+            }
+            if (!resolved) {
+                resolved = true;
+                target = mLauncher.helpers.isPackageInstalled(FytPackage.settingAction) ? null : resolveSettingsTile();
+            }
+            if (target == null) {
+                return;
+            }
+            ContentValues v = new ContentValues();
+            v.put("packageName", target[0]);
+            v.put("className", target[1]);
+            try {
+                LitePal.update(AppMultiple.class, v, row.rowId());
+            } catch (Exception e) {
+                Log.e(Launcher.TAG, "migrateMissingSyuSettingsRow: failed to update row " + row.rowId(), e);
+                continue;
+            }
+            row.packageName = target[0];
+            row.className = target[1];
+        }
+    }
+
     void createDefaultAppEntries() {
         String appName1 = Utils.getNameToStr("car_navi");
         String appName2 = Utils.getNameToStr("car_music");
@@ -1836,7 +1896,10 @@ final class LauncherAppBars {
         Bitmap icon4 = loadAppIconFromPackageManager("com.syu.radio", "com.syu.radio.Launch");
         Bitmap icon5 = loadAppIconFromPackageManager("com.syu.bt", "com.syu.bt.BtAct");
         Bitmap icon6 = BitmapFactory.decodeResource(mLauncher.getResources(), R.drawable.icon_settings);
-        Bitmap icon7 = loadAppIconFromPackageManager("com.syu.settings", "com.syu.settings.MainActivity");
+        String[] settingsTarget = resolveSettingsTile();
+        Bitmap icon7 = settingsTarget == null
+                ? BitmapFactory.decodeResource(mLauncher.getResources(), R.drawable.icon_add)
+                : loadAppIconFromPackageManager(settingsTarget[0], settingsTarget[1]);
         Bitmap icon8 = BitmapFactory.decodeResource(mLauncher.getResources(), R.drawable.icon_add);
 
         // AppListBean entries for UI
@@ -1890,8 +1953,13 @@ final class LauncherAppBars {
             new AppMultiple(5, "", FytPackage.AddAction, "").save();
         }
         
-        ab7 = new AppListBean(appName7, icon7, "com.syu.settings", "com.syu.settings.MainActivity");
-        new AppMultiple(6, appName7, "com.syu.settings", "com.syu.settings.MainActivity").save();
+        if (settingsTarget != null) {
+            ab7 = new AppListBean(appName7, icon7, settingsTarget[0], settingsTarget[1]);
+            new AppMultiple(6, appName7, settingsTarget[0], settingsTarget[1]).save();
+        } else {
+            ab7 = new AppListBean("", icon7, FytPackage.AddAction, "");
+            new AppMultiple(6, "", FytPackage.AddAction, "").save();
+        }
 
         ab8 = new AppListBean(appName8, icon8, FytPackage.AddAction, "");
         new AppMultiple(7, appName8, FytPackage.AddAction, "").save();
