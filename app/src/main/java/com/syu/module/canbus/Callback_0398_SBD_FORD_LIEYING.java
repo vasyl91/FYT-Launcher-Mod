@@ -2,8 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.sbd.fordlieying.AirSBDFordLieYing;
-import com.syu.carinfo.sbd.fordlieying.InfoSBDFordLieYing;
 import com.syu.ipc.IModuleCallback;
 import com.syu.module.IUiNotify;
 import com.syu.ui.air.AirHelper;
@@ -45,10 +43,6 @@ public class Callback_0398_SBD_FORD_LIEYING extends CallbackCanbusBase {
     Runnable mDismissFunctionalDrivingInfo1 = new Runnable() { 
         @Override
         public void run() {
-            if (AirSBDFordLieYing.mIsFront && AirSBDFordLieYing.mInstance != null) {
-                AirSBDFordLieYing.mInstance.finish();
-                Callback_0398_SBD_FORD_LIEYING.jump = false;
-            }
             ObjApp.getMsgView().msg2("jump2 " + Callback_0398_SBD_FORD_LIEYING.jump);
         }
     };
@@ -91,7 +85,7 @@ public class Callback_0398_SBD_FORD_LIEYING extends CallbackCanbusBase {
         if (updateCode == 119) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (value == 1 && !AirSBDFordLieYing.mIsFront && !InfoSBDFordLieYing.mIsFront && !delay) {
+            if (value == 1 && !delay) {
                 //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.sbd.fordlieying.AirSBDFordLieYing");
                 jump = true;
             }

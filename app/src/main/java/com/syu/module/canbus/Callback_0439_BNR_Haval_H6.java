@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.hava.BNRActivityHavaH8SeatSetAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -98,11 +97,6 @@ public class Callback_0439_BNR_Haval_H6 extends CallbackCanbusBase {
         if (updateCode == 143) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (value == 1 && !BNRActivityHavaH8SeatSetAct.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.hava.BNRActivityHavaH8SeatSetAct");
-            } else if (BNRActivityHavaH8SeatSetAct.mIsFront && BNRActivityHavaH8SeatSetAct.mInstance != null) {
-                BNRActivityHavaH8SeatSetAct.mInstance.finish();
-            }
         }
     }
 

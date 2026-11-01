@@ -2,6 +2,7 @@ package com.android.recycler;
 
 import com.android.launcher66.SysCalls;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,7 @@ import com.android.launcher66.AllAppsList;
 import com.android.launcher66.AppInfo;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+import com.android.launcher66.ScreenScale;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.syu.util.WindowUtil;
@@ -246,6 +248,29 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
     // =====================================================================================
     // LIFECYCLE
     // =====================================================================================
+
+    /**
+     * The picker's content at the settings' scaled density (ScreenScale), so its icons and names
+     * are the same share of the screen as in the PiP and autostart pickers there, which use the
+     * same layouts; the launcher itself runs at the screen's own density.
+     */
+    @NonNull
+    @Override
+    public LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
+        LayoutInflater inflater = super.onGetLayoutInflater(savedInstanceState);
+        if (!ScreenScale.applies() || getActivity() == null) return inflater;
+        // The dialog's own theme on top, as Dialog picks it: this fragment's, else the
+        // activity's android:dialogTheme.
+        int dialogTheme = getTheme();
+        if (dialogTheme == 0) {
+            android.util.TypedValue value = new android.util.TypedValue();
+            if (getActivity().getTheme().resolveAttribute(android.R.attr.dialogTheme, value, true)) {
+                dialogTheme = value.resourceId;
+            }
+        }
+        Context scaled = ScreenScale.wrapThemed(getActivity(), dialogTheme);
+        return scaled == getActivity() ? inflater : inflater.cloneInContext(scaled);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

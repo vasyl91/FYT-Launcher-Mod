@@ -2,8 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarCDAct;
-import com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarRadioAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -159,20 +157,12 @@ public class Callback_0190_RZC_XP1_TianLai extends CallbackCanbusBase {
                     DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
                     break;
                 case 145:
-                    if (ints[0] == 2 && !XBS09TianlaiCarCDAct.mIsFront) {
+                    if (ints[0] == 2) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarCDAct");
                         break;
-                    } else if (ints[0] == 1 && !XBS09TianlaiCarRadioAct.mIsFront) {
+                    } else if (ints[0] == 1) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xbs.tianlai.XBS09TianlaiCarRadioAct");
                         break;
-                    } else if (ints[0] == 3) {
-                        if (XBS09TianlaiCarRadioAct.mIsFront && XBS09TianlaiCarRadioAct.mInstance != null) {
-                            XBS09TianlaiCarRadioAct.mInstance.finish();
-                        }
-                        if (XBS09TianlaiCarCDAct.mIsFront && XBS09TianlaiCarCDAct.mInstance != null) {
-                            XBS09TianlaiCarCDAct.mInstance.finish();
-                            break;
-                        }
                     }
                     break;
                 default:

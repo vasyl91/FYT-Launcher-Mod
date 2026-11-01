@@ -524,8 +524,7 @@ final class HomeLayoutRecovery {
                 leftRecycler.setAdapter(mLauncher.mAppBars.mLeftAppListAdapter);
             }
             if (!(leftRecycler.getLayoutManager() instanceof Launcher.EvenVerticalLayoutManager)) {
-                leftRecycler.setLayoutManager(
-                        new Launcher.EvenVerticalLayoutManager(mLauncher.getApplicationContext(), LauncherAppBars.MAX_LEFT));
+                leftRecycler.setLayoutManager(mLauncher.mAppBars.newLeftLayoutManager());
             }
             mLauncher.mAppBars.installLeftRecyclerDecorations(leftRecycler);
             leftRecycler.clearAnimation();

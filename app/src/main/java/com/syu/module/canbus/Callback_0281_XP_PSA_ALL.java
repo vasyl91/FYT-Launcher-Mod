@@ -2,8 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi;
-import com.syu.carinfo.biaozhi408.PsaC4L_MemSpeedSetActi;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -116,7 +114,7 @@ public class Callback_0281_XP_PSA_ALL extends CallbackCanbusBase {
             if (updateCode == 154) {
                 HandlerCanbus.update(updateCode, ints);
                 int value = DataCanbus.DATA[154];
-                if (value == 1 && !BZ408OilMileIndexActi.mIsFront) {
+                if (value == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.biaozhi408.BZ408OilMileIndexActi");
                     return;
                 }
@@ -124,14 +122,10 @@ public class Callback_0281_XP_PSA_ALL extends CallbackCanbusBase {
             }
             if (updateCode == 182) {
                 if (ints != null) {
-                    if (ints[0] == 1 && !PsaC4L_MemSpeedSetActi.mIsFront) {
+                    if (ints[0] == 1) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.biaozhi408.PsaC4L_MemSpeedSetActi");
                         return;
                     } else {
-                        if (ints[0] == 0 && PsaC4L_MemSpeedSetActi.mIsFront && PsaC4L_MemSpeedSetActi.mInstance != null) {
-                            PsaC4L_MemSpeedSetActi.mInstance.finish();
-                            return;
-                        }
                         return;
                     }
                 }

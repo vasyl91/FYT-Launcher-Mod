@@ -47,6 +47,16 @@ class HeadlightNightModeTest {
         assertNull(HeadlightNightMode.dayByLights(prefs));
     }
 
+    @Test
+    void theSleepForgetsTheLightsSoTheSunDecidesAtTheWake() throws Exception {
+        setLights(0);
+        assertEquals(Boolean.TRUE, HeadlightNightMode.dayByLights(prefs));   // lights out at ACC off: "day"
+        HeadlightNightMode.onSleep();
+        assertNull(HeadlightNightMode.dayByLights(prefs));
+        setLights(1);                                                        // the MCU reports again
+        assertEquals(Boolean.FALSE, HeadlightNightMode.dayByLights(prefs));
+    }
+
     private static void setLights(int value) throws Exception {
         Field f = HeadlightNightMode.class.getDeclaredField("sLightsOn");
         f.setAccessible(true);

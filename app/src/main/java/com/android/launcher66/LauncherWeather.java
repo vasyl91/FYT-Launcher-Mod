@@ -114,7 +114,7 @@ final class LauncherWeather {
                     public void onWeatherChanged(WeatherDescription weather) {
                         if (weather != null) {
                             if (mLauncher.weatherImg != null) {
-                                mLauncher.weatherImg.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
+                                mLauncher.weatherImg.setImageResource(WeatherUtils.getIconResId(weather.getIconCode()));
                             }
                             String range = weather.getTemDescription().replaceAll("\\.\\d", "");
                             String temp = weather.getCurTem().replaceAll("\\.\\d", "");
@@ -131,7 +131,7 @@ final class LauncherWeather {
                                 mLauncher.weatherTempRange.setText(new StringBuilder(String.valueOf(range)).toString());
                             }
                             if (mLauncher.weatherImg1 != null) {
-                                mLauncher.weatherImg1.setImageResource(WeatherUtils.getResId("weather" + weather.getIconCode()));
+                                mLauncher.weatherImg1.setImageResource(WeatherUtils.getIconResId(weather.getIconCode()));
                             }
                             if (mLauncher.weatherCity1 != null) {
                                 mLauncher.weatherCity1.setText(new StringBuilder(String.valueOf(weather.getCity())).toString());

@@ -87,6 +87,8 @@ public class CustomPipSwitchPreference extends SwitchPreferenceCompat {
     public interface OnModeSwitchChangeListener { void onModeChanged(boolean isPip); }
     public void setOnModeSwitchChangeListener(@Nullable OnModeSwitchChangeListener l) { mModeListener = l; }
     public void setModeChecked(boolean isPip) { 
+        // Pinned PiP needs FYT's framework: elsewhere the pane is always a window.
+        if (!LauncherApplication.supportsPinnedPip()) isPip = false;
         if (mModeSwitch != null) mModeSwitch.setChecked(isPip);
         saveModeState(isPip);
     }
@@ -168,6 +170,12 @@ public class CustomPipSwitchPreference extends SwitchPreferenceCompat {
                     : new LinearLayout.LayoutParams(rawLp.width, rawLp.height);
             lp.setMarginStart(paddingStart);
             mMainSwitch.setLayoutParams(lp);
+        }
+
+        if (!LauncherApplication.supportsPinnedPip()) {
+            // Pinned PiP exists on FYT units only: no Window/PiP choice anywhere else, always Window.
+            if (mModeContainer != null) mModeContainer.setVisibility(View.GONE);
+            if (getSavedModeState()) saveModeState(false);
         }
 
         if (mModeSwitch != null) {
@@ -300,7 +308,7 @@ public class CustomPipSwitchPreference extends SwitchPreferenceCompat {
     private void applySizing(int rowH) {
         // PiP/Window switch sizing
         final float heightFactor = 0.25f;
-        mTargetH = Math.max(1, Math.round(rowH * heightFactor));
+        mTargetH = Math.max(1, Math.round(rowH * heightFactor * SettingsActivity.legacyControlScale(getContext())));
         mTargetW = Math.max(1, Math.round(mTargetH * 8.0f));
         mCoverW = Math.max(1, mTargetW / 2);
 
@@ -336,7 +344,7 @@ public class CustomPipSwitchPreference extends SwitchPreferenceCompat {
         final float BTN_H_PCT_OF_ROW = 0.55f; // 55% of row height
         final float TXT_PCT_OF_BTN_H = 0.50f; // 50% of button height
 
-        int btnH = Math.max(1, Math.round(rowH * BTN_H_PCT_OF_ROW));
+        int btnH = Math.max(1, Math.round(rowH * BTN_H_PCT_OF_ROW * SettingsActivity.legacyControlScale(getContext())));
         int gapW;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             gapW = SettingsActivity.nestedPaddingStart / 4;

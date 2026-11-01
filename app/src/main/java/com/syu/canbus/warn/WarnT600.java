@@ -6,6 +6,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -38,8 +39,13 @@ public class WarnT600 implements Runnable {
         public void run() {
             WarnT600.mTick = 15;
             if (WarnT600.this.mLayout != null && !WarnT600.this.isShow) {
-                WarnT600.this.isShow = true;
-                ObjApp.getWindowManager().addView(WarnT600.this.mLayout, WarnT600.this.getWindowLayoutParams());
+                try {
+                    ObjApp.getWindowManager().addView(WarnT600.this.mLayout, WarnT600.this.getWindowLayoutParams());
+                    WarnT600.this.isShow = true;
+                } catch (RuntimeException e) {
+                    // No "display over other apps" for a launcher that is not the system one
+                    Log.w("WarnT600", "warning not shown: " + e);
+                }
             }
         }
     };

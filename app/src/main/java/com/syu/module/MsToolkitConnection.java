@@ -8,9 +8,11 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
 
 import com.syu.ipc.IRemoteToolkit;
 import com.syu.loopview.MessageHandler;
+import com.syu.remote.RemoteTools;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,13 +29,22 @@ public class MsToolkitConnection implements ServiceConnection {
     private final Runnable mRunnableConnect = new Runnable() { 
         @Override
         public void run() {
-            if (MsToolkitConnection.this.mRemoteToolkit != null) {
+            if (MsToolkitConnection.this.mRemoteToolkit != null
+                    || !RemoteTools.isInstalled(MsToolkitConnection.this.mContext, "com.syu.ms")) {
+                // Connected, or no FYT service to connect to (a phone): no more retries.
                 MsToolkitConnection.this.mConnecting = false;
                 return;
             }
             Intent intent = new Intent("com.syu.ms.toolkit");
             intent.setComponent(new ComponentName("com.syu.ms", "app.ToolkitService"));
-            MsToolkitConnection.this.mContext.bindService(intent, MsToolkitConnection.INSTANCE, 1);
+            try {
+                MsToolkitConnection.this.mContext.bindService(intent, MsToolkitConnection.INSTANCE, 1);
+            } catch (SecurityException e) {
+                // Not exported to this launcher (not the system one): binding again cannot help.
+                Log.w("MsToolkitConnection", "com.syu.ms toolkit not bindable: " + e);
+                MsToolkitConnection.this.mConnecting = false;
+                return;
+            }
             MsToolkitConnection.this.mHandler.postDelayed(this, new Random().nextInt(MessageHandler.WHAT_ITEM_SELECTED) + 1000);
         }
     };

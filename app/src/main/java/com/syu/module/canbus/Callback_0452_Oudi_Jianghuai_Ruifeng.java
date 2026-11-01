@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.rzc.ruifengs3.JhRuiFengS7TireAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -98,8 +97,8 @@ public class Callback_0452_Oudi_Jianghuai_Ruifeng extends CallbackCanbusBase {
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0 && updateCode < 148) {
             HandlerCanbus.update(updateCode, ints);
-            if ((updateCode == 109 || updateCode == 108 || updateCode == 107 || updateCode == 106) && !JhRuiFengS7TireAct.bNotShowingWarning) {
-                if ((DataCanbus.DATA[109] != 0 || DataCanbus.DATA[108] != 0 || DataCanbus.DATA[107] != 0 || DataCanbus.DATA[106] != 0) && !JhRuiFengS7TireAct.bFront) {
+            if (updateCode == 109 || updateCode == 108 || updateCode == 107 || updateCode == 106) {
+                if (DataCanbus.DATA[109] != 0 || DataCanbus.DATA[108] != 0 || DataCanbus.DATA[107] != 0 || DataCanbus.DATA[106] != 0) {
                     try {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.ruifengs3.JhRuiFengS7TireAct");
                     } catch (Exception e) {

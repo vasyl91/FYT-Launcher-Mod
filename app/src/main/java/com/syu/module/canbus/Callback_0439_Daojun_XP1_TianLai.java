@@ -2,8 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.daojun.tianlai.djTianlaiCd;
-import com.syu.carinfo.daojun.tianlai.djTianlaiRadio;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -77,20 +75,12 @@ public class Callback_0439_Daojun_XP1_TianLai extends CallbackCanbusBase {
             switch (updateCode) {
                 case 119:
                     HandlerCanbus.update(updateCode, ints);
-                    if (ints[0] == 2 && !djTianlaiCd.isFront) {
+                    if (ints[0] == 2) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.tianlai.djTianlaiCd");
                         break;
-                    } else if (ints[0] == 1 && !djTianlaiRadio.isFront) {
+                    } else if (ints[0] == 1) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.daojun.tianlai.djTianlaiRadio");
                         break;
-                    } else if (ints[0] == 0) {
-                        if (djTianlaiRadio.isFront && djTianlaiRadio.mInit != null) {
-                            djTianlaiRadio.mInit.finish();
-                        }
-                        if (djTianlaiCd.isFront && djTianlaiCd.mInit != null) {
-                            djTianlaiCd.mInit.finish();
-                            break;
-                        }
                     }
                     break;
                 default:

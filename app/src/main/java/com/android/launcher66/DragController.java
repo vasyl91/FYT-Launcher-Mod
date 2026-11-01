@@ -268,6 +268,9 @@ public class DragController {
         }
 
         // Hide soft keyboard, if visible
+        // PinnedPipFocus: does nothing while the pinned PiP is shown (the input method's window is
+        // PinnedPipFocus's, not this token's). A drag out of a folder ends the name's editing first
+        // (DragLayer), and PinnedPipFocus closes the keyboard when the name loses the focus.
         if (mInputMethodManager == null) {
             mInputMethodManager = (InputMethodManager)
                     mLauncher.getSystemService(Context.INPUT_METHOD_SERVICE);

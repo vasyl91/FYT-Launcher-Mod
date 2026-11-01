@@ -101,7 +101,7 @@ public class WeekDay extends AppCompatTextView implements SharedPreferences.OnSh
 
     public void setDate() {
         String mText = TimeUtil.getWeekDay(this.mContext);
-        float targetSize = Launcher.textSizeBasic;
+        float targetSize = Launcher.widgetTextSizeBasic;
         
         setText(mText);
         

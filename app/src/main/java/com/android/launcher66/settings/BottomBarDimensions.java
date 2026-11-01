@@ -198,11 +198,24 @@ public final class BottomBarDimensions {
         return (int) ((screenHeight - statusBarHeight) * multiplier);
     }
 
+    /**
+     * Width of the left bar as the layouts draw it (see {@link PipEdgeTrim#computeLeftBarWidth}).
+     * Landscape matches the old per-class formulas to the pixel; portrait follows the XML ratio
+     * "W,0.071", which is relative to the bar's height, not to the screen width.
+     */
+    public static float computeLeftBarWidth(boolean portrait, int rootWidth, int rootHeight,
+                                            int barHeight) {
+        return PipEdgeTrim.computeLeftBarWidth(portrait, rootWidth, rootHeight, barHeight);
+    }
+
     /** Same lookup as {@code Launcher.getStatusBarHeight()}, usable without a Launcher instance. */
     @SuppressLint({"DiscouragedApi", "InternalInsetResource"})
     public static int getStatusBarHeight(@NonNull Resources res) {
-        int resourceId = res.getIdentifier("status_bar_height", "dimen", "android");
-        return resourceId > 0 ? res.getDimensionPixelSize(resourceId) : 0;
+        // The system's own resources: the settings activity runs at a reference density on
+        // non-FYT devices (SettingsActivity.attachBaseContext()), the status bar does not.
+        Resources sys = Resources.getSystem();
+        int resourceId = sys.getIdentifier("status_bar_height", "dimen", "android");
+        return resourceId > 0 ? sys.getDimensionPixelSize(resourceId) : 0;
     }
 
     // ---------------------------------------------------------------------------------------

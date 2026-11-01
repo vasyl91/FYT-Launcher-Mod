@@ -247,6 +247,19 @@ public class FytPackage {
             return cacheLaunchIntent(pkg, settingsIntent);
         }
 
+        if (settingAction.equals(pkg) && !isPackageInstalled(context, settingAction)) {
+            // No FYT settings app on this device: open the stock Android settings instead.
+            // Deliberately not cached under com.syu.settings, so installing it later wins.
+            ComponentName fallback = resolveSystemSettingsComponent(context);
+            if (fallback != null) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                intent.setComponent(fallback);
+                return intent;
+            }
+        }
+
         if (GaodeACTION.equals(pkg)) {
             Intent gaodeUsbIntent = getExplicitIntentIfActivityExists(
                     context,
@@ -279,6 +292,55 @@ public class FytPackage {
             return cacheLaunchIntent(pkg, fallback);
         }
         return null;
+    }
+
+    /**
+     * The activity that opens the stock Android settings, for devices without the FYT settings
+     * app (com.syu.settings). The package is not always plain com.android.settings: some ROMs ship
+     * it under a longer name (com.android.settings.intelligence and the like), so any package
+     * named com.android.settings or com.android.settings.&lt;anything&gt; that has a launcher
+     * activity qualifies; the plain one is preferred, then the shortest name. Failing that, whatever
+     * the system resolves android.settings.SETTINGS to.
+     *
+     * @return null when no settings activity can be found
+     */
+    public static ComponentName resolveSystemSettingsComponent(Context context) {
+        if (context == null) {
+            return null;
+        }
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            Intent launcherIntent = new Intent(Intent.ACTION_MAIN, null);
+            launcherIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            ActivityInfo best = null;
+            for (ResolveInfo resolveInfo : packageManager.queryIntentActivities(launcherIntent, 0)) {
+                ActivityInfo info = resolveInfo.activityInfo;
+                if (info == null || !isSystemSettingsPackage(info.packageName)) {
+                    continue;
+                }
+                if (best == null || info.packageName.length() < best.packageName.length()) {
+                    best = info;
+                }
+            }
+            if (best != null) {
+                return new ComponentName(best.packageName, best.name);
+            }
+
+            ResolveInfo resolved = packageManager.resolveActivity(
+                    new Intent("android.settings.SETTINGS"), PackageManager.MATCH_DEFAULT_ONLY);
+            if (resolved != null && resolved.activityInfo != null
+                    && !"android".equals(resolved.activityInfo.packageName)) {
+                return new ComponentName(resolved.activityInfo.packageName, resolved.activityInfo.name);
+            }
+        } catch (RuntimeException e) {
+            // A package manager failure must not take the launcher down: just offer nothing.
+        }
+        return null;
+    }
+
+    private static boolean isSystemSettingsPackage(String packageName) {
+        return sysSetAction.equals(packageName)
+                || (packageName != null && packageName.startsWith(sysSetAction + "."));
     }
 
     private static Intent cacheLaunchIntent(String packageName, Intent intent) {

@@ -20,7 +20,10 @@ public class MediaTransportReceiver extends BroadcastReceiver {
         }
 
         Context appContext = context.getApplicationContext();
-        if (MediaTransportController.handleAction(appContext, intent.getAction())) {
+        // The player the launcher's widget shows: the stock one too, not a paused app's session
+        Launcher launcher = Launcher.mLauncher;
+        String target = launcher != null ? launcher.mMusicWidget.getTransportTargetPackage() : null;
+        if (MediaTransportController.handleAction(appContext, intent.getAction(), target)) {
             refreshMusicWidgets(appContext);
         }
     }

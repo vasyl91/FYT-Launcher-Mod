@@ -5,19 +5,24 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+
+import com.syu.util.HostAwait;
+import com.syu.util.WindowHostVdClient;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 /**
  * The launcher's permission flow: the runtime permissions, the overlay permission, notification
- * access and WRITE_SETTINGS, asked one after another, each once the resume has settled and only
+ * access, WRITE_SETTINGS and installing unknown apps (its own updates), asked one after another, each once the resume has settled and only
  * while the launcher is in front. Split out of Launcher, which forwards the activity results.
  */
 final class LauncherPermissionFlow {
@@ -37,7 +42,9 @@ final class LauncherPermissionFlow {
      * Everything the launcher asks the user for, in the order it is asked. The runtime permissions
      * share one system dialog; each of the others has a Settings screen of its own.
      */
-    private enum PermissionStep { RUNTIME, OVERLAY, NOTIFICATION_ACCESS, WRITE_SETTINGS }
+    private enum PermissionStep {
+        RUNTIME, OVERLAY, NOTIFICATION_ACCESS, WRITE_SETTINGS, INSTALL_PACKAGES
+    }
 
     /**
      * Lets the resume settle before a dialog or screen goes over it: the PiP rebuild starts 250 ms
@@ -89,6 +96,11 @@ final class LauncherPermissionFlow {
             if (sPermissionStepsHandled.contains(step)) {
                 continue;
             }
+            // Not handled yet while a VD host that could grant it is attached or on its way: the
+            // other steps go on, and this one is asked again when the host has answered.
+            if (step == PermissionStep.WRITE_SETTINGS && writeSettingsAwaitsHost()) {
+                continue;
+            }
             sPermissionStepsHandled.add(step);
             if (isPermissionStepNeeded(step) && startPermissionStep(step)) {
                 mPermissionStepInFlight = step;
@@ -110,8 +122,98 @@ final class LauncherPermissionFlow {
                 return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                         && !LauncherApplication.hasSystemPrivileges()
                         && !Settings.System.canWrite(mLauncher);
+            case INSTALL_PACKAGES:
+                // The update in the settings installs the downloaded APK; a system app may anyway.
+                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                        && !LauncherApplication.hasSystemPrivileges()
+                        && !mLauncher.getPackageManager().canRequestPackageInstalls();
             default:
                 return false;
+        }
+    }
+
+    /** The host's answer about WRITE_SETTINGS is in (or none will come): what is left goes to the Settings screen. */
+    private static boolean sWriteSettingsHostDone;
+    private static boolean sWriteSettingsHostCallRunning;
+    /** The wait of this Launcher instance for a host that is on its way; main thread. */
+    private HostAwait.Handle mWriteSettingsHostWait;
+
+    /**
+     * WRITE_SETTINGS is missing and a VD host may still grant it: the Settings screen is what
+     * the user got when no host was there at that moment, and on the 7870 Shizuku is not there
+     * for the first minutes. With a host attached the (blocking) call into it goes to a worker
+     * thread and the flow runs again with its answer; with one on its way the flow waits for it,
+     * up to HostAwait.windowForUptime(), then falls back to the Settings screen. Where no host is
+     * there or expected (nothing installed), and on a system launcher, this is false at once.
+     *
+     * @return whether the step waits
+     */
+    private boolean writeSettingsAwaitsHost() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || LauncherApplication.hasSystemPrivileges()
+                || sWriteSettingsHostDone || Settings.System.canWrite(mLauncher)) {
+            return false;
+        }
+        if (WindowHostVdClient.hasPrivilegedHost()) {
+            if (!sWriteSettingsHostCallRunning) {
+                sWriteSettingsHostCallRunning = true;
+                final Launcher launcher = mLauncher;
+                new Thread(() -> {
+                    allowWriteSettingsThroughHost();
+                    launcher.mHandler.post(() -> {
+                        sWriteSettingsHostCallRunning = false;
+                        sWriteSettingsHostDone = true;
+                        runLater();
+                    });
+                }, "WriteSettingsHost").start();
+            }
+            return true;
+        }
+        if (!HostAwait.isExpected(mLauncher)) {
+            return false;
+        }
+        if (mWriteSettingsHostWait == null) {
+            mWriteSettingsHostWait = HostAwait.await(HostAwait.windowForUptime(SystemClock.elapsedRealtime()),
+                    "WRITE_SETTINGS", attached -> {
+                mWriteSettingsHostWait = null;
+                if (!attached) {
+                    sWriteSettingsHostDone = true;   // no host came: the Settings screen, as before
+                }
+                runLater();
+            });
+        }
+        return true;
+    }
+
+    /** Runs the flow again once the resume has settled; it does nothing while a step's screen is open. */
+    private void runLater() {
+        mLauncher.mHandler.removeCallbacks(mPermissionFlowRunnable);
+        mLauncher.mHandler.postDelayed(mPermissionFlowRunnable, PERMISSION_FLOW_DELAY_MS);
+    }
+
+    /** The Launcher goes: its wait for a host ends with it. */
+    void onDestroy() {
+        if (mWriteSettingsHostWait != null) {
+            mWriteSettingsHostWait.cancel();
+            mWriteSettingsHostWait = null;
+        }
+    }
+
+    /**
+     * With a VD host (the FYT VDHost Magisk module or Shizuku) there is no trip to Settings: the
+     * host turns the WRITE_SETTINGS app op on, as the user would there. A blocking call into the
+     * host: never on the main thread, see writeSettingsAwaitsHost().
+     */
+    private boolean allowWriteSettingsThroughHost() {
+        try {
+            String report = WindowHostVdClient.allowWriteSettings(mLauncher.getPackageName());
+            if (report == null) {
+                return false;
+            }
+            Log.i(Launcher.TAG, "Permission flow: WRITE_SETTINGS through the VD host: " + report);
+            return Settings.System.canWrite(mLauncher);
+        } catch (Throwable t) {
+            Log.w(Launcher.TAG, "Permission flow: WRITE_SETTINGS through the VD host failed: " + t);
+            return false;
         }
     }
 
@@ -144,6 +246,10 @@ final class LauncherPermissionFlow {
                 case WRITE_SETTINGS:
                     mLauncher.startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
                             Uri.parse("package:" + mLauncher.getPackageName())), Launcher.REQUEST_CODE_WRITE_SETTINGS);
+                    return true;
+                case INSTALL_PACKAGES:
+                    mLauncher.startActivityForResult(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                            Uri.parse("package:" + mLauncher.getPackageName())), Launcher.REQUEST_CODE_INSTALL_PACKAGES);
                     return true;
                 default:
                     return false;
@@ -186,7 +292,8 @@ final class LauncherPermissionFlow {
     static boolean isPermissionFlowRequest(int requestCode) {
         return requestCode == Launcher.REQUEST_CODE_OVERLAY
                 || requestCode == Launcher.REQUEST_CODE_NOTIFICATION_ACCESS
-                || requestCode == Launcher.REQUEST_CODE_WRITE_SETTINGS;
+                || requestCode == Launcher.REQUEST_CODE_WRITE_SETTINGS
+                || requestCode == Launcher.REQUEST_CODE_INSTALL_PACKAGES;
     }
 
     /** Back from a Settings screen of the permission flow; see onActivityResult(). */
@@ -203,6 +310,10 @@ final class LauncherPermissionFlow {
         } else if (requestCode == Launcher.REQUEST_CODE_WRITE_SETTINGS) {
             boolean granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.System.canWrite(mLauncher);
             Log.i(Launcher.TAG, "Permission flow: WRITE_SETTINGS " + (granted ? "granted" : "not granted"));
+        } else if (requestCode == Launcher.REQUEST_CODE_INSTALL_PACKAGES) {
+            boolean granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+                    || mLauncher.getPackageManager().canRequestPackageInstalls();
+            Log.i(Launcher.TAG, "Permission flow: install unknown apps " + (granted ? "granted" : "not granted"));
         }
     }
     /** onRequestPermissionsResult() for the runtime permissions' dialog. */

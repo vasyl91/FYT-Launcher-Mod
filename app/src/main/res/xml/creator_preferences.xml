@@ -66,12 +66,12 @@
             android:title="@string/extended_divider"
             android:summary=" "
             app:layout="@layout/nested_preference_category_switch" />
-        <com.android.launcher66.settings.CustomNestedNoSwitchPreference
-            android:key="cover_splash"
-            android:defaultValue="true"
+        <com.android.launcher66.settings.CustomNestedThreePreference
+            android:key="cover_splash_mode"
+            android:defaultValue="icon"
             android:title="@string/cover_splash"
-            android:summaryOn="@string/cover_splash_icon"
-            android:summaryOff="@string/cover_splash_night_mode"
+            android:entries="@array/cover_splash_entries"
+            android:entryValues="@array/cover_splash_values"
             app:layout="@layout/nested_preference_category_no_switch" />
         <com.android.launcher66.settings.CustomSwitchPreference
             android:key="swipe_detector"
@@ -236,30 +236,19 @@
             android:key="skip_codes"
             android:title="@string/skip_codes"
             android:maxLines="5"  />
-
-        <com.android.launcher66.settings.CustomPreferenceCategory
-            app:key="logger_category"
-            app:title="@string/logger_category"
-            style="@style/PreferenceCategoryStyle" >
-        
-            <com.android.launcher66.settings.CustomPreference
-                android:key="code_logger"
-                android:title="@string/code_logger_string"
-                app:layout="@layout/nested_preference_category_content"  />        
-            <com.android.launcher66.settings.CustomPreference
-                android:key="code_logger_data"
-                android:title="@string/code_logger_data"
-                android:maxLines="5"
-                app:layout="@layout/nested_preference_category_content" />              
-            <com.android.launcher66.settings.CustomSwitchPreference
-                android:key="omit_digits"
-                android:defaultValue="false"
-                android:maxLines="5"
-                android:title="@string/omit_digits"
-                android:summary="@string/omit_digits_summary"
-                app:layout="@layout/nested_preference_category_switch" />
-            
-        </com.android.launcher66.settings.CustomPreferenceCategory>
+        <Preference
+            android:key="canbus_library_import"
+            android:title="@string/canbus_library_import"
+            android:maxLines="5" />
+        <Preference
+            android:key="canbus_library_export"
+            android:title="@string/canbus_library_export"
+            android:summary="@string/canbus_library_export_summary"
+            android:maxLines="5" />
+        <Preference
+            android:key="canbus_library_reset"
+            android:title="@string/canbus_library_reset"
+            android:maxLines="5" />
 
         <com.android.launcher66.settings.CustomPreferenceCategory
             app:key="inspector_category"
@@ -275,6 +264,12 @@
                 android:title="@string/code_inspector_data"
                 android:maxLines="5"
                 app:layout="@layout/nested_preference_category_content" />
+            <com.android.launcher66.settings.CustomSwitchPreference
+                android:key="skip_zero_codes"
+                android:defaultValue="true"
+                android:title="@string/skip_zero_codes"
+                app:summary="@string/skip_zero_codes_summary"
+                app:layout="@layout/nested_preference_category_switch" />
             
         </com.android.launcher66.settings.CustomPreferenceCategory>
         <Preference

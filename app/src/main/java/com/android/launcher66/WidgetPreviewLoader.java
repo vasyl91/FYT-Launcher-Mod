@@ -127,7 +127,7 @@ public class WidgetPreviewLoader {
     private IconCache mIconCache;
 
     private final float sWidgetPreviewIconPaddingPercentage = 0.25f;
-    private float widgetScaleFactor = 1.75f;
+    private final float widgetScaleFactor = ScreenScale.widgetScale();
 
     private CacheDb mDb;
 
@@ -145,7 +145,10 @@ public class WidgetPreviewLoader {
 
         mContext = context;
         mPackageManager = mContext.getPackageManager();
-        mAppIconSize = grid.iconSizePx;
+        // The workspace icon in pixels. grid.iconSizePx takes that number as dp, which on a
+        // phone made the icon in a generated preview the density times too large.
+        mAppIconSize = Launcher.workspaceIconAndFolderSize > 0
+                ? Launcher.workspaceIconAndFolderSize : grid.iconSizePx;
         mIconCache = app.getIconCache();
         mDb = app.getWidgetPreviewCacheDb();
         mLoadedPreviews = new HashMap<String, WeakReference<Bitmap>>();
@@ -276,7 +279,7 @@ public class WidgetPreviewLoader {
     }
 
     static class CacheDb extends SQLiteOpenHelper {
-        final static int DB_VERSION = 2;
+        final static int DB_VERSION = 3; // 3: previews made again with the right icon size
         final static String DB_NAME = "widgetpreviews.db";
         final static String TABLE_NAME = "shortcut_and_widget_previews";
         final static String COLUMN_NAME = "name";
@@ -477,7 +480,8 @@ public class WidgetPreviewLoader {
 
     /** The upscale used to make the previews in the widget tray look bigger. */
     private float trayUpscaleFactor() {
-        return Math.max(0.1f, widgetScaleFactor - 0.25f);
+        // 1.5 on the FYT unit it was tuned on, and the same share of it elsewhere.
+        return Math.max(0.1f, widgetScaleFactor * (1.5f / 1.75f));
     }
 
     /**

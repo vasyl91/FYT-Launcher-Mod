@@ -335,7 +335,7 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
         // Binary search for best size (in SP units)
         float minSize = 1f;
         float maxSize = Math.min(500f, maxSpFromHeight);
-        float bestSize = Math.max(minSize, Math.min((float) Launcher.textSizeBasic, maxSize)); // start from reasonable default
+        float bestSize = Math.max(minSize, Math.min((float) Launcher.widgetTextSizeBasic, maxSize)); // start from reasonable default
 
         String text = getText().toString();
         TextPaint paint = new TextPaint(getPaint());

@@ -28,6 +28,9 @@ import com.android.launcher66.MediaWidgetState;
 import com.android.launcher66.R;
 import com.android.launcher66.ServiceIntentGate;
 import com.fyt.car.MusicService;
+import com.fyt.car.StockSources;
+import com.fyt.car.StockTitles;
+import com.fyt.car.StockTrack;
 import com.syu.car.CarStates;
 import com.syu.log.LogPreview;
 import com.syu.util.Id3Info;
@@ -119,31 +122,39 @@ public class DateRadioWidget extends Widget {
             String musictitle;
             if (fytData) { // from metadata
                 musictitle = MusicService.music_name;
+            } else if (StockSources.isSyuMediaUnit()) {
+                // A stream has no file name; a name without a dot is the whole name
+                musictitle = StockTitles.displayTitle(true, MusicService.music_path, MusicService.music_name);
             } else { // from file title
                 File file = new File(MusicService.music_path);
                 String filename = file.getName();
                 musictitle = filename.substring(0, filename.lastIndexOf("."));
             }
-            views.setTextViewText(ResValue.getInstance().music_name, musictitle);                         
+            views.setTextViewText(ResValue.getInstance().music_name, musictitle);
         } else {
             LogPreview.show("MusicService.music_path" + MusicService.music_path);
             views.setTextViewText(ResValue.getInstance().music_name, this.mContext.getResources().getString(R.string.music_name));      
         }
         if (MusicService.music_path != null && !MusicService.music_path.equals(this.music_path_pre)) {
             this.music_path_pre = MusicService.music_path;
-            Lrc lrc = new Lrc();
-            Id3Info info = lrc.getId3Info(MusicService.music_path);
-            byte[] dataPic = info.dataPic;
-            if (dataPic != null && dataPic.length > 0) {
-                Bitmap bp = BitmapFactory.decodeByteArray(dataPic, 0, dataPic.length);
-                if (bp != null) {
-                    if (LauncherApplication.sApp.getResources().getBoolean(R.bool.music_bitmap_circular)) {
-                        bp = makeRoundCorner(bp);
-                    }
-                    views.setImageViewBitmap(ResValue.getInstance().ivwidget_album_bg, bp);
-                }
-            } else {
+            if (StockSources.isSyuMediaUnit() && !StockTitles.isLocalFile(MusicService.music_path)) {
+                // A stream's URL has no tags to read (the reader throws for one ending in .mp3)
                 views.setImageViewResource(ResValue.getInstance().ivwidget_album_bg, ResValue.getInstance().music_album_def);
+            } else {
+                Lrc lrc = new Lrc();
+                Id3Info info = lrc.getId3Info(MusicService.music_path);
+                byte[] dataPic = info.dataPic;
+                if (dataPic != null && dataPic.length > 0) {
+                    Bitmap bp = BitmapFactory.decodeByteArray(dataPic, 0, dataPic.length);
+                    if (bp != null) {
+                        if (LauncherApplication.sApp.getResources().getBoolean(R.bool.music_bitmap_circular)) {
+                            bp = makeRoundCorner(bp);
+                        }
+                        views.setImageViewBitmap(ResValue.getInstance().ivwidget_album_bg, bp);
+                    }
+                } else {
+                    views.setImageViewResource(ResValue.getInstance().ivwidget_album_bg, ResValue.getInstance().music_album_def);
+                }
             }
         }
         if (MusicService.author_name != null && !MusicService.author_name.isEmpty()) {
@@ -214,6 +225,10 @@ public class DateRadioWidget extends Widget {
                 clearMusicCache(views);
             }
         }
+        if (!showingExternalMedia) {
+            // The radio (on the 7870 BT too), when it is what the widget shows: over the above
+            applyStockOverlay(views);
+        }
         views.setTextViewText(ResValue.getInstance().dt_weekday1, TimeUtil.getWeekDay(this.mContext));
         switch (LauncherApplication.sApp.getResources().getInteger(R.integer.apps_timewidget_show)) {
             case 0:
@@ -261,6 +276,34 @@ public class DateRadioWidget extends Widget {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void applyStockOverlay(RemoteViews views) {
+        StockTrack t = StockSources.shownOverlayTrack();
+        if (t == null) {
+            return;
+        }
+        views.setTextViewText(ResValue.getInstance().music_name, t.title);
+        views.setTextViewText(ResValue.getInstance().music_art,
+                t.artist.isEmpty() ? this.mContext.getResources().getString(R.string.music_author) : t.artist);
+        Bitmap cover = t.cover != null && t.cover.length > 0 ? getExternalAlbumArtBitmap(t.cover) : null;
+        if (cover != null) {
+            views.setImageViewBitmap(ResValue.getInstance().ivwidget_album_bg, cover);
+        } else {
+            views.setImageViewResource(ResValue.getInstance().ivwidget_album_bg, ResValue.getInstance().musicwidget_album_def);
+        }
+        views.setImageViewResource(ResValue.getInstance().musicbutton_playpause,
+                StockSources.isShownPlaying()
+                        ? ResValue.getInstance().music_playpause_icon
+                        : ResValue.getInstance().music_pause_icon);
+        if (t.durationMs > 0) {
+            int percent = (int) ((1000 * Math.min(t.positionMs, t.durationMs)) / t.durationMs);
+            views.setProgressBar(ResValue.getInstance().music_progress, 1000, percent, false);
+        } else {
+            views.setProgressBar(ResValue.getInstance().music_progress, 1000, 0, false);
+        }
+        views.setTextViewText(ResValue.getInstance().music_cur_time, timeParse(t.positionMs));
+        views.setTextViewText(ResValue.getInstance().music_total_time, timeParse(t.durationMs));
     }
 
     private boolean applyExternalMediaSnapshot(RemoteViews views) {

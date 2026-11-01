@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.od.mazdall.MazdAllMaintenanceWarnAct;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.door.DoorHelper;
 
@@ -196,13 +195,13 @@ public class Callback_0439_OD_MZD_ALL extends CallbackCanbusBase {
                     break;
                 case 52:
                     int value = ints[0];
-                    if (value != 0 && !MazdAllMaintenanceWarnAct.mIsFront) {
+                    if (value != 0) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.od.mazdall.MazdAllMaintenanceWarnAct");
                         break;
                     }
                 case 53:
                     int value2 = ints[0];
-                    if (value2 == 1 && !MazdAllMaintenanceWarnAct.mIsFront) {
+                    if (value2 == 1) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.od.mazdall.MazdAllMaintenanceWarnAct");
                         break;
                     }

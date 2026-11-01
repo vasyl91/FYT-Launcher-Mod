@@ -151,8 +151,8 @@ public class ResValue {
     public int btavbutton_prev = getResId("btavbutton_prev", R.id.class);
     public int btavbutton_next = getResId("btavbutton_next", R.id.class);
     public int btavbutton_playpause = getResId("btavbutton_playpause", R.id.class);
-    public int btav_pause_icon = getResId("btav_pause_icon", R.drawable.class);
-    public int btav_playpause_icon = getResId("btav_playpause_icon", R.drawable.class);
+    public int btav_pause_icon = getResId("music_pause_icon", R.drawable.class);
+    public int btav_playpause_icon = getResId("music_playpause_icon", R.drawable.class);
     public int mBtavView = getResId("btav_widget", R.id.class);
     public int rl_bt = getResId("rl_bt", R.id.class);
     public int mBtavIcon = getResId("btav_widget_info", R.id.class);
@@ -279,11 +279,6 @@ public class ResValue {
     public int weather_wind = getResId("weather_wind", R.id.class);
     public int weather_humidity = getResId("weather_humidity", R.id.class);
     public int weather_update_time = getResId("weather_update_time", R.id.class);
-    public int clingtitletext = getResId("clingtitletext", R.id.class);
-    public int clingtext = getResId("clingtext", R.id.class);
-    public int clickapp = getResId("clickapp", R.id.class);
-    public int clickapp_cling = getResId("clickapp_cling", R.id.class);
-    public int clickapp_cancel = getResId("clickapp_cancel", R.id.class);
     public int coverflowtext = getResId("coverflowtext", R.id.class);
     public int coverflow = getResId("coverflow", R.id.class);
     public int com_syu_radio = getResId("com_syu_radio", R.drawable.class);

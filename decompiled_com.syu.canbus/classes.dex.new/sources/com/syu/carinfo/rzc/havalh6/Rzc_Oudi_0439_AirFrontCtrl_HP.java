@@ -1,0 +1,939 @@
+package com.syu.carinfo.rzc.havalh6;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import com.syu.canbus.R;
+import com.syu.module.IUiNotify;
+import com.syu.module.canbus.DataCanbus;
+import com.syu.module.canbus.FinalCanbus;
+import com.syu.ui.air.AirHelper;
+import com.syu.util.HandlerUI;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.canbus.apk\dexFile\classes.dex */
+public class Rzc_Oudi_0439_AirFrontCtrl_HP extends Activity implements View.OnTouchListener {
+    public static Rzc_Oudi_0439_AirFrontCtrl_HP mInstance;
+    public static boolean mIsFront = false;
+    boolean bNeedSend = false;
+    int cmdId = -1;
+    int touchState = -1;
+    Runnable airControl = new Runnable() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl_HP.1
+        @Override // java.lang.Runnable
+        public void run() {
+            Rzc_Oudi_0439_AirFrontCtrl_HP.this.setAirControl(Rzc_Oudi_0439_AirFrontCtrl_HP.this.cmdId, 0);
+        }
+    };
+    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl_HP.2
+        @Override // com.syu.module.IUiNotify
+        public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
+            int value = DataCanbus.DATA[updateCode];
+            if (DataCanbus.DATA[1000] == 16384439) {
+                switch (updateCode) {
+                    case 10:
+                        Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirPower(value);
+                        break;
+                    case 11:
+                        Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirAC(value);
+                        break;
+                    case 12:
+                        Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdateAirCycle(value);
+                        break;
+                    case 13:
+                        Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdateAirAuto(value);
+                        break;
+                    case 14:
+                        Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdateAirZone(value);
+                        break;
+                    case 18:
+                    case 19:
+                    case 20:
+                        Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirBLowMode();
+                        break;
+                    case 21:
+                        Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirWindLevel(value);
+                        break;
+                    case 27:
+                        Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirTempLeft(value);
+                        break;
+                    case 28:
+                        Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirTempRight(value);
+                        break;
+                    case 126:
+                        switch (value) {
+                            case 0:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_xts_seatwin_left_level0);
+                                break;
+                            case 1:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_xts_seatwin_left_level1);
+                                break;
+                            case 2:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_xts_seatwin_left_level2);
+                                break;
+                            case 3:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_xts_seatwin_left_level3);
+                                break;
+                        }
+                        break;
+                    case 127:
+                        switch (value) {
+                            case 0:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level0);
+                                break;
+                            case 1:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level1);
+                                break;
+                            case 2:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level2);
+                                break;
+                            case 3:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level3);
+                                break;
+                        }
+                        break;
+                    case 128:
+                        switch (value) {
+                            case 0:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level0);
+                                break;
+                            case 1:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level1);
+                                break;
+                            case 2:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level2);
+                                break;
+                            case 3:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level3);
+                                break;
+                            case 4:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level4);
+                                break;
+                            case 5:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level5);
+                                break;
+                        }
+                        break;
+                    case 129:
+                        switch (value) {
+                            case 0:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_left).setBackgroundResource(R.drawable.ic_xts_seatmassage_left_level0);
+                                break;
+                            case 1:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_left).setBackgroundResource(R.drawable.ic_xts_seatmassage_left_level1);
+                                break;
+                            case 2:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_left).setBackgroundResource(R.drawable.ic_xts_seatmassage_left_level2);
+                                break;
+                            case 3:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_left).setBackgroundResource(R.drawable.ic_xts_seatmassage_left_level3);
+                                break;
+                        }
+                        break;
+                    case 130:
+                        switch (value) {
+                            case 0:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_xts_seatwin_right_level0);
+                                break;
+                            case 1:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_xts_seatwin_right_level1);
+                                break;
+                            case 2:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_xts_seatwin_right_level2);
+                                break;
+                            case 3:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_xts_seatwin_right_level3);
+                                break;
+                        }
+                        break;
+                    case 131:
+                        switch (value) {
+                            case 0:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level0);
+                                break;
+                            case 1:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level1);
+                                break;
+                            case 2:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level2);
+                                break;
+                            case 3:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level3);
+                                break;
+                        }
+                        break;
+                    case 132:
+                        switch (value) {
+                            case 0:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level0);
+                                break;
+                            case 1:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level1);
+                                break;
+                            case 2:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level2);
+                                break;
+                            case 3:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level3);
+                                break;
+                            case 4:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level4);
+                                break;
+                            case 5:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level5);
+                                break;
+                        }
+                        break;
+                    case 133:
+                        switch (value) {
+                            case 0:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_right).setBackgroundResource(R.drawable.ic_xts_seatmassage_right_level0);
+                                break;
+                            case 1:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_right).setBackgroundResource(R.drawable.ic_xts_seatmassage_right_level1);
+                                break;
+                            case 2:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_right).setBackgroundResource(R.drawable.ic_xts_seatmassage_right_level2);
+                                break;
+                            case 3:
+                                Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_right).setBackgroundResource(R.drawable.ic_xts_seatmassage_right_level3);
+                                break;
+                        }
+                        break;
+                }
+            }
+            switch (updateCode) {
+                case 10:
+                    Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirPower(value);
+                    break;
+                case 11:
+                    Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirAC(value);
+                    break;
+                case 12:
+                    Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdateAirCycle(value);
+                    break;
+                case 13:
+                    Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdateAirAuto(value);
+                    break;
+                case 14:
+                    switch (DataCanbus.DATA[1000]) {
+                        case FinalCanbus.CAR_439_OuDi_Haval_H9 /* 1376695 */:
+                        case FinalCanbus.CAR_439_OuDi_Haval_H9_H /* 1769911 */:
+                        case FinalCanbus.CAR_455_OD_Haval_H7 /* 12124615 */:
+                        case FinalCanbus.CAR_455_OD_Haval_H7_H /* 12190151 */:
+                        case FinalCanbus.CAR_439_OuDi_Haval_H9_RS /* 15598007 */:
+                        case FinalCanbus.CAR_439_OuDi_Haval_H9_H_RS /* 15663543 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV5 /* 16122308 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV6 /* 16187844 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV7 /* 16253380 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV5_H /* 16318916 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV6_H /* 16384452 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV7_H /* 16449988 */:
+                            break;
+                        default:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdateAirZone(value);
+                            break;
+                    }
+                    break;
+                case 18:
+                case 19:
+                case 20:
+                    Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirBLowMode();
+                    break;
+                case 21:
+                    Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirWindLevel(value);
+                    break;
+                case 27:
+                    Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirTempLeft(value);
+                    break;
+                case 28:
+                    Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdaterAirTempRight(value);
+                    break;
+                case 29:
+                    switch (value) {
+                        case 0:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level0);
+                            break;
+                        case 1:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level1);
+                            break;
+                        case 2:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level2);
+                            break;
+                        case 3:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_left).setBackgroundResource(R.drawable.ic_xts_seathot_left_level3);
+                            break;
+                    }
+                    break;
+                case 30:
+                    switch (value) {
+                        case 0:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level0);
+                            break;
+                        case 1:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level1);
+                            break;
+                        case 2:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level2);
+                            break;
+                        case 3:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seathot_right).setBackgroundResource(R.drawable.ic_xts_seathot_right_level3);
+                            break;
+                    }
+                    break;
+                case 31:
+                    switch (value) {
+                        case 0:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_xts_seatwin_left_level0);
+                            break;
+                        case 1:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_xts_seatwin_left_level1);
+                            break;
+                        case 2:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_xts_seatwin_left_level2);
+                            break;
+                        case 3:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_left).setBackgroundResource(R.drawable.ic_xts_seatwin_left_level3);
+                            break;
+                    }
+                    break;
+                case 32:
+                    switch (value) {
+                        case 0:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_xts_seatwin_right_level0);
+                            break;
+                        case 1:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_xts_seatwin_right_level1);
+                            break;
+                        case 2:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_xts_seatwin_right_level2);
+                            break;
+                        case 3:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwin_right).setBackgroundResource(R.drawable.ic_xts_seatwin_right_level3);
+                            break;
+                    }
+                    break;
+                case 57:
+                    switch (DataCanbus.DATA[1000]) {
+                        case FinalCanbus.CAR_439_OuDi_Haval_H9 /* 1376695 */:
+                        case FinalCanbus.CAR_439_OuDi_Haval_H9_H /* 1769911 */:
+                        case FinalCanbus.CAR_455_OD_Haval_H7 /* 12124615 */:
+                        case FinalCanbus.CAR_455_OD_Haval_H7_H /* 12190151 */:
+                        case FinalCanbus.CAR_439_OuDi_Haval_H9_RS /* 15598007 */:
+                        case FinalCanbus.CAR_439_OuDi_Haval_H9_H_RS /* 15663543 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV5 /* 16122308 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV6 /* 16187844 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV7 /* 16253380 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV5_H /* 16318916 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV6_H /* 16384452 */:
+                        case FinalCanbus.CAR_452_OD_Haval_VV7_H /* 16449988 */:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.mUpdateAirZone(value);
+                            break;
+                    }
+                    break;
+                case 93:
+                    switch (value) {
+                        case 0:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_left).setBackgroundResource(R.drawable.ic_xts_seatmassage_left_level0);
+                            break;
+                        case 1:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_left).setBackgroundResource(R.drawable.ic_xts_seatmassage_left_level1);
+                            break;
+                        case 2:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_left).setBackgroundResource(R.drawable.ic_xts_seatmassage_left_level2);
+                            break;
+                        case 3:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_left).setBackgroundResource(R.drawable.ic_xts_seatmassage_left_level3);
+                            break;
+                    }
+                    break;
+                case 94:
+                    switch (value) {
+                        case 0:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_right).setBackgroundResource(R.drawable.ic_xts_seatmassage_right_level0);
+                            break;
+                        case 1:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_right).setBackgroundResource(R.drawable.ic_xts_seatmassage_right_level1);
+                            break;
+                        case 2:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_right).setBackgroundResource(R.drawable.ic_xts_seatmassage_right_level2);
+                            break;
+                        case 3:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatmassage_right).setBackgroundResource(R.drawable.ic_xts_seatmassage_right_level3);
+                            break;
+                    }
+                    break;
+                case 95:
+                    switch (value) {
+                        case 0:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level0);
+                            break;
+                        case 1:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level1);
+                            break;
+                        case 2:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level2);
+                            break;
+                        case 3:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level3);
+                            break;
+                        case 4:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level4);
+                            break;
+                        case 5:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_left).setBackgroundResource(R.drawable.ic_xts_seatwaist_left_level5);
+                            break;
+                    }
+                    break;
+                case 96:
+                    switch (value) {
+                        case 0:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level0);
+                            break;
+                        case 1:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level1);
+                            break;
+                        case 2:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level2);
+                            break;
+                        case 3:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level3);
+                            break;
+                        case 4:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level4);
+                            break;
+                        case 5:
+                            Rzc_Oudi_0439_AirFrontCtrl_HP.this.findViewById(R.id.air_xts_seatwaist_right).setBackgroundResource(R.drawable.ic_xts_seatwaist_right_level5);
+                            break;
+                    }
+                    break;
+            }
+        }
+    };
+
+    @Override // android.app.Activity
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.layout_439_haval_airfront_h9_control_hp);
+        init();
+        mInstance = this;
+    }
+
+    private void init() {
+        ((Button) findViewById(R.id.air_xts_rearpage)).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl_HP.3
+            @Override // android.view.View.OnClickListener
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent();
+                    intent.setClass(Rzc_Oudi_0439_AirFrontCtrl_HP.this, Rzc_Oudi_0439_AirRearCtrl_HP.class);
+                    Rzc_Oudi_0439_AirFrontCtrl_HP.this.startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        ((Button) findViewById(R.id.air_xts_power)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_ac)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_auto)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_zone)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_cycle)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.btn_air_temp_left_plus)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.btn_air_temp_left_minus)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.btn_air_temp_right_plus)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.btn_air_temp_right_minus)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.dj_xts_air_win_minuts_btn)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.dj_xts_air_win_plus_btn)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_mode_body)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_mode_footbody)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_mode_footwin)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_mode_foot)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_seathot_left)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_seathot_right)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_seatwin_left)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_seatwin_right)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_seatmassage_left)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_seatmassage_right)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_seatwaist_left)).setOnTouchListener(this);
+        ((Button) findViewById(R.id.air_xts_seatwaist_right)).setOnTouchListener(this);
+    }
+
+    @Override // android.app.Activity
+    protected void onResume() {
+        super.onResume();
+        AirHelper.disableAirWindowLocal(true);
+        mIsFront = true;
+        addUpdater();
+    }
+
+    @Override // android.app.Activity
+    protected void onPause() {
+        super.onPause();
+        AirHelper.disableAirWindowLocal(false);
+        mIsFront = false;
+        removeUpdater();
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void setAirControl(int cmdId, int touchState) {
+        if (DataCanbus.DATA[1000] == 16384439) {
+            DataCanbus.PROXY.cmd(2, new int[]{cmdId, touchState}, null, null);
+        } else {
+            DataCanbus.PROXY.cmd(0, cmdId, touchState);
+        }
+    }
+
+    @Override // android.view.View.OnTouchListener
+    public boolean onTouch(View v, MotionEvent event) {
+        int id = v.getId();
+        if (DataCanbus.DATA[1000] == 16384439) {
+            switch (id) {
+                case R.id.btn_air_temp_left_plus /* 2131427425 */:
+                    this.cmdId = 3;
+                    break;
+                case R.id.btn_air_temp_left_minus /* 2131427427 */:
+                    this.cmdId = 2;
+                    break;
+                case R.id.air_xts_power /* 2131427428 */:
+                    this.cmdId = 1;
+                    break;
+                case R.id.dj_xts_air_win_minuts_btn /* 2131427429 */:
+                    this.cmdId = 9;
+                    break;
+                case R.id.dj_xts_air_win_plus_btn /* 2131427431 */:
+                    this.cmdId = 10;
+                    break;
+                case R.id.air_xts_seathot_left /* 2131427433 */:
+                    this.cmdId = 11;
+                    break;
+                case R.id.air_xts_seathot_right /* 2131427435 */:
+                    this.cmdId = 13;
+                    break;
+                case R.id.air_xts_auto /* 2131427436 */:
+                    this.cmdId = 21;
+                    break;
+                case R.id.air_xts_cycle /* 2131427437 */:
+                    this.cmdId = 25;
+                    break;
+                case R.id.air_xts_ac /* 2131427440 */:
+                    this.cmdId = 23;
+                    break;
+                case R.id.air_xts_mode_foot /* 2131427444 */:
+                    this.cmdId = 8;
+                    break;
+                case R.id.air_xts_mode_body /* 2131427445 */:
+                    this.cmdId = 7;
+                    break;
+                case R.id.btn_air_temp_right_plus /* 2131427450 */:
+                    this.cmdId = 5;
+                    break;
+                case R.id.btn_air_temp_right_minus /* 2131427452 */:
+                    this.cmdId = 4;
+                    break;
+                case R.id.air_xts_seatwin_left /* 2131427453 */:
+                    this.cmdId = 12;
+                    break;
+                case R.id.air_xts_seatwin_right /* 2131427455 */:
+                    this.cmdId = 14;
+                    break;
+                case R.id.air_xts_mode_footbody /* 2131427555 */:
+                    this.cmdId = 6;
+                    break;
+                case R.id.air_xts_mode_footwin /* 2131427735 */:
+                    this.cmdId = 26;
+                    break;
+                case R.id.air_xts_seatmassage_left /* 2131428357 */:
+                    this.cmdId = 17;
+                    break;
+                case R.id.air_xts_seatwaist_left /* 2131428358 */:
+                    this.cmdId = 18;
+                    break;
+                case R.id.air_xts_zone /* 2131428359 */:
+                    this.cmdId = 16;
+                    break;
+                case R.id.air_xts_seatwaist_right /* 2131428360 */:
+                    this.cmdId = 20;
+                    break;
+                case R.id.air_xts_seatmassage_right /* 2131428361 */:
+                    this.cmdId = 19;
+                    break;
+            }
+            switch (event.getAction()) {
+                case 0:
+                    setAirControl(this.cmdId, 1);
+                    break;
+                case 1:
+                    setAirControl(this.cmdId, 0);
+                    break;
+            }
+        } else {
+            switch (id) {
+                case R.id.btn_air_temp_left_plus /* 2131427425 */:
+                    this.cmdId = 30;
+                    break;
+                case R.id.btn_air_temp_left_minus /* 2131427427 */:
+                    this.cmdId = 31;
+                    break;
+                case R.id.air_xts_power /* 2131427428 */:
+                    this.cmdId = 16;
+                    break;
+                case R.id.dj_xts_air_win_minuts_btn /* 2131427429 */:
+                    this.cmdId = 29;
+                    break;
+                case R.id.dj_xts_air_win_plus_btn /* 2131427431 */:
+                    this.cmdId = 28;
+                    break;
+                case R.id.air_xts_seathot_left /* 2131427433 */:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        this.cmdId = 36;
+                    } else {
+                        this.cmdId = 34;
+                    }
+                    break;
+                case R.id.air_xts_seathot_right /* 2131427435 */:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        this.cmdId = 37;
+                    } else {
+                        this.cmdId = 35;
+                    }
+                    break;
+                case R.id.air_xts_auto /* 2131427436 */:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        this.cmdId = 34;
+                    } else {
+                        this.cmdId = 18;
+                    }
+                    break;
+                case R.id.air_xts_cycle /* 2131427437 */:
+                    this.cmdId = 19;
+                    break;
+                case R.id.air_xts_ac /* 2131427440 */:
+                    this.cmdId = 17;
+                    break;
+                case R.id.air_xts_mode_foot /* 2131427444 */:
+                    this.cmdId = 26;
+                    break;
+                case R.id.air_xts_mode_body /* 2131427445 */:
+                    this.cmdId = 24;
+                    break;
+                case R.id.btn_air_temp_right_plus /* 2131427450 */:
+                    this.cmdId = 32;
+                    break;
+                case R.id.btn_air_temp_right_minus /* 2131427452 */:
+                    this.cmdId = 33;
+                    break;
+                case R.id.air_xts_seatwin_left /* 2131427453 */:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        this.cmdId = 38;
+                    } else {
+                        this.cmdId = 36;
+                    }
+                    break;
+                case R.id.air_xts_seatwin_right /* 2131427455 */:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        this.cmdId = 39;
+                    } else {
+                        this.cmdId = 37;
+                    }
+                    break;
+                case R.id.air_xts_mode_footbody /* 2131427555 */:
+                    this.cmdId = 25;
+                    break;
+                case R.id.air_xts_mode_footwin /* 2131427735 */:
+                    this.cmdId = 27;
+                    break;
+                case R.id.air_xts_seatmassage_left /* 2131428357 */:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        this.cmdId = 40;
+                    } else {
+                        this.cmdId = 38;
+                    }
+                    break;
+                case R.id.air_xts_seatwaist_left /* 2131428358 */:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        this.cmdId = 42;
+                    } else {
+                        this.cmdId = 40;
+                    }
+                    break;
+                case R.id.air_xts_zone /* 2131428359 */:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        this.cmdId = 35;
+                    } else {
+                        this.cmdId = 20;
+                    }
+                    break;
+                case R.id.air_xts_seatwaist_right /* 2131428360 */:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        this.cmdId = 43;
+                    } else {
+                        this.cmdId = 41;
+                    }
+                    break;
+                case R.id.air_xts_seatmassage_right /* 2131428361 */:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        this.cmdId = 41;
+                    } else {
+                        this.cmdId = 39;
+                    }
+                    break;
+            }
+            switch (event.getAction()) {
+                case 0:
+                    this.touchState = 1;
+                    this.bNeedSend = true;
+                    setAirControl(this.cmdId, this.touchState);
+                    break;
+                case 1:
+                    this.bNeedSend = false;
+                    this.touchState = 0;
+                    HandlerUI.getInstance().postDelayed(this.airControl, 100L);
+                    break;
+            }
+        }
+        if (this.cmdId == -1 || this.touchState == -1) {
+            return false;
+        }
+        return false;
+    }
+
+    private void addUpdater() {
+        if (DataCanbus.DATA[1000] == 16384439) {
+            DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[127].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[128].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[129].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[130].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[131].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[132].addNotify(this.mNotifyCanbus, 1);
+            DataCanbus.NOTIFY_EVENTS[133].addNotify(this.mNotifyCanbus, 1);
+            return;
+        }
+        DataCanbus.NOTIFY_EVENTS[10].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[11].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[12].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[57].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[14].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[13].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[21].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[18].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[19].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[20].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[27].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[28].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[29].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[30].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[31].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[32].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[93].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[94].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[95].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[96].addNotify(this.mNotifyCanbus, 1);
+    }
+
+    private void removeUpdater() {
+        if (DataCanbus.DATA[1000] == 16384439) {
+            DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[127].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[128].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[129].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[130].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[131].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[132].removeNotify(this.mNotifyCanbus);
+            DataCanbus.NOTIFY_EVENTS[133].removeNotify(this.mNotifyCanbus);
+            return;
+        }
+        DataCanbus.NOTIFY_EVENTS[10].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[11].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[12].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[57].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[14].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[13].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[21].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[18].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[19].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[20].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[27].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[28].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[29].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[30].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[31].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[32].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[93].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[94].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[95].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[96].removeNotify(this.mNotifyCanbus);
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdaterAirBLowMode() {
+        int win = DataCanbus.DATA[18];
+        int body = DataCanbus.DATA[19];
+        int foot = DataCanbus.DATA[20];
+        if (DataCanbus.DATA[1000] == 16384439) {
+            win = DataCanbus.DATA[18];
+            body = DataCanbus.DATA[19];
+            foot = DataCanbus.DATA[20];
+        }
+        if (win == 1 && foot == 1 && body == 0) {
+            ((Button) findViewById(R.id.air_xts_mode_footwin)).setSelected(true);
+            ((Button) findViewById(R.id.air_xts_mode_body)).setSelected(false);
+            ((Button) findViewById(R.id.air_xts_mode_footbody)).setSelected(false);
+            ((Button) findViewById(R.id.air_xts_mode_foot)).setSelected(false);
+            return;
+        }
+        if (win == 0 && foot == 1 && body == 0) {
+            ((Button) findViewById(R.id.air_xts_mode_footwin)).setSelected(false);
+            ((Button) findViewById(R.id.air_xts_mode_body)).setSelected(false);
+            ((Button) findViewById(R.id.air_xts_mode_footbody)).setSelected(false);
+            ((Button) findViewById(R.id.air_xts_mode_foot)).setSelected(true);
+            return;
+        }
+        if (win == 0 && foot == 1 && body == 1) {
+            ((Button) findViewById(R.id.air_xts_mode_footwin)).setSelected(false);
+            ((Button) findViewById(R.id.air_xts_mode_body)).setSelected(false);
+            ((Button) findViewById(R.id.air_xts_mode_footbody)).setSelected(true);
+            ((Button) findViewById(R.id.air_xts_mode_foot)).setSelected(false);
+            return;
+        }
+        if (win == 0 && foot == 0 && body == 1) {
+            ((Button) findViewById(R.id.air_xts_mode_footwin)).setSelected(false);
+            ((Button) findViewById(R.id.air_xts_mode_body)).setSelected(true);
+            ((Button) findViewById(R.id.air_xts_mode_footbody)).setSelected(false);
+            ((Button) findViewById(R.id.air_xts_mode_foot)).setSelected(false);
+        }
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdaterAirPower(int value) {
+        if (((Button) findViewById(R.id.air_xts_power)) != null) {
+            if (value == 0) {
+                ((Button) findViewById(R.id.air_xts_power)).setSelected(false);
+            } else if (value == 1) {
+                ((Button) findViewById(R.id.air_xts_power)).setSelected(true);
+            }
+        }
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdaterAirAC(int value) {
+        if (((Button) findViewById(R.id.air_xts_ac)) != null) {
+            if (value == 0) {
+                ((Button) findViewById(R.id.air_xts_ac)).setSelected(false);
+            } else if (value == 1) {
+                ((Button) findViewById(R.id.air_xts_ac)).setSelected(true);
+            }
+        }
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdateAirAuto(int value) {
+        if (((Button) findViewById(R.id.air_xts_auto)) != null) {
+            if (value == 0) {
+                ((Button) findViewById(R.id.air_xts_auto)).setSelected(false);
+            } else if (value == 1) {
+                ((Button) findViewById(R.id.air_xts_auto)).setSelected(true);
+            }
+        }
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdateAirZone(int value) {
+        if (((Button) findViewById(R.id.air_xts_zone)) != null) {
+            if (value == 0) {
+                ((Button) findViewById(R.id.air_xts_zone)).setSelected(false);
+            } else if (value == 1) {
+                ((Button) findViewById(R.id.air_xts_zone)).setSelected(true);
+            }
+        }
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdateAirCycle(int value) {
+        if (((Button) findViewById(R.id.air_xts_cycle)) != null) {
+            if (value == 0) {
+                ((Button) findViewById(R.id.air_xts_cycle)).setSelected(false);
+            } else if (value == 1) {
+                ((Button) findViewById(R.id.air_xts_cycle)).setSelected(true);
+            }
+        }
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdaterAirTempLeft(int temp) {
+        int temp2;
+        if (((TextView) findViewById(R.id.tv_air_temp_left)) != null) {
+            switch (temp) {
+                case -3:
+                    ((TextView) findViewById(R.id.tv_air_temp_left)).setText("HI");
+                    break;
+                case -2:
+                    ((TextView) findViewById(R.id.tv_air_temp_left)).setText("LOW");
+                    break;
+                default:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        temp2 = ((temp - 112) * 5) + 160;
+                    } else if (DataCanbus.DATA[1000] == 16384439) {
+                        temp2 = (temp * 5) + 160;
+                    } else {
+                        temp2 = ((temp - 116) * 5) + 160;
+                    }
+                    ((TextView) findViewById(R.id.tv_air_temp_left)).setText((temp2 / 10.0f) + "°C");
+                    break;
+            }
+        }
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdaterAirTempRight(int temp) {
+        int temp2;
+        if (((TextView) findViewById(R.id.tv_air_temp_right)) != null) {
+            switch (temp) {
+                case -3:
+                    ((TextView) findViewById(R.id.tv_air_temp_right)).setText("HI");
+                    break;
+                case -2:
+                    ((TextView) findViewById(R.id.tv_air_temp_right)).setText("LOW");
+                    break;
+                default:
+                    if (DataCanbus.DATA[1000] == 2490807 || DataCanbus.DATA[1000] == 8651204 || DataCanbus.DATA[1000] == 2556343 || DataCanbus.DATA[1000] == 11796934 || DataCanbus.DATA[1000] == 11862470) {
+                        temp2 = ((temp - 112) * 5) + 160;
+                    } else if (DataCanbus.DATA[1000] == 16384439) {
+                        temp2 = (temp * 5) + 160;
+                    } else {
+                        temp2 = ((temp - 116) * 5) + 160;
+                    }
+                    ((TextView) findViewById(R.id.tv_air_temp_right)).setText((temp2 / 10.0f) + "°C");
+                    break;
+            }
+        }
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdaterAirWindLevel(int level) {
+        ((TextView) findViewById(R.id.dj_xts_air_winlevel)).setText(new StringBuilder().append(level).toString());
+    }
+}

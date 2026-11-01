@@ -1,7 +1,5 @@
 package com.android.launcher66.settings;
 
-import static com.android.launcher66.settings.SettingsActivity.getSettingsActivity;
-
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
@@ -171,6 +169,8 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
     }
 
     private void initUi(View rootView) {
+        // the saved rectangle of the statistics as wide as the window is, whatever the text of its size needs
+        StatsWindowSize.syncSavedRectangle(getContext(), sharedPrefs, true);
         helpers = new Helpers();
         helpers.checkAndResetIfOverlappingOnScreen(-1); 
         helpers.setUserOpenedCreator(true);
@@ -226,7 +226,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
             if (mLeftToRight != null) { mLeftToRight.setOnClickListener(this); setCalculatedButtonSizes(mLeftToRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
             if (mRightToLeft != null) { mRightToLeft.setOnClickListener(this); setCalculatedButtonSizes(mRightToLeft, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
             if (mRightToRight != null) { mRightToRight.setOnClickListener(this); setCalculatedButtonSizes(mRightToRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
-            if (mConfirmLayout != null) { mConfirmLayout.setOnClickListener(this); mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize); }
+            if (mConfirmLayout != null) { mConfirmLayout.setOnClickListener(this); SettingsActivity.fitTextToView(mConfirmLayout, SettingsActivity.confirmTextSize); }
 
             setCalculatedTextSize(rootView, R.id.selected_widget_string, SettingsActivity.selectionTextSize);
             setCalculatedTextSize(rootView, R.id.rectangle_name, SettingsActivity.selectionTextSize);
@@ -244,7 +244,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         }
 
         if (!LauncherApplication.isFytDevice()) {
-            scaleView();
+            applySystemBarInsets();
         }
     }
 
@@ -634,12 +634,12 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
             if (cand.left >= (minBorderX)) { candToPoints(ids, cand); saveAndRedraw(); }
 
         } else if (viewId == R.id.left_to_right) {
-            float newLeft = Math.min(r.right - cfg.minWidth, r.left + STEP);
+            float newLeft = Math.min(r.right - stepMinWidth(cfg, r), r.left + STEP);
             RectF cand = new RectF(newLeft, r.top, r.right, r.bottom);
             candToPoints(ids, cand); saveAndRedraw();
 
         } else if (viewId == R.id.right_to_left) {
-            float newRight = Math.max(r.left + cfg.minWidth, r.right - STEP);
+            float newRight = Math.max(r.left + stepMinWidth(cfg, r), r.right - STEP);
             RectF cand = new RectF(r.left, r.top, newRight, r.bottom);
             candToPoints(ids, cand); saveAndRedraw();
 
@@ -819,24 +819,14 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
     private void saveStatsPrefs(int widthSelector) {
         SharedPreferences.Editor e = sharedPrefs.edit();
 
-        // Determine desired width from the statsWidth selector
-        int desiredWidth;
-        switch (widthSelector) {
-            case 1:
-                desiredWidth = (SettingsActivity.calculatedStatsWidth / 3) * 2;
-                break;
-            case 2:
-                desiredWidth = SettingsActivity.calculatedStatsWidth / 4;
-                break;
-            case 0:
-            default:
-                desiredWidth = SettingsActivity.calculatedStatsWidth;
-                break;
-        }
-
         // Screen width and allowed width considering margins
         int screenWidth = android.content.res.Resources.getSystem().getDisplayMetrics().widthPixels;
         int allowedWidth = Math.max(0, screenWidth - 2 * margin);
+
+        // The share of the screen of the size, longer where its widest text needs it: the window on the screen has the
+        // same width, and the font is the same in the three sizes
+        int desiredWidth = StatsWindowSize.widthFor(getContext(), widthSelector, SettingsActivity.calculatedStatsWidth,
+                screenWidth, margin);
 
         // Clamp desired width to not exceed available space
         if (desiredWidth > allowedWidth) desiredWidth = allowedWidth;
@@ -929,91 +919,38 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         return !(a.right < b.left || b.right < a.left || a.bottom < b.top || b.bottom < a.top);
     }
 
-    // For non FYT devices
-    private void scaleView() {
+    /**
+     * Non-FYT devices: keeps the creator clear of the edge-to-edge system bars, and gives the
+     * arrow buttons the 0.75 they always had there. Their size is a share of the screen in pixels,
+     * so SettingsActivity's scaled density (which takes care of all text) does not reach them.
+     */
+    private void applySystemBarInsets() {
         if (mRootView == null) return;
-        
-        float scaleFactor = 0.75f;
-        int statusBarHeight = getSettingsActivity().getStatusBarHeight();
-        int navigationBarHeight = getSettingsActivity().getNavigationBarHeight();
-        boolean isPortrait = SettingsActivity.isPortrait;
-        
-        // Apply top inset for status bar
-        mRootView.setPadding(
-            mRootView.getPaddingLeft(),
-            mRootView.getPaddingTop() + statusBarHeight,
-            mRootView.getPaddingRight(),
-            mRootView.getPaddingBottom()
-        );
-        
-        // Apply bottom or right inset for navigation bar
-        View creatorBar = mRootView.findViewById(R.id.creator_bar);
-        View creatorBarAutoHide = mRootView.findViewById(R.id.creator_bar_auto_hide);
-        
-        if (creatorBar != null) {
-            ViewGroup.LayoutParams params = creatorBar.getLayoutParams();
-            if (params instanceof ViewGroup.MarginLayoutParams) {
-                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-                if (isPortrait) {
-                    marginParams.bottomMargin += navigationBarHeight;
-                } else {
-                    marginParams.rightMargin += navigationBarHeight;
-                }
-                creatorBar.setLayoutParams(marginParams);
-            }
+
+        for (Button b : new Button[]{ mTopUp, mTopDown, mBottomUp, mBottomDown,
+                mLeftToLeft, mLeftToRight, mRightToLeft, mRightToRight }) {
+            scaleButton(b, 0.75f);
         }
-        
-        if (creatorBarAutoHide != null) {
-            ViewGroup.LayoutParams params = creatorBarAutoHide.getLayoutParams();
-            if (params instanceof ViewGroup.MarginLayoutParams) {
-                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-                if (isPortrait) {
-                    marginParams.bottomMargin += navigationBarHeight;
-                } else {
-                    marginParams.rightMargin += navigationBarHeight;
-                }
-                creatorBarAutoHide.setLayoutParams(marginParams);
-            }
-        }
-        
-        // Scale buttons in bottom bar
-        if (mTopUp != null) scaleButton(mTopUp, scaleFactor);
-        if (mTopDown != null) scaleButton(mTopDown, scaleFactor);
-        if (mBottomUp != null) scaleButton(mBottomUp, scaleFactor);
-        if (mBottomDown != null) scaleButton(mBottomDown, scaleFactor);
-        if (mLeftToLeft != null) scaleButton(mLeftToLeft, scaleFactor);
-        if (mLeftToRight != null) scaleButton(mLeftToRight, scaleFactor);
-        if (mRightToLeft != null) scaleButton(mRightToLeft, scaleFactor);
-        if (mRightToRight != null) scaleButton(mRightToRight, scaleFactor);
-        if (mConfirmLayout != null) {
-            scaleButton(mConfirmLayout, scaleFactor);
-            mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize * scaleFactor);
-        }
-        
-        // Scale text in bottom bar
-        scaleTextView(mRootView, R.id.selected_widget_string, SettingsActivity.selectionTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.rectangle_name, SettingsActivity.selectionTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.top_button_string, SettingsActivity.arrowTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.bottom_button_string, SettingsActivity.arrowTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.left_button_string, SettingsActivity.arrowTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.right_button_string, SettingsActivity.arrowTextSize * scaleFactor);
+
+        SettingsActivity.padForSystemBars(mRootView);
     }
 
-    private void scaleButton(Button button, float scaleFactor) {
+    private static void scaleButton(Button button, float scaleFactor) {
         if (button == null) return;
         ViewGroup.LayoutParams params = button.getLayoutParams();
-        if (params != null) {
-            params.width = (int) (params.width * scaleFactor);
-            params.height = (int) (params.height * scaleFactor);
+        if (params != null && params.width > 0 && params.height > 0) {
+            params.width = Math.round(params.width * scaleFactor);
+            params.height = Math.round(params.height * scaleFactor);
             button.setLayoutParams(params);
         }
     }
 
-    private void scaleTextView(View rootView, int textViewId, float textSizeSp) {
-        if (rootView == null) return;
-        TextView tv = rootView.findViewById(textViewId);
-        if (tv != null) {
-            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp);
-        }
+
+    /**
+     * The width a step of an edge keeps: the minimum of the rectangle, but never more than it is now. The statistics window
+     * takes its width from its size (it can be narrower than the full share the minimum is), so a step must not widen it.
+     */
+    private static float stepMinWidth(RectangleConfig cfg, RectF r) {
+        return Math.min(cfg.minWidth, r.width());
     }
 }

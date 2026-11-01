@@ -18,17 +18,19 @@ public class SkinActivityLifecycleCallbacks implements Application.ActivityLifec
     public void onActivityCreated(Activity activity, Bundle bundle) {
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         SkinFactory skinLayoutFactory = new SkinFactory();
-        if (LauncherApplication.isFytDevice()) {
+        // AppCompat has set its factory already; replacing it takes a hidden field that only a
+        // platform-signed launcher may reach. Anything else (the standard version on an FYT unit)
+        // keeps AppCompat's: setFactory2() would throw.
+        if (LauncherApplication.isFytDevice() && LauncherApplication.hasSystemPrivileges()) {
             try {
                 @SuppressLint("SoonBlockedPrivateApi") Field field = LayoutInflater.class.getDeclaredField("mFactorySet");
                 field.setAccessible(true);
                 field.setBoolean(layoutInflater, false);
+                layoutInflater.setFactory2(skinLayoutFactory);
+                SkinUtils.getSkinManager().addObserver(skinLayoutFactory);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            layoutInflater.setFactory2(skinLayoutFactory);
-            SkinUtils.getSkinManager().addObserver(skinLayoutFactory);
         }
         SkinUtils.getSkinManager().addObserver(skinLayoutFactory); 
         /*if (activity instanceof Launcher) {

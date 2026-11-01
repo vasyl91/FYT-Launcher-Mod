@@ -5,9 +5,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.android.launcher66.LauncherApplication;
-import com.syu.carinfo.honda.Act_CarCD_AoDeSai;
-import com.syu.carinfo.lz.lexusis.LZLexusISCarSet;
-import com.syu.carinfo.wc.tianlaicd.WC08TianlaiCarEqAct;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
 import com.syu.module.canbus.FinalCanbus;
@@ -902,15 +899,13 @@ public class DataPack {
     static IUiNotify mNotifyWCTianlai = new IUiNotify() { 
         @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
-            if (!WC08TianlaiCarEqAct.mIsFront) {
-                UIWCNissan08TianlaiAll.getInstance().showWindowTip(DataCanbus.DATA[updateCode], updateCode);
-            }
+            UIWCNissan08TianlaiAll.getInstance().showWindowTip(DataCanbus.DATA[updateCode], updateCode);
         }
     };
     static IUiNotify mNotifyLZLeuxs = new IUiNotify() { 
         @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
-            if (updateCode == 142 && !LZLexusISCarSet.isFront) {
+            if (updateCode == 142) {
                 if (FinalCanbus.num >= 0) {
                     UIXCTianlai.getInstance().showWindowTip(DataCanbus.DATA[updateCode]);
                 } else {
@@ -1027,7 +1022,7 @@ public class DataPack {
     static IUiNotify mNotifyBNRAds = new IUiNotify() { 
         @Override
         public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
-            if (updateCode == 164 && !Act_CarCD_AoDeSai.mIsFront) {
+            if (updateCode == 164) {
                 if (FinalCanbus.num >= 0) {
                     UIXCTianlai.getInstance().showWindowTip(DataCanbus.DATA[updateCode]);
                 } else {

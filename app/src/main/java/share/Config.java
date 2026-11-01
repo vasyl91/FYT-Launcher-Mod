@@ -15,7 +15,6 @@ public class Config {
     public static final String ECAR = "ECAR";
     public static final String EQ = "Eq";
     public static boolean EXISTAMPAUTO = false;
-    public static boolean EXISTVOICE = false;
     public static final String FILE = "FILEMANAGER";
     public static final String HONGFANS = "HONGFANS";
     public static final String KLFM = "Klfm";

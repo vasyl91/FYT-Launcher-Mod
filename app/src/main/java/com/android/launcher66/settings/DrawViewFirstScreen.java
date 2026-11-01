@@ -1,7 +1,5 @@
 package com.android.launcher66.settings;
 
-import static com.android.launcher66.settings.SettingsActivity.getSettingsActivity;
-
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
@@ -44,6 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DrawViewFirstScreen extends View implements View.OnClickListener {
+
+    private static final String TAG = "DrawViewFirstScreen";
 
     // Core
     private final SharedPreferences sharedPrefs;
@@ -166,7 +166,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         switch (key) {
             case "pipDual":
                 if (compareScreens(Keys.PIP_DUAL_SCREEN)) {
-                    minWidth = SettingsActivity.calculatedPipMinWidth;
+                    minWidth = pipMinWidthFor(key);
                     minHeight = SettingsActivity.calculatedPipMinHeight;
                     if (pip && dualPip && !firstPip && !secondPip) {
                         enabled = true;
@@ -175,7 +175,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 break;
             case "pipFirst":
                 if (compareScreens(Keys.PIP_FIRST_SCREEN)) {
-                    minWidth = SettingsActivity.calculatedPipMinWidth / countEnabledPips();
+                    minWidth = pipMinWidthFor(key);
                     minHeight = SettingsActivity.calculatedPipMinHeight;
                     if (pip && firstPip && !dualPip) {
                         enabled = true;
@@ -184,7 +184,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 break;
             case "pipSecond":
                 if (compareScreens(Keys.PIP_SECOND_SCREEN)) {
-                    minWidth = SettingsActivity.calculatedPipMinWidth / countEnabledPips();
+                    minWidth = pipMinWidthFor(key);
                     minHeight = SettingsActivity.calculatedPipMinHeight;
                     if (pip && secondPip && !dualPip) {
                         enabled = true;
@@ -193,7 +193,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 break;
             case "pipThird":
                 if (compareScreens(Keys.PIP_THIRD_SCREEN)) {
-                    minWidth = SettingsActivity.calculatedPipMinWidth / countEnabledPips();
+                    minWidth = pipMinWidthFor(key);
                     minHeight = SettingsActivity.calculatedPipMinHeight;                
                     if (pip && thirdPip) {
                         enabled = true;
@@ -202,7 +202,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                 break;
             case "pipFourth":
                 if (compareScreens(Keys.PIP_FOURTH_SCREEN)) {
-                    minWidth = SettingsActivity.calculatedPipMinWidth / countEnabledPips();
+                    minWidth = pipMinWidthFor(key);
                     minHeight = SettingsActivity.calculatedPipMinHeight;
                     if (pip && fourthPip) {
                         enabled = true;
@@ -261,17 +261,15 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         invalidate();
     }
 
-    // Never returns 0, max value is 2
-    private static int countEnabledPips() {
-        int count = 0;
-        if (firstPip) count++;
-        if (secondPip) count++;
-        if (thirdPip) count++;
-        if (fourthPip) count++;
-        return Math.min(Math.max(1, count), 2);
+    // Same minimum Helpers cuts PiPs back to (PipEdgeTrim.pipMinWidth), so both agree on it.
+    private static int pipMinWidthFor(String key) {
+        return PipEdgeTrim.pipMinWidth(key, SettingsActivity.calculatedPipMinWidth,
+                firstPip, secondPip, thirdPip, fourthPip);
     }
 
     private void initUi(View rootView) {
+        // the saved rectangle of the statistics as wide as the window is, whatever the text of its size needs
+        StatsWindowSize.syncSavedRectangle(getContext(), sharedPrefs, false);
         helpers = new Helpers();
         helpers.checkAndResetIfOverlappingOnScreen(-1); 
         helpers.setUserOpenedCreator(true);
@@ -339,7 +337,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             if (mLeftToRight != null) { mLeftToRight.setOnClickListener(this); setCalculatedButtonSizes(mLeftToRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
             if (mRightToLeft != null) { mRightToLeft.setOnClickListener(this); setCalculatedButtonSizes(mRightToLeft, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
             if (mRightToRight != null) { mRightToRight.setOnClickListener(this); setCalculatedButtonSizes(mRightToRight, SettingsActivity.arrowShortDim, SettingsActivity.arrowLongDim); }
-            if (mConfirmLayout != null) { mConfirmLayout.setOnClickListener(this); mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize); }
+            if (mConfirmLayout != null) { mConfirmLayout.setOnClickListener(this); SettingsActivity.fitTextToView(mConfirmLayout, SettingsActivity.confirmTextSize); }
 
             setCalculatedTextSize(rootView, R.id.selected_widget_string, SettingsActivity.selectionTextSize);
             setCalculatedTextSize(rootView, R.id.rectangle_name, SettingsActivity.selectionTextSize);
@@ -357,7 +355,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         }
 
         if (!LauncherApplication.isFytDevice()) {
-            scaleView();
+            applySystemBarInsets();
         }
     }
 
@@ -401,6 +399,8 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
      * as its measured size and scales itself down to whatever room the creator has: the preview
      * stays true to the launcher instead of quietly becoming a different, smaller space.
      */
+    private float mLoggedScale = -1f;
+
     public void setWorkspaceArea(int width, int height) {
         if (width <= 0 || height <= 0 || (width == workspaceWidth && height == workspaceHeight)) {
             return;
@@ -436,6 +436,12 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         setTranslationX(Math.max(0f, (availableWidth - workspaceWidth * scale) / 2f));
         setTranslationY(Math.max(0f, availableHeight - workspaceHeight * scale));
         setMeasuredDimension(workspaceWidth, workspaceHeight);
+        if (scale != mLoggedScale) {
+            mLoggedScale = scale;
+            Log.d(TAG, "Canvas " + workspaceWidth + "x" + workspaceHeight + " in " + availableWidth
+                    + "x" + availableHeight + ": x" + scale + ", offset " + getTranslationX()
+                    + "/" + getTranslationY());
+        }
     }
 
     @Override
@@ -509,6 +515,17 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
     /** The same rectangle moved (and if needed shrunk, never below its minimum) into the canvas. */
     private RectF fitIntoCanvas(RectF r, RectangleConfig cfg) {
+        if (PipEdgeTrim.isPipKey(cfg.key)) {
+            // A PiP that only sticks out at the right or bottom is cut back, keeping its top left
+            // corner, as Helpers does for the real bars. Only when that would go below the minimum
+            // does it fall through to the move-and-shrink below.
+            int[] cut = PipEdgeTrim.trim((int) r.left, (int) r.top, (int) r.right, (int) r.bottom,
+                    getWidth() - margin, PipEdgeTrim.maxBottom(getHeight(), margin),
+                    cfg.minWidth, cfg.minHeight);
+            if (cut != null) {
+                r = new RectF(cut[0], cut[1], cut[2], cut[3]);
+            }
+        }
         float maxRight = getWidth() - margin;
         float maxBottom = getHeight() - margin;
         float width = Math.min(r.width(), Math.max(cfg.minWidth, maxRight - margin));
@@ -904,11 +921,11 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             if (cand.left < minBorderX) cand = null;
 
         } else if (viewId == R.id.left_to_right) {
-            float newLeft = Math.min(r.right - cfg.minWidth, r.left + STEP);
+            float newLeft = Math.min(r.right - stepMinWidth(cfg, r), r.left + STEP);
             cand = new RectF(newLeft, r.top, r.right, r.bottom);
 
         } else if (viewId == R.id.right_to_left) {
-            float newRight = Math.max(r.left + cfg.minWidth, r.right - STEP);
+            float newRight = Math.max(r.left + stepMinWidth(cfg, r), r.right - STEP);
             cand = new RectF(r.left, r.top, newRight, r.bottom);
 
         } else if (viewId == R.id.right_to_right) {
@@ -1212,24 +1229,14 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     private void saveStatsPrefs(int widthSelector) {
         SharedPreferences.Editor e = sharedPrefs.edit();
 
-        // Determine desired width from the statsWidth selector
-        int desiredWidth;
-        switch (widthSelector) {
-            case 1:
-                desiredWidth = (SettingsActivity.calculatedStatsWidth / 3) * 2;
-                break;
-            case 2:
-                desiredWidth = SettingsActivity.calculatedStatsWidth / 4;
-                break;
-            case 0:
-            default:
-                desiredWidth = SettingsActivity.calculatedStatsWidth;
-                break;
-        }
-
         // Screen width and allowed width considering margins
         int screenWidth = android.content.res.Resources.getSystem().getDisplayMetrics().widthPixels;
         int allowedWidth = Math.max(0, screenWidth - 2 * margin);
+
+        // The share of the screen of the size, longer where its widest text needs it: the window on the screen has the
+        // same width, and the font is the same in the three sizes
+        int desiredWidth = StatsWindowSize.widthFor(getContext(), widthSelector, SettingsActivity.calculatedStatsWidth,
+                screenWidth, margin);
 
         // Clamp desired width to not exceed available space
         if (desiredWidth > allowedWidth) desiredWidth = allowedWidth;
@@ -1332,91 +1339,38 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         }
     }
 
-    // For non FYT devices
-    private void scaleView() {
+    /**
+     * Non-FYT devices: keeps the creator clear of the edge-to-edge system bars, and gives the
+     * arrow buttons the 0.75 they always had there. Their size is a share of the screen in pixels,
+     * so SettingsActivity's scaled density (which takes care of all text) does not reach them.
+     */
+    private void applySystemBarInsets() {
         if (mRootView == null) return;
-        
-        float scaleFactor = 0.75f;
-        int statusBarHeight = getSettingsActivity().getStatusBarHeight();
-        int navigationBarHeight = getSettingsActivity().getNavigationBarHeight();
-        boolean isPortrait = SettingsActivity.isPortrait;
-        
-        // Apply top inset for status bar
-        mRootView.setPadding(
-            mRootView.getPaddingLeft(),
-            mRootView.getPaddingTop() + statusBarHeight,
-            mRootView.getPaddingRight(),
-            mRootView.getPaddingBottom()
-        );
-        
-        // Apply bottom or right inset for navigation bar
-        View creatorBar = mRootView.findViewById(R.id.creator_bar);
-        View creatorBarAutoHide = mRootView.findViewById(R.id.creator_bar_auto_hide);
-        
-        if (creatorBar != null) {
-            ViewGroup.LayoutParams params = creatorBar.getLayoutParams();
-            if (params instanceof ViewGroup.MarginLayoutParams) {
-                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-                if (isPortrait) {
-                    marginParams.bottomMargin += navigationBarHeight;
-                } else {
-                    marginParams.rightMargin += navigationBarHeight;
-                }
-                creatorBar.setLayoutParams(marginParams);
-            }
+
+        for (Button b : new Button[]{ mTopUp, mTopDown, mBottomUp, mBottomDown,
+                mLeftToLeft, mLeftToRight, mRightToLeft, mRightToRight }) {
+            scaleButton(b, 0.75f);
         }
-        
-        if (creatorBarAutoHide != null) {
-            ViewGroup.LayoutParams params = creatorBarAutoHide.getLayoutParams();
-            if (params instanceof ViewGroup.MarginLayoutParams) {
-                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-                if (isPortrait) {
-                    marginParams.bottomMargin += navigationBarHeight;
-                } else {
-                    marginParams.rightMargin += navigationBarHeight;
-                }
-                creatorBarAutoHide.setLayoutParams(marginParams);
-            }
-        }
-        
-        // Scale buttons in bottom bar
-        if (mTopUp != null) scaleButton(mTopUp, scaleFactor);
-        if (mTopDown != null) scaleButton(mTopDown, scaleFactor);
-        if (mBottomUp != null) scaleButton(mBottomUp, scaleFactor);
-        if (mBottomDown != null) scaleButton(mBottomDown, scaleFactor);
-        if (mLeftToLeft != null) scaleButton(mLeftToLeft, scaleFactor);
-        if (mLeftToRight != null) scaleButton(mLeftToRight, scaleFactor);
-        if (mRightToLeft != null) scaleButton(mRightToLeft, scaleFactor);
-        if (mRightToRight != null) scaleButton(mRightToRight, scaleFactor);
-        if (mConfirmLayout != null) {
-            scaleButton(mConfirmLayout, scaleFactor);
-            mConfirmLayout.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.confirmTextSize * scaleFactor);
-        }
-        
-        // Scale text in bottom bar
-        scaleTextView(mRootView, R.id.selected_widget_string, SettingsActivity.selectionTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.rectangle_name, SettingsActivity.selectionTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.top_button_string, SettingsActivity.arrowTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.bottom_button_string, SettingsActivity.arrowTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.left_button_string, SettingsActivity.arrowTextSize * scaleFactor);
-        scaleTextView(mRootView, R.id.right_button_string, SettingsActivity.arrowTextSize * scaleFactor);
+
+        SettingsActivity.padForSystemBars(mRootView);
     }
 
-    private void scaleButton(Button button, float scaleFactor) {
+    private static void scaleButton(Button button, float scaleFactor) {
         if (button == null) return;
         ViewGroup.LayoutParams params = button.getLayoutParams();
-        if (params != null) {
-            params.width = (int) (params.width * scaleFactor);
-            params.height = (int) (params.height * scaleFactor);
+        if (params != null && params.width > 0 && params.height > 0) {
+            params.width = Math.round(params.width * scaleFactor);
+            params.height = Math.round(params.height * scaleFactor);
             button.setLayoutParams(params);
         }
     }
 
-    private void scaleTextView(View rootView, int textViewId, float textSizeSp) {
-        if (rootView == null) return;
-        TextView tv = rootView.findViewById(textViewId);
-        if (tv != null) {
-            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp);
-        }
+
+    /**
+     * The width a step of an edge keeps: the minimum of the rectangle, but never more than it is now. The statistics window
+     * takes its width from its size (it can be narrower than the full share the minimum is), so a step must not widen it.
+     */
+    private static float stepMinWidth(RectangleConfig cfg, RectF r) {
+        return Math.min(cfg.minWidth, r.width());
     }
 }

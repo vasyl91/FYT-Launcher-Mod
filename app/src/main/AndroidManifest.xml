@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <queries>
+        <!-- DeviceLocation asks whether Google Play services are there (visibility from Android 11) -->
+        <package android:name="com.google.android.gms" />
         <intent>
             <action android:name="android.intent.action.INSTALL_PACKAGE" />
             <data android:mimeType="application/vnd.android.package-archive" />
@@ -130,7 +132,7 @@
 
         <activity
             android:clearTaskOnLaunch="true"
-            android:configChanges="mcc|mnc"
+            android:configChanges="mcc|mnc|uiMode"
             android:name="com.android.launcher66.Launcher"
             android:launchMode="singleTask"
             android:screenOrientation="nosensor"
@@ -268,11 +270,6 @@
 
         <service
             android:name="com.android.launcher66.settings.CanbusCodeInspector"
-            android:enabled="true"
-            android:exported="false" />
-
-        <service
-            android:name="com.android.launcher66.settings.CanbusCommandLogger"
             android:enabled="true"
             android:exported="false" />
 
@@ -471,6 +468,24 @@
             android:name="com.android.launcher66.LitePalInitProvider"
             android:authorities="${applicationId}.litepalinit"
             android:exported="false" />
+
+        <!-- The FYT VDHost daemon (Magisk module) delivers its binder here; see
+             WindowHostVdProvider. Exported because the daemon is not part of this app; the
+             provider itself only accepts root, system and shell. -->
+        <provider
+            android:name="com.syu.util.WindowHostVdProvider"
+            android:authorities="${applicationId}.vdhost"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
+
+        <!-- Receives Shizuku's binder: the last-resort pane host without root (WindowHostVdShizuku). -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
         <meta-data
             android:name="android.nfc.disable_beam_default"

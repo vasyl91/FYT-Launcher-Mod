@@ -1,9 +1,33 @@
 package com.android.launcher66;
 
+import android.media.session.PlaybackState;
+
 import java.util.Arrays;
 
 public final class MediaWidgetState {
     public static final String SOURCE_MEDIA_CONTROLLER = "mediaController";
+
+    /**
+     * Whether a session in this state is playing, as far as the play/pause button goes: also
+     * while it buffers, connects, seeks or moves to another track. YouTube Music goes
+     * PAUSED, BUFFERING, PLAYING on a play; counting BUFFERING as paused put the play icon back
+     * for that moment, and the PLAYING after it was not always shown.
+     */
+    public static boolean isPlaybackActive(int state) {
+        switch (state) {
+            case PlaybackState.STATE_PLAYING:
+            case PlaybackState.STATE_BUFFERING:
+            case PlaybackState.STATE_CONNECTING:
+            case PlaybackState.STATE_FAST_FORWARDING:
+            case PlaybackState.STATE_REWINDING:
+            case PlaybackState.STATE_SKIPPING_TO_NEXT:
+            case PlaybackState.STATE_SKIPPING_TO_PREVIOUS:
+            case PlaybackState.STATE_SKIPPING_TO_QUEUE_ITEM:
+                return true;
+            default:
+                return false;
+        }
+    }
 
     private static Snapshot sSnapshot;
 

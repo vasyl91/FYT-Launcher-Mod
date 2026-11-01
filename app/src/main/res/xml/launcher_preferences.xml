@@ -55,7 +55,7 @@
             <com.android.launcher66.settings.CustomPreference
                 android:key="copy_patch_url"
                 android:title="@string/copy_patch_url"
-                android:summary="@string/copy_patch_url_smmary"
+                android:summary="@string/copy_patch_url_summary"
                 app:layout="@layout/nested_preference_category_content" />
             
         </com.android.launcher66.settings.CustomPreferenceCategory>
@@ -151,6 +151,9 @@
             android:key="workspace_textSize"
             android:title="@string/workspace_textSize_str"
             android:summary="28" />
+        <Preference
+            android:layout="@layout/preference_separator"
+            android:selectable="false" />
         <SwitchPreferenceCompat
             android:key="launcher_home_wake"
             android:defaultValue="true"
@@ -310,24 +313,29 @@
         app:key="logcat_category"
         app:title="@string/logcat_service_run">
 
+        <Preference
+            android:key="logcat_names_info"
+            android:selectable="false"
+            android:title="@string/logcat_names_info"
+            android:summary="@string/logcat_names_info_summary" />
         <SwitchPreferenceCompat
             android:key="logcat_service"
-            android:defaultValue="false"
+            android:defaultValue="@bool/logcat_on_by_default"
             android:title="@string/logcat_service" />
         <SwitchPreferenceCompat
             android:key="logcat_service_wake"
-            android:defaultValue="false"
+            android:defaultValue="@bool/logcat_on_by_default"
             android:title="@string/logcat_service_wake" />
         <com.android.launcher66.settings.CustomNoSwitchPreference
             android:key="logcat_full"
-            android:defaultValue="false"
+            android:defaultValue="@bool/logcat_on_by_default"
             android:title="@string/logcat_full"
             android:summaryOn="@string/logcat_full_on"
             android:summaryOff="@string/logcat_full_off"
             app:layout="@layout/preference_no_switch" />
         <SwitchPreferenceCompat
             android:key="boot_logcat"
-            android:defaultValue="false"
+            android:defaultValue="@bool/logcat_on_by_default"
             android:title="@string/boot_logcat" />
         <Preference
             android:key="logcat_service_run"
@@ -343,7 +351,7 @@
         android:layout="@layout/preference_separator"
         android:selectable="false" /> 
 
-    <PreferenceCategory
+    <com.android.launcher66.settings.VersionPreferenceCategory
         app:key="app_version"
         app:title="@string/app_version">
 
@@ -352,11 +360,16 @@
             android:title="@string/update_version_button" />        
 
         <Preference
+            android:key="shizuku_download"
+            android:title="@string/shizuku_download_button"
+            app:isPreferenceVisible="false" />
+
+        <Preference
             android:key="empty1"
             android:focusable="false"
             android:clickable="false" />
             
-    </PreferenceCategory>
+    </com.android.launcher66.settings.VersionPreferenceCategory>
 
     <Preference
         android:layout="@layout/preference_separator"

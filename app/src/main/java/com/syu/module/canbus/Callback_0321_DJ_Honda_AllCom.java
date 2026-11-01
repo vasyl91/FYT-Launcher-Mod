@@ -2,8 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.honda.Activity17CRVAirControl;
-import com.syu.carinfo.honda.ActivityAirControl;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -125,18 +123,12 @@ public class Callback_0321_DJ_Honda_AllCom extends CallbackCanbusBase {
         switch (updateCode) {
             case 64:
                 if (this.carId == 7 || this.carId == 8 || this.carId == 9) {
-                    if (ints[0] == 1 && !Activity17CRVAirControl.mIsFront) {
+                    if (ints[0] == 1) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.honda.Activity17CRVAirControl");
                         break;
-                    } else if (ints[0] == 1 && Activity17CRVAirControl.mIsFront && Activity17CRVAirControl.mInstance != null) {
-                        Activity17CRVAirControl.mInstance.finish();
-                        break;
                     }
-                } else if (ints[0] == 1 && !ActivityAirControl.mIsFront) {
+                } else if (ints[0] == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.honda.ActivityAirControl");
-                    break;
-                } else if (ints[0] == 1 && ActivityAirControl.mIsFront && ActivityAirControl.mInstance != null) {
-                    ActivityAirControl.mInstance.finish();
                     break;
                 }
             default:

@@ -50,7 +50,9 @@ public class Callback_0101_WC1_QiJun extends CallbackCanbusBase {
             DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
         if (DataCanbus.DATA[1000] == 458853) {
-            ParkingHelper.getInstance().buildUi(new Parking_QiJun(LauncherApplication.getInstance()));
+            // Not built: ParkingHelper.buildUi() is empty in this mod, so the view (and its 13 asset reads, which
+            // are not in the APK) was made and thrown away at every start. Its constructor registers nothing.
+            //ParkingHelper.getInstance().buildUi(new Parking_QiJun(LauncherApplication.getInstance()));
             DataMain.NOTIFY_EVENTS[12].addNotify(ParkingHelper.getInstance(), 0);
             for (int i4 = 98; i4 <= 101; i4++) {
                 DataCanbus.NOTIFY_EVENTS[i4].addNotify(ParkingHelper.getInstance(), 0);

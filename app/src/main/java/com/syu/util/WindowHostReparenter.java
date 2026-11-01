@@ -35,6 +35,13 @@ public class WindowHostReparenter {
             return false;
         }
 
+        // WindowHostVdView (Android 11+) has no display layer tree to move: its display renders
+        // into whatever surface the view owns, and re-points to the new one when the caller moves
+        // the views between hosts right after this. Nothing to pre-swap.
+        if (WindowHostActivityView.isHosted(avA) || WindowHostActivityView.isHosted(avB)) {
+            return WindowHostActivityView.isHosted(avA) && WindowHostActivityView.isHosted(avB);
+        }
+
         // Cooldown: avoid rapid repeated swaps on same AV
         long now = SystemClock.uptimeMillis();
         synchronized (lastSwapTimestamps) {
@@ -326,6 +333,8 @@ public class WindowHostReparenter {
      */
     public static boolean notifyReparentDisplayContentToHost(View avView, View hostView) {
         if (avView == null || hostView == null) return false;
+        // See swapActivityViewSurfaces(): a WindowHostVdView follows its own surface.
+        if (WindowHostActivityView.isHosted(avView)) return true;
         try {
             Object rootSurfaceControl = getFieldObject(avView, "mRootSurfaceControl");
             if (rootSurfaceControl == null) {

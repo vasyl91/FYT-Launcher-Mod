@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <!-- Shared so that Android Studio, opened afresh, has "app" first and selected; otherwise it
+       creates a configuration per application module and selects the last, vdhost-server. -->
+  <configuration default="false" name="app" type="AndroidRunConfigurationType" factoryName="Android App">
+    <module name="FYT_Launcher_Mod.app.main" />
+    <option name="DEPLOY" value="true" />
+    <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+    <option name="DEPLOY_AS_INSTANT" value="false" />
+    <option name="ALL_USERS" value="false" />
+    <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+    <option name="CLEAR_APP_STORAGE" value="false" />
+    <option name="MODE" value="default_activity" />
+    <option name="CLEAR_LOGCAT" value="false" />
+    <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+    <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+    <option name="DEBUGGER_TYPE" value="Auto" />
+    <method v="2">
+      <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+    </method>
+  </configuration>
+</component>

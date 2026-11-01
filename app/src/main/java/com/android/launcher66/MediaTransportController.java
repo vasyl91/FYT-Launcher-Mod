@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 import com.fyt.car.MusicService;
+import com.fyt.car.StockSources;
 import com.syu.widget.WidgetProvider;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public final class MediaTransportController {
     private static final String TAG = "MediaTransport";
     private static final String STOCK_MUSIC_PACKAGE = "com.syu.music";
     private static final String STOCK_MUSIC_ACTIVITY = "com.syu.music.MAct";
+    /** The radio app of a 7862, the target of the widget's buttons while the radio is shown. */
+    private static final String STOCK_RADIO_PACKAGE = "com.syu.radio";
 
     private MediaTransportController() {
     }
@@ -41,6 +44,11 @@ public final class MediaTransportController {
 
         if (ACTION_OPEN_PLAYER.equals(action)) {
             return openActivePlayer(context, preferredPackage);
+        }
+
+        if (isStockPackage(preferredPackage)) {
+            // Not on to the sessions when it is unreachable: that would be another app's
+            return dispatchToStockPlayer(context, action);
         }
 
         MediaController controller = getTargetController(context, preferredPackage);
@@ -107,6 +115,16 @@ public final class MediaTransportController {
             return null;
         }
 
+        // The page of the stock source shown (a 7870's com.syu.media page, the radio app of a
+        // 7862 while the radio is shown); com.syu.music's, and a session's app, as before
+        if (LauncherApplication.isFytDevice()
+                && (preferredPackage == null || isStockPackage(preferredPackage))) {
+            Intent page = StockSources.pageIntent(context);
+            if (page != null) {
+                return page;
+            }
+        }
+
         MediaController controller = getTargetController(context, preferredPackage);
         if (controller != null) {
             Intent launchIntent = getPackageLaunchIntent(context, controller.getPackageName());
@@ -115,7 +133,8 @@ public final class MediaTransportController {
             }
         }
 
-        return getStockMusicIntent(context);
+        // FYT's stock player: an FYT unit's only
+        return LauncherApplication.isFytDevice() ? getStockMusicIntent(context) : null;
     }
 
     private static MediaController getTargetController(Context context, String preferredPackage) {
@@ -151,7 +170,10 @@ public final class MediaTransportController {
 
         MediaController fallback = null;
         for (MediaController controller : controllers) {
-            if (controller == null || STOCK_MUSIC_PACKAGE.equals(controller.getPackageName())) {
+            // com.syu.media (7870) has a session for its media buttons only: it ignores
+            // TransportControls, and its players are driven over their binder
+            if (controller == null || STOCK_MUSIC_PACKAGE.equals(controller.getPackageName())
+                    || MusicService.MEDIA_PKG.equals(controller.getPackageName())) {
                 continue;
             }
             PlaybackState state = safePlaybackState(controller);
@@ -216,6 +238,10 @@ public final class MediaTransportController {
     }
 
     private static boolean dispatchToStockMusic(Context context, String action) {
+        // FYT's stock player (com.syu.music): an FYT unit's only, as everything of FYT's
+        if (!LauncherApplication.isFytDevice()) {
+            return false;
+        }
         String stockAction = getStockAction(action);
         if (stockAction == null) {
             return false;
@@ -227,6 +253,50 @@ public final class MediaTransportController {
             return false;
         }
         return true;
+    }
+
+    /**
+     * The unit's own player, whatever else has a session: com.syu.media's IPlayer binder on the
+     * 7870 (it takes no intents), com.syu.music's intents otherwise. For the widget while
+     * it shows the stock track: with that player paused, the session fallback below picked a
+     * paused app's session instead (Musicolet's, capture 18-10-2026 23:18:46).
+     */
+    public static boolean dispatchToStockPlayer(Context context, String action) {
+        if (context == null || !LauncherApplication.isFytDevice()) {
+            return false;
+        }
+        // The radio (on the 7870 BT too) has the widget: its commands go to com.syu.ms
+        if (StockSources.shownOverlay() != null) {
+            return StockSources.control(action);
+        }
+        // On the 7870 there is no com.syu.music to send intents to, whether or not a track is known
+        if (MusicService.isSyuMediaSource() || StockSources.isSyuMediaUnit()) {
+            return dispatchToSyuMedia(action);
+        }
+        return dispatchToStockMusic(context, action);
+    }
+
+    private static boolean isStockPackage(String packageName) {
+        return STOCK_MUSIC_PACKAGE.equals(packageName) || MusicService.MEDIA_PKG.equals(packageName)
+                || STOCK_RADIO_PACKAGE.equals(packageName);
+    }
+
+    /**
+     * Over com.syu.media's IPlayer binder (see MusicService.controlSyuMedia()): its media session
+     * handles no keys for music. False while its service is not bound.
+     */
+    private static boolean dispatchToSyuMedia(String action) {
+        int command;
+        if (ACTION_NEXT.equals(action)) {
+            command = MusicService.SYU_MEDIA_NEXT;
+        } else if (ACTION_PREVIOUS.equals(action)) {
+            command = MusicService.SYU_MEDIA_PREVIOUS;
+        } else if (ACTION_PLAY_PAUSE.equals(action)) {
+            command = MusicService.SYU_MEDIA_PLAY_PAUSE;
+        } else {
+            return false;
+        }
+        return MusicService.controlSyuMedia(command);
     }
 
     private static String getStockAction(String action) {

@@ -41,7 +41,9 @@ android {
 
     flavorDimensions += "device"
     productFlavors {
-        create("phone") {
+        // Any Android 8+ device, a user app (privileged through the VD host's Magisk module or
+        // Shizuku where there is one). Called "phone" up to 1.2.1.
+        create("standard") {
             dimension = "device"
         }
         create("fyt") {
@@ -149,14 +151,15 @@ androidComponents {
     }
 
     // The Baseline Profile plugin adds nonMinified* and benchmark* build types for every
-    // non-debuggable build type. Only the fyt ones are used:
-    // fytNonMinifiedRelease - the generator installs and profiles it on the head unit,
-    // fytBenchmarkRelease   - StartupBenchmark measures startup with the profile.
-    // The generated profile itself is used by fytRelease (saved in src, see baselineProfile {}).
+    // non-debuggable build type. Only those made from release are used, for both flavors (the
+    // fyt build installs on FYT units only, being a system app; the standard build everywhere else):
+    // <flavor>NonMinifiedRelease - the generator installs and profiles it on the device,
+    // <flavor>BenchmarkRelease   - StartupBenchmark measures startup with the profile.
+    // The generated profile itself is used by every release build (src/main, see baselineProfile {}).
     beforeVariants { v ->
         val bt = v.buildType.orEmpty()
         val addedByPlugin = bt.startsWith("nonMinified") || bt.startsWith("benchmark")
-        val used = v.name == "fytNonMinifiedRelease" || v.name == "fytBenchmarkRelease"
+        val used = bt == "nonMinifiedRelease" || bt == "benchmarkRelease"
         if (addedByPlugin && !used) v.enable = false
     }
 
@@ -178,6 +181,9 @@ baselineProfile {
     automaticGenerationDuringBuild = false
     // Save the result in src/ (committed to the repository).
     saveInSrc = true
+    // In src/main/generated/baselineProfiles, for every flavor: standard runs the same code as fyt
+    // (the flavors differ in the manifest only), so a profile made on either device serves both.
+    mergeIntoMain = true
     // Startup profile -> R8 places startup classes in the primary DEX file.
     dexLayoutOptimization = true
     // The Baseline Profile variants disabled above are intentional.
@@ -253,6 +259,11 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     ksp(libs.glide.ksp)
+
+    // ─── VD host (Android 11+ panes, see vdhost/README.md) ───
+    implementation(project(":vdhost-shared"))
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
 
     // ─── Baseline Profile ───
     "baselineProfile"(project(":baselineprofile"))

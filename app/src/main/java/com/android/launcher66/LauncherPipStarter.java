@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import com.android.launcher66.settings.Keys;
 import com.syu.util.WindowHost;
+import com.syu.util.WindowHostVdClient;
 import com.syu.util.WindowUtil;
 
 /**
@@ -63,6 +64,12 @@ final class LauncherPipStarter {
 
         if (WindowUtil.isPipOnScreen()) {
             mPipWatchdogRetries = 0;
+            return;
+        }
+        // No host for the panes yet: forcing them does nothing, and they start when it attaches.
+        if (WindowHostVdClient.panesAwaitHost()) {
+            mPipWatchdogRetries = 0;
+            Log.d(Launcher.TAG, "pipWatchdog(" + source + "): no VD host yet, the panes start when it attaches");
             return;
         }
 

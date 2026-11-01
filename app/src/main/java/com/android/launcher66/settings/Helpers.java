@@ -31,8 +31,10 @@ public class Helpers {
     // so kept in memory: see SessionPrefs (was the "HelpersPrefs" file, an fsync per flag change).
     private static final SharedPreferences sharedPrefs = SessionPrefs.get();
     private static final SharedPreferences.Editor editor = sharedPrefs.edit();
-    // These prefs remain
-    private static final SharedPreferences sharedPrefsSus = LauncherApplication.sApp.getSharedPreferences("HelpersPrefsSus", Context.MODE_PRIVATE);
+    // These prefs remain. The name is a constant: LauncherApplication reads it before this
+    // class may be initialised (sApp is set only in its onCreate()).
+    public static final String SUS_PREFS = "HelpersPrefsSus";
+    private static final SharedPreferences sharedPrefsSus = LauncherApplication.sApp.getSharedPreferences(SUS_PREFS, Context.MODE_PRIVATE);
     private static final SharedPreferences.Editor editorSus = sharedPrefsSus.edit();
 
     private boolean day = false;
@@ -359,18 +361,6 @@ public class Helpers {
     }
     
 
-    private boolean codeLogger = false;
-    public boolean codeLoggerBoolean() {
-        codeLogger = sharedPrefsSus.getBoolean("codeLogger", false);
-        return codeLogger;
-    }
-    public void setCodeLoggerBoolean(boolean codeLogger) {
-        this.codeLogger = codeLogger;
-        editorSus.putBoolean("codeLogger", codeLogger);
-        editorSus.apply();
-    }
-
-
     private boolean logcatRun = false;
     public boolean logcatRunBoolean() {
         logcatRun = sharedPrefsSus.getBoolean("logcatRun", false);
@@ -452,18 +442,6 @@ public class Helpers {
     public void setCountDownInspector(int countDownInspector) {
         this.countDownInspector = countDownInspector;
         editorSus.putInt("countDownInspector", countDownInspector);
-        editorSus.apply();
-    }
-
-
-    private int countDownLogger = 0;
-    public int returnCountDownLogger() {
-        countDownLogger = sharedPrefsSus.getInt("countDownLogger", 0);
-        return countDownLogger;
-    }
-    public void setCountDownLogger(int countDownLogger) {
-        this.countDownLogger = countDownLogger;
-        editorSus.putInt("countDownLogger", countDownLogger);
         editorSus.apply();
     }
 
@@ -563,10 +541,12 @@ public class Helpers {
         boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
         int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
         
+        // Geometry of the bar and the box it lives in; the left bar width follows from it.
+        BarGeometry bar = getBarGeometry(mPrefs, orientation);
+        boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
+        
         // Only create bottom bar rect if we're checking screen 0 (or all screens)
         if (screenToCompare == -1 || screenToCompare == 0) {
-            BarGeometry bar = getBarGeometry(mPrefs, orientation);
-            
             float bottomBarTop = bar.barTop;
             
             if (!autoHideBottomBar) {
@@ -581,8 +561,18 @@ public class Helpers {
         }
         
         // Calculate right border exclusion area for left bar mode
-        float leftBarWidth = Launcher.screenWidth * 0.071f;
+        // Same width the launcher offsets the first page by (Launcher.calculatedLeftBarWidth: CellLayout,
+        // PiP panes); without a launcher the formula the layouts follow (7.1 % of the bar's height
+        // in portrait, of the width in landscape).
+        float leftBarWidth = Launcher.calculatedLeftBarWidth > 0
+                ? Launcher.calculatedLeftBarWidth
+                : BottomBarDimensions.computeLeftBarWidth(portrait, bar.rootWidth, bar.rootHeight, bar.barHeight);
         int margin = Integer.valueOf(mPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
+        
+        // A PiP that only reaches under the bottom bar or the left bar is cut back instead of
+        // reset. Done before the collision checks below, so those see the cut rectangles.
+        boolean trimmedAny = trimPipsCoveredByBars(mPrefs, enabledStates, screens, screenToCompare,
+                bottomBarRect != null ? bar : null, leftBar ? leftBarWidth : -1f, bar.rootWidth, margin);
         
         // Check for overlaps between rectangles
         for (int i = 0; i < rectangleKeys.length; i++) {
@@ -609,7 +599,7 @@ public class Helpers {
             }
 
             // Check for overlap with right border (only in left bar mode AND only on screen 0)
-            if (leftBar && screens[i] == 0 && overlapsOrTouchesBorder(rectA, leftBarWidth, margin)) {
+            if (leftBar && screens[i] == 0 && overlapsOrTouchesBorder(rectA, leftBarWidth, bar.rootWidth, margin)) {
                 foundOverlap = true;
                 needsReset[i] = true;
                 Log.i(TAG, "Rectangle " + rectangleKeys[i] + " overlaps with right border");
@@ -647,7 +637,73 @@ public class Helpers {
             resetOverlappingRectangles(mPrefs, rectangleKeys, needsReset, enabledStates, screenToCompare);
         }
         
-        return foundOverlap;
+        return foundOverlap || trimmedAny;
+    }
+
+    /**
+     * Cuts the bottom edge of a screen-0 PiP that overlaps the bottom bar, and the right edge of
+     * one that overlaps the left bar, and saves the result. A PiP that would end up below its
+     * minimum size (the creator's minimum, see PipEdgeTrim.pipMinWidth) is left alone, so the
+     * regular checks reset it as before.
+     *
+     * @param bottomBar geometry of the bar, or null when it reserves nothing (auto-hide)
+     * @param leftBarWidth width of the left bar, or a negative value when it is off
+     * @return true if any rectangle was cut
+     */
+    private boolean trimPipsCoveredByBars(SharedPreferences mPrefs, boolean[] enabledStates, int[] screens,
+                                          int screenToCompare, BarGeometry bottomBar, float leftBarWidth,
+                                          int rootWidth, int margin) {
+        if (bottomBar == null && leftBarWidth < 0f) return false;
+
+        boolean firstPip = mPrefs.getBoolean(Keys.PIP_FIRST, false);
+        boolean secondPip = mPrefs.getBoolean(Keys.PIP_SECOND, false);
+        boolean thirdPip = mPrefs.getBoolean(Keys.PIP_THIRD, false);
+        boolean fourthPip = mPrefs.getBoolean(Keys.PIP_FOURTH, false);
+
+        boolean trimmed = false;
+        for (int i = 0; i < RECTANGLE_KEYS.length; i++) {
+            String key = RECTANGLE_KEYS[i];
+            if (!PipEdgeTrim.isPipKey(key) || !enabledStates[i] || screens[i] != 0) continue;
+            if (screenToCompare >= 0 && screens[i] != screenToCompare) continue;
+
+            RectF rect = getRectangleBounds(mPrefs, key);
+            if (rect.isEmpty()) continue;
+
+            boolean hitsBottom = bottomBar != null
+                    && overlapsOrTouches(rect, new RectF(0, bottomBar.barTop, bottomBar.rootWidth, bottomBar.rootHeight));
+            boolean hitsSide = leftBarWidth >= 0f && overlapsOrTouchesBorder(rect, leftBarWidth, rootWidth, margin);
+            if (!hitsBottom && !hitsSide) continue;
+
+            int maxBottom = hitsBottom ? PipEdgeTrim.maxBottom((int) bottomBar.barTop, margin) : PipEdgeTrim.NO_LIMIT;
+            int maxRight = hitsSide ? PipEdgeTrim.maxRight(rootWidth, leftBarWidth, margin) : PipEdgeTrim.NO_LIMIT;
+            int minWidth = PipEdgeTrim.pipMinWidth(key, Launcher.calculatedPipMinWidth,
+                    firstPip, secondPip, thirdPip, fourthPip);
+            int minHeight = Launcher.calculatedPipMinHeight;
+
+            int[] cut = PipEdgeTrim.trim((int) rect.left, (int) rect.top, (int) rect.right, (int) rect.bottom,
+                    maxRight, maxBottom, minWidth, minHeight);
+            if (cut == null) {
+                Log.i(TAG, "Rectangle " + key + " would drop below its minimum when cut, resetting it instead");
+                continue;
+            }
+
+            SharedPreferences.Editor editor = mPrefs.edit();
+            editor.putInt(key + "TopLeftX", cut[0]);
+            editor.putInt(key + "TopLeftY", cut[1]);
+            editor.putInt(key + "TopRightX", cut[2]);
+            editor.putInt(key + "TopRightY", cut[1]);
+            editor.putInt(key + "BottomRightX", cut[2]);
+            editor.putInt(key + "BottomRightY", cut[3]);
+            editor.putInt(key + "BottomLeftX", cut[0]);
+            editor.putInt(key + "BottomLeftY", cut[3]);
+            // apply() updates the in-memory prefs at once, so the collision checks that follow
+            // read the cut rectangle even though the write to disk is still pending.
+            editor.apply();
+            trimmed = true;
+            Log.i(TAG, "Rectangle " + key + " cut back to fit beside the bars: " + rect + " -> "
+                    + cut[0] + "," + cut[1] + "," + cut[2] + "," + cut[3]);
+        }
+        return trimmed;
     }
 
     private static RectF getRectangleBounds(SharedPreferences mPrefs, String key) {
@@ -675,8 +731,7 @@ public class Helpers {
         return !(a.right < b.left || b.right < a.left || a.bottom < b.top || b.bottom < a.top);
     }
 
-    private static boolean overlapsOrTouchesBorder(RectF a, float leftBarWidth, int margin) {
-        int width = Launcher.screenWidth;
+    private static boolean overlapsOrTouchesBorder(RectF a, float leftBarWidth, int width, int margin) {
         return ((a.right + leftBarWidth) > (width - margin));
     }
 

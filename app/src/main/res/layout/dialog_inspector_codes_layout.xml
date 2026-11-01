@@ -28,47 +28,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- CMD Int Row -->
-        <TextView
-            android:id="@+id/inspector_cmd_int_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/inspector_cmd_int_text"
-            app:layout_constraintTop_toBottomOf="@id/code_inspector_data_title"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/inspector_cmd_int"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/guideline_inspector"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@id/inspector_cmd_int_text" />
-
-        <!-- CMD Arr Row -->
-        <TextView
-            android:id="@+id/inspector_cmd_arr_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/inspector_cmd_arr_text"
-            app:layout_constraintTop_toBottomOf="@id/inspector_cmd_int_text"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/inspector_cmd_arr"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/guideline_inspector"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@id/inspector_cmd_arr_text" />
-
         <!-- Timeout Row -->
         <TextView
             android:id="@+id/code_inspector_timeout_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/code_inspector_timeout_text"
-            app:layout_constraintTop_toBottomOf="@id/inspector_cmd_arr_text"
+            app:layout_constraintTop_toBottomOf="@id/code_inspector_data_title"
             app:layout_constraintStart_toStartOf="parent" />
 
         <EditText

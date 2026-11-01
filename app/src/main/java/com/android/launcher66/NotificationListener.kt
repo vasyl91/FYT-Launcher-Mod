@@ -35,6 +35,10 @@ import androidx.preference.PreferenceManager
 import com.android.launcher66.settings.Helpers
 import com.fyt.car.LauncherNotify
 import com.fyt.car.MusicService
+import com.fyt.car.StockKindArbiter
+import com.fyt.car.StockSources
+import com.fyt.car.StockTitles
+import com.fyt.car.StockTrack
 import com.syu.car.CarStates
 import com.syu.remote.RemoteTools
 import com.syu.widget.DateMusicProvider
@@ -52,6 +56,8 @@ private const val ACTIVE_SESSION_POLL_MS = 250L
 
 /** Panes are up ~1.5 s after the rebuild starts; the channel is taken right after that. */
 private const val PANE_RESTART_GRACE_MS = 2500L
+/** See isStockPlayerLeaving(): the channel goes within ~20 ms of the resume when it comes after it. */
+private const val STOCK_LEAVE_WINDOW_MS = 500L
 
 private const val MAX_CHANNEL_RESTORES = 6
 
@@ -154,6 +160,8 @@ private const val MCU_CH_RADIO = 1
 private const val MCU_CH_BTAV = 3
 private const val MCU_CH_FYT_MUSIC = 8
 private const val MCU_CH_THIRD_PARTY = 10
+/** Internet radio of com.syu.media (7870); no other unit has this channel. */
+private const val MCU_CH_ONLINE = 7
 
 class NotificationListener : NotificationListenerService() {
     
@@ -198,8 +206,10 @@ class NotificationListener : NotificationListenerService() {
     private var verifyIfLive = false
     private val destroyed = AtomicBoolean(false)
 
-    // Sessions belonging to these packages are not third party players
-    private val ownSourcePackages = setOf("com.android.launcher66", "com.syu.radio", "com.syu.music")
+    // Sessions belonging to these packages are not third party players. com.syu.media (the 7870's
+    // stock player) has a session for its media buttons only: its track comes through MusicService.
+    private val ownSourcePackages = setOf("com.android.launcher66", "com.syu.radio", "com.syu.music",
+            MusicService.MEDIA_PKG)
 
     // Edge detection so the arbitration runs once per transition into PLAYING,
     // not on every callback
@@ -246,6 +256,8 @@ class NotificationListener : NotificationListenerService() {
     private var paneRebuildEndedAtMs = 0L
     /** When the panes last came up with the launcher in front, 0 once it went to the background. */
     private var rebuildSettledAtMs = 0L
+    /** When the current pane rebuild window was opened (the launcher back in front, mostly). */
+    private var rebuildStartedAtMs = 0L
     /** The stock channel that was playing through that rebuild, MCU_CH_ANDROID for none. */
     private var rebuildStockChannel = MCU_CH_ANDROID
 
@@ -300,6 +312,13 @@ class NotificationListener : NotificationListenerService() {
     @Volatile
     private var fytMetaInFlight: String? = null
 
+    /**
+     * The last track of a stock source other than com.syu.music (a com.syu.media player, the radio,
+     * BT), as StockSources handed it over; main thread. It belongs to the published fields only
+     * while its key is fytMusicPath, which com.syu.music's updates overwrite with a file path.
+     */
+    private var stockTrack: StockTrack? = null
+
     var musicState: String? = ""
     var musicNamePrev: String = ""
     var curMinutes: Long = 0
@@ -346,7 +365,7 @@ class NotificationListener : NotificationListenerService() {
         contextRef = WeakReference(this)
         paused = false
 
-        settings = PreferenceManager.getDefaultSharedPreferences(this)
+        settings = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
         handlerControllerTime = Handler(Looper.getMainLooper())
         handlerFytTime = Handler(Looper.getMainLooper())
@@ -483,6 +502,7 @@ class NotificationListener : NotificationListenerService() {
 
         lastFytMeta = null
         fytMetaInFlight = null
+        stockTrack = null
         externalPlayingCachedAt = 0L
         externalPlayingCached = false
         try { metaExec?.shutdownNow() } catch (e: Exception) { /* already down */ }
@@ -623,6 +643,80 @@ class NotificationListener : NotificationListenerService() {
 
     /** Main thread. Everything the old inline block did once the tags were available. */
     private fun applyFytMeta(m: FytMeta) {
+        applyFytMeta(m, MusicService.MUSIC_PKG)
+    }
+
+    /**
+     * A track of a stock source other than com.syu.music, with everything known about it (see
+     * StockTrack): there is no file to read, so nothing is read. Main thread.
+     *
+     * The sound channel token is the one onMcuChannelChanged() uses for that source (radio:
+     * "com.syu.radio", BT: "com.syu.bt", the com.syu.media players: MEDIA_PKG), or taking the
+     * source for the MCU would alternate between two names on every update.
+     */
+    private fun handleStockSourceUpdate(t: StockTrack) {
+        if (destroyed.get() || isCleanedUp) return
+        stockTrack = t
+        fytState = t.playing
+        fytMusicPath = t.key
+        fytSource = MusicService.SOURCE
+        fytCurMinutes = t.positionMs
+        val meta = FytMeta(
+            path = t.key,
+            title = t.title,
+            artist = t.artist,
+            album = t.album,
+            duration = t.durationMs,
+            pathName = if (t.localFile) StockTitles.fileBaseName(t.key) else null
+        )
+        applyFytMeta(meta, stockSourcePackage(t.kind))
+    }
+
+    /**
+     * The stock source stopped: the one publication that tells the widget so, since nothing is
+     * published for a source that does not play (applyFytMeta()). Only while the widget shows a
+     * stock source; a session's app that has it is not given a stock track.
+     */
+    private fun handleStockSourcePaused(t: StockTrack) {
+        if (destroyed.get() || isCleanedUp) return
+        if (source != MusicService.SOURCE) return
+        if (!helpers.isFytMusicAllowed()) return
+        stockTrack = t
+        fytState = false
+        fytMusicPath = t.key
+        fytSource = MusicService.SOURCE
+        fytCurMinutes = t.positionMs
+        musicName = t.title
+        authorName = t.artist
+        fytAlbum = t.album
+        fytTotalMinutes = t.durationMs
+        fytStatus()
+    }
+
+    /**
+     * The radio gave the widget back to com.syu.music (7862). Its own update arrives by itself,
+     * but only while it plays; paused, nothing would take the station off the widget.
+     */
+    private fun handleStockOverlayHidden() {
+        if (destroyed.get() || isCleanedUp) return
+        stockTrack = null
+        if (MusicService.music_path.isEmpty()) return
+        handleFytUpdate(MusicService.state, MusicService.music_path, MusicService.SOURCE, MusicService.CURMINUTES)
+        val cached = lastFytMeta
+        if (!fytState && source == MusicService.SOURCE && cached != null && cached.path == fytMusicPath) {
+            fytStatus()
+        }
+    }
+
+    private fun stockSourcePackage(kind: StockKindArbiter.Kind): String = when (kind) {
+        StockKindArbiter.Kind.RADIO -> "com.syu.radio"
+        StockKindArbiter.Kind.MEDIA_BT -> "com.syu.bt"
+        StockKindArbiter.Kind.SYU_MUSIC -> MusicService.MUSIC_PKG
+        else -> MusicService.MEDIA_PKG
+    }
+
+    /** Main thread. Everything the old inline block did once the tags were available. */
+    private fun applyFytMeta(m: FytMeta, sourcePackage: String) {
         musicName = m.title
         authorName = m.artist
         fytAlbum = m.album
@@ -638,7 +732,7 @@ class NotificationListener : NotificationListenerService() {
         // The stock player has an audio channel, so MediaSession gives way -
         // once, rather than on every playback position tick.
         if (fytState) {
-            takeSourceForMcu(MusicService.MUSIC_PKG)
+            takeSourceForMcu(sourcePackage)
         }
 
         val isValidMusicName = currentMusicName.isNotEmpty() &&
@@ -677,6 +771,8 @@ class NotificationListener : NotificationListenerService() {
     // ---------------------------------------------------------------------
 
     private fun mcuTools(): RemoteTools? {
+        // The MCU and com.syu.ms: an FYT unit's only
+        if (!LauncherApplication.isFytDevice()) return null
         val context = contextRef.get() ?: return null
         return try {
             CarStates.getCar(context)?.tools
@@ -692,9 +788,19 @@ class NotificationListener : NotificationListenerService() {
     private fun isMcuChannelPlaying(): Boolean {
         val channel = mcuChannel()
         return channel == MCU_CH_RADIO || channel == MCU_CH_BTAV || channel == MCU_CH_FYT_MUSIC
+                || isOnlineChannel(channel)
     }
 
+    /**
+     * The 7870's internet radio (com.syu.media) is a stock source like the others: its channel has
+     * to survive a pane rebuild, be taken back after a steal, and tell a player that left by
+     * itself from one that was robbed. No other unit has this channel.
+     */
+    private fun isOnlineChannel(channel: Int): Boolean =
+        channel == MCU_CH_ONLINE && StockSources.isSyuMediaUnit()
+
     private fun handOverToThirdPartyPlayer() {
+        if (!LauncherApplication.isFytDevice()) return
         // com.syu.ms hands the channel over by itself as soon as it sees a third party player
         // start, so by the time we get here the MCU is normally already on 10. Sending it again
         // makes com.syu.ms re-run the whole source switch, and that second switch is what pauses
@@ -767,6 +873,19 @@ class NotificationListener : NotificationListenerService() {
         if (previous == -1) return
         Log.d("NotificationListener", "MCU channel $previous -> $channel")
 
+        if (isStockPlayerLeaving(previous, channel)) {
+            // Back in com.syu.music pauses it and gives its channel up, as the launcher comes
+            // back to the front: the user's own stop. Restored at "Panes settled", it played
+            // again 3 s later, but only when the channel went after the launcher's resume (on
+            // the 7862, 18 ms after it once, 40-54 ms before it four times: capture 18-10-2026
+            // 23:18:46, 23:29:09); the widget, buttons included, then followed whichever it was.
+            Log.d("NotificationListener", "Stock channel $previous given up by its player - not restored")
+            channelToRestore = MCU_CH_ANDROID
+            pendingRestore?.let { handler?.removeCallbacks(it) }
+            pendingRestore = null
+            return
+        }
+
         if (isPaneChannelSteal(channel)) {
             if (stealSeenAtMs == 0L) stealSeenAtMs = SystemClock.elapsedRealtime()
             scheduleChannelRestore()
@@ -796,8 +915,13 @@ class NotificationListener : NotificationListenerService() {
 
         when (channel) {
             MCU_CH_RADIO -> { stealSeenAtMs = 0L; takeSourceForMcu("com.syu.radio") }
-            MCU_CH_FYT_MUSIC -> { stealSeenAtMs = 0L; takeSourceForMcu(MusicService.MUSIC_PKG) }
+            // The 7870 has com.syu.media here, with its own token (see handleStockSourceUpdate())
+            MCU_CH_FYT_MUSIC -> {
+                stealSeenAtMs = 0L
+                takeSourceForMcu(if (StockSources.isSyuMediaUnit()) MusicService.MEDIA_PKG else MusicService.MUSIC_PKG)
+            }
             MCU_CH_BTAV -> { stealSeenAtMs = 0L; takeSourceForMcu("com.syu.bt") }
+            MCU_CH_ONLINE -> if (isOnlineChannel(channel)) { stealSeenAtMs = 0L; takeSourceForMcu(MusicService.MEDIA_PKG) }
         }
     }
 
@@ -836,6 +960,7 @@ class NotificationListener : NotificationListenerService() {
 
     private fun isStockChannel(channel: Int): Boolean =
         channel == MCU_CH_RADIO || channel == MCU_CH_BTAV || channel == MCU_CH_FYT_MUSIC
+                || isOnlineChannel(channel)
 
 
     /**
@@ -980,6 +1105,9 @@ class NotificationListener : NotificationListenerService() {
         try {
             mcuTools()?.sendInt(0, 0, stockChannel)
             lastMcuChannel = stockChannel
+            // com.syu.media pauses for every focus the panes' apps took, and the channel alone
+            // does not start it again (7870 only; com.syu.music needs nothing more)
+            StockSources.onStockChannelRestored(stockChannel)
         } catch (t: Throwable) {
             Log.w("NotificationListener", "Idle steal recovery failed: ${t.message}")
         }
@@ -1038,12 +1166,15 @@ class NotificationListener : NotificationListenerService() {
             if (configs.isEmpty()) return false
             val stateGetter = AudioPlaybackConfiguration::class.java.getMethod("getPlayerState")
             val uidGetter = AudioPlaybackConfiguration::class.java.getMethod("getClientUid")
+            // com.syu.media (7870) is a stock player with an ordinary uid, not a third party
+            val mediaUid = StockSources.syuMediaUid()
             configs.any { config ->
                 val state = stateGetter.invoke(config) as Int
                 val uid = uidGetter.invoke(config) as Int
                 val usage = config.audioAttributes.usage
                 state == PLAYER_STATE_STARTED
                         && uid >= Process.FIRST_APPLICATION_UID
+                        && uid != mediaUid
                         && (usage == AudioAttributes.USAGE_MEDIA
                             || usage == AudioAttributes.USAGE_GAME
                             || usage == AudioAttributes.USAGE_UNKNOWN)
@@ -1077,6 +1208,15 @@ class NotificationListener : NotificationListenerService() {
             }
         }
     }
+
+    /**
+     * The stock channel went to none right as the panes' rebuild began, i.e. as the launcher came
+     * back to the front: the stock player leaving with its own screen. A pane's app takes the
+     * channel only once it has been launched, later than this.
+     */
+    private fun isStockPlayerLeaving(previous: Int, channel: Int): Boolean =
+        channel == MCU_CH_ANDROID && isStockChannel(previous) && previous == channelToRestore
+                && SystemClock.elapsedRealtime() - rebuildStartedAtMs < STOCK_LEAVE_WINDOW_MS
 
     /**
      * Relaunching a media app into a pane makes the framework hand the sound channel to
@@ -1132,7 +1272,10 @@ class NotificationListener : NotificationListenerService() {
         val now = SystemClock.elapsedRealtime()
         val rearming = now >= paneRestartUntil
         paneRestartUntil = now + PANE_RESTART_GRACE_MS
-        if (rearming) channelRestores = 0
+        if (rearming) {
+            channelRestores = 0
+            rebuildStartedAtMs = now
+        }
         if (!isMcuChannelPlaying()) return
         channelToRestore = mcuChannel()
         if (rearming) {
@@ -1241,8 +1384,11 @@ class NotificationListener : NotificationListenerService() {
         override fun run() {
             val service = serviceRef.get() ?: return
             if (service.destroyed.get()) return
-            // CarStates.mAppID is maintained in the process, so reading it costs nothing
-            service.onMcuChannelChanged(CarStates.mAppID)
+            // CarStates.mAppID is maintained in the process, so reading it costs nothing. The MCU's
+            // channel: an FYT unit's only.
+            if (LauncherApplication.isFytDevice()) {
+                service.onMcuChannelChanged(CarStates.mAppID)
+            }
             val context = service.contextRef.get() ?: return
             // Not AudioManager.isMusicActive(): that waits for the audioserver, which hangs at boot
             // on this ROM, and from here it froze the whole launcher for ~10 s. AudioStateCache
@@ -1293,6 +1439,9 @@ class NotificationListener : NotificationListenerService() {
             super.onSessionDestroyed()
             val service = serviceRef.get() ?: return
             service.markNotPlaying(service.mediaController)
+            // Gone while playing, it left the widget's button on pause for good.
+            service.updateExternalMediaWidgetState(false)
+            service.sendBroadcastAsync(Intent("pause.button"))
         }
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
@@ -1313,9 +1462,10 @@ class NotificationListener : NotificationListenerService() {
             service.prevMinutes = 0
             // A real transition just happened, so the cached session answer is stale by definition.
             service.invalidateExternalPlayingCache()
+            // Buffering is not a pause: YouTube Music goes PAUSED, BUFFERING, PLAYING on a play, and
+            // a stream buffers while it plays (see MediaWidgetState.isPlaybackActive()).
             if (service.currentState == PlaybackState.STATE_PAUSED
-                || service.currentState == PlaybackState.STATE_STOPPED
-                || service.currentState == PlaybackState.STATE_BUFFERING) {
+                || service.currentState == PlaybackState.STATE_STOPPED) {
                 service.markNotPlaying(service.mediaController)
                 // Closed out here rather than relying on set() being reached
                 // through a re-attach: while musicState stays "true" the
@@ -1347,6 +1497,11 @@ class NotificationListener : NotificationListenerService() {
                 service.helpers.updateControllerTimeBool(false)
                 service.musicState = "false"
             } else if (service.currentState == PlaybackState.STATE_PLAYING) {
+                // The button at once, whatever the checks below make of the rest: they skip a song
+                // already seen playing (songPrev/prevState, kept in the preferences), and a PAUSED
+                // missed in a long sleep left the button on play while the music played again.
+                service.updateExternalMediaWidgetState(true)
+                service.sendBroadcastAsync(Intent("pause.button"))
                 // YoutubeMusic or Spotify (and probably some other music apps) need some delay to load the album art
                 service.postDelayedIfAlive(700) {
                     // playback may have stopped during the delay; this write
@@ -1421,7 +1576,17 @@ class NotificationListener : NotificationListenerService() {
     fun fytStatus() {
         fytData = settings?.getBoolean("fyt_data", true) != false
 
-        if (fytData) { // from metadata
+        // A stock source other than com.syu.music has the widget (handleStockSourceUpdate()): its
+        // track is no file of ours to name it by when it is a stream or the radio, and its cover
+        // comes with it. com.syu.music's updates leave fytMusicPath at its own file, so none of
+        // this applies to them.
+        val stock = stockTrack?.takeIf { it.key == fytMusicPath }
+        if (stock == null && StockSources.shownOverlay() != null) {
+            // The radio (or BT) has the widget; this is com.syu.music's last word as it lost the channel
+            return
+        }
+
+        if (fytData || (stock != null && !stock.localFile)) { // from metadata
             songFyt = musicName
             artist = authorName
             if (artist == null || artist?.isEmpty() == true || artist == "Unknown"){
@@ -1446,7 +1611,7 @@ class NotificationListener : NotificationListenerService() {
             longArrayOf(fytTotalMinutes, fytCurMinutes),
             null,
             arrayOf((songFyt).toString(), (artist).toString(), (fytState).toString(), fytAlbum, fytMusicPath, activeControllerPackage),
-            fytAlbumCover,
+            if (stock != null) stock.cover else fytAlbumCover,
             source
         )
     }
@@ -1468,6 +1633,10 @@ class NotificationListener : NotificationListenerService() {
         } ?: run { curMinutes = 0 }
 
         song = currentMeta.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""
+        if (song.isNullOrEmpty()) {
+            // Some apps fill only the display fields and leave TITLE / ARTIST empty
+            song = currentMeta.getString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE) ?: ""
+        }
         artist = currentMeta.getString(MediaMetadata.METADATA_KEY_ARTIST)
         if (artist == null || artist!!.isEmpty()) {
             artist = currentMeta.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
@@ -1480,6 +1649,9 @@ class NotificationListener : NotificationListenerService() {
         }
         if (artist == null || artist!!.isEmpty()) {
             artist = currentMeta.getString(MediaMetadata.METADATA_KEY_COMPOSER)
+        }
+        if (artist == null || artist!!.isEmpty()) {
+            artist = currentMeta.getString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
         }
         if (artist == null || artist!!.isEmpty()) {
             artist = "\u0020"
@@ -1496,11 +1668,10 @@ class NotificationListener : NotificationListenerService() {
         if (bitmap == null) {
             bitmap = currentMeta.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)
         }
-        if (bitmap == null && activeControllerPackage.contains("youtube")) {
-            val context = contextRef.get()
-            if (context != null) {
-                bitmap = getHighResAppIcon(context, activeControllerPackage)
-            }
+        if (bitmap == null) {
+            // No cover of its own: the player's icon, for every player (YouTube's only before),
+            // so the widget shows and keeps that rather than the previous track's cover.
+            bitmap = appIconFor(activeControllerPackage)
         }
 
         // PNG-encoding a full-size cover costs tens of ms and a fresh ByteArray each time,
@@ -1546,13 +1717,22 @@ class NotificationListener : NotificationListenerService() {
         val controller = mediaController ?: return
         val currentMeta = meta ?: controller.metadata ?: return
 
-        val title = currentMeta.getString(MediaMetadata.METADATA_KEY_TITLE) ?: song ?: ""
+        val metaTitle = currentMeta.getString(MediaMetadata.METADATA_KEY_TITLE)
+        val displayTitle = if (metaTitle.isNullOrEmpty()) {
+            currentMeta.getString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)
+        } else {
+            null
+        }
+        val title = if (!displayTitle.isNullOrEmpty()) displayTitle else metaTitle ?: song ?: ""
         var resolvedArtist = currentMeta.getString(MediaMetadata.METADATA_KEY_ARTIST)
         if (resolvedArtist.isNullOrEmpty()) {
             resolvedArtist = currentMeta.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
         }
         if (resolvedArtist.isNullOrEmpty()) {
             resolvedArtist = currentMeta.getString(MediaMetadata.METADATA_KEY_AUTHOR)
+        }
+        if (resolvedArtist.isNullOrEmpty()) {
+            resolvedArtist = currentMeta.getString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
         }
         if (resolvedArtist.isNullOrEmpty()) {
             resolvedArtist = artist ?: ""
@@ -1575,6 +1755,22 @@ class NotificationListener : NotificationListenerService() {
         )
         Widget.widgetUpdate(this, DateMusicProvider::class.java)
         Widget.widgetUpdate(this, DateRadioProvider::class.java)
+    }
+
+    private var appIconPackage: String? = null
+    private var appIconBitmap: Bitmap? = null
+
+    /**
+     * The player's icon as a cover, kept per package: the same bitmap each time, so the PNG cache
+     * in mediaControllerStatus() holds (it runs several times a second).
+     */
+    private fun appIconFor(packageName: String): Bitmap? {
+        if (packageName.isEmpty()) return null
+        if (packageName == appIconPackage) return appIconBitmap
+        val context = contextRef.get() ?: return null
+        appIconBitmap = getHighResAppIcon(context, packageName)
+        appIconPackage = packageName
+        return appIconBitmap
     }
 
     fun getHighResAppIcon(context: Context, packageName: String): Bitmap? {
@@ -1637,12 +1833,15 @@ class NotificationListener : NotificationListenerService() {
 
     private fun pickController(controllers: MutableList<MediaController>?): MediaController? {
         if (controllers == null) return null
-        for (mc in controllers) {
+        // com.syu.media's session has a play state but no metadata, and the stock player shows
+        // through MusicService: picked, its PLAYING would stop the stock time loop (set()).
+        val candidates = controllers.filter { it.packageName != MusicService.MEDIA_PKG }
+        for (mc in candidates) {
             if (mc.playbackState != null && mc.playbackState?.state == PlaybackState.STATE_PLAYING) {
                 return mc
             }
         }
-        return if (controllers.isNotEmpty()) controllers[0] else null
+        return if (candidates.isNotEmpty()) candidates[0] else null
     }
 
     class SessionListener(service: NotificationListener) : MediaSessionManager.OnActiveSessionsChangedListener {
@@ -1747,6 +1946,30 @@ class NotificationListener : NotificationListenerService() {
         fun onFytUpdate(state: Boolean, path: String, source: String, curMinutes: Long) {
             val listener = instance ?: return
             listener.mainHandler.post { listener.handleFytUpdate(state, path, source, curMinutes) }
+        }
+
+        /**
+         * A stock source other than com.syu.music that plays (a com.syu.media player, the radio, BT),
+         * with its track whole: nothing is read from a file for it (see handleStockSourceUpdate()).
+         */
+        @JvmStatic
+        fun onStockSourceUpdate(track: StockTrack) {
+            val listener = instance ?: return
+            listener.mainHandler.post { listener.handleStockSourceUpdate(track) }
+        }
+
+        /** The stock source stopped (handleStockSourcePaused()). */
+        @JvmStatic
+        fun onStockSourcePaused(track: StockTrack) {
+            val listener = instance ?: return
+            listener.mainHandler.post { listener.handleStockSourcePaused(track) }
+        }
+
+        /** The radio gave the widget back to com.syu.music (7862; handleStockOverlayHidden()). */
+        @JvmStatic
+        fun onStockOverlayHidden() {
+            val listener = instance ?: return
+            listener.mainHandler.post { listener.handleStockOverlayHidden() }
         }
 
         /** Called by WindowUtil once every pane has produced a frame. */

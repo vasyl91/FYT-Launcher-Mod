@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- A debug build captures logs unless the user turns the settings off; see main/values/bools.xml. -->
+    <bool name="logcat_on_by_default">true</bool>
+</resources>

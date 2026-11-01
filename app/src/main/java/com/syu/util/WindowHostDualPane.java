@@ -63,7 +63,7 @@ public class WindowHostDualPane {
 
     private static final String TAG = "WindowHostDualPane";
 
-    private static final String PREFS = "pip_window_host_prefs";
+    public static final String PREFS = "pip_window_host_prefs";
     private static final String KEY_SPLIT = "dual_split_ratio";
 
     private static final long SURFACE_RESTORE_DELAY_MS      = 500L;
@@ -78,6 +78,9 @@ public class WindowHostDualPane {
      * resolves on its first tick. A 4 ms step meant 150 posts per second per pane for nothing.
      */
     private static final int  START_WAIT_STEP_MS    = 16;
+    /** For a VD host still to attach (Shizuku, after the launcher's own start). */
+    private static final int  HOST_WAIT_TIMEOUT_MS  = 15000;
+    private static final int  HOST_WAIT_STEP_MS     = 100;
 
     private static final int  GEOMETRY_RETRIES      = 30;
 
@@ -175,9 +178,11 @@ public class WindowHostDualPane {
     private final AtomicBoolean rightBlackScreenDetected = new AtomicBoolean(false);
 
     /**
-     * Divider geometry.
+     * Divider geometry. What is drawn scales with the screen (screenUnits()), so the bar and its
+     * dots keep the proportions they have on the FYT unit on any density; the touch areas stay in
+     * dp, because a finger is the same size on every screen.
      */
-    private final int DIVIDER_VISUAL_PX     = dp(8);
+    private final int DIVIDER_VISUAL_PX     = Math.round(screenUnits(8));
     /** Full-height touchable strip -- this is the whole grab area when the handle is off. */
     private final int DIVIDER_BAR_TOUCH_PX  = dp(32);
     /** Wide grab handle, centred vertically. Purely an ADDITION on top of the strip above. */
@@ -263,6 +268,8 @@ public class WindowHostDualPane {
             scheduleRestore();
             setPendingBoundsFast(b);
             ensureActivityView(act, myGen);
+            WindowHostVdView.expectPackage(leftAV, lPkg);
+            WindowHostVdView.expectPackage(rightAV, rPkg);
             if (!leftAttached)  attachPane(Side.LEFT);
             if (!rightAttached) attachPane(Side.RIGHT);
 
@@ -434,6 +441,10 @@ public class WindowHostDualPane {
     /** Allowed VirtualDisplay size mismatch relative to the panel, in px. */
     private static final int VD_SIZE_TOLERANCE_PX = 16;
 
+    /** A tap region sync of that half is queued for the next layout pass. */
+    private boolean leftTapSyncPending;
+    private boolean rightTapSyncPending;
+
     /** Refreshes only the embedded displays' on-screen location after a pure move. */
     private void syncTapRegionsOnly() {
         for (Side side : Side.values()) {
@@ -441,7 +452,13 @@ public class WindowHostDualPane {
             final FrameLayout paneHost = hostOf(s);
             final Object paneAV = avOf(s);
             if (paneHost == null || paneAV == null) continue;
+            // See WindowHostSinglePane.syncTapRegionOnly(): nothing to sync for a VD pane, and a
+            // single sync per layout pass is enough for an ActivityView.
+            if (WindowHostActivityView.isHosted(paneAV)) continue;
+            if (s == Side.LEFT ? leftTapSyncPending : rightTapSyncPending) continue;
+            if (s == Side.LEFT) leftTapSyncPending = true; else rightTapSyncPending = true;
             postAfterLayout(paneHost, () -> {
+                if (s == Side.LEFT) leftTapSyncPending = false; else rightTapSyncPending = false;
                 if (hostOf(s) != paneHost || avOf(s) != paneAV) return;
                 try {
                     WindowHostActivityView.syncGeometryWithoutIme(paneAV);
@@ -641,6 +658,7 @@ public class WindowHostDualPane {
                 }
             } catch (Throwable ignore) { }
  
+            WindowHostVdView.markDisplayDonor(paneAV);
             out.add(paneAV);
             resetVdCache(paneAV);
  
@@ -727,6 +745,8 @@ public class WindowHostDualPane {
         p.width = 1; p.height = 1; p.x = -10000; p.y = -10000;
         p.alpha = 1f;
         p.setTitle("PipWindowHost:Dual");
+        // Set before the window is added; it stays in lp through every updateViewLayout().
+        Log.i(TAG, "Dual: window move animation off (" + PaneWindows.disableMoveAnimation(p) + ")");
 
         try { wm.addView(rootView, p); added = true; }
         catch (Throwable t) {
@@ -744,9 +764,23 @@ public class WindowHostDualPane {
 
         applySplit(false);
         root.getViewTreeObserver().addOnGlobalLayoutListener(() -> applySplit(false));
+        root.getViewTreeObserver().addOnPreDrawListener(() -> {
+            final long requested = moveRequestedNs;
+            if (requested != 0L) {
+                moveRequestedNs = 0L;
+                WindowUtil.recordPaneMoveLatency(System.nanoTime() - requested);
+            }
+            return true;
+        });
     }
 
-    /** Moves/resizes the host window. Pane geometry is applied separately by applySplit(). */
+    /** When the window was last asked to move; read by the next pass of its window, see WindowUtil. */
+    private long moveRequestedNs;
+
+    /**
+     * Moves/resizes the host window. Pane geometry is applied separately by applySplit().
+     * See WindowHostSinglePane.setPendingBoundsFast() for why this is not throttled.
+     */
     private void setPendingBoundsFast(Rect b) {
         if (hasPendingBounds && pendingBounds.equals(b)) return;
 
@@ -760,6 +794,7 @@ public class WindowHostDualPane {
         lp.x = b.left; lp.y = b.top;
         lp.alpha = 1f;
         lp.flags &= ~WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+        moveRequestedNs = System.nanoTime();
         try { wm.updateViewLayout(root, lp); } catch (Throwable ignore) {}
 
         root.setVisibility(View.VISIBLE);
@@ -809,6 +844,10 @@ public class WindowHostDualPane {
                 try { WindowHostActivityView.release(rightAV); } catch (Throwable ignore) {}
                 resetVdCache(rightAV); rightAV = null; rightTask = -1; rightReady.set(false);
             }
+        } else {
+            // Off screen but kept: panes of the next WindowHost may take their displays over.
+            WindowHostVdView.markDisplayDonor(leftAV);
+            WindowHostVdView.markDisplayDonor(rightAV);
         }
 
         added = false;
@@ -1531,9 +1570,19 @@ public class WindowHostDualPane {
     }
 
     private void startWhenReady(Side side, String pkg, int expectedGen) {
-        waitUntil(() -> readyOf(side).get() && attachedOf(side), START_WAIT_TIMEOUT_MS, START_WAIT_STEP_MS,
-                () -> { if (gen == expectedGen) startNow(side, pkg, expectedGen); },
-                () -> { if (gen == expectedGen) startNow(side, pkg, expectedGen); });
+        BooleanSupplier ready = () -> readyOf(side).get() && attachedOf(side);
+        Runnable start = () -> { if (gen == expectedGen) startNow(side, pkg, expectedGen); };
+        waitUntil(ready, START_WAIT_TIMEOUT_MS, START_WAIT_STEP_MS, start, () -> {
+            if (gen != expectedGen) return;
+            if (WindowHostActivityView.isAwaitingVdHost(avOf(side))) {
+                // Started without a display, every attempt failed and nothing tried again once the
+                // host came, 0.7 s later: the dual pane stayed empty (capture 19-10-2026 08:03:14)
+                Log.i(TAG, side + ": VD host not attached yet, " + pkg + " starts when it is");
+                waitUntil(ready, HOST_WAIT_TIMEOUT_MS, HOST_WAIT_STEP_MS, start, start);
+                return;
+            }
+            start.run();
+        });
     }
 
     private void startNow(Side side, String pkg, int expectedGen) {
@@ -1830,7 +1879,7 @@ public class WindowHostDualPane {
             bar.setBackgroundColor(0xFFE0E0E0);
             addView(bar);
 
-            View dots = new VerticalDotsView(ctx, 0xFF666666, 2.5f, 9f);
+            View dots = new VerticalDotsView(ctx, 0xFF666666, screenUnits(2.5f), screenUnits(9f));
             addView(dots, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER));
         }
     }
@@ -1853,12 +1902,11 @@ public class WindowHostDualPane {
         private final float dotRadiusPx;
         private final float spacingPx;
 
-        VerticalDotsView(Context ctx, int dotColor, float dotRadiusDp, float spacingDp) {
+        VerticalDotsView(Context ctx, int dotColor, float dotRadiusPx, float spacingPx) {
             super(ctx);
-            float d = ctx.getResources().getDisplayMetrics().density;
             p.setColor(dotColor);
-            dotRadiusPx = dotRadiusDp * d;
-            spacingPx = spacingDp * d;
+            this.dotRadiusPx = dotRadiusPx;
+            this.spacingPx = spacingPx;
             setWillNotDraw(false);
         }
 
@@ -2081,6 +2129,26 @@ public class WindowHostDualPane {
 
     private static int dp(int v) {
         return Math.round(LauncherApplication.sApp.getResources().getDisplayMetrics().density * v);
+    }
+
+    /**
+     * Pixels for v dp of the FYT unit the divider was designed on (2000x1200 at 240 dpi, i.e. a
+     * smallest width of 800 dp), scaled by the shorter screen side instead of the density: the
+     * same as dp() there, 11 px instead of 22 for the bar on a 1080x2340 phone at 450 dpi.
+     */
+    private static float screenUnits(float v) {
+        android.util.DisplayMetrics dm = new android.util.DisplayMetrics();
+        try {
+            android.hardware.display.DisplayManager dmgr = LauncherApplication.sApp
+                    .getSystemService(android.hardware.display.DisplayManager.class);
+            // The whole panel, system bars included: 1200 on the FYT unit, not 1200 minus a bar.
+            dmgr.getDisplay(android.view.Display.DEFAULT_DISPLAY).getRealMetrics(dm);
+        } catch (Throwable t) {
+            dm = LauncherApplication.sApp.getResources().getDisplayMetrics();
+        }
+        int shortSide = Math.min(dm.widthPixels, dm.heightPixels);
+        if (shortSide <= 0) return v * LauncherApplication.sApp.getResources().getDisplayMetrics().density;
+        return v * shortSide / 800f;
     }
 
     private static int clampPx(int v, int min, int max) {

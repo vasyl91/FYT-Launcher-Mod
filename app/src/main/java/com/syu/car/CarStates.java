@@ -3,6 +3,7 @@ package com.syu.car;
 import android.content.Context;
 
 import com.android.launcher66.settings.HeadlightNightMode;
+import com.fyt.car.StockSources;
 import com.syu.ipc.data.FinalCanbus;
 import com.syu.ipc.data.FinalMain;
 import com.syu.remote.Callback;
@@ -33,7 +34,8 @@ public class CarStates {
             FinalMain.U_MCU_ON, FinalMain.U_STANDBY, FinalMain.U_ARM_SLEEP_WAKEUP};
     final int[] TV_LOOK_CODE = new int[0];
     final int[] CANBUS_LOOK_CODE = {1000, FinalCanbus.U_EXIST_CAR_RADIO};
-    final int[] RADIO_LOOK_CODE = {0, 1, 2, 20, 23, 21};
+    /** 13 (RDS text) and 26 (station name, RDS PS) are the radio source of the music widget (StockSources). */
+    final int[] RADIO_LOOK_CODE = {0, 1, 2, 20, 23, 21, 13, 26};
     final int[] BT_LOOK_CODE = {0, 1, 2, 28, 26, 13, 9};
     final int[] SOUND_LOOK_CODE = {2, 3};
     /** Reported by com.syu.ms (FinalMain.U_NAVI_PACKAGE); empty until it has. */
@@ -70,6 +72,7 @@ public class CarStates {
                     if (updateCode == 0 && JTools.check(ints, 1)) {
                         if (ints != null && ints.length > 0) {
                             CarStates.mAppID = ints[0];
+                            StockSources.onAppIdChanged(ints[0]);
                             return;
                         }
                         return;

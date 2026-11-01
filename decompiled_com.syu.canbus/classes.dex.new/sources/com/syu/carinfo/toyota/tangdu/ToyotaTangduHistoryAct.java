@@ -1,0 +1,227 @@
+package com.syu.carinfo.toyota.tangdu;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import com.syu.canbus.BaseActivity;
+import com.syu.canbus.R;
+import com.syu.canbus.TheApp;
+import com.syu.carinfo.camry2012.xp.CamryData;
+import com.syu.carinfo.wccamry.ConstWcToyota;
+import com.syu.module.IUiNotify;
+import com.syu.module.canbus.Callback_0452_Tangdu_Toyota_All;
+import com.syu.module.canbus.DataCanbus;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.canbus.apk\dexFile\classes.dex */
+public class ToyotaTangduHistoryAct extends BaseActivity {
+    public static ToyotaTangduHistoryAct mInit;
+    private TextView[] mTvHisOil = new TextView[4];
+    private VerticalProgressbar[] mProgressbarHis = new VerticalProgressbar[5];
+    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.toyota.tangdu.ToyotaTangduHistoryAct.1
+        @Override // com.syu.module.IUiNotify
+        public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
+            switch (updateCode) {
+                case 105:
+                    ToyotaTangduHistoryAct.this.mUpdaterDrivingTime();
+                    break;
+                case 107:
+                    ToyotaTangduHistoryAct.this.mUpdaterAverageOilExpend();
+                    break;
+                case 108:
+                    ToyotaTangduHistoryAct.this.mUpdaterCurTripOilExpend();
+                    break;
+                case 109:
+                    if (ints == null) {
+                        for (int i = 0; i < 5; i++) {
+                            int[] ints2 = ConstWcToyota.mTripoilexpend[i];
+                            if (ints2 == null) {
+                                ints2 = new int[]{i, 0};
+                            }
+                            ToyotaTangduHistoryAct.this.mUpdaterTripOilValue(ints2);
+                        }
+                    } else {
+                        ToyotaTangduHistoryAct.this.mUpdaterTripOilValue(ints);
+                    }
+                    break;
+            }
+        }
+    };
+
+    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.layout_toyota_tangdu_history);
+        init();
+    }
+
+    @Override // com.syu.canbus.BaseActivity
+    public void init() {
+        mInit = this;
+        this.mTvHisOil[0] = (TextView) findViewById(R.id.camry_tv_his_oil_0);
+        this.mTvHisOil[1] = (TextView) findViewById(R.id.camry_tv_his_oil_1);
+        this.mTvHisOil[2] = (TextView) findViewById(R.id.camry_tv_his_oil_2);
+        this.mTvHisOil[3] = (TextView) findViewById(R.id.camry_tv_his_oil_3);
+        this.mProgressbarHis[0] = (VerticalProgressbar) findViewById(R.id.camry_progressbar_trip_0);
+        this.mProgressbarHis[1] = (VerticalProgressbar) findViewById(R.id.camry_progressbar_trip_1);
+        this.mProgressbarHis[2] = (VerticalProgressbar) findViewById(R.id.camry_progressbar_trip_2);
+        this.mProgressbarHis[3] = (VerticalProgressbar) findViewById(R.id.camry_progressbar_trip_3);
+        this.mProgressbarHis[4] = (VerticalProgressbar) findViewById(R.id.camry_progressbar_trip_4);
+        findViewById(R.id.camry_btn_update).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.toyota.tangdu.ToyotaTangduHistoryAct.2
+            @Override // android.view.View.OnClickListener
+            public void onClick(View v) {
+                DataCanbus.PROXY.cmd(0, new int[]{8, 0}, null, null);
+            }
+        });
+        findViewById(R.id.camry_btn_delete).setOnClickListener(new View.OnClickListener() { // from class: com.syu.carinfo.toyota.tangdu.ToyotaTangduHistoryAct.3
+            @Override // android.view.View.OnClickListener
+            public void onClick(View v) {
+                DataCanbus.PROXY.cmd(0, new int[]{9, 0}, null, null);
+            }
+        });
+    }
+
+    @Override // com.syu.canbus.BaseActivity
+    public void addNotify() {
+        DataCanbus.NOTIFY_EVENTS[107].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[105].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[108].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[109].addNotify(this.mNotifyCanbus, 1);
+    }
+
+    @Override // com.syu.canbus.BaseActivity
+    public void removeNotify() {
+        DataCanbus.NOTIFY_EVENTS[107].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[105].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[108].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[109].removeNotify(this.mNotifyCanbus);
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdaterDrivingTime() {
+        int time = DataCanbus.DATA[105];
+        if (time > -1) {
+            int hour = time / 60;
+            int minute = time % 60;
+            StringBuffer sb = new StringBuffer();
+            if (hour == 1) {
+                sb.append(String.valueOf(String.format("%02d", Integer.valueOf(hour))) + TheApp.getInstance().getResources().getString(R.string.time_hour));
+            } else {
+                sb.append(String.valueOf(String.format("%02d", Integer.valueOf(hour))) + TheApp.getInstance().getResources().getString(R.string.time_hours));
+            }
+            if (minute == 1) {
+                sb.append(String.valueOf(String.format("%02d", Integer.valueOf(minute))) + TheApp.getInstance().getResources().getString(R.string.time_minute));
+            } else {
+                sb.append(String.valueOf(String.format("%02d", Integer.valueOf(minute))) + TheApp.getInstance().getResources().getString(R.string.time_minutes));
+            }
+            if (((TextView) findViewById(R.id.camry_tv_driving_time)) != null) {
+                ((TextView) findViewById(R.id.camry_tv_driving_time)).setText(sb.toString());
+            }
+        }
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdaterAverageOilExpend() {
+        int value = DataCanbus.DATA[107];
+        int unit = (value >> 24) & 255;
+        int num = value & 16777215;
+        String str = "";
+        if (num != 65535) {
+            if (unit == 0) {
+                str = String.valueOf(String.format("%02d.%d", Integer.valueOf(num / 10), Integer.valueOf(num % 10))) + " " + CamryData.OIL_EXPEND_UNIT_MPG;
+            } else if (unit == 1) {
+                str = String.valueOf(String.format("%02d.%d", Integer.valueOf(num / 10), Integer.valueOf(num % 10))) + " " + CamryData.OIL_EXPEND_UNIT_KM_PER_L;
+            } else if (unit == 2) {
+                str = String.valueOf(String.format("%02d.%d", Integer.valueOf(num / 10), Integer.valueOf(num % 10))) + " " + CamryData.OIL_EXPEND_UNIT_L_PER_100KM;
+            }
+            ((TextView) findViewById(R.id.camry_tv_average_oil)).setText(str);
+            return;
+        }
+        ((TextView) findViewById(R.id.camry_tv_average_oil)).setText("--.--");
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdaterCurTripOilExpend() {
+        int value = DataCanbus.DATA[108];
+        int unit = (value >> 24) & 255;
+        int num = value & 16777215;
+        int numMax = 30;
+        if (num != 65535) {
+            if (unit == 0) {
+                numMax = 60;
+                if (((TextView) findViewById(R.id.camry_tv_trip_unit)) != null) {
+                    ((TextView) findViewById(R.id.camry_tv_trip_unit)).setText(CamryData.OIL_EXPEND_UNIT_MPG);
+                }
+                for (int i = 0; i < 4; i++) {
+                    if (this.mTvHisOil != null) {
+                        this.mTvHisOil[i].setText(new StringBuilder().append(Callback_0452_Tangdu_Toyota_All.mOilNum1[i]).toString());
+                    }
+                }
+            } else if (unit == 1) {
+                numMax = 30;
+                if (((TextView) findViewById(R.id.camry_tv_trip_unit)) != null) {
+                    ((TextView) findViewById(R.id.camry_tv_trip_unit)).setText(CamryData.OIL_EXPEND_UNIT_KM_PER_L);
+                }
+                for (int i2 = 0; i2 < 4; i2++) {
+                    if (this.mTvHisOil[i2] != null) {
+                        this.mTvHisOil[i2].setText(new StringBuilder().append(Callback_0452_Tangdu_Toyota_All.mOilNum0[i2]).toString());
+                    }
+                }
+            } else if (unit == 2) {
+                numMax = 30;
+                if (((TextView) findViewById(R.id.camry_tv_trip_unit)) != null) {
+                    ((TextView) findViewById(R.id.camry_tv_trip_unit)).setText(CamryData.OIL_EXPEND_UNIT_L_PER_100KM);
+                }
+                for (int i3 = 0; i3 < 4; i3++) {
+                    if (mInit.mTvHisOil[i3] != null) {
+                        this.mTvHisOil[i3].setText(new StringBuilder().append(Callback_0452_Tangdu_Toyota_All.mOilNum0[i3]).toString());
+                    }
+                }
+            }
+            if (((VerticalProgressbar) findViewById(R.id.camry_progressbar_trip_current)) != null) {
+                ((VerticalProgressbar) findViewById(R.id.camry_progressbar_trip_current)).setMax(numMax * 10);
+                if (num < 0) {
+                    num = 0;
+                } else if (num > numMax * 10) {
+                    num = numMax * 10;
+                }
+                ((VerticalProgressbar) findViewById(R.id.camry_progressbar_trip_current)).setProgress(num);
+                ((VerticalProgressbar) findViewById(R.id.camry_progressbar_trip_current)).invalidate();
+                return;
+            }
+            return;
+        }
+        ((VerticalProgressbar) findViewById(R.id.camry_progressbar_trip_current)).setProgress(0);
+        ((VerticalProgressbar) findViewById(R.id.camry_progressbar_trip_current)).invalidate();
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public void mUpdaterTripOilValue(int[] ints) {
+        if (ints[0] > -1 && ints[0] < 5) {
+            int value = ints[1];
+            int unit = (value >> 24) & 255;
+            int num = value & 16777215;
+            int numMax = 30;
+            if (num != 65535) {
+                if (unit == 0) {
+                    numMax = 60;
+                } else if (unit == 1 || unit == 2) {
+                    numMax = 30;
+                }
+                if (this.mProgressbarHis[ints[0]] != null) {
+                    this.mProgressbarHis[ints[0]].setMax(numMax * 10);
+                    if (num < 0) {
+                        num = 0;
+                    } else if (num > numMax * 10) {
+                        num = numMax * 10;
+                    }
+                    this.mProgressbarHis[ints[0]].setProgress(num);
+                    this.mProgressbarHis[ints[0]].invalidate();
+                    return;
+                }
+                return;
+            }
+            this.mProgressbarHis[ints[0]].setProgress(0);
+            this.mProgressbarHis[ints[0]].invalidate();
+        }
+    }
+}
