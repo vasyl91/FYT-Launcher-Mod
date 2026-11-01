@@ -29,7 +29,6 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewDebug;
@@ -38,7 +37,6 @@ import android.view.ViewParent;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LayoutAnimationController;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
@@ -4459,11 +4457,10 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     width = topRightX - topLeftX;
                     height = bottomLeftY - topLeftY;
 
-                    setCalculatedTextSizeAndColor(widgetView, R.id.tv_unit, mLauncher.widgetTextSizeBasic);
-                    setCalculatedTextSizeAndColor(widgetView, R.id.tv_band, mLauncher.widgetTextSizeBasic);
-                    setCalculatedTextSizeAndColor(widgetView, R.id.tv_freq, mLauncher.radioTextFrequency);
-                    setCalculatedButtonSizes(widgetView, R.id.radio_btn_prev, mLauncher.radioButtonWidth, mLauncher.radioButtonHeight);
-                    setCalculatedButtonSizes(widgetView, R.id.radio_btn_next, mLauncher.radioButtonWidth, mLauncher.radioButtonHeight);
+                    // The sizes come from RadioWidgetSizer (from the size of the widget); the colour here
+                    setCalculatedTextColor(widgetView, R.id.tv_unit);
+                    setCalculatedTextColor(widgetView, R.id.tv_band);
+                    setCalculatedTextColor(widgetView, R.id.tv_freq);
                     break;
 
                 default:
@@ -4544,6 +4541,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                         case "radio":
                             mLauncher.initRadioWidgetView(widgetView);
                             mLauncher.bindRadioWidgetOnclickListener();
+                            RadioWidgetSizer.attach(widgetView.findViewById(R.id.rl_radio));
                             break;
                     }
                 } finally {
@@ -5063,36 +5061,12 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     }
 
     // Helper methods
-    private void setCalculatedTextSizeAndColor(View view, int viewId, int textSize) {
-        TextView textView = view.findViewById(viewId);
-        if (textView != null) {
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-        }
-        setCalculatedTextColor(view, viewId);
-    }
-
     private void setCalculatedTextColor(View view, int viewId) {
         TextView textView = view.findViewById(viewId);
         if (textView != null) {
             boolean blackTintWidgets = prefs.getBoolean(Keys.BLACK_WIDGETS, false);
             if (blackTintWidgets) {
                 textView.setTextColor(Color.BLACK);
-            }
-        }
-    }
-
-    private void setCalculatedButtonSizes(View view, int viewId, int width, int height) {
-        Button button = view.findViewById(viewId);
-        if (button != null) {
-            ViewGroup.LayoutParams params = button.getLayoutParams();
-            if (params instanceof ViewGroup.MarginLayoutParams) {
-                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-                marginParams.width = width;
-                marginParams.height = height;
-                button.setLayoutParams(marginParams);
-            } else {
-                ViewGroup.MarginLayoutParams newParams = new ViewGroup.MarginLayoutParams(width, height);
-                button.setLayoutParams(newParams);
             }
         }
     }
