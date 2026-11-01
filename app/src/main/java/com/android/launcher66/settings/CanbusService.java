@@ -17,12 +17,20 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.GradientDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.provider.Settings;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -31,9 +39,11 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Lifecycle;
@@ -44,37 +54,49 @@ import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.Workspace;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.Priority;
+import com.syu.ipc.IModuleCallback;
 import com.syu.module.IUiNotify;
 import com.syu.module.canbus.DataCanbus;
+import com.syu.util.HostAwait;
+import com.syu.util.PaneWindows;
+import com.syu.util.WindowHostVdClient;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CanbusService extends Service implements PropertyChangeListener {
 
     private static final String TAG = "CanbusService";
+    /** The apps the fuel statistics are shown over; read at the start, see LauncherApplication. */
+    public static final String APP_STATS_PREFS = "AppStatsPrefs";
     private AccessibilityManager accessibilityManager;
-    private FusedLocationProviderClient fusedLocationClient;
-    private LocationCallback locationCallback;
+    private DeviceLocation.Handle locationUpdates;
     private AccessibilityManager.AccessibilityStateChangeListener accessibilityListener;
     private SharedPreferences prefs;
+    /** The last package of a Keys.ACCESIBILITY_SERVICE broadcast; see getCurrentActivityName(). */
+    private String mLastReportedPackage;
     private Helpers helpers = new Helpers();
     private IBinder binder;
     private View absoluteStats;
+    /**
+     * The window of the stats on the home screen from Android 14 on: as wide as a page and left
+     * where it is while the pages move, absoluteStats moving inside it (see addStatsView()). Null
+     * before Android 14, where the stats are a window of their own size moved by WindowManager, and
+     * for the stats over a map app.
+     */
+    private FrameLayout statsHost;
     private TextView consumptionTextView;
     private TextView mileageTextView;
     private WindowManager wm;  
@@ -85,18 +107,58 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private boolean userLayout = false;
     private boolean userStats = false;
     private int statsWidthSelector;
-    private boolean estimateOil = false;
-    private int fuel = 0;
-    private int range = 0;
-    private int rpm = 0;
-    private double velocity = 0;
-    private int horsePower = 0;
-    private int vehicleMass = 0;
-    private int revolutionsPerMinute = 0;
+    /** The codes of the settings; 0 = not set, the library's code (fuel, range) or the reader's (speed) is used then. */
+    private volatile int fuel = 0;
+    private volatile int range = 0;
+    private volatile int rpm = 0;
+    private volatile int speed = 0;
+    /** The codes in use: those of the settings, else those the library knows for the car, else 0. */
+    private volatile int fuelCode = 0;
+    private volatile int rangeCode = 0;
+    /** The speed code in use: that of the settings, else the one the code reader found, else 0 (the GPS). */
+    private volatile int speedCode = 0;
+    /** The RPM code in use: that of the settings, else the one the code reader found, else 0 (no RPM). */
+    private volatile int rpmCode = 0;
+    /**
+     * Which pair of the library's fuel and range codes the radio reports (the codes moved between the versions of
+     * the canbus module); null for a car the library has no pair for. The codes of the settings come before it.
+     */
+    private volatile CodePairChooser pairChooser;
+    private int pairCarId;
+    /** The choice last written to the settings, to write only a change. Main thread. */
+    private String pairSaved = "";
+    /** The last value of each code the service listens to, to show the values of a pair that has just been chosen. */
+    private final Map<Integer, Integer> lastCodeValues = new ConcurrentHashMap<>();
+    /**
+     * Where the protocol of the car reports the unit of the instantaneous consumption (the U record of the canbus
+     * library), or null: the library does not say, and the unit is then not known.
+     */
+    private volatile FuelUnit fuelUnit;
+    /** The widget shows the car's value in litres per hour now (it must change back when the speed rises). Main thread. */
+    private boolean fuelShownPerHour;
+    /** The last values of the codes above, from the update of com.syu.ms (binder thread). */
+    private volatile int fuelRaw = 0;
+    private volatile int fuelValue = 0;
+    private volatile int rangeValue = 0;
+    private volatile int rpmValue = 0;
+    private volatile int speedValue = 0;
+    /**
+     * The estimate of the consumption where the car gives none, learned from its own values; null without a
+     * fuel code (no estimate then). Main thread.
+     */
+    private FuelModel fuelModel;
+    private String fuelModelKey;
+    private long fuelModelSavedAt;
+    private FuelModel.SpeedScale speedScale = new FuelModel.SpeedScale(0);
+    private static final long FUEL_MODEL_SAVE_MS = 60_000L;
+    /** Above this speed (km/h) the car counts as driving, for the choice of the pair of codes. */
+    private static final double DRIVING_KMH = 5.0;
 
     private Workspace workspaceRef = null;
     private ViewTreeObserver.OnScrollChangedListener workspaceScrollListener = null;
     private WindowManager.LayoutParams statsLayoutParams = null;
+    /** The stats window is in the WindowManager (StatsOverlayAlpha has been told). */
+    private boolean statsWindowAdded;
     private int statsAbsoluteBaseX = 0; // absolute X in pixels (page index * pageWidth + local offset)
     private int statsPageWidth = 0;
     int statsWidth;
@@ -105,6 +167,41 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
     /** Set for the lifetime of the service; see Launcher.isServiceRunning(). */
     private static volatile boolean sRunning;
+
+    /** The pair of codes in use for a car, for the settings. */
+    private static final class PairInfo {
+        final int carId;
+        final CodePairChooser.Status status;
+
+        PairInfo(int carId, CodePairChooser.Status status) {
+            this.carId = carId;
+            this.status = status;
+        }
+    }
+
+    private static volatile PairInfo sPairInfo;
+
+    /** The pair of fuel and range codes in use for the car (confirmed or not), from the running service; else null. */
+    static CodePairChooser.Status pairStatus(int carId) {
+        PairInfo info = sPairInfo;
+        return info != null && info.carId == carId ? info.status : null;
+    }
+
+    /** The running service, for onPagesFrame(); main thread. */
+    private static CanbusService sInstance;
+
+    /**
+     * Main thread, from Workspace in the animation phase of each frame the pages move in, with the
+     * scroll the pages will be drawn with in that frame. The stats then move in the same frame as
+     * the pages; from the workspace's scroll listener alone they came a frame later, as that runs
+     * in the draw.
+     */
+    public static void onPagesFrame(int scrollX) {
+        CanbusService service = sInstance;
+        if (service != null) {
+            service.updateStatsPositionForScroll(scrollX);
+        }
+    }
 
     public static boolean isRunning() {
         return sRunning;
@@ -115,16 +212,20 @@ public class CanbusService extends Service implements PropertyChangeListener {
     public void onCreate() {
         super.onCreate();
         sRunning = true;
+        sInstance = this;
         Log.d(TAG, "Service created");
-        prefs = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());    
+        // A limit raised by a process that died without onDestroy goes back now
+        StatsOverlayAlpha.onWindowHiddenNow(this);
+        // The application's context: it has the file's path already, this service's would look it up
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
         userStats = prefs.getBoolean(Keys.USER_STATS, false);
-        horsePower = Integer.parseInt(prefs.getString("horse_power_code_int", "0"));
-        vehicleMass = Integer.parseInt(prefs.getString("vehicle_mass_code_int", "0")); // in kg
         helpers = new Helpers();
+        CanbusLibrary.preload(getApplicationContext());
         accessibilityManager = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
         registerAccessibilityEventListener();
         requestLocationUpdates();
+        registerBarometer();
         
         mPropertyChangeClass.addObserver(Keys.ALLAPPS, this);
         mPropertyChangeClass.addObserver(Keys.FUELSTATS, this);
@@ -156,9 +257,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
             fuel = intent.getIntExtra("fuel", 0);
             range = intent.getIntExtra("range", 0);
             rpm = intent.getIntExtra("rpm", 0);
-            int cmdInt = intent.getIntExtra("cmdInt", 0);
-            int cmdArr = intent.getIntExtra("cmdArr", 0);
-            DataCanbus.PROXY.cmd(cmdInt, new int[]{cmdArr}, null, null);
+            speed = intent.getIntExtra("speed", 0);
+            // Until the library says otherwise (mNotifyCar) the codes of the settings are the ones in use
+            fuelCode = fuel;
+            rangeCode = range;
             addStatsViewMainScreen();
             addNotify();
         }
@@ -169,9 +271,19 @@ public class CanbusService extends Service implements PropertyChangeListener {
     public void onDestroy() {
         super.onDestroy();
         sRunning = false;
+        if (sInstance == this) {
+            sInstance = null;
+            sPairInfo = null;
+        }
+        saveFuelModel();
         Log.d(TAG, "Service destroyed");
         removeLocationUpdates();
+        unregisterBarometer();
         unregisterAccessibilityEventListener();
+        if (hostWait != null) {
+            hostWait.cancel();
+            hostWait = null;
+        }
         ForegroundAppTracker.stop();
         mPropertyChangeClass.deleteObserver(Keys.ALLAPPS, this);
         mPropertyChangeClass.deleteObserver(Keys.FUELSTATS, this);
@@ -182,6 +294,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
         removeNotify();
         removeView();
+        StatsOverlayAlpha.onWindowHiddenNow(this);
         Intent broadcastIntent = new Intent(this, ServiceRestarter.class);
         SysCalls.sendBroadcast(CanbusService.this, broadcastIntent);
     }
@@ -200,8 +313,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
      * PiP panes waiting behind them.
      */
     private void registerAccessibilityEventListener() {
-        // With system privileges the foreground app comes from the task stack, and the
-        // accessibility service (and its settings screen) is not needed at all.
+        // With system privileges, or a VD host (root or Shizuku), the foreground app comes from
+        // the task stack, and the accessibility service (and its settings screen) is not needed.
         if (ForegroundAppTracker.start(this)) {
             return;
         }
@@ -213,14 +326,47 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 Log.d(TAG, "Accessibility service enabled");
             } else if (!isStateServiceSwitchedOn()) {
                 Log.d(TAG, "Accessibility service disabled");
-                openAccessibilitySettings();
+                openAccessibilitySettingsIfNeeded();
             }
         });
         if (!accessibilityManager.isEnabled() && !isStateServiceSwitchedOn()) {
             Log.d(TAG, "Accessibility service is not enabled");
-            openAccessibilitySettings();
+            openAccessibilitySettingsIfNeeded();
         }
     }
+
+    /**
+     * Not while a VD host reports the foreground app, nor while one is on its way: Shizuku binds
+     * a moment after the start, and ForegroundAppTracker takes over as soon as it is there.
+     */
+    private void openAccessibilitySettingsIfNeeded() {
+        if (ForegroundAppTracker.isActive() || WindowHostVdClient.canHostPanes()) {
+            Log.d(TAG, "Accessibility settings not opened: the VD host reports the foreground app");
+            return;
+        }
+        if (HostAwait.isExpected(this)) {
+            // Shizuku installed but not running yet (the 7870 starts it minutes after the launcher):
+            // the settings opened over the launcher at the start, before it. The window is the boot's
+            // for a start in the first minutes, a wake's later; a host that attaches ends the question
+            // (canHostPanes() is true then), one that does not leaves what was done before.
+            if (hostWait != null) return;
+            hostWait = HostAwait.await(HostAwait.windowForUptime(SystemClock.elapsedRealtime()),
+                    "accessibility settings", attached -> {
+                hostWait = null;
+                if (attached || ForegroundAppTracker.isActive() || WindowHostVdClient.canHostPanes()
+                        || isStateServiceSwitchedOn()) {
+                    Log.d(TAG, "Accessibility settings not opened: the VD host reports the foreground app");
+                    return;
+                }
+                openAccessibilitySettings();
+            });
+            return;
+        }
+        openAccessibilitySettings();
+    }
+
+    /** The wait for a VD host before the accessibility settings are opened; main thread. */
+    private HostAwait.Handle hostWait;
 
     /** StateAccessibilityService is on in the accessibility settings (bound or not yet). */
     private boolean isStateServiceSwitchedOn() {
@@ -260,14 +406,88 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
     
-    private final IUiNotify mNotifyCanbus = (updateCode, ints, flts, strs) -> {
-        if (updateCode == fuel) {
-            mUpdaterOilExpend();
-        } else if (updateCode == range) {
-            mUpdaterDrivingMileage();
-        } else if (updateCode == rpm) {
-            mUpdaterRPM();
+    private final Handler uiHandler = new Handler(Looper.getMainLooper());
+
+    /**
+     * The codes are read the way the code reader reads them: straight from com.syu.ms, whatever the
+     * callback of the car (Callback_XXXX) registered. DataCanbus.DATA and NOTIFY_EVENTS only know the
+     * codes that callback registered, and for a car the launcher has no callback for, only code 0.
+     */
+    private final IModuleCallback.Stub statsCallback = new IModuleCallback.Stub() {
+        @Override
+        public void update(int updateCode, int[] ints, float[] flts, String[] strs) {
+            if (ints == null || ints.length == 0) {
+                return;
+            }
+            int value = ints[0];
+            lastCodeValues.put(updateCode, value);
+            CodePairChooser chooser = pairChooser;
+            if (chooser != null && chooser.onValue(updateCode, value)) {
+                uiHandler.post(CanbusService.this::onPairChanged);
+            }
+            if (updateCode == fuelCode) {
+                fuelRaw = value;
+                fuelValue = fuelFromRaw(value);
+                uiHandler.post(CanbusService.this::mUpdaterOilExpend);
+            }
+            FuelUnit unit = fuelUnit;
+            if (unit != null && unit.unitCode() == updateCode) {
+                uiHandler.post(CanbusService.this::onFuelUnitChanged);
+            }
+            if (updateCode == rangeCode) {
+                rangeValue = value;
+                uiHandler.post(CanbusService.this::mUpdaterDrivingMileage);
+            }
+            if (updateCode == rpmCode) {
+                rpmValue = value;
+                uiHandler.post(CanbusService.this::mUpdaterRPM);
+            }
+            if (updateCode == speedCode) {
+                speedValue = value;
+                uiHandler.post(CanbusService.this::onSpeedCode);
+            }
         }
+    };
+
+    /** The codes registered with statsCallback; main thread. */
+    private final Set<Integer> statsCodesRegistered = new HashSet<>();
+
+    /**
+     * The car is known (it is zeroed when the connection to com.syu.ms drops, and set again when it
+     * is back): register the codes, and send the car the request of its fuel screen if it has one.
+     * The fuel and range codes are those of the settings; where none is set, those of the library.
+     */
+    private final IUiNotify mNotifyCar = (updateCode, ints, flts, strs) -> {
+        int carId = DataCanbus.DATA[1000];
+        if (carId == 0) {
+            return;
+        }
+        final Context app = getApplicationContext();
+        // The library may still be loading, and loading reads files: not on this thread
+        CanbusLibrary.executor().execute(() -> {
+            CanbusLibrary.Library library = CanbusLibrary.loadBlocking(app);
+            List<CanbusLibrary.CarCodes> pairs = library.codePairsFor(carId);
+            FuelUnit unit = library.unitFor(carId);
+            uiHandler.post(() -> {
+                if (sInstance != this) {
+                    return;
+                }
+                fuelUnit = unit;
+                fuelValue = fuelFromRaw(fuelRaw);
+                setUpPairs(carId, pairs);
+                applyPairCodes();
+                // The speed for the estimate: the code of the settings, else the one the code reader found
+                // (it followed the GPS, and its scale is known), else the GPS
+                ReaderGuesses reader = ReaderGuesses.parse(prefs.getString(ReaderGuesses.key(carId), null));
+                speedCode = speed > 0 ? speed : reader != null && reader.speed > 0 ? reader.speed : 0;
+                speedScale = new FuelModel.SpeedScale(reader != null && speedCode == reader.speed ? reader.speedScale : 0);
+                // and the RPM the same way: the model checks that the values look like revs
+                rpmCode = rpm > 0 ? rpm : reader != null && reader.rpm > 0 ? reader.rpm : 0;
+                loadFuelModel(carId);
+                registerStatsCodes();
+            });
+        });
+        CanbusLibrary.sendForCar(app, carId);
     };
 
     private final BroadcastReceiver pipReceiver = new BroadcastReceiver() {
@@ -333,6 +553,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                                         // Launcher not running, or mWorkspace not created yet
                                         return;
                                     }
+                                    // PinnedPipFocus: false whenever the pinned PiP is shown,
+                                    // also right after a touch on the launcher (PinnedPipFocus's
+                                    // window has the focus then), as before PinnedPipFocus.
                                     final boolean alreadyOnHome = launcher.mHasFocus;
                                     Folder openFolder = launcher.getWorkspace().getOpenFolder();
                                     // In all these cases, only animate if we're already on home
@@ -353,6 +576,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             if (packageName == null) {
                                 break;
                             }
+                            mLastReportedPackage = packageName;
                             if (packageName.equals("com.android.launcher3")) {
                                 helpers.setInRecent(true);
                                 helpers.setInAllApps(false);
@@ -376,7 +600,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
 
         private void currentForegroundApplication(String packageName) {
-            SharedPreferences statsPrefs = getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+            SharedPreferences statsPrefs = getApplicationContext().getSharedPreferences(APP_STATS_PREFS, MODE_PRIVATE);
             Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<>()));
             String appPackageName = SystemProperties.get("persist.launcher.packagename", "");
             if (packageName.contains(":")) {
@@ -427,7 +651,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 }
                 break;
             case Keys.FUELSTATS:
-                Log.i("fuelStatsChange", "\t(" + evt.getOldValue() + " -> " + evt.getNewValue() + ")" + " CurrentActivityName: " + getCurrentActivityName());
+                Log.i("fuelStatsChange", "\t(" + evt.getOldValue() + " -> " + evt.getNewValue() + ")");
                 if (String.valueOf(evt.getNewValue()).contains("com.android.launcher")) {
                     helpers.setForegroundAppOpened(false);
                 }
@@ -448,7 +672,16 @@ public class CanbusService extends Service implements PropertyChangeListener {
         } 
     }   
 
+    /**
+     * The app in front: the one ForegroundAppTracker last reported when it runs (the task stack,
+     * apps only), else the most recently used one by UsageStatsManager. That is a binder call
+     * reading a day of usage, on the main thread: 2.3 s right after a boot (FYT, Android 10).
+     */
     private String getCurrentActivityName() {
+        String reported = mLastReportedPackage;
+        if (reported != null && ForegroundAppTracker.isActive()) {
+            return reported;
+        }
         String currentApp = "NULL";
         UsageStatsManager usm = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
         long time = System.currentTimeMillis();
@@ -512,13 +745,13 @@ public class CanbusService extends Service implements PropertyChangeListener {
             wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
             LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             int leftBarSize = Launcher.calculatedLeftBarWidth;
-            if (mapApp) {
-                statsWidthSelector = prefs.getInt(Keys.APP_STATS_WIDTH_SELECTOR, 0);
-                statsWidth = prefs.getInt(Keys.APP_STATS_WIDTH, Launcher.calculatedStatsWidth);
-            } else {
-                statsWidthSelector = prefs.getInt(Keys.STATS_WIDTH_SELECTOR, 0);
-                statsWidth = prefs.getInt(Keys.STATS_WIDTH, Launcher.calculatedStatsWidth);
-            }
+            StatsWindowSize.syncSavedRectangle(this, prefs, mapApp);
+            statsWidthSelector = prefs.getInt(mapApp ? Keys.APP_STATS_WIDTH_SELECTOR : Keys.STATS_WIDTH_SELECTOR, 0);
+            // From the size, not from the width saved: the saved widths of the large and the medium window (from their
+            // longer line), the small one a quarter of the screen less 5 % (the editor does the same sum, so that the old
+            // saves are right too)
+            statsWidth = StatsWindowSize.widthFor(this, statsWidthSelector, Launcher.calculatedStatsWidth,
+                    getScreenWidth(), margin);
             statsHeight = Launcher.calculatedStatsHeight;
 
             if (getResources().getDisplayMetrics().widthPixels <= 1024
@@ -554,22 +787,26 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 consumptionTV.setText("");
                 mileageTV.setText(""); 
             }
-            consumptionTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
-            mileageTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
+            // One font for the three windows, worked out from the small one (never above the standard size)
+            float fontPx = StatsWindowSize.fontPx(this, prefs);
+            applyStatsTextSize(fontPx, consumptionTV, mileageTV);
 
             consumptionTextView = absoluteStats.findViewById(R.id.instantaneous_consumption_val);
             mileageTextView = absoluteStats.findViewById(R.id.driving_mileage_val);
 
             if (statsWidthSelector == 2) {
-                consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
-                mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val_mini, "-.-"));      
+                setValueText(consumptionTextView, R.string.instantaneous_consumption_val_mini, "0.0");
+                setValueText(mileageTextView, R.string.driving_mileage_val_mini, "-.-");
             } else {
-                consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
-                mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, "-.-"));                
+                setValueText(consumptionTextView, R.string.instantaneous_consumption_val, "0.0");
+                setValueText(mileageTextView, R.string.driving_mileage_val, "-.-");
             }
-            
-            consumptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic); 
-            mileageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
+
+            applyStatsTextSize(fontPx, consumptionTextView, mileageTextView);
+            // The saved widths and the font fit each other: this only shrinks the font where the window is cut to the screen
+            // (or the margin changed since), the same measuring as the saved widths
+            fitStatsText(this, statsWidthSelector, statsWidth, statsHeight, consumptionTV, consumptionTextView, mileageTV,
+                    mileageTextView);
             if (background) {
                 if (drawableBg) {
                     absoluteStats.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_custom));
@@ -598,6 +835,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     PixelFormat.TRANSLUCENT
             );
             statsLayoutParams.gravity = Gravity.TOP | Gravity.START;
+            // The overlay follows the pages on every frame of a scroll; WindowManager would animate
+            // each of those moves and the stats would trail the page (see PaneWindows).
+            Log.i(TAG, "stats window move animation off (" + PaneWindows.disableMoveAnimation(statsLayoutParams) + ")");
 
             // tags / prevView (your existing code)
             if (mapApp) {
@@ -629,7 +869,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     // try to read placeholderX/Y if available
                     int placeholderX = statsTopLeftX;
                     int placeholderY = statsTopLeftY;
-                    int placeholderWLocal = statsWidth;
                     try {
                         View pageView = workspaceRef != null ? workspaceRef.getChildAt(statsScreen) : null;
                         if (pageView instanceof com.android.launcher66.CellLayout) {
@@ -637,7 +876,6 @@ public class CanbusService extends Service implements PropertyChangeListener {
                             if (pos != null && pos.length >= 4) {
                                 placeholderX = pos[0];
                                 placeholderY = pos[1];
-                                placeholderWLocal = pos[2] > 0 ? pos[2] : placeholderWLocal;
                             }
                         }
                     } catch (Exception ignored) {}
@@ -654,20 +892,42 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     int pipAbsoluteX = statsAbsoluteBaseX;
                     int desiredScreenX = pipAbsoluteX - currentScroll;
 
-                    // compute safe anchor inside viewport and translation
-                    int viewWidth = Math.max(1, placeholderWLocal);
                     int pageWidth = Math.max(1, statsPageWidth);
-                    int maxAnchorX = Math.max(0, pageWidth - viewWidth);
-                    int safeLayoutX = Math.max(0, Math.min(desiredScreenX, maxAnchorX));
-                    float translationX = (float) (desiredScreenX - safeLayoutX);
+                    if (PaneWindows.relayoutIsAsync(Build.VERSION.SDK_INT)) {
+                        // From Android 14 on a move of the window is a relayoutAsync() that queued
+                        // up behind the panes' on the A55, 0.4-0.5 s. So the window spans the page
+                        // and stays where it is; the stats move inside it by translationX, in the
+                        // frame the pages are drawn in, and the window's edges are the screen's.
+                        // Not touchable, so its width takes no touch from the home screen.
+                        statsLayoutParams.width = pageWidth;
+                        statsLayoutParams.x = 0;
+                        statsLayoutParams.y = placeholderY;
+                        statsHost = new FrameLayout(this);
+                        statsHost.addView(absoluteStats, new FrameLayout.LayoutParams(statsWidth, statsHeight));
 
-                    // assign safe values to layout params BEFORE adding view
-                    statsLayoutParams.x = safeLayoutX;
-                    statsLayoutParams.y = placeholderY;
+                        StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
+                        wm.addView(statsHost, statsLayoutParams);
+                        onStatsWindowAdded();
+                        absoluteStats.setTranslationX(desiredScreenX);
+                    } else {
+                        // Before Android 14 relayout() waits for WindowManager, which places the
+                        // window in the frame it is asked in. The stats are moved as the panes
+                        // are: a window of their own size at their place, partly or wholly beside
+                        // the screen as well (FLAG_LAYOUT_NO_LIMITS, which the panes have), from
+                        // the animation phase (onPagesFrame()). Clamped to the screen, as it was,
+                        // the window stopped at the screen's edge and the stats left it by
+                        // translationX, a new frame of their own window: on the 7862 the one
+                        // render thread draws that after the launcher's frame, a vsync after the
+                        // page.
+                        statsLayoutParams.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+                        statsLayoutParams.x = desiredScreenX;
+                        statsLayoutParams.y = placeholderY;
 
-                    // add view already anchored for the page, then apply translation to place it exactly
-                    wm.addView(absoluteStats, statsLayoutParams);
-                    absoluteStats.setTranslationX(translationX);
+                        StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
+                        wm.addView(absoluteStats, statsLayoutParams);
+                        onStatsWindowAdded();
+                        absoluteStats.setTranslationX(0f);
+                    }
 
                     // attach listener afterward (same as before)
                     if (!mapApp && workspaceRef != null) {
@@ -686,7 +946,19 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     Log.w(TAG, "Failed to attach workspace scroll listener or add view: " + e.getMessage());
                     // fallback: ensure the view is added so at least mapApp path works
                     try {
-                        wm.addView(absoluteStats, statsLayoutParams);
+                        if (statsHost != null ? statsHost.getParent() == null
+                                : absoluteStats.getParent() == null) {
+                            // The window did not make it: the stats go in on their own and are
+                            // moved as a window of their size.
+                            if (statsHost != null) {
+                                statsHost.removeView(absoluteStats);
+                                statsHost = null;
+                                statsLayoutParams.width = statsWidth;
+                            }
+                            StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
+                            wm.addView(absoluteStats, statsLayoutParams);
+                            onStatsWindowAdded();
+                        }
                     } catch (Exception ex) {
                         Log.w(TAG, "Fallback addView failed: " + ex.getMessage());
                     }
@@ -694,7 +966,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
             } else {
                 // mapApp case (no workspace anchoring) — add as before
                 try {
+                    StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
                     wm.addView(absoluteStats, statsLayoutParams);
+                    onStatsWindowAdded();
                 } catch (Exception e) {
                     Log.w(TAG, "addView(mapApp) failed: " + e.getMessage());
                 }
@@ -705,6 +979,20 @@ public class CanbusService extends Service implements PropertyChangeListener {
             mUpdaterDrivingMileage();
             mUpdaterRPM();
         }
+    }
+
+    /** The stats window is in: its limit of obscuring opacity goes to 1, then the window is laid out again. */
+    private void onStatsWindowAdded() {
+        statsWindowAdded = true;
+        StatsOverlayAlpha.onWindowShown(this, () -> {
+            View v = statsHost != null ? statsHost : absoluteStats;
+            if (v == null || v.getParent() == null || statsLayoutParams == null || wm == null) return;
+            try {
+                wm.updateViewLayout(v, statsLayoutParams);
+            } catch (Exception e) {
+                Log.w(TAG, "updateViewLayout after the limit failed: " + e.getMessage());
+            }
+        });
     }
 
     public void removeView() {
@@ -718,12 +1006,20 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 if (wm != null) {
                     // reset translation before removing to leave the view in a known state
                     try { absoluteStats.setTranslationX(0f); } catch (Exception ignored) {}
-                    wm.removeView(absoluteStats);
+                    wm.removeView(statsHost != null ? statsHost : absoluteStats);
+                    if (statsHost != null) {
+                        statsHost.removeView(absoluteStats);
+                    }
                 }
             } catch (Exception e) {
                 Log.w(TAG, "Error removing stats view: " + e.getMessage());
             } finally {
+                if (statsWindowAdded) {
+                    statsWindowAdded = false;
+                    StatsOverlayAlpha.onWindowHidden(this);
+                }
                 absoluteStats = null;
+                statsHost = null;
                 statsLayoutParams = null;
                 workspaceRef = null;
                 statsAbsoluteBaseX = 0;
@@ -799,6 +1095,51 @@ public class CanbusService extends Service implements PropertyChangeListener {
         // desired Y - make sure to use placeholderY if that was stored in screen coordinates
         int desiredY = placeholderY;
 
+        if ((statsLayoutParams.flags & WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS) != 0) {
+            // A window of the stats' size at their place, moved as a pane is (see addStatsView()).
+            // Beside the screen before and after, it is left where it is: the move would show
+            // nothing and only cost a relayout.
+            try {
+                int width = statsLayoutParams.width > 0 ? statsLayoutParams.width : Math.max(1, placeholderW);
+                int screenWidth = Math.max(pageWidth, getScreenWidth());
+                int oldX = statsLayoutParams.x;
+                boolean moved = oldX != desiredScreenX && !PaneWindows.staysOffScreen(oldX,
+                        oldX + width, desiredScreenX, desiredScreenX + width, true, screenWidth);
+                if ((moved || statsLayoutParams.y != desiredY) && wm != null) {
+                    statsLayoutParams.x = desiredScreenX;
+                    statsLayoutParams.y = desiredY;
+                    wm.updateViewLayout(absoluteStats, statsLayoutParams);
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to update absoluteStats position: " + e.getMessage());
+            }
+            return;
+        }
+
+        if (statsHost != null) {
+            // The page-wide window stays; only the stats move inside it, see addStatsView().
+            try {
+                if (statsLayoutParams.y != desiredY || statsLayoutParams.width != pageWidth) {
+                    statsLayoutParams.x = 0;
+                    statsLayoutParams.y = desiredY;
+                    statsLayoutParams.width = pageWidth;
+                    wm.updateViewLayout(statsHost, statsLayoutParams);
+                }
+                int current = Math.round(absoluteStats.getTranslationX());
+                int width = absoluteStats.getWidth() > 0 ? absoluteStats.getWidth() : statsWidth;
+                // Beside the window before and after: drawn again, the stats would show nothing
+                // (HWUI: "Dirty ... doesn't intersect with 0 0 1080 117", on every frame of a swipe
+                // on the A55, log 28-10-2026 02:01).
+                if (current != desiredScreenX && !PaneWindows.staysOffScreen(current,
+                        current + width, desiredScreenX, desiredScreenX + width, true, pageWidth)) {
+                    absoluteStats.setTranslationX(desiredScreenX);
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to update absoluteStats position: " + e.getMessage());
+            }
+            return;
+        }
+
         boolean needUpdateLayout = false;
         if (statsLayoutParams.x != safeLayoutX) {
             statsLayoutParams.x = safeLayoutX;
@@ -813,8 +1154,15 @@ public class CanbusService extends Service implements PropertyChangeListener {
             if (needUpdateLayout && wm != null && absoluteStats != null) {
                 wm.updateViewLayout(absoluteStats, statsLayoutParams);
             }
-            // always apply translation; positive or negative allowed
-            if (absoluteStats.getTranslationX() != translationX) {
+            // always apply translation; positive or negative allowed -- unless the window stays
+            // and the stats are beside it before and after: drawn again, they would show nothing
+            int current = Math.round(absoluteStats.getTranslationX());
+            int target = Math.round(translationX);
+            int width = Math.max(1, absoluteStats.getWidth() > 0 ? absoluteStats.getWidth() : viewWidth);
+            int windowWidth = statsLayoutParams.width > 0 ? statsLayoutParams.width : Integer.MAX_VALUE;
+            boolean hidden = !needUpdateLayout && PaneWindows.staysOffScreen(current,
+                    current + width, target, target + width, true, windowWidth);
+            if (absoluteStats.getTranslationX() != translationX && !hidden) {
                 absoluteStats.setTranslationX(translationX);
             }
         } catch (Exception e) {
@@ -836,145 +1184,408 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
 
     public void addNotify() {
-        DataCanbus.NOTIFY_EVENTS[fuel].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[range].addNotify(this.mNotifyCanbus, 1);
-        DataCanbus.NOTIFY_EVENTS[rpm].addNotify(this.mNotifyCanbus, 1);
+        // The codes may differ from those of the last start
+        unregisterStatsCodes();
+        DataCanbus.NOTIFY_EVENTS[1000].addNotify(this.mNotifyCar, 1);
     }
 
     public void removeNotify() {
-        DataCanbus.NOTIFY_EVENTS[fuel].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[range].removeNotify(this.mNotifyCanbus);
-        DataCanbus.NOTIFY_EVENTS[rpm].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[1000].removeNotify(this.mNotifyCar);
+        unregisterStatsCodes();
+    }
+
+    private void registerStatsCodes() {
+        unregisterStatsCodes();
+        // the codes of all the library's pairs: which one the radio reports is found out from their values
+        Set<Integer> wanted = new LinkedHashSet<>(Arrays.asList(fuelCode, rangeCode, rpmCode, speedCode));
+        FuelUnit unit = fuelUnit;
+        if (unit != null && unit.unitCode() >= 0) {
+            wanted.add(unit.unitCode());
+        }
+        CodePairChooser chooser = pairChooser;
+        if (chooser != null) {
+            wanted.addAll(chooser.codes());
+        }
+        for (int code : wanted) {
+            if (code > 0 && statsCodesRegistered.add(code)) {
+                DataCanbus.PROXY.unregister(statsCallback, code);
+                DataCanbus.PROXY.register(statsCallback, code, 1);
+            }
+        }
+    }
+
+    /** The pairs of the library for the car: a new chooser, or the one that is there if nothing changed. Main thread. */
+    private void setUpPairs(int carId, List<CanbusLibrary.CarCodes> pairs) {
+        CodePairChooser chooser = pairChooser;
+        if (chooser != null && pairCarId == carId && chooser.status().pairs.equals(pairs)) {
+            return;
+        }
+        pairCarId = carId;
+        lastCodeValues.clear();
+        if (pairs.isEmpty()) {
+            pairChooser = null;
+            sPairInfo = null;
+            return;
+        }
+        chooser = new CodePairChooser(pairs);
+        String saved = prefs.getString(CodePairChooser.key(carId), null);
+        pairSaved = saved == null ? "" : saved;
+        CanbusLibrary.CarCodes before = CodePairChooser.decode(saved);
+        if (before != null) {
+            chooser.restore(before);
+        }
+        pairChooser = chooser;
+        sPairInfo = new PairInfo(carId, chooser.status());
+    }
+
+    /**
+     * The fuel and range codes in use: those of the settings, else those of the pair in use, else 0. Returns whether
+     * the fuel code changed, which is another model of the estimate. Main thread.
+     */
+    private boolean applyPairCodes() {
+        CodePairChooser chooser = pairChooser;
+        CanbusLibrary.CarCodes pair = chooser == null ? null : chooser.status().pair();
+        int newFuel = fuel > 0 ? fuel : pair != null && pair.fuel > 0 ? pair.fuel : 0;
+        int newRange = range > 0 ? range : pair != null && pair.range > 0 ? pair.range : 0;
+        boolean fuelChanged = newFuel != fuelCode;
+        boolean rangeChanged = newRange != rangeCode;
+        fuelCode = newFuel;
+        rangeCode = newRange;
+        if (fuelChanged) {
+            Integer v = lastCodeValues.get(newFuel);
+            fuelRaw = v == null ? 0 : v;
+            fuelValue = fuelFromRaw(fuelRaw);
+        }
+        if (rangeChanged) {
+            Integer v = lastCodeValues.get(newRange);
+            rangeValue = v == null ? 0 : v;
+        }
+        return fuelChanged;
+    }
+
+    /** The pair in use changed (a value confirmed one, or the chosen one has been silent for long). Main thread. */
+    private void onPairChanged() {
+        CodePairChooser chooser = pairChooser;
+        if (chooser == null || sInstance != this) {
+            return;
+        }
+        CodePairChooser.Status status = chooser.status();
+        sPairInfo = new PairInfo(pairCarId, status);
+        boolean fuelChanged = applyPairCodes();
+        if (fuelChanged) {
+            loadFuelModel(pairCarId);
+        }
+        if (status.confirmed) {
+            final String text = CodePairChooser.encode(status.index, status.pair());
+            if (!text.equals(pairSaved)) {
+                pairSaved = text;
+                final String key = CodePairChooser.key(pairCarId);
+                // apply() writes in the background, but it also takes the editor's lock: not here
+                CanbusLibrary.executor().execute(() -> prefs.edit().putString(key, text).apply());
+            }
+        }
+        if (fuelChanged && lastCodeValues.containsKey(fuelCode)) {
+            mUpdaterOilExpend();
+        }
+        if (lastCodeValues.containsKey(rangeCode)) {
+            mUpdaterDrivingMileage();
+        }
+    }
+
+    private void unregisterStatsCodes() {
+        for (int code : statsCodesRegistered) {
+            DataCanbus.PROXY.unregister(statsCallback, code);
+        }
+        statsCodesRegistered.clear();
+    }
+
+    /**
+     * The car's mass or engine displacement changed in the settings: the model of the estimate starts from the new values
+     * at once, no restart. Any thread.
+     */
+    public static void carDataChanged() {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            CanbusService service = sInstance;
+            if (service != null) {
+                service.applyCarData();
+            }
+        });
+    }
+
+    /** The mass and engine displacement of the settings to the model of the estimate. Main thread. */
+    private void applyCarData() {
+        if (fuelModel != null && prefs != null) {
+            fuelModel.setCar(carDatum(Keys.VEHICLE_MASS), carDatum(Keys.ENGINE_DISPLACEMENT));
+        }
+    }
+
+    /** A number of the settings: empty, 0 or not a number is 0 (not given). */
+    private int carDatum(String key) {
+        try {
+            return Integer.parseInt(prefs.getString(key, "0").trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    /**
+     * After a wake the car may have lost its request (the canbus connection does not always drop and
+     * come back, which is what sends it again): once more, when the unit has had a moment to settle.
+     * Any thread.
+     */
+    public static void resendRequestAfterWake() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            CanbusService service = sInstance;
+            if (service == null) {
+                return;
+            }
+            int carId = DataCanbus.DATA[1000];
+            if (carId != 0) {
+                CanbusLibrary.sendForCar(service.getApplicationContext(), carId);
+            }
+        }, 3000L);
+    }
+
+    /** The consumption in the raw value of the fuel code: masked where the protocol keeps the unit in a bit of it. */
+    private int fuelFromRaw(int raw) {
+        FuelUnit unit = fuelUnit;
+        return unit != null ? unit.consumption(raw) : raw;
+    }
+
+    /**
+     * The unit of the consumption the protocol reports now: L/100 km or L/h, or null when the library does not say, the
+     * code of the unit has not been reported yet, or it is a unit the launcher does not use (gallons, mpg).
+     */
+    private FuelUnit.Unit protocolUnit() {
+        FuelUnit unit = fuelUnit;
+        if (unit == null) {
+            return null;
+        }
+        return unit.unitNow(unit.unitCode() >= 0 ? lastCodeValues.get(unit.unitCode()) : null, fuelRaw);
     }
 
     public void mUpdaterOilExpend() {
-        if (userLayout && userStats && absoluteStats != null) {
-            int value = DataCanbus.DATA[fuel];
-            if (absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
-                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
-                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
-                if (value > 0 && value < 3001) {
-                    estimateOil = false;
-                    if (statsWidthSelector == 2) {
-                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, String.format(Locale.getDefault(), "%d.%d", value / 10, value % 10)));
-                    } else {
-                        consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%d.%d", value / 10, value % 10)));   
-                    }
-                } else {
-                    if (horsePower > 0 && vehicleMass > 0) {
-                        estimateOil = true;
-                    } else {
-                        if (statsWidthSelector == 2) {
-                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
-                        } else {
-                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));  
-                        }
-                    }
-                }
-            }         
+        if (fuelModel != null) {
+            long now = System.currentTimeMillis();
+            touchRpm(now);
+            fuelModel.onFuel(now, fuelValue);
+            if (now - fuelModelSavedAt > FUEL_MODEL_SAVE_MS) {
+                saveFuelModel();        // what it learned survives a restart, now and then
+            }
+        }
+        showFuel();
+    }
+
+    /**
+     * The consumption in the widget: the car's value in the unit {@link ConsumptionUnits} says (the unit of the protocol, or
+     * litres per hour at a low speed), the estimate where the car gives none, else 0. Main thread.
+     */
+    private void showFuel() {
+        if (!(userLayout && userStats && absoluteStats != null)
+                || absoluteStats.findViewById(R.id.instantaneous_consumption_val) == null) {
+            return;
+        }
+        int value = fuelValue;
+        ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
+        ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
+        if (value > 0 && value < 3001) {
+            ConsumptionUnits.Shown shown = carValueShown(value);
+            double blended = fuelModel != null ? fuelModel.blendedCarL100() : Double.NaN;
+            if (!Double.isNaN(blended) && (shown == null || shown.unit != ConsumptionUnits.Unit.LH)) {
+                // coming back from the estimate by a large jump: a value in between, with a tilde as the estimate has
+                setFuelBlendedText(blended);
+            } else {
+                setFuelText(value, shown);
+            }
+        } else if (!showFuelEstimate()) {
+            // No value from the car, and no estimate (none learned yet, or no fuel code)
+            setFuelText(0, value == 0 ? carValueShown(0) : null);
+        }
+    }
+
+    /** What {@link ConsumptionUnits} makes of the car's value now; null = as it was shown before (L/100 km). */
+    private ConsumptionUnits.Shown carValueShown(int value) {
+        FuelModel model = fuelModel;
+        FuelUnit.Unit reported = protocolUnit();
+        ConsumptionUnits.Unit protocol = reported == null ? null
+                : reported == FuelUnit.Unit.LH ? ConsumptionUnits.Unit.LH : ConsumptionUnits.Unit.L100;
+        if (model == null) {
+            return ConsumptionUnits.forCarValue(value, protocol, false, false, false, 0, false);
+        }
+        return ConsumptionUnits.forCarValue(value, protocol, model.thresholdCar(), model.lowSpeed(),
+                model.speedKnown(System.currentTimeMillis()), model.speedKmh(), model.isMoving());
+    }
+
+    /** A value in between the estimate and the car's (L/100 km): shown like the estimate, with a tilde. */
+    private void setFuelBlendedText(double l100) {
+        boolean mini = statsWidthSelector == 2;
+        fuelShownPerHour = false;
+        setValueText(consumptionTextView,
+                mini ? R.string.instantaneous_consumption_estimated_mini : R.string.instantaneous_consumption_estimated,
+                String.format(Locale.ROOT, "%.1f", l100));
+    }
+
+    /** The text of a value of the car: {@code raw} as L/100 km (× 10) unless {@code shown} says litres per hour. */
+    private void setFuelText(int raw, ConsumptionUnits.Shown shown) {
+        boolean mini = statsWidthSelector == 2;
+        fuelShownPerHour = shown != null && shown.unit == ConsumptionUnits.Unit.LH;
+        if (fuelShownPerHour) {
+            // the small window shows no unit at all: the number only, as for L/100 km
+            setValueText(consumptionTextView,
+                    mini ? R.string.instantaneous_consumption_val_mini : R.string.instantaneous_consumption_per_hour,
+                    String.format(Locale.ROOT, "%.1f", shown.value));
+            return;
+        }
+        // L/100 km: the value of the car (of the protocol: its own decimal), as it was
+        int tenths = shown != null ? (int) Math.round(shown.value * 10) : raw;
+        setValueText(consumptionTextView,
+                mini ? R.string.instantaneous_consumption_val_mini : R.string.instantaneous_consumption_val,
+                String.format(Locale.getDefault(), "%d.%d", tenths / 10, tenths % 10));
+    }
+
+    /**
+     * The estimate in the widget, where the car gives no value and the model has learned enough of the car's
+     * own values; false (nothing shown) otherwise. Main thread.
+     */
+    private boolean showFuelEstimate() {
+        FuelModel.Estimate e = fuelModel != null ? fuelModel.estimate(System.currentTimeMillis()) : null;
+        if (e == null || consumptionTextView == null) {
+            return false;
+        }
+        boolean mini = statsWidthSelector == 2;
+        // the small window has no unit, the tilde alone says it is an estimate
+        int text = mini ? R.string.instantaneous_consumption_estimated_mini
+                : e.perHour ? R.string.instantaneous_consumption_idle : R.string.instantaneous_consumption_estimated;
+        setValueText(consumptionTextView, text, e.text());
+        return true;
+    }
+
+    /**
+     * Sets the text of a value from a string resource with the number: in the large and the medium window the unit (all that
+     * follows the number) is {@link StatsWindowSize#UNIT_SCALE} of the size of the rest; the small window has no unit.
+     */
+    private void setValueText(TextView view, @StringRes int resId, String number) {
+        String text = view.getContext().getString(resId, number);
+        int unit = StatsWindowSize.unitStart(text, number);
+        if (statsWidthSelector <= 1 && unit >= 0 && unit < text.length()) {
+            SpannableString span = new SpannableString(text);
+            span.setSpan(new RelativeSizeSpan(StatsWindowSize.UNIT_SCALE), unit, text.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            view.setText(span);
+        } else {
+            view.setText(text);
+        }
+    }
+
+    /**
+     * After a new speed: the estimate follows it while the car gives no value, and the car's own value changes its unit
+     * at a low speed (litres per hour under 10 km/h, back to L/100 km above 13). Main thread.
+     */
+    private void refreshFuelEstimate() {
+        if (fuelModel == null) {
+            return;
+        }
+        if (!fuelModel.carGivesNoValue(System.currentTimeMillis())) {
+            if (fuelModel.lowSpeed() || fuelShownPerHour) {
+                showFuel();
+            }
+            return;
+        }
+        if (userLayout && userStats && absoluteStats != null
+                && absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
+            showFuelEstimate();
+        }
+    }
+
+    /** The code of the unit changed (the car, or its screen, switched between L/100 km and L/h). Main thread. */
+    private void onFuelUnitChanged() {
+        if (fuelModel != null && fuelModel.carGivesNoValue(System.currentTimeMillis())) {
+            refreshFuelEstimate();
+        } else {
+            showFuel();
+        }
+    }
+
+    /** The model of the car and its fuel code, from the settings; none without a fuel code. Main thread. */
+    private void loadFuelModel(int carId) {
+        saveFuelModel();
+        if (fuelCode <= 0) {
+            fuelModel = null;
+            fuelModelKey = null;
+            return;
+        }
+        String key = FuelModel.key(carId, fuelCode);
+        if (!key.equals(fuelModelKey)) {
+            fuelModel = FuelModel.parse(prefs.getString(key, null));
+            fuelModelKey = key;
+            applyCarData();
+        }
+    }
+
+    private void saveFuelModel() {
+        fuelModelSavedAt = System.currentTimeMillis();
+        if (fuelModel != null && fuelModelKey != null && prefs != null) {
+            prefs.edit().putString(fuelModelKey, fuelModel.serialize()).apply();
+        }
+    }
+
+    /** A value of the speed code: km/h once its scale is known. Main thread. */
+    private void onSpeedCode() {
+        speedScale.onValue(speedValue);
+        int scale = speedScale.scale();
+        if (scale > 0) {
+            onDriving(speedValue / (double) scale);
+        }
+        if (scale > 0 && fuelModel != null) {
+            long now = System.currentTimeMillis();
+            fuelModel.onSpeed(now, speedValue / (double) scale, true);
+            touchRpm(now);
+            refreshFuelEstimate();
         }
     }
 
     public void mUpdaterDrivingMileage() {
         if (userLayout && userStats && absoluteStats != null) {
-            int value = DataCanbus.DATA[range];
+            int value = rangeValue;
             if (absoluteStats.findViewById(R.id.driving_mileage_val) != null) {
                 ((TextView) absoluteStats.findViewById(R.id.driving_mileage_str)).setTextColor(Color.parseColor(textColor));
                 ((TextView) absoluteStats.findViewById(R.id.driving_mileage_val)).setTextColor(Color.parseColor(textColor));
-                if (value > -1 && value < 2001) {
-                    if (statsWidthSelector == 2) {
-                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val_mini, String.valueOf(value)));
-                    } else {
-                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, String.valueOf(value)));              
-                    }
-                } else {
-                    if (statsWidthSelector == 2) {
-                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val_mini, "-.-")); 
-                    } else {
-                        mileageTextView.setText(mileageTextView.getContext().getString(R.string.driving_mileage_val, "-.-"));               
-                    }
-                }
+                boolean known = value > -1 && value < 2001;
+                setValueText(mileageTextView,
+                        statsWidthSelector == 2 ? R.string.driving_mileage_val_mini : R.string.driving_mileage_val,
+                        known ? String.valueOf(value) : "-.-");
             }
         }
     }
 
     public void mUpdaterRPM() {
-        if (userLayout && userStats) {
-            revolutionsPerMinute = DataCanbus.DATA[rpm];          
+        if (fuelModel != null) {
+            fuelModel.onRpm(System.currentTimeMillis(), rpmValue);
         }
     }
 
-    private int aboveSpeedCounter = 0;
-    private boolean speedValidated = false;
-    private static final int REQUIRED_SAMPLES = 4; // 2s / 0.5s = 4
-        
     /**
-     * In my case canbus stops sending the fuel consumption when the speed drops below ~40km/h.
-     * This is an attemp to ROUGHLY estimate the fuel consumption to provide some insight even though it undoubtedly is an inaccurate calculation.
-     * */    
+     * The RPM is only reported when it changes, and the model takes a value older than 5 s as unknown: with each
+     * new speed or fuel value the last one is given again (at a stop with the engine off it stays 0). Main thread.
+     */
+    private void touchRpm(long now) {
+        if (fuelModel != null && rpmCode > 0 && lastCodeValues.containsKey(rpmCode)) {
+            fuelModel.onRpm(now, rpmValue);
+        }
+    }
+
+    /**
+     * The GPS speed, for the estimate of the consumption where the car gives none (FuelModel), when there is
+     * no speed code, and to find the scale of the speed code.
+     */
     private void requestLocationUpdates() {
         removeLocationUpdates();
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        LocationRequest locationRequest = new LocationRequest.Builder(1000)  // Initial interval
-                .setMinUpdateIntervalMillis(500)  
-                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-                .build();
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && 
             ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            
-            locationCallback = new LocationCallback() {
-
-                @Override
-                public void onLocationResult(@NonNull LocationResult locationResult) {
-                    if (locationResult == null) {
-                        return;
-                    }
-                    for (Location location : locationResult.getLocations()) {
-                        float speed = location.getSpeed(); // m/s
-                        velocity = speed * 3.6f; // in km/h
-                        if (estimateOil && userLayout && userStats && absoluteStats != null) {
-                            if (absoluteStats.findViewById(R.id.instantaneous_consumption_val) != null) {
-                                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
-                                ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
-                                if (revolutionsPerMinute > -1) {
-                                    // Step 1: 2-second validation sampled every 500ms
-                                    if (velocity > 5) {
-                                        if (!speedValidated) {
-                                            aboveSpeedCounter++;
-                                            if (aboveSpeedCounter >= REQUIRED_SAMPLES) {
-                                                speedValidated = true; // Passed 2-second check once
-                                            }
-                                        }
-                                    } else {
-                                        // Reset validation if it drops below threshold
-                                        aboveSpeedCounter = 0;
-                                        speedValidated = false;
-                                    }
-
-                                    // Step 2: Allow flow only after validation
-                                    if (speedValidated && velocity < 38 && velocity > 5) {
-                                        double fuelConsumption = calculateFuelConsumption(velocity, revolutionsPerMinute, horsePower, vehicleMass);
-                                        if (statsWidthSelector == 2) {
-                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
-                                        } else {
-                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, String.format(Locale.getDefault(), "%.1f", fuelConsumption)));
-                                        }
-                                    } else {
-                                        if (statsWidthSelector == 2) {
-                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val_mini, "0.0"));
-                                        } else {
-                                            consumptionTextView.setText(consumptionTextView.getContext().getString(R.string.instantaneous_consumption_val, "0.0"));
-                                        }
-                                    }
-                                } 
-                            }
-                        }
-                    }
-                }
-            };
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+            // The speed, about every half second: the GPS provider of the platform, Google Play
+            // services only if the unit has none (see DeviceLocation).
+            locationUpdates = DeviceLocation.requestUpdates(this, 500L, this::onLocation, Looper.getMainLooper());
         } else {            
             ActivityCompat.requestPermissions(
                     Launcher.getLauncher(),
@@ -987,138 +1598,98 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
 
-    private void removeLocationUpdates() {
-        if (fusedLocationClient != null && locationCallback != null) {
-            fusedLocationClient.removeLocationUpdates(locationCallback);
+    /** The speed (km/h) from either source: driving time for the choice of the pair of codes. Main thread. */
+    private void onDriving(double kmh) {
+        CodePairChooser chooser = pairChooser;
+        if (chooser != null && chooser.onDriving(System.currentTimeMillis(), kmh > DRIVING_KMH)) {
+            onPairChanged();
         }
-        locationCallback = null;
-        fusedLocationClient = null;
     }
 
-    private static final double FUEL_DENSITY = 0.74; // kg/L (tune per fuel/vehicle)
-    private static final double AIR_DENSITY = 1.225; // kg/m^3
-    private static final double DEFAULT_BSFC = 0.28; // kg/kWh (≈280 g/kWh) - tune per vehicle
-    private static final double DEFAULT_CdA = 0.66; // Cd * frontal area (m^2) - tune per vehicle
-    private static final double DEFAULT_CRR = 0.015; // rolling resistance coefficient - tune per tyres/surface
-    private static final double G = 9.81;
-    private static final double RPM_TO_SPEED_RATIO = 40.0; // fallback mapping rpm := speed * ratio (km/h -> rpm)
-    private static final double IDLE_FUEL_L_PER_H = 1.1; // typical idle fuel consumption (L/h) - tune as needed
-    private static final double MIN_SPEED_FOR_CONVERSION_KMH = 5.0; // below this we use a safe conversion floor
-    private static final double MAX_REASONABLE_L_PER_100KM = 200.0; // hard cap to avoid absurd display
+    /**
+     * The barometer, if the unit has one: its altitude (about every second, exact to 0.5 m) gives the grade of the road
+     * better than the GPS's; the model takes no altitude from the GPS while it is fresh. The readings are given on the
+     * main thread.
+     */
+    private SensorManager sensorManager;
+    private final SensorEventListener pressureListener = new SensorEventListener() {
+        private double sum;
+        private int count;
+        private long since;
 
-    // --- Smoothing state (keeps method backward-compatible; internal smoothing only) ---
-    private static double smoothedLPer100km = Double.NaN;
-    // Tune these: lower values => smoother/slower. Use larger rise alpha to show spikes quickly.
-    private static final double SMOOTH_ALPHA_RISE = 0.35; // reacts faster when consumption increases
-    private static final double SMOOTH_ALPHA_FALL = 0.12; // reacts slower when consumption decreases
-
-    // --- Decreasing detection state for the "3 second decrease => show 0.8 L/100km" rule ---
-    private static double lastSpeedForDecrease = Double.NaN;
-    private static long decreaseStartTimeMs = -1;
-    private static final long DECREASE_HOLD_MS = 3000; // 3 seconds
-    private static final double DECREASE_EPS_KMH = 0.5; // tolerance to ignore tiny jitter
-    private static final double FORCED_DISPLAY_ON_LONG_DECAY_L100 = 0.8; // value to show after 5s decreasing
-
-    public static double calculateFuelConsumption(double speedVal, int rpmInput, int horsePowerVal, int vehicleMassVal) {
-        long now = System.currentTimeMillis();
-
-        // Defensive bounds
-        if (speedVal < 0) speedVal = 0;
-        if (vehicleMassVal <= 0) vehicleMassVal = 1200; // fallback mass
-        if (horsePowerVal < 0) horsePowerVal = 0;
-
-        // --- detect sustained decreasing speed ---
-        if (Double.isNaN(lastSpeedForDecrease)) {
-            lastSpeedForDecrease = speedVal;
-            decreaseStartTimeMs = -1;
-        } else {
-            if (speedVal < lastSpeedForDecrease - DECREASE_EPS_KMH) {
-                // speed decreased beyond epsilon
-                if (decreaseStartTimeMs == -1) decreaseStartTimeMs = now;
-            } else if (speedVal > lastSpeedForDecrease + DECREASE_EPS_KMH) {
-                // speed increased -> reset decreasing detection
-                decreaseStartTimeMs = -1;
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            long now = System.currentTimeMillis();
+            sum += SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, event.values[0]);
+            count++;
+            if (since == 0) {
+                since = now;
             }
-            lastSpeedForDecrease = speedVal;
+            if (now - since >= 1000L) {
+                if (fuelModel != null) {
+                    fuelModel.onBarometer(now, sum / count);
+                }
+                sum = 0;
+                count = 0;
+                since = now;
+            }
         }
 
-        // If decreasing lasted longer than threshold, force the display to 0.8 L/100km
-        if (decreaseStartTimeMs != -1 && (now - decreaseStartTimeMs) >= DECREASE_HOLD_MS) {
-            smoothedLPer100km = FORCED_DISPLAY_ON_LONG_DECAY_L100;
-            // return rounded to 1 decimal
-            return Math.round(smoothedLPer100km * 10.0) / 10.0;
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
         }
+    };
 
-        // 1) Estimate rpm if not available
-        double rpmVal;
-        if (rpmInput <= 0) {
-            rpmVal = (speedVal > 0.1) ? (speedVal * RPM_TO_SPEED_RATIO) : 900.0; // assume idle ~900 rpm if stationary
-        } else {
-            rpmVal = rpmInput;
+    private void registerBarometer() {
+        if (sensorManager != null) {
+            return;
         }
-
-        // 2) Speed in m/s
-        double v = speedVal / 3.6;
-
-        // 3) Aerodynamic power (Watts): 0.5 * rho * CdA * v^3
-        double cdA = DEFAULT_CdA; // could be tuned externally if available
-        double aeroPowerW = 0.5 * AIR_DENSITY * cdA * v * v * v;
-
-        // 4) Rolling resistance power (Watts): Crr * m * g * v
-        double crr = DEFAULT_CRR;
-        double rollingPowerW = crr * vehicleMassVal * G * v;
-
-        // 5) Slope/acceleration unknown here; we can use a small extra baseline to account for auxiliaries
-        double auxiliaryPowerW = 400.0; // ~400 W for ancillaries (fan, electrics); tweak as needed
-
-        // 6) Tractive power needed (Watts) to overcome resistances
-        double tractivePowerW = aeroPowerW + rollingPowerW;
-
-        // 7) Estimate available engine power at current rpm as fraction of peak hp (very approximate)
-        double assumedMaxRpm = 6000.0;
-        double rpmFraction = Math.min(1.0, Math.max(0.05, rpmVal / assumedMaxRpm));
-        double engineMaxPowerW = horsePowerVal * 745.7; // convert HP to Watts (peak)
-        double approxEnginePowerW = engineMaxPowerW * rpmFraction * 0.85; // reflect driveline losses/partial load
-
-        // 8) Ensure mechanicalPowerW is reasonable (prevents tiny numbers)
-        double mechanicalPowerW = Math.max(tractivePowerW + auxiliaryPowerW, approxEnginePowerW * 0.25);
-
-        // 9) Detect likely mountain / heavy-load scenario: high RPM but low vehicle speed => engine working hard without speed increase.
-        double bsfcMultiplier = 1.0;
-        if (rpmVal > 2500 && speedVal < 30 && rpmInput > 0) {
-            bsfcMultiplier = 1.25; // tune between 1.1..1.5 if needed
+        SensorManager manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Sensor pressure = manager == null ? null : manager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        if (pressure == null) {
+            return;
         }
-
-        // 10) Convert mechanicalPowerW to kW and compute fuel mass rate using BSFC
-        double powerKW = Math.max(0.0, mechanicalPowerW) / 1000.0;
-        double bsfc = DEFAULT_BSFC * bsfcMultiplier; // kg / kWh
-        double fuelKgPerHour = powerKW * bsfc;
-
-        // Ensure we at least account for idle fuel
-        double idleKgPerHour = IDLE_FUEL_L_PER_H * FUEL_DENSITY;
-        if (fuelKgPerHour < idleKgPerHour) fuelKgPerHour = idleKgPerHour;
-
-        // Convert to L/h
-        double fuelLPerHour = fuelKgPerHour / FUEL_DENSITY;
-
-        // 11) Convert to L/100km for display. Avoid dividing by very small speeds.
-        double speedForConversion = Math.max(speedVal, MIN_SPEED_FOR_CONVERSION_KMH);
-        double lPer100kmRaw = (fuelLPerHour / speedForConversion) * 100.0;
-
-        // 12) Apply some sanity clamps
-        if (Double.isNaN(lPer100kmRaw) || Double.isInfinite(lPer100kmRaw)) lPer100kmRaw = IDLE_FUEL_L_PER_H * 100.0 / Math.max(speedForConversion, 1.0);
-        lPer100kmRaw = Math.max(0.0, Math.min(MAX_REASONABLE_L_PER_100KM, lPer100kmRaw));
-
-        // --- Smoothing: asymmetric EMA (rise quicker than fall) ---
-        if (Double.isNaN(smoothedLPer100km)) {
-            smoothedLPer100km = lPer100kmRaw;
-        } else {
-            double alpha = (lPer100kmRaw > smoothedLPer100km) ? SMOOTH_ALPHA_RISE : SMOOTH_ALPHA_FALL;
-            smoothedLPer100km = alpha * lPer100kmRaw + (1.0 - alpha) * smoothedLPer100km;
+        if (manager.registerListener(pressureListener, pressure, SensorManager.SENSOR_DELAY_NORMAL, uiHandler)) {
+            sensorManager = manager;
         }
+    }
 
-        // return rounded to 1 decimal place
-        return Math.round(smoothedLPer100km * 10.0) / 10.0;
+    private void unregisterBarometer() {
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(pressureListener);
+            sensorManager = null;
+        }
+    }
+
+    /** A fix from the location updates: its speed, for the estimate and for the scale of the speed code, and its altitude. */
+    private void onLocation(Location location) {
+        if (location == null || !location.hasSpeed()) {
+            return;
+        }
+        if (fuelModel != null && location.hasAltitude()) {
+            // for the grade of the road, also where the speed comes from a code
+            fuelModel.onAltitude(System.currentTimeMillis(), location.getAltitude(),
+                    location.hasVerticalAccuracy() ? location.getVerticalAccuracyMeters() : 10.0);
+        }
+        double kmh = location.getSpeed() * 3.6;
+        onDriving(kmh);
+        if (speedCode > 0) {
+            speedScale.onGps(kmh);
+        }
+        // The speed code, once its scale is known, is the better speed: faster, and exactly 0 at a stop
+        if (fuelModel != null && (speedCode <= 0 || speedScale.scale() == 0)) {
+            long now = System.currentTimeMillis();
+            fuelModel.onSpeed(now, kmh, false);
+            touchRpm(now);
+            refreshFuelEstimate();
+        }
+    }
+
+    private void removeLocationUpdates() {
+        if (locationUpdates != null) {
+            locationUpdates.remove();
+        }
+        locationUpdates = null;
     }
 
     public static class PropertyChangeClass {
@@ -1146,4 +1717,35 @@ public class CanbusService extends Service implements PropertyChangeListener {
             mPropertyChangeSupport.removePropertyChangeListener(name, listener);
         }
     }
+
+    /** The text size of the window: the saved one (px), else the launcher's standard (sp). */
+    private static void applyStatsTextSize(float fontPx, TextView... views) {
+        for (TextView view : views) {
+            if (fontPx > 0f) {
+                view.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontPx);
+            } else {
+                // not worked out yet: the standard size of the launcher
+                view.setTextSize(TypedValue.COMPLEX_UNIT_PX, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                        Launcher.textSizeBasic, view.getResources().getDisplayMetrics()));
+            }
+        }
+    }
+
+    /**
+     * Only a safety: the font and the widths are saved to fit each other (StatsWindowSize), but the window can be cut to the
+     * screen or the margin changed after that. Shrinks the font of the four fields where the window is too narrow or too
+     * low for the text, by the same measuring as the saved widths; does nothing where it fits.
+     */
+    private static void fitStatsText(Context context, int selector, int width, int height, TextView consumptionLabel,
+            TextView consumptionValue, TextView mileageLabel, TextView mileageValue) {
+        if (width <= 0 || height <= 0) return;
+        float px = consumptionValue.getTextSize();
+        if (px <= 0f) return;
+        float scale = StatsWindowSize.fitScaleOfWindow(context, selector, px, width, height);
+        if (scale >= 1f) return;
+        for (TextView view : new TextView[]{ consumptionLabel, consumptionValue, mileageLabel, mileageValue }) {
+            view.setTextSize(TypedValue.COMPLEX_UNIT_PX, px * scale);
+        }
+    }
+
 }

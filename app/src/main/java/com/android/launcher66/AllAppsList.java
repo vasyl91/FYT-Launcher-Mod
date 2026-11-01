@@ -67,9 +67,6 @@ public class AllAppsList {
                     if (info.componentName.getPackageName().equals(FytPackage.GaodeACTION)) {
                         Config.EXISTAMPAUTO = true;
                     }
-                    if (info.componentName.getPackageName().equals(FytPackage.voiceAction)) {
-                        Config.EXISTVOICE = true;
-                    }
                     data.add(info);
                     this.added.add(info);
                 }
@@ -134,9 +131,6 @@ public class AllAppsList {
             if (packageName.equals(FytPackage.GaodeACTION)) {
                 Config.EXISTAMPAUTO = false;
             }
-            if (packageName.equals(FytPackage.voiceAction)) {
-                Config.EXISTVOICE = false;
-            }
         }
         this.mIconCache.flush();
     }
@@ -157,9 +151,6 @@ public class AllAppsList {
                 }
                 if (packageName.equals(FytPackage.GaodeACTION)) {
                     Config.EXISTAMPAUTO = true;
-                }
-                if (packageName.equals(FytPackage.voiceAction)) {
-                    Config.EXISTVOICE = true;
                 }
                 if (matches.size() > 0) {
                     for (int i = data.size() - 1; i >= 0; i--) {

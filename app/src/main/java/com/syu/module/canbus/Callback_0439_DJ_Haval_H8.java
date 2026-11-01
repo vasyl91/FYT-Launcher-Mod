@@ -4,9 +4,6 @@ import android.SystemProperties;
 import android.os.RemoteException;
 
 import com.android.launcher66.LauncherApplication;
-import com.syu.carinfo.air.Air_Activity_RZC_Prado;
-import com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl;
-import com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl_HP;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -115,32 +112,19 @@ public class Callback_0439_DJ_Haval_H8 extends CallbackCanbusBase {
             if (LauncherApplication.getConfiguration() == 1) {
                 int CustomerId = SystemProperties.getInt("ro.build.fytmanufacturer", 0);
                 if (CustomerId == 95) {
-                    if (value == 1 && !Air_Activity_RZC_Prado.mIsFront) {
+                    if (value == 1) {
                         //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.air.Air_Activity_RZC_Prado");
                         return;
                     } else {
-                        if (Air_Activity_RZC_Prado.mIsFront && Air_Activity_RZC_Prado.mInstance != null) {
-                            Air_Activity_RZC_Prado.mInstance.finish();
-                            return;
-                        }
                         return;
                     }
                 }
-                if (value == 1 && !Rzc_Oudi_0439_AirFrontCtrl.mIsFront) {
+                if (value == 1) {
                     //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl");
                     return;
                 } else {
-                    if (Rzc_Oudi_0439_AirFrontCtrl.mIsFront && Rzc_Oudi_0439_AirFrontCtrl.mInstance != null) {
-                        Rzc_Oudi_0439_AirFrontCtrl.mInstance.finish();
-                        return;
-                    }
                     return;
                 }
-            }
-            if (value == 1 && !Rzc_Oudi_0439_AirFrontCtrl_HP.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_AirFrontCtrl_HP");
-            } else if (Rzc_Oudi_0439_AirFrontCtrl_HP.mIsFront && Rzc_Oudi_0439_AirFrontCtrl_HP.mInstance != null) {
-                Rzc_Oudi_0439_AirFrontCtrl_HP.mInstance.finish();
             }
         }
     }

@@ -20,11 +20,12 @@
 
     <com.android.launcher66.FolderEditText
         android:textSize="14.0sp"
-        android:textColor="#ff777777"
+        android:textColor="#ff333333"
+        android:textColorHint="#ff808080"
         android:textColorHighlight="#ffcccccc"
         android:gravity="center_horizontal"
         android:id="@+id/folder_name"
-        android:background="#00000000"
+        android:background="@drawable/folder_name_bg"
         android:paddingTop="@dimen/folder_name_padding"
         android:paddingBottom="@dimen/folder_name_padding"
         android:layout_width="fill_parent"

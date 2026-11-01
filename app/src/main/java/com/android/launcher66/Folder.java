@@ -166,7 +166,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
 
-        mContent.setCellDimensions(grid.folderCellWidthPx, grid.folderCellHeightPx);
+        int[] cell = itemCellSize(grid);
+        mContent.setCellDimensions(cell[0], cell[1]);
+        mContent.setRowPadding(false);
         mContent.setGridSize(0, 0);
         mContent.getShortcutsAndWidgets().setMotionEventSplittingEnabled(false);
         mContent.setInvertIfRtl(true);
@@ -187,6 +189,30 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         mFolderName.setInputType(mFolderName.getInputType() |
                 InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         mAutoScrollHelper = new FolderAutoScrollHelper(mScrollView);
+    }
+
+    /**
+     * A folder cell: one item as it is drawn (its icon over a line of its label), with AOSP's
+     * margins round it. grid.folderCellWidthPx / folderCellHeightPx come from grid.iconSizePx,
+     * the icon's pixels taken as dp: on a phone two items made a folder room for four, and a tap
+     * in the empty half opened the app above it.
+     */
+    private int[] itemCellSize(DeviceProfile grid) {
+        int iconSize = Utilities.sIconTextureWidth;
+        if (iconSize <= 0) return new int[] { grid.folderCellWidthPx, grid.folderCellHeightPx };
+        BubbleTextView probe = (BubbleTextView) mInflater.inflate(R.layout.application, this, false);
+        Drawable icon = new android.graphics.drawable.ColorDrawable();
+        icon.setBounds(0, 0, iconSize, iconSize);
+        probe.setCompoundDrawables(null, icon, null, null);
+        // As applyFromShortcutInfo() sets it.
+        probe.setCompoundDrawablePadding((int) ((grid.folderIconSizePx - grid.iconSizePx) / 2f));
+        probe.setText("Ag");
+        // The folder's cells set their own padding (ShortcutAndWidgetContainer.measureChild()).
+        probe.setPadding(0, 0, 0, 0);
+        probe.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        int width = iconSize + grid.edgeMarginPx * 3;
+        int height = probe.getMeasuredHeight() + (int) (1.5f * grid.edgeMarginPx);
+        return new int[] { width, height };
     }
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -224,8 +250,6 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 return false;
             }
 
-            mLauncher.dismissFolderCling(null);
-
             mLauncher.getWorkspace().onDragStartedWithItem(v);
             mLauncher.getWorkspace().beginDragShared(v, this, 1.0f);
             mIconDrawable = ((TextView) v).getCompoundDrawables()[1];
@@ -249,7 +273,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 
     public void startEditingFolderName() {
         mFolderName.setHint("");
-        WindowUtil.removePip();
+        // The panes stay: the keyboard comes over them, and they take no focus from it.
+        // The pinned PiP does take it, from the whole launcher window: there PinnedPipFocus's
+        // window has the input method for this field, and this call goes through it.
         mIsEditingName = true;
         mFolderName.postDelayed(new Runnable() {
             @Override
@@ -261,6 +287,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     }
 
     public void dismissEditingName() {
+        // PinnedPipFocus: does nothing while the pinned PiP is shown, the input method's window is
+        // PinnedPipFocus's then, not this one. It closes the keyboard itself when the
+        // requestFocus() in doneEditingFolderName() takes the focus from the name.
         mInputMethodManager.hideSoftInputFromWindow(getWindowToken(), 0);
         doneEditingFolderName(true);
     }
@@ -470,12 +499,6 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
             public void onAnimationEnd(Animator animation) {
                 mState = STATE_OPEN;
                 setLayerType(LAYER_TYPE_NONE, null);
-                Cling cling = mLauncher.showFirstRunFoldersCling();
-                if (cling != null) {
-                    cling.bringScrimToFront();
-                    bringToFront();
-                    cling.bringToFront();
-                }
                 setFocusOnFirstChild();
             }
         });
@@ -1194,7 +1217,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     // to correspond to the animation of the icon back into the folder. This is
     public void hideItem(ShortcutInfo info) {
         View v = getViewForInfo(info);
-        v.setVisibility(INVISIBLE);
+        if (v != null) {
+            v.setVisibility(INVISIBLE);
+        }
     }
     public void showItem(ShortcutInfo info) {
         View v = getViewForInfo(info);

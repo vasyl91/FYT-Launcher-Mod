@@ -3,7 +3,7 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.syu.canbus.R;
-import com.syu.carinfo.wccamry.ConstWcToyota;
+import com.syu.module.canbus.data.ConstWcToyota;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;

@@ -20,8 +20,10 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.settings.AppListAutostartDialogFragment;
 import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.LogcatDefaults;
 import com.android.launcher66.settings.LogcatWorker;
 import com.android.launcher66.settings.WakeDetection;
+import com.syu.util.WindowHostVdClient;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -31,6 +33,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * The launcher's first start after a device restart (a cold boot), as opposed to a wake from
@@ -113,7 +117,7 @@ public final class ColdStart {
     }
 
     private static void startLogcat(Application app, boolean coldStart, SharedPreferences settings) {
-        if (settings.getBoolean(Keys.LOGCAT_SERVICE, true)) {
+        if (settings.getBoolean(Keys.LOGCAT_SERVICE, LogcatDefaults.on(app))) {
             LogcatWorker.get().start(app, coldStart);
         }
     }
@@ -227,6 +231,7 @@ public final class ColdStart {
      */
     private static final List<String> DISPLAY_MEDIA_TITLES_PACKAGES = Arrays.asList(
             "vasyl.titles",
+            "vasyl.titles.phone",
             "com.syu.widget.music",
             "com.syu.screensaver",
             "com.ava.car",
@@ -292,13 +297,18 @@ public final class ColdStart {
                     SystemClock.sleep(BOOT_AUTOSTART_GAP_MS);
                 }
 
+                // Whether BOOT_COMPLETED really went out: when it failed the app is started
+                // instead, and the log said "by BOOT_COMPLETED" all the same.
+                boolean bootSent = false;
                 if (titles) {
                     wakeDisplayMediaTitles(pkg);
                 } else if (james) {
                     wakeJamesDSP(pkg);
-                } else if (boot && bootCompletedAutostart) {
-                    autostartWithIntent(pkg);
-                } else {
+                } else if (!(bootSent = boot && bootCompletedAutostart && sendBootCompleted(pkg))) {
+                    if (launch == null) {
+                        Log.w(TAG, "Boot autostart: " + pkg + " could not be woken and has no launch activity");
+                        continue;
+                    }
                     launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     app.startActivity(launch);
                 }
@@ -308,8 +318,8 @@ public final class ColdStart {
                 Log.i(TAG, "Boot autostart: "
                         + (titles ? "woke " + pkg + " by broadcast"
                         : james ? "woke " + pkg + " by broadcast"
-                        : boot ? "woke " + pkg + " by BOOT_COMPLETED"
-                        : "started " + pkg)
+                        : bootSent ? "woke " + pkg + " by BOOT_COMPLETED"
+                        : "started " + pkg + (boot ? " (BOOT_COMPLETED did not go out)" : ""))
                         + " (" + started.size() + "/" + packages.size() + ")");
 
             } catch (RuntimeException e) {
@@ -347,35 +357,56 @@ public final class ColdStart {
      * FLAG_RECEIVER_FOREGROUND lets the receiver run at foreground priority.
      */
     private void wakeDisplayMediaTitles(String pkg) {
-        Intent intent;
-        if (LauncherApplication.hasSystemPrivileges()) {
-            intent = new Intent(Intent.ACTION_BOOT_COMPLETED);
+        if (canSendBootCompleted() && sendBootCompleted(pkg)) {
             Log.i(TAG, "Display Media Titles by 'BOOT_COMPLETED' broadcast");
-        } else {
-            intent = new Intent(DISPLAY_MEDIA_TITLES_WAKE_ACTION);
-            Log.i(TAG, "Display Media Titles by 'vasyl.titles.action.WAKE' broadcast");
+            return;
         }
-        SysCalls.sendBroadcast(app, intent
+        Log.i(TAG, "Display Media Titles by 'vasyl.titles.action.WAKE' broadcast");
+        SysCalls.sendBroadcast(app, new Intent(DISPLAY_MEDIA_TITLES_WAKE_ACTION)
                 .setPackage(pkg) // package of the installed variant
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
     }
 
     private void wakeJamesDSP(String pkg) {
-        Intent intent;
-        if (LauncherApplication.hasSystemPrivileges()) {
-            intent = new Intent(Intent.ACTION_BOOT_COMPLETED);
+        if (canSendBootCompleted() && sendBootCompleted(pkg)) {
             Log.i(TAG, "JamesDSP by 'BOOT_COMPLETED' broadcast");
-        } else {
-            intent = new Intent(JAMES_DSP_WAKE_ACTION);
-            Log.i(TAG, "JamesDSP by 'james.dsp.action.AUTOSTART' broadcast");
+            return;
         }
-        SysCalls.sendBroadcast(app, intent
+        Log.i(TAG, "JamesDSP by 'james.dsp.action.AUTOSTART' broadcast");
+        SysCalls.sendBroadcast(app, new Intent(JAMES_DSP_WAKE_ACTION)
                 .setPackage(pkg)
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
     }
 
+    /**
+     * BOOT_COMPLETED is a protected broadcast: the launcher sends it as system, otherwise the VD
+     * host does when it may (the FYT VDHost Magisk module's daemon, Shizuku with root; not Shizuku
+     * over ADB).
+     */
+    public static boolean canSendBootCompleted() {
+        return LauncherApplication.hasSystemPrivileges() || WindowHostVdClient.canSendBootCompleted();
+    }
+
+    /** Sends BOOT_COMPLETED to pkg (see canSendBootCompleted()). @return whether it went out */
+    private boolean sendBootCompleted(String pkg) {
+        if (LauncherApplication.hasSystemPrivileges()) {
+            SysCalls.sendBroadcast(app, new Intent(Intent.ACTION_BOOT_COMPLETED)
+                    .setPackage(pkg)
+                    .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
+            return true;
+        }
+        try {
+            String report = WindowHostVdClient.sendBootCompleted(pkg);
+            Log.i(TAG, "BOOT_COMPLETED to " + pkg + " through the VD host: " + report);
+            return report != null && report.startsWith("OK");
+        } catch (Throwable t) {
+            Log.w(TAG, "BOOT_COMPLETED to " + pkg + " through the VD host failed: " + t);
+            return false;
+        }
+    }
+
     private boolean hasBootCompletedReceiver(String pkg) {
-        if (!LauncherApplication.hasSystemPrivileges()) return false;
+        if (!canSendBootCompleted()) return false;
         Intent intent = new Intent(Intent.ACTION_BOOT_COMPLETED);
         intent.setPackage(pkg);
 
@@ -393,12 +424,6 @@ public final class ColdStart {
         }
 
         return false;
-    }
-
-    private void autostartWithIntent(String pkg) {
-        SysCalls.sendBroadcast(app, new Intent(Intent.ACTION_BOOT_COMPLETED)
-                .setPackage(pkg)
-                .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
     }
 
     /**
@@ -532,15 +557,33 @@ public final class ColdStart {
     private static final List<String> TRANSIENT_PACKAGES = Arrays.asList(
             "android", "com.android.systemui", "com.android.launcher3");
 
-    /** From ForegroundAppTracker, main thread. The launcher itself counts as no app. */
+    /** One thread, so that the apps are written in the order they came to the front. */
+    private static final ExecutorService LAST_APP_WRITER = Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "LastAppNote");
+        thread.setDaemon(true);
+        return thread;
+    });
+    private static volatile String sLastNoted;
+
+    /**
+     * From ForegroundAppTracker, main thread. The launcher itself counts as no app. The preferences
+     * are reached from another thread: the first getSharedPreferences() of a context checks its
+     * folder on disk and edit() waits for the file to be read, which StrictMode flags on the main
+     * thread.
+     */
     public static void noteForegroundApp(Context context, String packageName) {
         if (TRANSIENT_PACKAGES.contains(packageName) || HomeFrontGuard.isCameraPackage(packageName)
                 || WakeDetection.isAsleep()) {
             return;
         }
-        String last = packageName.equals(context.getPackageName()) ? "" : packageName;
-        context.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
-                .edit().putString(KEY_LAST_APP, last).apply();
+        final String last = packageName.equals(context.getPackageName()) ? "" : packageName;
+        if (last.equals(sLastNoted)) {
+            return;
+        }
+        sLastNoted = last;
+        final Context app = context.getApplicationContext();
+        LAST_APP_WRITER.execute(() -> app.getSharedPreferences(BOOT_STATE_PREFS, Context.MODE_PRIVATE)
+                .edit().putString(KEY_LAST_APP, last).apply());
     }
 
     /** The app noted last; "" for the home screen, or when nothing has been noted. */

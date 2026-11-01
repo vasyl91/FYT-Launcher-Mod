@@ -22,9 +22,6 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.time.ZoneId;
 
@@ -262,8 +259,7 @@ public class NightModeService extends Service {
         if (ActivityCompat.checkSelfPermission(LauncherApplication.sApp, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(LauncherApplication.sApp, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(LauncherApplication.sApp);
-            OnSuccessListener<Location> listener = location -> {
+            DeviceLocation.Receiver listener = location -> {
                 SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
                 double lat;
                 double longt;
@@ -286,15 +282,9 @@ public class NightModeService extends Service {
                 startSunTask(LauncherApplication.sApp, lat, longt, reason);
             };
 
-
-            // Activity can be null (e.g. when waking up 10 seconds after the screen turns on, while the
-            // Launcher has not started yet) — the Activity-based variant would throw an NPE, so listen without it.
-            Activity activity = Launcher.getLauncher();
-            if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
-                fusedLocationClient.getLastLocation().addOnSuccessListener(activity, listener);
-            } else {
-                fusedLocationClient.getLastLocation().addOnSuccessListener(listener);
-            }
+            // The platform's last position first, Play services only when it has none (see
+            // DeviceLocation). Delivered on the main thread, no Activity needed.
+            DeviceLocation.lastKnown(LauncherApplication.sApp, listener);
         } else {
             Activity activity = Launcher.getLauncher();
             if (activity == null) {

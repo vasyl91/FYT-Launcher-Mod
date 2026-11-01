@@ -1,8 +1,6 @@
 package com.android.launcher66;
 
 import android.SystemProperties;
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -119,6 +117,7 @@ import com.android.launcher66.settings.BottomBarDimensions;
 import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.FabOverlayService;
+import com.android.launcher66.settings.ForegroundAppTracker;
 import com.android.launcher66.settings.FytRating;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
@@ -126,6 +125,7 @@ import com.android.launcher66.settings.MainViewModel;
 import com.android.launcher66.settings.NightModeService;
 import com.android.launcher66.settings.SessionPrefs;
 import com.android.launcher66.settings.SettingsActivity;
+import com.android.launcher66.settings.SyuMusicLibrary;
 import com.android.launcher66.settings.StatusBarSwipeDetector;
 import com.android.launcher66.settings.WakeDetection;
 import com.android.recycler.AppListAdapter;
@@ -139,11 +139,11 @@ import com.fyt.car.IUiRefresher;
 import com.fyt.car.LauncherNotify;
 import com.fyt.car.MapConfig;
 import com.fyt.car.MusicService;
-import com.fyt.flow.TrifficReceiver;
+import com.fyt.car.StockSources;
+import com.fyt.car.StockTitles;
 import com.fyt.skin.SkinUtils;
 import com.fyt.widget.RadioRuler;
 import com.fyt.widget.TurntableView3;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.syu.car.CarStates;
 import com.syu.log.LogPreview;
 import com.syu.popwindow.PopWindowBright;
@@ -279,6 +279,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final long CUSTOM_ELEMENTS_SETUP_DEBOUNCE_MS = 150L;
     private static final long WORKSPACE_NULL_LOADER_THROTTLE_MS = 1200L;
     static final String TAG = "Launcher";
+    private static boolean sKwapiSkipLogged;
+    /** The night bits of the configuration the launcher last saw; see onConfigurationChanged(). */
+    private int mUiNightMode;
     private static final String TOOLBAR_ICON_METADATA_NAME = "com.android.launcher.toolbar_icon";
     private static final String TOOLBAR_VOICE_SEARCH_ICON_METADATA_NAME = "com.android.launcher.toolbar_voice_search_icon";
     String state;
@@ -381,7 +384,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private SharedPreferences mSharedPrefs;
     private AnimatorSet mStateAnimation;
     private Stats mStats;
-    private TrifficReceiver mTrifficReceiver;
     private ImageView mTurnIconView;
     private TurntableView3 mTurntableView;
     private TextView mTvApps;
@@ -471,7 +473,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private State mOnResumeState = State.NONE;
     private SpannableStringBuilder mDefaultKeySsb = null;
     boolean mWorkspaceLoading = true;
-    private boolean closePop = LauncherApplication.sApp.getResources().getBoolean(R.bool.close_popwindow);
     private ArrayList<Runnable> mBindOnResumeCallbacks = new ArrayList<>();
     private ArrayList<Runnable> mOnResumeCallbacks = new ArrayList<>();
     private boolean mUserPresent = true;
@@ -494,7 +495,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             new android.util.SparseArray<>();
     private final ArrayList<Integer> mSynchronouslyBoundPages = new ArrayList<>();
     private Rect mRectForFolderAnimation = new Rect();
-    private HideFromAccessibilityHelper mHideFromAccessibilityHelper = new HideFromAccessibilityHelper();
     SharedPreferences mPrefs;
 	boolean fytData = true;  
     // Request codes of the permission flow, see PermissionStep.
@@ -502,12 +502,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     static final int REQUEST_CODE_STORAGE = 1004;
     static final int REQUEST_CODE_OVERLAY = 1006;
     static final int REQUEST_CODE_NOTIFICATION_ACCESS = 1007;
-    private FusedLocationProviderClient fusedLocationClient;
+    static final int REQUEST_CODE_INSTALL_PACKAGES = 1008;
     Helpers helpers = new Helpers();
     LinearLayout bottomButtons;
     LinearLayout bottomButtonsWidgets;
     private MainViewModel mViewModel;
     private final AtomicBoolean atomicOnCreate = new AtomicBoolean(false);
+    /**
+     * Times the first Launcher of the process from the end of Application.onCreate() to its first
+     * frame on screen, logged in one line (see logFirstFrame()); null for later instances and
+     * once that frame is out.
+     */
+    private StartupSteps mStartupSteps;
     public boolean onResumePip = false;
     public boolean allowPip = false;
     private volatile WindowHost mWindowHost;
@@ -1626,9 +1632,27 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         } else return false;
     }
 
+    /**
+     * Through the application's context: the same files, but it already knows their paths (read
+     * off the main thread at the start, see LauncherApplication), while this activity's own
+     * context would look each one up on disk again.
+     */
+    @Override
+    public SharedPreferences getSharedPreferences(String name, int mode) {
+        return getApplicationContext().getSharedPreferences(name, mode);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mUiNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        long appCreated = LauncherApplication.takeOnCreateEnd();
+        if (appCreated > 0) {
+            mStartupSteps = new StartupSteps(appCreated);
+            // Class loading and the constructor (field initialisers, Helpers).
+            markStartup("instantiate");
+        }
         super.onCreate(savedInstanceState);
+        markStartup("super");
         Log.i("onCreate", "onCreate----->");
         allowPip = true;
         atomicOnCreate.set(true);
@@ -1639,13 +1663,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         SessionPrefs.get().edit().clear().apply();
         helpers = new Helpers();
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);  
+        // The application's context: the preferences are read there already (attachBaseContext),
+        // where this activity's own context would look its folder up on disk first.
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());  
+        markStartup("prefs");
 
         // Resolves the PiP packages' icons and launch intents on a worker thread, so the first
         // pane rebuild does not block the main thread on PackageManager.
         WindowUtil.prewarmConfiguredPipPackages(this);
 
         calculateLayoutDimensions();       
+        markStartup("dimensions");
 
         if (mPrefs.getBoolean("transparent_statusbar", false)) {
             getWindow().addFlags(Integer.MIN_VALUE);
@@ -1661,6 +1689,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (!userLayout) {
             WindowUtil.restartPinnedPipApp();
         }
+        markStartup("pinnedPip");
 
         getWindow().addFlags(Integer.MIN_VALUE);
 
@@ -1668,6 +1697,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         LogPreview.show("------------------->>> density:" + density);
 
         checkForLocaleChange();
+        markStartup("locale");
 
         initVariable();
 
@@ -1675,11 +1705,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mAppWidgetHost = new LauncherAppWidgetHost(LauncherApplication.sApp, this, APPWIDGET_HOST_ID);
         mAppWidgetHost.setOnWidgetClickListener(this);
         mAppWidgetHost.startListening();
+        markStartup("widgetHost");
 
         registerContentObservers();
 
         mSavedState = savedInstanceState;
         restoreState(mSavedState);
+        markStartup("restore");
 
         // Update customization drawer _after_ restoring the states. Sorting by label loads every
         // widget's and shortcut's label from its app: two seconds of onCreate() at boot (capture
@@ -1712,6 +1744,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mModel.startLoader(true, mWorkspace.getCurrentPage());
             }
         }
+        markStartup("loader");
 
         // For handling default keys
         mDefaultKeySsb = new SpannableStringBuilder();
@@ -1720,15 +1753,86 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mHandler.post(this.runnable_register);
         
         updateGlobalIcons();
+        markStartup("globalIcons");
         
         // On large interfaces, we want the screen to auto-rotate based on the current orientation
         unlockScreenOrientation(true);
         
-        initRegisterReceiver();
+        // Three binder calls into system_server, which is busy right after a boot (up to 0.1 s
+        // there): none of these receivers is needed to show the home screen.
+        runAfterFirstFrame(this::initRegisterReceiver);
         
         requestWidgetUpdate();
+        markStartup("widgetUpdate");
 		
         onBackPressedX();
+        markStartup("onCreateEnd");
+    }
+
+    /** When runAfterFirstFrame() runs its work if no frame was drawn by then (keyguard). */
+    private static final long AFTER_FIRST_FRAME_BACKSTOP_MS = 1000;
+
+    /**
+     * Runs work the first frame does not need once that frame is drawn, or after
+     * AFTER_FIRST_FRAME_BACKSTOP_MS when the window is not drawn by then.
+     */
+    private void runAfterFirstFrame(Runnable work) {
+        final boolean[] done = {false};
+        final Runnable once = () -> {
+            if (!done[0]) {
+                done[0] = true;
+                work.run();
+            }
+        };
+        final View decor = getWindow().getDecorView();
+        decor.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                decor.getViewTreeObserver().removeOnPreDrawListener(this);
+                // Posted from the traversal that draws the frame, so it runs after it.
+                mHandler.post(once);
+                return true;
+            }
+        });
+        mHandler.postDelayed(once, AFTER_FIRST_FRAME_BACKSTOP_MS);
+    }
+
+    private void markStartup(String step) {
+        if (mStartupSteps != null) {
+            mStartupSteps.mark(step);
+        }
+    }
+
+    /**
+     * Logs the first start's steps once its first frame is drawn: what happens between onResume()
+     * and that frame (posted work, then measure and layout) and the frame itself count too.
+     */
+    private void logFirstFrame() {
+        final StartupSteps steps = mStartupSteps;
+        if (steps == null) {
+            return;
+        }
+        mStartupSteps = null;
+        final View decor = getWindow().getDecorView();
+        final Runnable report = () -> {
+            steps.mark("draw");
+            Log.d(TAG, "first frame: " + (SystemClock.elapsedRealtime()
+                    - android.os.Process.getStartElapsedRealtime())
+                    + "ms after the process start" + steps);
+        };
+        decor.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                decor.getViewTreeObserver().removeOnPreDrawListener(this);
+                steps.mark("untilDraw");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    decor.getViewTreeObserver().registerFrameCommitCallback(report);
+                } else {
+                    decor.post(report);
+                }
+                return true;
+            }
+        });
     }
 
     private void calculateLayoutDimensions() {
@@ -1774,6 +1878,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         textSizeTitle = calculateAdaptiveTextSize(orientationDimension, 22);
         textSizeArtist = calculateAdaptiveTextSize(orientationDimension, 16);
         textSizeWorkspace = calculateAdaptiveTextSize(orientationDimension, 32);
+        // The font and the widths of the statistics window, worked out once for this language and screen
+        if (mPrefs != null) {
+            com.android.launcher66.settings.StatsWindowSize.ensureSaved(this, mPrefs);
+        }
 
         // RecyclerView
         leftBarIconMargin = calculateDimension(screenHeight, 3.2);
@@ -1866,12 +1974,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         LauncherAppState.setApplicationContext(getApplicationContext());
         LauncherAppState app = LauncherAppState.getInstance();
+        markStartup("appState");
 
         ContentResolver resolver = getApplicationContext().getContentResolver();       
         Config.PLATFORM_ID = ShareHandler.getInt(resolver, 10, 0);
         Config.CUSTOMER_ID = ShareHandler.getInt(resolver, 9, 0);
         Config.USER_UIID = ShareHandler.getInt(resolver, 11, 0);
         Config.CHIP_UIID = ShareHandler.getInt(resolver, 13, 0);
+        markStartup("shareHandler");
         
         // Determine the dynamic grid properties
         Point smallestSize = new Point();
@@ -1888,9 +1998,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Math.min(largestSize.x, largestSize.y),
                 realSize.x, realSize.y,
                 dm.widthPixels, dm.heightPixels);
+        markStartup("grid");
 
         // the LauncherApplication should call this, but in case of Instrumentation it might not be present yet
-        mSharedPrefs = getSharedPreferences(LauncherAppState.getSharedPreferencesKey(),
+        mSharedPrefs = getApplicationContext().getSharedPreferences(LauncherAppState.getSharedPreferencesKey(),
                 Context.MODE_PRIVATE);
 
         mModel = app.setLauncher(this);
@@ -1901,22 +2012,37 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         mViewModel.setFirstUse(mModel.mFirstUse);
+        markStartup("model");
         
         setContentView(R.layout.launcher);
+        markStartup("inflate");
         
         setupViews();
+        markStartup("setupViews");
         grid.layout(this);
         mAppBars.prefetchBarSnapshots();
+        markStartup("gridLayout");
 
         mStats = new Stats(this);
 
-        if (LauncherApplication.hasSystemPrivileges()) {
-            kwAPi = KWAPI.createKWAPI(this, "fangyitong");
-            if (kwAPi != null) {
-                kwAPi.registerPlayerStatusListener(this, onRefreshKwStatus);
-            }            
+        // Kuwo's car music SDK, as FYT's launcher has it: an FYT unit's, and a system app's only
+        // (the system build on another device, a ROM made with the same key, leaves it out).
+        if (LauncherApplication.isFytDevice() && LauncherApplication.hasSystemPrivileges()) {
+            try {
+                kwAPi = KWAPI.createKWAPI(this, "fangyitong");
+                if (kwAPi != null) {
+                    kwAPi.registerPlayerStatusListener(this, onRefreshKwStatus);
+                }
+            } catch (RuntimeException e) {
+                Log.w(TAG, "KWAPI not created: " + e);
+            }
         } else {
-            Log.w(TAG, "Launcher not installed as a system app, KWAPI can not be created.");
+            // True on the 7870 (an FYT unit, but the standard build, no system rights): nothing is
+            // wrong there, so once per process and not a warning.
+            if (!sKwapiSkipLogged) {
+                sKwapiSkipLogged = true;
+                Log.d(TAG, "Not the system launcher of an FYT unit, KWAPI can not be created.");
+            }
         }
     }
 
@@ -1925,6 +2051,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             @Override
             public void handleOnBackPressed() {
                 Log.d(TAG, "onBackPressed----->");
+                // Android 11+ panes: Back meant for the app the user is working in (see there).
+                if (com.syu.util.WindowHostVdView.forwardBackToFocusedPane()) return;
                 if (isAllAppsVisible()) {
                     if (Launcher.this.mAppsCustomizeContent != null && (Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Applications || Launcher.this.mAppsCustomizeContent.getContentType() == AppsCustomizePagedView.ContentType.Widgets)) {
                         helpers.setInAllApps(false);
@@ -1953,18 +2081,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     mWorkspace.exitWidgetResizeMode();
                     mWorkspace.showOutlinesTemporarily(true);
                 }
-                if (ResValue.getInstance().clickapp_cling > 0) {
-                    Cling cling = (Cling) findViewById(ResValue.getInstance().clickapp_cling);
-                    if (cling != null) {
-                        cling.setVisibility(android.view.View.GONE);
-                    }
-                    Launcher.this.stopVoice();
-                    if (Launcher.this.mWaitingForResume != null) {
-                        Launcher.this.mWaitingForResume.setStayPressed(false);
-                    }
-                    if (Launcher.this.mAppsCustomizeContent != null) {
-                        Launcher.this.mAppsCustomizeContent.resetDrawableState();
-                    }
+                Launcher.this.stopVoice();
+                if (Launcher.this.mWaitingForResume != null) {
+                    Launcher.this.mWaitingForResume.setStayPressed(false);
+                }
+                if (Launcher.this.mAppsCustomizeContent != null) {
+                    Launcher.this.mAppsCustomizeContent.resetDrawableState();
                 }
                 if (Launcher.this.firstLayout != null) {
                     Launcher.this.firstLayout.setVisibility(android.view.View.VISIBLE);
@@ -2038,7 +2160,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (userLayout) {
             WindowUtil.initDefaultApp();
         }
+        // HiCar and the 360° camera take the panes away; see onPause() and PaneYieldWatcher.
+        com.syu.util.PaneYieldWatcher.start();
         FirstFrameAnimatorHelper.setIsVisible(true);
+        markStartup("onStart");
     }
 
 
@@ -2049,6 +2174,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onResume() {
         super.onResume();
         mWallpaperPicker.hideWallpaperPickerIndicator();
+        if (LauncherApplication.isFytDevice()) {
+            // A like changed in the stock player's own screen: read before the hearts are drawn
+            SyuMusicLibrary.onLauncherResumed(this);
+            MusicService.requestSyuMediaRefresh();
+        }
         // Deferred until the panes are up; see mFytRatingWake.
         mDeviceWake.scheduleFytRatingWake();
         scheduleStatusBarSwipeDetectorSync();
@@ -2096,7 +2226,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mAppsCustomizeTabHost.setVisibility(View.VISIBLE);
             helpers.setAllAppsShouldBeVisible(false);
         }
+        markStartup("resumeStart");
         handleView();
+        markStartup("handleView");
         if (Config.CHIP_UIID == 6 && !LauncherApplication.isHaveDvd) {
         }
         if (mOnResumeState == State.WORKSPACE) {
@@ -2180,8 +2312,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         mWorkspace.updateInteractionForState();
         mWorkspace.onResume();
+        markStartup("workspaceResume");
         registerResumeRefreshersAndNotify();
         restoreResumeMediaState();
+        markStartup("refreshers");
 
         mMusicWidget.setPlayPauseIcon(true);
 
@@ -2211,6 +2345,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         mHomeRecovery.scheduleHomeLayoutWatchdog("onResume", !isAllAppsVisible());
         mPipStarter.schedulePipWatchdog("onResume");
+        markStartup("onResumeEnd");
+        logFirstFrame();
     }
 
     private void scheduleFastHomeDeferredResumeWork(boolean processPendingUpdate) {
@@ -2402,6 +2538,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private void registerResumeRefreshersAndNotify() {
         registerNotifyRefreshers();
 
+        // com.syu.ms (radio, MCU, Bluetooth): an FYT unit's only. Elsewhere tools stays null.
+        if (!LauncherApplication.isFytDevice()) {
+            return;
+        }
         tools = CarStates.getCar(app).getTools();
 
         if (!mRefreshersRegistered) {
@@ -2661,6 +2801,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }, 7100); 
         }
 
+        // PinnedPipFocus: false whenever the pinned PiP is shown, also right after the user touched
+        // the launcher (PinnedPipFocus's window has the focus then), as before PinnedPipFocus.
         final boolean alreadyOnHome = mHasFocus;
 
         if (mWorkspace == null) {
@@ -2743,6 +2885,18 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
         AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
         super.onPause();
+        // Before the early return below: an overlay window, it would keep the focus from the next
+        // activity.
+        PinnedPipFocus.release("launcher paused");
+        // The 7870's ROM pauses and resumes the launcher six times in the 16 s after a wake (capture
+        // 26-10-2026 19:45:55); this says what took the screen each time. The app is the one
+        // ForegroundAppTracker saw last, which needs no query here.
+        long sinceWake = WakeDetection.msSinceWake();
+        if (sinceWake >= 0L && sinceWake <= HomeLayoutRecovery.WAKE_HOME_RECOVERY_WINDOW_MS) {
+            String front = ForegroundAppTracker.lastKnownPackage();
+            Log.i(TAG, "onPause " + sinceWake / 1000L + " s after the wake, in front: "
+                    + (front != null ? front : "unknown"));
+        }
         allowPip = false;
         cleanWidgetBar();
         if (mWorkspace != null) {
@@ -2759,6 +2913,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.setEdgeHandleHostVisible(false);
         }
         Log.d(TAG, "---->>> onPause");
+        // Sees other apps' processes as the system launcher only; any other has PaneYieldWatcher.
         mHandler.postDelayed(()-> {
             if (Utils.topApp(FytPackage.hicarAction)
                 || Utils.topApp(FytPackage.fourcamera2Action)) {
@@ -2851,7 +3006,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "---->>> onDestroy");
+        // Why a destroy that is a recreation: if it still happens after uiMode was declared, the
+        // next capture names the change (assetsPaths would be an overlay, which cannot be declared).
+        int changing = changingConfigurations();
+        Log.i(TAG, "onDestroy: isChangingConfigurations=" + isChangingConfigurations()
+                + ", changes=" + (changing == -1 ? "unknown" : "0x" + Integer.toHexString(changing)
+                        + " (" + ConfigChanges.configChangeNames(changing) + ")"));
         mWallpaperPicker.hideWallpaperPickerIndicator();
+        mPermissionFlow.onDestroy();
+        PinnedPipFocus.release("launcher destroyed");
         // Unconditional, and before any field is cleared. onPause() returns early on
         // (mHomeButtonPressed && isOnMainWorkspaceScreen()), so leaving via HOME from the
         // main screen never unregistered the refreshers and the static NOTIFIER_* kept
@@ -2873,12 +3036,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
             mWindowHost = null;
         }        
-        tools.removeRefreshLisenter(0, refreshMain);
-        tools.removeRefreshLisenter(4, refreshMain);
-        tools.removeRefreshLisenter(7, refreshMain);
-        tools.removeRefreshLisenter(2, refreshBtInfo);
-        tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioBand);
-        tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioFreq);
+        if (tools != null) {
+            tools.removeRefreshLisenter(0, refreshMain);
+            tools.removeRefreshLisenter(4, refreshMain);
+            tools.removeRefreshLisenter(7, refreshMain);
+            tools.removeRefreshLisenter(2, refreshBtInfo);
+            tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioBand);
+            tools.removeRefreshLisenter(1, mRadioWidget.refreshRadioFreq);
+        }
         purgeMyRefreshListeners();
         mRefreshersRegistered = false;
         unregisterAllReceivers();
@@ -3051,7 +3216,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         BroadcastReceiver[] receivers = {
             removeMusic,
             mAutoMap,
-            mTrifficReceiver,
             mReceiver,
             mCloseSystemDialogsReceiver,
         };
@@ -3069,7 +3233,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // Clear references
         removeMusic = null;
         mAutoMap = null;
-        mTrifficReceiver = null;
         mReceiver = null;
         mCloseSystemDialogsReceiver = null;
     }      
@@ -3090,6 +3253,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         if (serviceClass == CanbusService.class) {
             return CanbusService.isRunning();
+        }
+        if (serviceClass == FabOverlayService.class) {
+            return FabOverlayService.isRunning();
         }
         String serviceName = serviceClass.getName();
         long now = SystemClock.uptimeMillis();
@@ -3124,11 +3290,30 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
+    /**
+     * The configuration changes behind a recreation (Activity.getChangingConfigurations(), which is
+     * not in the public SDK, so by reflection); -1 where that is refused.
+     */
+    private int changingConfigurations() {
+        try {
+            return (Integer) android.app.Activity.class.getMethod("getChangingConfigurations").invoke(this);
+        } catch (Throwable t) {
+            return -1;
+        }
+    }
+
     private void stopServicesOnDestroy() {
         // Not WakeDetectionService: sleep and wake are the process', not this activity's, and a
         // recreation of the activity used to end their handling for good (see WakeDetection).
-        SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, NightModeService.class));
-        setServiceRunningCache(NightModeService.class, false);
+        // Nor NightModeService on a recreation: its onDestroy() cancels the SunTask of the whole
+        // process (the lights' too), the new instance's startService() finds it running and does
+        // nothing (onStartCommand() is idempotent), and it came back 7.4 s late on the 7870.
+        // CanbusService and FabOverlayService stay as they were: FabOverlayService adds overlay
+        // views at its start, so starting it twice could add them twice.
+        if (!isChangingConfigurations()) {
+            SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, NightModeService.class));
+            setServiceRunningCache(NightModeService.class, false);
+        }
         SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, CanbusService.class));
         setServiceRunningCache(CanbusService.class, false);
         SysCalls.stopService(Launcher.this, new Intent(LauncherApplication.sApp, FabOverlayService.class));
@@ -3286,22 +3471,28 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private void initRegisterReceiver() {
+        // Runs after the first frame (see onCreate()): unregisterAllReceivers() may have run first.
+        if (isDestroyed() || removeMusic == null) {
+            return;
+        }
+        // Both matter on FYT units only: FYT's SystemUI sends com.fyt.systemui.remove (for
+        // com.syu.music), and MyAutoMapReceiver ignores AutoNavi until com.syu.ms has reported
+        // the ACC state. Elsewhere they cost two binder calls, and every AutoNavi broadcast a
+        // getRunningTasks() call.
+        if (!LauncherApplication.isFytDevice()) {
+            return;
+        }
         IntentFilter musicFilter = new IntentFilter();
         musicFilter.addAction("com.fyt.systemui.remove");
         this.mAutoMap = new MyAutoMapReceiver();
         IntentFilter amapFilter = new IntentFilter();
         amapFilter.addAction("AUTONAVI_STANDARD_BROADCAST_SEND");
-        this.mTrifficReceiver = new TrifficReceiver();
-        IntentFilter trifficFilter = new IntentFilter();
-        trifficFilter.addAction("intent.action.mapgoo.simtool.info.triffic.v2");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(this.removeMusic, musicFilter, Context.RECEIVER_EXPORTED);
             registerReceiver(this.mAutoMap, amapFilter, Context.RECEIVER_EXPORTED);
-            registerReceiver(this.mTrifficReceiver, trifficFilter, Context.RECEIVER_EXPORTED);
         } else {
             registerReceiver(this.removeMusic, musicFilter);
             registerReceiver(this.mAutoMap, amapFilter);
-            registerReceiver(this.mTrifficReceiver, trifficFilter);
         }
     }
 
@@ -3665,6 +3856,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return;
         }
 
+        // A shortcut from the tray: added below or cancelled, its screen is no longer awaited
+        mWorkspace.releaseScreenForAdd();
+
         // The pattern used here is that a user PICKs a specific application,
         // which, depending on the target, might need to CREATE the actual target.
 
@@ -3716,6 +3910,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             };
         } else if (resultCode == RESULT_CANCELED) {
             animationType = Workspace.CANCEL_TWO_STAGE_WIDGET_DROP_ANIMATION;
+            mWorkspace.releaseScreenForAdd();
             onCompleteRunnable = new Runnable() {
                 @Override
                 public void run() {
@@ -3821,14 +4016,24 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_UP) {
             com.syu.util.UserTouches.note();
         }
+        if (action == MotionEvent.ACTION_DOWN) {
+            com.syu.util.WindowHostVdView.noteLauncherInteraction();
+            // FYT's pinned PiP keeps the focus from this window: the keyboard and the keys follow
+            // the touch through PinnedPipFocus's window instead.
+            PinnedPipFocus.onLauncherTouchDown(this);
+        }
         return super.dispatchTouchEvent(ev);
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+        // PinnedPipFocus: while the pinned PiP is shown this window has no focus, whatever the user
+        // touches; PinnedPipFocus's window has it on the launcher's behalf. Not called then, and
+        // mHasFocus stays false, as before PinnedPipFocus.
         mHasFocus = hasFocus;
         if (hasFocus) {
+            com.syu.util.WindowHostVdView.noteLauncherInteraction();
             mHomeRecovery.scheduleFocusHomeRecovery("focus");
         }
     }
@@ -4356,6 +4561,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mMusicWidget.tvMusicNameTwo = null;
         mMusicWidget.ivALbumBgTwo = null;
         mMusicWidget.tvAritstTwo = null;
+        mMusicWidget.releaseBarSizer();
         
         // Weather bar
         weatherCity1 = null;
@@ -4393,46 +4599,25 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             putCustomView(Config.WS_Allapps, mWorkspace.findViewById(ResValue.getInstance().rl_allapps));
             putCustomView(Config.WS_Showbar, mWorkspace.findViewById(ResValue.getInstance().show_bar));
         }
-        if (mMusicWidget.tvMusicName != null) {
-            if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
-                if (fytData) { // from metadata
-                    if (!(mMusicWidget.tvMusicName.getText().toString()).equals(MusicService.music_name)) {
-                        mMusicWidget.tvMusicName.setText(MusicService.music_name);                        
-                    }
-                } else { // from file title
-                    File file = new File(MusicService.music_path);
-                    String filename = file.getName();
-                    mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    if (!(mMusicWidget.tvMusicName.getText().toString()).equals(mMusicWidget.musictitle)) {
-                        mMusicWidget.tvMusicName.setText(mMusicWidget.musictitle);                        
-                    }
-                }
-                mMusicWidget.tvMusicName.setSelected(true);
-            } else {
-                mMusicWidget.tvMusicName.setText(R.string.music_name);
-                mMusicWidget.tvMusicName.setSelected(true);
+        String initTitle = "";
+        if ((mMusicWidget.tvMusicName != null || mMusicWidget.tvMusicNameTwo != null)
+                && MusicService.music_path != null && !MusicService.music_path.isEmpty()
+                && MusicService.music_path.lastIndexOf("/") >= 0) {
+            if (fytData) { // from metadata
+                initTitle = MusicService.music_name;
+            } else if (StockSources.isSyuMediaUnit()) {
+                // A stream has no file name; a name without a dot is the whole name
+                mMusicWidget.musictitle = StockTitles.displayTitle(true, MusicService.music_path, MusicService.music_name);
+                initTitle = mMusicWidget.musictitle;
+            } else { // from file title
+                File file = new File(MusicService.music_path);
+                String filename = file.getName();
+                mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
+                initTitle = mMusicWidget.musictitle;
             }
         }
-        if (mMusicWidget.tvMusicNameTwo != null) {
-            if (MusicService.music_path != null && !MusicService.music_path.isEmpty() && MusicService.music_path.lastIndexOf("/") >= 0) {
-                if (fytData) { // from metadata
-                    if (!(mMusicWidget.tvMusicNameTwo.getText().toString()).equals(MusicService.music_name)) {
-                        mMusicWidget.tvMusicNameTwo.setText(MusicService.music_name);                        
-                    }
-                } else { // from file title
-                    File file = new File(MusicService.music_path);
-                    String filename = file.getName();
-                    mMusicWidget.musictitle = filename.substring(0, filename.lastIndexOf("."));
-                    if (!(mMusicWidget.tvMusicNameTwo.getText().toString()).equals(mMusicWidget.musictitle)) {
-                        mMusicWidget.tvMusicNameTwo.setText(mMusicWidget.musictitle);                        
-                    }
-                }
-                mMusicWidget.tvMusicNameTwo.setSelected(true);
-            } else {
-                mMusicWidget.tvMusicNameTwo.setText(R.string.music_name);
-                mMusicWidget.tvMusicNameTwo.setSelected(true);
-            }
-        }
+        // No artist yet: the placeholder
+        mMusicWidget.setTrack(initTitle, "");
         if (mMusicWidget.tvCurTime != null) {
             mMusicWidget.tvCurTime.setText("00:00");
         }
@@ -4449,12 +4634,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }
         }*/
-        if (mMusicWidget.tvAritst != null) {
-            mMusicWidget.tvAritst.setText(R.string.music_author);
-        }
-        if (mMusicWidget.tvAritstTwo != null) {
-            mMusicWidget.tvAritstTwo.setText(R.string.music_author);
-        }
         if (mMusicWidget.tvAlbum != null) {
             mMusicWidget.tvAlbum.setText(R.string.music_album);
         }
@@ -4544,6 +4723,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        // Declared in the manifest (uiMode): the 7870's ROM flips the night mode with the car's
+        // lights, and the Activity was destroyed and rebuilt 72 ms after "Lights on" each time.
+        int night = newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        if (night != mUiNightMode) {
+            Log.i(TAG, "uiMode night 0x" + Integer.toHexString(mUiNightMode) + " -> 0x"
+                    + Integer.toHexString(night) + ", the launcher stays");
+            mUiNightMode = night;
+        }
         
         // Refresh decorations when orientation changes
         mAppBars.markAppDataDirty();
@@ -4675,7 +4862,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetPrev");
                 intent.setPackage("com.syu.bt");
-                ServiceIntentGate.startIfAvailable(this, intent, "btav prev");
+                if (!ServiceIntentGate.startIfAvailable(this, intent, "btav prev")) {
+                    // 7870: no com.syu.bt; com.syu.media plays BT audio, controlled through com.syu.ms
+                    StockSources.controlBt(MediaTransportController.ACTION_PREVIOUS);
+                }
             });
         }
         if (mBtavNextButton != null) {
@@ -4683,7 +4873,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetNext");
                 intent.setPackage("com.syu.bt");
-                ServiceIntentGate.startIfAvailable(this, intent, "btav next");
+                if (!ServiceIntentGate.startIfAvailable(this, intent, "btav next")) {
+                    StockSources.controlBt(MediaTransportController.ACTION_NEXT);
+                }
             });
         }
         if (mBtavPlayPauseButton != null) {
@@ -4691,21 +4883,27 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Intent intent = new Intent();
                 intent.setAction("com.syu.bt.byav.widgetPlayPause");
                 intent.setPackage("com.syu.bt");
-                ServiceIntentGate.startIfAvailable(this, intent, "btav playpause");
+                if (!ServiceIntentGate.startIfAvailable(this, intent, "btav playpause")) {
+                    StockSources.controlBt(MediaTransportController.ACTION_PLAY_PAUSE);
+                }
             });
         }
         if (mBtavIcon != null) {
-            mBtavIcon.setOnClickListener(v -> {
-                Intent intent = new Intent();
-                intent.setComponent(new ComponentName("com.syu.bt", "com.syu.bt.act.ActBtAvStart"));
-                this.startActivity(intent);
-            });
+            mBtavIcon.setOnClickListener(v -> openBtAvPage());
         }
         if (mRadioIcon != null) {
-            mRadioIcon.setOnClickListener(v -> this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.radio"), "bt"));
+            mRadioIcon.setOnClickListener(v -> {
+                if (!openMediaPageInPlaceOf("com.syu.radio", v, "bt")) {
+                    this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.radio"), "bt");
+                }
+            });
         }
         if (mMusicIcon != null) {
-            mMusicIcon.setOnClickListener(v -> this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.music"), "bt"));
+            mMusicIcon.setOnClickListener(v -> {
+                if (!openMediaPageInPlaceOf("com.syu.music", v, "bt")) {
+                    this.startActivitySafely(v, FytPackage.getIntent(Launcher.mLauncher, "com.syu.music"), "bt");
+                }
+            });
         }
         if (mNaviView != null) {
             mNaviView.setOnClickListener(v -> {
@@ -5178,11 +5376,67 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     static int[] getSpanForWidget(Context context, AppWidgetProviderInfo info) {
+        fillWidgetSize(info);
         return getSpanForWidget(context, info.provider, info.minWidth, info.minHeight);
     }
 
     static int[] getMinSpanForWidget(Context context, AppWidgetProviderInfo info) {
+        fillWidgetSize(info);
         return getSpanForWidget(context, info.provider, info.minResizeWidth, info.minResizeHeight);
+    }
+
+    /** The cells a widget that gives no size of its own gets: it can be resized from there. */
+    private static final int DEFAULT_WIDGET_SPAN = 2;
+
+    /**
+     * Gives info a size where it has none (minWidth or minHeight 0: many Samsung and some Google
+     * widgets, made for launchers that size them in cells), so it can be listed and added: the
+     * cells it asks for (Android 12+), else two cells, or its smallest resized size if that is
+     * larger. (The smallest size alone made Samsung's alarm clock 2x1, where it shows its
+     * smallest layout, the word "Alarm".) The pixels are a hair under the cells, so rectToCell()
+     * comes to exactly those cells. Widgets with a size of their own are left alone; calling it
+     * again changes nothing.
+     */
+    static void fillWidgetSize(AppWidgetProviderInfo info) {
+        if (info == null || (info.minWidth > 0 && info.minHeight > 0)) return;
+        int cell = CellLayout.widgetCellSize();
+        if (cell <= 0) return;
+        Rect padding = AppWidgetHostView.getDefaultPaddingForWidget(LauncherApplication.sApp,
+                info.provider, null);
+        int targetX = 0;
+        int targetY = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            targetX = info.targetCellWidth;
+            targetY = info.targetCellHeight;
+        }
+        if (info.minWidth <= 0) {
+            info.minWidth = widgetSide(targetX, info.minResizeWidth, cell,
+                    padding.left + padding.right);
+        }
+        if (info.minHeight <= 0) {
+            info.minHeight = widgetSide(targetY, info.minResizeHeight, cell,
+                    padding.top + padding.bottom);
+        }
+        if (info.minResizeWidth <= 0 || info.minResizeWidth > info.minWidth) {
+            info.minResizeWidth = info.minWidth;
+        }
+        if (info.minResizeHeight <= 0 || info.minResizeHeight > info.minHeight) {
+            info.minResizeHeight = info.minHeight;
+        }
+        // Once per widget: the sizes are asked for again and again, on fresh copies of info.
+        if (sSizedWidgets.add(info.provider)) {
+            Log.d(TAG, "Widget " + info.provider + " gives no size, sized "
+                    + info.minWidth + "x" + info.minHeight + " px");
+        }
+    }
+
+    private static final java.util.Set<ComponentName> sSizedWidgets =
+            java.util.Collections.synchronizedSet(new java.util.HashSet<>());
+
+    private static int widgetSide(int targetCells, int minResize, int cell, int padding) {
+        int cells = targetCells > 0 ? targetCells : DEFAULT_WIDGET_SPAN;
+        int side = Math.max(1, cells * cell - padding - 1);
+        return targetCells > 0 ? side : Math.max(side, minResize);
     }
 
     static int[] getSpanForWidget(Context context, PendingAddWidgetInfo info) {
@@ -5205,12 +5459,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (mAppWidgetHost != null) {
                     mAppWidgetHost.deleteAppWidgetId(appWidgetId);
                 }
+                WidgetFit.forget(Launcher.this, appWidgetId);
             }
         }.start();
     }
 
     private void completeAddAppWidget(final int appWidgetId, long container, long screenId, AppWidgetHostView hostView, AppWidgetProviderInfo appWidgetInfo) {
         Log.i("WIDGET", "completeAddAppWidget");
+        // Added or not, the screen is no longer awaited: the strip at the end may take it if empty
+        mWorkspace.releaseScreenForAdd();
         if (appWidgetInfo == null) {
             // Expected after a configure activity: completeTwoStageWidgetDrop() passes no info.
             Log.d("WIDGET", "No AppWidgetProviderInfo passed for ID " + appWidgetId + ", looking it up");
@@ -5300,6 +5557,25 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         resetAddInfo();
         WindowUtil.removePip();
         mWorkspace.triggerStripEmptyScreens("Launcher, completeAddAppWidget()", true);
+        if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+            showScreenOfAddedWidget(screenId);
+        }
+    }
+
+    /**
+     * Once the tray has closed (see exitSpringLoadedDragModeDelayed()), the screen the widget went
+     * to, should anything have moved the workspace meanwhile: a strip of the still empty new
+     * screen at the end used to leave it on the one before (see Workspace.mScreenAwaitingAdd).
+     */
+    private void showScreenOfAddedWidget(final long screenId) {
+        mHandler.postDelayed(() -> {
+            if (mWorkspace == null) return;
+            int index = mWorkspace.getPageIndexForScreenId(screenId);
+            if (index >= 0 && index != mWorkspace.getNextPage()) {
+                Log.i("WIDGET", "showing the added widget's screen " + screenId + " (page " + index + ")");
+                mWorkspace.snapToPage(index);
+            }
+        }, EXIT_SPRINGLOADED_MODE_LONG_TIMEOUT + 300);
     }
 
     @Override
@@ -5531,6 +5807,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
 
+            // PinnedPipFocus: mHasFocus is false whenever the pinned PiP is shown, also right after
+            // the user touched the launcher (PinnedPipFocus's window has the focus then).
             final boolean alreadyOnHome = mHasFocus && ((intent.getFlags() &
                     Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
                     != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
@@ -5566,6 +5844,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
             final View v = getWindow().peekDecorView();
             if (v != null && v.getWindowToken() != null) {
+                // PinnedPipFocus: does nothing while PinnedPipFocus's window has the input method
+                // (this window's token is not its). That window closes the keyboard itself once
+                // the folder's name gives its focus up (closeFolder() above, onPause()).
                 InputMethodManager imm = (InputMethodManager)getSystemService(
                         INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -6080,6 +6361,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             throw new RuntimeException(e);
                         }
                         startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "bt");
+                    } else {
+                        // 7870: the radio is a page of com.syu.media
+                        openMediaPage(v, "com.syu.radio", "bt");
                     }
                 }
                 WindowUtil.removePip();
@@ -6104,6 +6388,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                             throw new RuntimeException(e);
                         }
                         startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "music");
+                    } else {
+                        // 7870: the radio is a page of com.syu.media
+                        openMediaPage(v, "com.syu.radio", "music");
                     }
                 }
                 WindowUtil.removePip();
@@ -6130,6 +6417,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.WS_MusicIV)) {
+                if (openMediaPageInPlaceOf("com.syu.music", v, "music")) {
+                    return;
+                }
                 startActivitySafely(v, FytPackage.getIntent(this, "com.syu.music"), "music");
                 return;
             }
@@ -6223,9 +6513,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.BTAV)) {
-                Intent intent2 = new Intent();
-                intent2.setComponent(new ComponentName("com.syu.bt", "com.syu.bt.act.ActBtAvStart"));
-                startActivity(intent2);
+                openBtAvPage();
                 return;
             }
             if (v == getCustomView(Config.ECAR)) {
@@ -6539,6 +6827,48 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         CarStates.getCar(getApplicationContext()).mTools.sendInt(0, 24, 0);
     }
 
+    /**
+     * A page of com.syu.media, the 7870's stock radio / music / BT player, which has no app of
+     * com.syu.radio or com.syu.music.
+     *
+     * @return false off a 7870
+     */
+    private boolean openMediaPage(View v, String action, String tag) {
+        Intent page = StockSources.mediaPage(action);
+        if (page == null) {
+            return false;
+        }
+        Log.d(TAG, "Opening the " + action + " page of " + MusicService.MEDIA_PKG);
+        startActivitySafely(v, page, tag);
+        return true;
+    }
+
+    /** openMediaPage() for the app of a 7862 that is not installed: false where it is (or off a 7870). */
+    private boolean openMediaPageInPlaceOf(String packageName, View v, String tag) {
+        return StockSources.isSyuMediaUnit() && !helpers.isPackageInstalled(packageName)
+                && openMediaPage(v, packageName, tag);
+    }
+
+    /**
+     * The BT audio page: com.syu.bt's where it is, a page of com.syu.media on a 7870. Where there
+     * is neither nothing happens (it used to be an ActivityNotFoundException).
+     */
+    private void openBtAvPage() {
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName("com.syu.bt", "com.syu.bt.act.ActBtAvStart"));
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+            return;
+        }
+        Intent page = StockSources.btPage();
+        if (page != null) {
+            Log.d(TAG, "Opening the BT music page of " + MusicService.MEDIA_PKG);
+            startActivitySafely(null, page, "bt");
+            return;
+        }
+        Log.w(TAG, "No BT audio page here (no com.syu.bt, no com.syu.media)");
+    }
+
     public boolean startActivitySafely(final View v, final Intent intent, final Object tag) {
         if (intent == null) {
             Toast.makeText(getApplicationContext(), R.string.activity_not_found, Toast.LENGTH_LONG).show();
@@ -6583,129 +6913,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 SystemProperties.set("sys.bdcl.enable", "1");
             }
         }
-        TextView clingTitleText = (TextView) findViewById(ResValue.getInstance().clingtitletext);
-        TextView clingText = (TextView) findViewById(ResValue.getInstance().clingtext);
-        String str1 = SystemProperties.get("ro.client.foreign", "false");
-        if (str1.equals("true") || ResValue.getInstance().clickapp_cling <= 0 || intent.getComponent() == null || !Config.EXISTVOICE || !closePop) {
-            success = start(v, intent, tag);
-        } else {
-            if (findViewById(ResValue.getInstance().clickapp) != null) {
-                findViewById(ResValue.getInstance().clickapp).setOnClickListener(arg0 -> {
-                    Cling cling = (Cling) this.findViewById(ResValue.getInstance().clickapp_cling);
-                    Runnable cb = () -> {
-                    };
-                    this.dismissClingApp(cling, cb, intent, 200, true);
-                    this.success = this.start(v, intent, tag);
-                    this.stopVoice();
-                });
-            }
-            findViewById(ResValue.getInstance().clickapp_cancel).setOnClickListener(arg0 -> {
-                Cling cling = (Cling) this.findViewById(ResValue.getInstance().clickapp_cling);
-                Runnable cb = new Runnable() {
-                    @Override
-                    public void run() {
-                    }
-                };
-                this.dismissClingApp(cling, cb, intent, 200, true);
-                this.stopVoice();
-                if (this.mWaitingForResume != null) {
-                    this.mWaitingForResume.setStayPressed(false);
-                }
-                if (this.mAppsCustomizeContent != null) {
-                    this.mAppsCustomizeContent.resetDrawableState();
-                }
-            });
-            if (intent.getComponent().getPackageName().equals("com.syu.music")) {
-                LogPreview.show("SystemProperties" + SystemProperties.getInt("persist.sys.clingmusic", 0));
-                if (SystemProperties.getInt("persist.sys.clingmusic", 0) < 3) {
-                    showClickappCling();
-                    String clingMusicTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingmusictitle", "string"));
-                    String clingMusicText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingmusictext", "string"));
-                    clingTitleText.setText(clingMusicTitle);
-                    clingText.setText(clingMusicText);
-                    wakeVoice(String.valueOf(clingMusicTitle) + clingMusicText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals("com.syu.video")) {
-                LogPreview.show("SystemProperties" + SystemProperties.getInt("persist.fyt.clingvideo", 0));
-                if (SystemProperties.getInt("persist.sys.clingvideo", 0) < 3) {
-                    showClickappCling();
-                    String clingVideoTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingvideotitle", "string"));
-                    String clingVideoText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingvideotext", "string"));
-                    clingTitleText.setText(clingVideoTitle);
-                    clingText.setText(clingVideoText);
-                    wakeVoice(String.valueOf(clingVideoTitle) + clingVideoText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals(FytPackage.GaodeACTION)) {
-                if (SystemProperties.getInt("persist.sys.clinggaode", 0) < 3) {
-                    showClickappCling();
-                    String clingNaveTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingnavetitle", "string"));
-                    String clingNaveText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingnavetext", "string"));
-                    clingTitleText.setText(clingNaveTitle);
-                    clingText.setText(clingNaveText);
-                    wakeVoice(String.valueOf(clingNaveTitle) + clingNaveText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals("com.syu.radio")) {
-                if (SystemProperties.getInt("persist.sys.clingradio", 0) < 3) {
-                    showClickappCling();
-                    String clingRadioTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingradiotitle", "string"));
-                    String clingRadioText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingradiotext", "string"));
-                    clingTitleText.setText(clingRadioTitle);
-                    clingText.setText(clingRadioText);
-                    wakeVoice(String.valueOf(clingRadioTitle) + clingRadioText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals("com.syu.bt")) {
-                if (SystemProperties.getInt("persist.sys.clingbt", 0) < 3) {
-                    showClickappCling();
-                    String clingBtTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingbttitle", "string"));
-                    String clingBtText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingbttext", "string"));
-                    clingTitleText.setText(clingBtTitle);
-                    clingText.setText(clingBtText);
-                    wakeVoice(String.valueOf(clingBtTitle) + clingBtText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals(FytPackage.KWACTION)) {
-                if (SystemProperties.getInt("persist.sys.clingkuwo", 0) < 3) {
-                    showClickappCling();
-                    String clingKuwoTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingkuwotitle", "string"));
-                    String clingKuwoText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingkuwotext", "string"));
-                    clingTitleText.setText(clingKuwoTitle);
-                    clingText.setText(clingKuwoText);
-                    wakeVoice(String.valueOf(clingKuwoTitle) + clingKuwoText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else if (intent.getComponent().getPackageName().equals(FytPackage.KLFMACTION)) {
-                if (SystemProperties.getInt("persist.sys.clingkaola", 0) < 3) {
-                    showClickappCling();
-                    String clingKaoLaTitle = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingkaolatitle", "string"));
-                    String clingKaoLaText = getApplicationContext().getResources().getString(ResValue.getInstance().getId("clingkaolatext", "string"));
-                    clingTitleText.setText(clingKaoLaTitle);
-                    clingText.setText(clingKaoLaText);
-                    wakeVoice(String.valueOf(clingKaoLaTitle) + clingKaoLaText);
-                } else {
-                    success = start(v, intent, tag);
-                }
-            } else {
-                success = start(v, intent, tag);
-            }
-        }
+        success = start(v, intent, tag);
         return success;
-    }
-
-    public void wakeVoice(String value) {
-        Intent intent = new Intent("com.syu.execute_tts");
-        intent.putExtra("raw_text", value);
-        intent.setPackage(FytPackage.voiceAction);
-        ServiceIntentGate.startIfAvailable(this, intent, "voice execute");
     }
 
     public void stopVoice() {
@@ -6855,7 +7064,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 folder.dismissEditingName();
             }
             closeFolder(folder);
-            dismissFolderCling(null);
         }
     }
 
@@ -7694,7 +7902,20 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override 
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "CloseSystemDialogsIntentReceiver");
-            if (mWorkspace != null) {
+            // FYT's framework sends com.lsec.pipdie whenever the pinned PiP app dies, also when the
+            // launcher has force-stopped it to start it again. That restart must not take the user
+            // away from the page the PiP is shown on: its start would then be refused there (log
+            // 27-10-2026 23:31: 16.804, 23.633, 32.588, each "not on page 2" later).
+            if ("com.lsec.pipdie".equals(intent.getAction())) {
+                // No pinned PiP to keep the focus from the launcher's window any more.
+                PinnedPipFocus.release("pinned PiP app died");
+            }
+            boolean ownPipRestart = "com.lsec.pipdie".equals(intent.getAction())
+                    && WindowUtil.pipDieFromOwnForceStop();
+            if (ownPipRestart) {
+                Log.i(TAG, "com.lsec.pipdie after the launcher's own restart of the pinned PiP app,"
+                        + " staying on the page");
+            } else if (mWorkspace != null) {
                 mWorkspace.moveToDefaultScreen(true);
             }
             Intent i = new Intent();
@@ -8147,6 +8368,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             Log.d(TAG, "bindAppWidget: id=" + item.appWidgetId + " belongs to component " + appWidgetInfo.provider);
         }
 
+        // A widget saved with no cells was left out at every start (Workspace.addInScreen():
+        // "Invalid spans: 0x0"): a drop over the PiP panes used to save 0x0 before it crashed.
+        // It gets the cells it asks for again, saved, where it was.
+        if (item.spanX < 1 || item.spanY < 1) {
+            int[] span = getSpanForWidget(this, appWidgetInfo);
+            int[] minSpan = getMinSpanForWidget(this, appWidgetInfo);
+            item.spanX = Math.max(1, span[0]);
+            item.spanY = Math.max(1, span[1]);
+            item.minSpanX = Math.max(1, Math.min(item.spanX, minSpan[0]));
+            item.minSpanY = Math.max(1, Math.min(item.spanY, minSpan[1]));
+            Log.w(TAG, "bindAppWidget: id=" + item.appWidgetId + " was saved with no cells, now "
+                    + item.spanX + "x" + item.spanY);
+            LauncherModel.updateItemInDatabase(this, item);
+        }
+
         // Reuse the host view if this widget already has one.
         //
         // mAppWidgetHost.createView() inflates the provider's RemoteViews across a process boundary
@@ -8455,264 +8691,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    private boolean isClingsEnabled() {
-        return false;
-    }
-
-    private Cling initCling(int clingId, int scrimId, boolean animate, boolean dimNavBarVisibilty) {
-        Cling cling = (Cling) findViewById(clingId);
-        View scrim = null;
-        if (scrimId > 0) {
-            scrim = findViewById(R.id.cling_scrim);
-        }
-        if (cling != null) {
-            cling.init(this, scrim);
-            cling.show(animate, 250);
-            if (dimNavBarVisibilty) {
-                cling.setSystemUiVisibility(cling.getSystemUiVisibility() | 1);
-            }
-        }
-        return cling;
-    }
-
-    public void dismissClingApp(final Cling cling, final Runnable postAnimationCb, final Intent intent, int duration, boolean restoreNavBarVisibilty) {
-        if (cling != null && cling.getVisibility() != View.GONE) {
-            final Runnable cleanUpClingCb = new Runnable() { 
-                public void run() {
-                    cling.cleanup();
-                    final Intent intent2 = intent;
-                    new Thread("dismissClingThread") { 
-                        public void run() {
-                            if (intent2.getComponent().getPackageName().equals("com.syu.music")) {
-                                int a = SystemProperties.getInt("persist.sys.clingmusic", 0);
-                                String value = new StringBuilder(String.valueOf(a + 1)).toString();
-                                LogPreview.show("dismissClingApp" + value);
-                                SystemProperties.set("persist.sys.clingmusic", value);
-                                return;
-                            }
-                            if (intent2.getComponent().getPackageName().equals("com.syu.video")) {
-                                int a2 = SystemProperties.getInt("persist.sys.clingvideo", 0);
-                                String value2 = new StringBuilder(String.valueOf(a2 + 1)).toString();
-                                LogPreview.show("dismissClingAppvideo" + value2);
-                                SystemProperties.set("persist.sys.clingvideo", value2);
-                                return;
-                            }
-                            if (intent2.getComponent().getPackageName().equals(FytPackage.GaodeACTION)) {
-                                int a3 = SystemProperties.getInt("persist.sys.clinggaode", 0);
-                                String value3 = new StringBuilder(String.valueOf(a3 + 1)).toString();
-                                SystemProperties.set("persist.sys.clinggaode", value3);
-                                return;
-                            }
-                            if (intent2.getComponent().getPackageName().equals("com.syu.radio")) {
-                                int a4 = SystemProperties.getInt("persist.sys.clingradio", 0);
-                                String value4 = new StringBuilder(String.valueOf(a4 + 1)).toString();
-                                SystemProperties.set("persist.sys.clingradio", value4);
-                                return;
-                            }
-                            if (intent2.getComponent().getPackageName().equals("com.syu.bt")) {
-                                int a5 = SystemProperties.getInt("persist.sys.clingbt", 0);
-                                String value5 = new StringBuilder(String.valueOf(a5 + 1)).toString();
-                                SystemProperties.set("persist.sys.clingbt", value5);
-                            } else if (intent2.getComponent().getPackageName().equals(FytPackage.KWACTION)) {
-                                int a6 = SystemProperties.getInt("persist.sys.clingkuwo", 0);
-                                String value6 = new StringBuilder(String.valueOf(a6 + 1)).toString();
-                                SystemProperties.set("persist.sys.clingkuwo", value6);
-                            } else if (intent2.getComponent().getPackageName().equals(FytPackage.KLFMACTION)) {
-                                int a7 = SystemProperties.getInt("persist.sys.clingkaola", 0);
-                                String value7 = new StringBuilder(String.valueOf(a7 + 1)).toString();
-                                SystemProperties.set("persist.sys.clingkaola", value7);
-                            }
-                        }
-                    }.start();
-                    if (postAnimationCb != null) {
-                        postAnimationCb.run();
-                    }
-                }
-            };
-            if (duration <= 0) {
-                cleanUpClingCb.run();
-            } else {
-                cling.hide(duration, cleanUpClingCb);
-            }
-            mHideFromAccessibilityHelper.restoreImportantForAccessibility(mDragLayer);
-
-            if (restoreNavBarVisibilty) {
-                cling.setSystemUiVisibility(cling.getSystemUiVisibility() &
-                        ~View.SYSTEM_UI_FLAG_LOW_PROFILE);
-            }
-        }
-    }
-
-    private void dismissCling(final Cling cling, final Runnable postAnimationCb,
-                              final String flag, int duration, boolean restoreNavBarVisibilty) {
-        // To catch cases where siblings of top-level views are made invisible, just check whether
-        // the cling is directly set to GONE before dismissing it.
-        if (cling != null && cling.getVisibility() != View.GONE) {
-            final Runnable cleanUpClingCb = new Runnable() {
-                public void run() {
-                    cling.cleanup();
-                    // We should update the shared preferences on a background thread
-                    new Thread("dismissClingThread") {
-                        public void run() {
-                            if (mSharedPrefs == null) {
-                                return;
-                            }
-                            SharedPreferences.Editor editor = mSharedPrefs.edit();
-                            editor.putBoolean(flag, true);
-                            editor.apply();
-                        }
-                    }.start();
-                    if (postAnimationCb != null) {
-                        postAnimationCb.run();
-                    }
-                }
-            };
-            if (duration <= 0) {
-                cleanUpClingCb.run();
-            } else {
-                cling.hide(duration, cleanUpClingCb);
-            }
-            mHideFromAccessibilityHelper.restoreImportantForAccessibility(mDragLayer);
-
-            if (restoreNavBarVisibilty) {
-                cling.setSystemUiVisibility(cling.getSystemUiVisibility() &
-                        ~View.SYSTEM_UI_FLAG_LOW_PROFILE);
-            }
-        }
-    }
-
-    private void removeCling(int id) {
-        final View cling = findViewById(id);
-        if (cling != null) {
-            final ViewGroup parent = (ViewGroup) cling.getParent();
-            parent.post(new Runnable() { 
-                @Override
-                public void run() {
-                    parent.removeView(cling);
-                }
-            });
-            mHideFromAccessibilityHelper.restoreImportantForAccessibility(mDragLayer);
-        }
-    }
-
-    private boolean skipCustomClingIfNoAccounts() {
-        AccountManager mAccountManager;
-        Cling cling = (Cling) findViewById(R.id.workspace_cling);
-        boolean customCling = cling.getDrawIdentifier().equals("workspace_custom");
-        if (!customCling || (mAccountManager = AccountManager.get(this)) == null) {
-            return false;
-        }
-        Account[] accounts = mAccountManager.getAccountsByType("com.google");
-        return accounts.length == 0;
-    }
-
-    public void updateCustomContentHintVisibility() {
-        Cling cling = (Cling) findViewById(R.id.first_run_cling);
-        String ccHintStr = getFirstRunCustomContentHint();
-        if (mWorkspace.hasCustomContent()) {
-            if (cling != null) {
-                setCustomContentHintVisibility(cling, ccHintStr, true, true);
-            }
-        } else if (cling != null) {
-            setCustomContentHintVisibility(cling, ccHintStr, false, true);
-        }
-    }
-
-    private void setCustomContentHintVisibility(Cling cling, String ccHintStr, boolean visible, boolean animate) {
-        final TextView ccHint = (TextView) cling.findViewById(R.id.custom_content_hint);
-        if (ccHint != null) {
-            if (visible && !ccHintStr.isEmpty()) {
-                ccHint.setText(ccHintStr);
-                ccHint.setVisibility(android.view.View.VISIBLE);
-                if (animate) {
-                    ccHint.setAlpha(0.0f);
-                    ccHint.animate().alpha(1.0f).setDuration(250L).start();
-                    return;
-                } else {
-                    ccHint.setAlpha(1.0f);
-                    return;
-                }
-            }
-            if (animate) {
-                ccHint.animate().alpha(0.0f).setDuration(250L).setListener(new AnimatorListenerAdapter() { 
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        ccHint.setVisibility(android.view.View.GONE);
-                    }
-                }).start();
-            } else {
-                ccHint.setAlpha(0.0f);
-                ccHint.setVisibility(android.view.View.GONE);
-            }
-        }
-    }
-
-    public void showFirstRunCling() {
-        if (isClingsEnabled() && !mSharedPrefs.getBoolean("cling_gel.first_run.dismissed", false) && !skipCustomClingIfNoAccounts()) {
-            if (LauncherApplication.sApp.getResources().getBoolean(R.bool.isdefaultwallpaper)) {
-                setDefaultWallpaper();
-            }
-            Cling cling = (Cling) findViewById(R.id.first_run_cling);
-            if (cling != null) {
-                String sbHintStr = getFirstRunClingSearchBarHint();
-                String ccHintStr = getFirstRunCustomContentHint();
-                if (!sbHintStr.isEmpty()) {
-                    TextView sbHint = (TextView) cling.findViewById(R.id.search_bar_hint);
-                    sbHint.setText(sbHintStr);
-                    sbHint.setVisibility(android.view.View.VISIBLE);
-                }
-                setCustomContentHintVisibility(cling, ccHintStr, true, false);
-            }
-            initCling(R.id.first_run_cling, 0, false, true);
-            return;
-        }
-        removeCling(R.id.first_run_cling);
-    }
-
-    protected String getFirstRunClingSearchBarHint() {
-        return "";
-    }
-
-    protected String getFirstRunCustomContentHint() {
-        return "";
-    }
-
-    protected int getFirstRunFocusedHotseatAppDrawableId() {
-        return -1;
-    }
-
-    protected ComponentName getFirstRunFocusedHotseatAppComponentName() {
-        return null;
-    }
-
-    protected int getFirstRunFocusedHotseatAppRank() {
-        return -1;
-    }
-
-    protected String getFirstRunFocusedHotseatAppBubbleTitle() {
-        return "";
-    }
-
-    protected String getFirstRunFocusedHotseatAppBubbleDescription() {
-        return "";
-    }
-
-    public void showClickappCling() {
-        if (ResValue.getInstance().clickapp_cling > 0) {
-            Cling c = initCling(ResValue.getInstance().clickapp_cling, 0, false, true);
-            c.setFocusedHotseatApp(getFirstRunFocusedHotseatAppDrawableId(), getFirstRunFocusedHotseatAppRank(), getFirstRunFocusedHotseatAppComponentName(), getFirstRunFocusedHotseatAppBubbleTitle(), getFirstRunFocusedHotseatAppBubbleDescription());
-        }
-    }
-
-    public void showFirstRunWorkspaceCling() {
-        if (isClingsEnabled() && !mSharedPrefs.getBoolean("cling_gel.workspace.dismissed", false)) {
-            Cling c = initCling(R.id.workspace_cling, 0, false, true);
-            c.setFocusedHotseatApp(getFirstRunFocusedHotseatAppDrawableId(), getFirstRunFocusedHotseatAppRank(), getFirstRunFocusedHotseatAppComponentName(), getFirstRunFocusedHotseatAppBubbleTitle(), getFirstRunFocusedHotseatAppBubbleDescription());
-        } else {
-            removeCling(R.id.workspace_cling);
-        }
-    }
-
     public void setDefaultWallpaper() {
         WallpaperManager mWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
         LauncherApplication.mAppWallPaper = true;
@@ -8769,55 +8747,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     }
 
-    public Cling showFirstRunFoldersCling() {
-        if (isClingsEnabled() && !mSharedPrefs.getBoolean("cling_gel.folder.dismissed", false)) {
-            return initCling(R.id.folder_cling, R.id.cling_scrim, true, true);
-        }
-        removeCling(R.id.folder_cling);
-        return null;
-    }
-
     protected SharedPreferences getSharedPrefs() {
         return mSharedPrefs;
-    }
-
-    public boolean isFolderClingVisible() {
-        Cling cling = (Cling) findViewById(R.id.folder_cling);
-        return cling != null && cling.getVisibility() == android.view.View.VISIBLE;
-    }
-
-    public void dismissFirstRunCling(View v) {
-        Cling cling = (Cling) findViewById(R.id.first_run_cling);
-        Runnable cb = new Runnable() { 
-            @Override
-            public void run() {
-                Launcher.this.showFirstRunWorkspaceCling();
-            }
-        };
-        dismissCling(cling, cb, "cling_gel.first_run.dismissed", 200, false);
-        mSearchDropTargetBar.hideSearchBar(true);
-    }
-
-    public void dismissWorkspaceCling(View v) {
-        Cling cling = (Cling) findViewById(R.id.workspace_cling);
-        Runnable cb = null;
-        if (v == null) {
-            cb = new Runnable() { 
-                @Override
-                public void run() {
-                    if (Launcher.this.mWorkspace != null) {
-                        Launcher.this.mWorkspace.enterOverviewMode();
-                    }
-                }
-            };
-        }
-        dismissCling(cling, cb, "cling_gel.workspace.dismissed", 200, true);
-        mSearchDropTargetBar.showSearchBar(true);
-    }
-
-    public void dismissFolderCling(View v) {
-        Cling cling = (Cling) findViewById(R.id.folder_cling);
-        dismissCling(cling, null, "cling_gel.folder.dismissed", 200, true);
     }
 
     public void dumpState() {
@@ -8872,18 +8803,66 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Widget.widgetUpdate(LauncherApplication.sApp, DateMusicProvider.class);
     }
 
+    /**
+     * The left bar's layout manager: spreads at most maxItems items evenly over the recycler's
+     * height, and works out how many items that height has room for (BarCapacity.leftCapacity(),
+     * from the visible icon, which follows the recycler's width), telling its listener when the answer changes.
+     */
     public static class EvenVerticalLayoutManager extends LinearLayoutManager {
         static final String LM_TAG = "EvenVerticalLM";
         static final String LM_PREFS = "LauncherPrefs";
-        private static final String KEY_ITEM_HEIGHT = "left_bar_item_height";
+        // The height of an item depends on the orientation (item_left_app_list.xml is 1:1.7 in
+        // portrait and 1:1 in landscape), so each has its own value. The old key held one height
+        // for both and is not read any more; invalidateItemMetrics() removes it.
+        private static final String KEY_ITEM_HEIGHT_LEGACY = "left_bar_item_height";
+        private static final String KEY_ITEM_HEIGHT_PORT = "left_bar_item_height_port";
+        private static final String KEY_ITEM_HEIGHT_LAND = "left_bar_item_height_land";
+        // The capacity last worked out, per orientation: where the bar starts from before it is measured.
+        // _v2: the old values were worked out from the item box and are not read any more.
+        private static final String KEY_CAPACITY_PORT = "left_bar_capacity_port_v2";
+        private static final String KEY_CAPACITY_LAND = "left_bar_capacity_land_v2";
+        private static final String KEY_CAPACITY_PORT_OLD = "left_bar_capacity_port";
+        private static final String KEY_CAPACITY_LAND_OLD = "left_bar_capacity_land";
 
-        private static int sCachedNaturalItemHeight = -1;
+        private static int sCachedNaturalItemHeightPort = -1;
+        private static int sCachedNaturalItemHeightLand = -1;
 
-        private final int mMaxItems;
+        /** Told, on the main thread and never from inside a layout pass, that the capacity changed. */
+        public interface CapacityListener {
+            void onLeftCapacityChanged(int capacity);
+        }
+
+        private int mMaxItems;
         private final Context mAppContext;
         private RecyclerView mHost;
         private int mNaturalItemHeight = -1;
         private int mSlotHeight = -1;
+        private CapacityListener mCapacityListener;
+        private boolean mCapacityCheckPending;
+        private boolean mHeightCacheChecked;
+
+        /** Looks at the settled height of the recycler, not at the size of one measure pass. */
+        private final Runnable mCapacityCheck = new Runnable() {
+            @Override
+            public void run() {
+                mCapacityCheckPending = false;
+                if (mHost == null || mHost.getWidth() <= 0 || mHost.getHeight() <= 0) {
+                    return;
+                }
+                int icon = iconSizeFor(mHost.getWidth());
+                int capacity = BarCapacity.leftCapacity(mHost.getHeight(), icon);
+                if (capacity == mMaxItems) {
+                    return;
+                }
+                Log.d(LM_TAG, "capacity " + mMaxItems + " -> " + capacity + " (W=" + mHost.getWidth()
+                        + " H=" + mHost.getHeight() + " icon=" + icon + ")");
+                setMaxItems(capacity);
+                storeCapacity(capacity);
+                if (mCapacityListener != null) {
+                    mCapacityListener.onLeftCapacityChanged(capacity);
+                }
+            }
+        };
 
         public EvenVerticalLayoutManager(Context context, int maxItems) {
             super(context, RecyclerView.VERTICAL, false);
@@ -8892,16 +8871,99 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mNaturalItemHeight = loadNaturalItemHeight();
         }
 
+        public void setMaxItems(int maxItems) {
+            int next = Math.max(1, maxItems);
+            if (next == mMaxItems) {
+                return;
+            }
+            mMaxItems = next;
+            requestLayout();
+        }
+
+        public void setCapacityListener(CapacityListener listener) {
+            mCapacityListener = listener;
+        }
+
+        private static boolean isPortrait(Context context) {
+            return context.getResources().getConfiguration().orientation
+                    == Configuration.ORIENTATION_PORTRAIT;
+        }
+
+        /** The capacity stored for the orientation; BarCapacity.MIN_LEFT_SLOTS before the first measure. */
+        static int loadCapacity(Context context, boolean portrait) {
+            try {
+                int stored = context.getApplicationContext()
+                        .getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
+                        .getInt(portrait ? KEY_CAPACITY_PORT : KEY_CAPACITY_LAND, BarCapacity.MIN_LEFT_SLOTS);
+                return Math.max(BarCapacity.MIN_LEFT_SLOTS, Math.min(BarCapacity.LEFT_MEMORY, stored));
+            } catch (Exception e) {
+                return BarCapacity.MIN_LEFT_SLOTS;
+            }
+        }
+
+        private void storeCapacity(int capacity) {
+            try {
+                mAppContext.getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
+                        .edit().putInt(isPortrait(hostContext()) ? KEY_CAPACITY_PORT : KEY_CAPACITY_LAND,
+                                capacity).apply();
+            } catch (Exception ignored) {
+            }
+        }
+
+        /** The context whose configuration says which way the screen is turned now. */
+        private Context hostContext() {
+            return mHost != null ? mHost.getContext() : mAppContext;
+        }
+
+        /** Visible icon size for a recycler this wide; the LM sets only vertical padding. */
+        private int iconSizeFor(int width) {
+            int inner = width;
+            if (mHost != null) {
+                inner -= mHost.getPaddingLeft() + mHost.getPaddingRight();
+            }
+            return BarCapacity.leftIconSize(inner);
+        }
+
+        /**
+         * A cached natural height that disagrees with icon * the XML ratio was measured with other
+         * layouts or sizes: forget it once (this orientation only) so it is measured again.
+         */
+        private void verifyHeightCache(int width) {
+            if (mHeightCacheChecked || mNaturalItemHeight <= 0 || width <= 0) {
+                return;
+            }
+            mHeightCacheChecked = true;
+            boolean portrait = isPortrait(hostContext());
+            int expected = Math.round(iconSizeFor(width) * BarCapacity.leftItemRatio(portrait));
+            if (Math.abs(mNaturalItemHeight - expected) > 2) {
+                Log.w(LM_TAG, "cached item height " + mNaturalItemHeight + " != expected " + expected
+                        + ", measuring again");
+                mNaturalItemHeight = -1;
+                mSlotHeight = -1;
+                if (portrait) {
+                    sCachedNaturalItemHeightPort = -1;
+                } else {
+                    sCachedNaturalItemHeightLand = -1;
+                }
+            }
+        }
+
         private int loadNaturalItemHeight() {
-            if (sCachedNaturalItemHeight > 0) {
-                return sCachedNaturalItemHeight;
+            boolean portrait = isPortrait(hostContext());
+            int cached = portrait ? sCachedNaturalItemHeightPort : sCachedNaturalItemHeightLand;
+            if (cached > 0) {
+                return cached;
             }
             try {
                 int stored = mAppContext
                         .getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
-                        .getInt(KEY_ITEM_HEIGHT, -1);
+                        .getInt(portrait ? KEY_ITEM_HEIGHT_PORT : KEY_ITEM_HEIGHT_LAND, -1);
                 if (stored > 0) {
-                    sCachedNaturalItemHeight = stored;
+                    if (portrait) {
+                        sCachedNaturalItemHeightPort = stored;
+                    } else {
+                        sCachedNaturalItemHeightLand = stored;
+                    }
                 }
                 return stored;
             } catch (Exception e) {
@@ -8910,10 +8972,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         private void storeNaturalItemHeight(int height) {
-            sCachedNaturalItemHeight = height;
+            boolean portrait = isPortrait(hostContext());
+            if (portrait) {
+                sCachedNaturalItemHeightPort = height;
+            } else {
+                sCachedNaturalItemHeightLand = height;
+            }
             try {
                 mAppContext.getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
-                        .edit().putInt(KEY_ITEM_HEIGHT, height).apply();
+                        .edit().putInt(portrait ? KEY_ITEM_HEIGHT_PORT : KEY_ITEM_HEIGHT_LAND, height).apply();
             } catch (Exception ignored) {
             }
         }
@@ -8927,6 +8994,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override
         public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
             super.onDetachedFromWindow(view, recycler);
+            view.removeCallbacks(mCapacityCheck);
+            mCapacityCheckPending = false;
             mHost = null;
         }
 
@@ -8941,6 +9010,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (mNaturalItemHeight <= 0) {
                 mNaturalItemHeight = loadNaturalItemHeight();
             }
+            int width = getWidth() > 0 ? getWidth() : (mHost != null ? mHost.getMeasuredWidth() : 0);
+            verifyHeightCache(width);
+            checkCapacity(width, total);
             int count = Math.min(getItemCount(), mMaxItems);
             if (total <= 0 || count <= 0 || mNaturalItemHeight <= 0) {
                 return false;
@@ -8963,6 +9035,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mHost.setPadding(mHost.getPaddingLeft(), edge, mHost.getPaddingRight(), edge);
             }
             return true;
+        }
+
+        /**
+         * Compares what this height has room for with the capacity in use. A different answer is
+         * not acted on here (this runs inside measure and layout passes, whose heights can be
+         * transient): one check is posted, and that one reads the height the recycler ended up with.
+         */
+        private void checkCapacity(int width, int height) {
+            if (mHost == null || mCapacityCheckPending || width <= 0 || height <= 0) {
+                return;
+            }
+            if (BarCapacity.leftCapacity(height, iconSizeFor(width)) != mMaxItems) {
+                mCapacityCheckPending = true;
+                mHost.post(mCapacityCheck);
+            }
         }
 
         @Override
@@ -8998,13 +9085,23 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             applySpacing(getHeight());
         }
 
+        @Override
+        public void onLayoutCompleted(RecyclerView.State state) {
+            super.onLayoutCompleted(state);
+            // The capacity can only be told once the recycler has its width and height.
+            checkCapacity(getWidth(), getHeight());
+        }
+
         public void invalidateItemMetrics() {
             mNaturalItemHeight = -1;
             mSlotHeight = -1;
-            sCachedNaturalItemHeight = -1;
+            sCachedNaturalItemHeightPort = -1;
+            sCachedNaturalItemHeightLand = -1;
             try {
                 mAppContext.getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
-                        .edit().remove(KEY_ITEM_HEIGHT).apply();
+                        .edit().remove(KEY_ITEM_HEIGHT_LEGACY).remove(KEY_ITEM_HEIGHT_PORT)
+                        .remove(KEY_ITEM_HEIGHT_LAND).remove(KEY_CAPACITY_PORT_OLD)
+                        .remove(KEY_CAPACITY_LAND_OLD).apply();
             } catch (Exception ignored) {
             }
             requestLayout();
@@ -9062,6 +9159,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void initMusicWidgetView(View musicWidgetView) {
         mMusicWidget.initMusicWidgetView(musicWidgetView);
+    }
+
+    public void refreshMusicSizes() {
+        mMusicWidget.refreshSizes();
     }
 
     public void initMusicBarView(View musicBarView) {

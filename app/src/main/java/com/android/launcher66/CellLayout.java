@@ -183,7 +183,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private final static Paint sPaint = new Paint();
 
     private int excludeLastRow = 1; // do not allow to place the object where the bottom bar is
-    private float widgetScaleFactor = 1.75f;
+    private final float widgetScaleFactor = ScreenScale.widgetScale();
 
     boolean userDate = true;
     boolean userMusic = true;
@@ -390,6 +390,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
     public float getChildrenScale() {
         return mIsHotseat ? mHotseatScale : 1.0f;
+    }
+
+    /** Whether the top rows sit lower by the workspace's top padding (see LayoutParams). */
+    public void setRowPadding(boolean rowPadding) {
+        mShortcutsAndWidgets.setRowPadding(rowPadding);
     }
 
     public void setCellDimensions(int width, int height) {
@@ -789,26 +794,24 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
             if ((child.getVisibility() == VISIBLE || child.getAnimation() != null) &&
                     lp.isLockedToGrid) {
-                child.getHitRect(frame);
-
-                float scale = child.getScaleX();
-                frame = new Rect(child.getLeft(), child.getTop(), child.getRight(),
-                        child.getBottom());
-
-                // The child hit rect is relative to the CellLayoutChildren parent, so we need to
-                // offset that by this CellLayout's padding to test an (x,y) point that is relative
-                // to this view.
-                if (child instanceof LauncherAppWidgetHostView) {
-                    final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
-                    AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-                    if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
-                        frame.offsetTo(child.getLeft() + (int) (frame.width() / (scale * scale)), child.getTop() + (int) (frame.height() / (scale * scale)));
-                    }
+                if (LauncherAppWidgetHostView.isScaled(child)) {
+                    // Where the widget is drawn: the hit rect has the scale and the centring
+                    // translation of ShortcutAndWidgetContainer.onLayout() in it. It is relative
+                    // to that container, which sits in this view at its own left and top. (The
+                    // formula here before was fitted to a scale of 1.75 and missed the widget
+                    // altogether at any other.)
+                    child.getHitRect(frame);
+                    frame.offset(mShortcutsAndWidgets.getLeft(), mShortcutsAndWidgets.getTop());
                 } else {
+                    float scale = child.getScaleX();
+                    frame.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
+                    // The child hit rect is relative to the CellLayoutChildren parent, so we need
+                    // to offset that by this CellLayout's padding to test an (x,y) point that is
+                    // relative to this view.
                     frame.offset(getPaddingLeft(), getPaddingTop());
+                    frame.inset((int) (frame.width() * (1f - scale) / 2),
+                            (int) (frame.height() * (1f - scale) / 2));
                 }
-                frame.inset((int) (frame.width() * (1f - scale) / 2),
-                        (int) (frame.height() * (1f - scale) / 2));
                 if (frame.contains(x, y)) {
                     cellInfo.cell = child;
                     cellInfo.cellX = lp.cellX;
@@ -1487,18 +1490,6 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             int left = topLeft[0];
             int top = topLeft[1];
 
-            float density = this.mLauncher.getResources().getDisplayMetrics().density;
-            int mBackgroundPadding = (int) Math.ceil(24.0f * density);
-
-            if (v != null && v instanceof LauncherAppWidgetHostView) {
-                final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) v;
-                AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-                if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
-                    top = topLeft[1] + (mBackgroundPadding / 2);
-                } else if (pinfo != null && pinfo.resizeMode == AppWidgetProviderInfo.RESIZE_BOTH) {
-                    top = topLeft[1] + mBackgroundPadding;
-                }
-            }
 
             if (v != null && dragOffset == null) {
                 // When drawing the drag outline, it did not account for margin offsets
@@ -1520,9 +1511,13 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                     // outline offset
                     left += dragOffset.x + ((mCellWidth * spanX) + ((spanX - 1) * mWidthGap)
                              - dragRegion.width()) / 2;
+                    // The icon sits centred in a cell taller than its content (measureChild()
+                    // pads it by the same amount): without this the outline showed at the top of
+                    // the cell, above where the icon lands. FYT cells fit their content (no
+                    // padding), phones' are taller.
                     int cHeight = getShortcutsAndWidgets().getCellContentHeight();
                     int cellPaddingY = (int) Math.max(0, ((mCellHeight - cHeight) / 2f));
-                    //top += dragOffset.y + cellPaddingY;
+                    top += dragOffset.y + cellPaddingY;
                 } else {
                     // Center the drag outline in the cell
                     left += ((mCellWidth * spanX) + ((spanX - 1) * mWidthGap)
@@ -1626,13 +1621,23 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     }
 
     private boolean shouldExcludeFirstBottomCell() {
-        return (mLauncher.getWorkspace().getCurrentPage() == 0 &&
-                prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false));
+        return isFirstWorkspacePageShown() && prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
     }
 
     private boolean shouldExcludeLastRow() {
-        return (mLauncher.getWorkspace().getCurrentPage() == 0 &&
-                !prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false));
+        return isFirstWorkspacePageShown() && !prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+    }
+
+    /**
+     * Whether this is the workspace's first page (the one with the bottom bar), shown now. Only
+     * the page itself: a folder's grid is a CellLayout too, and with the first page shown it lost
+     * its last row (or its first bottom cell), which in a new folder's 1 x 1 grid is the only
+     * cell -- the items got no cell and no view, and the drop crashed in Folder.hideItem().
+     */
+    private boolean isFirstWorkspacePageShown() {
+        Workspace workspace = mLauncher.getWorkspace();
+        return workspace != null && workspace.getCurrentPage() == 0
+                && workspace.getChildCount() > 0 && workspace.getChildAt(0) == this;
     }
 
     /**
@@ -2657,22 +2662,16 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             }
             // Store view type
             mIsWidget = false;
-            if (child instanceof LauncherAppWidgetHostView) {
-                final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
-                AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-                if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
-                    mIsWidget = true;
-                }
-            }
+            mIsWidget = LauncherAppWidgetHostView.isScaled(child);
 
             // Calculate compensation for widget scaling
             if (mIsWidget) {
                 finalScale = widgetScaleFactor;
-                float density = mLauncher.getResources().getDisplayMetrics().density;
-                int mBackgroundPadding = (int) Math.ceil(24.0f * density);
-                // Calculate compensation to maintain position during scale
-                mCompensationX = (child.getWidth() * (finalScale - 1.0f)) / 2.0f;
-                mCompensationY = (child.getHeight() * (finalScale - 1.0f)) / 2.0f + (mBackgroundPadding / 2.0f);
+                // The widget's own centring translation (ShortcutAndWidgetContainer.onLayout()),
+                // kept while it shakes.
+                LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
+                mCompensationX = hostView.getTranslationXForCentering();
+                mCompensationY = hostView.getTranslationYForCentering();
                 // Adjust initial translation to include compensation
                 initDeltaX = child.getTranslationX() - mCompensationX;
                 initDeltaY = child.getTranslationY() - mCompensationY;
@@ -3405,7 +3404,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
      * @param height Height in pixels
      * @param result An array of length 2 in which to store the result (may be null).
      */
-    public static int[] rectToCell(int width, int height, int[] result) {
+    /** The side of the square cell rectToCell() counts widget spans in, in pixels. */
+    public static int widgetCellSize() {
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
         Rect padding = grid.getWorkspacePadding(grid.isLandscape ?
@@ -3417,7 +3417,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                 - padding.left - padding.right, (int) grid.numColumns);
         int parentHeight = grid.calculateCellHeight(grid.heightPx
                 - padding.top - padding.bottom, (int) grid.numRows);
-        int smallerSize = Math.min(parentWidth, parentHeight);
+        return Math.min(parentWidth, parentHeight);
+    }
+
+    public static int[] rectToCell(int width, int height, int[] result) {
+        int smallerSize = widgetCellSize();
 
         // Always round up to next largest cell
         int spanX = (int) Math.ceil(width / (float) smallerSize);
@@ -3610,6 +3614,13 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
     public static class LayoutParams extends ViewGroup.MarginLayoutParams {
         /**
+         * Whether the top rows are moved down by the workspace's top padding: on the workspace
+         * only. In a folder it pushed each row over the next and the last over the folder's
+         * name. Set by ShortcutAndWidgetContainer before every setup().
+         */
+        boolean rowPadding = true;
+
+        /**
          * Horizontal location of the item in the grid.
          */
         @ViewDebug.ExportedProperty
@@ -3725,21 +3736,17 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     myCellX = colCount - myCellX - cellHSpan;
                 }
 
-                width = (int) (myCellHSpan * cellWidth / cellScaleX - leftMargin - rightMargin);
-                height = (int) (myCellVSpan * cellHeight / cellScaleY - topMargin - bottomMargin);
                 x = (myCellX * cellWidth + leftMargin);
                 y = (myCellY * cellHeight + topMargin);
 
                 // padding for the first row and for consecutive rows so it doesn't look wierd
-                if (myCellY == 0) {
-                    y += Launcher.workspaceTopPadding;
-                }
-                if (myCellY == 1) {
-                    y += Launcher.workspaceTopPadding / 2;
-                }
-                if (myCellY == 2) {
-                    y += Launcher.workspaceTopPadding / 4;
-                }
+                int rowPadding = rowPadding(myCellY);
+                y += rowPadding;
+
+                // The widget is drawn that much lower: without it off its height it reached
+                // over the row below.
+                width = (int) (myCellHSpan * cellWidth / cellScaleX - leftMargin - rightMargin);
+                height = (int) ((myCellVSpan * cellHeight - rowPadding) / cellScaleY - topMargin - bottomMargin);
             }
         }
 
@@ -3763,16 +3770,16 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 y = (int) (myCellY * (cellHeight + heightGap) + topMargin);
 
                 // padding for the first row and for consecutive rows so it doesn't look wierd
-                if (myCellY == 0) {
-                    y += Launcher.workspaceTopPadding;
-                }
-                if (myCellY == 1) {
-                    y += Launcher.workspaceTopPadding / 2;
-                }
-                if (myCellY == 2) {
-                    y += Launcher.workspaceTopPadding / 4;
-                }
+                y += rowPadding(myCellY);
             }
+        }
+
+        private int rowPadding(int cellY) {
+            if (!rowPadding) return 0;
+            if (cellY == 0) return Launcher.workspaceTopPadding;
+            if (cellY == 1) return Launcher.workspaceTopPadding / 2;
+            if (cellY == 2) return Launcher.workspaceTopPadding / 4;
+            return 0;
         }
 
         public String toString() {
@@ -4433,8 +4440,9 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     width = topRightX - topLeftX;
                     height = bottomLeftY - topLeftY;
 
-                    setCalculatedTextSizeAndColor(widgetView, R.id.tv_musicName, mLauncher.textSizeTitle);
-                    setCalculatedTextSizeAndColor(widgetView, R.id.tv_artist, mLauncher.textSizeArtist);
+                    // The size comes from MusicWidgetSizer (from the size of the widget); the colour here
+                    setCalculatedTextColor(widgetView, R.id.tv_musicName);
+                    setCalculatedTextColor(widgetView, R.id.tv_artist);
                     break;
 
                 case "radio":
@@ -4955,6 +4963,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
             int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
 
+            // the saved rectangle as wide as the window (its size and the text it needs), which the cells are reserved from
+            com.android.launcher66.settings.StatsWindowSize.syncSavedRectangle(getContext(), prefs, false);
             int leftBarWidth = mLauncher.calculatedLeftBarWidth;
             int statsWidth = mLauncher.calculatedStatsWidth;
             int statsHeight = mLauncher.calculatedStatsHeight;
@@ -5057,6 +5067,13 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         TextView textView = view.findViewById(viewId);
         if (textView != null) {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+        }
+        setCalculatedTextColor(view, viewId);
+    }
+
+    private void setCalculatedTextColor(View view, int viewId) {
+        TextView textView = view.findViewById(viewId);
+        if (textView != null) {
             boolean blackTintWidgets = prefs.getBoolean(Keys.BLACK_WIDGETS, false);
             if (blackTintWidgets) {
                 textView.setTextColor(Color.BLACK);

@@ -121,6 +121,13 @@ public final class UserTouches {
             IModuleCallback callback = new IModuleCallback.Stub() {
                 @Override
                 public void update(int code, int[] ints, float[] flts, String[] strs) {
+                    // The 7870's module (LsecService.MRemoteModule) ignores which code was
+                    // registered and sends every event of its own to every callback: touches (5),
+                    // the volume (9), a focus request of any app (8). Only code 2 is a button;
+                    // the 7862's reports nothing else
+                    if (code != BSP_BUTTON_EVENT) {
+                        return;
+                    }
                     sLastButtonMs = SystemClock.elapsedRealtime();
                     Log.i(TAG, "Button reported by FYT's framework: code " + code + " "
                             + Arrays.toString(ints));

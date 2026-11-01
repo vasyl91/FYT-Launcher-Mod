@@ -144,7 +144,11 @@ public class IconCache {
             Iterator<Map.Entry<ComponentName, CacheEntry>> it = this.mCache.entrySet().iterator();
             while (it.hasNext()) {
                 CacheEntry e = it.next().getValue();
-                if (e.icon.getWidth() != grid.iconSizePx || e.icon.getHeight() != grid.iconSizePx) {
+                // Icons are made at Utilities' texture size (Launcher.app_icon_size), not at
+                // grid.iconSizePx: compared with that, every icon was thrown away each time the
+                // launcher was created again.
+                if (e.icon.getWidth() != Utilities.sIconTextureWidth
+                        || e.icon.getHeight() != Utilities.sIconTextureHeight) {
                     it.remove();
                 }
             }

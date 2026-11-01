@@ -347,6 +347,7 @@ public final class WindowHostSplash {
             View cover = build(container.getContext(), pkg);
             cover.setTag(key);
             bumpGeneration(cover);
+            Log.d(TAG, "cover up: " + key + " " + pkg);
             container.addView(cover, lp != null ? lp : new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             cover.bringToFront();
@@ -484,17 +485,29 @@ public final class WindowHostSplash {
         cover.removeAllViews();
         coverPackage.put(cover, pkg);
 
+        String mode = coverSplashMode(prefs(ctx));
+        if (Keys.COVER_SPLASH_TRANSPARENT.equals(mode)) {
+            // Nothing to see, but the cover still comes and goes as any other, so the panes keep
+            // the timing they have with it (swaps, synchronised reveals).
+            cover.setBackgroundColor(Color.TRANSPARENT);
+            return;
+        }
+
         // Cached: see iconStateCache. This used to be a getApplicationIcon() binder call on the
         // main thread, once per pane, in the middle of the launch sequence.
         Drawable icon = iconFor(ctx, pkg);
 
-        if (prefs(ctx).getBoolean(Keys.COVER_SPLASH, true)) {
-            cover.setBackgroundColor(backgroundFor(pkg, icon));
-        } else {
-            int bgColor = helpers().isDay()
-                ? Color.rgb(247, 247, 247)
-                : Color.rgb(169, 169, 169);    
-            cover.setBackgroundColor(bgColor);        
+        switch (mode) {
+            case Keys.COVER_SPLASH_BLACK:
+                // "Dark mode": always black, whatever the night mode and the icon.
+                cover.setBackgroundColor(Color.BLACK);
+                break;
+            case Keys.COVER_SPLASH_NIGHT_MODE:
+                cover.setBackgroundColor(helpers().isDay() ? Color.rgb(247, 247, 247) : Color.BLACK);
+                break;
+            default:
+                cover.setBackgroundColor(backgroundFor(pkg, icon));
+                break;
         }
 
         if (icon != null) {
@@ -509,6 +522,17 @@ public final class WindowHostSplash {
         }
     }
 
+    /**
+     * Keys.COVER_SPLASH_MODE; before it existed the choice was the boolean Keys.COVER_SPLASH
+     * (true = icon colour, false = night mode), which LauncherApplication migrates once.
+     */
+    private static String coverSplashMode(SharedPreferences p) {
+        if (p.contains(Keys.COVER_SPLASH_MODE)) {
+            return p.getString(Keys.COVER_SPLASH_MODE, Keys.COVER_SPLASH_ICON);
+        }
+        return p.getBoolean(Keys.COVER_SPLASH, true) ? Keys.COVER_SPLASH_ICON : Keys.COVER_SPLASH_NIGHT_MODE;
+    }
+
     private static void fadeOut(final ViewGroup paneHost, final View cover,
                                 final int expectedGeneration, final Runnable onDone) {
         if (generationOf(cover) != expectedGeneration) return;
@@ -519,9 +543,11 @@ public final class WindowHostSplash {
                     .withEndAction(() -> {
                         if (generationOf(cover) != expectedGeneration) {
                             cover.setAlpha(1f);   // someone re-covered mid-fade
+                            Log.d(TAG, "cover re-raised mid-fade: " + cover.getTag() + " " + coverPackage.get(cover));
                             return;
                         }
                         try { paneHost.removeView(cover); } catch (Throwable ignore) { }
+                        Log.d(TAG, "cover down: " + cover.getTag() + " " + coverPackage.get(cover));
                         runQuietly(onDone);
                     })
                     .start();
@@ -553,6 +579,11 @@ public final class WindowHostSplash {
      */
     private static Boolean hasVisibleTask(int displayId) {
         if (displayId < 0) return Boolean.FALSE;
+
+        // A WindowHostVdView display (Android 11+): the VD host can list its tasks even when the
+        // launcher, not being system, is refused ActivityTaskManager (blocked hidden API).
+        Boolean empty = WindowHostVdClient.isDisplayEmpty(displayId);
+        if (empty != null) return !empty;
 
         long now = SystemClock.uptimeMillis();
         if (snapshot == null || (now - snapshotAtMs) > SNAPSHOT_TTL_MS) {

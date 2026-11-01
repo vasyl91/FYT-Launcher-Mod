@@ -64,6 +64,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.AbsoluteLayout;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -80,6 +81,7 @@ import com.android.launcher66.Launcher.CustomContentCallbacks;
 import com.android.launcher66.LauncherSettings.Favorites;
 import com.android.launcher66.settings.BottomBarDimensions;
 import com.android.launcher66.settings.CanbusAsyncTask;
+import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.recycler.SimpleDividerDecoration;
@@ -305,6 +307,16 @@ public class Workspace extends SmoothPagedView
     private final Handler stripHandler = new Handler(Looper.getMainLooper());
     private Runnable stripAction;
     private static final long STRIP_DELAY = 2500;
+    /**
+     * The screen an item dropped from the tray is on its way to, and since when. The item is added
+     * only after the drop animation, often after the bind or configure activity too, and a strip
+     * in between took the still empty screen: a new screen at the end was dropped from the
+     * database and the workspace went to the one before it. Kept until the add ends, at most
+     * SCREEN_AWAITING_ADD_MAX_MS.
+     */
+    private long mScreenAwaitingAdd = ItemInfo.NO_ID;
+    private long mScreenAwaitingAddSince;
+    private static final long SCREEN_AWAITING_ADD_MAX_MS = 120_000L;
     /** A strip requested while the workspace was loading; see stripEmptyScreens(). */
     private boolean mStripScreensAfterLoad = false;
     /** A strip based on the database requested while the workspace was loading. */
@@ -352,6 +364,40 @@ public class Workspace extends SmoothPagedView
     private boolean mBarRevealed = false;
     /** The overlay bar is sliding out; it is removed when the animation ends. */
     private boolean mOverlayHideAnimating = false;
+    /** A finger is on the overlay window (BarSwipeFrame). */
+    private boolean mOverlayTouchHeld = false;
+    /** The overlay bar has slid out, but its window stays until the finger is lifted. */
+    private boolean mOverlayRemoveAtUp = false;
+    /** The auto-hide timer ran out while a finger was on the overlay: hide it when lifted. */
+    private boolean mOverlayHideAtUp = false;
+    private final BarSwipeFrame.Host mBarSwipeHost = new BarSwipeFrame.Host() {
+        @Override
+        public boolean feed(MotionEvent e) {
+            return handleExternalSwipe(e);
+        }
+
+        @Override
+        public boolean isPaging() {
+            return isExternalSwipePaging();
+        }
+
+        @Override
+        public void onTouchStarted() {
+            synchronized (overlayLock) {
+                mOverlayTouchHeld = true;
+            }
+        }
+
+        @Override
+        public void onPagingStarted() {
+            hideOverlayForSwipe();
+        }
+
+        @Override
+        public void onTouchEnded() {
+            onOverlayTouchEnded();
+        }
+    };
     /** Auto-hide without the left bar: the edge handle replaces the collapsed button. */
     private boolean mEdgeHandleMode = false;
     /** The launcher is resumed; set by Launcher.onPause() and onResume(). */
@@ -579,48 +625,41 @@ public class Workspace extends SmoothPagedView
         Display display = mLauncher.getWindowManager().getDefaultDisplay();
         display.getSize(mDisplaySize);
 
+        // grid.iconSizePx is the icon's pixels taken as dp (the density times the icon on a
+        // phone), and the distance is kept so: it feels right as it is.
         mMaxDistanceForFolderCreation = (0.55f * grid.iconSizePx);
         mFlingThresholdVelocity = (int) (FLING_THRESHOLD_VELOCITY * mDensity);
     }
 
     private void loadWorkspaceScreensFromProvider() {
-        ContentResolver resolver = mLauncher.getContentResolver();
-        Cursor c = resolver.query(
-            LauncherSettings.WorkspaceScreens.CONTENT_URI,
-            new String[] { "_id", LauncherSettings.WorkspaceScreens.SCREEN_RANK },
-            null, null,
-            LauncherSettings.WorkspaceScreens.SCREEN_RANK + " ASC"
-        );
+        long[] ids = WorkspaceScreensPreload.take();
+        if (ids == null) {
+            ids = WorkspaceScreensPreload.query(mLauncher.getContentResolver());
+        }
+        if (ids == null) {
+            Log.w(TAG, "loadWorkspaceScreensFromProvider: query returned null");
+            return;
+        }
+        // Clear existing in-memory maps (start clean)
+        mScreenOrder.clear();
+        mWorkspaceScreens.clear();
 
-        try (c) {
-            if (c == null) {
-                Log.w(TAG, "loadWorkspaceScreensFromProvider: query returned null");
-                return;
-            }
-            // Clear existing in-memory maps (start clean)
-            mScreenOrder.clear();
-            mWorkspaceScreens.clear();
+        for (long screenId : ids) {
+            // Create the CellLayout page for this persisted id
+            CellLayout page = (CellLayout) LayoutInflater.from(getContext())
+                    .inflate(R.layout.workspace_screen, this, false);
 
-            while (c.moveToNext()) {
-                long screenId = c.getLong(0);
-                int rank = c.getInt(1); // may be used if you need extra ordering checks
+            // make sure layout params are correct for PagedView.
+            LayoutParams lp = new LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+            );
+            page.setLayoutParams(lp);
 
-                // Create the CellLayout page for this persisted id
-                CellLayout page = (CellLayout) LayoutInflater.from(getContext())
-                        .inflate(R.layout.workspace_screen, this, false);
-
-                // make sure layout params are correct for PagedView.
-                LayoutParams lp = new LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                );
-                page.setLayoutParams(lp);
-
-                // put into maps and add view (append at end)
-                mScreenOrder.add(screenId);
-                mWorkspaceScreens.put(screenId, page);
-                addView(page); // append (safe)
-            }
+            // put into maps and add view (append at end)
+            mScreenOrder.add(screenId);
+            mWorkspaceScreens.put(screenId, page);
+            addView(page); // append (safe)
         }
     }
 
@@ -983,10 +1022,6 @@ public class Workspace extends SmoothPagedView
             dateTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
             TextView weekTextSize = workspaceView.findViewById(R.id.curWeek);
             weekTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeBasic);
-            TextView titleTextSize = workspaceView.findViewById(R.id.tv_musicName);
-            titleTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeTitle);
-            TextView artistTextSize = workspaceView.findViewById(R.id.tv_artist);
-            artistTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeArtist);
 
             View mUserMusicWidget = workspaceView.findViewById(R.id.rl_music);
             this.mLauncher.initMusicWidgetView(mUserMusicWidget);
@@ -1054,14 +1089,9 @@ public class Workspace extends SmoothPagedView
     }
 
     private void setWidgetBarTextView(View barView) {
+        // The music texts are sized by MusicWidgetSizer; only their colour is set here
         titleText = barView.findViewById(R.id.tv_musicName_two);
-        if (titleText != null) {
-            adjustTextSize(titleText, 1.0f);
-        }
         artistText = barView.findViewById(R.id.tv_artist_two);
-        if (artistText != null) {
-            adjustTextSize(artistText, 1.0f);
-        }
         cityText = barView.findViewById(R.id.weather_city1);
         if (cityText != null) {
             adjustTextSize(cityText, 0.65f);
@@ -1202,10 +1232,11 @@ public class Workspace extends SmoothPagedView
             return;
         }
 
-        // Count TextViews in parent
+        // Count the TextViews in the parent that take room
         int textViewCount = 0;
         for (int i = 0; i < parent.getChildCount(); i++) {
-            if (parent.getChildAt(i) instanceof TextView) {
+            if (parent.getChildAt(i) instanceof TextView
+                    && parent.getChildAt(i).getVisibility() != View.GONE) {
                 textViewCount++;
             }
         }
@@ -1431,6 +1462,9 @@ public class Workspace extends SmoothPagedView
      * safe to call on every return to the home screen.
      */
     public void verifyWidgetBarText(String source) {
+        if (mLauncher != null) {
+            mLauncher.refreshMusicSizes(); // the music texts are not among the fitted ones
+        }
         if (mBarTextFits.isEmpty()) {
             return;
         }
@@ -1488,6 +1522,7 @@ public class Workspace extends SmoothPagedView
         setWidgetBarTextView(workspaceView);
 
         mLauncher.rebindBarWidgetsAfterWake(musicWidget, weatherWidget);
+        mLauncher.refreshMusicSizes();
         Log.d(TAG, "Widget bar refreshed after wake: " + source);
     }
 
@@ -1673,12 +1708,14 @@ public class Workspace extends SmoothPagedView
 
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
-            // Choose layout based on widgetBar setting
-            if (widgetBar) {
-                overlayBottomBar = inflater.inflate(R.layout.custom_layout_two_user, null);
-            } else {
-                overlayBottomBar = inflater.inflate(R.layout.custom_layout_one_user, null);
-            }
+            // Choose layout based on widgetBar setting. The layout sits in a frame that lets a
+            // horizontal swipe on this window page the workspace (BarSwipeFrame).
+            final View barContent = inflater.inflate(
+                    widgetBar ? R.layout.custom_layout_two_user : R.layout.custom_layout_one_user, null);
+            final BarSwipeFrame barFrame = new BarSwipeFrame(getContext(), mBarSwipeHost);
+            barFrame.addView(barContent, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            overlayBottomBar = barFrame;
 
             overlayBottomBar.setOnApplyWindowInsetsListener((v, insets) -> {
                 int bottomInset = insets.getSystemWindowInsetBottom();
@@ -2221,6 +2258,24 @@ public class Workspace extends SmoothPagedView
      * once. A slide-in still running is taken over from where it is.
      */
     public void hideOverlayBottomBar(boolean animate) {
+        hideOverlay(animate, false);
+    }
+
+    /**
+     * A page swipe has started on the bar's window: the bar slides away as it does for a swipe on
+     * the grid, but its window stays until the finger is lifted. Removing it, or changing its
+     * flags, would cancel the gesture that is paging the workspace.
+     */
+    private void hideOverlayForSwipe() {
+        Log.d(TAG, "Hiding the auto-hide bar: page swipe on the bar");
+        hideOverlay(true, true);
+    }
+
+    /**
+     * @param keepWindowUntilUp leave the window in place (and touchable) after the slide until the
+     *                          finger on it is lifted; see {@link #hideOverlayForSwipe()}
+     */
+    private void hideOverlay(boolean animate, boolean keepWindowUntilUp) {
         // Also make sure to cancel any pending auto-hide
         cancelPendingAutoHide();
 
@@ -2253,20 +2308,25 @@ public class Workspace extends SmoothPagedView
                 mOverlayHideAnimating = true;
                 mBarRevealed = false;
 
-                // Touches pass through while the bar slides out.
-                setOverlayTouchable(false);
+                mOverlayHideAtUp = false;
+                if (!keepWindowUntilUp) {
+                    // Touches pass through while the bar slides out. The window gets no more of
+                    // the gesture on it then, so it does not wait for the end of it either.
+                    mOverlayTouchHeld = false;
+                    setOverlayTouchable(false);
+                }
                 bar.animate().cancel();
 
                 int distance = bar.getHeight();
                 if (!animate || distance <= 0 || !bar.isAttachedToWindow()) {
-                    finishOverlayHide(bar, windowManager);
+                    onOverlaySlideOutEnded(bar, windowManager);
                 } else {
                     restoreDurationMs = BAR_HIDE_DURATION_MS;
                     bar.animate()
                             .translationY(distance)
                             .setDuration(BAR_HIDE_DURATION_MS)
                             .setInterpolator(new AccelerateInterpolator(1.5f))
-                            .withEndAction(() -> finishOverlayHide(bar, windowManager))
+                            .withEndAction(() -> onOverlaySlideOutEnded(bar, windowManager))
                             .start();
                 }
             }
@@ -2279,6 +2339,61 @@ public class Workspace extends SmoothPagedView
         if (launcher != null) {
             mainHandler.post(launcher::disableRecycler);
         }
+    }
+
+    /**
+     * The slide-out is over. The bar is off the window by now, so a window that still has a finger
+     * on it can wait for the end of that gesture without showing anything.
+     */
+    private void onOverlaySlideOutEnded(View bar, WindowManager windowManager) {
+        synchronized (overlayLock) {
+            if (mOverlayTouchHeld && bar == overlayBottomBar) {
+                mOverlayRemoveAtUp = true;
+                return;
+            }
+        }
+        finishOverlayHide(bar, windowManager);
+    }
+
+    /** The gesture on the overlay window is over, or the window is gone. */
+    private void onOverlayTouchEnded() {
+        synchronized (overlayLock) {
+            mOverlayTouchHeld = false;
+            final View bar = overlayBottomBar;
+            final WindowManager windowManager = overlayWindowManager;
+            if (bar == null || windowManager == null) {
+                return;
+            }
+            if (mOverlayRemoveAtUp) {
+                mOverlayRemoveAtUp = false;
+                // Posted: this runs in the dispatch of the window's last event.
+                mainHandler.post(() -> {
+                    synchronized (overlayLock) {
+                        if (bar != overlayBottomBar) {
+                            return;
+                        }
+                    }
+                    finishOverlayHide(bar, windowManager);
+                });
+            } else if (mOverlayHideAtUp && isOverlayShowing && !mOverlayHideAnimating) {
+                mOverlayHideAtUp = false;
+                mainHandler.post(this::hideOverlayBottomBar);
+            }
+        }
+    }
+
+    /**
+     * The auto-hide timer ran out. A bar with a finger on it stays, the finger is not left without
+     * the bar it is using; it goes when the finger is lifted.
+     */
+    private void hideOverlayUnlessTouched() {
+        synchronized (overlayLock) {
+            if (mOverlayTouchHeld) {
+                mOverlayHideAtUp = true;
+                return;
+            }
+        }
+        hideOverlayBottomBar();
     }
 
     /** End of a hide: detaches the shared adapter and removes the window. */
@@ -2500,6 +2615,9 @@ public class Workspace extends SmoothPagedView
         overlayBottomBar = null;
         overlayWindowParams = null;
         overlayWindowManager = null;
+        mOverlayTouchHeld = false;
+        mOverlayRemoveAtUp = false;
+        mOverlayHideAtUp = false;
         
         // Re-initialize widget references to point to normal workspace views
         if (workspaceView != null && widgetBar) {
@@ -2664,7 +2782,7 @@ public class Workspace extends SmoothPagedView
         autoHideFuture = scheduler.schedule(() -> {
             synchronized (overlayLock) {
                 if (isOverlayShowing && !isOverlayAnimating) {
-                    mainHandler.post(this::hideOverlayBottomBar);
+                    mainHandler.post(this::hideOverlayUnlessTouched);
                 }
             }
         }, autoHideTimeout, TimeUnit.SECONDS);
@@ -2702,6 +2820,8 @@ public class Workspace extends SmoothPagedView
 
     public void onWorkspaceDestroy() {
         mLauncher = null;
+        Choreographer.getInstance().removeFrameCallback(mPaneFrame);
+        mPaneFramePosted = false;
         // Nothing queued by this workspace may run once its Launcher is gone: the delayed strip and
         // PiP restarts read mLauncher, which is null from here on.
         stripHandler.removeCallbacksAndMessages(null);
@@ -2756,8 +2876,6 @@ public class Workspace extends SmoothPagedView
         // Ensure that the current page and default page are maintained.
         mDefaultPage = mOriginalDefaultPage + 1;
 
-        // Update the custom content hint
-        mLauncher.updateCustomContentHintVisibility();
         if (mRestorePage != INVALID_RESTORE_PAGE) {
             mRestorePage = mRestorePage + 1;
         } else {
@@ -2785,8 +2903,6 @@ public class Workspace extends SmoothPagedView
         // Ensure that the current page and default page are maintained.
         mDefaultPage = mOriginalDefaultPage - 1;
 
-        // Update the custom content hint
-        mLauncher.updateCustomContentHintVisibility();
         if (mRestorePage != INVALID_RESTORE_PAGE) {
             mRestorePage = mRestorePage - 1;
         } else {
@@ -2861,6 +2977,17 @@ public class Workspace extends SmoothPagedView
         int nScreens = getChildCount();
         nScreens = nScreens - numCustomPages();
         return mWorkspaceScreens.containsKey(EXTRA_EMPTY_SCREEN_ID) && nScreens > 1;
+    }
+
+    /** See mScreenAwaitingAdd. */
+    void holdScreenForAdd(long screenId) {
+        mScreenAwaitingAdd = screenId;
+        mScreenAwaitingAddSince = SystemClock.uptimeMillis();
+    }
+
+    /** The add from the tray ended, added or not; see mScreenAwaitingAdd. */
+    public void releaseScreenForAdd() {
+        mScreenAwaitingAdd = ItemInfo.NO_ID;
     }
 
     public void commitExtraEmptyScreen() {
@@ -2980,7 +3107,8 @@ public class Workspace extends SmoothPagedView
      * calling stripEmptyScreens() few times in a very short succesion
      */
     public void triggerStripEmptyScreens(String sourceClass, boolean instant) {
-        Log.i(TAG, "triggerStripEmptyScreens called in: " + sourceClass);
+        // Called several times in one frame at a start (already debounced below): not worth an I each.
+        Log.d(TAG, "triggerStripEmptyScreens called in: " + sourceClass);
         if (stripAction != null) {
             stripHandler.removeCallbacks(stripAction);
         }
@@ -3033,6 +3161,14 @@ public class Workspace extends SmoothPagedView
             cl = mWorkspaceScreens.get(id);
             if (cl != null && id >= 0 && cl.getShortcutsAndWidgets().getChildCount() == 0) {
                 removeScreens.add(id);
+            }
+        }
+        if (mScreenAwaitingAdd != ItemInfo.NO_ID && removeScreens.contains(mScreenAwaitingAdd)) {
+            if (SystemClock.uptimeMillis() - mScreenAwaitingAddSince < SCREEN_AWAITING_ADD_MAX_MS) {
+                Log.i(TAG, "stripEmptyScreens: screen " + mScreenAwaitingAdd + " kept, an item is on its way to it");
+                removeScreens.remove(mScreenAwaitingAdd);
+            } else {
+                mScreenAwaitingAdd = ItemInfo.NO_ID;
             }
         }
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -3476,6 +3612,11 @@ public class Workspace extends SmoothPagedView
         }
     }
 
+    /** The paging has taken the status bar strip's or the auto-hide bar's gesture over. */
+    boolean isExternalSwipePaging() {
+        return mExternalSwipeTracking && mExternalSwipeScrolling;
+    }
+
     private boolean canPageFromExternalSwipe() {
         return mEdgeHandleHostVisible // set while the launcher is in front
                 && mLauncher != null
@@ -3582,9 +3723,58 @@ public class Workspace extends SmoothPagedView
         }
     }
 
+    /**
+     * Moves the PiP panes in the ANIMATION phase of every frame the pages move in, with the
+     * position the pages will have in the draw of that frame (PagedView.scrollXForThisFrame()).
+     *
+     * The panes used to follow only from the draw (computeScroll(), screenScrolled()), which is the
+     * TRAVERSAL phase. updateViewLayout() called there schedules the pane window's pass for the
+     * next frame, because Choreographer takes the callbacks of a phase at the start of the frame:
+     * the pane window got its position a frame after the page was drawn, and WindowManager applies
+     * it later still. At 120 Hz and a quick snap that is a visible gap, the pane trails the page.
+     * Called in the ANIMATION phase, the pass of the pane window falls into the same frame as the
+     * draw of the pages.
+     *
+     * The position is predicted, not read from mScroller.computeScrollOffset(): that would finish
+     * the scroller in the last frame, the draw would skip its closing scrollTo(), and the page would
+     * stop short of its place. The draws still push the position as before; for the same value the
+     * equality filter in WindowUtil makes that a no-op, and a scroll the prediction does not cover
+     * (a fling) goes through them as it did.
+     *
+     * On the Galaxy A55 the panes were already faster with the window animations off than with them
+     * on, and still behind the pages; this is the part of the delay that remained.
+     */
+    private boolean mPaneFramePosted = false;
+    private final Choreographer.FrameCallback mPaneFrame = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            mPaneFramePosted = false;
+            if (!isPageMoving() || !isAttachedToWindow()) {
+                return; // the callback ends with the scroll
+            }
+            int scrollX = scrollXForThisFrame();
+            // The stats first: before Android 14 each window's move is a relayout() the main
+            // thread waits for in its pass, and these passes run in the order they were asked
+            // for. Behind the panes' (a VirtualDisplay each) the stats missed the vsync the page
+            // and the panes were shown in, on the 7862.
+            CanbusService.onPagesFrame(scrollX);
+            WindowUtil.updatePipPositionsForScroll(scrollX);
+            postPaneFrame();
+        }
+    };
+
+    private void postPaneFrame() {
+        if (!mPaneFramePosted) {
+            mPaneFramePosted = true;
+            Choreographer.getInstance().postFrameCallback(mPaneFrame);
+        }
+    }
+
     protected void onPageBeginMoving() {
         super.onPageBeginMoving();
         Log.i(TAG, "onPageBeginMoving()");
+        WindowUtil.onPagesBeginMoving();
+        postPaneFrame();
         if (getChildCount() > 1) {
             WindowUtil.removePinnedPip();
         }
@@ -3620,6 +3810,7 @@ public class Workspace extends SmoothPagedView
 
     protected void onPageEndMoving() {
         super.onPageEndMoving(); 
+        WindowUtil.onPagesSettled();
         /*Log.d(TAG, "onPageEndMoving: " + "isInOverviewMode() = " + String.valueOf(helpers.isInOverviewMode())
                                        + "; openedFromOverviewBoolean() = " + String.valueOf(helpers.openedFromOverviewBoolean())
                                        + "; getChildCount() = " + String.valueOf(getChildCount())
@@ -3711,10 +3902,8 @@ public class Workspace extends SmoothPagedView
     }
 
     protected void setWallpaperDimension() {
-        String spKey = WallpaperCropActivity.getSharedPreferencesKey();
-        SharedPreferences sp = mLauncher.getSharedPreferences(spKey, Context.MODE_MULTI_PROCESS);
         WallpaperPickerActivity.suggestWallpaperDimension(mLauncher.getResources(),
-                sp, mLauncher.getWindowManager(), mWallpaperManager);
+                mLauncher.getApplicationContext(), mLauncher.getWindowManager(), mWallpaperManager);
     }
 
     protected void snapToPage(int whichPage, Runnable r) {
@@ -4527,6 +4716,16 @@ public class Workspace extends SmoothPagedView
     public boolean enterOverviewMode() {
         // Do not allow to enter if widget has been long clicked
         if (helpers.isWidgetClickedBool()) return false;
+        // Refused while the pages are held, before anything says the overview is open. Pages
+        // caught again while they snap take the down themselves (TOUCH_STATE_SCROLLING), so the
+        // Workspace's own long press is armed, and holding them fires it. This check used to come
+        // after the flag and OVERVIEW_MODE_OPEN: the overview never opened, yet isInOverviewMode()
+        // stayed true until something else cleared it (the app drawer, a new resume), so
+        // onPageEndMoving() no longer opened the pinned PiP and CanbusService kept the stats
+        // window removed (log 28-10-2026 00:57).
+        if (mTouchState != TOUCH_STATE_REST) {
+            return false;
+        }
 
         helpers.setInOverviewMode(true);
         helpers.setListOpen(false);
@@ -4540,9 +4739,6 @@ public class Workspace extends SmoothPagedView
             helpers.setInRecent(false);
             Intent intentOverviewMode = new Intent(Keys.OVERVIEW_MODE_OPEN);
             SysCalls.sendBroadcast(LauncherApplication.sApp, intentOverviewMode);
-        }
-        if (mTouchState != TOUCH_STATE_REST) {
-            return false;
         }
         if (!LauncherApplication.sApp.getResources().getBoolean(R.bool.wallpaper_show)) {
             return true;
@@ -5052,16 +5248,9 @@ public class Workspace extends SmoothPagedView
         final Canvas canvas = new Canvas();
         
         // Identify view type for scaling
-        boolean isWidget = false;
-        if (child instanceof LauncherAppWidgetHostView) {
-            final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
-            AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-            if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
-                isWidget = true;
-            }
-        }
+        boolean isWidget = LauncherAppWidgetHostView.isScaled(child);
 
-        float widgetScaleFactor = 1.75f;
+        float widgetScaleFactor = ScreenScale.widgetScale();
         float widgetScale = isWidget ? widgetScaleFactor : 1.0f;
         
         // Create scaled drag outline
@@ -5108,7 +5297,15 @@ public class Workspace extends SmoothPagedView
         Point dragVisualizeOffset = null;
         Rect dragRect = null;
         if (child instanceof BubbleTextView || child instanceof PagedViewIcon) {
+            // The icon as drawn: grid.iconSizePx is Launcher.workspaceIconAndFolderSize (pixels)
+            // taken as dp, so on a phone it was the density times too large, and the outline,
+            // centred by it, showed about an icon's width left of where the icon landed (on FYT
+            // units, at a density of 1.5, half an icon).
             int iconSize = grid.iconSizePx;
+            Drawable icon = ((TextView) child).getCompoundDrawables()[1];
+            if (icon != null && icon.getBounds().width() > 0) {
+                iconSize = icon.getBounds().width();
+            }
             int top = child.getPaddingTop();
             int left = (bmpWidth - iconSize) / 2;
             int right = left + iconSize;
@@ -5551,6 +5748,14 @@ public class Workspace extends SmoothPagedView
                         mTargetCell, resultSpan, CellLayout.MODE_ON_DROP);
 
                 boolean foundCell = mTargetCell[0] >= 0 && mTargetCell[1] >= 0;
+                // A place with no room at all (over the PiP panes, say) can come back as a
+                // cell with a 0 span: taken as the widget's new size it crashed the drop.
+                if (foundCell && (resultSpan[0] < 1 || resultSpan[1] < 1)) {
+                    Log.w(TAG, "onDrop(): no room at " + mTargetCell[0] + "," + mTargetCell[1]
+                            + " (span " + resultSpan[0] + "x" + resultSpan[1] + "), back to where it was");
+                    foundCell = false;
+                    mTargetCell[0] = mTargetCell[1] = -1;
+                }
 
                 // if the widget resizes on drop
                 if (foundCell && (cell instanceof AppWidgetHostView) &&
@@ -6354,6 +6559,9 @@ public class Workspace extends SmoothPagedView
 
         if (info instanceof PendingAddItemInfo) {
             final PendingAddItemInfo pendingInfo = (PendingAddItemInfo) dragInfo;
+            if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                holdScreenForAdd(screenId);
+            }
 
             boolean findNearestVacantCell = true;
             if (pendingInfo.itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT) {
@@ -6514,9 +6722,16 @@ public class Workspace extends SmoothPagedView
                 intent.getComponent().getClassName();
     }
 
+    /** The widget drawn at its cells' size; null when that size is empty. */
     public Bitmap createWidgetBitmap(ItemInfo widgetInfo, View layout) {
         int[] unScaledSize = estimateItemSize(widgetInfo.spanX,
                 widgetInfo.spanY, false);
+        if (unScaledSize[0] <= 0 || unScaledSize[1] <= 0
+                || unScaledSize[0] == Integer.MAX_VALUE || unScaledSize[1] == Integer.MAX_VALUE) {
+            Log.w(TAG, "createWidgetBitmap: no size for a " + widgetInfo.spanX + "x"
+                    + widgetInfo.spanY + " widget");
+            return null;
+        }
         int visibility = layout.getVisibility();
         layout.setVisibility(VISIBLE);
 
@@ -6622,8 +6837,11 @@ public class Workspace extends SmoothPagedView
             Log.d(TAG, "6557954 Animate widget drop, final view is appWidgetHostView");
             mLauncher.getDragLayer().removeView(finalView);
         }
+        Bitmap crossFadeBitmap = null;
         if ((animationType == ANIMATE_INTO_POSITION_AND_RESIZE || external) && finalView != null) {
-            Bitmap crossFadeBitmap = createWidgetBitmap(info, finalView);
+            crossFadeBitmap = createWidgetBitmap(info, finalView);
+        }
+        if (crossFadeBitmap != null) {
             dragView.setCrossFadeBitmap(crossFadeBitmap);
             dragView.crossFade((int) (duration * 0.8f));
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET && external) {

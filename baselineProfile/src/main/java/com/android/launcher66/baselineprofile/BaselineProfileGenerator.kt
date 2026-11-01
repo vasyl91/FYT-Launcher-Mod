@@ -149,8 +149,10 @@ internal fun MacrobenchmarkScope.waitForLauncher() {
  *
  * BaselineProfileRule flushes all processes of the package only at the end of each iteration.
  * A secondary process (":wallpaper_chooser") may already be gone by then, so its profile is
- * flushed explicitly while it is still alive. Requires root; the command goes through
- * "su root", like Macrobenchmark's own root commands.
+ * flushed explicitly while it is still alive. Needs root; the command goes through "su root",
+ * like Macrobenchmark's own root commands. Without root (a phone on Android 13+, which needs
+ * none for the profile) it is skipped: the shell may not signal an app's process, and the
+ * process only adds the wallpaper picker's code.
  */
 internal fun MacrobenchmarkScope.flushProcessProfile(processName: String) {
     val pids = device.executeShellCommand("pidof $processName").trim()
@@ -160,7 +162,14 @@ internal fun MacrobenchmarkScope.flushProcessProfile(processName: String) {
         return
     }
     // adbd running as root does not need su (and may not have one).
-    val su = if (device.executeShellCommand("id").contains("uid=0")) "" else "su root "
+    val su = when {
+        device.executeShellCommand("id").contains("uid=0") -> ""
+        device.executeShellCommand("which su").isNotBlank() -> "su root "
+        else -> {
+            Log.w(TAG, "Profile flush skipped for $processName: no root")
+            return
+        }
+    }
     pids.forEach { pid ->
         val out = device.executeShellCommand("${su}kill -s SIGUSR1 $pid").trim()
         Log.i(TAG, "Profile flush requested for $processName (pid $pid)${if (out.isNotEmpty()) ": $out" else ""}")
@@ -282,7 +291,7 @@ class BaselineProfileGenerator {
     /** Cold start: system Settings on top -> kill the launcher -> explicit HOME intent. */
     private fun MacrobenchmarkScope.coldStartViaHome() {
         bringSystemSettingsToFront()
-        // If the FYT firmware restarts the launcher immediately and killProcess() throws,
+        // If the firmware (FYT) restarts the launcher immediately and killProcess() throws,
         // remove this line - the startup path is still captured when the process restarts.
         killProcess()
         startActivityAndWait(homeIntent())

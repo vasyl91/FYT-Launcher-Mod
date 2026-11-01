@@ -33,11 +33,13 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.perf.BaselineProfileCompiler;
 import com.android.launcher66.settings.CrashLogger;
+import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
-import com.android.launcher66.settings.LogcatWorker;
 import com.android.launcher66.settings.VersionChecker;
 import com.android.launcher66.settings.WakeDetection;
 import com.android.launcher66.settings.WakeDetectionService;
+import com.fyt.car.MusicService;
+import com.fyt.car.StockSources;
 import com.fyt.skin.SkinManager;
 import com.fyt.skin.util.FileUtil;
 import com.syu.canbus.ZipCompare;
@@ -107,6 +109,20 @@ public class LauncherApplication extends Application {
     }
 
     @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        // Starts reading the preference files used first: SharedPreferences loads a file on a
+        // thread of its own, so it reads while the content providers start. Otherwise onCreate()
+        // and the Launcher's first lines waited for the reads on the main thread (0.4 s at a boot).
+        if (!isWallpaperPickerProcess()) {
+            PreferenceManager.getDefaultSharedPreferences(this);
+            getSharedPreferences(Helpers.SUS_PREFS, MODE_PRIVATE);
+            // Read for every widget the workspace binds (setAppWidget()).
+            getSharedPreferences(WidgetFit.PREFS, MODE_PRIVATE);
+        }
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate()");
@@ -119,11 +135,22 @@ public class LauncherApplication extends Application {
                     + (SystemClock.elapsedRealtime() - start) + "ms");
             return;
         }
+        // Which steps the time goes to, in one line at the end. Android gives the start up to
+        // here a time limit ("failed to complete startup"), which a boot can use up.
+        StartupSteps steps = new StartupSteps(start);
+        // Which device this is, before anything asks (isFytDevice() has 60+ callers). The default
+        // preferences are being read since attachBaseContext(), so this adds no disk read.
+        DeviceIdentity.init(PreferenceManager.getDefaultSharedPreferences(this));
+        steps.mark("device");
         initData();
+        steps.mark("initData");
+        // Android 11+ PiP panes: start listening for Shizuku (the lowest-priority pane host).
+        com.syu.util.WindowHostVdClient.init(this);
         // Tells the sound channel logic a tapped app from one that came up by itself.
         com.syu.util.UserTouches.start();
         // And the buttons FYT's framework reports (HomeFrontGuard); calls into system_server.
         new Thread(com.syu.util.UserTouches::startButtons, "FytButtons").start();
+        steps.mark("touches");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         // One setting became two (wake, cold start): both start from the old one, once.
         if (prefs.contains(Keys.LAUNCHER_HOME)) {
@@ -134,24 +161,74 @@ public class LauncherApplication extends Application {
                     .remove(Keys.LAUNCHER_HOME)
                     .apply();
         }
+        // PiP splash colour: a boolean became three options (CustomNestedThreePreference), once.
+        if (prefs.contains(Keys.COVER_SPLASH)) {
+            boolean iconColour = prefs.getBoolean(Keys.COVER_SPLASH, true);
+            prefs.edit()
+                    .putString(Keys.COVER_SPLASH_MODE,
+                            iconColour ? Keys.COVER_SPLASH_ICON : Keys.COVER_SPLASH_NIGHT_MODE)
+                    .remove(Keys.COVER_SPLASH)
+                    .apply();
+        }
+        // Pinned PiP exists on the FYT platforms but the 7870: elsewhere every pane is a window,
+        // and a mode saved as pinned (by an older version, or on another device's backup) is put
+        // back right away, the 7870 included.
+        if (!supportsPinnedPip()) {
+            clearPinnedPipModes(prefs, DeviceIdentity.chipset().name());
+        }
+        if (!showsFytOptions()) {
+            // Settings hide what only an FYT unit has, so none of it may stay on.
+            prefs.edit()
+                    .putBoolean(Keys.NIGHT_MODE_LIGHTS, false)
+                    .putBoolean(Keys.USER_RADIO, false)
+                    .putBoolean(Keys.USER_STATS, false)
+                    .putBoolean(Keys.DISPLAY_CANBUS_READER, false)
+                    .apply();
+        } else if (!prefs.contains(Keys.USER_RADIO)) {
+            // The radio widget shows the FYT radio: on by default there only. Written down, as
+            // the code reading it disagrees on the default.
+            prefs.edit().putBoolean(Keys.USER_RADIO, isFytDevice()).apply();
+        }
+        warmUpOffMainThread();
+        // The music widget's last cover used to live in these preferences: out to its file.
+        if (prefs.contains(LauncherMusicWidget.PREF_LAST_ALBUM_ART)) {
+            final Context app = this;
+            new Thread(() -> LauncherMusicWidget.migrateAlbumArt(app, prefs), "AlbumArtMove").start();
+        }
+        steps.mark("prefs");
         // Before anything can start a HomeFrontGuard: it needs to know whether the launcher is in front.
         HomeFrontGuard.trackActivities(this);
         // First start after a device restart (not a wake from sleep): the launcher is kept in
         // front and the autostart is scheduled, see ColdStart.
         coldStart = ColdStart.start(this, prefs);
+        steps.mark("coldStart");
         // Sleep and wake, for as long as the process lives; its calls into system_server run
         // on its own thread.
         WakeDetection.start(this);
+        steps.mark("wake");
         initProperties();
+        steps.mark("properties");
         sHandler = new Handler(Looper.getMainLooper());
         cfg();
+        steps.mark("cfg");
         setupBase();
+        steps.mark("setupBase");
         initWindow();
+        steps.mark("initWindow");
         connectService();
+        steps.mark("connectService");
         DataPack.init(this);
-        if (BuildConfig.DEBUG) {
-            enableStrictMode();
+        steps.mark("dataPack");
+        // The 7870's player (com.syu.media) reports nothing to MusicService by itself: follow it
+        // over its binder, on FYT units only. Binds on its own thread; where com.syu.media is
+        // missing (7862, 8581: com.syu.music) the bind just fails.
+        if (isFytDevice()) {
+            // Which stock source the music widget shows, from the MCU's channel; learns on its own
+            // thread whether this is a 7870. Before the players below report into it.
+            StockSources.init(this);
+            MusicService.startSyuMedia(this);
         }
+        enableStrictMode();
         // Keeps the process up for WakeDetection, see there. Two binder calls (resolveService,
         // startService), so off the main thread: at a cold boot they could block it during the
         // boot-time stall (see ColdStart).
@@ -161,9 +238,23 @@ public class LauncherApplication extends Application {
                 "wake detection"
         ), "StartWakeDetection").start(), 1000);
         LeakCanaryInit.init();
+        steps.mark("leakCanary");
         handler.postDelayed(this::runDeferredStartupWork,
                 Math.max(DEFERRED_STARTUP_WORK_MS, ColdStart.bootStallDelayMs()));
-        Log.d(TAG, "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms");
+        Log.d(TAG, "onCreate(): " + (SystemClock.elapsedRealtime() - start) + "ms" + steps);
+        sOnCreateEnd = SystemClock.elapsedRealtime();
+    }
+
+    /**
+     * When onCreate() ended, for the first Launcher of the process to time its own start from
+     * (see Launcher.mStartupSteps); 0 once taken.
+     */
+    private static long sOnCreateEnd;
+
+    static long takeOnCreateEnd() {
+        long end = sOnCreateEnd;
+        sOnCreateEnd = 0;
+        return end;
     }
 
     /**
@@ -193,9 +284,7 @@ public class LauncherApplication extends Application {
         CrashHandler.getInstance(getApplicationContext());
         sHandler = new Handler(Looper.getMainLooper());
         initStaticFields();
-        if (BuildConfig.DEBUG) {
-            enableStrictMode();
-        }
+        enableStrictMode();
     }
 
     /** The system services and resources this class's static helpers read; in every process. */
@@ -212,6 +301,12 @@ public class LauncherApplication extends Application {
         sRootView = new View(this);
     }
 
+    /**
+     * Logs what StrictMode finds (disk or network on a thread that must not, leaked SQLite objects
+     * and closables) and does nothing else: no penalty ever ends the process. It runs in release
+     * builds too, so that a capture from an owner's device shows the same violations a debug build
+     * does; the price is a stack trace per violation, written to the log only.
+     */
     private void enableStrictMode() {
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .detectDiskReads()
@@ -245,6 +340,48 @@ public class LauncherApplication extends Application {
             appEnable(FytPackage.auxAction, auxEnable);
             appEnable(FytPackage.frontvideoAction, frontVideoEnable);
         }, "AppEnable").start();
+    }
+
+    /**
+     * What the launcher's first screen reads from disk, read first on threads of their own: the
+     * bars' rows (which also opens their database), the workspace's database, and the
+     * preference files and folders the main thread opens early. The main thread then finds
+     * them in memory (StrictMode caught each of them on it at a start).
+     */
+    private void warmUpOffMainThread() {
+        BarRows.preload(BarCapacity.LEFT_MEMORY);
+        // Its own thread: the main thread needs the screens about a second from now, when
+        // Workspace is inflated. Opens the workspace's database (LauncherProvider) on the way.
+        new Thread(() -> {
+            try {
+                WorkspaceScreensPreload.preload(this);
+            } catch (Throwable t) {
+                Log.w(TAG, "start-up screens read: " + t);
+            }
+        }, "StartupScreens").start();
+        new Thread(() -> {
+            try {
+                getFilesDir();
+                getCacheDir();
+                LauncherMusicWidget.preloadAlbumArt(this);
+                getSharedPreferences(LauncherAppState.getSharedPreferencesKey(), MODE_PRIVATE);
+                getSharedPreferences(Launcher.EvenVerticalLayoutManager.LM_PREFS, MODE_PRIVATE);
+                getSharedPreferences(com.android.launcher66.settings.AppListCacheDialogFragment.PREFS_NAME,
+                        MODE_PRIVATE);
+                getSharedPreferences(getPackageName(), MODE_PRIVATE);
+                getSharedPreferences(WallpaperCropActivity.getSharedPreferencesKey(),
+                        MODE_MULTI_PROCESS);
+                getSharedPreferences(PendingUpdateStore.PREFS, MODE_PRIVATE);
+                getSharedPreferences(com.syu.util.WindowHostDualPane.PREFS, MODE_PRIVATE);
+                getSharedPreferences(com.android.launcher66.settings.CanbusService.APP_STATS_PREFS,
+                        MODE_PRIVATE);
+                BaselineProfileCompiler.warmUp(this);
+                // Whether Shizuku is installed (a PackageManager call), for HostAwait.isExpected().
+                com.syu.util.HostAwait.warmUp(this);
+            } catch (Throwable t) {
+                Log.w(TAG, "start-up warm-up: " + t);
+            }
+        }, "StartupWarmUp").start();
     }
 
     private void initData() {
@@ -617,16 +754,66 @@ public class LauncherApplication extends Application {
         return ai.uid == android.os.Process.SYSTEM_UID || (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
     }
 
-    public static boolean isFytDevice() {
-        String board = SystemProperties.get("ro.product.board");
-        String manufacturer = SystemProperties.get("ro.product.manufacturer");
-        String platform = SystemProperties.get("ro.fyt.platform");
-        String displayId = Build.DISPLAY;
+    /**
+     * Whether a pane can be FYT's pinned PiP instead of a window: on every FYT platform but the
+     * 7870, in the fyt and the standard version alike (see PinnedPip; the 7870 has no pinned
+     * stack for the launcher to use, owner's decision). What it calls that a user app may be
+     * refused (system properties, setPinnedStackVisible, forceStopPackage) is caught, see
+     * WindowUtil.
+     *
+     * Known from the start of the process (DeviceIdentity), without waiting for StockSources.
+     */
+    public static boolean supportsPinnedPip() {
+        return PinnedPip.supported(DeviceIdentity.chipset());
+    }
 
-        return (board != null && board.toUpperCase().contains("FYT")) ||
-               (manufacturer != null && manufacturer.toUpperCase().contains("FYT")) ||
-               (platform != null && !platform.isEmpty()) ||
-               (displayId != null && displayId.toUpperCase().contains("FYT"));
+    /** Whether the pane saved under modeKey is the pinned PiP, which is not where it is unsupported. */
+    public static boolean isPinnedMode(SharedPreferences prefs, String modeKey) {
+        return PinnedPip.mode(supportsPinnedPip(), prefs.getBoolean(modeKey, false));
+    }
+
+    /**
+     * Puts every pane back to a window, if any is saved as pinned. Main thread; the write is apply().
+     */
+    public static void clearPinnedPipModes(SharedPreferences prefs, String why) {
+        if (!prefs.getBoolean(Keys.PIP_FIRST_MODE, false)
+                && !prefs.getBoolean(Keys.PIP_SECOND_MODE, false)
+                && !prefs.getBoolean(Keys.PIP_THIRD_MODE, false)
+                && !prefs.getBoolean(Keys.PIP_FOURTH_MODE, false)) {
+            return;
+        }
+        prefs.edit()
+                .putBoolean(Keys.PIP_FIRST_MODE, false)
+                .putBoolean(Keys.PIP_SECOND_MODE, false)
+                .putBoolean(Keys.PIP_THIRD_MODE, false)
+                .putBoolean(Keys.PIP_FOURTH_MODE, false)
+                .apply();
+        Log.i(TAG, "Pinned PiP is not offered here (" + why + "): the panes are windows again");
+    }
+
+    /**
+     * Whether this is an FYT unit. The rule is in FytPlatform; the answer is found once and kept,
+     * see DeviceIdentity.
+     */
+    public static boolean isFytDevice() {
+        return DeviceIdentity.isFyt();
+    }
+
+    /**
+     * Whether settings show what only an FYT unit has (its music title source, night by car
+     * lights, the radio widget, fuel statistics, the canbus reader): there, and in debug builds.
+     */
+    public static boolean showsFytOptions() {
+        return BuildConfig.DEBUG || isFytDevice();
+    }
+
+    /**
+     * Whether settings show an option that needs the launcher as system, root or Shizuku: where
+     * it can work, and in debug builds anywhere. Without what it needs it does nothing there,
+     * each one checks again when it runs.
+     */
+    public static boolean showsPrivilegedOption(boolean usable) {
+        return usable || BuildConfig.DEBUG;
     }
 
     public static boolean isServiceRunning(Class<? extends Service> serviceClass) {
@@ -639,6 +826,50 @@ public class LauncherApplication extends Application {
                 }
             }
         }
+        return false;
+    }
+
+    private static boolean sNoPaneHostLogged;
+
+    /**
+     * Whether the PiP panes can work here: wherever a VD host is there or on its way -- the
+     * launcher installed as system (on Android 8-10 that is the framework's ActivityView), the
+     * FYT VDHost Magisk module, or Shizuku (see vdhost/README.md). Being an FYT unit says nothing
+     * of it: the standard version there without root or Shizuku would only wait for a host, and a
+     * system install on another device has what the FYT one has. Root alone is not enough either:
+     * without the module nothing would host the panes.
+     */
+    public static boolean canHostPips() {
+        if (com.syu.util.WindowHostVdClient.canHostPanes()) return true;
+        if (isRooted() && !sNoPaneHostLogged) {
+            sNoPaneHostLogged = true;
+            Log.w(TAG, "PiP panes need the FYT VDHost Magisk module or Shizuku; neither is available");
+        }
+        return false;
+    }
+
+    public static boolean isRooted() {
+        String[] paths = {
+            "/system/bin/su",
+            "/system/xbin/su",
+            "/sbin/su",
+            "/system/su",
+            "/vendor/bin/su",
+            "/data/local/bin/su",
+            "/data/local/xbin/su"
+        };
+
+        for (String path : paths) {
+            if (new File(path).exists()) {
+                return true;
+            }
+        }
+
+        String tags = Build.TAGS;
+        if (tags != null && tags.contains("test-keys")) {
+            return true;
+        }
+
         return false;
     }
 

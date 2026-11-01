@@ -15,8 +15,11 @@ import android.provider.Settings
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
+import androidx.profileinstaller.ProfileInstaller
 import androidx.profileinstaller.ProfileVerifier
 import com.android.launcher66.BuildConfig
+import com.syu.util.HostAwait
+import com.syu.util.WindowHostVdClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,6 +27,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 import java.text.SimpleDateFormat
@@ -47,6 +51,11 @@ import kotlin.coroutines.resume
  *
  * Why it works without root: the launcher runs as UID 1000 (android.uid.system) and is signed
  * with the platform key, so system_server grants it the same operations as "adb shell".
+ *
+ * Other builds (standard flavor, Android 8+) are compiled the same way by the VD host when one runs
+ * outside the launcher: the FYT VDHost Magisk module's daemon or Shizuku's service (see
+ * [compileThroughHost]). Without either, nothing is compiled and Android's own idle dexopt
+ * applies the profile some night.
  *
  * Two phases per installed APK:
  *
@@ -144,6 +153,10 @@ object BaselineProfileCompiler {
 
     /** Head unit boot is busy (CAN bus, BT, navigation) - do not compete for CPU. */
     private const val START_DELAY_MS = 90_000L
+
+    /** A VD host on its way is waited for until this long after the process started (see [canCompileOrAwaitHost]). */
+    private const val HOST_WAIT_SINCE_START_MS = 10L * 60L * 1000L
+
     private const val INSTALL_TIMEOUT_MS = 30_000L
 
     /** While the clock is wrong: how often to check whether it has been corrected. */
@@ -153,6 +166,8 @@ object BaselineProfileCompiler {
     private val CHECKPOINT_INTERVAL_MS = TimeUnit.MINUTES.toMillis(15)
 
     private const val ACTION_INSTALL_PROFILE = "androidx.profileinstaller.action.INSTALL_PROFILE"
+    /** ProfileInstaller's record of the APK it last wrote the profile for (its files dir). */
+    private const val PROFILE_INSTALLER_SKIP_FILE = "profileinstaller_profileWrittenFor_lastUpdateTime.dat"
     private const val RECEIVER = "androidx.profileinstaller.ProfileInstallReceiver"
 
     /** ProfileInstaller result codes: 1 = RESULT_INSTALL_SUCCESS, 2 = RESULT_ALREADY_INSTALLED. */
@@ -193,12 +208,66 @@ object BaselineProfileCompiler {
     @VisibleForTesting
     internal var elapsedNow: () -> Long = { SystemClock.elapsedRealtime() }
 
-    /** True if this build / device can use the compiler (fyt system build, Android 8-13). */
+    /**
+     * True if this build / device can use the compiler: a release build, the fyt system build
+     * compiling itself, any other through the VD host once root or Shizuku runs one
+     * ([canCompileNow]). Never a debug build: AGP packs the Baseline Profile into non-debuggable
+     * builds only, so the fyt debug build was compiled without one and still reported OK.
+     */
     @JvmStatic
     fun isSupported(): Boolean =
         TEST_BUILD_TYPE_PREFIXES.none { BuildConfig.BUILD_TYPE.startsWith(it) } &&
-            Process.myUid() == Process.SYSTEM_UID &&
-            Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU
+            !BuildConfig.DEBUG &&
+            (compilesItself() || Process.myUid() != Process.SYSTEM_UID)
+
+    /** Outcome of [resetToBaselineProfile]. */
+    enum class ResetResult {
+        /** The collected data is gone; the Baseline Profile is compiled again. */
+        CLEARED,
+        /**
+         * The host may not clear the data (Shizuku over ADB on Android 8-13): the Baseline
+         * Profile is written and compiled again on top of it.
+         */
+        BASELINE_REAPPLIED,
+        /** Not available, or clearing failed (the Baseline Profile is still re-applied). */
+        FAILED,
+    }
+
+    /**
+     * The fyt system build: PackageManager compiles it at its own request. From Android 14 the
+     * same performDexOptMode() goes to ART Service and still lets uid 1000 in (system, root or
+     * shell; checkProfiles is ignored there, profiles are always checked), as does
+     * clearApplicationProfileData(). (It used to stop at Android 13 for no such reason.)
+     */
+    private fun compilesItself(): Boolean =
+        Process.myUid() == Process.SYSTEM_UID && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+
+    /** Whether a compilation can run now: by the launcher itself, or a VD host is attached. */
+    private fun canCompileNow(): Boolean = compilesItself() || WindowHostVdClient.hasPrivilegedHost()
+
+    /**
+     * Like [canCompileNow], but a VD host that is on its way (Shizuku installed, not running yet:
+     * the 7870 starts it minutes after the launcher) is waited for, up to [HOST_WAIT_SINCE_START_MS]
+     * after the process started, instead of leaving the work to the next session. One blocking
+     * wait on a background thread, released by the host's arrival (an event, not a poll); a
+     * sleep or a reset ([generation]) ends it. The count of attempts is not touched.
+     */
+    private suspend fun canCompileOrAwaitHost(context: Context, gen: Int): Boolean {
+        if (canCompileNow()) return true
+        return withContext(Dispatchers.IO) {
+            if (!HostAwait.isExpected(context)) return@withContext false
+            val remaining = HOST_WAIT_SINCE_START_MS -
+                (SystemClock.elapsedRealtime() - Process.getStartElapsedRealtime())
+            if (remaining <= 0L) return@withContext false
+            Log.i(TAG, "Waiting up to ${remaining / 1000} s for the VD host (Shizuku)")
+            HostAwait.awaitBlocking(remaining) { gen == generation.get() } &&
+                gen == generation.get() && canCompileNow()
+        }
+    }
+
+    /** How the last compilation of this process went through the VD host, for [statusText]. */
+    @Volatile
+    private var lastHostReport: String? = null
 
     /** True once a compilation finished in this process: its code is used from the next launcher start. */
     @Volatile
@@ -210,6 +279,16 @@ object BaselineProfileCompiler {
      * @param coldBoot true for the first launcher start after a device restart
      * (ColdStart.isColdBoot()); such a start always counts as a session.
      */
+    /**
+     * Reads what scheduleIfNeeded() needs from disk (its preferences, the APK's stamp), from the
+     * start-up warm-up thread: both are kept in memory, and the main thread took them otherwise.
+     */
+    @JvmStatic
+    fun warmUp(context: Context) {
+        prefs(context)
+        apkStamp(context)
+    }
+
     @JvmStatic
     @JvmOverloads
     fun scheduleIfNeeded(app: Application, coldBoot: Boolean = false) {
@@ -267,6 +346,10 @@ object BaselineProfileCompiler {
     @JvmStatic
     @WorkerThread
     fun statusText(context: Context): String {
+        if (BuildConfig.DEBUG) {
+            return "Not used in a debug build: it carries no Baseline Profile (only release " +
+                "builds do), so there is nothing to compile."
+        }
         val prefs = prefs(context)
         // Bring device time and a pending compile time up to date for the display.
         prefs.edit().also { updateDeviceTime(prefs, it) }.apply()
@@ -295,7 +378,8 @@ object BaselineProfileCompiler {
             "Session = device restart, or a wake-up / launcher restart at least " +
             "${TimeUnit.MILLISECONDS.toMinutes(SESSION_MIN_GAP_MS)} min after the previous session\n" +
             "Clock: " + (if (clockValid) "valid" else "not set yet - days counted from device time") + "\n" +
-            "ProfileVerifier: $verifier"
+            "ProfileVerifier: $verifier" +
+            (lastHostReport?.let { "\nVD host: $it" } ?: "")
     }
 
     /** Number of usage refreshes done for the installed APK (for the reset dialog). */
@@ -336,14 +420,15 @@ object BaselineProfileCompiler {
      * restarts, and on that start the initial compilation runs as for a new APK. The state is
      * committed before the call for that reason. Blocking binder call: call off the main thread.
      *
-     * @return false if the profiles could not be cleared (nothing was killed; the Baseline
-     * Profile is then re-applied on top of the collected data). Normally the function does not
-     * return at all.
+     * Without uid 1000 the VD host clears the profiles: the daemon's call (uid 1000) kills the
+     * launcher the same way, Shizuku's (shell, Android 14+) leaves it running.
+     *
+     * @return see [ResetResult]. With the system's call the function normally does not return.
      */
     @JvmStatic
     @WorkerThread
-    fun resetToBaselineProfile(context: Context): Boolean {
-        if (!isSupported()) return false
+    fun resetToBaselineProfile(context: Context): ResetResult {
+        if (!isSupported()) return ResetResult.FAILED
         generation.incrementAndGet()
         cancelPendingJob()
         val app = context.applicationContext
@@ -358,20 +443,35 @@ object BaselineProfileCompiler {
         editor.commit()
 
         return try {
-            Log.i(TAG, "Full reset: clearing profiles, the launcher process will be killed")
-            val pm = systemPackageManager()
-            pm.javaClass.getMethod("clearApplicationProfileData", String::class.java)
-                .invoke(pm, app.packageName)
-            // Still alive (the firmware did not kill the package): compile right away instead.
-            Log.w(TAG, "Full reset: process was not killed, compiling now")
+            var result = ResetResult.CLEARED
+            if (compilesItself()) {
+                Log.i(TAG, "Full reset: clearing profiles, the launcher process will be killed")
+                val pm = systemPackageManager()
+                pm.javaClass.getMethod("clearApplicationProfileData", String::class.java)
+                    .invoke(pm, app.packageName)
+            } else {
+                Log.i(TAG, "Full reset: the VD host clears the profiles")
+                val report = WindowHostVdClient.clearProfiles(app.packageName)
+                    ?: "no VD host (root or Shizuku)"
+                lastHostReport = report
+                Log.i(TAG, "VD host: $report")
+                val outcome = report.substringAfter(": ")
+                if (outcome.startsWith("UNSUPPORTED")) {
+                    result = ResetResult.BASELINE_REAPPLIED
+                } else {
+                    check(outcome.startsWith("OK")) { report }
+                }
+            }
+            // Still alive (the package was not killed): compile right away instead.
+            Log.i(TAG, "Full reset: $result, the process is still alive - compiling now")
             scheduleInitialCompilation(app, prefs, apkStamp(app), 0L)
-            true
+            result
         } catch (t: Throwable) {
             // Profiles not cleared: at least re-apply the Baseline Profile on top of them now,
             // instead of leaving the state "pending" until the next restart.
             Log.e(TAG, "Full reset failed, re-applying the baseline profile only", t)
             scheduleInitialCompilation(app, prefs, apkStamp(app), 0L)
-            false
+            ResetResult.FAILED
         }
     }
 
@@ -396,6 +496,13 @@ object BaselineProfileCompiler {
             // and the next start / wake simply tries again.
             delay(delayMs)
             if (gen != generation.get()) return@startPendingJob
+            if (!canCompileOrAwaitHost(context, gen)) {
+                // Not an attempt: the next start or wake tries again.
+                val status = "Waiting for root (FYT VDHost module) or Shizuku - $stamp"
+                prefs.edit().putString(KEY_LAST_STATUS, status).apply()
+                Log.i(TAG, status)
+                return@startPendingJob
+            }
 
             // Count the attempt only now that the work really starts. Committed synchronously,
             // so an attempt interrupted by power-off still counts (prevents endless retries).
@@ -423,7 +530,7 @@ object BaselineProfileCompiler {
 
     private suspend fun installAndCompile(context: Context): Boolean {
         // a) Force-write baseline.prof (assets/dexopt in the APK) into the ART current profile.
-        val installCode = forceInstallProfile(context)
+        val installCode = if (compilesItself()) forceInstallProfile(context) else writeProfile(context)
         Log.i(TAG, "ProfileInstaller result=$installCode")
         if (installCode !in INSTALL_OK) return false
 
@@ -487,6 +594,11 @@ object BaselineProfileCompiler {
         startPendingJob {
             delay(START_DELAY_MS)
             if (gen != generation.get()) return@startPendingJob
+            if (!canCompileOrAwaitHost(context, gen)) {
+                // The schedule stays due: the next session tries again.
+                Log.i(TAG, "Usage refresh due, waiting for root (FYT VDHost module) or Shizuku")
+                return@startPendingJob
+            }
             val ok = runCatching { compileWithProfile(context.packageName) }
                 .onFailure { Log.e(TAG, "Usage refresh failed", it) }
                 .getOrDefault(false)
@@ -638,13 +750,45 @@ object BaselineProfileCompiler {
     // System calls
     // ---------------------------------------------------------------------------------------
 
+    private fun compileWithProfile(pkg: String): Boolean =
+        if (compilesItself()) compileItself(pkg) else compileThroughHost(pkg)
+
+    /**
+     * The VD host compiles the launcher as "adb shell cmd package compile -m speed-profile -f"
+     * would (see VdHostCore.compilePackage). Synchronous binder call - may take tens of seconds.
+     */
+    private fun compileThroughHost(pkg: String): Boolean {
+        val report = WindowHostVdClient.compilePackage(pkg) ?: "no VD host (root or Shizuku)"
+        lastHostReport = report
+        Log.i(TAG, "VD host compilation: $report")
+        return report.substringAfter(": ").startsWith("OK")
+    }
+
+    /**
+     * Without uid 1000 the broadcast to ProfileInstallReceiver is refused (DUMP permission), so
+     * ProfileInstaller writes the profile in this process. Forced like the broadcast's write:
+     * ProfileInstaller skips an APK it already wrote the profile for, which it tells by this
+     * file - after a full reset that would leave the cleared profile empty.
+     */
+    private fun writeProfile(context: Context): Int? {
+        File(context.filesDir, PROFILE_INSTALLER_SKIP_FILE).delete()
+        var result: Int? = null
+        ProfileInstaller.writeProfile(context, { it.run() }, object : ProfileInstaller.DiagnosticsCallback {
+            override fun onDiagnosticReceived(code: Int, data: Any?) {}
+            override fun onResultReceived(code: Int, data: Any?) {
+                result = code
+            }
+        })
+        return result
+    }
+
     /**
      * performDexOptMode(speed-profile) with checkProfiles=true: installd merges the current
      * profile (baseline + methods recorded by ART) into the reference profile and compiles it.
      * Does not kill the running launcher; the new code is used from the next process start.
      * Synchronous binder call - may take tens of seconds.
      */
-    private fun compileWithProfile(pkg: String): Boolean {
+    private fun compileItself(pkg: String): Boolean {
         val pm = systemPackageManager()
         val boolType = java.lang.Boolean.TYPE
         val dexopt = pm.javaClass.getMethod(

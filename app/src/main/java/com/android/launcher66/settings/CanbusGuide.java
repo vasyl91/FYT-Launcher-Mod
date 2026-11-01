@@ -57,14 +57,10 @@ public class CanbusGuide extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         List<GuideItem> items = new ArrayList<>();
-        items.add(new TitleItem(getString(R.string.codes_guide_initial_reading_title)));
-        items.add(new DescriptionItem(getString(R.string.codes_guide_initial_reading_one)));
-        items.add(new PictureItem(R.drawable.logger_guide, getString(R.string.codes_guide_initial_reading_two)));
-        items.add(new DescriptionItem(getString(R.string.codes_guide_initial_reading_three)));
         items.add(new TitleItem(getString(R.string.codes_guide_detailed_reading_title)));
-        items.add(new DescriptionItem(getString(R.string.codes_guide_detailed_reading)));
+        items.add(new DescriptionItem(getString(R.string.codes_guide_inspector)));
         items.add(new TitleItem(getString(R.string.codes_guide_miscellaneous_title)));
-        items.add(new DescriptionItem(getString(R.string.codes_guide_miscellaneous)));
+        items.add(new DescriptionItem(getString(R.string.codes_guide_skip_codes)));
         
         GuideAdapter adapter = new GuideAdapter(items);
         recyclerView.setAdapter(adapter);

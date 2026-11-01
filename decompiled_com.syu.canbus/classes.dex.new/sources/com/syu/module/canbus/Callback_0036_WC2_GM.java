@@ -1,0 +1,240 @@
+package com.syu.module.canbus;
+
+import android.os.RemoteException;
+import com.syu.canbus.TheApp;
+import com.syu.carinfo.xp.yinglang.GmConstData;
+import com.syu.ipc.IModuleCallback;
+import com.syu.ui.air.AirHelper;
+import com.syu.ui.air.Air_0036_WC2_17_GL6;
+import com.syu.ui.door.DoorHelper;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.canbus.apk\dexFile\classes.dex */
+public class Callback_0036_WC2_GM extends CallbackCanbusBase {
+    public static final int U_24GHZ_RADAR_SET = 116;
+    public static final int U_AIR_MODE_SET = 98;
+    public static final int U_AIR_QUALITY_SENSOR1 = 99;
+    public static final int U_AIR_QUALITY_SENSOR2 = 100;
+    public static final int U_AIR_TEMP_OUT = 197;
+    public static final int U_ANJIXING_BT_NUMBER = 161;
+    public static final int U_ANJIXING_BT_PASSWORD = 160;
+    public static final int U_ANJIXING_NUMBER = 159;
+    public static final int U_ANJIXING_PHONE_FLAG = 150;
+    public static final int U_ANJIXING_PHONE_HOUR = 151;
+    public static final int U_ANJIXING_PHONE_MINUTE = 152;
+    public static final int U_ANJIXING_PHONE_NUMBER = 193;
+    public static final int U_ANJIXING_PHONE_SECOND = 153;
+    public static final int U_ANJIXING_PHONE_TYPE = 149;
+    public static final int U_ANJIXING_SHENGYU_DAY = 157;
+    public static final int U_ANJIXING_SHENGYU_MOUNTH = 156;
+    public static final int U_ANJIXING_SHENGYU_TIME = 154;
+    public static final int U_ANJIXING_SHENGYU_YEAR = 155;
+    public static final int U_ANJIXING_STATE = 148;
+    public static final int U_ANJIXING_TTS = 191;
+    public static final int U_ANJIXING_TTS_SHOW = 192;
+    public static final int U_ANJIXING_WARN_TYPE = 158;
+    public static final int U_AUTO_CRUISE_CONTROL = 171;
+    public static final int U_AUTO_FANGZHUANG = 163;
+    public static final int U_AUTO_FRONT_GOFOG_ON = 108;
+    public static final int U_AUTO_HEAT_SEAT = 103;
+    public static final int U_AUTO_LUOSUO = 125;
+    public static final int U_AUTO_MIRROR_FOLDING = 120;
+    public static final int U_AUTO_MIRROR_QINGXIE = 119;
+    public static final int U_AUTO_REAR_GOFOG_ON = 109;
+    public static final int U_AUTO_SEAT_TONGFENG_SET = 102;
+    public static final int U_AUTO_UNLOCK_SHOUDONG = 128;
+    public static final int U_AUTO_UNLOCK_ZIDONG = 126;
+    public static final int U_AUTO_WIND_MODE = 97;
+    public static final int U_AUTO_YUGUA = 166;
+    public static final int U_AUTO_YUSHUA_SHEDING = 122;
+    public static final int U_AUTO_ZOOM_TEMP_SET = 101;
+    public static final int U_BATTERY_VOLTAGE = 195;
+    public static final int U_BOCHE_HELP_SYSTEM_SET = 112;
+    public static final int U_BOCHE_SYSTEM_SET_TUOKA = 115;
+    public static final int U_CAREQ_DA6_D0_B70 = 213;
+    public static final int U_CAREQ_DA6_D1_B70 = 214;
+    public static final int U_CAREQ_DA6_D2_B70 = 215;
+    public static final int U_CAREQ_DA6_D3_B70 = 216;
+    public static final int U_CAREQ_DA6_D4_B70 = 217;
+    public static final int U_CAREQ_DA6_D5_B70 = 218;
+    public static final int U_CARINF_D12_D6_B0 = 224;
+    public static final int U_CARINF_D12_D6_B1 = 223;
+    public static final int U_CARINF_D12_D6_B2 = 222;
+    public static final int U_CARINF_D12_D6_B3 = 221;
+    public static final int U_CARINF_D12_D6_B6 = 220;
+    public static final int U_CARINF_D12_D6_B7 = 219;
+    public static final int U_CARINF_D13_D11_D13 = 205;
+    public static final int U_CARINF_D13_D4_D5 = 204;
+    public static final int U_CARINF_D32_D10_D11 = 228;
+    public static final int U_CARINF_D32_D12_B70 = 229;
+    public static final int U_CARINF_D32_D13_B70 = 230;
+    public static final int U_CARINF_D32_D7_B70 = 225;
+    public static final int U_CARINF_D32_D8_B70 = 226;
+    public static final int U_CARINF_D32_D9_B70 = 227;
+    public static final int U_CARINF_D34_D12_D13 = 232;
+    public static final int U_CARINF_D34_D14_D16 = 233;
+    public static final int U_CARINF_D34_D17_D18 = 234;
+    public static final int U_CARINF_D34_D19_D21 = 235;
+    public static final int U_CARINF_D34_D22_B10 = 237;
+    public static final int U_CARINF_D34_D22_B2 = 236;
+    public static final int U_CARINF_D34_D7_D8 = 203;
+    public static final int U_CARINF_D34_D9_D11 = 231;
+    public static final int U_CARSET_D35_D4_B2 = 198;
+    public static final int U_CARSET_D46_D1_B0 = 207;
+    public static final int U_CARSET_D46_D1_B1 = 206;
+    public static final int U_CARSET_D46_D1_B2 = 200;
+    public static final int U_CARSET_D46_D1_B43 = 199;
+    public static final int U_CARSET_D46_D2_B10 = 208;
+    public static final int U_CARSET_D56_D1_B10 = 211;
+    public static final int U_CARSET_D56_D1_B2 = 210;
+    public static final int U_CARSET_D56_D1_B43 = 209;
+    public static final int U_CARSET_D56_D1_B6 = 201;
+    public static final int U_CARSET_D75_D0_B3 = 212;
+    public static final int U_CAR_CURRENT_SPEED = 110;
+    public static final int U_CAR_HANDBREAK_STATE = 194;
+    public static final int U_CAR_STATE_NOTIFY = 164;
+    public static final int U_CAR_TYPE_SELECT = 162;
+    public static final int U_CEMANG_WARN_SYSTEM_SET = 113;
+    public static final int U_CNT_MAX = 238;
+    public static final int U_CUR_SPEED = 168;
+    public static final int U_DELAY_TO_LOCK_SET = 127;
+    public static final int U_DRIVER_KEY_AUTO_SHIBIE = 134;
+    public static final int U_DRIVER_PERSONAL_SET = 121;
+    public static final int U_DRIVER_SEAT_YIWEI = 117;
+    public static final int U_ECO_ZHISHI_SET = 142;
+    public static final int U_ENGINE_SPEED = 169;
+    public static final int U_FANGZHUANG_WARN_TYPE_SET = 114;
+    public static final int U_FORGET_KEY = 138;
+    public static final int U_FRONT_LEFT_HIGH_WARN_INFO = 176;
+    public static final int U_FRONT_LEFT_LOW_WARN_INFO = 177;
+    public static final int U_FRONT_LEFT_PRESS = 172;
+    public static final int U_FRONT_LEFT_WARN_INFO = 178;
+    public static final int U_FRONT_RIGHT_HIGH_WARN_INFO = 179;
+    public static final int U_FRONT_RIGHT_LOW_WARN_INFO = 180;
+    public static final int U_FRONT_RIGHT_PRESS = 173;
+    public static final int U_FRONT_RIGHT_WARN_INFO = 181;
+    public static final int U_LEARVER_CAR_LOCK = 137;
+    public static final int U_LOCATION_LIGHTS = 190;
+    public static final int U_LOOKING_FOR_LIGHT = 140;
+    public static final int U_LUOSUO_DELAY_SET = 141;
+    public static final int U_NEAR_CAR_UNLOCK = 136;
+    public static final int U_PREVENT_ANTI_LOCK = 189;
+    public static final int U_PREVENT_AUTO_LUOSUO = 124;
+    public static final int U_RANGE_MILES = 202;
+    public static final int U_REAR_LEFT_HIGH_WARN_INFO = 182;
+    public static final int U_REAR_LEFT_LOW_WARN_INFO = 183;
+    public static final int U_REAR_LEFT_PRESS = 174;
+    public static final int U_REAR_LEFT_WARN_INFO = 184;
+    public static final int U_REAR_RIGHT_HIGH_WARN_INFO = 185;
+    public static final int U_REAR_RIGHT_LOW_WARN_INFO = 186;
+    public static final int U_REAR_RIGHT_PRESS = 175;
+    public static final int U_REAR_RIGHT_WARN_INFO = 187;
+    public static final int U_REAR_ZOOM_TEMP_SET = 107;
+    public static final int U_RELOCK_REMOTE_OPEN_DOOR = 133;
+    public static final int U_REMOTE_HUAYIMEN_SET = 139;
+    public static final int U_REMOTE_LOCK_FEEDBACK = 129;
+    public static final int U_REMOTE_LOCK_SET = 131;
+    public static final int U_REMOTE_START_AIR = 111;
+    public static final int U_REMOTE_START_SEAT_AUTO_HEAT1 = 165;
+    public static final int U_REMOTE_START_SEAT_AUTO_HOT = 105;
+    public static final int U_REMOTE_START_SEAT_AUTO_TONFEGN = 104;
+    public static final int U_REMOTE_UNLOCK_AUTO_LOCK = 132;
+    public static final int U_REMOTE_UNLOCK_FEEDBACK = 130;
+    public static final int U_REMOTE_WINDOW_CONTROL = 167;
+    public static final int U_SETTING_ASSIST = 170;
+    public static final int U_SHUNSHI_YOUHAO = 106;
+    public static final int U_SOUND_CMD_REQUEST = 147;
+    public static final int U_SPEED_MODE_BEIGUANG_SET = 146;
+    public static final int U_SPEED_MODE_FADONGJI_SET = 145;
+    public static final int U_SPEED_MODE_SET = 144;
+    public static final int U_TOTAL_TRAVEL_MILES = 196;
+    public static final int U_WARN_ENABLE = 188;
+    public static final int U_YIBIAO_INFO_SET = 143;
+    public static final int U_YUANCHENG_START_SET = 135;
+    public static final int U_ZHUANGXIANG_GUANZHU_QINGXIE = 123;
+    public static final int U_ZHUANGXIANG_GUANZHU_YIWEI = 118;
+    public static String btNumber;
+    public static String btPassWord;
+    public static String onStarPhoneNumber;
+    public static String onStarTTS;
+
+    @Override // com.syu.module.canbus.CallbackCanbusBase
+    public void in() {
+        IModuleCallback callback = ModuleCallbackCanbusProxy.getInstance();
+        for (int i = 0; i < 238; i++) {
+            DataCanbus.PROXY.register(callback, i, 1);
+        }
+        DoorHelper.sUcDoorEngine = 0;
+        DoorHelper.sUcDoorFl = 1;
+        DoorHelper.sUcDoorFr = 2;
+        DoorHelper.sUcDoorRl = 3;
+        DoorHelper.sUcDoorRr = 4;
+        DoorHelper.sUcDoorBack = 5;
+        DoorHelper.getInstance().buildUi();
+        for (int i2 = 0; i2 < 6; i2++) {
+            DataCanbus.NOTIFY_EVENTS[i2].addNotify(DoorHelper.getInstance(), 0);
+        }
+        AirHelper.getInstance().buildUi(new Air_0036_WC2_17_GL6(TheApp.getInstance()));
+        for (int i3 = 10; i3 < 97; i3++) {
+            DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
+        }
+    }
+
+    @Override // com.syu.module.canbus.CallbackCanbusBase
+    public void out() {
+        for (int i = 0; i < 6; i++) {
+            DataCanbus.NOTIFY_EVENTS[i].removeNotify(DoorHelper.getInstance());
+        }
+        for (int i2 = 10; i2 < 97; i2++) {
+            DataCanbus.NOTIFY_EVENTS[i2].removeNotify(AirHelper.SHOW_AND_REFRESH);
+        }
+        AirHelper.getInstance().destroyUi();
+        DoorHelper.getInstance().destroyUi();
+    }
+
+    @Override // com.syu.ipc.IModuleCallback
+    public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
+        switch (updateCode) {
+            case 159:
+                if (strs != null && strs.length > 0) {
+                    GmConstData.anjixingNumber = strs[0];
+                    DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
+                    break;
+                }
+                break;
+            case 160:
+                if (strs != null && strs.length > 0) {
+                    btPassWord = strs[0];
+                    DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
+                    break;
+                }
+                break;
+            case 161:
+                if (strs != null && strs.length > 0) {
+                    btNumber = strs[0];
+                    DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
+                    break;
+                }
+                break;
+            case 191:
+                if (strs != null && strs.length > 0) {
+                    onStarTTS = strs[0];
+                    DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
+                    break;
+                }
+                break;
+            case 193:
+                if (strs != null && strs.length > 0) {
+                    onStarPhoneNumber = strs[0];
+                    DataCanbus.NOTIFY_EVENTS[updateCode].onNotify();
+                    break;
+                }
+                break;
+            default:
+                if (updateCode >= 0 && updateCode < 238) {
+                    HandlerCanbus.update(updateCode, ints);
+                    break;
+                }
+                break;
+        }
+    }
+}

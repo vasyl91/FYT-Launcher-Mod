@@ -23,7 +23,13 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
     private int mWidthGap;
     private Launcher mLauncher;
     private Context mContext;
-    private float widgetScaleFactor = 1.75f;
+    private final float widgetScaleFactor = ScreenScale.widgetScale();
+
+    private boolean mRowPadding = true;
+
+    void setRowPadding(boolean rowPadding) {
+        mRowPadding = rowPadding;
+    }
 
     public ShortcutAndWidgetContainer(Context context) {
         super(context);
@@ -92,16 +98,12 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         }
         
         // Normal setup for other views
-        if (child instanceof LauncherAppWidgetHostView) {
-            final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
-            AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-            if (pinfo != null && pinfo.resizeMode == AppWidgetProviderInfo.RESIZE_NONE) {
-                lp.setup(mCellWidth, mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
-            } else {
-                // Resizable widgets have their own scale
-                lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, widgetScaleFactor, widgetScaleFactor);                   
-            }
+        if (LauncherAppWidgetHostView.isScaled(child)) {
+            // Widgets have their own scale
+            lp.rowPadding = mRowPadding;
+            lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, widgetScaleFactor, widgetScaleFactor);
         } else {
+            lp.rowPadding = mRowPadding;
             lp.setup(this.mCellWidth, this.mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
         }
     }
@@ -151,18 +153,14 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         if (!lp.isFullscreen) {
             final DeviceProfile profile = mLauncher.getDeviceProfile();
 
-            if (child instanceof LauncherAppWidgetHostView) {
-                final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
-                AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-                if (pinfo != null && pinfo.resizeMode == AppWidgetProviderInfo.RESIZE_NONE) {
-                    lp.setup(mCellWidth, mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
-                } else {
-                    // Resizable widgets have their own scale  
-                    lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, widgetScaleFactor, widgetScaleFactor);                
-                }
+            if (LauncherAppWidgetHostView.isScaled(child)) {
+                // Widgets have their own scale
+                lp.rowPadding = mRowPadding;
+                lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, widgetScaleFactor, widgetScaleFactor);
             } else {
                 LauncherAppState app = LauncherAppState.getInstance();
                 DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
+                lp.rowPadding = mRowPadding;
                 lp.setup(mCellWidth, mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
                 int cHeight = getCellContentHeight();
                 int cellPaddingY = (int) Math.max(0.0f, (lp.height - cHeight) / 2.0f);
@@ -197,24 +195,17 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
                     continue;
                 }
 
-                if (child instanceof LauncherAppWidgetHostView) {
-                    final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) child;
-                    AppWidgetProviderInfo pinfo = hostView.getAppWidgetInfo();
-                    if (pinfo != null && pinfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE) {
-                        LauncherAppWidgetHostView lahv = (LauncherAppWidgetHostView) child;
+                if (LauncherAppWidgetHostView.isScaled(child)) {
+                    LauncherAppWidgetHostView lahv = (LauncherAppWidgetHostView) child;
 
-                        // Scale and center the widget to fit within its cells.
-                        float scaleX = widgetScaleFactor;
-                        float scaleY = widgetScaleFactor;
+                    // Scale and center the widget to fit within its cells: scaled about its
+                    // centre, then moved back so it starts at the top left of its cells.
+                    float scaleX = widgetScaleFactor;
+                    float scaleY = widgetScaleFactor;
 
-                        Rect p = AppWidgetHostView.getDefaultPaddingForWidget(mContext, hostView.getAppWidgetInfo().provider, null);
-                        float density = this.mLauncher.getResources().getDisplayMetrics().density;
-                        int mBackgroundPadding = (int) Math.ceil(24.0f * density);
-
-                        lahv.setScaleToFit(Math.min(scaleX, scaleY));
-                        lahv.setTranslationForCentering(-(lp.width - (lp.width * scaleX)) / 2.0f,
-                                (-(lp.height - (lp.height * scaleY)) / 2.0f) + (mBackgroundPadding / 2.0f));
-                    }
+                    lahv.setScaleToFit(Math.min(scaleX, scaleY));
+                    lahv.setTranslationForCentering(-(lp.width - (lp.width * scaleX)) / 2.0f,
+                            -(lp.height - (lp.height * scaleY)) / 2.0f);
                 }
 
                 int childLeft = lp.x;

@@ -25,8 +25,7 @@ import androidx.preference.PreferenceManager;
 import com.android.async.AsyncTask;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.android.launcher66.settings.DeviceLocation;
 import com.syu.esri.ShapeDB;
 import com.syu.esri.ShapeData;
 import com.syu.esri.ShapeIndex;
@@ -78,7 +77,6 @@ public class WeatherManager {
     private static volatile OkHttpClient sHttpClient;
 
     private boolean locationPermissionRequested = false;
-    private FusedLocationProviderClient fusedLocationClient;
     private SharedPreferences mPrefs;
     public static WeatherManager instance;
     String cityName;
@@ -229,7 +227,6 @@ public class WeatherManager {
         this.inChina = false;
         this.mContext = context.getApplicationContext();
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.mContext);
         SharedPreferences preferences = this.mContext.getSharedPreferences(this.mContext.getPackageName(), 0);
         String string = preferences.getString("city", "");
         this.cityName = string;
@@ -280,16 +277,14 @@ public class WeatherManager {
         }
 
         if (this.mNetworkCheck != null && this.mNetworkCheck.hasNet && !this.isRunning) {
-            // Check permission for fused location
+            // The last position, from the platform first (DeviceLocation)
             if (hasLocationPermission()) {
-                fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                DeviceLocation.lastKnown(this.mContext, location -> {
                     if (location != null) {
                         if (WeatherManager.this.mCurLocation == null) {
                             WeatherManager.this.updateLocation(location);
                         }
                     }
-                }).addOnFailureListener(e -> {
-                    e.printStackTrace();
                 });
             }
 
@@ -567,9 +562,11 @@ public class WeatherManager {
                 public WeatherDescription doInBackground(String[] params) {
                     if (params != null && params.length > 0) {
                         String url = OPEN_WEATHER_CURRENT_URL + "&lat=" + lat + "&lon=" + lon;
-                        Log.d("hzq", "getWeatherNew url = " + url);
+                        Log.d("hzq", "getWeatherNew url = " + redactUrl(url));
                         String entry = WeatherManager.sendGet(url);
-                        Log.d("hzq", "call getWeatherNew ** entry = " + entry);
+                        // Only the size: the answer holds the coordinates and the place.
+                        Log.d("hzq", "call getWeatherNew ** entry "
+                                + (entry == null ? "null" : "length = " + entry.length()));
                         if (entry != null && !entry.isEmpty()) {
                             return WeatherDescription.parseOpenWeatherMapData(entry);
                         }
@@ -653,31 +650,62 @@ public class WeatherManager {
         return client;
     }
 
+    private static final java.util.regex.Pattern APPID_PARAM =
+            java.util.regex.Pattern.compile("(?<=[?&])appid=[^&\\s]*");
+    private static final java.util.regex.Pattern COORDINATE_PARAM =
+            java.util.regex.Pattern.compile("(?<=[?&])(lat|lon)=(-?[0-9.]+(?:[eE][-+]?[0-9]+)?)");
+
+    /**
+     * The URL for a log: the API key is hidden and the coordinates are rounded to two places
+     * (about a kilometre). The logs go to the public Download/Launcher66_Logs and are passed
+     * on, and they showed the key and the exact position of the car.
+     */
+    static String redactUrl(String url) {
+        if (url == null) return null;
+        String out = APPID_PARAM.matcher(url).replaceAll("appid=***");
+        java.util.regex.Matcher m = COORDINATE_PARAM.matcher(out);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            String rounded;
+            try {
+                rounded = String.format(java.util.Locale.US, "%.2f", Double.parseDouble(m.group(2)));
+            } catch (NumberFormatException e) {
+                rounded = "***";
+            }
+            m.appendReplacement(sb, m.group(1) + "=" + rounded);
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
     public static String sendGet(String url) {
         // A new client per request also meant a new connection pool and dispatcher threads,
         // and a fresh TLS handshake every time.
         OkHttpClient client = httpClient();
 
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Accept", "*/*")
-                .addHeader("Connection", "keep-alive")
-                .addHeader("Content-Type", "application/json;charset=UTF-8")
-                .addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)")
-                .build();
+        try {
+            // Built inside the try: a URL that cannot be parsed throws an IllegalArgumentException
+            // whose message is the URL itself (key included), and it would reach the caller's log
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("Accept", "*/*")
+                    .addHeader("Connection", "keep-alive")
+                    .addHeader("Content-Type", "application/json;charset=UTF-8")
+                    .addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)")
+                    .build();
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    Log.w(TAG, "HTTP error: " + response.code() + " for URL: " + redactUrl(url));
+                    return null;
+                }
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                Log.w(TAG, "HTTP error: " + response.code() + " for URL: " + url);
+                if (response.body() != null) {
+                    return response.body().string();
+                }
                 return null;
             }
-            
-            if (response.body() != null) {
-                return response.body().string();
-            }
-            return null;
         } catch (Exception e) {
-            Log.e(TAG, "Network error: " + url + " - " + e.getMessage());
+            Log.e(TAG, "Network error: " + redactUrl(url) + " - " + redactUrl(e.getMessage()));
             return null;
         }
     }

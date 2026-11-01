@@ -3,6 +3,7 @@ package com.syu.module.canbus.up;
 import android.os.RemoteException;
 
 import com.syu.ipc.IModuleCallback;
+import com.syu.module.canbus.CanbusModuleGuard;
 
 public class ModuleCallbackCanUpProxy extends IModuleCallback.Stub {
     private static final ModuleCallbackCanUpProxy INSTANCE = new ModuleCallbackCanUpProxy();
@@ -17,12 +18,13 @@ public class ModuleCallbackCanUpProxy extends IModuleCallback.Stub {
 
     public void setCallbackCanbus(CallbackCanUpBase callback) {
         if (this.mCallbackCanUpBase != callback) {
-            if (this.mCallbackCanUpBase != null) {
-                this.mCallbackCanUpBase.out();
+            CallbackCanUpBase old = this.mCallbackCanUpBase;
+            if (old != null) {
+                CanbusModuleGuard.out(old, old::out);
             }
             this.mCallbackCanUpBase = callback;
-            if (this.mCallbackCanUpBase != null) {
-                this.mCallbackCanUpBase.in();
+            if (callback != null) {
+                CanbusModuleGuard.in(callback, DataCanUp.DATA[100], callback::in);
             }
         }
     }
@@ -41,7 +43,11 @@ public class ModuleCallbackCanUpProxy extends IModuleCallback.Stub {
             if (updateCode < 100) {
                 IModuleCallback callback = this.mCallbackCanUpBase;
                 if (callback != null) {
-                    callback.update(updateCode, ints, flts, strs);
+                    try {
+                        callback.update(updateCode, ints, flts, strs);
+                    } catch (RuntimeException e) {
+                        CanbusModuleGuard.failed(callback, "update", e);
+                    }
                     return;
                 }
                 return;

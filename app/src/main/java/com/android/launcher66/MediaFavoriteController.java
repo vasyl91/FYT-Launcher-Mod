@@ -29,7 +29,9 @@ import com.android.launcher66.settings.AppListCacheDialogFragment;
 import com.android.launcher66.settings.FytRating;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SpotifyRating;
+import com.android.launcher66.settings.SyuMusicLibrary;
 import com.fyt.car.MusicService;
+import com.fyt.car.StockSources;
 import com.syu.widget.DateMusicProvider;
 import com.syu.widget.Widget;
 
@@ -41,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -152,6 +155,14 @@ public final class MediaFavoriteController {
         MediaController controller = getTargetController(context, preferredPackage);
         if (controller == null) {
             return false;
+        }
+
+        // YT Music's own button: the like lands in the account through the app, and its session
+        // shows the result (option 1, the video id and the Data API, when it shows none).
+        YouTubeMusicLike musicLike = youTubeMusicLike(controller);
+        if (musicLike != null) {
+            return sendCustomAction(controller, musicLike.action,
+                    musicLike.liked ? "YT Music undo like" : "YT Music like");
         }
 
         // The session picker no longer applies this rule, because doing so kept
@@ -295,6 +306,10 @@ public final class MediaFavoriteController {
         FavoriteActions actions = state == null
                 ? new FavoriteActions()
                 : findFavoriteActions(state.getCustomActions());
+        YouTubeMusicLike musicLike = youTubeMusicLike(controller);
+        if (musicLike != null) {
+            return musicLike.liked ? FAVORITE_STATE_FAVORITED : FAVORITE_STATE_NOT_FAVORITED;
+        }
         if (isYouTubePackage(controller.getPackageName())) {
             String packageName = controller.getPackageName();
             String videoId = findVideoId(controller);
@@ -423,13 +438,19 @@ public final class MediaFavoriteController {
      *     the list; see isFavoriteCacheUsable.
      */
     public static boolean isFavoriteTemporarilyDisabledPackage(String packageName) {
-        // The stock player exposes no rating of any kind, so the only thing the
-        // button can act on is the launcher's own cache: greyed out and refusing
-        // presses unless com.syu.music is on the cache list and its track can be
-        // identified. Checked first, because every rule below is about a media
+        // The stock player exposes no rating on a session. com.syu.media (7870): its
+        // library's flag, greyed out until that has answered. com.syu.music: the only
+        // thing the button can act on is the launcher's own cache: greyed out and
+        // refusing presses unless com.syu.music is on the cache list and its track can
+        // be identified. Checked first, because every rule below is about a media
         // session and it has none.
         if (isStockMusicSource(packageName)) {
             return !isStockFavoriteAvailable();
+        }
+
+        if (isYouTubeMusicPackage(packageName)
+                && youTubeMusicLike(findRevancedController(LauncherApplication.sApp, packageName)) != null) {
+            return false;
         }
 
         if (isYouTubePackage(packageName)) {
@@ -441,7 +462,7 @@ public final class MediaFavoriteController {
             // made for kids flag was then compared against the wrong id, came
             // back false, and the button was drawn enabled on a video the
             // switch was supposed to grey out.
-            return isRevancedFavoriteDisabled(packageName, currentRevancedVideoId());
+            return isRevancedFavoriteDisabled(packageName, currentRevancedVideoId(packageName));
         }
 
         if (YOUTUBE_PACKAGE.equals(packageName)) {
@@ -489,7 +510,7 @@ public final class MediaFavoriteController {
         // as unrated is the switch's decision, and it is taken before anything
         // else so no later rule can override it.
         if (madeForKids && !isKidsRatingAllowed()) {
-            pokeRevanced();
+            pokeRevanced(packageName);
             return true;
         }
 
@@ -509,7 +530,7 @@ public final class MediaFavoriteController {
             if (madeForKids || YouTubeRevancedLikeState.isStateResolved(videoId)) {
                 return false;
             }
-            pokeRevanced();
+            pokeRevanced(packageName);
             return true;
         }
 
@@ -539,7 +560,7 @@ public final class MediaFavoriteController {
         // exactly as in the signed-in branch above, so the lookup is kept
         // running the same way instead of waiting on a button nobody can press.
         if (isFytAccountPresent()) {
-            pokeRevanced();
+            pokeRevanced(packageName);
         }
         return true;
     }
@@ -606,10 +627,13 @@ public final class MediaFavoriteController {
      * Falls back to the id of the last state lookup when the session cannot be
      * read at all, which is the one case where there is nothing better to go on.
      */
-    private static String currentRevancedVideoId() {
+    private static String currentRevancedVideoId(String preferredPackage) {
         long now = SystemClock.elapsedRealtime();
+        // Only the same build's: with YouTube in a PiP and YouTube Music playing, the id the
+        // other one left behind was taken for this one's.
         if (revancedVideoIdAtMs != 0L
-                && now - revancedVideoIdAtMs < REVANCED_VIDEO_ID_MAX_AGE_MS) {
+                && now - revancedVideoIdAtMs < REVANCED_VIDEO_ID_MAX_AGE_MS
+                && (preferredPackage == null || preferredPackage.equals(revancedPackage))) {
             String remembered = revancedVideoId;
             return remembered != null
                     ? remembered
@@ -619,7 +643,7 @@ public final class MediaFavoriteController {
         String videoId = null;
         String packageName = null;
         try {
-            MediaController controller = findRevancedController(LauncherApplication.sApp);
+            MediaController controller = findRevancedController(LauncherApplication.sApp, preferredPackage);
             if (controller != null) {
                 packageName = controller.getPackageName();
                 videoId = findVideoId(controller);
@@ -1011,15 +1035,21 @@ public final class MediaFavoriteController {
     /** Whether ReVanced holds a session right now, permission rules aside. */
     private static boolean hasRevancedSession(Context context, String preferredPackage) {
         return isYouTubePackage(preferredPackage)
-                || findRevancedController(context) != null;
+                || findRevancedController(context, preferredPackage) != null;
     }
 
     /**
      * The ReVanced session as the system reports it, with none of the favorite
      * rules applied. Deliberately separate from the picker: this answers "is it
      * there", not "may it be used".
+     *
+     * With more than one of the YouTube builds holding a session - YouTube in a
+     * PiP, YouTube Music playing - the one the widget shows (preferredPackage)
+     * is taken, else the one playing, and only then the first listed: the first
+     * listed used to be the paused YouTube in the PiP, and the YouTube Music
+     * video was never looked up.
      */
-    private static MediaController findRevancedController(Context context) {
+    private static MediaController findRevancedController(Context context, String preferredPackage) {
         if (context == null) {
             return null;
         }
@@ -1037,11 +1067,25 @@ public final class MediaFavoriteController {
                 return null;
             }
 
+            MediaController playing = null;
+            MediaController first = null;
             for (MediaController controller : controllers) {
-                if (controller != null && isYouTubePackage(controller.getPackageName())) {
+                if (controller == null || !isYouTubePackage(controller.getPackageName())) {
+                    continue;
+                }
+                if (controller.getPackageName().equals(preferredPackage)) {
                     return controller;
                 }
+                if (first == null) {
+                    first = controller;
+                }
+                PlaybackState state = safePlaybackState(controller);
+                if (playing == null && state != null
+                        && state.getState() == PlaybackState.STATE_PLAYING) {
+                    playing = controller;
+                }
             }
+            return playing != null ? playing : first;
         } catch (Exception e) {
             Log.w(TAG, "Could not look for a ReVanced session", e);
         }
@@ -1065,7 +1109,7 @@ public final class MediaFavoriteController {
      * requestRefresh refuses anything already answered, already in flight, or
      * still inside its backoff.
      */
-    private static void pokeRevanced() {
+    private static void pokeRevanced(String preferredPackage) {
         if (!POKING.compareAndSet(false, true)) {
             // Reached again through the diagnostics, which ask this same rule.
             return;
@@ -1073,7 +1117,7 @@ public final class MediaFavoriteController {
 
         try {
             Context context = LauncherApplication.sApp;
-            MediaController controller = findRevancedController(context);
+            MediaController controller = findRevancedController(context, preferredPackage);
             if (controller == null) {
                 return;
             }
@@ -1197,7 +1241,8 @@ public final class MediaFavoriteController {
         return packageName != null
                 && !packageName.isEmpty()
                 && !"null".equals(packageName)
-                && !STOCK_MUSIC_PACKAGE.equals(packageName);
+                && !STOCK_MUSIC_PACKAGE.equals(packageName)
+                && !MusicService.MEDIA_PKG.equals(packageName);
     }
 
     /**
@@ -1210,7 +1255,9 @@ public final class MediaFavoriteController {
      * not name.
      */
     public static boolean isStockMusicSource(String packageName) {
-        if (STOCK_MUSIC_PACKAGE.equals(packageName)) {
+        // com.syu.media (the 7870) has a session, but for its media buttons only; its track is
+        // MusicService's like com.syu.music's.
+        if (STOCK_MUSIC_PACKAGE.equals(packageName) || MusicService.MEDIA_PKG.equals(packageName)) {
             return true;
         }
         if (isExternalPackage(packageName)) {
@@ -1224,23 +1271,94 @@ public final class MediaFavoriteController {
     }
 
     // =====================================================================================
-    // Stock player (com.syu.music): the launcher's cache is all there is
+    // Stock player, its own library each. com.syu.media (7870): content://com.syu.media/song.
+    // com.syu.music (7862, 8581): its music.db, opened through root (SyuMusicLibrary).
+    // The launcher's cache is only the fallback where neither can be reached.
     // =====================================================================================
+
+    /*
+     * Which one is told by the package the track came from: MusicService follows com.syu.media
+     * itself (FYT units only), and isSyuMediaSource() says whether the track it shows is that
+     * player's; otherwise a stock track is com.syu.music's. Each player keeps its favorites in its
+     * own library, which on an FYT unit the launcher reaches - the provider for com.syu.media, and
+     * for com.syu.music, on a rooted unit, its database. Only where a library is out of reach does
+     * the opt-in cache stand in, see isFavoriteCacheUsable.
+     */
+
+    /** The stock state for com.syu.media's track: FAVORITED, NOT_FAVORITED or UNKNOWN. */
+    private static int syuMediaFavoriteState() {
+        Boolean favorite = MusicService.getSyuMediaFavorite();
+        if (favorite == null) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
+        return favorite ? FAVORITE_STATE_FAVORITED : FAVORITE_STATE_NOT_FAVORITED;
+    }
+
+    /**
+     * The stock source is com.syu.music (7862/8581, not the 7870's com.syu.media) and its real
+     * favorites database is reachable, so the launcher manages it there, not in the cache.
+     */
+    private static boolean isSyuMusicLibrarySource() {
+        return !MusicService.isSyuMediaSource()
+                && SyuMusicLibrary.isAvailable(LauncherApplication.sApp);
+    }
+
+    /**
+     * Redraws both hearts after a stock flag changed by other means than a press here (com.syu.media
+     * or com.syu.music in its own screen, say) or was read only now. Main thread.
+     */
+    public static void onStockFavoriteChanged(Context context) {
+        refreshWidget(context);
+        Launcher launcher = Launcher.mLauncher;
+        if (launcher != null) {
+            try {
+                launcher.mMusicWidget.updateFavoriteButtonState();
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Stock favorite redraw failed", e);
+            }
+        }
+    }
 
     /**
      * Whether the favorite button can do anything for the stock player.
      *
-     * Only through the cache, and the cache is opt-in: with com.syu.music off the
-     * list the button stays greyed out and refuses presses, as it always did. On
-     * the list it works whenever the track can be identified. Asks exactly what
-     * getStockFavoriteState asks, so the drawn state and the greyed button agree.
+     * com.syu.media / com.syu.music with its library reachable: once the library has answered for
+     * the track (a track with no row answers NOT_FAVORITED, so the button lights at once).
+     *
+     * com.syu.music without it (no root): only through the cache, and the cache is opt-in:
+     * off the list the button stays greyed out and refuses presses, as it always did; on the list
+     * it works whenever the track can be identified. Asks exactly what getStockFavoriteState asks,
+     * so the drawn state and the greyed button agree.
      */
     private static boolean isStockFavoriteAvailable() {
+        // The radio (on the 7870 BT audio too) has no favorites to keep: the heart is greyed out
+        if (StockSources.shownOverlay() != null) {
+            return false;
+        }
+        if (MusicService.isSyuMediaSource()) {
+            return syuMediaFavoriteState() != FAVORITE_STATE_UNKNOWN;
+        }
+        if (isSyuMusicLibrarySource()) {
+            return SyuMusicLibrary.getState(LauncherApplication.sApp, MusicService.music_path)
+                    != FAVORITE_STATE_UNKNOWN;
+        }
         return isFavoriteCacheUsable(STOCK_MUSIC_PACKAGE) && currentStockTrackKey() != null;
     }
 
     /** The state kept for the stock player's track; unknown whenever unavailable. */
     private static int getStockFavoriteState(Context context) {
+        if (StockSources.shownOverlay() != null) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
+        if (MusicService.isSyuMediaSource()) {
+            // Picks up a flag changed in com.syu.media's own screen while it is paused, when
+            // nothing else asks it.
+            MusicService.requestSyuMediaRefresh();
+            return syuMediaFavoriteState();
+        }
+        if (isSyuMusicLibrarySource()) {
+            return SyuMusicLibrary.getState(context, MusicService.music_path);
+        }
         if (context == null || !isFavoriteCacheUsable(STOCK_MUSIC_PACKAGE)) {
             return FAVORITE_STATE_UNKNOWN;
         }
@@ -1249,10 +1367,42 @@ public final class MediaFavoriteController {
     }
 
     /**
-     * A press while the stock player is the source: flips the kept state, and
+     * A press while the stock player is the source. com.syu.media: flips the flag in its library
+     * (its provider). com.syu.music with its library reachable: inserts or deletes its row, which
+     * its own screen then reflects. com.syu.music without it: flips the kept cache state, and
      * nothing else - there is no player to tell.
      */
     private static boolean toggleStockFavorite(Context context) {
+        if (StockSources.shownOverlay() != null) {
+            Log.d(TAG, "Press ignored: " + StockSources.shownKind() + " has no favorites");
+            return false;
+        }
+        if (MusicService.isSyuMediaSource()) {
+            int before = syuMediaFavoriteState();
+            if (before == FAVORITE_STATE_UNKNOWN) {
+                Log.d(TAG, "Press ignored: com.syu.media's favorite is not known yet");
+                return false;
+            }
+            boolean sent = MusicService.setSyuMediaFavorite(before != FAVORITE_STATE_FAVORITED);
+            if (sent) {
+                refreshWidget(context);
+            }
+            return sent;
+        }
+        if (isSyuMusicLibrarySource()) {
+            String path = MusicService.music_path;
+            int before = SyuMusicLibrary.getState(context, path);
+            if (before == FAVORITE_STATE_UNKNOWN) {
+                Log.d(TAG, "Press ignored: com.syu.music's favorite is not known yet");
+                return false;
+            }
+            boolean sent = SyuMusicLibrary.setFavorite(context, path, MusicService.music_name,
+                    MusicService.author_name, MusicService.album, before != FAVORITE_STATE_FAVORITED);
+            if (sent) {
+                refreshWidget(context);
+            }
+            return sent;
+        }
         if (context == null || !isFavoriteCacheUsable(STOCK_MUSIC_PACKAGE)) {
             Log.d(TAG, "Press ignored: the stock player is not on the cache list");
             return false;
@@ -1919,6 +2069,16 @@ public final class MediaFavoriteController {
      * the controller would refuse.
      */
     public static boolean isFavoriteCacheBlockedByAccount(String packageName) {
+        // Not an account, but the same kind of owner: com.syu.media's own library holds the
+        // flag, read and written there (see the stock player section), never cached.
+        if (MusicService.MEDIA_PKG.equals(packageName)) {
+            return true;
+        }
+        // com.syu.music the same, where its real favorites database is reachable (a rooted
+        // unit): the cache is its fallback only where it is not.
+        if (SyuMusicLibrary.PACKAGE.equals(packageName)) {
+            return SyuMusicLibrary.isAvailable(LauncherApplication.sApp);
+        }
         if (isYouTubePackage(packageName)) {
             return isFytAccountPresent();
         }
@@ -2033,6 +2193,133 @@ public final class MediaFavoriteController {
                 || YOUTUBE_MUSIC_REVANCED_PACKAGE.equals(packageName)
                 || YOUTUBE_MUSIC_PACKAGE.equals(packageName);
     }
+
+    private static boolean isYouTubeMusicPackage(String packageName) {
+        return YOUTUBE_MUSIC_REVANCED_PACKAGE.equals(packageName)
+                || YOUTUBE_MUSIC_PACKAGE.equals(packageName);
+    }
+
+    /** YT Music's like button as its session shows it; see youTubeMusicLike(). */
+    private static final class YouTubeMusicLike {
+        final PlaybackState.CustomAction action;
+        final boolean liked;
+
+        YouTubeMusicLike(PlaybackState.CustomAction action, boolean liked) {
+            this.action = action;
+            this.liked = liked;
+        }
+    }
+
+    /** The like button's last reading, logged when it changes. */
+    private static volatile String lastYouTubeMusicLike;
+
+    /**
+     * YT Music's session gives no video id for a song (only a music video's thumbnail has one),
+     * but the like button among its custom actions says the state (capture 18-10-2026 17:42:42).
+     * Its name is in the app's language ("Like" / "Undo like", "Podoba mi się" / "Cofnij
+     * polubienie"), its icon's resource name is not: see likeIconState(). Null for another
+     * player, or no such button.
+     */
+    private static YouTubeMusicLike youTubeMusicLike(MediaController controller) {
+        if (controller == null || !isYouTubeMusicPackage(controller.getPackageName())) {
+            return null;
+        }
+        PlaybackState state = safePlaybackState(controller);
+        List<PlaybackState.CustomAction> actions = state != null ? state.getCustomActions() : null;
+        if (actions == null) {
+            return null;
+        }
+        String packageName = controller.getPackageName();
+        for (PlaybackState.CustomAction action : actions) {
+            int icon = likeIconState(packageName, action.getIcon());
+            if (icon == LIKE_ICON_OTHER) {
+                continue;
+            }
+            boolean liked = icon == LIKE_ICON_LIKED;
+            String source = "icon";
+            if (icon == LIKE_ICON_UNKNOWN) {
+                // The icon not looked up yet (or its name says nothing): the English names
+                String text = ((action.getAction() == null ? "" : action.getAction())
+                        + " " + (action.getName() == null ? "" : action.getName().toString()))
+                        .toLowerCase(Locale.US);
+                if (!text.contains("like") || text.contains("dislike")) {
+                    continue;
+                }
+                liked = text.contains("undo") || text.contains("remove") || text.contains("unlike");
+                source = "name";
+            }
+            String reading = action.getAction() + "|" + action.getName() + "|" + liked;
+            if (!reading.equals(lastYouTubeMusicLike)) {
+                lastYouTubeMusicLike = reading;
+                Log.i(TAG, "YT Music like button: " + action.getAction() + " \"" + action.getName()
+                        + "\" icon " + iconEntryNames.getOrDefault(packageName + ":" + action.getIcon(), "?")
+                                .replace(LOOKING_UP, "?")
+                        + " (by " + source + ") -> " + (liked ? "liked" : "not liked"));
+            }
+            return new YouTubeMusicLike(action, liked);
+        }
+        return null;
+    }
+
+    /** What likeIconState() tells of an icon. */
+    private static final int LIKE_ICON_UNKNOWN = 0;
+    private static final int LIKE_ICON_OTHER = 1; // thumb down, shuffle, repeat
+    private static final int LIKE_ICON_NOT_LIKED = 2;
+    private static final int LIKE_ICON_LIKED = 3;
+
+    /** Resource names of players' icons, by package and id; "" for one that has none. */
+    private static final ConcurrentHashMap<String, String> iconEntryNames = new ConcurrentHashMap<>();
+
+    /**
+     * What the icon's resource name says: LIKED for the filled thumb up, NOT_LIKED for the outline
+     * one, OTHER for any other icon, UNKNOWN while the name is not known (or says nothing). The
+     * names are YouTube's icon set, yt_fill_thumb_up / yt_outline_thumb_up / ..._thumb_down (the
+     * ids of capture 18-10-2026 18:01:44 are in that alphabetical order: 2131232976 < 2131233337
+     * < 2131233341). Looked up once per icon, off the main thread: the player's resources come
+     * from its APK.
+     */
+    private static int likeIconState(String packageName, int icon) {
+        if (icon == 0) {
+            return LIKE_ICON_UNKNOWN;
+        }
+        String key = packageName + ":" + icon;
+        String name = iconEntryNames.get(key);
+        if (name == null) {
+            if (iconEntryNames.putIfAbsent(key, LOOKING_UP) == null) {
+                FAVORITE_CACHE_EXECUTOR.execute(() -> {
+                    String entry = "";
+                    try {
+                        entry = LauncherApplication.sApp.getPackageManager()
+                                .getResourcesForApplication(packageName).getResourceEntryName(icon)
+                                .toLowerCase(Locale.US);
+                    } catch (Exception e) {
+                        // Uninstalled meanwhile, or no such resource: the names decide
+                    }
+                    iconEntryNames.put(key, entry);
+                    if (!entry.isEmpty()) {
+                        refreshWidget(LauncherApplication.sApp);
+                    }
+                });
+            }
+            return LIKE_ICON_UNKNOWN;
+        }
+        if (name.isEmpty() || LOOKING_UP.equals(name)) {
+            return LIKE_ICON_UNKNOWN;
+        }
+        if (name.contains("thumb_down") || name.contains("dislike")) {
+            return LIKE_ICON_OTHER;
+        }
+        if (name.contains("thumb_up") || name.contains("like")) {
+            // Neither: a name of another kind, the button's own names decide
+            if (name.contains("fill")) return LIKE_ICON_LIKED;
+            if (name.contains("outline")) return LIKE_ICON_NOT_LIKED;
+            return LIKE_ICON_UNKNOWN;
+        }
+        // Shuffle, repeat - or a name that says nothing (shortened by the build): the names decide
+        return name.contains("shuffle") || name.contains("repeat") ? LIKE_ICON_OTHER : LIKE_ICON_UNKNOWN;
+    }
+
+    private static final String LOOKING_UP = "\u0000";
 
     private static FavoriteState ratingToFavoriteState(Rating rating) {
         if (rating == null) {
@@ -2515,6 +2802,12 @@ public final class MediaFavoriteController {
     }
 
     public static void dumpMediaDebug(Context context, MediaController controller) {
+        dumpMediaDebug(context, controller, true);
+    }
+
+    /** Without the notification's actions: those read the player's resources from disk. */
+    private static void dumpMediaDebug(Context context, MediaController controller,
+            boolean notificationActions) {
         String pkg = controller.getPackageName();
         Log.d(DEBUG_TAG, "=========== " + pkg + " ===========");
 
@@ -2554,16 +2847,34 @@ public final class MediaFavoriteController {
         if (queue == null || queue.isEmpty()) {
             Log.d(DEBUG_TAG, "  queue: empty");
         } else {
+            // The item playing (or titled so) only: a radio queue runs to hundreds
+            long activeId = ps != null ? ps.getActiveQueueItemId() : MediaSession.QueueItem.UNKNOWN_ID;
+            Log.d(DEBUG_TAG, "  queue: " + queue.size() + " items, active id " + activeId);
+            // and the first few when none is: what its items hold
+            String title = md != null ? md.getString(MediaMetadata.METADATA_KEY_TITLE) : null;
+            boolean any = false;
             for (MediaSession.QueueItem q : queue) {
+                if (q.getQueueId() == activeId || isTitled(q, title)) any = true;
+            }
+            int shown = 0;
+            for (MediaSession.QueueItem q : queue) {
+                if (any ? q.getQueueId() != activeId && !isTitled(q, title) : shown >= 3) continue;
+                shown++;
                 MediaDescription qd = q.getDescription();
-                Log.d(DEBUG_TAG, "  queue mediaId=" + qd.getMediaId()
+                Log.d(DEBUG_TAG, "  queue id=" + q.getQueueId()
+                        + " mediaId=" + qd.getMediaId()
+                        + " subtitle=" + qd.getSubtitle()
                         + " title=" + qd.getTitle()
-                        + " iconUri=" + qd.getIconUri());
+                        + " iconUri=" + qd.getIconUri()
+                        + " mediaUri=" + qd.getMediaUri());
+                dumpBundle("queue.extras", qd.getExtras());
             }
         }
         Log.d(DEBUG_TAG, "  queueTitle = " + controller.getQueueTitle());
 
-        dumpNotificationActions(context, controller);
+        if (notificationActions) {
+            dumpNotificationActions(context, controller);
+        }
 
         Log.d(DEBUG_TAG, "  >>> videoId candidate = " + findVideoId(controller));
         Log.d(DEBUG_TAG, "==================================================");
@@ -2696,50 +3007,155 @@ public final class MediaFavoriteController {
 
             for (MediaSession.QueueItem item : queue) {
                 if (item.getQueueId() == activeItemId) {
-                    
-                    MediaDescription qd = item.getDescription();
-                    List<String> candidates = new ArrayList<>();
-
-                    if (qd.getMediaId() != null) {
-                        candidates.add(qd.getMediaId());
-                    }
-                    if (qd.getIconUri() != null) {
-                        candidates.add(qd.getIconUri().toString());
-                    }
-                    for (String s : candidates) {
-                        Matcher m = VIDEO_ID_IN_URL.matcher(s);
-                        if (m.find()) {
-                            return m.group(1);
-                        }
-                        m = BARE_VIDEO_ID.matcher(s);
-                        if (m.matches()) {
-                            return s;
-                        }
+                    String id = videoIdOf(item.getDescription());
+                    if (id != null) {
+                        return id;
                     }
                     break;
                 }
             }
         }
+        // YT Music may name no item as the active one (UNKNOWN_ID, capture 18-10-2026 17:14:22):
+        // the item of the same title then, and artist if the title is there more than once.
+        String byTitle = videoIdByTitle(queue, metadata);
+        if (byTitle != null) {
+            return byTitle;
+        }
+        if (isYouTubePackage(controller.getPackageName())) {
+            warnNoVideoId(controller, metadata);
+        }
         return null;
+    }
+
+    /** The video id in a queue item's media id or icon URI; null if neither holds one. */
+    private static String videoIdOf(MediaDescription qd) {
+        if (qd == null) {
+            return null;
+        }
+        List<String> candidates = new ArrayList<>();
+        if (qd.getMediaId() != null) {
+            candidates.add(qd.getMediaId());
+        }
+        if (qd.getIconUri() != null) {
+            candidates.add(qd.getIconUri().toString());
+        }
+        for (String s : candidates) {
+            Matcher m = VIDEO_ID_IN_URL.matcher(s);
+            if (m.find()) {
+                return m.group(1);
+            }
+            m = BARE_VIDEO_ID.matcher(s);
+            if (m.matches()) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The video id of the queue item titled as the track playing; null if none is, or the
+     * items that are point at different videos and the artist does not tell them apart.
+     */
+    private static String videoIdByTitle(List<MediaSession.QueueItem> queue, MediaMetadata metadata) {
+        if (queue == null || queue.isEmpty() || metadata == null) {
+            return null;
+        }
+        String title = trimmed(metadata.getString(MediaMetadata.METADATA_KEY_TITLE));
+        if (title == null) {
+            return null;
+        }
+        String artist = trimmed(metadata.getString(MediaMetadata.METADATA_KEY_ARTIST));
+        String any = null;
+        String byArtist = null;
+        boolean anyAmbiguous = false;
+        boolean byArtistAmbiguous = false;
+        for (MediaSession.QueueItem item : queue) {
+            if (!isTitled(item, title)) {
+                continue;
+            }
+            MediaDescription qd = item.getDescription();
+            String id = videoIdOf(qd);
+            if (id == null) {
+                continue;
+            }
+            if (any == null) any = id;
+            else if (!any.equals(id)) anyAmbiguous = true;
+            String subtitle = trimmed(textOf(qd.getSubtitle()));
+            if (artist != null && subtitle != null && subtitle.contains(artist)) {
+                if (byArtist == null) byArtist = id;
+                else if (!byArtist.equals(id)) byArtistAmbiguous = true;
+            }
+        }
+        if (byArtist != null && !byArtistAmbiguous) {
+            return byArtist;
+        }
+        return anyAmbiguous ? null : any;
+    }
+
+    private static boolean isTitled(MediaSession.QueueItem item, String title) {
+        String t = trimmed(title);
+        return t != null && item.getDescription() != null
+                && t.equals(trimmed(textOf(item.getDescription().getTitle())));
+    }
+
+    private static String textOf(CharSequence text) {
+        return text != null ? text.toString() : null;
+    }
+
+    private static String trimmed(String text) {
+        if (text == null) {
+            return null;
+        }
+        String t = text.trim();
+        return t.isEmpty() ? null : t;
+    }
+
+    /** The session (package and media id) last reported as giving no video id. */
+    private static volatile String lastNoVideoIdKey;
+
+    /**
+     * Once per track: without a video id nothing can be rated, and every path that needs one
+     * gives up silently - this line is what tells that apart on the device.
+     */
+    private static void warnNoVideoId(MediaController controller, MediaMetadata metadata) {
+        String packageName = controller.getPackageName();
+        String mediaId = metadata != null
+                ? metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID) : null;
+        String title = metadata != null
+                ? metadata.getString(MediaMetadata.METADATA_KEY_TITLE) : null;
+        String key = packageName + "|" + mediaId + "|" + title;
+        if (key.equals(lastNoVideoIdKey)) {
+            return;
+        }
+        lastNoVideoIdKey = key;
+        Log.w(TAG, "No video id in the " + packageName + " session: mediaId=" + mediaId
+                + ", title=" + title + "; what it holds:");
+        // Where the id could be instead (YT Music gives none in mediaId): the whole session, once
+        // per track. Its own findVideoId() comes back here with the same key and stops.
+        dumpMediaDebug(LauncherApplication.sApp, controller, false);
     }
 
     private static String describeMetadataValue(MediaMetadata md, String key) {
         try {
-            CharSequence text = md.getText(key);
+            // Not for the others: read as text they log a ClassCastException each
+            CharSequence text = isTextMetadataKey(key) ? md.getText(key) : null;
             if (text != null) {
                 return "Text: " + text;
             }
         } catch (Throwable ignored) {
         }
         try {
-            Rating r = md.getRating(key);
+            Rating r = MediaMetadata.METADATA_KEY_USER_RATING.equals(key)
+                    || MediaMetadata.METADATA_KEY_RATING.equals(key) ? md.getRating(key) : null;
             if (r != null) {
                 return "Rating: style=" + r.getRatingStyle() + " rated=" + r.isRated();
             }
         } catch (Throwable ignored) {
         }
         try {
-            Bitmap b = md.getBitmap(key);
+            Bitmap b = MediaMetadata.METADATA_KEY_ALBUM_ART.equals(key)
+                    || MediaMetadata.METADATA_KEY_ART.equals(key)
+                    || MediaMetadata.METADATA_KEY_DISPLAY_ICON.equals(key) ? md.getBitmap(key) : null;
             if (b != null) {
                 return "Bitmap " + b.getWidth() + "x" + b.getHeight();
             }

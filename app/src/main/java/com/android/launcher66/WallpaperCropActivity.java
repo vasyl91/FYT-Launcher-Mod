@@ -909,17 +909,21 @@ public class WallpaperCropActivity extends AppCompatActivity {
         editor.commit();
 
         suggestWallpaperDimension(getResources(),
-                sp, getWindowManager(), WallpaperManager.getInstance(this));
+                getApplicationContext(), getWindowManager(), WallpaperManager.getInstance(this));
     }
 
     static public void suggestWallpaperDimension(Resources res,
-            final SharedPreferences sharedPrefs,
+            final Context context,
             WindowManager windowManager,
             final WallpaperManager wallpaperManager) {
         final Point defaultWallpaperSize = getDefaultWallpaperSize(res, windowManager);
 
         new Thread("suggestWallpaperDimension") {
             public void run() {
+                // Read anew, the picker writes them from its own process; that checks the file,
+                // so here rather than on the caller's thread
+                SharedPreferences sharedPrefs = context.getSharedPreferences(
+                        getSharedPreferencesKey(), Context.MODE_MULTI_PROCESS);
                 // If we have saved a wallpaper width/height, use that instead
                 int savedWidth = sharedPrefs.getInt(WALLPAPER_WIDTH_KEY, defaultWallpaperSize.x);
                 int savedHeight = sharedPrefs.getInt(WALLPAPER_HEIGHT_KEY, defaultWallpaperSize.y);

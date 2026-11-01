@@ -28,6 +28,9 @@ public class StateAccessibilityService extends AccessibilityService {
         int eventType = event.getEventType();
         String packageName = event.getPackageName() != null ? event.getPackageName().toString() : "null";
         if (eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            // PinnedPipFocus: with the pinned PiP shown, the focus now moves between the PiP and
+            // PinnedPipFocus's window with each touch, and a window that gets it back sends this
+            // event: the PiP app's package and this launcher's then come in turn.
             // The task stack reports the foreground app already (system privileges); a second
             // source would only contradict it.
             if (ForegroundAppTracker.isActive()) {

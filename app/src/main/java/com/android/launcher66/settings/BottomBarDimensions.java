@@ -201,8 +201,11 @@ public final class BottomBarDimensions {
     /** Same lookup as {@code Launcher.getStatusBarHeight()}, usable without a Launcher instance. */
     @SuppressLint({"DiscouragedApi", "InternalInsetResource"})
     public static int getStatusBarHeight(@NonNull Resources res) {
-        int resourceId = res.getIdentifier("status_bar_height", "dimen", "android");
-        return resourceId > 0 ? res.getDimensionPixelSize(resourceId) : 0;
+        // The system's own resources: the settings activity runs at a reference density on
+        // non-FYT devices (SettingsActivity.attachBaseContext()), the status bar does not.
+        Resources sys = Resources.getSystem();
+        int resourceId = sys.getIdentifier("status_bar_height", "dimen", "android");
+        return resourceId > 0 ? sys.getDimensionPixelSize(resourceId) : 0;
     }
 
     // ---------------------------------------------------------------------------------------

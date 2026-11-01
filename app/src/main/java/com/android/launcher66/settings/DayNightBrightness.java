@@ -11,6 +11,7 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.DeviceIdentity;
 import com.android.launcher66.LauncherApplication;
 import com.syu.car.CarStates;
 import com.syu.ipc.data.FinalMain;
@@ -54,6 +55,14 @@ public final class DayNightBrightness {
     /** The syu service may not be bound yet, e.g. when the DayNightMode job started the process. */
     private static final int FYT_MAX_RETRIES = 10;
     private static final long FYT_RETRY_DELAY_MS = 1000;
+
+    /**
+     * The lowest night brightness off the FYT 7862 (a decision of the owner: the 7862 may go to 0).
+     * The 7870 (com.syu.media) can switch its backlight off completely at level 0, and 10 is the
+     * lowest level at which its screen is certain to be readable at night. A phone gets 10/255.
+     */
+    static final int FYT_LEVEL_FLOOR_7870 = 10;
+    static final int SYSTEM_VALUE_FLOOR = 10;
 
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
@@ -160,23 +169,42 @@ public final class DayNightBrightness {
                     + " as FYT level " + level + "/" + FYT_MAX + " (" + reason + ")");
             MAIN_HANDLER.post(() -> sendToFyt(appContext, level, 0));
         } else {
-            Log.i(TAG, "Applying " + state + " brightness " + value + "/" + PREF_MAX + " (" + reason + ")");
-            new Thread(() -> writeSystemBrightness(appContext, value), TAG).start();
+            final int written = floorSystemValue(value);
+            Log.i(TAG, "Applying " + state + " brightness " + value + "/" + PREF_MAX + " (" + reason + ")"
+                    + (written != value
+                    ? " (raised to the minimum " + SYSTEM_VALUE_FLOOR + " of this device)" : ""));
+            new Thread(() -> writeSystemBrightness(appContext, written), TAG).start();
         }
+    }
+
+    /** Only the 7870 has a minimum among the FYT units; any other keeps the level as it is. */
+    static int floorFytLevel(int level, boolean is7870) {
+        return is7870 ? Math.max(level, FYT_LEVEL_FLOOR_7870) : level;
+    }
+
+    /** The lowest value of a phone (not an FYT unit). */
+    static int floorSystemValue(int value) {
+        return Math.max(value, SYSTEM_VALUE_FLOOR);
     }
 
     /** Runs on the main thread, like the command sent by PopWindowBright. */
     private static void sendToFyt(Context appContext, int level, int attempt) {
         RemoteTools tools = CarStates.getCar(appContext).getTools();
-        if (tools == null || !tools.connected()) {
-            if (attempt < FYT_MAX_RETRIES) {
-                MAIN_HANDLER.postDelayed(() -> sendToFyt(appContext, level, attempt + 1), FYT_RETRY_DELAY_MS);
-            } else {
-                Log.w(TAG, "syu service not connected, FYT brightness level " + level + " not sent");
-            }
+        boolean connected = tools != null && tools.connected();
+        if (!connected && attempt < FYT_MAX_RETRIES) {
+            MAIN_HANDLER.postDelayed(() -> sendToFyt(appContext, level, attempt + 1), FYT_RETRY_DELAY_MS);
             return;
         }
-        tools.sendInt(0, FinalMain.C_BRIGHT_LEVEL, level);
+        if (!connected) {
+            Log.w(TAG, "syu service not connected, FYT brightness level " + level + " not sent");
+            return;
+        }
+        int sent = floorFytLevel(level, DeviceIdentity.is7870());
+        if (sent != level) {
+            Log.i(TAG, "FYT brightness level " + level + " raised to the minimum " + sent
+                    + " of this device (7870)");
+        }
+        tools.sendInt(0, FinalMain.C_BRIGHT_LEVEL, sent);
     }
 
     private static void writeSystemBrightness(Context appContext, int value) {

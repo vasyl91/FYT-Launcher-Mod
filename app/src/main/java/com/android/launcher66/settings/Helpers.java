@@ -31,8 +31,10 @@ public class Helpers {
     // so kept in memory: see SessionPrefs (was the "HelpersPrefs" file, an fsync per flag change).
     private static final SharedPreferences sharedPrefs = SessionPrefs.get();
     private static final SharedPreferences.Editor editor = sharedPrefs.edit();
-    // These prefs remain
-    private static final SharedPreferences sharedPrefsSus = LauncherApplication.sApp.getSharedPreferences("HelpersPrefsSus", Context.MODE_PRIVATE);
+    // These prefs remain. The name is a constant: LauncherApplication reads it before this
+    // class may be initialised (sApp is set only in its onCreate()).
+    public static final String SUS_PREFS = "HelpersPrefsSus";
+    private static final SharedPreferences sharedPrefsSus = LauncherApplication.sApp.getSharedPreferences(SUS_PREFS, Context.MODE_PRIVATE);
     private static final SharedPreferences.Editor editorSus = sharedPrefsSus.edit();
 
     private boolean day = false;
@@ -359,18 +361,6 @@ public class Helpers {
     }
     
 
-    private boolean codeLogger = false;
-    public boolean codeLoggerBoolean() {
-        codeLogger = sharedPrefsSus.getBoolean("codeLogger", false);
-        return codeLogger;
-    }
-    public void setCodeLoggerBoolean(boolean codeLogger) {
-        this.codeLogger = codeLogger;
-        editorSus.putBoolean("codeLogger", codeLogger);
-        editorSus.apply();
-    }
-
-
     private boolean logcatRun = false;
     public boolean logcatRunBoolean() {
         logcatRun = sharedPrefsSus.getBoolean("logcatRun", false);
@@ -452,18 +442,6 @@ public class Helpers {
     public void setCountDownInspector(int countDownInspector) {
         this.countDownInspector = countDownInspector;
         editorSus.putInt("countDownInspector", countDownInspector);
-        editorSus.apply();
-    }
-
-
-    private int countDownLogger = 0;
-    public int returnCountDownLogger() {
-        countDownLogger = sharedPrefsSus.getInt("countDownLogger", 0);
-        return countDownLogger;
-    }
-    public void setCountDownLogger(int countDownLogger) {
-        this.countDownLogger = countDownLogger;
-        editorSus.putInt("countDownLogger", countDownLogger);
         editorSus.apply();
     }
 
@@ -581,7 +559,9 @@ public class Helpers {
         }
         
         // Calculate right border exclusion area for left bar mode
-        float leftBarWidth = Launcher.screenWidth * 0.071f;
+        // Same width the launcher offsets the first page by (7.1 % of the bar's height in portrait).
+        float leftBarWidth = Launcher.calculatedLeftBarWidth > 0
+                ? Launcher.calculatedLeftBarWidth : Launcher.screenWidth * 0.071f;
         int margin = Integer.valueOf(mPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
         
         // Check for overlaps between rectangles

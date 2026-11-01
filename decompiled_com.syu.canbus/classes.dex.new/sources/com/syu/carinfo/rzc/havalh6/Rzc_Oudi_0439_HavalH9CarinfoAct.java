@@ -1,0 +1,139 @@
+package com.syu.carinfo.rzc.havalh6;
+
+import android.os.Bundle;
+import android.widget.TextView;
+import com.syu.canbus.BaseActivity;
+import com.syu.canbus.R;
+import com.syu.module.IUiNotify;
+import com.syu.module.canbus.DataCanbus;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.canbus.apk\dexFile\classes.dex */
+public class Rzc_Oudi_0439_HavalH9CarinfoAct extends BaseActivity {
+    private IUiNotify mNotifyCanbus = new IUiNotify() { // from class: com.syu.carinfo.rzc.havalh6.Rzc_Oudi_0439_HavalH9CarinfoAct.1
+        @Override // com.syu.module.IUiNotify
+        public void onNotify(int updateCode, int[] ints, float[] flts, String[] strs) {
+            int value = DataCanbus.DATA[updateCode];
+            switch (updateCode) {
+                case 118:
+                    if (value >= 64) {
+                        int temp = ((value * 30) / 4) - 480;
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_condensate_value)).setText((temp / 10.0f) + "℃");
+                    } else {
+                        int temp2 = 480 - ((value * 30) / 4);
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_condensate_value)).setText("-" + (temp2 / 10.0f) + "℃");
+                    }
+                    break;
+                case 119:
+                    if (value >= 40) {
+                        int temp3 = value - 40;
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_oiltemp_value)).setText(temp3 + "℃");
+                    } else {
+                        int temp4 = 40 - value;
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_oiltemp_value)).setText("-" + temp4 + "℃");
+                    }
+                    break;
+                case 120:
+                    int temp5 = (value * 10) / 4;
+                    ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_voltage_value)).setText((temp5 / 10.0f) + "V");
+                    break;
+                case 121:
+                    int temp6 = value * 59;
+                    ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_pressure_value)).setText(String.valueOf(temp6 / 100) + "." + ((temp6 % 100) / 10) + "Kpa");
+                    break;
+                case 122:
+                    if ((value & 128) == 128) {
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_slope_value)).setText(String.valueOf(String.format("-%d", Integer.valueOf(value & 127))) + "°");
+                    } else {
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_slope_value)).setText(String.valueOf(String.format("%d", Integer.valueOf(value & 127))) + "°");
+                    }
+                    break;
+                case 123:
+                    ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_torque_value)).setText(String.valueOf(String.format("%d", Integer.valueOf(value))) + "%");
+                    break;
+                case 124:
+                    if ((value & 128) == 128) {
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_inclination_value)).setText(String.valueOf(String.format("R:%d", Integer.valueOf(value & 127))) + "°");
+                    } else {
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_inclination_value)).setText(String.valueOf(String.format("L:%d", Integer.valueOf(value & 127))) + "°");
+                    }
+                    break;
+                case 125:
+                    if (Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_trailer_value) != null) {
+                        if ((value & 128) == 128) {
+                            ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_trailer_value)).setText(R.string.str_mount_set);
+                        } else {
+                            ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_trailer_value)).setText(R.string.str_nomount_set);
+                        }
+                    }
+                    break;
+                case 126:
+                    if ((value & 32768) == 32768) {
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_altitude_value)).setText("-" + (value & 32767) + "m");
+                    } else {
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.od_havalh9_altitude_value)).setText((value & 32767) + "m");
+                    }
+                    break;
+                case 140:
+                    if ((value & 32768) == 32768) {
+                        int value2 = (((65536 - value) / 2) * 33) / 540;
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.tv_text1)).setText(String.valueOf(String.format("L:%d.%d", Integer.valueOf(value2 / 10), Integer.valueOf(value2 % 10))) + "°");
+                    } else {
+                        int value3 = ((value / 2) * 33) / 540;
+                        ((TextView) Rzc_Oudi_0439_HavalH9CarinfoAct.this.findViewById(R.id.tv_text1)).setText(String.valueOf(String.format("R:%d.%d", Integer.valueOf(value3 / 10), Integer.valueOf(value3 % 10))) + "°");
+                    }
+                    break;
+            }
+        }
+    };
+
+    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.layout_0439_od_havalh9carinfo);
+        init();
+    }
+
+    @Override // com.syu.canbus.BaseActivity
+    public void init() {
+    }
+
+    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    protected void onResume() {
+        super.onResume();
+        addNotify();
+    }
+
+    @Override // com.syu.canbus.BaseActivity, android.app.Activity
+    protected void onPause() {
+        super.onPause();
+        removeNotify();
+    }
+
+    @Override // com.syu.canbus.BaseActivity
+    public void addNotify() {
+        DataCanbus.NOTIFY_EVENTS[118].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[119].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[120].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[121].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[122].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[123].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[124].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[125].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[126].addNotify(this.mNotifyCanbus, 1);
+        DataCanbus.NOTIFY_EVENTS[140].addNotify(this.mNotifyCanbus, 1);
+    }
+
+    @Override // com.syu.canbus.BaseActivity
+    public void removeNotify() {
+        DataCanbus.NOTIFY_EVENTS[118].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[119].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[120].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[121].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[122].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[123].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[124].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[125].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[126].removeNotify(this.mNotifyCanbus);
+        DataCanbus.NOTIFY_EVENTS[140].removeNotify(this.mNotifyCanbus);
+    }
+}

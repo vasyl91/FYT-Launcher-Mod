@@ -33,6 +33,7 @@ import androidx.core.graphics.ColorUtils;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Launcher;
+import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.syu.util.WindowUtil;
@@ -68,7 +69,7 @@ public class FabOverlayService extends Service {
     // ---- Look ------------------------------------------------------------------------------
 
     /** Opacity of the black button background (0..1). */
-    private static final float BACKGROUND_ALPHA = 0.5f;
+    static final float BACKGROUND_ALPHA = 0.5f;
 
     // ---- Click blocking --------------------------------------------------------------------
 
@@ -76,6 +77,8 @@ public class FabOverlayService extends Service {
     private static final long BLOCK_AFTER_CLICK_MS = 3000L;
     /** Clicks are ignored for this long after a BLOCK_FLOATING_BUTTON broadcast. */
     private static final long BLOCK_ON_REQUEST_MS = 5000L;
+    /** Icon colour while clicks are ignored, instead of the usual white. */
+    private static final int BLOCKED_ICON_COLOR = 0xFF8A8A8A;
 
     // ---- Clean-up of positions stored by older versions ------------------------------------
 
@@ -122,17 +125,28 @@ public class FabOverlayService extends Service {
 
     /** Uptime (ms) until which clicks are ignored, see {@link #blockFor(long)}. */
     private long blockedUntilUptimeMs = 0L;
+    private final android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    /** Turns the icons white again once the block is over, or later when it was extended. */
+    private final Runnable unblockIcons = this::refreshBlockedLook;
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
+    /** Whether the service is running; Launcher.isServiceRunning() reads it instead of a cache. */
+    private static volatile boolean sRunning;
+
+    public static boolean isRunning() {
+        return sRunning;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        sRunning = true;
         Log.i(TAG, "Service created");
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         themedContext = new ContextThemeWrapper(this, R.style.AppTheme);
         readSettings();
@@ -234,10 +248,10 @@ public class FabOverlayService extends Service {
         secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
         thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
         fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
-        firstPipPinned = prefs.getBoolean(Keys.PIP_FIRST_MODE, false);
-        secondPipPinned = prefs.getBoolean(Keys.PIP_SECOND_MODE, false);
-        thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
-        fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+        firstPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FIRST_MODE);
+        secondPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_SECOND_MODE);
+        thirdPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE);
+        fourthPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE);
     }
 
     private boolean isFloatingButton() {
@@ -289,9 +303,16 @@ public class FabOverlayService extends Service {
      * density 1.5). Taking the shorter side directly does not depend on the orientation.
      */
     private int computeFabSizePx() {
-        int shorterSide = Math.min(screenWidth, screenHeight);
+        return fabSizePx(this);
+    }
+
+    /** {@link #computeFabSizePx()} for any context: the size of the floating buttons, and of the stop logcat button. */
+    static int fabSizePx(Context context) {
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        float density = dm.density > 0f ? dm.density : 1f;
+        int shorterSide = Math.min(dm.widthPixels, dm.heightPixels);
         int size = Math.round(shorterSide * FAB_SIZE_SCREEN_FRACTION);
-        return Math.max(dpToPx(FAB_MIN_SIZE_DP), size);
+        return Math.max(Math.round(FAB_MIN_SIZE_DP * density), size);
     }
 
     // ---- Overlay creation ------------------------------------------------------------------
@@ -299,6 +320,8 @@ public class FabOverlayService extends Service {
     private void addOverlay(OverlayFab fab) {
         try {
             fab.view = createFabView(fab.iconRes);
+            fab.iconTint = fab.view.getImageTintList();
+            applyBlockedLook(fab, SystemClock.uptimeMillis() < blockedUntilUptimeMs);
             fab.params = createLayoutParams();
             // Position is computed before addView(), so the button never shows up at a
             // temporary spot and then jumps (the old code moved it in a post() callback).
@@ -385,7 +408,7 @@ public class FabOverlayService extends Service {
      * else changes in that case.
      */
     @RequiresApi(Build.VERSION_CODES.Q)
-    private static void excludeFromSystemGestures(View view) {
+    static void excludeFromSystemGestures(View view) {
         view.addOnLayoutChangeListener((v, left, top, right, bottom,
                                         oldLeft, oldTop, oldRight, oldBottom) ->
                 v.setSystemGestureExclusionRects(Collections.singletonList(
@@ -617,6 +640,25 @@ public class FabOverlayService extends Service {
     private void blockFor(long durationMs) {
         blockedUntilUptimeMs = Math.max(blockedUntilUptimeMs,
                 SystemClock.uptimeMillis() + durationMs);
+        refreshBlockedLook();
+    }
+
+    /** Grey icons while clicks are ignored, white ones as soon as the buttons work again. */
+    private void refreshBlockedLook() {
+        mainHandler.removeCallbacks(unblockIcons);
+        long remaining = blockedUntilUptimeMs - SystemClock.uptimeMillis();
+        boolean blocked = remaining > 0;
+        for (OverlayFab fab : activeFabs) {
+            applyBlockedLook(fab, blocked);
+        }
+        if (blocked) {
+            mainHandler.postDelayed(unblockIcons, remaining);
+        }
+    }
+
+    private static void applyBlockedLook(OverlayFab fab, boolean blocked) {
+        if (fab.view == null) return;
+        fab.view.setImageTintList(blocked ? ColorStateList.valueOf(BLOCKED_ICON_COLOR) : fab.iconTint);
     }
 
     // ---- Visibility ------------------------------------------------------------------------
@@ -727,6 +769,8 @@ public class FabOverlayService extends Service {
 
     @Override
     public void onDestroy() {
+        sRunning = false;
+        mainHandler.removeCallbacks(unblockIcons);
         // unregisterReceiver() throws IllegalArgumentException when registration failed. Guarded,
         // so the exception cannot abort onDestroy() before the overlays are removed and leave
         // orphaned type 2038 windows (with their ViewRootImpl) in the WindowManager.
@@ -768,9 +812,14 @@ public class FabOverlayService extends Service {
 
     @SuppressLint({"DiscouragedApi", "InternalInsetResource"})
     public int getStatusBarHeight() {
+        return statusBarHeightPx(this);
+    }
+
+    @SuppressLint({"DiscouragedApi", "InternalInsetResource"})
+    static int statusBarHeightPx(Context context) {
         // There is no public API for the status bar height before a window is attached.
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        return resourceId > 0 ? getResources().getDimensionPixelSize(resourceId) : 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        return resourceId > 0 ? context.getResources().getDimensionPixelSize(resourceId) : 0;
     }
 
     private int dpToPx(float dp) {
@@ -791,6 +840,8 @@ public class FabOverlayService extends Service {
         WindowManager.LayoutParams params;
         /** True between a successful addView() and removeOverlay(). */
         boolean added;
+        /** The icon's own tint, given back when a block ends. */
+        ColorStateList iconTint;
 
         // Touch state of this button only
         float downRawX;

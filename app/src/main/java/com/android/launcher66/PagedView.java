@@ -115,6 +115,13 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     protected int mNextPage = INVALID_PAGE;
     protected int mMaxScrollX;
     protected Scroller mScroller;
+    /** The interpolator mScroller was created with; scrollXForThisFrame() asks it as well. */
+    protected Interpolator mScrollerInterpolator;
+    /**
+     * mScroller runs a startScroll() (snapToPage()), whose position can be worked out ahead of the
+     * draw; a fling cannot.
+     */
+    private boolean mScrollerPredictable = false;
     private VelocityTracker mVelocityTracker;
 
     private float mParentDownMotionX;
@@ -326,7 +333,8 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         mLogicalCurrentPage = 0;
         mDirtyPageContent = new ArrayList<Boolean>();
         mDirtyPageContent.ensureCapacity(32);
-        mScroller = new Scroller(getContext(), new ScrollInterpolator());
+        mScrollerInterpolator = new ScrollInterpolator();
+        mScroller = new Scroller(getContext(), mScrollerInterpolator);
         mCurrentPage = 0;
         mCenterPagesVertically = true;
 
@@ -746,6 +754,32 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         }
     }
 
+    /**
+     * The horizontal scroll the pages will have in the draw of this frame. While the pages snap
+     * (startScroll()), that is known before the draw: Scroller.computeScrollOffset() is a function
+     * of the time and the frame's time is fixed from the start of the frame, so the same
+     * arithmetic gives the same pixel (ScrollerPrediction). Otherwise the pages are where
+     * mUnboundedScrollX says: a finger has moved them in the input phase of this frame, and a
+     * fling is not worked out ahead.
+     *
+     * mScroller.computeScrollOffset() is not called here: in the last frame it would finish the
+     * scroller, computeScrollHelper() would then skip the closing scrollTo() in the draw, and the
+     * page would stop a few pixels short of its place.
+     */
+    int scrollXForThisFrame() {
+        if (mScroller.isFinished() || !mScrollerPredictable || mFreeScroll || getScaleX() != 1f
+                || mScrollerInterpolator == null) {
+            return mUnboundedScrollX;
+        }
+        final int duration = mScroller.getDuration();
+        final int passed = mScroller.timePassed();
+        final float interpolated = passed < duration
+                ? mScrollerInterpolator.getInterpolation(ScrollerPrediction.progress(passed, duration))
+                : 1f;
+        return ScrollerPrediction.x(
+                mScroller.getStartX(), mScroller.getFinalX(), passed, duration, interpolated);
+    }
+
     // we moved this functionality to a helper function so SmoothPagedView can reuse it
     protected boolean computeScrollHelper() {
         if (mScroller.computeScrollOffset()) {
@@ -759,6 +793,17 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
             }
 
             WindowUtil.updatePipPositionsForScroll(mUnboundedScrollX);
+
+            // With the ease-out (t^5) a snap has the pages on their last pixel for its last fifth
+            // or more: half a pixel of 2000 is left at 81 % of the time. The screen has stopped,
+            // yet onPageEndMoving(), and what waits for it (the pinned PiP's start), came that
+            // much later. Ended there, the scroller lets the next frame finish the page switch.
+            // Only for that interpolator: it never goes past the end, an overshoot one does.
+            if (mNextPage != INVALID_PAGE && mScrollerInterpolator instanceof ScrollInterpolator
+                    && mScroller.getCurrX() == mScroller.getFinalX()
+                    && mScroller.getCurrY() == mScroller.getFinalY()) {
+                mScroller.abortAnimation();
+            }
 
             invalidate();
             return true;
@@ -2034,6 +2079,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
 
                     mScroller.fling(initialScrollX,
                             getScrollY(), vX, 0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
+                    mScrollerPredictable = false;
                     invalidate();
                 }
             } else if (mTouchState == TOUCH_STATE_NEXT_PAGE) {
@@ -2353,6 +2399,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
             mScroller.abortAnimation();
         }
         mScroller.startScroll(mUnboundedScrollX, 0, delta, 0, duration);
+        mScrollerPredictable = true;
 
         notifyPageSwitchListener();
 

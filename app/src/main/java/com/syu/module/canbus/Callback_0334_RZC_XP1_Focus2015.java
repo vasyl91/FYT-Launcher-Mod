@@ -2,9 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.ford.MustangCarCDAct;
-import com.syu.carinfo.ford.MustangCarRadioAct;
-import com.syu.carinfo.wc.ruijie15.RuijieAirControlAct_Rzc;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -175,10 +172,6 @@ public class Callback_0334_RZC_XP1_Focus2015 extends CallbackCanbusBase {
     Runnable mDismissFunctionalDrivingInfo1 = new Runnable() { 
         @Override
         public void run() {
-            if (RuijieAirControlAct_Rzc.mIsFront && Callback_0334_RZC_XP1_Focus2015.jump && RuijieAirControlAct_Rzc.mInstance != null) {
-                RuijieAirControlAct_Rzc.mInstance.finish();
-                Callback_0334_RZC_XP1_Focus2015.jump = false;
-            }
         }
     };
     public static String RadioFrq1 = "";
@@ -239,11 +232,6 @@ public class Callback_0334_RZC_XP1_Focus2015 extends CallbackCanbusBase {
         if (updateCode == 180) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (value == 2 && !MustangCarCDAct.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ford.MustangCarCDAct");
-            } else if (value == 1 && !MustangCarRadioAct.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.ford.MustangCarRadioAct");
-            }
         }
     }
 
@@ -258,10 +246,8 @@ public class Callback_0334_RZC_XP1_Focus2015 extends CallbackCanbusBase {
             if (459086 == DataCanbus.DATA[1000] || 1179982 == DataCanbus.DATA[1000] || 1245518 == DataCanbus.DATA[1000]) {
                 if (power != ints[0]) {
                     power = ints[0];
-                    if (!RuijieAirControlAct_Rzc.mIsFront) {
-                        //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RuijieAirControlAct_Rzc");
-                        jump = true;
-                    }
+                    //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.wc.ruijie15.RuijieAirControlAct_Rzc");
+                    jump = true;
                 }
                 if (jump) {
                     HandlerUI.getInstance().removeCallbacks(this.mDismissFunctionalDrivingInfo1);

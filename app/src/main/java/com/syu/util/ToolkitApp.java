@@ -3,6 +3,8 @@ package com.syu.util;
 import android.SystemProperties;
 import android.view.WindowManager;
 
+import com.android.launcher66.LauncherApplication;
+
 public class ToolkitApp {
     public static WindowManager.LayoutParams buildOverlayLayoutParams(int width, int height) {
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
@@ -11,7 +13,7 @@ public class ToolkitApp {
         lp.width = width;
         lp.height = height;
         lp.format = 1;
-        lp.type = 2014;
+        lp.type = windowType(2014);
         lp.flags = 256;
         lp.flags |= 56;
         lp.gravity = 51;
@@ -25,11 +27,20 @@ public class ToolkitApp {
         lp.width = width;
         lp.height = height;
         lp.format = 1;
-        lp.type = 2006;
+        lp.type = windowType(2006);
         lp.flags = 256;
         lp.flags |= 56;
         lp.gravity = 51;
         return lp;
+    }
+
+    /**
+     * The system window type the FYT code asks for, for the system launcher only: a user app may
+     * add an application overlay at most (with "display over other apps"), else addView throws.
+     */
+    private static int windowType(int systemType) {
+        return LauncherApplication.hasSystemPrivileges()
+                ? systemType : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
     }
 
     public static boolean isScreenPort() {

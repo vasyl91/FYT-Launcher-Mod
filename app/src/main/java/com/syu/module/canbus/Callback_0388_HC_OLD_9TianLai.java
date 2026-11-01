@@ -2,7 +2,6 @@ package com.syu.module.canbus;
 
 import android.os.RemoteException;
 
-import com.syu.carinfo.sbd.x80.TianLai09Act;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -70,9 +69,6 @@ public class Callback_0388_HC_OLD_9TianLai extends CallbackCanbusBase {
             return;
         }
         if (updateCode == 116) {
-            if ((ints[0] == 2 || ints[0] == 1) && !TianLai09Act.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.sbd.x80.TianLai09Act");
-            }
             HandlerCanbus.update(updateCode, ints);
             return;
         }

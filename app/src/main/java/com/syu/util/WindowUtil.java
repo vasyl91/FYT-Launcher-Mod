@@ -10,13 +10,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Choreographer;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -34,14 +37,15 @@ import com.android.launcher66.HomeFrontGuard;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.NotificationListener;
+import com.android.launcher66.PinnedPipFocus;
 import com.android.launcher66.R;
 import com.android.launcher66.Workspace;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.WakeDetection;
 import com.fyt.thread.ThreadManager;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +54,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -353,10 +358,12 @@ public class WindowUtil {
     }
 
     public static void startMapPip(final boolean show) {
+        if (WakeDetection.skipPipWork("startMapPip")) return;
         ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
     }
 
     public static void startMapPip(final boolean show, int millis) {
+        if (WakeDetection.skipPipWork("startMapPip")) return;
         delayMillis = millis;
         ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
     }
@@ -586,7 +593,7 @@ public class WindowUtil {
     }
 
     public static void openPip(boolean show) {
-        if (!LauncherApplication.isFytDevice()) return;
+        if (!LauncherApplication.canHostPips()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
 
@@ -676,12 +683,18 @@ public class WindowUtil {
                                 // Dismiss windowed activity on main thread (existing)
                                 launcher.handler.post(host::dismiss);
                             }
-                            // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
-                            Method getServiceMethod = ActivityManager.class.getMethod("getService");
-                            Object activityManager = getServiceMethod.invoke(null);
-                            Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
-                            Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
-                            setPinnedStackVisibleMethod.invoke(activityManager, false);
+                            // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP.
+                            // FYT's framework only; elsewhere there is no pinned PiP to remove.
+                            if (LauncherApplication.supportsPinnedPip()) {
+                                Method getServiceMethod = ActivityManager.class.getMethod("getService");
+                                Object activityManager = getServiceMethod.invoke(null);
+                                Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
+                                Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
+                                setPinnedStackVisibleMethod.invoke(activityManager, false);
+                                // The focus it kept from the launcher's window is the
+                                // window's again.
+                                PinnedPipFocus.release("pinned stack hidden");
+                            }
                             Log.i(TAG, "openPip() pane: dismissed");
                         } catch (Throwable t) {
                             Log.w(TAG, "openPip() pane: dismiss failed", t);
@@ -756,7 +769,7 @@ public class WindowUtil {
     }
 
     public static void removePip() {
-        if (!LauncherApplication.isFytDevice()) return;
+        if (!LauncherApplication.canHostPips()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         launcher.handler.post(launcher::cancelPipWatchdog);
@@ -819,12 +832,17 @@ public class WindowUtil {
                     // Dismiss windowed activity on main thread (existing)
                     launcher.handler.post(host::dismiss);
                 }
-                // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
-                Method getServiceMethod = ActivityManager.class.getMethod("getService");
-                Object activityManager = getServiceMethod.invoke(null);
-                Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
-                Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
-                setPinnedStackVisibleMethod.invoke(activityManager, false);
+                // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP.
+                // FYT's framework only; elsewhere there is no pinned PiP to remove.
+                if (LauncherApplication.supportsPinnedPip()) {
+                    Method getServiceMethod = ActivityManager.class.getMethod("getService");
+                    Object activityManager = getServiceMethod.invoke(null);
+                    Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
+                    Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
+                    setPinnedStackVisibleMethod.invoke(activityManager, false);
+                    // The focus it kept from the launcher's window is the window's again.
+                    PinnedPipFocus.release("pinned stack hidden");
+                }
                 Log.i(TAG, "removePip() pane: dismissed");
             } catch (Throwable t) {
                 Log.w(TAG, "removePip() pane: dismiss failed", t);
@@ -1075,6 +1093,9 @@ public class WindowUtil {
         return true;
     }
 
+    /** After the last pane of a set is launched, when the swap buttons are asked for again. */
+    private static final long FAB_AFTER_PANES_MS = 300L;
+
     private static void launchNextPane(List<PaneLaunch> queue, int generation) {
         if (paneLaunchCancelled(generation)) return;
         if (queue.isEmpty()) {
@@ -1107,6 +1128,14 @@ public class WindowUtil {
         if (queue.isEmpty()) {
             pendingPaneLaunches = 0;
             PaneFrameMonitor.stop(generation);
+            // openPip() asks for the swap buttons once, a moment after it scheduled the panes,
+            // when they may not be on the screen yet: canShowOverlayFab() then says no and,
+            // with FabOverlayService just stopped by recreateView(), nothing brought the buttons
+            // back. Ask again now that the last pane is launched; a no-op when they are up.
+            Launcher fabLauncher = Launcher.getLauncher();
+            if (fabLauncher != null) {
+                fabLauncher.handler.postDelayed(fabLauncher::showOverlayFab, FAB_AFTER_PANES_MS);
+            }
             return;
         }
         Launcher launcher = Launcher.getLauncher();
@@ -1390,7 +1419,7 @@ public class WindowUtil {
     }
 
     public static void openMultiplePips() {
-        if (!LauncherApplication.isFytDevice()) return;
+        if (!LauncherApplication.canHostPips()) return;
         if (waitForBootBeforeOpening()) return;
         openMultiplePipsNow();
     }
@@ -1434,7 +1463,7 @@ public class WindowUtil {
     }
 
     private static void openMultiplePipsNow() {
-        if (!LauncherApplication.isFytDevice()) return;
+        if (!LauncherApplication.canHostPips()) return;
 
         // Second line of defence. Even with the in-flight claim, two runnables could already be
         // queued on the main handler; building a second WindowHost orphans the first one's windows.
@@ -1677,18 +1706,45 @@ public class WindowUtil {
                 prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
             }
 
+            lastRequestedScrollOffset = scrollOffset;
+
             // Nothing moved since the last frame, so there is nothing to push to any pane.
             // A fling delivers the same offset repeatedly once it settles, and every one of those
             // frames used to walk all five pane types and their window updates.
             if (!forcePipBoundsUpdate && scrollOffset == lastScrollOffset) return;
-            lastScrollOffset = scrollOffset;
+
+            // Where the panes go, before any of them is moved: how many windows that moves decides
+            // on Android 14+ whether they may be moved in this frame.
+            int windows = 0;
+            for (int i = 0; i < SCROLL_PANE_TYPES.length; i++) {
+                String pipType = SCROLL_PANE_TYPES[i];
+                plannedPaneBounds[i] = isPaneTypeOn(pipType)
+                        ? boundsToApply(workspace, pipType, scrollOffset) : null;
+                if (plannedPaneBounds[i] != null && movesWindow(host, pipType)) windows++;
+            }
+
+            // From Android 14 on these moves do not wait for WindowManager, and on the Galaxy A55
+            // they queued up there until the panes were 0.4-0.5 s behind the pages (see
+            // PaneWindows.relayoutIsAsync()). While the pages move, the windows are moved only as
+            // often as WindowManager keeps up with; onPagesSettled() passes the last place on.
+            if (!forcePipBoundsUpdate && pagesMoving && windows > 0
+                    && PaneWindows.relayoutIsAsync(Build.VERSION.SDK_INT)
+                    && !PaneWindows.withinRelayoutBudget(SystemClock.uptimeMillis(),
+                            lastPaneRelayoutMs, windows, PANE_RELAYOUTS_PER_SECOND,
+                            PANE_RELAYOUT_TOLERANCE_MS)) {
+                return; // lastScrollOffset stays as it is: the next frame tries again
+            }
 
             // Update positions for currently visible PiPs without dismissing them
-            if (dualPip)   updatePipPosition(host, workspace, "dual", scrollOffset);
-            if (firstPip)  updatePipPosition(host, workspace, "first", scrollOffset);
-            if (secondPip) updatePipPosition(host, workspace, "second", scrollOffset);
-            if (thirdPip)  updatePipPosition(host, workspace, "third", scrollOffset);
-            if (fourthPip) updatePipPosition(host, workspace, "fourth", scrollOffset);
+            for (int i = 0; i < SCROLL_PANE_TYPES.length; i++) {
+                Rect bounds = plannedPaneBounds[i];
+                if (bounds == null) continue;
+                plannedPaneBounds[i] = null;
+                updatePipBounds(host, SCROLL_PANE_TYPES[i], bounds);
+                lastPipBounds.put(SCROLL_PANE_TYPES[i], bounds);
+            }
+            if (windows > 0) lastPaneRelayoutMs = SystemClock.uptimeMillis();
+            lastScrollOffset = scrollOffset;
 
             forcePipBoundsUpdate = false;
         } catch (Exception e) {
@@ -1699,16 +1755,135 @@ public class WindowUtil {
     /** Last offset actually pushed to the panes; see updatePipPositionsForScroll(). */
     private static int lastScrollOffset = Integer.MIN_VALUE;
 
-    private static void updatePipPosition(WindowHost host, Workspace workspace,
-                                          String pipType, int scrollOffset) {
+    /** Last offset updatePipPositionsForScroll() was asked for, pushed or held back. Main thread. */
+    private static int lastRequestedScrollOffset = Integer.MIN_VALUE;
+
+    /** The pane types updatePipPositionsForScroll() moves, in that order. */
+    private static final String[] SCROLL_PANE_TYPES = {"dual", "first", "second", "third", "fourth"};
+
+    /** Where updatePipPositionsForScroll() moves each of SCROLL_PANE_TYPES in this frame. */
+    private static final Rect[] plannedPaneBounds = new Rect[SCROLL_PANE_TYPES.length];
+
+    /** When pane windows were last moved (uptime); 0 if not yet. Main thread. */
+    private static long lastPaneRelayoutMs;
+
+    /**
+     * How many pane window moves a second WindowManager is given while the pages move, on Android
+     * 14+. The A55 handled 100-150 relayouts a second in all, 7-10 ms each, so one pane is moved at
+     * 60 Hz there (every second frame at 120 Hz) and two at 40 Hz each. A display of 60 Hz moves one
+     * pane on every frame, as before.
+     */
+    private static final int PANE_RELAYOUTS_PER_SECOND = 80;
+    private static final long PANE_RELAYOUT_TOLERANCE_MS = 2L;
+
+    private static boolean isPaneTypeOn(String pipType) {
+        switch (pipType) {
+            case "dual":   return dualPip;
+            case "first":  return firstPip;
+            case "second": return secondPip;
+            case "third":  return thirdPip;
+            case "fourth": return fourthPip;
+            default:       return false;
+        }
+    }
+
+    /** Whether updatePipBounds() moves a window for this pane type: it is shown and not pinned. */
+    private static boolean movesWindow(WindowHost host, String pipType) {
+        switch (pipType) {
+            case "dual":   return host.isDualVisible();
+            case "first":  return host.isFirstVisible() && !firstPipPinned;
+            case "second": return host.isSecondVisible() && !secondPipPinned;
+            case "third":  return host.isThirdVisible() && !thirdPipPinned;
+            case "fourth": return host.isFourthVisible() && !fourthPipPinned;
+            default:       return false;
+        }
+    }
+
+    // What the pane windows did during one scroll of the pages, for one line in the log. Main thread.
+    private static boolean pagesMoving;
+    private static long pagesMovingSinceMs;
+    private static int paneMoves;
+    private static int paneMoveSamples;
+    private static long paneMoveDelaySumNs;
+    private static long paneMoveDelayMaxNs;
+
+    /**
+     * How far to the right a pane window can be seen while the pages move: the display's width,
+     * at least a page; read when they start, as Display.getRealSize() may ask system_server.
+     */
+    private static int paneViewportWidth = Integer.MAX_VALUE;
+
+    /** The pages start to scroll: the count of the pane window moves starts over. */
+    public static void onPagesBeginMoving() {
+        pagesMoving = true;
+        pagesMovingSinceMs = SystemClock.uptimeMillis();
+        paneViewportWidth = readPaneViewportWidth();
+        paneMoves = 0;
+        paneMoveSamples = 0;
+        paneMoveDelaySumNs = 0L;
+        paneMoveDelayMaxNs = 0L;
+    }
+
+    /** When the pages last stopped (uptime), for the pinned PiP's start in the log; 0 if never. */
+    private static long sPagesStoppedUptimeMs;
+
+    private static int readPaneViewportWidth() {
+        try {
+            Workspace workspace = workspace();
+            Display display = workspace != null ? workspace.getDisplay() : null;
+            if (display == null) return Integer.MAX_VALUE; // only what is left of the screen is skipped
+            Point size = new Point();
+            display.getRealSize(size);
+            return Math.max(size.x, workspace.getViewportWidth());
+        } catch (RuntimeException e) {
+            return Integer.MAX_VALUE;
+        }
+    }
+
+    /** The pages have settled. */
+    public static void onPagesSettled() {
+        sPagesStoppedUptimeMs = SystemClock.uptimeMillis();
+        if (!pagesMoving) return;
+        pagesMoving = false;
+        // A move held back for WindowManager would otherwise never come: the frames stop with the
+        // pages. Not moving any more, it is not held back again.
+        if (lastRequestedScrollOffset != lastScrollOffset
+                && lastRequestedScrollOffset != Integer.MIN_VALUE) {
+            updatePipPositionsForScroll(lastRequestedScrollOffset);
+        }
+        if (paneMoves == 0) return;
+        final long durationMs = SystemClock.uptimeMillis() - pagesMovingSinceMs;
+        final float avgMs = paneMoveSamples == 0 ? 0f : paneMoveDelaySumNs / 1e6f / paneMoveSamples;
+        Log.d(TAG, "pane moves: " + paneMoves + " in " + durationMs + " ms, move to pane frame avg "
+                + String.format(Locale.US, "%.1f", avgMs) + " ms, max "
+                + String.format(Locale.US, "%.1f", paneMoveDelayMaxNs / 1e6f) + " ms");
+    }
+
+    /**
+     * From the pane window's own pre-draw: the time from the request to move it to its next pass.
+     * That is how far a pane is behind the page it should be under, apart from what WindowManager
+     * adds when it applies the position.
+     */
+    static void recordPaneMoveLatency(long ns) {
+        if (!pagesMoving) return;
+        paneMoveSamples++;
+        paneMoveDelaySumNs += ns;
+        if (ns > paneMoveDelayMaxNs) paneMoveDelayMaxNs = ns;
+    }
+
+    /**
+     * The bounds the pane of this type gets at this scroll; null if it keeps the ones it has: the
+     * same, or beside the viewport before and after at the same size (PaneWindows.staysOffScreen()).
+     */
+    private static Rect boundsToApply(Workspace workspace, String pipType, int scrollOffset) {
         String screenKey = getScreenKeyForType(pipType);
         int pipHomeScreen = prefs.getInt(screenKey, 1) - 1;
 
         CellLayout pipHomeCellLayout = (CellLayout) workspace.getChildAt(pipHomeScreen);
-        if (pipHomeCellLayout == null) return;
+        if (pipHomeCellLayout == null) return null;
 
         int[] basePos = pipHomeCellLayout.getPipPlaceholderPosition(pipType);
-        if (basePos == null) return;
+        if (basePos == null) return null;
 
         int pageWidth = workspace.getViewportWidth();
         savePlaceholderPosition(pipType, pipHomeScreen, basePos, pageWidth);
@@ -1726,12 +1901,18 @@ public class WindowUtil {
         // If the new bounds are identical to the previously applied ones,
         // skip the update to avoid unnecessary IPC operations.
         Rect last = lastPipBounds.get(pipType);
-        if (!forcePipBoundsUpdate && last != null && last.equals(bounds)) {
-            return;
+        if (!forcePipBoundsUpdate && last != null) {
+            if (last.equals(bounds)) return null;
+            // Beside the viewport and staying there: the move would show nothing. On the A55 a pane
+            // one page further (Fourth) took a third of a swipe's relayouts that way.
+            // Only while the pages move, against the display's width read when they started.
+            boolean sameSize = last.width() == bounds.width() && last.height() == bounds.height();
+            if (pagesMoving && PaneWindows.staysOffScreen(last.left, last.right, bounds.left,
+                    bounds.right, sameSize, paneViewportWidth)) {
+                return null;
+            }
         }
-
-        updatePipBounds(host, pipType, bounds);
-        lastPipBounds.put(pipType, new Rect(bounds));
+        return bounds;
     }
 
     private static void updatePipBounds(WindowHost host, String pipType, Rect bounds) {
@@ -1740,26 +1921,31 @@ public class WindowUtil {
                 case "dual":
                     if (host.isDualVisible()) {
                         host.updateDualBounds(bounds);
+                        paneMoves++;
                     }
                     break;
                 case "first":
                     if (host.isFirstVisible() && !firstPipPinned) {
                         host.updateFirstBounds(bounds);
+                        paneMoves++;
                     }
                     break;
                 case "second":
                     if (host.isSecondVisible() && !secondPipPinned) {
                         host.updateSecondBounds(bounds);
+                        paneMoves++;
                     }
                     break;
                 case "third":
                     if (host.isThirdVisible() && !thirdPipPinned) {
                         host.updateThirdBounds(bounds);
+                        paneMoves++;
                     }
                     break;
                 case "fourth":
                     if (host.isFourthVisible() && !fourthPipPinned) {
                         host.updateFourthBounds(bounds);
+                        paneMoves++;
                     }
                     break;
             }
@@ -1972,8 +2158,44 @@ public class WindowUtil {
     // PINNED PIP
     // =====================================================================================
 
+    /** When the pinned PiP app was last started (uptime); 0 if never. Main thread. */
+    private static long sPinnedStartUptimeMs;
+
+    /** Whether the app's process was not running at that start. Main thread. */
+    private static boolean sPinnedColdStart;
+
+    /**
+     * How long after a cold start the pinned PiP app is left alone by removePinnedPip(): the
+     * process is bound 0.32 s after the start (log A) and the activity resumes after that. A warm
+     * start is not waited for, see PinnedPipLaunch.hideMustWait(): waiting for it as well kept the
+     * PiP on the screen 0.7-0.8 s into the swipe away (log 27-10-2026 23:55).
+     */
+    private static final long PINNED_START_SETTLE_MS = 1500L;
+
+    /** When the launcher last force-stopped the pinned PiP app itself (uptime); 0 if never. */
+    private static volatile long sOwnForceStopUptimeMs;
+
+    /**
+     * How long after the launcher's own force-stop a com.lsec.pipdie is taken for the answer to it.
+     * It came 0.03-0.3 s after it (log 27-10-2026 23:31: 32.556 to 32.588, 16.650 to 16.804,
+     * 23.349 to 23.633).
+     */
+    private static final long OWN_FORCE_STOP_PIPDIE_MS = 2000L;
+
+    /**
+     * Whether a com.lsec.pipdie arriving now answers the launcher's own force-stop of the pinned PiP
+     * app rather than an app that died by itself. FYT's framework sends it for both.
+     */
+    public static boolean pipDieFromOwnForceStop() {
+        return PinnedPipLaunch.answersOwnForceStop(SystemClock.uptimeMillis(), sOwnForceStopUptimeMs,
+                OWN_FORCE_STOP_PIPDIE_MS);
+    }
+
     public static void openPinnedPip() {
-        if (!LauncherApplication.isFytDevice()) return;
+        if (WakeDetection.skipPipWork("openPinnedPip")) return;
+        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): every FYT platform
+        // but the 7870, see PinnedPip and LauncherApplication.supportsPinnedPip().
+        if (!LauncherApplication.supportsPinnedPip()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         suppressMediaSourceSwitch();
@@ -2021,6 +2243,21 @@ public class WindowUtil {
             if (fourthPip && fourthPipPinned && isPipPackageInstalled(fourthPkg)) {
                 openAsPinnedPip(fourthPkg, Keys.PIP_FOURTH_KEY, Keys.PIP_FOURTH_SCREEN);
             }            
+        } else {
+            // This gate used to give up without a word. When the pinned PiP does not come back, the
+            // line says which part of it held (log A: topApp() false after the stack was hidden).
+            Log.d(TAG, "openPinnedPip(): skipped, allowPip=" + launcher.allowPip
+                    + " topApp=" + Utils.topApp()
+                    + " inWidgets=" + helpers.isInWidgets()
+                    + " inAllApps=" + helpers.isInAllApps()
+                    + " inOverview=" + helpers.isInOverviewMode()
+                    + " firstPreferenceWindow=" + helpers.isFirstPreferenceWindow()
+                    + " wallpaperWindow=" + helpers.isWallpaperWindow()
+                    + " tabHost=" + (launcher.mAppsCustomizeTabHost != null)
+                    + " allAppsVisible=" + (launcher.mAppsCustomizeTabHost != null
+                            && helpers.allAppsVisibility(launcher.mAppsCustomizeTabHost.getVisibility()))
+                    + " listOpen=" + helpers.isListOpen()
+                    + " wasInRecents=" + helpers.userWasInRecents());
         }
     }
 
@@ -2028,10 +2265,10 @@ public class WindowUtil {
         if (prefs == null) {
             prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
         }
-        firstPipPinned = prefs.getBoolean(Keys.PIP_FIRST_MODE, false);
-        secondPipPinned = prefs.getBoolean(Keys.PIP_SECOND_MODE, false);
-        thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
-        fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+        firstPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FIRST_MODE);
+        secondPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_SECOND_MODE);
+        thirdPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE);
+        fourthPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE);
         return firstPipPinned || secondPipPinned || thirdPipPinned || fourthPipPinned;
     }
 
@@ -2051,7 +2288,7 @@ public class WindowUtil {
             helpers = new Helpers();
         }
 
-        SystemProperties.set("persist.syu.launcher.haspip", "true");
+        setPersistentProperty("persist.syu.launcher.haspip", "true");
 
         if (currentScreen == pipScreen && launcher.mAppsCustomizeTabHost != null
                 && !helpers.allAppsVisibility(launcher.mAppsCustomizeTabHost.getVisibility())) {
@@ -2060,7 +2297,26 @@ public class WindowUtil {
                 Log.i(TAG, "reassertLauncherTop() started for stealer in pinned PiP");
                 reassertLauncherTop();
             }
-            if (!packageName.equals(currentPackage) || checkIfMapSizeChanged(pipKey)) {
+            boolean packageChanged = !packageName.equals(currentPackage);
+            boolean sizeChanged = checkIfMapSizeChanged(pipKey);
+            // The app may still have a task on another display (a window pane's retired
+            // ActivityView, say). FYT's framework then moves that task to the default display full
+            // screen instead of making a pinned stack, so the app is restarted first. Asked only
+            // when nothing else already restarts it: it is a binder call.
+            ActivityManager.RunningTaskInfo strayTask = null;
+            boolean inWindowPane = false;
+            if (!packageChanged && !sizeChanged) {
+                strayTask = taskOutsidePinnedStack(packageName);
+                inWindowPane = strayTask != null && isShownInWindowPane(packageName);
+            }
+            if (PinnedPipLaunch.needsRestart(packageChanged, sizeChanged, strayTask != null,
+                    inWindowPane)) {
+                if (strayTask != null) {
+                    Log.i(TAG, "openAsPinnedPip(" + packageName + "): task " + strayTask.id
+                            + " outside the pinned stack (display "
+                            + DefaultDisplayTask.displayId(strayTask) + ", mode "
+                            + DefaultDisplayTask.windowingMode(strayTask) + "), restarting it first");
+                }
                 // save previous values
                 editor.putInt("prevPinnedPipTopLeftX", prefs.getInt(pipKey + "TopLeftX", 107));  
                 editor.putInt("prevPinnedPipTopLeftY", prefs.getInt(pipKey + "TopLeftY", 57));  
@@ -2069,29 +2325,106 @@ public class WindowUtil {
                 editor.apply();
 
                 setPinnedPipBounds(pipKey, screenKey);         
-                SystemProperties.set("persist.launcher.packagename", packageName);
+                setPersistentProperty("persist.launcher.packagename", packageName);
                 AppPackageName = packageName; 
-                restartPinnedPipApp();
+                forceStopPinnedPipApp();
                 
                 launcher.handler.postDelayed(() -> startPinnedPip(packageName), 1000);
             } else {
+                if (strayTask != null) {
+                    Log.i(TAG, "openAsPinnedPip(" + packageName + "): task " + strayTask.id
+                            + " outside the pinned stack, also shown in a window pane, not restarted");
+                }
                 setPinnedPipBounds(pipKey, screenKey);         
-                SystemProperties.set("persist.launcher.packagename", packageName);
+                setPersistentProperty("persist.launcher.packagename", packageName);
                 AppPackageName = packageName; 
                 startPinnedPip(packageName); 
             }
         }
     }
 
+    /**
+     * What keeps the pinned PiP from being started right now, for the log; null if nothing does.
+     * Main thread.
+     */
+    private static String startBlocker() {
+        final Launcher launcher = Launcher.getLauncher();
+        Workspace workspace = workspace();
+        if (launcher == null || workspace == null || prefs == null || helpers == null) return null;
+        int pipScreen = prefs.getInt(Keys.PINNED_PIP_SCREEN, 1) - 1;
+        boolean allAppsVisible = launcher.mAppsCustomizeTabHost != null
+                && helpers.allAppsVisibility(launcher.mAppsCustomizeTabHost.getVisibility());
+        if (PinnedPipLaunch.mayStartNow(workspace.isPageMoving(), workspace.getCurrentPage(),
+                pipScreen, allAppsVisible)) {
+            return null;
+        }
+        if (workspace.isPageMoving()) return "pages moving";
+        if (workspace.getCurrentPage() != pipScreen) return "not on page " + (pipScreen + 1);
+        return "all apps open";
+    }
+
+    /** A task of the package outside the pinned stack; null if there is none or it cannot be told. */
+    private static ActivityManager.RunningTaskInfo taskOutsidePinnedStack(String packageName) {
+        try {
+            ActivityManager am = (ActivityManager) LauncherApplication.sApp
+                    .getSystemService(Context.ACTIVITY_SERVICE);
+            return am != null ? DefaultDisplayTask.taskOutsidePinnedStack(am, packageName) : null;
+        } catch (RuntimeException e) {
+            Log.w(TAG, "taskOutsidePinnedStack(" + packageName + ") failed: " + e);
+            return null;
+        }
+    }
+
+    /**
+     * Whether a PiP slot that is on and shown as a window (not pinned) has this package. Read from
+     * the preferences, where firstPkg and secondPkg come from as well, so the answer is current.
+     */
+    private static boolean isShownInWindowPane(String packageName) {
+        return PinnedPipLaunch.shownInWindowPane(packageName,
+                new boolean[]{prefs.getBoolean(Keys.PIP_FIRST, false), prefs.getBoolean(Keys.PIP_SECOND, false),
+                        prefs.getBoolean(Keys.PIP_THIRD, false), prefs.getBoolean(Keys.PIP_FOURTH, false)},
+                new boolean[]{LauncherApplication.isPinnedMode(prefs, Keys.PIP_FIRST_MODE),
+                        LauncherApplication.isPinnedMode(prefs, Keys.PIP_SECOND_MODE),
+                        LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE),
+                        LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE)},
+                new String[]{prefs.getString(Keys.PIP_FIRST_PACKAGE, ""), prefs.getString(Keys.PIP_SECOND_PACKAGE, ""),
+                        prefs.getString(Keys.PIP_THIRD_PACKAGE, ""), prefs.getString(Keys.PIP_FOURTH_PACKAGE, "")});
+    }
+
     private static void startPinnedPip(String packageName) {
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         Intent intent = FytPackage.getIntent(LauncherApplication.sApp, packageName);
+        if (intent == null) return;
         intent.putExtra("force_pip", true);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         SystemProperties.set("sys.lsec.force_pip", "true");
         if (intent.resolveActivity(LauncherApplication.sApp.getPackageManager()) != null) {
-            launcher.handler.postDelayed(() -> LauncherApplication.sApp.startActivity(intent), 100);
+            // Asked now, within the 100 ms below rather than on top of them: a binder call.
+            final boolean coldStart = !WindowHostActivityView.isProcessAlive(LauncherApplication.sApp,
+                    packageName);
+            launcher.handler.postDelayed(() -> {
+                // Looked at when the start is due, not when it was asked for: the pages may have
+                // been swiped since (a restart waits a second first). onPageEndMoving() asks again.
+                String blocker = startBlocker();
+                if (blocker != null) {
+                    Log.i(TAG, "startPinnedPip(" + packageName + "): not started (" + blocker
+                            + "), left to onPageEndMoving");
+                    return;
+                }
+                // The newer start wins over a hide that was put off after the previous one.
+                launcher.handler.removeCallbacks(sHideAfterStart);
+                sPinnedStartUptimeMs = SystemClock.uptimeMillis();
+                sPinnedColdStart = coldStart;
+                try {
+                    LauncherApplication.sApp.startActivity(intent);
+                    Log.i(TAG, "startPinnedPip(" + packageName + "): " + (coldStart ? "cold" : "warm")
+                            + " start, " + (sPinnedStartUptimeMs - sPagesStoppedUptimeMs)
+                            + " ms after the pages last stopped");
+                } catch (RuntimeException e) {
+                    Log.w(TAG, "startPinnedPip(" + packageName + ") failed: " + e);
+                }
+            }, 100);
         }  
         checkIfOpenedOnTheRightScreen(500);
         checkIfOpenedOnTheRightScreen(1500);
@@ -2113,7 +2446,7 @@ public class WindowUtil {
     }
 
     public static void restartPinnedPipApp() {
-        if (!LauncherApplication.isFytDevice()) return;
+        if (!LauncherApplication.canHostPips()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
         final WindowHost host = host();
@@ -2123,6 +2456,24 @@ public class WindowUtil {
                 setHost(null);
             });
         }
+        // The panes above are rebuilt everywhere; the pinned PiP app below exists on the
+        // com.syu.music units only.
+        if (!LauncherApplication.supportsPinnedPip()) return;
+        forceStopPinnedPipApp();
+    }
+
+    /**
+     * Force-stops the pinned PiP app, so that its next force_pip start makes a fresh pinned stack.
+     * What openAsPinnedPip() calls: the window panes are not its business. Within openPip() they
+     * are dismissed and built again anyway, but openAsPinnedPip() also runs from onPageEndMoving()
+     * and the app list, where nothing builds them again, and restartPinnedPipApp()'s cleanup left
+     * them gone (log 27-10-2026 23:31: removed at 23.430, and the openPip() com.lsec.pipdie brings
+     * found pipsAdded() still true at 23.914).
+     *
+     * <p>The time is noted for the com.lsec.pipdie the death brings: the launcher stays on its page
+     * for it, see pipDieFromOwnForceStop().
+     */
+    private static void forceStopPinnedPipApp() {
         if (AppPackageName != null && !AppPackageName.isEmpty()) {
             if (FytPackage.GMAPS.equals(AppPackageName)) {
                 Log.i(TAG, "restartPinnedPipApp: skip force-stop for Google Maps");
@@ -2131,11 +2482,13 @@ public class WindowUtil {
             ActivityManager activityManager = (ActivityManager) LauncherApplication.sApp.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
             HomeFrontGuard.expectSystemLaunch(LauncherApplication.sApp,
                     Collections.singleton(AppPackageName), "pinned PiP restart");
+            sOwnForceStopUptimeMs = SystemClock.uptimeMillis();
             try {
                 Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
                 forceStopPackage.setAccessible(true);
                 forceStopPackage.invoke(activityManager, AppPackageName);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            } catch (ReflectiveOperationException | RuntimeException e) {
+                // Also the standard version's: FORCE_STOP_PACKAGES is the system's
                 Log.e(TAG, "restartPinnedPipApp() failed: " + e);
             }
         }
@@ -2159,23 +2512,60 @@ public class WindowUtil {
     }
 
     public static void removePinnedPip() {
-        if (!LauncherApplication.isFytDevice()) return;
+        // Pinned PiP relies on FYT's framework (setPinnedStackVisible & co.): every FYT platform
+        // but the 7870, see PinnedPip and LauncherApplication.supportsPinnedPip().
+        if (!LauncherApplication.supportsPinnedPip()) return;
         if (prefs == null) {
             prefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp); 
         }
         boolean userLayout  = prefs.getBoolean(Keys.USER_LAYOUT, false);
         if (userLayout) {
-            try {
-                // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
-                Method getServiceMethod = ActivityManager.class.getMethod("getService");
-                Object activityManager = getServiceMethod.invoke(null);
-                Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
-                Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
-                setPinnedStackVisibleMethod.invoke(activityManager, false);
-                Log.i(TAG, "removePinnedPip() pane: dismissed");
-            } catch (Throwable t) {
-                Log.w(TAG, "removePinnedPip() pane: dismiss failed", t);
+            long now = SystemClock.uptimeMillis();
+            final Launcher launcher = Launcher.getLauncher();
+            if (launcher != null && PinnedPipLaunch.hideMustWait(sPinnedColdStart, now,
+                    sPinnedStartUptimeMs, PINNED_START_SETTLE_MS)) {
+                // Hidden before its activity has resumed, the stack leaves the launcher without a
+                // resumed top (log A: forcehidden:true 0.3 s after a cold start, "Trying to pause
+                // when nothing is resumed"). One hide for all callers, once the app has had its time.
+                long hideAt = sPinnedStartUptimeMs + PINNED_START_SETTLE_MS;
+                launcher.handler.removeCallbacks(sHideAfterStart);
+                launcher.handler.postAtTime(sHideAfterStart, hideAt);
+                Log.i(TAG, "removePinnedPip(): the pinned app is still starting, hidden in "
+                        + (hideAt - now) + " ms");
+                return;
             }
+            hidePinnedStackNow();
+        }
+    }
+
+    /** The hide that removePinnedPip() put off until the pinned app has had time to resume. */
+    private static final Runnable sHideAfterStart = WindowUtil::hidePinnedStackNow;
+
+    private static void hidePinnedStackNow() {
+        try {
+            // Get and call the setPinnedStackVisible(false) method via reflection to remove pinned PiP
+            Method getServiceMethod = ActivityManager.class.getMethod("getService");
+            Object activityManager = getServiceMethod.invoke(null);
+            Class<?> activityManagerClass = Class.forName("android.app.IActivityManager");
+            Method setPinnedStackVisibleMethod = activityManagerClass.getMethod("setPinnedStackVisible", boolean.class);
+            setPinnedStackVisibleMethod.invoke(activityManager, false);
+            // The focus it kept from the launcher's window is the window's again.
+            PinnedPipFocus.release("pinned stack hidden");
+            Log.i(TAG, "removePinnedPip() pane: dismissed");
+        } catch (Throwable t) {
+            Log.w(TAG, "removePinnedPip() pane: dismiss failed", t);
+        }
+    }
+
+    /**
+     * SystemProperties.set() of a persist.* property, left out when it holds the value already.
+     * init writes the file of the persistent properties again for every set of one, also with the
+     * same value, and the caller waits for that: openAsPinnedPip() set two of them, unchanged, on
+     * every return to the PiP's page, before its start.
+     */
+    private static void setPersistentProperty(String key, String value) {
+        if (!value.equals(SystemProperties.get(key, ""))) {
+            SystemProperties.set(key, value);
         }
     }
 
@@ -2237,8 +2627,8 @@ public class WindowUtil {
             secondPip       = prefs.getBoolean(Keys.PIP_SECOND, false);
             thirdPip        = prefs.getBoolean(Keys.PIP_THIRD, false);
             fourthPip       = prefs.getBoolean(Keys.PIP_FOURTH, false);
-            thirdPipPinned  = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
-            fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+            thirdPipPinned  = LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE);
+            fourthPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE);
 
             int covers = coverForRightAndFourthSwap() + coverForLeftAndThirdSwap();
 
@@ -2369,7 +2759,7 @@ public class WindowUtil {
             dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
             firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
             thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
-            thirdPipPinned = prefs.getBoolean(Keys.PIP_THIRD_MODE, false);
+            thirdPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_THIRD_MODE);
 
             coverForLeftAndThirdSwap();
 
@@ -2659,7 +3049,7 @@ public class WindowUtil {
             dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
             secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
             fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
-            fourthPipPinned = prefs.getBoolean(Keys.PIP_FOURTH_MODE, false);
+            fourthPipPinned = LauncherApplication.isPinnedMode(prefs, Keys.PIP_FOURTH_MODE);
 
             coverForRightAndFourthSwap();
 

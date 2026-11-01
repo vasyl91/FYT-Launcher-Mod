@@ -2,9 +2,15 @@
 
 **Launcher Mod has been tested on Android 10 with a 2000x1200 resolution, as this is the only FYT device I own.**
 
-It should work with all resolutions on Android 8 through 16, provided you install it as a privileged/system app. Depending on the FYT brand, Android 12+ might not allow you to install the app with `android:sharedUserId="android.uid.system"` without root access or the proper platform keystore. This is a fundamental security restriction that cannot be bypassed. In that case, you can use the non-privileged phone version (keep in mind that the multiple-PiP feature won't work without system privileges — standard PiP should still work, but only on FYT devices) — this version was tested on a phone running Android 16.
+It should work with all resolutions on Android 8 through 16 (see [Supported devices](#supported-devices)), as the FYT version (a system app) on FYT units, or as the standard version (a user app) on any device.
 
-IMPORTANT: Note that some FYT devices do not support pinned PiP on the main screen. You can still use the launcher, but you'll have to turn off PiP in the launcher's settings (otherwise Google Maps will pop up every time you try to open the home page — if this happens, wipe the launcher's data or reinstall it).
+The FYT version declares `android:sharedUserId="android.uid.system"`, so it runs as the system itself (uid 1000). Android accepts that only from an APK signed with the same platform key as the firmware, and this one is signed with the public AOSP test key, which FYT firmware is built with. A firmware signed with its own platform key refuses it (`INSTALL_FAILED_SHARED_USER_INCOMPATIBLE`), whatever its Android version and whether it is rooted or not: the check is the signature, not a permission root could grant. On such a unit, and on any other device, use the standard version (see [Versions and updates](#versions-and-updates)): it gets the privileges it needs from root through the [FYT VDHost](vdhost/README.md) Magisk module, or from Shizuku without root. The PiPs work in it as windows, and pinned PiP works on the FYT units except the 7870 (recognised by the chipset) as in the FYT version. It is not offered on the 7870.
+
+The check is the key, not the brand: some custom ROMs (unofficial builds in particular) are made with the same public AOSP test key, and the FYT version installs there as a system app too. It then works as on an FYT unit wherever the system is all it needs (the PiPs, the Baseline Profile, the status bar swipe area, the boot autostart, the full logcat), while what only an FYT unit has (pinned PiP, radio, CAN bus, FYT's music and navigation sources, skins) stays off: the launcher sees it is not on one. A ROM signed with its own platform key would need the launcher built and signed with that key, which only the ROM's maintainer has. **No such build exists yet**: on these ROMs use the standard version.
+
+Both versions are the same app (`com.android.launcher66`), but Android does not let an update change the shared user id: the FYT version has to be uninstalled before installing the standard one, and the other way round (this wipes the launcher's data).
+
+IMPORTANT: Note that some FYT devices do not support pinned PiP on the main screen. On the 7870 (recognised by the chipset) the launcher does not offer it at all: every PiP is a window there. You can still use the launcher, but you'll have to turn off PiP in the launcher's settings (otherwise Google Maps will pop up every time you try to open the home page — if this happens, wipe the launcher's data or reinstall it).
 
 [XDA Forums thread](https://xdaforums.com/t/reverse-engineered-launcher-for-fyt-7862-8581.4702542/)
 
@@ -38,7 +44,24 @@ For the first installation, download `installer.zip`, unpack it onto a FAT32-for
 
 If installation doesn't start automatically, please try other USB ports. If it still doesn't start regardless of the USB port, it means either your device is not an FYT device, or it is an FYT device but runs Android 12 or higher (some brands don't allow installing apps via scripts from a USB drive).
 
-Following this method is important because it installs the launcher as a privileged/system app, which is essential for it to work properly. 
+This method installs the FYT version as a privileged system app, in place of the stock launcher: install it this way the first time. Where the script cannot run, or the firmware refuses the FYT version (see above), install the standard version like any other APK and give it root with the [FYT VDHost](vdhost/README.md) Magisk module or start Shizuku.
+
+<a id="supported-devices"></a>**Supported devices:**
+
+| Android | Installed as | Privileges from | Multiple PiPs | Pinned PiP | Tested |
+|---|---|---|---|---|---|
+| 8–9 | FYT version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ➖ |
+| 10 | FYT version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ✅ FYT unit, 2000x1200 |
+| 11–16 | FYT version | the system (uid 1000) | ✅ the launcher's own virtual displays | ✅ | ➖ |
+| 8–10 | standard version | root ([FYT VDHost](vdhost/README.md) module) or Shizuku | ✅ virtual displays through the module or Shizuku | ✅ on FYT units except the 7870 | ➖ |
+| 11–16 | standard version | root ([FYT VDHost](vdhost/README.md) module) | ✅ virtual displays through the module | ✅ on FYT units except the 7870 | ✅ Android 14, Xiaomi Redmi Note 8T |
+| 11–16 | standard version | Shizuku | ✅ virtual displays through Shizuku ¹ | ✅ on FYT units except the 7870 | ✅ Android 16, Samsung Galaxy A55 |
+| 8–16 | standard version | none | ❌ | ✅ on FYT units except the 7870 | ➖ |
+| 8–16 | FYT version on a non-FYT ROM made with the AOSP test key | the system (uid 1000) | ✅ as the FYT version on the same Android | ❌ FYT units only (not the 7870) | ➖ |
+
+¹ Apps that protect their content (`FLAG_SECURE`: video streaming, banking) show black in a PiP, and the PiPs come up only once Shizuku has started (about half a minute after a boot, longer if it waits for Wi-Fi).
+
+Without system privileges, root or Shizuku the launcher itself works everywhere; what needs them (the multiple PiPs, the status bar swipe area, the boot autostart, the full logcat) is hidden or does nothing.
 
 ---
 
@@ -48,7 +71,7 @@ Most FYT ROMs offer two ways of displaying apps on the launcher's screen. The mo
 The only reliable way I've found to prevent Google Maps from switching to its minimal UI requires root, LSPosed, and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/latest). It successfully forces the app to keep its full UI inside FYT's Picture-in-Picture mode (remember to select Google Maps in the LSPosed "Enable module" section).
 Check out this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always make a full backup (AllAppUpdate.bin, config.txt, etc.) before flashing anything!
 
-The second method, related to the modified Android ActivityView class, displays apps in windowed mode as they normally appear. This doesn't affect the layout and doesn't require root. The multiple-PiP feature uses this method.
+The second method displays apps in windowed mode as they normally appear: through Android's hidden ActivityView class (FYT version on Android 8–10; FYT did not modify it), otherwise through the launcher's own virtual displays. This doesn't affect the layout and needs no root in the FYT version. The multiple-PiP feature uses this method.
 
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
@@ -116,9 +139,63 @@ The second method, related to the modified Android ActivityView class, displays 
 
 ---
 
+## Baseline Profiles
+
+A Baseline Profile lists the code the launcher runs when it starts and in everyday use (pages, widgets, bars, PiPs), so that Android compiles it ahead of time instead of interpreting it at every start. It is generated with the [`:baselineprofile`](baselineProfile/README.md) module and ships inside every release APK. It is one file for both versions, which run the same code.
+
+Android compiles it by itself only during idle maintenance (screen off, charging, long inactivity), which a head unit in a car practically never reaches. The launcher therefore does it itself, in the background and without restarting:
+
+1. **After installing:** 90 s after the first start of a new APK, the profile is applied and the launcher compiled with it (`speed-profile`). The compiled code is used from the next launcher start.
+2. **Usage refreshes:** meanwhile Android records the code your own setup uses in the same profile. The launcher is compiled again with it after 3, 14 and 30 days, each time once it has had at least 5, 10 and 10 sessions (a device restart, a wake-up from sleep, or a launcher restart at least 3 minutes after the previous session).
+
+Its state and two resets (the refresh schedule only, or everything back to the profile in the APK) are in the launcher's settings.
+
+| Installed as | Android | After installing | Usage refreshes | Reset | Compiled by |
+|---|---|---|---|---|---|
+| FYT version (system app) | 8–16 | ✅ | ✅ | ✅ | Android's package manager, asked by the launcher itself (uid 1000) |
+| Standard version + [FYT VDHost](vdhost/README.md) module (root) | 8–16 | ✅ | ✅ | ✅ | the module's daemon (uid 1000) |
+| Standard version + Shizuku | 8–16 | ✅ | ✅ | ✅ ¹ | Shizuku's service, as `adb shell cmd package compile -m speed-profile -f` would |
+| Standard version, no root, no Shizuku | 8–16 | ❌ ² | ❌ ² | ❌ | – |
+| Debug build (any version) | 8–16 | ❌ ³ | ❌ ³ | ❌ | – |
+
+¹ On Android 8–13 Shizuku may not clear the recorded data: the profile from the APK is applied again on top of it.<br>
+² Android's own idle maintenance applies the profile one day.<br>
+³ Debug builds carry no Baseline Profile.
+
+**Generating a new profile** (for developers, after larger code changes; see [baselineProfile/README.md](baselineProfile/README.md)) takes one test device, an FYT unit (FYT version) or any other device (standard version), connected over ADB:
+
+| Android on the test device | Generating a profile |
+|---|---|
+| 8 | ❌ Macrobenchmark needs Android 9+ |
+| 9–12 | ✅ with root (Magisk, root allowed for Shell) |
+| 13–16 | ✅ without root |
+
+---
+
+## Versions and updates
+
+Every release comes in two versions:
+
+| File | Version | Where |
+|---|---|---|
+| `fyt_release_<version>.apk` | FYT version | FYT units only. A system app (signed with the platform key, `android:sharedUserId="android.uid.system"`), installed with `installer.zip`. |
+| `standard_release_<version>.apk` | Standard version (called "phone" up to 1.2.1) | Any other Android 8+ device: phones, tablets, other head units. A user app; the privileged features come from the [FYT VDHost](vdhost/README.md) Magisk module (root) or Shizuku. |
+
+The launcher's settings show which one is installed, under its version (e.g. "Release build · FYT version").
+
+**Built-in update.** The updater downloads its own version's file (`fyt_release_` or `standard_release_` + the version) from the [latest release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest). A debug build is offered the release of the same or a newer version, to install over it ("Press here to download and install release version …").
+
+Versions up to 1.2.1 download `update<version>.apk` instead, whichever version they are. So that they still find their update, every release also carries the FYT version under that name: the [Release assets](.github/workflows/release-assets.yml) workflow adds it by itself when a release is published. It waits up to 10 minutes for `fyt_release_<version>.apk`, if the files are uploaded after publishing; otherwise run it by hand (Actions → Release assets → Run workflow, with the tag). A standard ("phone") 1.2.1 would download the FYT version and fail to install it: it has to be updated to the standard version by hand once.
+
+Releases are tagged `v<version>` (e.g. `v1.2.2`): the updater reads the version from the tag.
+
+---
+
 ## Fuel statistics
 
-To get it working, you have to find the CAN bus codes. Without them, the enabled widget will show 0 by default. You can do this with the help of the CAN bus logging tool (check the guide in the launcher's settings) or look for the codes manually in the source code as described below.
+To get it working, you have to find the CAN bus codes. Without them, the enabled widget will show 0 by default. The easiest way is the Canbus reader (Settings > Layout creator > Canbus reader, check the guide there): it records every code your unit sends for a few minutes while you drive and, at the beginning of the file, **guesses** which codes are the fuel consumption, the range, the RPM and the speed. The guesses may be wrong, but they tell you where to look. Codes that only ever sent 0 are left out of the file (a switch in the reader settings; the header says how many), the add-on codes 500-559 of the RZC CAN boxes are named, and if a code carries the raw frames of the CAN box (recognised by what it holds, not by its number), they are decoded in a section of their own, with the fields that equal an ordinary code marked. The reader sends your car no random commands. The other way is to look for the codes manually in the source code, as described below.
+
+Most CAN boxes send the fuel consumption and the range on their own. Only some wait for a request, the one the original fuel screen of the CAN bus app sends when it opens (`cmdInt` and `cmdArr`, see step 8). The launcher knows such cars from its **canbus library**: for them (and only for them) the *Canbus codes* window shows the cmdInt / cmdArr fields, and leaving them empty sends the requests of the car's first fuel screen. A car that is not in the library gets no request at all. The library also knows the **fuel and range codes** of many cars: while the *Fuel* and *Range* fields of the *Canbus codes* window are empty (or 0), the code of the library is used and shown as the hint. A code you type always wins. Which code is right depends on your canbus app, so a library built from your own `com.syu.canbus` can differ from the built-in one. If your car is missing or is newer than the library, build a library from your own decompiled `com.syu.canbus` (steps 10-12 below) with [`canbus_library/build_canbus_library.bat`](canbus_library/README.md) and import it in the launcher.
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_stats.gif)
 
@@ -205,6 +282,8 @@ That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexAct
 
     `Fuel: 102, Range: 103, cmdInt: 70, cmdArr: 51`
 
+    The cmdInt / cmdArr fields are shown only for the cars that need a request (the library knows them), and this car is one of them; the example is here to show what they mean. For such a car you can leave them empty. A car whose request has two numbers is written with a comma, e.g. `74,3`.
+
  If you have trouble identifying these codes, look in the containing folder for a file that holds the general code list for that particular car (it might NOT be available for every car! In my case, it's [`com.syu.carinfo.rzc.biaozhi408.Const_RZC4_PSA_ALL_DATA.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/Const_RZC4_PSA_ALL_DATA.java)).
 
 9. If the widget still shows `0.0 L/100Km` and `0 Km`, or the readings are bizarre and inaccurate, your device probably uses different codes than the ones provided in this library. To get these codes, you'll have to unpack the CAN bus app installed on your head unit. 
@@ -215,8 +294,10 @@ That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexAct
 
 12. In APKRepatcher, go to File > Open APK, select your `com.syu.canbus.apk`, and wait until it finishes. Then go to the directory `APKRepatcher\Projects\com.syu.canbus.apk\javaCode\classes.dex\sources\com\syu` and repeat step 2.
 
+    The same `sources` folder can be given to the canbus library script ([`canbus_library`](canbus_library/README.md)), which builds a file with the screen class and the requests of every car of your version of the app; import it in the launcher (*Import a canbus library*) and the class named under Fuel statistics follows it.
 
-In my case, the CAN bus stops sending fuel consumption data when the speed drops below 40 km/h, so I added a function that attempts to ROUGHLY estimate fuel consumption, to provide some insight even though it's admittedly an inaccurate calculation. To use this, you'll need to find one additional code representing RPM — `U_ENGINE_SPEED = 148;` — found in [`Const_RZC4_PSA_ALL_DATA.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/Const_RZC4_PSA_ALL_DATA.java) mentioned earlier, and provide your car's details in the app settings.
+
+Many cars report the fuel consumption only above some speed (mine below ~30 km/h gives "no value"). Where the car gives none, the widget shows an estimate, marked `≈` (`≈4.2 L/100km`, and `≈0.9 L/h` at a stop). It is a fallback only: it is learned from the car's own values (the speed, how hard the car speeds up or slows down, and the RPM if the car reports it) and shown only after a few minutes of driving with values from the car; a car without a fuel code never gets one. It is better with the speed of the CAN bus than with the GPS: set the *Speed code* in the *Canbus codes* window, or leave it empty to use the speed code the Canbus reader found (shown as the hint). The *RPM code* there is optional.
 
 </details>
 

@@ -30,6 +30,8 @@ public final class Keys {
     public static final String OAUTH_FOR_YOUTUBE_REVANCED = "oauth_for_youtube_revanced";
     public static final String YOUTUBE_REVANCED_KIDS = "youtube_revanced_kids";
     public static final String COPY_PATCH_URL = "copy_patch_url";
+    public static final String DEVICE_CHIPSET = "device_chipset";
+    public static final String DEVICE_CHIPSET_RULES = "device_chipset_rules";
     public static final String SPOTIFY_CLIENT_ID = "spotify_client_id";
     public static final String OAUTH_FOR_SPOTIFY = "oauth_for_spotify";
     public static final String SPOTIFY_LOGOUT = "spotify_logout";
@@ -70,8 +72,13 @@ public final class Keys {
     public static final String BOOT_LOGCAT = "boot_logcat";
     public static final String LOGCAT_SERVICE_WAKE = "logcat_service_wake";
     public static final String LOGCAT_SERVICE_RUN = "logcat_service_run";
+    /** Where the user left the stop logcat button, see LogcatStopButton. */
+    public static final String LOGCAT_STOP_X = "logcat_stop_button_x";
+    public static final String LOGCAT_STOP_Y = "logcat_stop_button_y";
+    public static final String LOGCAT_STOP_SAVED = "logcat_stop_button_saved";
     public static final String LOGCAT_SERVICE_TIMEOUT = "logcat_service_timeout";
     public static final String APP_VERSION_UPDATE = "app_version_update";
+    public static final String SHIZUKU_DOWNLOAD = "shizuku_download";
 
     public static final String DISPLAY_PIP = "display_pip";
     public static final String USER_DATE = "user_date";
@@ -84,12 +91,24 @@ public final class Keys {
     public static final String RADIO_SCREEN = "radio_screen";
     public static final String STATS_SCREEN = "stats_screen";
     public static final String STATS_WIDTH = "stats_width";
+    /** The text size (px, float) of the statistics window, the same in its three sizes, worked out once. */
+    public static final String STATS_FONT_PX = "stats_font_px";
+    /** The width (px, int) of the large and the medium statistics window, worked out once. */
+    public static final String STATS_WIDTH_LARGE_PX = "stats_width_large_px";
+    public static final String STATS_WIDTH_MEDIUM_PX = "stats_width_medium_px";
+    /** What the three values above were worked out for (language, screen, font scale); they change with it. */
+    public static final String STATS_GEOMETRY_TAG = "stats_geometry_tag";
     public static final String STATS_WIDTH_SELECTOR = "stats_width_selector";
     public static final String STATS_CODES = "stats_codes";
-    public static final String EXTRA_STATS_CODES = "extra_stats_codes";
+    /** The canbus code of the speed for the fuel estimate; "0" or none = the code reader's, else the GPS. */
+    public static final String SPEED_CODE = "speed_code_int";
     public static final String MAIN_SCREEN_STATS = "main_screen_stats";
     public static final String COLOR_PICKER = "color_picker";
     public static final String STATS_BG = "stats_bg";
+    /** boolean: we raised maximum_obscuring_opacity_for_touch for the stats window (StatsOverlayAlpha) */
+    public static final String STATS_OBSCURING_RAISED = "stats_obscuring_raised";
+    /** String: the limit before we raised it; no key = the setting did not exist */
+    public static final String STATS_OBSCURING_ORIGINAL = "stats_obscuring_original";
     public static final String BG_DRAWABLE = "bg_drawable";
     public static final String BG_COLOR = "bg_color";
     public static final String BG_COLOR_PICKER = "bg_color_picker";
@@ -101,20 +120,18 @@ public final class Keys {
     public static final String DISPLAY_CANBUS_READER = "display_canbus_reader";
     public static final String CODES_GUIDE = "codes_guide";
     public static final String SKIP_CODES = "skip_codes";
-    public static final String CODE_LOGGER = "code_logger";
-    public static final String CODE_LOGGER_DATA = "code_logger_data";
+    public static final String CANBUS_LIBRARY_IMPORT = "canbus_library_import";
+    public static final String CANBUS_LIBRARY_EXPORT = "canbus_library_export";
+    public static final String CANBUS_LIBRARY_RESET = "canbus_library_reset";
+    public static final String EXTRA_STATS_CODES = "extra_stats_codes";
+    /** The car's mass (kg) and engine displacement (cm³) for the estimate of the consumption; the names of their fields. */
+    public static final String VEHICLE_MASS = "vehicle_mass_code_int";
+    public static final String ENGINE_DISPLACEMENT = "engine_displacement_code_int";
     public static final String CMD_INT = "cmdInt_code_int";
     public static final String CMD_ARR = "cmdArr_code_int";
-    public static final String STARTING_CMD_INT = "starting_cmd_int";
-    public static final String STARTING_CMD_ARR = "starting_cmd_arr";
-    public static final String MAX_CMD_INT = "max_cmd_int";
-    public static final String MAX_CMD_ARR = "max_cmd_arr";
-    public static final String CODE_LOGGER_TIMEOUT = "code_logger_timeout";
-    public static final String OMIT_DIGITS = "omit_digits";
     public static final String CODE_INSPECTOR = "code_inspector";
     public static final String CODE_INSPECTOR_DATA = "code_inspector_data";
-    public static final String INSPECTOR_CMD_INT = "inspector_cmd_int";
-    public static final String INSPECTOR_CMD_ARR = "inspector_cmd_arr";
+    public static final String SKIP_ZERO_CODES = "skip_zero_codes";
     public static final String CODE_INSPECTOR_TIMEOUT = "code_inspector_timeout";
     public static final String LEFT_BAR = "left_bar";
     public static final String WIDGET_BAR = "widget_bar";
@@ -163,7 +180,13 @@ public final class Keys {
     public static final String FAB_OVERLAY_BUTTON_RIGHT = "fab_overlay_button_right";
     public static final String BLOCK_FLOATING_BUTTON = "block_floating_button";
     public static final String EXTENDED_DIVIDER = "extended_divider";
+    /** Old boolean (true = icon colour, false = night mode); migrated to COVER_SPLASH_MODE. */
     public static final String COVER_SPLASH = "cover_splash";
+    public static final String COVER_SPLASH_MODE = "cover_splash_mode";
+    public static final String COVER_SPLASH_ICON = "icon";
+    public static final String COVER_SPLASH_NIGHT_MODE = "night_mode";
+    public static final String COVER_SPLASH_BLACK = "black";
+    public static final String COVER_SPLASH_TRANSPARENT = "transparent";
     public static final String SWIPE_DETECTOR = "swipe_detector";
 
     public static final String RECYCLER_APP = "recycler_app";

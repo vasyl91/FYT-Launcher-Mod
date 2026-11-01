@@ -1,0 +1,403 @@
+package com.syu.util;
+
+import android.content.Context;
+import android.os.Build;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.Process;
+import android.os.RemoteException;
+import android.util.Log;
+
+import com.syu.vdhost.VdHostCore;
+import com.syu.vdhost.VdHostProtocol;
+import com.syu.vdhost.VdHostStub;
+
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+/**
+ * Connection to the VD host, which stands in for the framework's ActivityView on Android 11+,
+ * and on Android 8-10 for a launcher that is not a system app (see WindowHostVdView).
+ *
+ * Three hosts, most reliable first:
+ *  1. LOCAL   -- the launcher runs as android.uid.system (FYT install): the host runs right here.
+ *  2. DAEMON  -- the FYT VDHost Magisk module's daemon (uid 1000) pushes its binder into
+ *                WindowHostVdProvider shortly after this process starts, and after a restart.
+ *  3. SHIZUKU -- WindowHostVdShizukuService, run by Shizuku as shell; no root needed.
+ *
+ * The first host that attaches is kept until it dies. The order holds because LOCAL is created
+ * synchronously, and Shizuku waits for the daemon whenever the module is installed; a daemon that
+ * still comes late replaces Shizuku.
+ */
+public final class WindowHostVdClient {
+    private static final String TAG = "WindowHostVdClient";
+
+    enum Source { LOCAL, DAEMON, SHIZUKU }
+
+    public interface Listener {
+        /** Main thread. available == false: the host died and every display it owned is gone. */
+        void onHostChanged(boolean available);
+    }
+
+    private static final Object sLock = new Object();
+    private static VdHostProtocol.Proxy sHost;
+    private static Source sSource;
+    /** The uid the attached host runs as (see VdHostProtocol.Proxy.getHostUid()), -1 if unknown. */
+    private static int sHostUid = -1;
+    private static IBinder.DeathRecipient sDeath;
+
+    private static final CopyOnWriteArrayList<Listener> sListeners = new CopyOnWriteArrayList<>();
+    /** Displays created through this client, so the reaper only asks the host about its own. */
+    private static final Set<Integer> sDisplays = ConcurrentHashMap.newKeySet();
+    private static final Handler sMain = new Handler(Looper.getMainLooper());
+
+    private WindowHostVdClient() {}
+
+    /** From Application.onCreate(): starts listening for Shizuku. */
+    public static void init(Context ctx) {
+        if (ctx == null) return;
+        WindowHostVdShizuku.init(ctx.getApplicationContext());
+    }
+
+    static boolean isSystemUid() {
+        return Process.myUid() == Process.SYSTEM_UID;
+    }
+
+    /** The Magisk module sets ro.fyt.vdhost=1 (system.prop). */
+    public static boolean isModuleInstalled() {
+        try {
+            Class<?> sp = Class.forName("android.os.SystemProperties");
+            Object v = sp.getMethod("get", String.class, String.class)
+                    .invoke(null, VdHostProtocol.PROP_MODULE, "");
+            return "1".equals(v);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /**
+     * Whether the panes should be WindowHostVdView instead of the framework's ActivityView.
+     *
+     * Android 8-10 keep the real ActivityView for a system launcher (FYT). Any other launcher
+     * could not start other apps in it (that needs ACTIVITY_EMBEDDING, and INJECT_EVENTS for the
+     * touches), so it takes the VD host there, as on Android 12+, which has no ActivityView at
+     * all: with no host yet the panes just stay empty instead of crashing. Android 11 still has a
+     * framework ActivityView, which is kept as a last resort when no host can be expected.
+     */
+    static boolean shouldUse() {
+        if (Build.VERSION.SDK_INT < 30) return !isSystemUid();
+        if (Build.VERSION.SDK_INT >= 31) return true;
+        return canHostPanes();
+    }
+
+    /**
+     * Whether some host is there or can be expected (on Android 8-10 a system launcher counts:
+     * it has the framework's ActivityView). Rooted without the Magisk module and without Shizuku
+     * there is nothing that could run the panes.
+     */
+    public static boolean canHostPanes() {
+        return current() != null || isSystemUid() || isModuleInstalled() || WindowHostVdShizuku.isUsable();
+    }
+
+    /**
+     * Whether the panes are VD views with no host to run them yet (Shizuku comes half a minute
+     * after a boot): they come up by themselves when one attaches, nothing can start them before.
+     * A system launcher on Android 11+ is its own host and never waits.
+     */
+    public static boolean panesAwaitHost() {
+        if (!shouldUse()) return false;
+        if (Build.VERSION.SDK_INT >= 30 && isSystemUid()) return false;
+        synchronized (sLock) {
+            return sHost == null;
+        }
+    }
+
+    /** The host, or null while none has attached yet. */
+    static VdHostProtocol.Proxy get(Context ctx) {
+        synchronized (sLock) {
+            if (sHost != null) return sHost;
+            if (Build.VERSION.SDK_INT >= 30 && isSystemUid() && ctx != null) {
+                try {
+                    VdHostCore core = new VdHostCore(ctx.getApplicationContext());
+                    final int myUid = Process.myUid();
+                    VdHostStub stub = new VdHostStub(core, uid -> uid == myUid);
+                    sHost = new VdHostProtocol.Proxy(stub);
+                    sSource = Source.LOCAL;
+                    Log.i(TAG, "in-process VD host (the launcher runs as system)");
+                } catch (Throwable t) {
+                    Log.w(TAG, "in-process VD host unavailable", t);
+                }
+            }
+            return sHost;
+        }
+    }
+
+    /** Whether a host runs outside the launcher: the Magisk daemon or Shizuku's service. */
+    public static boolean hasPrivilegedHost() {
+        synchronized (sLock) {
+            return sHost != null && sSource != Source.LOCAL;
+        }
+    }
+
+    /** Shizuku and its forks (Shizuku Next) keep this package name. */
+    private static final String SHIZUKU_PACKAGE = "moe.shizuku.privileged.api";
+
+    public static boolean isShizukuInstalled(Context context) {
+        try {
+            context.getPackageManager().getPackageInfo(SHIZUKU_PACKAGE, 0);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    public static boolean isShizukuRunning() {
+        return WindowHostVdShizuku.isRunning();
+    }
+
+    /**
+     * Root is there: the daemon of the FYT VDHost Magisk module (or Shizuku started with root)
+     * runs as system or root, the module's property is set, or a su binary can be seen.
+     */
+    public static boolean hasRoot() {
+        if (canSendBootCompleted() || isModuleInstalled()) return true;
+        for (String path : new String[]{ "/system/bin/su", "/system/xbin/su", "/sbin/su",
+                "/debug_ramdisk/su", "/vendor/bin/su" }) {
+            if (new java.io.File(path).exists()) return true;
+        }
+        return false;
+    }
+
+    /** The privileged host, or null: none attached, or the launcher is its own (system) host. */
+    private static VdHostProtocol.Proxy privilegedHost() {
+        synchronized (sLock) {
+            return sSource == Source.LOCAL ? null : sHost;
+        }
+    }
+
+    /**
+     * Whether the privileged host may send protected broadcasts (BOOT_COMPLETED): the daemon
+     * (system) and Shizuku with root may, Shizuku over ADB (shell) may not.
+     */
+    public static boolean canSendBootCompleted() {
+        synchronized (sLock) {
+            return sSource != null && sSource != Source.LOCAL && (sHostUid == 0 || sHostUid == Process.SYSTEM_UID);
+        }
+    }
+
+    /** See VdHostProtocol.Proxy.sendBootCompleted(). Blocking. @return the report, null without a host */
+    public static String sendBootCompleted(String pkg) throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        return host != null ? host.sendBootCompleted(pkg) : null;
+    }
+
+    /** See VdHostProtocol.Proxy.allowWriteSettings(). Blocking. @return the report, null without a host */
+    public static String allowWriteSettings(String pkg) throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        return host != null ? host.allowWriteSettings(pkg) : null;
+    }
+
+    /**
+     * See VdHostProtocol.Proxy.setObscuringOpacityLimit(). Blocking.
+     * @return the report, null without a host or from a daemon that does not know the call
+     */
+    public static String setObscuringOpacityLimit(String pkg, String value) throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        return host != null ? host.setObscuringOpacityLimit(pkg, value) : null;
+    }
+
+    /** See VdHostProtocol.Proxy.watchForeground(). @return false without a host */
+    public static boolean watchForeground(IBinder callback) throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        if (host == null) return false;
+        host.watchForeground(callback);
+        return true;
+    }
+
+    /** See VdHostProtocol.Proxy.exec(). @return null without a host */
+    public static VdHostProtocol.ExecHandle exec(String[] argv, android.os.ParcelFileDescriptor out,
+                                                IBinder clientToken) throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        return host != null ? host.exec(argv, out, clientToken) : null;
+    }
+
+    /**
+     * Has the host compile the launcher with its profile, see VdHostProtocol.Proxy.compilePackage().
+     * Blocking for tens of seconds: never on the main thread.
+     *
+     * @return the host's report ("DAEMON: OK ..." on success), or null when no host outside the
+     *         launcher is attached
+     */
+    public static String compilePackage(String pkg) throws RemoteException {
+        return callPrivilegedHost(pkg, true);
+    }
+
+    /**
+     * Has the host drop the launcher's ART profiles, see VdHostProtocol.Proxy.clearProfiles().
+     * Blocking: never on the main thread.
+     *
+     * @return as compilePackage()
+     */
+    public static String clearProfiles(String pkg) throws RemoteException {
+        return callPrivilegedHost(pkg, false);
+    }
+
+    private static String callPrivilegedHost(String pkg, boolean compile) throws RemoteException {
+        VdHostProtocol.Proxy host;
+        Source source;
+        synchronized (sLock) {
+            host = sHost;
+            source = sSource;
+        }
+        if (host == null || source == Source.LOCAL) return null;
+        return source + ": " + (compile ? host.compilePackage(pkg) : host.clearProfiles(pkg));
+    }
+
+    static VdHostProtocol.Proxy current() {
+        synchronized (sLock) {
+            return sHost;
+        }
+    }
+
+    /** WindowHostVdProvider, on a binder thread. @return whether the binder was taken */
+    static boolean onDaemonAttached(IBinder binder) {
+        return attach(binder, Source.DAEMON);
+    }
+
+    /** WindowHostVdShizuku, on the main thread. @return whether the binder was taken */
+    static boolean onShizukuAttached(IBinder binder) {
+        return attach(binder, Source.SHIZUKU);
+    }
+
+    private static boolean attach(IBinder binder, Source source) {
+        if (binder == null) return false;
+        VdHostProtocol.Proxy proxy = new VdHostProtocol.Proxy(binder);
+        int version;
+        try {
+            version = proxy.getVersion();
+        } catch (Throwable t) {
+            Log.w(TAG, source + " VD host did not answer", t);
+            return false;
+        }
+        if (version != VdHostProtocol.VERSION) {
+            Log.w(TAG, source + " VD host speaks protocol " + version + ", expected "
+                    + VdHostProtocol.VERSION + " -- update the Magisk module and the launcher together");
+            return false;
+        }
+
+        int hostUid;
+        try {
+            hostUid = proxy.getHostUid();
+        } catch (Throwable t) {
+            hostUid = -1;
+        }
+
+        final boolean replaced;
+        synchronized (sLock) {
+            if (sHost != null && sHost.asBinder() == binder) return true;
+            if (sHost != null) {
+                // Only a daemon may push Shizuku aside; everything else keeps what it has.
+                if (!(source == Source.DAEMON && sSource == Source.SHIZUKU)) {
+                    return source == Source.DAEMON;   // tell the daemon to stop retrying
+                }
+            }
+            final IBinder.DeathRecipient death = () -> onHostDied(binder);
+            try {
+                binder.linkToDeath(death, 0);
+            } catch (RemoteException e) {
+                return false;
+            }
+            replaced = sHost != null;
+            if (replaced && sDeath != null) {
+                try { sHost.asBinder().unlinkToDeath(sDeath, 0); } catch (Throwable ignore) { }
+            }
+            sHost = proxy;
+            sSource = source;
+            sDeath = death;
+            sHostUid = hostUid;
+        }
+
+        Log.i(TAG, source + " VD host attached" + (replaced ? ", replacing Shizuku" : ""));
+        if (replaced) {
+            // The panes drop their Shizuku displays and recreate them on the daemon; unbinding
+            // ends the Shizuku service process, which releases the old displays.
+            sDisplays.clear();
+            notifyListeners(false);
+            sMain.post(WindowHostVdShizuku::unbind);
+        }
+        notifyListeners(true);
+        if (!replaced) sMain.post(WindowHostVdClient::openPanesIfMissing);
+        return true;
+    }
+
+    /**
+     * A host can attach after the launcher already decided there was nothing to show the panes
+     * with (Shizuku's binder arrives a moment after start-up). Ask once more; openPip() checks
+     * on its own whether panes are wanted at all.
+     */
+    private static void openPanesIfMissing() {
+        try {
+            if (WindowUtil.getActiveWindowHost() == null) WindowUtil.startMapPip(false);
+        } catch (Throwable t) {
+            Log.w(TAG, "re-opening the panes failed", t);
+        }
+    }
+
+    private static void onHostDied(IBinder binder) {
+        Source source;
+        synchronized (sLock) {
+            if (sHost == null || sHost.asBinder() != binder) return;
+            source = sSource;
+            sHost = null;
+            sSource = null;
+            sDeath = null;
+            sHostUid = -1;
+        }
+        sDisplays.clear();
+        Log.w(TAG, source + " VD host died; its displays are gone");
+        notifyListeners(false);
+        // The daemon is restarted by service.sh and redelivers; until then Shizuku may stand in.
+        WindowHostVdShizuku.onHostLost();
+    }
+
+    public static void addListener(Listener l) {
+        if (l != null) sListeners.addIfAbsent(l);
+    }
+
+    public static void removeListener(Listener l) {
+        sListeners.remove(l);
+    }
+
+    private static void notifyListeners(boolean available) {
+        sMain.post(() -> {
+            for (Listener l : sListeners) {
+                try { l.onHostChanged(available); } catch (Throwable t) { Log.w(TAG, "listener failed", t); }
+            }
+        });
+    }
+
+    static void noteDisplay(int displayId, boolean alive) {
+        if (alive) sDisplays.add(displayId);
+        else sDisplays.remove(displayId);
+    }
+
+    /**
+     * For WindowHostAvReaper: on Android 11+ the launcher may not list another app's tasks, the
+     * host may.
+     *
+     * @return null when the display is not one of ours or the host cannot tell
+     */
+    static Boolean isDisplayEmpty(int displayId) {
+        if (!sDisplays.contains(displayId)) return null;
+        VdHostProtocol.Proxy host = current();
+        if (host == null) return null;
+        try {
+            int n = host.getTaskCount(displayId);
+            return n < 0 ? null : n == 0;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+}

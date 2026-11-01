@@ -1,0 +1,27 @@
+package com.syu.module.main;
+
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.canbus.apk\dexFile\classes.dex */
+public class ShareHandler {
+    public static final Uri URI = Uri.parse("content://com.syu.ms.provider");
+
+    public static int getInt(ContentResolver resolver, int key, int valueIfNotFound) {
+        Cursor cursor;
+        int result = valueIfNotFound;
+        if (resolver != null && (cursor = resolver.query(URI, null, Integer.toString(key), null, null)) != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    result = cursor.getInt(0);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            cursor.close();
+            return result;
+        }
+        return result;
+    }
+}

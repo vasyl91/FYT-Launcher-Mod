@@ -3,7 +3,6 @@ package com.syu.module.canbus;
 import android.os.RemoteException;
 
 import com.android.launcher66.LauncherApplication;
-import com.syu.carinfo.xp.xiandai.XiandaiSosPage;
 import com.syu.ipc.IModuleCallback;
 import com.syu.module.main.DataMain;
 import com.syu.ui.air.AirHelper;
@@ -92,7 +91,9 @@ public class Callback_0080_RZC_XP1_QiJun extends CallbackCanbusBase {
             DataCanbus.NOTIFY_EVENTS[i3].addNotify(AirHelper.SHOW_AND_REFRESH, 0);
         }
         if (458832 == DataCanbus.DATA[1000]) {
-            ParkingHelper.getInstance().buildUi(new Parking_RZC_QiJun(LauncherApplication.getInstance()));
+            // Not built: ParkingHelper.buildUi() is empty in this mod, so the view (and its 13 asset reads, which
+            // are not in the APK) was made and thrown away at every start. Its constructor registers nothing.
+            //ParkingHelper.getInstance().buildUi(new Parking_RZC_QiJun(LauncherApplication.getInstance()));
             DataMain.NOTIFY_EVENTS[12].addNotify(ParkingHelper.getInstance(), 0);
             for (int i4 = 98; i4 <= 101; i4++) {
                 DataCanbus.NOTIFY_EVENTS[i4].addNotify(ParkingHelper.getInstance(), 0);
@@ -123,11 +124,6 @@ public class Callback_0080_RZC_XP1_QiJun extends CallbackCanbusBase {
         if (updateCode == 112) {
             HandlerCanbus.update(updateCode, ints);
             int value = ints[0];
-            if (value != 0 && !XiandaiSosPage.mIsFront) {
-                //JumpPage.startActivity("com.syu.canbus", "com.syu.carinfo.xp.xiandai.XiandaiSosPage");
-            } else if (value == 0 && XiandaiSosPage.mIsFront && XiandaiSosPage.mInstance != null) {
-                XiandaiSosPage.mInstance.finish();
-            }
         }
     }
 

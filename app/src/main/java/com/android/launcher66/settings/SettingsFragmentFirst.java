@@ -32,7 +32,6 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,6 +62,8 @@ import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.async.AsyncTask;
+import com.android.launcher66.ColdStart;
+import com.android.launcher66.DeviceIdentity;
 import com.android.launcher66.DeviceProfile;
 import com.android.launcher66.LauncherAppState;
 import com.android.launcher66.LauncherApplication;
@@ -70,6 +71,7 @@ import com.android.launcher66.MediaFavoriteController;
 import com.android.launcher66.R;
 import com.android.launcher66.WallpaperPickerActivity;
 import com.android.launcher66.perf.BaselineProfileCompiler;
+import com.syu.util.WindowHostVdClient;
 import com.fyt.skin.SkinAttribute;
 import com.fyt.skin.SkinUtils;
 
@@ -83,6 +85,8 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -153,6 +157,11 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private Dialog loadingDialog;
     private AlertDialog alertUpdateDialog;
 
+    /** Where Shizuku Next is released; GitHub redirects to the latest release. */
+    private static final String SHIZUKU_NEXT_RELEASES_URL =
+            "https://github.com/rushiranpise/Shizuku-Next/releases/latest";
+    private Preference shizukuDownload;
+
     private static final String KEY_BASELINE_PROFILE_SUMMARY = "baseline_profile_summary";
     private static final String KEY_BASELINE_PROFILE_RESET = "baseline_profile_reset";
     private Preference baselineProfileSummary;
@@ -178,6 +187,16 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         logcatRun.setEnabled(true);
         logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
     }; 
+
+    /**
+     * A capture ended without this screen asking for it: by the time limit, or by the stop button over the
+     * screens (LogcatStopButton). Told twice (when it ends and when the file is finished).
+     */
+    private final LogcatWorker.CaptureEndListener logcatCaptureEndListener = () -> {
+        if (isAdded() && logcatRun != null) {
+            showLogcatStoppedUi();
+        }
+    };
 
     @NonNull
     @Override
@@ -208,25 +227,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         super.onViewCreated(view, savedInstanceState);
 
         if (!LauncherApplication.isFytDevice()) {
-            float scaleFactor = 0.75f;
-            
+            // Only the system bar insets: the proportions come from SettingsActivity's
+            // reference density, before anything is inflated.
             recyclerView = findRecyclerView(view);
-
-            if (recyclerView != null) {
-                // Find RecyclerView by searching through view hierarchy
-                view.post(() -> {
-                    if (recyclerView != null) {
-                        Log.i("SCALE", "Found RecyclerView!");
-                        PreferenceScaleHelper.scaleRecyclerView(recyclerView, scaleFactor);
-                    } else {
-                        Log.e("SCALE", "RecyclerView not found!");
-                        // Fallback: scale whatever is visible now
-                        scaleAllViews(view, scaleFactor);
-                    }
-
-                    refreshRecyclerMultiple();
-                });    
-            }      
+            PreferenceScaleHelper.applySystemBarInsets(recyclerView);
         }
     }
 
@@ -245,32 +249,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         return null;
     }
 
-    private void scaleAllViews(View view, float scale) {
-        if (view instanceof ViewGroup viewGroup) {
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                View child = viewGroup.getChildAt(i);
-                scaleAllViews(child, scale);
-            }
-        }
-        
-        // Scale text
-        if (view instanceof TextView textView) {
-            float currentSizePx = textView.getTextSize();
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, currentSizePx * scale);
-        }
-        
-        // Scale padding
-        int paddingLeft = (int) (view.getPaddingLeft() * scale);
-        int paddingTop = (int) (view.getPaddingTop() * scale);
-        int paddingRight = (int) (view.getPaddingRight() * scale);
-        int paddingBottom = (int) (view.getPaddingBottom() * scale);
-        view.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-        
-        // Scale minimum height
-        if (view.getMinimumHeight() > 0) {
-            view.setMinimumHeight((int) (view.getMinimumHeight() * scale));
-        }
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -324,6 +302,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         youtubeRevancedKids = findPreference(Keys.YOUTUBE_REVANCED_KIDS);
         Preference copyPatchUrl = findPreference(Keys.COPY_PATCH_URL);
         Preference fytData = findPreference(Keys.FYT_DATA);
+        if (fytData != null && !LauncherApplication.showsFytOptions()) {
+            fytData.setVisible(false);
+        }
 
         clientIdPreference = findPreference(Keys.SPOTIFY_CLIENT_ID);
         dialogClientIdEditText();
@@ -390,6 +371,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         versionChecker = new VersionChecker();
         PreferenceCategory appVersion = findPreference("app_version");
         Preference appVersionUpdate = findPreference(Keys.APP_VERSION_UPDATE);
+        shizukuDownload = findPreference(Keys.SHIZUKU_DOWNLOAD);
 
         if (userLayout != null) {
             userLayout.setOnPreferenceClickListener(this);
@@ -486,12 +468,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (bootCompletedAutostart != null) {
             bootCompletedAutostart.setOnPreferenceClickListener(this);
-            bootCompletedAutostart.setVisible(LauncherApplication.hasSystemPrivileges());
+            // BOOT_COMPLETED goes out as system, or through a VD host that may send it.
+            bootCompletedAutostart.setVisible(
+                    LauncherApplication.showsPrivilegedOption(ColdStart.canSendBootCompleted()));
         }
         nightMode();        
         if (logcatService != null) {
             logcatService.setOnPreferenceClickListener(this);
-            logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, false);
+            logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, LogcatDefaults.on(requireContext()));
             if (logcatServiceBool) {
                 String summaryText = getString(R.string.logcat_service_summary);
                 logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
@@ -501,7 +485,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (logcatServiceWake != null) {
             logcatServiceWake.setOnPreferenceClickListener(this);
-            logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, false);
+            logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, LogcatDefaults.on(requireContext()));
             if (logcatServiceWakeBool) {
                 String summaryText = getString(LauncherApplication.isFytDevice()
                         ? R.string.logcat_service_wake_summary
@@ -513,29 +497,34 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (logcatFull != null) {
             logcatFull.setOnPreferenceClickListener(this);
-            logcatFull.setVisible(LauncherApplication.hasSystemPrivileges());
+            // As system, or through a VD host (root or Shizuku), see LogcatWorker.
+            logcatFull.setVisible(
+                    LauncherApplication.showsPrivilegedOption(LogcatWorker.canCaptureAllLogs(requireContext())));
             // The boot log only works together with "log everything" (LogcatWorker), so it is
             // shown only while that is on.
             logcatFull.setOnPreferenceChangeListener((preference, newValue) -> {
                 if (logcatBoot != null) {
-                    logcatBoot.setVisible(LauncherApplication.hasSystemPrivileges()
-                            && Boolean.TRUE.equals(newValue));
+                    logcatBoot.setVisible(LauncherApplication.showsPrivilegedOption(
+                            LogcatWorker.canCaptureAllLogs(requireContext())) && Boolean.TRUE.equals(newValue));
                 }
                 return true;
             });
         }
         if (logcatBoot != null) {
             logcatBoot.setOnPreferenceClickListener(this);
-            logcatBoot.setVisible(LauncherApplication.hasSystemPrivileges()
-                    && logcatFull != null && logcatFull.isChecked());
+            logcatBoot.setVisible(LauncherApplication.showsPrivilegedOption(
+                    LogcatWorker.canCaptureAllLogs(requireContext())) && logcatFull != null && logcatFull.isChecked());
         }
         if (logcatRun != null) {
             logcatRun.setOnPreferenceClickListener(this);
             LogcatWorker.get().setStateListener(logcatStateListener);
+            LogcatWorker.get().addCaptureEndListener(logcatCaptureEndListener);
             int delay = (int) LogcatWorker.get().getRemainingMillis();
             if (LogcatWorker.get().isActive() && delay > 0) {
                 setCountDownTimer(delay);
                 setTickRunnable(delay);
+            } else if (LogcatWorker.get().isSaving()) {
+                showLogcatSaving();
             } else {
                 logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
                 helpers.setCountDownLogcat(0);
@@ -545,14 +534,44 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             logcatServiceTimeout.setOnPreferenceClickListener(this);
         }
         if (appVersion != null) {
+            // Under the version: how the launcher runs here, the device and its Android, and the
+            // build and which of the two apps it is (the update downloads that one's file).
+            // The device line is system properties and Build fields only: no disk, no binder.
+            String build = getString(com.android.launcher66.BuildConfig.DEBUG
+                    ? R.string.build_type_debug : R.string.build_type_release);
+            String flavor = getString("fyt".equals(com.android.launcher66.BuildConfig.FLAVOR)
+                    ? R.string.build_flavor_fyt : R.string.build_flavor_standard);
+            String buildLine = build + " · " + flavor;
+            String deviceLine = DeviceIdentity.deviceLine();
+            appVersion.setSummary(deviceLine + "\n" + buildLine);
+            // The root check looks for su files on disk: off the main thread
+            final Context appContext = requireContext().getApplicationContext();
+            new Thread(() -> {
+                final String appType = appTypeText(appContext);
+                mHandler.post(() -> {
+                    if (isAdded() && appVersion != null) {
+                        appVersion.setSummary(appType + "\n" + buildLine + "\n" + deviceLine);
+                    }
+                });
+            }, "AppTypeText").start();
             String currentVersion = Helpers.getAppVersion(LauncherApplication.sApp);
             appVersion.setTitle(getString(R.string.app_version, currentVersion));
             versionChecker.checkForUpdate(currentVersion, new VersionChecker.VersionCheckCallback() {
                 @Override
                 public void onUpdateAvailable(String latestVersion) {
                     if (isAdded()) { 
-                        appVersion.setTitle(getString(R.string.app_version_update, currentVersion, latestVersion));
                         latestAppVersion = latestVersion;
+                        if (com.android.launcher66.BuildConfig.DEBUG) {
+                            // A debug build is offered the release (of the same version or a
+                            // newer one) to install over it, not a newer version as such.
+                            appVersion.setTitle(getString(R.string.app_version, currentVersion));
+                            if (appVersionUpdate != null) {
+                                appVersionUpdate.setTitle(getString(R.string.install_release_button,
+                                        latestVersion));
+                            }
+                        } else {
+                            appVersion.setTitle(getString(R.string.app_version_update, currentVersion, latestVersion));
+                        }
                         if (appVersionUpdate != null) {
                             appVersionUpdate.setVisible(true);
                         }
@@ -584,6 +603,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (appVersionUpdate != null) {
             appVersionUpdate.setOnPreferenceClickListener(this);
         }
+        if (shizukuDownload != null) {
+            shizukuDownload.setOnPreferenceClickListener(this);
+        }
     }
 
     @Override
@@ -597,6 +619,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         // SharedPreferences, so unlike the call above there is nothing to wait
         // for and no background refresh to start.
         SpotifyRating.syncPreference(requireContext(), clientIdPreference, oauthForSpotify);
+        updateShizukuDownload();
     }
 
     @Override
@@ -618,7 +641,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             nightModeBool = sharedPrefs.getBoolean(Keys.NIGHT_MODE, false);
             if (nightModeLights != null) {
                 nightModeLights.setOnPreferenceClickListener(this);
-                nightModeLights.setVisible(nightModeBool);
+                nightModeLights.setVisible(nightModeBool && LauncherApplication.showsFytOptions());
             }
             correctionCategory.setVisible(nightModeBool);
             sunriseCorrectionSeekBar.setVisible(nightModeBool);
@@ -855,7 +878,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 nightModeBool = sharedPrefs.getBoolean(Keys.NIGHT_MODE, false);
                 handler.post(updateSummary);
                 if (nightModeLights != null) {
-                    nightModeLights.setVisible(nightModeBool);
+                    nightModeLights.setVisible(nightModeBool && LauncherApplication.showsFytOptions());
                 }
                 correctionCategory.setVisible(nightModeBool);
                 sunriseTitleAndSummary.setVisible(nightModeBool);
@@ -930,7 +953,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 brightnessPref.setChecked(false);
                 break;
             case Keys.LOGCAT_SERVICE:
-                logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, false);
+                logcatServiceBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE, LogcatDefaults.on(requireContext()));
                 if (logcatServiceBool) {
                     String summaryText = getString(R.string.logcat_service_summary);
                     logcatService.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
@@ -939,7 +962,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 }
                 break;
             case Keys.LOGCAT_SERVICE_WAKE:
-                logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, false);
+                logcatServiceWakeBool = sharedPrefs.getBoolean(Keys.LOGCAT_SERVICE_WAKE, LogcatDefaults.on(requireContext()));
                 if (logcatServiceWakeBool) {
                     String summaryText = getString(LauncherApplication.isFytDevice()
                             ? R.string.logcat_service_wake_summary
@@ -981,6 +1004,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             case KEY_BASELINE_PROFILE_RESET:
                 showBaselineResetDialog();
                 break;
+            case Keys.SHIZUKU_DOWNLOAD:
+                ReleasesPage.open(requireContext(), SHIZUKU_NEXT_RELEASES_URL, TAG);
+                break;
             case Keys.APP_VERSION_UPDATE:
                 alertUpdateDialog = displayDownloadConfirmationDialog().create();
                 alertUpdateDialog.show();
@@ -995,30 +1021,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             default:
                 break;
         }
-        if (!LauncherApplication.isFytDevice()) {
-            refreshRecyclerMultiple();
-        }
         return false;
     }
 
-    private void refreshRecyclerMultiple() {
-        // Each new Handler(...) was invisible to mHandler.removeCallbacksAndMessages(null)
-        // in onDestroyView(), so this::refreshRecycler kept the fragment alive for another
-        // 1.6 s after the screen closed. A shared handler can actually be cancelled.
-        long[] delays = {300, 500, 700, 900, 1200, 1400, 1600};
-        for (long delay : delays) {
-            mHandler.postDelayed(this::refreshRecycler, delay);
-        }
-    }
 
-    private void refreshRecycler() {
-        if (recyclerView != null) {
-            RecyclerView.Adapter adapter = recyclerView.getAdapter();
-            if (adapter != null) {
-                adapter.notifyDataSetChanged();
-            }               
-        }
-    }
 
     @Override
     public void onDestroyView() {
@@ -1038,6 +1044,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         removeTickRunnable();
         cancelCountDownTimer();
         LogcatWorker.get().clearStateListener(logcatStateListener);
+        LogcatWorker.get().removeCaptureEndListener(logcatCaptureEndListener);
         dismissDialogs();
         mPropertyChangeClass.deleteObserver(Keys.DOWNLOAD_PERCENTAGE, this);
         
@@ -1132,21 +1139,41 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         @Override
         public void run() {
             cancelCountDownTimer();
+            removeTickRunnable();
+            if (LogcatWorker.get().isSaving()) {
+                showLogcatSaving();
+                return;
+            }
             logcatRun.setEnabled(true);
             logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
-            removeTickRunnable();
         }
     };
 
+    /** The capture has ended and still writes what it read up to then; its listener re-enables. */
+    private void showLogcatSaving() {
+        logcatRun.setEnabled(false);
+        logcatRun.setSummary(getString(R.string.logcat_service_saving));
+    }
+
     public void startLogcatRun() {
-        LogcatWorker.get().start(requireContext(), LogcatWorker.Mode.FROM_NOW);
+        LogcatWorker.get().start(requireContext(), LogcatWorker.Mode.FROM_NOW, LogcatWorker.Trigger.MANUAL);
+        // A capture started by hand only: the stop button over the screens the user goes on to try
+        LogcatStopButton.show(requireContext().getApplicationContext());
     }
 
     public void stopLogcatRun() {
         LogcatWorker.get().stop(true, requireContext());
+        showLogcatStoppedUi();
+    }
+
+    private void showLogcatStoppedUi() {
         removeTickRunnable();
         cancelCountDownTimer();
-        logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
+        if (LogcatWorker.get().isSaving()) {
+            showLogcatSaving();
+        } else {
+            logcatRun.setSummary(getString(R.string.logcat_service_run_summary));
+        }
     }
 
     private void dialogAllAppsTextSizeEditText() {
@@ -1323,6 +1350,20 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     private void downloadAndInstall() {
+        // Without leave to install unknown apps the download would end in a refused install:
+        // the screen to give it first, then the update again.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && !LauncherApplication.hasSystemPrivileges()
+                && !requireContext().getPackageManager().canRequestPackageInstalls()) {
+            try {
+                startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                        android.net.Uri.parse("package:" + requireContext().getPackageName())));
+                Toast.makeText(LauncherApplication.sApp, R.string.update_allow_install, Toast.LENGTH_LONG).show();
+                return;
+            } catch (android.content.ActivityNotFoundException e) {
+                Log.w(TAG, "No screen to allow installing unknown apps, trying the update anyway", e);
+            }
+        }
         versionChecker.downloadAndInstallApk(LauncherApplication.sApp, latestAppVersion, new VersionChecker.DownloadCallback() {
             @Override
             public void onDownloadStarted(String fileName) {
@@ -1468,7 +1509,51 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     // BASELINE PROFILE
     // =====================================================================================
 
+    /**
+     * How the launcher runs here, under the version: as a system app, which needs nothing else,
+     * or as a user app with what it can use instead -- root (and then whether the FYT VDHost
+     * Magisk module is installed), or else Shizuku, when installed.
+     */
+    /** Any thread. */
+    private static String appTypeText(Context context) {
+        if (LauncherApplication.hasSystemPrivileges()) {
+            return context.getString(R.string.app_type_system);
+        }
+        List<String> parts = new ArrayList<>();
+        parts.add(context.getString(R.string.app_type_user));
+        if (WindowHostVdClient.hasRoot()) {
+            parts.add(context.getString(R.string.app_type_root));
+            parts.add(context.getString(WindowHostVdClient.isModuleInstalled()
+                    ? R.string.app_type_module_installed : R.string.app_type_module_missing));
+        } else if (WindowHostVdClient.isShizukuInstalled(context)) {
+            parts.add(context.getString(WindowHostVdClient.isShizukuRunning()
+                    ? R.string.app_type_shizuku_running : R.string.app_type_shizuku_stopped));
+        }
+        return android.text.TextUtils.join(", ", parts);
+    }
+
     /** Loads the Baseline Profile status off the main thread and shows it as the summary. */
+    /**
+     * Shows the button to download Shizuku Next in the standard version while Shizuku is not
+     * installed: it is what hosts the PiP panes there without root. The check is a binder call,
+     * so it runs off the main thread; onResume() calls it, so the button goes away on coming back
+     * from installing it. The fyt version has system privileges and never needs it.
+     */
+    private void updateShizukuDownload() {
+        if (shizukuDownload == null || !"standard".equals(com.android.launcher66.BuildConfig.FLAVOR)) {
+            return;
+        }
+        final Context appContext = requireContext().getApplicationContext();
+        new Thread(() -> {
+            final boolean missing = !WindowHostVdClient.isShizukuInstalled(appContext);
+            mHandler.post(() -> {
+                if (isAdded() && shizukuDownload != null) {
+                    shizukuDownload.setVisible(missing);
+                }
+            });
+        }, "ShizukuInstalled").start();
+    }
+
     private void updateBaselineProfileSummary() {
         if (baselineProfileSummary == null) {
             return;
@@ -1545,11 +1630,22 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         new Thread(() -> {
             // Normally never returns: clearing the profiles kills the launcher process, which
             // then restarts and recompiles from the Baseline Profile in the background.
-            final boolean ok = BaselineProfileCompiler.resetToBaselineProfile(appContext);
+            final BaselineProfileCompiler.ResetResult result =
+                    BaselineProfileCompiler.resetToBaselineProfile(appContext);
+            final int message;
+            switch (result) {
+                case CLEARED:
+                    message = R.string.baseline_reset_full_started;
+                    break;
+                case BASELINE_REAPPLIED:
+                    message = R.string.baseline_reset_reapplied;
+                    break;
+                default:
+                    message = R.string.baseline_reset_failed;
+                    break;
+            }
             mHandler.post(() -> {
-                Toast.makeText(appContext,
-                        ok ? R.string.baseline_reset_full_started : R.string.baseline_reset_failed,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(appContext, message, Toast.LENGTH_LONG).show();
                 if (isAdded()) {
                     updateBaselineProfileSummary();
                 }
