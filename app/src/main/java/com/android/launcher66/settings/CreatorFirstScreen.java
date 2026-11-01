@@ -269,7 +269,9 @@ public class CreatorFirstScreen extends Fragment {
         //    silently became a different coordinate space than the launcher's.
         boolean leftBar = sharedPrefs.getBoolean(Keys.LEFT_BAR, false);
         boolean autoHideBottomBar = sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-        int workspaceWidth = leftBar ? rootWidth - (int) (rootWidth * 0.071f) : rootWidth;
+        int workspaceWidth = leftBar
+                ? rootWidth - (int) BottomBarDimensions.computeLeftBarWidth(portrait, rootWidth, rootHeight, barHeight)
+                : rootWidth;
         // With auto-hide the workspace keeps the full height; only the collapsed button is reserved.
         int workspaceHeight = autoHideBottomBar ? rootHeight : rootHeight - barHeight;
         View canvasArea = rootView.findViewById(R.id.creator_first_screen);
