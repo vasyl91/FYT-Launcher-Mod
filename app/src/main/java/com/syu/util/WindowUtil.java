@@ -2113,17 +2113,16 @@ public class WindowUtil {
         }, delay);
     }
 
+    /**
+     * Restarts the app in the pinned PiP (force-stop, except Google Maps). Deliberately leaves the
+     * WindowHost alone: the pinned PiP is not hosted there, and releasing the host destroys the
+     * ActivityViews (and with them the apps) of every ordinary pane. See releasePaneHost() for the
+     * rare case where that is wanted.
+     */
     public static void restartPinnedPipApp() {
         if (!LauncherApplication.isFytDevice()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
-        final WindowHost host = host();
-        if (host != null) {
-            launcher.handler.post(() -> {
-                host.cleanup();
-                setHost(null);
-            });
-        }
         if (AppPackageName != null && !AppPackageName.isEmpty()) {
             if (FytPackage.GMAPS.equals(AppPackageName)) {
                 Log.i(TAG, "restartPinnedPipApp: skip force-stop for Google Maps");
@@ -2140,6 +2139,39 @@ public class WindowUtil {
                 Log.e(TAG, "restartPinnedPipApp() failed: " + e);
             }
         }
+    }
+
+    /**
+     * Releases the ordinary PiP panes for good: ActivityViews and their VirtualDisplays go, and
+     * with them the tasks inside - e.g. the Google Maps route. Only for a change that rebuilds the
+     * panes from scratch anyway (a different layout type). A mere geometry change must use
+     * onPipGeometryChanged(), which keeps the tasks.
+     */
+    public static void releasePaneHost() {
+        if (!LauncherApplication.isFytDevice()) return;
+        final Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        final WindowHost host = host();
+        if (host != null) {
+            launcher.handler.post(() -> {
+                host.cleanup();
+                setHost(null);
+            });
+        }
+    }
+
+    /**
+     * The PiP positions or sizes saved in the preferences changed (creator, bottom bar, left bar).
+     * Does not touch the running panes: it only makes the next openPip() rebuild them through the
+     * regular path - a new host takes over the existing tasks and the old host's ActivityViews are
+     * retired once that happened - with the new bounds read from the preferences. Without the
+     * invalidation the open-PiP debounce would call the old layout current, because its signature
+     * has no geometry in it (a return within STOP_REMOVE_PIP_GRACE_MS finds the panes still up).
+     */
+    public static void onPipGeometryChanged() {
+        lastPipBounds.clear();
+        forcePipBoundsUpdate = true;
+        invalidateOpenPipDebounce();
     }
 
     private static boolean checkIfMapSizeChanged(String pipKey) {

@@ -2282,10 +2282,20 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // and PiPs, and this moves them out of it. Restarting first would re-create the PiP windows
         // at the old positions and the corrected ones would only appear after the next restart.
         helpers.checkAndResetIfOverlappingOnScreen(-1);
-        if (currentUserLayout && displayPip && !atomicOnCreate.get()
-                && (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator())) {
-            Log.i("Recreate page", "user layout");
-            WindowUtil.restartPinnedPipApp();
+        if (currentUserLayout && displayPip && !atomicOnCreate.get()) {
+            if (helpers.hasLayoutTypeChanged()) {
+                // The panes are rebuilt from scratch for a different layout type anyway.
+                Log.i("Recreate page", "user layout, layout type changed");
+                WindowUtil.releasePaneHost();
+                WindowUtil.restartPinnedPipApp();
+            }
+            if (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator()) {
+                // Only the geometry may have changed. Rebuild the panes the non-destructive way so
+                // their apps keep running (a released host would kill e.g. the Maps route). A pinned
+                // PiP notices a changed rectangle itself in openAsPinnedPip().
+                Log.i("Recreate page", "user layout, PiP geometry may have changed");
+                WindowUtil.onPipGeometryChanged();
+            }
         }
 
         if (mPrefs.getBoolean(Keys.NIGHT_MODE, false)) {
