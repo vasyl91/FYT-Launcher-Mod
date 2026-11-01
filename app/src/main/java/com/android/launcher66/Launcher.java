@@ -8805,8 +8805,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     /**
      * The left bar's layout manager: spreads at most maxItems items evenly over the recycler's
-     * height, and works out how many items that height has room for (BarCapacity.leftCapacity()),
-     * telling its listener when the answer changes.
+     * height, and works out how many items that height has room for (BarCapacity.leftCapacity(),
+     * from the visible icon, which follows the recycler's width), telling its listener when the answer changes.
      */
     public static class EvenVerticalLayoutManager extends LinearLayoutManager {
         static final String LM_TAG = "EvenVerticalLM";
@@ -8818,8 +8818,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         private static final String KEY_ITEM_HEIGHT_PORT = "left_bar_item_height_port";
         private static final String KEY_ITEM_HEIGHT_LAND = "left_bar_item_height_land";
         // The capacity last worked out, per orientation: where the bar starts from before it is measured.
-        private static final String KEY_CAPACITY_PORT = "left_bar_capacity_port";
-        private static final String KEY_CAPACITY_LAND = "left_bar_capacity_land";
+        // _v2: the old values were worked out from the item box and are not read any more.
+        private static final String KEY_CAPACITY_PORT = "left_bar_capacity_port_v2";
+        private static final String KEY_CAPACITY_LAND = "left_bar_capacity_land_v2";
+        private static final String KEY_CAPACITY_PORT_OLD = "left_bar_capacity_port";
+        private static final String KEY_CAPACITY_LAND_OLD = "left_bar_capacity_land";
 
         private static int sCachedNaturalItemHeightPort = -1;
         private static int sCachedNaturalItemHeightLand = -1;
@@ -8836,21 +8839,23 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         private int mSlotHeight = -1;
         private CapacityListener mCapacityListener;
         private boolean mCapacityCheckPending;
+        private boolean mHeightCacheChecked;
 
         /** Looks at the settled height of the recycler, not at the size of one measure pass. */
         private final Runnable mCapacityCheck = new Runnable() {
             @Override
             public void run() {
                 mCapacityCheckPending = false;
-                if (mHost == null || mNaturalItemHeight <= 0 || mHost.getHeight() <= 0) {
+                if (mHost == null || mHost.getWidth() <= 0 || mHost.getHeight() <= 0) {
                     return;
                 }
-                int capacity = BarCapacity.leftCapacity(mHost.getHeight(), mNaturalItemHeight);
+                int icon = iconSizeFor(mHost.getWidth());
+                int capacity = BarCapacity.leftCapacity(mHost.getHeight(), icon);
                 if (capacity == mMaxItems) {
                     return;
                 }
-                Log.d(LM_TAG, "capacity " + mMaxItems + " -> " + capacity + " (H=" + mHost.getHeight()
-                        + " h=" + mNaturalItemHeight + ")");
+                Log.d(LM_TAG, "capacity " + mMaxItems + " -> " + capacity + " (W=" + mHost.getWidth()
+                        + " H=" + mHost.getHeight() + " icon=" + icon + ")");
                 setMaxItems(capacity);
                 storeCapacity(capacity);
                 if (mCapacityListener != null) {
@@ -8908,6 +8913,39 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         /** The context whose configuration says which way the screen is turned now. */
         private Context hostContext() {
             return mHost != null ? mHost.getContext() : mAppContext;
+        }
+
+        /** Visible icon size for a recycler this wide; the LM sets only vertical padding. */
+        private int iconSizeFor(int width) {
+            int inner = width;
+            if (mHost != null) {
+                inner -= mHost.getPaddingLeft() + mHost.getPaddingRight();
+            }
+            return BarCapacity.leftIconSize(inner);
+        }
+
+        /**
+         * A cached natural height that disagrees with icon * the XML ratio was measured with other
+         * layouts or sizes: forget it once (this orientation only) so it is measured again.
+         */
+        private void verifyHeightCache(int width) {
+            if (mHeightCacheChecked || mNaturalItemHeight <= 0 || width <= 0) {
+                return;
+            }
+            mHeightCacheChecked = true;
+            boolean portrait = isPortrait(hostContext());
+            int expected = Math.round(iconSizeFor(width) * BarCapacity.leftItemRatio(portrait));
+            if (Math.abs(mNaturalItemHeight - expected) > 2) {
+                Log.w(LM_TAG, "cached item height " + mNaturalItemHeight + " != expected " + expected
+                        + ", measuring again");
+                mNaturalItemHeight = -1;
+                mSlotHeight = -1;
+                if (portrait) {
+                    sCachedNaturalItemHeightPort = -1;
+                } else {
+                    sCachedNaturalItemHeightLand = -1;
+                }
+            }
         }
 
         private int loadNaturalItemHeight() {
@@ -8972,7 +9010,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (mNaturalItemHeight <= 0) {
                 mNaturalItemHeight = loadNaturalItemHeight();
             }
-            checkCapacity(total);
+            int width = getWidth() > 0 ? getWidth() : (mHost != null ? mHost.getMeasuredWidth() : 0);
+            verifyHeightCache(width);
+            checkCapacity(width, total);
             int count = Math.min(getItemCount(), mMaxItems);
             if (total <= 0 || count <= 0 || mNaturalItemHeight <= 0) {
                 return false;
@@ -9002,11 +9042,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
          * not acted on here (this runs inside measure and layout passes, whose heights can be
          * transient): one check is posted, and that one reads the height the recycler ended up with.
          */
-        private void checkCapacity(int total) {
-            if (mHost == null || mCapacityCheckPending || total <= 0 || mNaturalItemHeight <= 0) {
+        private void checkCapacity(int width, int height) {
+            if (mHost == null || mCapacityCheckPending || width <= 0 || height <= 0) {
                 return;
             }
-            if (BarCapacity.leftCapacity(total, mNaturalItemHeight) != mMaxItems) {
+            if (BarCapacity.leftCapacity(height, iconSizeFor(width)) != mMaxItems) {
                 mCapacityCheckPending = true;
                 mHost.post(mCapacityCheck);
             }
@@ -9048,9 +9088,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         @Override
         public void onLayoutCompleted(RecyclerView.State state) {
             super.onLayoutCompleted(state);
-            // The first item measured fixes the natural height, usually while the recycler still has
-            // no height of its own; the capacity can only be told once both are known.
-            checkCapacity(getHeight());
+            // The capacity can only be told once the recycler has its width and height.
+            checkCapacity(getWidth(), getHeight());
         }
 
         public void invalidateItemMetrics() {
@@ -9061,7 +9100,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             try {
                 mAppContext.getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE)
                         .edit().remove(KEY_ITEM_HEIGHT_LEGACY).remove(KEY_ITEM_HEIGHT_PORT)
-                        .remove(KEY_ITEM_HEIGHT_LAND).apply();
+                        .remove(KEY_ITEM_HEIGHT_LAND).remove(KEY_CAPACITY_PORT_OLD)
+                        .remove(KEY_CAPACITY_LAND_OLD).apply();
             } catch (Exception ignored) {
             }
             requestLayout();

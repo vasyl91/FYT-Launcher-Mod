@@ -15,7 +15,9 @@ import com.android.launcher66.settings.BottomBarDimensions;
  *
  * The bottom bar's part is pure (screen width, preferences, orientation) so that it can run before
  * any view is measured, e.g. for the bar snapshots; the left bar's part needs the measured height
- * of its recycler and lives in Launcher.EvenVerticalLayoutManager.
+ * of its recycler and lives in Launcher.EvenVerticalLayoutManager. The left bar counts from the
+ * visible icon (a fraction of the bar's width), not from the item box, so that both orientations
+ * leave the same visible gap.
  */
 public final class BarCapacity {
 
@@ -35,6 +37,26 @@ public final class BarCapacity {
 
     /** Left bar: fewest slots it shows, the count it had before it followed the space. */
     public static final int MIN_LEFT_SLOTS = 5;
+
+    /**
+     * Left bar: width of the visible icon as a fraction of the bar's width. Must match
+     * layout_constraintWidth_percent of the icon in both item_left_app_list.xml files.
+     */
+    public static final float LEFT_ICON_WIDTH_PERCENT = 0.7394f;
+
+    /**
+     * Left bar: item height as a multiple of the icon (the XML dimension ratio). Must match
+     * layout_constraintDimensionRatio in res/layout-port (1:1.7) and res/layout-land (1:1).
+     */
+    public static final float LEFT_ITEM_RATIO_PORTRAIT = 1.7f;
+    public static final float LEFT_ITEM_RATIO_LANDSCAPE = 1.0f;
+
+    /**
+     * Left bar: smallest pitch of two neighbouring icons, as a multiple of the visible icon.
+     * 1.7 is the proportion of the portrait item that the owner found right; landscape (1:1) gets
+     * the same visible gap. This is the only place to tune the left bar's density.
+     */
+    public static final float LEFT_MIN_ICON_PITCH = MIN_SLOT_PITCH * 1.7f;
 
     // Recycler width as a fraction of the screen, mirroring the values that
     // Workspace.forceOriginalSizesLayoutOne/Two() force onto the views.
@@ -159,17 +181,27 @@ public final class BarCapacity {
     // Left bar
     // ---------------------------------------------------------------------------------------
 
+    /** Visible icon size of the left bar for a recycler whose inner width (without padding) is this. */
+    public static int leftIconSize(int recyclerInnerWidth) {
+        return (int) (recyclerInnerWidth * LEFT_ICON_WIDTH_PERCENT);
+    }
+
+    /** Item height as a multiple of the icon, for the orientation. */
+    public static float leftItemRatio(boolean portrait) {
+        return portrait ? LEFT_ITEM_RATIO_PORTRAIT : LEFT_ITEM_RATIO_LANDSCAPE;
+    }
+
     /**
-     * Slots that fit in a left bar of this height when an item is naturally this tall:
-     * floor(height / (item * MIN_SLOT_PITCH)), within [MIN_LEFT_SLOTS, LEFT_MEMORY].
+     * Slots that fit in a left bar of this height when its visible icon is this big:
+     * floor(height / (icon * LEFT_MIN_ICON_PITCH)), within [MIN_LEFT_SLOTS, LEFT_MEMORY].
      */
-    public static int leftCapacity(int height, int naturalItemHeight) {
-        if (height <= 0 || naturalItemHeight <= 0) {
+    public static int leftCapacity(int height, int iconSize) {
+        if (height <= 0 || iconSize <= 0) {
             return MIN_LEFT_SLOTS;
         }
-        int capacity = (int) Math.floor(height / (naturalItemHeight * MIN_SLOT_PITCH) + CAPACITY_EPSILON);
+        int capacity = (int) Math.floor(height / (iconSize * LEFT_MIN_ICON_PITCH) + CAPACITY_EPSILON);
         capacity = Math.max(MIN_LEFT_SLOTS, Math.min(LEFT_MEMORY, capacity));
-        logOnce(true, "left: available=" + height + " item=" + naturalItemHeight + " pitch=" + MIN_SLOT_PITCH
+        logOnce(true, "left: available=" + height + " icon=" + iconSize + " pitch=" + LEFT_MIN_ICON_PITCH
                 + " capacity=" + capacity);
         return capacity;
     }
