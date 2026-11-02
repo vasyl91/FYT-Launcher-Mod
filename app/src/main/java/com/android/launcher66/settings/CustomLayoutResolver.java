@@ -334,6 +334,112 @@ public final class CustomLayoutResolver {
         return c;
     }
 
+    // ---------------------------------------------------------------- reset into free space
+
+    /** The room an element may be put into on its screen. */
+    public static final class Bounds {
+        public final int minLeft;
+        public final int minTop;
+        public final int maxRight;
+        public final int maxBottom;
+
+        public Bounds(int minLeft, int minTop, int maxRight, int maxBottom) {
+            this.minLeft = minLeft;
+            this.minTop = minTop;
+            this.maxRight = maxRight;
+            this.maxBottom = maxBottom;
+        }
+    }
+
+    /**
+     * Where a reset element goes: the first free place, not the fixed default one. Free means
+     * inside the bounds, at least {@code gap} from the {@code obstacles} (the elements that stay,
+     * the ones reset before and the stats window) and in no cell of the launcher database.
+     *
+     * <p>The size it had is tried first, then the size of a reset. For each size the old default
+     * position comes first, then the corners that touch the margins or the obstacles (and the
+     * lines of the cell grid, where an empty part of a page starts), top to bottom, left to right.
+     * When the occupied cells are not known nothing can be verified, and the default is kept as
+     * before; when nothing is free it is the default too, in the size of a reset - the launcher
+     * then moves the standard items away from it.
+     *
+     * @param currentSize {width, height} of the element before, or null (never set)
+     * @param resetSize   {width, height} of a reset
+     * @param defaultPos  {x, y} the fixed default
+     * @param obstacles   {left, top, right, bottom} each
+     * @return {x, y, width, height}
+     */
+    public static int[] placeReset(int[] currentSize, int[] resetSize, int[] defaultPos,
+                                   List<int[]> obstacles, Env env, Bounds bounds) {
+        int[] fallback = {defaultPos[0], defaultPos[1], resetSize[0], resetSize[1]};
+        if (!env.canMove()) return fallback;
+
+        List<int[]> sizes = new ArrayList<>();
+        if (currentSize != null) {
+            // Drawn bigger than the room: as big as the room is, but never under the minimum of a reset
+            sizes.add(new int[] {
+                    Math.max(resetSize[0], Math.min(currentSize[0], bounds.maxRight - bounds.minLeft)),
+                    Math.max(resetSize[1], Math.min(currentSize[1], bounds.maxBottom - bounds.minTop))});
+        }
+        sizes.add(resetSize);
+
+        for (int[] size : sizes) {
+            if (fits(defaultPos[0], defaultPos[1], size, obstacles, env, bounds)) {
+                return new int[] {defaultPos[0], defaultPos[1], size[0], size[1]};
+            }
+            for (int[] at : candidates(obstacles, env, bounds)) {
+                if (fits(at[0], at[1], size, obstacles, env, bounds)) {
+                    return new int[] {at[0], at[1], size[0], size[1]};
+                }
+            }
+        }
+        return fallback;
+    }
+
+    private static boolean fits(int x, int y, int[] size, List<int[]> obstacles, Env env, Bounds b) {
+        int right = x + size[0];
+        int bottom = y + size[1];
+        if (x < b.minLeft || y < b.minTop || right > b.maxRight || bottom > b.maxBottom) return false;
+        int gap = env.gap();
+        for (int[] o : obstacles) {
+            boolean apart = right + gap <= o[LEFT] || o[RIGHT] + gap <= x
+                    || bottom + gap <= o[TOP] || o[BOTTOM] + gap <= y;
+            if (!apart) return false;
+        }
+        int[] cells = env.grid.cellsOf(x, y, right, bottom, env.leftBarOffset);
+        for (int c = cells[0]; c <= cells[2]; c++) {
+            for (int rw = cells[1]; rw <= cells[3]; rw++) {
+                if (env.occupied[c][rw]) return false;
+            }
+        }
+        return true;
+    }
+
+    private static List<int[]> candidates(List<int[]> obstacles, Env env, Bounds b) {
+        java.util.TreeSet<Integer> xs = new java.util.TreeSet<>();
+        java.util.TreeSet<Integer> ys = new java.util.TreeSet<>();
+        int gap = env.gap();
+        xs.add(b.minLeft);
+        ys.add(b.minTop);
+        for (int[] o : obstacles) {
+            xs.add(o[RIGHT] + gap);
+            ys.add(o[BOTTOM] + gap);
+        }
+        for (int c = 0; c < env.grid.countX; c++) {
+            xs.add(env.grid.colStart(c) - env.leftBarOffset);
+        }
+        for (int rw = 0; rw < env.grid.countY; rw++) {
+            ys.add(env.grid.rowStart(rw));
+        }
+        List<int[]> list = new ArrayList<>();
+        for (int y : ys) {           // top to bottom
+            for (int x : xs) {       // left to right
+                list.add(new int[] {x, y});
+            }
+        }
+        return list;
+    }
+
     /** Indexes of the elements that were not reset, in order. */
     public static List<Integer> kept(Result result) {
         List<Integer> kept = new ArrayList<>();

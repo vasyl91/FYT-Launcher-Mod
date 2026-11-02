@@ -585,6 +585,7 @@ public class Helpers {
         WorkspaceOccupancy occupancy = null;
         boolean occupancyRead = false;
 
+        List<ScreenResolution> resolutions = new ArrayList<>();
         int lastScreen = 0;
         for (int i = 0; i < screens.length; i++) {
             if (enabledStates[i]) lastScreen = Math.max(lastScreen, screens[i]);
@@ -657,13 +658,23 @@ public class Helpers {
             }
 
             CustomLayoutResolver.Result result = CustomLayoutResolver.resolve(elements, env);
+            ScreenResolution resolution = new ScreenResolution(env, new CustomLayoutResolver.Bounds(margin, margin,
+                    env.maxRight != CustomLayoutResolver.NO_LIMIT ? env.maxRight : bar.rootWidth - margin,
+                    env.maxBottom != CustomLayoutResolver.NO_LIMIT ? env.maxBottom : bar.rootHeight - margin));
             for (int k = 0; k < elements.size(); k++) {
                 int i = indexes.get(k);
+                if (!result.reset[k]) {
+                    resolution.obstacles.add(result.rects[k]);
+                }
                 if (i < 0) continue;
                 String key = rectangleKeys[i];
                 if (result.reset[k]) {
                     foundOverlap = true;
                     needsReset[i] = true;
+                    CustomLayoutResolver.Element element = elements.get(k);
+                    resolution.resets.add(i);
+                    resolution.previousSize.add(element.empty ? null
+                            : new int[] {element.right - element.left, element.bottom - element.top});
                     Log.i(TAG, "Rectangle " + key + " has no room beside the bars or the others, resetting it");
                     continue;
                 }
@@ -688,14 +699,74 @@ public class Helpers {
                 Log.i(TAG, "Rectangle " + key + " fitted beside the bars: " + current + " -> "
                         + rect[0] + "," + rect[1] + "," + rect[2] + "," + rect[3]);
             }
+            resolutions.add(resolution);
         }
 
         // Reset what could not be fitted
         if (foundOverlap) {
+            // The fixed default positions come first (they are written here) ...
             resetOverlappingRectangles(mPrefs, rectangleKeys, needsReset, enabledStates, screenToCompare);
+            // ... then each reset element is put into the first free place instead, if there is one.
+            for (ScreenResolution resolution : resolutions) {
+                placeResetsInFreeSpace(mPrefs, rectangleKeys, resolution);
+            }
         }
 
         return foundOverlap || changedAny;
+    }
+
+    /** What a screen looked like after the layout was resolved: the room, the ones that stay, the ones to reset. */
+    private static final class ScreenResolution {
+        final CustomLayoutResolver.Env env;
+        final CustomLayoutResolver.Bounds bounds;
+        /** {left, top, right, bottom} of everything that stays on the screen, and of what was reset before. */
+        final List<int[]> obstacles = new ArrayList<>();
+        /** Indexes into RECTANGLE_KEYS, in that order (PiPs first), and the size each had before (or null). */
+        final List<Integer> resets = new ArrayList<>();
+        final List<int[]> previousSize = new ArrayList<>();
+
+        ScreenResolution(CustomLayoutResolver.Env env, CustomLayoutResolver.Bounds bounds) {
+            this.env = env;
+            this.bounds = bounds;
+        }
+    }
+
+    /**
+     * Puts the elements that were reset where there is room for them, instead of on the fixed
+     * default place, see {@link CustomLayoutResolver#placeReset}. The default place the reset
+     * has just written is both the first candidate and the fallback. The place is also the new
+     * user rectangle: a reset is a deliberate relocation.
+     */
+    private static void placeResetsInFreeSpace(SharedPreferences prefs, String[] rectangleKeys,
+                                               ScreenResolution resolution) {
+        for (int n = 0; n < resolution.resets.size(); n++) {
+            String key = rectangleKeys[resolution.resets.get(n)];
+            RectF byDefault = getRectangleBounds(prefs, key);
+            if (byDefault.isEmpty()) continue;
+
+            int[] placed = CustomLayoutResolver.placeReset(resolution.previousSize.get(n),
+                    new int[] {(int) byDefault.width(), (int) byDefault.height()},
+                    new int[] {(int) byDefault.left, (int) byDefault.top},
+                    resolution.obstacles, resolution.env, resolution.bounds);
+            int left = placed[0];
+            int top = placed[1];
+            int right = left + placed[2];
+            int bottom = top + placed[3];
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt(key + "TopLeftX", left);
+            editor.putInt(key + "TopLeftY", top);
+            editor.putInt(key + "TopRightX", right);
+            editor.putInt(key + "TopRightY", top);
+            editor.putInt(key + "BottomRightX", right);
+            editor.putInt(key + "BottomRightY", bottom);
+            editor.putInt(key + "BottomLeftX", left);
+            editor.putInt(key + "BottomLeftY", bottom);
+            putUserRect(editor, key, left, top, right, bottom);
+            editor.apply();
+            resolution.obstacles.add(new int[] {left, top, right, bottom});
+            Log.i(TAG, "Rectangle " + key + " reset to " + left + "," + top + "," + right + "," + bottom);
+        }
     }
 
     /**
