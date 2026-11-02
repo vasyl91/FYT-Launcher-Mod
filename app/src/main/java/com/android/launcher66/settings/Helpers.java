@@ -519,6 +519,7 @@ public class Helpers {
      */
     public boolean checkAndResetIfOverlappingOnScreen(int screenToCompare) {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
+        ensureUserRects(mPrefs);
         
         String[] rectangleKeys = RECTANGLE_KEYS;
         String[] screenKeys = SCREEN_KEYS;
@@ -723,6 +724,46 @@ public class Helpers {
                 return new int[] {PipEdgeTrim.pipMinWidth(key, Launcher.calculatedPipMinWidth,
                         firstPip, secondPip, thirdPip, fourthPip), Launcher.calculatedPipMinHeight};
         }
+    }
+
+    /**
+     * The rectangle the user drew (in the creator) or that a reset gave an element: the layout
+     * the element returns to whenever the bars leave room for it. The eight corner keys hold the
+     * layout actually in use, which Helpers derives from this rectangle and the bars; launcher,
+     * CellLayout, WindowUtil and the PiP read only the corners.
+     */
+    public static void putUserRect(SharedPreferences.Editor editor, String key,
+                                   int left, int top, int right, int bottom) {
+        editor.putInt(key + "UserLeft", left);
+        editor.putInt(key + "UserTop", top);
+        editor.putInt(key + "UserRight", right);
+        editor.putInt(key + "UserBottom", bottom);
+    }
+
+    /** @return {left, top, right, bottom}, or null when the element has no user rectangle yet. */
+    private static int[] getUserRect(SharedPreferences prefs, String key) {
+        if (!prefs.contains(key + "UserLeft") || !prefs.contains(key + "UserRight")
+                || !prefs.contains(key + "UserTop") || !prefs.contains(key + "UserBottom")) {
+            return null;
+        }
+        return new int[] {prefs.getInt(key + "UserLeft", 0), prefs.getInt(key + "UserTop", 0),
+                prefs.getInt(key + "UserRight", 0), prefs.getInt(key + "UserBottom", 0)};
+    }
+
+    /**
+     * Migration: layouts saved before the user rectangle existed take the corners they have now
+     * (cut back earlier or not - that is the best the old data can tell).
+     */
+    private static void ensureUserRects(SharedPreferences prefs) {
+        SharedPreferences.Editor editor = null;
+        for (String key : RECTANGLE_KEYS) {
+            if (getUserRect(prefs, key) != null) continue;
+            RectF rect = getRectangleBounds(prefs, key);
+            if (rect.isEmpty()) continue;
+            if (editor == null) editor = prefs.edit();
+            putUserRect(editor, key, (int) rect.left, (int) rect.top, (int) rect.right, (int) rect.bottom);
+        }
+        if (editor != null) editor.apply();
     }
 
     private static RectF getRectangleBounds(SharedPreferences mPrefs, String key) {
@@ -1091,7 +1132,20 @@ public class Helpers {
             }
         }
         
+        // apply() updates the in-memory prefs at once. A reset is a deliberate relocation, so the
+        // new place is also what the element returns to once the bars leave room.
         editorReset.apply();
+        SharedPreferences.Editor editorUser = null;
+        for (int i = 0; i < rectangleKeys.length; i++) {
+            if (!needsReset[i] || !enabledStates[i]
+                    || !compareScreensForReset(SCREEN_KEYS[i], screenToCompare, mPrefs)) continue;
+            RectF placed = getRectangleBounds(mPrefs, rectangleKeys[i]);
+            if (placed.isEmpty()) continue;
+            if (editorUser == null) editorUser = mPrefs.edit();
+            putUserRect(editorUser, rectangleKeys[i], (int) placed.left, (int) placed.top,
+                    (int) placed.right, (int) placed.bottom);
+        }
+        if (editorUser != null) editorUser.apply();
     }
 
     /**

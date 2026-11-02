@@ -38,8 +38,10 @@ import com.android.launcher66.R;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
@@ -83,6 +85,10 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     private String selectedWidgetKey = null;
     private String activeRectKey = null;
     private final RectangleTouchHelper touchHelper = new RectangleTouchHelper();
+    // Rectangles the user dragged or resized since the last save. Only those get a new user
+    // rectangle (Helpers.putUserRect): the others show a layout the bars may have cut back, which
+    // must not replace what the user drew.
+    private final Set<String> touchedKeys = new HashSet<>();
     private static final int NO_POINTER = -1;
     // The finger that started the drag; other fingers on the canvas are ignored.
     private int activePointerId = NO_POINTER;
@@ -845,6 +851,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         int dx = Math.round(finalRect.left - before.left);
         int dy = Math.round(finalRect.top - before.top);
         if (dx == 0 && dy == 0) return;
+        touchedKeys.add(activeRectKey);
         for (int id : ids) {
             point[id].x += dx;
             point[id].y += dy;
@@ -860,6 +867,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         touchHelper.resize(x, y, before, cfg.minWidth, cfg.minHeight,
                 minBorderX, minBorderY, maxBorderX, maxBorderY, cand);
         if (cand.equals(before) || collidesWithAutoHideBar(cand)) return;
+        touchedKeys.add(cfg.key);
         candToPoints(ids, cand);
     }
 
@@ -1222,7 +1230,12 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             e.putInt(cfg.key + "BottomRightY", point[ids[2]].y);
             e.putInt(cfg.key + "BottomLeftX", point[ids[3]].x);
             e.putInt(cfg.key + "BottomLeftY", point[ids[3]].y);
+            if (touchedKeys.contains(cfg.key) && !"stats".equals(cfg.key)) {
+                Helpers.putUserRect(e, cfg.key, point[ids[0]].x, point[ids[0]].y,
+                        point[ids[2]].x, point[ids[2]].y);
+            }
         }
+        touchedKeys.clear();
         e.apply();
     }
 

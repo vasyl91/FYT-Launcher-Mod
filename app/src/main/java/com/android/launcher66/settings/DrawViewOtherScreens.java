@@ -914,6 +914,11 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
             e.putInt(cfg.key + "BottomRightY", point[ids[2]].y);
             e.putInt(cfg.key + "BottomLeftX", point[ids[3]].x);
             e.putInt(cfg.key + "BottomLeftY", point[ids[3]].y);
+            // No bar cuts anything back on these screens: what is drawn is what the user drew.
+            if (!"stats".equals(cfg.key)) {
+                Helpers.putUserRect(e, cfg.key, point[ids[0]].x, point[ids[0]].y,
+                        point[ids[2]].x, point[ids[2]].y);
+            }
         }
         e.apply();
     }
