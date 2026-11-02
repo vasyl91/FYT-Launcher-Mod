@@ -134,4 +134,58 @@ class PipEdgeTrimTest {
             assertFalse(PipEdgeTrim.isPipKey(key), key);
         }
     }
+
+    @Test
+    void trimmableKeys() {
+        for (String key : new String[] {"pipDual", "pipFirst", "pipSecond", "pipThird", "pipFourth",
+                "date", "music", "radio"}) {
+            assertTrue(PipEdgeTrim.isTrimmableKey(key), key);
+        }
+        for (String key : new String[] {"stats", "appStats", "", null}) {
+            assertFalse(PipEdgeTrim.isTrimmableKey(key), String.valueOf(key));
+        }
+    }
+
+    @Test
+    void dateWidgetCutAtTheBottomBarKeepsItsMinimumHeight() {
+        WidgetMetrics.Metrics m = WidgetMetrics.compute(2000, 1200);
+        int maxBottom = PipEdgeTrim.maxBottom(1000, 5);
+        // 400 high, bar eats 45 of it: still above the minimum height (144)
+        assertArrayEquals(new int[] {10, 600, 10 + m.dateMinWidth, 995},
+                PipEdgeTrim.trim(10, 600, 10 + m.dateMinWidth, 1040, NO, maxBottom,
+                        m.dateMinWidth, m.dateMinHeight));
+    }
+
+    @Test
+    void radioWidgetThatWouldDropBelowItsMinimumIsNotCut() {
+        WidgetMetrics.Metrics m = WidgetMetrics.compute(2000, 1200);
+        int maxBottom = PipEdgeTrim.maxBottom(1000, 5);
+        int top = maxBottom - m.radioMinHeight + 1; // one pixel short after the cut
+        assertNull(PipEdgeTrim.trim(10, top, 10 + m.radioMinWidth, top + m.radioMinHeight + 40,
+                NO, maxBottom, m.radioMinWidth, m.radioMinHeight));
+        // exactly the minimum is still fine
+        assertArrayEquals(new int[] {10, top - 1, 10 + m.radioMinWidth, maxBottom},
+                PipEdgeTrim.trim(10, top - 1, 10 + m.radioMinWidth, top + m.radioMinHeight + 40,
+                        NO, maxBottom, m.radioMinWidth, m.radioMinHeight));
+    }
+
+    @Test
+    void musicWidgetCutAtTheLeftBarWithinItsMinimumWidth() {
+        WidgetMetrics.Metrics m = WidgetMetrics.compute(2000, 1200);
+        int maxRight = PipEdgeTrim.maxRight(2000, 142f, 5); // 1853
+        assertArrayEquals(new int[] {1500, 100, maxRight, 100 + m.musicMinHeight},
+                PipEdgeTrim.trim(1500, 100, 1900, 100 + m.musicMinHeight, maxRight, NO,
+                        m.musicMinWidth, m.musicMinHeight));
+        // left edge so far right that the cut leaves less than the minimum width
+        int left = maxRight - m.musicMinWidth + 1;
+        assertNull(PipEdgeTrim.trim(left, 100, left + 400, 100 + m.musicMinHeight, maxRight, NO,
+                m.musicMinWidth, m.musicMinHeight));
+    }
+
+    @Test
+    void widgetEntirelyUnderTheBarIsNotCut() {
+        WidgetMetrics.Metrics m = WidgetMetrics.compute(2000, 1200);
+        int maxBottom = PipEdgeTrim.maxBottom(1000, 5);
+        assertNull(PipEdgeTrim.trim(10, 1010, 10 + m.dateMinWidth, 1200, NO, maxBottom, 0, 0));
+    }
 }

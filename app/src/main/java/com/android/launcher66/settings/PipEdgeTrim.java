@@ -1,9 +1,10 @@
 package com.android.launcher66.settings;
 
 /**
- * Geometry rules for PiP rectangles that a bigger bottom bar or the left bar has started to cover.
- * Instead of resetting the PiP to its default place (which also restarts the app inside it), the
- * covered edge is cut back: the top-left corner stays where the user put it.
+ * Geometry rules for PiP and widget (date, music, radio) rectangles that a bigger bottom bar or the
+ * left bar has started to cover. Instead of resetting the element to its default place (which
+ * restarts the app inside a PiP and loses the user's layout of a widget), the covered edge is cut
+ * back: the top-left corner stays where the user put it.
  *
  * <p>Pure Java on purpose (no Android imports) so the rules are unit-tested on the JVM. Everything
  * is in the coordinate space the creator saves in: the box the widgets live in, without the left
@@ -80,6 +81,11 @@ public final class PipEdgeTrim {
         if (third) count++;
         if (fourth) count++;
         return fullMinWidth / Math.min(Math.max(1, count), 2);
+    }
+
+    /** Rectangles that are cut back at the bars instead of reset: the PiP ones plus date, music, radio. */
+    public static boolean isTrimmableKey(String key) {
+        return isPipKey(key) || "date".equals(key) || "music".equals(key) || "radio".equals(key);
     }
 
     public static boolean isPipKey(String key) {

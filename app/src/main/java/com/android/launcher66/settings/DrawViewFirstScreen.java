@@ -515,8 +515,8 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
     /** The same rectangle moved (and if needed shrunk, never below its minimum) into the canvas. */
     private RectF fitIntoCanvas(RectF r, RectangleConfig cfg) {
-        if (PipEdgeTrim.isPipKey(cfg.key)) {
-            // A PiP that only sticks out at the right or bottom is cut back, keeping its top left
+        if (PipEdgeTrim.isTrimmableKey(cfg.key)) {
+            // A PiP or widget that only sticks out at the right or bottom is cut back, keeping its top left
             // corner, as Helpers does for the real bars. Only when that would go below the minimum
             // does it fall through to the move-and-shrink below.
             int[] cut = PipEdgeTrim.trim((int) r.left, (int) r.top, (int) r.right, (int) r.bottom,

@@ -569,9 +569,9 @@ public class Helpers {
                 : BottomBarDimensions.computeLeftBarWidth(portrait, bar.rootWidth, bar.rootHeight, bar.barHeight);
         int margin = Integer.valueOf(mPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
         
-        // A PiP that only reaches under the bottom bar or the left bar is cut back instead of
-        // reset. Done before the collision checks below, so those see the cut rectangles.
-        boolean trimmedAny = trimPipsCoveredByBars(mPrefs, enabledStates, screens, screenToCompare,
+        // A PiP or widget that only reaches under the bottom bar or the left bar is cut back instead
+        // of reset. Done before the collision checks below, so those see the cut rectangles.
+        boolean trimmedAny = trimRectsCoveredByBars(mPrefs, enabledStates, screens, screenToCompare,
                 bottomBarRect != null ? bar : null, leftBar ? leftBarWidth : -1f, bar.rootWidth, margin);
         
         // Check for overlaps between rectangles
@@ -641,16 +641,16 @@ public class Helpers {
     }
 
     /**
-     * Cuts the bottom edge of a screen-0 PiP that overlaps the bottom bar, and the right edge of
-     * one that overlaps the left bar, and saves the result. A PiP that would end up below its
-     * minimum size (the creator's minimum, see PipEdgeTrim.pipMinWidth) is left alone, so the
-     * regular checks reset it as before.
+     * Cuts the bottom edge of a screen-0 PiP or widget (date, music, radio) that overlaps the
+     * bottom bar, and the right edge of one that overlaps the left bar, and saves the result. An
+     * element that would end up below its minimum size (the creator's minimum, see
+     * {@link #trimMinSize}) is left alone, so the regular checks reset it as before.
      *
      * @param bottomBar geometry of the bar, or null when it reserves nothing (auto-hide)
      * @param leftBarWidth width of the left bar, or a negative value when it is off
      * @return true if any rectangle was cut
      */
-    private boolean trimPipsCoveredByBars(SharedPreferences mPrefs, boolean[] enabledStates, int[] screens,
+    private boolean trimRectsCoveredByBars(SharedPreferences mPrefs, boolean[] enabledStates, int[] screens,
                                           int screenToCompare, BarGeometry bottomBar, float leftBarWidth,
                                           int rootWidth, int margin) {
         if (bottomBar == null && leftBarWidth < 0f) return false;
@@ -663,7 +663,7 @@ public class Helpers {
         boolean trimmed = false;
         for (int i = 0; i < RECTANGLE_KEYS.length; i++) {
             String key = RECTANGLE_KEYS[i];
-            if (!PipEdgeTrim.isPipKey(key) || !enabledStates[i] || screens[i] != 0) continue;
+            if (!PipEdgeTrim.isTrimmableKey(key) || !enabledStates[i] || screens[i] != 0) continue;
             if (screenToCompare >= 0 && screens[i] != screenToCompare) continue;
 
             RectF rect = getRectangleBounds(mPrefs, key);
@@ -676,9 +676,9 @@ public class Helpers {
 
             int maxBottom = hitsBottom ? PipEdgeTrim.maxBottom((int) bottomBar.barTop, margin) : PipEdgeTrim.NO_LIMIT;
             int maxRight = hitsSide ? PipEdgeTrim.maxRight(rootWidth, leftBarWidth, margin) : PipEdgeTrim.NO_LIMIT;
-            int minWidth = PipEdgeTrim.pipMinWidth(key, Launcher.calculatedPipMinWidth,
-                    firstPip, secondPip, thirdPip, fourthPip);
-            int minHeight = Launcher.calculatedPipMinHeight;
+            int[] min = trimMinSize(key, firstPip, secondPip, thirdPip, fourthPip);
+            int minWidth = min[0];
+            int minHeight = min[1];
 
             int[] cut = PipEdgeTrim.trim((int) rect.left, (int) rect.top, (int) rect.right, (int) rect.bottom,
                     maxRight, maxBottom, minWidth, minHeight);
@@ -704,6 +704,25 @@ public class Helpers {
                     + cut[0] + "," + cut[1] + "," + cut[2] + "," + cut[3]);
         }
         return trimmed;
+    }
+
+    /**
+     * {width, height} minimum of a trimmable rectangle, the same value the creator writes into its
+     * RectangleConfig (all of them come from WidgetMetrics).
+     */
+    private static int[] trimMinSize(String key, boolean firstPip, boolean secondPip,
+                                     boolean thirdPip, boolean fourthPip) {
+        switch (key) {
+            case "date":
+                return new int[] {Launcher.calculatedDateMinWidth, Launcher.calculatedDateMinHeight};
+            case "music":
+                return new int[] {Launcher.calculatedMusicMinWidth, Launcher.calculatedMusicMinHeight};
+            case "radio":
+                return new int[] {Launcher.calculatedRadioMinWidth, Launcher.calculatedRadioMinHeight};
+            default:
+                return new int[] {PipEdgeTrim.pipMinWidth(key, Launcher.calculatedPipMinWidth,
+                        firstPip, secondPip, thirdPip, fourthPip), Launcher.calculatedPipMinHeight};
+        }
     }
 
     private static RectF getRectangleBounds(SharedPreferences mPrefs, String key) {
