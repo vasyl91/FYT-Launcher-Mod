@@ -27,4 +27,24 @@ public final class TextFit {
         }
         return maxSize * (availableWidth / textWidthAtMax) * SAFETY;
     }
+
+    /**
+     * Text size for a line that has a box of its own: it must fit the width, and its line (font
+     * ascent to descent) may take only {@code heightShare} of the height, so what is left over can
+     * be split into equal gaps. Never above the maximum.
+     *
+     * @param textWidthAtMax   width of the text measured at {@code maxSize}
+     * @param lineHeightAtMax  ascent + descent of the font at {@code maxSize}
+     * @param availableWidth   width of the box, padding already taken off
+     * @param availableHeight  height of the box
+     */
+    public static float fitBox(float maxSize, float textWidthAtMax, float lineHeightAtMax,
+                               float availableWidth, float availableHeight, float heightShare) {
+        float size = fit(maxSize, textWidthAtMax, availableWidth);
+        float budget = availableHeight * heightShare;
+        if (availableHeight > 0f && lineHeightAtMax > budget) {
+            size = Math.min(size, maxSize * budget / lineHeightAtMax);
+        }
+        return size;
+    }
 }

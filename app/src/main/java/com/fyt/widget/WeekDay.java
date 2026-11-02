@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.widget.TextViewCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Launcher;
@@ -22,11 +21,13 @@ public class WeekDay extends AppCompatTextView implements SharedPreferences.OnSh
     private static WeekDay mWeekDay;
     private final Context mContext;
     private ViewTreeObserver.OnPreDrawListener mPreDrawListener;
+    /** android:tag of a view that sits alone in its box, see absolute_time.xml. */
+    private static final String BOX_FIT_TAG = "boxFit";
     private String mFittedText;
-    private int mAutoSizeMaxSp = -1;
+    // The date widget layout (absolute_time.xml) marks its views to be fitted to their box.
+    private BoxTextFit mBoxFit;
     private SharedPreferences mPrefs;
     private int mDefaultTextColor;
-    private static final int AUTO_SIZE_MIN_SP = 8;
 
     public WeekDay(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -62,12 +63,20 @@ public class WeekDay extends AppCompatTextView implements SharedPreferences.OnSh
         super.onAttachedToWindow();
         // Register preference change listener
         mPrefs.registerOnSharedPreferenceChangeListener(this);
+        if (BOX_FIT_TAG.equals(getTag())) {
+            mBoxFit = new BoxTextFit(this);
+            mBoxFit.attach();
+        }
         setDate();
         updateTextColor();
     }
 
     @Override
     protected void onDetachedFromWindow() {
+        if (mBoxFit != null) {
+            mBoxFit.detach();
+            mBoxFit = null;
+        }
         // Remove any pending listeners to prevent memory leaks
         if (mPreDrawListener != null) {
             getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
@@ -106,14 +115,14 @@ public class WeekDay extends AppCompatTextView implements SharedPreferences.OnSh
         String mText = TimeUtil.getWeekDay(this.mContext);
         setText(mText);
 
-        if (TextViewCompat.getAutoSizeTextType(this) != TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE) {
-            // The layout turned autosize on: it fits the text to the width and height of the view
-            // whenever either changes. setTextSize() would switch it off, so only the limits are set.
-            configureAutoSize();
+        if (mBoxFit != null) {
+            // The view has a box of its own in this layout: fit the text to it. Done again by the
+            // box fit whenever the box changes size.
+            mBoxFit.fit();
             return;
         }
 
-        // No autosize in this layout: fit the text to its line, always starting from the maximum so
+        // No box in this layout: fit the text to its line, always starting from the maximum so
         // a shorter text (the week day changes at midnight) is not stuck at the size of a longer one.
         if (mText.equals(mFittedText)) return;
         mFittedText = mText;
@@ -137,16 +146,6 @@ public class WeekDay extends AppCompatTextView implements SharedPreferences.OnSh
             }
         };
         getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
-    }
-
-    /** Uniform autosize between 8 sp (as the radio widget) and the widget text size. */
-    private void configureAutoSize() {
-        int maxSp = Math.max(Launcher.widgetTextSizeBasic, 1);
-        if (maxSp == mAutoSizeMaxSp) return;
-        mAutoSizeMaxSp = maxSp;
-        int minSp = Math.min(AUTO_SIZE_MIN_SP, maxSp);
-        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                this, minSp, maxSp, 1, TypedValue.COMPLEX_UNIT_SP);
     }
 
     private void adjustTextSize(String text, float targetSize) {
