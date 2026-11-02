@@ -32,8 +32,10 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.HomeFrontGuard;
+import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.PipEdgeTrim;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -1074,9 +1076,8 @@ public class WindowHostDualPane {
         }
 
         int totalWidth = Math.max(1, pendingBounds.width());
-        int minW = Math.round(totalWidth * MIN_SPLIT_RATIO);
-        int maxW = Math.round(totalWidth * MAX_SPLIT_RATIO);
-        int leftW  = clampPx(Math.round(totalWidth * splitRatio), minW, maxW);
+        // The saved proportion stays as it is; only the width it is applied as is limited.
+        int leftW  = DualSplitBounds.leftWidth(totalWidth, splitRatio, minPanePx());
         int rightW = totalWidth - leftW;
 
         if (!force && leftW == lastAppliedLeftW && rightW == lastAppliedRightW) return;
@@ -1240,8 +1241,7 @@ public class WindowHostDualPane {
         }
         if (hasPendingBounds && pendingBounds.width() > 0) {
             int total = pendingBounds.width();
-            int leftW = clampPx(Math.round(total * splitRatio),
-                    Math.round(total * MIN_SPLIT_RATIO), Math.round(total * MAX_SPLIT_RATIO));
+            int leftW = DualSplitBounds.leftWidth(total, splitRatio, minPanePx());
             return side == Side.LEFT ? leftW : (total - leftW);
         }
         return paneHost != null ? paneHost.getWidth() : 0;
@@ -1551,8 +1551,7 @@ public class WindowHostDualPane {
         int originX = hasPendingBounds ? pendingBounds.left : 0;
         int originY = hasPendingBounds ? pendingBounds.top  : 0;
 
-        int leftW = clampPx(Math.round(totalW * splitRatio),
-                Math.round(totalW * MIN_SPLIT_RATIO), Math.round(totalW * MAX_SPLIT_RATIO));
+        int leftW = DualSplitBounds.leftWidth(totalW, splitRatio, minPanePx());
 
         if (side == Side.LEFT) {
             return new Rect(originX, originY, originX + leftW, originY + totalH);
@@ -1950,9 +1949,10 @@ public class WindowHostDualPane {
                     totalW = hasPendingBounds ? pendingBounds.width() : root.getWidth();
                     if (totalW <= 0) totalW = Math.max(1, root.getWidth());
 
-                    minW = Math.round(totalW * MIN_SPLIT_RATIO);
-                    maxW = Math.round(totalW * MAX_SPLIT_RATIO);
-                    startLeftW = clampPx(Math.round(totalW * splitRatio), minW, maxW);
+                    int[] range = DualSplitBounds.leftRange(totalW, minPanePx());
+                    minW = range[0];
+                    maxW = range[1];
+                    startLeftW = DualSplitBounds.leftWidth(totalW, splitRatio, minPanePx());
 
                     pendingLeft = pendingRight = -1;
                     return true;
@@ -2042,7 +2042,8 @@ public class WindowHostDualPane {
             if (rightAV != null && WindowUtil.isReparentUnsettled(WindowHostActivityView.asView(rightAV))) return;
 
             int tw = Math.max(1, leftW + rightW);
-            int clampedLeft = clampPx(leftW, Math.round(tw * MIN_SPLIT_RATIO), Math.round(tw * MAX_SPLIT_RATIO));
+            int[] range = DualSplitBounds.leftRange(tw, minPanePx());
+            int clampedLeft = clampPx(leftW, range[0], range[1]);
             int clampedRight = tw - clampedLeft;
 
             setSplitRatio((float) clampedLeft / (float) tw);
@@ -2149,6 +2150,14 @@ public class WindowHostDualPane {
         int shortSide = Math.min(dm.widthPixels, dm.heightPixels);
         if (shortSide <= 0) return v * LauncherApplication.sApp.getResources().getDisplayMetrics().density;
         return v * shortSide / 800f;
+    }
+
+    /**
+     * Narrowest a pane may be: the minimum of a single PiP when two are shown, the same value the
+     * creator and Helpers cut the dual PiP back to (half of its minimum width).
+     */
+    private static int minPanePx() {
+        return PipEdgeTrim.pipMinWidth("pipFirst", Launcher.calculatedPipMinWidth, true, true, false, false);
     }
 
     private static int clampPx(int v, int min, int max) {
