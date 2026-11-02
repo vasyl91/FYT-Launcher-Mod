@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.widget.TextViewCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Launcher;
@@ -22,9 +23,11 @@ public class Date extends AppCompatTextView implements SharedPreferences.OnShare
     private static Date mDate;
     private final Context mContext;
     private ViewTreeObserver.OnPreDrawListener mPreDrawListener;
-    private boolean isTextSizeAdjusted = false;
+    private String mFittedText;
+    private int mAutoSizeMaxSp = -1;
     private SharedPreferences mPrefs;
     private int mDefaultTextColor;
+    private static final int AUTO_SIZE_MIN_SP = 8;
 
     public static Date getDate() {
         return mDate;
@@ -102,66 +105,76 @@ public class Date extends AppCompatTextView implements SharedPreferences.OnShare
 
     public void setDate() {
         String mText = TimeUtil.getDateOfToday(this.mContext, getDateStringFormat(LauncherApplication.sApp.getResources().getInteger(R.integer.apps_timewidget_show)));
-        float targetSize = Launcher.widgetTextSizeBasic;
-        
         setText(mText);
-        
-        // Only adjust size once, or when text actually changes
-        if (!isTextSizeAdjusted) {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, targetSize);
-            
-            // Use a member variable to track the listener
-            mPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    if (mPreDrawListener != null) {
-                        getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
-                        mPreDrawListener = null;
-                    }
-                    
-                    if (!isAttachedToWindow()) {
-                        return true;
-                    }
-                    
-                    adjustTextSize(mText, targetSize);
-                    isTextSizeAdjusted = true;
-                    return true;
-                }
-            };
-            
-            getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
+
+        if (TextViewCompat.getAutoSizeTextType(this) != TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE) {
+            // The layout turned autosize on: it fits the text to the width and height of the view
+            // whenever either changes. setTextSize() would switch it off, so only the limits are set.
+            configureAutoSize();
+            return;
         }
+
+        // No autosize in this layout: fit the text to its line, always starting from the maximum so
+        // a shorter text (the week day changes at midnight) is not stuck at the size of a longer one.
+        if (mText.equals(mFittedText)) return;
+        mFittedText = mText;
+        final float targetSize = Launcher.widgetTextSizeBasic;
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, targetSize);
+
+        if (mPreDrawListener != null) {
+            getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
+        }
+        mPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                getViewTreeObserver().removeOnPreDrawListener(this);
+                if (mPreDrawListener == this) {
+                    mPreDrawListener = null;
+                }
+                if (isAttachedToWindow()) {
+                    adjustTextSize(mText, targetSize);
+                }
+                return true;
+            }
+        };
+        getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
+    }
+
+    /** Uniform autosize between 8 sp (as the radio widget) and the widget text size. */
+    private void configureAutoSize() {
+        int maxSp = Math.max(Launcher.widgetTextSizeBasic, 1);
+        if (maxSp == mAutoSizeMaxSp) return;
+        mAutoSizeMaxSp = maxSp;
+        int minSp = Math.min(AUTO_SIZE_MIN_SP, maxSp);
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                this, minSp, maxSp, 1, TypedValue.COMPLEX_UNIT_SP);
     }
 
     private void adjustTextSize(String text, float targetSize) {
+        // These layouts size the view to its text, so the line is the parent minus some air.
         int maxWidth = 0;
         if (getParent() instanceof View) {
-            View parent = (View) getParent();
-            maxWidth = parent.getWidth() - (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
+            maxWidth = ((View) getParent()).getWidth() - (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
         }
-        
         if (maxWidth <= 0) {
             maxWidth = getWidth();
         }
-        
-        if (maxWidth > 0) {
-            setMaxWidth(maxWidth);
-            
-            int availableWidth = maxWidth - getPaddingLeft() - getPaddingRight();
-            
-            if (availableWidth > 0) {
-                TextPaint paint = new TextPaint();
-                paint.setTextSize(TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_SP, targetSize, getResources().getDisplayMetrics()));
-                
-                float textWidth = paint.measureText(text);
-                
-                if (textWidth >= availableWidth) {
-                    float scaledSize = targetSize * (availableWidth / textWidth) * 0.95f;
-                    setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
-                }
-            }
+        int availableWidth = maxWidth - getPaddingLeft() - getPaddingRight();
+        if (availableWidth <= 0) {
+            // Not laid out yet: let the next setDate() try again.
+            mFittedText = null;
+            return;
+        }
+        setMaxWidth(maxWidth);
+
+        // Measured with a copy of the view's paint, so the typeface and letter spacing are the real ones.
+        TextPaint paint = new TextPaint(getPaint());
+        paint.setTextSize(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP, targetSize, getResources().getDisplayMetrics()));
+        float fitted = TextFit.fit(targetSize, paint.measureText(text), availableWidth);
+        if (fitted != targetSize) {
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, fitted);
         }
     }
 

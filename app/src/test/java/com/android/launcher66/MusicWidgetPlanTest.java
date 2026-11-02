@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.android.launcher66.settings.WidgetMetrics;
+
 import org.junit.jupiter.api.Test;
 
 class MusicWidgetPlanTest {
@@ -79,6 +81,26 @@ class MusicWidgetPlanTest {
                 MusicWidgetPlan.Plan bar = MusicWidgetPlan.planBar(w, h, h, 1000, 1f);
                 int barSum = bar.rows() * bar.rowPx + bar.buttonRowPx + bar.gapPx * (bar.rows() + 1);
                 assertTrue(barSum <= h, "bar " + w + "x" + h + " " + bar + " sum " + barSum);
+            }
+        }
+    }
+
+    @Test
+    void homePartsFitTheMinimumWidgetTheCreatorAllows() {
+        int[][] screens = {{1280, 720}, {1920, 1080}, {2000, 1200}};
+        float[] densities = {1.5f, 2.0f};
+        for (int[] screen : screens) {
+            WidgetMetrics.Metrics m = WidgetMetrics.compute(screen[0], screen[1]);
+            for (float density : densities) {
+                MusicWidgetPlan.Plan p = MusicWidgetPlan.planHome(m.musicMinWidth, m.musicMinHeight,
+                        density, 22f * density);
+                String where = screen[0] + "x" + screen[1] + " density " + density + ": " + p;
+                int elements = (p.cover ? 1 : 0) + p.rows() + 2;
+                int used = (p.cover ? p.coverPx : 0) + p.rows() * p.rowPx + p.progressPx
+                        + p.buttonRowPx + elements * p.gapPx;
+                assertTrue(used <= m.musicMinHeight, "height " + where);
+                assertTrue(4 * p.buttonSidePx <= m.musicMinWidth, "buttons " + where);
+                assertTrue(p.coverPx <= m.musicMinWidth, "cover " + where);
             }
         }
     }

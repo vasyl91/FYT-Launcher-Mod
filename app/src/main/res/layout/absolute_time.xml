@@ -34,44 +34,55 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- Stretched to the height of the row (set by the clock column), so the two text lines below
+             have a definite width and height: AppCompat autosize does not work with wrap_content. -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_layout_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_alignSelf="stretch"
             app:layout_flexBasisPercent="30%"
             app:layout_flexGrow="0"
             app:layout_flexShrink="0">
 
-            <com.google.android.flexbox.FlexboxLayout     
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintDimensionRatio="1:1"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:flexDirection="column"
-                app:justifyContent="space_evenly" >
+                app:layout_constraintTop_toTopOf="parent" >
 
+                <!-- textSize 0sp: the size comes from autosize, its maximum is set in Date / WeekDay
+                     (Launcher.widgetTextSizeBasic). -->
                 <com.fyt.widget.Date
                     android:textSize="0sp"
                     android:textColor="@android:color/white"
                     android:id="@+id/date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:singleLine="true" />
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:maxLines="1"
+                    app:autoSizeTextType="uniform" />
 
                 <com.fyt.widget.WeekDay
                     android:textSize="0sp"
                     android:textColor="@android:color/white"
                     android:id="@+id/curWeek"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:singleLine="true"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:maxLines="1"
+                    app:autoSizeTextType="uniform" />
 
-            </com.google.android.flexbox.FlexboxLayout>
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.flexbox.FlexboxLayout>
