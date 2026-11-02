@@ -92,6 +92,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -319,8 +321,9 @@ public class Workspace extends SmoothPagedView
     private static final long SCREEN_AWAITING_ADD_MAX_MS = 120_000L;
     /** A strip requested while the workspace was loading; see stripEmptyScreens(). */
     private boolean mStripScreensAfterLoad = false;
-    /** A strip based on the database requested while the workspace was loading. */
-    private boolean mStripScreensBaseOnDBAfterLoad = false;
+    /** How many times in a row a plan of the model did not fit the pages; see applyScreenStrip(). */
+    private int mStripRetries = 0;
+    private static final int STRIP_MAX_RETRIES = 3;
     private final Helpers helpers = new Helpers();
     public static final long CUSTOM_CONTENT_SCREEN_ID1 = WorkspaceScreenPlan.USER_PAGE_ID;
     private View workspaceView;
@@ -793,26 +796,12 @@ public class Workspace extends SmoothPagedView
         newScreen.setSoundEffectsEnabled(false);
         
         // Add to data structures
+        boolean createdHere = false;
         if (screenId == EXTRA_EMPTY_SCREEN_ID) {
             mScreenOrder.remove(EXTRA_EMPTY_SCREEN_ID);
-            long maxScreen = mScreenOrder.isEmpty() ? 0L : Math.abs(Collections.max(mScreenOrder));
-            if (maxScreen == 302) {
-                screenId = 1;
-            } else {
-                screenId = maxScreen + 1;
-            }
-            // Persist
-            try {
-                ContentValues cv = new ContentValues();
-                cv.put(LauncherSettings.WorkspaceScreens._ID, screenId); // dbInsertAndCheck requires _id
-                cv.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, insertIndex);
-                // LauncherSettings.WorkspaceScreens.CONTENT_URI == "content://com.android.launcher66.settings/workspaceScreens?notify=true"
-                mLauncher.getContentResolver().insert(LauncherSettings.WorkspaceScreens.CONTENT_URI, cv);
-                Log.i(TAG, "Persisted workspace screen to provider: id=" + screenId + " rank=" + insertIndex);
-            } catch (Exception e) {
-                // Don't crash if the provider insert fails — log and continue (but this is the important part).
-                Log.w(TAG, "Failed to persist new workspace screen to provider: " + e);
-            }
+            // The only source of the screen ids; the table is written below by the model.
+            screenId = LauncherAppState.getLauncherProvider().generateNewScreenId();
+            createdHere = true;
         }
         mScreenOrder.add(insertIndex, screenId);
         mWorkspaceScreens.put(screenId, newScreen);
@@ -824,7 +813,10 @@ public class Workspace extends SmoothPagedView
         );
         addView(newScreen, insertIndex, lp);
         
-        Log.i(TAG, "insertNewWorkspaceScreen: final mScreenOrder=" + mScreenOrder);
+        if (createdHere && PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getBoolean(Keys.USER_LAYOUT, false)) {
+            mLauncher.getModel().updateWorkspaceScreenOrder(mLauncher, mScreenOrder);
+        }
         return screenId;
     }
 
@@ -2972,18 +2964,12 @@ public class Workspace extends SmoothPagedView
             }
         }
 
-        // 4) Layout has no ID, assign a new ID 
-        long maxScreen = mScreenOrder.isEmpty() ? 0L : Math.abs(Collections.max(mScreenOrder));
-        long newId;
-        if (maxScreen == 302) {
-            newId = 1;
-        } else {
-            newId = maxScreen + 1;
-        }
-        mScreenOrder.add(newId);
+        // 4) The layout has no ID, which should not happen: every page is created with one. It gets
+        // an id from the same source as every screen, but only the map knows it; the order and the
+        // table are the model's.
+        long newId = LauncherAppState.getLauncherProvider().generateNewScreenId();
         mWorkspaceScreens.put(newId, layout);
-        Log.w(TAG, "getIdForScreen(): assigned new virtual screenId=" + newId
-                + " orderWasEmpty=" + (maxScreen == 0L));
+        Log.e(TAG, "getIdForScreen(): a page without an id got screenId=" + newId);
         return newId;
     }
 
@@ -3028,198 +3014,138 @@ public class Workspace extends SmoothPagedView
             mStripScreensAfterLoad = false;
             triggerStripEmptyScreens("Workspace, after load", false);
         }
-        if (mStripScreensBaseOnDBAfterLoad) {
-            mStripScreensBaseOnDBAfterLoad = false;
-            stripEmptyScreensBaseOnDB();
-        }
     }
 
+    /**
+     * Asks the model which screens are empty. The workspace does not judge a page by its views: the
+     * model knows what the database holds on every screen and which screens the custom elements
+     * live on, and answers with a plan that applyScreenStrip() carries out.
+     */
     public void stripEmptyScreens(String sourceClass) {
-        Log.i(TAG, "stripEmptyScreens called in: " + sourceClass);
         if (mLauncher != null && mLauncher.isWorkspaceLoading()) {
-            // During a bind, pages whose items are not bound yet look empty. Stripping them would
-            // drop their screen ids from the database and shift the custom page preferences.
+            // During a bind, pages whose items are not bound yet look empty to the model too: it
+            // plans from the database, but the page list it was asked about is half built.
             mStripScreensAfterLoad = true;
-            Log.i(TAG, "stripEmptyScreens deferred: workspace is loading");
+            Log.d(TAG, "Screen strip deferred, workspace is loading (" + sourceClass + ")");
             return;
         }
         if (getChildCount() <= 0 || mScreenOrder.isEmpty()) {
-            Log.w(TAG, "stripEmptyScreens skipped: workspace screen state not ready");
+            Log.w(TAG, "Screen strip skipped, the screens are not ready (" + sourceClass + ")");
             return;
         }
         if (isPageMoving()) {
             mStripScreensOnPageStopMoving = true;
             return;
         }
-
-        int currentPage = getNextPage();
-        ArrayList<Long> removeScreens = new ArrayList<>();
-        CellLayout cl;
-
-        // Detect empty screens (no widgets/shortcuts)
-        for (Long id : mWorkspaceScreens.keySet()) {
-            cl = mWorkspaceScreens.get(id);
-            if (cl != null && id >= 0 && cl.getShortcutsAndWidgets().getChildCount() == 0) {
-                removeScreens.add(id);
-            }
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (!mPrefs.getBoolean(Keys.USER_LAYOUT, false)) {
+            // The screens are not bound to the table without the user layout.
+            return;
         }
-        if (mScreenAwaitingAdd != ItemInfo.NO_ID && removeScreens.contains(mScreenAwaitingAdd)) {
+
+        HashSet<Long> keep = new HashSet<>();
+        if (mScreenAwaitingAdd != ItemInfo.NO_ID) {
             if (SystemClock.uptimeMillis() - mScreenAwaitingAddSince < SCREEN_AWAITING_ADD_MAX_MS) {
-                Log.i(TAG, "stripEmptyScreens: screen " + mScreenAwaitingAdd + " kept, an item is on its way to it");
-                removeScreens.remove(mScreenAwaitingAdd);
+                keep.add(mScreenAwaitingAdd);
             } else {
                 mScreenAwaitingAdd = ItemInfo.NO_ID;
             }
         }
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        
-        ArrayList<Integer> customScreens = new ArrayList<>();
-        if (mPrefs.getBoolean(Keys.USER_MUSIC, false)) {
-            customScreens.add(mPrefs.getInt(Keys.MUSIC_SCREEN, 1) - 1);
-        }
-        if (mPrefs.getBoolean(Keys.USER_DATE, false)) {
-            customScreens.add(mPrefs.getInt(Keys.DATE_SCREEN, 1) - 1);
-        }
-        if (mPrefs.getBoolean(Keys.USER_RADIO, false)) {
-            customScreens.add(mPrefs.getInt(Keys.RADIO_SCREEN, 1) - 1);
-        }
-        if (mPrefs.getBoolean(Keys.PIP_DUAL, false)) {
-            customScreens.add(mPrefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1);
-        }
-        if (mPrefs.getBoolean(Keys.PIP_FIRST, false)) {
-            customScreens.add(mPrefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1);
-        }
-        if (mPrefs.getBoolean(Keys.PIP_SECOND, false)) {
-            customScreens.add(mPrefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1);
-        }
-        if (mPrefs.getBoolean(Keys.PIP_THIRD, false)) {
-            customScreens.add(mPrefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1);
-        }
-        if (mPrefs.getBoolean(Keys.PIP_FOURTH, false)) {
-            customScreens.add(mPrefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1);
-        }
-        if (mPrefs.getBoolean(Keys.USER_STATS, false)) {
-            customScreens.add(mPrefs.getInt(Keys.STATS_SCREEN, 1) - 1);
-        }
+        mLauncher.getModel().planScreenStrip(mLauncher, getRealScreenOrder(), keep, sourceClass);
+    }
 
-        for (Integer rank : customScreens) {
-            if (rank >= 0 && rank < getChildCount()) {
-                cl = ((CellLayout) getChildAt(rank));
-                if (!canResolveScreenId(cl)) {
-                    continue;
-                }
-                long customScreenId = getIdForScreen(cl);
-                removeScreens.remove(customScreenId);
-            }
-        }   
-
-        cl = ((CellLayout) getChildAt(0));
-        if (canResolveScreenId(cl)) {
-            long customScreenId = getIdForScreen(cl);
-            removeScreens.remove(customScreenId);
-        }
-
-        int minScreens = 1 + numCustomPages();
-        int pageShift = 0;
-
-        // Take a snapshot of old screen order before removal
-        ArrayList<Long> oldOrder = new ArrayList<>(mScreenOrder);
-
-        // Remove empty screens
-        for (Long id : removeScreens) {
-            cl = mWorkspaceScreens.get(id);
-            mWorkspaceScreens.remove(id);
-            mScreenOrder.remove(id);
-
-            if (getChildCount() > minScreens) {
-                if (indexOfChild(cl) < currentPage) {
-                    pageShift++;
-                }
-                removeView(cl);
-            } else {
-                // if this is the last non-custom content screen, convert it to the empty screen
-                mWorkspaceScreens.put(EXTRA_EMPTY_SCREEN_ID, cl);
-                mScreenOrder.add(EXTRA_EMPTY_SCREEN_ID);
+    /** The screens in the order of the pages, without the user page and the extra empty screen. */
+    private ArrayList<Long> getRealScreenOrder() {
+        ArrayList<Long> order = new ArrayList<>();
+        for (Long id : mScreenOrder) {
+            if (id != null && id >= 0) {
+                order.add(id);
             }
         }
+        return order;
+    }
 
-        if (removeScreens.isEmpty()) {
-            if (pageShift >= 0) setCurrentPage(currentPage - pageShift);
+    /**
+     * Carries out a plan of the model: removes the pages it names and moves the page numbers of the
+     * elements, the start page and the pinned PiP in the same step, so that the number in a
+     * preference minus one is the index of the page, as everything that reads them assumes.
+     *
+     * The plan was made for the screens in basedOn. If the pages are not those any more, or a page
+     * to remove holds a launcher item, the plan is not applied (not partly, the numbers were
+     * worked out for all of it) and a new one is asked for.
+     */
+    void applyScreenStrip(WorkspaceScreenPlan.Result plan, ArrayList<Long> basedOn, String source) {
+        if (mLauncher.isWorkspaceLoading()) {
+            mStripScreensAfterLoad = true;
             return;
         }
+        if (plan.removed.isEmpty() && plan.prefChanges.isEmpty()) {
+            mStripRetries = 0;
+            return;
+        }
+        if (isPageMoving()) {
+            mStripScreensOnPageStopMoving = true;
+            return;
+        }
+        String mismatch = null;
+        if (!getRealScreenOrder().equals(basedOn)) {
+            mismatch = "the pages changed meanwhile";
+        } else {
+            for (Long id : plan.removed) {
+                CellLayout page = mWorkspaceScreens.get(id);
+                if (page == null) {
+                    continue;
+                }
+                ShortcutAndWidgetContainer container = page.getShortcutsAndWidgets();
+                for (int i = 0; i < container.getChildCount(); i++) {
+                    if (page.isMovableLauncherItem(container.getChildAt(i))) {
+                        mismatch = "screen " + id + " still holds an item";
+                        break;
+                    }
+                }
+                if (mismatch != null) {
+                    break;
+                }
+            }
+        }
+        if (mismatch != null) {
+            if (++mStripRetries > STRIP_MAX_RETRIES) {
+                Log.w(TAG, "Screen strip given up (" + source + "): " + mismatch);
+                mStripRetries = 0;
+                return;
+            }
+            Log.d(TAG, "Screen strip asked again (" + source + "): " + mismatch);
+            triggerStripEmptyScreens(source, false);
+            return;
+        }
+        mStripRetries = 0;
 
+        int currentPage = getNextPage();
+        int pageShift = 0;
+        for (Long id : plan.removed) {
+            CellLayout page = mWorkspaceScreens.remove(id);
+            mScreenOrder.remove(id);
+            if (page != null) {
+                if (indexOfChild(page) < currentPage) {
+                    pageShift++;
+                }
+                removeView(page);
+            }
+        }
+
+        // The numbers change in the same step as the pages.
+        CustomElementPrefs.apply(PreferenceManager.getDefaultSharedPreferences(getContext()),
+                plan.prefChanges);
         mLauncher.getModel().updateWorkspaceScreenOrder(mLauncher, mScreenOrder);
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        SharedPreferences.Editor editor = prefs.edit();
-        ContentResolver resolver = mLauncher.getContentResolver();
-
-        ArrayList<Long> newOrder = new ArrayList<>(mScreenOrder);
-        Log.i(TAG, "stripEmptyScreens: oldOrder=" + oldOrder + " newOrder=" + newOrder + " removed=" + removeScreens);
-
-        final boolean[] prefsChanged = {false};
-
-        BiConsumer<String, String> maybeShiftPref = (prefKey, enabledKey) -> {
-            if (prefs.contains(prefKey) && (!prefs.contains(enabledKey) || prefs.getBoolean(enabledKey, false))) {
-                int oldIndex = prefs.getInt(prefKey, 1) - 1;
-                if (oldIndex < 0) {
-                    return;
-                }
-
-                // Determine how many removed screens were before this index
-                int removedBefore = 0;
-                for (Long removedId : removeScreens) {
-                    int removedRank = oldOrder.indexOf(removedId);
-                    if (removedRank >= 0 && removedRank < oldIndex) removedBefore++;
-                }
-                int newIndex = Math.max(0, oldIndex - removedBefore);
-
-                if (newIndex != oldIndex) {
-                    editor.putInt(prefKey, newIndex + 1);
-                    prefsChanged[0] = true;
-                    Log.i(TAG, "Shifted pref " + prefKey + " from " + (oldIndex + 1) + " → " + (newIndex + 1));
-                }
-            }
-        };
-
-        maybeShiftPref.accept(Keys.MUSIC_SCREEN, Keys.USER_MUSIC);
-        maybeShiftPref.accept(Keys.DATE_SCREEN, Keys.USER_DATE);
-        maybeShiftPref.accept(Keys.RADIO_SCREEN, Keys.USER_RADIO);
-        maybeShiftPref.accept(Keys.PIP_DUAL_SCREEN, Keys.PIP_DUAL);
-        maybeShiftPref.accept(Keys.PIP_FIRST_SCREEN, Keys.PIP_FIRST);
-        maybeShiftPref.accept(Keys.PIP_SECOND_SCREEN, Keys.PIP_SECOND);
-        maybeShiftPref.accept(Keys.PIP_THIRD_SCREEN, Keys.PIP_THIRD);
-        maybeShiftPref.accept(Keys.PIP_FOURTH_SCREEN, Keys.PIP_FOURTH);
-        maybeShiftPref.accept(Keys.STATS_SCREEN, Keys.USER_STATS);
-        editor.apply();
-
-        for (int rank = 0; rank < newOrder.size(); rank++) {
-            long screenId = newOrder.get(rank);
-            ContentValues values = new ContentValues();
-            values.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, rank);
-            try {
-                resolver.update(
-                    LauncherSettings.WorkspaceScreens.CONTENT_URI,
-                    values,
-                    "_id=?",
-                    new String[]{String.valueOf(screenId)}
-                );
-                Log.i(TAG, "Updated screenId=" + screenId + " → rank=" + rank);
-            } catch (Exception e) {
-                Log.w(TAG, "Failed to update screen rank for " + screenId, e);
-            }
-        }
-
-        if (pageShift >= 0) {
-            setCurrentPage(currentPage - pageShift);
-        }
+        setCurrentPage(Math.max(0, currentPage - pageShift));
+        Log.i(TAG, "Screen strip (" + source + "): removed=" + plan.removed + " order="
+                + plan.order + " prefs=" + plan.prefChanges);
 
         mainHandler.postDelayed(() -> {
             if (mLauncher == null || mLauncher.mAppsCustomizeTabHost == null) {
                 return;
             }
             if (!helpers.allAppsVisibility(mLauncher.mAppsCustomizeTabHost.getVisibility())) {
-                Log.d("stripEmptyScreens", "startMapPip");
                 WindowUtil.startMapPip(false);
             }
         }, 250);
@@ -4576,6 +4502,18 @@ public class Workspace extends SmoothPagedView
         return getChangeStateAnimation(state, animated, 0, -1);
     }
 
+    /**
+     * The pages that can be moved in the overview: the user page, which holds the bottom bar and
+     * has no row in the screens table, stays first.
+     */
+    @Override
+    protected void getReorderablePages(int[] range) {
+        super.getReorderablePages(range);
+        if (hasMyCustomContent()) {
+            range[0] = Math.min(Math.max(range[0], 1), Math.max(0, getChildCount() - 1));
+        }
+    }
+
     @Override
     protected void getOverviewModePages(int[] range) {
         int start = numCustomPages();
@@ -4596,14 +4534,51 @@ public class Workspace extends SmoothPagedView
         super.onEndReordering();
 
         hideOutlines();
-        mScreenOrder.clear();
+        // Page numbers (from 1) = indexes in these lists + 1, the user page first.
+        ArrayList<Long> oldPages = new ArrayList<>();
+        oldPages.add(WorkspaceScreenPlan.USER_PAGE_ID);
+        oldPages.addAll(getRealScreenOrder());
+
         int count = getChildCount();
+        if (count > 0 && hasMyCustomContent() && mWorkspaceScreens.get(CUSTOM_CONTENT_SCREEN_ID1) != null
+                && getChildAt(0) != mWorkspaceScreens.get(CUSTOM_CONTENT_SCREEN_ID1)) {
+            // Not possible through getReorderablePages(); the first page is the user page anyway.
+            Log.e(TAG, "Screens reordered with the user page away from the first place: putting it back");
+            CellLayout userPage = mWorkspaceScreens.get(CUSTOM_CONTENT_SCREEN_ID1);
+            removeView(userPage);
+            addView(userPage, 0);
+        }
+        mScreenOrder.clear();
         for (int i = 0; i < count; i++) {
             CellLayout cl = ((CellLayout) getChildAt(i));
-            mScreenOrder.add(getIdForScreen(cl));
+            Long id = null;
+            for (Map.Entry<Long, CellLayout> entry : mWorkspaceScreens.entrySet()) {
+                if (entry.getValue() == cl) {
+                    id = entry.getKey();
+                    break;
+                }
+            }
+            mScreenOrder.add(id != null ? id : getIdForScreen(cl));
         }
+        ArrayList<Long> newPages = new ArrayList<>();
+        newPages.add(WorkspaceScreenPlan.USER_PAGE_ID);
+        newPages.addAll(getRealScreenOrder());
 
-        mLauncher.getModel().updateWorkspaceScreenOrder(mLauncher, mScreenOrder);
+        // The elements, the start page and the pinned PiP go with their screens.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        LinkedHashMap<String, Integer> refs = new LinkedHashMap<>();
+        for (Map.Entry<CustomElement, Integer> entry : CustomElementPrefs.requestedPages(prefs).entrySet()) {
+            refs.put(entry.getKey().screenKey, entry.getValue());
+        }
+        refs.putAll(CustomElementPrefs.pageRefs(prefs));
+        List<WorkspaceScreenPlan.PrefChange> changes =
+                WorkspaceScreenPlan.remapAfterReorder(oldPages, newPages, refs);
+        CustomElementPrefs.apply(prefs, changes);
+        Log.i(TAG, "Screens reordered: order=" + getRealScreenOrder() + " prefs=" + changes);
+
+        if (prefs.getBoolean(Keys.USER_LAYOUT, false)) {
+            mLauncher.getModel().updateWorkspaceScreenOrder(mLauncher, mScreenOrder);
+        }
 
         // Re-enable auto layout transitions for page deletion.
         enableLayoutTransitions();
@@ -7530,98 +7505,6 @@ public class Workspace extends SmoothPagedView
 
     public void getLocationInDragLayer(int[] loc) {
         mLauncher.getDragLayer().getLocationInDragLayer(this, loc);
-    }
-
-    /**
-     * Base on database data, if no record in table favorites that screen
-     * field equals to 'screenId', and it's container field equals CONTAINER_DESKTOP(-100)
-     * then, we think the 'screenId' represented workspace is empty.
-     *
-     * Why we should use this method? Because some time the workspace has not bind
-     * any item from database, method stripEmptyScreen(...) will remove all screens
-     * from workspace.
-     *
-     * @param screenId
-     * @return true if workspace is empty, otherwise false.
-     */
-    public boolean isEmptyScreenBaseDB(long screenId) {
-        boolean ret = true;
-        /* select _id from favorites where screen=screenId and container = -100; */
-        ContentResolver contentResolver = mLauncher.getContentResolver();
-        Uri contentUri = LauncherSettings.Favorites.CONTENT_URI;
-        Cursor c = contentResolver.query(contentUri,
-                new String[] {LauncherSettings.Favorites._ID},
-                String.format("%s=? and %s=?", LauncherSettings.Favorites.SCREEN, LauncherSettings.Favorites.CONTAINER),
-                new String[] {String.valueOf(screenId), String.valueOf(LauncherSettings.Favorites.CONTAINER_DESKTOP)}, null);
-        if (c != null) {
-            ret = (c.getCount() <= 0);
-            c.close();
-        }
-        return ret;
-    }
-
-    /**
-     * This method is cloned from stripEmptyScreens, but change the condition of
-     * judging a screen whether it is empty or not.
-     */
-    public void stripEmptyScreensBaseOnDB() {
-        if (mLauncher != null && mLauncher.isWorkspaceLoading()) {
-            mStripScreensBaseOnDBAfterLoad = true;
-            Log.i(TAG, "stripEmptyScreensBaseOnDB deferred: workspace is loading");
-            return;
-        }
-        if (isPageMoving()) {
-            mStripScreensOnPageStopMoving = true;
-            return;
-        }
-
-        int currentPage = getNextPage();
-        ArrayList<Long> removeScreens = new ArrayList<Long>();
-        for (Long id: mWorkspaceScreens.keySet()) {
-            CellLayout cl = mWorkspaceScreens.get(id);
-            if (id >= 0 && isEmptyScreenBaseDB(id)) {
-                removeScreens.add(id);
-            } else {
-                Log.v(TAG, "not empty screen base on database, ignore screen id: " + id);
-            }
-        }
-
-        // We enforce at least one page to add new items to. In the case that we remove the last
-        // such screen, we convert the last screen to the empty screen
-        int minScreens = 1 + numCustomPages();
-
-        int pageShift = 0;
-        for (Long id: removeScreens) {
-            CellLayout cl = mWorkspaceScreens.get(id);
-            mWorkspaceScreens.remove(id);
-            mScreenOrder.remove(id);
-
-            if (getChildCount() > minScreens) {
-                if (indexOfChild(cl) < currentPage) {
-                    pageShift++;
-                }
-                removeView(cl);
-            } else {
-                // if this is the last non-custom content screen, convert it to the empty screen
-                mWorkspaceScreens.put(EXTRA_EMPTY_SCREEN_ID, cl);
-                mScreenOrder.add(EXTRA_EMPTY_SCREEN_ID);
-            }
-        }
-
-        if (!removeScreens.isEmpty()) {
-            // Update the model if we have changed any screens
-            mLauncher.getModel().updateWorkspaceScreenOrder(mLauncher, mScreenOrder);
-        }
-
-        if (pageShift >= 0) {
-            setCurrentPage(currentPage - pageShift);
-        }
-        mainHandler.postDelayed(()-> {
-            if (!helpers.isInOverviewMode()) {
-                Log.d("stripEmptyScreensBaseOnDB", "startMapPip");
-                WindowUtil.startMapPip(false);
-            }
-        }, 250);
     }
 
     private void promptFolderFullIfNecessary(CellLayout target, int[] targetCell, ItemInfo dragInfo) {

@@ -1228,6 +1228,11 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         range[1] = Math.max(0, getChildCount() - 1);
     }
 
+    /** The pages that can be moved while reordering; by default all the pages of the overview. */
+    protected void getReorderablePages(int[] range) {
+        getOverviewModePages(range);
+    }
+
     protected void getVisiblePages(int[] range) {
         final int pageCount = getChildCount();
         mTmpIntPoint[0] = mTmpIntPoint[1] = 0;
@@ -1948,7 +1953,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                         !isHoveringOverDelete) {
                     mTempVisiblePagesRange[0] = 0;
                     mTempVisiblePagesRange[1] = getPageCount() - 1;
-                    getOverviewModePages(mTempVisiblePagesRange);
+                    getReorderablePages(mTempVisiblePagesRange);
                     if (mTempVisiblePagesRange[0] <= pageUnderPointIndex &&
                             pageUnderPointIndex <= mTempVisiblePagesRange[1] &&
                             pageUnderPointIndex != mSidePageHoverIndex && mScroller.isFinished()) {
@@ -2653,7 +2658,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
 
         mTempVisiblePagesRange[0] = 0;
         mTempVisiblePagesRange[1] = getPageCount() - 1;
-        getOverviewModePages(mTempVisiblePagesRange);
+        getReorderablePages(mTempVisiblePagesRange);
         mReorderingStarted = true;
 
         // Check if we are within the reordering range

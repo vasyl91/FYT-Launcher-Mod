@@ -3893,7 +3893,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             onCompleteRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    //mWorkspace.stripEmptyScreensBaseOnDB();
                     exitSpringLoadedDragModeDelayed((resultCode != RESULT_CANCELED), false,
                             null);
                 }
@@ -7998,6 +7997,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         CustomElementPrefs.apply(mPrefs, plan.prefChanges);
         mCustomElementScreens = new EnumMap<>(CustomElement.class);
         mCustomElementScreens.putAll(plan.elementScreens);
+    }
+
+    @Override
+    public void bindScreenStrip(WorkspaceScreenPlan.Result plan, ArrayList<Long> basedOn, String source) {
+        if (mWorkspace != null) {
+            mWorkspace.applyScreenStrip(plan, basedOn, source);
+        }
     }
 
     @Override

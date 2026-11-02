@@ -185,6 +185,8 @@ public class LauncherModel extends BroadcastReceiver {
         public void bindItems(ArrayList<ItemInfo> shortcuts, int start, int end,
                               boolean forceAnimateIcons);
         public void bindScreenPlan(WorkspaceScreenPlan.Result plan);
+        public void bindScreenStrip(WorkspaceScreenPlan.Result plan, ArrayList<Long> basedOn,
+                                    String source);
         public void bindScreens(ArrayList<Long> orderedScreenIds);
         public void bindAddScreens(ArrayList<Long> orderedScreenIds);
         public void bindFolders(HashMap<Long,FolderInfo> folders);
@@ -1043,10 +1045,51 @@ public class LauncherModel extends BroadcastReceiver {
                 synchronized (sBgLock) {
                     sBgWorkspaceScreens.clear();
                     sBgWorkspaceScreens.addAll(screensCopy);
+                    publishScreenSnapshotLocked();
                 }
             }
         };
         runOnWorkerThread(r);
+    }
+
+    /**
+     * Works out, on the worker, which of the screens the workspace shows are empty. The drops, moves
+     * and deletes the user made are queued before this on the same worker, so sBgItemsIdMap is
+     * up to date; the views are never asked. A plan that changes something goes back to the main
+     * thread together with the list it was made for, and Workspace applies it only if its own
+     * list still is that one.
+     *
+     * @param uiOrder the screens of the workspace in order, without the user page
+     * @param keep screens that stay even if empty (an item is on its way to them)
+     */
+    void planScreenStrip(final Callbacks callbacks, final ArrayList<Long> uiOrder,
+                         final HashSet<Long> keep, final String source) {
+        runOnWorkerThread(new Runnable() {
+            @Override
+            public void run() {
+                final WorkspaceScreenPlan.Result plan;
+                synchronized (sBgLock) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
+                            LauncherApplication.sApp);
+                    plan = WorkspaceScreenPlan.plan(new WorkspaceScreenPlan.Input(uiOrder,
+                            screensWithContentLocked(), keep, CustomElementPrefs.requestedPages(prefs),
+                            CustomElementPrefs.pageRefs(prefs), false, null));
+                    publishScreenSnapshotLocked();
+                }
+                if (!plan.changed()) {
+                    return;
+                }
+                runOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Callbacks cb = mCallbacks != null ? mCallbacks.get() : null;
+                        if (cb != null && cb == callbacks) {
+                            cb.bindScreenStrip(plan, uiOrder, source);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     /**
