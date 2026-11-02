@@ -785,8 +785,6 @@ public class Workspace extends SmoothPagedView
             }
         }
         
-        Log.i(TAG, "insertNewWorkspaceScreen: adding screen id=" + screenId + " at index=" + insertIndex);
-        
         // Create the CellLayout
         CellLayout newScreen = (CellLayout) LayoutInflater.from(getContext())
                 .inflate(R.layout.workspace_screen, this, false);
@@ -2993,8 +2991,6 @@ public class Workspace extends SmoothPagedView
      * calling stripEmptyScreens() few times in a very short succesion
      */
     public void triggerStripEmptyScreens(String sourceClass, boolean instant) {
-        // Called several times in one frame at a start (already debounced below): not worth an I each.
-        Log.d(TAG, "triggerStripEmptyScreens called in: " + sourceClass);
         if (stripAction != null) {
             stripHandler.removeCallbacks(stripAction);
         }
@@ -5525,7 +5521,6 @@ public class Workspace extends SmoothPagedView
     }
 
     public void onDrop(final DragObject d) {      
-        Log.i(TAG, "Screen order onDrop(): " + mScreenOrder);
         mDragViewVisualCenter = getDragViewVisualCenter(d.x, d.y, d.xOffset, d.yOffset, d.dragView,
                 mDragViewVisualCenter);
 

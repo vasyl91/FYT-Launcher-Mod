@@ -8101,7 +8101,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Launcher.this.bindItems(shortcuts, start, end, forceAnimateIcons);
             }
         };
-        JLog.getInstance().e("Launcher bindItems");
         if (!waitUntilResume(r)) {
             final AnimatorSet anim = LauncherAnimUtils.createAnimatorSet();
             final Collection<Animator> bounceAnims = new ArrayList<>();

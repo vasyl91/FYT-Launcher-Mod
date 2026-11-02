@@ -688,7 +688,6 @@ public class LauncherModel extends BroadcastReceiver {
             item.screenId = screenId;
         }
 
-        Log.d(TAG,"LauncherModel.moveItemInDatabase()  valuse put CELLX = "+item.cellX+";SCREEN = "+item.screenId);
         final ContentValues values = new ContentValues();
         values.put(LauncherSettings.Favorites.CONTAINER, item.container);
         values.put(LauncherSettings.Favorites.CELLX, item.cellX);
@@ -722,7 +721,6 @@ public class LauncherModel extends BroadcastReceiver {
                 item.screenId = screen;
             }
 
-            Log.d(TAG,"LauncherModel.moveItemsInDatabase()  ss valuse put CELLX = "+item.cellX+";SCREEN = "+item.screenId);
             final ContentValues values = new ContentValues();
             values.put(LauncherSettings.Favorites.CONTAINER, item.container);
             values.put(LauncherSettings.Favorites.CELLX, item.cellX);
@@ -754,7 +752,6 @@ public class LauncherModel extends BroadcastReceiver {
             item.screenId = screenId;
         }
 
-        Log.d(TAG,"LauncherModel.modifyItemInDatabase()  valuse put CELLX = "+item.cellX+";SCREEN = "+item.screenId);
         final ContentValues values = new ContentValues();
         values.put(LauncherSettings.Favorites.CONTAINER, item.container);
         values.put(LauncherSettings.Favorites.CELLX, item.cellX);
@@ -771,7 +768,6 @@ public class LauncherModel extends BroadcastReceiver {
      */
     static void updateItemInDatabase(Context context, final ItemInfo item) {
         final ContentValues values = new ContentValues();
-        Log.d(TAG,"LauncherModel.updateItemInDatabase() CELLX = "+item.cellX+";SCREEN = "+item.screenId);
         item.onAddToDatabase(values);
         item.updateValuesWithCoordinates(values, item.cellX, item.cellY);
         updateItemInDatabaseHelper(context, values, item, "updateItemInDatabase");
@@ -897,7 +893,6 @@ public class LauncherModel extends BroadcastReceiver {
             item.screenId = screenId;
         }
 
-        Log.d(TAG,"LauncherModel.addItemToDatabase() CELLX = "+item.cellX+";SCREEN = "+item.screenId);
         final ContentValues values = new ContentValues();
         final ContentResolver cr = context.getContentResolver();
         item.onAddToDatabase(values);

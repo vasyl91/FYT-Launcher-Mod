@@ -60,7 +60,6 @@ import java.util.concurrent.Executors;
 
 public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     static final String TAG = "CellLayout";
-    private static final boolean DEBUG_CUSTOM_LAYOUT = false;
 
     private Launcher mLauncher;
     private int mCellWidth;
@@ -155,12 +154,6 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     public static final int MODE_ACCEPT_DROP = 3;
     private static final boolean DESTRUCTIVE_REORDER = false;
     private static final boolean DEBUG_VISUALIZE_OCCUPIED = false;
-
-    private static void logCustomLayout(String message) {
-        if (DEBUG_CUSTOM_LAYOUT) {
-            Log.i(TAG, message);
-        }
-    }
 
     static final int LANDSCAPE = 0;
     static final int PORTRAIT = 1;
@@ -1213,6 +1206,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             return;
         }
         clearDetachedCustomElementRefs();
+        StringBuilder placed = new StringBuilder();
         for (CustomElement element : mAssignedElements) {
             if (isCustomElementAttached(getCustomElementView(element))) {
                 continue;
@@ -1230,6 +1224,17 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                     addPipPlaceholder(element.label, element.geometryPrefix, element.screenKey);
                     break;
             }
+            View view = getCustomElementView(element);
+            if (isCustomElementAttached(view) && view.getLayoutParams() instanceof LayoutParams) {
+                LayoutParams lp = (LayoutParams) view.getLayoutParams();
+                placed.append(placed.length() == 0 ? "" : ", ").append(element.label).append(" [")
+                        .append(lp.cellX).append(',').append(lp.cellY).append(' ')
+                        .append(lp.cellHSpan).append('x').append(lp.cellVSpan).append(']');
+            }
+        }
+        if (placed.length() > 0) {
+            Log.i(TAG, "Custom elements on page " + (pageIndex + 1) + " (screen "
+                    + workspace.getIdForScreen(this) + "): " + placed);
         }
     }
 
@@ -3904,7 +3909,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     }
 
     private void addCustomWidgetToGrid(String prefix, View widgetView, int currentScreen) {
-        logCustomLayout("addCustomWidgetToGrid called: prefix=" + prefix + ", screen=" + currentScreen);
         if (getContext() instanceof Launcher) {
             Workspace workspace = ((Launcher) getContext()).getWorkspace();
             if (workspace == null || workspace.indexOfChild(this) < 0) {
@@ -4046,7 +4050,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     RadioWidgetSizer.attach(widgetView.findViewById(R.id.rl_radio));
                     break;
             }
-            logCustomLayout(prefix + " widget added at [" + startCell[0] + "," + startCell[1] + "] spanning " + spanX + "x" + spanY);
         }
     }
 
@@ -4105,7 +4108,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     }
 
     private void addPipPlaceholder(String pipType, String pipKey, String screenKey) {
-        logCustomLayout("addPipPlaceholder START: " + pipType);
         if (getContext() instanceof Launcher) {
             Workspace workspace = ((Launcher) getContext()).getWorkspace();
             if (workspace == null || workspace.indexOfChild(this) < 0) {
@@ -4212,8 +4214,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             if (!isViewAttachedToThisCellLayout(placeholder)) {
                 addViewToCellLayout(placeholder, 0, childId, lp, false);
             }
-            logCustomLayout("Added " + pipType + " PiP placeholder at [" + startCell[0] + "," + startCell[1] +
-                  "] spanning " + spanX + "x" + spanY);
         }
     }
 
@@ -4405,9 +4405,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             if (!isViewAttachedToThisCellLayout(placeholder)) {
                 addViewToCellLayout(placeholder, 0, childId, lp, false);
             }
-
-            logCustomLayout("Added stats placeholder at [" + startCell[0] + "," + startCell[1] +
-                  "] spanning " + spanX + "x" + spanY);
         }
     }
 
@@ -4664,9 +4661,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
      * item comes back once there is space again.
      */
     private void handleConflictingViews(int cellX, int cellY, int spanX, int spanY) {
-        logCustomLayout("=== handleConflictingViews START ===");
-        logCustomLayout("Custom element wants cells [" + cellX + "," + cellY + "] spanning " + spanX + "x" + spanY);
-
         Workspace workspace = mLauncher != null ? mLauncher.getWorkspace() : null;
         int pageIndex = workspace != null ? workspace.indexOfChild(this) : -1;
         if (pageIndex < 0) {
@@ -4682,7 +4676,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         // Find all launcher items that intersect with the custom element's area. Other children
         // (custom elements, views tagged with something else) belong to the page and stay.
         int count = mShortcutsAndWidgets.getChildCount();
-        logCustomLayout("Total children in layout: " + count);
         for (int i = 0; i < count; i++) {
             View child = mShortcutsAndWidgets.getChildAt(i);
             if (!isMovableLauncherItem(child)) {
@@ -4693,7 +4686,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                                       lp.cellX + lp.cellHSpan,
                                       lp.cellY + lp.cellVSpan);
             if (Rect.intersects(customRect, childRect)) {
-                logCustomLayout("  -> CONFLICT with child " + i + " at [" + lp.cellX + "," + lp.cellY + "]");
                 conflictingViews.add(child);
             }
         }
@@ -4718,9 +4710,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             }
         }
 
-        logCustomLayout("Total views to process (conflicts + bar area): " + conflictingViews.size());
         if (conflictingViews.isEmpty()) {
-            logCustomLayout("=== handleConflictingViews END (no conflicts) ===");
             return;
         }
 
@@ -4741,8 +4731,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             // cell, which the excludeLastRow check then rejected.
             boolean[][] searchOccupied = buildSearchOccupied(excludeBarRows, excludeFirstCell);
             if (findVacantCells(searchOccupied, mCountX, mCountY, lp.cellHSpan, lp.cellVSpan, newLocation)) {
-                logCustomLayout("RELOCATING view from [" + lp.cellX + "," + lp.cellY + "] to ["
-                        + newLocation[0] + "," + newLocation[1] + "]");
                 lp.cellX = newLocation[0];
                 lp.cellY = newLocation[1];
                 info.cellX = newLocation[0];
@@ -4762,8 +4750,10 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             markCellsForView(cellX, cellY, spanX, spanY, mOccupied, true);
         }
 
-        logCustomLayout("Summary: " + relocated + " relocated, " + movedAway
-                + " moved to another page, " + keptInDatabase + " kept in the database only");
+        if (relocated > 0 || movedAway > 0) {
+            Log.i(TAG, "Custom element at [" + cellX + "," + cellY + "] " + spanX + "x" + spanY + ": "
+                    + relocated + " relocated, " + movedAway + " moved to another page");
+        }
 
         if (relocated > 0) {
             mShortcutsAndWidgets.requestLayout();
@@ -4782,7 +4772,5 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
         // Keep rendering order correct
         mShortcutsAndWidgets.invalidate();
-
-        logCustomLayout("=== handleConflictingViews END ===");
     }
 }
