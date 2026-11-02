@@ -194,6 +194,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -278,7 +279,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final long FAST_HOME_PIP_DEFER_MS = 1000L;
     /** Total time the recovery loop may spend waiting cheaply before it insists on a repair pass. */
     static final long HOME_RECOVERY_INIT_WAIT_MAX_MS = 25000L;
-    private static final long CUSTOM_ELEMENTS_SETUP_DEBOUNCE_MS = 150L;
     private static final long WORKSPACE_NULL_LOADER_THROTTLE_MS = 1200L;
     static final String TAG = "Launcher";
     private static boolean sKwapiSkipLogged;
@@ -553,15 +553,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private long mLastForceReloadMs = 0L;
     private static final long FORCE_RELOAD_THROTTLE_MS = 1500L;
     private Runnable mFastHomeDeferredResumeRunnable;
-    Runnable mCustomElementsSetupRunnable;
-    /**
-     * A custom elements setup that came due while the model was rebuilding the screens
-     * (startBinding() .. finishBindingItems()). finishBindingItems() replays it; see
-     * requestCustomElementsSetup().
-     */
-    boolean mCustomElementsSetupAfterBind = false;
-    private boolean mCustomElementsSetupAfterBindUrgent = false;
-    private String mCustomElementsSetupAfterBindSource;
     private Runnable mFastHomeDeferredPipRunnable;
     boolean widgetBar = false;
     private DeviceProfile grid;
@@ -1402,7 +1393,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         Log.w(TAG, "Workspace loading made no progress for " + WORKSPACE_LOADING_WATCHDOG_MS
                 + " ms, the bind never finished: releasing the loading state");
         mWorkspaceLoading = false;
-        replayCustomElementsSetupAfterBind();
+        placeCustomElements("workspaceLoadingWatchdog");
         mWorkspace.onWorkspaceLoadFinished();
     }
 
@@ -1430,16 +1421,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
 
 
-    void requestCustomElementsHealthRetry(String source) {
-        requestCustomElementsSetup(source, true);
-    }
-
-    void requestCustomElementsSetup(String source) {
-        requestCustomElementsSetup(source, false);
-    }
-
-    void requestCustomElementsSetup(String source, boolean urgent) {
-        if (mWorkspace == null) {
+    /**
+     * Hands every page the custom elements the model assigned to it (see bindScreenPlan()); each page
+     * places them when it has its size. It is cheap and does nothing for what is already on a page,
+     * so the recovery and the resume may call it whenever something looks wrong. It does not wait
+     * for anything but the bind: the pages are built from the model's plan, so there is nothing to
+     * compute from the views.
+     */
+    void placeCustomElements(String source) {
+        if (mWorkspace == null || mWorkspaceLoading || mCustomElementScreens == null) {
             return;
         }
         SharedPreferences prefs = mPrefs != null
@@ -1448,71 +1438,39 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (!prefs.getBoolean(Keys.USER_LAYOUT, false)) {
             return;
         }
-        if (mCustomElementsSetupRunnable != null) {
-            if (!urgent) {
-                return;
+        HashMap<Long, EnumSet<CustomElement>> byScreen = new HashMap<>();
+        for (Map.Entry<CustomElement, Long> entry : mCustomElementScreens.entrySet()) {
+            EnumSet<CustomElement> set = byScreen.get(entry.getValue());
+            if (set == null) {
+                set = EnumSet.noneOf(CustomElement.class);
+                byScreen.put(entry.getValue(), set);
             }
-            mHandler.removeCallbacks(mCustomElementsSetupRunnable);
+            set.add(entry.getKey());
         }
-        mCustomElementsSetupRunnable = () -> {
-            mCustomElementsSetupRunnable = null;
-            if (mWorkspace == null || isAppsCustomizeVisibleOrOpening()) {
-                return;
+        HashSet<CellLayout> assigned = new HashSet<>();
+        int count = 0;
+        for (Map.Entry<Long, EnumSet<CustomElement>> entry : byScreen.entrySet()) {
+            CellLayout page = mWorkspace.getScreenWithId(entry.getKey());
+            if (page == null) {
+                Log.w(TAG, "Custom elements " + entry.getValue() + " belong to screen " + entry.getKey()
+                        + ", which the workspace does not have: the model and the pages disagree");
+                continue;
             }
-            if (mWorkspaceLoading) {
-                // The model is rebuilding the screens right now: startBinding() has removed them,
-                // and bindScreens(), bindItems() (in chunks), bindAppWidget() and
-                // finishBindingItems() arrive as separate main thread messages. Adding the custom
-                // elements in between ends in CellLayout.addWidgetsToPagesImmediately() ->
-                // stripEmptyScreens(), and a page whose icons are not bound yet looks empty at
-                // that moment: it can be dropped, together with its screen id in the database,
-                // and the icons on it are then never shown again. The elements could also take
-                // the cells of icons still to come, which bindItems() then skips. So wait.
-                mCustomElementsSetupAfterBind = true;
-                mCustomElementsSetupAfterBindUrgent |= urgent;
-                mCustomElementsSetupAfterBindSource = source;
-                Log.d(TAG, "Custom elements setup deferred until binding finishes: " + source);
-                return;
-            }
-            CellLayout setupHost = getCustomElementsSetupHost();
-            if (setupHost != null) {
-                setupHost.triggerAddCustomElements(urgent);
-                Log.d(TAG, "Custom elements setup requested: " + source);
-            }
-        };
-        mHandler.postDelayed(mCustomElementsSetupRunnable, urgent ? 0L : CUSTOM_ELEMENTS_SETUP_DEBOUNCE_MS);
-    }
-
-    /** Runs the custom elements setup that requestCustomElementsSetup() held back during a bind. */
-    private void replayCustomElementsSetupAfterBind() {
-        if (!mCustomElementsSetupAfterBind) {
-            return;
+            assigned.add(page);
+            page.setCustomElements(entry.getValue());
+            count += entry.getValue().size();
         }
-        String source = mCustomElementsSetupAfterBindSource;
-        boolean urgent = mCustomElementsSetupAfterBindUrgent;
-        mCustomElementsSetupAfterBind = false;
-        mCustomElementsSetupAfterBindUrgent = false;
-        mCustomElementsSetupAfterBindSource = null;
-        requestCustomElementsSetup("afterBind:" + source, urgent);
-    }
-
-    private CellLayout getCustomElementsSetupHost() {
-        if (mWorkspace == null) {
-            return null;
-        }
+        // A page that lost its elements (they live on another page now) lets go of the assignment.
         for (int i = 0; i < mWorkspace.getChildCount(); i++) {
             View child = mWorkspace.getChildAt(i);
-            if (child instanceof CellLayout && mWorkspace.canResolveScreenId((CellLayout) child)) {
-                return (CellLayout) child;
+            if (child instanceof CellLayout && !assigned.contains(child)
+                    && ((CellLayout) child).hostsCustomElements()) {
+                ((CellLayout) child).setCustomElements(null);
             }
         }
-        for (int i = 0; i < mWorkspace.getChildCount(); i++) {
-            View child = mWorkspace.getChildAt(i);
-            if (child instanceof CellLayout) {
-                return (CellLayout) child;
-            }
+        if (count > 0) {
+            Log.d(TAG, "Custom elements placed (" + source + "): " + assigned.size() + " pages");
         }
-        return null;
     }
 
 
@@ -2468,7 +2426,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (atomicOnCreate.get()) {
             Log.d("Recreate page", "Skipping recreateView — activity was recreated, loader already running");
             isRecreateActive = false;
-            requestCustomElementsSetup("onResumePendingFreshCreate");
+            placeCustomElements("onResumePendingFreshCreate");
             return;
         }
 
@@ -8535,8 +8493,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     Launcher.this.onFinishBindingItems();
                 }
             });
-            // Every screen and item is in place now; see requestCustomElementsSetup().
-            replayCustomElementsSetupAfterBind();
+            // Every screen and item is in place now, so the conflict handling of the custom elements
+            // sees all of them.
+            placeCustomElements("finishBindingItems");
             // And a strip of empty screens that was held back during the bind.
             mWorkspace.onWorkspaceLoadFinished();
             mHomeRecovery.scheduleHomeLayoutWatchdog("finishBindingItems", !isAllAppsVisible());

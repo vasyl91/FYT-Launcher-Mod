@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Stack;
@@ -184,16 +185,6 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private int excludeLastRow = 1; // do not allow to place the object where the bottom bar is
     private final float widgetScaleFactor = ScreenScale.widgetScale();
 
-    boolean userDate = true;
-    boolean userMusic = true;
-    boolean userRadio = true;
-    boolean dualPip = false;
-    boolean firstPip = false;
-    boolean secondPip = false;
-    boolean thirdPip = false;
-    boolean fourthPip = false;
-
-    private boolean mHasUserWidgets = false;
     private View mUserDateWidget = null;
     private View mUserMusicWidget = null;
     private View mUserRadioWidget = null;
@@ -203,34 +194,26 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private View mThirdPipPlaceholder = null;
     private View mFourthPipPlaceholder = null;
     private View mStatsPlaceholder = null;
-    private Runnable mPendingStatsPlaceholderAdd;
     private String selectedBackground;
 
     private SharedPreferences prefs;
     private boolean leftBar = false;
-    private boolean mNeedsWidgetSetup = true;
-    private static final int CUSTOM_ELEMENT_SETUP_MAX_RETRIES = 28;
-    private static final long CUSTOM_ELEMENT_SETUP_INITIAL_DELAY_MS = 1500L;
-    private static final long CUSTOM_ELEMENT_SETUP_RETRY_DELAY_MS = 250L;
-    private int mCustomElementSetupAttempt = 0;
+
+    /** The custom elements the model put on this page; see Launcher.placeCustomElements(). */
+    private EnumSet<CustomElement> mAssignedElements = EnumSet.noneOf(CustomElement.class);
+    /** The one post that places the assigned elements is queued. */
+    private boolean mPlacementPosted = false;
+    private final Runnable mPlacementRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mPlacementPosted = false;
+            placeAssignedElements();
+        }
+    };
     private HashMap<View, int[]> mUserWidgetPositions = new HashMap<>();
     private HashMap<View, int[]> mUserWidgetCells = new HashMap<>();
     private HashMap<View, int[]> mPipPlaceholderCells = new HashMap<>();
     private HashMap<View, int[]> mStatsCells = new HashMap<>();
-    private final HashSet<View> mPendingCustomElementAdds = new HashSet<>();
-    private final ArrayList<View> mActiveFullWidgets = new ArrayList<>();
-
-    private Handler mCustomElementSetupHandler = new Handler(Looper.getMainLooper());
-    private Runnable mCustomElementSetupAction;
-    private boolean mCustomElementSetupPending = false;
-    private boolean mCustomElementSetupUrgent = false;
-    /**
-     * Pages are ensured and addWidgetsToAllExistingPages() is queued (the 500 ms step). The time
-     * keeps a runnable that never ran (workspace detached meanwhile) from blocking setups for good.
-     */
-    private boolean mCustomElementAddScheduled = false;
-    private long mCustomElementAddScheduledAt = 0L;
-    private static final long CUSTOM_ELEMENT_ADD_STALE_MS = 5000L;
 
     public CellLayout(Context context) {
         this(context, null);
@@ -1114,6 +1097,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                     left + r - l,
                     top + b - t);
         }
+        scheduleCustomElementPlacement();
     }
 
     @Override
@@ -1128,150 +1112,132 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         mForegroundRect.set(mForegroundPadding, mForegroundPadding,
                 w - mForegroundPadding, h - mForegroundPadding);
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
-
-        if (userLayout) {
-            // Add widgets after size is determined, but only for the correct page
-            if (mNeedsWidgetSetup && w > 0 && h > 0 && mCellWidth > 0 && mCellHeight > 0) {
-                mNeedsWidgetSetup = false;
-                mLauncher.requestCustomElementsSetup("cellSizeChanged");
-            }
-        }
+        // The elements wait for the size of the page; this is the moment it is known.
+        scheduleCustomElementPlacement();
     }
 
     /**
-     * Setup might be requested from multiple places to guarantee adding custom elements,
-     * however it also might be called few times in a very short succession.
-     * This function exists to ensure addWidgetsToAllExistingPages() runs only once.
+     * The custom elements the model assigned to this page (WorkspaceScreenPlan). They are placed
+     * once the page has its size, in one post; the page is the model's plan carried out, it does
+     * not look at the preferences to decide which element belongs to it.
      */
-    public void triggerAddCustomElements() {
-        triggerAddCustomElements(false);
+    public void setCustomElements(EnumSet<CustomElement> elements) {
+        mAssignedElements = (elements == null || elements.isEmpty())
+                ? EnumSet.noneOf(CustomElement.class)
+                : EnumSet.copyOf(elements);
+        scheduleCustomElementPlacement();
     }
 
-    public void triggerAddCustomElements(boolean urgent) {
+    /** Whether the model assigned any custom element to this page. */
+    public boolean hostsCustomElements() {
+        return !mAssignedElements.isEmpty();
+    }
+
+    /** The page is measured and its cell metrics are known. */
+    private boolean hasPlacementMetrics() {
+        return mCellWidth > 0 && mCellHeight > 0 && mCountX > 0 && mCountY > 0
+                && getWidth() > 0 && getHeight() > 0;
+    }
+
+    /**
+     * Queues the placement when everything it needs is there; otherwise onSizeChanged() and
+     * onLayout() call this again. A post, because both run inside a layout pass.
+     */
+    private void scheduleCustomElementPlacement() {
+        if (mAssignedElements.isEmpty() || mPlacementPosted || areAssignedElementsPlaced()) {
+            return;
+        }
+        if (!hasPlacementMetrics() || !(getParent() instanceof Workspace)) {
+            return;
+        }
+        mPlacementPosted = true;
+        post(mPlacementRunnable);
+    }
+
+    /**
+     * An element is assigned, not placed yet, and what it waits for is the size of the page or the
+     * queued post. A placement that was tried and failed is not "pending": the recovery asks again.
+     */
+    public boolean isCustomElementPlacementPending() {
+        if (mAssignedElements.isEmpty() || areAssignedElementsPlaced()) {
+            return false;
+        }
+        return mPlacementPosted || !hasPlacementMetrics();
+    }
+
+    private boolean areAssignedElementsPlaced() {
+        for (CustomElement element : mAssignedElements) {
+            if (!isCustomElementAttached(getCustomElementView(element))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private View getCustomElementView(CustomElement element) {
+        switch (element) {
+            case DATE:
+                return mUserDateWidget;
+            case MUSIC:
+                return mUserMusicWidget;
+            case RADIO:
+                return mUserRadioWidget;
+            case STATS:
+                return mStatsPlaceholder;
+            default:
+                return getPipPlaceholder(element.label);
+        }
+    }
+
+    /** Places every element assigned to this page that is not on it yet. */
+    private void placeAssignedElements() {
+        if (mAssignedElements.isEmpty() || mLauncher == null) {
+            return;
+        }
+        Workspace workspace = mLauncher.getWorkspace();
+        int pageIndex = workspace != null ? workspace.indexOfChild(this) : -1;
+        if (pageIndex < 0) {
+            return;
+        }
+        if (mLauncher.isWorkspaceLoading()) {
+            // finishBindingItems() places the elements once every icon of the page is bound, so the
+            // conflict handling sees them all.
+            return;
+        }
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         if (!prefs.getBoolean(Keys.USER_LAYOUT, false)) {
             clearDetachedCustomElementRefs();
             return;
         }
-        if (mCustomElementAddScheduled
-                && SystemClock.uptimeMillis() - mCustomElementAddScheduledAt < CUSTOM_ELEMENT_ADD_STALE_MS) {
-            // The elements are about to be added. Restarting here (an urgent request did) left
-            // the queued add running anyway, so addWidgetsToAllExistingPages() ran twice.
+        if (!hasPlacementMetrics()) {
             return;
         }
-        if (mCustomElementSetupPending) {
-            if (!urgent || mCustomElementSetupUrgent) {
-                return;
+        clearDetachedCustomElementRefs();
+        for (CustomElement element : mAssignedElements) {
+            if (isCustomElementAttached(getCustomElementView(element))) {
+                continue;
             }
-            if (mCustomElementSetupAction != null) {
-                mCustomElementSetupHandler.removeCallbacks(mCustomElementSetupAction);
-            }
-            mCustomElementSetupPending = false;
-            mCustomElementSetupUrgent = false;
-        }
-        mCustomElementSetupAttempt = 0;
-        mCustomElementSetupAction = () -> {
-            mCustomElementSetupPending = false;
-            mCustomElementSetupUrgent = false;
-            if (mLauncher == null || mLauncher.getWorkspace() == null) {
-                return;
-            }
-            if (deferCustomElementSetupWhileLoading("setup")) {
-                return;
-            }
-            prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-            if (!prefs.getBoolean(Keys.USER_LAYOUT, false)) {
-                clearDetachedCustomElementRefs();
-                return;
-            }
-
-            Workspace workspace = mLauncher.getWorkspace();
-            if (!isCustomElementSetupHost(workspace)) {
-                return;
-            }
-            if (!workspace.isScreenStateReadyForCustomElements()) {
-                retryCustomElementSetup("workspace screen state not ready");
-                return;
-            }
-
-            // The model has already created the pages the elements ask for (WorkspaceScreenPlan).
-            readCustomElementPrefs();
-
-            // Wait for layout to complete, then add widgets
-            mCustomElementSetupPending = true;
-            mCustomElementSetupUrgent = urgent;
-            mCustomElementAddScheduled = true;
-            mCustomElementAddScheduledAt = SystemClock.uptimeMillis();
-            workspace.postDelayed(() -> {
-                mCustomElementSetupPending = false;
-                mCustomElementSetupUrgent = false;
-                mCustomElementAddScheduled = false;
-                // A rebind may have started during the delay.
-                if (deferCustomElementSetupWhileLoading("before adding elements")) {
-                    return;
-                }
-                if (!workspace.isScreenStateReadyForCustomElements()) {
-                    retryCustomElementSetup("workspace screen state changed during the delay");
-                    return;
-                }
-                mCustomElementSetupAttempt = 0;
-                addWidgetsToAllExistingPages(workspace);
-            }, 500);
-        };
-
-        mCustomElementSetupPending = true;
-        mCustomElementSetupUrgent = urgent;
-        mCustomElementSetupHandler.postDelayed(
-                mCustomElementSetupAction,
-                urgent ? 0L : CUSTOM_ELEMENT_SETUP_INITIAL_DELAY_MS
-        );
-    }
-
-    private void retryCustomElementSetup(String reason) {
-        if (mCustomElementSetupAttempt >= CUSTOM_ELEMENT_SETUP_MAX_RETRIES) {
-            Log.w(TAG, "Custom element setup skipped: " + reason);
-            return;
-        }
-        mCustomElementSetupAttempt++;
-        Log.i(TAG, "Custom element setup deferred: " + reason
-                + " attempt=" + mCustomElementSetupAttempt);
-        if (mCustomElementSetupAction != null) {
-            mCustomElementSetupPending = true;
-            mCustomElementSetupUrgent = true;
-            mCustomElementSetupHandler.postDelayed(mCustomElementSetupAction, CUSTOM_ELEMENT_SETUP_RETRY_DELAY_MS);
-        }
-    }
-
-    private boolean isCustomElementSetupHost(Workspace workspace) {
-        if (workspace == null) {
-            return false;
-        }
-        for (int i = 0; i < workspace.getChildCount(); i++) {
-            View child = workspace.getChildAt(i);
-            if (child instanceof CellLayout && workspace.canResolveScreenId((CellLayout) child)) {
-                return child == this;
+            switch (element) {
+                case DATE:
+                case MUSIC:
+                case RADIO:
+                    placeCustomWidget(element, pageIndex);
+                    break;
+                case STATS:
+                    addStatsPlaceholder(Keys.STATS_SCREEN);
+                    break;
+                default:
+                    addPipPlaceholder(element.label, element.geometryPrefix, element.screenKey);
+                    break;
             }
         }
-        return workspace.indexOfChild(this) == 0;
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (mCustomElementSetupAction != null) {
-            mCustomElementSetupHandler.removeCallbacks(mCustomElementSetupAction);
-            mCustomElementSetupAction = null;
-        }
-        mCustomElementSetupPending = false;
-        mCustomElementSetupUrgent = false;
-        mCustomElementAddScheduled = false;
-    }
-
-    /** A setup requested earlier has not run (or finished adding) yet. */
-    public boolean isCustomElementSetupPending() {
-        return mCustomElementSetupPending;
+        removeCallbacks(mPlacementRunnable);
+        mPlacementPosted = false;
     }
 
     @Override
@@ -3818,182 +3784,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         return mLastDownOnOccupiedCell;
     }
 
-    private void addWidgetsToAllExistingPages(Workspace workspace) {
-        logCustomLayout("=== addWidgetsToAllExistingPages START ===");
-        if (workspace == null || !workspace.isScreenStateReadyForCustomElements()) {
-            Log.i(TAG, "addWidgetsToAllExistingPages deferred: workspace screen state not ready");
-            retryCustomElementSetup("workspace screen state not ready before add");
-            return;
-        }
-
-        int pageCount = workspace.getChildCount();
-        logCustomLayout("Total pages in workspace: " + pageCount);
-
-        // Reload preferences to get updated values
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-
-        // Use a more reliable approach - wait for workspace to be fully ready
-        workspace.post(() -> {
-            logCustomLayout("Workspace post() executed, checking layout state");
-
-            if (!workspace.isLayoutRequested() && workspace.getWidth() > 0 && workspace.getHeight() > 0) {
-                logCustomLayout("Workspace is laid out, adding widgets immediately");
-                addWidgetsToPagesImmediately(workspace, pageCount);
-            } else {
-                logCustomLayout("Workspace not ready yet, adding layout listener");
-                workspace.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                             int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                        if (right - left > 0 && bottom - top > 0) {
-                            workspace.removeOnLayoutChangeListener(this);
-                            logCustomLayout("Workspace layout complete, adding widgets");
-                            addWidgetsToPagesImmediately(workspace, pageCount);
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    private void addWidgetsToPagesImmediately(Workspace workspace, int pageCount) {
-        for (int i = 0; i < pageCount; i++) {
-            View pageView = workspace.getChildAt(i);
-            if (!(pageView instanceof CellLayout)) {
-                continue;
-            }
-
-            CellLayout page = (CellLayout) pageView;
-            final int pageIndex = i;
-
-            // Check if this page needs any widgets
-            boolean needsWidgets = checkIfPageNeedsWidgets(pageIndex);
-
-            if (!needsWidgets) {
-                logCustomLayout("Page " + pageIndex + " does not need any widgets");
-                continue;
-            }
-
-            logCustomLayout("Page " + pageIndex + " needs widgets - processing...");
-
-            // Process this page - check if CellLayout is ready
-            if (page.getWidth() > 0 && page.getHeight() > 0) {
-                addWidgetsToPage(page, pageIndex);
-            } else {
-                // CellLayout not ready yet, wait for it
-                page.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                             int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                        if (right - left > 0 && bottom - top > 0) {
-                            page.removeOnLayoutChangeListener(this);
-                            logCustomLayout("CellLayout for page " + pageIndex + " is ready");
-                            addWidgetsToPage(page, pageIndex);
-                        }
-                    }
-                });
-            }
-        }
-
-        logCustomLayout("=== addWidgetsToAllExistingPages COMPLETE ===");
-        if (workspace != null) {
-            workspace.triggerStripEmptyScreens("CellLayout, addWidgetsToPagesImmediately()", true);
-        }
-    }
-
-    private boolean checkIfPageNeedsWidgets(int pageIndex) {
-        if (!prefs.getBoolean(Keys.USER_LAYOUT, false)) {
-            return false;
-        }
-        if (prefs.getBoolean(Keys.USER_DATE, true) &&
-            prefs.getInt(Keys.DATE_SCREEN, 1) - 1 == pageIndex) {
-            return true;
-        }
-        if (prefs.getBoolean(Keys.USER_MUSIC, true) &&
-            prefs.getInt(Keys.MUSIC_SCREEN, 1) - 1 == pageIndex) {
-            return true;
-        }
-        if (prefs.getBoolean(Keys.USER_RADIO, true) &&
-            prefs.getInt(Keys.RADIO_SCREEN, 1) - 1 == pageIndex) {
-            return true;
-        }
-        if (prefs.getBoolean(Keys.PIP_DUAL, false) &&
-            prefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1 == pageIndex) {
-            return true;
-        }
-        if (prefs.getBoolean(Keys.PIP_FIRST, false) &&
-            prefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1 == pageIndex) {
-            return true;
-        }
-        if (prefs.getBoolean(Keys.PIP_SECOND, false) &&
-            prefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1 == pageIndex) {
-            return true;
-        }
-        if (prefs.getBoolean(Keys.PIP_THIRD, false) &&
-            prefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1 == pageIndex) {
-            return true;
-        }
-        if (prefs.getBoolean(Keys.PIP_FOURTH, false) &&
-            prefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1 == pageIndex) {
-            return true;
-        }
-        if (prefs.getBoolean(Keys.USER_STATS, false) &&
-            prefs.getInt(Keys.STATS_SCREEN, 1) - 1 == pageIndex) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private void addWidgetsToPage(CellLayout page, int pageIndex) {
-        logCustomLayout("Adding widgets to page " + pageIndex);
-        Workspace workspace = mLauncher != null ? mLauncher.getWorkspace() : null;
-        if (workspace == null || workspace.indexOfChild(page) < 0) {
-            Log.i(TAG, "CellLayout page detached before widget setup, skipping page " + pageIndex);
-            return;
-        }
-        if (!workspace.canResolveScreenId(page)) {
-            Log.i(TAG, "CellLayout screen id not ready for page " + pageIndex + ", retrying...");
-            postDelayed(() -> addWidgetsToPage(page, pageIndex), 100);
-            return;
-        }
-
-        if (deferCustomElementSetupWhileLoading("page " + pageIndex)) {
-            return;
-        }
-
-        // Check if CellLayout is properly initialized
-        if (page.mCellWidth <= 0 || page.mCellHeight <= 0 || page.mCountX <= 0 || page.mCountY <= 0) {
-            Log.w(TAG, "CellLayout not initialized for page " + pageIndex + ", retrying...");
-            page.postDelayed(() -> addWidgetsToPage(page, pageIndex), 100);
-            return;
-        }
-
-        page.checkAndAddWidgetsView(pageIndex);
-        page.checkAndAddPipPlaceholders(pageIndex);
-
-        if (prefs.getBoolean(Keys.USER_STATS, false) &&
-            prefs.getInt(Keys.STATS_SCREEN, 1) - 1 == pageIndex) {
-            page.addStatsPlaceholder(Keys.STATS_SCREEN);
-        }
-
-        logCustomLayout("✓ Widgets added to page " + pageIndex);
-    }
-
-    /** Reads the switches of the elements into the fields the placement code looks at. */
-    private void readCustomElementPrefs() {
-        leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
-        userDate = prefs.getBoolean(Keys.USER_DATE, true);
-        userMusic = prefs.getBoolean(Keys.USER_MUSIC, true);
-        userRadio = prefs.getBoolean(Keys.USER_RADIO, true);
-        clearDetachedCustomElementRefs();
-        dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
-        firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
-        secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
-        thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
-        fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
-    }
-
     private boolean isViewAttachedToThisCellLayout(View view) {
         if (view == null || mShortcutsAndWidgets == null) {
             return false;
@@ -4008,95 +3798,67 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         return false;
     }
 
-    private boolean isCustomElementPendingAdd(View view) {
-        return view != null && mPendingCustomElementAdds.contains(view);
-    }
-
-    private boolean isCustomElementAttachedOrPending(View view) {
-        return isViewAttachedToThisCellLayout(view) || isCustomElementPendingAdd(view);
-    }
-
-    private void markCustomElementPendingAdd(View view) {
-        if (view != null) {
-            mPendingCustomElementAdds.add(view);
-        }
-    }
-
-    private void clearCustomElementPendingAdd(View view) {
-        if (view != null) {
-            mPendingCustomElementAdds.remove(view);
-        }
+    private boolean isCustomElementAttached(View view) {
+        return isViewAttachedToThisCellLayout(view);
     }
 
     private void clearDetachedViewState(View view) {
         if (view == null) {
             return;
         }
-        clearCustomElementPendingAdd(view);
         mUserWidgetCells.remove(view);
         mUserWidgetPositions.remove(view);
         mPipPlaceholderCells.remove(view);
         mStatsCells.remove(view);
     }
 
-    private boolean isStatsPlaceholderPending(View view) {
-        return view != null && view == mStatsPlaceholder && mPendingStatsPlaceholderAdd != null;
-    }
-
-    private void clearStatsPlaceholderState() {
-        if (mPendingStatsPlaceholderAdd != null && mLauncher != null) {
-            mLauncher.handler.removeCallbacks(mPendingStatsPlaceholderAdd);
-        }
-        mPendingStatsPlaceholderAdd = null;
-        clearDetachedViewState(mStatsPlaceholder);
-        mStatsPlaceholder = null;
-    }
-
     private void clearDetachedCustomElementRefs() {
-        if (mUserDateWidget != null && !isCustomElementAttachedOrPending(mUserDateWidget)) {
+        if (mUserDateWidget != null && !isCustomElementAttached(mUserDateWidget)) {
             clearDetachedViewState(mUserDateWidget);
             mUserDateWidget = null;
         }
-        if (mUserMusicWidget != null && !isCustomElementAttachedOrPending(mUserMusicWidget)) {
+        if (mUserMusicWidget != null && !isCustomElementAttached(mUserMusicWidget)) {
             clearDetachedViewState(mUserMusicWidget);
             mUserMusicWidget = null;
         }
-        if (mUserRadioWidget != null && !isCustomElementAttachedOrPending(mUserRadioWidget)) {
+        if (mUserRadioWidget != null && !isCustomElementAttached(mUserRadioWidget)) {
             clearDetachedViewState(mUserRadioWidget);
             mUserRadioWidget = null;
         }
-        if (mDualPipPlaceholder != null && !isCustomElementAttachedOrPending(mDualPipPlaceholder)) {
+        if (mDualPipPlaceholder != null && !isCustomElementAttached(mDualPipPlaceholder)) {
             clearDetachedViewState(mDualPipPlaceholder);
             mDualPipPlaceholder = null;
         }
-        if (mFirstPipPlaceholder != null && !isCustomElementAttachedOrPending(mFirstPipPlaceholder)) {
+        if (mFirstPipPlaceholder != null && !isCustomElementAttached(mFirstPipPlaceholder)) {
             clearDetachedViewState(mFirstPipPlaceholder);
             mFirstPipPlaceholder = null;
         }
-        if (mSecondPipPlaceholder != null && !isCustomElementAttachedOrPending(mSecondPipPlaceholder)) {
+        if (mSecondPipPlaceholder != null && !isCustomElementAttached(mSecondPipPlaceholder)) {
             clearDetachedViewState(mSecondPipPlaceholder);
             mSecondPipPlaceholder = null;
         }
-        if (mThirdPipPlaceholder != null && !isCustomElementAttachedOrPending(mThirdPipPlaceholder)) {
+        if (mThirdPipPlaceholder != null && !isCustomElementAttached(mThirdPipPlaceholder)) {
             clearDetachedViewState(mThirdPipPlaceholder);
             mThirdPipPlaceholder = null;
         }
-        if (mFourthPipPlaceholder != null && !isCustomElementAttachedOrPending(mFourthPipPlaceholder)) {
+        if (mFourthPipPlaceholder != null && !isCustomElementAttached(mFourthPipPlaceholder)) {
             clearDetachedViewState(mFourthPipPlaceholder);
             mFourthPipPlaceholder = null;
         }
-        if (mStatsPlaceholder != null
-                && !isCustomElementAttachedOrPending(mStatsPlaceholder)
-                && !isStatsPlaceholderPending(mStatsPlaceholder)) {
-            clearStatsPlaceholderState();
+        if (mStatsPlaceholder != null && !isCustomElementAttached(mStatsPlaceholder)) {
+            clearDetachedViewState(mStatsPlaceholder);
+            mStatsPlaceholder = null;
         }
-        mHasUserWidgets = isCustomElementAttachedOrPending(mUserDateWidget)
-                || isCustomElementAttachedOrPending(mUserMusicWidget)
-                || isCustomElementAttachedOrPending(mUserRadioWidget);
     }
 
+    /**
+     * A page without assigned elements is always healthy, measured or not. A page with them is
+     * healthy when every one is on it, or when it is only waiting for its size or for the post.
+     */
     public boolean hasHealthyCustomElements() {
-        clearDetachedCustomElementRefs();
+        if (mAssignedElements.isEmpty()) {
+            return true;
+        }
         if (mLauncher == null || mLauncher.getWorkspace() == null) {
             return true;
         }
@@ -4104,180 +3866,41 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         if (!currentPrefs.getBoolean(Keys.USER_LAYOUT, false)) {
             return true;
         }
-        if (mCellWidth <= 0 || mCellHeight <= 0 || mCountX <= 0 || mCountY <= 0) {
-            return false;
-        }
-        int currentPageIndex = mLauncher.getWorkspace().indexOfChild(this);
-        if (currentPageIndex < 0) {
-            return false;
-        }
-
-        if (currentPrefs.getBoolean(Keys.USER_DATE, true)
-                && currentPrefs.getInt(Keys.DATE_SCREEN, 1) - 1 == currentPageIndex
-                && !isCustomElementAttachedOrPending(mUserDateWidget)) {
-            return false;
-        }
-        if (currentPrefs.getBoolean(Keys.USER_MUSIC, true)
-                && currentPrefs.getInt(Keys.MUSIC_SCREEN, 1) - 1 == currentPageIndex
-                && !isCustomElementAttachedOrPending(mUserMusicWidget)) {
-            return false;
-        }
-        if (currentPrefs.getBoolean(Keys.USER_RADIO, true)
-                && currentPrefs.getInt(Keys.RADIO_SCREEN, 1) - 1 == currentPageIndex
-                && !isCustomElementAttachedOrPending(mUserRadioWidget)) {
-            return false;
-        }
-        if (currentPrefs.getBoolean(Keys.PIP_DUAL, false)
-                && currentPrefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1 == currentPageIndex
-                && !isCustomElementAttachedOrPending(mDualPipPlaceholder)) {
-            return false;
-        }
-        if (currentPrefs.getBoolean(Keys.PIP_FIRST, false)
-                && currentPrefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1 == currentPageIndex
-                && !isCustomElementAttachedOrPending(mFirstPipPlaceholder)) {
-            return false;
-        }
-        if (currentPrefs.getBoolean(Keys.PIP_SECOND, false)
-                && currentPrefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1 == currentPageIndex
-                && !isCustomElementAttachedOrPending(mSecondPipPlaceholder)) {
-            return false;
-        }
-        if (currentPrefs.getBoolean(Keys.PIP_THIRD, false)
-                && currentPrefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1 == currentPageIndex
-                && !isCustomElementAttachedOrPending(mThirdPipPlaceholder)) {
-            return false;
-        }
-        if (currentPrefs.getBoolean(Keys.USER_STATS, false)
-                && currentPrefs.getInt(Keys.STATS_SCREEN, 1) - 1 == currentPageIndex
-                && !isCustomElementAttachedOrPending(mStatsPlaceholder)
-                && !isStatsPlaceholderPending(mStatsPlaceholder)) {
-            return false;
-        }
-        return !currentPrefs.getBoolean(Keys.PIP_FOURTH, false)
-                || currentPrefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1 != currentPageIndex
-                || isCustomElementAttachedOrPending(mFourthPipPlaceholder);
+        clearDetachedCustomElementRefs();
+        return areAssignedElementsPlaced() || mPlacementPosted || !hasPlacementMetrics();
     }
 
-    public void checkAndAddWidgetsView(int pageIndex) {
-        logCustomLayout("=== checkAndAddWidgetsView START for page " + pageIndex + " ===");
-
-        // Reload preferences to ensure we have current values
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        if (!prefs.getBoolean(Keys.USER_LAYOUT, false)) {
-            clearDetachedCustomElementRefs();
-            logCustomLayout("User layout disabled; skip widget setup");
-            return;
+    /** Creates the date, music or radio widget of this page and puts it in the grid. */
+    private void placeCustomWidget(CustomElement element, int pageIndex) {
+        int layout;
+        switch (element) {
+            case DATE:
+                layout = R.layout.absolute_time;
+                break;
+            case MUSIC:
+                layout = R.layout.absolute_music;
+                break;
+            default:
+                layout = R.layout.absolute_radio;
+                break;
         }
-        userDate = prefs.getBoolean(Keys.USER_DATE, true);
-        userMusic = prefs.getBoolean(Keys.USER_MUSIC, true);
-        userRadio = prefs.getBoolean(Keys.USER_RADIO, true);
-        clearDetachedCustomElementRefs();
-
-        // Check if CellLayout is properly initialized
-        if (mCellWidth <= 0 || mCellHeight <= 0 || mCountX <= 0 || mCountY <= 0) {
-            Log.w(TAG, "CellLayout not properly initialized, will retry...");
-            postDelayed(() -> checkAndAddWidgetsView(pageIndex), 50);
-            return;
-        }
-
-        boolean shouldAddWidgets = false;
-
-        if (userDate && prefs.getInt(Keys.DATE_SCREEN, 1) - 1 == pageIndex) {
-            shouldAddWidgets = true;
-            logCustomLayout("  -> Should add DATE widget (dateScreen=" + (prefs.getInt(Keys.DATE_SCREEN, 1) - 1) + ")");
-        }
-        if (userMusic && prefs.getInt(Keys.MUSIC_SCREEN, 1) - 1 == pageIndex) {
-            shouldAddWidgets = true;
-            logCustomLayout("  -> Should add MUSIC widget (musicScreen=" + (prefs.getInt(Keys.MUSIC_SCREEN, 1) - 1) + ")");
-        }
-        if (userRadio && prefs.getInt(Keys.RADIO_SCREEN, 1) - 1 == pageIndex) {
-            shouldAddWidgets = true;
-            logCustomLayout("  -> Should add RADIO widget (radioScreen=" + (prefs.getInt(Keys.RADIO_SCREEN, 1) - 1) + ")");
-        }
-
-        logCustomLayout("shouldAddWidgets: " + shouldAddWidgets + ", mHasUserWidgets: " + mHasUserWidgets);
-
-        if (!shouldAddWidgets) {
-            logCustomLayout("No widgets needed for this page");
-            return;
-        }
-
-        if (mCellWidth <= 0 || mCellHeight <= 0 || mCountX <= 0 || mCountY <= 0) {
-            Log.w(TAG, "CellLayout not properly initialized, skipping widget setup");
-            return;
-        }
-
-        if (mLauncher == null || mLauncher.getWorkspace() == null) {
-            Log.w(TAG, "Launcher or workspace is null");
-            return;
-        }
-
-        Workspace workspace = mLauncher.getWorkspace();
-        final int currentPageIndex = workspace.indexOfChild(this);
-        if (currentPageIndex < 0) {
-            Log.w(TAG, "Page not attached to workspace");
-            return;
-        }
-
-        if (currentPageIndex != pageIndex) {
-            Log.w(TAG, "Page index mismatch: expected " + pageIndex + ", got " + currentPageIndex);
-            return;
-        }
-
-        boolean dateNeeded = userDate && prefs.getInt(Keys.DATE_SCREEN, 1) - 1 == currentPageIndex;
-        boolean musicNeeded = userMusic && prefs.getInt(Keys.MUSIC_SCREEN, 1) - 1 == currentPageIndex;
-        boolean radioNeeded = userRadio && prefs.getInt(Keys.RADIO_SCREEN, 1) - 1 == currentPageIndex;
-        boolean hasRequiredWidgets = (!dateNeeded || isCustomElementAttachedOrPending(mUserDateWidget))
-                && (!musicNeeded || isCustomElementAttachedOrPending(mUserMusicWidget))
-                && (!radioNeeded || isCustomElementAttachedOrPending(mUserRadioWidget));
-        if (hasRequiredWidgets) {
-            mHasUserWidgets = true;
-            logCustomLayout("Required widgets already attached on this page");
-            return;
-        }
-
-        logCustomLayout("Proceeding with widget addition for page " + pageIndex);
-
         selectedBackground = prefs.getString(Keys.WIDGETS_SELECTED_BACKGROUND, "bg_custom");
-
-        if (userDate) {
-            int dateScreen = prefs.getInt(Keys.DATE_SCREEN, 1) - 1;
-            if (currentPageIndex == dateScreen && !isCustomElementAttachedOrPending(mUserDateWidget)) {
-                logCustomLayout("Creating DATE widget for page " + currentPageIndex);
-                mUserDateWidget = mLauncher.getLayoutInflater().inflate(R.layout.absolute_time, null);
-                if (!selectedBackground.equals("bg_custom")) {
-                    mUserDateWidget.setBackgroundResource(getResId(selectedBackground));
-                }
-                addCustomWidgetToGrid("date", mUserDateWidget, currentPageIndex);
-            }
+        View widget = mLauncher.getLayoutInflater().inflate(layout, null);
+        if (!selectedBackground.equals("bg_custom")) {
+            widget.setBackgroundResource(getResId(selectedBackground));
         }
-
-        if (userMusic) {
-            int musicScreen = prefs.getInt(Keys.MUSIC_SCREEN, 1) - 1;
-            if (currentPageIndex == musicScreen && !isCustomElementAttachedOrPending(mUserMusicWidget)) {
-                logCustomLayout("Creating MUSIC widget for page " + currentPageIndex);
-                mUserMusicWidget = mLauncher.getLayoutInflater().inflate(R.layout.absolute_music, null);
-                if (!selectedBackground.equals("bg_custom")) {
-                    mUserMusicWidget.setBackgroundResource(getResId(selectedBackground));
-                }
-                addCustomWidgetToGrid("music", mUserMusicWidget, currentPageIndex);
-            }
+        switch (element) {
+            case DATE:
+                mUserDateWidget = widget;
+                break;
+            case MUSIC:
+                mUserMusicWidget = widget;
+                break;
+            default:
+                mUserRadioWidget = widget;
+                break;
         }
-
-        if (userRadio) {
-            int radioScreen = prefs.getInt(Keys.RADIO_SCREEN, 1) - 1;
-            if (currentPageIndex == radioScreen && !isCustomElementAttachedOrPending(mUserRadioWidget)) {
-                logCustomLayout("Creating RADIO widget for page " + currentPageIndex);
-                mUserRadioWidget = mLauncher.getLayoutInflater().inflate(R.layout.absolute_radio, null);
-                if (!selectedBackground.equals("bg_custom")) {
-                    mUserRadioWidget.setBackgroundResource(getResId(selectedBackground));
-                }
-                addCustomWidgetToGrid("radio", mUserRadioWidget, currentPageIndex);
-            }
-        }
-
-        mHasUserWidgets = true;
-        logCustomLayout("Widget addition complete for page " + pageIndex);
+        addCustomWidgetToGrid(element.label, widget, pageIndex);
     }
 
     private void addCustomWidgetToGrid(String prefix, View widgetView, int currentScreen) {
@@ -4285,14 +3908,12 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         if (getContext() instanceof Launcher) {
             Workspace workspace = ((Launcher) getContext()).getWorkspace();
             if (workspace == null || workspace.indexOfChild(this) < 0) {
-                clearCustomElementPendingAdd(widgetView);
                 Log.i(TAG, prefix + " widget page detached, skipping");
                 return;
             }
             if (!workspace.canResolveScreenId(this)) {
-                Log.i(TAG, prefix + " widget screen id not ready, retrying");
-                markCustomElementPendingAdd(widgetView);
-                postDelayed(() -> addCustomWidgetToGrid(prefix, widgetView, currentScreen), 100);
+                // The recovery places the elements again when the screen is known.
+                Log.w(TAG, prefix + " widget screen id not ready, not placed");
                 return;
             }
 
@@ -4383,24 +4004,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             int spanX = endCell[0] - startCell[0] + 1;
             int spanY = endCell[1] - startCell[1] + 1;
 
-            // Find and handle conflicting views - incremental delay is necessary to prevent the race condtion
-            switch (prefix) {
-                case "date":
-                    mLauncher.handler.postDelayed(() -> {
-                        handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
-                    }, 100);
-                    break;
-                case "music":
-                    mLauncher.handler.postDelayed(() -> {
-                        handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
-                    }, 150);
-                    break;
-                case "radio":
-                    mLauncher.handler.postDelayed(() -> {
-                        handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
-                    }, 200);
-                    break;
-            }
+            // The items of the page are all bound by now, so what is in the way is known.
+            handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
 
             mUserWidgetCells.put(widgetView, new int[]{startCell[0], startCell[1], spanX, spanY});
 
@@ -4423,116 +4028,26 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     startCell[0], startCell[1], spanX, spanY
             );
 
-            // Add view and immediately init — single post() replaces two separate postDelayed()
-            // calls at 200ms and 400ms, saving at least 400ms per widget.
-            markCustomElementPendingAdd(widgetView);
-            mLauncher.handler.post(() -> {
-                try {
-                    if (!isViewAttachedToThisCellLayout(widgetView)) {
-                        addViewToCellLayout(widgetView, 0, childId, lp, true);
-                    }
-                    switch (prefix) {
-                        case "date":
-                            mLauncher.initDateWidgetView(widgetView);
-                            break;
-                        case "music":
-                            mLauncher.initMusicWidgetView(widgetView);
-                            mLauncher.bindMusicWidgetOnclickListener(widgetView);
-                            mLauncher.preSetMusicWidgets();
-                            break;
-                        case "radio":
-                            mLauncher.initRadioWidgetView(widgetView);
-                            mLauncher.bindRadioWidgetOnclickListener();
-                            RadioWidgetSizer.attach(widgetView.findViewById(R.id.rl_radio));
-                            break;
-                    }
-                } finally {
-                    clearCustomElementPendingAdd(widgetView);
-                }
-            });
+            if (!isViewAttachedToThisCellLayout(widgetView)) {
+                addViewToCellLayout(widgetView, 0, childId, lp, true);
+            }
+            switch (prefix) {
+                case "date":
+                    mLauncher.initDateWidgetView(widgetView);
+                    break;
+                case "music":
+                    mLauncher.initMusicWidgetView(widgetView);
+                    mLauncher.bindMusicWidgetOnclickListener(widgetView);
+                    mLauncher.preSetMusicWidgets();
+                    break;
+                case "radio":
+                    mLauncher.initRadioWidgetView(widgetView);
+                    mLauncher.bindRadioWidgetOnclickListener();
+                    RadioWidgetSizer.attach(widgetView.findViewById(R.id.rl_radio));
+                    break;
+            }
             logCustomLayout(prefix + " widget added at [" + startCell[0] + "," + startCell[1] + "] spanning " + spanX + "x" + spanY);
-            workspace.triggerStripEmptyScreens("CellLayout, addCustomWidgetToGrid()", false);
         }
-    }
-
-    public void checkAndAddPipPlaceholders(int pageIndex) {
-        logCustomLayout("=== checkAndAddPipPlaceholders START for page " + pageIndex + " ===");
-
-        // Reload preferences to ensure we have current values
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        if (!prefs.getBoolean(Keys.USER_LAYOUT, false)) {
-            clearDetachedCustomElementRefs();
-            logCustomLayout("User layout disabled; skip PiP placeholders");
-            return;
-        }
-        dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
-        firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
-        secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
-        thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
-        fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
-        clearDetachedCustomElementRefs();
-
-        logCustomLayout("PiP states - dual: " + dualPip + ", first: " + firstPip +
-              ", second: " + secondPip + ", third: " + thirdPip + ", fourth: " + fourthPip);
-
-        // Track if we added any placeholders
-        boolean addedAnyPlaceholders = false;
-
-        if (dualPip && prefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1 == pageIndex) {
-            if (!isCustomElementAttachedOrPending(mDualPipPlaceholder)) {
-                logCustomLayout("Adding dual PiP placeholder for page " + pageIndex);
-                addPipPlaceholder("dual", Keys.PIP_DUAL_KEY, Keys.PIP_DUAL_SCREEN);
-                addedAnyPlaceholders = true;
-            } else {
-                logCustomLayout("Dual PiP placeholder already exists");
-            }
-        }
-
-        if (firstPip && prefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1 == pageIndex) {
-            if (!isCustomElementAttachedOrPending(mFirstPipPlaceholder)) {
-                logCustomLayout("Adding first PiP placeholder for page " + pageIndex);
-                addPipPlaceholder("first", Keys.PIP_FIRST_KEY, Keys.PIP_FIRST_SCREEN);
-                addedAnyPlaceholders = true;
-            } else {
-                logCustomLayout("First PiP placeholder already exists");
-            }
-        }
-
-        if (secondPip && prefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1 == pageIndex) {
-            if (!isCustomElementAttachedOrPending(mSecondPipPlaceholder)) {
-                logCustomLayout("Adding second PiP placeholder for page " + pageIndex);
-                addPipPlaceholder("second", Keys.PIP_SECOND_KEY, Keys.PIP_SECOND_SCREEN);
-                addedAnyPlaceholders = true;
-            } else {
-                logCustomLayout("Second PiP placeholder already exists");
-            }
-        }
-
-        if (thirdPip && prefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1 == pageIndex) {
-            if (!isCustomElementAttachedOrPending(mThirdPipPlaceholder)) {
-                logCustomLayout("Adding third PiP placeholder for page " + pageIndex);
-                addPipPlaceholder("third", Keys.PIP_THIRD_KEY, Keys.PIP_THIRD_SCREEN);
-                addedAnyPlaceholders = true;
-            } else {
-                logCustomLayout("Third PiP placeholder already exists");
-            }
-        }
-
-        if (fourthPip && prefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1 == pageIndex) {
-            if (!isCustomElementAttachedOrPending(mFourthPipPlaceholder)) {
-                logCustomLayout("Adding fourth PiP placeholder for page " + pageIndex);
-                addPipPlaceholder("fourth", Keys.PIP_FOURTH_KEY, Keys.PIP_FOURTH_SCREEN);
-                addedAnyPlaceholders = true;
-            } else {
-                logCustomLayout("Fourth PiP placeholder already exists");
-            }
-        }
-
-        if (!addedAnyPlaceholders) {
-            logCustomLayout("No PiP placeholders needed for page " + pageIndex);
-        }
-
-        logCustomLayout("=== checkAndAddPipPlaceholders END for page " + pageIndex + " ===");
     }
 
     private View getPipPlaceholder(String pipType) {
@@ -4569,18 +4084,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         }
     }
 
-    public boolean hasStoredPipBounds(String pipType) {
-        String pipKey = getPipPreferenceKey(pipType);
-        if (pipKey.isEmpty()) {
-            return false;
-        }
-        SharedPreferences currentPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return currentPrefs.contains(pipKey + "TopLeftX")
-                && currentPrefs.contains(pipKey + "TopLeftY")
-                && currentPrefs.contains(pipKey + "TopRightX")
-                && currentPrefs.contains(pipKey + "BottomLeftY");
-    }
-
     private void setPipPlaceholder(String pipType, View placeholder) {
         switch (pipType) {
             case "dual":
@@ -4610,21 +4113,19 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 return;
             }
             if (!workspace.canResolveScreenId(this)) {
-                Log.i(TAG, pipType + " PiP placeholder screen id not ready, retrying");
-                postDelayed(() -> addPipPlaceholder(pipType, pipKey, screenKey), 100);
+                // The recovery places the elements again when the screen is known.
+                Log.w(TAG, pipType + " PiP placeholder screen id not ready, not placed");
                 return;
             }
 
-            // Check if CellLayout is ready
+            // The placement runs only on a measured page; this is for a direct call.
             if (mCellWidth <= 0 || mCellHeight <= 0 || mCountX <= 0 || mCountY <= 0) {
-                Log.w(TAG, "CellLayout not ready for " + pipType + " PiP, retrying...");
-                postDelayed(() -> addPipPlaceholder(pipType, pipKey, screenKey), 50);
                 return;
             }
 
             View existingPlaceholder = getPipPlaceholder(pipType);
 
-            if (existingPlaceholder != null && isCustomElementAttachedOrPending(existingPlaceholder)) {
+            if (existingPlaceholder != null && isCustomElementAttached(existingPlaceholder)) {
                 Log.w(TAG, pipType + " PIP placeholder already exists, skipping");
                 return;
             } else if (existingPlaceholder != null) {
@@ -4632,12 +4133,9 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 setPipPlaceholder(pipType, null);
             }
 
+            // The model assigned this pane to this page, so the page is the one the pane lives on.
             int currentScreen = mLauncher.getWorkspace().indexOfChild(this);
-            int pipScreen = prefs.getInt(screenKey, 1) - 1;
-
-            if (currentScreen != pipScreen) {
-                return;
-            }
+            int pipScreen = currentScreen;
 
             int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
 
@@ -4686,7 +4184,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
             // Store reference based on type
             setPipPlaceholder(pipType, placeholder);
-            markCustomElementPendingAdd(placeholder);
 
             // Store cell info
             mPipPlaceholderCells.put(placeholder, new int[]{startCell[0], startCell[1], spanX, spanY});
@@ -4712,20 +4209,11 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 resolvedScreenId,
                 startCell[0], startCell[1], spanX, spanY);
 
-            // Use post() instead of postDelayed(100ms) — conflict handling runs synchronously above,
-            // so there is no race to guard against.
-            mLauncher.handler.post(() -> {
-                try {
-                    if (!isViewAttachedToThisCellLayout(placeholder)) {
-                        addViewToCellLayout(placeholder, 0, childId, lp, false);
-                    }
-                    logCustomLayout("Added " + pipType + " PiP placeholder at [" + startCell[0] + "," + startCell[1] +
-                          "] spanning " + spanX + "x" + spanY);
-                } finally {
-                    clearCustomElementPendingAdd(placeholder);
-                }
-            });
-            workspace.triggerStripEmptyScreens("CellLayout, addPipPlaceholder()", false);
+            if (!isViewAttachedToThisCellLayout(placeholder)) {
+                addViewToCellLayout(placeholder, 0, childId, lp, false);
+            }
+            logCustomLayout("Added " + pipType + " PiP placeholder at [" + startCell[0] + "," + startCell[1] +
+                  "] spanning " + spanX + "x" + spanY);
         }
     }
 
@@ -4826,7 +4314,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         }
     }
 
-    // For CanbusService
     public void addStatsPlaceholder(String screenKey) {
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         if (!prefs.getBoolean(Keys.USER_LAYOUT, false) || !prefs.getBoolean(Keys.USER_STATS, false)) {
@@ -4840,26 +4327,22 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 return;
             }
             if (!workspace.canResolveScreenId(this)) {
-                Log.i(TAG, "Stats placeholder screen id not ready, retrying");
-                postDelayed(() -> addStatsPlaceholder(screenKey), 100);
+                // The recovery places the elements again when the screen is known.
+                Log.w(TAG, "Stats placeholder screen id not ready, not placed");
+                return;
+            }
+            if (mCellWidth <= 0 || mCellHeight <= 0 || mCountX <= 0 || mCountY <= 0) {
                 return;
             }
             clearDetachedCustomElementRefs();
-            if (mStatsPlaceholder != null
-                    && (isViewAttachedToThisCellLayout(mStatsPlaceholder)
-                    || isStatsPlaceholderPending(mStatsPlaceholder))) {
+            if (mStatsPlaceholder != null && isViewAttachedToThisCellLayout(mStatsPlaceholder)) {
                 Log.w(TAG, "Stats placeholder already exists, skipping");
                 return;
-            } else if (mStatsPlaceholder != null) {
-                clearStatsPlaceholderState();
             }
 
+            // The model assigned the statistics to this page.
             int currentScreen = mLauncher.getWorkspace().indexOfChild(this);
-            int pipScreen = prefs.getInt(screenKey, 1) - 1;
-
-            if (currentScreen != pipScreen) {
-                return;
-            }
+            int pipScreen = currentScreen;
 
             int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
 
@@ -4900,7 +4383,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             View placeholder = new View(getContext());
             placeholder.setBackgroundColor(Color.TRANSPARENT);
             mStatsPlaceholder = placeholder;
-            markCustomElementPendingAdd(placeholder);
 
             // Create layout params
             CellLayout.LayoutParams lp = new CellLayout.LayoutParams(startCell[0], startCell[1], spanX, spanY);
@@ -4920,22 +4402,12 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 resolvedScreenId,
                 startCell[0], startCell[1], spanX, spanY);
 
-            mPendingStatsPlaceholderAdd = () -> {
-                if (mStatsPlaceholder != placeholder) {
-                    clearCustomElementPendingAdd(placeholder);
-                    return;
-                }
-                mPendingStatsPlaceholderAdd = null;
-                if (!isViewAttachedToThisCellLayout(placeholder)) {
-                    addViewToCellLayout(placeholder, 0, childId, lp, false);
-                }
-                clearCustomElementPendingAdd(placeholder);
-            };
-            mLauncher.handler.postDelayed(mPendingStatsPlaceholderAdd, 200);
+            if (!isViewAttachedToThisCellLayout(placeholder)) {
+                addViewToCellLayout(placeholder, 0, childId, lp, false);
+            }
 
             logCustomLayout("Added stats placeholder at [" + startCell[0] + "," + startCell[1] +
                   "] spanning " + spanX + "x" + spanY);
-            workspace.triggerStripEmptyScreens("CellLayout, addStatsPlaceholder()", false);
         }
     }
 
@@ -4959,7 +4431,49 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         if (isViewAttachedToThisCellLayout(mStatsPlaceholder) && mStatsCells.containsKey(mStatsPlaceholder)) {
             return mStatsCells.get(mStatsPlaceholder);
         }
+        if (mAssignedElements.contains(CustomElement.STATS)) {
+            // The placeholder is added a little after the page is built, while the statistics window
+            // needs its place at once: same arithmetic as addStatsPlaceholder(), from preferences.
+            return computeStatsPlaceholderPosition();
+        }
         return null;
+    }
+
+    /**
+     * Where addStatsPlaceholder() puts the statistics, without adding anything. Unlike it, this does
+     * not call StatsWindowSize.syncSavedRectangle(), which writes preferences.
+     *
+     * @return {x, y, width, height, page} or null when this page does not host the statistics.
+     */
+    private int[] computeStatsPlaceholderPosition() {
+        try {
+            if (mLauncher == null || !mAssignedElements.contains(CustomElement.STATS)) {
+                return null;
+            }
+            SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
+            if (!p.getBoolean(Keys.USER_LAYOUT, false) || !p.getBoolean(Keys.USER_STATS, false)) {
+                return null;
+            }
+            Workspace workspace = mLauncher.getWorkspace();
+            int currentScreen = workspace != null ? workspace.indexOfChild(this) : -1;
+            if (currentScreen < 0) {
+                return null;
+            }
+            prefs = p;
+            int margin = Integer.parseInt(p.getString(Keys.LAYOUT_MARGIN, "5"));
+            int leftBarWidth = mLauncher.calculatedLeftBarWidth;
+            int statsWidth = mLauncher.calculatedStatsWidth;
+            int statsHeight = mLauncher.calculatedStatsHeight;
+            int topLeftX = isLeftBarOffsetActive(currentScreen)
+                    ? p.getInt("statsTopLeftX", margin) + leftBarWidth
+                    : p.getInt("statsTopLeftX", margin);
+            int topLeftY = p.getInt("statsTopLeftY", margin);
+            return new int[]{topLeftX, topLeftY + mLauncher.getStatusBarHeight(), statsWidth,
+                    statsHeight, currentScreen};
+        } catch (Throwable t) {
+            Log.w(TAG, "computeStatsPlaceholderPosition failed", t);
+            return null;
+        }
     }
 
     // Helper methods
@@ -5005,22 +4519,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         }
     }
 
-    /**
-     * While the model rebinds the screens, custom elements must not be placed: the pages are half
-     * built (their icons are still to come), so the conflict handling below and stripEmptyScreens()
-     * would judge them wrongly. Launcher replays the request once finishBindingItems() has run.
-     */
-    private boolean deferCustomElementSetupWhileLoading(String stage) {
-        if (mLauncher == null || !mLauncher.isWorkspaceLoading()) {
-            return false;
-        }
-        Log.i(TAG, "Custom element setup waits for the workspace to load (" + stage + ")");
-        mLauncher.requestCustomElementsSetup("CellLayout: " + stage);
-        return true;
-    }
-
     /** A child that is a launcher item (icon, folder, widget), as opposed to a custom element. */
-    private boolean isMovableLauncherItem(View child) {
+    boolean isMovableLauncherItem(View child) {
         return child != null && !isUserWidget(child)
                 && child.getTag() instanceof ItemInfo
                 && child.getLayoutParams() instanceof LayoutParams;
@@ -5117,7 +4617,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 if (page == this || !(page instanceof CellLayout)) {
                     continue;
                 }
-                if (checkIfPageNeedsWidgets(i) != (pass == 1)) {
+                if (((CellLayout) page).hostsCustomElements() != (pass == 1)) {
                     continue;
                 }
                 CellLayout target = (CellLayout) page;
@@ -5286,42 +4786,10 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             }
         }
 
-        // Track all active custom widgets on the page
-        if (isUserWidget(this)) {
-            if (spanX >= mCountX && spanY >= mCountY) {
-                if (!mActiveFullWidgets.contains(this)) {
-                    mActiveFullWidgets.add(this);
-                }
-            } else {
-                mActiveFullWidgets.remove(this);
-            }
-        }
-
-        // Check if at least one fullscreen custom widget exists
-        boolean hasFullCustom = !mActiveFullWidgets.isEmpty();
+        // Every item of the page is shown again: nothing hides them while a custom element is added.
         int total = mShortcutsAndWidgets.getChildCount();
-
         for (int i = 0; i < total; i++) {
-            View child = mShortcutsAndWidgets.getChildAt(i);
-
-            boolean isCustom = isUserWidget(child);
-
-            // Case 1: There is at least one fullscreen custom widget
-            if (hasFullCustom) {
-                // Hide all original (non-custom) items
-                if (!isCustom) {
-                    child.setVisibility(View.INVISIBLE);
-                    continue;
-                }
-
-                // Show all custom widgets that occupy full screen
-                child.setVisibility(View.VISIBLE);
-                child.bringToFront();
-            }
-            // Case 2: No fullscreen widget active — restore everything
-            else {
-                child.setVisibility(View.VISIBLE);
-            }
+            mShortcutsAndWidgets.getChildAt(i).setVisibility(View.VISIBLE);
         }
 
         // Keep rendering order correct

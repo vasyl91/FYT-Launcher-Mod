@@ -640,10 +640,6 @@ final class LauncherAppBars {
         // Initialize app data
         initializeAppList();
 
-        if (!mApplyingBarSnapshot) { // a snapshot is only the bar; the rest waits for the app data
-            mLauncher.requestCustomElementsSetup("setupRecyclerView");
-        }
-
         // One call instead of two — each one adds an OnGlobalLayoutListener + 2 postDelayed
         refreshRecyclerDecorationsAfterLayout(recyclerView);
 

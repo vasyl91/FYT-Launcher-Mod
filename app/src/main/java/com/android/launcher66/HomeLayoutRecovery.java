@@ -173,22 +173,17 @@ final class HomeLayoutRecovery {
     }
 
     /**
-     * A custom elements setup is queued here or in a CellLayout and has not added the elements yet.
-     * A repair pass in that window cannot help (see isHomeLayoutInitPending()); and the urgent
-     * retry the layout check sends used to restart a setup whose add was already queued, so
-     * addWidgetsToAllExistingPages() and stripEmptyScreens() ran two or three times in a row
-     * (CellLayout.triggerAddCustomElements() now ignores it then).
+     * A page has custom elements assigned that are not on it yet, and what they wait for is the
+     * size of the page or the post that places them. A repair pass in that window cannot help
+     * (see isHomeLayoutInitPending()).
      */
     boolean isCustomElementsSetupInFlight() {
-        if (mLauncher.mCustomElementsSetupRunnable != null || mLauncher.mCustomElementsSetupAfterBind) {
-            return true;
-        }
         if (mLauncher.mWorkspace == null) {
             return false;
         }
         for (int i = 0; i < mLauncher.mWorkspace.getChildCount(); i++) {
             View child = mLauncher.mWorkspace.getChildAt(i);
-            if (child instanceof CellLayout && ((CellLayout) child).isCustomElementSetupPending()) {
+            if (child instanceof CellLayout && ((CellLayout) child).isCustomElementPlacementPending()) {
                 return true;
             }
         }
@@ -286,13 +281,12 @@ final class HomeLayoutRecovery {
         if (!customElementsHealthy) {
             healthy = false;
             if (isCustomElementsSetupInFlight()) {
-                // Not a fault, the setup is on its way. Still hurried along: an urgent request skips
-                // CellLayout's 1.5 s initial delay, and CellLayout ignores it once the add is queued.
-                Log.d(Launcher.TAG, "Custom elements still being set up during " + source + ", hurrying it");
+                // Not a fault: a page waits for its size or for the post that places its elements.
+                Log.d(Launcher.TAG, "Custom elements on their way during " + source);
             } else {
-                Log.w(Launcher.TAG, "Custom elements pending during " + source + ", scheduling widget retry");
+                Log.w(Launcher.TAG, "Custom elements missing during " + source + ", placing them");
             }
-            mLauncher.requestCustomElementsHealthRetry(source);
+            mLauncher.placeCustomElements(source);
         }
         return healthy;
     }
@@ -450,12 +444,10 @@ final class HomeLayoutRecovery {
         if (mLauncher.mWorkspace != null) {
             mLauncher.mWorkspace.post(() -> {
                 if (mLauncher.mWorkspace == null) return;
-                // Only when something is missing. Each request ends in addWidgetsToAllExistingPages()
-                // and a stripEmptyScreens() pass ~2 s later, and a wake asked for it five times
-                // (early, late, +250 ms, focus, retry) with every element already in place
-                // ("Stats placeholder already exists", capture 05-10-2026 21:14:30-38).
+                // Only when something is missing; placing is idempotent, but there is no reason to
+                // walk the pages when every element is in place.
                 if (currentUserLayout && !areCustomElementsInPlace()) {
-                    mLauncher.requestCustomElementsSetup(source);
+                    mLauncher.placeCustomElements(source);
                 }
                 restoreBottomRecyclerAfterHome(source);
                 mLauncher.mWorkspace.requestLayout();

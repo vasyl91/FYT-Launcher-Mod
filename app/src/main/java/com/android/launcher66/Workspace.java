@@ -980,6 +980,12 @@ public class Workspace extends SmoothPagedView
         updateEdgeHandle("createUserPage", 0);
 
         invalidate();
+
+        // recreateView() without a reload builds a new first page, and the elements of the model's
+        // plan that live on it go with it. During a bind finishBindingItems() places them.
+        if (!mLauncher.isWorkspaceLoading()) {
+            mLauncher.placeCustomElements("createUserPage");
+        }
     }
 
     private void setWidgetBarTextView(View barView) {
