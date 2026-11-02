@@ -3,14 +3,12 @@ package com.android.launcher66.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.preference.PreferenceManager;
 
-import com.android.launcher66.CellLayout;
-import com.android.launcher66.Launcher;
-import com.android.launcher66.Workspace;
+import com.android.launcher66.CustomElement;
+import com.android.launcher66.LauncherModel;
+import com.android.launcher66.WorkspaceScreenPlan;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +19,10 @@ import java.util.Set;
 
 /**
  * Manages widget page assignments and automatically relocates widgets to prevent gaps.
+ *
+ * The pages are counted and judged from the model's snapshot (LauncherModel.getScreenSnapshot()),
+ * not from the views of the workspace, which may be half built or not exist at all while the
+ * settings are open. Only the elements that are switched on keep a page.
  */
 public class WidgetPageManager {
     private static final String TAG = "WidgetPageManager";
@@ -36,19 +38,6 @@ public class WidgetPageManager {
     }
     
     private OnPreferencesUpdatedListener mListener;
-    
-    // All widget keys that can be relocated
-    private static final String[] ALL_WIDGET_KEYS = {
-        Keys.MUSIC_SCREEN,
-        Keys.DATE_SCREEN,
-        Keys.RADIO_SCREEN,
-        Keys.PIP_DUAL_SCREEN,
-        Keys.PIP_FIRST_SCREEN,
-        Keys.PIP_SECOND_SCREEN,
-        Keys.PIP_THIRD_SCREEN,
-        Keys.PIP_FOURTH_SCREEN,
-        Keys.STATS_SCREEN
-    };
     
     public WidgetPageManager(Context context, String widgetKey) {
         mContext = context;
@@ -73,13 +62,10 @@ public class WidgetPageManager {
         // Clamp value between 1 and 99
         value = Math.max(1, Math.min(99, value));
         
-        Launcher launcher = Launcher.getLauncher();
-        if (launcher == null) return false;
-        
-        Workspace workspace = launcher.getWorkspace();
-        if (workspace == null) return false;
-        
-        int pageCount = workspace.getChildCount();
+        WorkspaceScreenPlan.Snapshot snapshot = LauncherModel.getScreenSnapshot();
+        if (!snapshot.isReady()) return false;
+
+        int pageCount = snapshot.pageCount();
         int currentPageIndex = getCurrentWidgetPageIndex();
         int highestIndex = getHighestPageIndex();
         
@@ -99,47 +85,26 @@ public class WidgetPageManager {
             Log.i(TAG, "Checking if widget is alone on page " + (currentPageIndex + 1));
             
             // Check if current page is the last page
-            boolean isLastPage = (currentPageIndex + 1) == workspace.getChildCount();
-            
+            boolean isLastPage = (currentPageIndex + 1) == pageCount;
+
             // Only block if:
             // 1. Moving to a NEW page that doesn't exist yet (newPageIndex >= pageCount)
             // 2. AND widget is alone on the last page
             // 3. AND moving would create a gap
             if (isLastPage && newPageIndex >= pageCount) {
-                CellLayout currentLayout = (CellLayout) workspace.getChildAt(currentPageIndex);
-                
-                if (currentLayout != null) {
-                    ViewGroup container = currentLayout.getShortcutsAndWidgets();
-                    ArrayList<String> customContent = new ArrayList<>();
-                    boolean regularContent = false;
-                    
-                    if (container != null) {
-                        for (int i = 0; i < container.getChildCount(); i++) {
-                            View child = container.getChildAt(i);
-                            if (!currentLayout.isUserWidget(child)) {
-                                regularContent = true;
-                            }
-                            if (currentLayout.isUserWidget(child)) {
-                                String widgetName = currentLayout.getUserWidgetKey(child);
-                                customContent.add(widgetName);
-                            }
-                        }
-                    }
-                    
-                    // Check if this widget is alone on the page
-                    if (!regularContent && customContent.size() == 1) {
-                        if (customContent.get(0).equals(mWidgetKey) && !checkCustomElements(mWidgetKey)) {
-                            // Check if the move would create a gap
-                            if (wouldCreateGapWhenMovingFromLastPage(currentPageIndex, newPageIndex)) {
-                                Log.i(TAG, "Cancelled page change: widget is the only element on last page (" + (currentPageIndex + 1) + "), and moving to page " + value + " would create a gap");
-                                return false;
-                            }
-                        }
+                // Alone: no icon, folder or widget on the page and no other element switched on
+                // that lives there.
+                boolean regularContent = snapshot.pageHasContent(currentPageIndex);
+                if (!regularContent && !isAnotherElementOnPage(currentPageIndex)) {
+                    // Check if the move would create a gap
+                    if (wouldCreateGapWhenMovingFromLastPage(currentPageIndex, newPageIndex)) {
+                        Log.i(TAG, "Cancelled page change: widget is the only element on last page (" + (currentPageIndex + 1) + "), and moving to page " + value + " would create a gap");
+                        return false;
                     }
                 }
             }
         }
-        
+
         // Apply the change and auto-relocate other widgets
         Log.i(TAG, "Apply pref value and relocate widgets if needed");
         return applyAndRelocateWidgets(newPageIndex);
@@ -152,9 +117,9 @@ public class WidgetPageManager {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
         if (sp == null) return false;
         
-        // Get all current widget positions
+        // Get the current positions of the elements that are switched on (and of this one)
         Map<String, Integer> widgetPositions = new HashMap<>();
-        for (String key : ALL_WIDGET_KEYS) {
+        for (String key : getActiveKeys(sp)) {
             int pageIndex = sp.getInt(key, 1) - 1;
             widgetPositions.put(key, pageIndex);
         }
@@ -274,27 +239,53 @@ public class WidgetPageManager {
     }
     
     /**
-     * Get all pages that have regular (non-widget) content.
+     * Get all pages that have regular (non-widget) content, from the model's snapshot.
      */
     private ArrayList<Integer> getPagesWithRegularContent() {
         ArrayList<Integer> pages = new ArrayList<>();
-        
-        Launcher launcher = Launcher.getLauncher();
-        if (launcher == null) return pages;
-        
-        Workspace workspace = launcher.getWorkspace();
-        if (workspace == null) return pages;
-        
-        for (int i = 0; i < workspace.getChildCount(); i++) {
-            CellLayout layout = (CellLayout) workspace.getChildAt(i);
-            if (layout != null && hasRegularContent(layout)) {
+        WorkspaceScreenPlan.Snapshot snapshot = LauncherModel.getScreenSnapshot();
+        if (!snapshot.isReady()) return pages;
+
+        // Page 0 is the user page, always occupied.
+        for (int i = 1; i < snapshot.pageCount(); i++) {
+            if (snapshot.pageHasContent(i)) {
                 pages.add(i);
             }
         }
-        
         return pages;
     }
-    
+
+    /**
+     * The preferences with the page of every element that is switched on, and of this one: only
+     * those keep a page. A switched off element is not moved with the others.
+     */
+    private ArrayList<String> getActiveKeys(SharedPreferences sp) {
+        ArrayList<String> keys = new ArrayList<>();
+        for (CustomElement element : CustomElement.values()) {
+            if (sp.getBoolean(element.enabledKey, element.defaultEnabled)
+                    || element.screenKey.equals(mWidgetKey)) {
+                keys.add(element.screenKey);
+            }
+        }
+        return keys;
+    }
+
+    /** Whether an element other than this one, switched on, lives on the page (0-based). */
+    private boolean isAnotherElementOnPage(int pageIndex) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+        if (sp == null) return false;
+        for (CustomElement element : CustomElement.values()) {
+            if (element.screenKey.equals(mWidgetKey)
+                    || !sp.getBoolean(element.enabledKey, element.defaultEnabled)) {
+                continue;
+            }
+            if (sp.getInt(element.screenKey, 1) - 1 == pageIndex) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Check if moving widget from the last page would create a gap.
      * This is specifically for when a widget is alone on the last page.
@@ -308,8 +299,7 @@ public class WidgetPageManager {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
         if (sp == null) return false;
         
-        Launcher launcher = Launcher.getLauncher();
-        Workspace workspace = launcher != null ? launcher.getWorkspace() : null;
+        WorkspaceScreenPlan.Snapshot snapshot = LauncherModel.getScreenSnapshot();
         
         // Collect all widget page indices AFTER this move
         ArrayList<Integer> occupiedPages = new ArrayList<>();
@@ -320,14 +310,13 @@ public class WidgetPageManager {
         // Add all widget pages, simulating the move
         addWidgetPages(sp, occupiedPages, currentPageIndex, newPageIndex);
         
-        // Check for physical pages with regular content
-        if (workspace != null) {
-            for (int i = 0; i < workspace.getChildCount(); i++) {
+        // Check for pages with regular content
+        if (snapshot.isReady()) {
+            for (int i = 0; i < snapshot.pageCount(); i++) {
                 // Skip the current page since we're moving away from it
                 if (i == currentPageIndex) continue;
-                
-                CellLayout layout = (CellLayout) workspace.getChildAt(i);
-                if (layout != null && hasRegularContent(layout)) {
+
+                if (snapshot.pageHasContent(i)) {
                     occupiedPages.add(i);
                 }
             }
@@ -359,91 +348,18 @@ public class WidgetPageManager {
     }
     
     /**
-     * Check if a page has regular (non-widget) content.
+     * Add the pages of the elements that are switched on to the occupied list, simulating a move
+     * for this one.
      */
-    private boolean hasRegularContent(CellLayout layout) {
-        ViewGroup container = layout.getShortcutsAndWidgets();
-        if (container == null) return false;
-        
-        for (int i = 0; i < container.getChildCount(); i++) {
-            View child = container.getChildAt(i);
-            if (!layout.isUserWidget(child)) {
-                return true; // Found regular content
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * Add all widget pages to the occupied list, simulating a move for one widget.
-     */
-    private void addWidgetPages(SharedPreferences sp, ArrayList<Integer> occupiedPages, 
+    private void addWidgetPages(SharedPreferences sp, ArrayList<Integer> occupiedPages,
                                 int currentPageIndex, int newPageIndex) {
-        // If this is the widget being moved, use the new page index
-        if (mWidgetKey.equals(Keys.MUSIC_SCREEN)) {
-            occupiedPages.add(newPageIndex);
-        } else {
-            int page = sp.getInt(Keys.MUSIC_SCREEN, 1) - 1;
-            if (page >= 0) occupiedPages.add(page);
-        }
-        
-        if (mWidgetKey.equals(Keys.DATE_SCREEN)) {
-            occupiedPages.add(newPageIndex);
-        } else {
-            int page = sp.getInt(Keys.DATE_SCREEN, 1) - 1;
-            if (page >= 0) occupiedPages.add(page);
-        }
-        
-        if (mWidgetKey.equals(Keys.RADIO_SCREEN)) {
-            occupiedPages.add(newPageIndex);
-        } else {
-            int page = sp.getInt(Keys.RADIO_SCREEN, 1) - 1;
-            if (page >= 0) occupiedPages.add(page);
-        }
-        
-        if (mWidgetKey.equals(Keys.PIP_DUAL_SCREEN)) {
-            occupiedPages.add(newPageIndex);
-        } else {
-            int page = sp.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1;
-            if (page >= 0) occupiedPages.add(page);
-        }
-        
-        if (mWidgetKey.equals(Keys.PIP_FIRST_SCREEN)) {
-            occupiedPages.add(newPageIndex);
-        } else {
-            int page = sp.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1;
-            if (page >= 0) occupiedPages.add(page);
-        }
-        
-        if (mWidgetKey.equals(Keys.PIP_SECOND_SCREEN)) {
-            occupiedPages.add(newPageIndex);
-        } else {
-            int page = sp.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1;
-            if (page >= 0) occupiedPages.add(page);
-        }
-        
-        if (mWidgetKey.equals(Keys.PIP_THIRD_SCREEN)) {
-            occupiedPages.add(newPageIndex);
-        } else {
-            int page = sp.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1;
-            if (page >= 0) occupiedPages.add(page);
-        }
-        
-        if (mWidgetKey.equals(Keys.PIP_FOURTH_SCREEN)) {
-            occupiedPages.add(newPageIndex);
-        } else {
-            int page = sp.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1;
-            if (page >= 0) occupiedPages.add(page);
-        }
-        
-        if (mWidgetKey.equals(Keys.STATS_SCREEN)) {
-            occupiedPages.add(newPageIndex);
-        } else {
-            int page = sp.getInt(Keys.STATS_SCREEN, 1) - 1;
+        for (String key : getActiveKeys(sp)) {
+            // If this is the widget being moved, use the new page index
+            int page = key.equals(mWidgetKey) ? newPageIndex : sp.getInt(key, 1) - 1;
             if (page >= 0) occupiedPages.add(page);
         }
     }
-    
+
     /**
      * Get the current page index (0-based) for this widget.
      * 
@@ -457,39 +373,23 @@ public class WidgetPageManager {
     }
     
     /**
-     * Get the highest page index across all widgets.
-     * 
+     * Get the highest page index across the elements that are switched on (and this one).
+     *
      * @return The highest page index, or -1 if none found
      */
     private int getHighestPageIndex() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
         if (sp == null) return -1;
-        
+
         ArrayList<Integer> screensPrefs = new ArrayList<>();
-        
-        for (String key : ALL_WIDGET_KEYS) {
+
+        for (String key : getActiveKeys(sp)) {
             screensPrefs.add(sp.getInt(key, 1) - 1);
         }
-        
+
         if (!screensPrefs.isEmpty()) {
             return Collections.max(screensPrefs);
         }
         return -1;
-    }
-
-    private boolean checkCustomElements(String mWidgetKey) {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
-        if (sp == null) return false;
-        
-        ArrayList<Integer> screensPrefs = new ArrayList<>();
-        
-        for (String key : ALL_WIDGET_KEYS) {
-            screensPrefs.add(sp.getInt(key, 1) - 1);
-        }
-        
-        if (!screensPrefs.contains(getCurrentWidgetPageIndex())) {
-            return true;
-        }
-        return false;
     }
 }

@@ -4498,18 +4498,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             || view == mFourthPipPlaceholder || view == mStatsPlaceholder;
     }
 
-    public String getUserWidgetKey(View view) {
-        String widgetKey = "null";
-        if (view == mUserDateWidget) {
-            widgetKey = Keys.DATE_SCREEN;
-        } else if (view == mUserMusicWidget) {
-            widgetKey = Keys.MUSIC_SCREEN;
-        } else if (view == mUserRadioWidget) {
-            widgetKey = Keys.RADIO_SCREEN;
-        }
-        return widgetKey;
-    }
-
     private static int getResId(String resName) {
         try {
             Field idField = R.drawable.class.getDeclaredField(resName);
