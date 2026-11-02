@@ -212,9 +212,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private static final int CUSTOM_ELEMENT_SETUP_MAX_RETRIES = 28;
     private static final long CUSTOM_ELEMENT_SETUP_INITIAL_DELAY_MS = 1500L;
     private static final long CUSTOM_ELEMENT_SETUP_RETRY_DELAY_MS = 250L;
-    private static final ExecutorService CUSTOM_ELEMENT_CLEANUP_EXECUTOR = Executors.newSingleThreadExecutor();
     private int mCustomElementSetupAttempt = 0;
-    private boolean mGeneratedCustomRowsCleanupDone = false;
     private HashMap<View, int[]> mUserWidgetPositions = new HashMap<>();
     private HashMap<View, int[]> mUserWidgetCells = new HashMap<>();
     private HashMap<View, int[]> mPipPlaceholderCells = new HashMap<>();
@@ -1198,12 +1196,10 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                 return;
             }
 
-            cleanupGeneratedCustomElementRowsIfNeeded();
+            // The model has already created the pages the elements ask for (WorkspaceScreenPlan).
+            readCustomElementPrefs();
 
-            // Step 1: Ensure all required pages exist
-            ensurePagesExistForCustomElements(workspace);
-
-            // Step 2: Wait for layout to complete, then add widgets
+            // Wait for layout to complete, then add widgets
             mCustomElementSetupPending = true;
             mCustomElementSetupUrgent = urgent;
             mCustomElementAddScheduled = true;
@@ -1217,7 +1213,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                     return;
                 }
                 if (!workspace.isScreenStateReadyForCustomElements()) {
-                    retryCustomElementSetup("workspace screen state changed after ensure");
+                    retryCustomElementSetup("workspace screen state changed during the delay");
                     return;
                 }
                 mCustomElementSetupAttempt = 0;
@@ -1259,42 +1255,6 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             }
         }
         return workspace.indexOfChild(this) == 0;
-    }
-
-    private void cleanupGeneratedCustomElementRowsIfNeeded() {
-        if (mGeneratedCustomRowsCleanupDone) {
-            return;
-        }
-        mGeneratedCustomRowsCleanupDone = true;
-        Context appContext = getContext().getApplicationContext();
-        CUSTOM_ELEMENT_CLEANUP_EXECUTOR.execute(() -> {
-            try {
-                String selection = LauncherSettings.Favorites.ITEM_TYPE + "=? AND "
-                        + LauncherSettings.Favorites.CONTAINER + "=? AND ("
-                        + LauncherSettings.Favorites.TITLE + " IS NULL OR "
-                        + LauncherSettings.Favorites.TITLE + "=?) AND ("
-                        + LauncherSettings.Favorites.INTENT + " IS NULL OR "
-                        + LauncherSettings.Favorites.INTENT + "=?) AND "
-                        + LauncherSettings.Favorites.APPWIDGET_ID + "=?";
-                String[] args = new String[] {
-                        String.valueOf(LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT),
-                        String.valueOf(LauncherSettings.Favorites.CONTAINER_DESKTOP),
-                        "",
-                        "",
-                        "-1"
-                };
-                int deleted = appContext.getContentResolver().delete(
-                        LauncherSettings.Favorites.CONTENT_URI_NO_NOTIFICATION,
-                        selection,
-                        args
-                );
-                if (deleted > 0) {
-                    Log.i(TAG, "Cleaned generated custom element rows: " + deleted);
-                }
-            } catch (Exception e) {
-                Log.w(TAG, "Failed to cleanup generated custom element rows", e);
-            }
-        });
     }
 
     @Override
@@ -4020,7 +3980,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         logCustomLayout("✓ Widgets added to page " + pageIndex);
     }
 
-    private void ensurePagesExistForCustomElements(Workspace workspace) {
+    /** Reads the switches of the elements into the fields the placement code looks at. */
+    private void readCustomElementPrefs() {
         leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
         userDate = prefs.getBoolean(Keys.USER_DATE, true);
         userMusic = prefs.getBoolean(Keys.USER_MUSIC, true);
@@ -4031,80 +3992,6 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
         thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
         fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
-        boolean userStats = prefs.getBoolean(Keys.USER_STATS, false);
-        clearDetachedCustomElementRefs();
-
-        // Collect all required screens
-        HashSet<Integer> requiredScreens = new HashSet<>();
-
-        if (userDate) {
-            requiredScreens.add(prefs.getInt(Keys.DATE_SCREEN, 1) - 1);
-        }
-        if (userMusic) {
-            requiredScreens.add(prefs.getInt(Keys.MUSIC_SCREEN, 1) - 1);
-        }
-        if (userRadio) {
-            requiredScreens.add(prefs.getInt(Keys.RADIO_SCREEN, 1) - 1);
-        }
-        if (dualPip) {
-            requiredScreens.add(prefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1);
-        }
-        if (firstPip) {
-            requiredScreens.add(prefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1);
-        }
-        if (secondPip) {
-            requiredScreens.add(prefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1);
-        }
-        if (thirdPip) {
-            requiredScreens.add(prefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1);
-        }
-        if (fourthPip) {
-            requiredScreens.add(prefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1);
-        }
-
-        if (userStats) {
-            requiredScreens.add(prefs.getInt(Keys.STATS_SCREEN, 1) - 1);
-        }
-
-        if (requiredScreens.isEmpty()) {
-            return;
-        }
-
-        // Get current page count (excluding custom pages)
-        int currentPageCount = workspace.getChildCount() - workspace.numCustomPages();
-
-        // Find the maximum screen index needed
-        int maxScreenNeeded = Collections.max(requiredScreens);
-
-        logCustomLayout("Current pages: " + currentPageCount + ", max needed: " + maxScreenNeeded);
-        logCustomLayout("Required screens: " + requiredScreens);
-
-        // Create only the pages we need
-        SharedPreferences.Editor editor = prefs.edit();
-        boolean prefsChanged = false;
-
-        for (int screenIndex = currentPageCount; screenIndex <= maxScreenNeeded; screenIndex++) {
-            workspace.ensurePageExists(screenIndex);
-
-            // Persist the new screen
-            try {
-                long createdScreenId = workspace.getScreenIdForPageIndex(screenIndex);
-                ContentValues cv = new ContentValues();
-                cv.put(LauncherSettings.WorkspaceScreens._ID, createdScreenId);
-                cv.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, screenIndex);
-                mLauncher.getContentResolver().insert(LauncherSettings.WorkspaceScreens.CONTENT_URI, cv);
-                logCustomLayout("Created and persisted page " + (screenIndex + 1) + " (id=" + createdScreenId + ")");
-            } catch (Exception e) {
-                Log.w(TAG, "Failed to persist workspace screen: " + e);
-            }
-        }
-
-        if (prefsChanged) {
-            editor.apply();
-        }
-
-        workspace.requestLayout();
-        workspace.invalidate();
     }
 
     private boolean isViewAttachedToThisCellLayout(View view) {
@@ -5054,7 +4941,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
     /**
      * leftBar must be read from THIS page instance, not inherited from the setup host
-     * (ensurePagesExistForCustomElements() sets the field only on the host).
+     * (readCustomElementPrefs() sets the field only on the host).
      */
     private boolean isLeftBarOffsetActive(int currentScreen) {
         if (currentScreen != 0) {

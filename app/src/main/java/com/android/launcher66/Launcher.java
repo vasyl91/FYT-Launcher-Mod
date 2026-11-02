@@ -191,6 +191,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -497,6 +498,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final ArrayList<Integer> mSynchronouslyBoundPages = new ArrayList<>();
     private Rect mRectForFolderAnimation = new Rect();
     SharedPreferences mPrefs;
+    /** The screen of every custom element, from the last screen plan of the model. */
+    private EnumMap<CustomElement, Long> mCustomElementScreens;
 	boolean fytData = true;  
     // Request codes of the permission flow, see PermissionStep.
     static final int REQUEST_CODE_WRITE_SETTINGS = 1003;
@@ -8028,6 +8031,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // view. Clearing here made every rebind pass start from scratch, which is why the capture
         // shows 70 inflations for 8 widgets and not a single reuse. Entries are dropped when a
         // widget is genuinely removed (removeAppWidget) or the activity is destroyed.
+    }
+
+    @Override
+    public void bindScreenPlan(WorkspaceScreenPlan.Result plan) {
+        // The page numbers change before bindScreens() builds the pages, so the number in a preference
+        // and the index of the page stay in step.
+        CustomElementPrefs.apply(mPrefs, plan.prefChanges);
+        mCustomElementScreens = new EnumMap<>(CustomElement.class);
+        mCustomElementScreens.putAll(plan.elementScreens);
     }
 
     @Override

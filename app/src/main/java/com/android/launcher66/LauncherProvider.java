@@ -698,38 +698,38 @@ public class LauncherProvider extends ContentProvider {
             return id;
         }
 
-        public long generateNewScreenId() {
+        /**
+         * The id for a new screen: one above the highest id handed out so far, skipping the ids the
+         * model already lists. It is the only source of screen ids; the callers on the main thread
+         * and the loader on the worker thread must not collide.
+         */
+        public synchronized long generateNewScreenId() {
             if (this.mMaxScreenId < 0) {
                 throw new RuntimeException("Error: max screen id was not initialized");
             }
-            this.mMaxScreenId++;
             ArrayList<Long> workspaceScreens = LauncherModel.sBgWorkspaceScreens;
-            if (workspaceScreens != null && workspaceScreens.contains(mMaxScreenId)) {
-                Long maxScreen = Math.abs(Collections.max(workspaceScreens));
-                if (maxScreen == 302) {
-                    this.mMaxScreenId = 1;
-                } else {
-                    this.mMaxScreenId = maxScreen + 1;
-                } 
-            }
+            do {
+                this.mMaxScreenId++;
+            } while (workspaceScreens != null && workspaceScreens.contains(mMaxScreenId));
             return this.mMaxScreenId;
         }
 
-        public void updateMaxScreenId(long maxScreenId) {
+        public synchronized void updateMaxScreenId(long maxScreenId) {
             this.mMaxScreenId = maxScreenId;
         }
 
+        /** Highest real screen id; 0 when the table has none (the negative ids are never stored). */
         private long initializeMaxScreenId(SQLiteDatabase db) {
-            Cursor c = db.rawQuery("SELECT MAX(_id) FROM workspaceScreens", null);
-            long id = -1;
-            if (c != null && c.moveToNext()) {
-                id = c.getLong(0);
-            }
-            if (c != null) {
-                c.close();
-            }
-            if (id == -1) {
-                throw new RuntimeException("Error: could not query max screen id");
+            Cursor c = db.rawQuery("SELECT MAX(_id) FROM workspaceScreens WHERE _id >= 0", null);
+            long id = 0;
+            try {
+                if (c != null && c.moveToNext() && !c.isNull(0)) {
+                    id = c.getLong(0);
+                }
+            } finally {
+                if (c != null) {
+                    c.close();
+                }
             }
             return id;
         }

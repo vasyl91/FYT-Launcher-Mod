@@ -322,7 +322,7 @@ public class Workspace extends SmoothPagedView
     /** A strip based on the database requested while the workspace was loading. */
     private boolean mStripScreensBaseOnDBAfterLoad = false;
     private final Helpers helpers = new Helpers();
-    public static final long CUSTOM_CONTENT_SCREEN_ID1 = -302;
+    public static final long CUSTOM_CONTENT_SCREEN_ID1 = WorkspaceScreenPlan.USER_PAGE_ID;
     private View workspaceView;
     private final boolean isDebug;
     public boolean backPressed = false;
@@ -661,112 +661,6 @@ public class Workspace extends SmoothPagedView
             mWorkspaceScreens.put(screenId, page);
             addView(page); // append (safe)
         }
-    }
-
-    public void ensurePageExists(int pageIndex) {
-        if (pageIndex < 0) {
-            Log.w(TAG, "ensurePageExists: negative pageIndex=" + pageIndex);
-            return;
-        }
-
-        // Fast path: already have page at that index
-        if (getChildCount() > pageIndex) return;
-
-        while (getChildCount() <= pageIndex) {
-            // we want to append at the end by default
-            int requestedInsertIndex = getChildCount();
-
-            // Persist a new screen row and get authoritative id
-            long persistedId = createPersistedWorkspaceScreen(requestedInsertIndex);
-
-            if (persistedId <= 0) {
-                // Persistence failed. Log and create an ephemeral (negative) id to keep runtime stable.
-                persistedId = -System.identityHashCode(new Object()); // unique negative value
-                Log.w(TAG, "ensurePageExists: persistence failed - using ephemeral id=" + persistedId);
-            }
-
-            // create new page and ensure correct layout params for PagedView
-            CellLayout newScreen = (CellLayout) LayoutInflater.from(getContext())
-                    .inflate(R.layout.workspace_screen, this, false);
-
-            // Use PagedView.LayoutParams so PagedView.onMeasure can cast safely
-            PagedView.LayoutParams lp = new PagedView.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-            );
-
-            // Determine clamped index for safe insert
-            int childCount = getChildCount();
-            int clampedIndex = Math.max(0, Math.min(requestedInsertIndex, childCount));
-
-            // Update mScreenOrder consistently BEFORE adding the view
-            if (clampedIndex >= mScreenOrder.size()) {
-                mScreenOrder.add(persistedId);
-            } else {
-                mScreenOrder.add(clampedIndex, persistedId);
-            }
-
-            mWorkspaceScreens.put(persistedId, newScreen);
-
-            // Add view with explicit LayoutParams and clamped index to avoid ClassCastException and OOB
-            try {
-                addView(newScreen, clampedIndex, lp);
-            } catch (IndexOutOfBoundsException ex) {
-                Log.e(TAG, "ensurePageExists: addView failed at clampedIndex=" + clampedIndex
-                        + " childCount=" + getChildCount(), ex);
-                addView(newScreen, lp); // append as fallback
-            }
-        }
-    }
-
-    private long createPersistedWorkspaceScreen(int desiredRank) {
-        Log.i(TAG, "createPersistedWorkspaceScreen: rank=" + desiredRank +
-              " current mScreenOrder=" + mScreenOrder);
-
-        ContentResolver resolver = mLauncher.getContentResolver();
-
-        if (desiredRank < mScreenOrder.size()) {
-            long existingScreenId = mScreenOrder.get(desiredRank);
-            Log.i(TAG, "createPersistedWorkspaceScreen: reusing existing screen at rank="
-                  + desiredRank + " id=" + existingScreenId);
-            return existingScreenId;
-        }
-
-        long maxId = 0;
-        try (Cursor c = resolver.query(
-                LauncherSettings.WorkspaceScreens.CONTENT_URI,
-                new String[]{LauncherSettings.WorkspaceScreens._ID},
-                null, null, null
-        )) {
-            if (c != null) {
-                while (c.moveToNext()) {
-                    long id = c.getLong(0);
-                    if (id > maxId) maxId = id;
-                }
-            }
-        }
-
-        for (Long id : mScreenOrder) {
-            if (id > maxId) maxId = id;
-        }
-
-        long newId = maxId + 1;
-
-        ContentValues cv = new ContentValues();
-        cv.put(LauncherSettings.WorkspaceScreens._ID, newId);
-        cv.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, desiredRank);
-
-        try {
-            resolver.insert(LauncherSettings.WorkspaceScreens.CONTENT_URI, cv);
-        } catch (Exception e) {
-            Log.e(TAG, "createPersistedWorkspaceScreen: insert failed", e);
-            return -1;
-        }
-
-        Log.i(TAG, "createPersistedWorkspaceScreen: created NEW screen id=" +
-              newId + " rank=" + desiredRank);
-
-        return newId;
     }
 
     private void setupLayoutTransition() {

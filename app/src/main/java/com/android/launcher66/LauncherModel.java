@@ -49,6 +49,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -152,6 +153,21 @@ public class LauncherModel extends BroadcastReceiver {
 
     // sBgWorkspaceScreens is the ordered set of workspace screens.
     static final ArrayList<Long> sBgWorkspaceScreens = new ArrayList<Long>();
+
+    // The screen where every custom element lives, from the last screen plan.
+    static final EnumMap<CustomElement, Long> sBgCustomElementScreens =
+            new EnumMap<CustomElement, Long>(CustomElement.class);
+
+    // Screens kept only because an item that is not shown (its package is not available for the moment)
+    // is stored on them.
+    static final HashSet<Long> sBgRetainedScreens = new HashSet<Long>();
+
+    // What the main thread and the settings may read about the screens without querying the database.
+    private static volatile WorkspaceScreenPlan.Snapshot sScreenSnapshot =
+            WorkspaceScreenPlan.Snapshot.EMPTY;
+
+    // The plan of the last load, bound to the launcher with the screens.
+    private volatile WorkspaceScreenPlan.Result mScreenPlan;
     private SharedPreferences mPrefs;
 
     // </ only access in worker thread >
@@ -168,6 +184,7 @@ public class LauncherModel extends BroadcastReceiver {
         public void startBinding();
         public void bindItems(ArrayList<ItemInfo> shortcuts, int start, int end,
                               boolean forceAnimateIcons);
+        public void bindScreenPlan(WorkspaceScreenPlan.Result plan);
         public void bindScreens(ArrayList<Long> orderedScreenIds);
         public void bindAddScreens(ArrayList<Long> orderedScreenIds);
         public void bindFolders(HashMap<Long,FolderInfo> folders);
@@ -420,18 +437,6 @@ public class LauncherModel extends BroadcastReceiver {
         };
         /* @} */
         runOnWorkerThread(r);
-    }
-
-    public void updateScreens(final Context context) {
-        ArrayList<Long> workspaceScreens = new ArrayList<Long>();
-        TreeMap<Integer, Long> orderedScreens = loadWorkspaceScreensDb(context);
-        for (Integer i : orderedScreens.keySet()) {
-            long screenId = orderedScreens.get(i);
-            workspaceScreens.add(screenId);
-        }   
-        
-        // Update the workspace screens
-        updateWorkspaceScreenOrder(context, workspaceScreens);     
     }
 
     public Bitmap getFallbackIcon() {
@@ -1004,17 +1009,12 @@ public class LauncherModel extends BroadcastReceiver {
         final ContentResolver cr = context.getContentResolver();
         final Uri uri = LauncherSettings.WorkspaceScreens.CONTENT_URI;
 
-        // Negative screen ids are not persisted, except that the extra empty screen (-201) gets a
-        // real id here, in its place. The old loop appended that id to the very list it was
-        // iterating over, which threw ConcurrentModificationException.
+        // Negative screen ids (the user page, the extra empty screen) are not persisted and a screen
+        // is listed once. Workspace gives the extra empty screen a real id before it gets here
+        // (commitExtraEmptyScreen()), so a screen is never saved under an id that is not its own.
         for (Long id : screens) {
-            if (id == null) {
-                continue;
-            }
-            if (id >= 0) {
+            if (id != null && id >= 0 && !screensCopy.contains(id)) {
                 screensCopy.add(id);
-            } else if (id == -201) {
-                screensCopy.add(LauncherAppState.getLauncherProvider().generateNewScreenId());
             }
         }
 
@@ -1310,8 +1310,86 @@ public class LauncherModel extends BroadcastReceiver {
         return orderedScreens;
     }
 
+    /** The screens table as it is stored: the screens by rank and whether the table is in order. */
+    static final class ScreenTable {
+        final ArrayList<Long> order = new ArrayList<Long>();
+        /** Every id once, no negative ids and the ranks are exactly 0..n-1. */
+        boolean canonical = true;
+    }
+
+    /**
+     * Reads the screens table, repairing what loadWorkspaceScreensDb() cannot: rows with the same
+     * rank (two screens that were saved with the ranks of different writers) and the same id twice.
+     * The table has no key, so both can be in it. When it is not canonical the loader writes it again.
+     */
+    static ScreenTable readWorkspaceScreens(Context context) {
+        final ScreenTable table = new ScreenTable();
+        final ArrayList<long[]> rows = new ArrayList<long[]>();
+        final Cursor sc = context.getContentResolver().query(
+                LauncherSettings.WorkspaceScreens.CONTENT_URI, null, null, null, null);
+        if (sc == null) {
+            return table;
+        }
+        try {
+            final int idIndex = sc.getColumnIndexOrThrow(LauncherSettings.WorkspaceScreens._ID);
+            final int rankIndex = sc.getColumnIndexOrThrow(
+                    LauncherSettings.WorkspaceScreens.SCREEN_RANK);
+            while (sc.moveToNext()) {
+                rows.add(new long[] {sc.getInt(rankIndex), sc.getLong(idIndex)});
+            }
+        } finally {
+            sc.close();
+        }
+        // The sort is stable, so rows with one rank keep the order they are stored in.
+        Collections.sort(rows, new Comparator<long[]>() {
+            @Override
+            public int compare(long[] a, long[] b) {
+                return Long.compare(a[0], b[0]);
+            }
+        });
+        HashSet<Long> seen = new HashSet<Long>();
+        for (int i = 0; i < rows.size(); i++) {
+            long rank = rows.get(i)[0];
+            long id = rows.get(i)[1];
+            if (rank != i || id < 0 || !seen.add(id)) {
+                table.canonical = false;
+            }
+            if (id >= 0 && !table.order.contains(id)) {
+                table.order.add(id);
+            }
+        }
+        return table;
+    }
+
     public boolean isAllAppsLoaded() {
         return mAllAppsLoaded;
+    }
+
+    public static WorkspaceScreenPlan.Snapshot getScreenSnapshot() {
+        return sScreenSnapshot;
+    }
+
+    /**
+     * Screens that hold something: an icon, a folder or a widget placed on the desktop, and the
+     * screens kept for an item that is not shown. Items the loader does not bind (outside the grid,
+     * overlapping, rejected) are not in the map, so they do not keep a screen, as before. Caller
+     * holds sBgLock.
+     */
+    static HashSet<Long> screensWithContentLocked() {
+        HashSet<Long> screens = new HashSet<Long>();
+        for (ItemInfo item : sBgItemsIdMap.values()) {
+            if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP && item.screenId >= 0) {
+                screens.add(item.screenId);
+            }
+        }
+        screens.addAll(sBgRetainedScreens);
+        return screens;
+    }
+
+    /** Makes the screens, the ones with content and the elements' screens readable off the lock. */
+    static void publishScreenSnapshotLocked() {
+        sScreenSnapshot = new WorkspaceScreenPlan.Snapshot(sBgWorkspaceScreens,
+                screensWithContentLocked(), sBgCustomElementScreens);
     }
 
     boolean isLoadingWorkspace() {
@@ -1685,7 +1763,7 @@ public class LauncherModel extends BroadcastReceiver {
         }
 
         /**
-         * Screens that hold items but are missing from the screen table go back in, at the end:
+         * Screens that hold items but are missing from the screen table go back in, at the end (the screen plan saves the table):
          * a screen stripped as empty while an item was on its way to it (see
          * Workspace.mScreenAwaitingAdd) left the item on a screen that Workspace recreated in memory
          * only, at every start, and whose id a later new screen could get again. Caller holds sBgLock.
@@ -1701,7 +1779,6 @@ public class LauncherModel extends BroadcastReceiver {
             if (missing.isEmpty()) return;
             Log.w(TAG, "screens " + missing + " hold items but were not saved: added");
             sBgWorkspaceScreens.addAll(missing);
-            updateWorkspaceScreenOrder(mContext, sBgWorkspaceScreens);
         }
 
         /**
@@ -1720,7 +1797,6 @@ public class LauncherModel extends BroadcastReceiver {
             if (cell == null) {
                 screenId = LauncherAppState.getLauncherProvider().generateNewScreenId();
                 sBgWorkspaceScreens.add(screenId);
-                updateWorkspaceScreenOrder(mContext, sBgWorkspaceScreens);
                 cell = new int[] {0, 0};
             }
             Log.w(TAG, "widget " + widget.appWidgetId + " overlapped another item at "
@@ -1790,6 +1866,8 @@ public class LauncherModel extends BroadcastReceiver {
                 sBgItemsIdMap.clear();
                 sBgDbIconCache.clear();
                 sBgWorkspaceScreens.clear();
+                sBgCustomElementScreens.clear();
+                sBgRetainedScreens.clear();
             }
         }
 
@@ -1830,7 +1908,6 @@ public class LauncherModel extends BroadcastReceiver {
                 // before any earlier duplicates)
                 final HashMap<Long, ItemInfo[][]> occupied = new HashMap<Long, ItemInfo[][]>();
                 final ArrayList<LauncherAppWidgetInfo> overlappingWidgets = new ArrayList<>();
-                ArrayList<Long> needRetainScreens = new ArrayList<Long>();
 
                 try {
                     final int idIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites._ID);
@@ -1911,7 +1988,10 @@ public class LauncherModel extends BroadcastReceiver {
                                         // icon for good; a real uninstall deletes it through
                                         // PackageUpdatedTask (OP_REMOVE).
                                         Launcher.addDumpLog(TAG, "Invalid package kept (not shown): " + cn, true);
-                                        needRetainScreens.add(c.getLong(screenIndex));
+                                        if (c.getInt(containerIndex)
+                                                == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                                            sBgRetainedScreens.add(c.getLong(screenIndex));
+                                        }
                                         continue;
                                     }
                                 } catch (URISyntaxException e) {
@@ -2147,6 +2227,11 @@ public class LauncherModel extends BroadcastReceiver {
                     }
                 }
 
+                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+                mPrefs = prefs;
+                final boolean userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
+                boolean forceTableWrite = false;
+                ScreenTable table = null;
                 if (loadedOldDb || isWorkspaceLoadingProtected()) {
                     long maxScreenId = 0;
                     // If we're importing we use the old screen order.
@@ -2163,7 +2248,7 @@ public class LauncherModel extends BroadcastReceiver {
                     Collections.sort(sBgWorkspaceScreens);
 
                     LauncherAppState.getLauncherProvider().updateMaxScreenId(maxScreenId);
-                    updateWorkspaceScreenOrder(context, sBgWorkspaceScreens);
+                    forceTableWrite = true;
 
                     // Update the max item id after we load an old db
                     long maxItemId = 0;
@@ -2173,84 +2258,43 @@ public class LauncherModel extends BroadcastReceiver {
                     }
                     LauncherAppState.getLauncherProvider().updateMaxItemId(maxItemId);
                 } else {
-                    TreeMap<Integer, Long> orderedScreens = loadWorkspaceScreensDb(mContext);
-                    Log.i(TAG, "orderedScreens: " + orderedScreens);
-                    for (Integer i : orderedScreens.keySet()) {
-                        sBgWorkspaceScreens.add(orderedScreens.get(i));
-                    }
+                    table = readWorkspaceScreens(mContext);
+                    sBgWorkspaceScreens.addAll(table.order);
                     restoreMissingScreens();
-                    Log.i(TAG, "sBgWorkspaceScreens: " + sBgWorkspaceScreens);
-                    mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-
-                    // Collect all pages that contain custom widgets, per user mPrefs
-                    ArrayList<Long> unusedScreens = new ArrayList<Long>(sBgWorkspaceScreens);
-                    Log.i(TAG, "unusedScreens: " + unusedScreens);
-                    ArrayList<Integer> customScreens = new ArrayList<>();
-                    if (mPrefs.getBoolean(Keys.USER_MUSIC, false)) {
-                        customScreens.add(mPrefs.getInt(Keys.MUSIC_SCREEN, 1) - 2);
-                    }
-                    if (mPrefs.getBoolean(Keys.USER_DATE, false)) {
-                        customScreens.add(mPrefs.getInt(Keys.DATE_SCREEN, 1) - 2);
-                    }
-                    if (mPrefs.getBoolean(Keys.USER_RADIO, false)) {
-                        customScreens.add(mPrefs.getInt(Keys.RADIO_SCREEN, 1) - 2);
-                    }
-                    if (mPrefs.getBoolean(Keys.PIP_DUAL, false)) {
-                        customScreens.add(mPrefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 2);
-                    }
-                    if (mPrefs.getBoolean(Keys.PIP_FIRST, false)) {
-                        customScreens.add(mPrefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 2);
-                    }
-                    if (mPrefs.getBoolean(Keys.PIP_SECOND, false)) {
-                        customScreens.add(mPrefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 2);
-                    }
-                    if (mPrefs.getBoolean(Keys.PIP_THIRD, false)) {
-                        customScreens.add(mPrefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 2);
-                    }
-                    if (mPrefs.getBoolean(Keys.PIP_FOURTH, false)) {
-                        customScreens.add(mPrefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 2);
-                    }
-
-
-                    Log.i(TAG, "customScreens: " + customScreens);
-
-                    // Convert ranks to actual screenIds in sBgWorkspaceScreens
-                    for (Integer rank : customScreens) {
-                        if (rank >= 0 && rank < sBgWorkspaceScreens.size()) {
-                            long customScreenId = sBgWorkspaceScreens.get(rank);
-                            if (unusedScreens.contains(customScreenId)) {
-                                unusedScreens.remove(customScreenId);
-                                Log.i(TAG, "Preserving custom widget screenId=" + customScreenId + " (rank=" + rank + ")");
-                            }
-                        }
-                    }
-
-                    // Remove any empty screens
-                    for (ItemInfo item: sBgItemsIdMap.values()) {
-                        long screenId = item.screenId;
-                        if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP &&
-                                unusedScreens.contains(screenId)) {
-                            unusedScreens.remove(screenId);
-                        }
-                    }
-
-                    if (needRetainScreens != null) {
-                        for (long screenId: needRetainScreens) {
-                            if (unusedScreens.contains(screenId)) {
-                                unusedScreens.remove(screenId);
-                            }
-                        }                
-                    }
-
-                    // If there are any empty screens remove them, and update.
-                    if (!unusedScreens.isEmpty()) {
-                        sBgWorkspaceScreens.removeAll(unusedScreens);
-                        updateWorkspaceScreenOrder(mContext, sBgWorkspaceScreens);
-                    }      
                 }
+                // Placed before the plan: a widget that needed a new screen adds it to the list and
+                // the widget is among the items that keep a screen.
                 for (LauncherAppWidgetInfo widget : overlappingWidgets) {
                     placeOverlappingWidget(widget, occupied, countX, countY, contentResolver);
                 }
+
+                // The one decision about the screens: which exist, in what order and where every
+                // custom element lives. With the user layout off nothing is bound to the screens, so
+                // nothing in the table or in the preferences is touched.
+                final WorkspaceScreenPlan.Result plan;
+                if (userLayout) {
+                    plan = WorkspaceScreenPlan.plan(new WorkspaceScreenPlan.Input(
+                            sBgWorkspaceScreens, screensWithContentLocked(),
+                            Collections.<Long>emptySet(), CustomElementPrefs.requestedPages(prefs),
+                            CustomElementPrefs.pageRefs(prefs), true,
+                            LauncherAppState.getLauncherProvider()::generateNewScreenId));
+                } else {
+                    plan = WorkspaceScreenPlan.plan(new WorkspaceScreenPlan.Input(
+                            sBgWorkspaceScreens, new HashSet<Long>(sBgWorkspaceScreens),
+                            Collections.<Long>emptySet(), null, null, false, null));
+                }
+                final ArrayList<Long> planned = new ArrayList<Long>(plan.order);
+                if (userLayout && (forceTableWrite || table == null || !table.canonical
+                        || !planned.equals(table.order))) {
+                    updateWorkspaceScreenOrder(mContext, planned);
+                }
+                sBgWorkspaceScreens.clear();
+                sBgWorkspaceScreens.addAll(planned);
+                sBgCustomElementScreens.clear();
+                sBgCustomElementScreens.putAll(plan.elementScreens);
+                mScreenPlan = plan;
+                publishScreenSnapshotLocked();
+                Log.i(TAG, "Screen plan (load): " + plan.describe());
                 unsetWorkspaceLoadingProtect();
 
                 if (DEBUG_LOADERS) {
@@ -2550,6 +2594,22 @@ public class LauncherModel extends BroadcastReceiver {
                 }
             };
             runOnMainThread(r, MAIN_THREAD_BINDING_RUNNABLE);
+
+            // The page numbers in the preferences change before the pages are built, so that the page
+            // index and the number stay in step from the first frame. The queue is the same as for
+            // startBinding() and bindScreens().
+            final WorkspaceScreenPlan.Result screenPlan = mScreenPlan;
+            if (screenPlan != null) {
+                r = new Runnable() {
+                    public void run() {
+                        Callbacks callbacks = tryGetCallbacks(oldCallbacks);
+                        if (callbacks != null) {
+                            callbacks.bindScreenPlan(screenPlan);
+                        }
+                    }
+                };
+                runOnMainThread(r, MAIN_THREAD_BINDING_RUNNABLE);
+            }
 
             bindWorkspaceScreens(oldCallbacks, orderedScreenIds);
 
