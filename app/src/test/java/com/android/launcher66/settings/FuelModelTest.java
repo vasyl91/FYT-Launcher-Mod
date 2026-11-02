@@ -737,6 +737,30 @@ class FuelModelTest {
     }
 
     @Test
+    void atAStopWithNoNewCodesTheEstimateSettlesAtTheIdle() {
+        FuelModel m = new FuelModel();
+        long t = drive(m, new Random(7), 0, 900, 30, 0.9);
+        // the car burns 0.6 L/h more than the model above 30 km/h: a bias of driving, which says nothing of the idle
+        double[] kmh = {45};
+        t = ride(m, t, kmh, 0, 45, 30, aboveThirty(0.9, 0.6), new Log());
+        t = ride(m, t, kmh, -1.0, 0, 60, aboveThirty(0.9, 0.6), new Log());
+        // the codes come only when they change: one 0 and one "no value", then nothing; the service asks every second
+        m.onSpeed(t, 0, true);
+        m.onFuel(t, 65535);
+        FuelModel.Estimate e = null;
+        for (int i = 0; i < 10; i++, t += 1000) {
+            e = m.estimate(t);
+        }
+        assertNotNull(e);
+        assertTrue(e.perHour);
+        assertEquals(m.idle(), e.value, 0.1);
+        for (int i = 0; i < 110; i++, t += 1000) {
+            e = m.estimate(t);
+        }
+        assertEquals(m.idle(), e.value, 0.02);
+    }
+
+    @Test
     void atAStopTheEstimateIsInLitresPerHour() {
         FuelModel m = new FuelModel();
         long t = drive(m, new Random(7), 0, 900, 30, 0.9);

@@ -151,6 +151,26 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private long fuelModelSavedAt;
     private FuelModel.SpeedScale speedScale = new FuelModel.SpeedScale(0);
     private static final long FUEL_MODEL_SAVE_MS = 60_000L;
+    /**
+     * The codes of com.syu.ms come only when they change: at a stop the speed stays 0 and the fuel "no value", so nothing
+     * would recompute the estimate, and it would stay where it was on the way down to the idle (the smoothing goes on only
+     * with each estimate). With no new speed or fuel value for this long (ms), the estimate is computed again.
+     */
+    private static final long FUEL_TICK_MS = 1_000L;
+    /** The last time the estimate was computed (ms). Main thread. */
+    private long fuelRefreshedAt;
+    private final Runnable fuelTick = new Runnable() {
+        @Override
+        public void run() {
+            long now = System.currentTimeMillis();
+            if (fuelModel != null && now - fuelRefreshedAt >= FUEL_TICK_MS - 100
+                    && fuelModel.carGivesNoValue(now)) {
+                touchRpm(now);
+                refreshFuelEstimate();
+            }
+            uiHandler.postDelayed(this, FUEL_TICK_MS);
+        }
+    };
     /** Above this speed (km/h) the car counts as driving, for the choice of the pair of codes. */
     private static final double DRIVING_KMH = 5.0;
 
@@ -226,7 +246,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
         registerAccessibilityEventListener();
         requestLocationUpdates();
         registerBarometer();
-        
+        uiHandler.postDelayed(fuelTick, FUEL_TICK_MS);
+
         mPropertyChangeClass.addObserver(Keys.ALLAPPS, this);
         mPropertyChangeClass.addObserver(Keys.FUELSTATS, this);
         IntentFilter filter = new IntentFilter();
@@ -275,6 +296,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             sInstance = null;
             sPairInfo = null;
         }
+        uiHandler.removeCallbacks(fuelTick);
         saveFuelModel();
         Log.d(TAG, "Service destroyed");
         removeLocationUpdates();
@@ -1448,7 +1470,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
      * own values; false (nothing shown) otherwise. Main thread.
      */
     private boolean showFuelEstimate() {
-        FuelModel.Estimate e = fuelModel != null ? fuelModel.estimate(System.currentTimeMillis()) : null;
+        fuelRefreshedAt = System.currentTimeMillis();
+        FuelModel.Estimate e = fuelModel != null ? fuelModel.estimate(fuelRefreshedAt) : null;
         if (e == null || consumptionTextView == null) {
             return false;
         }

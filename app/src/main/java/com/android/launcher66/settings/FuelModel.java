@@ -812,15 +812,16 @@ public final class FuelModel {
         }
     }
 
-    /** The bias of the last values for a mode, faded; at a stop only the positive part (the air conditioning, a cold engine). */
+    /**
+     * The bias of the last values for a mode, faded. None at a stop: it was measured under load at speed and says nothing
+     * of the idle; added to it, the estimate stood at ~1.1 L/h instead of the idle (~0.9) for a minute and more.
+     */
     private double bias(Mode mode, long now) {
         switch (mode) {
             case DRIVING:
                 return faded(biasDrive, biasDriveT, now);
             case OVERRUN:
                 return faded(biasOverrun, biasOverrunT, now);
-            case STANDING:
-                return Math.max(0, faded(biasDrive, biasDriveT, now));
             default:
                 return 0;
         }
