@@ -43,6 +43,7 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.FolderIcon.FolderRingAnimator;
+import com.android.launcher66.settings.GridGeometry;
 import com.android.launcher66.settings.Keys;
 
 import java.lang.reflect.Field;
@@ -1085,6 +1086,20 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             setMeasuredDimension(maxWidth, maxHeight);
         } else {
             setMeasuredDimension(widthSize, heightSize);
+        }
+        publishGridGeometry();
+    }
+
+    /**
+     * Tells the settings (Helpers, which decides where custom widgets and PiPs may move) how the
+     * cells are laid out. All pages have the same grid, so the last one measured wins.
+     */
+    private void publishGridGeometry() {
+        if (mCellWidth <= 0 || mCellHeight <= 0) return;
+        GridGeometry grid = new GridGeometry(getPaddingLeft(), getPaddingTop(),
+                mCellWidth + mWidthGap, mCellHeight + mHeightGap, mCountX, mCountY);
+        if (grid.isUsable() && !grid.sameAs(GridGeometry.published())) {
+            GridGeometry.publish(grid);
         }
     }
 
