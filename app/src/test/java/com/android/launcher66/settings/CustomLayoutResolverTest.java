@@ -1,0 +1,339 @@
+package com.android.launcher66.settings;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.android.launcher66.settings.CustomLayoutResolver.Element;
+import com.android.launcher66.settings.CustomLayoutResolver.Env;
+import com.android.launcher66.settings.CustomLayoutResolver.Result;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+class CustomLayoutResolverTest {
+
+    private static final int NO = CustomLayoutResolver.NO_LIMIT;
+
+    private static Element widget(String key, int l, int t, int r, int b, int minW, int minH) {
+        return new Element(key, l, t, r, b, minW, minH, false, false, false);
+    }
+
+    private static Element pip(String key, int l, int t, int r, int b, int minW, int minH) {
+        return new Element(key, l, t, r, b, minW, minH, true, false, false);
+    }
+
+    private static Element stats(int l, int t, int r, int b) {
+        return new Element("stats", l, t, r, b, 0, 0, false, true, false);
+    }
+
+    private static Element empty(String key) {
+        return new Element(key, 0, 0, 0, 0, 100, 100, false, false, true);
+    }
+
+    /** Bottom bar from y=1000 with a margin of 5. */
+    private static Env bottomBar(boolean withGrid) {
+        Env env = new Env();
+        env.margin = 5;
+        env.maxBottom = PipEdgeTrim.maxBottom(1000, 5); // 995
+        env.bottomTrigger = 999;
+        if (withGrid) {
+            env.grid = new GridGeometry(0, 0, 100, 100, 20, 10);
+            env.occupied = new boolean[20][10];
+        }
+        return env;
+    }
+
+    private static Result resolve(Env env, Element... elements) {
+        return CustomLayoutResolver.resolve(Arrays.asList(elements), env);
+    }
+
+    // ------------------------------------------------------------ move, then cut
+
+    @Test
+    void freeSpaceAboveMovesTheElementByTheWholeOverlapWithoutResizingIt() {
+        Result r = resolve(bottomBar(true), pip("pipFirst", 100, 700, 400, 1040, 200, 200));
+        assertFalse(r.reset[0]);
+        assertArrayEquals(new int[] {100, 655, 400, 995}, r.rects[0]);
+    }
+
+    @Test
+    void partlyFreeSpaceMovesAsFarAsItGoesAndCutsTheRest() {
+        // the stats window above stops the move at its bottom edge + the gap
+        Result r = resolve(bottomBar(true),
+                pip("pipFirst", 100, 700, 400, 1040, 200, 200),
+                stats(100, 300, 400, 680));
+        assertFalse(r.reset[0]);
+        assertArrayEquals(new int[] {100, 685, 400, 995}, r.rects[0]);
+        assertArrayEquals(new int[] {100, 300, 400, 680}, r.rects[1]); // stats never moves
+    }
+
+    @Test
+    void withoutAKnownGridNothingMovesAndTheBottomEdgeIsCut() {
+        Result r = resolve(bottomBar(false), pip("pipFirst", 100, 700, 400, 1040, 200, 200));
+        assertArrayEquals(new int[] {100, 700, 400, 995}, r.rects[0]);
+    }
+
+    @Test
+    void anElementBelowTheBarComesBackAboveIt() {
+        Result r = resolve(bottomBar(true), widget("date", 100, 1010, 400, 1200, 300, 150));
+        assertArrayEquals(new int[] {100, 805, 400, 995}, r.rects[0]);
+    }
+
+    @Test
+    void anElementThatIsNotUnderTheBarIsLeftAlone() {
+        Result r = resolve(bottomBar(true), widget("date", 100, 700, 400, 990, 300, 150));
+        assertArrayEquals(new int[] {100, 700, 400, 990}, r.rects[0]);
+    }
+
+    // ------------------------------------------------------------ database cells
+
+    @Test
+    void anOccupiedCellInTheColumnsStopsTheMoveAtTheRowBoundary() {
+        Env env = bottomBar(true);
+        // pitch 100: columns 1..3, an icon in column 2 on row 5 -> the top may not go above row 6
+        env.occupied[2][5] = true;
+        Result r = resolve(env, pip("pipFirst", 100, 800, 400, 1240, 200, 100));
+        assertEquals(600, r.rects[0][1]);
+        assertEquals(995, r.rects[0][3]);
+    }
+
+    @Test
+    void theBoundaryFollowsThePaddingAndTheGapBetweenTheCells() {
+        Env env = bottomBar(true);
+        env.grid = new GridGeometry(10, 20, 108, 86, 20, 10);
+        env.occupied = new boolean[20][10];
+        env.occupied[2][5] = true;
+        Result r = resolve(env, pip("pipFirst", 118, 800, 400, 1500, 200, 100));
+        assertEquals(20 + 6 * 86, r.rects[0][1]);
+    }
+
+    @Test
+    void cellsUnderTheStartingPositionAreNotAnObstacle() {
+        Env env = bottomBar(true);
+        env.occupied[2][8] = true; // under the element as the user drew it: the launcher moves it
+        env.occupied[2][5] = true;
+        Result r = resolve(env, pip("pipFirst", 100, 800, 400, 1240, 200, 100));
+        assertEquals(600, r.rects[0][1]);
+    }
+
+    @Test
+    void anOccupiedCellOutsideTheColumnsIsNotAnObstacle() {
+        Env env = bottomBar(true);
+        env.occupied[7][5] = true;
+        Result r = resolve(env, pip("pipFirst", 100, 700, 400, 1040, 200, 100));
+        assertEquals(655, r.rects[0][1]);
+    }
+
+    // ------------------------------------------------------------ chains
+
+    @Test
+    void theElementAboveIsPushedUpToo() {
+        Result r = resolve(bottomBar(true),
+                widget("date", 100, 400, 400, 690, 200, 100),
+                widget("music", 100, 700, 400, 1040, 200, 200));
+        assertArrayEquals(new int[] {100, 360, 400, 650}, r.rects[0]);
+        assertArrayEquals(new int[] {100, 655, 400, 995}, r.rects[1]);
+    }
+
+    @Test
+    void whenTheOneAboveHasNoRoomLeftTheLowerOneIsCut() {
+        Result r = resolve(bottomBar(true),
+                widget("date", 100, 5, 400, 600, 200, 100),
+                widget("music", 100, 640, 400, 1040, 200, 200));
+        assertArrayEquals(new int[] {100, 5, 400, 600}, r.rects[0]);
+        assertArrayEquals(new int[] {100, 605, 400, 995}, r.rects[1]);
+    }
+
+    @Test
+    void atItsMinimumTheLowerOneMakesTheOneAboveGiveWay() {
+        Result r = resolve(bottomBar(true),
+                widget("date", 100, 5, 400, 780, 200, 100),
+                widget("music", 100, 790, 400, 1100, 200, 250));
+        assertFalse(r.reset[0] || r.reset[1]);
+        assertArrayEquals(new int[] {100, 745, 400, 995}, r.rects[1]); // at its minimum height
+        assertArrayEquals(new int[] {100, 5, 400, 740}, r.rects[0]);   // cut, top stays
+    }
+
+    @Test
+    void anElementThatCannotFitEvenThenIsResetAndTheOneAboveIsLeftAlone() {
+        Result r = resolve(bottomBar(true),
+                widget("date", 100, 5, 400, 600, 200, 100),
+                widget("music", 100, 640, 400, 1640, 200, 900));
+        assertFalse(r.reset[0]);
+        assertTrue(r.reset[1]);
+        assertArrayEquals(new int[] {100, 5, 400, 600}, r.rects[0]);
+    }
+
+    @Test
+    void ofSeveralThatCannotFitTheLowestIsResetFirstAndTheRestIsRecalculated() {
+        Result r = resolve(bottomBar(true),
+                pip("pipFirst", 100, 100, 400, 1300, 200, 1000),   // cannot fit
+                widget("music", 600, 700, 900, 1050, 200, 400));    // can, once it is alone
+        assertTrue(r.reset[0]);
+        assertFalse(r.reset[1]);
+        assertArrayEquals(new int[] {600, 645, 900, 995}, r.rects[1]);
+    }
+
+    // ------------------------------------------------------------ left bar
+
+    private static Env leftBar(boolean withGrid, int offset) {
+        Env env = new Env();
+        env.margin = 5;
+        env.maxRight = 1200;
+        env.rightTrigger = 1200;
+        env.leftBarOffset = offset;
+        if (withGrid) {
+            env.grid = new GridGeometry(0, 0, 100, 100, 20, 10);
+            env.occupied = new boolean[20][10];
+        }
+        return env;
+    }
+
+    @Test
+    void thePushOfTheLeftBarMovesTheElementLeftInTheBox() {
+        Result r = resolve(leftBar(true, 142), widget("radio", 800, 100, 1300, 300, 300, 100));
+        assertArrayEquals(new int[] {700, 100, 1200, 300}, r.rects[0]);
+    }
+
+    @Test
+    void anObstacleOnTheLeftStopsTheMoveAndTheRestIsCut() {
+        Result r = resolve(leftBar(true, 0),
+                widget("radio", 800, 100, 1300, 300, 300, 100),
+                stats(100, 100, 720, 300));
+        assertArrayEquals(new int[] {725, 100, 1200, 300}, r.rects[0]);
+    }
+
+    @Test
+    void anIconOnTheLeftStopsTheMoveAtTheColumnBoundaryOfTheScreen() {
+        Env env = leftBar(true, 142);
+        env.occupied[5][1] = true;
+        Result r = resolve(env, widget("radio", 800, 100, 1900, 300, 300, 100));
+        // the column after the icon starts at x=600 on the screen, 142 less in the box
+        assertEquals(600 - 142, r.rects[0][0]);
+        assertEquals(1200, r.rects[0][2]);
+    }
+
+    @Test
+    void bothBarsAreAppliedHorizontalFirst() {
+        Env env = bottomBar(true);
+        env.maxRight = 1200;
+        env.rightTrigger = 1200;
+        Result r = resolve(env, pip("pipDual", 800, 700, 1300, 1040, 300, 200));
+        assertArrayEquals(new int[] {700, 655, 1200, 995}, r.rects[0]);
+    }
+
+    // ------------------------------------------------------------ stats, overlaps, resets
+
+    @Test
+    void statsIsNeverMovedOrCutEvenUnderTheBar() {
+        Result r = resolve(bottomBar(true), stats(100, 900, 400, 1100));
+        assertFalse(r.reset[0]);
+        assertArrayEquals(new int[] {100, 900, 400, 1100}, r.rects[0]);
+    }
+
+    @Test
+    void statsBlocksTheMoveOfWhatIsBelowIt() {
+        Result r = resolve(bottomBar(true),
+                stats(100, 600, 400, 690),
+                widget("music", 100, 700, 400, 1040, 200, 200));
+        assertArrayEquals(new int[] {100, 695, 400, 995}, r.rects[1]);
+    }
+
+    @Test
+    void aWidgetOverlappingAPipIsReset() {
+        Result r = resolve(new Env(),
+                pip("pipFirst", 100, 100, 500, 400, 200, 200),
+                widget("date", 400, 300, 800, 500, 200, 100));
+        assertFalse(r.reset[0]);
+        assertTrue(r.reset[1]);
+    }
+
+    @Test
+    void ofTwoWidgetsTheLaterOneIsReset() {
+        Result r = resolve(new Env(),
+                widget("date", 100, 100, 500, 400, 200, 100),
+                widget("music", 400, 300, 800, 500, 200, 100));
+        assertFalse(r.reset[0]);
+        assertTrue(r.reset[1]);
+    }
+
+    @Test
+    void onlyOneOfTwoOverlappingElementsIsReset() {
+        Result r = resolve(new Env(),
+                pip("pipFirst", 100, 100, 500, 400, 200, 200),
+                pip("pipSecond", 400, 300, 800, 500, 200, 200),
+                widget("date", 450, 320, 700, 450, 100, 100));
+        int resets = 0;
+        for (boolean b : r.reset) if (b) resets++;
+        assertEquals(2, resets); // pipSecond (later PiP) and the widget; pipFirst stays
+        assertFalse(r.reset[0]);
+    }
+
+    @Test
+    void anElementThatWasNeverSetIsReset() {
+        Result r = resolve(new Env(), empty("date"), widget("music", 100, 100, 400, 400, 200, 100));
+        assertTrue(r.reset[0]);
+        assertFalse(r.reset[1]);
+    }
+
+    // ------------------------------------------------------------ reversibility
+
+    @Test
+    void theLayoutGoesBackToTheUserRectanglesWhenTheBarShrinks() {
+        Element[] user = {
+                widget("date", 100, 400, 400, 690, 200, 100),
+                widget("music", 100, 700, 400, 1040, 200, 200)};
+        Result tall = resolve(bottomBar(true), user);
+        assertFalse(Arrays.equals(new int[] {100, 700, 400, 1040}, tall.rects[1]));
+
+        Env low = new Env();
+        low.margin = 5;
+        low.maxBottom = PipEdgeTrim.maxBottom(1300, 5);
+        low.bottomTrigger = 1299;
+        low.grid = bottomBar(true).grid;
+        low.occupied = new boolean[20][10];
+        Result small = resolve(low, user);
+        assertArrayEquals(new int[] {100, 400, 400, 690}, small.rects[0]);
+        assertArrayEquals(new int[] {100, 700, 400, 1040}, small.rects[1]);
+
+        Result none = resolve(new Env(), user);
+        assertArrayEquals(new int[] {100, 700, 400, 1040}, none.rects[1]);
+    }
+
+    @Test
+    void theSameInputGivesTheSameLayout() {
+        Element[] user = {
+                widget("date", 100, 5, 400, 780, 200, 100),
+                widget("music", 100, 790, 400, 1100, 200, 250),
+                pip("pipFirst", 600, 700, 1000, 1100, 200, 200)};
+        Result a = resolve(bottomBar(true), user);
+        Result b = resolve(bottomBar(true), user);
+        assertTrue(Arrays.deepEquals(a.rects, b.rects));
+        assertArrayEquals(a.reset, b.reset);
+    }
+
+    @Test
+    void withAZeroMarginElementsNeverTouch() {
+        Env env = bottomBar(true);
+        env.margin = 0;
+        env.maxBottom = PipEdgeTrim.maxBottom(1000, 0); // 999
+        Result r = resolve(env,
+                widget("date", 100, 400, 400, 690, 200, 100),
+                widget("music", 100, 700, 400, 1040, 200, 200));
+        assertTrue(r.rects[0][3] < r.rects[1][1], Arrays.toString(r.rects[0]) + " " + Arrays.toString(r.rects[1]));
+        assertEquals(999, r.rects[1][3]);
+    }
+
+    @Test
+    void nothingChangesWithoutABar() {
+        List<Element> user = new ArrayList<>();
+        user.add(widget("date", 100, 400, 400, 690, 200, 100));
+        Result r = CustomLayoutResolver.resolve(user, new Env());
+        assertArrayEquals(new int[] {100, 400, 400, 690}, r.rects[0]);
+    }
+}

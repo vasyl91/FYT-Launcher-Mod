@@ -460,9 +460,12 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     }
 
     /**
-     * Pulls every rectangle back inside the canvas after its size changed, keeping each one where
-     * the user put it as far as possible: moved up just enough, and only made smaller when it no
-     * longer fits. Everything that moves is saved, so the launcher shows the same layout.
+     * Brings the layout in line with the canvas after its size changed (a bigger or smaller bottom
+     * bar, the left bar). Helpers does the work first: it derives the layout from the rectangles
+     * the user drew, so an element is moved into free space, then cut, and only reset when it
+     * cannot fit - and it goes back to its drawn place when the bar shrinks. Moving and shrinking
+     * inside the canvas is only the safety net after that. Everything that changes is saved, so
+     * the launcher shows the same layout; the user rectangles are not touched by any of it.
      *
      * Skipped while the bar auto-hides: the workspace then uses the full height. With the left bar
      * the collapsed button is out of bounds, which clampAwayFromAutoHideBar() already handles;
@@ -475,21 +478,19 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         if (sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
             return;
         }
-        if (!moveRectanglesInsideCanvas()) {
-            return;
-        }
+        // What is shown is saved first, so Helpers sees every rectangle of the creator.
         savePrefs();
-        // Moving a rectangle up can push it into its neighbour, which is what Helpers resets.
         if (helpers != null && helpers.checkAndResetIfOverlappingOnScreen(-1)) {
             for (RectangleConfig cfg : rectangleConfigs) {
                 if (cfg.enabled) {
                     initRectangle(cfg);
                 }
             }
-            if (moveRectanglesInsideCanvas()) {
-                // Keep the positions Helpers picked inside this canvas as well.
-                savePrefs();
-            }
+        }
+        if (moveRectanglesInsideCanvas()) {
+            // Helpers and this canvas disagree on the geometry of the bar: worth knowing.
+            Log.w(TAG, "Rectangles still did not fit the canvas after Helpers fitted them");
+            savePrefs();
         }
         invalidate();
     }

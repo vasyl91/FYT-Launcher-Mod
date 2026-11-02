@@ -19,9 +19,14 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.CustomLayoutDb;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.LauncherGlideBitmapLoader;
+import com.android.launcher66.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Helpers {
 
@@ -512,56 +517,55 @@ public class Helpers {
         };
     }
 
-    /** -1 Check all screens, reset overlapping rectangles on same screen
-     *   0 Check only screen 0, reset overlapping rectangles on that screen
-     *   1 Check only screen 1, reset overlapping rectangles on that screen
-     *   and so on..
+    /**
+     * Works out the layout of the PiPs and widgets and saves it in the eight corner keys the
+     * launcher reads. It is always derived from the rectangles the user drew (the User* keys) and
+     * the bars (see {@link CustomLayoutResolver}): an element the bottom bar or the left bar
+     * covers is moved into free space, then cut, and only if it cannot fit even then it is reset.
+     * Two elements that overlap on their own: one of them is reset.
+     *
+     * -1 Check all screens, reset overlapping rectangles on same screen
+     *  0 Check only screen 0, reset overlapping rectangles on that screen
+     *  1 Check only screen 1, reset overlapping rectangles on that screen
+     *  and so on..
+     *
+     * @return true if any corner was changed or any element reset
      */
     public boolean checkAndResetIfOverlappingOnScreen(int screenToCompare) {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
         ensureUserRects(mPrefs);
-        
+
         String[] rectangleKeys = RECTANGLE_KEYS;
         String[] screenKeys = SCREEN_KEYS;
-        
+
         // Check which rectangles are enabled
         boolean[] enabledStates = getEnabledStates(mPrefs);
-        
+
         // Get screen assignments for each rectangle
         int[] screens = new int[rectangleKeys.length];
         for (int i = 0; i < screenKeys.length; i++) {
             screens[i] = mPrefs.getInt(screenKeys[i], 1) - 1;
         }
-        
+
         boolean foundOverlap = false;
+        boolean changedAny = false;
         boolean[] needsReset = new boolean[rectangleKeys.length];
-        
-        // Calculate bottom bar area if needed
-        RectF bottomBarRect = null;
+
         boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
         boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
         int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
-        
+
         // Geometry of the bar and the box it lives in; the left bar width follows from it.
         BarGeometry bar = getBarGeometry(mPrefs, orientation);
         boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
-        
-        // Only create bottom bar rect if we're checking screen 0 (or all screens)
-        if (screenToCompare == -1 || screenToCompare == 0) {
-            float bottomBarTop = bar.barTop;
-            
-            if (!autoHideBottomBar) {
-                // Full width bottom bar, with and without the left bar
-                bottomBarRect = new RectF(0, bottomBarTop, bar.rootWidth, bar.rootHeight);
-            }
-            // Auto-hide reserves nothing. With the left bar it never did; without it there is no
-            // collapsed button any more - the bar is revealed through the thin edge handle, which
-            // stays on top of the widgets (Workspace / BottomBarEdgeHandle).
-            Log.d(TAG, "Bottom bar area " + bar + (leftBar ? ", left bar" : "")
-                    + (autoHideBottomBar ? ", auto-hide" : "") + " -> " + bottomBarRect);
-        }
-        
-        // Calculate right border exclusion area for left bar mode
+
+        // Auto-hide reserves nothing. With the left bar it never did; without it there is no
+        // collapsed button any more - the bar is revealed through the thin edge handle, which
+        // stays on top of the widgets (Workspace / BottomBarEdgeHandle).
+        boolean bottomBar = !autoHideBottomBar;
+        Log.d(TAG, "Bottom bar area " + bar + (leftBar ? ", left bar" : "")
+                + (autoHideBottomBar ? ", auto-hide" : ""));
+
         // Same width the launcher offsets the first page by (Launcher.calculatedLeftBarWidth: CellLayout,
         // PiP panes); without a launcher the formula the layouts follow (7.1 % of the bar's height
         // in portrait, of the width in landscape).
@@ -569,142 +573,129 @@ public class Helpers {
                 ? Launcher.calculatedLeftBarWidth
                 : BottomBarDimensions.computeLeftBarWidth(portrait, bar.rootWidth, bar.rootHeight, bar.barHeight);
         int margin = Integer.valueOf(mPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
-        
-        // A PiP or widget that only reaches under the bottom bar or the left bar is cut back instead
-        // of reset. Done before the collision checks below, so those see the cut rectangles.
-        boolean trimmedAny = trimRectsCoveredByBars(mPrefs, enabledStates, screens, screenToCompare,
-                bottomBarRect != null ? bar : null, leftBar ? leftBarWidth : -1f, bar.rootWidth, margin);
-        
-        // Check for overlaps between rectangles
-        for (int i = 0; i < rectangleKeys.length; i++) {
-            if (!enabledStates[i]) continue;
-            
-            // Skip if screenToCompare is specified and this rectangle is not on that screen
-            if (screenToCompare >= 0 && screens[i] != screenToCompare) continue;
-            
-            // Get rectangle bounds for first rectangle
-            RectF rectA = getRectangleBounds(mPrefs, rectangleKeys[i]);
-            if (rectA.isEmpty()) {
-                // If rectA is empty it means that it has never been set before (app's fresh start)
-                foundOverlap = true;
-                needsReset[i] = true;
-                Log.i(TAG, "Rectangle " + rectangleKeys[i] + " is empty");
-                continue;
-            }
-            
-            // Check for overlap with bottom bar (only on screen 0)
-            if (screens[i] == 0 && bottomBarRect != null && overlapsOrTouches(rectA, bottomBarRect)) {
-                foundOverlap = true;
-                needsReset[i] = true;
-                Log.i(TAG, "Rectangle " + rectangleKeys[i] + " overlaps with bottom bar");
-            }
-
-            // Check for overlap with right border (only in left bar mode AND only on screen 0)
-            if (leftBar && screens[i] == 0 && overlapsOrTouchesBorder(rectA, leftBarWidth, bar.rootWidth, margin)) {
-                foundOverlap = true;
-                needsReset[i] = true;
-                Log.i(TAG, "Rectangle " + rectangleKeys[i] + " overlaps with right border");
-            }
-            
-            // Check for overlap with other rectangles
-            for (int j = i + 1; j < rectangleKeys.length; j++) {
-                if (!enabledStates[j]) continue;
-                
-                // Check if rectangles are on the same screen
-                if (screenToCompare == -1) {
-                    // Check all screens - rectangles must be on same screen to overlap
-                    if (screens[i] != screens[j]) continue;
-                } else {
-                    // Check specific screen - both rectangles must be on the specified screen
-                    if (screens[j] != screenToCompare) continue;
-                }
-                
-                // Get rectangle bounds for second rectangle
-                RectF rectB = getRectangleBounds(mPrefs, rectangleKeys[j]);
-                if (rectB.isEmpty()) continue;
-                
-                // Check for overlap (including touching edges)
-                if (overlapsOrTouches(rectA, rectB)) {
-                    foundOverlap = true;
-                    needsReset[i] = true;
-                    needsReset[j] = true;
-                    Log.i(TAG, "Rectangle " + rectangleKeys[i] + " overlaps with: " + rectangleKeys[j]);
-                }
-            }
-        }
-        
-        // Reset overlapping rectangles if any were found
-        if (foundOverlap) {
-            resetOverlappingRectangles(mPrefs, rectangleKeys, needsReset, enabledStates, screenToCompare);
-        }
-        
-        return foundOverlap || trimmedAny;
-    }
-
-    /**
-     * Cuts the bottom edge of a screen-0 PiP or widget (date, music, radio) that overlaps the
-     * bottom bar, and the right edge of one that overlaps the left bar, and saves the result. An
-     * element that would end up below its minimum size (the creator's minimum, see
-     * {@link #trimMinSize}) is left alone, so the regular checks reset it as before.
-     *
-     * @param bottomBar geometry of the bar, or null when it reserves nothing (auto-hide)
-     * @param leftBarWidth width of the left bar, or a negative value when it is off
-     * @return true if any rectangle was cut
-     */
-    private boolean trimRectsCoveredByBars(SharedPreferences mPrefs, boolean[] enabledStates, int[] screens,
-                                          int screenToCompare, BarGeometry bottomBar, float leftBarWidth,
-                                          int rootWidth, int margin) {
-        if (bottomBar == null && leftBarWidth < 0f) return false;
+        if (margin < 0) margin = 10;
 
         boolean firstPip = mPrefs.getBoolean(Keys.PIP_FIRST, false);
         boolean secondPip = mPrefs.getBoolean(Keys.PIP_SECOND, false);
         boolean thirdPip = mPrefs.getBoolean(Keys.PIP_THIRD, false);
         boolean fourthPip = mPrefs.getBoolean(Keys.PIP_FOURTH, false);
 
-        boolean trimmed = false;
-        for (int i = 0; i < RECTANGLE_KEYS.length; i++) {
-            String key = RECTANGLE_KEYS[i];
-            if (!PipEdgeTrim.isTrimmableKey(key) || !enabledStates[i] || screens[i] != 0) continue;
-            if (screenToCompare >= 0 && screens[i] != screenToCompare) continue;
+        // The occupied cells are read at most once per call, and only for the first screen, the
+        // only one with bars.
+        WorkspaceOccupancy occupancy = null;
+        boolean occupancyRead = false;
 
-            RectF rect = getRectangleBounds(mPrefs, key);
-            if (rect.isEmpty()) continue;
+        int lastScreen = 0;
+        for (int i = 0; i < screens.length; i++) {
+            if (enabledStates[i]) lastScreen = Math.max(lastScreen, screens[i]);
+        }
+        lastScreen = Math.max(lastScreen, mPrefs.getInt(Keys.STATS_SCREEN, 1) - 1);
+        for (int screen = 0; screen <= lastScreen; screen++) {
+            if (screenToCompare >= 0 && screen != screenToCompare) continue;
 
-            boolean hitsBottom = bottomBar != null
-                    && overlapsOrTouches(rect, new RectF(0, bottomBar.barTop, bottomBar.rootWidth, bottomBar.rootHeight));
-            boolean hitsSide = leftBarWidth >= 0f && overlapsOrTouchesBorder(rect, leftBarWidth, rootWidth, margin);
-            if (!hitsBottom && !hitsSide) continue;
+            List<CustomLayoutResolver.Element> elements = new ArrayList<>();
+            List<Integer> indexes = new ArrayList<>();
+            for (int i = 0; i < rectangleKeys.length; i++) {
+                if (!enabledStates[i] || screens[i] != screen) continue;
+                String key = rectangleKeys[i];
+                RectF corners = getRectangleBounds(mPrefs, key);
+                if (corners.isEmpty()) {
+                    // It has never been set before (app's fresh start)
+                    Log.i(TAG, "Rectangle " + key + " is empty");
+                    elements.add(new CustomLayoutResolver.Element(key, 0, 0, 0, 0, 0, 0,
+                            PipEdgeTrim.isPipKey(key), false, true));
+                } else {
+                    int[] user = getUserRect(mPrefs, key);
+                    if (user == null || user[2] <= user[0] || user[3] <= user[1]) {
+                        user = new int[] {(int) corners.left, (int) corners.top, (int) corners.right, (int) corners.bottom};
+                    }
+                    int[] min = trimMinSize(key, firstPip, secondPip, thirdPip, fourthPip);
+                    elements.add(new CustomLayoutResolver.Element(key, user[0], user[1], user[2], user[3],
+                            min[0], min[1], PipEdgeTrim.isPipKey(key), false, false));
+                }
+                indexes.add(i);
+            }
+            // The stats window may overlap widgets, so it is no part of the overlap checks, but
+            // nothing is moved onto it.
+            if (mPrefs.getBoolean(Keys.USER_STATS, false) && mPrefs.getInt(Keys.STATS_SCREEN, 1) - 1 == screen) {
+                RectF stats = getRectangleBounds(mPrefs, "stats");
+                if (!stats.isEmpty()) {
+                    elements.add(new CustomLayoutResolver.Element("stats", (int) stats.left, (int) stats.top,
+                            (int) stats.right, (int) stats.bottom, 0, 0, false, true, false));
+                    indexes.add(-1);
+                }
+            }
+            if (elements.isEmpty()) continue;
 
-            int maxBottom = hitsBottom ? PipEdgeTrim.maxBottom((int) bottomBar.barTop, margin) : PipEdgeTrim.NO_LIMIT;
-            int maxRight = hitsSide ? PipEdgeTrim.maxRight(rootWidth, leftBarWidth, margin) : PipEdgeTrim.NO_LIMIT;
-            int[] min = trimMinSize(key, firstPip, secondPip, thirdPip, fourthPip);
-            int minWidth = min[0];
-            int minHeight = min[1];
-
-            int[] cut = PipEdgeTrim.trim((int) rect.left, (int) rect.top, (int) rect.right, (int) rect.bottom,
-                    maxRight, maxBottom, minWidth, minHeight);
-            if (cut == null) {
-                Log.i(TAG, "Rectangle " + key + " would drop below its minimum when cut, resetting it instead");
-                continue;
+            CustomLayoutResolver.Env env = new CustomLayoutResolver.Env();
+            env.margin = margin;
+            if (screen == 0) {
+                if (bottomBar) {
+                    env.maxBottom = PipEdgeTrim.maxBottom((int) bar.barTop, margin);
+                    // touching the bar counts as overlapping it
+                    env.bottomTrigger = (int) bar.barTop - 1;
+                }
+                if (leftBar) {
+                    env.maxRight = PipEdgeTrim.maxRight(bar.rootWidth, leftBarWidth, margin);
+                    env.rightTrigger = env.maxRight;
+                    env.leftBarOffset = (int) leftBarWidth;
+                }
+                if (env.maxBottom != CustomLayoutResolver.NO_LIMIT || env.maxRight != CustomLayoutResolver.NO_LIMIT) {
+                    GridGeometry grid = GridGeometry.published();
+                    if (grid != null && !occupancyRead) {
+                        occupancyRead = true;
+                        occupancy = CustomLayoutDb.read(LauncherApplication.sApp, grid,
+                                LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count));
+                    }
+                    if (grid != null && occupancy != null) {
+                        env.grid = grid;
+                        env.occupied = occupancy.page(0);
+                    } else {
+                        Log.w(TAG, "The cell grid or the occupied cells are not known, elements are cut but not moved");
+                    }
+                }
             }
 
-            SharedPreferences.Editor editor = mPrefs.edit();
-            editor.putInt(key + "TopLeftX", cut[0]);
-            editor.putInt(key + "TopLeftY", cut[1]);
-            editor.putInt(key + "TopRightX", cut[2]);
-            editor.putInt(key + "TopRightY", cut[1]);
-            editor.putInt(key + "BottomRightX", cut[2]);
-            editor.putInt(key + "BottomRightY", cut[3]);
-            editor.putInt(key + "BottomLeftX", cut[0]);
-            editor.putInt(key + "BottomLeftY", cut[3]);
-            // apply() updates the in-memory prefs at once, so the collision checks that follow
-            // read the cut rectangle even though the write to disk is still pending.
-            editor.apply();
-            trimmed = true;
-            Log.i(TAG, "Rectangle " + key + " cut back to fit beside the bars: " + rect + " -> "
-                    + cut[0] + "," + cut[1] + "," + cut[2] + "," + cut[3]);
+            CustomLayoutResolver.Result result = CustomLayoutResolver.resolve(elements, env);
+            for (int k = 0; k < elements.size(); k++) {
+                int i = indexes.get(k);
+                if (i < 0) continue;
+                String key = rectangleKeys[i];
+                if (result.reset[k]) {
+                    foundOverlap = true;
+                    needsReset[i] = true;
+                    Log.i(TAG, "Rectangle " + key + " has no room beside the bars or the others, resetting it");
+                    continue;
+                }
+                int[] rect = result.rects[k];
+                RectF current = getRectangleBounds(mPrefs, key);
+                if (current.left == rect[0] && current.top == rect[1]
+                        && current.right == rect[2] && current.bottom == rect[3]) continue;
+
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putInt(key + "TopLeftX", rect[0]);
+                editor.putInt(key + "TopLeftY", rect[1]);
+                editor.putInt(key + "TopRightX", rect[2]);
+                editor.putInt(key + "TopRightY", rect[1]);
+                editor.putInt(key + "BottomRightX", rect[2]);
+                editor.putInt(key + "BottomRightY", rect[3]);
+                editor.putInt(key + "BottomLeftX", rect[0]);
+                editor.putInt(key + "BottomLeftY", rect[3]);
+                // apply() updates the in-memory prefs at once, so what runs next reads this layout
+                // even though the write to disk is still pending.
+                editor.apply();
+                changedAny = true;
+                Log.i(TAG, "Rectangle " + key + " fitted beside the bars: " + current + " -> "
+                        + rect[0] + "," + rect[1] + "," + rect[2] + "," + rect[3]);
+            }
         }
-        return trimmed;
+
+        // Reset what could not be fitted
+        if (foundOverlap) {
+            resetOverlappingRectangles(mPrefs, rectangleKeys, needsReset, enabledStates, screenToCompare);
+        }
+
+        return foundOverlap || changedAny;
     }
 
     /**
@@ -784,15 +775,6 @@ public class Helpers {
         
         if (right <= left || bottom <= top) return new RectF();
         return new RectF(left, top, right, bottom);
-    }
-
-    private static boolean overlapsOrTouches(RectF a, RectF b) {
-        // If there is any separating gap, they don't intersect.
-        return !(a.right < b.left || b.right < a.left || a.bottom < b.top || b.bottom < a.top);
-    }
-
-    private static boolean overlapsOrTouchesBorder(RectF a, float leftBarWidth, int width, int margin) {
-        return ((a.right + leftBarWidth) > (width - margin));
     }
 
     private void resetOverlappingRectangles(SharedPreferences mPrefs, String[] rectangleKeys, 
