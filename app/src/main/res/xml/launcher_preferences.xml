@@ -89,6 +89,7 @@
             <com.android.launcher66.settings.CustomPreference
                 android:key="spotify_instruction"
                 android:title="@string/spotify_instruction"
+                android:summary=" "
                 app:layout="@layout/nested_preference_category_content" />
             
         </com.android.launcher66.settings.CustomPreferenceCategory>
