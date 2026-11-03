@@ -63,7 +63,11 @@ public class AppListBean {
         id = appendHash(id, packageName);
         id = appendHash(id, className);
         id = (id * 31L) + rowId;
-        return (id * 31L) + slot;
+        id = (id * 31L) + slot;
+        // The icon is part of what is shown. Without it a rebuild that only swaps an empty icon for
+        // the loaded one has the same signature, the adapters skip notifyDataSetChanged() and the
+        // bar stays blank until its RecyclerView is recreated (leaving the settings and coming back).
+        return (id * 31L) + (icon == null ? 0L : System.identityHashCode(icon));
     }
 
     private static long appendHash(long seed, String value) {

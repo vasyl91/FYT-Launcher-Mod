@@ -395,6 +395,9 @@ final class LauncherAppBars {
                 refreshCycle(data);
                 refreshLeftBar(left);
             });
+          } catch (Throwable t) {
+            Log.w(Launcher.TAG, "Loading the bar icons failed", t);
+          }
         });
     }
 
@@ -2307,7 +2310,9 @@ final class LauncherAppBars {
         }
         final List<String[]> batch = new ArrayList<>(mPendingFallbackIcons.values());
         mPendingFallbackIcons.clear();
+        Log.d(Launcher.TAG, "Bar icons queued for loading off the main thread: " + batch.size());
         mLauncher.bg.execute(() -> {
+          try {
             long start = SystemClock.uptimeMillis();
             int missing = 0;
             for (String[] item : batch) {
@@ -2343,6 +2348,9 @@ final class LauncherAppBars {
                 refreshCycle(data);
                 refreshLeftBar(left);
             });
+          } catch (Throwable t) {
+            Log.w(Launcher.TAG, "Loading the bar icons failed", t);
+          }
         });
     }
 }
