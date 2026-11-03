@@ -540,6 +540,47 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      * Startup work the first screen does not need waits until this ROM's boot-time stall is over
      * (see ColdStart.BOOT_STALL_OVER_UPTIME_MS); 0 when the launcher is not booting.
      */
+    /** Delay after bindAllApplications() before the widget list is sorted. */
+    private static final long WIDGET_SORT_DELAY_MS = 5000L;
+    /** The widget list is sorted at the latest this long after onCreate(). */
+    private static final long WIDGET_SORT_BACKSTOP_MS = 30_000L;
+
+    private boolean mWidgetSortStarted = false;
+    private final Runnable mStartWidgetSortRunnable = () -> startWidgetSort("scheduled");
+
+    /**
+     * Sorts the widgets and shortcuts on a thread of its own, once per instance. Only the widget
+     * picker needs the list; when packages change, bindPackagesUpdated() delivers it anyway.
+     * Started right at onCreate() it was costly: getInstalledProviders() unparcels hundreds of
+     * providers under the global Parcel creator lock and the comparator creates every package's
+     * Resources, and a MIN_PRIORITY thread holding that lock made main, RenderThread and the
+     * loader wait (4x "Long monitor contention", up to 609 ms, in the first seconds of a boot).
+     * The result is dropped if the loader has delivered a newer list in the meantime
+     * (bindPackagesUpdated() bumps the generation).
+     */
+    private void startWidgetSort(String reason) {
+        if (mWidgetSortStarted || mAppsCustomizeContent == null) {
+            return;
+        }
+        mWidgetSortStarted = true;
+        mHandler.removeCallbacks(mStartWidgetSortRunnable);
+        final int generation = mWidgetsListGeneration;
+        Thread widgetSort = new Thread(() -> {
+            long start = SystemClock.uptimeMillis();
+            final ArrayList<Object> sorted = LauncherModel.getSortedWidgetsAndShortcuts(Launcher.this);
+            Log.d(TAG, "Widget list sorted (" + reason + ") in " + (SystemClock.uptimeMillis() - start) + " ms");
+            runOnUiThread(() -> {
+                if (isDestroyed() || mAppsCustomizeContent == null
+                        || generation != mWidgetsListGeneration) {
+                    return;
+                }
+                mAppsCustomizeContent.onPackagesUpdated(sorted);
+            });
+        }, "LauncherWidgetSort");
+        widgetSort.setPriority(Thread.MIN_PRIORITY);
+        widgetSort.start();
+    }
+
     static long bootStallDelayMs() {
         return ColdStart.bootStallDelayMs();
     }
@@ -1680,25 +1721,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         restoreState(mSavedState);
         markStartup("restore");
 
-        // Update customization drawer _after_ restoring the states. Sorting by label loads every
-        // widget's and shortcut's label from its app: two seconds of onCreate() at boot (capture
-        // 23:16), so it runs on its own thread. The result is dropped if the loader has delivered a
-        // newer list in the meantime (bindPackagesUpdated() bumps the generation).
-        if (mAppsCustomizeContent != null) {
-            final int generation = mWidgetsListGeneration;
-            Thread widgetSort = new Thread(() -> {
-                final ArrayList<Object> sorted = LauncherModel.getSortedWidgetsAndShortcuts(Launcher.this);
-                runOnUiThread(() -> {
-                    if (isDestroyed() || mAppsCustomizeContent == null
-                            || generation != mWidgetsListGeneration) {
-                        return;
-                    }
-                    mAppsCustomizeContent.onPackagesUpdated(sorted);
-                });
-            }, "LauncherWidgetSort");
-            widgetSort.setPriority(Thread.MIN_PRIORITY);
-            widgetSort.start();
-        }
+        // The widget list is sorted after the start (see startWidgetSort()), not here: at boot the
+        // sort held the Parcel creator lock, which main, RenderThread and the loader then waited on.
+        // A backstop starts it even if the app list is never bound; the picker starts it at once.
+        mHandler.postDelayed(mStartWidgetSortRunnable, WIDGET_SORT_BACKSTOP_MS);
 
         if (!mRestoring) {
             if (sPausedFromUserAction) {
@@ -3014,6 +3040,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mHandler.removeCallbacks(mStartWidgetSortRunnable);
         Log.d(TAG, "---->>> onDestroy");
         // Why a destroy that is a recreation: if it still happens after uiMode was declared, the
         // next capture names the change (assetsPaths would be an overlay, which cannot be declared).
@@ -7549,6 +7576,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     void showAllApps(boolean animated, AppsCustomizePagedView.ContentType contentType, boolean resetPageToZero) {
+        if (contentType == AppsCustomizePagedView.ContentType.Widgets) {
+            startWidgetSort("widget picker opened");
+        }
         mHomeRecovery.cancelHomeLayoutWatchdog();
         mHomeRecovery.cancelWakeHomeRecovery("showAllApps:" + contentType);
         if (mState == State.WORKSPACE) {
@@ -8569,6 +8599,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void bindAllApplications(ArrayList<AppInfo> apps) {
         Log.d(TAG, "bindAllApplications");
+        mHandler.postDelayed(mStartWidgetSortRunnable, Math.max(WIDGET_SORT_DELAY_MS, bootStallDelayMs()));
         if (mAppBars.mAwaitingAllAppsBind) {
             mAppBars.mAwaitingAllAppsBind = false;
             mAppBars.mAllAppsBackstopChecks = 0;

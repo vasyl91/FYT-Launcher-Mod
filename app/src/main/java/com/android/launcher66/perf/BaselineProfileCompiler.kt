@@ -382,6 +382,28 @@ object BaselineProfileCompiler {
             (lastHostReport?.let { "\nVD host: $it" } ?: "")
     }
 
+    /**
+     * One line in the log with what the compiled-code state of this process is, so that a capture
+     * shows whether "Verification ... took" is expected (no profile) or a problem.
+     */
+    @JvmStatic
+    @WorkerThread
+    fun logProcessStatus(context: Context) {
+        val verifier = runCatching {
+            val s = ProfileVerifier.getCompilationStatusAsync().get()
+            "code=${s.profileInstallResultCode}, compiledWithProfile=${s.isCompiledWithProfile}, " +
+                "enqueued=${s.hasProfileEnqueuedForCompilation()}"
+        }.getOrElse { "unavailable (${it.javaClass.simpleName})" }
+        val last = prefs(context).getString(KEY_LAST_STATUS, "none") ?: "none"
+        val note = if (BuildConfig.DEBUG) {
+            "; debug build: no Baseline Profile, the code is verified and JIT-compiled at every start"
+        } else {
+            ""
+        }
+        Log.i(TAG, "build=${BuildConfig.BUILD_TYPE}, debug=${BuildConfig.DEBUG}, " +
+            "supported=${isSupported()}, ProfileVerifier: $verifier, last status: $last$note")
+    }
+
     /** Number of usage refreshes done for the installed APK (for the reset dialog). */
     @JvmStatic
     fun refreshesDone(context: Context): Int = prefs(context).getInt(KEY_REFRESHES, 0)

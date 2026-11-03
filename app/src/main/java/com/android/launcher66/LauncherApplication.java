@@ -362,6 +362,18 @@ public class LauncherApplication extends Application {
                 Log.w(TAG, "start-up screens read: " + t);
             }
         }, "StartupScreens").start();
+        // Its own thread so it does not delay StartupWarmUp. Without compiled code the first use of
+        // ConstraintLayout verified the class on the main thread for 1.1 s (reboot capture); done
+        // here first, the main thread finds it verified. With compiled code this costs almost nothing.
+        new Thread(() -> {
+            long start = SystemClock.uptimeMillis();
+            try {
+                Class.forName("androidx.constraintlayout.widget.ConstraintLayout", true, getClassLoader());
+                Log.d(TAG, "Class warm-up: " + (SystemClock.uptimeMillis() - start) + " ms");
+            } catch (Throwable t) {
+                Log.w(TAG, "Class warm-up failed: " + t);
+            }
+        }, "ClassWarmUp").start();
         new Thread(() -> {
             try {
                 getFilesDir();
@@ -379,6 +391,7 @@ public class LauncherApplication extends Application {
                 getSharedPreferences(com.android.launcher66.settings.CanbusService.APP_STATS_PREFS,
                         MODE_PRIVATE);
                 BaselineProfileCompiler.warmUp(this);
+                BaselineProfileCompiler.logProcessStatus(this);
                 // Whether Shizuku is installed (a PackageManager call), for HostAwait.isExpected().
                 com.syu.util.HostAwait.warmUp(this);
                 // The su files, once: the stats window asks hasRoot() on the main thread.
