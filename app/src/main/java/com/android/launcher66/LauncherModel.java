@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.HandlerThread;
 import android.os.Parcelable;
 import android.os.Process;
@@ -992,9 +993,32 @@ public class LauncherModel extends BroadcastReceiver {
                     sBgItemsIdMap.remove(item.id);
                     sBgDbIconCache.remove(item);
                 }
+                requestStripAfterDelete(item.container, "item");
             }
         };
         runOnWorkerThread(r);
+    }
+
+    /**
+     * Asks the workspace to strip its empty screens once the model has dropped an item that was on
+     * the desktop. The strip plan is computed on this worker after this runnable (the queue is
+     * FIFO), so it sees the deletion. The strip that onDropCompleted() triggers comes before it:
+     * DeleteDropTarget deletes only after the trash animation, 250-600 ms after the drop, so that
+     * plan still counts the deleted widget and leaves its page in place until the next reload.
+     * Debouncing in triggerStripEmptyScreens() merges the redundant calls.
+     */
+    private static void requestStripAfterDelete(long container, final String what) {
+        if (container != LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+            return;
+        }
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            public void run() {
+                Launcher launcher = Launcher.getLauncher();
+                if (launcher != null && launcher.getWorkspace() != null) {
+                    launcher.getWorkspace().triggerStripEmptyScreens("Model, " + what + " deleted", true);
+                }
+            }
+        });
     }
 
     /**
@@ -1113,6 +1137,7 @@ public class LauncherModel extends BroadcastReceiver {
                         sBgDbIconCache.remove(childInfo);
                     }
                 }
+                requestStripAfterDelete(info.container, "folder");
             }
         };
         runOnWorkerThread(r);

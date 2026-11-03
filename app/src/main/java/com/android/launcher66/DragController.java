@@ -910,7 +910,11 @@ public class DragController {
      * Sets the drag listner which will be notified when a drag starts or ends.
      */
     public void addDragListener(DragListener l) {
-        mListeners.add(l);
+        // recreateView() calls setupViews() again, which registers the Workspace, the
+        // SearchDropTargetBar and the DeleteDropTarget anew each time the settings are left.
+        if (!mListeners.contains(l)) {
+            mListeners.add(l);
+        }
     }
 
     /**
@@ -924,7 +928,10 @@ public class DragController {
      * Add a DropTarget to the list of potential places to receive drop events.
      */
     public void addDropTarget(DropTarget target) {
-        mDropTargets.add(target);
+        // See addDragListener(): setupViews() registers the targets again after every recreateView().
+        if (!mDropTargets.contains(target)) {
+            mDropTargets.add(target);
+        }
     }
 
     /**

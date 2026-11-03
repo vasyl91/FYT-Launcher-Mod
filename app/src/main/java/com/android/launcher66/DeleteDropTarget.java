@@ -247,7 +247,6 @@ public class DeleteDropTarget extends ButtonDropTarget {
         if (!willAcceptDrop(info) || isAllAppsWidget(source, info)) {
             isVisible = false;
         }
-        Log.i("DeleteDropTarget", String.valueOf(isVisible));
 
         // Choose the visual drawable for the overlay.
         TransitionDrawable visual = useUninstallLabel ? mUninstallDrawable : mRemoveDrawable;

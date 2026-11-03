@@ -779,7 +779,7 @@ public class Workspace extends SmoothPagedView
             for (Long id : mWorkspaceScreens.keySet()) {
                 CellLayout cl = mWorkspaceScreens.get(id);
                 if (cl != null && id >= 0 && cl.getShortcutsAndWidgets().getChildCount() == 0) {
-                    Log.i(TAG, "insertNewWorkspaceScreen: empty screen already exists at id=" + id + ", skipping creation");
+                    Log.d(TAG, "insertNewWorkspaceScreen: empty screen already exists at id=" + id + ", skipping creation");
                     return id;
                 }
             }
