@@ -290,6 +290,10 @@
     <string name="init_default_app_error">Veuillez définir l\'application de navigation/de premier plan dans les paramètres de l\'appareil.</string>
     <string name="logcat_names_info">Noms des fichiers journaux</string>
     <string name="logcat_names_info_summary">reboot – démarré avec le launcher après le redémarrage de l\'appareil\nstart – démarré avec le launcher après son redémarrage spontané (plantage, mise à jour)\nwake – démarré au réveil de l\'appareil\nuser – démarré à la main avec « Service Logcat »\nfull – contient tous les journaux de l\'appareil\npid – contient uniquement les journaux du launcher\ncrash – écrit lorsque le lanceur a planté (l\'erreur et les dernières lignes du journal)</string>
+    <string name="logcat_locations_info">Où trouver les journaux et les rapports de plantage</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – les journaux et les rapports de plantage (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – utilisé tant que Download n\'est pas accessible en écriture (p. ex. juste après un redémarrage) ; déplacé ensuite vers Download\n/sdcard/crash – rapports de plantage des versions jusqu\'à 1.2.1</string>
+    <string name="logcat_last_crash">Dernier rapport de plantage : %1$s</string>
+    <string name="logcat_no_crash">Aucun rapport de plantage</string>
     <string name="crash_restarted_toast">Le lanceur a redémarré après une erreur : %1$s. Rapport : %2$s</string>
     <string name="crash_safe_mode_toast">Le lanceur a planté %1$d fois de suite (%2$s). Les widgets personnalisés, les fenêtres PiP et la fenêtre de statistiques sont désactivés jusqu\'à ce que vous quittiez les paramètres. Rapport : %3$s</string>
     <string name="logcat_service">Service Logcat au démarrage</string>

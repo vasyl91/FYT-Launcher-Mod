@@ -290,6 +290,10 @@
     <string name="init_default_app_error">Tafadhali weka programu ya navi/mbele kwenye mipangilio ya kifaa.</string>
     <string name="logcat_names_info">Majina ya faili za kumbukumbu</string>
     <string name="logcat_names_info_summary">reboot – ilianza pamoja na kizindua baada ya kifaa kuwashwa upya\nstart – ilianza pamoja na kizindua baada ya kujiwasha upya chenyewe (hitilafu, sasisho)\nwake – ilianza kifaa kilipoamka\nuser – ilianzishwa kwa mkono kwa “Huduma ya Logcat”\nfull – ina kumbukumbu zote za kifaa\npid – ina kumbukumbu za kizindua pekee\ncrash – huandikwa kizindua kinapoharibika (hitilafu na mistari ya mwisho ya kumbukumbu)</string>
+    <string name="logcat_locations_info">Mahali pa kupata kumbukumbu na ripoti za hitilafu</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – kumbukumbu na ripoti za hitilafu (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – hutumika wakati Download haiwezi kuandikwa (k.m. mara baada ya kuwasha upya); baadaye huhamishiwa Download\n/sdcard/crash – ripoti za hitilafu za matoleo hadi 1.2.1</string>
+    <string name="logcat_last_crash">Ripoti ya mwisho ya hitilafu: %1$s</string>
+    <string name="logcat_no_crash">Hakuna ripoti za hitilafu</string>
     <string name="crash_restarted_toast">Kizindua kimeanzishwa upya baada ya hitilafu: %1$s. Ripoti: %2$s</string>
     <string name="crash_safe_mode_toast">Kizindua kimeharibika mara %1$d mfululizo (%2$s). Wijeti maalum, vidirisha vya PiP na dirisha la takwimu vimezimwa hadi utoke kwenye mipangilio. Ripoti: %3$s</string>
     <string name="logcat_service">Huduma ya Logcat wakati wa kuanza</string>

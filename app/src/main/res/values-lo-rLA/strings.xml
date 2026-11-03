@@ -290,6 +290,10 @@
     <string name="init_default_app_error">ກະລຸນາຕັ້ງແອັບນຳທາງ/ແອັບດ້ານໜ້າໃນການຕັ້ງຄ່າອຸປະກອນ.</string>
     <string name="logcat_names_info">ຊື່ໄຟລ໌ບັນທຶກ</string>
     <string name="logcat_names_info_summary">reboot – ເລີ່ມພ້ອມກັບ launcher ຫຼັງຈາກອຸປະກອນເລີ່ມໃໝ່\nstart – ເລີ່ມພ້ອມກັບ launcher ຫຼັງຈາກມັນເລີ່ມໃໝ່ເອງ (ຂັດຂ້ອງ, ອັບເດດ)\nwake – ເລີ່ມເມື່ອອຸປະກອນຕື່ນຂຶ້ນ\nuser – ເລີ່ມດ້ວຍມືດ້ວຍ “ບໍລິການ Logcat”\nfull – ມີບັນທຶກທັງໝົດຂອງອຸປະກອນ\npid – ມີສະເພາະບັນທຶກຂອງ launcher\ncrash – ຂຽນເມື່ອຕົວເປີດແອັບຄ້າງ (ຂໍ້ຜິດພາດ ແລະ ແຖວສຸດທ້າຍຂອງບັນທຶກ)</string>
+    <string name="logcat_locations_info">ບ່ອນຊອກຫາບັນທຶກ ແລະ ລາຍງານການຄ້າງ</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ບັນທຶກ ແລະ ລາຍງານການຄ້າງ (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ໃຊ້ເມື່ອຂຽນໃສ່ Download ບໍ່ໄດ້ (ເຊັ່ນ ຫຼັງເລີ່ມໃໝ່ທັນທີ); ຕໍ່ມາຍ້າຍໄປ Download\n/sdcard/crash – ລາຍງານການຄ້າງຂອງເວີຊັນເຖິງ 1.2.1</string>
+    <string name="logcat_last_crash">ລາຍງານການຄ້າງຫຼ້າສຸດ: %1$s</string>
+    <string name="logcat_no_crash">ບໍ່ມີລາຍງານການຄ້າງ</string>
     <string name="crash_restarted_toast">ຕົວເປີດແອັບຖືກເລີ່ມໃໝ່ຫຼັງຈາກເກີດຂໍ້ຜິດພາດ: %1$s. ລາຍງານ: %2$s</string>
     <string name="crash_safe_mode_toast">ຕົວເປີດແອັບຄ້າງ %1$d ເທື່ອຕິດຕໍ່ກັນ (%2$s). ວິດເຈັດທີ່ກຳນົດເອງ, ແຖບ PiP ແລະ ໜ້າຕ່າງສະຖິຕິຖືກປິດຈົນກວ່າທ່ານຈະອອກຈາກການຕັ້ງຄ່າ. ລາຍງານ: %3$s</string>
     <string name="logcat_service">ບໍລິການ Logcat ເມື່ອເລີ່ມຕົ້ນ</string>

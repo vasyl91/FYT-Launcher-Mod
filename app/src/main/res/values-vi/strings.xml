@@ -290,6 +290,10 @@
     <string name="init_default_app_error">Vui lòng đặt ứng dụng dẫn đường/ứng dụng phía trước trong cài đặt thiết bị.</string>
     <string name="logcat_names_info">Tên tệp nhật ký</string>
     <string name="logcat_names_info_summary">reboot – bắt đầu cùng launcher sau khi thiết bị khởi động lại\nstart – bắt đầu cùng launcher sau khi nó tự khởi động lại (sự cố, cập nhật)\nwake – bắt đầu khi thiết bị thức dậy\nuser – bắt đầu thủ công bằng “Dịch vụ Logcat”\nfull – chứa tất cả nhật ký của thiết bị\npid – chỉ chứa nhật ký của launcher\ncrash – được ghi khi trình khởi chạy gặp sự cố (lỗi và các dòng nhật ký cuối)</string>
+    <string name="logcat_locations_info">Nơi tìm nhật ký và báo cáo sự cố</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – nhật ký và báo cáo sự cố (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – được dùng khi chưa ghi được vào Download (ví dụ ngay sau khi khởi động lại); sau đó được chuyển vào Download\n/sdcard/crash – báo cáo sự cố của các phiên bản đến 1.2.1</string>
+    <string name="logcat_last_crash">Báo cáo sự cố gần nhất: %1$s</string>
+    <string name="logcat_no_crash">Không có báo cáo sự cố</string>
     <string name="crash_restarted_toast">Trình khởi chạy đã khởi động lại sau lỗi: %1$s. Báo cáo: %2$s</string>
     <string name="crash_safe_mode_toast">Trình khởi chạy đã gặp sự cố %1$d lần liên tiếp (%2$s). Tiện ích tùy chỉnh, ngăn PiP và cửa sổ thống kê bị tắt cho đến khi bạn thoát khỏi cài đặt. Báo cáo: %3$s</string>
     <string name="logcat_service">Dịch vụ Logcat khi khởi động</string>

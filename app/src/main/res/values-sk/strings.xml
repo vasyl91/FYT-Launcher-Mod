@@ -290,6 +290,10 @@
     <string name="init_default_app_error">Nastavte navigačnú aplikáciu/aplikáciu v popredí v nastaveniach zariadenia.</string>
     <string name="logcat_names_info">Názvy súborov denníka</string>
     <string name="logcat_names_info_summary">reboot – spustené s launcherom po reštarte zariadenia\nstart – spustené s launcherom po jeho samostatnom reštarte (pád, aktualizácia)\nwake – spustené pri prebudení zariadenia\nuser – spustené ručne cez „Služba Logcat“\nfull – obsahuje všetky denníky zariadenia\npid – obsahuje iba denníky launchera\ncrash – zapísané, keď launcher spadol (chyba a posledné riadky záznamu)</string>
+    <string name="logcat_locations_info">Kde nájsť záznamy a hlásenia o pádoch</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – záznamy a hlásenia o pádoch (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – používa sa, kým nemožno zapisovať do Download (napr. hneď po reštarte); neskôr sa presunie do Download\n/sdcard/crash – hlásenia o pádoch verzií do 1.2.1</string>
+    <string name="logcat_last_crash">Posledné hlásenie o páde: %1$s</string>
+    <string name="logcat_no_crash">Žiadne hlásenia o pádoch</string>
     <string name="crash_restarted_toast">Launcher bol po chybe reštartovaný: %1$s. Hlásenie: %2$s</string>
     <string name="crash_safe_mode_toast">Launcher spadol %1$d× za sebou (%2$s). Vlastné widgety, panely PiP a okno štatistík sú vypnuté, kým neopustíte nastavenia. Hlásenie: %3$s</string>
     <string name="logcat_service">Služba Logcat pri spustení</string>

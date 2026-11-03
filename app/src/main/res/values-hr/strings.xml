@@ -290,6 +290,10 @@
     <string name="init_default_app_error">Postavite navigacijsku aplikaciju/aplikaciju u prednjem planu u postavkama uređaja.</string>
     <string name="logcat_names_info">Nazivi datoteka zapisnika</string>
     <string name="logcat_names_info_summary">reboot – pokrenuto s launcherom nakon ponovnog pokretanja uređaja\nstart – pokrenuto s launcherom nakon što se sam ponovno pokrenuo (pad, ažuriranje)\nwake – pokrenuto kad se uređaj probudio\nuser – pokrenuto ručno putem „Logcat usluga“\nfull – sadrži sve zapisnike uređaja\npid – sadrži samo zapisnike launchera\ncrash – zapisuje se kad launcher padne (pogreška i zadnji retci zapisnika)</string>
+    <string name="logcat_locations_info">Gdje pronaći zapisnike i izvješća o rušenju</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – zapisnici i izvješća o rušenju (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – koristi se dok se u Download ne može pisati (npr. odmah nakon ponovnog pokretanja); kasnije se premješta u Download\n/sdcard/crash – izvješća o rušenju verzija do 1.2.1</string>
+    <string name="logcat_last_crash">Posljednje izvješće o rušenju: %1$s</string>
+    <string name="logcat_no_crash">Nema izvješća o rušenju</string>
     <string name="crash_restarted_toast">Launcher je ponovno pokrenut nakon pogreške: %1$s. Izvješće: %2$s</string>
     <string name="crash_safe_mode_toast">Launcher je pao %1$d puta zaredom (%2$s). Vlastiti widgeti, PiP okna i prozor statistike isključeni su dok ne izađete iz postavki. Izvješće: %3$s</string>
     <string name="logcat_service">Logcat usluga pri pokretanju</string>

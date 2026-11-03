@@ -290,6 +290,10 @@
     <string name="init_default_app_error">Lütfen cihaz ayarlarında navigasyon/ön uygulamayı ayarlayın.</string>
     <string name="logcat_names_info">Günlük dosyası adları</string>
     <string name="logcat_names_info_summary">reboot – cihaz yeniden başlatıldıktan sonra başlatıcıyla birlikte başladı\nstart – başlatıcı kendiliğinden yeniden başladıktan sonra (çökme, güncelleme) onunla birlikte başladı\nwake – cihaz uyandığında başladı\nuser – “Logcat hizmeti” ile elle başlatıldı\nfull – cihazın tüm günlüklerini içerir\npid – yalnızca başlatıcının günlüklerini içerir\ncrash – başlatıcı çöktüğünde yazılır (hata ve günlüğün son satırları)</string>
+    <string name="logcat_locations_info">Günlükler ve çökme raporları nerede</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – günlükler ve çökme raporları (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – Download\'a yazılamadığı sürece kullanılır (ör. yeniden başlatmanın hemen ardından); sonra Download\'a taşınır\n/sdcard/crash – 1.2.1 sürümüne kadar olan sürümlerin çökme raporları</string>
+    <string name="logcat_last_crash">Son çökme raporu: %1$s</string>
+    <string name="logcat_no_crash">Çökme raporu yok</string>
     <string name="crash_restarted_toast">Başlatıcı bir hatadan sonra yeniden başlatıldı: %1$s. Rapor: %2$s</string>
     <string name="crash_safe_mode_toast">Başlatıcı art arda %1$d kez çöktü (%2$s). Özel widget\'lar, PiP bölmeleri ve istatistik penceresi ayarlardan çıkana kadar kapalı. Rapor: %3$s</string>
     <string name="logcat_service">Açılışta Logcat hizmeti</string>

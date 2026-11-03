@@ -142,6 +142,10 @@
     <string name="resizable_bottom_bar_summary">Altura: %1$s do lado mais curto do ecrã (%2$s)</string>
     <string name="logcat_names_info">Nomes dos ficheiros de registo</string>
     <string name="logcat_names_info_summary">reboot – iniciado com o launcher depois de o dispositivo reiniciar\nstart – iniciado com o launcher depois de este reiniciar sozinho (falha, atualização)\nwake – iniciado quando o dispositivo acordou\nuser – iniciado manualmente com «Serviço Logcat»\nfull – contém todos os registos do dispositivo\npid – contém apenas os registos do launcher\ncrash – escrito quando o launcher falhou (o erro e as últimas linhas do registo)</string>
+    <string name="logcat_locations_info">Onde encontrar os registos e os relatórios de falhas</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – os registos e os relatórios de falhas (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – usada enquanto não for possível escrever em Download (p. ex. logo após um reinício); depois movida para Download\n/sdcard/crash – relatórios de falhas das versões até à 1.2.1</string>
+    <string name="logcat_last_crash">Último relatório de falha: %1$s</string>
+    <string name="logcat_no_crash">Sem relatórios de falhas</string>
     <string name="crash_restarted_toast">O launcher foi reiniciado após um erro: %1$s. Relatório: %2$s</string>
     <string name="crash_safe_mode_toast">O launcher falhou %1$d vezes seguidas (%2$s). Widgets próprios, painéis PiP e a janela de estatísticas ficam desativados até sair das definições. Relatório: %3$s</string>
 </resources>

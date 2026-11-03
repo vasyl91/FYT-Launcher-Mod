@@ -356,6 +356,10 @@
          and change them only together with the code. -->
     <string name="logcat_names_info">Log file names</string>
     <string name="logcat_names_info_summary">reboot – started with the launcher after the device restarted\nstart – started with the launcher after it restarted on its own (crash, update)\nwake – started when the device woke up\nuser – started by hand with \"Logcat service\"\nfull – holds all of the device\'s logs\npid – holds the launcher\'s logs only\ncrash – written when the launcher crashed (the error and the last log lines)</string>
+    <string name="logcat_locations_info">Where to find the logs and crash reports</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – the logs and the crash reports (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – used while Download cannot be written (e.g. right after a restart); moved to Download later\n/sdcard/crash – crash reports of versions up to 1.2.1</string>
+    <string name="logcat_last_crash">Last crash report: %1$s</string>
+    <string name="logcat_no_crash">No crash reports</string>
     <string name="crash_restarted_toast">Launcher was restarted after an error: %1$s. Report: %2$s</string>
     <string name="crash_safe_mode_toast">Launcher crashed %1$d times in a row (%2$s). Custom widgets, PiP panes and the stats window are off until you leave the settings. Report: %3$s</string>
     <string name="logcat_service">Logcat service on startup</string>

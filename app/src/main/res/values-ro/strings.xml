@@ -290,6 +290,10 @@
     <string name="init_default_app_error">Setați aplicația de navigare/din prim-plan în setările dispozitivului.</string>
     <string name="logcat_names_info">Numele fișierelor de jurnal</string>
     <string name="logcat_names_info_summary">reboot – pornit împreună cu launcherul după repornirea dispozitivului\nstart – pornit împreună cu launcherul după ce acesta a repornit singur (blocare, actualizare)\nwake – pornit la trezirea dispozitivului\nuser – pornit manual cu „Serviciu Logcat”\nfull – conține toate jurnalele dispozitivului\npid – conține doar jurnalele launcherului\ncrash – scris când launcherul s-a oprimit (eroarea și ultimele linii din jurnal)</string>
+    <string name="logcat_locations_info">Unde găsiți jurnalele și rapoartele de oprire</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – jurnalele și rapoartele de oprire (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – folosit cât timp nu se poate scrie în Download (de ex. imediat după o repornire); mutat ulterior în Download\n/sdcard/crash – rapoartele de oprire ale versiunilor până la 1.2.1</string>
+    <string name="logcat_last_crash">Ultimul raport de oprire: %1$s</string>
+    <string name="logcat_no_crash">Niciun raport de oprire</string>
     <string name="crash_restarted_toast">Launcherul a repornit după o eroare: %1$s. Raport: %2$s</string>
     <string name="crash_safe_mode_toast">Launcherul s-a oprit brusc de %1$d ori la rând (%2$s). Widgeturile proprii, panourile PiP și fereastra de statistici sunt dezactivate până ieșiți din setări. Raport: %3$s</string>
     <string name="logcat_service">Serviciu Logcat la pornire</string>

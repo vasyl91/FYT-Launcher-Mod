@@ -290,6 +290,10 @@
     <string name="init_default_app_error">Aseta navigointi-/etualan sovellus laitteen asetuksissa.</string>
     <string name="logcat_names_info">Lokitiedostojen nimet</string>
     <string name="logcat_names_info_summary">reboot – käynnistetty käynnistimen mukana laitteen uudelleenkäynnistyksen jälkeen\nstart – käynnistetty käynnistimen mukana sen käynnistyttyä itse uudelleen (kaatuminen, päivitys)\nwake – käynnistetty laitteen herätessä\nuser – käynnistetty käsin kohdasta ”Logcat-palvelu”\nfull – sisältää kaikki laitteen lokit\npid – sisältää vain käynnistimen lokit\ncrash – kirjoitetaan, kun käynnistin kaatui (virhe ja lokin viimeiset rivit)</string>
+    <string name="logcat_locations_info">Mistä lokit ja kaatumisraportit löytyvät</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – lokit ja kaatumisraportit (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – käytössä, kun Downloadiin ei voi kirjoittaa (esim. heti uudelleenkäynnistyksen jälkeen); siirretään myöhemmin Downloadiin\n/sdcard/crash – versioiden 1.2.1 asti kaatumisraportit</string>
+    <string name="logcat_last_crash">Viimeisin kaatumisraportti: %1$s</string>
+    <string name="logcat_no_crash">Ei kaatumisraportteja</string>
     <string name="crash_restarted_toast">Käynnistin käynnistyi uudelleen virheen jälkeen: %1$s. Raportti: %2$s</string>
     <string name="crash_safe_mode_toast">Käynnistin kaatui %1$d kertaa peräkkäin (%2$s). Omat widgetit, PiP-ruudut ja tilastoikkuna ovat pois päältä, kunnes poistut asetuksista. Raportti: %3$s</string>
     <string name="logcat_service">Logcat-palvelu käynnistyksessä</string>

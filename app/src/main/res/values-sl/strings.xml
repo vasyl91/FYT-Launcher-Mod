@@ -290,6 +290,10 @@
     <string name="init_default_app_error">V nastavitvah naprave nastavite navigacijsko aplikacijo/aplikacijo v ospredju.</string>
     <string name="logcat_names_info">Imena datotek dnevnika</string>
     <string name="logcat_names_info_summary">reboot – zagnano z zaganjalnikom po ponovnem zagonu naprave\nstart – zagnano z zaganjalnikom, ko se je sam ponovno zagnal (zrušitev, posodobitev)\nwake – zagnano ob prebuditvi naprave\nuser – zagnano ročno prek »Storitev Logcat«\nfull – vsebuje vse dnevnike naprave\npid – vsebuje samo dnevnike zaganjalnika\ncrash – zapisano, ko se je zaganjalnik zrušil (napaka in zadnje vrstice dnevnika)</string>
+    <string name="logcat_locations_info">Kje najti dnevnike in poročila o zrušitvah</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – dnevniki in poročila o zrušitvah (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – uporablja se, dokler v Download ni mogoče pisati (npr. takoj po ponovnem zagonu); pozneje se premakne v Download\n/sdcard/crash – poročila o zrušitvah različic do 1.2.1</string>
+    <string name="logcat_last_crash">Zadnje poročilo o zrušitvi: %1$s</string>
+    <string name="logcat_no_crash">Ni poročil o zrušitvah</string>
     <string name="crash_restarted_toast">Zaganjalnik se je znova zagnal po napaki: %1$s. Poročilo: %2$s</string>
     <string name="crash_safe_mode_toast">Zaganjalnik se je zrušil %1$d-krat zapored (%2$s). Lastni pripomočki, okna PiP in okno statistike so izklopljeni, dokler ne zapustite nastavitev. Poročilo: %3$s</string>
     <string name="logcat_service">Storitev Logcat ob zagonu</string>

@@ -161,6 +161,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private static final String SHIZUKU_NEXT_RELEASES_URL =
             "https://github.com/rushiranpise/Shizuku-Next/releases/latest";
     private Preference shizukuDownload;
+    private Preference logcatLocationsInfo;
 
     private static final String KEY_BASELINE_PROFILE_SUMMARY = "baseline_profile_summary";
     private static final String KEY_BASELINE_PROFILE_RESET = "baseline_profile_reset";
@@ -372,6 +373,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         PreferenceCategory appVersion = findPreference("app_version");
         Preference appVersionUpdate = findPreference(Keys.APP_VERSION_UPDATE);
         shizukuDownload = findPreference(Keys.SHIZUKU_DOWNLOAD);
+        logcatLocationsInfo = findPreference(Keys.LOGCAT_LOCATIONS_INFO);
 
         if (userLayout != null) {
             userLayout.setOnPreferenceClickListener(this);
@@ -620,6 +622,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         // for and no background refresh to start.
         SpotifyRating.syncPreference(requireContext(), clientIdPreference, oauthForSpotify);
         updateShizukuDownload();
+        updateLastCrashReport();
     }
 
     @Override
@@ -1555,6 +1558,78 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 }
             });
         }, "ShizukuInstalled").start();
+    }
+
+    /**
+     * Lists the places that hold logs and crash reports and, under it, the newest crash report. The
+     * folders are listed off the main thread. The reports of versions up to 1.2.1 are in
+     * /sdcard/crash (crash-yyyy-MM-dd-HH-mm-ss-...txt); since then they are in Launcher66_Logs
+     * (crash_pid_...txt), or in the app's own folder while Download cannot be written.
+     */
+    private void updateLastCrashReport() {
+        if (logcatLocationsInfo == null) {
+            return;
+        }
+        final Context appContext = requireContext().getApplicationContext();
+        final String locations = getString(R.string.logcat_locations_info_summary);
+        final String none = getString(R.string.logcat_no_crash);
+        new Thread(() -> {
+            String last = null;
+            try {
+                last = findLastCrashReport(appContext);
+            } catch (Throwable t) {
+                Log.w("SettingsFragmentFirst", "Could not look for the last crash report: " + t);
+            }
+            final String text = locations + "\n\n"
+                    + (last != null ? appContext.getString(R.string.logcat_last_crash, last) : none);
+            mHandler.post(() -> {
+                if (isAdded() && logcatLocationsInfo != null) {
+                    logcatLocationsInfo.setSummary(text);
+                }
+            });
+        }, "LastCrashReport").start();
+    }
+
+    /** "dd-MM-yyyy HH:mm folder/name" of the newest crash report in any of the places, or null. */
+    private static String findLastCrashReport(Context context) {
+        File[] dirs = {
+                LogcatWorker.usablePublicDir(context),
+                LogcatWorker.resolveFallbackDir(context),
+                new File("/sdcard/crash")};
+        String[] labels = {
+                "Download/Launcher66_Logs",
+                fallbackLabel(context, dirs[1]),
+                "/sdcard/crash"};
+        File newest = null;
+        String newestLabel = null;
+        for (int i = 0; i < dirs.length; i++) {
+            File[] files = dirs[i] == null ? null : dirs[i].listFiles();
+            if (files == null) {
+                continue;     // not there, or not readable (Android 11+ for /sdcard/crash)
+            }
+            for (File file : files) {
+                String name = file.getName();
+                if (name.startsWith("crash") && name.endsWith(".txt")
+                        && (newest == null || file.lastModified() > newest.lastModified())) {
+                    newest = file;
+                    newestLabel = labels[i];
+                }
+            }
+        }
+        if (newest == null) {
+            return null;
+        }
+        String time = new java.text.SimpleDateFormat("dd-MM-yyyy HH:mm", java.util.Locale.getDefault())
+                .format(new java.util.Date(newest.lastModified()));
+        return time + " " + newestLabel + "/" + newest.getName();
+    }
+
+    /** The app's folder for the reports, as LogcatWorker.resolveFallbackDir() chose it. */
+    private static String fallbackLabel(Context context, File dir) {
+        if (dir != null && dir.getAbsolutePath().startsWith(context.getFilesDir().getAbsolutePath())) {
+            return "files/Launcher66_Logs";
+        }
+        return "Android/data/" + context.getPackageName() + "/files/Download/Launcher66_Logs";
     }
 
     private void updateBaselineProfileSummary() {

@@ -290,6 +290,10 @@
     <string name="init_default_app_error">Укажіть навігаційний/основний застосунок у налаштуваннях пристрою.</string>
     <string name="logcat_names_info">Імена файлів журналу</string>
     <string name="logcat_names_info_summary">reboot – запущено разом з лаунчером після перезапуску пристрою\nstart – запущено разом з лаунчером після його самостійного перезапуску (збій, оновлення)\nwake – запущено, коли пристрій прокинувся\nuser – запущено вручну через «Служба Logcat»\nfull – містить усі журнали пристрою\npid – містить лише журнали лаунчера\ncrash – записується під час збою лаунчера (помилка та останні рядки журналу)</string>
+    <string name="logcat_locations_info">Де шукати журнали та звіти про збої</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – журнали та звіти про збої (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – використовується, поки в Download не можна писати (наприклад, одразу після перезапуску); пізніше переноситься до Download\n/sdcard/crash – звіти про збої версій до 1.2.1</string>
+    <string name="logcat_last_crash">Останній звіт про збій: %1$s</string>
+    <string name="logcat_no_crash">Звітів про збої немає</string>
     <string name="crash_restarted_toast">Лаунчер перезапущено після помилки: %1$s. Звіт: %2$s</string>
     <string name="crash_safe_mode_toast">Лаунчер аварійно завершився %1$d разів поспіль (%2$s). Власні віджети, панелі PiP і вікно статистики вимкнено, доки ви не вийдете з налаштувань. Звіт: %3$s</string>
     <string name="logcat_service">Служба Logcat під час запуску</string>

@@ -67,6 +67,7 @@ public final class Keys {
     public static final String SUNRISE_CORRECTION = "sunrise_correction";
     public static final String SUNSET_CORRECTION = "sunset_correction";
     public static final String RESET_NIGHT_MODE = "reset_night_mode";
+    public static final String LOGCAT_LOCATIONS_INFO = "logcat_locations_info";
     public static final String LOGCAT_SERVICE = "logcat_service";
     public static final String LOGCAT_FULL = "logcat_full";
     public static final String BOOT_LOGCAT = "boot_logcat";

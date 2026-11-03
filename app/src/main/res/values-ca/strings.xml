@@ -290,6 +290,10 @@
     <string name="init_default_app_error">Defineix l\'aplicació de navegació/de primer pla a la configuració del dispositiu.</string>
     <string name="logcat_names_info">Noms dels fitxers de registre</string>
     <string name="logcat_names_info_summary">reboot – iniciat amb el llançador després de reiniciar el dispositiu\nstart – iniciat amb el llançador després que s\'hagi reiniciat per si sol (error, actualització)\nwake – iniciat quan el dispositiu es desperta\nuser – iniciat manualment amb «Servei Logcat»\nfull – conté tots els registres del dispositiu\npid – conté només els registres del llançador\ncrash – escrit quan el llançador ha fallat (l\'error i les últimes línies del registre)</string>
+    <string name="logcat_locations_info">On trobar els registres i els informes de fallades</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – els registres i els informes de fallades (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – s\'usa mentre no es pot escriure a Download (p. ex. just després d\'un reinici); després es mou a Download\n/sdcard/crash – informes de fallades de les versions fins a la 1.2.1</string>
+    <string name="logcat_last_crash">Últim informe de fallada: %1$s</string>
+    <string name="logcat_no_crash">Cap informe de fallades</string>
     <string name="crash_restarted_toast">El llançador s\'ha reiniciat després d\'un error: %1$s. Informe: %2$s</string>
     <string name="crash_safe_mode_toast">El llançador ha fallat %1$d vegades seguides (%2$s). Els ginys propis, els panells PiP i la finestra d\'estadístiques estan desactivats fins que surtis de la configuració. Informe: %3$s</string>
     <string name="logcat_service">Servei Logcat a l\'inici</string>

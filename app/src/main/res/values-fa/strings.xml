@@ -290,6 +290,10 @@
     <string name="init_default_app_error">لطفاً برنامه ناوبری/جلو را در تنظیمات دستگاه تنظیم کنید.</string>
     <string name="logcat_names_info">نام فایل‌های گزارش</string>
     <string name="logcat_names_info_summary">reboot – همراه با لانچر پس از راه‌اندازی مجدد دستگاه شروع شده\nstart – همراه با لانچر پس از راه‌اندازی مجدد خودکار آن شروع شده (خرابی، به‌روزرسانی)\nwake – هنگام بیدار شدن دستگاه شروع شده\nuser – به‌صورت دستی با «سرویس Logcat» شروع شده\nfull – شامل همه گزارش‌های دستگاه است\npid – فقط شامل گزارش‌های لانچر است\ncrash – هنگام کرش لانچر نوشته می‌شود (خطا و آخرین خط‌های گزارش)</string>
+    <string name="logcat_locations_info">گزارش‌ها و گزارش‌های کرش را کجا پیدا کنید</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – گزارش‌ها و گزارش‌های کرش (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – تا زمانی که نوشتن در Download ممکن نباشد (مثلاً بلافاصله پس از راه‌اندازی مجدد) استفاده می‌شود؛ بعداً به Download منتقل می‌شود\n/sdcard/crash – گزارش‌های کرش نسخه‌های تا 1.2.1</string>
+    <string name="logcat_last_crash">آخرین گزارش کرش: %1$s</string>
+    <string name="logcat_no_crash">گزارش کرشی وجود ندارد</string>
     <string name="crash_restarted_toast">لانچر پس از یک خطا دوباره راه‌اندازی شد: %1$s. گزارش: %2$s</string>
     <string name="crash_safe_mode_toast">لانچر %1$d بار پشت‌سرهم کرش کرد (%2$s). ویجت‌های سفارشی، پنجره‌های PiP و پنجرهٔ آمار تا خروج از تنظیمات خاموش هستند. گزارش: %3$s</string>
     <string name="logcat_service">سرویس Logcat هنگام شروع</string>

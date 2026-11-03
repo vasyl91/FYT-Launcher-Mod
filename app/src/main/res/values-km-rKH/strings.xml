@@ -290,6 +290,10 @@
     <string name="init_default_app_error">សូមកំណត់កម្មវិធីណាវី/កម្មវិធីខាងមុខនៅក្នុងការកំណត់ឧបករណ៍។</string>
     <string name="logcat_names_info">ឈ្មោះឯកសារកំណត់ហេតុ</string>
     <string name="logcat_names_info_summary">reboot – ចាប់ផ្តើមជាមួយ launcher បន្ទាប់ពីឧបករណ៍ចាប់ផ្តើមឡើងវិញ\nstart – ចាប់ផ្តើមជាមួយ launcher បន្ទាប់ពីវាចាប់ផ្តើមឡើងវិញដោយខ្លួនឯង (គាំង ការអាប់ដេត)\nwake – ចាប់ផ្តើមនៅពេលឧបករណ៍ភ្ញាក់\nuser – ចាប់ផ្តើមដោយដៃជាមួយ “សេវាកម្ម Logcat”\nfull – មានកំណត់ហេតុទាំងអស់របស់ឧបករណ៍\npid – មានតែកំណត់ហេតុរបស់ launcher ប៉ុណ្ណោះ\ncrash – សរសេរនៅពេលកម្មវិធីចាប់ផ្តើមគាំង (កំហុស និងបន្ទាត់ចុងក្រោយនៃកំណត់ហេតុ)</string>
+    <string name="logcat_locations_info">កន្លែងរកកំណត់ហេតុ និងរបាយការណ៍គាំង</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – កំណត់ហេតុ និងរបាយការណ៍គាំង (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ប្រើពេលមិនអាចសរសេរទៅ Download បាន (ឧ. ភ្លាមៗក្រោយចាប់ផ្តើមឡើងវិញ)។ ក្រោយមកផ្លាស់ទៅ Download\n/sdcard/crash – របាយការណ៍គាំងនៃកំណែរហូតដល់ 1.2.1</string>
+    <string name="logcat_last_crash">របាយការណ៍គាំងចុងក្រោយ៖ %1$s</string>
+    <string name="logcat_no_crash">គ្មានរបាយការណ៍គាំង</string>
     <string name="crash_restarted_toast">កម្មវិធីចាប់ផ្តើមបានចាប់ផ្តើមឡើងវិញបន្ទាប់ពីមានកំហុស៖ %1$s។ របាយការណ៍៖ %2$s</string>
     <string name="crash_safe_mode_toast">កម្មវិធីចាប់ផ្តើមបានគាំង %1$d ដងជាប់ៗគ្នា (%2$s)។ ធាតុក្រាហ្វិកផ្ទាល់ខ្លួន ផ្ទាំង PiP និងបង្អួចស្ថិតិត្រូវបានបិទ រហូតដល់អ្នកចាកចេញពីការកំណត់។ របាយការណ៍៖ %3$s</string>
     <string name="logcat_service">សេវាកម្ម Logcat ពេលចាប់ផ្តើម</string>

@@ -319,6 +319,11 @@
             android:selectable="false"
             android:title="@string/logcat_names_info"
             android:summary="@string/logcat_names_info_summary" />
+        <Preference
+            android:key="logcat_locations_info"
+            android:selectable="false"
+            android:title="@string/logcat_locations_info"
+            android:summary="@string/logcat_locations_info_summary" />
         <SwitchPreferenceCompat
             android:key="logcat_service"
             android:defaultValue="@bool/logcat_on_by_default"

@@ -290,6 +290,10 @@
     <string name="init_default_app_error">Nastavte navigační aplikaci/aplikaci v popředí v nastavení zařízení.</string>
     <string name="logcat_names_info">Názvy souborů protokolu</string>
     <string name="logcat_names_info_summary">reboot – spuštěno s launcherem po restartu zařízení\nstart – spuštěno s launcherem po jeho samostatném restartu (pád, aktualizace)\nwake – spuštěno při probuzení zařízení\nuser – spuštěno ručně přes „Služba Logcat“\nfull – obsahuje všechny protokoly zařízení\npid – obsahuje pouze protokoly launcheru\ncrash – zapsáno, když se launcher zhroutil (chyba a poslední řádky protokolu)</string>
+    <string name="logcat_locations_info">Kde najít protokoly a hlášení o pádech</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – protokoly a hlášení o pádech (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – používá se, dokud nelze zapisovat do Download (např. hned po restartu); později se přesune do Download\n/sdcard/crash – hlášení o pádech verzí do 1.2.1</string>
+    <string name="logcat_last_crash">Poslední hlášení o pádu: %1$s</string>
+    <string name="logcat_no_crash">Žádná hlášení o pádech</string>
     <string name="crash_restarted_toast">Launcher byl po chybě restartován: %1$s. Hlášení: %2$s</string>
     <string name="crash_safe_mode_toast">Launcher spadl %1$d× za sebou (%2$s). Vlastní widgety, panely PiP a okno statistik jsou vypnuty, dokud neopustíte nastavení. Hlášení: %3$s</string>
     <string name="logcat_service">Služba Logcat při spuštění</string>
