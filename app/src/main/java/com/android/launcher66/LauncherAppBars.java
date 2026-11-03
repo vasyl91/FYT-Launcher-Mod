@@ -395,9 +395,6 @@ final class LauncherAppBars {
                 refreshCycle(data);
                 refreshLeftBar(left);
             });
-          } catch (Throwable t) {
-            Log.w(Launcher.TAG, "Loading the bar icons failed", t);
-          }
         });
     }
 
