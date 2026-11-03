@@ -8574,6 +8574,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mAppBars.mAllAppsBackstopChecks = 0;
             mHandler.removeCallbacks(mAppBars.mAllAppsBindBackstop);
             mAppBars.triggerAppData();
+        } else if (mAppBars.barsUseFallbackIcons()) {
+            // Off the FYT head unit the bars are built before the model has loaded the app list, so
+            // they carry icons loaded from the PackageManager. Rebuild them once with the launcher's.
+            Log.d(TAG, "Bars were built before the app list, rebuilding them with the launcher's icons");
+            mAppBars.triggerAppData();
         }
         if (AppsCustomizePagedView.DISABLE_ALL_APPS) {
             if (mIntentsOnWorkspaceFromUpgradePath != null) {

@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -154,7 +155,24 @@ final class LauncherAppBars {
 
     long mLastPostResumeAppDataRefreshMs = 0L;
 
-    final Map<String, Bitmap> mAppIconBitmapCache = new HashMap<>();
+    /**
+     * Icons the bars loaded from the PackageManager. Written by the worker that loads them and
+     * read on the main thread, hence concurrent. Never holds null.
+     */
+    final Map<String, Bitmap> mAppIconBitmapCache = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** Keys (appIconCacheKey) the left bar could not resolve at all; those rows are dropped. */
+    final java.util.Set<String> mUnresolvableIcons = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    /** Main thread only: icons waiting for the next worker pass, key -> {package, class, "strict"|"plain"}. */
+    final java.util.LinkedHashMap<String, String[]> mPendingFallbackIcons = new java.util.LinkedHashMap<>();
+
+    /** Main thread only: a flushFallbackIcons() is already posted, so one pass collects the whole batch. */
+    boolean mFallbackIconFlushPosted = false;
+
+    /** Main thread only: the last rebuild of that bar used an icon that is not the launcher's. */
+    boolean mBottomUsedFallbackIcon = false;
+    boolean mLeftUsedFallbackIcon = false;
 
     boolean mLeftRecyclerLayoutPending = false;
 
@@ -887,17 +905,24 @@ final class LauncherAppBars {
                 // If not found in AllAppsList but package is installed, load icon from package manager.
                 // Strict variant: returns null for uninstalled/unresolvable components, so the row is
                 // dropped (and the remaining icons re-flow) instead of showing the "add app" icon.
-                Bitmap icon = loadLeftBarIconStrict(multiple.packageName, multiple.className);
-                if (icon != null) {
-                    AppListBean ab = new AppListBean(
-                        multiple.name,
-                        icon,
-                        multiple.packageName,
-                        multiple.className
-                    );
-                    nextLeftAppListData.add(ab);
-                    leftSnapshot.usedFallbackIcon = true;
+                // The main thread only reads the cache: a missing icon is queued for a worker, and the
+                // bar is rebuilt once it is loaded. Until then the row has an empty icon.
+                String iconKey = appIconCacheKey(multiple.packageName, multiple.className);
+                if (mUnresolvableIcons.contains(iconKey)) {
+                    continue;
                 }
+                Bitmap icon = mAppIconBitmapCache.get(iconKey);
+                if (icon == null) {
+                    queueFallbackIcon(multiple.packageName, multiple.className, true);
+                }
+                AppListBean ab = new AppListBean(
+                    multiple.name,
+                    icon,
+                    multiple.packageName,
+                    multiple.className
+                );
+                nextLeftAppListData.add(ab);
+                leftSnapshot.usedFallbackIcon = true;
             }
         }
         
@@ -905,6 +930,7 @@ final class LauncherAppBars {
             mLeftAppListData = nextLeftAppListData;
             mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
             mLastLeftAppListSourceSignature = sourceSignature;
+            mLeftUsedFallbackIcon = leftSnapshot.usedFallbackIcon;
             Log.d(Launcher.TAG, "Left app data initialized with " + mLeftAppListData.size() + " items");
             saveLeftBarSnapshot(leftAppData, capacity, leftSnapshot);
         }
@@ -1365,7 +1391,13 @@ final class LauncherAppBars {
                 } else {
                     // Installed but not in AllAppsList (transient during a package update) -
                     // load straight from PackageManager so the icon does not disappear.
-                    beanIcon = loadAppIconFromPackageManager(row.packageName, row.className);
+                    // The main thread only reads the cache; a missing icon is loaded by a worker and the
+                    // bar is rebuilt afterwards (null shows an empty icon meanwhile).
+                    String iconKey = appIconCacheKey(row.packageName, row.className);
+                    beanIcon = mAppIconBitmapCache.get(iconKey);
+                    if (beanIcon == null) {
+                        queueFallbackIcon(row.packageName, row.className, false);
+                    }
                     beanName = row.name;
                     if (snapshot != null) {
                         snapshot.usedFallbackIcon = true;
@@ -1498,6 +1530,7 @@ final class LauncherAppBars {
             mAppListData = nextAppListData;
             mAppListAdapter.notifyDataSetChanged(mAppListData);
             mLastAppListSourceSignature = sourceSignature;
+            mBottomUsedFallbackIcon = bottomSnapshot.usedFallbackIcon;
             saveBottomBarSnapshot(appData, mLauncher.userLayout, mLauncher.widgetBar, capacity, bottomSnapshot);
         } else if (!safeToUpdate) {
             scheduleAppListInitializationRetry("incompleteAllAppsList");
@@ -1619,6 +1652,7 @@ final class LauncherAppBars {
             mAppListData = nextAppListData;
             mAppListAdapter.notifyDataSetChanged(mAppListData);
             mLastAppListSourceSignature = sourceSignature;
+            mBottomUsedFallbackIcon = bottomSnapshot.usedFallbackIcon;
             saveBottomBarSnapshot(data, mLauncher.userLayout, mLauncher.widgetBar, capacity, bottomSnapshot);
         } else if (!safeToUpdate) {
             scheduleAppListInitializationRetry("refreshCycleIncompleteAllAppsList");
@@ -1770,8 +1804,13 @@ final class LauncherAppBars {
                         row.className
                 );
             } else {
-                Bitmap icon = loadLeftBarIconStrict(row.packageName, row.className);
-                if (icon != null) {
+                // Cache read only; see initializeLeftAppData().
+                String iconKey = appIconCacheKey(row.packageName, row.className);
+                if (!mUnresolvableIcons.contains(iconKey)) {
+                    Bitmap icon = mAppIconBitmapCache.get(iconKey);
+                    if (icon == null) {
+                        queueFallbackIcon(row.packageName, row.className, true);
+                    }
                     beanName = row.name != null ? row.name : "";
                     beanIcon = icon;
                     leftSnapshot.usedFallbackIcon = true;
@@ -1800,6 +1839,7 @@ final class LauncherAppBars {
             mLeftAppListData = nextLeftAppListData;
             mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
             mLastLeftAppListSourceSignature = sourceSignature;
+            mLeftUsedFallbackIcon = leftSnapshot.usedFallbackIcon;
             saveLeftBarSnapshot(src, capacity, leftSnapshot);
         }
     }
@@ -2130,6 +2170,7 @@ final class LauncherAppBars {
         return isPackageInBottomBar(pkgs);
     }
 
+    @WorkerThread
     Bitmap loadAppIconFromPackageManager(String packageName, String className) {
         String cacheKey = appIconCacheKey(packageName, className);
         Bitmap cached = mAppIconBitmapCache.get(cacheKey);
@@ -2165,8 +2206,11 @@ final class LauncherAppBars {
     /**
      * Strict icon loader used ONLY by the left bar. Returns null when the package/component can
      * no longer be resolved (e.g. it has just been uninstalled) instead of falling back to the
-     * "add app" placeholder icon that the bottom bar legitimately uses.
+     * "add app" placeholder icon that the bottom bar legitimately uses. "Strict" is unrelated to
+     * StrictMode. Worker thread only: getActivityIcon creates a class loader and the package's
+     * Resources, which took seconds on the main thread right after a boot.
      */
+    @WorkerThread
     Bitmap loadLeftBarIconStrict(String packageName, String className) {
         if (TextUtils.isEmpty(packageName)) {
             return null;
@@ -2232,5 +2276,73 @@ final class LauncherAppBars {
 
     void clearAppIconBitmapCache() {
         mAppIconBitmapCache.clear();
+        mUnresolvableIcons.clear();
+    }
+
+    /** True when a bar was built with icons loaded from the PackageManager instead of the app list. */
+    boolean barsUseFallbackIcons() {
+        return mBottomUsedFallbackIcon || mLeftUsedFallbackIcon;
+    }
+
+    /**
+     * Main thread. Asks for an icon the app list does not have. The flush is posted so that one
+     * worker pass and one rebuild serve the whole batch of icons a bar needs.
+     */
+    void queueFallbackIcon(String packageName, String className, boolean strict) {
+        String key = appIconCacheKey(packageName, className);
+        if (mPendingFallbackIcons.containsKey(key)) {
+            return;
+        }
+        mPendingFallbackIcons.put(key, new String[]{packageName, className, strict ? "strict" : "plain"});
+        if (!mFallbackIconFlushPosted) {
+            mFallbackIconFlushPosted = true;
+            mLauncher.mHandler.post(this::flushFallbackIcons);
+        }
+    }
+
+    private void flushFallbackIcons() {
+        mFallbackIconFlushPosted = false;
+        if (mPendingFallbackIcons.isEmpty()) {
+            return;
+        }
+        final List<String[]> batch = new ArrayList<>(mPendingFallbackIcons.values());
+        mPendingFallbackIcons.clear();
+        mLauncher.bg.execute(() -> {
+            long start = SystemClock.uptimeMillis();
+            int missing = 0;
+            for (String[] item : batch) {
+                String key = appIconCacheKey(item[0], item[1]);
+                if ("strict".equals(item[2])) {
+                    Bitmap icon = loadLeftBarIconStrict(item[0], item[1]);
+                    if (icon == null) {
+                        mUnresolvableIcons.add(key);
+                        missing++;
+                    }
+                } else {
+                    Bitmap icon = loadAppIconFromPackageManager(item[0], item[1]);
+                    if (icon != null) {
+                        // A failed load returns the "+" placeholder without caching it. Cache it
+                        // here so the rebuild below does not queue the same icon again.
+                        mAppIconBitmapCache.putIfAbsent(key, icon);
+                    }
+                }
+            }
+            Log.d(Launcher.TAG, "Bar icons loaded off the main thread: " + batch.size()
+                    + " (" + missing + " not found) in " + (SystemClock.uptimeMillis() - start) + " ms");
+            int capacity = bottomCapacity(mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false),
+                    mLauncher.mPrefs.getBoolean(Keys.WIDGET_BAR, false));
+            List<AppMultiple> data = ensureBottomRows(BarRows.bottom(), capacity);
+            List<LeftAppMultiple> left = BarRows.left(BarCapacity.LEFT_MEMORY);
+            mLauncher.runOnUiThread(() -> {
+                if (mLauncher.isDestroyed() || mLauncher.isFinishing()) {
+                    return;
+                }
+                // The rows did not change, so the signature check would skip the rebuild.
+                mLastAppListSourceSignature = Long.MIN_VALUE;
+                mLastLeftAppListSourceSignature = Long.MIN_VALUE;
+                refreshCycle(data);
+                refreshLeftBar(left);
+            });
+        });
     }
 }
