@@ -2,7 +2,7 @@
 
 Pracujesz w repozytorium `vasyl91/FYT-Launcher-Mod`, na gałęzi `testBranch`. Zacznij od `git pull origin testBranch`.
 
-Zrób sześć commitów w kolejności C1 → C6. **Każdy commit musi się budować samodzielnie i przechodzić testy.** Wypychaj je na tę gałąź.
+Zrób siedem commitów w kolejności C1 → C7. **Każdy commit musi się budować samodzielnie i przechodzić testy.** Wypychaj je na tę gałąź.
 **Nie twórz pull requesta.**
 
 Numery linii to stan z `56418db` i są orientacyjne (≈). Zawsze sprawdzaj je w kodzie. Ścieżki bez prefiksu są względem
@@ -30,13 +30,26 @@ C1 jest pilny: bez niego launcher na FYT restartuje się co kilka sekund. Wypchn
 - `com/fyt/skin/SkinAttribute.loadView(View, AttributeSet)` (≈38–70) dla atrybutu `tag` robi `Integer.parseInt(attrs.getAttributeValue(i).substring(1))`, czyli zakłada referencję `@<id>`. Dosłowny tekst `"boxFit"` daje `"oxFit"` → wyjątek. To samo `parseInt(substring(1))` jest dalej dla atrybutów z listy (`background`, `src`, `textColor`, `drawable*`), bez ochrony.
 - `SkinFactory` jest fabryką `LayoutInflater` tylko na FYT z uprawnieniami systemowymi (`com/fyt/skin/SkinActivityLifecycleCallbacks.onActivityCreated`, warunek `isFytDevice() && hasSystemPrivileges()`). Dlatego Samsung i Xiaomi nie padają.
 - `CellLayout.placeAssignedElements()` (≈1186) stawia elementy w jednym poście tuż po bindzie. Inflacja daty pada przy każdym starcie, więc launcher restartuje się w kółko.
+- **Potwierdzenie z raportu crasha**, który właściciel znalazł na FYT w `/sdcard/crash/crash-2026-11-03-09-35-33-com_android_launcher66.txt`
+  (`versionName=1.2.1`, `versionCode=10201`):
+  - ten sam łańcuch wyjątków i ten sam stos co w logcacie: `NumberFormatException: "oxFit"` w `SkinAttribute.loadView:43`, wołane z
+    `CellLayout.placeCustomWidget:3893` ← `placeAssignedElements:1218` ← `CellLayout$1.run:203` (post stawiania);
+  - `Binary XML file line #75` to linia, na której kończy się znacznik startowy `<com.fyt.widget.Date … />` w obecnym
+    `absolute_time.xml` (linie 64–75, `android:tag="boxFit"` w 65). Przed `3eb7798` `Date` zaczynał się w linii 59 i nie miał taga;
+  - `"oxFit"` to `"boxFit".substring(1)`. Jedynym takim tagiem w tym layoucie jest `boxFit` (`Date`, `WeekDay`).
 
 ### 0.2 Raport crashy nie powstaje
 - `LauncherApplication.onCreate()` (≈126–145):
   - najpierw `settings.CrashLogger.install(this)` (≈130). Ten handler zapisuje `crash_<czas>.txt` ze stosem i 600 ostatnimi liniami logu procesu do `Download/Launcher66_Logs` (albo do folderu zapasowego `LogcatWorker.resolveFallbackDir()`), a potem woła poprzedni handler;
   - potem `initData()` (≈388) woła `CrashHandler.getInstance(getApplicationContext())`. Konstruktor `com/android/launcher66/CrashHandler` robi `Thread.setDefaultUncaughtExceptionHandler(this)` i **zastępuje CrashLogger**;
   - to samo w `initWallpaperPickerProcess()` (≈280–284).
-- `CrashHandler` loguje `FATAL EXCEPTION` (stąd ta linia w logu), ale plik zapisuje tylko do `/sdcard/crash`. Aplikacja z uid systemu na FYT i każda aplikacja na Androidzie 11+ nie może tam pisać, więc pliku nie ma nigdzie. Właściciel nie widzi żadnego raportu.
+- `CrashHandler` loguje `FATAL EXCEPTION` (stąd ta linia w logu) i zapisuje plik tylko do `/sdcard/crash`
+  (`crash-<yyyy-MM-dd-HH-mm-ss>-com_android_launcher66.txt`): wersja i stos, bez urządzenia, bez platformy, bez linii logu.
+  - Na FYT (Android 10, `requestLegacyExternalStorage`) ten plik powstaje: właściciel znalazł go tam dopiero po wskazaniu folderu.
+    Żadne ustawienie ani komunikat nie mówi, że tam jest.
+  - Na Androidzie 11+ zapis do `/sdcard/crash` wymaga dostępu do wszystkich plików (`MANAGE_EXTERNAL_STORAGE`); bez niego nie powstaje nic.
+  - Bogatszy raport `CrashLogger` (urządzenie, stos, 600 linii logu procesu) w `Download/Launcher66_Logs`, czyli tam, gdzie właściciel
+    szuka logów, nie powstaje nigdy, bo jego handler jest wyparty.
 - Brak jakiejkolwiek ochrony przed pętlą: każdy start powtarza to samo.
 - W repo są jeszcze `com/syu/crash/CrashHandler.java` i `com/syu/canbus/CrashHandler.java` (zdekompilowane, nigdzie nieużywane). Nie ruszaj ich.
 
@@ -65,6 +78,7 @@ C1 jest pilny: bez niego launcher na FYT restartuje się co kilka sekund. Wypchn
 ## 1. Decyzje właściciela (nie zmieniaj ich)
 1. Literalny `android:tag` (np. `"boxFit"`) jest dozwolony w layoutach. Skórki FYT obsługują tylko referencje `@<id>`/`?<id>`; wszystko inne pomijają. Skórka nigdy nie może przerwać inflacji.
 2. Jeden handler crashy: `settings/CrashLogger`. Raport ląduje w `Download/Launcher66_Logs` (albo w folderze zapasowym, który `LogcatWorker` potem przenosi), a nazwa pasuje do konwencji `LogFileName`: `crash_pid_<dd-MM-yyyy_HH-mm-ss>.txt`.
+   `/sdcard/crash` przestaje być zapisywany (Android 11+ i tak na to nie pozwala); stare pliki tam zostają, a C7 mówi, gdzie ich szukać.
 3. Ochrona przed pętlą:
    - po **3 crashach w ciągu 120 s** kolejny start jest „bezpieczny”: nie stawia elementów własnych (data, muzyka, radio, placeholdery PiP i statystyk), nie otwiera paneli PiP i nie dodaje okna statystyk;
    - tryb trwa do wyjścia z ustawień launchera albo do restartu procesu;
@@ -74,6 +88,8 @@ C1 jest pilny: bez niego launcher na FYT restartuje się co kilka sekund. Wypchn
 6. Pełna alfa okna statystyk ma być utrzymywana przez cały czas jego widoczności: gdy wartość limitu spadnie poniżej 1, launcher ją podnosi ponownie i przekłada okno (`updateViewLayout`).
 7. `shizuku_download` widoczny tylko dla niesystemowej aplikacji (flavor standard, bez uprawnień systemowych) na urządzeniu **bez roota**, gdy Shizuku nie jest zainstalowane.
 8. Przełącznik dopasowania widżetu ma na każdym ekranie wyglądać jak na telefonie 1080x2340 przy 450 dpi: ten sam udział krótszego boku ekranu.
+9. Sekcja logcata w ustawieniach mówi, gdzie szukać logów i raportów crashy (wszystkie miejsca, łącznie z `/sdcard/crash` z wersji
+   do 1.2.1), i pokazuje ostatni raport crasha, jeśli jest. Teksty we wszystkich językach.
 
 ## 2. Zasady pracy i konwencje repo
 - **Komentarze, Javadoc, `Log.*` i opisy commitów wyłącznie po angielsku**, w stylu otaczającego kodu: pełne zdania, wyjaśniają *dlaczego*.
@@ -292,6 +308,51 @@ C1 jest pilny: bez niego launcher na FYT restartuje się co kilka sekund. Wypchn
 - Test czystej arytmetyki: wydziel `static int referencePx(float dp, int shortSidePx)` i przetestuj w `app/src/test/java/com/android/launcher66/ScreenScaleTest.java`
   (1080 → 113, 1200 → 125, 720 → 75).
 
+## C7 — `Settings: where to find the logs and the crash reports`
+
+Po C2 (nazwa `crash_pid_…`, jedno miejsce zapisu). Decyzja 9.
+
+### C7.1 Nowa pozycja w sekcji logcata
+- `res/xml/launcher_preferences.xml`, `PreferenceCategory app:key="logcat_category"` (≈314): zaraz po `logcat_names_info` (≈317–321)
+  dodaj
+  ```xml
+  <Preference
+      android:key="logcat_locations_info"
+      android:selectable="false"
+      android:title="@string/logcat_locations_info"
+      android:summary="@string/logcat_locations_info_summary" />
+  ```
+  i stałą `Keys.LOGCAT_LOCATIONS_INFO = "logcat_locations_info"`.
+- Teksty (po angielsku w `values`, przetłumaczone w każdym z 59 plików `strings.xml`, jak w §2):
+  - `logcat_locations_info`: „Where to find the logs and crash reports”;
+  - `logcat_locations_info_summary`, każde miejsce w osobnej linii (`\n`), ścieżki bez tłumaczenia:
+    - „Download/Launcher66_Logs – the logs and the crash reports (crash_pid_…)”;
+    - „Android/data/com.android.launcher66/files/Download/Launcher66_Logs – used while Download cannot be written (e.g. right after
+      a restart); moved to Download later”;
+    - „/sdcard/crash – crash reports of versions up to 1.2.1”.
+  - `logcat_last_crash`: „Last crash report: %1$s”, z czasem i nazwą pliku;
+  - `logcat_no_crash`: „No crash reports”.
+- Ścieżka zapasowa ma być prawdziwa: sprawdź ją w `LogcatWorker.resolveFallbackDir()` (≈1366, `getExternalFilesDir(DIRECTORY_DOWNLOADS)` +
+  `Launcher66_Logs`). Jeśli się różni, popraw tekst, nie kod.
+
+### C7.2 Ostatni raport w podsumowaniu
+- `settings/SettingsFragmentFirst`: w miejscu, gdzie są pozycje logcata (≈360–369), `findPreference(Keys.LOGCAT_LOCATIONS_INFO)`.
+- W `onResume()` (≈612), jak `updateShizukuDownload()`, nowa `updateLastCrashReport()`. W wątku tła szuka najnowszego pliku
+  `crash_*.txt` w kolejnych folderach:
+  - `LogcatWorker.usablePublicDir(ctx)`;
+  - `LogcatWorker.resolveFallbackDir(ctx)`;
+  - `/sdcard/crash` (stary format `crash-…-com_android_launcher66.txt`; brak dostępu → pomiń).
+
+  Najnowszy wybierz po `lastModified()`. Wynik na wątek główny przez `mHandler.post`, gdy `isAdded()`.
+- Podsumowanie: `getString(R.string.logcat_locations_info_summary) + "\n\n" + (plik != null ? getString(R.string.logcat_last_crash,
+  <czas "dd-MM-yyyy HH:mm"> + " " + <folder względny>/<nazwa>) : getString(R.string.logcat_no_crash))`.
+  Folder względny to `Download/Launcher66_Logs`, `Android/data/…/Launcher66_Logs` albo `/sdcard/crash`.
+- Bez I/O na wątku głównym. Wyjątki w wątku tła łapane (`Log.w`).
+
+### C7.3 Legenda nazw
+- Linia „crash – …” w `logcat_names_info_summary` dochodzi już w C2.3; tu tylko sprawdź, że obie pozycje (nazwy i lokalizacje)
+  mówią to samo (`crash_pid_`).
+
 ## 3. Czego NIE zmieniać
 - `com/syu/crash/*`, `com/syu/canbus/CrashHandler.java`, `LogcatWorker` (poza użyciem jego istniejących `usablePublicDir`/`resolveFallbackDir`).
 - Logiki planu ekranów (`WorkspaceScreenPlan`, `planScreenStrip`, `applyScreenStrip`), geometrii elementów i PiP.
@@ -302,7 +363,7 @@ C1 jest pilny: bez niego launcher na FYT restartuje się co kilka sekund. Wypchn
 ## 4. Weryfikacja
 1. Po każdym commicie CI zielone; nowe testy przechodzą.
 2. `rg` w `app/src` (`--glob '!**/generated/**'`):
-   - `CrashHandler.getInstance|/sdcard/crash` → zero;
+   - `CrashHandler.getInstance` → zero; `/sdcard/crash` → tylko w `strings.xml` (C7) i w `SettingsFragmentFirst.updateLastCrashReport()`;
    - `Log.i\("DeleteDropTarget"` → zero;
    - `substring\(1\)\)` w `com/fyt/skin/SkinAttribute.java` → zero.
 3. Scenariusze dla właściciela (wypisz je w raporcie):
@@ -319,6 +380,9 @@ C1 jest pilny: bez niego launcher na FYT restartuje się co kilka sekund. Wypchn
    - i) Xiaomi z rootem: brak przycisku Shizuku. Telefon bez roota bez Shizuku: przycisk jest.
    - j) FYT: przełącznik dopasowania widżetu w ramce zmiany rozmiaru wyraźnie większy (≈125 px).
    - k) Powrót z ustawień na Xiaomi: brak StrictMode z `CustomLayoutDb.read`.
+   - l) Ustawienia → Logcat: pozycja „Where to find the logs and crash reports” z trzema miejscami i ostatnim raportem. Na FYT to
+     dziś `/sdcard/crash/crash-2026-11-03-09-35-33-…`, a po crashu na nowej wersji `Download/Launcher66_Logs/crash_pid_…`.
+     Sprawdź język polski i jeden inny.
 
 ## 5. Raport końcowy (w odpowiedzi, po polsku)
 - Commity (hash + temat) i wynik CI każdego.
