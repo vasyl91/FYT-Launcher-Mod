@@ -291,7 +291,7 @@
     <string name="logcat_names_info">Имена на лог файловете</string>
     <string name="logcat_names_info_summary">reboot – стартиран заедно с лаунчъра след рестартиране на устройството\nstart – стартиран заедно с лаунчъра след като той сам се е рестартирал (срив, актуализация)\nwake – стартиран при събуждане на устройството\nuser – стартиран ръчно чрез „Услуга Logcat“\nfull – съдържа всички логове на устройството\npid – съдържа само логовете на лаунчъра\ncrash – записва се, когато стартерът се е сринал (грешката и последните редове от журнала)</string>
     <string name="logcat_locations_info">Къде да намерите журналите и отчетите за сривове</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – журналите и отчетите за сривове (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – използва се, докато в Download не може да се пише (напр. веднага след рестартиране); по-късно се премества в Download\n/sdcard/crash – отчети за сривове на версии до 1.2.1</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – журналите и отчетите за сривове (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – използва се, докато в Download не може да се пише (напр. веднага след рестартиране); по-късно се премества в Download</string>
     <string name="logcat_last_crash">Последен отчет за срив: %1$s</string>
     <string name="logcat_no_crash">Няма отчети за сривове</string>
     <string name="crash_restarted_toast">Стартерът беше рестартиран след грешка: %1$s. Отчет: %2$s</string>

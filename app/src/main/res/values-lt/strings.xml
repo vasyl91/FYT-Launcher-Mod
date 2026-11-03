@@ -291,7 +291,7 @@
     <string name="logcat_names_info">Žurnalo failų pavadinimai</string>
     <string name="logcat_names_info_summary">reboot – paleista kartu su paleidikliu iš naujo paleidus įrenginį\nstart – paleista kartu su paleidikliu jam pačiam persikrovus (strigtis, naujinimas)\nwake – paleista, kai įrenginys pabudo\nuser – paleista rankiniu būdu: „Logcat“ paslauga\nfull – joje yra visi įrenginio žurnalai\npid – joje yra tik paleidiklio žurnalai\ncrash – įrašoma, kai paleidiklis užstrigo (klaida ir paskutinės žurnalo eilutės)</string>
     <string name="logcat_locations_info">Kur rasti žurnalus ir strigčių ataskaitas</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – žurnalai ir strigčių ataskaitos (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – naudojamas, kol negalima rašyti į Download (pvz., iškart po paleidimo iš naujo); vėliau perkeliamas į Download\n/sdcard/crash – iki 1.2.1 versijų strigčių ataskaitos</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – žurnalai ir strigčių ataskaitos (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – naudojamas, kol negalima rašyti į Download (pvz., iškart po paleidimo iš naujo); vėliau perkeliamas į Download</string>
     <string name="logcat_last_crash">Paskutinė strigties ataskaita: %1$s</string>
     <string name="logcat_no_crash">Strigčių ataskaitų nėra</string>
     <string name="crash_restarted_toast">Paleidiklis buvo paleistas iš naujo po klaidos: %1$s. Ataskaita: %2$s</string>

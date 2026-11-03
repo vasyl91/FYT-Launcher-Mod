@@ -291,7 +291,7 @@
     <string name="logcat_names_info">የምዝግብ ማስታወሻ ፋይል ስሞች</string>
     <string name="logcat_names_info_summary">reboot – መሣሪያው እንደገና ከጀመረ በኋላ ከማስጀመሪያው ጋር ተጀምሯል\nstart – ማስጀመሪያው በራሱ እንደገና ከጀመረ በኋላ ተጀምሯል (ብልሽት፣ ዝማኔ)\nwake – መሣሪያው ሲነቃ ተጀምሯል\nuser – በእጅ በ“የLogcat አገልግሎት” ተጀምሯል\nfull – የመሣሪያውን ሁሉንም ምዝግብ ማስታወሻዎች ይይዛል\npid – የማስጀመሪያውን ምዝግብ ማስታወሻዎች ብቻ ይይዛል\ncrash – አስጀማሪው ሲበላሽ ይጻፋል (ስህተቱ እና የምዝግብ ማስታወሻው የመጨረሻ መስመሮች)</string>
     <string name="logcat_locations_info">ምዝግብ ማስታወሻዎችንና የብልሽት ሪፖርቶችን የት ማግኘት ይቻላል</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ምዝግብ ማስታወሻዎችና የብልሽት ሪፖርቶች (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ወደ Download መጻፍ በማይቻልበት ጊዜ ይጠቅማል (ለምሳሌ ልክ ዳግም ከጀመረ በኋላ)፤ በኋላ ወደ Download ይዛወራል\n/sdcard/crash – እስከ 1.2.1 ድረስ ያሉ ስሪቶች የብልሽት ሪፖርቶች</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ምዝግብ ማስታወሻዎችና የብልሽት ሪፖርቶች (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ወደ Download መጻፍ በማይቻልበት ጊዜ ይጠቅማል (ለምሳሌ ልክ ዳግም ከጀመረ በኋላ)፤ በኋላ ወደ Download ይዛወራል</string>
     <string name="logcat_last_crash">የመጨረሻ የብልሽት ሪፖርት፦ %1$s</string>
     <string name="logcat_no_crash">የብልሽት ሪፖርት የለም</string>
     <string name="crash_restarted_toast">አስጀማሪው ከስህተት በኋላ እንደገና ተጀምሯል፦ %1$s። ሪፖርት፦ %2$s</string>

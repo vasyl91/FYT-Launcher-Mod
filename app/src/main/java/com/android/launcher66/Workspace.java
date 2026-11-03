@@ -3136,11 +3136,16 @@ public class Workspace extends SmoothPagedView
         setCurrentPage(Math.max(0, currentPage - pageShift));
         Log.i(TAG, "Screen strip (" + source + "): removed=" + plan.removed + " order="
                 + plan.order + " prefs=" + plan.prefChanges);
+        // The panes follow their placeholders now, not at the next scroll: the scroll offset may be
+        // the same as before, and then nothing else moves them.
+        WindowUtil.onPaneScreensChanged();
 
         mainHandler.postDelayed(() -> {
             if (mLauncher == null || mLauncher.mAppsCustomizeTabHost == null) {
                 return;
             }
+            // Once more after the layout of the remaining pages.
+            WindowUtil.onPaneScreensChanged();
             if (!helpers.allAppsVisibility(mLauncher.mAppsCustomizeTabHost.getVisibility())) {
                 WindowUtil.startMapPip(false);
             }

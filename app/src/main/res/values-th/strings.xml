@@ -291,7 +291,7 @@
     <string name="logcat_names_info">ชื่อไฟล์บันทึก</string>
     <string name="logcat_names_info_summary">reboot – เริ่มพร้อมกับตัวเปิดแอปหลังจากอุปกรณ์รีสตาร์ต\nstart – เริ่มพร้อมกับตัวเปิดแอปหลังจากที่มันรีสตาร์ตเอง (ขัดข้อง, อัปเดต)\nwake – เริ่มเมื่ออุปกรณ์ตื่น\nuser – เริ่มด้วยตนเองจาก “บริการ Logcat”\nfull – มีบันทึกทั้งหมดของอุปกรณ์\npid – มีเฉพาะบันทึกของตัวเปิดแอป\ncrash – เขียนเมื่อแลนเชอร์ขัดข้อง (ข้อผิดพลาดและบรรทัดสุดท้ายของบันทึก)</string>
     <string name="logcat_locations_info">ตำแหน่งของบันทึกและรายงานการขัดข้อง</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – บันทึกและรายงานการขัดข้อง (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ใช้ขณะที่เขียนลง Download ไม่ได้ (เช่น หลังรีสตาร์ตทันที) แล้วจึงย้ายไปที่ Download\n/sdcard/crash – รายงานการขัดข้องของเวอร์ชันจนถึง 1.2.1</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – บันทึกและรายงานการขัดข้อง (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ใช้ขณะที่เขียนลง Download ไม่ได้ (เช่น หลังรีสตาร์ตทันที) แล้วจึงย้ายไปที่ Download</string>
     <string name="logcat_last_crash">รายงานการขัดข้องล่าสุด: %1$s</string>
     <string name="logcat_no_crash">ไม่มีรายงานการขัดข้อง</string>
     <string name="crash_restarted_toast">แลนเชอร์เริ่มต้นใหม่หลังเกิดข้อผิดพลาด: %1$s รายงาน: %2$s</string>

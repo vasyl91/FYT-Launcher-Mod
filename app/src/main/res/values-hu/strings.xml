@@ -291,7 +291,7 @@
     <string name="logcat_names_info">Naplófájlok nevei</string>
     <string name="logcat_names_info_summary">reboot – az indítóval együtt indult az eszköz újraindítása után\nstart – az indítóval együtt indult, miután az magától újraindult (összeomlás, frissítés)\nwake – az eszköz felébredésekor indult\nuser – kézzel indítva a(z) „Logcat szolgáltatás” segítségével\nfull – az eszköz összes naplóját tartalmazza\npid – csak az indító naplóit tartalmazza\ncrash – akkor készül, ha a launcher összeomlott (a hiba és a napló utolsó sorai)</string>
     <string name="logcat_locations_info">Hol találhatók a naplók és az összeomlási jelentések</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – a naplók és az összeomlási jelentések (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – addig használatos, amíg a Download nem írható (pl. közvetlenül újraindítás után); később átkerül a Downloadba\n/sdcard/crash – az 1.2.1-ig terjedő verziók összeomlási jelentései</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – a naplók és az összeomlási jelentések (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – addig használatos, amíg a Download nem írható (pl. közvetlenül újraindítás után); később átkerül a Downloadba</string>
     <string name="logcat_last_crash">Utolsó összeomlási jelentés: %1$s</string>
     <string name="logcat_no_crash">Nincs összeomlási jelentés</string>
     <string name="crash_restarted_toast">A launcher hiba után újraindult: %1$s. Jelentés: %2$s</string>

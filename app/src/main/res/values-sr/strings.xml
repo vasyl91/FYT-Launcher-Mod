@@ -291,7 +291,7 @@
     <string name="logcat_names_info">Називи датотека евиденције</string>
     <string name="logcat_names_info_summary">reboot – покренуто са лаунчером након поновног покретања уређаја\nstart – покренуто са лаунчером након што се сам поново покренуо (рушење, ажурирање)\nwake – покренуто када се уређај пробудио\nuser – покренуто ручно преко „Logcat услуга“\nfull – садржи све евиденције уређаја\npid – садржи само евиденције лаунчера\ncrash – записује се када лаунчер падне (грешка и последњи редови дневника)</string>
     <string name="logcat_locations_info">Где да нађете дневнике и извештаје о падовима</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – дневници и извештаји о падовима (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – користи се док се у Download не може писати (нпр. одмах након поновног покретања); касније се премешта у Download\n/sdcard/crash – извештаји о падовима верзија до 1.2.1</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – дневници и извештаји о падовима (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – користи се док се у Download не може писати (нпр. одмах након поновног покретања); касније се премешта у Download</string>
     <string name="logcat_last_crash">Последњи извештај о паду: %1$s</string>
     <string name="logcat_no_crash">Нема извештаја о падовима</string>
     <string name="crash_restarted_toast">Лаунчер је поново покренут након грешке: %1$s. Извештај: %2$s</string>

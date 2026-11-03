@@ -1695,6 +1695,21 @@ public class WindowUtil {
         }
     }
 
+    /**
+     * The pages changed under the panes without the scroll offset changing: a page before a pane's
+     * page was removed (the strip of empty screens), so the pane's screen number and its place among
+     * the pages are different now. updatePipPositionsForScroll() skips a call with the offset it
+     * already pushed, so the panes stayed where the removed page had left them until the next
+     * scroll. Main thread.
+     */
+    public static void onPaneScreensChanged() {
+        forcePipBoundsUpdate = true;
+        Workspace workspace = workspace();
+        if (workspace != null) {
+            updatePipPositionsForScroll(workspace.mUnboundedScrollX);
+        }
+    }
+
     public static void updatePipPositionsForScroll(int scrollOffset) {
         try {
             final Launcher launcher = Launcher.getLauncher();

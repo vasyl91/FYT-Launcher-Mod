@@ -291,7 +291,7 @@
     <string name="logcat_names_info">Logleêrname</string>
     <string name="logcat_names_info_summary">reboot – begin saam met die lanseerder nadat die toestel herbegin is\nstart – begin saam met die lanseerder nadat dit self herbegin het (ineenstorting, opdatering)\nwake – begin wanneer die toestel wakker word\nuser – met die hand begin met “Logcat-diens”\nfull – bevat al die toestel se logs\npid – bevat net die lanseerder se logs\ncrash – geskryf wanneer die launcher gecrash het (die fout en die laaste logreëls)</string>
     <string name="logcat_locations_info">Waar om die logs en ineenstortingsverslae te vind</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – die logs en die ineenstortingsverslae (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – gebruik terwyl daar nie na Download geskryf kan word nie (bv. net ná \'n herbegin); later na Download verskuif\n/sdcard/crash – ineenstortingsverslae van weergawes tot 1.2.1</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – die logs en die ineenstortingsverslae (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – gebruik terwyl daar nie na Download geskryf kan word nie (bv. net ná \'n herbegin); later na Download verskuif</string>
     <string name="logcat_last_crash">Jongste ineenstortingsverslag: %1$s</string>
     <string name="logcat_no_crash">Geen ineenstortingsverslae nie</string>
     <string name="crash_restarted_toast">Die launcher is ná \'n fout herbegin: %1$s. Verslag: %2$s</string>

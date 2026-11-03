@@ -291,7 +291,7 @@
     <string name="logcat_names_info">Nazwy plików logów</string>
     <string name="logcat_names_info_summary">reboot – uruchomiony wraz z launcherem po ponownym uruchomieniu urządzenia\nstart – uruchomiony wraz z launcherem po jego samoczynnym restarcie (awaria, aktualizacja)\nwake – uruchomiony po wybudzeniu urządzenia\nuser – uruchomiony ręcznie przyciskiem „Logcat”\nfull – zawiera wszystkie logi urządzenia\npid – zawiera tylko logi launchera\ncrash – zapisany, gdy launcher uległ awarii (błąd i ostatnie linie logu)</string>
     <string name="logcat_locations_info">Gdzie szukać logów i raportów crashy</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – logi i raporty crashy (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – używany, gdy do Pobranych nie można zapisać (np. tuż po restarcie); później przenoszony do Pobranych\n/sdcard/crash – raporty crashy wersji do 1.2.1</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – logi i raporty crashy (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – używany, gdy do Pobranych nie można zapisać (np. tuż po restarcie); później przenoszony do Pobranych</string>
     <string name="logcat_last_crash">Ostatni raport crasha: %1$s</string>
     <string name="logcat_no_crash">Brak raportów crashy</string>
     <string name="crash_restarted_toast">Launcher został uruchomiony ponownie po błędzie: %1$s. Raport: %2$s</string>

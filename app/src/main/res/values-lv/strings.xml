@@ -291,7 +291,7 @@
     <string name="logcat_names_info">Žurnāla failu nosaukumi</string>
     <string name="logcat_names_info_summary">reboot – palaists kopā ar palaidēju pēc ierīces restartēšanas\nstart – palaists kopā ar palaidēju pēc tā pašrestartēšanās (avārija, atjauninājums)\nwake – palaists, kad ierīce pamodās\nuser – palaists manuāli ar “Logcat pakalpojums”\nfull – satur visus ierīces žurnālus\npid – satur tikai palaidēja žurnālus\ncrash – tiek ierakstīts, kad palaidējs avarēja (kļūda un žurnāla pēdējās rindas)</string>
     <string name="logcat_locations_info">Kur atrast žurnālus un avāriju atskaites</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – žurnāli un avāriju atskaites (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – tiek izmantota, kamēr uz Download nevar rakstīt (piem., uzreiz pēc restartēšanas); vēlāk tiek pārvietota uz Download\n/sdcard/crash – versiju līdz 1.2.1 avāriju atskaites</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – žurnāli un avāriju atskaites (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – tiek izmantota, kamēr uz Download nevar rakstīt (piem., uzreiz pēc restartēšanas); vēlāk tiek pārvietota uz Download</string>
     <string name="logcat_last_crash">Pēdējā avārijas atskaite: %1$s</string>
     <string name="logcat_no_crash">Avāriju atskaišu nav</string>
     <string name="crash_restarted_toast">Palaidējs tika restartēts pēc kļūdas: %1$s. Atskaite: %2$s</string>

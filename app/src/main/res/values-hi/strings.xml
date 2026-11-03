@@ -291,7 +291,7 @@
     <string name="logcat_names_info">लॉग फ़ाइल के नाम</string>
     <string name="logcat_names_info_summary">reboot – डिवाइस के रीस्टार्ट होने के बाद लॉन्चर के साथ शुरू हुआ\nstart – लॉन्चर के अपने आप रीस्टार्ट होने (क्रैश, अपडेट) के बाद उसके साथ शुरू हुआ\nwake – डिवाइस के जागने पर शुरू हुआ\nuser – “Logcat सेवा” से हाथ से शुरू किया गया\nfull – डिवाइस के सभी लॉग शामिल हैं\npid – केवल लॉन्चर के लॉग शामिल हैं\ncrash – लॉन्चर क्रैश होने पर लिखा जाता है (त्रुटि और लॉग की आख़िरी पंक्तियाँ)</string>
     <string name="logcat_locations_info">लॉग और क्रैश रिपोर्ट कहाँ मिलेंगी</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – लॉग और क्रैश रिपोर्ट (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – जब तक Download में लिखा नहीं जा सकता (जैसे रीस्टार्ट के तुरंत बाद) तब तक इस्तेमाल होता है; बाद में Download में ले जाया जाता है\n/sdcard/crash – 1.2.1 तक के संस्करणों की क्रैश रिपोर्ट</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – लॉग और क्रैश रिपोर्ट (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – जब तक Download में लिखा नहीं जा सकता (जैसे रीस्टार्ट के तुरंत बाद) तब तक इस्तेमाल होता है; बाद में Download में ले जाया जाता है</string>
     <string name="logcat_last_crash">आख़िरी क्रैश रिपोर्ट: %1$s</string>
     <string name="logcat_no_crash">कोई क्रैश रिपोर्ट नहीं</string>
     <string name="crash_restarted_toast">त्रुटि के बाद लॉन्चर दोबारा शुरू किया गया: %1$s. रिपोर्ट: %2$s</string>

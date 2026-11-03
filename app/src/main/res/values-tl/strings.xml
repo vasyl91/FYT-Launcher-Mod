@@ -291,7 +291,7 @@
     <string name="logcat_names_info">Mga pangalan ng log file</string>
     <string name="logcat_names_info_summary">reboot – sinimulan kasama ng launcher pagkatapos mag-restart ang device\nstart – sinimulan kasama ng launcher pagkatapos nitong mag-restart nang mag-isa (crash, update)\nwake – sinimulan nang magising ang device\nuser – manu-manong sinimulan gamit ang “Logcat service”\nfull – naglalaman ng lahat ng log ng device\npid – naglalaman lamang ng mga log ng launcher\ncrash – isinusulat kapag nag-crash ang launcher (ang error at ang huling linya ng log)</string>
     <string name="logcat_locations_info">Saan makikita ang mga log at crash report</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ang mga log at crash report (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ginagamit habang hindi masusulatan ang Download (hal. pagkatapos mismo ng restart); inililipat sa Download mamaya\n/sdcard/crash – mga crash report ng mga bersyon hanggang 1.2.1</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ang mga log at crash report (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ginagamit habang hindi masusulatan ang Download (hal. pagkatapos mismo ng restart); inililipat sa Download mamaya</string>
     <string name="logcat_last_crash">Huling crash report: %1$s</string>
     <string name="logcat_no_crash">Walang crash report</string>
     <string name="crash_restarted_toast">Na-restart ang launcher pagkatapos ng error: %1$s. Ulat: %2$s</string>

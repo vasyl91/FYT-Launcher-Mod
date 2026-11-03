@@ -291,7 +291,7 @@
     <string name="logcat_names_info">Names dals fails da protocol</string>
     <string name="logcat_names_info_summary">reboot – avià cun il launcher suenter che l\'apparat è vegnì reavià\nstart – avià cun il launcher suenter ch\'el è sa reavià sez (crash, actualisaziun)\nwake – avià cura che l\'apparat è sa dasdà\nuser – avià a maun cun «Servetsch Logcat»\nfull – cuntegna tut ils protocols da l\'apparat\npid – cuntegna be ils protocols dal launcher\ncrash – scrit cur ch\'il launcher è sa bloccà (la sbagl e las ultimas lingias dal log)</string>
     <string name="logcat_locations_info">U chattar ils logs e ils rapports da crash</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ils logs e ils rapports da crash (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – duvrà fin che i na sa po betg scriver en Download (p. ex. directamain suenter in reinizi); pli tard vegn el spustà en Download\n/sdcard/crash – rapports da crash da las versiuns fin 1.2.1</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ils logs e ils rapports da crash (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – duvrà fin che i na sa po betg scriver en Download (p. ex. directamain suenter in reinizi); pli tard vegn el spustà en Download</string>
     <string name="logcat_last_crash">Ultim rapport da crash: %1$s</string>
     <string name="logcat_no_crash">Nagins rapports da crash</string>
     <string name="crash_restarted_toast">Il launcher è vegnì reavià suenter ina sbagl: %1$s. Rapport: %2$s</string>

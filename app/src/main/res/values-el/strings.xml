@@ -291,7 +291,7 @@
     <string name="logcat_names_info">Ονόματα αρχείων καταγραφής</string>
     <string name="logcat_names_info_summary">reboot – ξεκίνησε με το launcher μετά την επανεκκίνηση της συσκευής\nstart – ξεκίνησε με το launcher αφού αυτό επανεκκινήθηκε μόνο του (κατάρρευση, ενημέρωση)\nwake – ξεκίνησε όταν η συσκευή ξύπνησε\nuser – ξεκίνησε χειροκίνητα με «Υπηρεσία Logcat»\nfull – περιέχει όλα τα αρχεία καταγραφής της συσκευής\npid – περιέχει μόνο τα αρχεία καταγραφής του launcher\ncrash – γράφεται όταν ο launcher κράσαρε (το σφάλμα και οι τελευταίες γραμμές του αρχείου καταγραφής)</string>
     <string name="logcat_locations_info">Πού θα βρείτε τα αρχεία καταγραφής και τις αναφορές κρασαρίσματος</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – τα αρχεία καταγραφής και οι αναφορές κρασαρίσματος (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – χρησιμοποιείται όσο δεν γίνεται εγγραφή στο Download (π.χ. αμέσως μετά από επανεκκίνηση)· αργότερα μεταφέρεται στο Download\n/sdcard/crash – αναφορές κρασαρίσματος των εκδόσεων έως 1.2.1</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – τα αρχεία καταγραφής και οι αναφορές κρασαρίσματος (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – χρησιμοποιείται όσο δεν γίνεται εγγραφή στο Download (π.χ. αμέσως μετά από επανεκκίνηση)· αργότερα μεταφέρεται στο Download</string>
     <string name="logcat_last_crash">Τελευταία αναφορά κρασαρίσματος: %1$s</string>
     <string name="logcat_no_crash">Δεν υπάρχουν αναφορές κρασαρίσματος</string>
     <string name="crash_restarted_toast">Ο launcher επανεκκινήθηκε μετά από σφάλμα: %1$s. Αναφορά: %2$s</string>

@@ -291,7 +291,7 @@
     <string name="logcat_names_info">Namn på loggfiler</string>
     <string name="logcat_names_info_summary">reboot – startad med launchern efter att enheten startats om\nstart – startad med launchern efter att den startat om av sig själv (krasch, uppdatering)\nwake – startad när enheten vaknade\nuser – startad manuellt med ”Logcat-tjänst”\nfull – innehåller alla enhetens loggar\npid – innehåller bara launcherns loggar\ncrash – skrivs när startprogrammet kraschade (felet och de sista loggraderna)</string>
     <string name="logcat_locations_info">Var du hittar loggar och kraschrapporter</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – loggarna och kraschrapporterna (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – används medan det inte går att skriva till Download (t.ex. direkt efter en omstart); flyttas senare till Download\n/sdcard/crash – kraschrapporter från versioner till och med 1.2.1</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – loggarna och kraschrapporterna (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – används medan det inte går att skriva till Download (t.ex. direkt efter en omstart); flyttas senare till Download</string>
     <string name="logcat_last_crash">Senaste kraschrapport: %1$s</string>
     <string name="logcat_no_crash">Inga kraschrapporter</string>
     <string name="crash_restarted_toast">Startprogrammet startades om efter ett fel: %1$s. Rapport: %2$s</string>
