@@ -27,6 +27,12 @@ final class BoxTextFit implements View.OnLayoutChangeListener {
 
     private final TextView mView;
     private View mParent;
+    /**
+     * Fitting from onLayoutChange() called setTextSize() while the parent was being laid out, and
+     * the view complained "requestLayout() improperly called ... during layout". The fit runs in a
+     * post, after the pass.
+     */
+    private final Runnable mFitRunnable = this::fit;
 
     BoxTextFit(TextView view) {
         mView = view;
@@ -41,6 +47,7 @@ final class BoxTextFit implements View.OnLayoutChangeListener {
     }
 
     void detach() {
+        mView.removeCallbacks(mFitRunnable);
         if (mParent != null) {
             mParent.removeOnLayoutChangeListener(this);
             mParent = null;
@@ -50,7 +57,8 @@ final class BoxTextFit implements View.OnLayoutChangeListener {
     @Override
     public void onLayoutChange(View v, int left, int top, int right, int bottom,
                                int oldLeft, int oldTop, int oldRight, int oldBottom) {
-        fit();
+        mView.removeCallbacks(mFitRunnable);
+        mView.post(mFitRunnable);
     }
 
     void fit() {

@@ -500,7 +500,7 @@ final class LauncherAppBars {
         
         mRecyclerView = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.recycler_view);
         if (mRecyclerView == null) {
-            Log.e(Launcher.TAG, "RecyclerView not found in workspace! Waiting for layout...");
+            Log.d(Launcher.TAG, "Bottom bar not built yet, waiting for the layout");
             
             // Reset flag before early return so retry can work
             mIsInitializingAppData = false;

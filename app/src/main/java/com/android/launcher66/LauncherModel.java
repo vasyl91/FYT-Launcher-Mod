@@ -1449,6 +1449,41 @@ public class LauncherModel extends BroadcastReceiver {
         return screens;
     }
 
+    /** The cells an item of the desktop occupies, in the page's own coordinates. */
+    static final class DesktopCell {
+        final long screenId;
+        final int x;
+        final int y;
+        final int spanX;
+        final int spanY;
+
+        DesktopCell(long screenId, int x, int y, int spanX, int spanY) {
+            this.screenId = screenId;
+            this.x = x;
+            this.y = y;
+            this.spanX = spanX;
+            this.spanY = spanY;
+        }
+    }
+
+    /**
+     * A copy of the cells that the icons, folders and widgets on the desktop occupy, from the
+     * model's memory: no query, so the main thread may ask. Only meaningful once the model has
+     * loaded (getScreenSnapshot().isReady()).
+     */
+    static ArrayList<DesktopCell> desktopItemCells() {
+        ArrayList<DesktopCell> cells = new ArrayList<DesktopCell>();
+        synchronized (sBgLock) {
+            for (ItemInfo item : sBgItemsIdMap.values()) {
+                if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                    cells.add(new DesktopCell(item.screenId, item.cellX, item.cellY,
+                            Math.max(1, item.spanX), Math.max(1, item.spanY)));
+                }
+            }
+        }
+        return cells;
+    }
+
     /** Makes the screens, the ones with content and the elements' screens readable off the lock. */
     static void publishScreenSnapshotLocked() {
         sScreenSnapshot = new WorkspaceScreenPlan.Snapshot(sBgWorkspaceScreens,

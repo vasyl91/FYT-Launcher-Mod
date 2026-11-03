@@ -1,6 +1,7 @@
 package com.android.launcher66.settings;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.android.async.AsyncTask;
 import com.android.launcher66.LauncherApplication;
@@ -18,6 +19,8 @@ import java.io.FileReader;
  * decompiled_carinfo (the pages); to add a car to it, add a C record to the asset and run the script.
  */
 public class CanbusClasses extends AsyncTask<Void, Void, Void> {
+
+    private static final String TAG = "CanbusClasses";
 
 	// Checks if there is an existing class for user's car model
 
@@ -84,24 +87,21 @@ public class CanbusClasses extends AsyncTask<Void, Void, Void> {
     }
 
     static String readFile(String path) {
-        String strInfo = "";
-        try {
-            File file = new File(path);
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            StringBuffer sb = new StringBuffer();
-            while (true) {
-                String str = br.readLine();
-                if (str != null) {
-                    sb.append(String.valueOf(str) + "\n");
-                } else {
-                    br.close();
-                    strInfo = sb.toString();
-                    return strInfo;
-                }
+        File file = new File(path);
+        // Absent on every device but the FYT units (/sys/fytver/...): not worth a stack trace.
+        if (!file.isFile() || !file.canRead()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String str;
+            while ((str = br.readLine()) != null) {
+                sb.append(str).append('\n');
             }
+            return sb.toString();
         } catch (Exception e) {
-            e.printStackTrace();
-            return strInfo;
+            Log.d(TAG, "Cannot read " + path + ": " + e);
+            return sb.toString();
         }
     }
 }
