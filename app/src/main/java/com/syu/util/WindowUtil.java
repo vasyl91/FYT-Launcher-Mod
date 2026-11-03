@@ -77,6 +77,9 @@ public class WindowUtil {
     private static final Rect offscreen = new Rect(-3000, -3000, -2400, -2400);
     private static final Map<String, Rect> lastPipBounds = new HashMap<>();
     private static volatile boolean forcePipBoundsUpdate = false;
+
+    /** Main thread only: a bounds pump is already scheduled, so a second one is never started. */
+    private static boolean sBoundsPumpRunning = false;
     private static final Map<View, Long> sReparentUnsettledUntil = new WeakHashMap<>();
     private static final long REPARENT_SETTLE_GRACE_MS = 250L;
     private static final Handler retryHandler = new Handler(Looper.getMainLooper());
@@ -545,9 +548,7 @@ public class WindowUtil {
                     return true;
                 }
                 Log.i(TAG, "openPip(): panes up but awaiting bounds - pumping bounds instead of rebuilding");
-                forcePipBoundsUpdate = true;
-                final Launcher l = Launcher.getLauncher();
-                if (l != null) l.handler.post(() -> pumpPipBoundsUntilReady(32));
+                requestPaneBoundsPump("openPip, panes awaiting bounds");
                 return true;
             }
 
@@ -1588,7 +1589,7 @@ public class WindowUtil {
 
         runOrdered(launches);
 
-        launcher.handler.postDelayed(() -> pumpPipBoundsUntilReady(32), 100);
+        launcher.handler.postDelayed(() -> requestPaneBoundsPump("panes launched"), 100);
 
         // The previous host's ActivityViews still hold the embedded tasks. Retire them: they are
         // released only once the freshly created panes have taken those tasks over, which is what
@@ -1599,28 +1600,52 @@ public class WindowUtil {
     }
 
     /**
+     * Starts the bounds pump unless one is already running. Panes call it at the moment they begin
+     * to wait for bounds: panes start one after another, and a pump started at a fixed moment could
+     * find nobody waiting yet, end, and leave a pane to the 2.5 s watchdog. Main thread only.
+     */
+    public static void requestPaneBoundsPump(String reason) {
+        forcePipBoundsUpdate = true;
+        if (sBoundsPumpRunning) return;
+        final Launcher launcher = Launcher.getLauncher();
+        if (launcher == null) return;
+        sBoundsPumpRunning = true;
+        Log.d(TAG, "Pane bounds pump started (" + reason + ")");
+        launcher.handler.post(() -> pumpPipBoundsUntilReady(32));
+    }
+
+    /**
      * Applies the dimensions to newly created panels, retrying until none of the panels
      * reports that it is still waiting for bounds (WindowHost.isAnyPaneAwaitingBounds()).
+     * Every exit that does not reschedule clears sBoundsPumpRunning.
      */
     private static void pumpPipBoundsUntilReady(int attemptsLeft) {
         try {
             final Launcher launcher = Launcher.getLauncher();
             final WindowHost host = host();
-            if (launcher == null || host == null) return;
+            if (launcher == null || host == null) {
+                sBoundsPumpRunning = false;
+                return;
+            }
  
             Workspace workspace = workspace();
             if (workspace != null) {
                 updatePipPositionsForScroll(workspace.mUnboundedScrollX);
             }
  
-            if (!host.isAnyPaneAwaitingBounds()) return;
+            if (!host.isAnyPaneAwaitingBounds()) {
+                sBoundsPumpRunning = false;
+                return;
+            }
             if (attemptsLeft <= 0) {
                 Log.w(TAG, "pumpPipBoundsUntilReady: gave up, panes still awaiting bounds");
+                sBoundsPumpRunning = false;
                 return;
             }
             forcePipBoundsUpdate = true;
             launcher.handler.postDelayed(() -> pumpPipBoundsUntilReady(attemptsLeft - 1), 120);
         } catch (Throwable t) {
+            sBoundsPumpRunning = false;
             Log.w(TAG, "pumpPipBoundsUntilReady failed", t);
         }
     }

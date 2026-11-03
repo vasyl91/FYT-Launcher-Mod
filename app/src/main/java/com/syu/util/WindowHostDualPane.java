@@ -302,6 +302,8 @@ public class WindowHostDualPane {
                 if (WindowHostActivityView.shouldWaitForRealBounds(launchBounds(s))) {
                     setStartDeferred(s, true);
                     armDeferredStartWatchdog(s, pkg, myGen);
+                    Log.d(TAG, s + ": launch bounds " + launchBounds(s) + " not usable yet, waiting for a bounds update");
+                    WindowUtil.requestPaneBoundsPump("dual " + s);
                 } else {
                     setStartDeferred(s, false);
                     startWhenReady(s, pkg, myGen);
@@ -365,7 +367,8 @@ public class WindowHostDualPane {
         postMainDelayed(() -> {
             if (gen != expectedGen || !isStartDeferred(side) || pkg == null) return;
             setStartDeferred(side, false);
-            Log.w(TAG, side + ": bounds update never arrived, starting " + pkg + " anyway");
+            Log.w(TAG, side + ": bounds update never arrived, starting " + pkg
+                    + " anyway (last bounds " + pendingBounds + ")");
             startWhenReady(side, pkg, expectedGen);
             checkForBlackScreenAndRestart(side, pkg, expectedGen);
         }, DEFERRED_START_WATCHDOG_MS);

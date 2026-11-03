@@ -210,6 +210,8 @@ public class WindowHostSinglePane {
                 if (WindowHostActivityView.shouldWaitForRealBounds(b)) {
                     startDeferredForBounds = true;
                     armDeferredStartWatchdog(pkg, myGen);
+                    Log.d(TAG, name + ": launch bounds " + b + " not usable yet, waiting for a bounds update");
+                    WindowUtil.requestPaneBoundsPump(name);
                 } else {
                     startDeferredForBounds = false;
                     startWhenReady(pkg, myGen);
@@ -309,7 +311,8 @@ public class WindowHostSinglePane {
         postMainDelayed(() -> {
             if (gen != expectedGen || !startDeferredForBounds || pkg == null) return;
             startDeferredForBounds = false;
-            Log.w(TAG, name + ": bounds update never arrived, starting " + pkg + " anyway");
+            Log.w(TAG, name + ": bounds update never arrived, starting " + pkg
+                    + " anyway (last bounds " + pendingBounds + ")");
             startWhenReady(pkg, expectedGen);
             checkForBlackScreenAndRestart(pkg, expectedGen);
         }, DEFERRED_START_WATCHDOG_MS);
