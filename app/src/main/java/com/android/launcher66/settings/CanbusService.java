@@ -721,6 +721,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
     
     private void addStatsViewMainScreen() {
+        if (CrashLoopGuard.isSafeMode()) {
+            return;
+        }
         userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
         new Handler(Looper.getMainLooper()).postDelayed(()-> {
             Launcher launcher = Launcher.getLauncher();

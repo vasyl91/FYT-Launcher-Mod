@@ -1,6 +1,7 @@
 package com.syu.util;
 
 import com.android.launcher66.SysCalls;
+import com.android.launcher66.settings.CrashLoopGuard;
 import android.SystemProperties;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -358,11 +359,13 @@ public class WindowUtil {
     }
 
     public static void startMapPip(final boolean show) {
+        if (CrashLoopGuard.isSafeMode()) return;
         if (WakeDetection.skipPipWork("startMapPip")) return;
         ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
     }
 
     public static void startMapPip(final boolean show, int millis) {
+        if (CrashLoopGuard.isSafeMode()) return;
         if (WakeDetection.skipPipWork("startMapPip")) return;
         delayMillis = millis;
         ThreadManager.getLongPool().execute(() -> WindowUtil.openPip(show));
@@ -593,6 +596,7 @@ public class WindowUtil {
     }
 
     public static void openPip(boolean show) {
+        if (CrashLoopGuard.isSafeMode()) return;
         if (!LauncherApplication.canHostPips()) return;
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;

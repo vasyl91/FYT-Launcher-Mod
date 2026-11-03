@@ -289,7 +289,9 @@
     <string name="reset_night_mode">Aseta yötilan oletusarvot</string>
     <string name="init_default_app_error">Aseta navigointi-/etualan sovellus laitteen asetuksissa.</string>
     <string name="logcat_names_info">Lokitiedostojen nimet</string>
-    <string name="logcat_names_info_summary">reboot – käynnistetty käynnistimen mukana laitteen uudelleenkäynnistyksen jälkeen\nstart – käynnistetty käynnistimen mukana sen käynnistyttyä itse uudelleen (kaatuminen, päivitys)\nwake – käynnistetty laitteen herätessä\nuser – käynnistetty käsin kohdasta ”Logcat-palvelu”\nfull – sisältää kaikki laitteen lokit\npid – sisältää vain käynnistimen lokit</string>
+    <string name="logcat_names_info_summary">reboot – käynnistetty käynnistimen mukana laitteen uudelleenkäynnistyksen jälkeen\nstart – käynnistetty käynnistimen mukana sen käynnistyttyä itse uudelleen (kaatuminen, päivitys)\nwake – käynnistetty laitteen herätessä\nuser – käynnistetty käsin kohdasta ”Logcat-palvelu”\nfull – sisältää kaikki laitteen lokit\npid – sisältää vain käynnistimen lokit\ncrash – kirjoitetaan, kun käynnistin kaatui (virhe ja lokin viimeiset rivit)</string>
+    <string name="crash_restarted_toast">Käynnistin käynnistyi uudelleen virheen jälkeen: %1$s. Raportti: %2$s</string>
+    <string name="crash_safe_mode_toast">Käynnistin kaatui %1$d kertaa peräkkäin (%2$s). Omat widgetit, PiP-ruudut ja tilastoikkuna ovat pois päältä, kunnes poistut asetuksista. Raportti: %3$s</string>
     <string name="logcat_service">Logcat-palvelu käynnistyksessä</string>
     <string name="logcat_service_summary"><![CDATA[Logcat alkaa kirjata lokia, kun sovellus käynnistyy. Käynnistä laite tai sovellus uudelleen ja tarkista lokit kansiosta <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat-palvelu laitteen herätessä</string>

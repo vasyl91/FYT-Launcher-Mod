@@ -289,7 +289,9 @@
     <string name="reset_night_mode">Przywróć wartośc domyślne dla trybu nocnego</string>
     <string name="init_default_app_error">Ustaw domyślną nawigację w ustawieniach urządzenia.</string>
     <string name="logcat_names_info">Nazwy plików logów</string>
-    <string name="logcat_names_info_summary">reboot – uruchomiony wraz z launcherem po ponownym uruchomieniu urządzenia\nstart – uruchomiony wraz z launcherem po jego samoczynnym restarcie (awaria, aktualizacja)\nwake – uruchomiony po wybudzeniu urządzenia\nuser – uruchomiony ręcznie przyciskiem „Logcat”\nfull – zawiera wszystkie logi urządzenia\npid – zawiera tylko logi launchera</string>
+    <string name="logcat_names_info_summary">reboot – uruchomiony wraz z launcherem po ponownym uruchomieniu urządzenia\nstart – uruchomiony wraz z launcherem po jego samoczynnym restarcie (awaria, aktualizacja)\nwake – uruchomiony po wybudzeniu urządzenia\nuser – uruchomiony ręcznie przyciskiem „Logcat”\nfull – zawiera wszystkie logi urządzenia\npid – zawiera tylko logi launchera\ncrash – zapisany, gdy launcher uległ awarii (błąd i ostatnie linie logu)</string>
+    <string name="crash_restarted_toast">Launcher został uruchomiony ponownie po błędzie: %1$s. Raport: %2$s</string>
+    <string name="crash_safe_mode_toast">Launcher zawiesił się %1$d razy z rzędu (%2$s). Własne widżety, panele PiP i okno statystyk są wyłączone do wyjścia z ustawień. Raport: %3$s</string>
     <string name="logcat_service">Logcat podczas startu</string>
     <string name="logcat_service_summary"><![CDATA[Logcat rozpocznie rejestrowanie po uruchomieniu aplikacji. Uruchom ponownie urządzenie lub aplikację i sprawdź logi w <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat po wybudzeniu urządzenia</string>

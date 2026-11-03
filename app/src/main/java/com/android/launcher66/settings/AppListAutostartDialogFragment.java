@@ -200,7 +200,7 @@ public class AppListAutostartDialogFragment extends DialogFragment
             return;
         }
         POWER_SYNC.execute(() -> {
-            // An exception escaping this thread would end the whole launcher (CrashHandler).
+            // An exception escaping this thread would end the whole launcher (CrashLogger).
             try {
                 UnisocPowerWhitelist power = UnisocPowerWhitelist.create(app);
                 SharedPreferences prefs = prefs(app);

@@ -289,7 +289,9 @@
     <string name="reset_night_mode">恢复夜间模式默认值</string>
     <string name="init_default_app_error">请在设备设置中选择导航/前置应用。</string>
     <string name="logcat_names_info">日志文件名</string>
-    <string name="logcat_names_info_summary">reboot – 设备重启后随启动器一起启动\nstart – 启动器自行重启（崩溃、更新）后随之启动\nwake – 设备唤醒时启动\nuser – 通过“日志服务”手动启动\nfull – 包含设备的所有日志\npid – 仅包含启动器的日志</string>
+    <string name="logcat_names_info_summary">reboot – 设备重启后随启动器一起启动\nstart – 启动器自行重启（崩溃、更新）后随之启动\nwake – 设备唤醒时启动\nuser – 通过“日志服务”手动启动\nfull – 包含设备的所有日志\npid – 仅包含启动器的日志\ncrash – 启动器崩溃时写入（错误和日志的最后几行）</string>
+    <string name="crash_restarted_toast">启动器在出错后已重启：%1$s。报告：%2$s</string>
+    <string name="crash_safe_mode_toast">启动器已连续崩溃 %1$d 次（%2$s）。在退出设置之前，自定义小组件、画中画窗格和统计窗口均已关闭。报告：%3$s</string>
     <string name="logcat_service">开机启动日志服务</string>
     <string name="logcat_service_summary"><![CDATA[应用启动时，Logcat 将开始记录日志。重启设备或应用，然后在 <b>Download/Launcher66_Logs</b> 中查看日志。]]></string>
     <string name="logcat_service_wake">设备唤醒时启动 Logcat 服务</string>

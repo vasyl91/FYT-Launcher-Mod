@@ -289,7 +289,9 @@
     <string name="reset_night_mode">Tetapkan nilai lalai untuk mod malam</string>
     <string name="init_default_app_error">Sila tetapkan apl navigasi/depan dalam tetapan peranti.</string>
     <string name="logcat_names_info">Nama fail log</string>
-    <string name="logcat_names_info_summary">reboot – dimulakan bersama pelancar selepas peranti dimulakan semula\nstart – dimulakan bersama pelancar selepas ia dimulakan semula dengan sendirinya (ranap, kemas kini)\nwake – dimulakan apabila peranti bangun\nuser – dimulakan secara manual dengan “Perkhidmatan Logcat”\nfull – mengandungi semua log peranti\npid – hanya mengandungi log pelancar</string>
+    <string name="logcat_names_info_summary">reboot – dimulakan bersama pelancar selepas peranti dimulakan semula\nstart – dimulakan bersama pelancar selepas ia dimulakan semula dengan sendirinya (ranap, kemas kini)\nwake – dimulakan apabila peranti bangun\nuser – dimulakan secara manual dengan “Perkhidmatan Logcat”\nfull – mengandungi semua log peranti\npid – hanya mengandungi log pelancar\ncrash – ditulis apabila pelancar ranap (ralat dan baris log terakhir)</string>
+    <string name="crash_restarted_toast">Pelancar dimulakan semula selepas ralat: %1$s. Laporan: %2$s</string>
+    <string name="crash_safe_mode_toast">Pelancar ranap %1$d kali berturut-turut (%2$s). Widget tersuai, anak tetingkap PiP dan tetingkap statistik dimatikan sehingga anda keluar dari tetapan. Laporan: %3$s</string>
     <string name="logcat_service">Perkhidmatan Logcat semasa permulaan</string>
     <string name="logcat_service_summary"><![CDATA[Logcat akan mula merekod log apabila aplikasi dimulakan. Mulakan semula peranti atau apl dan semak log dalam <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Perkhidmatan Logcat apabila peranti bangun</string>

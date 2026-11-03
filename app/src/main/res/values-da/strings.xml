@@ -289,7 +289,9 @@
     <string name="reset_night_mode">Indstil standardværdierne for nattilstand</string>
     <string name="init_default_app_error">Indstil navigations-/forgrundsappen i enhedsindstillingerne.</string>
     <string name="logcat_names_info">Navne på logfiler</string>
-    <string name="logcat_names_info_summary">reboot – startet sammen med launcheren efter genstart af enheden\nstart – startet sammen med launcheren efter at den selv er genstartet (nedbrud, opdatering)\nwake – startet, da enheden vågnede\nuser – startet manuelt med “Logcat-tjeneste”\nfull – indeholder alle enhedens logs\npid – indeholder kun launcherens logs</string>
+    <string name="logcat_names_info_summary">reboot – startet sammen med launcheren efter genstart af enheden\nstart – startet sammen med launcheren efter at den selv er genstartet (nedbrud, opdatering)\nwake – startet, da enheden vågnede\nuser – startet manuelt med “Logcat-tjeneste”\nfull – indeholder alle enhedens logs\npid – indeholder kun launcherens logs\ncrash – skrives, når launcheren gik ned (fejlen og de sidste logliner)</string>
+    <string name="crash_restarted_toast">Launcheren blev genstartet efter en fejl: %1$s. Rapport: %2$s</string>
+    <string name="crash_safe_mode_toast">Launcheren gik ned %1$d gange i træk (%2$s). Egne widgets, PiP-ruder og statistikvinduet er slået fra, til du forlader indstillingerne. Rapport: %3$s</string>
     <string name="logcat_service">Logcat-tjeneste ved opstart</string>
     <string name="logcat_service_summary"><![CDATA[Logcat begynder at logge, når appen starter. Genstart enheden eller appen, og tjek logfilerne i <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat-tjeneste, når enheden vågner</string>

@@ -289,7 +289,9 @@
     <string name="reset_night_mode">Nustatyti numatytąsias nakties režimo reikšmes</string>
     <string name="init_default_app_error">Įrenginio nustatymuose nustatykite navigacijos / priekinio plano programą.</string>
     <string name="logcat_names_info">Žurnalo failų pavadinimai</string>
-    <string name="logcat_names_info_summary">reboot – paleista kartu su paleidikliu iš naujo paleidus įrenginį\nstart – paleista kartu su paleidikliu jam pačiam persikrovus (strigtis, naujinimas)\nwake – paleista, kai įrenginys pabudo\nuser – paleista rankiniu būdu: „Logcat“ paslauga\nfull – joje yra visi įrenginio žurnalai\npid – joje yra tik paleidiklio žurnalai</string>
+    <string name="logcat_names_info_summary">reboot – paleista kartu su paleidikliu iš naujo paleidus įrenginį\nstart – paleista kartu su paleidikliu jam pačiam persikrovus (strigtis, naujinimas)\nwake – paleista, kai įrenginys pabudo\nuser – paleista rankiniu būdu: „Logcat“ paslauga\nfull – joje yra visi įrenginio žurnalai\npid – joje yra tik paleidiklio žurnalai\ncrash – įrašoma, kai paleidiklis užstrigo (klaida ir paskutinės žurnalo eilutės)</string>
+    <string name="crash_restarted_toast">Paleidiklis buvo paleistas iš naujo po klaidos: %1$s. Ataskaita: %2$s</string>
+    <string name="crash_safe_mode_toast">Paleidiklis užstrigo %1$d kartus iš eilės (%2$s). Savi valdikliai, PiP skydeliai ir statistikos langas išjungti, kol išeisite iš nustatymų. Ataskaita: %3$s</string>
     <string name="logcat_service">„Logcat“ paslauga paleidžiant</string>
     <string name="logcat_service_summary"><![CDATA[„Logcat“ pradės registruoti, kai bus paleista programa. Paleiskite įrenginį ar programą iš naujo ir patikrinkite žurnalus aplanke <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">„Logcat“ paslauga pažadinus įrenginį</string>

@@ -21,6 +21,8 @@
     <string name="folder_closed">Kaust on suletud</string>
     <string name="folder_name_format">Kaust: %1$s</string>
     <string name="logcat_names_info">Logifailide nimed</string>
-    <string name="logcat_names_info_summary">reboot – käivitatud koos käivitajaga pärast seadme taaskäivitust\nstart – käivitatud koos käivitajaga pärast selle iseseisvat taaskäivitust (krahh, värskendus)\nwake – käivitatud seadme ärkamisel\nuser – käivitatud käsitsi valikuga „Logcati teenus“\nfull – sisaldab kõiki seadme logisid\npid – sisaldab ainult käivitaja logisid</string>
+    <string name="logcat_names_info_summary">reboot – käivitatud koos käivitajaga pärast seadme taaskäivitust\nstart – käivitatud koos käivitajaga pärast selle iseseisvat taaskäivitust (krahh, värskendus)\nwake – käivitatud seadme ärkamisel\nuser – käivitatud käsitsi valikuga „Logcati teenus“\nfull – sisaldab kõiki seadme logisid\npid – sisaldab ainult käivitaja logisid\ncrash – kirjutatakse, kui käivitaja jooksis kokku (viga ja logi viimased read)</string>
+    <string name="crash_restarted_toast">Käivitaja taaskäivitus pärast viga: %1$s. Aruanne: %2$s</string>
+    <string name="crash_safe_mode_toast">Käivitaja jooksis %1$d korda järjest kokku (%2$s). Oma vidinad, PiP-paneelid ja statistikaaken on välja lülitatud, kuni seadetest väljute. Aruanne: %3$s</string>
     <string name="shizuku_download_button">Puudutage Shizuku Next allalaadimiseks (vajalik PiP-paneelide jaoks ilma rootita)</string>
 </resources>

@@ -289,7 +289,9 @@
     <string name="reset_night_mode">ለሌሊት ሁነታ ነባሪ እሴቶችን አቀናብር</string>
     <string name="init_default_app_error">እባክዎ የናቪ/የፊት መተግበሪያውን በመሣሪያ ቅንብሮች ውስጥ ያቀናብሩ።</string>
     <string name="logcat_names_info">የምዝግብ ማስታወሻ ፋይል ስሞች</string>
-    <string name="logcat_names_info_summary">reboot – መሣሪያው እንደገና ከጀመረ በኋላ ከማስጀመሪያው ጋር ተጀምሯል\nstart – ማስጀመሪያው በራሱ እንደገና ከጀመረ በኋላ ተጀምሯል (ብልሽት፣ ዝማኔ)\nwake – መሣሪያው ሲነቃ ተጀምሯል\nuser – በእጅ በ“የLogcat አገልግሎት” ተጀምሯል\nfull – የመሣሪያውን ሁሉንም ምዝግብ ማስታወሻዎች ይይዛል\npid – የማስጀመሪያውን ምዝግብ ማስታወሻዎች ብቻ ይይዛል</string>
+    <string name="logcat_names_info_summary">reboot – መሣሪያው እንደገና ከጀመረ በኋላ ከማስጀመሪያው ጋር ተጀምሯል\nstart – ማስጀመሪያው በራሱ እንደገና ከጀመረ በኋላ ተጀምሯል (ብልሽት፣ ዝማኔ)\nwake – መሣሪያው ሲነቃ ተጀምሯል\nuser – በእጅ በ“የLogcat አገልግሎት” ተጀምሯል\nfull – የመሣሪያውን ሁሉንም ምዝግብ ማስታወሻዎች ይይዛል\npid – የማስጀመሪያውን ምዝግብ ማስታወሻዎች ብቻ ይይዛል\ncrash – አስጀማሪው ሲበላሽ ይጻፋል (ስህተቱ እና የምዝግብ ማስታወሻው የመጨረሻ መስመሮች)</string>
+    <string name="crash_restarted_toast">አስጀማሪው ከስህተት በኋላ እንደገና ተጀምሯል፦ %1$s። ሪፖርት፦ %2$s</string>
+    <string name="crash_safe_mode_toast">አስጀማሪው በተከታታይ %1$d ጊዜ ተበላሽቷል (%2$s)። ብጁ ምግባሮች፣ የPiP ክፍሎች እና የስታቲስቲክስ መስኮት ከቅንብሮች እስኪወጡ ድረስ ጠፍተዋል። ሪፖርት፦ %3$s</string>
     <string name="logcat_service">በጅምር ጊዜ የLogcat አገልግሎት</string>
     <string name="logcat_service_summary"><![CDATA[መተግበሪያው ሲጀምር Logcat መመዝገብ ይጀምራል። መሣሪያውን ወይም መተግበሪያውን ዳግም ያስጀምሩ እና ምዝግብ ማስታወሻዎቹን በ<b>Download/Launcher66_Logs</b> ውስጥ ይመልከቱ።]]></string>
     <string name="logcat_service_wake">መሣሪያው ሲነቃ የLogcat አገልግሎት</string>

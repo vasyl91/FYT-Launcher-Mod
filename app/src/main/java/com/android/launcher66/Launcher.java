@@ -114,6 +114,7 @@ import com.android.async.AsyncTask;
 import com.android.launcher66.settings.AppListPipDialogFragment;
 import com.android.launcher66.settings.AppListStatsDialogFragment;
 import com.android.launcher66.settings.BottomBarDimensions;
+import com.android.launcher66.settings.CrashLoopGuard;
 import com.android.launcher66.settings.WidgetMetrics;
 import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
@@ -1429,6 +1430,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      * compute from the views.
      */
     void placeCustomElements(String source) {
+        if (CrashLoopGuard.isSafeMode()) {
+            return;
+        }
         if (mWorkspace == null || mWorkspaceLoading || mCustomElementScreens == null) {
             return;
         }
@@ -2142,6 +2146,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     protected void onResume() {
         super.onResume();
+        showCrashToastOnce();
         mWallpaperPicker.hideWallpaperPickerIndicator();
         if (LauncherApplication.isFytDevice()) {
             // A like changed in the stock player's own screen: read before the hearts are drawn
@@ -2358,6 +2363,22 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mHandler.postDelayed(mFastHomeDeferredResumeRunnable, FAST_HOME_RESUME_DEFER_MS);
     }
 
+    /**
+     * Once per process, when the previous run ended in a crash: tells the user what happened and
+     * where the report is. In the safe mode it also says that the custom elements are off.
+     */
+    private void showCrashToastOnce() {
+        if (!CrashLoopGuard.takeToast()) {
+            return;
+        }
+        String error = CrashLoopGuard.previousCrash();
+        String report = CrashLoopGuard.reportPath();
+        String message = CrashLoopGuard.isSafeMode()
+                ? getString(R.string.crash_safe_mode_toast, CrashLoopGuard.crashesAtStart(), error, report)
+                : getString(R.string.crash_restarted_toast, error, report);
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
     private void processPendingUpdateOnResume() {
         // Poll any pending updateOnce that the app-level receiver saved while launcher was stopped.
         long pending = PendingUpdateStore.pollPendingAndClear(this);
@@ -2369,6 +2390,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (shouldProcessUpdateOnce(pending)) {
             Log.d("onResume", "Pending updateOnce was duplicate/older; skipping.");
             return;
+        }
+        // The settings were left (that is what posts this update): the elements and panes the safe
+        // mode kept off come back with the rebuild below.
+        final boolean leavingSafeMode = CrashLoopGuard.isSafeMode();
+        if (leavingSafeMode) {
+            CrashLoopGuard.leaveSafeMode("settings left");
         }
 
         Log.d("Recreate page", "Started (onResume pending)");
@@ -2431,6 +2458,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         recreateView(currentUserLayout);
+        if (leavingSafeMode) {
+            placeCustomElements("safeModeLeft");
+        }
     }
 
     private void cancelFastHomeDeferredWork() {

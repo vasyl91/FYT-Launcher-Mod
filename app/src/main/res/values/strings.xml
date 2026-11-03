@@ -355,7 +355,9 @@
          the ones in the names (LogcatWorker.Trigger.fileLabel, LogFileName): never translate them
          and change them only together with the code. -->
     <string name="logcat_names_info">Log file names</string>
-    <string name="logcat_names_info_summary">reboot – started with the launcher after the device restarted\nstart – started with the launcher after it restarted on its own (crash, update)\nwake – started when the device woke up\nuser – started by hand with \"Logcat service\"\nfull – holds all of the device\'s logs\npid – holds the launcher\'s logs only</string>
+    <string name="logcat_names_info_summary">reboot – started with the launcher after the device restarted\nstart – started with the launcher after it restarted on its own (crash, update)\nwake – started when the device woke up\nuser – started by hand with \"Logcat service\"\nfull – holds all of the device\'s logs\npid – holds the launcher\'s logs only\ncrash – written when the launcher crashed (the error and the last log lines)</string>
+    <string name="crash_restarted_toast">Launcher was restarted after an error: %1$s. Report: %2$s</string>
+    <string name="crash_safe_mode_toast">Launcher crashed %1$d times in a row (%2$s). Custom widgets, PiP panes and the stats window are off until you leave the settings. Report: %3$s</string>
     <string name="logcat_service">Logcat service on startup</string>
     <string name="logcat_service_summary"><![CDATA[Logcat will start logging when the application starts. Restart the device or app and check the logs in <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat service when the device wakes</string>

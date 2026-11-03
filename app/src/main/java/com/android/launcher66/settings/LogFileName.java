@@ -23,6 +23,8 @@ final class LogFileName {
     static final String TXT = ".txt";
     /** A late full dump is named like its capture, with this in place of the extension. */
     static final String LATE_SUFFIX = "_late.txt";
+    /** The label of the crash reports (CrashLogger): crash_pid_&lt;time&gt;.txt. */
+    static final String CRASH_LABEL = "crash";
 
     private static final String SCOPE_FULL = "full";
     private static final String SCOPE_PID = "pid";

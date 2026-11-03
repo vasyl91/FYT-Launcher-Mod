@@ -289,7 +289,9 @@
     <string name="reset_night_mode">Nastavit výchozí hodnoty nočního režimu</string>
     <string name="init_default_app_error">Nastavte navigační aplikaci/aplikaci v popředí v nastavení zařízení.</string>
     <string name="logcat_names_info">Názvy souborů protokolu</string>
-    <string name="logcat_names_info_summary">reboot – spuštěno s launcherem po restartu zařízení\nstart – spuštěno s launcherem po jeho samostatném restartu (pád, aktualizace)\nwake – spuštěno při probuzení zařízení\nuser – spuštěno ručně přes „Služba Logcat“\nfull – obsahuje všechny protokoly zařízení\npid – obsahuje pouze protokoly launcheru</string>
+    <string name="logcat_names_info_summary">reboot – spuštěno s launcherem po restartu zařízení\nstart – spuštěno s launcherem po jeho samostatném restartu (pád, aktualizace)\nwake – spuštěno při probuzení zařízení\nuser – spuštěno ručně přes „Služba Logcat“\nfull – obsahuje všechny protokoly zařízení\npid – obsahuje pouze protokoly launcheru\ncrash – zapsáno, když se launcher zhroutil (chyba a poslední řádky protokolu)</string>
+    <string name="crash_restarted_toast">Launcher byl po chybě restartován: %1$s. Hlášení: %2$s</string>
+    <string name="crash_safe_mode_toast">Launcher spadl %1$d× za sebou (%2$s). Vlastní widgety, panely PiP a okno statistik jsou vypnuty, dokud neopustíte nastavení. Hlášení: %3$s</string>
     <string name="logcat_service">Služba Logcat při spuštění</string>
     <string name="logcat_service_summary"><![CDATA[Logcat začne zaznamenávat po spuštění aplikace. Restartujte zařízení nebo aplikaci a zkontrolujte protokoly v <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Služba Logcat při probuzení zařízení</string>

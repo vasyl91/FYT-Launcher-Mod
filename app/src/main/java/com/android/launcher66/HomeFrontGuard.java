@@ -482,7 +482,7 @@ public final class HomeFrontGuard {
                 scheduleCheck(next);
             } catch (RuntimeException e) {
                 // An exception escaping the guard's thread would end the whole launcher
-                // (CrashHandler); the guard ends instead.
+                // (CrashLogger); the guard ends instead.
                 Log.w(TAG, name + " check failed", e);
                 stop("error: " + e);
             }

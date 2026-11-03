@@ -101,4 +101,15 @@ class LogFileNameTest {
         assertEquals("wake", Trigger.WAKE.fileLabel);
         assertEquals("user", Trigger.MANUAL.fileLabel);
     }
+
+    @Test
+    void aCrashReportIsNamedLikeACaptureAndParses() {
+        assertEquals("crash_pid_", LogFileName.prefix(LogFileName.CRASH_LABEL, false));
+        String name = LogFileName.name(LogFileName.prefix(LogFileName.CRASH_LABEL, false),
+                "03-11-2026_09-35-33", LogFileName.TXT);
+        assertEquals("crash_pid_03-11-2026_09-35-33.txt", name);
+        LogFileName.Parts parts = LogFileName.parse(name);
+        assertEquals("crash_pid_", parts.prefix);
+        assertEquals("03-11-2026_09-35-33", parts.timestamp);
+    }
 }

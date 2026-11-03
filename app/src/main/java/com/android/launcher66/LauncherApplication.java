@@ -33,6 +33,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.perf.BaselineProfileCompiler;
 import com.android.launcher66.settings.CrashLogger;
+import com.android.launcher66.settings.CrashLoopGuard;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.VersionChecker;
@@ -128,6 +129,9 @@ public class LauncherApplication extends Application {
         Log.d(TAG, "onCreate()");
         // First, so that a crash anywhere below is written to Launcher66_Logs too.
         CrashLogger.install(this);
+        if (!isWallpaperPickerProcess()) {
+            CrashLoopGuard.onProcessStart(this);
+        }
         long start = SystemClock.elapsedRealtime();
         if (isWallpaperPickerProcess()) {
             initWallpaperPickerProcess();
@@ -281,7 +285,6 @@ public class LauncherApplication extends Application {
         sApp = this;
         // Kept: cheap, and the skin may style views in this process too.
         SkinManager.init(this);
-        CrashHandler.getInstance(getApplicationContext());
         sHandler = new Handler(Looper.getMainLooper());
         initStaticFields();
         enableStrictMode();
@@ -378,6 +381,8 @@ public class LauncherApplication extends Application {
                 BaselineProfileCompiler.warmUp(this);
                 // Whether Shizuku is installed (a PackageManager call), for HostAwait.isExpected().
                 com.syu.util.HostAwait.warmUp(this);
+                // Only does anything when the previous run crashed: the message names the report.
+                CrashLoopGuard.resolveReportPath(this);
             } catch (Throwable t) {
                 Log.w(TAG, "start-up warm-up: " + t);
             }
@@ -387,7 +392,6 @@ public class LauncherApplication extends Application {
     private void initData() {
         sApp = this;
         SkinManager.init(this);
-        CrashHandler.getInstance(getApplicationContext());
         CustomIcons.loadIcons(this, R.xml.custom_icons);
         W3Utils.initialize(this);
         CarStates.getCar(this);

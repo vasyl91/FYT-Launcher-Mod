@@ -289,7 +289,9 @@
     <string name="reset_night_mode">ตั้งค่าเริ่มต้นของโหมดกลางคืน</string>
     <string name="init_default_app_error">โปรดตั้งค่าแอปนำทาง/แอปด้านหน้าในการตั้งค่าอุปกรณ์</string>
     <string name="logcat_names_info">ชื่อไฟล์บันทึก</string>
-    <string name="logcat_names_info_summary">reboot – เริ่มพร้อมกับตัวเปิดแอปหลังจากอุปกรณ์รีสตาร์ต\nstart – เริ่มพร้อมกับตัวเปิดแอปหลังจากที่มันรีสตาร์ตเอง (ขัดข้อง, อัปเดต)\nwake – เริ่มเมื่ออุปกรณ์ตื่น\nuser – เริ่มด้วยตนเองจาก “บริการ Logcat”\nfull – มีบันทึกทั้งหมดของอุปกรณ์\npid – มีเฉพาะบันทึกของตัวเปิดแอป</string>
+    <string name="logcat_names_info_summary">reboot – เริ่มพร้อมกับตัวเปิดแอปหลังจากอุปกรณ์รีสตาร์ต\nstart – เริ่มพร้อมกับตัวเปิดแอปหลังจากที่มันรีสตาร์ตเอง (ขัดข้อง, อัปเดต)\nwake – เริ่มเมื่ออุปกรณ์ตื่น\nuser – เริ่มด้วยตนเองจาก “บริการ Logcat”\nfull – มีบันทึกทั้งหมดของอุปกรณ์\npid – มีเฉพาะบันทึกของตัวเปิดแอป\ncrash – เขียนเมื่อแลนเชอร์ขัดข้อง (ข้อผิดพลาดและบรรทัดสุดท้ายของบันทึก)</string>
+    <string name="crash_restarted_toast">แลนเชอร์เริ่มต้นใหม่หลังเกิดข้อผิดพลาด: %1$s รายงาน: %2$s</string>
+    <string name="crash_safe_mode_toast">แลนเชอร์ขัดข้อง %1$d ครั้งติดต่อกัน (%2$s) วิดเจ็ตที่กำหนดเอง บานหน้าต่าง PiP และหน้าต่างสถิติจะปิดจนกว่าคุณจะออกจากการตั้งค่า รายงาน: %3$s</string>
     <string name="logcat_service">บริการ Logcat เมื่อเริ่มต้น</string>
     <string name="logcat_service_summary"><![CDATA[Logcat จะเริ่มบันทึกเมื่อแอปเริ่มทำงาน รีสตาร์ทอุปกรณ์หรือแอป แล้วตรวจสอบบันทึกที่ <b>Download/Launcher66_Logs</b>]]></string>
     <string name="logcat_service_wake">บริการ Logcat เมื่ออุปกรณ์ตื่น</string>

@@ -257,7 +257,7 @@ public final class ColdStart {
         Log.i(TAG, "Boot autostart of " + stored + " in " + delay + " ms, "
                 + BOOT_AUTOSTART_GAP_MS + " ms apart");
         mainHandler.postDelayed(() -> new Thread(() -> {
-            // An exception escaping this thread would end the whole launcher (CrashHandler).
+            // An exception escaping this thread would end the whole launcher (CrashLogger).
             try {
                 runBootAutostart(returnToLauncher);
             } catch (RuntimeException e) {
@@ -665,7 +665,7 @@ public final class ColdStart {
                     }
                 }
             } catch (RuntimeException e) {
-                // Escaping this thread it would end the whole launcher (CrashHandler).
+                // Escaping this thread it would end the whole launcher (CrashLogger).
                 Log.w(TAG, "Bringing back " + pkg + " failed", e);
             }
         }, "LastAppRestore").start();

@@ -25,6 +25,8 @@
     <string name="folder_name_format">Dossier : %1$s</string>
     <string name="widget_button_text">Widgets</string>
     <string name="logcat_names_info">Noms des fichiers journaux</string>
-    <string name="logcat_names_info_summary">reboot – démarré avec le launcher après le redémarrage de l\'appareil\nstart – démarré avec le launcher après son redémarrage spontané (plantage, mise à jour)\nwake – démarré au réveil de l\'appareil\nuser – démarré à la main avec « Service Logcat »\nfull – contient tous les journaux de l\'appareil\npid – contient uniquement les journaux du launcher</string>
+    <string name="logcat_names_info_summary">reboot – démarré avec le launcher après le redémarrage de l\'appareil\nstart – démarré avec le launcher après son redémarrage spontané (plantage, mise à jour)\nwake – démarré au réveil de l\'appareil\nuser – démarré à la main avec « Service Logcat »\nfull – contient tous les journaux de l\'appareil\npid – contient uniquement les journaux du launcher\ncrash – écrit lorsque le lanceur a planté (l\'erreur et les dernières lignes du journal)</string>
+    <string name="crash_restarted_toast">Le lanceur a redémarré après une erreur : %1$s. Rapport : %2$s</string>
+    <string name="crash_safe_mode_toast">Le lanceur a planté %1$d fois de suite (%2$s). Les widgets personnalisés, les fenêtres PiP et la fenêtre de statistiques sont désactivés jusqu\'à ce que vous quittiez les paramètres. Rapport : %3$s</string>
     <string name="shizuku_download_button">Appuyez pour télécharger Shizuku Next (nécessaire pour les volets PiP sans root)</string>
 </resources>

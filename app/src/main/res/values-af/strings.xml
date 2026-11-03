@@ -289,7 +289,9 @@
     <string name="reset_night_mode">Stel die verstekwaardes vir nagmodus</string>
     <string name="init_default_app_error">Stel asseblief die navigasie-/voorgrondprogram in die toestelinstellings.</string>
     <string name="logcat_names_info">Logleêrname</string>
-    <string name="logcat_names_info_summary">reboot – begin saam met die lanseerder nadat die toestel herbegin is\nstart – begin saam met die lanseerder nadat dit self herbegin het (ineenstorting, opdatering)\nwake – begin wanneer die toestel wakker word\nuser – met die hand begin met “Logcat-diens”\nfull – bevat al die toestel se logs\npid – bevat net die lanseerder se logs</string>
+    <string name="logcat_names_info_summary">reboot – begin saam met die lanseerder nadat die toestel herbegin is\nstart – begin saam met die lanseerder nadat dit self herbegin het (ineenstorting, opdatering)\nwake – begin wanneer die toestel wakker word\nuser – met die hand begin met “Logcat-diens”\nfull – bevat al die toestel se logs\npid – bevat net die lanseerder se logs\ncrash – geskryf wanneer die launcher gecrash het (die fout en die laaste logreëls)</string>
+    <string name="crash_restarted_toast">Die launcher is ná \'n fout herbegin: %1$s. Verslag: %2$s</string>
+    <string name="crash_safe_mode_toast">Die launcher het %1$d keer agtereenvolgens gecrash (%2$s). Eie legstukke, PiP-vensters en die statistiekvenster is af totdat jy die instellings verlaat. Verslag: %3$s</string>
     <string name="logcat_service">Logcat-diens by opstart</string>
     <string name="logcat_service_summary"><![CDATA[Logcat sal begin log wanneer die program begin. Herbegin die toestel of program en kyk na die logboeke in <b>Download/Launcher66_Logs</b>.]]></string>
     <string name="logcat_service_wake">Logcat-diens wanneer die toestel wakker word</string>

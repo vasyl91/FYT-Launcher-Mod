@@ -289,7 +289,9 @@
     <string name="reset_night_mode">恢復夜間模式預設值</string>
     <string name="init_default_app_error">請在裝置設定中選擇導航/前置應用程式。</string>
     <string name="logcat_names_info">記錄檔名稱</string>
-    <string name="logcat_names_info_summary">reboot – 裝置重新啟動後隨啟動器一同啟動\nstart – 啟動器自行重新啟動（當機、更新）後隨之啟動\nwake – 裝置喚醒時啟動\nuser – 透過「記錄服務」手動啟動\nfull – 包含裝置的所有記錄\npid – 僅包含啟動器的記錄</string>
+    <string name="logcat_names_info_summary">reboot – 裝置重新啟動後隨啟動器一同啟動\nstart – 啟動器自行重新啟動（當機、更新）後隨之啟動\nwake – 裝置喚醒時啟動\nuser – 透過「記錄服務」手動啟動\nfull – 包含裝置的所有記錄\npid – 僅包含啟動器的記錄\ncrash – 啟動器當機時寫入（錯誤和記錄的最後幾行）</string>
+    <string name="crash_restarted_toast">啟動器在發生錯誤後已重新啟動：%1$s。報告：%2$s</string>
+    <string name="crash_safe_mode_toast">啟動器已連續當機 %1$d 次（%2$s）。在離開設定之前，自訂小工具、子母畫面窗格和統計視窗均已關閉。報告：%3$s</string>
     <string name="logcat_service">開機啟動記錄服務</string>
     <string name="logcat_service_summary"><![CDATA[應用程式啟動時，Logcat 將開始記錄。重新啟動裝置或應用程式，然後在 <b>Download/Launcher66_Logs</b> 中檢視記錄。]]></string>
     <string name="logcat_service_wake">裝置喚醒時啟動 Logcat 服務</string>
