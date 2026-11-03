@@ -2,6 +2,7 @@ package com.fyt.skin;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -13,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SkinFactory implements LayoutInflater.Factory2, PropertyChangeListener {
 
+    private static final String TAG = "SkinFactory";
     public final String[] a = {"android.widget.", "android.view.", "android.webkit."};
     SkinAttribute mSkinAttribute = new SkinAttribute();
     private static final ConcurrentHashMap<String, Constructor<? extends View>> sConstructorMap = new ConcurrentHashMap<String, Constructor<? extends View>>(); //= new HashMap<>();
@@ -26,7 +28,12 @@ public class SkinFactory implements LayoutInflater.Factory2, PropertyChangeListe
             view = createView(name, context, attrs);
         }
         if (view != null) {
-            this.mSkinAttribute.loadView(view, attrs);
+            try {
+                this.mSkinAttribute.loadView(view, attrs);
+            } catch (RuntimeException e) {
+                // A skin must never break the inflation of a layout.
+                Log.w(TAG, "Skin skipped for " + name + ": " + e);
+            }
         }
         return view;
     }

@@ -194,6 +194,12 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
     /** The custom elements the model put on this page; see Launcher.placeCustomElements(). */
     private EnumSet<CustomElement> mAssignedElements = EnumSet.noneOf(CustomElement.class);
+    /**
+     * Elements whose placement threw. They are skipped and count as placed, so one broken element
+     * neither kills the launcher nor makes HomeLayoutRecovery retry it forever; a new assignment
+     * (setCustomElements) tries them again.
+     */
+    private final EnumSet<CustomElement> mFailedElements = EnumSet.noneOf(CustomElement.class);
     /** The one post that places the assigned elements is queued. */
     private boolean mPlacementPosted = false;
     private final Runnable mPlacementRunnable = new Runnable() {
@@ -1118,6 +1124,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         mAssignedElements = (elements == null || elements.isEmpty())
                 ? EnumSet.noneOf(CustomElement.class)
                 : EnumSet.copyOf(elements);
+        mFailedElements.clear();
         scheduleCustomElementPlacement();
     }
 
@@ -1160,6 +1167,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
     private boolean areAssignedElementsPlaced() {
         for (CustomElement element : mAssignedElements) {
+            if (mFailedElements.contains(element)) {
+                continue;
+            }
             if (!isCustomElementAttached(getCustomElementView(element))) {
                 return false;
             }
@@ -1208,28 +1218,37 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         clearDetachedCustomElementRefs();
         StringBuilder placed = new StringBuilder();
         for (CustomElement element : mAssignedElements) {
-            if (isCustomElementAttached(getCustomElementView(element))) {
+            if (mFailedElements.contains(element)
+                    || isCustomElementAttached(getCustomElementView(element))) {
                 continue;
             }
-            switch (element) {
-                case DATE:
-                case MUSIC:
-                case RADIO:
-                    placeCustomWidget(element, pageIndex);
-                    break;
-                case STATS:
-                    addStatsPlaceholder(Keys.STATS_SCREEN);
-                    break;
-                default:
-                    addPipPlaceholder(element.label, element.geometryPrefix, element.screenKey);
-                    break;
-            }
-            View view = getCustomElementView(element);
-            if (isCustomElementAttached(view) && view.getLayoutParams() instanceof LayoutParams) {
-                LayoutParams lp = (LayoutParams) view.getLayoutParams();
-                placed.append(placed.length() == 0 ? "" : ", ").append(element.label).append(" [")
-                        .append(lp.cellX).append(',').append(lp.cellY).append(' ')
-                        .append(lp.cellHSpan).append('x').append(lp.cellVSpan).append(']');
+            try {
+                switch (element) {
+                    case DATE:
+                    case MUSIC:
+                    case RADIO:
+                        placeCustomWidget(element, pageIndex);
+                        break;
+                    case STATS:
+                        addStatsPlaceholder(Keys.STATS_SCREEN);
+                        break;
+                    default:
+                        addPipPlaceholder(element.label, element.geometryPrefix, element.screenKey);
+                        break;
+                }
+                View view = getCustomElementView(element);
+                if (isCustomElementAttached(view) && view.getLayoutParams() instanceof LayoutParams) {
+                    LayoutParams lp = (LayoutParams) view.getLayoutParams();
+                    placed.append(placed.length() == 0 ? "" : ", ").append(element.label).append(" [")
+                            .append(lp.cellX).append(',').append(lp.cellY).append(' ')
+                            .append(lp.cellHSpan).append('x').append(lp.cellVSpan).append(']');
+                }
+            } catch (RuntimeException e) {
+                Log.e(TAG, "Custom element " + element.label + " could not be placed on page "
+                        + (pageIndex + 1) + ", skipped", e);
+                mFailedElements.add(element);
+                // Drop the reference of a view that was created but never attached.
+                clearDetachedCustomElementRefs();
             }
         }
         if (placed.length() > 0) {
