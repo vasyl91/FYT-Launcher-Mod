@@ -157,12 +157,33 @@ public final class WindowHostVdClient {
         return WindowHostVdShizuku.isRunning();
     }
 
+    /** Whether a su binary can be seen; the files do not change while the process runs. */
+    private static volatile Boolean sSuBinary;
+
     /**
      * Root is there: the daemon of the FYT VDHost Magisk module (or Shizuku started with root)
-     * runs as system or root, the module's property is set, or a su binary can be seen.
+     * runs as system or root, the module's property is set, or a su binary can be seen. The
+     * su files are looked for once (five File.exists() calls): StatsOverlayAlpha asked on the main
+     * thread before every addView of the stats window, and StrictMode saw 342 ms of it.
      */
     public static boolean hasRoot() {
         if (canSendBootCompleted() || isModuleInstalled()) return true;
+        Boolean cached = sSuBinary;
+        if (cached == null) {
+            cached = findSuBinary();
+            sSuBinary = cached;
+        }
+        return cached;
+    }
+
+    /** Looks for the su binary now, off the main thread (StartupWarmUp), so that hasRoot() finds it cached. */
+    public static void warmUpRootCheck() {
+        if (sSuBinary == null) {
+            sSuBinary = findSuBinary();
+        }
+    }
+
+    private static boolean findSuBinary() {
         for (String path : new String[]{ "/system/bin/su", "/system/xbin/su", "/sbin/su",
                 "/debug_ramdisk/su", "/vendor/bin/su" }) {
             if (new java.io.File(path).exists()) return true;

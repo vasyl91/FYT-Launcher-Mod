@@ -381,6 +381,8 @@ public class LauncherApplication extends Application {
                 BaselineProfileCompiler.warmUp(this);
                 // Whether Shizuku is installed (a PackageManager call), for HostAwait.isExpected().
                 com.syu.util.HostAwait.warmUp(this);
+                // The su files, once: the stats window asks hasRoot() on the main thread.
+                com.syu.util.WindowHostVdClient.warmUpRootCheck();
                 // Only does anything when the previous run crashed: the message names the report.
                 CrashLoopGuard.resolveReportPath(this);
             } catch (Throwable t) {

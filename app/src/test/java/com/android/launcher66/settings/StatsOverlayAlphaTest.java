@@ -109,4 +109,12 @@ class StatsOverlayAlphaTest {
         assertFalse(d.due(10000));
         assertEquals(RAISE, limitAction(true, false, "0.8"));
     }
+
+    @Test
+    void needsRaiseOnlyForAShownUntrustedWindowBelowTheFullLimit() {
+        assertTrue(StatsOverlayAlpha.needsRaise(true, false, 0.8f));
+        assertFalse(StatsOverlayAlpha.needsRaise(true, false, 1f));
+        assertFalse(StatsOverlayAlpha.needsRaise(true, true, 0.8f));
+        assertFalse(StatsOverlayAlpha.needsRaise(false, false, 0.8f));
+    }
 }

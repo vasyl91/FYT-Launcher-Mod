@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.ContentObserver;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -67,6 +68,14 @@ public final class StatsOverlayAlpha {
         }
     }
 
+    /**
+     * The window is shown, is not a trusted overlay and the limit is below 1: someone lowered it
+     * after we raised it (or never let us), and the window loses its full alpha until we raise it.
+     */
+    static boolean needsRaise(boolean windowShown, boolean trustedApplied, float currentLimit) {
+        return windowShown && !trustedApplied && currentLimit < 1f;
+    }
+
     static LimitAction limitAction(boolean windowShown, boolean raisedByUs, String currentValue) {
         boolean full = parseLimit(currentValue) >= 1f;
         if (windowShown) return full ? LimitAction.NOTHING : LimitAction.RAISE;
@@ -98,12 +107,27 @@ public final class StatsOverlayAlpha {
     private static volatile Context sApp;
     private static volatile Runnable sOnRaised;
     private static boolean listenerAdded;
+    /** How often the limit is looked at while the window is shown, in case no change is reported. */
+    private static final long CHECK_INTERVAL_MS = 60_000L;
+    /** Main thread only. */
+    private static ContentObserver sLimitObserver;
 
     private static final class Tasks {
         static final Runnable HIDE_TASK = () -> {
             if (DEBOUNCE.due(SystemClock.uptimeMillis())) {
                 desiredShown = false;
+                stopWatching();
                 submit();
+            }
+        };
+
+        /** Main thread: looks at the limit and asks again in a minute for as long as the window is shown. */
+        static final Runnable CHECK_TASK = new Runnable() {
+            @Override
+            public void run() {
+                if (!desiredShown) return;
+                submit();
+                MainHolder.MAIN.postDelayed(this, CHECK_INTERVAL_MS);
             }
         };
 
@@ -116,11 +140,12 @@ public final class StatsOverlayAlpha {
     static void applyBeforeAdd(Context context, WindowManager.LayoutParams params) {
         trustedApplied = false;
         try {
-            Route route = route(Build.VERSION.SDK_INT, Process.myUid() == Process.SYSTEM_UID,
-                    granted(context, "android.permission.INTERNAL_SYSTEM_WINDOW"),
-                    granted(context, "android.permission.WRITE_SECURE_SETTINGS"),
-                    WindowHostVdClient.hasPrivilegedHost(), WindowHostVdClient.hasRoot(), currentLimit(context));
-            if (route == Route.TRUSTED) {
+            // Not route(): it also asks hasRoot() and the host, which is of no interest here and
+            // used to cost five File.exists() on the main thread before every addView.
+            boolean trusted = Build.VERSION.SDK_INT >= 31 && currentLimit(context) < 1f
+                    && (Process.myUid() == Process.SYSTEM_UID
+                    || granted(context, "android.permission.INTERNAL_SYSTEM_WINDOW"));
+            if (trusted) {
                 try {
                     WindowManager.LayoutParams.class.getMethod("setTrustedOverlay").invoke(params);
                     trustedApplied = true;
@@ -143,6 +168,7 @@ public final class StatsOverlayAlpha {
         DEBOUNCE.onShown(SystemClock.uptimeMillis());
         desiredShown = true;
         addHostListener();
+        startWatching(context.getApplicationContext());
         submit();
     }
 
@@ -158,7 +184,54 @@ public final class StatsOverlayAlpha {
         sApp = context.getApplicationContext();
         MainHolder.MAIN.removeCallbacks(Tasks.HIDE_TASK);
         desiredShown = false;
+        stopWatching();
+        // Also when the host is not there yet (a start before Shizuku): the listener makes the
+        // restore happen once it connects.
+        addHostListener();
         submit();
+    }
+
+    /**
+     * Main thread. While the window is shown the limit is watched, so that a full alpha lost to
+     * someone else's write is brought back: by the setting's observer and, in case the system
+     * reports nothing, by a look every minute.
+     */
+    private static void startWatching(Context app) {
+        if (sLimitObserver == null) {
+            sLimitObserver = new ContentObserver(MainHolder.MAIN) {
+                @Override
+                public void onChange(boolean selfChange) {
+                    Context c = sApp;
+                    if (c != null && needsRaise(desiredShown, trustedApplied, currentLimit(c))) {
+                        submit();
+                    }
+                }
+            };
+            try {
+                app.getContentResolver().registerContentObserver(
+                        Settings.Global.getUriFor(LIMIT_KEY), false, sLimitObserver);
+            } catch (Throwable t) {
+                Log.w(TAG, "cannot watch the limit: " + t);
+                sLimitObserver = null;
+            }
+        }
+        MainHolder.MAIN.removeCallbacks(Tasks.CHECK_TASK);
+        MainHolder.MAIN.postDelayed(Tasks.CHECK_TASK, CHECK_INTERVAL_MS);
+    }
+
+    /** Main thread. The window is gone: nothing to keep at full alpha. */
+    private static void stopWatching() {
+        MainHolder.MAIN.removeCallbacks(Tasks.CHECK_TASK);
+        ContentObserver observer = sLimitObserver;
+        sLimitObserver = null;
+        Context app = sApp;
+        if (observer != null && app != null) {
+            try {
+                app.getContentResolver().unregisterContentObserver(observer);
+            } catch (Throwable t) {
+                Log.w(TAG, "cannot stop watching the limit: " + t);
+            }
+        }
     }
 
     private static void addHostListener() {
@@ -206,6 +279,9 @@ public final class StatsOverlayAlpha {
                     Log.w(TAG, "RAISE: route " + write + ", the limit stays " + current);
                     return;
                 }
+                if (raised) {
+                    Log.w(TAG, "RAISE again: the limit was " + current + " while the window was shown");
+                }
                 SharedPreferences.Editor e = prefs.edit();
                 if (!raised) {
                     if (current == null) e.remove(Keys.STATS_OBSCURING_ORIGINAL);
@@ -224,7 +300,8 @@ public final class StatsOverlayAlpha {
                 if (after >= 1f && onRaised != null && desiredShown) MainHolder.MAIN.post(onRaised);
             } else {   // RESTORE
                 if (write == Route.NOT_NEEDED || write == Route.UNAVAILABLE) {
-                    Log.w(TAG, "RESTORE: route " + write + ", the limit stays " + current);
+                    Log.i(TAG, "RESTORE: route " + write + ", the limit stays " + current
+                            + ", deferred until a host is available");
                     return;
                 }
                 String original = prefs.getString(Keys.STATS_OBSCURING_ORIGINAL, null);
