@@ -1535,9 +1535,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     /** Loads the Baseline Profile status off the main thread and shows it as the summary. */
     /**
      * Shows the button to download Shizuku Next in the standard version while Shizuku is not
-     * installed: it is what hosts the PiP panes there without root. The check is a binder call,
-     * so it runs off the main thread; onResume() calls it, so the button goes away on coming back
-     * from installing it. The fyt version has system privileges and never needs it.
+     * installed, on a device without root: it is what hosts the PiP panes there without root.
+     * Root and the system privileges of the fyt version do not need it. The checks are a binder
+     * call and files, so they run off the main thread; onResume() calls it, so the button goes
+     * away on coming back from installing it.
      */
     private void updateShizukuDownload() {
         if (shizukuDownload == null || !"standard".equals(com.android.launcher66.BuildConfig.FLAVOR)) {
@@ -1545,10 +1546,12 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         final Context appContext = requireContext().getApplicationContext();
         new Thread(() -> {
-            final boolean missing = !WindowHostVdClient.isShizukuInstalled(appContext);
+            final boolean show = !LauncherApplication.hasSystemPrivileges()
+                    && !WindowHostVdClient.hasRoot()
+                    && !WindowHostVdClient.isShizukuInstalled(appContext);
             mHandler.post(() -> {
                 if (isAdded() && shizukuDownload != null) {
-                    shizukuDownload.setVisible(missing);
+                    shizukuDownload.setVisible(show);
                 }
             });
         }, "ShizukuInstalled").start();

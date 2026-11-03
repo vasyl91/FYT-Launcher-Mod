@@ -36,9 +36,28 @@ public final class ScreenScale {
     private static final float WIDGET_SCALE_FYT = 1.75f;
     private static final float FYT_SHORT_SIDE_DP = 800f;
 
+    /** The reference phone's density, for the sizes worked out from the screen in pixels. */
+    public static final int REFERENCE_DENSITY_DPI = 450;
+
     private static Boolean sApplies;
 
     private ScreenScale() {
+    }
+
+    /**
+     * {@code dpOnReference} dp as they come out on the reference phone (1080 x 2340 at 450 dpi,
+     * where the widget fit toggle looks right), as the same share of this screen's shorter side.
+     * It does not depend on applies(): FYT units, which keep their own density, get it as well.
+     */
+    public static int referencePx(Context context, float dpOnReference) {
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        return referencePx(dpOnReference, Math.min(dm.widthPixels, dm.heightPixels));
+    }
+
+    /** The arithmetic of {@link #referencePx(Context, float)}, free of Android. */
+    static int referencePx(float dpOnReference, int shortSidePx) {
+        return Math.round(dpOnReference * REFERENCE_DENSITY_DPI / 160f
+                * shortSidePx / REFERENCE_SHORT_SIDE_PX);
     }
 
     /** Whether anything is scaled: everywhere but on FYT units. */

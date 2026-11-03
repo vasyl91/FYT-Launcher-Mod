@@ -100,9 +100,10 @@ public class AppWidgetResizeFrame extends FrameLayout {
         this.mBottomHandle.setImageResource(R.drawable.widget_resize_handle_bottom);
         FrameLayout.LayoutParams lp4 = new FrameLayout.LayoutParams(-2, -2, 81);
         addView(this.mBottomHandle, lp4);
-        float toggleDensity = context.getResources().getDisplayMetrics().density;
-        int toggleSize = Math.round(40.0f * toggleDensity);
-        int togglePadding = Math.round(8.0f * toggleDensity);
+        // The same share of the screen everywhere: 40 dp were 5 % of the shorter side on an FYT unit
+        // (1200 x 2000 at 240 dpi) but 10.4 % on the phone it looked right on (1080 x 2340 at 450 dpi).
+        int toggleSize = ScreenScale.referencePx(context, 40.0f);
+        int togglePadding = ScreenScale.referencePx(context, 8.0f);
         this.mFitToggle = new ImageView(context);
         this.mFitToggle.setImageResource(R.drawable.ic_widget_fit);
         this.mFitToggle.setPadding(togglePadding, togglePadding, togglePadding, togglePadding);
