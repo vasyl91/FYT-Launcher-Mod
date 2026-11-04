@@ -67,14 +67,16 @@ public class WidgetPageManager {
 
         int pageCount = snapshot.pageCount();
         int currentPageIndex = getCurrentWidgetPageIndex();
-        int highestIndex = getHighestPageIndex();
+        int highestOtherPage = getHighestOtherPage();
         
-        Log.i(TAG, "Current value: " + value + ", page count: " + pageCount + ", highest index: " + highestIndex);
+        Log.i(TAG, "Current value: " + value + ", page count: " + pageCount
+                + ", highest other page: " + highestOtherPage);
         Log.i(TAG, "Key: " + mWidgetKey + ", located on page:" + (currentPageIndex + 1));
         
-        // Adjust value if needed
-        if (value > pageCount && value > highestIndex && pageCount >= highestIndex) {
-            value = highestIndex + 2;
+        // A number past the last screen always gives exactly one new screen
+        int typed = value;
+        value = ScreenNumberRule.target(value, pageCount, highestOtherPage);
+        if (value != typed) {
             Log.i(TAG, "New current value: " + value);
         }
         int newPageIndex = value - 1;
@@ -373,23 +375,22 @@ public class WidgetPageManager {
     }
     
     /**
-     * Get the highest page index across the elements that are switched on (and this one).
+     * Get the highest page (1-based) of the other elements that are switched on, not counting this one.
      *
-     * @return The highest page index, or -1 if none found
+     * @return The highest page, or 0 if no other element is on
      */
-    private int getHighestPageIndex() {
+    private int getHighestOtherPage() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
-        if (sp == null) return -1;
+        if (sp == null) return 0;
 
-        ArrayList<Integer> screensPrefs = new ArrayList<>();
-
-        for (String key : getActiveKeys(sp)) {
-            screensPrefs.add(sp.getInt(key, 1) - 1);
+        int highest = 0;
+        for (CustomElement element : CustomElement.values()) {
+            if (element.screenKey.equals(mWidgetKey)
+                    || !sp.getBoolean(element.enabledKey, element.defaultEnabled)) {
+                continue;
+            }
+            highest = Math.max(highest, sp.getInt(element.screenKey, 1));
         }
-
-        if (!screensPrefs.isEmpty()) {
-            return Collections.max(screensPrefs);
-        }
-        return -1;
+        return highest;
     }
 }

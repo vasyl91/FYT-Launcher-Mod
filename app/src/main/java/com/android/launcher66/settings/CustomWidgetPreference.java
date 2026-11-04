@@ -428,6 +428,10 @@ public class CustomWidgetPreference extends Preference {
         
         if (mPageManager == null) return;
         
+        // The IME overlay and the loss of focus both save the same value, one after the other. The
+        // second call would only repeat the first, so skip a value that is already saved.
+        if (value == mPageManager.getCurrentWidgetPageIndex() + 1) return;
+        
         // Validate and save the page number
         mPageManager.validateAndSavePage(value);
         int currentPageIndex = mPageManager.getCurrentWidgetPageIndex();
