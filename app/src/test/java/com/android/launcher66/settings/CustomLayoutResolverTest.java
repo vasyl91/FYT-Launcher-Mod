@@ -244,34 +244,109 @@ class CustomLayoutResolverTest {
         assertArrayEquals(new int[] {100, 695, 400, 995}, r.rects[1]);
     }
 
+    // The minimum of these widgets is their whole rectangle, so no part beside the PiP is big enough.
     @Test
-    void aWidgetOverlappingAPipIsReset() {
+    void aWidgetOverlappingAPipIsResetWhenItCannotBeCut() {
         Result r = resolve(new Env(),
                 pip("pipFirst", 100, 100, 500, 400, 200, 200),
-                widget("date", 400, 300, 800, 500, 200, 100));
+                widget("date", 400, 300, 800, 500, 400, 200));
+        assertFalse(r.reset[0]);
+        assertTrue(r.reset[1]);
+        assertFalse(r.cut[1]);
+    }
+
+    @Test
+    void ofTwoWidgetsTheLaterOneIsResetWhenItCannotBeCut() {
+        Result r = resolve(new Env(),
+                widget("date", 100, 100, 500, 400, 400, 300),
+                widget("music", 400, 300, 800, 500, 400, 200));
         assertFalse(r.reset[0]);
         assertTrue(r.reset[1]);
     }
 
     @Test
-    void ofTwoWidgetsTheLaterOneIsReset() {
-        Result r = resolve(new Env(),
-                widget("date", 100, 100, 500, 400, 200, 100),
-                widget("music", 400, 300, 800, 500, 200, 100));
-        assertFalse(r.reset[0]);
-        assertTrue(r.reset[1]);
-    }
-
-    @Test
-    void onlyOneOfTwoOverlappingElementsIsReset() {
+    void onlyOneOfTwoOverlappingElementsIsResetWhenItCannotBeCut() {
         Result r = resolve(new Env(),
                 pip("pipFirst", 100, 100, 500, 400, 200, 200),
-                pip("pipSecond", 400, 300, 800, 500, 200, 200),
-                widget("date", 450, 320, 700, 450, 100, 100));
+                pip("pipSecond", 400, 300, 800, 500, 400, 200),
+                widget("date", 450, 320, 700, 450, 250, 130));
         int resets = 0;
         for (boolean b : r.reset) if (b) resets++;
         assertEquals(2, resets); // pipSecond (later PiP) and the widget; pipFirst stays
         assertFalse(r.reset[0]);
+    }
+
+    @Test
+    void aWidgetOverlappingAPipIsCutBesideIt() {
+        Result r = resolve(new Env(),
+                pip("pipFirst", 100, 100, 500, 400, 200, 200),
+                widget("date", 400, 300, 800, 500, 200, 100));
+        assertFalse(r.reset[0]);
+        assertFalse(r.reset[1]);
+        assertTrue(r.cut[1]);
+        assertFalse(r.cut[0]);
+        assertEquals(0, r.conflictWith[1]);
+        // the biggest part is the one right of the PiP, a gap of 5 away from it
+        assertArrayEquals(new int[] {505, 300, 800, 500}, r.rects[1]);
+        assertArrayEquals(new int[] {100, 100, 500, 400}, r.rects[0]);
+    }
+
+    @Test
+    void theCutKeepsTheGapToEveryKeptElement() {
+        int[][] kept = {{100, 100, 300, 300}, {600, 100, 800, 300}};
+        Result r = resolve(new Env(),
+                pip("pipFirst", kept[0][0], kept[0][1], kept[0][2], kept[0][3], 100, 100),
+                pip("pipSecond", kept[1][0], kept[1][1], kept[1][2], kept[1][3], 100, 100),
+                widget("music", 250, 50, 650, 350, 100, 100));
+        assertTrue(r.cut[2]);
+        assertArrayEquals(new int[] {305, 50, 595, 350}, r.rects[2]);
+        for (int[] k : kept) {
+            boolean apart = r.rects[2][2] + 5 <= k[0] || k[2] + 5 <= r.rects[2][0]
+                    || r.rects[2][3] + 5 <= k[1] || k[3] + 5 <= r.rects[2][1];
+            assertTrue(apart, Arrays.toString(r.rects[2]) + " too close to " + Arrays.toString(k));
+        }
+    }
+
+    @Test
+    void theCutKeepsTheLargestFreePart() {
+        // below the PiP is 850 x 295, right of it 495 x 400
+        Result r = resolve(new Env(),
+                pip("pipFirst", 100, 100, 400, 300, 100, 100),
+                widget("music", 50, 200, 900, 600, 100, 100));
+        assertArrayEquals(new int[] {50, 305, 900, 600}, r.rects[1]);
+    }
+
+    @Test
+    void aCutNeverGoesBelowTheMinimum() {
+        // the biggest free part is 295 wide, the widget needs 300
+        Result r = resolve(new Env(),
+                pip("pipFirst", 100, 100, 500, 400, 200, 200),
+                widget("date", 400, 300, 800, 500, 300, 200));
+        assertTrue(r.reset[1]);
+        assertFalse(r.cut[1]);
+    }
+
+    @Test
+    void theSameInputGivesTheSameCut() {
+        Element[] user = {
+                pip("pipFirst", 100, 100, 500, 400, 200, 200),
+                widget("date", 400, 300, 800, 500, 200, 100)};
+        Result a = resolve(new Env(), user);
+        Result b = resolve(new Env(), user);
+        assertTrue(Arrays.deepEquals(a.rects, b.rects));
+        assertArrayEquals(a.cut, b.cut);
+        assertArrayEquals(a.reset, b.reset);
+    }
+
+    @Test
+    void theStatsWindowIsNoConflict() {
+        Result r = resolve(new Env(),
+                widget("date", 100, 100, 500, 400, 200, 100),
+                stats(300, 200, 700, 500));
+        assertFalse(r.reset[0]);
+        assertFalse(r.cut[0]);
+        assertArrayEquals(new int[] {100, 100, 500, 400}, r.rects[0]);
+        assertArrayEquals(new int[] {300, 200, 700, 500}, r.rects[1]);
     }
 
     @Test

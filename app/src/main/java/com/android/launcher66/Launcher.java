@@ -2431,7 +2431,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // Before the PiPs are restarted: a bar that got taller in the settings now covers widgets
         // and PiPs, and this moves them out of it. Restarting first would re-create the PiP windows
         // at the old positions and the corrected ones would only appear after the next restart.
-        helpers.checkAndResetIfOverlappingOnScreen(-1);
+        boolean layoutChanged = helpers.checkAndResetIfOverlappingOnScreen(-1);
         if (currentUserLayout && displayPip && !atomicOnCreate.get()) {
             if (helpers.hasLayoutTypeChanged()) {
                 // The panes are rebuilt from scratch for a different layout type anyway.
@@ -2439,7 +2439,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 WindowUtil.releasePaneHost();
                 WindowUtil.restartPinnedPipApp();
             }
-            if (helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged() || helpers.hasUserOpenedCreator()) {
+            // layoutChanged: a screen number changed in the settings can put elements on one page,
+            // and the overlap check then cuts or moves them. The panes need the new corners even
+            // though neither the layout type nor the bars changed.
+            if (layoutChanged || helpers.hasLayoutTypeChanged() || helpers.hasBarSettingsChanged()
+                    || helpers.hasUserOpenedCreator()) {
                 // Only the geometry may have changed. Rebuild the panes the non-destructive way so
                 // their apps keep running (a released host would kill e.g. the Maps route). A pinned
                 // PiP notices a changed rectangle itself in openAsPinnedPip().

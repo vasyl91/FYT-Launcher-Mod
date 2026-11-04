@@ -115,4 +115,31 @@ class ResetPlacementTest {
                 new int[] {5, 5}, rects(new int[] {5, 5, 405, 305}), env(true), bar);
         assertArrayEquals(new int[] {410, 5, 400, 300}, p);
     }
+
+    @Test
+    void withoutAKnownGridTheObstaclesAreStillAvoided() {
+        int[] p = CustomLayoutResolver.placeReset(null, new int[] {300, 200},
+                new int[] {5, 5}, rects(new int[] {5, 5, 405, 205}), env(false), bounds);
+        assertArrayEquals(new int[] {410, 5, 300, 200}, p);
+    }
+
+    @Test
+    void onAPageWithoutBarsTheResetGoesBesideThePip() {
+        // The page of the log: date and radio on the left, the third PiP in the middle, and the music
+        // widget (270 x 324), reset to a default position that lies on the PiP.
+        int[] date = {5, 5, 405, 105};
+        int[] radio = {5, 115, 605, 515};
+        int[] third = {500, 5, 1500, 800};
+        List<int[]> others = rects(date, radio, third);
+        int[] p = CustomLayoutResolver.placeReset(new int[] {270, 324}, new int[] {270, 324},
+                new int[] {600, 300}, others, env(true), bounds);
+        int[] placed = {p[0], p[1], p[0] + p[2], p[1] + p[3]};
+        assertArrayEquals(new int[] {270, 324}, new int[] {p[2], p[3]});
+        for (int[] o : others) {
+            boolean apart = placed[2] + 5 <= o[0] || o[2] + 5 <= placed[0]
+                    || placed[3] + 5 <= o[1] || o[3] + 5 <= placed[1];
+            org.junit.jupiter.api.Assertions.assertTrue(apart,
+                    Arrays.toString(placed) + " overlaps " + Arrays.toString(o));
+        }
+    }
 }

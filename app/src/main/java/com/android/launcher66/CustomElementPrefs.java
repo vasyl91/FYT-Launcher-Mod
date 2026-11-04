@@ -12,6 +12,18 @@ import java.util.List;
 public final class CustomElementPrefs {
     private CustomElementPrefs() { }
 
+    /**
+     * Whether the launcher shows the element: it is switched on (the default of
+     * {@link CustomElement#defaultEnabled} while the user never touched it) and, for a PiP, the
+     * "display PiP" switch is on too (on by default, as the launcher starts the PiPs with it).
+     */
+    public static boolean isShown(SharedPreferences prefs, CustomElement element) {
+        if (!prefs.getBoolean(element.enabledKey, element.defaultEnabled)) {
+            return false;
+        }
+        return !element.isPip() || prefs.getBoolean(Keys.DISPLAY_PIP, true);
+    }
+
     /** The page, from 1, of every element that is switched on. */
     public static EnumMap<CustomElement, Integer> requestedPages(SharedPreferences prefs) {
         EnumMap<CustomElement, Integer> pages = new EnumMap<>(CustomElement.class);

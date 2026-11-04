@@ -19,10 +19,13 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.CustomElement;
+import com.android.launcher66.CustomElementPrefs;
 import com.android.launcher66.CustomLayoutDb;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.LauncherGlideBitmapLoader;
+import com.android.launcher66.LauncherModel;
 import com.android.launcher66.R;
 
 import java.util.ArrayList;
@@ -493,27 +496,31 @@ public class Helpers {
                                                  Keys.PIP_THIRD_SCREEN, Keys.PIP_FOURTH_SCREEN, Keys.DATE_SCREEN,
                                                  Keys.MUSIC_SCREEN, Keys.RADIO_SCREEN};
 
-    /** Which of RECTANGLE_KEYS are shown, in the same order. */
+    /**
+     * Which of RECTANGLE_KEYS are shown, in the same order. An element counts when the launcher
+     * shows it, with the defaults the launcher uses for an element the user never switched
+     * ({@link CustomElementPrefs#isShown}): the date, music and radio widgets are on, a PiP is on
+     * only when switched on and "display PiP" is on.
+     */
     private static boolean[] getEnabledStates(SharedPreferences prefs) {
-        boolean dualPip = prefs.getBoolean(Keys.PIP_DUAL, false);
-        boolean firstPip = prefs.getBoolean(Keys.PIP_FIRST, false);
-        boolean secondPip = prefs.getBoolean(Keys.PIP_SECOND, false);
-        boolean thirdPip = prefs.getBoolean(Keys.PIP_THIRD, false);
-        boolean fourthPip = prefs.getBoolean(Keys.PIP_FOURTH, false);
-        boolean pip = prefs.getBoolean(Keys.DISPLAY_PIP, false);
-        boolean date = prefs.getBoolean(Keys.USER_DATE, false);
-        boolean music = prefs.getBoolean(Keys.USER_MUSIC, false);
-        boolean radio = prefs.getBoolean(Keys.USER_RADIO, false);
+        boolean dualPip = CustomElementPrefs.isShown(prefs, CustomElement.PIP_DUAL);
+        boolean firstPip = CustomElementPrefs.isShown(prefs, CustomElement.PIP_FIRST);
+        boolean secondPip = CustomElementPrefs.isShown(prefs, CustomElement.PIP_SECOND);
+        boolean thirdPip = CustomElementPrefs.isShown(prefs, CustomElement.PIP_THIRD);
+        boolean fourthPip = CustomElementPrefs.isShown(prefs, CustomElement.PIP_FOURTH);
+        boolean date = CustomElementPrefs.isShown(prefs, CustomElement.DATE);
+        boolean music = CustomElementPrefs.isShown(prefs, CustomElement.MUSIC);
+        boolean radio = CustomElementPrefs.isShown(prefs, CustomElement.RADIO);
 
         return new boolean[] {
-            pip && dualPip && !firstPip && !secondPip,  // pipDual
-            pip && firstPip && !dualPip,                // pipFirst
-            pip && secondPip && !dualPip,               // pipSecond
-            pip && thirdPip,                            // pipThird
-            pip && fourthPip,                           // pipFourth
-            date,                                       // date
-            music,                                      // music
-            radio,                                      // radio
+            dualPip && !firstPip && !secondPip,  // pipDual
+            firstPip && !dualPip,                // pipFirst
+            secondPip && !dualPip,               // pipSecond
+            thirdPip,                            // pipThird
+            fourthPip,                           // pipFourth
+            date,                                // date
+            music,                               // music
+            radio,                               // radio
         };
     }
 
@@ -522,7 +529,8 @@ public class Helpers {
      * launcher reads. It is always derived from the rectangles the user drew (the User* keys) and
      * the bars (see {@link CustomLayoutResolver}): an element the bottom bar or the left bar
      * covers is moved into free space, then cut, and only if it cannot fit even then it is reset.
-     * Two elements that overlap on their own: one of them is reset.
+     * Two elements that overlap on any page: the one that gives way is cut beside the other, and
+     * if it cannot be cut it is moved or reset into free space.
      *
      * -1 Check all screens, reset overlapping rectangles on same screen
      *  0 Check only screen 0, reset overlapping rectangles on that screen
@@ -580,10 +588,12 @@ public class Helpers {
         boolean thirdPip = mPrefs.getBoolean(Keys.PIP_THIRD, false);
         boolean fourthPip = mPrefs.getBoolean(Keys.PIP_FOURTH, false);
 
-        // The occupied cells are read at most once per call, and only for the first screen, the
-        // only one with bars.
+        // The occupied cells of all pages are read at most once per call (the model snapshot holds
+        // them all), so that a reset can avoid the icons and folders on every page, not only on
+        // the first one with the bars.
         WorkspaceOccupancy occupancy = null;
         boolean occupancyRead = false;
+        boolean gridWarned = false;
 
         List<ScreenResolution> resolutions = new ArrayList<>();
         int lastScreen = 0;
@@ -641,24 +651,30 @@ public class Helpers {
                     env.rightTrigger = env.maxRight;
                     env.leftBarOffset = (int) leftBarWidth;
                 }
-                if (env.maxBottom != CustomLayoutResolver.NO_LIMIT || env.maxRight != CustomLayoutResolver.NO_LIMIT) {
-                    GridGeometry grid = GridGeometry.published();
-                    if (grid != null && !occupancyRead) {
-                        occupancyRead = true;
-                        occupancy = CustomLayoutDb.read(LauncherApplication.sApp, grid,
-                                LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count));
-                    }
-                    if (grid != null && occupancy != null) {
-                        env.grid = grid;
-                        env.occupied = occupancy.page(0);
-                    } else {
-                        Log.w(TAG, "The cell grid or the occupied cells are not known, elements are cut but not moved");
-                    }
-                }
+            }
+            GridGeometry grid = GridGeometry.published();
+            // Away from the bars the cells are only read from the model's in-memory copy: before it is
+            // loaded they would cost two database queries on this (possibly main) thread.
+            boolean barsHere = env.maxBottom != CustomLayoutResolver.NO_LIMIT
+                    || env.maxRight != CustomLayoutResolver.NO_LIMIT;
+            if (!barsHere && !LauncherModel.getScreenSnapshot().isReady()) {
+                grid = null;
+            }
+            if (grid != null && !occupancyRead) {
+                occupancyRead = true;
+                occupancy = CustomLayoutDb.read(LauncherApplication.sApp, grid,
+                        LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count));
+            }
+            if (grid != null && occupancy != null) {
+                env.grid = grid;
+                env.occupied = occupancy.page(screen);
+            } else if (!gridWarned) {
+                gridWarned = true;
+                Log.w(TAG, "The cell grid or the occupied cells are not known, elements are cut but not moved");
             }
 
             CustomLayoutResolver.Result result = CustomLayoutResolver.resolve(elements, env);
-            ScreenResolution resolution = new ScreenResolution(env, new CustomLayoutResolver.Bounds(margin, margin,
+            ScreenResolution resolution = new ScreenResolution(screen, env, new CustomLayoutResolver.Bounds(margin, margin,
                     env.maxRight != CustomLayoutResolver.NO_LIMIT ? env.maxRight : bar.rootWidth - margin,
                     env.maxBottom != CustomLayoutResolver.NO_LIMIT ? env.maxBottom : bar.rootHeight - margin));
             for (int k = 0; k < elements.size(); k++) {
@@ -675,10 +691,32 @@ public class Helpers {
                     resolution.resets.add(i);
                     resolution.previousSize.add(element.empty ? null
                             : new int[] {element.right - element.left, element.bottom - element.top});
-                    Log.i(TAG, "Rectangle " + key + " has no room beside the bars or the others, resetting it");
+                    int winner = result.conflictWith[k];
+                    if (!result.cut[k] && winner >= 0) {
+                        Log.i(TAG, "Rectangle " + key + " overlaps " + elements.get(winner).key
+                                + " and cannot be cut, placing it elsewhere");
+                    } else if (!element.empty) {
+                        Log.i(TAG, "Rectangle " + key + " has no room beside the bars, resetting it");
+                    }
+                    resolution.noteLayout(key, "reset");
                     continue;
                 }
                 int[] rect = result.rects[k];
+                if (result.cut[k]) {
+                    Log.i(TAG, "Rectangle " + key + " overlaps " + elements.get(result.conflictWith[k]).key
+                            + ", cut to " + rect[0] + "," + rect[1] + "," + rect[2] + "," + rect[3]);
+                }
+                CustomLayoutResolver.Element element = elements.get(k);
+                String note = null;
+                if (result.cut[k]) {
+                    note = "cut";
+                } else if (!element.empty && (rect[0] != element.left || rect[1] != element.top
+                        || rect[2] != element.right || rect[3] != element.bottom)) {
+                    boolean sameSize = rect[2] - rect[0] == element.right - element.left
+                            && rect[3] - rect[1] == element.bottom - element.top;
+                    note = sameSize ? "moved" : "cut";
+                }
+                resolution.noteLayout(key, note);
                 RectF current = getRectangleBounds(mPrefs, key);
                 if (current.left == rect[0] && current.top == rect[1]
                         && current.right == rect[2] && current.bottom == rect[3]) continue;
@@ -696,7 +734,7 @@ public class Helpers {
                 // even though the write to disk is still pending.
                 editor.apply();
                 changedAny = true;
-                Log.i(TAG, "Rectangle " + key + " fitted beside the bars: " + current + " -> "
+                Log.i(TAG, "Rectangle " + key + " fitted to the room: " + current + " -> "
                         + rect[0] + "," + rect[1] + "," + rect[2] + "," + rect[3]);
             }
             resolutions.add(resolution);
@@ -711,6 +749,9 @@ public class Helpers {
                 placeResetsInFreeSpace(mPrefs, rectangleKeys, resolution);
             }
         }
+        for (ScreenResolution resolution : resolutions) {
+            resolution.logLayout(mPrefs);
+        }
 
         return foundOverlap || changedAny;
     }
@@ -724,10 +765,34 @@ public class Helpers {
         /** Indexes into RECTANGLE_KEYS, in that order (PiPs first), and the size each had before (or null). */
         final List<Integer> resets = new ArrayList<>();
         final List<int[]> previousSize = new ArrayList<>();
+        /** The page (0-based) and, for the log, the elements on it with what happened to them (or null). */
+        final int screen;
+        private final List<String> layoutKeys = new ArrayList<>();
+        private final List<String> layoutNotes = new ArrayList<>();
 
-        ScreenResolution(CustomLayoutResolver.Env env, CustomLayoutResolver.Bounds bounds) {
+        ScreenResolution(int screen, CustomLayoutResolver.Env env, CustomLayoutResolver.Bounds bounds) {
+            this.screen = screen;
             this.env = env;
             this.bounds = bounds;
+        }
+
+        void noteLayout(String key, String note) {
+            layoutKeys.add(key);
+            layoutNotes.add(note);
+        }
+
+        /** One line per page with the corners now in use, after the resets have been placed. */
+        void logLayout(SharedPreferences prefs) {
+            StringBuilder line = new StringBuilder("Layout of page ").append(screen + 1).append(": ");
+            for (int n = 0; n < layoutKeys.size(); n++) {
+                RectF rect = getRectangleBounds(prefs, layoutKeys.get(n));
+                if (n > 0) line.append("; ");
+                line.append(layoutKeys.get(n)).append(' ').append((int) rect.left).append(',')
+                        .append((int) rect.top).append(',').append((int) rect.right).append(',')
+                        .append((int) rect.bottom);
+                if (layoutNotes.get(n) != null) line.append(" (").append(layoutNotes.get(n)).append(')');
+            }
+            Log.d(TAG, line.toString());
         }
     }
 
@@ -752,6 +817,12 @@ public class Helpers {
             int top = placed[1];
             int right = left + placed[2];
             int bottom = top + placed[3];
+            // Judged before the element becomes an obstacle itself.
+            int[] previous = resolution.previousSize.get(n);
+            String how = !CustomLayoutResolver.isFreeAt(placed, resolution.obstacles, resolution.env,
+                    resolution.bounds) ? "default, nothing free"
+                    : previous != null && (placed[2] != (int) byDefault.width()
+                            || placed[3] != (int) byDefault.height()) ? "own size" : "reset size";
 
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt(key + "TopLeftX", left);
@@ -765,7 +836,8 @@ public class Helpers {
             putUserRect(editor, key, left, top, right, bottom);
             editor.apply();
             resolution.obstacles.add(new int[] {left, top, right, bottom});
-            Log.i(TAG, "Rectangle " + key + " reset to " + left + "," + top + "," + right + "," + bottom);
+            Log.i(TAG, "Rectangle " + key + " reset to " + left + "," + top + "," + right + "," + bottom
+                    + " (" + how + ")");
         }
     }
 
