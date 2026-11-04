@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">بازنشانی</string>
     <string name="reset_night_mode">تنظیم مقادیر پیش‌فرض حالت شب</string>
     <string name="init_default_app_error">لطفاً برنامه ناوبری/جلو را در تنظیمات دستگاه تنظیم کنید.</string>
-    <string name="logcat_names_info">نام فایل‌های گزارش</string>
-    <string name="logcat_names_info_summary">reboot – همراه با لانچر پس از راه‌اندازی مجدد دستگاه شروع شده\nstart – همراه با لانچر پس از راه‌اندازی مجدد خودکار آن شروع شده (خرابی، به‌روزرسانی)\nwake – هنگام بیدار شدن دستگاه شروع شده\nuser – به‌صورت دستی با «سرویس Logcat» شروع شده\nfull – شامل همه گزارش‌های دستگاه است\npid – فقط شامل گزارش‌های لانچر است\ncrash – هنگام کرش لانچر نوشته می‌شود (خطا و آخرین خط‌های گزارش)</string>
-    <string name="logcat_locations_info">گزارش‌ها و گزارش‌های کرش را کجا پیدا کنید</string>
+    <string name="logcat_names_info">نام فایل‌های گزارش:</string>
+    <string name="logcat_names_info_summary">reboot – همراه با لانچر پس از راه‌اندازی مجدد دستگاه شروع شده\nstart – همراه با لانچر هنگامی که بدون راه‌اندازی مجدد دستگاه دوباره شروع شد، شروع شده (به‌روزرسانی، خرابی)\nwake – هنگام بیدار شدن دستگاه شروع شده\nuser – به‌صورت دستی با «سرویس Logcat» شروع شده\nfull – شامل همه گزارش‌های دستگاه است\npid – فقط شامل گزارش‌های لانچر است\ncrash – در لحظهٔ کرش لانچر نوشته می‌شود: خطا و آخرین خط‌های گزارش (آنچه پس از راه‌اندازی مجدد می‌آید در گزارش start است)</string>
+    <string name="logcat_locations_info">گزارش‌ها و گزارش‌های کرش را کجا پیدا کنید:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – گزارش‌ها و گزارش‌های کرش (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – تا زمانی که نوشتن در Download ممکن نباشد (مثلاً بلافاصله پس از راه‌اندازی مجدد) استفاده می‌شود؛ بعداً به Download منتقل می‌شود</string>
     <string name="logcat_last_crash">آخرین گزارش کرش: %1$s</string>
     <string name="logcat_no_crash">گزارش کرشی وجود ندارد</string>

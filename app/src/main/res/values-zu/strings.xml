@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">Setha kabusha</string>
     <string name="reset_night_mode">Setha amanani azenzakalelayo emodi yobusuku</string>
     <string name="init_default_app_error">Sicela usethe uhlelo lokusebenza le-navi/langaphambili ezilungiselelweni zedivayisi.</string>
-    <string name="logcat_names_info">Amagama amafayela e-log</string>
-    <string name="logcat_names_info_summary">reboot – iqalwe kanye nesiqalisi ngemva kokuqala kabusha kwedivayisi\nstart – iqalwe kanye nesiqalisi ngemva kokuthi siziqalise kabusha (ukuphahlazeka, ukubuyekeza)\nwake – iqalwe lapho idivayisi ivuka\nuser – iqalwe ngesandla ku-“Isevisi ye-Logcat”\nfull – iqukethe wonke amalogi edivayisi\npid – iqukethe amalogi esiqalisi kuphela\ncrash – kubhalwa lapho isiqalisi siphahlazeka (iphutha nemigqa yokugcina yelogi)</string>
-    <string name="logcat_locations_info">Lapho ungathola khona amalogi nemibiko yokuphahlazeka</string>
+    <string name="logcat_names_info">Amagama amafayela e-log:</string>
+    <string name="logcat_names_info_summary">reboot – iqalwe kanye nesiqalisi ngemva kokuqala kabusha kwedivayisi\nstart – iqalwe kanye nesiqalisi lapho siqala kabusha ngaphandle kokuqala kabusha kwedivayisi (ukubuyekeza, ukuphahlazeka)\nwake – iqalwe lapho idivayisi ivuka\nuser – iqalwe ngesandla ku-“Isevisi ye-Logcat”\nfull – iqukethe wonke amalogi edivayisi\npid – iqukethe amalogi esiqalisi kuphela\ncrash – kubhalwa ngesikhathi isiqalisi siphahlazeka: iphutha nemigqa yokugcina yelogi (okwenzeka ngemva kokuqala kabusha kuselogini ye-start)</string>
+    <string name="logcat_locations_info">Lapho ungathola khona amalogi nemibiko yokuphahlazeka:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – amalogi nemibiko yokuphahlazeka (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – kusetshenziswa ngenkathi kungabhalwa ku-Download (isb. ngokushesha ngemva kokuqala kabusha); kamuva kudluliselwe ku-Download</string>
     <string name="logcat_last_crash">Umbiko wokugcina wokuphahlazeka: %1$s</string>
     <string name="logcat_no_crash">Awekho amabika okuphahlazeka</string>

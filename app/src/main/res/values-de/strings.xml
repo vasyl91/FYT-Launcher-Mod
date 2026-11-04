@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">Zurücksetzen</string>
     <string name="reset_night_mode">Standardwerte für den Nachtmodus festlegen</string>
     <string name="init_default_app_error">Bitte die Navi-/Front-App in den Geräteeinstellungen festlegen.</string>
-    <string name="logcat_names_info">Namen der Logdateien</string>
-    <string name="logcat_names_info_summary">reboot – mit dem Launcher gestartet, nachdem das Gerät neu gestartet wurde\nstart – mit dem Launcher gestartet, nachdem er sich selbst neu gestartet hat (Absturz, Update)\nwake – gestartet, als das Gerät aufgewacht ist\nuser – von Hand mit „Logcat-Dienst“ gestartet\nfull – enthält alle Logs des Geräts\npid – enthält nur die Logs des Launchers\ncrash – geschrieben, wenn der Launcher abgestürzt ist (der Fehler und die letzten Logzeilen)</string>
-    <string name="logcat_locations_info">Wo Logs und Absturzberichte zu finden sind</string>
+    <string name="logcat_names_info">Namen der Logdateien:</string>
+    <string name="logcat_names_info_summary">reboot – mit dem Launcher gestartet, nachdem das Gerät neu gestartet wurde\nstart – mit dem Launcher gestartet, als er ohne Neustart des Geräts erneut gestartet wurde (Update, Absturz)\nwake – gestartet, als das Gerät aufgewacht ist\nuser – von Hand mit „Logcat-Dienst“ gestartet\nfull – enthält alle Logs des Geräts\npid – enthält nur die Logs des Launchers\ncrash – im Moment des Launcher-Absturzes geschrieben: der Fehler und die letzten Logzeilen (was nach dem Neustart folgt, steht im start-Log)</string>
+    <string name="logcat_locations_info">Wo Logs und Absturzberichte zu finden sind:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – die Logs und die Absturzberichte (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – wird genutzt, solange in Download nicht geschrieben werden kann (z. B. direkt nach einem Neustart); später nach Download verschoben</string>
     <string name="logcat_last_crash">Letzter Absturzbericht: %1$s</string>
     <string name="logcat_no_crash">Keine Absturzberichte</string>

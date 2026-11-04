@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">重置</string>
     <string name="reset_night_mode">恢复夜间模式默认值</string>
     <string name="init_default_app_error">请在设备设置中选择导航/前置应用。</string>
-    <string name="logcat_names_info">日志文件名</string>
-    <string name="logcat_names_info_summary">reboot – 设备重启后随启动器一起启动\nstart – 启动器自行重启（崩溃、更新）后随之启动\nwake – 设备唤醒时启动\nuser – 通过“日志服务”手动启动\nfull – 包含设备的所有日志\npid – 仅包含启动器的日志\ncrash – 启动器崩溃时写入（错误和日志的最后几行）</string>
-    <string name="logcat_locations_info">日志和崩溃报告的位置</string>
+    <string name="logcat_names_info">日志文件名：</string>
+    <string name="logcat_names_info_summary">reboot – 设备重启后随启动器一起启动\nstart – 启动器在未重启设备的情况下再次启动时随之启动（更新、崩溃）\nwake – 设备唤醒时启动\nuser – 通过“日志服务”手动启动\nfull – 包含设备的所有日志\npid – 仅包含启动器的日志\ncrash – 启动器崩溃的瞬间写入：错误和日志的最后几行（重启之后的内容在 start 日志中）</string>
+    <string name="logcat_locations_info">日志和崩溃报告的位置：</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – 日志和崩溃报告（crash_pid_…）\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – 在无法写入 Download 时使用（例如刚重启后），之后会移到 Download</string>
     <string name="logcat_last_crash">最近的崩溃报告：%1$s</string>
     <string name="logcat_no_crash">没有崩溃报告</string>

@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">Resetten</string>
     <string name="reset_night_mode">De standaardwaarden voor de nachtmodus instellen</string>
     <string name="init_default_app_error">Stel de navigatie-/voorgrondapp in bij de apparaatinstellingen.</string>
-    <string name="logcat_names_info">Namen van logbestanden</string>
-    <string name="logcat_names_info_summary">reboot – gestart met de launcher nadat het apparaat opnieuw was opgestart\nstart – gestart met de launcher nadat deze zichzelf opnieuw had gestart (crash, update)\nwake – gestart toen het apparaat ontwaakte\nuser – handmatig gestart met “Logcat-service”\nfull – bevat alle logs van het apparaat\npid – bevat alleen de logs van de launcher\ncrash – geschreven toen de launcher crashte (de fout en de laatste logregels)</string>
-    <string name="logcat_locations_info">Waar u de logs en crashrapporten vindt</string>
+    <string name="logcat_names_info">Namen van logbestanden:</string>
+    <string name="logcat_names_info_summary">reboot – gestart met de launcher nadat het apparaat opnieuw was opgestart\nstart – gestart met de launcher toen deze opnieuw startte zonder dat het apparaat opnieuw was opgestart (update, crash)\nwake – gestart toen het apparaat ontwaakte\nuser – handmatig gestart met “Logcat-service”\nfull – bevat alle logs van het apparaat\npid – bevat alleen de logs van de launcher\ncrash – geschreven op het moment dat de launcher crashte: de fout en de laatste logregels (wat na de herstart volgt, staat in het start-log)</string>
+    <string name="logcat_locations_info">Waar u de logs en crashrapporten vindt:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – de logs en de crashrapporten (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – gebruikt zolang er niet in Download geschreven kan worden (bijv. direct na een herstart); later verplaatst naar Download</string>
     <string name="logcat_last_crash">Laatste crashrapport: %1$s</string>
     <string name="logcat_no_crash">Geen crashrapporten</string>

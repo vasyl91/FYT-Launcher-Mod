@@ -351,12 +351,12 @@
     <string name="reset_night_mode_category">Reset</string>
     <string name="reset_night_mode">Set the default values for the night mode</string>
     <string name="init_default_app_error">Please set the navi/front app in the device settings.</string>
-    <!-- The legend of the log file names. The six words reboot, start, wake, user, full and pid are
-         the ones in the names (LogcatWorker.Trigger.fileLabel, LogFileName): never translate them
-         and change them only together with the code. -->
-    <string name="logcat_names_info">Log file names</string>
-    <string name="logcat_names_info_summary">reboot – started with the launcher after the device restarted\nstart – started with the launcher after it restarted on its own (crash, update)\nwake – started when the device woke up\nuser – started by hand with \"Logcat service\"\nfull – holds all of the device\'s logs\npid – holds the launcher\'s logs only\ncrash – written when the launcher crashed (the error and the last log lines)</string>
-    <string name="logcat_locations_info">Where to find the logs and crash reports</string>
+    <!-- The legend of the log file names. The seven words reboot, start, wake, user, full, pid and
+         crash are the ones in the names (LogcatWorker.Trigger.fileLabel, LogFileName; crash is
+         LogFileName.CRASH_LABEL): never translate them and change them only together with the code. -->
+    <string name="logcat_names_info">Log file names:</string>
+    <string name="logcat_names_info_summary">reboot – started with the launcher after the device restarted\nstart – started with the launcher when it started again without a device restart (update, crash)\nwake – started when the device woke up\nuser – started by hand with \"Logcat service\"\nfull – holds all of the device\'s logs\npid – holds the launcher\'s logs only\ncrash – written the moment the launcher crashed: the error and the last log lines (what follows the restart is in the start log)</string>
+    <string name="logcat_locations_info">Where to find the logs and crash reports:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – the logs and the crash reports (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – used while Download cannot be written (e.g. right after a restart); moved to Download later</string>
     <string name="logcat_last_crash">Last crash report: %1$s</string>
     <string name="logcat_no_crash">No crash reports</string>

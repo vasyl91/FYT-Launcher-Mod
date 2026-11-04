@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">កំណត់ឡើងវិញ</string>
     <string name="reset_night_mode">កំណត់តម្លៃលំនាំដើមសម្រាប់មុខងារយប់</string>
     <string name="init_default_app_error">សូមកំណត់កម្មវិធីណាវី/កម្មវិធីខាងមុខនៅក្នុងការកំណត់ឧបករណ៍។</string>
-    <string name="logcat_names_info">ឈ្មោះឯកសារកំណត់ហេតុ</string>
-    <string name="logcat_names_info_summary">reboot – ចាប់ផ្តើមជាមួយ launcher បន្ទាប់ពីឧបករណ៍ចាប់ផ្តើមឡើងវិញ\nstart – ចាប់ផ្តើមជាមួយ launcher បន្ទាប់ពីវាចាប់ផ្តើមឡើងវិញដោយខ្លួនឯង (គាំង ការអាប់ដេត)\nwake – ចាប់ផ្តើមនៅពេលឧបករណ៍ភ្ញាក់\nuser – ចាប់ផ្តើមដោយដៃជាមួយ “សេវាកម្ម Logcat”\nfull – មានកំណត់ហេតុទាំងអស់របស់ឧបករណ៍\npid – មានតែកំណត់ហេតុរបស់ launcher ប៉ុណ្ណោះ\ncrash – សរសេរនៅពេលកម្មវិធីចាប់ផ្តើមគាំង (កំហុស និងបន្ទាត់ចុងក្រោយនៃកំណត់ហេតុ)</string>
-    <string name="logcat_locations_info">កន្លែងរកកំណត់ហេតុ និងរបាយការណ៍គាំង</string>
+    <string name="logcat_names_info">ឈ្មោះឯកសារកំណត់ហេតុ៖</string>
+    <string name="logcat_names_info_summary">reboot – ចាប់ផ្តើមជាមួយ launcher បន្ទាប់ពីឧបករណ៍ចាប់ផ្តើមឡើងវិញ\nstart – ចាប់ផ្តើមជាមួយ launcher នៅពេលវាចាប់ផ្តើមឡើងវិញដោយមិនបានចាប់ផ្តើមឧបករណ៍ឡើងវិញ (ការអាប់ដេត គាំង)\nwake – ចាប់ផ្តើមនៅពេលឧបករណ៍ភ្ញាក់\nuser – ចាប់ផ្តើមដោយដៃជាមួយ “សេវាកម្ម Logcat”\nfull – មានកំណត់ហេតុទាំងអស់របស់ឧបករណ៍\npid – មានតែកំណត់ហេតុរបស់ launcher ប៉ុណ្ណោះ\ncrash – សរសេរនៅពេលកម្មវិធីចាប់ផ្តើមគាំង៖ កំហុស និងបន្ទាត់ចុងក្រោយនៃកំណត់ហេតុ (អ្វីដែលកើតឡើងបន្ទាប់ពីការចាប់ផ្តើមឡើងវិញ មាននៅក្នុងកំណត់ហេតុ start)</string>
+    <string name="logcat_locations_info">កន្លែងរកកំណត់ហេតុ និងរបាយការណ៍គាំង៖</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – កំណត់ហេតុ និងរបាយការណ៍គាំង (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ប្រើពេលមិនអាចសរសេរទៅ Download បាន (ឧ. ភ្លាមៗក្រោយចាប់ផ្តើមឡើងវិញ)។ ក្រោយមកផ្លាស់ទៅ Download</string>
     <string name="logcat_last_crash">របាយការណ៍គាំងចុងក្រោយ៖ %1$s</string>
     <string name="logcat_no_crash">គ្មានរបាយការណ៍គាំង</string>

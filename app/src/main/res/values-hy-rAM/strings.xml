@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">Վերակայել</string>
     <string name="reset_night_mode">Սահմանել գիշերային ռեժիմի լռելյայն արժեքները</string>
     <string name="init_default_app_error">Խնդրում ենք սարքի կարգավորումներում սահմանել նավիգացիոն/առաջին պլանի հավելվածը։</string>
-    <string name="logcat_names_info">Մատյանի ֆայլերի անունները</string>
-    <string name="logcat_names_info_summary">reboot – գործարկվել է լանչերի հետ սարքի վերագործարկումից հետո\nstart – գործարկվել է լանչերի հետ՝ նրա ինքնուրույն վերագործարկումից հետո (խափանում, թարմացում)\nwake – գործարկվել է սարքի արթնանալիս\nuser – գործարկվել է ձեռքով «Logcat ծառայություն»-ով\nfull – պարունակում է սարքի բոլոր մատյանները\npid – պարունակում է միայն լանչերի մատյանները\ncrash – գրվում է, երբ լաունչերը խափանվել է (սխալը և մատյանի վերջին տողերը)</string>
-    <string name="logcat_locations_info">Որտեղ գտնել մատյաններն ու խափանումների զեկույցները</string>
+    <string name="logcat_names_info">Մատյանի ֆայլերի անունները՝</string>
+    <string name="logcat_names_info_summary">reboot – գործարկվել է լանչերի հետ սարքի վերագործարկումից հետո\nstart – գործարկվել է լանչերի հետ, երբ այն կրկին գործարկվել է առանց սարքի վերագործարկման (թարմացում, խափանում)\nwake – գործարկվել է սարքի արթնանալիս\nuser – գործարկվել է ձեռքով «Logcat ծառայություն»-ով\nfull – պարունակում է սարքի բոլոր մատյանները\npid – պարունակում է միայն լանչերի մատյանները\ncrash – գրվում է լաունչերի խափանման պահին՝ սխալը և մատյանի վերջին տողերը (վերագործարկումից հետո եղածը start մատյանում է)</string>
+    <string name="logcat_locations_info">Որտեղ գտնել մատյաններն ու խափանումների զեկույցները՝</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – մատյանները և խափանումների զեկույցները (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – օգտագործվում է, քանի դեռ Download-ում գրել հնարավոր չէ (օր.՝ վերագործարկումից անմիջապես հետո), հետո տեղափոխվում է Download</string>
     <string name="logcat_last_crash">Վերջին խափանման զեկույցը՝ %1$s</string>
     <string name="logcat_no_crash">Խափանումների զեկույցներ չկան</string>

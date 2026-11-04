@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">Reset</string>
     <string name="reset_night_mode">Atur nilai default untuk mode malam</string>
     <string name="init_default_app_error">Harap atur aplikasi navigasi/depan di setelan perangkat.</string>
-    <string name="logcat_names_info">Nama file log</string>
-    <string name="logcat_names_info_summary">reboot – dimulai bersama launcher setelah perangkat dimulai ulang\nstart – dimulai bersama launcher setelah launcher dimulai ulang sendiri (error, pembaruan)\nwake – dimulai saat perangkat bangun\nuser – dimulai secara manual dengan “Layanan Logcat”\nfull – berisi semua log perangkat\npid – hanya berisi log launcher\ncrash – ditulis saat peluncur mogok (galat dan baris log terakhir)</string>
-    <string name="logcat_locations_info">Tempat menemukan log dan laporan mogok</string>
+    <string name="logcat_names_info">Nama file log:</string>
+    <string name="logcat_names_info_summary">reboot – dimulai bersama launcher setelah perangkat dimulai ulang\nstart – dimulai bersama launcher saat launcher dimulai lagi tanpa perangkat dimulai ulang (pembaruan, error)\nwake – dimulai saat perangkat bangun\nuser – dimulai secara manual dengan “Layanan Logcat”\nfull – berisi semua log perangkat\npid – hanya berisi log launcher\ncrash – ditulis saat peluncur mogok: galat dan baris log terakhir (yang terjadi setelah dimulai ulang ada di log start)</string>
+    <string name="logcat_locations_info">Tempat menemukan log dan laporan mogok:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – log dan laporan mogok (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – dipakai selama Download tidak dapat ditulis (mis. tepat setelah mulai ulang); kemudian dipindahkan ke Download</string>
     <string name="logcat_last_crash">Laporan mogok terakhir: %1$s</string>
     <string name="logcat_no_crash">Tidak ada laporan mogok</string>

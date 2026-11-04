@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">รีเซ็ต</string>
     <string name="reset_night_mode">ตั้งค่าเริ่มต้นของโหมดกลางคืน</string>
     <string name="init_default_app_error">โปรดตั้งค่าแอปนำทาง/แอปด้านหน้าในการตั้งค่าอุปกรณ์</string>
-    <string name="logcat_names_info">ชื่อไฟล์บันทึก</string>
-    <string name="logcat_names_info_summary">reboot – เริ่มพร้อมกับตัวเปิดแอปหลังจากอุปกรณ์รีสตาร์ต\nstart – เริ่มพร้อมกับตัวเปิดแอปหลังจากที่มันรีสตาร์ตเอง (ขัดข้อง, อัปเดต)\nwake – เริ่มเมื่ออุปกรณ์ตื่น\nuser – เริ่มด้วยตนเองจาก “บริการ Logcat”\nfull – มีบันทึกทั้งหมดของอุปกรณ์\npid – มีเฉพาะบันทึกของตัวเปิดแอป\ncrash – เขียนเมื่อแลนเชอร์ขัดข้อง (ข้อผิดพลาดและบรรทัดสุดท้ายของบันทึก)</string>
-    <string name="logcat_locations_info">ตำแหน่งของบันทึกและรายงานการขัดข้อง</string>
+    <string name="logcat_names_info">ชื่อไฟล์บันทึก:</string>
+    <string name="logcat_names_info_summary">reboot – เริ่มพร้อมกับตัวเปิดแอปหลังจากอุปกรณ์รีสตาร์ต\nstart – เริ่มพร้อมกับตัวเปิดแอปเมื่อมันเริ่มทำงานใหม่โดยไม่มีการรีสตาร์ตอุปกรณ์ (อัปเดต, ขัดข้อง)\nwake – เริ่มเมื่ออุปกรณ์ตื่น\nuser – เริ่มด้วยตนเองจาก “บริการ Logcat”\nfull – มีบันทึกทั้งหมดของอุปกรณ์\npid – มีเฉพาะบันทึกของตัวเปิดแอป\ncrash – เขียนในขณะที่แลนเชอร์ขัดข้อง: ข้อผิดพลาดและบรรทัดสุดท้ายของบันทึก (สิ่งที่เกิดขึ้นหลังรีสตาร์ตอยู่ในบันทึก start)</string>
+    <string name="logcat_locations_info">ตำแหน่งของบันทึกและรายงานการขัดข้อง:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – บันทึกและรายงานการขัดข้อง (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ใช้ขณะที่เขียนลง Download ไม่ได้ (เช่น หลังรีสตาร์ตทันที) แล้วจึงย้ายไปที่ Download</string>
     <string name="logcat_last_crash">รายงานการขัดข้องล่าสุด: %1$s</string>
     <string name="logcat_no_crash">ไม่มีรายงานการขัดข้อง</string>

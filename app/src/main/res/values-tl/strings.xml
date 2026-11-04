@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">I-reset</string>
     <string name="reset_night_mode">Itakda ang mga default na halaga para sa night mode</string>
     <string name="init_default_app_error">Pakitakda ang navi/front app sa mga setting ng device.</string>
-    <string name="logcat_names_info">Mga pangalan ng log file</string>
-    <string name="logcat_names_info_summary">reboot – sinimulan kasama ng launcher pagkatapos mag-restart ang device\nstart – sinimulan kasama ng launcher pagkatapos nitong mag-restart nang mag-isa (crash, update)\nwake – sinimulan nang magising ang device\nuser – manu-manong sinimulan gamit ang “Logcat service”\nfull – naglalaman ng lahat ng log ng device\npid – naglalaman lamang ng mga log ng launcher\ncrash – isinusulat kapag nag-crash ang launcher (ang error at ang huling linya ng log)</string>
-    <string name="logcat_locations_info">Saan makikita ang mga log at crash report</string>
+    <string name="logcat_names_info">Mga pangalan ng log file:</string>
+    <string name="logcat_names_info_summary">reboot – sinimulan kasama ng launcher pagkatapos mag-restart ang device\nstart – sinimulan kasama ng launcher nang mag-restart ito nang hindi nire-restart ang device (update, crash)\nwake – sinimulan nang magising ang device\nuser – manu-manong sinimulan gamit ang “Logcat service”\nfull – naglalaman ng lahat ng log ng device\npid – naglalaman lamang ng mga log ng launcher\ncrash – isinusulat sa mismong sandali ng pag-crash ng launcher: ang error at ang huling linya ng log (ang sumusunod pagkatapos ng restart ay nasa start log)</string>
+    <string name="logcat_locations_info">Saan makikita ang mga log at crash report:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ang mga log at crash report (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ginagamit habang hindi masusulatan ang Download (hal. pagkatapos mismo ng restart); inililipat sa Download mamaya</string>
     <string name="logcat_last_crash">Huling crash report: %1$s</string>
     <string name="logcat_no_crash">Walang crash report</string>

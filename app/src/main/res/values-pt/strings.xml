@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">Redefinir</string>
     <string name="reset_night_mode">Definir os valores padrão do modo noturno</string>
     <string name="init_default_app_error">Defina o app de navegação/primeiro plano nas configurações do dispositivo.</string>
-    <string name="logcat_names_info">Nomes dos arquivos de log</string>
-    <string name="logcat_names_info_summary">reboot – iniciado com o launcher após a reinicialização do dispositivo\nstart – iniciado com o launcher após ele reiniciar sozinho (falha, atualização)\nwake – iniciado quando o dispositivo despertou\nuser – iniciado manualmente com “Serviço Logcat”\nfull – contém todos os logs do dispositivo\npid – contém apenas os logs do launcher\ncrash – escrito quando o launcher falhou (o erro e as últimas linhas do registo)</string>
-    <string name="logcat_locations_info">Onde encontrar os registos e os relatórios de falhas</string>
+    <string name="logcat_names_info">Nomes dos arquivos de log:</string>
+    <string name="logcat_names_info_summary">reboot – iniciado com o launcher após a reinicialização do dispositivo\nstart – iniciado com o launcher quando ele iniciou novamente sem reinício do dispositivo (atualização, falha)\nwake – iniciado quando o dispositivo despertou\nuser – iniciado manualmente com “Serviço Logcat”\nfull – contém todos os logs do dispositivo\npid – contém apenas os logs do launcher\ncrash – escrito no momento em que o launcher falhou: o erro e as últimas linhas do registo (o que acontece após o reinício está no registo start)</string>
+    <string name="logcat_locations_info">Onde encontrar os registos e os relatórios de falhas:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – os registos e os relatórios de falhas (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – usada enquanto não for possível escrever em Download (p. ex. logo após um reinício); depois movida para Download</string>
     <string name="logcat_last_crash">Último relatório de falha: %1$s</string>
     <string name="logcat_no_crash">Sem relatórios de falhas</string>

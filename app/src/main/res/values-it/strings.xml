@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">Reimposta</string>
     <string name="reset_night_mode">Imposta i valori predefiniti della modalità notte</string>
     <string name="init_default_app_error">Imposta l\'app di navigazione/primo piano nelle impostazioni del dispositivo.</string>
-    <string name="logcat_names_info">Nomi dei file di log</string>
-    <string name="logcat_names_info_summary">reboot – avviato con il launcher dopo il riavvio del dispositivo\nstart – avviato con il launcher dopo che si è riavviato da solo (arresto anomalo, aggiornamento)\nwake – avviato al risveglio del dispositivo\nuser – avviato manualmente con «Servizio Logcat»\nfull – contiene tutti i log del dispositivo\npid – contiene solo i log del launcher\ncrash – scritto quando il launcher è andato in crash (l\'errore e le ultime righe del log)</string>
-    <string name="logcat_locations_info">Dove trovare i log e i rapporti di crash</string>
+    <string name="logcat_names_info">Nomi dei file di log:</string>
+    <string name="logcat_names_info_summary">reboot – avviato con il launcher dopo il riavvio del dispositivo\nstart – avviato con il launcher quando si è riavviato senza che il dispositivo venisse riavviato (aggiornamento, arresto anomalo)\nwake – avviato al risveglio del dispositivo\nuser – avviato manualmente con «Servizio Logcat»\nfull – contiene tutti i log del dispositivo\npid – contiene solo i log del launcher\ncrash – scritto nel momento in cui il launcher è andato in crash: l\'errore e le ultime righe del log (ciò che segue il riavvio è nel log start)</string>
+    <string name="logcat_locations_info">Dove trovare i log e i rapporti di crash:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – i log e i rapporti di crash (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – usata finché non si può scrivere in Download (ad es. subito dopo un riavvio); poi spostata in Download</string>
     <string name="logcat_last_crash">Ultimo rapporto di crash: %1$s</string>
     <string name="logcat_no_crash">Nessun rapporto di crash</string>

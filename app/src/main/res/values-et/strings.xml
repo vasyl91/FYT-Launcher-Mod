@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">Lähtesta</string>
     <string name="reset_night_mode">Määra öörežiimi vaikeväärtused</string>
     <string name="init_default_app_error">Määrake navigatsiooni-/esiplaanirakendus seadme seadetes.</string>
-    <string name="logcat_names_info">Logifailide nimed</string>
-    <string name="logcat_names_info_summary">reboot – käivitatud koos käivitajaga pärast seadme taaskäivitust\nstart – käivitatud koos käivitajaga pärast selle iseseisvat taaskäivitust (krahh, värskendus)\nwake – käivitatud seadme ärkamisel\nuser – käivitatud käsitsi valikuga „Logcati teenus“\nfull – sisaldab kõiki seadme logisid\npid – sisaldab ainult käivitaja logisid\ncrash – kirjutatakse, kui käivitaja jooksis kokku (viga ja logi viimased read)</string>
-    <string name="logcat_locations_info">Kust leida logid ja kokkujooksmisaruanded</string>
+    <string name="logcat_names_info">Logifailide nimed:</string>
+    <string name="logcat_names_info_summary">reboot – käivitatud koos käivitajaga pärast seadme taaskäivitust\nstart – käivitatud koos käivitajaga, kui see käivitus uuesti ilma seadet taaskäivitamata (värskendus, krahh)\nwake – käivitatud seadme ärkamisel\nuser – käivitatud käsitsi valikuga „Logcati teenus“\nfull – sisaldab kõiki seadme logisid\npid – sisaldab ainult käivitaja logisid\ncrash – kirjutatakse hetkel, kui käivitaja jooksis kokku: viga ja logi viimased read (see, mis taaskäivitusele järgneb, on start-logis)</string>
+    <string name="logcat_locations_info">Kust leida logid ja kokkujooksmisaruanded:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – logid ja kokkujooksmisaruanded (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – kasutusel, kuni Downloadi ei saa kirjutada (nt kohe pärast taaskäivitust); hiljem teisaldatakse Downloadi</string>
     <string name="logcat_last_crash">Viimane kokkujooksmisaruanne: %1$s</string>
     <string name="logcat_no_crash">Kokkujooksmisaruandeid pole</string>

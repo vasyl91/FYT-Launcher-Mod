@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">ຣີເຊັດ</string>
     <string name="reset_night_mode">ຕັ້ງຄ່າເລີ່ມຕົ້ນສຳລັບໂໝດກາງຄືນ</string>
     <string name="init_default_app_error">ກະລຸນາຕັ້ງແອັບນຳທາງ/ແອັບດ້ານໜ້າໃນການຕັ້ງຄ່າອຸປະກອນ.</string>
-    <string name="logcat_names_info">ຊື່ໄຟລ໌ບັນທຶກ</string>
-    <string name="logcat_names_info_summary">reboot – ເລີ່ມພ້ອມກັບ launcher ຫຼັງຈາກອຸປະກອນເລີ່ມໃໝ່\nstart – ເລີ່ມພ້ອມກັບ launcher ຫຼັງຈາກມັນເລີ່ມໃໝ່ເອງ (ຂັດຂ້ອງ, ອັບເດດ)\nwake – ເລີ່ມເມື່ອອຸປະກອນຕື່ນຂຶ້ນ\nuser – ເລີ່ມດ້ວຍມືດ້ວຍ “ບໍລິການ Logcat”\nfull – ມີບັນທຶກທັງໝົດຂອງອຸປະກອນ\npid – ມີສະເພາະບັນທຶກຂອງ launcher\ncrash – ຂຽນເມື່ອຕົວເປີດແອັບຄ້າງ (ຂໍ້ຜິດພາດ ແລະ ແຖວສຸດທ້າຍຂອງບັນທຶກ)</string>
-    <string name="logcat_locations_info">ບ່ອນຊອກຫາບັນທຶກ ແລະ ລາຍງານການຄ້າງ</string>
+    <string name="logcat_names_info">ຊື່ໄຟລ໌ບັນທຶກ:</string>
+    <string name="logcat_names_info_summary">reboot – ເລີ່ມພ້ອມກັບ launcher ຫຼັງຈາກອຸປະກອນເລີ່ມໃໝ່\nstart – ເລີ່ມພ້ອມກັບ launcher ເມື່ອມັນເລີ່ມໃໝ່ໂດຍບໍ່ໄດ້ເລີ່ມອຸປະກອນໃໝ່ (ອັບເດດ, ຂັດຂ້ອງ)\nwake – ເລີ່ມເມື່ອອຸປະກອນຕື່ນຂຶ້ນ\nuser – ເລີ່ມດ້ວຍມືດ້ວຍ “ບໍລິການ Logcat”\nfull – ມີບັນທຶກທັງໝົດຂອງອຸປະກອນ\npid – ມີສະເພາະບັນທຶກຂອງ launcher\ncrash – ຂຽນໃນຂະນະທີ່ຕົວເປີດແອັບຄ້າງ: ຂໍ້ຜິດພາດ ແລະ ແຖວສຸດທ້າຍຂອງບັນທຶກ (ສິ່ງທີ່ເກີດຂຶ້ນຫຼັງການເລີ່ມໃໝ່ຢູ່ໃນບັນທຶກ start)</string>
+    <string name="logcat_locations_info">ບ່ອນຊອກຫາບັນທຶກ ແລະ ລາຍງານການຄ້າງ:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ບັນທຶກ ແລະ ລາຍງານການຄ້າງ (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ໃຊ້ເມື່ອຂຽນໃສ່ Download ບໍ່ໄດ້ (ເຊັ່ນ ຫຼັງເລີ່ມໃໝ່ທັນທີ); ຕໍ່ມາຍ້າຍໄປ Download</string>
     <string name="logcat_last_crash">ລາຍງານການຄ້າງຫຼ້າສຸດ: %1$s</string>
     <string name="logcat_no_crash">ບໍ່ມີລາຍງານການຄ້າງ</string>

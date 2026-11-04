@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">Đặt lại</string>
     <string name="reset_night_mode">Đặt giá trị mặc định cho chế độ ban đêm</string>
     <string name="init_default_app_error">Vui lòng đặt ứng dụng dẫn đường/ứng dụng phía trước trong cài đặt thiết bị.</string>
-    <string name="logcat_names_info">Tên tệp nhật ký</string>
-    <string name="logcat_names_info_summary">reboot – bắt đầu cùng launcher sau khi thiết bị khởi động lại\nstart – bắt đầu cùng launcher sau khi nó tự khởi động lại (sự cố, cập nhật)\nwake – bắt đầu khi thiết bị thức dậy\nuser – bắt đầu thủ công bằng “Dịch vụ Logcat”\nfull – chứa tất cả nhật ký của thiết bị\npid – chỉ chứa nhật ký của launcher\ncrash – được ghi khi trình khởi chạy gặp sự cố (lỗi và các dòng nhật ký cuối)</string>
-    <string name="logcat_locations_info">Nơi tìm nhật ký và báo cáo sự cố</string>
+    <string name="logcat_names_info">Tên tệp nhật ký:</string>
+    <string name="logcat_names_info_summary">reboot – bắt đầu cùng launcher sau khi thiết bị khởi động lại\nstart – bắt đầu cùng launcher khi nó khởi động lại mà không khởi động lại thiết bị (cập nhật, sự cố)\nwake – bắt đầu khi thiết bị thức dậy\nuser – bắt đầu thủ công bằng “Dịch vụ Logcat”\nfull – chứa tất cả nhật ký của thiết bị\npid – chỉ chứa nhật ký của launcher\ncrash – được ghi vào lúc trình khởi chạy gặp sự cố: lỗi và các dòng nhật ký cuối (những gì diễn ra sau khi khởi động lại nằm trong nhật ký start)</string>
+    <string name="logcat_locations_info">Nơi tìm nhật ký và báo cáo sự cố:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – nhật ký và báo cáo sự cố (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – được dùng khi chưa ghi được vào Download (ví dụ ngay sau khi khởi động lại); sau đó được chuyển vào Download</string>
     <string name="logcat_last_crash">Báo cáo sự cố gần nhất: %1$s</string>
     <string name="logcat_no_crash">Không có báo cáo sự cố</string>

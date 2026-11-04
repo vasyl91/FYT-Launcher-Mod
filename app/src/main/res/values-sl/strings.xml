@@ -288,9 +288,9 @@
     <string name="reset_night_mode_category">Ponastavi</string>
     <string name="reset_night_mode">Nastavi privzete vrednosti nočnega načina</string>
     <string name="init_default_app_error">V nastavitvah naprave nastavite navigacijsko aplikacijo/aplikacijo v ospredju.</string>
-    <string name="logcat_names_info">Imena datotek dnevnika</string>
-    <string name="logcat_names_info_summary">reboot – zagnano z zaganjalnikom po ponovnem zagonu naprave\nstart – zagnano z zaganjalnikom, ko se je sam ponovno zagnal (zrušitev, posodobitev)\nwake – zagnano ob prebuditvi naprave\nuser – zagnano ročno prek »Storitev Logcat«\nfull – vsebuje vse dnevnike naprave\npid – vsebuje samo dnevnike zaganjalnika\ncrash – zapisano, ko se je zaganjalnik zrušil (napaka in zadnje vrstice dnevnika)</string>
-    <string name="logcat_locations_info">Kje najti dnevnike in poročila o zrušitvah</string>
+    <string name="logcat_names_info">Imena datotek dnevnika:</string>
+    <string name="logcat_names_info_summary">reboot – zagnano z zaganjalnikom po ponovnem zagonu naprave\nstart – zagnano z zaganjalnikom, ko se je ponovno zagnal brez ponovnega zagona naprave (posodobitev, zrušitev)\nwake – zagnano ob prebuditvi naprave\nuser – zagnano ročno prek »Storitev Logcat«\nfull – vsebuje vse dnevnike naprave\npid – vsebuje samo dnevnike zaganjalnika\ncrash – zapisano v trenutku, ko se je zaganjalnik zrušil: napaka in zadnje vrstice dnevnika (kar sledi po ponovnem zagonu, je v dnevniku start)</string>
+    <string name="logcat_locations_info">Kje najti dnevnike in poročila o zrušitvah:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – dnevniki in poročila o zrušitvah (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – uporablja se, dokler v Download ni mogoče pisati (npr. takoj po ponovnem zagonu); pozneje se premakne v Download</string>
     <string name="logcat_last_crash">Zadnje poročilo o zrušitvi: %1$s</string>
     <string name="logcat_no_crash">Ni poročil o zrušitvah</string>
