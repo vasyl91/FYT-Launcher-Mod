@@ -1,21 +1,28 @@
 package com.android.launcher66.settings;
 
+import android.app.ActivityManager;
+import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Display;
 import android.widget.Toast;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.DefaultDisplayTask;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.MediaFavoriteController;
 import com.android.launcher66.R;
@@ -35,6 +42,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -388,9 +398,25 @@ public final class SpotifyRating {
         Intent browser = new Intent(Intent.ACTION_VIEW, authorizeUri);
         browser.addCategory(Intent.CATEGORY_BROWSABLE);
         browser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        String browserPackage = pinBrowserPackage(context, browser);
+
+        // The main display is asked for explicitly. A browser that already has a task on another
+        // display (observed on a FYT head unit right after the launcher's data was cleared: Firefox,
+        // singleTask, with a task on a pane's virtual display) is otherwise brought up where that
+        // task is. It then counts as the app on top for everything that reads the task list of all
+        // displays, while the main display keeps showing the settings and the sign-in page is not
+        // seen. Starting on the default display needs no permission.
+        Bundle options = ActivityOptions.makeBasic()
+                .setLaunchDisplayId(Display.DEFAULT_DISPLAY).toBundle();
 
         try {
-            context.startActivity(browser);
+            try {
+                context.startActivity(browser, options);
+            } catch (SecurityException e) {
+                Log.w(TAG, "Starting the browser with a launch display was refused, starting it without", e);
+                context.startActivity(browser);
+            }
+            scheduleBrowserCheck(context.getApplicationContext(), browser, browserPackage, options);
             return true;
         } catch (ActivityNotFoundException e) {
             // Head units ship without a browser far more often than phones do,
@@ -400,6 +426,126 @@ public final class SpotifyRating {
             toast(context, R.string.spotify_no_browser);
             return false;
         }
+    }
+
+    /**
+     * Names the browser that will open the page when there is a definite one: the default
+     * browser, or the only one installed. With several and no default the system chooser is left
+     * to choose, as before. Logs what was found, because on a head unit the answer is not obvious.
+     * One query at a button press, which StrictMode allows.
+     *
+     * @return the package the intent is now bound to, or null when it is left to the system
+     */
+    private static String pinBrowserPackage(Context context, Intent browser) {
+        String chosen = null;
+        String defaultPackage = null;
+        int handlers = 0;
+        try {
+            PackageManager pm = context.getPackageManager();
+            ResolveInfo resolved = pm.resolveActivity(browser, PackageManager.MATCH_DEFAULT_ONLY);
+            if (resolved != null && resolved.activityInfo != null
+                    && !"android".equals(resolved.activityInfo.packageName)) {
+                // "android" is the system's ResolverActivity: there is no default browser
+                defaultPackage = resolved.activityInfo.packageName;
+            }
+            Set<String> packages = new HashSet<>();
+            List<ResolveInfo> all = pm.queryIntentActivities(browser, PackageManager.MATCH_DEFAULT_ONLY);
+            if (all != null) {
+                for (ResolveInfo info : all) {
+                    if (info.activityInfo != null) packages.add(info.activityInfo.packageName);
+                }
+            }
+            handlers = packages.size();
+            if (defaultPackage != null) {
+                chosen = defaultPackage;
+            } else if (handlers == 1) {
+                chosen = packages.iterator().next();
+            }
+            if (chosen != null) {
+                browser.setPackage(chosen);
+            }
+        } catch (RuntimeException e) {
+            Log.w(TAG, "The browser could not be resolved, leaving it to the system", e);
+        }
+        Log.i(TAG, "Spotify browser: default=" + defaultPackage + ", handlers=" + handlers
+                + ", bound to=" + chosen + ", system privileges=" + LauncherApplication.hasSystemPrivileges()
+                + ", SDK=" + android.os.Build.VERSION.SDK_INT);
+        return chosen;
+    }
+
+    /** How long the browser gets to bring its task up before the task list is read. */
+    private static final long BROWSER_CHECK_DELAY_MS = 1500;
+
+    /**
+     * Writes down where the browser's task ended up and starts the browser once more when it is on
+     * another display while the main one shows this app. Nothing is shown to the user. Only with
+     * the task list of all displays readable, which takes system privileges; otherwise it is
+     * logged that the check was skipped.
+     */
+    private static void scheduleBrowserCheck(final Context appContext, final Intent browser,
+                                             final String browserPackage, final Bundle options) {
+        if (!LauncherApplication.hasSystemPrivileges() || !DefaultDisplayTask.knowsDisplays()) {
+            Log.d(TAG, "Spotify browser check: task stack not visible, check skipped");
+            return;
+        }
+        // getRunningTasks() is a binder call, so it stays off the main thread. An exception thrown
+        // on a thread of our own would be a crash of the launcher: everything is caught.
+        new Thread(() -> {
+            try {
+                Thread.sleep(BROWSER_CHECK_DELAY_MS);
+                ActivityManager am = (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
+                if (am == null) return;
+                if (!logBrowserCheck(appContext, am, browserPackage, "")) return;
+
+                ActivityManager.RunningTaskInfo task = browserTask(am, browserPackage);
+                int display = task != null ? DefaultDisplayTask.displayId(task) : -1;
+                android.content.ComponentName top = DefaultDisplayTask.topActivity(am);
+                if (task != null && display >= 0 && display != Display.DEFAULT_DISPLAY
+                        && top != null && appContext.getPackageName().equals(top.getPackageName())) {
+                    Intent again = new Intent(browser);
+                    again.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    appContext.startActivity(again, options);
+                    Log.w(TAG, "Spotify browser check: " + browserPackage + " was on display " + display
+                            + " while the main display showed this app, started again on the main display");
+                    Thread.sleep(BROWSER_CHECK_DELAY_MS);
+                    logBrowserCheck(appContext, am, browserPackage, " (after the second start)");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Spotify browser check failed", e);
+            }
+        }, "SpotifyBrowserCheck").start();
+    }
+
+    /** Logs the display of the browser's task and what the main display shows; false if unknown. */
+    private static boolean logBrowserCheck(Context appContext, ActivityManager am, String browserPackage,
+                                           String suffix) {
+        android.content.ComponentName top = DefaultDisplayTask.topActivity(am);
+        if (browserPackage == null) {
+            Log.i(TAG, "Spotify browser check: the browser is left to the system, main display shows "
+                    + (top != null ? top.getPackageName() : null) + suffix);
+            return false;
+        }
+        ActivityManager.RunningTaskInfo task = browserTask(am, browserPackage);
+        Log.i(TAG, "Spotify browser check: " + browserPackage + " task "
+                + (task != null ? task.id : null) + " on display "
+                + (task != null ? DefaultDisplayTask.displayId(task) : null)
+                + ", main display shows " + (top != null ? top.getPackageName() : null) + suffix);
+        return true;
+    }
+
+    @SuppressWarnings("deprecation")
+    private static ActivityManager.RunningTaskInfo browserTask(ActivityManager am, String pkg) {
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(16);
+        if (tasks == null) return null;
+        for (ActivityManager.RunningTaskInfo task : tasks) {
+            if ((task.topActivity != null && pkg.equals(task.topActivity.getPackageName()))
+                    || (task.baseActivity != null && pkg.equals(task.baseActivity.getPackageName()))) {
+                return task;
+            }
+        }
+        return null;
     }
 
     /** A random string over the unreserved set; used for the verifier and the state. */
