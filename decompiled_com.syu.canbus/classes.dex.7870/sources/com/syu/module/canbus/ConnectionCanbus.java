@@ -1,0 +1,43 @@
+package com.syu.module.canbus;
+
+import android.os.RemoteException;
+import com.syu.ipc.IRemoteToolkit;
+import com.syu.module.ConnectionObserver;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\com.syu.canbus7870.apk\dexFile\classes.dex */
+public class ConnectionCanbus implements ConnectionObserver {
+    private static final ConnectionCanbus INSTANCE = new ConnectionCanbus();
+    public boolean IsConnectCanbus = false;
+
+    public static ConnectionCanbus getInstance() {
+        return INSTANCE;
+    }
+
+    private ConnectionCanbus() {
+    }
+
+    @Override // com.syu.module.ConnectionObserver
+    public void onConnected(IRemoteToolkit toolkit) {
+        try {
+            DataCanbus.PROXY.setRemoteModule(toolkit.getRemoteModule(7));
+            ModuleCallbackCanbusProxy callback = ModuleCallbackCanbusProxy.getInstance();
+            DataCanbus.PROXY.register(callback, 1000, 1);
+            DataCanbus.PROXY.register(callback, FinalCanbus.U_AIR_WINDOW_ENABLE, 1);
+            DataCanbus.PROXY.register(callback, 1003, 1);
+            DataCanbus.PROXY.register(callback, FinalCanbus.U_DOOR_WINDOW_ENABLE, 1);
+            DataCanbus.PROXY.register(callback, FinalCanbus.U_CAR_BT_ON, 1);
+            DataCanbus.PROXY.register(callback, FinalCanbus.U_SHOW_AIR_WINDOW, 1);
+            this.IsConnectCanbus = true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override // com.syu.module.ConnectionObserver
+    public void onDisconnected() {
+        this.IsConnectCanbus = false;
+        DataCanbus.PROXY.setRemoteModule(null);
+        DataCanbus.DATA[1000] = 0;
+        ModuleCallbackCanbusProxy.getInstance().setCallbackCanbus(null);
+    }
+}
