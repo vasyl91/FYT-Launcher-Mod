@@ -21,6 +21,12 @@ final class MusicWidgetPlan {
     /** A button is this share of the smaller side of its cell. */
     static final float BUTTON_FILL = 0.8f;
 
+    /**
+     * In one row of four beside the text a button is this share of the smaller side of its cell: 10%
+     * more than {@link #BUTTON_FILL}, because the owner finds them small there.
+     */
+    static final float BUTTON_FILL_ONE_ROW = 0.88f;
+
     // Home widget, shares of the height (each set adds up to 1):
     /** Cover, two text rows, progress, buttons, gaps. */
     static final float[] HOME_STANDARD = {0.38f, 0.13f, 0.13f, 0.04f, 0.24f, 0.08f};
@@ -105,16 +111,6 @@ final class MusicWidgetPlan {
     /** Two text rows, gaps. */
     static final float[] BAR_WIDE_STANDARD = {0.45f, 0.45f, 0.10f};
 
-    /**
-     * With the buttons beside the text, what is left of the widget right of the cover and its gap
-     * (R) is divided between the text and the block of buttons. The block is 2 x 2 and takes 35%
-     * of R; with 'Buttons in one line' it is one row of four and takes 40% (the text keeps the
-     * rest, rounding included).
-     */
-    static final float BAR_BESIDE_BUTTONS_SHARE = 0.35f;
-
-    static final float BAR_BESIDE_BUTTONS_ONE_ROW_SHARE = 0.40f;
-
     /** The cover of the home widget is at most this share of its width. */
     static final float HOME_COVER_WIDTH = 0.9f;
 
@@ -195,7 +191,8 @@ final class MusicWidgetPlan {
             if (wide) {
                 return "layout=beside oneLine=" + oneLine + " large=" + largeText + " cover=" + coverPx + "+"
                         + coverGapPx + " R=" + restPx + " text=" + columnPx + " buttons=" + buttonBlockPx
-                        + "(" + (buttonRows == 1 ? "1x4" : "2x2") + ") row=" + rowPx + " textPx=" + textPx + " cell="
+                        + "(" + (buttonRows == 1 ? "1x4, " + Math.round(100f * buttonBlockPx / Math.max(1, restPx)) + "%"
+                        : "2x2") + ") row=" + rowPx + " textPx=" + textPx + " cell="
                         + cellWidthPx + "x" + buttonRowPx + "/" + buttonSidePx + " gap=" + gapPx + " capTop=" + capTopPx;
             }
             if (columnPx > 0) {
@@ -370,12 +367,13 @@ final class MusicWidgetPlan {
      * row with {@code oneLine}) in 65% of what is left (R), then a block of buttons in the other
      * 35%. The block is 2 x 2 (prev and next above play/pause and favorite), on every bar height
      * and with one line or two. With {@code buttonsOneRow} ('Buttons in one line') it is one row
-     * of four (prev, play/pause, next, favorite) and takes 40% of R, the text 60%. The text is
+     * of four (prev, play/pause, next, favorite) and takes half of R in portrait and 40% in
+     * landscape (WidgetBarPlan.besideButtonsShare), with buttons 10% larger than in 2 x 2. The text is
      * smaller here than the room would allow: the usual size is that of the one line of the usual
      * layout, and 'Large text' is the size the usual text used to have here.
      */
     static Plan planBarWide(int w, int h, int baseW, float density, boolean largeText, boolean oneLine,
-                            boolean buttonsOneRow) {
+                            boolean buttonsOneRow, boolean portrait) {
         Plan plan = new Plan();
         plan.wide = true;
         plan.compact = oneLine;
@@ -386,7 +384,7 @@ final class MusicWidgetPlan {
         // width with cells of 50% each would round both cells up (52.5 -> 53 + 53 = 106 > 105),
         // the second cell would not fit and the flexbox would wrap to one button per row.
         int cells = buttonsOneRow ? 4 : 2;
-        float share = buttonsOneRow ? BAR_BESIDE_BUTTONS_ONE_ROW_SHARE : BAR_BESIDE_BUTTONS_SHARE;
+        float share = WidgetBarPlan.besideButtonsShare(portrait, buttonsOneRow);
         plan.cellWidthPx = (int) (plan.restPx * share) / cells;
         plan.buttonBlockPx = cells * plan.cellWidthPx;
         plan.buttonRows = buttonsOneRow ? 1 : 2;
@@ -419,7 +417,8 @@ final class MusicWidgetPlan {
             plan.textPx = Math.max(plan.rowPx / LINE_FACTOR, MIN_TEXT_SP_FLOOR * density);
         }
         plan.buttonRowPx = buttonsOneRow ? h : h / 2;
-        plan.buttonSidePx = Math.round(Math.min(plan.cellWidthPx, plan.buttonRowPx) * BUTTON_FILL);
+        plan.buttonSidePx = Math.min(plan.cellWidthPx, Math.round(Math.min(plan.cellWidthPx, plan.buttonRowPx)
+                * (buttonsOneRow ? BUTTON_FILL_ONE_ROW : BUTTON_FILL)));
         return plan;
     }
 }

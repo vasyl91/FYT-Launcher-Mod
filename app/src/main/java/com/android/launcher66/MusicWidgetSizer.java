@@ -152,7 +152,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
             if (buttons instanceof FlexboxLayout) {
                 // The wide layout (WidgetBarLayout): the buttons are a block beside the text.
                 plan = MusicWidgetPlan.planBarWide(w, h, baseW, density, largeText, oneLine,
-                        WidgetBarLayout.buttonsInOneRow(prefs, portraitBar));
+                        WidgetBarLayout.buttonsInOneRow(prefs, portraitBar), portraitBar);
                 plan.withFont(fontShape(mRoot.findViewById(R.id.tv_musicName_two)), density);
                 applyBarWide(plan, w);
             } else {

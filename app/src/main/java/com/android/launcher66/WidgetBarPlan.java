@@ -20,6 +20,13 @@ public final class WidgetBarPlan {
     /** The icon above the weather texts keeps at least this share of its usual height. */
     static final float WEATHER_ICON_MIN_SHARE = 0.6f;
 
+    /** With the buttons beside the text in two rows of two, they take this share of the room right of the cover. */
+    static final float BESIDE_BUTTONS_TWO_ROWS = 0.35f;
+    /** In one row of four ('Buttons in one line'), in landscape. */
+    static final float BESIDE_BUTTONS_ONE_ROW_LAND = 0.40f;
+    /** In one row of four, in portrait, where the bar is narrow and four buttons need the room. */
+    static final float BESIDE_BUTTONS_ONE_ROW_PORT = 0.50f;
+
     private WidgetBarPlan() {
     }
 
@@ -55,6 +62,17 @@ public final class WidgetBarPlan {
             return MUSIC_PORT + (weatherHidden ? WEATHER_PORT : 0f);
         }
         return MUSIC_LAND + (dateHidden ? DATE_LAND : 0f) + (weatherHidden ? WEATHER_LAND : 0f);
+    }
+
+    /**
+     * The share of R (what is left of the widget right of the cover and its gap) the block of
+     * buttons takes beside the text; the text keeps the rest, rounding included.
+     */
+    static float besideButtonsShare(boolean portrait, boolean oneRow) {
+        if (!oneRow) {
+            return BESIDE_BUTTONS_TWO_ROWS;
+        }
+        return portrait ? BESIDE_BUTTONS_ONE_ROW_PORT : BESIDE_BUTTONS_ONE_ROW_LAND;
     }
 
     /** The music widget is wider than usual when any widget of the bar is hidden. */

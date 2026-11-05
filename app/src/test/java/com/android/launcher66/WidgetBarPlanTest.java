@@ -76,4 +76,12 @@ class WidgetBarPlanTest {
         assertFalse(WidgetBarPlan.buttonsBeside(false, false, true));
         assertFalse(WidgetBarPlan.buttonsBeside(false, false, false));
     }
+
+    @Test
+    void theBlockOfButtonsBesideTheTextTakesItsShareOfTheRoom() {
+        assertEquals(0.35f, WidgetBarPlan.besideButtonsShare(false, false), 0f);
+        assertEquals(0.35f, WidgetBarPlan.besideButtonsShare(true, false), 0f);
+        assertEquals(0.40f, WidgetBarPlan.besideButtonsShare(false, true), 0f);
+        assertEquals(0.50f, WidgetBarPlan.besideButtonsShare(true, true), 0f);
+    }
 }
