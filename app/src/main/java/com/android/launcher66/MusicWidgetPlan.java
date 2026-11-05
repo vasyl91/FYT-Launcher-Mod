@@ -52,12 +52,11 @@ final class MusicWidgetPlan {
     /** Height of a text row / font size in px with large text. */
     static final float LINE_FACTOR_LARGE = 1.2f;
 
-    /** The wide bar with large text: the rows fill the whole height of the column. */
-    static final float[] BAR_WIDE_STANDARD_LARGE = {0.50f, 0.50f, 0.00f};
-
     /**
      * One line of text: the box of the font (ascent to descent) is this share of the height of the
-     * line's row, usual and with 'Large text' (the whole height that is there to be used).
+     * line's row; with 'Large text' in the usual layout it is the share
+     * {@link #ONE_LINE_BOX_LARGE} (the whole height that is there to be used). Beside the buttons
+     * 'Large text' is the size the text used to have without it (see {@link #planBarWide}).
      */
     static final float ONE_LINE_BOX = 0.60f;
 
@@ -180,8 +179,10 @@ final class MusicWidgetPlan {
          * is the box divided by it. Two lines keep the size the plan gave them.
          */
         Plan withFont(FontShape font, float density) {
-            if (oneLine && fontBoxPx > 0f && font.boxRatio > 0f) {
+            if (fontBoxPx > 0f && font.boxRatio > 0f) {
                 textPx = textForBox(fontBoxPx, font.boxRatio, density);
+            }
+            if (oneLine && fontBoxPx > 0f) {
                 float capH = font.capRatio * textPx;
                 capTopPx = Math.round((rowPx - capH) / 2f);
                 textTopPaddingPx = oneLineTopPadding(rowPx, capH, font.ascentRatio * textPx);
@@ -356,14 +357,22 @@ final class MusicWidgetPlan {
     }
 
     /**
+     * The usual text of the bar at this height: the one line of the usual layout without 'Large
+     * text'. The layout with the buttons beside the text takes its text size (and the box of its
+     * font) from this plan, so that the two cannot drift apart.
+     */
+    static Plan belowOneLine(int w, int h, int baseW, float density) {
+        return planBar(w, h, baseW, density, false, true);
+    }
+
+    /**
      * The bar with the buttons beside the text: cover, then the text (title above artist, or one
      * row with {@code oneLine}) in 65% of what is left (R), then a block of buttons in the other
      * 35%. The block is 2 x 2 (prev and next above play/pause and favorite), on every bar height
      * and with one line or two. With {@code buttonsOneRow} ('Buttons in one line') it is one row
-     * of four (prev, play/pause, next, favorite) and takes 40% of R, the text 60%. With 'Large
-     * text' two rows fill the whole height of the column (two halves) and the font has the
-     * smaller line factor; one line has the whole height in both cases and its font is sized from
-     * the box of the font (see {@link #textForBox}).
+     * of four (prev, play/pause, next, favorite) and takes 40% of R, the text 60%. The text is
+     * smaller here than the room would allow: the usual size is that of the one line of the usual
+     * layout, and 'Large text' is the size the usual text used to have here.
      */
     static Plan planBarWide(int w, int h, int baseW, float density, boolean largeText, boolean oneLine,
                             boolean buttonsOneRow) {
@@ -382,20 +391,32 @@ final class MusicWidgetPlan {
         plan.buttonBlockPx = cells * plan.cellWidthPx;
         plan.buttonRows = buttonsOneRow ? 1 : 2;
         plan.columnPx = plan.restPx - plan.buttonBlockPx;
-        float lineFactor = largeText ? LINE_FACTOR_LARGE : LINE_FACTOR;
+        // The rows keep the heights they always had; the size of the text is what differs, and it
+        // is the same for one line and for two. Usual text: the size of the one line of the usual
+        // layout at the same h ({@link #belowOneLine}, the very function that sizes it there, so the two
+        // layouts cannot drift apart). 'Large text': the size the usual text used to have here: the
+        // box of the font is 0.60 of the height with one line, and a row of 0.45 of the height
+        // over the line factor with two.
+        Plan below = belowOneLine(w, h, baseW, density);
+        float[] shares = BAR_WIDE_STANDARD;
         if (oneLine) {
             // The line has the whole height of the column and no margin: it is centred in it.
             plan.rowTopPx = 0;
             plan.rowPx = h;
             plan.gapPx = 0;
-            plan.fontBoxPx = plan.rowPx * (largeText ? ONE_LINE_BOX_LARGE : ONE_LINE_BOX);
-            plan.textPx = textForBox(plan.fontBoxPx, DEFAULT_FONT_RATIO, density);
         } else {
-            float[] shares = largeText ? BAR_WIDE_STANDARD_LARGE : BAR_WIDE_STANDARD;
             plan.rowPx = part(h, shares[0]);
             plan.gapPx = part(h, shares[shares.length - 1] / (plan.rows() + 1));
             plan.rowTopPx = plan.gapPx;
-            plan.textPx = Math.max(plan.rowPx / lineFactor, MIN_TEXT_SP_FLOOR * density);
+        }
+        if (!largeText) {
+            plan.fontBoxPx = below.fontBoxPx;
+            plan.textPx = below.textPx;
+        } else if (oneLine) {
+            plan.fontBoxPx = plan.rowPx * ONE_LINE_BOX;
+            plan.textPx = textForBox(plan.fontBoxPx, DEFAULT_FONT_RATIO, density);
+        } else {
+            plan.textPx = Math.max(plan.rowPx / LINE_FACTOR, MIN_TEXT_SP_FLOOR * density);
         }
         plan.buttonRowPx = buttonsOneRow ? h : h / 2;
         plan.buttonSidePx = Math.round(Math.min(plan.cellWidthPx, plan.buttonRowPx) * BUTTON_FILL);
