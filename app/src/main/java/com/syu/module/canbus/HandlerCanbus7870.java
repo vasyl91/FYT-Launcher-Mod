@@ -2351,5 +2351,6 @@ final class HandlerCanbus7870 {
             default:
                 return new Callback_0000_null();
         }
+        return null;
     }
 }
