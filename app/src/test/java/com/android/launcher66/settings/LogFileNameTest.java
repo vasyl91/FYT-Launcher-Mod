@@ -112,4 +112,15 @@ class LogFileNameTest {
         assertEquals("crash_pid_", parts.prefix);
         assertEquals("03-11-2026_09-35-33", parts.timestamp);
     }
+
+    @Test
+    void aCompatReportIsNamedLikeACrashReportAndParses() {
+        assertEquals("compat_pid_", LogFileName.prefix(LogFileName.COMPAT_LABEL, false));
+        String name = LogFileName.name(LogFileName.prefix(LogFileName.COMPAT_LABEL, false),
+                "05-11-2026_10-12-13", LogFileName.TXT);
+        assertEquals("compat_pid_05-11-2026_10-12-13.txt", name);
+        LogFileName.Parts parts = LogFileName.parse(name);
+        assertEquals("compat_pid_", parts.prefix);
+        assertEquals("05-11-2026_10-12-13", parts.timestamp);
+    }
 }

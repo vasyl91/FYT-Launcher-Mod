@@ -1,5 +1,6 @@
 package com.fyt.car;
 
+import com.android.launcher66.settings.FytCompat;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -219,6 +220,7 @@ final class StockRadioSource {
                 found = lookup(forFreq);
             } catch (RuntimeException e) {
                 Log.w(TAG, "radio logo lookup failed for " + forFreq + ": " + e);
+                FytCompat.report("radio.logo lookup", e);
                 found = new Lookup(null, null);
             }
             Lookup result = found;

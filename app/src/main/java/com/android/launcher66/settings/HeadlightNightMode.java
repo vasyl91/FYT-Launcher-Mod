@@ -90,6 +90,10 @@ public final class HeadlightNightMode {
 
     /** Re-applies wallpaper and brightness; called when the switch is turned on, too. */
     public static void applyNow() {
+        FytCompat.run("headlights.apply", HeadlightNightMode::applyNowUnguarded);
+    }
+
+    private static void applyNowUnguarded() {
         Context context = sContext;
         if (context == null || sLightsOn == UNKNOWN) {
             return;

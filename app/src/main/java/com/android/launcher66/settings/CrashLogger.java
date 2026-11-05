@@ -38,6 +38,8 @@ public final class CrashLogger implements Thread.UncaughtExceptionHandler {
     private static final String TAG = "CrashLogger";
     /** Lines of this process's log written along with the trace. */
     private static final int LOG_TAIL_LINES = 600;
+    /** The same for a report of a failure that was caught. */
+    private static final int COMPAT_LOG_TAIL_LINES = 300;
     /** The process is dying: reading the log may not hold it up for long. */
     private static final long LOG_TAIL_TIMEOUT_MS = 2000L;
     /** The reports kept in the folder; the oldest are deleted. */
@@ -91,10 +93,7 @@ public final class CrashLogger implements Thread.UncaughtExceptionHandler {
     }
 
     private void write(Thread thread, Throwable throwable) throws Exception {
-        File dir = LogcatWorker.usablePublicDir(mContext);
-        if (dir == null) {
-            dir = LogcatWorker.resolveFallbackDir(mContext);
-        }
+        File dir = reportDir(mContext);
         if (dir == null) {
             return;
         }
@@ -103,20 +102,73 @@ public final class CrashLogger implements Thread.UncaughtExceptionHandler {
                 LogFileName.prefix(LogFileName.CRASH_LABEL, false), time, LogFileName.TXT));
         try (PrintWriter out = new PrintWriter(new FileWriter(file, false))) {
             out.println("===== CRASH " + time + " pid=" + Process.myPid() + " thread=" + thread.getName() + " =====");
-            out.println("===== device=" + Build.MANUFACTURER + " " + Build.MODEL
-                    + ", android=" + Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ") =====");
-            out.println("===== app=" + versionName() + " (" + versionCode() + "), flavor=" + BuildConfig.FLAVOR
-                    + ", platform=" + platform() + ", system=" + system() + " =====");
-            out.println("===== uptime=" + uptime() + " ms, crashes in the last "
-                    + (CrashLoopPolicy.WINDOW_MS / 1000) + " s: " + recentCrashes() + " =====");
+            writeHeader(mContext, out, true);
             throwable.printStackTrace(out);
             out.println();
-            out.println("===== last " + LOG_TAIL_LINES + " log lines of this process =====");
-            out.flush();
-            appendLogTail(out);
+            writeLogTail(out);
         }
         Log.e(TAG, "Crash report: " + file.getAbsolutePath());
-        deleteOldReports(dir);
+        deleteOldReports(dir, LogFileName.CRASH_LABEL);
+    }
+
+    /**
+     * Writes the report of a failure that was caught, so the launcher goes on: compat_pid_&lt;time&gt;.txt,
+     * next to the crash reports, with the same device and app lines, the stack and the log's end.
+     * Meant for the thread FytCompat reports from, not the main thread (it reads the log). Nothing
+     * here throws.
+     *
+     * @param area       what failed, e.g. "ms.callback code 12"
+     * @param occurrence how many times this failure has happened in the process
+     */
+    static void writeNonFatal(Context context, String area, Thread thread, Throwable throwable, int occurrence) {
+        try {
+            Context app = context.getApplicationContext();
+            File dir = reportDir(app != null ? app : context);
+            if (dir == null) {
+                return;
+            }
+            String time = new SimpleDateFormat(LogFileName.NAME_PATTERN, Locale.US).format(new Date());
+            File file = uniqueFile(dir, LogFileName.name(
+                    LogFileName.prefix(LogFileName.COMPAT_LABEL, false), time, LogFileName.TXT));
+            try (PrintWriter out = new PrintWriter(new FileWriter(file, false))) {
+                out.println("===== COMPAT " + time + " pid=" + Process.myPid() + " thread=" + thread.getName()
+                        + " area=" + area + " occurrence=" + occurrence + " =====");
+                writeHeader(app != null ? app : context, out, false);
+                throwable.printStackTrace(out);
+                out.println();
+                writeLogTail(out, COMPAT_LOG_TAIL_LINES);
+            }
+            Log.i(TAG, "Compat report: " + file.getAbsolutePath());
+            deleteOldReports(dir, LogFileName.COMPAT_LABEL);
+        } catch (Throwable t) {
+            Log.w(TAG, "Could not write the compat report", t);
+        }
+    }
+
+    private static File reportDir(Context context) {
+        File dir = LogcatWorker.usablePublicDir(context);
+        return dir != null ? dir : LogcatWorker.resolveFallbackDir(context);
+    }
+
+    /** The device and app lines every report starts with; the crash report adds the crash count. */
+    private static void writeHeader(Context context, PrintWriter out, boolean crash) {
+        out.println("===== device=" + Build.MANUFACTURER + " " + Build.MODEL
+                + ", android=" + Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ") =====");
+        out.println("===== app=" + versionName(context) + " (" + versionCode(context) + "), flavor=" + BuildConfig.FLAVOR
+                + ", platform=" + platform() + ", system=" + system() + " =====");
+        out.println("===== uptime=" + uptime() + " ms"
+                + (crash ? ", crashes in the last " + (CrashLoopPolicy.WINDOW_MS / 1000) + " s: "
+                + recentCrashes(context) : "") + " =====");
+    }
+
+    private static void writeLogTail(PrintWriter out) {
+        writeLogTail(out, LOG_TAIL_LINES);
+    }
+
+    private static void writeLogTail(PrintWriter out, int lines) {
+        out.println("===== last " + lines + " log lines of this process =====");
+        out.flush();
+        appendLogTail(out, lines);
     }
 
     /** The name, or name_2, name_3, ... when a report of the same second exists. */
@@ -130,9 +182,9 @@ public final class CrashLogger implements Thread.UncaughtExceptionHandler {
     }
 
     /** Keeps the newest MAX_REPORTS reports; a failure here is of no consequence. */
-    private static void deleteOldReports(File dir) {
+    private static void deleteOldReports(File dir, String label) {
         try {
-            File[] files = dir.listFiles((d, name) -> name.startsWith(LogFileName.CRASH_LABEL + "_")
+            File[] files = dir.listFiles((d, name) -> name.startsWith(label + "_")
                     && name.endsWith(LogFileName.TXT));
             if (files == null || files.length <= MAX_REPORTS) {
                 return;
@@ -149,18 +201,18 @@ public final class CrashLogger implements Thread.UncaughtExceptionHandler {
         }
     }
 
-    private String versionName() {
+    private static String versionName(Context context) {
         try {
-            String name = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0).versionName;
+            String name = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
             return name != null ? name : UNKNOWN;
         } catch (Throwable t) {
             return UNKNOWN;
         }
     }
 
-    private String versionCode() {
+    private static String versionCode(Context context) {
         try {
-            PackageInfo info = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             return String.valueOf(Build.VERSION.SDK_INT >= 28 ? info.getLongVersionCode() : info.versionCode);
         } catch (Throwable t) {
             return UNKNOWN;
@@ -191,19 +243,19 @@ public final class CrashLogger implements Thread.UncaughtExceptionHandler {
         }
     }
 
-    private String recentCrashes() {
+    private static String recentCrashes(Context context) {
         try {
-            return String.valueOf(CrashLoopGuard.recentCrashes(mContext));
+            return String.valueOf(CrashLoopGuard.recentCrashes(context));
         } catch (Throwable t) {
             return UNKNOWN;
         }
     }
 
-    private static void appendLogTail(PrintWriter out) {
+    private static void appendLogTail(PrintWriter out, int lines) {
         java.lang.Process logcat = null;
         try {
             logcat = new ProcessBuilder("logcat", "-d", "-v", "threadtime",
-                    "-t", String.valueOf(LOG_TAIL_LINES), "--pid", String.valueOf(Process.myPid()))
+                    "-t", String.valueOf(lines), "--pid", String.valueOf(Process.myPid()))
                     .redirectErrorStream(true)
                     .start();
             long deadline = System.currentTimeMillis() + LOG_TAIL_TIMEOUT_MS;

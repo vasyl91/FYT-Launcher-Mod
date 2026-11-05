@@ -2,6 +2,7 @@ package com.syu.module.canbus.up;
 
 import android.os.RemoteException;
 
+import com.android.launcher66.settings.FytCompat;
 import com.syu.ipc.IModuleCallback;
 import com.syu.module.canbus.CanbusModuleGuard;
 
@@ -39,13 +40,17 @@ public class ModuleCallbackCanUpProxy extends IModuleCallback.Stub {
 
     @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
+        FytCompat.run("ms.canup code " + updateCode, () -> dispatch(updateCode, ints, flts, strs));
+    }
+
+    private void dispatch(int updateCode, int[] ints, float[] flts, String[] strs) {
         if (updateCode >= 0) {
             if (updateCode < 100) {
                 IModuleCallback callback = this.mCallbackCanUpBase;
                 if (callback != null) {
                     try {
                         callback.update(updateCode, ints, flts, strs);
-                    } catch (RuntimeException e) {
+                    } catch (RemoteException | RuntimeException e) {
                         CanbusModuleGuard.failed(callback, "update", e);
                     }
                     return;

@@ -30,6 +30,7 @@ public class SkinActivityLifecycleCallbacks implements Application.ActivityLifec
                 SkinUtils.getSkinManager().addObserver(skinLayoutFactory);
             } catch (Exception e) {
                 e.printStackTrace();
+                com.android.launcher66.settings.FytCompat.report("skin.factory", e);
             }
         }
         SkinUtils.getSkinManager().addObserver(skinLayoutFactory); 

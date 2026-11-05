@@ -2,6 +2,7 @@ package com.syu.canbus.warn;
 
 import android.SystemProperties;
 import android.content.Context;
+import com.android.launcher66.settings.FytCompat;
 import android.util.Log;
 
 import com.android.launcher66.LauncherApplication;
@@ -1274,8 +1275,8 @@ public class DataPack {
         }
     };
 
-    public static void init(Context context) {        
-        addUpdate();
+    public static void init(Context context) {
+        FytCompat.run("datapack.init", DataPack::addUpdate);
     }
 
     private static void addUpdate() {

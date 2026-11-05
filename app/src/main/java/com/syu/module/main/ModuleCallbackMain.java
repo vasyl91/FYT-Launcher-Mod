@@ -3,6 +3,7 @@ package com.syu.module.main;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.android.launcher66.settings.FytCompat;
 import com.syu.ipc.IModuleCallback;
 import com.syu.module.canbus.Callback_0453_LZ_BBA_All;
 import com.syu.module.canbus.Callback_0453_LZ_LandRover_KeepCD;
@@ -23,10 +24,16 @@ public class ModuleCallbackMain extends IModuleCallback.Stub {
 
     @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
+        FytCompat.run("ms.main code " + updateCode, () -> dispatch(updateCode, ints, flts, strs));
+    }
+
+    private void dispatch(int updateCode, int[] ints, float[] flts, String[] strs) {
         if (updateCode < 200) {
             switch (updateCode) {
                 case 174:
-                    if (intsOk(ints, 1)) {
+                    // Reads ints[2], so it needs three: a shorter payload is dropped, as in the
+                    // 7870 version of com.syu.canbus.
+                    if (ints != null && ints.length > 2) {
                         Log.v("zed", "174  rev==alll 11111111111 ints[0]== " + ints[0]);
                         if (ints[1] == -2) {
                             Callback_0453_LZ_BBA_All.modevalue = ints[2];
@@ -34,13 +41,13 @@ public class ModuleCallbackMain extends IModuleCallback.Stub {
                             Log.v("zed", "174  Callback_0453_LZ_BBA_All.modevalue  == " + ints[2]);
                         }
                         HandlerMain.update(updateCode, ints, flts, strs);
-                        break;
                     }
+                    break;
                 default:
                     if (intsOk(ints, 1)) {
                         HandlerMain.update(updateCode, ints[0]);
-                        break;
                     }
+                    break;
             }
         }
     }

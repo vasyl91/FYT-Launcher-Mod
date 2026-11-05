@@ -289,9 +289,9 @@
     <string name="reset_night_mode">ለሌሊት ሁነታ ነባሪ እሴቶችን አቀናብር</string>
     <string name="init_default_app_error">እባክዎ የናቪ/የፊት መተግበሪያውን በመሣሪያ ቅንብሮች ውስጥ ያቀናብሩ።</string>
     <string name="logcat_names_info">የምዝግብ ማስታወሻ ፋይል ስሞች፦</string>
-    <string name="logcat_names_info_summary">reboot – መሣሪያው እንደገና ከጀመረ በኋላ ከማስጀመሪያው ጋር ተጀምሯል\nstart – ማስጀመሪያው መሣሪያው እንደገና ሳይጀመር እንደገና ሲጀምር ከእሱ ጋር ተጀምሯል (ዝማኔ፣ ብልሽት)\nwake – መሣሪያው ሲነቃ ተጀምሯል\nuser – በእጅ በ“የLogcat አገልግሎት” ተጀምሯል\nfull – የመሣሪያውን ሁሉንም ምዝግብ ማስታወሻዎች ይይዛል\npid – የማስጀመሪያውን ምዝግብ ማስታወሻዎች ብቻ ይይዛል\ncrash – አስጀማሪው በተበላሸበት ቅጽበት ይጻፋል፦ ስህተቱ እና የምዝግብ ማስታወሻው የመጨረሻ መስመሮች (ከዳግም ማስጀመሪያው በኋላ ያለው በ start ምዝግብ ማስታወሻ ውስጥ ነው)</string>
+    <string name="logcat_names_info_summary">reboot – መሣሪያው እንደገና ከጀመረ በኋላ ከማስጀመሪያው ጋር ተጀምሯል\nstart – ማስጀመሪያው መሣሪያው እንደገና ሳይጀመር እንደገና ሲጀምር ከእሱ ጋር ተጀምሯል (ዝማኔ፣ ብልሽት)\nwake – መሣሪያው ሲነቃ ተጀምሯል\nuser – በእጅ በ“የLogcat አገልግሎት” ተጀምሯል\nfull – የመሣሪያውን ሁሉንም ምዝግብ ማስታወሻዎች ይይዛል\npid – የማስጀመሪያውን ምዝግብ ማስታወሻዎች ብቻ ይይዛል\ncrash – አስጀማሪው በተበላሸበት ቅጽበት ይጻፋል፦ ስህተቱ እና የምዝግብ ማስታወሻው የመጨረሻ መስመሮች (ከዳግም ማስጀመሪያው በኋላ ያለው በ start ምዝግብ ማስታወሻ ውስጥ ነው)\ncompat – ለFYT ክፍሎች የተሠራ ኮድ በዚህ ክፍል ወይም የአንድሮይድ ስሪት ላይ ሲወድቅ እና ያለ ብልሽት ሲያዝ ይጻፋል፦ ስህተቱ እና የምዝግብ ማስታወሻው የመጨረሻ መስመሮች</string>
     <string name="logcat_locations_info">ምዝግብ ማስታወሻዎችንና የብልሽት ሪፖርቶችን የት ማግኘት ይቻላል፦</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ምዝግብ ማስታወሻዎችና የብልሽት ሪፖርቶች (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ወደ Download መጻፍ በማይቻልበት ጊዜ ይጠቅማል (ለምሳሌ ልክ ዳግም ከጀመረ በኋላ)፤ በኋላ ወደ Download ይዛወራል</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ምዝግብ ማስታወሻዎችና የብልሽት ሪፖርቶች (crash_pid_…, compat_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – ወደ Download መጻፍ በማይቻልበት ጊዜ ይጠቅማል (ለምሳሌ ልክ ዳግም ከጀመረ በኋላ)፤ በኋላ ወደ Download ይዛወራል</string>
     <string name="logcat_last_crash">የመጨረሻ የብልሽት ሪፖርት፦ %1$s</string>
     <string name="logcat_no_crash">የብልሽት ሪፖርት የለም</string>
     <string name="crash_restarted_toast">አስጀማሪው ከስህተት በኋላ እንደገና ተጀምሯል፦ %1$s። ሪፖርት፦ %2$s</string>

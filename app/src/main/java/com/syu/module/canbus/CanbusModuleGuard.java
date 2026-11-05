@@ -3,6 +3,8 @@ package com.syu.module.canbus;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.android.launcher66.settings.FytCompat;
+
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,12 +41,16 @@ public final class CanbusModuleGuard {
         run(module, "out", out);
     }
 
-    /** Logs a RuntimeException from the module's {@code method}, the first time for that class and method. */
-    public static void failed(Object module, String method, RuntimeException e) {
+    /**
+     * Logs a failure of the module's {@code method}, the first time for that class and method, and
+     * reports it as a compat report (once per kind of failure, see FytCompat).
+     */
+    public static void failed(Object module, String method, Throwable e) {
         String name = module.getClass().getName();
         if (sLogged.add(name + "." + method)) {
             Log.w(TAG, "canbus module " + name + " failed in " + method + "()", e);
         }
+        FytCompat.report("canbus.module " + name + "." + method, e);
     }
 
     private static void run(Object module, String method, Runnable call) {

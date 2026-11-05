@@ -307,6 +307,7 @@ Many cars report the fuel consumption only above some speed (mine below ~30 km/h
 
 1. Use the built-in logcat tool (see the launcher's settings) or get the logs using other software, e.g. [Logcat Reader](https://play.google.com/store/apps/details?id=com.dp.logcatapp&hl=en&pli=1). If you want to include LeakCanary and typical debug logs specific to BuildConfig.DEBUG download and install the latest debug version. For anything else the built-in logcat in the release version should be sufficient.
 2. Open a new issue, provide your Android version and describe the error (with step-by-step instructions for reproducing it). Attach the logs.
+3. The reports are in `Download/Launcher66_Logs`: `crash_pid_<time>.txt` is written when the launcher crashes. `compat_pid_<time>.txt` is written when code made for FYT units (the data from `com.syu.ms`, the CAN bus modules, the radio and music sources) fails on your unit or Android version and is caught, so that the launcher goes on without a crash. It holds the error and the last log lines. The same failure is written once per run of the launcher (at most 10 files per run, the newest 20 are kept). Attach it to the issue as well: it shows what does not fit your unit.
 
 I cannot guarantee that I'll fix every error.
 

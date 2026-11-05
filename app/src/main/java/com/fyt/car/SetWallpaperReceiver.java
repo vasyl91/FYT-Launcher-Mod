@@ -31,6 +31,10 @@ public class SetWallpaperReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        com.android.launcher66.settings.FytCompat.run("receiver com.fyt wallpaper", () -> handle(context, intent));
+    }
+
+    private void handle(Context context, Intent intent) {
         Log.d("LZP", "onReceive-----------> 13");
         // The receiver is exported: an intent without an action is possible.
         if (intent == null || intent.getAction() == null) {

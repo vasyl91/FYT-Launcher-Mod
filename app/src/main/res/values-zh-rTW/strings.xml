@@ -289,9 +289,9 @@
     <string name="reset_night_mode">恢復夜間模式預設值</string>
     <string name="init_default_app_error">請在裝置設定中選擇導航/前置應用程式。</string>
     <string name="logcat_names_info">記錄檔名稱：</string>
-    <string name="logcat_names_info_summary">reboot – 裝置重新啟動後隨啟動器一同啟動\nstart – 啟動器在未重新啟動裝置的情況下再次啟動時隨之啟動（更新、當機）\nwake – 裝置喚醒時啟動\nuser – 透過「記錄服務」手動啟動\nfull – 包含裝置的所有記錄\npid – 僅包含啟動器的記錄\ncrash – 啟動器當機的瞬間寫入：錯誤和記錄的最後幾行（重新啟動之後的內容在 start 記錄中）</string>
+    <string name="logcat_names_info_summary">reboot – 裝置重新啟動後隨啟動器一同啟動\nstart – 啟動器在未重新啟動裝置的情況下再次啟動時隨之啟動（更新、當機）\nwake – 裝置喚醒時啟動\nuser – 透過「記錄服務」手動啟動\nfull – 包含裝置的所有記錄\npid – 僅包含啟動器的記錄\ncrash – 啟動器當機的瞬間寫入：錯誤和記錄的最後幾行（重新啟動之後的內容在 start 記錄中）\ncompat – 為 FYT 裝置編寫的程式碼在此裝置或 Android 版本上失敗並被攔截而未當機時寫入：錯誤和記錄的最後幾行</string>
     <string name="logcat_locations_info">記錄和當機報告的位置：</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – 記錄和當機報告（crash_pid_…）\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – 在無法寫入 Download 時使用（例如剛重新啟動後），之後會移到 Download</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – 記錄和當機報告（crash_pid_…，compat_pid_…）\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – 在無法寫入 Download 時使用（例如剛重新啟動後），之後會移到 Download</string>
     <string name="logcat_last_crash">最近的當機報告：%1$s</string>
     <string name="logcat_no_crash">沒有當機報告</string>
     <string name="crash_restarted_toast">啟動器在發生錯誤後已重新啟動：%1$s。報告：%2$s</string>

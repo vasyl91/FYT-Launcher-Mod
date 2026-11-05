@@ -289,9 +289,9 @@
     <string name="reset_night_mode">Nastavit výchozí hodnoty nočního režimu</string>
     <string name="init_default_app_error">Nastavte navigační aplikaci/aplikaci v popředí v nastavení zařízení.</string>
     <string name="logcat_names_info">Názvy souborů protokolu:</string>
-    <string name="logcat_names_info_summary">reboot – spuštěno s launcherem po restartu zařízení\nstart – spuštěno s launcherem, když se znovu spustil bez restartu zařízení (aktualizace, pád)\nwake – spuštěno při probuzení zařízení\nuser – spuštěno ručně přes „Služba Logcat“\nfull – obsahuje všechny protokoly zařízení\npid – obsahuje pouze protokoly launcheru\ncrash – zapsáno v okamžiku pádu launcheru: chyba a poslední řádky protokolu (co následuje po restartu, je v protokolu start)</string>
+    <string name="logcat_names_info_summary">reboot – spuštěno s launcherem po restartu zařízení\nstart – spuštěno s launcherem, když se znovu spustil bez restartu zařízení (aktualizace, pád)\nwake – spuštěno při probuzení zařízení\nuser – spuštěno ručně přes „Služba Logcat“\nfull – obsahuje všechny protokoly zařízení\npid – obsahuje pouze protokoly launcheru\ncrash – zapsáno v okamžiku pádu launcheru: chyba a poslední řádky protokolu (co následuje po restartu, je v protokolu start)\ncompat – zapsáno, když kód pro jednotky FYT selhal na této jednotce nebo verzi Androidu a byl zachycen bez pádu: chyba a poslední řádky logu</string>
     <string name="logcat_locations_info">Kde najít protokoly a hlášení o pádech:</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – protokoly a hlášení o pádech (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – používá se, dokud nelze zapisovat do Download (např. hned po restartu); později se přesune do Download</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – protokoly a hlášení o pádech (crash_pid_…, compat_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – používá se, dokud nelze zapisovat do Download (např. hned po restartu); později se přesune do Download</string>
     <string name="logcat_last_crash">Poslední hlášení o pádu: %1$s</string>
     <string name="logcat_no_crash">Žádná hlášení o pádech</string>
     <string name="crash_restarted_toast">Launcher byl po chybě restartován: %1$s. Hlášení: %2$s</string>

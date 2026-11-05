@@ -438,6 +438,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private final IModuleCallback.Stub statsCallback = new IModuleCallback.Stub() {
         @Override
         public void update(int updateCode, int[] ints, float[] flts, String[] strs) {
+            FytCompat.run("canbus.stats code " + updateCode, () -> onStatsCode(updateCode, ints));
+        }
+
+        private void onStatsCode(int updateCode, int[] ints) {
             if (ints == null || ints.length == 0) {
                 return;
             }
@@ -486,7 +490,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
         final Context app = getApplicationContext();
         // The library may still be loading, and loading reads files: not on this thread
-        CanbusLibrary.executor().execute(() -> {
+        CanbusLibrary.executor().execute(() -> FytCompat.run("canbus.carcodes", () -> {
             CanbusLibrary.Library library = CanbusLibrary.loadBlocking(app);
             List<CanbusLibrary.CarCodes> pairs = library.codePairsFor(carId);
             FuelUnit unit = library.unitFor(carId);
@@ -508,7 +512,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 loadFuelModel(carId);
                 registerStatsCodes();
             });
-        });
+        }));
         CanbusLibrary.sendForCar(app, carId);
     };
 

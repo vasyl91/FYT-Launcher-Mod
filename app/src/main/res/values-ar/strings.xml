@@ -289,9 +289,9 @@
     <string name="reset_night_mode">ضبط القيم الافتراضية للوضع الليلي</string>
     <string name="init_default_app_error">يُرجى ضبط تطبيق الملاحة/المقدمة في إعدادات الجهاز.</string>
     <string name="logcat_names_info">أسماء ملفات السجل:</string>
-    <string name="logcat_names_info_summary">reboot – بدأ مع المشغّل بعد إعادة تشغيل الجهاز\nstart – بدأ مع المشغّل عندما بدأ من جديد دون إعادة تشغيل الجهاز (تحديث، تعطّل)\nwake – بدأ عند استيقاظ الجهاز\nuser – بدأ يدويًا عبر «خدمة Logcat»\nfull – يحتوي على جميع سجلات الجهاز\npid – يحتوي على سجلات المشغّل فقط\ncrash – يُكتب لحظة تعطّل المشغّل: الخطأ وآخر أسطر السجل (ما يلي إعادة التشغيل موجود في سجل start)</string>
+    <string name="logcat_names_info_summary">reboot – بدأ مع المشغّل بعد إعادة تشغيل الجهاز\nstart – بدأ مع المشغّل عندما بدأ من جديد دون إعادة تشغيل الجهاز (تحديث، تعطّل)\nwake – بدأ عند استيقاظ الجهاز\nuser – بدأ يدويًا عبر «خدمة Logcat»\nfull – يحتوي على جميع سجلات الجهاز\npid – يحتوي على سجلات المشغّل فقط\ncrash – يُكتب لحظة تعطّل المشغّل: الخطأ وآخر أسطر السجل (ما يلي إعادة التشغيل موجود في سجل start)\ncompat – يُكتب عندما يفشل رمز مخصص لوحدات FYT على هذه الوحدة أو إصدار Android ويُحتوى الخطأ دون تعطّل: الخطأ وآخر أسطر السجل</string>
     <string name="logcat_locations_info">أين تجد السجلات وتقارير التعطّل:</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – السجلات وتقارير التعطّل (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – يُستخدم ما دام تعذّرت الكتابة في Download (مثلًا بعد إعادة التشغيل مباشرة)؛ ثم يُنقل إلى Download</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – السجلات وتقارير التعطّل (crash_pid_…, compat_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – يُستخدم ما دام تعذّرت الكتابة في Download (مثلًا بعد إعادة التشغيل مباشرة)؛ ثم يُنقل إلى Download</string>
     <string name="logcat_last_crash">آخر تقرير تعطّل: %1$s</string>
     <string name="logcat_no_crash">لا توجد تقارير تعطّل</string>
     <string name="crash_restarted_toast">أُعيد تشغيل المشغّل بعد خطأ: %1$s. التقرير: %2$s</string>

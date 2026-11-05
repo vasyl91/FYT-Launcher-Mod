@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.RemoteException;
 
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.settings.FytCompat;
 import com.syu.ipc.IModuleCallback;
 import com.syu.ui.air.AirHelper;
 import com.syu.ui.door.DoorHelper;
@@ -46,35 +47,31 @@ public class ModuleCallbackCanbusProxy extends IModuleCallback.Stub {
 
     @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
+        FytCompat.run("ms.canbus code " + updateCode, () -> dispatch(updateCode, ints, flts, strs));
+    }
+
+    private void dispatch(int updateCode, int[] ints, float[] flts, String[] strs) {
         if (updateCode >= 0) {
             if (updateCode < 1000) {
-                IModuleCallback callback = this.mCallback;
-                if (callback != null) {
-                    try {
-                        callback.update(updateCode, ints, flts, strs);
-                    } catch (RuntimeException e) {
-                        CanbusModuleGuard.failed(callback, "update", e);
-                    }
-                    return;
-                }
+                forward(updateCode, ints, flts, strs);
                 return;
             }
             switch (updateCode) {
                 case 1000:
                     if (intsOk(ints, 1)) {
                         HandlerCanbus.canbusId(updateCode, ints[0]);
-                        break;
                     }
+                    break;
                 case FinalCanbus.U_AIR_WINDOW_ENABLE /* 1001 */:
                     if (intsOk(ints, 1)) {
                         AirHelper.airWindowEnable(ints[0]);
-                        break;
                     }
+                    break;
                 case FinalCanbus.U_DOOR_WINDOW_ENABLE /* 1002 */:
                     if (intsOk(ints, 1)) {
                         DoorHelper.doorWindowEnable(ints[0]);
-                        break;
                     }
+                    break;
                 case FinalCanbus.U_DRIVER_ON_RIGHT /* 1003 */:
                     HandlerCanbus.update(updateCode, ints);
                     break;
@@ -83,23 +80,32 @@ public class ModuleCallbackCanbusProxy extends IModuleCallback.Stub {
                         Intent intent = new Intent("com.syu.canbus.enter.air");
                         intent.setPackage(LauncherApplication.getInstance().getPackageName());
                         SysCalls.sendBroadcast(LauncherApplication.getInstance(), intent);
-                        break;
                     } catch (Exception e) {
                         return;
                     }
+                    break;
                 case FinalCanbus.U_CAR_BT_ON /* 1015 */:
-                    HandlerCanbus.updateCarBt(ints[0]);
+                    if (intsOk(ints, 1)) {
+                        HandlerCanbus.updateCarBt(ints[0]);
+                    }
                     break;
                 case FinalCanbus.U_ORI_CARBACK /* 1021 */:
-                    IModuleCallback callback2 = this.mCallback;
-                    if (callback2 != null) {
-                        try {
-                            callback2.update(updateCode, ints, flts, strs);
-                        } catch (RuntimeException e) {
-                            CanbusModuleGuard.failed(callback2, "update", e);
-                        }
-                        break;
-                    }
+                    forward(updateCode, ints, flts, strs);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    /** To the module made for the car; one that does not fit it is logged once and goes no further. */
+    private void forward(int updateCode, int[] ints, float[] flts, String[] strs) {
+        IModuleCallback callback = this.mCallback;
+        if (callback != null) {
+            try {
+                callback.update(updateCode, ints, flts, strs);
+            } catch (RemoteException | RuntimeException e) {
+                CanbusModuleGuard.failed(callback, "update", e);
             }
         }
     }

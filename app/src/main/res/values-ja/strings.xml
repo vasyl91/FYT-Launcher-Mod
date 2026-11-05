@@ -289,9 +289,9 @@
     <string name="reset_night_mode">ナイトモードをデフォルト値に設定</string>
     <string name="init_default_app_error">端末設定でナビ/前面アプリを設定してください。</string>
     <string name="logcat_names_info">ログファイル名:</string>
-    <string name="logcat_names_info_summary">reboot – デバイスの再起動後にランチャーとともに開始\nstart – デバイスを再起動せずにランチャーが再び起動したときに、ともに開始（アップデート、クラッシュ）\nwake – デバイスのスリープ解除時に開始\nuser – 「Logcatサービス」から手動で開始\nfull – デバイスのすべてのログを含む\npid – ランチャーのログのみを含む\ncrash – ランチャーがクラッシュした瞬間に書き込まれます：エラーとログの最後の行（再起動後の内容は start ログにあります）</string>
+    <string name="logcat_names_info_summary">reboot – デバイスの再起動後にランチャーとともに開始\nstart – デバイスを再起動せずにランチャーが再び起動したときに、ともに開始（アップデート、クラッシュ）\nwake – デバイスのスリープ解除時に開始\nuser – 「Logcatサービス」から手動で開始\nfull – デバイスのすべてのログを含む\npid – ランチャーのログのみを含む\ncrash – ランチャーがクラッシュした瞬間に書き込まれます：エラーとログの最後の行（再起動後の内容は start ログにあります）\ncompat – FYT ユニット向けのコードがこのユニットまたは Android バージョンで失敗し、クラッシュせずに捕捉されたときに書き込まれます：エラーとログの最後の行</string>
     <string name="logcat_locations_info">ログとクラッシュレポートの場所:</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ログとクラッシュレポート（crash_pid_…）\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – Download に書き込めない間（再起動直後など）に使用。後で Download に移動されます</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – ログとクラッシュレポート（crash_pid_…、compat_pid_…）\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – Download に書き込めない間（再起動直後など）に使用。後で Download に移動されます</string>
     <string name="logcat_last_crash">最新のクラッシュレポート: %1$s</string>
     <string name="logcat_no_crash">クラッシュレポートはありません</string>
     <string name="crash_restarted_toast">エラーの後にランチャーが再起動しました: %1$s。レポート: %2$s</string>

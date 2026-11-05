@@ -6,11 +6,13 @@ import android.os.RemoteException;
 
 import com.syu.ipc.IModuleCallback;
 
-import java.util.ArrayList;
+import com.android.launcher66.settings.FytCompat;
+
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Callback extends IModuleCallback.Stub {
-    List<Lisenter> mLisenters = new ArrayList<>();
+    List<Lisenter> mLisenters = new CopyOnWriteArrayList<>();
     Handler mHandler = new Handler(Looper.getMainLooper());
 
     public interface OnRefreshLisenter {
@@ -64,7 +66,10 @@ public class Callback extends IModuleCallback.Stub {
         Runnable refesh = () -> {
             for (Lisenter lisenter : Callback.this.mLisenters) {
                 if (lisenter.code == Massage.this.code) {
-                    lisenter.lisenter.onRefresh(Massage.this.code, Massage.this.ints, Massage.this.flts, Massage.this.strs);
+                    // A listener of FYT's data that fails is reported; the next ones still get theirs.
+                    FytCompat.run("ms.callback code " + Massage.this.code,
+                            () -> lisenter.lisenter.onRefresh(Massage.this.code, Massage.this.ints,
+                                    Massage.this.flts, Massage.this.strs));
                 }
             }
         };

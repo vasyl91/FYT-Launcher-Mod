@@ -18,11 +18,11 @@
     <string name="apps_customize_apps_scroll_format">Halaman apl %1$d daripada %2$d</string>
     <string name="apps_customize_widgets_scroll_format">Halaman widget %1$d daripada %2$d</string>
     <string name="logcat_names_info">Nama fail log:</string>
-    <string name="logcat_names_info_summary">reboot – dimulakan bersama pelancar selepas peranti dimulakan semula\nstart – dimulakan bersama pelancar apabila ia bermula semula tanpa peranti dimulakan semula (kemas kini, ranap)\nwake – dimulakan apabila peranti bangun\nuser – dimulakan secara manual dengan “Perkhidmatan Logcat”\nfull – mengandungi semua log peranti\npid – hanya mengandungi log pelancar\ncrash – ditulis pada saat pelancar ranap: ralat dan baris log terakhir (apa yang berlaku selepas dimulakan semula ada dalam log start)</string>
+    <string name="logcat_names_info_summary">reboot – dimulakan bersama pelancar selepas peranti dimulakan semula\nstart – dimulakan bersama pelancar apabila ia bermula semula tanpa peranti dimulakan semula (kemas kini, ranap)\nwake – dimulakan apabila peranti bangun\nuser – dimulakan secara manual dengan “Perkhidmatan Logcat”\nfull – mengandungi semua log peranti\npid – hanya mengandungi log pelancar\ncrash – ditulis pada saat pelancar ranap: ralat dan baris log terakhir (apa yang berlaku selepas dimulakan semula ada dalam log start)\ncompat – ditulis apabila kod yang dibuat untuk unit FYT gagal pada unit atau versi Android ini dan ditangkap tanpa ranap: ralat dan baris log terakhir</string>
     <string name="install_release_button_file">Ketik untuk memuat turun dan memasang versi keluaran %1$s (%2$s)</string>
     <string name="update_version_button_file">Ketik untuk memuat turun dan mengemas kini apl (%1$s)</string>
     <string name="logcat_locations_info">Tempat mencari log dan laporan ranap:</string>
-    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – log dan laporan ranap (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – digunakan selagi Download tidak boleh ditulis (cth. sejurus selepas mula semula); kemudian dialihkan ke Download</string>
+    <string name="logcat_locations_info_summary">Download/Launcher66_Logs – log dan laporan ranap (crash_pid_…, compat_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – digunakan selagi Download tidak boleh ditulis (cth. sejurus selepas mula semula); kemudian dialihkan ke Download</string>
     <string name="logcat_last_crash">Laporan ranap terakhir: %1$s</string>
     <string name="logcat_no_crash">Tiada laporan ranap</string>
     <string name="crash_restarted_toast">Pelancar dimulakan semula selepas ralat: %1$s. Laporan: %2$s</string>

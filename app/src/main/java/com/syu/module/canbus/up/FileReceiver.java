@@ -16,6 +16,10 @@ public class FileReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        com.android.launcher66.settings.FytCompat.run("receiver com.syu.filemanager", () -> handle(context, intent));
+    }
+
+    private void handle(Context context, Intent intent) {
         Bundle bundle;
         String action = intent.getAction();
         if ("com.syu.filemanager".equals(action) && (bundle = intent.getExtras()) != null) {

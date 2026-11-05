@@ -97,6 +97,7 @@ public final class PinnedPipFocus {
             attach(launcher);
         } catch (RuntimeException e) {
             Log.w(TAG, "Taking the focus from the pinned PiP failed", e);
+            com.android.launcher66.settings.FytCompat.report("pinnedpip.focus", e);
         }
     }
 

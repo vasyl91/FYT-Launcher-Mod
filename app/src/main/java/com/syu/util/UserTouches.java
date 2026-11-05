@@ -1,6 +1,7 @@
 package com.syu.util;
 
 import android.hardware.input.InputManager;
+import com.android.launcher66.settings.FytCompat;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -128,9 +129,11 @@ public final class UserTouches {
                     if (code != BSP_BUTTON_EVENT) {
                         return;
                     }
-                    sLastButtonMs = SystemClock.elapsedRealtime();
-                    Log.i(TAG, "Button reported by FYT's framework: code " + code + " "
-                            + Arrays.toString(ints));
+                    FytCompat.run("fyt.buttons callback", () -> {
+                        sLastButtonMs = SystemClock.elapsedRealtime();
+                        Log.i(TAG, "Button reported by FYT's framework: code " + code + " "
+                                + Arrays.toString(ints));
+                    });
                 }
             };
             bsp.register(callback, BSP_BUTTON_EVENT, 0);
@@ -138,6 +141,7 @@ public final class UserTouches {
             Log.i(TAG, "Listening to FYT's button events");
         } catch (Throwable t) {
             Log.w(TAG, "FYT's button events not available: " + t);
+            FytCompat.report("fyt.buttons", t);
         }
     }
 

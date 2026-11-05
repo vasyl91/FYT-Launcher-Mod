@@ -120,7 +120,7 @@ public final class StockSources {
             // Started with the radio on: no channel change will say so
             sRadio.onActivated();
         }
-        Thread probe = new Thread(StockSources::probeDevice, "StockSourcesProbe");
+        Thread probe = new Thread(() -> com.android.launcher66.settings.FytCompat.run("stocksources.probe", StockSources::probeDevice), "StockSourcesProbe");
         probe.setDaemon(true);
         probe.start();
     }

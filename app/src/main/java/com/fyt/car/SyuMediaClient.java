@@ -1,5 +1,6 @@
 package com.fyt.car;
 
+import com.android.launcher66.settings.FytCompat;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
@@ -171,6 +172,7 @@ final class SyuMediaClient implements ServiceConnection {
             bound = app.bindService(intent, this, 0);
         } catch (RuntimeException e) {
             Log.w(TAG, kind + " bindService failed", e);
+            FytCompat.report("syumedia.bind", e);
             bound = false;
         }
         if (!bound) {
@@ -294,6 +296,7 @@ final class SyuMediaClient implements ServiceConnection {
                 song = Song.read(reply);
             } catch (RuntimeException e) {
                 Log.w(TAG, kind + ": unreadable song", e);
+                FytCompat.report("syumedia.song", e);
             } finally {
                 reply.recycle();
             }
@@ -406,6 +409,7 @@ final class SyuMediaClient implements ServiceConnection {
                         trackSelection(track), trackSelectionArgs(track));
             } catch (RuntimeException e) {
                 Log.w(TAG, kind + ": favorite not written", e);
+                FytCompat.report("syumedia.favorite", e);
             }
             Log.d(TAG, "favorite " + kind + "=" + favorite + " written to " + rows + " row(s)");
             // Read back whatever the library now holds, and publish it even when it is what

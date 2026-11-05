@@ -3,8 +3,10 @@ package com.syu.module;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.android.launcher66.settings.FytCompat;
+
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 public final class UiNotifyEvent implements Runnable {
     public static final Handler HANDLER_UI = new Handler(Looper.getMainLooper());
@@ -38,14 +40,30 @@ public final class UiNotifyEvent implements Runnable {
         }
     }
 
-    public synchronized void addNotify(IUiNotify notify, int onNotify) {
+    public void addNotify(IUiNotify notify, int onNotify) {
         if (notify != null) {
-            if (!this.mUiNotifies.contains(notify)) {
-                this.mUiNotifies.add(notify);
+            synchronized (this) {
+                if (!this.mUiNotifies.contains(notify)) {
+                    this.mUiNotifies.add(notify);
+                }
             }
             if (onNotify == 1) {
-                notify.onNotify(this.mUpdateCode, null, null, null);
+                final int code = this.mUpdateCode;
+                FytCompat.run("canbus.notify " + code, () -> notify.onNotify(code, null, null, null));
             }
+        }
+    }
+
+    /** A copy of the listeners, so that they are called outside the lock and may remove themselves. */
+    private synchronized List<IUiNotify> snapshot() {
+        return new ArrayList<>(this.mUiNotifies);
+    }
+
+    /** Calls every listener; one that fails is reported and the rest still get the event. */
+    private void dispatch(int[] ints, float[] flts, String[] strs) {
+        final int code = this.mUpdateCode;
+        for (IUiNotify notify : snapshot()) {
+            FytCompat.run("canbus.notify " + code, () -> notify.onNotify(code, ints, flts, strs));
         }
     }
 
@@ -84,22 +102,12 @@ public final class UiNotifyEvent implements Runnable {
 
         @Override
         public void run() {
-            synchronized (UiNotifyEvent.this) {
-                Iterator it = UiNotifyEvent.this.mUiNotifies.iterator();
-                while (it.hasNext()) {
-                    IUiNotify notify = (IUiNotify) it.next();
-                    notify.onNotify(UiNotifyEvent.this.mUpdateCode, this.ints, this.flts, this.strs);
-                }
-            }
+            UiNotifyEvent.this.dispatch(this.ints, this.flts, this.strs);
         }
     }
 
     @Override
-    public synchronized void run() {
-        Iterator<IUiNotify> it = this.mUiNotifies.iterator();
-        while (it.hasNext()) {
-            IUiNotify notify = it.next();
-            notify.onNotify(this.mUpdateCode, null, null, null);
-        }
+    public void run() {
+        dispatch(null, null, null);
     }
 }

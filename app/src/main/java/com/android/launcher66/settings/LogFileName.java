@@ -25,6 +25,11 @@ final class LogFileName {
     static final String LATE_SUFFIX = "_late.txt";
     /** The label of the crash reports (CrashLogger): crash_pid_&lt;time&gt;.txt. */
     static final String CRASH_LABEL = "crash";
+    /**
+     * The label of the reports of failures that were caught (FytCompat, CrashLogger.writeNonFatal):
+     * compat_pid_&lt;time&gt;.txt.
+     */
+    static final String COMPAT_LABEL = "compat";
 
     private static final String SCOPE_FULL = "full";
     private static final String SCOPE_PID = "pid";

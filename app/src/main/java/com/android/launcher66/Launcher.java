@@ -1,5 +1,6 @@
 package com.android.launcher66;
 
+import com.android.launcher66.settings.FytCompat;
 import android.SystemProperties;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -2034,6 +2035,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
             } catch (RuntimeException e) {
                 Log.w(TAG, "KWAPI not created: " + e);
+                FytCompat.report("kwapi", e);
             }
         } else {
             // True on the 7870 (an FYT unit, but the standard build, no system rights): nothing is

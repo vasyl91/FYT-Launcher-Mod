@@ -2,6 +2,7 @@ package com.syu.module.sound;
 
 import android.os.RemoteException;
 
+import com.android.launcher66.settings.FytCompat;
 import com.syu.ipc.IModuleCallback;
 
 public class ModuleCallbackSound extends IModuleCallback.Stub {
@@ -21,7 +22,7 @@ public class ModuleCallbackSound extends IModuleCallback.Stub {
     @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0 && updateCode < 50 && intsOk(ints, 1)) {
-            HandlerSound.update(updateCode, ints[0]);
+            FytCompat.run("ms.sound code " + updateCode, () -> HandlerSound.update(updateCode, ints[0]));
         }
     }
 }
