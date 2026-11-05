@@ -79,6 +79,7 @@ final class BottomBarEdgeHandle {
 
     private final WindowManager windowManager;
     private final StripView view;
+    private final EdgeHandlePass pass = new EdgeHandlePass();
     private WindowManager.LayoutParams params;
     private boolean attached = false;
     private boolean shown = false;
@@ -89,7 +90,7 @@ final class BottomBarEdgeHandle {
 
     BottomBarEdgeHandle(Context context, Runnable onTrigger, TargetFinder finder) {
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        view = new StripView(context, onTrigger, finder);
+        view = new StripView(context, onTrigger, finder, this::onPassEnded);
         // No inset handling, on purpose: the bar overlay's inset listener only pads its content and
         // never resizes its window, so a window of exactly the bar height is what lines up with it.
     }
@@ -117,6 +118,7 @@ final class BottomBarEdgeHandle {
         }
         boolean changed = !shown;
         shown = true;
+        pass.show();
         setTouchable(true);
         if (!changed && view.getVisibility() == View.VISIBLE && view.getAlpha() >= 1f) {
             return false; // already fully shown, keep whatever is running
@@ -146,6 +148,20 @@ final class BottomBarEdgeHandle {
         if (!attached) {
             return changed;
         }
+        if (!pass.requestHide(view.isPassing())) {
+            // A gesture has been handed on to the launcher and its replay is what moved the page,
+            // which hid the handle. Cancelling it here would end it at its first move, in the middle
+            // of that replay. The strip fades, the window stays touchable until the gesture ends
+            // (onPassEnded), and then the hide is finished.
+            view.animate().cancel();
+            view.animate()
+                    .alpha(0f)
+                    .setStartDelay(0)
+                    .setDuration(Math.max(1, durationMs))
+                    .setInterpolator(new DecelerateInterpolator())
+                    .start();
+            return changed;
+        }
         view.cancelGesture();
         // Touches pass through at once, even while the strip is still fading out.
         setTouchable(false);
@@ -165,9 +181,22 @@ final class BottomBarEdgeHandle {
         return changed;
     }
 
+    /** The gesture that was handed on to the launcher ended: a hide that waited for it is finished. */
+    private void onPassEnded() {
+        if (!pass.passEnded() || !attached || shown) {
+            return;
+        }
+        Log.d(TAG, "Edge handle: hidden after the gesture handed on ended");
+        setTouchable(false);
+        view.animate().cancel();
+        view.setAlpha(0f);
+        view.setVisibility(View.INVISIBLE);
+    }
+
     /** Removes the window; the instance must not be used afterwards. */
     void release() {
         shown = false;
+        pass.release();
         view.animate().cancel();
         view.cancelGesture();
         if (attached) {
@@ -269,6 +298,7 @@ final class BottomBarEdgeHandle {
 
         private final Runnable onTrigger;
         private final TargetFinder finder;
+        private final Runnable onPassEnded;
         private final BottomBarEdgeGesture gesture;
         private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Path path = new Path();
@@ -287,10 +317,11 @@ final class BottomBarEdgeHandle {
         private Target passing;
         private final Runnable timeout = this::onTimeout;
 
-        StripView(Context context, Runnable onTrigger, TargetFinder finder) {
+        StripView(Context context, Runnable onTrigger, TargetFinder finder, Runnable onPassEnded) {
             super(context);
             this.onTrigger = onTrigger;
             this.finder = finder;
+            this.onPassEnded = onPassEnded;
             this.gesture = new BottomBarEdgeGesture(
                     ViewConfiguration.get(context).getScaledTouchSlop(), ViewConfiguration.getTapTimeout());
             paint.setStyle(Paint.Style.FILL);
@@ -306,6 +337,11 @@ final class BottomBarEdgeHandle {
             invalidate();
         }
 
+        /** A gesture is being handed on to the launcher. */
+        boolean isPassing() {
+            return passing != null;
+        }
+
         void cancelGesture() {
             removeCallbacks(timeout);
             if (passing != null) {
@@ -318,6 +354,7 @@ final class BottomBarEdgeHandle {
         }
 
         private void endGesture() {
+            boolean wasPassing = passing != null;
             tracking = false;
             passing = null;
             for (MotionEvent e : held) {
@@ -325,6 +362,9 @@ final class BottomBarEdgeHandle {
             }
             held.clear();
             setStripPressed(false);
+            if (wasPassing && onPassEnded != null) {
+                onPassEnded.run();
+            }
         }
 
         private void setStripPressed(boolean value) {
@@ -449,33 +489,45 @@ final class BottomBarEdgeHandle {
             }
         }
 
-        /** Hands the gesture to what is under the finger: replays what was held, then goes live. */
+        /**
+         * Hands the gesture to what is under the finger: replays what was held, then goes live. The
+         * events are moved to a list of their own first: replaying them moves the page, which hides
+         * the handle and (see BottomBarEdgeHandle.hide) must not end this gesture under the loop.
+         */
         private void startPassing() {
             setStripPressed(false);
             tracking = false;
-            if (held.isEmpty()) {
-                return;
-            }
-            MotionEvent first = held.get(0);
-            Target target = finder == null ? null
-                    : finder.find(Math.round(first.getRawX()), Math.round(first.getRawY()));
-            if (target == null || target.view == null || !target.view.isAttachedToWindow()) {
-                Log.d(TAG, "Edge handle: pass (nothing under the finger)");
-                return;
-            }
-            Log.d(TAG, "Edge handle: pass (" + target.name + ")");
-            passing = target;
-            // The original down time and positions: the target sees the gesture from its start.
-            for (MotionEvent e : held) {
-                forward(e);
-            }
-            boolean ended = false;
-            for (MotionEvent e : held) {
-                int action = e.getActionMasked();
-                ended |= action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL;
-            }
-            if (ended) {
-                passing = null;
+            List<MotionEvent> replay = EdgeHandlePass.take(held);
+            try {
+                if (replay.isEmpty()) {
+                    return;
+                }
+                MotionEvent first = replay.get(0);
+                Target target = finder == null ? null
+                        : finder.find(Math.round(first.getRawX()), Math.round(first.getRawY()));
+                if (target == null || target.view == null || !target.view.isAttachedToWindow()) {
+                    Log.d(TAG, "Edge handle: pass (nothing under the finger)");
+                    return;
+                }
+                Log.d(TAG, "Edge handle: pass (" + target.name + ")");
+                passing = target;
+                boolean ended = false;
+                // The original down time and positions: the target sees the gesture from its start.
+                for (MotionEvent e : replay) {
+                    if (passing != target) {
+                        break;   // the gesture ended in the middle of the replay (a cancel)
+                    }
+                    forward(e);
+                    int action = e.getActionMasked();
+                    ended |= action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL;
+                }
+                if (ended && passing == target) {
+                    endGesture();
+                }
+            } finally {
+                for (MotionEvent e : replay) {
+                    e.recycle();
+                }
             }
         }
 
