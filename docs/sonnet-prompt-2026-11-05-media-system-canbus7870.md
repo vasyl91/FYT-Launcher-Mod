@@ -156,7 +156,7 @@ RadioCtrlFragment: radioCtrFavorite isChecked: true
 - com.syu.media działa jako zwykły uid aplikacji `u0a82` (domena `platform_app`), **nie jako uid 1000**. Czyta `/data/blink/…`, więc DAC tego pliku wpuszcza „others”.
 
 **Zdekompilowane com.syu.media:**
-- Właściciel dodaje je do repo przed Twoim startem. Znajdziesz je przez `git ls-files | rg '/com/syu/media/' | head`.
+- Są w repo: `decompiled_com.syu.media/classes.dex/sources/com/syu/media/` (226 klas aplikacji). Katalogi `classes2.dex`–`classes4.dex` to biblioteki.
 - Komentarz `SyuMediaClient` mówi, że protokół IPlayer pochodzi właśnie z takiej dekompilacji.
 
 ### 3.2 Problem 2: logi (ten sam plik)
@@ -745,6 +745,7 @@ Dobierz drogę według kroku 0 (b, c, d) i zaimplementuj w `com/fyt/car/SyuMedia
 4. README, Night mode:
    - tryb nocny launchera zmienia tapetę i jasność, nie tryb ciemny systemu;
    - jeśli ROM przełącza tryb ciemny ze światłami, aplikacje w PiP przerysowują się (a te, które tego nie obsługują, startują od nowa) dokładnie jak na ekranie głównym. Decyduje o tym opcja ROM-u.
+5. **Nie** przypinaj wirtualnym wyświetlaczom paneli trybu dzień/noc. To pomysł na osobny brief (§7).
 
 ## C11 — `Docs: README and briefs consistent`
 Rób go tylko wtedy, gdy po C1–C10 w README zostały niespójności.
@@ -794,3 +795,12 @@ Rób go tylko wtedy, gdy po C1–C10 w README zostały niespójności.
   - informacja o `dev.igor.fytcustomservice` dla testera;
   - rekomendacja 1003 dla ścieżki domyślnej;
   - scenariusze z §5.
+
+## 7. Pomysł na osobny brief (nie implementuj w tej rundzie)
+
+Wirtualnym wyświetlaczom PiP można przypiąć bieżący tryb dzień/noc. Aplikacje w PiP przestałyby się wtedy restartować, ale zostawałyby w motywie z chwili otwarcia.
+
+Punkt wyjścia dla tamtego briefu (do sprawdzenia):
+- **Mechanizm:** nadpisanie konfiguracji (`uiMode`) samego wirtualnego wyświetlacza panelu, np. ukrytym `IActivityTaskManager.updateDisplayOverrideConfiguration(Configuration, displayId)` (Android 8–9: `IActivityManager`). Zmiana trybu ciemnego systemu nie zmienia wtedy konfiguracji tego wyświetlacza, więc Android nie odtwarza aplikacji w panelu.
+- **Uprawnienie `CHANGE_CONFIGURATION`:** ma je wersja system i demon modułu Magisk (uid 1000). Dla Shizuku (shell) trzeba to sprawdzić.
+- **Kompromis:** aplikacja w panelu zostaje w motywie z chwili otwarcia. Czy i kiedy dopasować ją do bieżącego trybu (np. przy przebudowie panelu), decyduje właściciel.
