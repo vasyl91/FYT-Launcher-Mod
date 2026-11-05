@@ -63,6 +63,14 @@ public class HandlerCanbus {
         Code decompiled incorrectly, please refer to instructions dump.
     */
     public static CallbackCanbusBase getCallbackCanbusById(int id) {
+        // The 7870 has another version of com.syu.canbus, with a map of its own.
+        if (com.android.launcher66.DeviceIdentity.is7870()) {
+            return HandlerCanbus7870.getCallbackCanbusById(id);
+        }
+        return getCallbackCanbusByIdDefault(id);
+    }
+
+    private static CallbackCanbusBase getCallbackCanbusByIdDefault(int id) {
         DataCanbus.sCanbusId = id;
         int canbusId = id & 65535;
         int carId = (id >> 16) & 65535;

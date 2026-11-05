@@ -308,6 +308,10 @@ final class CanbusLibraryImport {
         StringBuilder sb = new StringBuilder();
         SimpleDateFormat time = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
         sb.append("Canbus library import - ").append(success ? "success" : "failed").append('\n');
+        sb.append("Library: ").append(CanbusLibrary.platformName().equals("default")
+                ? "the default one (" + CanbusLibrary.ASSET_NAME + ", imports in " + CanbusLibrary.USER_FILE_NAME + ")"
+                : "the one of the " + CanbusLibrary.platformName() + " (" + CanbusLibrary.assetName() + ", imports in "
+                + CanbusLibrary.userFileName() + ")").append('\n');
         sb.append("Time: ").append(time.format(new Date(now))).append('\n');
         sb.append("File: ").append(fileName).append(" (").append(fileSize > 0 ? fileSize + " bytes" : "size unknown").append(")\n");
         sb.append("Result: ").append(success ? "success, the library was updated"

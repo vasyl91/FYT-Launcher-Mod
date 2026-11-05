@@ -754,7 +754,12 @@ public final class CanbusLibrary {
 
     /** {@code canbus_library_export_2026-10-30_00-56-34.txt}. */
     static String exportFileName(long timeMillis) {
-        return "canbus_library_export_"
+        return exportFileName(timeMillis, "default");
+    }
+
+    /** The export of the 7870's library carries the platform in its name: canbus_library_export_7870_... */
+    static String exportFileName(long timeMillis, String platform) {
+        return "canbus_library_export_" + ("default".equals(platform) ? "" : platform + "_")
                 + new java.text.SimpleDateFormat(EXPORT_STAMP_PATTERN, java.util.Locale.US).format(new java.util.Date(timeMillis))
                 + ".txt";
     }
@@ -1324,8 +1329,30 @@ public final class CanbusLibrary {
     // ---------------------------------------------------------------------------------------------
 
     private static final String TAG = "CanbusLibrary";
+    /** The built-in library of the other FYT units, and what the user imported for them. */
     static final String ASSET_NAME = "canbus_library.txt";
     static final String USER_FILE_NAME = "canbus_library_user.txt";
+    /** The same for the 7870, whose com.syu.canbus is another version (see HandlerCanbus7870). */
+    static final String ASSET_NAME_7870 = "canbus_library_7870.txt";
+    static final String USER_FILE_NAME_7870 = "canbus_library_user_7870.txt";
+
+    /** The library pair of this unit: the 7870 has its own, the others share the default one. */
+    static boolean uses7870() {
+        return com.android.launcher66.DeviceIdentity.is7870();
+    }
+
+    static String assetName() {
+        return uses7870() ? ASSET_NAME_7870 : ASSET_NAME;
+    }
+
+    static String userFileName() {
+        return uses7870() ? USER_FILE_NAME_7870 : USER_FILE_NAME;
+    }
+
+    /** Which library is in use, for the reports and the exported file's name. */
+    static String platformName() {
+        return uses7870() ? "7870" : "default";
+    }
     /** What {@link #sendForCar} reports when it sent nothing. */
     static final String NONE = "none";
 
@@ -1406,11 +1433,11 @@ public final class CanbusLibrary {
     }
 
     static File userFile(Context context) {
-        return new File(context.getApplicationContext().getFilesDir(), USER_FILE_NAME);
+        return new File(context.getApplicationContext().getFilesDir(), userFileName());
     }
 
     private static Library readAsset(Context app) {
-        try (InputStream in = app.getAssets().open(ASSET_NAME);
+        try (InputStream in = app.getAssets().open(assetName());
              InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
             ParseResult r = parse(reader, -1, null, null);
             if (r.ok()) {

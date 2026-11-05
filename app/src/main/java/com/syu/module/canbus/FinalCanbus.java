@@ -3665,6 +3665,9 @@ public class FinalCanbus {
     public static final int CAR_WC2_GUOCHAN = 395;
     public static final int CAR_WC2_GUOCHAN_1 = 65931;
     public static final int CAR_WC2_GUOCHAN_10 = 655755;
+    // Used by Callback_0395_WC2_GuoChan_Qirui, which comes from the 7870's com.syu.canbus.
+    public static final int CAR_WC2_GUOCHAN_8 = 524683;
+    public static final int CAR_WC2_Qirui_M1AEVFL1 = 2687371;
     public static final int CAR_WC2_GUOCHAN_11 = 721291;
     public static final int CAR_WC2_GUOCHAN_13 = 852363;
     public static final int CAR_WC2_GUOCHAN_14 = 917899;

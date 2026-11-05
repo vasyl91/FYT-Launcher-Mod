@@ -5,6 +5,8 @@ setlocal EnableExtensions
 rem Builds a canbus library for the FYT launcher from a decompiled com.syu.canbus.
 rem   build_canbus_library.bat "C:\path\to\classes.dex\sources"          (or drag the folder onto this file)
 rem   build_canbus_library.bat --check library.txt                       (any other argument goes to the script as it is)
+rem   build_canbus_library.bat --launcher <repo> --platform 7870          (the library built into the launcher for the 7870)
+rem A library for a unit is built from the com.syu.canbus of that unit and imported on the same unit.
 rem The script is build_canbus_library.py next to this file; the result is written to the current folder.
 
 set "SCRIPT=%~dp0build_canbus_library.py"

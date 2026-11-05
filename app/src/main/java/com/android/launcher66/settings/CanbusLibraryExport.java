@@ -69,7 +69,7 @@ final class CanbusLibraryExport {
             result.error = "no folder to save to";
             return result;
         }
-        String name = CanbusLibrary.exportFileName(now);
+        String name = CanbusLibrary.exportFileName(now, CanbusLibrary.platformName());
         File file = CanbusLibraryImport.uniqueFile(out.dir, name.substring(0, name.length() - LogFileName.TXT.length()));
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             writer.write(text);

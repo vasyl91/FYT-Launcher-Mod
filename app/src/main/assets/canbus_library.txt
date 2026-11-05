@@ -1,5 +1,6 @@
 canbus_library 4
 # Canbus library: the screen class of each car id and the requests of its fuel screens.
+# Platform: default
 # Sources, the newest first (the classes and the pages of a car come from the first that knows it, the codes from all):
 #   decompiled_com.syu.canbus/classes.dex.new/sources (newer com.syu.canbus)
 #   decompiled_com.syu.canbus/classes.dex/sources (older com.syu.canbus)
@@ -668,4 +669,4 @@ U 1704391,1769927,1835463,1900999,1966535,2032071,2097607,2425271,3342775,426029
 U 2687429,2752965,3866685,3932221,3997757,4653117,4718653,5636157,5701693,5832765,5898301,5963837,6029373,6094909,6160445,6225981,6291517,9044422 | code 184 | 1=L100,2=OTHER,3=OTHER,*=LH
 U 7274939,7340475,7406011,7471547,7537083,7602619,10420667,10486203,10551739,10617275,10682811,10748347 | code 108 | 1=LH,*=L100
 U 13042103,13107639,13173175,13238711,13304247,13369783,13435319,13500855 | bit 5 | mask 31 | 0=L100,1=LH
-end 656 e3216331
+end 656 d803cd12

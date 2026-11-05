@@ -94,7 +94,9 @@ Other modes of the script (`py build_canbus_library.py ...`):
 
 ```
 py build_canbus_library.py <src> [--out FILE] [--mapping FILE]   from a decompiled com.syu.canbus
-py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher, from the newer and the older com.syu.canbus and decompiled_carinfo/
+py build_canbus_library.py --launcher <repo> [--platform default|7870] [--out FILE]
+                                                                 the library built into the launcher, from the newer and the older com.syu.canbus and decompiled_carinfo/
+                                                                 (7870: from the com.syu.canbus of the 7870 first, into canbus_library_7870.txt)
 py build_canbus_library.py --seal FILE                           recompute the footer of an edited file
 py build_canbus_library.py --check FILE                          validate a file like the launcher does
 py build_canbus_library.py --diff A B [--ids 1507667,163]        what differs between two library files
@@ -214,8 +216,15 @@ end 8 1a2b3c4d
   * The asset is read only for the classes of the cars the canbus sources do not know and for `N`; its `R` and `S` records are not used, so running the command twice
     in a row writes the same file. The file is version 4 as long as a car has a `U` record. The result overwrites the asset by default.
 
+  * **The 7870 has a library of its own** (`--platform 7870`, written to `app/src/main/assets/canbus_library_7870.txt`): the same rules with
+    `decompiled_com.syu.canbus/classes.dex.7870/sources` as the newest source, so the classes, the pages and the first fuel/range pair of a car are those of the 7870's
+    `com.syu.canbus`. When the 7870's version has no `U` record for a car (the labels `L`/`H` of a page conflict) it is taken from the next source that has one,
+    and every other platform's file gets the same rule. The launcher chooses the file by the unit (`DeviceIdentity.is7870()`); an import goes to the library of the
+    unit it is made on (`canbus_library_user_7870.txt` against `canbus_library_user.txt`), so build the file from the `com.syu.canbus` of the same unit.
+    `--platform default` (the default) is the library of the other units, unchanged.
+
   **To add a car to the built-in library**: add it to the `ActivityLauncher` of a source (or its `C` line to the asset, if no source knows it) and run
-  `py build_canbus_library.py --launcher .`; `--seal` is for a file edited by hand.
+  `py build_canbus_library.py --launcher .` (and `--platform 7870` for the 7870's file); `--seal` is for a file edited by hand.
 * **Classes (from a decompiled `com.syu.canbus`).** It finds the `switch (DataCanbus.DATA[1000])` of `ActivityLauncher.launchCanbus()` and runs it for every car id, with fall-through,
   for the four combinations (portrait yes/no, firmware matches yes/no). A result that depends on the orientation becomes `| alt | portrait`,
   one that depends on `/sys/fytver/fyt_bin_version` becomes `| alt | fytver:...`. Conditions it does not know are treated as false and listed as warnings.

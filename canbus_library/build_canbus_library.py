@@ -79,6 +79,10 @@ TOKEN_RE = re.compile(r'''
 ''', re.X | re.S)
 
 
+# The variable launchCanbus() assigns the class name to: JADX names it cls, name, or, when the method holds
+# another variable of the same name, cls2, cls3 ... (the 7870 build has cls2 in 653 places).
+CLASS_VAR_RE = re.compile(r'(?:cls|name)\d*')
+
 class Tok:
     __slots__ = ('kind', 'text', 'line')
 
@@ -261,7 +265,7 @@ class SwitchParser:
             self.collect_until((';',))
             self.i += 1
             return Stmt('return', line)
-        if tok.kind == 'id' and tok.text in ('cls', 'name') and self.is_op(self.peek(1), '=') \
+        if tok.kind == 'id' and CLASS_VAR_RE.fullmatch(tok.text) and self.is_op(self.peek(1), '=') \
                 and not self.is_op(self.peek(2), '='):
             self.i += 2
             rhs = self.collect_until((';',))
@@ -336,6 +340,7 @@ class CondEval:
 
     PORTRAIT_RE = re.compile(r'(?:\w+\.)*(?:TheApp|LauncherApplication)\.getConfiguration\(\)(==|!=)1')
     PORTRAIT2_RE = re.compile(r'(?:\w+\.)*isPortrait\(\)')
+    PLATFORM_RE = re.compile(r'(?:"\d+"\.equals\(\w+\)|\w+\.equals\("\d+"\))')
     FYTVER_RE = re.compile(r'readFile\("' + re.escape(FYTVER_PATH) + r'"\)\.contains\("([^"]*)"\)')
 
     def __init__(self, warn):
@@ -425,6 +430,10 @@ class CondEval:
             if tok not in self.tokens:
                 self.tokens.append(tok)
             return self.fytver
+        if self.PLATFORM_RE.fullmatch(text):
+            # `"6319".equals(platform)` (the 7870 build of com.syu.canbus): the format has no condition on the
+            # platform, and the 7870 itself reports 6318, so it is false for every unit this library is read on.
+            return False
         self.warn(atom[0].line if atom else self.line, 'unrecognised condition "%s" taken as false' % text)
         return False
 
@@ -471,7 +480,7 @@ def count_pairs(toks, a, b):
     n = 0
     for i in range(a, b):
         t = toks[i]
-        if t.kind == 'id' and t.text in ('cls', 'name') and i + 1 < b and toks[i + 1].text == '=':
+        if t.kind == 'id' and CLASS_VAR_RE.fullmatch(t.text) and i + 1 < b and toks[i + 1].text == '=':
             n += 1
     return n
 
@@ -1836,10 +1845,19 @@ LAUNCHER_SOURCES = (
     ('decompiled_com.syu.canbus/classes.dex/sources', 'older com.syu.canbus', True),
     ('decompiled_carinfo', 'decompiled_carinfo', False),
 )
+# The same for the 7870, whose own com.syu.canbus (classes.dex.7870) is the newest.
+LAUNCHER_SOURCES_7870 = (
+    ('decompiled_com.syu.canbus/classes.dex.7870/sources', 'com.syu.canbus of the 7870', True),
+) + LAUNCHER_SOURCES
 LAUNCHER_ASSET = 'app/src/main/assets/canbus_library.txt'
+LAUNCHER_ASSET_7870 = 'app/src/main/assets/canbus_library_7870.txt'
+PLATFORMS = {
+    'default': (LAUNCHER_SOURCES, LAUNCHER_ASSET),
+    '7870': (LAUNCHER_SOURCES_7870, LAUNCHER_ASSET_7870),
+}
 
 
-def build_launcher(repo, out_path, log):
+def build_launcher(repo, out_path, log, platform='default'):
     """The library built into the launcher, from all the sources in LAUNCHER_SOURCES:
 
     * C, R and N of a car come from the newest source that knows its id (the switch of its ActivityLauncher); a car none
@@ -1850,10 +1868,15 @@ def build_launcher(repo, out_path, log):
     The asset is read for the classes of the cars the canbus sources do not know and for N; its R and S records are not
     used, so running this twice gives the same file."""
     repo = pathlib.Path(repo)
-    asset_path = repo / LAUNCHER_ASSET
+    # the previous library: the platform's own asset if there is one, else the default one (the classes of the cars
+    # none of the canbus sources knows, and N)
+    asset_path = repo / PLATFORMS[platform][1]
+    if not asset_path.is_file():
+        asset_path = repo / LAUNCHER_ASSET
     if not asset_path.is_file():
         log('error: %s not found' % asset_path)
         return 1
+    sources = PLATFORMS[platform][0]
     asset = check_text(asset_path.read_bytes())
     if asset.errors:
         log('error: %s does not validate:' % asset_path)
@@ -1863,7 +1886,7 @@ def build_launcher(repo, out_path, log):
     warnings = []
     stats = Stats()
     indexes = []          # (name, index, class records or None)
-    for rel, name, has_switch in LAUNCHER_SOURCES:
+    for rel, name, has_switch in sources:
         folder = repo / rel
         if not folder.is_dir():
             log('error: %s not found' % folder)
@@ -1911,6 +1934,7 @@ def build_launcher(repo, out_path, log):
     pages_of, page_keys, moved = {}, {}, {}
     units_of = {}
     pairs_of = collections.defaultdict(list)
+    units_later = {}
     for k, (name, index, records, counts) in enumerate(indexes):
         own = records if records is not None else class_records
 
@@ -1927,15 +1951,24 @@ def build_launcher(repo, out_path, log):
                 pages_of[cid], page_keys[cid] = pages[cid], keys[cid]
                 if cid in mv:
                     moved[cid] = mv[cid]
-        # the unit of a car comes from its owner, the newest source that knows it (its code differs between versions)
+        # the unit of a car comes from its owner, the newest source that knows it (its code differs between versions);
+        # where the owner has none (its labels L/H of the unit conflict), from the next source that has one
         for cid, text in find_units(own, index, warn).items():
             if owner.get(cid) == k:
                 units_of[cid] = text
+            elif cid not in units_of and owner.get(cid, len(indexes)) < k:
+                units_later.setdefault(cid, text)
         log('  %s: pages for %d ids, codes for %d ids' % (name, len(pages), len(codes)))
     codes_of = {cid: tuple(pairs) for cid, pairs in pairs_of.items()}
+    recovered = [cid for cid in units_later if cid not in units_of]
+    for cid in recovered:
+        units_of[cid] = units_later[cid]
+    if recovered:
+        log('U of %d ids taken from an older source, the newest one having none for them' % len(recovered))
 
-    source_lines = ['# Sources, the newest first (the classes and the pages of a car come from the first that knows it, the codes from all):']
-    for rel, name, has_switch in LAUNCHER_SOURCES:
+    source_lines = ['# Platform: %s' % platform,
+                    '# Sources, the newest first (the classes and the pages of a car come from the first that knows it, the codes from all):']
+    for rel, name, has_switch in sources:
         source_lines.append('#   %s (%s)' % (rel, name))
     source_lines.append('#   cars none of the canbus sources knows keep their class from the previous library.')
     return emit(out_path, log, source_lines,
@@ -2281,6 +2314,8 @@ def main(argv=None):
     ap.add_argument('--out', help='the file to write')
     ap.add_argument('--mapping', help='the java file that holds the switch on the car id (default: found in <src>)')
     ap.add_argument('--launcher', metavar='REPO', help='build the library built into the launcher from REPO')
+    ap.add_argument('--platform', choices=sorted(PLATFORMS), default='default',
+                    help='with --launcher: the library of the 7870 (canbus_library_7870.txt) or the default one')
     ap.add_argument('--seal', metavar='FILE', help='recompute the footer of FILE')
     ap.add_argument('--check', metavar='FILE', help='validate FILE like the launcher')
     ap.add_argument('--diff', nargs=2, metavar=('A', 'B'), help='what differs between two library files')
@@ -2304,7 +2339,8 @@ def main(argv=None):
         return cmd_merge(args.merge[0], args.merge[1], args.out, log)
 
     if args.launcher:
-        return build_launcher(args.launcher, args.out or str(pathlib.Path(args.launcher) / LAUNCHER_ASSET), log)
+        asset = PLATFORMS[args.platform][1]
+        return build_launcher(args.launcher, args.out or str(pathlib.Path(args.launcher) / asset), log, args.platform)
 
     if not args.src:
         ap.print_usage()

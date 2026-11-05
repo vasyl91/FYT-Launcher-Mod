@@ -366,6 +366,41 @@ class CanbusLibraryTest {
         assertEquals(text, CanbusLibrary.seal(text.substring(0, footerAt)));
     }
 
+    // ---- the library of the 7870
+
+    private static ParseResult parseAsset(String name) throws IOException {
+        String text = new String(Files.readAllBytes(new File("src/main/assets/" + name).toPath()),
+                StandardCharsets.UTF_8);
+        return parse(text);
+    }
+
+    @Test
+    void bothBuiltInLibrariesParseAndTheSealIsRight() throws IOException {
+        for (String name : new String[]{"canbus_library.txt", "canbus_library_7870.txt"}) {
+            ParseResult r = parseAsset(name);
+            assertTrue(r.ok(), name + ": " + r.errors);
+            assertTrue(r.library.carsWithClass() > 4000, name);
+        }
+    }
+
+    @Test
+    void the7870LibraryHasTheClassesOfItsOwnCanbusApp() throws IOException {
+        Library def = parseAsset("canbus_library.txt").library;
+        Library l7870 = parseAsset("canbus_library_7870.txt").library;
+        // 12 and 129 are Psa301IndexActi in the default library, PsaOilMileIndexActi in the 7870's.
+        assertEquals("com.syu.carinfo.psa.PsaOilMileIndexActi", l7870.classNameFor(12, false, ""));
+        assertEquals("com.syu.carinfo.psa.PsaOilMileIndexActi", l7870.classNameFor(129, false, ""));
+        assertTrue(l7870.carsWithClass() > def.carsWithClass());
+    }
+
+    @Test
+    void theExportOfTheOtherLibraryCarriesThePlatform() {
+        String name = CanbusLibrary.exportFileName(1_761_785_794_000L, "7870");
+        assertTrue(name.matches("canbus_library_export_7870_\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}\\.txt"), name);
+        assertEquals(CanbusLibrary.exportFileName(1_761_785_794_000L),
+                CanbusLibrary.exportFileName(1_761_785_794_000L, "default"));
+    }
+
     // ---- S records: the fuel and range codes of a car (version 2)
 
     @Test
