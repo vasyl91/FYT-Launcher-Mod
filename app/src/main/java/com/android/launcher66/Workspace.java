@@ -450,9 +450,6 @@ public class Workspace extends SmoothPagedView
     /** The share of its slot the weather texts may fill, usual and with 'Large text'. */
     private static final float BAR_WEATHER_SHARE = 0.65f;
     private static final float BAR_WEATHER_SHARE_LARGE = 0.95f;
-    /** With 'Large text' the weather text rows are this much higher, and the icon this share of its height at least. */
-    private static final float BAR_WEATHER_ROW_GROWTH = 0.15f;
-    private static final float BAR_WEATHER_ICON_MIN_SHARE = 0.6f;
     private static final float BAR_TEXT_MAX_SP = 300f;
     /** A parent lower than this fraction of the bar height is a transient layout - do not fit from it. */
     private static final float BAR_TEXT_MIN_PARENT_FRACTION = 0.25f;
@@ -1033,9 +1030,7 @@ public class Workspace extends SmoothPagedView
         if (tempText != null) {
             adjustTextSize(tempText, weatherShare);
         }
-        if (largeText) {
-            enlargeWeatherTexts(barView);
-        }
+        applyWeatherTextShares(barView, largeText);
         if (blackTintBar) {
             if (titleText != null) {
                 titleText.setTextColor(Color.BLACK);
@@ -1067,47 +1062,63 @@ public class Workspace extends SmoothPagedView
      * 'Large text': one line with an ellipsis at the end, and the text rows of the weather widget
      * get 15% more of its height at the cost of the icon above them (which keeps more than 60% of
      * its usual height). The text then fills its row; the icon is the only neighbour that gives way.
+     *
+     * <p>The shares are always computed from those of the layout file, which are remembered in a
+     * view tag the first time. This method runs again whenever the bar is attached (after every
+     * wake, after every return to the first page); computed from the current shares it would
+     * grow the rows a little more each time. With the option off the remembered shares are put back.
      */
-    private void enlargeWeatherTexts(View barView) {
+    private void applyWeatherTextShares(View barView, boolean largeText) {
         int[] rows = {R.id.weather_weather1, R.id.weather_city1, R.id.weather_temp1};
-        for (int id : rows) {
-            View row = barView.findViewById(id);
-            if (row instanceof TextView) {
-                ((TextView) row).setEllipsize(TextUtils.TruncateAt.END);
-                ((TextView) row).setSingleLine(true);
+        if (largeText) {
+            for (int id : rows) {
+                View row = barView.findViewById(id);
+                if (row instanceof TextView) {
+                    ((TextView) row).setEllipsize(TextUtils.TruncateAt.END);
+                    ((TextView) row).setSingleLine(true);
+                }
             }
         }
         View icon = barView.findViewById(R.id.weather_imge1);
         View weatherRow = barView.findViewById(R.id.weather_weather1);
-        View cityRow = barView.findViewById(R.id.weather_city1);
-        if (icon == null || weatherRow == null || cityRow == null
+        if (icon == null || weatherRow == null
                 || !(icon.getLayoutParams() instanceof ConstraintLayout.LayoutParams iconLp)
-                || !(weatherRow.getLayoutParams() instanceof ConstraintLayout.LayoutParams weatherLp)
-                || !(cityRow.getLayoutParams() instanceof ConstraintLayout.LayoutParams cityLp)) {
+                || !(weatherRow.getLayoutParams() instanceof ConstraintLayout.LayoutParams weatherLp)) {
             return;
         }
-        float usualRow = weatherLp.matchConstraintPercentHeight;
-        float largeRow = usualRow * (1f + BAR_WEATHER_ROW_GROWTH);
-        float usualIcon = iconLp.matchConstraintPercentHeight;
-        // Two rows of text sit under the icon (the city and the temperature share the second one)
-        float largeIcon = Math.max(usualIcon * BAR_WEATHER_ICON_MIN_SHARE,
-                usualIcon - 2f * (largeRow - usualRow));
-        if (largeRow != weatherLp.matchConstraintPercentHeight) {
-            weatherLp.matchConstraintPercentHeight = largeRow;
-            weatherRow.setLayoutParams(weatherLp);
+        Object rememberedRow = weatherRow.getTag(R.id.weather_usual_share);
+        Object rememberedIcon = icon.getTag(R.id.weather_usual_share);
+        float usualRow;
+        float usualIcon;
+        if (rememberedRow instanceof Float && rememberedIcon instanceof Float) {
+            usualRow = (Float) rememberedRow;
+            usualIcon = (Float) rememberedIcon;
+        } else {
+            usualRow = weatherLp.matchConstraintPercentHeight;
+            usualIcon = iconLp.matchConstraintPercentHeight;
+            if (!largeText) {
+                return;   // nothing was changed yet, so there is nothing to put back
+            }
+            weatherRow.setTag(R.id.weather_usual_share, usualRow);
+            icon.setTag(R.id.weather_usual_share, usualIcon);
         }
-        if (largeRow != cityLp.matchConstraintPercentHeight) {
-            cityLp.matchConstraintPercentHeight = largeRow;
-            cityRow.setLayoutParams(cityLp);
+        float rowShare = usualRow;
+        float iconShare = usualIcon;
+        if (largeText) {
+            float[] large = WidgetBarPlan.largeWeatherShares(usualRow, usualIcon);
+            rowShare = large[0];
+            iconShare = large[1];
         }
-        View tempRow = barView.findViewById(R.id.weather_temp1);
-        if (tempRow != null && tempRow.getLayoutParams() instanceof ConstraintLayout.LayoutParams tempLp
-                && largeRow != tempLp.matchConstraintPercentHeight) {
-            tempLp.matchConstraintPercentHeight = largeRow;
-            tempRow.setLayoutParams(tempLp);
+        for (int id : rows) {
+            View row = barView.findViewById(id);
+            if (row != null && row.getLayoutParams() instanceof ConstraintLayout.LayoutParams lp
+                    && rowShare != lp.matchConstraintPercentHeight) {
+                lp.matchConstraintPercentHeight = rowShare;
+                row.setLayoutParams(lp);
+            }
         }
-        if (largeIcon != iconLp.matchConstraintPercentHeight) {
-            iconLp.matchConstraintPercentHeight = largeIcon;
+        if (iconShare != iconLp.matchConstraintPercentHeight) {
+            iconLp.matchConstraintPercentHeight = iconShare;
             icon.setLayoutParams(iconLp);
         }
     }
