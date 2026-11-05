@@ -79,7 +79,7 @@ Launcher side, `app/src/main/java/com/syu/util/`:
 Output: `vdhost/server/build/outputs/magisk/FYT-VDHost-<version>.zip`. Flash it in Magisk and
 reboot. The launcher must be a build that contains `WindowHostVdProvider`. The module and the launcher
 speak the same protocol (`VdHostProtocol.VERSION`, now 3), but the launcher also takes a host down to
-`VdHostProtocol.MIN_VERSION` (2): an older module (1.0.x) keeps hosting the panes and doing the older
+`VdHostProtocol.MIN_VERSION` (2): a module built before protocol 3 keeps hosting the panes and doing the older
 errands below, and the calls added in protocol 3 are not made to it (the launcher logs once "VD host
 protocol 2: file reads and permission grants need the module update"). A host of protocol 1, or newer
 than the launcher, is refused.
