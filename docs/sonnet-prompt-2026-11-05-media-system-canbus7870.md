@@ -148,12 +148,22 @@ Prefy zapisuj przez `apply()`.
 - SELinux działa w trybie **permissive** (`permissive=1` we wszystkich `avc`).
 - com.syu.media działa jako zwykły uid aplikacji `u0a82` (domena `platform_app`), **nie jako uid 1000**. Wersja systemowa launchera nie ma więc do jej danych większego dostępu niż standard.
 
-**Dekompilacja** (`decompiled_com.syu.media/classes.dex/sources/`):
+**Dekompilacja i manifest** (`decompiled_com.syu.media/`; manifest: `decompiled_com.syu.media/AndroidManifest.xml`):
 - Lokalizacja:
-  - aplikacja w `com/syu/media/`;
-  - radio w `com/syu/radio/` i `com/syu/manger/`;
-  - provider radia w `decompiled_com.syu.media/classes2.dex/sources/com/syu/radio/provider/`.
-- Manifestu nie ma. O eksporcie providera radia rozstrzyga próba w czasie działania (`SecurityException`). Sprawdź poniższe fakty w kodzie, zanim na nich oprzesz zmianę; różnice zgłoś.
+  - aplikacja w `classes.dex/sources/com/syu/media/`;
+  - radio 7870 w pakietach Java `com/syu/radio/` i `com/syu/manger/` **wewnątrz APK com.syu.media**;
+  - provider radia w `classes2.dex/sources/com/syu/radio/provider/`.
+- **Radio:** na 7862 radio to osobna aplikacja com.syu.radio (`decompiled_com.syu.radio/`, poza tym briefem). Na 7870 radio, muzykę, BT i radio online obsługuje com.syu.media.
+  - Nazwy się powtarzają: na 7870 authority `com.syu.radio` należy do com.syu.media (`com.syu.radio.provider.RadioProvider`). Na 7862 należy do aplikacji com.syu.radio (`com.android.fmradio.FmProvider`, bez `android:exported`, czyli nieeksportowany).
+  - Ścieżki z tego briefu stosuj tylko na jednostce com.syu.media (`StockSources.isSyuMediaUnit()`). Raz na proces sprawdź właściciela: `pm.resolveContentProvider("com.syu.radio", 0).packageName` musi być `com.syu.media`.
+- Manifest com.syu.media (kompilacja 2024-01-17, compileSdk 33):
+  - brak `sharedUserId`;
+  - `MainAct` (`singleInstance`) ma akcje `com.syu.music`, `com.syu.radio`, `com.syu.btmusic`, `com.syu.btav`, `com.syu.online` oraz `VIEW` dla plików audio;
+  - usługi `com.syu.media.music.MusicService` i `com.syu.media.online.OnlineRadioService` mają intent-filtry, nie mają uprawnienia, więc są eksportowane;
+  - providery `com.syu.media` i `com.syu.radio`: `android:exported="true"`, bez uprawnienia;
+  - receiverów w manifeście nie ma;
+  - `androidx.room.MultiInstanceInvalidationService` ma `exported="false"`, więc nie da się nim powiadomić Room z zewnątrz.
+- Sprawdź poniższe fakty w kodzie, zanim na nich oprzesz zmianę. Różnice zgłoś.
 
 1. **Provider `com.syu.media`** (`provider/MediaProvider`, baza Room `media_database.db`):
    - ścieżki:
@@ -184,9 +194,9 @@ Prefy zapisuj przez `apply()`.
 4. **Receivery i akcje:**
    - `companion/receiver/Receiver`, rejestrowany tylko przez `MainAct`: `com.fyt.systemui.remove` (zapis stanu, możliwa zmiana kanału dźwięku) i `PACKAGE_*`;
    - `MediaFiles`: `MEDIA_MOUNTED`, `UNMOUNTED`, `EJECT` (chronione; uruchamiają skan);
-   - `MainAct` przyjmuje akcje kart: `com.syu.music`, `com.syu.radio`, `com.syu.online`, `com.syu.btmusic`;
+   - `MainAct` przyjmuje akcje kart: `com.syu.music`, `com.syu.radio`, `com.syu.online`, `com.syu.btmusic`, `com.syu.btav` (manifest);
    - nie ma obsługi klawisza „ulubione”.
-5. **Provider `com.syu.radio`** (`com/syu/radio/provider/RadioProvider`, w tej samej aplikacji):
+5. **Provider `com.syu.radio`** (`com/syu/radio/provider/RadioProvider` w APK com.syu.media; `exported="true"`, bez uprawnienia):
    - `city_station` (1): query. Gdy jest selekcja, `selectionArgs` są wymagane (`Intrinsics.checkNotNull`), inaczej NPE. Dlatego `content query --where …` bez argumentów zawodzi;
    - `city_station/*/#` (2): zwraca `query("")`. Nie używaj;
    - `local_assert` (3): statyczny kursor `freq, cover_path, title` z logo znalezionymi w `radio_logo`. `MediaApp` odświeża go i woła `notifyChange("content://com.syu.radio/local_assert")`, czyli jest przewidziany dla innych aplikacji;
@@ -212,7 +222,7 @@ Prefy zapisuj przez `apply()`.
 |---|---|---|---|---|
 | Serce muzyki/online: widżet → baza com.syu.media | tak (provider, dziś) | tak | tak | tak |
 | …widżet → ekran com.syu.media od razu | **nie** (brak API) | nie | nie (tylko restart aplikacji/utworu, zabroniony) | nie |
-| Serce FM: aplikacja → widżet | tak, jeśli `com.syu.radio` eksportowany | tak (czyta też nieeksportowany) | tak (`su -c content query`) | **nie**, jeśli nieeksportowany |
+| Serce FM: aplikacja → widżet | tak (provider `com.syu.radio` z com.syu.media jest eksportowany) | tak | tak | tak |
 | Serce FM: widżet → aplikacja | **nie** (provider tylko do odczytu, baza prywatna, aplikacja i tak by nie zauważyła) | nie | nie | nie |
 | Logo FM | tak (`local_assert`; `/sdcard/radio_logo` z dostępem do pamięci) | tak | tak | tak |
 | Ikona stacji online | tak (APK w `/odm/app`; na 7870 SELinux permissive) | tak | tak (kopia przez `su -c cat`) | tak (kopia przez host, C6) |
@@ -356,6 +366,12 @@ Używa go `Launcher.initVariable()` (≈1956–1968), ale tylko gdy nowa instanc
 - `DataCanbus`, `CallbackCanbusBase`, `UiNotifyEvent`.
 
 Pakiet to nadal `com.syu.canbus`, a launcher rozmawia z `com.syu.ms` bezpośrednio.
+
+**Manifesty com.syu.canbus** (`decompiled_com.syu.canbus/classes.dex*/AndroidManifest.xml`):
+- wszystkie trzy wersje mają ten sam pakiet i `sharedUserId="android.uid.systemui"`;
+- 7870 (kompilacja 2026-10-16) ma względem `new` (2026-03-06) 50 aktywności aut więcej i 10 mniej;
+- usługi, receivery, providery, akcje i uprawnienia są identyczne;
+- nic w manifeście nie wymaga osobnej ścieżki poza mapą callbacków i biblioteką (C4).
 
 **Różnice w kodzie 7870:**
 - `FinalCanbus`:
@@ -704,11 +720,17 @@ Zasady:
 
 ### C7.3 FM
 1. `StockRadioSource.requestLookup()` (≈204): zdejmij wyłączenie dla jednostki com.syu.media i popraw komentarz.
-2. Na 7870, w tej kolejności:
-   - a) `content://com.syu.radio/local_assert` (`freq`, `cover_path`, `title`; `freq` w tych samych jednostkach co `StockRadioSource.freq`):
-     - bez uprawnień, jeśli provider jest eksportowany;
-     - `SecurityException` → jeden log i krok b);
-   - b) skan `/storage/emulated/0/radio_logo` istniejącym `lookup()`. Schemat `<Nazwa>_<freq>.png` jest taki sam jak w com.syu.radio. Dopilnuj reguł `RadioIconCache`: dokładnie 2 części, kropka usuwana, `90.40` → 9040;
+2. Na 7870 (właściciel authority sprawdzony, §3.1), w tej kolejności:
+   - a) `content://com.syu.radio/local_assert`:
+     - kolumny `freq`, `cover_path`, `title`; `freq` jest w tych samych jednostkach co `StockRadioSource.freq`;
+     - bez uprawnień, bo provider jest eksportowany;
+     - to ta sama lista, z której korzysta aplikacja (`RadioIconCache`), więc widżet pokaże to samo logo co ona;
+     - zarejestruj `ContentObserver` na tym URI, bo `MediaApp` woła `notifyChange` po wczytaniu logo. Lista wypełnia się asynchronicznie przy starcie com.syu.media;
+     - zapytania i obserwator tylko wtedy, gdy radio jest pokazanym źródłem. Wtedy proces com.syu.media i tak działa, a launcher nie uruchamia go bez potrzeby;
+   - b) tylko gdy a) rzuci wyjątek (inny firmware): skan `/storage/emulated/0/radio_logo` według **reguł com.syu.media**, a nie łagodniejszego parsera 7862 (`StockFreq.parseLogoFileName` dzieli po ostatnim `_` i porównuje częstotliwość jako liczbę rzeczywistą). Reguły:
+     - dokładnie 2 części po `_`;
+     - rozszerzenie `.png` z rozróżnieniem wielkości liter;
+     - z częstotliwości usuwana kropka, porównanie liczby całkowitej (`90.40` → 9040, `90.4` → 904, czyli brak dopasowania);
    - c) `cover_path` stacji z `city_station` (odczyt z C8.2), jeśli jest niepusty.
 3. `title` z `local_assert` lub z nazwy pliku jest nazwą stacji, gdy brak RDS PS (tak jak dziś na 7862).
 4. Bez logo:
@@ -754,21 +776,16 @@ Zasady:
      - `content://com.syu.radio/city_station`, projekcja `favorite, cover_path, title`;
      - selekcja `freq=? AND favorite=1`, `selectionArgs` zawsze podane;
      - miasta nie znamy, bo jego wybór siedzi w prywatnych prefach com.syu.media. Ulubiony wiersz tej częstotliwości w dowolnym mieście liczy się jako ulubiony.
-   - Kolejność dróg:
-     1. bez uprawnień (provider eksportowany);
-     2. aplikacja systemowa: ten sam odczyt (uid 1000 czyta też nieeksportowany);
-     3. root: `su -c content query --uri content://com.syu.radio/city_station --projection freq:favorite:cover_path:title --sort "favorite DESC"`.
-        - Bez `--where`, bo provider rzuca NPE przy selekcji bez argumentów.
-        - Czytaj wiersze `Row: …`, dopóki `favorite=1`, potem zakończ proces.
-        - Wynik trzymaj 60 s.
-     4. Shizuku: niemożliwe, gdy provider nie jest eksportowany (shell). Zaloguj raz.
+   - Droga: zwykły `ContentResolver.query`, bez uprawnień, bo provider jest eksportowany (manifest). Wersja systemowa robi to samo.
+     - Rootu ani Shizuku tu nie potrzeba. `SecurityException` lub inny błąd oznacza inny firmware: zaloguj raz i zostaw serce FM szare.
+     - Nie używaj `content query --where …`: provider rzuca NPE, gdy selekcja przychodzi bez `selectionArgs`.
    - Kiedy czytać: przy zmianie stacji, co około 5 s, gdy radio jest pokazane, i przy powrocie launchera na wierzch. Wynik trzymaj w pamięci per częstotliwość.
 2. `StockRadioSource.buildTrack()` na jednostce com.syu.media ustawia `favorite` na wynik odczytu albo na `null`, gdy stan jest nieznany.
 3. `MediaFavoriteController`:
    - `isStockFavoriteAvailable()` i `getStockFavoriteState()`: dla nakładki `RADIO` na jednostce com.syu.media pokaż stan (pełne lub puste), gdy jest znany. Użyj istniejącego wyglądu nieaktywnego przycisku, z wypełnieniem według stanu, bez nowych grafik;
    - `toggleStockFavorite()`: dla FM nic nie zmienia. Log raz na proces: `Press ignored: com.syu.media's FM favorites are read-only`;
    - BT zostaje szare. com.syu.music bez zmian (`git diff` nie dotyka `SyuMusicLibrary`).
-4. Test czystej funkcji, która parsuje wynik `content query`.
+4. Test czystej funkcji, która z kursora (`favorite`, `cover_path`, `title`) liczy stan stacji dla częstotliwości.
 
 ## C9 — `Standard version: overlay, notification access and unknown apps through root or Shizuku`
 
@@ -841,7 +858,7 @@ Rób go tylko wtedy, gdy po C1–C10 w README zostały niespójności.
    - d) BT: okładka telefonu 1,5–6 s po zmianie utworu. Log pokazuje kod 51 i odczyt pliku.
    - e) Klasa w „Fuel statistics” pochodzi z biblioteki 7870. Import trafia do biblioteki 7870.
    - f) W logu nie ma `avc … getattr … /odm/app/…apk` z `launcher-loader`. Ostrzeżenia `SurfaceSyncer`/`Parcel` mogą zostać (framework).
-   - g) W logu jest jedna linia mówiąca, czy provider `com.syu.radio` jest eksportowany (decyduje o drodze dla FM).
+   - g) W logu jest jedna linia z właścicielem authority `com.syu.radio`. Na 7870 ma to być `com.syu.media`.
 
 ## 6. Raport końcowy (w odpowiedzi, po polsku)
 - Commity (hash i temat) z wynikiem CI każdego.
