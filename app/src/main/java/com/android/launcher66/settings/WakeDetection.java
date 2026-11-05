@@ -454,6 +454,10 @@ public final class WakeDetection implements WakeSignals.Listener {
         }
 
         WindowUtil.removePip();
+        // The panes are down on purpose; a watchdog armed before the sleep signal must not bring
+        // them back up (it also checks skipPipWork() itself, for one armed after it).
+        Launcher sleepingLauncher = Launcher.getLauncher();
+        if (sleepingLauncher != null) sleepingLauncher.cancelPipWatchdog();
 
         long sleepTimestamp = System.currentTimeMillis();
         prefs.edit().putLong("sleep_timestamp", sleepTimestamp).apply();

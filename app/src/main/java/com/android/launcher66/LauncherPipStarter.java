@@ -4,6 +4,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.WakeDetection;
 import com.syu.util.WindowHost;
 import com.syu.util.WindowHostVdClient;
 import com.syu.util.WindowUtil;
@@ -40,6 +41,13 @@ final class LauncherPipStarter {
         cancelPipWatchdog();
         if (!mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false)) return;
         if (!mLauncher.mPrefs.getBoolean(Keys.DISPLAY_PIP, true)) return;
+        // After the sleep signal the panes are meant to be down (WindowUtil.removePip()), and the
+        // launcher only comes to the front for the home press that parks it. A watchdog armed by
+        // that would force the panes up twice and log an error for a screen that is off.
+        if (WakeDetection.skipPipWork("pipWatchdog")) {
+            mPipWatchdogRetries = 0;
+            return;
+        }
 
         mPipWatchdogRunnable = () -> {
             mPipWatchdogRunnable = null;
@@ -56,6 +64,11 @@ final class LauncherPipStarter {
     }
 
     void runPipWatchdog(String source) {
+        if (WakeDetection.skipPipWork("pipWatchdog")) {
+            // Slept after the watchdog was armed: no retries, no error.
+            mPipWatchdogRetries = 0;
+            return;
+        }
         if (mLauncher.mPaused || mLauncher.mWorkspace == null) return;
         if (mLauncher.isAllAppsVisible()) return;
         if (mLauncher.mState != Launcher.State.WORKSPACE) return;
