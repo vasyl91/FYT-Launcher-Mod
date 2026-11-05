@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">ღილაკები ერთ რიგში</string>
     <string name="widget_bar_buttons_one_line_on">ოთხი ღილაკის ერთი რიგი სათაურისა და შემსრულებლის გვერდით</string>
     <string name="widget_bar_buttons_one_line_off">ორი რიგი, თითოეულში ორი ღილაკი</string>
+    <string name="widget_bar_no_cover">ალბომის ყდის დამალვა</string>
+    <string name="widget_bar_no_cover_on">მის ადგილს იკავებს სათაური, შემსრულებელი და ღილაკები</string>
 </resources>

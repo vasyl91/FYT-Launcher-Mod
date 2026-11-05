@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Knapper på én rad</string>
     <string name="widget_bar_buttons_one_line_on">Én rad med fire knapper ved siden av tittel og artist</string>
     <string name="widget_bar_buttons_one_line_off">To rader med to knapper</string>
+    <string name="widget_bar_no_cover">Skjul albumcoveret</string>
+    <string name="widget_bar_no_cover_on">Tittel, artist og knapper tar plassen</string>
 </resources>

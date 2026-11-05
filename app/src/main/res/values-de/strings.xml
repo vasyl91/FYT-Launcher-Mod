@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Tasten in einer Reihe</string>
     <string name="widget_bar_buttons_one_line_on">Eine Reihe mit vier Tasten neben Titel und Interpret</string>
     <string name="widget_bar_buttons_one_line_off">Zwei Reihen mit je zwei Tasten</string>
+    <string name="widget_bar_no_cover">Albumcover ausblenden</string>
+    <string name="widget_bar_no_cover_on">Titel, Interpret und Tasten nehmen seinen Platz ein</string>
 </resources>

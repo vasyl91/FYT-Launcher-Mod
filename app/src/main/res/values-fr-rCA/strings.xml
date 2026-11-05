@@ -56,4 +56,6 @@
     <string name="widget_bar_buttons_one_line">Boutons sur une seule rangée</string>
     <string name="widget_bar_buttons_one_line_on">Une rangée de quatre boutons à côté du titre et de l\'artiste</string>
     <string name="widget_bar_buttons_one_line_off">Deux rangées de deux boutons</string>
+    <string name="widget_bar_no_cover">Masquer la pochette de l\'album</string>
+    <string name="widget_bar_no_cover_on">Le titre, l\'artiste et les boutons prennent sa place</string>
 </resources>

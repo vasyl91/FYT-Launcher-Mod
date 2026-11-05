@@ -1195,7 +1195,9 @@ final class LauncherMusicWidget {
             setBarButtonsTint(mMusicNextButtonTwo);
             updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
             tvMusicNameTwo = musicBarView.findViewById(ResValue.getInstance().tv_musicName_two);
-            ivALbumBgTwo = musicBarView.findViewById(ResValue.getInstance().iv_album_bg_two);
+            // A hidden cover is not set at all: every place that sets the bar's cover skips a null view
+            ivALbumBgTwo = mLauncher.mPrefs.getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_NO_COVER, false)
+                    ? null : musicBarView.findViewById(ResValue.getInstance().iv_album_bg_two);
             tvAritstTwo = musicBarView.findViewById(ResValue.getInstance().tv_artist_two);
             View musicWidget = musicBarView.findViewById(ResValue.getInstance().rl_music_two);
             if (musicWidget != null) {

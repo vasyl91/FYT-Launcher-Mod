@@ -294,10 +294,12 @@ final class MusicWidgetPlan {
     }
 
     /** The cover of a bar and the space behind it, for a widget of usual width W0 and height h. */
-    private static void placeCover(Plan plan, int w, int h, int baseW) {
+    private static void placeCover(Plan plan, int w, int h, int baseW, boolean coverHidden) {
         int w0 = baseW > 0 ? Math.min(baseW, w) : w;
-        plan.cover = true;
-        plan.coverPx = Math.min(part(h, BAR_COVER_HEIGHT), part(w0, BAR_COVER_WIDTH));
+        plan.cover = !coverHidden;
+        // A hidden cover takes no room; the space behind it stays as the margin from the list of
+        // apps, and what is left of the widget is all for the text and the buttons.
+        plan.coverPx = coverHidden ? 0 : Math.min(part(h, BAR_COVER_HEIGHT), part(w0, BAR_COVER_WIDTH));
         plan.coverGapPx = part(w0, BAR_COLUMN_GAP);
         plan.restPx = Math.max(0, w - plan.coverPx - plan.coverGapPx);
     }
@@ -309,11 +311,17 @@ final class MusicWidgetPlan {
      * nothing hidden it equals {@code w}. The column right of the cover is all that is left of w.
      */
     static Plan planBar(int w, int h, int baseW, float density, boolean largeText, boolean oneLine) {
+        return planBar(w, h, baseW, density, largeText, oneLine, false);
+    }
+
+    /** {@link #planBar} with {@code coverHidden}: the cover takes no room (see {@link #placeCover}). */
+    static Plan planBar(int w, int h, int baseW, float density, boolean largeText, boolean oneLine,
+                        boolean coverHidden) {
         Plan plan = new Plan();
         plan.compact = oneLine;
         plan.oneLine = oneLine;
         plan.largeText = largeText;
-        placeCover(plan, w, h, baseW);
+        placeCover(plan, w, h, baseW, coverHidden);
         plan.columnPx = plan.restPx;
         float[] shares = largeText
                 ? (plan.compact ? BAR_COMPACT_LARGE : BAR_STANDARD_LARGE)
@@ -374,12 +382,18 @@ final class MusicWidgetPlan {
      */
     static Plan planBarWide(int w, int h, int baseW, float density, boolean largeText, boolean oneLine,
                             boolean buttonsOneRow, boolean portrait) {
+        return planBarWide(w, h, baseW, density, largeText, oneLine, buttonsOneRow, portrait, false);
+    }
+
+    /** {@link #planBarWide} with {@code coverHidden}: the cover takes no room, R is all but the gap. */
+    static Plan planBarWide(int w, int h, int baseW, float density, boolean largeText, boolean oneLine,
+                            boolean buttonsOneRow, boolean portrait, boolean coverHidden) {
         Plan plan = new Plan();
         plan.wide = true;
         plan.compact = oneLine;
         plan.oneLine = oneLine;
         plan.largeText = largeText;
-        placeCover(plan, w, h, baseW);
+        placeCover(plan, w, h, baseW, coverHidden);
         // The block is a whole number of cells wide, each a whole number of px. A block of an odd
         // width with cells of 50% each would round both cells up (52.5 -> 53 + 53 = 106 > 105),
         // the second cell would not fit and the flexbox would wrap to one button per row.

@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Painikkeet yhdellä rivillä</string>
     <string name="widget_bar_buttons_one_line_on">Yksi neljän painikkeen rivi nimen ja esittäjän vieressä</string>
     <string name="widget_bar_buttons_one_line_off">Kaksi kahden painikkeen riviä</string>
+    <string name="widget_bar_no_cover">Piilota albumin kansi</string>
+    <string name="widget_bar_no_cover_on">Sen paikan ottavat nimi, esittäjä ja painikkeet</string>
 </resources>

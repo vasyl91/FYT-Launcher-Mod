@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Pulsanti su una sola riga</string>
     <string name="widget_bar_buttons_one_line_on">Una riga di quattro pulsanti accanto a titolo e artista</string>
     <string name="widget_bar_buttons_one_line_off">Due file di due pulsanti</string>
+    <string name="widget_bar_no_cover">Nascondi la copertina dell\'album</string>
+    <string name="widget_bar_no_cover_on">Titolo, artista e pulsanti prendono il suo posto</string>
 </resources>

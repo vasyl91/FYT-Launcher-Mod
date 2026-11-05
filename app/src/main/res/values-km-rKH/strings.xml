@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">ប៊ូតុងក្នុងជួរតែមួយ</string>
     <string name="widget_bar_buttons_one_line_on">ប៊ូតុងបួនក្នុងមួយជួរនៅក្បែរចំណងជើង និងសិល្បករ</string>
     <string name="widget_bar_buttons_one_line_off">ពីរជួរ ជួរនីមួយៗមានប៊ូតុងពីរ</string>
+    <string name="widget_bar_no_cover">លាក់គម្របអាល់ប៊ុម</string>
+    <string name="widget_bar_no_cover_on">ចំណងជើង សិល្បករ និងប៊ូតុងយកកន្លែងរបស់វា</string>
 </resources>

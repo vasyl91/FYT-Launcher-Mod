@@ -34,9 +34,13 @@ final class WidgetBarLayout {
         return prefs.getBoolean(Keys.WIDGET_BAR_NO_WEATHER, false);
     }
 
+    static boolean coverHidden(SharedPreferences prefs) {
+        return prefs.getBoolean(Keys.WIDGET_BAR_NO_COVER, false);
+    }
+
     static boolean buttonsBeside(SharedPreferences prefs, boolean portrait) {
         return WidgetBarPlan.buttonsBeside(dateHidden(prefs, portrait), weatherHidden(prefs),
-                prefs.getBoolean(Keys.WIDGET_BAR_BUTTONS_BESIDE, true));
+                coverHidden(prefs), prefs.getBoolean(Keys.WIDGET_BAR_BUTTONS_BESIDE, true));
     }
 
     /** The title and artist as the user arranged them, in whichever layout the bar has. */
@@ -50,11 +54,12 @@ final class WidgetBarLayout {
                 buttonsBeside(prefs, portrait));
     }
 
-    /** @return whether the bar was changed (some widget is hidden) */
+    /** @return whether the bar was changed (some widget or the cover is hidden) */
     static boolean apply(View bar, LayoutInflater inflater, SharedPreferences prefs, boolean portrait) {
         boolean noDate = dateHidden(prefs, portrait);
         boolean noWeather = weatherHidden(prefs);
-        if (!WidgetBarPlan.wide(noDate, noWeather) || !(bar instanceof ConstraintLayout)) {
+        boolean noCover = coverHidden(prefs);
+        if (!WidgetBarPlan.wide(noDate, noWeather, noCover) || !(bar instanceof ConstraintLayout)) {
             return false;
         }
         ConstraintLayout root = (ConstraintLayout) bar;
@@ -72,10 +77,19 @@ final class WidgetBarLayout {
         }
 
         // With the buttons beside the text the wide variant of the music widget replaces the
-        // usual one. Otherwise the usual layout stays and has the whole widened width.
+        // usual one. Otherwise the usual layout stays and has the whole width the widget has.
         if (buttonsBeside(prefs, portrait)) {
             music.removeAllViews();
             inflater.inflate(R.layout.music_bar_content_wide, music, true);
+        }
+        // The cover is gone in either layout. The width of the music widget does not change: the
+        // cover is no widget of the bar, its room goes to the text and the buttons inside it.
+        View cover = music.findViewById(R.id.iv_album_bg_two);
+        if (noCover && cover != null) {
+            cover.setVisibility(View.GONE);
+        }
+        if (!WidgetBarPlan.widensMusic(noDate, noWeather)) {
+            return true;
         }
 
         // The music widget ends where the last widget that is left begins, or at the bar's edge.

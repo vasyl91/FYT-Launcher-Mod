@@ -75,17 +75,26 @@ public final class WidgetBarPlan {
         return portrait ? BESIDE_BUTTONS_ONE_ROW_PORT : BESIDE_BUTTONS_ONE_ROW_LAND;
     }
 
-    /** The music widget is wider than usual when any widget of the bar is hidden. */
-    public static boolean wide(boolean dateHidden, boolean weatherHidden) {
+    /** The music widget is wider than usual when the date or the weather is hidden: it takes their room. */
+    public static boolean widensMusic(boolean dateHidden, boolean weatherHidden) {
         return dateHidden || weatherHidden;
+    }
+
+    /**
+     * Something of the bar is hidden: the date, the weather or the album cover. Then the music
+     * widget has room that the usual layout does not use, and the buttons may go beside the text.
+     */
+    public static boolean wide(boolean dateHidden, boolean weatherHidden, boolean coverHidden) {
+        return dateHidden || weatherHidden || coverHidden;
     }
 
     /**
      * The layout with the buttons beside the text (music_bar_content_wide) is used when something
      * is hidden and the user wants the buttons there. Otherwise the usual layout (the text, and
-     * the buttons below it) is used, with the whole widened width.
+     * the buttons below it) is used, with the whole width the music widget has.
      */
-    public static boolean buttonsBeside(boolean dateHidden, boolean weatherHidden, boolean switchOn) {
-        return wide(dateHidden, weatherHidden) && switchOn;
+    public static boolean buttonsBeside(boolean dateHidden, boolean weatherHidden, boolean coverHidden,
+            boolean switchOn) {
+        return wide(dateHidden, weatherHidden, coverHidden) && switchOn;
     }
 }

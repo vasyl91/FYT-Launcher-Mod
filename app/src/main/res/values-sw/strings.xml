@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Vitufe katika safu moja</string>
     <string name="widget_bar_buttons_one_line_on">Safu moja ya vitufe vinne kando ya kichwa na msanii</string>
     <string name="widget_bar_buttons_one_line_off">Safu mbili za vitufe viwili viwili</string>
+    <string name="widget_bar_no_cover">Ficha jalada la albamu</string>
+    <string name="widget_bar_no_cover_on">Kichwa, msanii na vitufe huchukua nafasi yake</string>
 </resources>

@@ -31,10 +31,17 @@ class WidgetBarPlanTest {
 
     @Test
     void theWideLayoutIsUsedWhenAnyWidgetIsHidden() {
-        assertFalse(WidgetBarPlan.wide(false, false));
-        assertTrue(WidgetBarPlan.wide(true, false));
-        assertTrue(WidgetBarPlan.wide(false, true));
-        assertTrue(WidgetBarPlan.wide(true, true));
+        assertFalse(WidgetBarPlan.widensMusic(false, false));
+        assertTrue(WidgetBarPlan.widensMusic(true, false));
+        assertTrue(WidgetBarPlan.widensMusic(false, true));
+        assertTrue(WidgetBarPlan.widensMusic(true, true));
+        // the cover is no widget of the bar: it does not widen the music widget
+        assertFalse(WidgetBarPlan.widensMusic(false, false));
+        assertFalse(WidgetBarPlan.wide(false, false, false));
+        assertTrue(WidgetBarPlan.wide(true, false, false));
+        assertTrue(WidgetBarPlan.wide(false, true, false));
+        assertTrue(WidgetBarPlan.wide(false, false, true));
+        assertTrue(WidgetBarPlan.wide(true, true, true));
     }
 
     @Test
@@ -68,13 +75,13 @@ class WidgetBarPlanTest {
 
     @Test
     void theButtonsGoBesideTheTextOnlyWhenSomethingIsHiddenAndTheSwitchIsOn() {
-        assertTrue(WidgetBarPlan.buttonsBeside(true, false, true));
-        assertTrue(WidgetBarPlan.buttonsBeside(false, true, true));
-        assertTrue(WidgetBarPlan.buttonsBeside(true, true, true));
-        assertFalse(WidgetBarPlan.buttonsBeside(true, true, false));
-        assertFalse(WidgetBarPlan.buttonsBeside(false, true, false));
-        assertFalse(WidgetBarPlan.buttonsBeside(false, false, true));
-        assertFalse(WidgetBarPlan.buttonsBeside(false, false, false));
+        assertTrue(WidgetBarPlan.buttonsBeside(true, false, false, true));
+        assertTrue(WidgetBarPlan.buttonsBeside(false, true, false, true));
+        assertTrue(WidgetBarPlan.buttonsBeside(true, true, false, true));
+        assertFalse(WidgetBarPlan.buttonsBeside(true, true, false, false));
+        assertFalse(WidgetBarPlan.buttonsBeside(false, true, false, false));
+        assertFalse(WidgetBarPlan.buttonsBeside(false, false, false, true));
+        assertFalse(WidgetBarPlan.buttonsBeside(false, false, false, false));
     }
 
     @Test
@@ -83,5 +90,11 @@ class WidgetBarPlanTest {
         assertEquals(0.35f, WidgetBarPlan.besideButtonsShare(true, false), 0f);
         assertEquals(0.40f, WidgetBarPlan.besideButtonsShare(false, true), 0f);
         assertEquals(0.50f, WidgetBarPlan.besideButtonsShare(true, true), 0f);
+    }
+
+    @Test
+    void aHiddenCoverAloneLetsTheButtonsGoBesideTheText() {
+        assertTrue(WidgetBarPlan.buttonsBeside(false, false, true, true));
+        assertFalse(WidgetBarPlan.buttonsBeside(false, false, true, false));
     }
 }

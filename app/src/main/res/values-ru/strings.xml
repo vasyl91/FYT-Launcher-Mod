@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Кнопки в один ряд</string>
     <string name="widget_bar_buttons_one_line_on">Один ряд из четырёх кнопок рядом с названием и исполнителем</string>
     <string name="widget_bar_buttons_one_line_off">Два ряда по две кнопки</string>
+    <string name="widget_bar_no_cover">Скрыть обложку альбома</string>
+    <string name="widget_bar_no_cover_on">Её место занимают название, исполнитель и кнопки</string>
 </resources>

@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Gumbi u jednom redu</string>
     <string name="widget_bar_buttons_one_line_on">Jedan red od četiri gumba pokraj naslova i izvođača</string>
     <string name="widget_bar_buttons_one_line_off">Dva reda po dva gumba</string>
+    <string name="widget_bar_no_cover">Sakrij omot albuma</string>
+    <string name="widget_bar_no_cover_on">Njegovo mjesto zauzimaju naslov, izvođač i gumbi</string>
 </resources>

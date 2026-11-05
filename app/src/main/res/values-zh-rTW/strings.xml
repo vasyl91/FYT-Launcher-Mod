@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">按鈕排成一行</string>
     <string name="widget_bar_buttons_one_line_on">四個按鈕排成一行，位於標題和歌手旁邊</string>
     <string name="widget_bar_buttons_one_line_off">兩排，每排兩個按鈕</string>
+    <string name="widget_bar_no_cover">隱藏專輯封面</string>
+    <string name="widget_bar_no_cover_on">標題、歌手和按鈕將佔用其位置</string>
 </resources>

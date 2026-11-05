@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Дугмад у једном реду</string>
     <string name="widget_bar_buttons_one_line_on">Један ред од четири дугмета поред наслова и извођача</string>
     <string name="widget_bar_buttons_one_line_off">Два реда по два дугмета</string>
+    <string name="widget_bar_no_cover">Сакриј омот албума</string>
+    <string name="widget_bar_no_cover_on">Његово место заузимају наслов, извођач и дугмад</string>
 </resources>

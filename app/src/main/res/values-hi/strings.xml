@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">बटन एक पंक्ति में</string>
     <string name="widget_bar_buttons_one_line_on">शीर्षक और कलाकार के बगल में चार बटनों की एक पंक्ति</string>
     <string name="widget_bar_buttons_one_line_off">दो-दो बटनों की दो पंक्तियाँ</string>
+    <string name="widget_bar_no_cover">एल्बम कवर छिपाएँ</string>
+    <string name="widget_bar_no_cover_on">इसकी जगह शीर्षक, कलाकार और बटन ले लेते हैं</string>
 </resources>

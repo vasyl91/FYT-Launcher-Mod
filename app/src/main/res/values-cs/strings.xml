@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Tlačítka v jedné řadě</string>
     <string name="widget_bar_buttons_one_line_on">Jedna řada čtyř tlačítek vedle názvu a interpreta</string>
     <string name="widget_bar_buttons_one_line_off">Dvě řady po dvou tlačítkách</string>
+    <string name="widget_bar_no_cover">Skrýt obal alba</string>
+    <string name="widget_bar_no_cover_on">Jeho místo zaujmou název, interpret a tlačítka</string>
 </resources>

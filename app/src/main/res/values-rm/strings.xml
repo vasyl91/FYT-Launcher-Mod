@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Buttuns en ina retscha</string>
     <string name="widget_bar_buttons_one_line_on">Ina retscha da quatter buttuns ordaifer il titel e l\'artist</string>
     <string name="widget_bar_buttons_one_line_off">Duas retschas cun duos buttuns</string>
+    <string name="widget_bar_no_cover">Zuppentar la cuverta da l\'album</string>
+    <string name="widget_bar_no_cover_on">Il titel, l\'artist ed ils buttuns pigliano ses lieu</string>
 </resources>

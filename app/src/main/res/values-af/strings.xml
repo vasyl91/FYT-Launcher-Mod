@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Knoppies in een ry</string>
     <string name="widget_bar_buttons_one_line_on">Een ry van vier knoppies langs die titel en kunstenaar</string>
     <string name="widget_bar_buttons_one_line_off">Twee rye van twee knoppies</string>
+    <string name="widget_bar_no_cover">Versteek die albumomslag</string>
+    <string name="widget_bar_no_cover_on">Die titel, kunstenaar en knoppies neem sy plek in</string>
 </resources>

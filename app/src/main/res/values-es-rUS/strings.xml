@@ -80,4 +80,6 @@
     <string name="widget_bar_buttons_one_line">Botones en una sola fila</string>
     <string name="widget_bar_buttons_one_line_on">Una fila de cuatro botones junto al título y el artista</string>
     <string name="widget_bar_buttons_one_line_off">Dos filas de dos botones</string>
+    <string name="widget_bar_no_cover">Ocultar la portada del álbum</string>
+    <string name="widget_bar_no_cover_on">El título, el artista y los botones ocupan su lugar</string>
 </resources>

@@ -2005,7 +2005,7 @@ public class Workspace extends SmoothPagedView
         final boolean portraitBar = orientation == Configuration.ORIENTATION_PORTRAIT;
         final boolean noDate = WidgetBarLayout.dateHidden(mPrefs, portraitBar);
         final boolean noWeather = WidgetBarLayout.weatherHidden(mPrefs);
-        if (WidgetBarPlan.wide(noDate, noWeather)) {
+        if (WidgetBarPlan.widensMusic(noDate, noWeather)) {
             musicWidgetWidth = (int) (screenWidth * WidgetBarPlan.musicShare(portraitBar, noDate, noWeather));
         }
         

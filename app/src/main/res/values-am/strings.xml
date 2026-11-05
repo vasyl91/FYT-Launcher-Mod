@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">አዝራሮች በአንድ መስመር</string>
     <string name="widget_bar_buttons_one_line_on">አራት አዝራሮች በአንድ ረድፍ ከርዕሱና ከአርቲስቱ ጎን</string>
     <string name="widget_bar_buttons_one_line_off">ሁለት ረድፍ፣ በእያንዳንዱ ሁለት አዝራሮች</string>
+    <string name="widget_bar_no_cover">የአልበም ሽፋንን ደብቅ</string>
+    <string name="widget_bar_no_cover_on">ርዕሱ፣ አርቲስቱና አዝራሮቹ ቦታውን ይወስዳሉ</string>
 </resources>

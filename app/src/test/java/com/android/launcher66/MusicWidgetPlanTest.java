@@ -561,4 +561,60 @@ class MusicWidgetPlanTest {
             }
         }
     }
+
+    // A hidden cover: its room goes to the text and the buttons.
+
+    @Test
+    void withoutTheCoverRIsTheWholeWidgetButTheGap() {
+        for (int w : new int[] {300, 359, 577}) {
+            int w0 = w * 28 / 45;
+            for (int h : new int[] {40, 66, 110}) {
+                MusicWidgetPlan.Plan below = MusicWidgetPlan.planBar(w, h, w0, 1f, false, false, true);
+                MusicWidgetPlan.Plan beside = MusicWidgetPlan.planBarWide(w, h, w0, 1f, false, false, false, false, true);
+                MusicWidgetPlan.Plan withCover = MusicWidgetPlan.planBarWide(w, h, w0, 1f, false, false, false, false);
+                int gap = (int) (w0 * MusicWidgetPlan.BAR_COLUMN_GAP);
+                assertFalse(below.cover);
+                assertFalse(beside.cover);
+                assertEquals(0, below.coverPx);
+                assertEquals(0, beside.coverPx);
+                assertEquals(gap, below.coverGapPx);
+                assertEquals(gap, beside.coverGapPx);
+                assertEquals(w - gap, below.restPx);
+                assertEquals(w - gap, beside.restPx);
+                assertEquals(below.restPx, below.columnPx);
+                assertTrue(beside.restPx > withCover.restPx, "more room " + w + "x" + h);
+                assertEquals(beside.restPx, beside.columnPx + beside.buttonBlockPx);
+            }
+        }
+    }
+
+    @Test
+    void theSplitsAreCountedFromTheNewRoom() {
+        for (boolean portrait : new boolean[] {false, true}) {
+            for (boolean oneRow : new boolean[] {false, true}) {
+                MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(400, 66, 400, 1f, false, false, oneRow,
+                        portrait, true);
+                float share = WidgetBarPlan.besideButtonsShare(portrait, oneRow);
+                assertEquals(plan.restPx * share, plan.buttonBlockPx, 4f, "buttons " + portrait + oneRow);
+                assertEquals(plan.restPx * (1f - share), plan.columnPx, 4.01f, "text " + portrait + oneRow);
+                assertEquals(oneRow ? 1 : 2, plan.buttonRows);
+            }
+        }
+    }
+
+    @Test
+    void theTextSizeDoesNotDependOnTheCover() {
+        for (int h : new int[] {66, 110}) {
+            float with = MusicWidgetPlan.planBarWide(359, h, 223, 1f, false, true, false, false, false).textPx;
+            float without = MusicWidgetPlan.planBarWide(359, h, 223, 1f, false, true, false, false, true).textPx;
+            assertEquals(with, without, 0.001f, "h=" + h);
+        }
+    }
+
+    @Test
+    void theShownCoverIsTheOneItWas() {
+        MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBar(359, 66, 359, 1f, false, false, false);
+        assertTrue(plan.cover);
+        assertTrue(plan.coverPx > 0);
+    }
 }

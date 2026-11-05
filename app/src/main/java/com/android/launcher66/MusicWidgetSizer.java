@@ -144,6 +144,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
             boolean portraitBar = mRoot.getResources().getConfiguration().orientation
                     == android.content.res.Configuration.ORIENTATION_PORTRAIT;
             boolean oneLine = WidgetBarLayout.lineText(prefs).oneLine();
+            boolean coverHidden = WidgetBarLayout.coverHidden(prefs);
             // The cover and the space behind it are sized from the widget's usual width, the one it
             // has with the date and the weather shown, so they do not move when those are hidden.
             int baseW = MusicWidgetPlan.usualWidth(w, WidgetBarPlan.baseShare(portraitBar),
@@ -152,11 +153,11 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
             if (buttons instanceof FlexboxLayout) {
                 // The wide layout (WidgetBarLayout): the buttons are a block beside the text.
                 plan = MusicWidgetPlan.planBarWide(w, h, baseW, density, largeText, oneLine,
-                        WidgetBarLayout.buttonsInOneRow(prefs, portraitBar), portraitBar);
+                        WidgetBarLayout.buttonsInOneRow(prefs, portraitBar), portraitBar, coverHidden);
                 plan.withFont(fontShape(mRoot.findViewById(R.id.tv_musicName_two)), density);
                 applyBarWide(plan, w);
             } else {
-                plan = MusicWidgetPlan.planBar(w, h, baseW, density, largeText, oneLine);
+                plan = MusicWidgetPlan.planBar(w, h, baseW, density, largeText, oneLine, coverHidden);
                 plan.withFont(fontShape(mRoot.findViewById(R.id.tv_musicName_two)), density);
                 applyBar(plan, w);
             }
@@ -214,6 +215,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         View buttons = mRoot.findViewById(R.id.music_bar_buttons);
 
         if (cover != null) {
+            setVisibility(cover, plan.cover ? View.VISIBLE : View.GONE);
             setBox(cover, plan.coverPx, plan.coverPx, 0, 0);
         }
         if (column != null) {
@@ -246,6 +248,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         View buttons = mRoot.findViewById(R.id.music_bar_buttons);
 
         if (cover != null) {
+            setVisibility(cover, plan.cover ? View.VISIBLE : View.GONE);
             setBox(cover, plan.coverPx, plan.coverPx, 0, 0);
         }
         if (column != null) {

@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">دکمه‌ها در یک ردیف</string>
     <string name="widget_bar_buttons_one_line_on">یک ردیف چهار دکمه‌ای کنار عنوان و خواننده</string>
     <string name="widget_bar_buttons_one_line_off">دو ردیف دو دکمه‌ای</string>
+    <string name="widget_bar_no_cover">پنهان کردن جلد آلبوم</string>
+    <string name="widget_bar_no_cover_on">عنوان، خواننده و دکمه‌ها جای آن را می‌گیرند</string>
 </resources>

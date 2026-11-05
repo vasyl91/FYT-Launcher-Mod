@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Товчнууд нэг мөрөнд</string>
     <string name="widget_bar_buttons_one_line_on">Гарчиг, уран бүтээлчийн хажууд дөрвөн товчтой нэг мөр</string>
     <string name="widget_bar_buttons_one_line_off">Хоёр товчтой хоёр мөр</string>
+    <string name="widget_bar_no_cover">Цомгийн хавтсыг нуух</string>
+    <string name="widget_bar_no_cover_on">Түүний оронд гарчиг, уран бүтээлч, товчнууд орно</string>
 </resources>

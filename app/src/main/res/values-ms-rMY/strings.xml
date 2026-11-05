@@ -49,4 +49,6 @@
     <string name="widget_bar_buttons_one_line">Butang dalam satu baris</string>
     <string name="widget_bar_buttons_one_line_on">Satu baris empat butang di sebelah tajuk dan artis</string>
     <string name="widget_bar_buttons_one_line_off">Dua baris, setiap satu dua butang</string>
+    <string name="widget_bar_no_cover">Sembunyikan sampul album</string>
+    <string name="widget_bar_no_cover_on">Tajuk, artis dan butang mengambil tempatnya</string>
 </resources>

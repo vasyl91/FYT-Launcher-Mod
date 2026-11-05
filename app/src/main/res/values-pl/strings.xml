@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Przyciski w jednej linii</string>
     <string name="widget_bar_buttons_one_line_on">Jeden rząd czterech przycisków obok tytułu i wykonawcy</string>
     <string name="widget_bar_buttons_one_line_off">Dwa rzędy po dwa przyciski</string>
+    <string name="widget_bar_no_cover">Ukryj okładkę albumu</string>
+    <string name="widget_bar_no_cover_on">Jej miejsce zajmują tytuł, wykonawca i przyciski</string>
 </resources>

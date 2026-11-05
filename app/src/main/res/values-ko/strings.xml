@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">버튼을 한 줄로 배치</string>
     <string name="widget_bar_buttons_one_line_on">제목과 아티스트 옆에 버튼 4개를 한 줄로 표시</string>
     <string name="widget_bar_buttons_one_line_off">두 개씩 두 줄로 표시</string>
+    <string name="widget_bar_no_cover">앨범 커버 숨기기</string>
+    <string name="widget_bar_no_cover_on">제목, 아티스트, 버튼이 그 자리를 차지합니다</string>
 </resources>

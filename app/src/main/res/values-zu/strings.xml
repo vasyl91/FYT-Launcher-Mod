@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Izinkinobho emgqeni owodwa</string>
     <string name="widget_bar_buttons_one_line_on">Umugqa owodwa wezinkinobho ezine eceleni kwesihloko nomculi</string>
     <string name="widget_bar_buttons_one_line_off">Imigqa emibili yezinkinobho ezimbili</string>
+    <string name="widget_bar_no_cover">Fihla isembozo se-albhamu</string>
+    <string name="widget_bar_no_cover_on">Isihloko, umculi nezinkinobho kuthatha indawo yaso</string>
 </resources>

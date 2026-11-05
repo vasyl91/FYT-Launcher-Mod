@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">ปุ่มในแถวเดียว</string>
     <string name="widget_bar_buttons_one_line_on">ปุ่มสี่ปุ่มในแถวเดียวข้างชื่อเพลงและศิลปิน</string>
     <string name="widget_bar_buttons_one_line_off">สองแถว แถวละสองปุ่ม</string>
+    <string name="widget_bar_no_cover">ซ่อนปกอัลบั้ม</string>
+    <string name="widget_bar_no_cover_on">ชื่อเพลง ศิลปิน และปุ่มจะใช้พื้นที่แทน</string>
 </resources>

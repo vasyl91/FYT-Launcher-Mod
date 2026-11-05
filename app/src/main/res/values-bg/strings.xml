@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">Бутони на един ред</string>
     <string name="widget_bar_buttons_one_line_on">Един ред от четири бутона до заглавието и изпълнителя</string>
     <string name="widget_bar_buttons_one_line_off">Два реда по два бутона</string>
+    <string name="widget_bar_no_cover">Скриване на обложката на албума</string>
+    <string name="widget_bar_no_cover_on">Мястото ѝ се заема от заглавието, изпълнителя и бутоните</string>
 </resources>

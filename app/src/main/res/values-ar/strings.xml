@@ -523,4 +523,6 @@
     <string name="widget_bar_buttons_one_line">الأزرار في سطر واحد</string>
     <string name="widget_bar_buttons_one_line_on">صف واحد من أربعة أزرار بجانب العنوان والفنان</string>
     <string name="widget_bar_buttons_one_line_off">صفّان من زرّين</string>
+    <string name="widget_bar_no_cover">إخفاء غلاف الألبوم</string>
+    <string name="widget_bar_no_cover_on">يشغل العنوان والفنان والأزرار مكانه</string>
 </resources>

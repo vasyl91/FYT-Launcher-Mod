@@ -140,6 +140,8 @@ public final class Keys {
     public static final String AUTO_CODES_PREFIX = "auto_codes_";
     public static final String LEFT_BAR = "left_bar";
     public static final String WIDGET_BAR = "widget_bar";
+    /** The album cover is not shown in the widget bar and the title, artist and buttons take its room. */
+    public static final String WIDGET_BAR_NO_COVER = "widget_bar_no_cover";
     /** The date is not shown in the widget bar and the music widget takes its room (landscape only). */
     public static final String WIDGET_BAR_NO_DATE = "widget_bar_no_date";
     /** The weather is not shown in the widget bar and the music widget takes its room. */

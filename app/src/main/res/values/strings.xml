@@ -533,4 +533,6 @@
     <string name="widget_bar_buttons_one_line">Buttons in one line</string>
     <string name="widget_bar_buttons_one_line_on">One row of four buttons beside the title and artist</string>
     <string name="widget_bar_buttons_one_line_off">Two rows of two buttons</string>
+    <string name="widget_bar_no_cover">Hide the album cover</string>
+    <string name="widget_bar_no_cover_on">The title, artist and buttons take its place</string>
 </resources>
