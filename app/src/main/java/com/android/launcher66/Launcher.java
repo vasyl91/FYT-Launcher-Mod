@@ -2175,6 +2175,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     protected void onResume() {
         super.onResume();
         showCrashToastOnce();
+        // The GPS of the fuel statistics, if the permission came after the service started
+        CanbusService.onLauncherResumed();
         mWallpaperPicker.hideWallpaperPickerIndicator();
         if (LauncherApplication.isFytDevice()) {
             // A like changed in the stock player's own screen: read before the hearts are drawn

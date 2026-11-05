@@ -145,6 +145,14 @@ public final class FuelModel {
     private static final double SMOOTH_RISE = 0.35;
     private static final double SMOOTH_FALL = 0.12;
     private static final long ACCEL_WINDOW_MS = 2000L;
+    /**
+     * The same for a speed from the GPS, which comes about once a second: in 2 s it gave 2 speeds, and 3 over 0.8 s
+     * were rare (1-4 % of the samples), so the model hardly learned from the GPS alone. 4 s hold 3-4 fixes; 2 spread
+     * over 1.5 s are enough for the slope.
+     */
+    private static final long ACCEL_WINDOW_GPS_MS = 4000L;
+    private static final int ACCEL_MIN_SPEEDS_GPS = 2;
+    private static final long ACCEL_MIN_SPAN_GPS_MS = 1500L;
     /** The coefficients of driving: the idle, rolling, air, inertia, hard acceleration, engine friction. */
     private static final int DRIVE_N = 6;
     private static final int COAST_N = 2;
@@ -953,8 +961,14 @@ public final class FuelModel {
         return kmh() > (speedFromCan ? 1.0 : 5.0);
     }
 
-    /** m/s², the slope of the speed over the last ~2 s; NaN with fewer than 3 speeds over at least 0.8 s. */
+    /**
+     * m/s², the slope of the speed over the last ~2 s; NaN with fewer than 3 speeds over at least 0.8 s. A speed from
+     * the GPS (about 1 Hz): the last ~4 s, at least 2 speeds over at least 1.5 s.
+     */
     double accel(long now) {
+        final long window = speedFromCan ? ACCEL_WINDOW_MS : ACCEL_WINDOW_GPS_MS;
+        final int minSpeeds = speedFromCan ? 3 : ACCEL_MIN_SPEEDS_GPS;
+        final long minSpan = speedFromCan ? 800L : ACCEL_MIN_SPAN_GPS_MS;
         int n = 0;
         double st = 0;
         double sv = 0;
@@ -962,7 +976,7 @@ public final class FuelModel {
         double last = Double.NaN;
         for (Iterator<double[]> it = speeds.descendingIterator(); it.hasNext(); ) {
             double[] s = it.next();
-            if (now - s[0] > ACCEL_WINDOW_MS) {
+            if (now - s[0] > window) {
                 break;
             }
             n++;
@@ -971,7 +985,7 @@ public final class FuelModel {
             last = Double.isNaN(last) ? s[0] : last;
             first = s[0];
         }
-        if (n < 3 || last - first < 800) {
+        if (n < minSpeeds || last - first < minSpan) {
             return Double.NaN;
         }
         double mt = st / n;
@@ -980,7 +994,7 @@ public final class FuelModel {
         double den = 0;
         for (Iterator<double[]> it = speeds.descendingIterator(); it.hasNext(); ) {
             double[] s = it.next();
-            if (now - s[0] > ACCEL_WINDOW_MS) {
+            if (now - s[0] > window) {
                 break;
             }
             num += (s[0] - mt) * (s[1] - mv);

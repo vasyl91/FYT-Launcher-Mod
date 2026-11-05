@@ -428,6 +428,8 @@ public final class WakeDetection implements WakeSignals.Listener {
         sSleepElapsedMs = SystemClock.elapsedRealtime();
         sAsleep = true;
         HeadlightNightMode.onSleep();
+        // The automatic canbus code check stops with the drive
+        CanbusService.onSleep();
         // Baseline Profile: a compilation still waiting for its delay would otherwise
         // fire right into the busy first seconds after the next wake.
         BaselineProfileCompiler.onDeviceSleep();

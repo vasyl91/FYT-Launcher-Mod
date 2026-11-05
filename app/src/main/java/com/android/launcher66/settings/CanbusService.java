@@ -108,6 +108,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private boolean userStats = false;
     private int statsWidthSelector;
     /** The codes of the settings; 0 = not set, the library's code (fuel, range) or the reader's (speed) is used then. */
+    /** The automatic code check; null off an FYT unit. Main thread. */
+    private CanbusAutoCheck autoCheck;
+    /** The scale the speed code is read with now (see selectCodes()). */
+    private int speedScaleOf = -1;
     private volatile int fuel = 0;
     private volatile int range = 0;
     private volatile int rpm = 0;
@@ -241,6 +245,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
         userLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
         userStats = prefs.getBoolean(Keys.USER_STATS, false);
         helpers = new Helpers();
+        if (LauncherApplication.isFytDevice()) {
+            autoCheck = new CanbusAutoCheck(getApplicationContext(), uiHandler);
+        }
         CanbusLibrary.preload(getApplicationContext());
         accessibilityManager = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
         registerAccessibilityEventListener();
@@ -279,12 +286,18 @@ public class CanbusService extends Service implements PropertyChangeListener {
             range = intent.getIntExtra("range", 0);
             rpm = intent.getIntExtra("rpm", 0);
             speed = intent.getIntExtra("speed", 0);
-            // Until the library says otherwise (mNotifyCar) the codes of the settings are the ones in use
-            fuelCode = fuel;
-            rangeCode = range;
-            addStatsViewMainScreen();
-            addNotify();
+        } else {
+            // A sticky restart brings no intent: the codes are the ones of the settings
+            readSavedCodes();
+            Log.i(TAG, "restarted without an intent, the codes are those of the settings");
         }
+        // Until the library says otherwise (mNotifyCar) the codes of the settings are the ones in use
+        fuelCode = fuel;
+        rangeCode = range;
+        addStatsViewMainScreen();
+        addNotify();
+        // The permission may have been given since onCreate
+        retryLocationUpdates();
         return START_STICKY;
     }
 
@@ -298,6 +311,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
         uiHandler.removeCallbacks(fuelTick);
         saveFuelModel();
+        if (autoCheck != null) {
+            autoCheck.destroy();
+            autoCheck = null;
+        }
         Log.d(TAG, "Service destroyed");
         removeLocationUpdates();
         unregisterBarometer();
@@ -499,18 +516,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     return;
                 }
                 fuelUnit = unit;
-                fuelValue = fuelFromRaw(fuelRaw);
                 setUpPairs(carId, pairs);
-                applyPairCodes();
-                // The speed for the estimate: the code of the settings, else the one the code reader found
-                // (it followed the GPS, and its scale is known), else the GPS
-                ReaderGuesses reader = ReaderGuesses.parse(prefs.getString(ReaderGuesses.key(carId), null));
-                speedCode = speed > 0 ? speed : reader != null && reader.speed > 0 ? reader.speed : 0;
-                speedScale = new FuelModel.SpeedScale(reader != null && speedCode == reader.speed ? reader.speedScale : 0);
-                // and the RPM the same way: the model checks that the values look like revs
-                rpmCode = rpm > 0 ? rpm : reader != null && reader.rpm > 0 ? reader.rpm : 0;
-                loadFuelModel(carId);
-                registerStatsCodes();
+                selectCodes(carId);
+                if (autoCheck != null) {
+                    autoCheck.onCarChanged(carId);
+                }
             });
         }));
         CanbusLibrary.sendForCar(app, carId);
@@ -1223,6 +1233,107 @@ public class CanbusService extends Service implements PropertyChangeListener {
         unregisterStatsCodes();
     }
 
+    /**
+     * The codes in use for the car: the fuel and range codes (the settings, else the pair of the library that gives
+     * data, else the ones the automatic check found), the speed and the RPM (the settings, else the ones the code
+     * reader or the check found); the model of the estimate and the registrations follow. Main thread.
+     */
+    private void selectCodes(int carId) {
+        fuelValue = fuelFromRaw(fuelRaw);
+        applyPairCodes();
+        // The speed for the estimate: the code of the settings, else the one the code reader found
+        // (it followed the GPS, and its scale is known), else the GPS
+        ReaderGuesses reader = ReaderGuesses.parse(prefs.getString(ReaderGuesses.key(carId), null));
+        int newSpeedCode = speed > 0 ? speed : reader != null && reader.speed > 0 ? reader.speed : 0;
+        int newScale = reader != null && newSpeedCode == reader.speed ? reader.speedScale : 0;
+        if (speedScale == null || newSpeedCode != speedCode || newScale != speedScaleOf) {
+            speedScale = new FuelModel.SpeedScale(newScale);
+            speedScaleOf = newScale;
+        }
+        speedCode = newSpeedCode;
+        // and the RPM the same way: the model checks that the values look like revs
+        rpmCode = rpm > 0 ? rpm : reader != null && reader.rpm > 0 ? reader.rpm : 0;
+        loadFuelModel(carId);
+        registerStatsCodes();
+    }
+
+    /** The codes of the settings, for a start without an intent. */
+    private void readSavedCodes() {
+        fuel = savedCode("fuel_code_int");
+        range = savedCode("range_code_int");
+        rpm = savedCode("rpm_code_int");
+        speed = savedCode(Keys.SPEED_CODE);
+    }
+
+    private int savedCode(String key) {
+        try {
+            return Math.max(0, Integer.parseInt(prefs.getString(key, "0").trim()));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    /**
+     * The code reader or the automatic check found codes, or the owner typed one in the Canbus codes window: the
+     * service chooses its codes again at once, no restart. Any thread.
+     */
+    public static void readerGuessesChanged() {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            CanbusService service = sInstance;
+            if (service != null) {
+                service.reselectCodes();
+            }
+        });
+    }
+
+    /** A code reader was started by hand: the automatic check gives way to it. Any thread. */
+    public static void readerStarted() {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            CanbusService service = sInstance;
+            if (service != null && service.autoCheck != null) {
+                service.autoCheck.interrupt("the code reader was started");
+            }
+        });
+    }
+
+    /** The unit sleeps or ACC went off (WakeDetection): an automatic check in progress is dropped. Any thread. */
+    public static void onSleep() {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            CanbusService service = sInstance;
+            if (service != null && service.autoCheck != null) {
+                service.autoCheck.interrupt("sleep / ACC off");
+            }
+        });
+    }
+
+    /** The launcher is in front again: the GPS is asked for once more if it was not running. Any thread. */
+    public static void onLauncherResumed() {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            CanbusService service = sInstance;
+            if (service != null) {
+                service.retryLocationUpdates();
+            }
+        });
+    }
+
+    private void reselectCodes() {
+        if (prefs == null || sInstance != this) {
+            return;
+        }
+        readSavedCodes();
+        int carId = DataCanbus.DATA[1000];
+        if (carId == 0) {
+            return;
+        }
+        int fuelBefore = fuelCode;
+        int rangeBefore = rangeCode;
+        int speedBefore = speedCode;
+        int rpmBefore = rpmCode;
+        selectCodes(carId);
+        Log.i(TAG, "codes chosen again: fuel " + fuelBefore + " -> " + fuelCode + ", range " + rangeBefore + " -> "
+                + rangeCode + ", speed " + speedBefore + " -> " + speedCode + ", rpm " + rpmBefore + " -> " + rpmCode);
+    }
+
     private void registerStatsCodes() {
         unregisterStatsCodes();
         // the codes of all the library's pairs: which one the radio reports is found out from their values
@@ -1273,9 +1384,23 @@ public class CanbusService extends Service implements PropertyChangeListener {
      */
     private boolean applyPairCodes() {
         CodePairChooser chooser = pairChooser;
-        CanbusLibrary.CarCodes pair = chooser == null ? null : chooser.status().pair();
-        int newFuel = fuel > 0 ? fuel : pair != null && pair.fuel > 0 ? pair.fuel : 0;
-        int newRange = range > 0 ? range : pair != null && pair.range > 0 ? pair.range : 0;
+        CodePairChooser.Status status = chooser == null ? null : chooser.status();
+        CanbusLibrary.CarCodes pair = status == null ? null : status.pair();
+        // The automatic check's candidates stand in where the library has no pair or its code said nothing
+        AutoCodes auto = AutoCodes.parse(prefs.getString(AutoCodes.key(pairCarId != 0 ? pairCarId : DataCanbus.DATA[1000]), null));
+        boolean confirmed = status != null && status.confirmed;
+        int libraryFuel = pair != null && pair.fuel > 0 ? pair.fuel : 0;
+        int libraryRange = pair != null && pair.range > 0 ? pair.range : 0;
+        int newFuel = AutoCodes.choose(fuel, libraryFuel, confirmed, auto == null ? -1 : auto.fuel,
+                auto != null && auto.fuelSilent);
+        int newRange = AutoCodes.choose(range, libraryRange, confirmed, auto == null ? -1 : auto.range,
+                auto != null && auto.rangeSilent);
+        if (auto != null && fuel <= 0 && newFuel != libraryFuel && libraryFuel > 0 && sLoggedDifference.add("fuel" + newFuel)) {
+            Log.i(TAG, "the check's fuel code " + newFuel + " is used, the library's is " + libraryFuel);
+        }
+        if (auto != null && range <= 0 && newRange != libraryRange && libraryRange > 0 && sLoggedDifference.add("range" + newRange)) {
+            Log.i(TAG, "the check's range code " + newRange + " is used, the library's is " + libraryRange);
+        }
         boolean fuelChanged = newFuel != fuelCode;
         boolean rangeChanged = newRange != rangeCode;
         fuelCode = newFuel;
@@ -1291,6 +1416,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
         return fuelChanged;
     }
+
+    /** The differences between the check's codes and the library's, logged once each per process. */
+    private static final Set<String> sLoggedDifference = new HashSet<>();
 
     /** The pair in use changed (a value confirmed one, or the chosen one has been silent for long). Main thread. */
     private void onPairChanged() {
@@ -1609,6 +1737,18 @@ public class CanbusService extends Service implements PropertyChangeListener {
      * no speed code, and to find the scale of the speed code.
      */
     private void requestLocationUpdates() {
+        requestLocationUpdates(true);
+    }
+
+    /** The location updates again if they are not running and the permission is there now. Main thread. */
+    private void retryLocationUpdates() {
+        if (locationUpdates == null) {
+            requestLocationUpdates(false);
+        }
+    }
+
+    /** @param askForPermission whether the user is asked for the permission when it is missing (at the start only) */
+    private void requestLocationUpdates(boolean askForPermission) {
         removeLocationUpdates();
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && 
@@ -1616,7 +1756,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             // The speed, about every half second: the GPS provider of the platform, Google Play
             // services only if the unit has none (see DeviceLocation).
             locationUpdates = DeviceLocation.requestUpdates(this, 500L, this::onLocation, Looper.getMainLooper());
-        } else {            
+        } else if (askForPermission) {
             ActivityCompat.requestPermissions(
                     Launcher.getLauncher(),
                     new String[]{
@@ -1700,6 +1840,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
             // for the grade of the road, also where the speed comes from a code
             fuelModel.onAltitude(System.currentTimeMillis(), location.getAltitude(),
                     location.hasVerticalAccuracy() ? location.getVerticalAccuracyMeters() : 10.0);
+        }
+        if (autoCheck != null) {
+            autoCheck.onLocation(location);
         }
         double kmh = location.getSpeed() * 3.6;
         onDriving(kmh);

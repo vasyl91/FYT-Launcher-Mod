@@ -68,6 +68,30 @@ class FuelModelTest {
         return t;
     }
 
+    /**
+     * {@link #drive} with the speed from the GPS: a fix about every second, up to 350 ms early or late, and the car's
+     * value with it.
+     */
+    private static long driveGps(FuelModel m, Random rnd, long t0, int seconds, double thresholdKmh, double coastLph) {
+        double kmh = 0;
+        double target = 0;
+        long last = -1;
+        long t = t0;
+        for (int step = 0; step < seconds; step++, t += 1000) {
+            if (step % 15 == 0) {
+                target = rnd.nextInt(4) == 0 ? 0 : 10 + rnd.nextInt(45);
+            }
+            double accel = Math.max(-1.5, Math.min(1.5, (target - kmh) / 3.6 / 2)) + (rnd.nextDouble() - 0.5) * 0.2;
+            kmh = Math.max(0, kmh + accel * 3.6);
+            long at = Math.max(last + 1, t + rnd.nextInt(700) - 350);
+            last = at;
+            m.onSpeed(at, kmh, false);
+            double lph = trueLph(kmh, accel, coastLph);
+            m.onFuel(at, kmh > thresholdKmh ? (int) Math.round(lph / kmh * 100 * 10) : 65535);
+        }
+        return t;
+    }
+
     /** Holds a speed with an acceleration for a few seconds, the car giving no value. */
     private static long hold(FuelModel m, long t, double kmh, double accel) {
         for (int i = 0; i < 15; i++, t += 200) {
@@ -221,6 +245,18 @@ class FuelModelTest {
     /** The estimate in L/h, whatever its unit, at the speed it was made at. */
     private static double lph(FuelModel.Estimate e, double kmh) {
         return e.perHour ? e.value : e.value * kmh / 100.0;
+    }
+
+    @Test
+    void aDriveWithTheGpsAloneLearnsAboutAsFastAsOneWithACanSpeed() {
+        FuelModel can = new FuelModel();
+        drive(can, new Random(1), 0, 600, 30, 0.9);
+        FuelModel gps = new FuelModel();
+        driveGps(gps, new Random(1), 0, 600, 30, 0.9);
+        assertTrue(can.calibrated());
+        assertTrue(gps.calibrated(), "the GPS drive is calibrated in the same ten minutes");
+        // 1 Hz fixes with a wandering time used to leave a half of the samples out (2 s window, 3 speeds)
+        assertTrue(gps.samples() >= 0.8 * can.samples(), gps.samples() + " samples against " + can.samples());
     }
 
     @Test

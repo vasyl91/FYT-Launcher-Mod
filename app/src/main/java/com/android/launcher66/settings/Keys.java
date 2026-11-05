@@ -134,6 +134,10 @@ public final class Keys {
     public static final String CODE_INSPECTOR_DATA = "code_inspector_data";
     public static final String SKIP_ZERO_CODES = "skip_zero_codes";
     public static final String CODE_INSPECTOR_TIMEOUT = "code_inspector_timeout";
+    /** Per car (+ car id): the state of the automatic code check, see CanbusAutoCheckPolicy. */
+    public static final String CANBUS_AUTO_CHECK_PREFIX = "canbus_auto_check_";
+    /** Per car (+ car id): the fuel and range codes the automatic check found, see AutoCodes. */
+    public static final String AUTO_CODES_PREFIX = "auto_codes_";
     public static final String LEFT_BAR = "left_bar";
     public static final String WIDGET_BAR = "widget_bar";
     public static final String WIDGETS_BACKGROUND = "choose_widgets_background";

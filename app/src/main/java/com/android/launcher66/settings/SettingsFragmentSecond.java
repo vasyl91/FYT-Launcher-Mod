@@ -2083,6 +2083,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         editor.putString(code.getResources().getResourceEntryName(code.getId()), valueStr);
         editor.apply();
         statsCodes.setSummary(statsCodesSummary());
+        // The running service chooses its codes again; it used to read them only when it started
+        CanbusService.readerGuessesChanged();
     }
 
     /** Whether the library says this car needs a request: the cmd fields are for such cars only. */
