@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:sharedUserId="" package="com.syu.radio" platformBuildVersionCode="26" platformBuildVersionName="8.0.0">
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FM_RADIO"/>
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_ROUTING"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="app.custom.permission"/>
+    <application android:icon="@drawable/app" android:label="@string/app_name" android:name="com.syu.app.App" android:theme="@style/ActivityStart">
+        <meta-data android:name="compile" android:value="2023-07-20 18:45:48/190000008_com.syu.radio"/>
+        <activity android:hardwareAccelerated="true" android:launchMode="singleInstance" android:name="com.syu.radio.act.ActRadio">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.syu.radio.set"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="radio"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.syu.radio"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:launchMode="singleInstance" android:name="com.syu.radio.Launch" android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <service android:name="com.android.fmradio.FmService">
+            <intent-filter>
+                <action android:name="com.android.fmradio.IFmRadioService"/>
+            </intent-filter>
+        </service>
+        <service android:name="com.pekall.fmradio.FMRadioService">
+            <intent-filter>
+                <action android:name="com.android.fmradio.FMRADIO_SERVICE"/>
+            </intent-filter>
+        </service>
+        <service android:name="com.syu.radio.broadcast.MyService">
+            <intent-filter>
+                <action android:name="com.syu.radio.keepAlive"/>
+                <action android:name="com.syu.radio.prevservice"/>
+                <action android:name="com.syu.radio.nextservice"/>
+                <action android:name="com.syu.radio.relogo"/>
+                <action android:name="com.syu.radio.msgservice"/>
+            </intent-filter>
+        </service>
+        <provider android:authorities="com.syu.radio" android:name="com.android.fmradio.FmProvider"/>
+    </application>
+</manifest>
