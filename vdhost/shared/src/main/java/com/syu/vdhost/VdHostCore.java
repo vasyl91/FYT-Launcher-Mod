@@ -67,6 +67,7 @@ public final class VdHostCore {
     private Object mActivityTaskManager;
     private Method mStartActivityAsUser;
     private Handler mFocusHandler;
+    private Handler mImeHandler;
     private boolean mFocusUnavailableLogged;
     private boolean mDisplayStateResolved;
     private Method mSetDisplayState;
@@ -225,7 +226,7 @@ public final class VdHostCore {
                 Log.w(TAG, "no input container for display " + displayId, t);
             }
         }
-        applyImePolicy(displayId);
+        applyImePolicyLater(displayId);
         scheduleFocusRestore();
         Log.i(TAG, "created display " + displayId + " " + w + "x" + h + "@" + dpi
                 + " flags=0x" + Integer.toHexString(f) + " for uid " + callerUid);
@@ -439,6 +440,35 @@ public final class VdHostCore {
         if (Build.VERSION.SDK_INT < 30) f &= ~VdHostProtocol.VD_FLAG_TRUSTED;
         if (Build.VERSION.SDK_INT < 33) f &= ~VdHostProtocol.VD_FLAG_ALWAYS_UNLOCKED;
         return f;
+    }
+
+    /**
+     * Applies the IME policy on a thread of its own. The system writes its display window settings
+     * to disk when the policy changes, and the caller of createDisplay() is the launcher's main
+     * thread: its StrictMode policy travels with the binder call, so the write was reported as a
+     * violation of the launcher and the main thread waited for it (70-88 ms, three times at
+     * start-up). The policy only matters once the keyboard is shown, which is long after this.
+     * It has a thread of its own because the focus handler is cleared by scheduleFocusRestore().
+     */
+    private void applyImePolicyLater(int displayId) {
+        if (Build.VERSION.SDK_INT < 31) return;
+        synchronized (this) {
+            if (mImeHandler == null) {
+                HandlerThread t = new HandlerThread("vdhost-ime");
+                t.start();
+                mImeHandler = new Handler(t.getLooper());
+            }
+        }
+        mImeHandler.post(() -> {
+            synchronized (mDisplays) {
+                // Released in the meantime: there is nothing left to set the policy for.
+                if (mDisplays.get(displayId) == null) return;
+            }
+            long start = SystemClock.uptimeMillis();
+            applyImePolicy(displayId);
+            Log.i(TAG, "ime policy for display " + displayId + " applied in "
+                    + (SystemClock.uptimeMillis() - start) + " ms");
+        });
     }
 
     /**

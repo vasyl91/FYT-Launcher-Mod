@@ -120,6 +120,9 @@ public class LauncherApplication extends Application {
             getSharedPreferences(Helpers.SUS_PREFS, MODE_PRIVATE);
             // Read for every widget the workspace binds (setAppWidget()).
             getSharedPreferences(WidgetFit.PREFS, MODE_PRIVATE);
+            // The cached favorite states: the first widget update reads them on the main thread,
+            // and an unread file there was a StrictMode disk read (19 ms) at every start.
+            getSharedPreferences(MediaFavoriteController.PREFS_NAME, MODE_PRIVATE);
         }
     }
 

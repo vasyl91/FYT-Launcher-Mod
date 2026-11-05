@@ -57,7 +57,8 @@ public final class MediaFavoriteController {
     public static final int FAVORITE_STATE_FAVORITED = 2;
 
     private static final String TAG = "MediaFavorite";
-    private static final String PREFS_NAME = "media_favorite_state";
+    /** The last favorite states, read on the main thread from the first widget update on. */
+    static final String PREFS_NAME = "media_favorite_state";
     private static final String PREF_PREFIX = "favorite:";
     private static final String STOCK_MUSIC_PACKAGE = "com.syu.music";
     private static final String SPOTIFY_PACKAGE = "com.spotify.music";
