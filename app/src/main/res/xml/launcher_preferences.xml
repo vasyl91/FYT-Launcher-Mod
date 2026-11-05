@@ -314,12 +314,12 @@
         app:key="logcat_category"
         app:title="@string/logcat_service_run">
 
-        <Preference
+        <com.android.launcher66.settings.InfoPreference
             android:key="logcat_names_info"
             android:selectable="false"
             android:title="@string/logcat_names_info"
             android:summary="@string/logcat_names_info_summary" />
-        <Preference
+        <com.android.launcher66.settings.InfoPreference
             android:key="logcat_locations_info"
             android:selectable="false"
             android:title="@string/logcat_locations_info"
