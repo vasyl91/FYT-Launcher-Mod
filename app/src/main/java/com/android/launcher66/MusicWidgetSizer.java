@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.google.android.flexbox.FlexItem;
 import com.google.android.flexbox.FlexboxLayout;
 
 /**
@@ -32,6 +31,9 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
     }
 
     private static final String TAG = "MusicWidgetSizer";
+
+    /** The flexbox's "no share" (FlexItem.FLEX_BASIS_PERCENT_DEFAULT, which the library keeps package-private). */
+    private static final float NO_FLEX_BASIS = -1f;
 
     /** As Workspace.BAR_TEXT_MIN_PARENT_FRACTION: a bar below this share of its height is mid-layout. */
     private static final float BAR_TRANSIENT_FRACTION = 0.25f;
@@ -270,9 +272,9 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
             }
             FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) cell.getLayoutParams();
             // A width in px, not a share of the block: the two cells add up to the block exactly.
-            if (lp.getFlexBasisPercent() != FlexItem.FLEX_BASIS_PERCENT_DEFAULT || lp.getOrder() != i
+            if (lp.getFlexBasisPercent() != NO_FLEX_BASIS || lp.getOrder() != i
                     || lp.height != plan.buttonRowPx || lp.width != plan.cellWidthPx) {
-                lp.setFlexBasisPercent(FlexItem.FLEX_BASIS_PERCENT_DEFAULT);
+                lp.setFlexBasisPercent(NO_FLEX_BASIS);
                 lp.setOrder(i);
                 lp.height = plan.buttonRowPx;
                 lp.width = plan.cellWidthPx;
