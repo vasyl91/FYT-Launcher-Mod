@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Große Schrift</string>
     <string name="widget_bar_large_text_on">So groß, wie die Leiste Platz bietet</string>
     <string name="widget_bar_large_text_off">Übliche Schriftgröße</string>
+    <string name="bottom_bar_every_page">Untere Leiste auf jeder Seite</string>
+    <string name="bottom_bar_every_page_on">Auf jeder Seite des Startbildschirms sichtbar</string>
+    <string name="bottom_bar_every_page_off">Nur auf der ersten Seite</string>
+    <string name="bottom_bar_every_page_no_overlay">Benötigt die Berechtigung „Über anderen Apps einblenden“</string>
 </resources>

@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Text gran</string>
     <string name="widget_bar_large_text_on">Tan gran com permeti l\'espai de la barra</string>
     <string name="widget_bar_large_text_off">Mida de text habitual</string>
+    <string name="bottom_bar_every_page">Barra inferior a cada pàgina</string>
+    <string name="bottom_bar_every_page_on">Es mostra a cada pàgina de la pantalla d\'inici</string>
+    <string name="bottom_bar_every_page_off">Només a la primera pàgina</string>
+    <string name="bottom_bar_every_page_no_overlay">Cal el permís per mostrar sobre altres aplicacions</string>
 </resources>

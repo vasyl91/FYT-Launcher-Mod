@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">نص كبير</string>
     <string name="widget_bar_large_text_on">بأكبر حجم يتسع له الشريط</string>
     <string name="widget_bar_large_text_off">حجم النص المعتاد</string>
+    <string name="bottom_bar_every_page">الشريط السفلي في كل صفحة</string>
+    <string name="bottom_bar_every_page_on">يظهر في كل صفحة من الشاشة الرئيسية</string>
+    <string name="bottom_bar_every_page_off">في الصفحة الأولى فقط</string>
+    <string name="bottom_bar_every_page_no_overlay">يتطلب إذن العرض فوق التطبيقات الأخرى</string>
 </resources>

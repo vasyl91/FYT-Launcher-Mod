@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Nagy szöveg</string>
     <string name="widget_bar_large_text_on">Akkora, amekkorának a sávban van hely</string>
     <string name="widget_bar_large_text_off">Szokásos szövegméret</string>
+    <string name="bottom_bar_every_page">Alsó sáv minden oldalon</string>
+    <string name="bottom_bar_every_page_on">A kezdőképernyő minden oldalán látható</string>
+    <string name="bottom_bar_every_page_off">Csak az első oldalon</string>
+    <string name="bottom_bar_every_page_no_overlay">Engedély kell a más alkalmazások feletti megjelenítéshez</string>
 </resources>

@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Stor tekst</string>
     <string name="widget_bar_large_text_on">Så stor som det er plass til i feltet</string>
     <string name="widget_bar_large_text_off">Vanlig tekststørrelse</string>
+    <string name="bottom_bar_every_page">Nedre felt på hver side</string>
+    <string name="bottom_bar_every_page_on">Vises på alle sidene på startskjermen</string>
+    <string name="bottom_bar_every_page_off">Bare på første side</string>
+    <string name="bottom_bar_every_page_no_overlay">Krever tillatelse til å vises over andre apper</string>
 </resources>

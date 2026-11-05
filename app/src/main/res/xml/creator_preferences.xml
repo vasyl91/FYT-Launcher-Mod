@@ -109,6 +109,12 @@
             android:title="@string/start_page"
             android:summary="1" />   
         <SwitchPreferenceCompat
+            android:key="bottom_bar_every_page"
+            android:defaultValue="false"
+            android:title="@string/bottom_bar_every_page"
+            android:summaryOn="@string/bottom_bar_every_page_on"
+            android:summaryOff="@string/bottom_bar_every_page_off" />
+        <SwitchPreferenceCompat
             android:key="auto_hide_bottom_bar"
             android:defaultValue="false"
             android:title="@string/auto_hide_bottom_bar"

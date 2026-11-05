@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Suur tekst</string>
     <string name="widget_bar_large_text_on">Nii suur, kui riba ruum võimaldab</string>
     <string name="widget_bar_large_text_off">Tavaline tekstisuurus</string>
+    <string name="bottom_bar_every_page">Alumine riba igal lehel</string>
+    <string name="bottom_bar_every_page_on">Kuvatakse avaekraani igal lehel</string>
+    <string name="bottom_bar_every_page_off">Ainult esimesel lehel</string>
+    <string name="bottom_bar_every_page_no_overlay">Vajab luba kuvamiseks teiste rakenduste peal</string>
 </resources>

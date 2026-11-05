@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Text mare</string>
     <string name="widget_bar_large_text_on">Cât de mare permite spațiul din bară</string>
     <string name="widget_bar_large_text_off">Dimensiune obișnuită a textului</string>
+    <string name="bottom_bar_every_page">Bara de jos pe fiecare pagină</string>
+    <string name="bottom_bar_every_page_on">Afișată pe fiecare pagină a ecranului de pornire</string>
+    <string name="bottom_bar_every_page_off">Doar pe prima pagină</string>
+    <string name="bottom_bar_every_page_no_overlay">Necesită permisiunea de afișare peste alte aplicații</string>
 </resources>

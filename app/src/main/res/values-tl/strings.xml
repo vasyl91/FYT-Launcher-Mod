@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Malaking teksto</string>
     <string name="widget_bar_large_text_on">Kasing laki ng kasya sa bar</string>
     <string name="widget_bar_large_text_off">Karaniwang laki ng teksto</string>
+    <string name="bottom_bar_every_page">Ibabang bar sa bawat pahina</string>
+    <string name="bottom_bar_every_page_on">Ipinapakita sa bawat pahina ng home screen</string>
+    <string name="bottom_bar_every_page_off">Sa unang pahina lang</string>
+    <string name="bottom_bar_every_page_no_overlay">Kailangan ng pahintulot na magpakita sa ibabaw ng iba pang app</string>
 </resources>

@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Chữ lớn</string>
     <string name="widget_bar_large_text_on">Lớn tối đa theo chỗ trống trên thanh</string>
     <string name="widget_bar_large_text_off">Cỡ chữ thông thường</string>
+    <string name="bottom_bar_every_page">Thanh dưới ở mọi trang</string>
+    <string name="bottom_bar_every_page_on">Hiển thị ở mọi trang của màn hình chính</string>
+    <string name="bottom_bar_every_page_off">Chỉ ở trang đầu tiên</string>
+    <string name="bottom_bar_every_page_no_overlay">Cần quyền hiển thị trên các ứng dụng khác</string>
 </resources>

@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Крупный текст</string>
     <string name="widget_bar_large_text_on">Настолько крупный, насколько позволяет панель</string>
     <string name="widget_bar_large_text_off">Обычный размер текста</string>
+    <string name="bottom_bar_every_page">Нижняя панель на каждой странице</string>
+    <string name="bottom_bar_every_page_on">Показывается на каждой странице главного экрана</string>
+    <string name="bottom_bar_every_page_off">Только на первой странице</string>
+    <string name="bottom_bar_every_page_no_overlay">Нужно разрешение на показ поверх других приложений</string>
 </resources>

@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Maandishi makubwa</string>
     <string name="widget_bar_large_text_on">Makubwa kadiri upau unavyoruhusu</string>
     <string name="widget_bar_large_text_off">Ukubwa wa kawaida wa maandishi</string>
+    <string name="bottom_bar_every_page">Upau wa chini kwenye kila ukurasa</string>
+    <string name="bottom_bar_every_page_on">Huonyeshwa kwenye kila ukurasa wa skrini ya kwanza</string>
+    <string name="bottom_bar_every_page_off">Kwenye ukurasa wa kwanza tu</string>
+    <string name="bottom_bar_every_page_no_overlay">Inahitaji ruhusa ya kuonyesha juu ya programu zingine</string>
 </resources>

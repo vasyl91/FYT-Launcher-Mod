@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">बड़ा टेक्स्ट</string>
     <string name="widget_bar_large_text_on">जितना बड़ा बार में जगह हो</string>
     <string name="widget_bar_large_text_off">सामान्य टेक्स्ट आकार</string>
+    <string name="bottom_bar_every_page">हर पेज पर निचला बार</string>
+    <string name="bottom_bar_every_page_on">होम स्क्रीन के हर पेज पर दिखता है</string>
+    <string name="bottom_bar_every_page_off">केवल पहले पेज पर</string>
+    <string name="bottom_bar_every_page_no_overlay">दूसरे ऐप्लिकेशन के ऊपर दिखाने की अनुमति ज़रूरी है</string>
 </resources>

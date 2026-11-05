@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Veľký text</string>
     <string name="widget_bar_large_text_on">Taký veľký, aký dovolí miesto na paneli</string>
     <string name="widget_bar_large_text_off">Obvyklá veľkosť textu</string>
+    <string name="bottom_bar_every_page">Spodný panel na každej stránke</string>
+    <string name="bottom_bar_every_page_on">Zobrazený na každej stránke domovskej obrazovky</string>
+    <string name="bottom_bar_every_page_off">Iba na prvej stránke</string>
+    <string name="bottom_bar_every_page_no_overlay">Vyžaduje povolenie zobrazovať sa nad inými aplikáciami</string>
 </resources>

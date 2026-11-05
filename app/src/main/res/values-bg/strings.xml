@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Едър текст</string>
     <string name="widget_bar_large_text_on">Толкова голям, колкото позволява лентата</string>
     <string name="widget_bar_large_text_off">Обичаен размер на текста</string>
+    <string name="bottom_bar_every_page">Долна лента на всяка страница</string>
+    <string name="bottom_bar_every_page_on">Показва се на всяка страница на началния екран</string>
+    <string name="bottom_bar_every_page_off">Само на първата страница</string>
+    <string name="bottom_bar_every_page_no_overlay">Изисква разрешение за показване върху други приложения</string>
 </resources>

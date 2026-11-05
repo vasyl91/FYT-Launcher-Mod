@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Suuri teksti</string>
     <string name="widget_bar_large_text_on">Niin suuri kuin palkissa on tilaa</string>
     <string name="widget_bar_large_text_off">Tavallinen tekstikoko</string>
+    <string name="bottom_bar_every_page">Alapalkki joka sivulla</string>
+    <string name="bottom_bar_every_page_on">Näkyy aloitusnäytön jokaisella sivulla</string>
+    <string name="bottom_bar_every_page_off">Vain ensimmäisellä sivulla</string>
+    <string name="bottom_bar_every_page_no_overlay">Vaatii luvan näyttää muiden sovellusten päällä</string>
 </resources>

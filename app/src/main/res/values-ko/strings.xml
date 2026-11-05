@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">큰 글자</string>
     <string name="widget_bar_large_text_on">바에 들어가는 가장 큰 크기</string>
     <string name="widget_bar_large_text_off">일반 글자 크기</string>
+    <string name="bottom_bar_every_page">모든 페이지에 하단 바 표시</string>
+    <string name="bottom_bar_every_page_on">홈 화면의 모든 페이지에 표시됩니다</string>
+    <string name="bottom_bar_every_page_off">첫 페이지에만</string>
+    <string name="bottom_bar_every_page_no_overlay">다른 앱 위에 표시할 권한이 필요합니다</string>
 </resources>

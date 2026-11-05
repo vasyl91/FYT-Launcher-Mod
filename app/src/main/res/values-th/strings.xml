@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">ข้อความขนาดใหญ่</string>
     <string name="widget_bar_large_text_on">ใหญ่เท่าที่แถบมีที่ว่าง</string>
     <string name="widget_bar_large_text_off">ขนาดข้อความปกติ</string>
+    <string name="bottom_bar_every_page">แถบด้านล่างในทุกหน้า</string>
+    <string name="bottom_bar_every_page_on">แสดงในทุกหน้าของหน้าจอหลัก</string>
+    <string name="bottom_bar_every_page_off">เฉพาะหน้าแรก</string>
+    <string name="bottom_bar_every_page_no_overlay">ต้องได้รับสิทธิ์แสดงทับแอปอื่น</string>
 </resources>

@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">ຕົວອັກສອນໃຫຍ່</string>
     <string name="widget_bar_large_text_on">ໃຫຍ່ເທົ່າທີ່ແຖບມີບ່ອນ</string>
     <string name="widget_bar_large_text_off">ຂະໜາດຕົວອັກສອນປົກກະຕິ</string>
+    <string name="bottom_bar_every_page">ແຖບລຸ່ມໃນທຸກໜ້າ</string>
+    <string name="bottom_bar_every_page_on">ສະແດງໃນທຸກໜ້າຂອງໜ້າຈໍຫຼັກ</string>
+    <string name="bottom_bar_every_page_off">ສະເພາະໜ້າທຳອິດ</string>
+    <string name="bottom_bar_every_page_no_overlay">ຕ້ອງການສິດໃນການສະແດງທັບແອັບອື່ນ</string>
 </resources>

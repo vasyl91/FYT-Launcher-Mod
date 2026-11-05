@@ -42,6 +42,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -85,6 +86,7 @@ import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
+import com.android.recycler.AppListDialogFragment;
 import com.android.recycler.SimpleDividerDecoration;
 import com.syu.util.WindowHost;
 import com.syu.util.WindowUtil;
@@ -360,6 +362,8 @@ public class Workspace extends SmoothPagedView
     private static final long BAR_HIDE_DURATION_MS = 180;
     private static final long COLLAPSED_BAR_FADE_OUT_MS = 120;
     private static final long EDGE_HANDLE_FADE_MS = 150;
+    /** The persistent bar fades out in this time when the first page's own bar of another width takes over. */
+    private static final long PERSISTENT_CROSSFADE_MS = 150;
     // The edge handle returns only in the second half of the slide-out. It is an overlay window:
     // when the bar goes away because an app is being launched (Launcher.cleanWidgetBar()), onPause()
     // hides it again before it can show above the incoming app.
@@ -403,7 +407,19 @@ public class Workspace extends SmoothPagedView
             onOverlayTouchEnded();
         }
     };
-    /** Auto-hide without the left bar: the edge handle replaces the collapsed button. */
+    /**
+     * 'Bottom bar on every page' (BottomBarPlacement), read when the first page is built. Without
+     * auto-hide the bar of the other pages is a persistent overlay (the bar's overlay window with
+     * no timer); with it every page has the edge handle.
+     */
+    private boolean mEveryPage = false;
+    /** The overlay on screen (or being built) is the persistent one, not the auto-hide bar. */
+    private boolean mOverlayPersistent = false;
+    /** The left bar setting of the page that was built last. */
+    private boolean mLeftBar = false;
+    /** Adding the persistent overlay failed (no permission): not tried again until the page is rebuilt. */
+    private boolean mPersistentFailed = false;
+    /** Auto-hide without the left bar, or with 'every page': the edge handle replaces the collapsed button. */
     private boolean mEdgeHandleMode = false;
     /** The launcher is resumed; set by Launcher.onPause() and onResume(). */
     private boolean mEdgeHandleHostVisible = false;
@@ -576,6 +592,7 @@ public class Workspace extends SmoothPagedView
 
     public void onDragStart(final DragSource source, Object info, int dragAction) {
         mIsDragOccuring = true;
+        updatePersistentBar("drag start");
         updateChildrenLayersEnabled(false);
         mLauncher.lockScreenOrientation();
         mLauncher.onInteractionBegin();
@@ -592,6 +609,7 @@ public class Workspace extends SmoothPagedView
 
     public void onDragEnd() {
         mIsDragOccuring = false;
+        updatePersistentBar("drag end");
         updateChildrenLayersEnabled(false);
         mLauncher.unlockScreenOrientation(false);
 
@@ -836,6 +854,7 @@ public class Workspace extends SmoothPagedView
         helpers.setInOverviewMode(false);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
+        mLeftBar = leftBar;
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
         blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
         boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
@@ -903,12 +922,17 @@ public class Workspace extends SmoothPagedView
             autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
             // Without the left bar there is no collapsed button: the bar is revealed through the
             // edge handle (BottomBarEdgeHandle), which updateEdgeHandle() shows and hides.
-            mEdgeHandleMode = autoHideBottomBar && !leftBar;
+            mEveryPage = mPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false);
+            mPersistentFailed = false;
+            // With the left bar the first page has the collapsed button; the other pages, if the bar
+            // is on every page, have the handle.
+            mEdgeHandleMode = autoHideBottomBar && (!leftBar || mEveryPage);
             if (autoHideBottomBar) {
                 toggleBottomBar();              
             }
         } else {
             mEdgeHandleMode = false;
+            mEveryPage = false;
             workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one, workspaceLayout, false);
             customScreen[0].addView(workspaceView);
 
@@ -1546,11 +1570,18 @@ public class Workspace extends SmoothPagedView
         }
         mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
         mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
-        if (mBarMusicWidget != null) mBarMusicWidget.setVisibility(View.INVISIBLE);
-        if (mBarWeatherWidget != null) mBarWeatherWidget.setVisibility(View.INVISIBLE);
+        // A widget hidden in the settings (WidgetBarLayout) is GONE and stays so.
+        if (mBarMusicWidget != null && mBarMusicWidget.getVisibility() == View.VISIBLE) {
+            mBarMusicWidget.setVisibility(View.INVISIBLE);
+        }
+        if (mBarWeatherWidget != null && mBarWeatherWidget.getVisibility() == View.VISIBLE) {
+            mBarWeatherWidget.setVisibility(View.INVISIBLE);
+        }
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             mBarDateWidget = workspaceView.findViewById(R.id.bar_widget_date);
-            if (mBarDateWidget != null) mBarDateWidget.setVisibility(View.INVISIBLE);
+            if (mBarDateWidget != null && mBarDateWidget.getVisibility() == View.VISIBLE) {
+                mBarDateWidget.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
@@ -1569,7 +1600,7 @@ public class Workspace extends SmoothPagedView
                 .withEndAction(() -> bottomBarRecycler.setVisibility(View.INVISIBLE))
                 .start();
 
-        if (mEdgeHandleMode) {
+        if (mEdgeHandleMode && !mLeftBar) {
             // No collapsed button without the left bar: nothing of the inline bar stays on screen,
             // the edge handle stands for it.
             bottomBarAllApps.animate().cancel();
@@ -1716,10 +1747,20 @@ public class Workspace extends SmoothPagedView
                 isOverlayShowing = true;
                 final View addedBar = overlayBottomBar;
                 addedBar.post(addedBar::requestApplyInsets);
-                startOverlayShowTransition();
-                setupAutoHideForOverlay();
+                if (mOverlayPersistent) {
+                    // Over the page's own bar, in the same place: it is there at once, no slide,
+                    // so that it covers the bar that leaves with the page without a jump. No timer.
+                    overlayBottomBar.setAlpha(1f);
+                    overlayBottomBar.setTranslationY(0f);
+                } else {
+                    startOverlayShowTransition();
+                    setupAutoHideForOverlay();
+                }
             } catch (Exception e) {
                 Log.e("OverlayBottomBar", "Failed to add overlay view", e);
+                if (mOverlayPersistent) {
+                    mPersistentFailed = true;   // typically no permission to draw over other apps
+                }
                 cleanupOverlayImmediately();
             } finally {
                 isOverlayAnimating = false;
@@ -1768,11 +1809,16 @@ public class Workspace extends SmoothPagedView
             if (mLauncher != null) {
                 mLauncher.onClickAllAppsButton();
             }
-            hideOverlayBottomBar();
+            if (!mOverlayPersistent) {
+                hideOverlayBottomBar();
+            }   // else all apps takes the persistent bar away itself (updatePersistentBar())
         });
 
         overlayBottomBar.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+                if (mOverlayPersistent) {
+                    return false;   // a touch on the page does not put the page's bar away
+                }
                 hideOverlayBottomBar();
                 return true;
             }
@@ -2252,6 +2298,9 @@ public class Workspace extends SmoothPagedView
      * flags, would cancel the gesture that is paging the workspace.
      */
     private void hideOverlayForSwipe() {
+        if (mOverlayPersistent) {
+            return;   // the persistent bar stays while the pages move under the finger
+        }
         Log.d(TAG, "Hiding the auto-hide bar: page swipe on the bar");
         hideOverlay(true, true);
     }
@@ -2452,7 +2501,10 @@ public class Workspace extends SmoothPagedView
         if (mEdgeHandleMode) {
             updateEdgeHandle(shown ? "bar hidden" : "bar shown", durationMs,
                     shown && durationMs > 0 ? EDGE_HANDLE_RETURN_DELAY_MS : 0);
-            return;
+            if (!mLeftBar) {
+                return;
+            }
+            // With the left bar the first page has its collapsed button as well (every page).
         }
         if (workspaceView == null) {
             return;
@@ -2522,6 +2574,9 @@ public class Workspace extends SmoothPagedView
     }
 
     private void updateEdgeHandle(String reason, long durationMs, long showDelayMs) {
+        // The persistent bar follows the same events (pages moving or settling, all apps, overview,
+        // pause and resume), so it is decided in the same place.
+        updatePersistentBar(reason);
         if (!mEdgeHandleMode) {
             releaseEdgeHandle();
             return;
@@ -2551,8 +2606,13 @@ public class Workspace extends SmoothPagedView
                 && mLauncher != null
                 && mLauncher.mState == Launcher.State.WORKSPACE
                 && mState == State.NORMAL
-                && !isPageMoving()
-                && getCurrentPage() == getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1);
+                && BottomBarPlacement.bar(placementPage(), mEveryPage, true, mLeftBar, isPageMoving())
+                        == BottomBarPlacement.Bar.HANDLE;
+    }
+
+    /** 0 for the first page of the home screen (the one with the bar), 1 for any other. */
+    private int placementPage() {
+        return getCurrentPage() == getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1) ? 0 : 1;
     }
 
     private void applyEdgeHandleGeometry() {
@@ -2602,6 +2662,132 @@ public class Workspace extends SmoothPagedView
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // 'Bottom bar on every page', without auto-hide: the persistent overlay
+    // ---------------------------------------------------------------------------------------------
+
+    /** Called when something that puts the persistent bar away or brings it back has changed. */
+    public void updatePersistentBar() {
+        updatePersistentBar("changed");
+    }
+
+    /**
+     * The bar of the other pages is the bar's overlay window, built like the auto-hide bar but with
+     * no timer and not put away by a touch outside it or a swipe on it. BottomBarPlacement says
+     * when it is there: while the pages move (the first page's own bar leaves with its page, and
+     * the overlay is up from the first moment of the move, in the same place, so it covers that bar
+     * without a jump), and on every page but the first at rest. It is put away, and comes back
+     * after, where it would lie over what the launcher shows by itself: when the launcher is not
+     * in front, in all apps and in the overview, while something is dragged, while a folder or the
+     * list of apps (opened from the bar) is open.
+     */
+    private void updatePersistentBar(String reason) {
+        boolean mode = mEveryPage && !autoHideBottomBar && workspaceView != null && mLauncher != null
+                && mPrefs != null && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        if (!mode) {
+            if (mOverlayPersistent) {
+                hidePersistentOverlay(0, reason);
+            }
+            return;
+        }
+        BottomBarPlacement.Bar bar = BottomBarPlacement.bar(placementPage(), true, false, mLeftBar,
+                isPageMoving());
+        boolean want = bar == BottomBarPlacement.Bar.PERSISTENT_OVERLAY && persistentBarAllowed();
+        if (want && !mOverlayPersistent) {
+            showPersistentOverlay(reason);
+        } else if (!want && mOverlayPersistent) {
+            // The first page's bar is under it again. With the left bar that bar is another width
+            // than the overlay, so the overlay fades out (it must not show two bars for long).
+            hidePersistentOverlay(bar == BottomBarPlacement.Bar.EMBEDDED && mLeftBar
+                    ? PERSISTENT_CROSSFADE_MS : 0, reason);
+        }
+    }
+
+    /** Whether nothing else the launcher shows is in the persistent bar's place now. */
+    private boolean persistentBarAllowed() {
+        if (mPersistentFailed || !mEdgeHandleHostVisible || mState != State.NORMAL || mIsDragOccuring
+                || mLauncher.mState != Launcher.State.WORKSPACE || getOpenFolder() != null) {
+            return false;
+        }
+        if (mDragController != null && mDragController.isDragging()) {
+            return false;
+        }
+        try {
+            if (AppListDialogFragment.isListDialogShowing(mLauncher.getSupportFragmentManager())) {
+                return false;
+            }
+        } catch (RuntimeException e) {
+            return false;   // the activity is going away
+        }
+        return Settings.canDrawOverlays(getContext());
+    }
+
+    private void showPersistentOverlay(String reason) {
+        synchronized (overlayLock) {
+            if (isOverlayShowing || isOverlayAnimating || overlayBottomBar != null
+                    || bottomBarAllApps == null) {
+                return;
+            }
+            Log.d(TAG, "Persistent bottom bar shown (" + reason + ") on page " + getCurrentPage());
+            mOverlayPersistent = true;
+            isOverlayAnimating = true;
+            // The inline bar stays as it is: it leaves with its page, or lies under the overlay.
+            showOverlayBottomBar();
+            if (!isOverlayShowing) {
+                mOverlayPersistent = false;
+            }
+        }
+    }
+
+    /** @param fadeMs fade out for that long, 0 for at once */
+    private void hidePersistentOverlay(long fadeMs, String reason) {
+        synchronized (overlayLock) {
+            final View bar = overlayBottomBar;
+            final WindowManager windowManager = overlayWindowManager;
+            if (!mOverlayPersistent) {
+                return;
+            }
+            if (bar == null || windowManager == null) {
+                mOverlayPersistent = false;
+                return;
+            }
+            if (mOverlayHideAnimating) {
+                if (fadeMs <= 0) {
+                    bar.animate().cancel();
+                    finishPersistentHide(bar, windowManager);
+                }
+                return;
+            }
+            if (isOverlayAnimating) {
+                return;   // still being built; the next update takes it away
+            }
+            Log.d(TAG, "Persistent bottom bar hidden (" + reason + ")");
+            isOverlayAnimating = true;
+            mOverlayHideAnimating = true;
+            // Touches pass through while it fades: the page below is what the finger is on.
+            mOverlayTouchHeld = false;
+            setOverlayTouchable(false);
+            bar.animate().cancel();
+            if (fadeMs <= 0 || !bar.isAttachedToWindow()) {
+                finishPersistentHide(bar, windowManager);
+            } else {
+                bar.animate()
+                        .alpha(0f)
+                        .setDuration(fadeMs)
+                        .withEndAction(() -> finishPersistentHide(bar, windowManager))
+                        .start();
+            }
+        }
+    }
+
+    /** Removes the persistent overlay and gives the widget bar's views back to the page's own bar. */
+    private void finishPersistentHide(View bar, WindowManager windowManager) {
+        finishOverlayHide(bar, windowManager);
+        // clearOverlayReferences() let go of the music and weather views of the overlay; the bar of
+        // the first page is the one that is bound again (the same as after a wake).
+        mainHandler.post(() -> refreshWidgetBarAfterWake("persistent bar removed"));
+    }
+
     private void clearOverlayReferences() {
         if (mLauncher != null) {
             mLauncher.clearBarWidgetReferences();
@@ -2616,6 +2802,7 @@ public class Workspace extends SmoothPagedView
         overlayBottomBar = null;
         overlayWindowParams = null;
         overlayWindowManager = null;
+        mOverlayPersistent = false;
         mOverlayTouchHeld = false;
         mOverlayRemoveAtUp = false;
         mOverlayHideAtUp = false;
@@ -2779,6 +2966,9 @@ public class Workspace extends SmoothPagedView
 
     public void scheduleAutoHide() {
         cancelPendingAutoHide();
+        if (mOverlayPersistent) {
+            return;   // no timer: the bar of the other pages stays
+        }
         int autoHideTimeout = mPrefs.getInt(Keys.AUTO_HIDE_TIMEOUT, 3);
         autoHideFuture = scheduler.schedule(() -> {
             synchronized (overlayLock) {

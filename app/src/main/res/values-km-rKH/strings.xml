@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">អក្សរធំ</string>
     <string name="widget_bar_large_text_on">ធំតាមដែលរបារមានកន្លែង</string>
     <string name="widget_bar_large_text_off">ទំហំអក្សរធម្មតា</string>
+    <string name="bottom_bar_every_page">របារខាងក្រោមនៅគ្រប់ទំព័រ</string>
+    <string name="bottom_bar_every_page_on">បង្ហាញនៅគ្រប់ទំព័រនៃអេក្រង់ដើម</string>
+    <string name="bottom_bar_every_page_off">តែនៅទំព័រដំបូងប៉ុណ្ណោះ</string>
+    <string name="bottom_bar_every_page_no_overlay">ត្រូវការការអនុញ្ញាតឱ្យបង្ហាញលើកម្មវិធីផ្សេងទៀត</string>
 </resources>

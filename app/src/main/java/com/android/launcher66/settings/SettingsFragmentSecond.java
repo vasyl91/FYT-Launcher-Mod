@@ -118,6 +118,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private AlertDialog alertStartPageDialog;
     private SwitchPreferenceCompat autoHidePreference;
     private AutoHideSeekBarPreference autoHideSeekBar;
+    private Preference everyPagePreference;
     private CustomSwitchPreference widgetBarNoDatePreference;
     private CustomSwitchPreference widgetBarNoWeatherPreference;
     private CustomSwitchPreference widgetBarLargeTextPreference;
@@ -353,6 +354,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         String startPageStr = sharedPrefs.getString(Keys.START_PAGE, "1");
         startPage.setSummary(startPageStr);
 
+        everyPagePreference = findPreference(Keys.BOTTOM_BAR_EVERY_PAGE);
         autoHidePreference = findPreference(Keys.AUTO_HIDE_BOTTOM_BAR);
         autoHideSeekBar = findPreference(Keys.AUTO_HIDE_TIMEOUT);
         resizableBarPreference = findPreference(Keys.RESIZABLE_BOTTOM_BAR);
@@ -516,6 +518,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (startPage != null) {
             startPage.setOnPreferenceClickListener(this);
+        }
+        if (everyPagePreference != null) {
+            everyPagePreference.setOnPreferenceClickListener(this);
+            updateEveryPageSummary();
         }
         autoHideBool = sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
         if (autoHidePreference != null) {
@@ -726,6 +732,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 });
 
                 alertStartPageDialog.show();
+                break;
+            case Keys.BOTTOM_BAR_EVERY_PAGE:
+                updateEveryPageSummary();
+                helpers.setBarSettingsChanged(true);
                 break;
             case Keys.AUTO_HIDE_BOTTOM_BAR:
                 autoHideBool = sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
@@ -1100,12 +1110,28 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         extraStatsCodes = null;
         autoHidePreference = null;
         autoHideSeekBar = null;
+        everyPagePreference = null;
         widgetBarNoDatePreference = null;
         widgetBarNoWeatherPreference = null;
         widgetBarLargeTextPreference = null;
         resizableBarPreference = null;
         barHeightSeekBar = null;
         imm = null;
+    }
+
+    /**
+     * The bar on the other pages (and the handle that reveals it) is a window over the apps. Without
+     * the permission for that (the standard version before it is given) nothing shows there, so the
+     * summary of the switch says what is missing instead of promising the bar.
+     */
+    private void updateEveryPageSummary() {
+        if (!(everyPagePreference instanceof TwoStatePreference)) {
+            return;
+        }
+        TwoStatePreference every = (TwoStatePreference) everyPagePreference;
+        boolean missing = every.isChecked() && !android.provider.Settings.canDrawOverlays(requireContext());
+        every.setSummaryOn(getString(missing ? R.string.bottom_bar_every_page_no_overlay
+                : R.string.bottom_bar_every_page_on));
     }
 
     /**

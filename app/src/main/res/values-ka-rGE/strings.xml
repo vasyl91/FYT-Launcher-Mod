@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">დიდი ტექსტი</string>
     <string name="widget_bar_large_text_on">იმდენად დიდი, რამდენსაც ზოლი იტევს</string>
     <string name="widget_bar_large_text_off">ჩვეულებრივი ტექსტის ზომა</string>
+    <string name="bottom_bar_every_page">ქვედა ზოლი ყველა გვერდზე</string>
+    <string name="bottom_bar_every_page_on">ჩანს მთავარი ეკრანის ყველა გვერდზე</string>
+    <string name="bottom_bar_every_page_off">მხოლოდ პირველ გვერდზე</string>
+    <string name="bottom_bar_every_page_no_overlay">საჭიროა სხვა აპებზე გამოსახვის ნებართვა</string>
 </resources>

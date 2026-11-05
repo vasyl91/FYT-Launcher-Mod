@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Том текст</string>
     <string name="widget_bar_large_text_on">Самбарт багтах хэмжээгээрээ том</string>
     <string name="widget_bar_large_text_off">Энгийн текстийн хэмжээ</string>
+    <string name="bottom_bar_every_page">Хуудас бүр дээр доод самбар</string>
+    <string name="bottom_bar_every_page_on">Үндсэн дэлгэцийн хуудас бүр дээр харагдана</string>
+    <string name="bottom_bar_every_page_off">Зөвхөн эхний хуудас дээр</string>
+    <string name="bottom_bar_every_page_no_overlay">Бусад аппын дээр харуулах зөвшөөрөл шаардлагатай</string>
 </resources>

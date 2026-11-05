@@ -137,6 +137,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
         // dismissListDialog() closed one while the other stayed added with its window and
         // ViewTree tags - and that one is what shows up as retained.
         AppListDialogFragment.showListDialog(fragmentManager, target.rowId, this);
+        // The bar of every page lies over the list: it steps aside until the list is closed.
+        if (mLauncher.getWorkspace() != null) {
+            mLauncher.getWorkspace().updatePersistentBar();
+        }
     }
 
     private void schedulePickerRetry(View decor, final int position, final int attempt) {

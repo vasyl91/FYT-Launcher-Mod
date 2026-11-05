@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Великий текст</string>
     <string name="widget_bar_large_text_on">Настільки великий, наскільки дозволяє панель</string>
     <string name="widget_bar_large_text_off">Звичайний розмір тексту</string>
+    <string name="bottom_bar_every_page">Нижня панель на кожній сторінці</string>
+    <string name="bottom_bar_every_page_on">Показується на кожній сторінці головного екрана</string>
+    <string name="bottom_bar_every_page_off">Лише на першій сторінці</string>
+    <string name="bottom_bar_every_page_no_overlay">Потрібен дозвіл відображатися поверх інших додатків</string>
 </resources>

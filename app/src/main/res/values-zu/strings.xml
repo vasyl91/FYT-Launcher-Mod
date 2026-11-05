@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Umbhalo omkhulu</string>
     <string name="widget_bar_large_text_on">Mkhulu njengoba ibha inendawo</string>
     <string name="widget_bar_large_text_off">Usayizi wombhalo ojwayelekile</string>
+    <string name="bottom_bar_every_page">Ibha engezansi ekhasini ngalinye</string>
+    <string name="bottom_bar_every_page_on">Ibonakala ekhasini ngalinye lesikrini sasekhaya</string>
+    <string name="bottom_bar_every_page_off">Ekhasini lokuqala kuphela</string>
+    <string name="bottom_bar_every_page_no_overlay">Idinga imvume yokubonisa phezu kwezinye izinhlelo zokusebenza</string>
 </resources>

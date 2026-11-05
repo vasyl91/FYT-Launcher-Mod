@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Testo grande</string>
     <string name="widget_bar_large_text_on">Grande quanto lo spazio della barra consente</string>
     <string name="widget_bar_large_text_off">Dimensione normale del testo</string>
+    <string name="bottom_bar_every_page">Barra inferiore su ogni pagina</string>
+    <string name="bottom_bar_every_page_on">Visibile in ogni pagina della schermata Home</string>
+    <string name="bottom_bar_every_page_off">Solo nella prima pagina</string>
+    <string name="bottom_bar_every_page_no_overlay">Richiede l\'autorizzazione a mostrarsi sopra le altre app</string>
 </resources>

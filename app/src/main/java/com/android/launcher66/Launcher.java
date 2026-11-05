@@ -5669,9 +5669,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     public void cleanWidgetBar() {
         boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-        if (autoHideBottomBar && widgetBar) {
+        // The bar on every page (without auto-hide) is an overlay too, and lets go of the same views.
+        boolean overlayBar = autoHideBottomBar || mPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false);
+        if (overlayBar && widgetBar) {
             if (mWorkspace != null) {
-                mWorkspace.hideOverlayBottomBar();
+                if (autoHideBottomBar) {
+                    // Not for the persistent bar: this would also disable the page's own recycler.
+                    mWorkspace.hideOverlayBottomBar();
+                }
                 mWorkspace.cancelPendingAutoHide();
                 mWorkspace.clearWidgetReferences();
             }
@@ -7122,6 +7127,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         folder.animateOpen();
         growAndFadeOutFolderIcon(folderIcon);
+        // The bar of every page lies over the folder: it steps aside while the folder is open.
+        mWorkspace.updatePersistentBar();
 
         // Notify the accessibility manager that this folder "window" has appeared and occluded
         // the workspace items
@@ -7147,6 +7154,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             shrinkAndFadeInFolderIcon(fi);
         }
         folder.animateClosed();
+        mWorkspace.updatePersistentBar();
 
         // Notify the accessibility manager that this folder "window" has disappeard and no
         // longer occludeds the workspace items

@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">大きな文字</string>
     <string name="widget_bar_large_text_on">バーに収まる最大の大きさ</string>
     <string name="widget_bar_large_text_off">通常の文字サイズ</string>
+    <string name="bottom_bar_every_page">すべてのページに下バーを表示</string>
+    <string name="bottom_bar_every_page_on">ホーム画面のすべてのページに表示します</string>
+    <string name="bottom_bar_every_page_off">最初のページのみ</string>
+    <string name="bottom_bar_every_page_no_overlay">他のアプリの上に重ねて表示する権限が必要です</string>
 </resources>

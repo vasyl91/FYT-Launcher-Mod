@@ -392,6 +392,14 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
             clearListFlags();
         }
         super.onDismiss(dialog);
+        // The bar of every page stepped aside for the list; it comes back once the fragment is
+        // removed (its transaction is committed after this call, hence the delay).
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            com.android.launcher66.Launcher launcher = com.android.launcher66.Launcher.getLauncher();
+            if (launcher != null && launcher.getWorkspace() != null) {
+                launcher.getWorkspace().updatePersistentBar();
+            }
+        }, 250L);
     }
 
     @Override

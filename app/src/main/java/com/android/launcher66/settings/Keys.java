@@ -154,6 +154,8 @@ public final class Keys {
     public static final String BLACK_WIDGETS = "black_widgets";
     public static final String START_PAGE = "start_page";
     public static final String LAYOUT_MARGIN = "layout_margin";
+    /** The bottom bar is on every page of the home screen, not only on the first (BottomBarPlacement). */
+    public static final String BOTTOM_BAR_EVERY_PAGE = "bottom_bar_every_page";
     public static final String AUTO_HIDE_BOTTOM_BAR = "auto_hide_bottom_bar";
     public static final String AUTO_HIDE_TIMEOUT = "auto_hide_timeout";
     public static final String RESIZABLE_BOTTOM_BAR = "resizable_bottom_bar";

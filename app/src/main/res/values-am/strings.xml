@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">ትልቅ ጽሑፍ</string>
     <string name="widget_bar_large_text_on">አሞሌው በሚፈቅደው መጠን ትልቅ</string>
     <string name="widget_bar_large_text_off">መደበኛ የጽሑፍ መጠን</string>
+    <string name="bottom_bar_every_page">የታች አሞሌ በእያንዳንዱ ገጽ ላይ</string>
+    <string name="bottom_bar_every_page_on">በመነሻ ማያ ገጽ በእያንዳንዱ ገጽ ላይ ይታያል</string>
+    <string name="bottom_bar_every_page_off">በመጀመሪያው ገጽ ላይ ብቻ</string>
+    <string name="bottom_bar_every_page_no_overlay">በሌሎች መተግበሪያዎች ላይ የማሳየት ፈቃድ ያስፈልጋል</string>
 </resources>

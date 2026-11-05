@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Liels teksts</string>
     <string name="widget_bar_large_text_on">Tik liels, cik joslā ir vietas</string>
     <string name="widget_bar_large_text_off">Parastais teksta izmērs</string>
+    <string name="bottom_bar_every_page">Apakšējā josla katrā lapā</string>
+    <string name="bottom_bar_every_page_on">Tiek rādīta katrā sākuma ekrāna lapā</string>
+    <string name="bottom_bar_every_page_off">Tikai pirmajā lapā</string>
+    <string name="bottom_bar_every_page_no_overlay">Nepieciešama atļauja attēlot pāri citām lietotnēm</string>
 </resources>

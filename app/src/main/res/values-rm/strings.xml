@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Text grond</string>
     <string name="widget_bar_large_text_on">Uschè grond sco che la bara lubescha</string>
     <string name="widget_bar_large_text_off">Grondezza da text usitada</string>
+    <string name="bottom_bar_every_page">Bara sutvart sin mintga pagina</string>
+    <string name="bottom_bar_every_page_on">Visibla sin mintga pagina da la surfatscha da partenza</string>
+    <string name="bottom_bar_every_page_off">Be sin l\'emprima pagina</string>
+    <string name="bottom_bar_every_page_no_overlay">Dovra l\'autorisaziun da mussar sur autras apps</string>
 </resources>

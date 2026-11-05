@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Groot teks</string>
     <string name="widget_bar_large_text_on">So groot as wat die balk ruimte voor het</string>
     <string name="widget_bar_large_text_off">Gewone teksgrootte</string>
+    <string name="bottom_bar_every_page">Onderste balk op elke bladsy</string>
+    <string name="bottom_bar_every_page_on">Op elke bladsy van die tuisskerm gewys</string>
+    <string name="bottom_bar_every_page_off">Net op die eerste bladsy</string>
+    <string name="bottom_bar_every_page_no_overlay">Vereis die toestemming om oor ander toepassings te vertoon</string>
 </resources>

@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Büyük metin</string>
     <string name="widget_bar_large_text_on">Çubukta yer olduğu kadar büyük</string>
     <string name="widget_bar_large_text_off">Olağan metin boyutu</string>
+    <string name="bottom_bar_every_page">Her sayfada alt çubuk</string>
+    <string name="bottom_bar_every_page_on">Ana ekranın her sayfasında gösterilir</string>
+    <string name="bottom_bar_every_page_off">Yalnızca ilk sayfada</string>
+    <string name="bottom_bar_every_page_no_overlay">Diğer uygulamaların üzerinde gösterme izni gerekir</string>
 </resources>

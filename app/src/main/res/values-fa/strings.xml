@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">متن بزرگ</string>
     <string name="widget_bar_large_text_on">تا جایی که نوار جا دارد بزرگ</string>
     <string name="widget_bar_large_text_off">اندازه معمول متن</string>
+    <string name="bottom_bar_every_page">نوار پایین در هر صفحه</string>
+    <string name="bottom_bar_every_page_on">در هر صفحه از صفحه اصلی نمایش داده می‌شود</string>
+    <string name="bottom_bar_every_page_off">فقط در صفحه اول</string>
+    <string name="bottom_bar_every_page_no_overlay">نیاز به مجوز نمایش روی سایر برنامه‌ها دارد</string>
 </resources>

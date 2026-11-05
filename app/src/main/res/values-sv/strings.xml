@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Stor text</string>
     <string name="widget_bar_large_text_on">Så stor som det finns plats för i fältet</string>
     <string name="widget_bar_large_text_off">Vanlig textstorlek</string>
+    <string name="bottom_bar_every_page">Nedre fält på varje sida</string>
+    <string name="bottom_bar_every_page_on">Visas på alla sidor på startskärmen</string>
+    <string name="bottom_bar_every_page_off">Bara på första sidan</string>
+    <string name="bottom_bar_every_page_no_overlay">Kräver behörighet att visas ovanpå andra appar</string>
 </resources>

@@ -1584,23 +1584,35 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     }
 
     private boolean shouldExcludeFirstBottomCell() {
-        return isFirstWorkspacePageShown() && prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        int page = shownWorkspacePage();
+        return page >= 0 && BottomBarPlacement.reserve(page, barOnEveryPage(prefs),
+                prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) == BottomBarPlacement.Reserve.CELL;
     }
 
     private boolean shouldExcludeLastRow() {
-        return isFirstWorkspacePageShown() && !prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        int page = shownWorkspacePage();
+        return page >= 0 && BottomBarPlacement.reserve(page, barOnEveryPage(prefs),
+                prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) == BottomBarPlacement.Reserve.ROW;
+    }
+
+    /** 'Bottom bar on every page'. */
+    private static boolean barOnEveryPage(SharedPreferences prefs) {
+        return prefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false);
     }
 
     /**
-     * Whether this is the workspace's first page (the one with the bottom bar), shown now. Only
-     * the page itself: a folder's grid is a CellLayout too, and with the first page shown it lost
-     * its last row (or its first bottom cell), which in a new folder's 1 x 1 grid is the only
-     * cell -- the items got no cell and no view, and the drop crashed in Folder.hideItem().
+     * The index of this page when it is a page of the workspace and the one shown now, else -1.
+     * Only the page itself: a folder's grid is a CellLayout too, and with a page shown it lost its
+     * last row (or its first bottom cell), which in a new folder's 1 x 1 grid is the only cell --
+     * the items got no cell and no view, and the drop crashed in Folder.hideItem().
      */
-    private boolean isFirstWorkspacePageShown() {
+    private int shownWorkspacePage() {
         Workspace workspace = mLauncher.getWorkspace();
-        return workspace != null && workspace.getCurrentPage() == 0
-                && workspace.getChildCount() > 0 && workspace.getChildAt(0) == this;
+        if (workspace == null || workspace.getChildCount() == 0) {
+            return -1;
+        }
+        int index = workspace.indexOfChild(this);
+        return index >= 0 && workspace.getCurrentPage() == index ? index : -1;
     }
 
     /**
@@ -4530,16 +4542,21 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 && child.getLayoutParams() instanceof LayoutParams;
     }
 
-    /** The bottom bar covers the last row(s) of the first page, unless it hides itself. */
+    /**
+     * The bottom bar covers the last row(s) of the first page, unless it hides itself; with 'Bottom
+     * bar on every page' of every page (BottomBarPlacement).
+     */
     private boolean isBarRowExcluded(int pageIndex) {
-        return pageIndex == 0 && !PreferenceManager.getDefaultSharedPreferences(getContext())
-                .getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
+        return BottomBarPlacement.reserve(pageIndex, barOnEveryPage(p),
+                p.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) == BottomBarPlacement.Reserve.ROW;
     }
 
-    /** With the auto-hiding bar, only its handle in the first page's bottom-left cell is taken. */
+    /** With the auto-hiding bar, only its handle in the bottom-left cell of a page is taken. */
     private boolean isFirstBottomCellExcluded(int pageIndex) {
-        return pageIndex == 0 && PreferenceManager.getDefaultSharedPreferences(getContext())
-                .getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
+        return BottomBarPlacement.reserve(pageIndex, barOnEveryPage(p),
+                p.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) == BottomBarPlacement.Reserve.CELL;
     }
 
     /** A copy of mOccupied with the cells under the bottom bar marked as taken. */

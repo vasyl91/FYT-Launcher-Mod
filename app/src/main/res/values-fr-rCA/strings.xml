@@ -42,4 +42,8 @@
     <string name="widget_bar_large_text">Grand texte</string>
     <string name="widget_bar_large_text_on">Aussi grand que la barre le permet</string>
     <string name="widget_bar_large_text_off">Taille de texte habituelle</string>
+    <string name="bottom_bar_every_page">Barre du bas sur chaque page</string>
+    <string name="bottom_bar_every_page_on">Affichée sur chaque page de l\'écran d\'accueil</string>
+    <string name="bottom_bar_every_page_off">Uniquement sur la première page</string>
+    <string name="bottom_bar_every_page_no_overlay">Nécessite l\'autorisation d\'afficher par-dessus les autres applications</string>
 </resources>

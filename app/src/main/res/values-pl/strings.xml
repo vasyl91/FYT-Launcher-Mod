@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Duży tekst</string>
     <string name="widget_bar_large_text_on">Tak duży, jak pozwala miejsce na pasku</string>
     <string name="widget_bar_large_text_off">Zwykły rozmiar tekstu</string>
+    <string name="bottom_bar_every_page">Pasek dolny na każdej stronie</string>
+    <string name="bottom_bar_every_page_on">Widoczny na każdej stronie ekranu głównego</string>
+    <string name="bottom_bar_every_page_off">Tylko na pierwszej stronie</string>
+    <string name="bottom_bar_every_page_no_overlay">Wymaga zgody na wyświetlanie nad innymi aplikacjami</string>
 </resources>

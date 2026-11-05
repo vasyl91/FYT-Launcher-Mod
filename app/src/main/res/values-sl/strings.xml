@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Veliko besedilo</string>
     <string name="widget_bar_large_text_on">Tako veliko, kot dopušča prostor v vrstici</string>
     <string name="widget_bar_large_text_off">Običajna velikost besedila</string>
+    <string name="bottom_bar_every_page">Spodnja vrstica na vsaki strani</string>
+    <string name="bottom_bar_every_page_on">Prikazana na vsaki strani začetnega zaslona</string>
+    <string name="bottom_bar_every_page_off">Samo na prvi strani</string>
+    <string name="bottom_bar_every_page_no_overlay">Zahteva dovoljenje za prikaz čez druge aplikacije</string>
 </resources>

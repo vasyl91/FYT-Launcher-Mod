@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Велики текст</string>
     <string name="widget_bar_large_text_on">Онолико велики колико трака има места</string>
     <string name="widget_bar_large_text_off">Уобичајена величина текста</string>
+    <string name="bottom_bar_every_page">Доња трака на свакој страници</string>
+    <string name="bottom_bar_every_page_on">Приказује се на свакој страници почетног екрана</string>
+    <string name="bottom_bar_every_page_off">Само на првој страници</string>
+    <string name="bottom_bar_every_page_no_overlay">Потребна је дозвола за приказ преко других апликација</string>
 </resources>

@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Մեծ տեքստ</string>
     <string name="widget_bar_large_text_on">Այնքան մեծ, որքան տեղ կա գոտում</string>
     <string name="widget_bar_large_text_off">Սովորական տեքստի չափ</string>
+    <string name="bottom_bar_every_page">Ներքևի գոտին յուրաքանչյուր էջում</string>
+    <string name="bottom_bar_every_page_on">Ցուցադրվում է հիմնական էկրանի յուրաքանչյուր էջում</string>
+    <string name="bottom_bar_every_page_off">Միայն առաջին էջում</string>
+    <string name="bottom_bar_every_page_no_overlay">Պահանջվում է այլ հավելվածների վրայով ցուցադրելու թույլտվություն</string>
 </resources>

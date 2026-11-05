@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Μεγάλο κείμενο</string>
     <string name="widget_bar_large_text_on">Όσο μεγάλο επιτρέπει ο χώρος της γραμμής</string>
     <string name="widget_bar_large_text_off">Συνηθισμένο μέγεθος κειμένου</string>
+    <string name="bottom_bar_every_page">Κάτω γραμμή σε κάθε σελίδα</string>
+    <string name="bottom_bar_every_page_on">Εμφανίζεται σε κάθε σελίδα της αρχικής οθόνης</string>
+    <string name="bottom_bar_every_page_off">Μόνο στην πρώτη σελίδα</string>
+    <string name="bottom_bar_every_page_no_overlay">Απαιτείται η άδεια εμφάνισης πάνω από άλλες εφαρμογές</string>
 </resources>

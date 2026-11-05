@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Didelis tekstas</string>
     <string name="widget_bar_large_text_on">Toks didelis, kiek leidžia juostos vieta</string>
     <string name="widget_bar_large_text_off">Įprastas teksto dydis</string>
+    <string name="bottom_bar_every_page">Apatinė juosta kiekviename puslapyje</string>
+    <string name="bottom_bar_every_page_on">Rodoma kiekviename pagrindinio ekrano puslapyje</string>
+    <string name="bottom_bar_every_page_off">Tik pirmame puslapyje</string>
+    <string name="bottom_bar_every_page_no_overlay">Reikia leidimo rodyti virš kitų programų</string>
 </resources>

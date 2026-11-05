@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Вялікі тэкст</string>
     <string name="widget_bar_large_text_on">Такі вялікі, наколькі дазваляе месца на панэлі</string>
     <string name="widget_bar_large_text_off">Звычайны памер тэксту</string>
+    <string name="bottom_bar_every_page">Ніжняя панэль на кожнай старонцы</string>
+    <string name="bottom_bar_every_page_on">Паказваецца на кожнай старонцы галоўнага экрана</string>
+    <string name="bottom_bar_every_page_off">Толькі на першай старонцы</string>
+    <string name="bottom_bar_every_page_no_overlay">Патрабуецца дазвол паказваць паверх іншых праграм</string>
 </resources>

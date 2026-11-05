@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Velký text</string>
     <string name="widget_bar_large_text_on">Tak velký, jak dovolí místo na panelu</string>
     <string name="widget_bar_large_text_off">Obvyklá velikost textu</string>
+    <string name="bottom_bar_every_page">Spodní panel na každé stránce</string>
+    <string name="bottom_bar_every_page_on">Zobrazen na každé stránce domovské obrazovky</string>
+    <string name="bottom_bar_every_page_off">Jen na první stránce</string>
+    <string name="bottom_bar_every_page_no_overlay">Vyžaduje oprávnění zobrazovat přes ostatní aplikace</string>
 </resources>

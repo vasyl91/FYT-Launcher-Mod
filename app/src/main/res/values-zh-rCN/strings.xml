@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">大字体</string>
     <string name="widget_bar_large_text_on">尽可能大，以栏内空间为限</string>
     <string name="widget_bar_large_text_off">常规字号</string>
+    <string name="bottom_bar_every_page">每页都显示底部栏</string>
+    <string name="bottom_bar_every_page_on">在主屏幕的每一页显示</string>
+    <string name="bottom_bar_every_page_off">仅在第一页</string>
+    <string name="bottom_bar_every_page_no_overlay">需要“显示在其他应用上层”的权限</string>
 </resources>

@@ -509,4 +509,8 @@
     <string name="widget_bar_large_text">Grote tekst</string>
     <string name="widget_bar_large_text_on">Zo groot als de balk ruimte biedt</string>
     <string name="widget_bar_large_text_off">Gebruikelijke tekstgrootte</string>
+    <string name="bottom_bar_every_page">Onderbalk op elke pagina</string>
+    <string name="bottom_bar_every_page_on">Op elke pagina van het startscherm getoond</string>
+    <string name="bottom_bar_every_page_off">Alleen op de eerste pagina</string>
+    <string name="bottom_bar_every_page_no_overlay">Vereist de toestemming om over andere apps te worden weergegeven</string>
 </resources>

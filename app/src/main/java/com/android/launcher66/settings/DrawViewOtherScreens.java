@@ -261,6 +261,13 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
             rectangleName = rootView.findViewById(R.id.rectangle_name);
             View creatorBar = rootView.findViewById(R.id.creator_bar); 
             View creatorView = rootView.findViewById(R.id.creator_other_screens);   
+            // 'Bottom bar on every page' without auto-hide: the real bar takes this strip of every
+            // page, as on the first one, where the strip cannot be hidden either.
+            final boolean barOnThisPage = sharedPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false)
+                    && !sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+            if (barOnThisPage && creatorBar != null) {
+                creatorBar.setVisibility(View.VISIBLE);
+            }
             gestureDetector = new GestureDetector(getSafeContext(), new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onDoubleTap(MotionEvent event) {
@@ -269,6 +276,9 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
                     String getKey = hitTestRect(X, Y);
                     if (String.valueOf(getKey).equals("stats")) { 
                         saveStatsAndRedraw();
+                        return true;
+                    }
+                    if (barOnThisPage) {
                         return true;
                     }
                     if (creatorBar.getVisibility() == View.VISIBLE) {
