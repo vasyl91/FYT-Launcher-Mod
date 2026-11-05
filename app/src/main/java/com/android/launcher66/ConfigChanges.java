@@ -21,6 +21,29 @@ final class ConfigChanges {
             "fontWeightAdjustment", "windowConfiguration", "fontScale", "assetsPaths",
     };
 
+    /** CONFIG_ASSETS_PATHS: an overlay of the theme changed (Material You after a new wallpaper, say). */
+    private static final int ASSETS_PATHS = 0x80000000;
+
+    /**
+     * The bits changed from one configuration to the next (Configuration.diff(), which is not in the
+     * public SDK, so by reflection); -1 where that is not possible.
+     */
+    static int diff(android.content.res.Configuration before, android.content.res.Configuration after) {
+        if (before == null || after == null) return -1;
+        try {
+            return (Integer) android.content.res.Configuration.class
+                    .getMethod("diff", android.content.res.Configuration.class).invoke(before, after);
+        } catch (Throwable t) {
+            return -1;
+        }
+    }
+
+    /** {@link #configChangeNames}, with "theme overlay" after assetsPaths, the one a manifest cannot declare. */
+    static String describe(int bits) {
+        String names = configChangeNames(bits);
+        return bits != -1 && (bits & ASSETS_PATHS) != 0 ? names + " - theme overlay" : names;
+    }
+
     /** "uiMode|assetsPaths"; "none" for 0; a bit that is not known as 0x... */
     static String configChangeNames(int bits) {
         if (bits == 0) return "none";

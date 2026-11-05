@@ -1954,7 +1954,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return (int) (baseSize * scaleFactor);
     }
 
+    /** The configuration before the one onConfigurationChanged() gets, to say what changed. */
+    private Configuration mLastConfiguration;
+
     private void initVariable() {
+        mLastConfiguration = new Configuration(getResources().getConfiguration());
         Launcher previous = mLauncher;
         if (previous != null && previous != this) {
             WindowHost oldHost = previous.getWindowHost();
@@ -3056,7 +3060,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         int changing = changingConfigurations();
         Log.i(TAG, "onDestroy: isChangingConfigurations=" + isChangingConfigurations()
                 + ", changes=" + (changing == -1 ? "unknown" : "0x" + Integer.toHexString(changing)
-                        + " (" + ConfigChanges.configChangeNames(changing) + ")"));
+                        + " (" + ConfigChanges.describe(changing) + ")"));
         mWallpaperPicker.hideWallpaperPickerIndicator();
         mPermissionFlow.onDestroy();
         PinnedPipFocus.release("launcher destroyed");
@@ -3071,6 +3075,22 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // The panes go now; a removal still deferred from onStop() has nothing left to do.
         mStopRemovePipPending = false;
         mHandler.removeCallbacks(mDeferredStopRemovePip);
+        // Recreated for a change the manifest cannot declare (a theme overlay after a change of the
+        // wallpaper, say): the apps in the panes must not start from the beginning. Their displays are
+        // handed over -- the views are taken off the panes, the displays marked as donors and parked
+        // with the reaper -- before removePip() and cleanup() take the windows away; the new instance's
+        // panes take them over (WindowHostVdView.takeDonorDisplay), and the reaper releases what nobody
+        // took after its wait. A plain destroy works as it always did.
+        final boolean panesHandedOver = isChangingConfigurations() && mWindowHost != null
+                && LauncherApplication.canHostPips();
+        if (panesHandedOver) {
+            try {
+                mWindowHost.retireActivityViews();
+                Log.i(TAG, "onDestroy: panes handed over");
+            } catch (Throwable t) {
+                Log.w(TAG, "onDestroy: handing the panes over failed", t);
+            }
+        }
         Log.d("onDestroy", "removePip");
         WindowUtil.removePip();
         if (mWindowHost != null) {
@@ -3110,12 +3130,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (handler != null) {
             handler.removeCallbacksAndMessages(null);
         }
-        WindowHostAvReaper.releaseAll();
-        // Synchronous, and after every other owner has let go: catches the ActivityViews the
-        // panes and the reaper lost track of -- above all the previous host whose delayed
-        // retireActivityViews() was just cleared from the handler -- before they pin this
-        // Activity through their native TaskStackListener registration.
-        WindowHostActivityView.releaseAllFor(this);
+        if (!panesHandedOver) {
+            WindowHostAvReaper.releaseAll();
+            // Synchronous, and after every other owner has let go: catches the ActivityViews the
+            // panes and the reaper lost track of -- above all the previous host whose delayed
+            // retireActivityViews() was just cleared from the handler -- before they pin this
+            // Activity through their native TaskStackListener registration.
+            WindowHostActivityView.releaseAllFor(this);
+        }
         clearBarWidgetReferences();
         mWorkspace.removeCallbacks(mBuildLayersRunnable);
         removePendingOnDrawListener();
@@ -4769,6 +4791,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         super.onConfigurationChanged(newConfig);
         // Declared in the manifest (uiMode): the 7870's ROM flips the night mode with the car's
         // lights, and the Activity was destroyed and rebuilt 72 ms after "Lights on" each time.
+        // Everything that changed, in one line (not only the night mode): which bit it is says what to
+        // declare in the manifest, or that nothing can be (a theme overlay).
+        int changedBits = ConfigChanges.diff(mLastConfiguration, newConfig);
+        Log.i(TAG, "onConfigurationChanged: changed=" + (changedBits == -1 ? "unknown"
+                : "0x" + Integer.toHexString(changedBits) + " (" + ConfigChanges.describe(changedBits) + ")"));
+        mLastConfiguration = new Configuration(newConfig);
         int night = newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK;
         if (night != mUiNightMode) {
             Log.i(TAG, "uiMode night 0x" + Integer.toHexString(mUiNightMode) + " -> 0x"

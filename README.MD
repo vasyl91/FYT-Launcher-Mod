@@ -117,6 +117,8 @@ On the 7870, where the radio, USB music, Bluetooth audio and the online radio ar
 
 **Night mode:**
 
+The launcher's night mode changes the wallpaper and the brightness; it does not switch the system's dark mode. On a unit whose ROM switches the dark mode with the car's lights (the 7870's does), the system tells every app, and an app that does not handle the change itself is drawn again or started anew by Android: that is what happens to the apps in the PiPs, exactly as it would on the home screen, and it is decided by that option of the ROM, not by the launcher. The launcher itself stays (it declares `uiMode`). If it is recreated anyway, because of a change that cannot be declared (the theme overlay Android 12+ makes after a new wallpaper), the apps in the panes keep running: their displays are handed over to the new launcher (the log says `panes handed over`), and the wallpaper is set only when it really changed (`wallpaper unchanged, not set`).
+
 <details>
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_night_mode.gif)

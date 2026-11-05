@@ -319,7 +319,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
 
                 String signature = fileSignature(imageFile);
                 if (alreadyApplied(name, SOURCE_FILE, signature)) {
-                    Log.d(TAG, "Wallpaper already set: " + name);
+                    Log.d(TAG, "wallpaper unchanged, not set: " + name);
                     return;
                 }
 
@@ -378,7 +378,7 @@ public class SunTask extends AsyncTask<String, Void, String> {
             }
 
             if (alreadyApplied(name, SOURCE_DEFAULT, signature)) {
-                Log.d(TAG, "Default wallpaper already set: " + name);
+                Log.d(TAG, "default wallpaper unchanged, not set: " + name);
                 return;
             }
 
