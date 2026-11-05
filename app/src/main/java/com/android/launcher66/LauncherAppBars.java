@@ -641,6 +641,10 @@ final class LauncherAppBars {
         if (recyclerView.getAdapter() != mAppListAdapter) {
             recyclerView.setAdapter(mAppListAdapter);
         }
+        // A bar window that was built before the apps arrived (see Workspace) gets them now
+        if (mLauncher.mWorkspace != null) {
+            mLauncher.mWorkspace.onBottomBarAdapterReady();
+        }
         // No change/remove/add animations = no flicker when notifyDataSetChanged() is called.
         if (recyclerView.getItemAnimator() != null) {
             recyclerView.setItemAnimator(null);

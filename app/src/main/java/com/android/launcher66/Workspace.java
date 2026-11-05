@@ -2143,6 +2143,31 @@ public class Workspace extends SmoothPagedView
         }
     }
 
+    /** The overlay that has been told, in the log, that its apps came after it was built. */
+    private View mAdapterLateLoggedFor;
+
+    /**
+     * The built-in bar has its apps (LauncherAppBars.setupRecyclerView calls this right after it
+     * sets the adapter). An overlay that was built before them (the persistent bar after a return
+     * from the settings with the home screen on another page than the first, which builds it at
+     * once, while the apps are read a moment later) has a recycler without an adapter and would
+     * stay empty until it is built again: it gets the adapter now.
+     */
+    public void onBottomBarAdapterReady() {
+        if (overlayBottomBar == null || bottomBarRecycler == null || bottomBarRecycler.getAdapter() == null) {
+            return;
+        }
+        RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
+        if (overlayRecycler == null || overlayRecycler.getAdapter() == bottomBarRecycler.getAdapter()) {
+            return;
+        }
+        if (mAdapterLateLoggedFor != overlayBottomBar) {
+            mAdapterLateLoggedFor = overlayBottomBar;
+            Log.d(TAG, "Overlay bar: apps attached after it was built");
+        }
+        setupRecyclerView(bottomBarRecycler, overlayRecycler);
+    }
+
     private void setupRecyclerView(RecyclerView mBottomRecycler, RecyclerView mOverlayRecycler) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(LauncherApplication.sApp);
         layoutManager.setOrientation(RecyclerView.HORIZONTAL);
