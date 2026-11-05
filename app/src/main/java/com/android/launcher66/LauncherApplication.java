@@ -123,6 +123,8 @@ public class LauncherApplication extends Application {
             // The cached favorite states: the first widget update reads them on the main thread,
             // and an unread file there was a StrictMode disk read (19 ms) at every start.
             getSharedPreferences(MediaFavoriteController.PREFS_NAME, MODE_PRIVATE);
+            // The skin's file: SkinManager.init() in initData() opens it on the main thread.
+            getSharedPreferences(com.fyt.skin.data.SkinPathDataSource.SKIN_SHARED, MODE_PRIVATE);
         }
     }
 

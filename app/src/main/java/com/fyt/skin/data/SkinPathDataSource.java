@@ -6,7 +6,7 @@ import com.android.launcher66.LauncherApplication;
 
 public class SkinPathDataSource {
     private static final String KEY_SKIN_PATH = "skin-path";
-    private static final String SKIN_SHARED = "skin-peeler-lib";
+    public static final String SKIN_SHARED = "skin-peeler-lib";
     private static LauncherApplication mApplication;
     private final SharedPreferences mPref;
 
