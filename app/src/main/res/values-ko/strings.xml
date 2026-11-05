@@ -160,6 +160,7 @@
     <string name="music_misc_category">기타</string>
     <string name="favorite_cache">즐겨찾기 캐시를 사용할 음악 앱 선택</string>
     <string name="favorite_cache_list">즐겨찾기 버튼 캐시</string>
+    <string name="syu_media_favorite_note">저장했습니다. 미디어 앱이 라이브러리를 다시 불러오면(예: 재시작 후) 하트가 표시됩니다.</string>
     <string name="favorite_cache_summary">일부 앱은 좋아요/싫어요 상태를 외부 앱에 제공하지 않습니다. 선택한 앱은 내장 캐시 시스템을 사용하지만 좋아요/싫어요 상태 정보는 런처에만 저장됩니다. 음악 위젯은 다른 곳에서 동영상에 좋아요 또는 싫어요를 눌렀는지 알 수 없습니다.</string>
     <string name="oauth_for_youtube_revanced">좋아요 상태를 가져오도록 YouTube ReVanced의 Google 인증 사용</string>
     <string name="youtube_revanced_kids">madeForKids=true인 YouTube ReVanced 동영상의 즐겨찾기 버튼</string>

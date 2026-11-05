@@ -160,6 +160,7 @@
     <string name="music_misc_category">Overig</string>
     <string name="favorite_cache">Selecteer de muziek-apps die de favorietencache moeten gebruiken</string>
     <string name="favorite_cache_list">Cache van de favorietenknop</string>
+    <string name="syu_media_favorite_note">Opgeslagen. De media-app toont het hart nadat de bibliotheek opnieuw is geladen (bijv. na een herstart).</string>
     <string name="favorite_cache_summary">Sommige apps geven de status liken/niet liken niet door aan externe apps. Geselecteerde apps gebruiken het ingebouwde cachesysteem, maar de status liken/niet liken wordt alleen in de launcher opgeslagen. De muziekwidget weet niet of je een video elders hebt geliket of niet.</string>
     <string name="oauth_for_youtube_revanced">Google-autorisatie voor YouTube ReVanced inschakelen om de likestatus op te halen</string>
     <string name="youtube_revanced_kids">Favorietenknop voor YouTube ReVanced-video\'s met madeForKids=true</string>

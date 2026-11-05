@@ -160,6 +160,7 @@
     <string name="music_misc_category">Այլ</string>
     <string name="favorite_cache">Ընտրեք երաժշտական հավելվածները, որոնք կօգտագործեն ընտրյալների քեշը</string>
     <string name="favorite_cache_list">«Ընտրյալներ» կոճակի քեշ</string>
+    <string name="syu_media_favorite_note">Պահպանվեց։ Մեդիա հավելվածը սիրտը կցուցադրի գրադարանը վերաբեռնելուց հետո (օր.՝ վերագործարկումից հետո)։</string>
     <string name="favorite_cache_summary">Որոշ հավելվածներ արտաքին հավելվածներին չեն փոխանցում «Հավանել/Չհավանել» կարգավիճակը։ Ընտրված հավելվածները կօգտագործեն ներկառուցված քեշի համակարգը, բայց կարգավիճակը կպահվի միայն գործարկիչում։ Երաժշտության վիջեթը չի իմանա, թե արդյոք դուք որևէ տեսանյութ հավանել եք այլ տեղում։</string>
     <string name="oauth_for_youtube_revanced">Միացնել Google-ի լիազորումը YouTube ReVanced-ի համար՝ հավանելու կարգավիճակը ստանալու նպատակով</string>
     <string name="youtube_revanced_kids">«Ընտրյալներ» կոճակ madeForKids=true ունեցող YouTube ReVanced տեսանյութերի համար</string>

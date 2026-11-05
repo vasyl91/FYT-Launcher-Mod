@@ -160,6 +160,7 @@
     <string name="music_misc_category">Altro</string>
     <string name="favorite_cache">Seleziona le app musicali che devono usare la cache dei preferiti</string>
     <string name="favorite_cache_list">Cache del pulsante Preferiti</string>
+    <string name="syu_media_favorite_note">Salvato. L\'app multimediale mostrerà il cuore dopo aver ricaricato la sua libreria (ad es. dopo un riavvio).</string>
     <string name="favorite_cache_summary">Alcune app non forniscono lo stato mi piace/non mi piace alle app esterne. Le app selezionate useranno il sistema di cache integrato, ma lo stato mi piace/non mi piace sarà memorizzato solo nel launcher. Il widget musica non saprà se hai messo mi piace o non mi piace a un video altrove.</string>
     <string name="oauth_for_youtube_revanced">Attiva l\'autorizzazione Google per YouTube ReVanced per recuperare lo stato dei mi piace</string>
     <string name="youtube_revanced_kids">Pulsante Preferiti per i video di YouTube ReVanced con madeForKids=true</string>

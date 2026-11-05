@@ -160,6 +160,7 @@
     <string name="music_misc_category">Outros</string>
     <string name="favorite_cache">Selecione os apps de música que devem usar o cache de favoritos</string>
     <string name="favorite_cache_list">Cache do botão Favoritos</string>
+    <string name="syu_media_favorite_note">Salvo. O app de mídia mostrará o coração depois de recarregar a biblioteca (por ex., após reiniciar).</string>
     <string name="favorite_cache_summary">Alguns apps não fornecem o status de curtir/não curtir a apps externos. Os apps selecionados usarão o sistema de cache integrado, mas o status de curtir/não curtir será armazenado apenas no launcher. O widget de música não saberá se você curtiu ou não um vídeo em outro lugar.</string>
     <string name="oauth_for_youtube_revanced">Ativar a autorização do Google para o YouTube ReVanced obter o status de curtida</string>
     <string name="youtube_revanced_kids">Botão Favoritos para vídeos do YouTube ReVanced com madeForKids=true</string>

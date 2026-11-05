@@ -1338,7 +1338,11 @@ final class LauncherMusicWidget {
     void updateFavoriteButtonState() {
         String preferredPackage = getPreferredMediaControllerPackage();
         if (MediaFavoriteController.isFavoriteTemporarilyDisabledPackage(preferredPackage)) {
-            updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN, false);
+            // Greyed out and not pressable; FM of com.syu.media still shows the state the app has
+            int shown = preferredPackage == null
+                    ? MediaFavoriteController.getReadOnlyFavoriteState()
+                    : MediaFavoriteController.FAVORITE_STATE_UNKNOWN;
+            updateFavoriteButtonState(shown, false);
             return;
         }
         updateFavoriteButtonState(MediaFavoriteController.getCurrentFavoriteState(mLauncher, preferredPackage));

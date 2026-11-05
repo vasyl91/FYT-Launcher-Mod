@@ -160,6 +160,7 @@
     <string name="music_misc_category">ອື່ນໆ</string>
     <string name="favorite_cache">ເລືອກແອັບເພງທີ່ຄວນໃຊ້ແຄດລາຍການທີ່ມັກ</string>
     <string name="favorite_cache_list">ແຄດຂອງປຸ່ມລາຍການທີ່ມັກ</string>
+    <string name="syu_media_favorite_note">ບັນທຶກແລ້ວ. ແອັບມີເດຍຈະສະແດງຫົວໃຈຫຼັງຈາກໂຫຼດຫ້ອງສະໝຸດຂອງມັນໃໝ່ (ເຊັ່ນ ຫຼັງຈາກເລີ່ມໃໝ່).</string>
     <string name="favorite_cache_summary">ບາງແອັບບໍ່ສົ່ງສະຖານະຖືກໃຈ/ບໍ່ຖືກໃຈໃຫ້ແອັບພາຍນອກ. ແອັບທີ່ເລືອກຈະໃຊ້ລະບົບແຄດໃນຕົວ ແຕ່ຂໍ້ມູນສະຖານະຖືກໃຈ/ບໍ່ຖືກໃຈຈະຖືກເກັບໄວ້ໃນ Launcher ເທົ່ານັ້ນ. ວິດເຈັດເພງຈະບໍ່ຮູ້ວ່າທ່ານໄດ້ກົດຖືກໃຈ ຫຼື ບໍ່ຖືກໃຈວິດີໂອຢູ່ບ່ອນອື່ນ.</string>
     <string name="oauth_for_youtube_revanced">ເປີດການອະນຸຍາດ Google ສຳລັບ YouTube ReVanced ເພື່ອດຶງສະຖານະຖືກໃຈ</string>
     <string name="youtube_revanced_kids">ປຸ່ມທີ່ມັກສຳລັບວິດີໂອ YouTube ReVanced ທີ່ມີ madeForKids=true</string>

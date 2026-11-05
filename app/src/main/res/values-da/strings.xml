@@ -160,6 +160,7 @@
     <string name="music_misc_category">Andet</string>
     <string name="favorite_cache">Vælg de musikapps, der skal bruge favoritcachen</string>
     <string name="favorite_cache_list">Cache til favoritknappen</string>
+    <string name="syu_media_favorite_note">Gemt. Medieappen viser hjertet, når den har genindlæst sit bibliotek (f.eks. efter en genstart).</string>
     <string name="favorite_cache_summary">Nogle apps videregiver ikke synes godt om/synes ikke om-status til eksterne apps. Valgte apps bruger det indbyggede cachesystem, men status gemmes kun i launcheren. Musikwidgetten ved ikke, om du har liket eller disliket en video et andet sted.</string>
     <string name="oauth_for_youtube_revanced">Aktivér Google-godkendelse til YouTube ReVanced for at hente like-status</string>
     <string name="youtube_revanced_kids">Favoritknap til YouTube ReVanced-videoer med madeForKids=true</string>

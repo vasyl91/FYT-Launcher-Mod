@@ -160,6 +160,7 @@
     <string name="music_misc_category">სხვა</string>
     <string name="favorite_cache">აირჩიეთ მუსიკის აპები, რომლებიც ფავორიტების ქეშს გამოიყენებს</string>
     <string name="favorite_cache_list">ფავორიტების ღილაკის ქეში</string>
+    <string name="syu_media_favorite_note">შენახულია. მედია აპი გულს აჩვენებს ბიბლიოთეკის ხელახლა ჩატვირთვის შემდეგ (მაგ., გადატვირთვის შემდეგ).</string>
     <string name="favorite_cache_summary">ზოგი აპი გარე აპებს არ აწვდის მოწონება/არმოწონების სტატუსს. არჩეული აპები ჩაშენებულ ქეშის სისტემას გამოიყენებს, მაგრამ სტატუსი მხოლოდ ლაუნჩერში შეინახება. მუსიკის ვიჯეტმა არ იცის, სხვაგან მოიწონეთ თუ არა ვიდეო.</string>
     <string name="oauth_for_youtube_revanced">ჩართეთ Google-ის ავტორიზაცია YouTube ReVanced-ისთვის მოწონების სტატუსის მისაღებად</string>
     <string name="youtube_revanced_kids">ფავორიტების ღილაკი YouTube ReVanced-ის ვიდეოებისთვის, სადაც madeForKids=true</string>

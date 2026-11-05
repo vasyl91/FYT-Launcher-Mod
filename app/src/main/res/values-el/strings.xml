@@ -160,6 +160,7 @@
     <string name="music_misc_category">Άλλο</string>
     <string name="favorite_cache">Επιλέξτε τις μουσικές εφαρμογές που θα χρησιμοποιούν την προσωρινή μνήμη αγαπημένων</string>
     <string name="favorite_cache_list">Προσωρινή μνήμη κουμπιού Αγαπημένα</string>
+    <string name="syu_media_favorite_note">Αποθηκεύτηκε. Η εφαρμογή πολυμέσων θα δείξει την καρδιά αφού ξαναφορτώσει τη βιβλιοθήκη της (π.χ. μετά από επανεκκίνηση).</string>
     <string name="favorite_cache_summary">Ορισμένες εφαρμογές δεν παρέχουν την κατάσταση «Μου αρέσει/Δεν μου αρέσει» σε εξωτερικές εφαρμογές. Οι επιλεγμένες εφαρμογές θα χρησιμοποιούν το ενσωματωμένο σύστημα προσωρινής μνήμης, αλλά η κατάσταση θα αποθηκεύεται μόνο στον launcher. Το γραφικό στοιχείο μουσικής δεν θα γνωρίζει αν έχετε επισημάνει ένα βίντεο αλλού.</string>
     <string name="oauth_for_youtube_revanced">Ενεργοποίηση εξουσιοδότησης Google για το YouTube ReVanced ώστε να ανακτάται η κατάσταση «Μου αρέσει»</string>
     <string name="youtube_revanced_kids">Κουμπί Αγαπημένα για βίντεο YouTube ReVanced με madeForKids=true</string>

@@ -160,6 +160,7 @@
     <string name="music_misc_category">Auter</string>
     <string name="favorite_cache">Tscherna las apps da musica che duain duvrar la cache dals favurits</string>
     <string name="favorite_cache_list">Cache dal buttun Favurits</string>
+    <string name="syu_media_favorite_note">Memorisà. L\'app da multimedia mussa il cor suenter ch\'ella ha chargià danovamain sia biblioteca (p. ex. suenter in reinizi).</string>
     <string name="favorite_cache_summary">Intgins apps na dattan betg a las apps externas l\'status plaschair/betg plaschair. Las apps tschernidas duvran il sistem da cache integrà, ma l\'status vegn memorisà mo en il launcher. Il widget da musica na sa betg, sche ti has evaluà in video auter nua.</string>
     <string name="oauth_for_youtube_revanced">Activar l\'autorisaziun da Google per YouTube ReVanced per retschaiver l\'status da plaschair</string>
     <string name="youtube_revanced_kids">Buttun Favurits per videos da YouTube ReVanced cun madeForKids=true</string>

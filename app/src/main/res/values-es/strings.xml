@@ -160,6 +160,7 @@
     <string name="music_misc_category">Otras</string>
     <string name="favorite_cache">Selecciona las aplicaciones de música que usarán la caché de favoritos</string>
     <string name="favorite_cache_list">Caché del botón de favoritos</string>
+    <string name="syu_media_favorite_note">Guardado. La aplicación multimedia mostrará el corazón cuando recargue su biblioteca (p. ej., tras reiniciarla).</string>
     <string name="favorite_cache_summary">Algunas aplicaciones no proporcionan el estado de me gusta/no me gusta a aplicaciones externas. Las aplicaciones seleccionadas usarán el sistema de caché integrado, pero la información de me gusta/no me gusta solo se guardará en el launcher. El widget de música no sabrá si marcaste un vídeo con me gusta o no me gusta en otro lugar.</string>
     <string name="oauth_for_youtube_revanced">Activar la autorización de Google para YouTube ReVanced y obtener el estado de me gusta</string>
     <string name="youtube_revanced_kids">Botón de favoritos para vídeos de YouTube ReVanced con madeForKids=true</string>

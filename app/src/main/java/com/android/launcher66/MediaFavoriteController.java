@@ -1331,7 +1331,9 @@ public final class MediaFavoriteController {
      * so the drawn state and the greyed button agree.
      */
     private static boolean isStockFavoriteAvailable() {
-        // The radio (on the 7870 BT audio too) has no favorites to keep: the heart is greyed out
+        // The radio (on the 7870 BT audio too) has no favorites to keep: the heart is greyed out. (The FM
+        // favorites of com.syu.media's app are shown but cannot be changed from here, see
+        // getReadOnlyFavoriteState: the heart is greyed out then too.)
         if (StockSources.shownOverlay() != null) {
             return false;
         }
@@ -1345,10 +1347,27 @@ public final class MediaFavoriteController {
         return isFavoriteCacheUsable(STOCK_MUSIC_PACKAGE) && currentStockTrackKey() != null;
     }
 
-    /** The state kept for the stock player's track; unknown whenever unavailable. */
+    /** Logged once per process: a press on the heart while FM of com.syu.media is shown. */
+    private static boolean sLoggedFmReadOnly;
+
+    /**
+     * The state of a heart that is shown but cannot be pressed: the FM station of com.syu.media's app on the
+     * 7870 (its provider is read-only, so the launcher can only look). Unknown for everything else, BT audio
+     * included, and when the app's list could not be read.
+     */
+    public static int getReadOnlyFavoriteState() {
+        Boolean favorite = StockSources.mediaRadioFavorite();
+        if (favorite == null) {
+            return FAVORITE_STATE_UNKNOWN;
+        }
+        return favorite ? FAVORITE_STATE_FAVORITED : FAVORITE_STATE_NOT_FAVORITED;
+    }
+
+    /** The state of a stock player's track; unknown whenever unavailable. */
     private static int getStockFavoriteState(Context context) {
         if (StockSources.shownOverlay() != null) {
-            return FAVORITE_STATE_UNKNOWN;
+            // FM on the 7870: the state the app has, to look at (the heart is greyed out)
+            return getReadOnlyFavoriteState();
         }
         if (MusicService.isSyuMediaSource()) {
             // Picks up a flag changed in com.syu.media's own screen while it is paused, when
@@ -1374,7 +1393,14 @@ public final class MediaFavoriteController {
      */
     private static boolean toggleStockFavorite(Context context) {
         if (StockSources.shownOverlay() != null) {
-            Log.d(TAG, "Press ignored: " + StockSources.shownKind() + " has no favorites");
+            if (StockSources.mediaRadioFavorite() != null || StockSources.radioShown() && StockSources.isSyuMediaUnit()) {
+                if (!sLoggedFmReadOnly) {
+                    sLoggedFmReadOnly = true;
+                    Log.i(TAG, "Press ignored: com.syu.media's FM favorites are read-only");
+                }
+            } else {
+                Log.d(TAG, "Press ignored: " + StockSources.shownKind() + " has no favorites");
+            }
             return false;
         }
         if (MusicService.isSyuMediaSource()) {

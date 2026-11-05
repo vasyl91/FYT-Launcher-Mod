@@ -160,6 +160,7 @@
     <string name="music_misc_category">Інше</string>
     <string name="favorite_cache">Виберіть музичні застосунки, які використовуватимуть кеш вибраного</string>
     <string name="favorite_cache_list">Кеш кнопки «Вибране»</string>
+    <string name="syu_media_favorite_note">Збережено. Медіазастосунок покаже серце після перезавантаження своєї бібліотеки (наприклад, після перезапуску).</string>
     <string name="favorite_cache_summary">Деякі застосунки не передають зовнішнім застосункам стан «подобається/не подобається». Вибрані застосунки використовуватимуть вбудовану систему кешу, але інформація про стан зберігатиметься лише в лаунчері. Віджет музики не знатиме, чи ви вподобали відео деінде.</string>
     <string name="oauth_for_youtube_revanced">Увімкнути авторизацію Google для YouTube ReVanced, щоб отримувати стан вподобання</string>
     <string name="youtube_revanced_kids">Кнопка «Вибране» для відео YouTube ReVanced із madeForKids=true</string>

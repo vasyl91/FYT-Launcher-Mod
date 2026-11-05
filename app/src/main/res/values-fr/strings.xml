@@ -160,6 +160,7 @@
     <string name="music_misc_category">Autre</string>
     <string name="favorite_cache">Sélectionnez les applications de musique qui doivent utiliser le cache des favoris</string>
     <string name="favorite_cache_list">Cache du bouton Favoris</string>
+    <string name="syu_media_favorite_note">Enregistré. L\'application multimédia affichera le cœur après avoir rechargé sa bibliothèque (par ex. après un redémarrage).</string>
     <string name="favorite_cache_summary">Certaines applications ne transmettent pas l\'état j\'aime/je n\'aime pas aux applications externes. Les applications sélectionnées utiliseront le système de cache intégré, mais l\'état j\'aime/je n\'aime pas ne sera enregistré que dans le lanceur. Le widget musique ne saura pas si vous avez aimé ou non une vidéo ailleurs.</string>
     <string name="oauth_for_youtube_revanced">Activer l\'autorisation Google pour YouTube ReVanced afin de récupérer l\'état « j\'aime »</string>
     <string name="youtube_revanced_kids">Bouton Favoris pour les vidéos YouTube ReVanced avec madeForKids=true</string>

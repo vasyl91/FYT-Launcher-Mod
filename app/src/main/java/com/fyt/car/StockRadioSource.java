@@ -81,9 +81,49 @@ final class StockRadioSource {
     private boolean burstPending;
 
     private volatile StockTrack current;
+    /** The FM favorites of com.syu.media's app (the 7870), read only. */
+    private final SyuMediaRadioFavorites favorites;
+    private boolean favoritesTickRunning;
+    private static final long FAVORITES_TICK_MS = 5_000L;
+    private final Runnable favoritesTick = new Runnable() {
+        @Override
+        public void run() {
+            favoritesTickRunning = false;
+            refreshFavorites();
+        }
+    };
 
     StockRadioSource(Context app) {
         this.app = app;
+        this.favorites = new SyuMediaRadioFavorites(app);
+    }
+
+    /**
+     * Reads the favorite state of the station tuned in, on the 7870: at a change of the station, about every
+     * 5 s while the radio is shown, and when the launcher is back in front. Main thread.
+     */
+    void refreshFavorites() {
+        if (!StockSources.isSyuMediaUnit() || !StockSources.isRadioShown()) {
+            return;
+        }
+        favorites.refresh(freq, this::onFavoritesChanged);
+        if (!favoritesTickRunning) {
+            favoritesTickRunning = true;
+            main.postDelayed(favoritesTick, FAVORITES_TICK_MS);
+        }
+    }
+
+    /** The state or the cover path of the station changed in the app's list. Main thread. */
+    private void onFavoritesChanged() {
+        Lookup shown = lookupCache.get(freq);
+        if (shown != null && !shown.realLogo && favorites.coverPathOf(freq) != null) {
+            lookupCache.remove(freq);       // the list names a cover now
+            requestLookup(freq);
+        }
+        if (StockSources.isRadioShown()) {
+            scheduleBurst();
+            com.android.launcher66.MediaFavoriteController.onStockFavoriteChanged(app);
+        }
     }
 
     /** Registers for the radio's codes (on the main thread, like Callback delivers them). */
@@ -108,6 +148,7 @@ final class StockRadioSource {
             tools.notify(1, 1, 26, 13);
         }
         requestLookup(freq);
+        refreshFavorites();
         scheduleBurst();
     }
 
@@ -126,6 +167,7 @@ final class StockRadioSource {
                     ps = "";
                     rds = "";
                     requestLookup(freq);
+                    refreshFavorites();
                 }
                 break;
             case 26:
@@ -202,8 +244,10 @@ final class StockRadioSource {
             String text = rds.trim();
             artist = !text.isEmpty() ? text : (freq > 0 ? StockFreq.band(freq) : "");
         }
+        // The heart of FM on the 7870 shows what com.syu.media's app has; elsewhere the radio has none
+        Boolean favorite = StockSources.isSyuMediaUnit() ? favorites.favoriteOf(freq) : null;
         return new StockTrack(Kind.RADIO, "stock-radio:/" + freq, title, artist, "",
-                0, 0, playing, false, lookup != null ? lookup.logo : null, null);
+                0, 0, playing, false, lookup != null ? lookup.logo : null, favorite);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -332,10 +376,15 @@ final class StockRadioSource {
             }
         }
         if (logo == null) {
+            // the list of stations of the app (city_station) may name a cover for it
+            logo = readLogo(favorites.coverPathOf(forFreq));
+        }
+        boolean real = logo != null;
+        if (logo == null) {
             // what the app shows for a station without a logo; the same one for a frequency
             logo = StockCoverLoader.stationFallback(app, forFreq);
         }
-        return new Lookup(name, logo);
+        return new Lookup(name, logo, real);
     }
 
     private boolean providerIsMedia() {
@@ -381,10 +430,17 @@ final class StockRadioSource {
     private static final class Lookup {
         final String name;
         final byte[] logo;
+        /** The logo is a station's own, not the picture the app shows for a station without one. */
+        final boolean realLogo;
 
         Lookup(String name, byte[] logo) {
+            this(name, logo, logo != null);
+        }
+
+        Lookup(String name, byte[] logo, boolean realLogo) {
             this.name = name;
             this.logo = logo;
+            this.realLogo = realLogo;
         }
     }
 

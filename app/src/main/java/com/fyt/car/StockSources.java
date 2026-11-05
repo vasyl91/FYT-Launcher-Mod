@@ -198,6 +198,25 @@ public final class StockSources {
         return kind.overlay ? kind : null;
     }
 
+    /**
+     * The FM favorite of com.syu.media's app for the station tuned in (the 7870): true / false, or null when it
+     * is not known or the shown source is not the radio of that app. Read only, see SyuMediaRadioFavorites.
+     */
+    public static Boolean mediaRadioFavorite() {
+        if (sShown != Kind.RADIO || !isSyuMediaUnit() || sRadio == null) {
+            return null;
+        }
+        StockTrack t = sRadio.current();
+        return t == null ? null : t.favorite;
+    }
+
+    /** The launcher is in front again: the FM favorite of com.syu.media is read once more. Main thread. */
+    public static void onLauncherResumed() {
+        if (sRadio != null) {
+            sRadio.refreshFavorites();
+        }
+    }
+
     /** The radio is the shown source: the one thing a 7862 has on top of com.syu.music. */
     public static boolean radioShown() {
         return sShown == Kind.RADIO;

@@ -160,6 +160,7 @@
     <string name="music_misc_category">Iba pa</string>
     <string name="favorite_cache">Piliin ang mga music app na gagamit ng cache ng mga paborito</string>
     <string name="favorite_cache_list">Cache ng button na Mga Paborito</string>
+    <string name="syu_media_favorite_note">Na-save. Ipapakita ng media app ang puso pagkatapos nitong i-reload ang library nito (hal. pagkatapos ng restart).</string>
     <string name="favorite_cache_summary">Hindi ibinibigay ng ilang app ang status ng like/dislike sa mga external na app. Gagamitin ng mga napiling app ang built-in na cache system, ngunit sa launcher lang iimbak ang status. Hindi malalaman ng widget ng musika kung nag-like ka ng video sa ibang lugar.</string>
     <string name="oauth_for_youtube_revanced">Paganahin ang Google Authorization para sa YouTube ReVanced upang makuha ang status ng like</string>
     <string name="youtube_revanced_kids">Button na Paborito para sa mga video ng YouTube ReVanced na may madeForKids=true</string>

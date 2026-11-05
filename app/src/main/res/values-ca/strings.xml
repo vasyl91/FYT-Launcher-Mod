@@ -160,6 +160,7 @@
     <string name="music_misc_category">Altres</string>
     <string name="favorite_cache">Selecciona les aplicacions de música que han d\'utilitzar la memòria cau de preferits</string>
     <string name="favorite_cache_list">Memòria cau del botó Preferits</string>
+    <string name="syu_media_favorite_note">Desat. L\'aplicació multimèdia mostrarà el cor després de tornar a carregar la biblioteca (p. ex., després de reiniciar).</string>
     <string name="favorite_cache_summary">Algunes aplicacions no proporcionen l\'estat m\'agrada/no m\'agrada a les aplicacions externes. Les aplicacions seleccionades utilitzaran el sistema de memòria cau integrat, però l\'estat només s\'emmagatzemarà al llançador. El widget de música no sabrà si has marcat un vídeo amb m\'agrada en un altre lloc.</string>
     <string name="oauth_for_youtube_revanced">Activa l\'autorització de Google per a YouTube ReVanced per obtenir l\'estat de m\'agrada</string>
     <string name="youtube_revanced_kids">Botó Preferits per als vídeos de YouTube ReVanced amb madeForKids=true</string>

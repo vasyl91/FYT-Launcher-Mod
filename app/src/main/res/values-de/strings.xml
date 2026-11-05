@@ -160,6 +160,7 @@
     <string name="music_misc_category">Sonstige</string>
     <string name="favorite_cache">Musik-Apps auswählen, die den Favoriten-Cache verwenden sollen</string>
     <string name="favorite_cache_list">Cache der Favoriten-Taste</string>
+    <string name="syu_media_favorite_note">Gespeichert. Die Medien-App zeigt das Herz an, nachdem sie ihre Bibliothek neu geladen hat (z. B. nach einem Neustart).</string>
     <string name="favorite_cache_summary">Manche Apps geben den Gefällt-mir-/Gefällt-mir-nicht-Status nicht an externe Apps weiter. Ausgewählte Apps nutzen das integrierte Cache-System, der Status wird dann jedoch nur im Launcher gespeichert. Das Musik-Widget erfährt nicht, ob Sie ein Video anderswo mit „Gefällt mir“ oder „Gefällt mir nicht“ bewertet haben.</string>
     <string name="oauth_for_youtube_revanced">Google-Autorisierung für YouTube ReVanced aktivieren, um den Gefällt-mir-Status abzurufen</string>
     <string name="youtube_revanced_kids">Favoriten-Taste für YouTube-ReVanced-Videos mit madeForKids=true</string>

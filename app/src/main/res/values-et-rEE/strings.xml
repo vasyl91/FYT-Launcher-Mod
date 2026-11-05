@@ -22,6 +22,7 @@
     <string name="folder_name_format">Kaust: %1$s</string>
     <string name="logcat_names_info">Logifailide nimed:</string>
     <string name="logcat_names_info_summary">reboot – käivitatud koos käivitajaga pärast seadme taaskäivitust\nstart – käivitatud koos käivitajaga, kui see käivitus uuesti ilma seadet taaskäivitamata (värskendus, krahh)\nwake – käivitatud seadme ärkamisel\nuser – käivitatud käsitsi valikuga „Logcati teenus“\nfull – sisaldab kõiki seadme logisid\npid – sisaldab ainult käivitaja logisid\ncrash – kirjutatakse hetkel, kui käivitaja jooksis kokku: viga ja logi viimased read (see, mis taaskäivitusele järgneb, on start-logis)\ncompat – kirjutatakse, kui FYT-seadmetele tehtud kood ebaõnnestus selles seadmes või Androidi versioonis ja püüti kinni ilma jooksmahangumiseta: viga ja logi viimased read</string>
+    <string name="syu_media_favorite_note">Salvestatud. Meediarakendus näitab südant pärast raamatukogu uuesti laadimist (nt pärast taaskäivitust).</string>
     <string name="install_release_button_file">Puudutage väljalaskeversiooni %1$s allalaadimiseks ja installimiseks (%2$s)</string>
     <string name="update_version_button_file">Puudutage rakenduse allalaadimiseks ja värskendamiseks (%1$s)</string>
     <string name="logcat_locations_info">Kust leida logid ja kokkujooksmisaruanded:</string>

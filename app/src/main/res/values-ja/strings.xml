@@ -160,6 +160,7 @@
     <string name="music_misc_category">その他</string>
     <string name="favorite_cache">お気に入りキャッシュを使用する音楽アプリを選択</string>
     <string name="favorite_cache_list">お気に入りボタンのキャッシュ</string>
+    <string name="syu_media_favorite_note">保存しました。メディアアプリがライブラリを再読み込みすると（再起動後など）、ハートが表示されます。</string>
     <string name="favorite_cache_summary">一部のアプリは、高評価/低評価の状態を外部アプリに提供しません。選択したアプリは内蔵のキャッシュを使用しますが、高評価/低評価の情報はランチャー内にのみ保存されます。ミュージックウィジェットは、ほかの場所で動画に高評価または低評価を付けたかどうかを把握できません。</string>
     <string name="oauth_for_youtube_revanced">高評価の状態を取得するため、YouTube ReVancedのGoogle認証を有効にする</string>
     <string name="youtube_revanced_kids">madeForKids=trueのYouTube ReVanced動画のお気に入りボタン</string>

@@ -160,6 +160,7 @@
     <string name="music_misc_category">अन्य</string>
     <string name="favorite_cache">वे संगीत ऐप चुनें जो पसंदीदा कैश इस्तेमाल करेंगे</string>
     <string name="favorite_cache_list">पसंदीदा बटन कैश</string>
+    <string name="syu_media_favorite_note">सहेजा गया। मीडिया ऐप अपनी लाइब्रेरी फिर से लोड करने के बाद (जैसे रीस्टार्ट के बाद) दिल को दिखाएगा।</string>
     <string name="favorite_cache_summary">कुछ ऐप बाहरी ऐप को पसंद/नापसंद की स्थिति नहीं देते। चुने गए ऐप अंतर्निहित कैश प्रणाली इस्तेमाल करेंगे, लेकिन पसंद/नापसंद की जानकारी केवल लॉन्चर में सहेजी जाएगी। संगीत विजेट को पता नहीं चलेगा कि आपने किसी वीडियो को कहीं और पसंद किया या नापसंद।</string>
     <string name="oauth_for_youtube_revanced">पसंद की स्थिति पाने के लिए YouTube ReVanced हेतु Google अनुमति चालू करें</string>
     <string name="youtube_revanced_kids">madeForKids=true वाले YouTube ReVanced वीडियो के लिए पसंदीदा बटन</string>

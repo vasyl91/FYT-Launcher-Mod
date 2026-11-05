@@ -29,6 +29,7 @@
     <string name="app_type_user">用戶應用程式</string>
     <string name="logcat_names_info">記錄檔名稱：</string>
     <string name="logcat_names_info_summary">reboot – 裝置重新啟動後隨啟動器一同啟動\nstart – 啟動器在未重新啟動裝置的情況下再次啟動時隨之啟動（更新、當機）\nwake – 裝置喚醒時啟動\nuser – 透過「記錄服務」手動啟動\nfull – 包含裝置的所有記錄\npid – 僅包含啟動器的記錄\ncrash – 啟動器當機的瞬間寫入：錯誤和記錄的最後幾行（重新啟動之後的內容在 start 記錄中）\ncompat – 為 FYT 裝置編寫的程式碼在此裝置或 Android 版本上失敗並被攔截而未當機時寫入：錯誤和記錄的最後幾行</string>
+    <string name="syu_media_favorite_note">已儲存。媒體應用程式重新載入其媒體庫後（例如重新啟動後）會顯示該愛心。</string>
     <string name="install_release_button_file">點選此處下載並安裝正式版 %1$s (%2$s)</string>
     <string name="update_version_button_file">點選此處下載並更新應用程式 (%1$s)</string>
     <string name="logcat_locations_info">記錄和當機報告的位置：</string>

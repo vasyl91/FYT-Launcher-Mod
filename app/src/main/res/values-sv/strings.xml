@@ -160,6 +160,7 @@
     <string name="music_misc_category">Övrigt</string>
     <string name="favorite_cache">Välj de musikappar som ska använda favoritcachen</string>
     <string name="favorite_cache_list">Cache för favoritknappen</string>
+    <string name="syu_media_favorite_note">Sparat. Medieappen visar hjärtat när den har laddat om sitt bibliotek (t.ex. efter en omstart).</string>
     <string name="favorite_cache_summary">Vissa appar lämnar inte ut gilla/ogilla-status till externa appar. Valda appar använder det inbyggda cachesystemet, men gilla/ogilla-status lagras bara i launchern. Musikwidgeten vet inte om du har gillat eller ogillat en video någon annanstans.</string>
     <string name="oauth_for_youtube_revanced">Aktivera Google-auktorisering för YouTube ReVanced för att hämta gilla-status</string>
     <string name="youtube_revanced_kids">Favoritknapp för YouTube ReVanced-videor med madeForKids=true</string>

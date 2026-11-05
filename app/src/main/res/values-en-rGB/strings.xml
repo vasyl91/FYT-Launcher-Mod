@@ -4,6 +4,7 @@
 
     <string name="favorite_cache">Select the music apps that should use the favourites cache</string>
     <string name="favorite_cache_list">Favourites button cache</string>
+    <string name="syu_media_favorite_note">Saved. The media app shows the heart after it reloads its library (e.g. after a restart).</string>
     <string name="oauth_for_youtube_revanced">Enable Google Authorisation for YouTube ReVanced to retrieve the like status</string>
     <string name="youtube_revanced_kids">Favourite button for YouTube ReVanced videos with madeForKids=true</string>
     <string name="youtube_revanced_kids_on">The Favourite button will be enabled but videos liked on YouTube might appear as not liked in the widget.</string>

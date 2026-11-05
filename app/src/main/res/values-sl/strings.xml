@@ -160,6 +160,7 @@
     <string name="music_misc_category">Drugo</string>
     <string name="favorite_cache">Izberite glasbene aplikacije, ki naj uporabljajo predpomnilnik priljubljenih</string>
     <string name="favorite_cache_list">Predpomnilnik gumba Priljubljene</string>
+    <string name="syu_media_favorite_note">Shranjeno. Predstavnostna aplikacija bo prikazala srček, ko znova naloži svojo knjižnico (npr. po vnovičnem zagonu).</string>
     <string name="favorite_cache_summary">Nekatere aplikacije zunanjim aplikacijam ne posredujejo stanja všečkanja/nevšečkanja. Izbrane aplikacije bodo uporabljale vgrajeni sistem predpomnjenja, vendar se bo stanje shranjevalo samo v zaganjalniku. Gradnik glasbe ne bo vedel, ali ste videoposnetek kje drugje všečkali.</string>
     <string name="oauth_for_youtube_revanced">Omogoči Googlovo avtorizacijo za YouTube ReVanced za pridobivanje stanja všečkanja</string>
     <string name="youtube_revanced_kids">Gumb Priljubljene za videoposnetke YouTube ReVanced z madeForKids=true</string>

@@ -160,6 +160,7 @@
     <string name="music_misc_category">ផ្សេងៗ</string>
     <string name="favorite_cache">ជ្រើសរើសកម្មវិធីតន្ត្រីដែលគួរប្រើឃ្លាំងសម្ងាត់ចំណូលចិត្ត</string>
     <string name="favorite_cache_list">ឃ្លាំងសម្ងាត់ប៊ូតុងចំណូលចិត្ត</string>
+    <string name="syu_media_favorite_note">បានរក្សាទុក។ កម្មវិធីមេឌៀនឹងបង្ហាញបេះដូងបន្ទាប់ពីវាផ្ទុកបណ្ណាល័យរបស់វាឡើងវិញ (ឧ. បន្ទាប់ពីចាប់ផ្តើមឡើងវិញ)។</string>
     <string name="favorite_cache_summary">កម្មវិធីមួយចំនួនមិនផ្តល់ស្ថានភាពចូលចិត្ត/មិនចូលចិត្តដល់កម្មវិធីខាងក្រៅទេ។ កម្មវិធីដែលបានជ្រើសរើសនឹងប្រើប្រព័ន្ធឃ្លាំងសម្ងាត់ដែលភ្ជាប់មកជាមួយ ប៉ុន្តែព័ត៌មានស្ថានភាពចូលចិត្ត/មិនចូលចិត្តនឹងត្រូវបានរក្សាទុកតែក្នុង Launcher ប៉ុណ្ណោះ។ ធាតុក្រាហ្វិកតន្ត្រីនឹងមិនដឹងថាអ្នកបានចូលចិត្ត ឬមិនចូលចិត្តវីដេអូនៅកន្លែងផ្សេងទេ។</string>
     <string name="oauth_for_youtube_revanced">បើកការអនុញ្ញាតរបស់ Google សម្រាប់ YouTube ReVanced ដើម្បីទាញយកស្ថានភាពចូលចិត្ត</string>
     <string name="youtube_revanced_kids">ប៊ូតុងចំណូលចិត្តសម្រាប់វីដេអូ YouTube ReVanced ដែលមាន madeForKids=true</string>

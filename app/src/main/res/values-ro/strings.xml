@@ -160,6 +160,7 @@
     <string name="music_misc_category">Altele</string>
     <string name="favorite_cache">Selectați aplicațiile muzicale care vor folosi memoria cache a favoritelor</string>
     <string name="favorite_cache_list">Cache pentru butonul Favorite</string>
+    <string name="syu_media_favorite_note">Salvat. Aplicația media va afișa inima după ce își reîncarcă biblioteca (de ex., după o repornire).</string>
     <string name="favorite_cache_summary">Unele aplicații nu furnizează aplicațiilor externe starea de apreciere/neapreciere. Aplicațiile selectate vor folosi sistemul de cache încorporat, dar starea va fi stocată doar în launcher. Widgetul muzical nu va ști dacă ați apreciat sau nu un videoclip în altă parte.</string>
     <string name="oauth_for_youtube_revanced">Activați autorizarea Google pentru YouTube ReVanced pentru a prelua starea aprecierii</string>
     <string name="youtube_revanced_kids">Butonul Favorite pentru videoclipurile YouTube ReVanced cu madeForKids=true</string>

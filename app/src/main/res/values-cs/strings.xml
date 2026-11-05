@@ -160,6 +160,7 @@
     <string name="music_misc_category">Ostatní</string>
     <string name="favorite_cache">Vyberte hudební aplikace, které mají používat mezipaměť oblíbených</string>
     <string name="favorite_cache_list">Mezipaměť tlačítka Oblíbené</string>
+    <string name="syu_media_favorite_note">Uloženo. Multimediální aplikace zobrazí srdce po opětovném načtení své knihovny (např. po restartu).</string>
     <string name="favorite_cache_summary">Některé aplikace nepředávají externím aplikacím stav To se mi líbí / To se mi nelíbí. Vybrané aplikace budou používat vestavěný systém mezipaměti, ale informace o stavu se budou ukládat pouze v launcheru. Widget hudby nebude vědět, zda jste video jinde ohodnotili.</string>
     <string name="oauth_for_youtube_revanced">Povolit autorizaci Google pro YouTube ReVanced, aby bylo možné načíst stav líbí se</string>
     <string name="youtube_revanced_kids">Tlačítko Oblíbené pro videa YouTube ReVanced s madeForKids=true</string>

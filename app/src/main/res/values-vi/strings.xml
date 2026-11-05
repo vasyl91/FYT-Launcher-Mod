@@ -160,6 +160,7 @@
     <string name="music_misc_category">Khác</string>
     <string name="favorite_cache">Chọn các ứng dụng nhạc muốn dùng bộ nhớ đệm yêu thích</string>
     <string name="favorite_cache_list">Bộ nhớ đệm nút Yêu thích</string>
+    <string name="syu_media_favorite_note">Đã lưu. Ứng dụng đa phương tiện sẽ hiện trái tim sau khi tải lại thư viện của nó (ví dụ: sau khi khởi động lại).</string>
     <string name="favorite_cache_summary">Một số ứng dụng không cung cấp trạng thái thích/không thích cho ứng dụng bên ngoài. Các ứng dụng đã chọn sẽ dùng hệ thống bộ nhớ đệm tích hợp, nhưng thông tin trạng thái thích/không thích chỉ được lưu trong trình khởi chạy. Widget nhạc sẽ không biết bạn đã thích hay không thích một video ở nơi khác.</string>
     <string name="oauth_for_youtube_revanced">Bật ủy quyền Google cho YouTube ReVanced để lấy trạng thái thích</string>
     <string name="youtube_revanced_kids">Nút Yêu thích cho video YouTube ReVanced có madeForKids=true</string>

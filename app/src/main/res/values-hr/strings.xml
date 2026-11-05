@@ -160,6 +160,7 @@
     <string name="music_misc_category">Ostalo</string>
     <string name="favorite_cache">Odaberite glazbene aplikacije koje će koristiti predmemoriju favorita</string>
     <string name="favorite_cache_list">Predmemorija gumba Favoriti</string>
+    <string name="syu_media_favorite_note">Spremljeno. Medijska aplikacija prikazat će srce nakon što ponovno učita svoju biblioteku (npr. nakon ponovnog pokretanja).</string>
     <string name="favorite_cache_summary">Neke aplikacije ne daju vanjskim aplikacijama status sviđanja/nesviđanja. Odabrane aplikacije koristit će ugrađeni sustav predmemorije, ali će se status pohranjivati samo u launcheru. Widget glazbe neće znati jeste li negdje drugdje označili video.</string>
     <string name="oauth_for_youtube_revanced">Omogući Google autorizaciju za YouTube ReVanced radi dohvaćanja statusa sviđanja</string>
     <string name="youtube_revanced_kids">Gumb Favoriti za YouTube ReVanced videozapise s madeForKids=true</string>

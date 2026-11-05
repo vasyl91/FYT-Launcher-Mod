@@ -160,6 +160,7 @@
     <string name="music_misc_category">Egyéb</string>
     <string name="favorite_cache">Válassza ki a kedvencek gyorsítótárát használó zenei alkalmazásokat</string>
     <string name="favorite_cache_list">Kedvenc gomb gyorsítótára</string>
+    <string name="syu_media_favorite_note">Mentve. A médiaalkalmazás a könyvtár újratöltése után (pl. újraindítás után) jeleníti meg a szívet.</string>
     <string name="favorite_cache_summary">Egyes alkalmazások nem adják át a kedvelés/nem kedvelés állapotát külső alkalmazásoknak. A kiválasztott alkalmazások a beépített gyorsítótárat használják, de az állapot csak a launcherben tárolódik. A zenewidget nem tudja, hogy máshol kedvelt-e egy videót.</string>
     <string name="oauth_for_youtube_revanced">Google-engedélyezés bekapcsolása a YouTube ReVancedhez a kedvelési állapot lekéréséhez</string>
     <string name="youtube_revanced_kids">Kedvenc gomb a madeForKids=true YouTube ReVanced videókhoz</string>

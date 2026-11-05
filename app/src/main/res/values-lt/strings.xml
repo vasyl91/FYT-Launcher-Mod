@@ -160,6 +160,7 @@
     <string name="music_misc_category">Kita</string>
     <string name="favorite_cache">Pasirinkite muzikos programas, kurios naudos mėgstamiausiųjų talpyklą</string>
     <string name="favorite_cache_list">Mėgstamiausiųjų mygtuko talpykla</string>
+    <string name="syu_media_favorite_note">Išsaugota. Medijos programa parodys širdelę, kai iš naujo įkels savo biblioteką (pvz., po paleidimo iš naujo).</string>
     <string name="favorite_cache_summary">Kai kurios programos neperduoda išorinėms programoms būsenos „patinka / nepatinka“. Pasirinktos programos naudos integruotą talpyklos sistemą, bet ši būsena bus saugoma tik paleidyklėje. Muzikos valdiklis nežinos, ar kitur pažymėjote vaizdo įrašą kaip patinkantį.</string>
     <string name="oauth_for_youtube_revanced">Įjungti „Google“ autorizaciją, kad „YouTube ReVanced“ galėtų gauti „patinka“ būseną</string>
     <string name="youtube_revanced_kids">Mėgstamiausiųjų mygtukas „YouTube ReVanced“ vaizdo įrašams su madeForKids=true</string>

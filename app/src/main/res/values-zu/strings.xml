@@ -160,6 +160,7 @@
     <string name="music_misc_category">Okunye</string>
     <string name="favorite_cache">Khetha izinhlelo zokusebenza zomculo ezizosebenzisa inqolobane yezintandokazi</string>
     <string name="favorite_cache_list">Inqolobane yenkinobho yezintandokazi</string>
+    <string name="syu_media_favorite_note">Kulondoloziwe. Uhlelo lokusebenza lwemidiya luzoveza inhliziyo ngemva kokulayisha kabusha ilabhulali yalo (isb. ngemva kokuqala kabusha).</string>
     <string name="favorite_cache_summary">Ezinye izinhlelo zokusebenza azinikezi izinhlelo zokusebenza zangaphandle isimo sokuthanda/ukungathandi. Izinhlelo zokusebenza ezikhethiwe zizosebenzisa uhlelo lwenqolobane olwakhelwe-ngaphakathi, kodwa isimo sizogcinwa kusiqalisi kuphela. Iwijethi yomculo ngeke yazi uma ukuthande ividiyo kwenye indawo.</string>
     <string name="oauth_for_youtube_revanced">Nika amandla Imvume ye-Google ye-YouTube ReVanced ukuze uthole isimo sokuthanda</string>
     <string name="youtube_revanced_kids">Inkinobho yezintandokazi yamavidiyo e-YouTube ReVanced ane-madeForKids=true</string>

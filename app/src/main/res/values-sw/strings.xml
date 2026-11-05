@@ -160,6 +160,7 @@
     <string name="music_misc_category">Nyingine</string>
     <string name="favorite_cache">Chagua programu za muziki zitakazotumia akiba ya vipendwa</string>
     <string name="favorite_cache_list">Akiba ya kitufe cha Vipendwa</string>
+    <string name="syu_media_favorite_note">Imehifadhiwa. Programu ya midia itaonyesha moyo baada ya kupakia upya maktaba yake (k.m. baada ya kuwasha upya).</string>
     <string name="favorite_cache_summary">Baadhi ya programu hazitoi hali ya kupenda/kutopenda kwa programu za nje. Programu zilizochaguliwa zitatumia mfumo wa akiba uliojengewa ndani, lakini hali hiyo itahifadhiwa kwenye kizinduzi pekee. Wijeti ya muziki haitajua kama ulipenda video mahali pengine.</string>
     <string name="oauth_for_youtube_revanced">Washa Idhini ya Google kwa YouTube ReVanced ili kupata hali ya kupenda</string>
     <string name="youtube_revanced_kids">Kitufe cha Vipendwa kwa video za YouTube ReVanced zenye madeForKids=true</string>

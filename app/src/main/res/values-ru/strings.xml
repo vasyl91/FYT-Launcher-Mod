@@ -160,6 +160,7 @@
     <string name="music_misc_category">Другое</string>
     <string name="favorite_cache">Выберите музыкальные приложения, которые будут использовать кэш избранного</string>
     <string name="favorite_cache_list">Кэш кнопки «Избранное»</string>
+    <string name="syu_media_favorite_note">Сохранено. Медиаприложение покажет сердечко после перезагрузки своей библиотеки (например, после перезапуска).</string>
     <string name="favorite_cache_summary">Некоторые приложения не передают внешним приложениям статус «нравится/не нравится». Выбранные приложения будут использовать встроенную систему кэша, но информация о статусе будет храниться только в лаунчере. Виджет музыки не узнает, понравилось ли вам видео где-то ещё.</string>
     <string name="oauth_for_youtube_revanced">Включить авторизацию Google для YouTube ReVanced, чтобы получать статус лайка</string>
     <string name="youtube_revanced_kids">Кнопка «Избранное» для видео YouTube ReVanced с madeForKids=true</string>

@@ -160,6 +160,7 @@
     <string name="music_misc_category">سایر</string>
     <string name="favorite_cache">برنامه‌های موسیقی‌ای را که باید از حافظه پنهان علاقه‌مندی‌ها استفاده کنند انتخاب کنید</string>
     <string name="favorite_cache_list">حافظه پنهان دکمه علاقه‌مندی‌ها</string>
+    <string name="syu_media_favorite_note">ذخیره شد. برنامهٔ رسانه پس از بارگذاری دوبارهٔ کتابخانه‌اش (مثلاً پس از راه‌اندازی مجدد) قلب را نشان می‌دهد.</string>
     <string name="favorite_cache_summary">برخی برنامه‌ها وضعیت پسندیدن/نپسندیدن را در اختیار برنامه‌های خارجی قرار نمی‌دهند. برنامه‌های انتخاب‌شده از سیستم حافظه پنهان داخلی استفاده می‌کنند، اما اطلاعات وضعیت پسندیدن/نپسندیدن فقط در لانچر ذخیره می‌شود. ویجت موسیقی نمی‌داند که ویدیویی را در جای دیگر پسندیده‌اید یا نه.</string>
     <string name="oauth_for_youtube_revanced">فعال‌سازی مجوز Google برای YouTube ReVanced جهت دریافت وضعیت پسندیدن</string>
     <string name="youtube_revanced_kids">دکمه علاقه‌مندی‌ها برای ویدیوهای YouTube ReVanced با madeForKids=true</string>

@@ -2182,6 +2182,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // A like changed in the stock player's own screen: read before the hearts are drawn
             SyuMusicLibrary.onLauncherResumed(this);
             MusicService.requestSyuMediaRefresh();
+            StockSources.onLauncherResumed();
         }
         // Deferred until the panes are up; see mFytRatingWake.
         mDeviceWake.scheduleFytRatingWake();

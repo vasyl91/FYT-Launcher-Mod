@@ -160,6 +160,7 @@
     <string name="music_misc_category">Annet</string>
     <string name="favorite_cache">Velg musikkappene som skal bruke favorittbufferen</string>
     <string name="favorite_cache_list">Buffer for favorittknappen</string>
+    <string name="syu_media_favorite_note">Lagret. Medieappen viser hjertet etter at den har lastet biblioteket på nytt (f.eks. etter en omstart).</string>
     <string name="favorite_cache_summary">Noen apper gir ikke liker/liker ikke-status til eksterne apper. Valgte apper bruker det innebygde buffersystemet, men statusen lagres bare i launcheren. Musikkwidgeten vet ikke om du har likt eller mislikt en video andre steder.</string>
     <string name="oauth_for_youtube_revanced">Aktiver Google-autorisasjon for YouTube ReVanced for å hente liker-status</string>
     <string name="youtube_revanced_kids">Favorittknapp for YouTube ReVanced-videoer med madeForKids=true</string>

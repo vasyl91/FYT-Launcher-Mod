@@ -160,6 +160,7 @@
     <string name="music_misc_category">Muu</string>
     <string name="favorite_cache">Valitse musiikkisovellukset, jotka käyttävät suosikkien välimuistia</string>
     <string name="favorite_cache_list">Suosikkipainikkeen välimuisti</string>
+    <string name="syu_media_favorite_note">Tallennettu. Mediasovellus näyttää sydämen, kun se on ladannut kirjastonsa uudelleen (esim. uudelleenkäynnistyksen jälkeen).</string>
     <string name="favorite_cache_summary">Jotkin sovellukset eivät välitä tykkäys-/ei-tykkäys-tilaa ulkoisille sovelluksille. Valitut sovellukset käyttävät sisäänrakennettua välimuistijärjestelmää, mutta tila tallennetaan vain launcheriin. Musiikki-widget ei tiedä, oletko tykännyt videosta tai ei muualla.</string>
     <string name="oauth_for_youtube_revanced">Ota Googlen valtuutus käyttöön YouTube ReVancedissa tykkäystilan hakemiseksi</string>
     <string name="youtube_revanced_kids">Suosikkipainike YouTube ReVanced -videoille, joilla madeForKids=true</string>

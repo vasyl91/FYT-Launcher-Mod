@@ -160,6 +160,7 @@
     <string name="music_misc_category">Бусад</string>
     <string name="favorite_cache">Дуртай жагсаалтын кэш ашиглах хөгжмийн аппуудыг сонгох</string>
     <string name="favorite_cache_list">Дуртай товчийн кэш</string>
+    <string name="syu_media_favorite_note">Хадгалагдлаа. Медиа апп номын сангаа дахин ачаалсны дараа (жишээ нь дахин эхлүүлсний дараа) зүрхийг харуулна.</string>
     <string name="favorite_cache_summary">Зарим апп таалагдсан/таалагдаагүй төлвийг гадны аппуудад өгдөггүй. Сонгосон аппууд суурилуулсан кэш системийг ашиглах боловч таалагдсан/таалагдаагүй төлвийн мэдээлэл зөвхөн Launcher-т хадгалагдана. Хөгжмийн виджет таныг өөр газар видеог таалсан эсвэл таалаагүйг мэдэхгүй.</string>
     <string name="oauth_for_youtube_revanced">Таалагдсан төлвийг авахын тулд YouTube ReVanced-д Google-ийн зөвшөөрлийг идэвхжүүлэх</string>
     <string name="youtube_revanced_kids">madeForKids=true тэмдэглэгээтэй YouTube ReVanced видеонуудын дуртай товч</string>

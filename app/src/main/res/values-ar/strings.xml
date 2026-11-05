@@ -160,6 +160,7 @@
     <string name="music_misc_category">أخرى</string>
     <string name="favorite_cache">اختر تطبيقات الموسيقى التي ستستخدم ذاكرة المفضلة المؤقتة</string>
     <string name="favorite_cache_list">ذاكرة زر المفضلة المؤقتة</string>
+    <string name="syu_media_favorite_note">تم الحفظ. سيعرض تطبيق الوسائط القلب بعد إعادة تحميل مكتبته (مثلًا بعد إعادة التشغيل).</string>
     <string name="favorite_cache_summary">لا توفّر بعض التطبيقات حالة الإعجاب/عدم الإعجاب للتطبيقات الخارجية. ستستخدم التطبيقات المحددة نظام الذاكرة المؤقتة المدمج، لكن معلومات حالة الإعجاب/عدم الإعجاب ستُخزَّن في المشغّل فقط. لن يعرف عنصر واجهة الموسيقى ما إذا كنت قد أعجبت بمقطع فيديو أو لم يعجبك في مكان آخر.</string>
     <string name="oauth_for_youtube_revanced">تفعيل تفويض Google لـ YouTube ReVanced لاسترجاع حالة الإعجاب</string>
     <string name="youtube_revanced_kids">زر المفضلة لفيديوهات YouTube ReVanced التي تحمل madeForKids=true</string>

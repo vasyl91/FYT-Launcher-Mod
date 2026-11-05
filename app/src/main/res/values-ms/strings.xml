@@ -160,6 +160,7 @@
     <string name="music_misc_category">Lain-lain</string>
     <string name="favorite_cache">Pilih apl muzik yang akan menggunakan cache kegemaran</string>
     <string name="favorite_cache_list">Cache butang Kegemaran</string>
+    <string name="syu_media_favorite_note">Disimpan. Apl media akan menunjukkan hati selepas memuatkan semula pustakanya (cth. selepas dimulakan semula).</string>
     <string name="favorite_cache_summary">Sesetengah apl tidak memberikan status suka/tidak suka kepada apl luaran. Apl yang dipilih akan menggunakan sistem cache terbina dalam, tetapi status suka/tidak suka hanya disimpan dalam pelancar. Widget muzik tidak akan tahu sama ada anda menyukai video di tempat lain.</string>
     <string name="oauth_for_youtube_revanced">Dayakan Kebenaran Google untuk YouTube ReVanced bagi mendapatkan status suka</string>
     <string name="youtube_revanced_kids">Butang Kegemaran untuk video YouTube ReVanced dengan madeForKids=true</string>

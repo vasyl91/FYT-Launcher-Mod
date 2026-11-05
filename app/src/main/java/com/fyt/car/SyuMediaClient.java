@@ -17,6 +17,9 @@ import android.os.Parcel;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.android.launcher66.R;
 
 import com.fyt.car.StockKindArbiter.Kind;
 
@@ -411,13 +414,23 @@ final class SyuMediaClient implements ServiceConnection {
                 Log.w(TAG, kind + ": favorite not written", e);
                 FytCompat.report("syumedia.favorite", e);
             }
-            Log.d(TAG, "favorite " + kind + "=" + favorite + " written to " + rows + " row(s)");
+            Log.d(TAG, "favorite " + kind + " id=" + track.id + " =" + favorite + " written to " + rows + " row(s)");
+            if (rows > 0 && !sFavoriteNoteShown) {
+                // com.syu.media has no way to be told: it reads the flag from its library when it loads it,
+                // and keeps its lists in memory. Said once per process.
+                sFavoriteNoteShown = true;
+                new Handler(Looper.getMainLooper()).post(() ->
+                        Toast.makeText(app, R.string.syu_media_favorite_note, Toast.LENGTH_LONG).show());
+            }
             // Read back whatever the library now holds, and publish it even when it is what
             // was last published: the flag shown was changed ahead of the write.
             last = null;
             refresh(true);
         });
     }
+
+    /** The note about the app's screen has been shown in this process. */
+    private static volatile boolean sFavoriteNoteShown;
 
     /** The track's favorite flag in com.syu.media's library; null if it cannot be read. */
     private Boolean readFavorite(Song song) {

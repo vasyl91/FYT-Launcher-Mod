@@ -26,6 +26,7 @@
     <string name="widget_button_text">Widgets</string>
     <string name="logcat_names_info">Noms des fichiers journaux :</string>
     <string name="logcat_names_info_summary">reboot – démarré avec le launcher après le redémarrage de l\'appareil\nstart – démarré avec le launcher lorsqu\'il a redémarré sans redémarrage de l\'appareil (mise à jour, plantage)\nwake – démarré au réveil de l\'appareil\nuser – démarré à la main avec « Service Logcat »\nfull – contient tous les journaux de l\'appareil\npid – contient uniquement les journaux du launcher\ncrash – écrit au moment où le lanceur a planté : l\'erreur et les dernières lignes du journal (la suite après le redémarrage figure dans le journal start)\ncompat – écrit lorsque du code conçu pour les unités FYT a échoué sur cette unité ou cette version d\'Android et a été intercepté sans plantage : l\'erreur et les dernières lignes du journal</string>
+    <string name="syu_media_favorite_note">Enregistré. L\'application multimédia affichera le cœur après avoir rechargé sa bibliothèque (par ex. après un redémarrage).</string>
     <string name="install_release_button_file">Appuyez pour télécharger et installer la version finale %1$s (%2$s)</string>
     <string name="update_version_button_file">Appuyez pour télécharger et mettre à jour l\'application (%1$s)</string>
     <string name="logcat_locations_info">Où trouver les journaux et les rapports de plantage :</string>

@@ -160,6 +160,7 @@
     <string name="music_misc_category">Остало</string>
     <string name="favorite_cache">Изаберите музичке апликације које ће користити кеш омиљених</string>
     <string name="favorite_cache_list">Кеш дугмета Омиљено</string>
+    <string name="syu_media_favorite_note">Сачувано. Медијска апликација ће приказати срце након што поново учита своју библиотеку (нпр. након поновног покретања).</string>
     <string name="favorite_cache_summary">Неке апликације не дају спољним апликацијама статус свиђања/несвиђања. Изабране апликације користиће уграђени систем кеша, али ће се статус чувати само у покретачу. Виџет музике неће знати да ли сте негде другде означили видео.</string>
     <string name="oauth_for_youtube_revanced">Омогући Google ауторизацију за YouTube ReVanced ради преузимања статуса свиђања</string>
     <string name="youtube_revanced_kids">Дугме Омиљено за YouTube ReVanced видео снимке са madeForKids=true</string>

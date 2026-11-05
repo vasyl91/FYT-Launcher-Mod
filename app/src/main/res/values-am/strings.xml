@@ -160,6 +160,7 @@
     <string name="music_misc_category">ሌላ</string>
     <string name="favorite_cache">የተወዳጆች መሸጎጫን የሚጠቀሙ የሙዚቃ መተግበሪያዎችን ይምረጡ</string>
     <string name="favorite_cache_list">የተወዳጆች አዝራር መሸጎጫ</string>
+    <string name="syu_media_favorite_note">ተቀምጧል። የሚዲያ መተግበሪያው ቤተ-መጽሐፍቱን እንደገና ከጫነ በኋላ (ለምሳሌ ከዳግም ማስጀመር በኋላ) ልቡን ያሳያል።</string>
     <string name="favorite_cache_summary">አንዳንድ መተግበሪያዎች የመውደድ/አለመውደድ ሁኔታን ለውጫዊ መተግበሪያዎች አያቀርቡም። የተመረጡ መተግበሪያዎች አብሮ የተሰራውን የመሸጎጫ ስርዓት ይጠቀማሉ፣ ነገር ግን ሁኔታው በማስጀመሪያው ውስጥ ብቻ ይቀመጣል። የሙዚቃ ምግቡ ቪዲዮን ሌላ ቦታ እንደወደዱ አያውቅም።</string>
     <string name="oauth_for_youtube_revanced">የመውደድ ሁኔታን ለማግኘት ለYouTube ReVanced የGoogle ፈቃድን አንቃ</string>
     <string name="youtube_revanced_kids">madeForKids=true ላላቸው የYouTube ReVanced ቪዲዮዎች የተወዳጆች አዝራር</string>
