@@ -300,8 +300,12 @@ final class HostServices {
             dup = ParcelFileDescriptor.dup(fd);
             StructStat stat = Os.fstat(dup.getFileDescriptor());
             String opened = Os.readlink("/proc/self/fd/" + dup.getFd());
-            if (!HostFilePolicy.allowedOpened(path, opened, OsConstants.S_ISREG(stat.st_mode), stat.st_size)) {
-                Log.i(TAG, "readFile refused: " + path);
+            boolean regular = OsConstants.S_ISREG(stat.st_mode);
+            if (!HostFilePolicy.allowedOpened(path, opened, regular, stat.st_size)) {
+                // Where the descriptor leads is what tells an alias of the storage (another mount
+                // namespace) from a swapped file, so it goes into the log.
+                Log.i(TAG, "readFile refused: " + path + " (opened " + opened + ", regular=" + regular
+                        + ", size=" + stat.st_size + ")");
                 dup.close();
                 return null;
             }

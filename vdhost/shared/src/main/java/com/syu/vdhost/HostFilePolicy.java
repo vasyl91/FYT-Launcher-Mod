@@ -64,7 +64,62 @@ public final class HostFilePolicy {
      * @param length fstat(): its size in bytes
      */
     public static boolean allowedOpened(String requested, String openedPath, boolean isRegularFile, long length) {
-        return allowed(requested, openedPath, isRegularFile, length);
+        if (requested == null || openedPath == null) {
+            return false;
+        }
+        // The path itself must be one of the allowed ones; what the descriptor leads to may be
+        // the same file under another name of the shared storage.
+        if (!requested.equals(openedPath) && !sameSharedStorageFile(requested, openedPath)) {
+            return false;
+        }
+        return isRegularFile && length >= 0 && length <= maxBytes(requested) && pathAllowed(requested);
+    }
+
+    private static final String SHARED_STORAGE = "/storage/emulated/";
+
+    /**
+     * Whether {@code opened} is {@code requested} under another name of the shared storage. The
+     * host (a Magisk daemon) may live in another mount namespace than the apps, and then a file
+     * asked for as /storage/emulated/&lt;u&gt;/x resolves, in /proc/self/fd, to the backing path of the
+     * same storage: /data/media/&lt;u&gt;/x, /mnt/user/&lt;u&gt;/emulated/&lt;u&gt;/x,
+     * /mnt/pass_through/&lt;u&gt;/emulated/&lt;u&gt;/x, or /storage/self/primary/x. The rest of the path must be
+     * identical; any other target is no alias.
+     */
+    public static boolean sameSharedStorageFile(String requested, String opened) {
+        if (requested == null || opened == null || !requested.startsWith(SHARED_STORAGE)) {
+            return false;
+        }
+        int userEnd = requested.indexOf('/', SHARED_STORAGE.length());
+        if (userEnd < 0) {
+            return false;
+        }
+        String user = requested.substring(SHARED_STORAGE.length(), userEnd);
+        if (!isDigits(user)) {
+            return false;
+        }
+        String rest = requested.substring(userEnd);   // starts with '/'
+        if (rest.length() < 2) {
+            return false;
+        }
+        if (opened.equals(requested)) {
+            return true;
+        }
+        return opened.equals("/data/media/" + user + rest)
+                || opened.equals("/mnt/user/" + user + "/emulated/" + user + rest)
+                || opened.equals("/mnt/pass_through/" + user + "/emulated/" + user + rest)
+                || opened.equals("/storage/self/primary" + rest);
+    }
+
+    private static boolean isDigits(String text) {
+        if (text.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) < '0' || text.charAt(i) > '9') {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** The longest file the host hands out for this path. */

@@ -104,4 +104,44 @@ class HostFilePolicyTest {
         // a path outside the allowed ones, even if the descriptor agrees
         assertFalse(HostFilePolicy.allowedOpened("/data/system/users/0.xml", "/data/system/users/0.xml", true, 100));
     }
+
+    @Test
+    void theOtherNamesOfTheSharedStorageAreTheSameFile() {
+        String path = "/storage/emulated/0/radio_logo/Warszawa/radio.png";
+        assertTrue(HostFilePolicy.sameSharedStorageFile(path, "/data/media/0/radio_logo/Warszawa/radio.png"));
+        assertTrue(HostFilePolicy.sameSharedStorageFile(path,
+                "/mnt/user/0/emulated/0/radio_logo/Warszawa/radio.png"));
+        assertTrue(HostFilePolicy.sameSharedStorageFile(path,
+                "/mnt/pass_through/0/emulated/0/radio_logo/Warszawa/radio.png"));
+        assertTrue(HostFilePolicy.sameSharedStorageFile(path, "/storage/self/primary/radio_logo/Warszawa/radio.png"));
+        assertTrue(HostFilePolicy.allowedOpened(path, "/data/media/0/radio_logo/Warszawa/radio.png", true, 5_000));
+    }
+
+    @Test
+    void anyOtherTargetOfTheDescriptorIsStillRefused() {
+        String path = "/storage/emulated/0/radio_logo/radio.png";
+        // the rest of the path differs
+        assertFalse(HostFilePolicy.sameSharedStorageFile(path, "/data/media/0/radio_logo/other.png"));
+        assertFalse(HostFilePolicy.sameSharedStorageFile(path, "/data/media/0/secret/radio.png"));
+        // another user's storage, or a folder that only starts like one of the aliases
+        assertFalse(HostFilePolicy.sameSharedStorageFile(path, "/data/media/10/radio_logo/radio.png"));
+        assertFalse(HostFilePolicy.sameSharedStorageFile(path, "/mnt/user/0/emulated/10/radio_logo/radio.png"));
+        assertFalse(HostFilePolicy.sameSharedStorageFile(path, "/data/media/0/radio_logo/radio.png.bak"));
+        assertFalse(HostFilePolicy.sameSharedStorageFile(path, "/data/system/users/0.xml"));
+        assertFalse(HostFilePolicy.sameSharedStorageFile(path, null));
+        // paths outside the shared storage have no aliases
+        assertFalse(HostFilePolicy.sameSharedStorageFile("/data/blink/c.jpg", "/data/media/0/c.jpg"));
+        assertFalse(HostFilePolicy.allowedOpened(path, "/data/media/0/secret/radio.png", true, 100));
+    }
+
+    @Test
+    void anAliasStillNeedsAnAllowedRequestedPathAndAnOrdinaryFile() {
+        // the requested path is checked as before, whatever the descriptor leads to
+        String notAllowed = "/storage/emulated/0/DCIM/photo.png";
+        assertFalse(HostFilePolicy.allowedOpened(notAllowed, "/data/media/0/DCIM/photo.png", true, 100));
+        String path = "/storage/emulated/0/radio_logo/radio.png";
+        String alias = "/data/media/0/radio_logo/radio.png";
+        assertFalse(HostFilePolicy.allowedOpened(path, alias, false, 100));
+        assertFalse(HostFilePolicy.allowedOpened(path, alias, true, HostFilePolicy.MAX_BYTES + 1));
+    }
 }

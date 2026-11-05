@@ -143,7 +143,8 @@ The host also does the few things the launcher does itself as `android.uid.syste
 | Read the cover a phone plays over Bluetooth, the stock radio's logos and icon pack (protocol 3) | `SyuMediaFiles` through `readFile` | yes | yes where the files are readable by shell |
 
 `readFile` hands out a read-only descriptor of nothing but those files (`HostFilePolicy`: images in `/data/blink/`,
-`.png` logos in `/storage/emulated/0/radio_logo/`, `/odm/app/cabinet.data`; canonical path, a regular file, at most 2 MB),
+`.png` logos in `/storage/emulated/0/radio_logo/`, `/odm/app/cabinet.data`; canonical path, a regular file, at most 2 MB; a descriptor that leads to the same file under another name of the shared
+storage, such as `/data/media/0/…`, is accepted, any other target is refused and the log says where it led),
 `allowAppOp` the three app ops above for the caller's own package, `allowNotificationListener` a component of the
 caller's own package.
 
