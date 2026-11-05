@@ -140,24 +140,24 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
             android.content.SharedPreferences prefs = androidx.preference.PreferenceManager
                     .getDefaultSharedPreferences(mRoot.getContext());
             boolean largeText = prefs.getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_LARGE_TEXT, false);
-            // The user's choice on every bar height (it used to follow the height of the bar)
             // The user's arrangement of the title and artist, in either layout (WidgetBarLines)
             boolean portraitBar = mRoot.getResources().getConfiguration().orientation
                     == android.content.res.Configuration.ORIENTATION_PORTRAIT;
             boolean oneLine = WidgetBarLayout.lineText(prefs).oneLine();
             // The cover and the space behind it are sized from the widget's usual width, the one it
             // has with the date and the weather shown, so they do not move when those are hidden.
-            boolean portrait = portraitBar;
-            int baseW = MusicWidgetPlan.usualWidth(w, WidgetBarPlan.baseShare(portrait),
-                    WidgetBarPlan.musicShare(portrait, WidgetBarLayout.dateHidden(prefs, portrait),
+            int baseW = MusicWidgetPlan.usualWidth(w, WidgetBarPlan.baseShare(portraitBar),
+                    WidgetBarPlan.musicShare(portraitBar, WidgetBarLayout.dateHidden(prefs, portraitBar),
                             WidgetBarLayout.weatherHidden(prefs)));
             if (buttons instanceof FlexboxLayout) {
                 // The wide layout (WidgetBarLayout): the buttons are a block beside the text.
                 plan = MusicWidgetPlan.planBarWide(w, h, baseW, density, largeText, oneLine,
                         WidgetBarLayout.buttonsInOneRow(prefs, portraitBar));
+                plan.withFont(fontShape(mRoot.findViewById(R.id.tv_musicName_two)), density);
                 applyBarWide(plan, w);
             } else {
                 plan = MusicWidgetPlan.planBar(w, h, baseW, density, largeText, oneLine);
+                plan.withFont(fontShape(mRoot.findViewById(R.id.tv_musicName_two)), density);
                 applyBar(plan, w);
             }
         } else {
@@ -227,7 +227,8 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         applyText(title, plan);
         applyText(artist, plan);
         if (buttons != null) {
-            setBox(buttons, ViewGroup.LayoutParams.MATCH_PARENT, plan.buttonRowPx, plan.gapPx, 0);
+            setBox(buttons, ViewGroup.LayoutParams.MATCH_PARENT, plan.buttonsHeightPx, plan.buttonsTopPx, 0,
+                    plan.buttonsBottomPx);
         }
         sizeButtons(plan.buttonSidePx, R.id.music_prev_two, R.id.music_playpause_two,
                 R.id.music_next_two, R.id.music_favorite_two);
@@ -293,38 +294,49 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
 
     /**
      * One font for both rows; the second row is hidden by the widget in the one-line mode. The
-     * one line has no margin on top and the height of its whole room, so the column centres it,
-     * and no font padding, so that the letters (not the padding) are centred; its size comes from
-     * the box of the font this view really has.
+     * one line has no margin on top and the height of its whole room, and its capital letters
+     * (not the box of the font, and not the padding) are centred in it: no font padding, the
+     * letters at the top of the view and the padding that puts the baseline where
+     * MusicWidgetPlan.oneLineTopPadding says. Two lines are centred as a whole.
      */
     private void applyText(TextView view, MusicWidgetPlan.Plan plan) {
         if (view == null) {
             return;
         }
-        float textPx = plan.textPx;
-        if (plan.oneLine && mBar) {
-            textPx = plan.withFontRatio(fontRatio(view), mDensity).textPx;
-        }
+        boolean line = plan.oneLine && mBar;
         setBox(view, ViewGroup.LayoutParams.MATCH_PARENT, plan.rowPx, plan.rowTopPx, 0);
-        if (Math.abs(view.getTextSize() - textPx) > 0.5f) {
-            view.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);
+        if (Math.abs(view.getTextSize() - plan.textPx) > 0.5f) {
+            view.setTextSize(TypedValue.COMPLEX_UNIT_PX, plan.textPx);
         }
-        if (view.getGravity() != Gravity.CENTER) {
-            view.setGravity(Gravity.CENTER);
+        int gravity = line ? Gravity.CENTER_HORIZONTAL | Gravity.TOP : Gravity.CENTER;
+        if (view.getGravity() != gravity) {
+            view.setGravity(gravity);
         }
-        boolean fontPadding = !(plan.oneLine && mBar);
-        if (view.getIncludeFontPadding() != fontPadding) {
-            view.setIncludeFontPadding(fontPadding);
+        if (view.getIncludeFontPadding() != !line) {
+            view.setIncludeFontPadding(!line);
+        }
+        int top = line ? plan.textTopPaddingPx : 0;
+        if (view.getPaddingTop() != top || view.getPaddingBottom() != 0) {
+            view.setPadding(view.getPaddingLeft(), top, view.getPaddingRight(), 0);
         }
     }
 
-    /** (descent - ascent) / size of the font of a view: the height of its box per unit of size. */
-    private static float fontRatio(TextView view) {
+    /** The shape of the font of a view, measured at a test size, once per plan. */
+    private static MusicWidgetPlan.FontShape fontShape(TextView view) {
+        if (view == null) {
+            return MusicWidgetPlan.DEFAULT_FONT;
+        }
         android.graphics.Paint paint = new android.graphics.Paint();
         paint.setTypeface(view.getTypeface());
         paint.setTextSize(100f);
         android.graphics.Paint.FontMetrics fm = paint.getFontMetrics();
-        return (fm.descent - fm.ascent) / 100f;
+        android.graphics.Rect cap = new android.graphics.Rect();
+        paint.getTextBounds("H", 0, 1, cap);
+        float box = (fm.descent - fm.ascent) / 100f;
+        if (box <= 0f || cap.height() <= 0) {
+            return MusicWidgetPlan.DEFAULT_FONT;
+        }
+        return new MusicWidgetPlan.FontShape(box, cap.height() / 100f, -fm.ascent / 100f);
     }
 
     private void sizeButtons(int side, int... ids) {
@@ -345,16 +357,23 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
 
     /** Size and top margin (and the same margin on both sides) of a child of a LinearLayout. */
     private static void setBox(View view, int width, int height, int topMargin, int sideMargin) {
+        setBox(view, width, height, topMargin, sideMargin, 0);
+    }
+
+    private static void setBox(View view, int width, int height, int topMargin, int sideMargin,
+            int bottomMargin) {
         ViewGroup.LayoutParams raw = view.getLayoutParams();
         if (!(raw instanceof LinearLayout.LayoutParams)) {
             return;
         }
         LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) raw;
         if (lp.width != width || lp.height != height || lp.topMargin != topMargin
+                || lp.bottomMargin != bottomMargin
                 || lp.leftMargin != sideMargin || lp.rightMargin != sideMargin) {
             lp.width = width;
             lp.height = height;
             lp.topMargin = topMargin;
+            lp.bottomMargin = bottomMargin;
             lp.leftMargin = sideMargin;
             lp.rightMargin = sideMargin;
             view.setLayoutParams(lp);

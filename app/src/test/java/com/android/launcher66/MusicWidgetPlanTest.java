@@ -74,7 +74,8 @@ class MusicWidgetPlanTest {
 
                 for (boolean oneLine : new boolean[] {false, true}) {
                     MusicWidgetPlan.Plan bar = MusicWidgetPlan.planBar(w, h, w, 1f, false, oneLine);
-                    int barSum = bar.rows() * (bar.rowTopPx + bar.rowPx) + bar.gapPx + bar.buttonRowPx;
+                    int barSum = bar.rows() * (bar.rowTopPx + bar.rowPx) + bar.buttonsTopPx + bar.buttonsHeightPx
+                            + bar.buttonsBottomPx;
                     assertTrue(barSum <= h, "bar " + w + "x" + h + " " + bar + " sum " + barSum);
                 }
             }
@@ -258,7 +259,8 @@ class MusicWidgetPlanTest {
         for (int h : new int[]{40, 66, 91, 120}) {
             for (boolean oneLine : new boolean[] {false, true}) {
                 MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBar(359, h, 359, 1f, true, oneLine);
-                assertTrue(plan.rows() * (plan.rowPx + plan.gapPx) + plan.buttonRowPx <= h, "bar " + h);
+                assertTrue(plan.rows() * (plan.rowTopPx + plan.rowPx) + plan.buttonsTopPx + plan.buttonsHeightPx
+                        + plan.buttonsBottomPx <= h, "bar " + h);
                 MusicWidgetPlan.Plan wideLarge = MusicWidgetPlan.planBarWide(359, h, 359, 1f, true, oneLine, false);
                 assertTrue(wideLarge.rows() * (wideLarge.rowPx + wideLarge.gapPx) <= h, "wide " + h);
             }
@@ -276,8 +278,9 @@ class MusicWidgetPlanTest {
                 assertEquals(h, beside.rowPx, "beside row " + h);
                 MusicWidgetPlan.Plan below = MusicWidgetPlan.planBar(359, h, 359, 1f, large, true);
                 assertEquals(0, below.rowTopPx, "below top " + h);
-                // the row, the gap before the buttons and the buttons are the whole height
-                assertEquals(h, below.rowPx + below.gapPx + below.buttonRowPx, 1, "below " + h);
+                // the text row, the row of buttons and the room left under them are the whole height
+                assertEquals(h, below.rowPx + below.buttonsHeightPx + below.buttonsBottomPx, "below " + h);
+                assertEquals(below.yButtonsPx, below.rowPx, "text row ends at the buttons " + h);
             }
         }
     }
@@ -316,8 +319,8 @@ class MusicWidgetPlanTest {
     void theOneLineIsSizedFromTheMetricsOfTheFont() {
         MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(359, 66, 359, 1f, true, true, false);
         // a font whose box is 1.4 times its size gets a smaller size than one with 1.0
-        float tall = plan.withFontRatio(1.4f, 1f).textPx;
-        float flat = plan.withFontRatio(1.0f, 1f).textPx;
+        float tall = plan.withFont(new MusicWidgetPlan.FontShape(1.4f, 0.7f, 1.1f), 1f).textPx;
+        float flat = plan.withFont(new MusicWidgetPlan.FontShape(1.0f, 0.7f, 0.8f), 1f).textPx;
         assertEquals(plan.fontBoxPx / 1.4f, tall, 0.01f);
         assertEquals(plan.fontBoxPx / 1.0f, flat, 0.01f);
         assertTrue(flat > tall);
@@ -326,7 +329,7 @@ class MusicWidgetPlanTest {
         // two lines keep their size whatever the metrics say
         MusicWidgetPlan.Plan two = MusicWidgetPlan.planBarWide(359, 66, 359, 1f, false, false, false);
         float before = two.textPx;
-        assertEquals(before, two.withFontRatio(1.4f, 1f).textPx, 0f);
+        assertEquals(before, two.withFont(new MusicWidgetPlan.FontShape(1.4f, 0.7f, 1.1f), 1f).textPx, 0f);
         // never under the floor
         assertEquals(MusicWidgetPlan.MIN_TEXT_SP_FLOOR * 2f, MusicWidgetPlan.textForBox(1f, 1.2f, 2f), 0f);
     }
@@ -385,5 +388,72 @@ class MusicWidgetPlanTest {
         assertEquals(two.rowPx, row.rowPx);
         assertEquals(two.textPx, row.textPx, 0f);
         assertTrue(row.columnPx > two.columnPx - 1 - two.restPx * 0.06f && row.columnPx < two.columnPx);
+    }
+
+    // One line in the usual layout: centred between the top and the visible buttons, by the letters.
+
+    @Test
+    void theVisibleButtonsStayWhereTheyWere() {
+        for (int h : new int[] {40, 66, 91, 110, 120}) {
+            for (boolean large : new boolean[] {false, true}) {
+                MusicWidgetPlan.Plan one = MusicWidgetPlan.planBar(359, h, 359, 1f, large, true);
+                // their row ended at h and they stood in its middle: the top edge is the same
+                int topBefore = h - (one.buttonRowPx + one.buttonSidePx) / 2;
+                assertEquals(topBefore, one.yButtonsPx, 1, "top " + h + " large=" + large);
+                assertEquals(one.buttonSidePx, one.buttonsHeightPx);
+                assertEquals(0, one.buttonsTopPx);
+                assertEquals(h, one.rowPx + one.buttonsHeightPx + one.buttonsBottomPx);
+                // the font box is taken from the new, taller, row
+                assertEquals((large ? MusicWidgetPlan.ONE_LINE_BOX_LARGE : MusicWidgetPlan.ONE_LINE_BOX)
+                        * one.rowPx, one.fontBoxPx, 0.01f);
+            }
+        }
+    }
+
+    @Test
+    void theLettersAreAsFarFromTheTopAsFromTheButtons() {
+        MusicWidgetPlan.FontShape font = MusicWidgetPlan.DEFAULT_FONT;
+        for (int h : new int[] {66, 110}) {
+            for (boolean large : new boolean[] {false, true}) {
+                MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBar(359, h, 359, 1f, large, true)
+                        .withFont(font, 1f);
+                float capH = font.capRatio * plan.textPx;
+                float baseline = plan.textTopPaddingPx + font.ascentRatio * plan.textPx;
+                float aboveCaps = baseline - capH;
+                float belowBaseline = plan.yButtonsPx - baseline;
+                assertEquals(aboveCaps, belowBaseline, 1f, "gaps " + h + " large=" + large);
+                assertEquals(aboveCaps, plan.capTopPx, 1f, "capTop " + h + " large=" + large);
+                assertTrue(aboveCaps > 0, "room " + h);
+            }
+        }
+    }
+
+    @Test
+    void theLettersOfTheLineBesideTheButtonsAreCentredToo() {
+        MusicWidgetPlan.FontShape font = MusicWidgetPlan.DEFAULT_FONT;
+        for (int h : new int[] {66, 110}) {
+            MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(359, h, 359, 1f, false, true, false)
+                    .withFont(font, 1f);
+            float baseline = plan.textTopPaddingPx + font.ascentRatio * plan.textPx;
+            assertEquals(baseline - font.capRatio * plan.textPx, plan.rowPx - baseline, 1f, "beside " + h);
+        }
+    }
+
+    @Test
+    void theTopPaddingPutsTheBaselineBelowTheMiddleByHalfTheCapitals() {
+        // a row of 40, capitals of 20, ascent 30: the baseline is at 30, so no padding is needed
+        assertEquals(0, MusicWidgetPlan.oneLineTopPadding(40f, 20f, 30f));
+        // a row of 100, capitals of 40, ascent 50: baseline 70, padding 20
+        assertEquals(20, MusicWidgetPlan.oneLineTopPadding(100f, 40f, 50f));
+        // never negative
+        assertEquals(0, MusicWidgetPlan.oneLineTopPadding(40f, 10f, 60f));
+    }
+
+    @Test
+    void twoLinesInTheUsualLayoutKeepTheButtonsRow() {
+        MusicWidgetPlan.Plan two = MusicWidgetPlan.planBar(359, 66, 359, 1f, false, false);
+        assertEquals(two.gapPx, two.buttonsTopPx);
+        assertEquals(two.buttonRowPx, two.buttonsHeightPx);
+        assertEquals(0, two.buttonsBottomPx);
     }
 }

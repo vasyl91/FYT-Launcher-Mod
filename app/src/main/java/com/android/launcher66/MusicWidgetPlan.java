@@ -65,9 +65,28 @@ final class MusicWidgetPlan {
 
     /**
      * (descent - ascent) / text size of the usual fonts, for a plan made without the metrics of the
-     * view's font (the sizer measures them and calls {@link Plan#withFontRatio}).
+     * view's font (the sizer measures them and calls {@link Plan#withFont}).
      */
     static final float DEFAULT_FONT_RATIO = 1.17f;
+
+    /**
+     * The shape of a font per unit of text size: the height of its box (descent - ascent), of a
+     * capital letter, and its ascent above the baseline. The sizer measures them once for the
+     * typeface of the text view; {@link #DEFAULT_FONT} is Roboto's.
+     */
+    static final class FontShape {
+        final float boxRatio;
+        final float capRatio;
+        final float ascentRatio;
+
+        FontShape(float boxRatio, float capRatio, float ascentRatio) {
+            this.boxRatio = boxRatio;
+            this.capRatio = capRatio;
+            this.ascentRatio = ascentRatio;
+        }
+    }
+
+    static final FontShape DEFAULT_FONT = new FontShape(DEFAULT_FONT_RATIO, 0.711f, 0.928f);
 
     /**
      * The cover of a bar is at most this share of the bar's height and of its usual width W0: the
@@ -126,6 +145,21 @@ final class MusicWidgetPlan {
         int rowTopPx;
         /** One line: the height the box of the font (ascent to descent) may have. */
         float fontBoxPx;
+        /** One line: top padding of the text view that puts the capital letters in the middle of the row. */
+        int textTopPaddingPx;
+        /** One line: the distance from the top of the row to the top of a capital letter. */
+        int capTopPx;
+        /**
+         * The row of buttons below the text, in the usual layout: its top margin, its height and
+         * its bottom margin. With two lines the row of buttons is {@code buttonRowPx} high with the
+         * gap on top; with one line it is as high as the buttons and the room that is left over
+         * them below goes to the text (see planBar).
+         */
+        int buttonsTopPx;
+        int buttonsHeightPx;
+        int buttonsBottomPx;
+        /** One line, usual layout: the top of the visible buttons, which is the height of the text row. */
+        int yButtonsPx;
 
         /** The wide bar: the buttons are a block beside the text (see planBarWide). */
         boolean wide;
@@ -141,13 +175,16 @@ final class MusicWidgetPlan {
         }
 
         /**
-         * The text size for the one line from the metrics of the font the view really has:
-         * the box of the font is {@code ratio} times the size, so the size is the box divided by
-         * it. Two lines keep the size the plan gave them.
+         * The text size and the place of the letters for the one line, from the shape of the font
+         * the view really has: the box of the font is {@code boxRatio} times the size, so the size
+         * is the box divided by it. Two lines keep the size the plan gave them.
          */
-        Plan withFontRatio(float ratio, float density) {
-            if (oneLine && fontBoxPx > 0f && ratio > 0f) {
-                textPx = textForBox(fontBoxPx, ratio, density);
+        Plan withFont(FontShape font, float density) {
+            if (oneLine && fontBoxPx > 0f && font.boxRatio > 0f) {
+                textPx = textForBox(fontBoxPx, font.boxRatio, density);
+                float capH = font.capRatio * textPx;
+                capTopPx = Math.round((rowPx - capH) / 2f);
+                textTopPaddingPx = oneLineTopPadding(rowPx, capH, font.ascentRatio * textPx);
             }
             return this;
         }
@@ -158,13 +195,13 @@ final class MusicWidgetPlan {
                 return "layout=beside oneLine=" + oneLine + " large=" + largeText + " cover=" + coverPx + "+"
                         + coverGapPx + " R=" + restPx + " text=" + columnPx + " buttons=" + buttonBlockPx
                         + "(" + (buttonRows == 1 ? "1x4" : "2x2") + ") row=" + rowPx + " textPx=" + textPx + " cell="
-                        + cellWidthPx + "x" + buttonRowPx + "/" + buttonSidePx + " gap=" + gapPx;
+                        + cellWidthPx + "x" + buttonRowPx + "/" + buttonSidePx + " gap=" + gapPx + " capTop=" + capTopPx;
             }
             if (columnPx > 0) {
                 return "layout=below oneLine=" + oneLine + " large=" + largeText + " cover=" + coverPx + "+"
                         + coverGapPx + " R=" + restPx + " text=" + columnPx + " buttons=" + columnPx
                         + "(1x4) row=" + rowPx + " textPx=" + textPx + " buttonRow=" + buttonRowPx + "/"
-                        + buttonSidePx + " gap=" + gapPx;
+                        + buttonSidePx + " gap=" + gapPx + " yButtons=" + yButtonsPx + " capTop=" + capTopPx;
             }
             return "compact=" + compact + " cover=" + cover + "(" + coverPx + ") row=" + rowPx
                     + " text=" + textPx + " progress=" + progressPx + " buttons=" + buttonRowPx
@@ -173,6 +210,18 @@ final class MusicWidgetPlan {
     }
 
     private MusicWidgetPlan() {
+    }
+
+    /**
+     * The top padding of a text view {@code rowH} high (font padding off, gravity top) that puts
+     * the capital letters in the middle of the row: the baseline is at (rowH + capH) / 2 from the
+     * top, so the space above the capitals and the space below the baseline are equal. Letters
+     * sit high in the box of the font (the descent below the baseline is empty for most of
+     * them), so centring the box itself would raise them. Never negative.
+     */
+    static int oneLineTopPadding(float rowH, float capH, float ascent) {
+        float baseline = (rowH + capH) / 2f;
+        return Math.max(0, Math.round(baseline - ascent));
     }
 
     /** The text size whose font box ({@code ratio} times the size) is {@code boxPx} high. */
@@ -274,18 +323,6 @@ final class MusicWidgetPlan {
         plan.buttonRowPx = part(h, plan.compact ? shares[1] : shares[2]);
         plan.gapPx = part(h, shares[shares.length - 1] / (plan.rows() + 1));
         float lineFactor = largeText ? LINE_FACTOR_LARGE : LINE_FACTOR;
-        if (oneLine) {
-            // The row is the whole room above the buttons (less the gap before them) and has no
-            // margin on top, so that the column centres the line in it.
-            plan.rowTopPx = 0;
-            plan.rowPx = Math.max(0, h - plan.buttonRowPx - plan.gapPx);
-            plan.fontBoxPx = plan.rowPx * (largeText ? ONE_LINE_BOX_LARGE : ONE_LINE_BOX);
-            plan.textPx = textForBox(plan.fontBoxPx, DEFAULT_FONT_RATIO, density);
-        } else {
-            plan.rowTopPx = plan.gapPx;
-            plan.rowPx = part(h, shares[0]);
-            plan.textPx = Math.max(plan.rowPx / lineFactor, MIN_TEXT_SP_FLOOR * density);
-        }
         plan.buttonSidePx = Math.round(Math.min(plan.buttonRowPx, plan.columnPx / 4f) * BUTTON_FILL);
         if (largeText) {
             // The buttons are not smaller than today's, as far as their (now lower) row allows.
@@ -293,6 +330,27 @@ final class MusicWidgetPlan {
             int usualRow = part(h, plan.compact ? usual[1] : usual[2]);
             int usualSide = Math.round(Math.min(usualRow, plan.columnPx / 4f) * BUTTON_FILL);
             plan.buttonSidePx = Math.max(plan.buttonSidePx, Math.min(usualSide, plan.buttonRowPx));
+        }
+        if (oneLine) {
+            // The visible buttons are lower than their row and stand in its middle, so the row has
+            // empty room over them. The text takes everything above the buttons themselves: the
+            // row of buttons is as high as they are, with the room left over them below it, and
+            // they stay exactly where they were. The line is centred in what is above them.
+            plan.buttonsHeightPx = plan.buttonSidePx;
+            plan.buttonsTopPx = 0;
+            plan.buttonsBottomPx = Math.max(0, (plan.buttonRowPx - plan.buttonSidePx) / 2);
+            plan.yButtonsPx = Math.max(0, h - plan.buttonsHeightPx - plan.buttonsBottomPx);
+            plan.rowTopPx = 0;
+            plan.rowPx = plan.yButtonsPx;
+            plan.fontBoxPx = plan.rowPx * (largeText ? ONE_LINE_BOX_LARGE : ONE_LINE_BOX);
+            plan.textPx = textForBox(plan.fontBoxPx, DEFAULT_FONT_RATIO, density);
+        } else {
+            plan.rowTopPx = plan.gapPx;
+            plan.rowPx = part(h, shares[0]);
+            plan.textPx = Math.max(plan.rowPx / lineFactor, MIN_TEXT_SP_FLOOR * density);
+            plan.buttonsTopPx = plan.gapPx;
+            plan.buttonsHeightPx = plan.buttonRowPx;
+            plan.buttonsBottomPx = 0;
         }
         return plan;
     }
