@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Judul dan artis dalam satu baris</string>
     <string name="widget_bar_one_line_on">Satu baris: artis – judul</string>
     <string name="widget_bar_one_line_off">Judul di atas artis</string>
+    <string name="widget_bar_buttons_beside">Tombol di samping judul</string>
+    <string name="widget_bar_buttons_beside_on">Dua baris tombol di sebelah kanan judul dan artis</string>
+    <string name="widget_bar_buttons_beside_off">Tombol di bawah judul dan artis</string>
 </resources>

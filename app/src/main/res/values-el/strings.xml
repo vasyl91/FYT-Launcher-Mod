@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Τίτλος και καλλιτέχνης σε μία γραμμή</string>
     <string name="widget_bar_one_line_on">Μία γραμμή: καλλιτέχνης – τίτλος</string>
     <string name="widget_bar_one_line_off">Ο τίτλος πάνω από τον καλλιτέχνη</string>
+    <string name="widget_bar_buttons_beside">Κουμπιά δίπλα στον τίτλο</string>
+    <string name="widget_bar_buttons_beside_on">Δύο σειρές κουμπιών δεξιά από τον τίτλο και τον καλλιτέχνη</string>
+    <string name="widget_bar_buttons_beside_off">Κουμπιά κάτω από τον τίτλο και τον καλλιτέχνη</string>
 </resources>

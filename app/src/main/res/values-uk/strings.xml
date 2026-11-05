@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Назва та виконавець в одному рядку</string>
     <string name="widget_bar_one_line_on">Один рядок: виконавець – назва</string>
     <string name="widget_bar_one_line_off">Назва над виконавцем</string>
+    <string name="widget_bar_buttons_beside">Кнопки поруч із назвою</string>
+    <string name="widget_bar_buttons_beside_on">Два ряди кнопок праворуч від назви та виконавця</string>
+    <string name="widget_bar_buttons_beside_off">Кнопки під назвою та виконавцем</string>
 </resources>

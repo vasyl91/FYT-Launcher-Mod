@@ -526,4 +526,7 @@
     <string name="widget_bar_one_line">Title and artist in one line</string>
     <string name="widget_bar_one_line_on">One line: artist – title</string>
     <string name="widget_bar_one_line_off">The title above the artist</string>
+    <string name="widget_bar_buttons_beside">Buttons beside the title</string>
+    <string name="widget_bar_buttons_beside_on">Two rows of buttons to the right of the title and artist</string>
+    <string name="widget_bar_buttons_beside_off">Buttons below the title and artist</string>
 </resources>

@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Titel en kunstenaar in een reël</string>
     <string name="widget_bar_one_line_on">Een reël: kunstenaar – titel</string>
     <string name="widget_bar_one_line_off">Die titel bo die kunstenaar</string>
+    <string name="widget_bar_buttons_beside">Knoppies langs die titel</string>
+    <string name="widget_bar_buttons_beside_on">Twee rye knoppies regs van die titel en kunstenaar</string>
+    <string name="widget_bar_buttons_beside_off">Knoppies onder die titel en kunstenaar</string>
 </resources>

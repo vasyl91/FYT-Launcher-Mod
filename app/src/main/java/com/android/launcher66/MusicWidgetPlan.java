@@ -54,12 +54,16 @@ final class MusicWidgetPlan {
 
     static final float[] BAR_WIDE_COMPACT_LARGE = {0.80f, 0.20f};
 
-    /** The cover of a bar is at most this share of the bar's height and of its width. */
+    /**
+     * The cover of a bar is at most this share of the bar's height and of its usual width W0: the
+     * width the widget has with no widget of the bar hidden, so that the cover keeps its size and
+     * its place whatever the settings hide.
+     */
     static final float BAR_COVER_HEIGHT = 0.86f;
 
     static final float BAR_COVER_WIDTH = 0.25f;
 
-    /** The space between the cover and the column in a bar, as a share of its width. */
+    /** The space between the cover and the column in a bar, as a share of its usual width W0. */
     static final float BAR_COLUMN_GAP = 0.03f;
 
     // Bar, wide (the date or the weather is hidden and the widget has their room): the text sits
@@ -71,10 +75,14 @@ final class MusicWidgetPlan {
     /** One text row, gaps. */
     static final float[] BAR_WIDE_COMPACT = {0.70f, 0.30f};
 
-    /** The block of buttons in the wide bar, as a share of the widget's width: 2 x 2, or a row. */
-    static final float BAR_WIDE_BUTTONS_STANDARD = 0.30f;
+    /**
+     * With the buttons beside the text, what is left of the widget right of the cover and its gap
+     * (R) is divided in these shares: the text (title and artist, or one line) and the block of
+     * buttons, which is always 2 x 2. The rounding left over goes to the text.
+     */
+    static final float BAR_BESIDE_TEXT_SHARE = 0.65f;
 
-    static final float BAR_WIDE_BUTTONS_COMPACT = 0.40f;
+    static final float BAR_BESIDE_BUTTONS_SHARE = 0.35f;
 
     /** The cover of the home widget is at most this share of its width. */
     static final float HOME_COVER_WIDTH = 0.9f;
@@ -90,14 +98,23 @@ final class MusicWidgetPlan {
         int buttonRowPx;
         int buttonSidePx;
         int gapPx;
-        /** Width of the column right of the cover (the bar only). */
+        /**
+         * Width of the column right of the cover (the bar only): all of R below the text, the text's
+         * share of it with the buttons beside.
+         */
         int columnPx;
+        /** The space between the cover and the column (the bar only). */
+        int coverGapPx;
+        /** What is left of the widget right of the cover and its gap (the bar only). */
+        int restPx;
+        boolean largeText;
+        boolean oneLine;
 
         /** The wide bar: the buttons are a block beside the text (see planBarWide). */
         boolean wide;
         /** Width of the block of buttons (the wide bar only). */
         int buttonBlockPx;
-        /** Rows of buttons in the block: 2 (2 x 2) or 1 (a row of four). */
+        /** Rows of buttons in the block: always 2 (2 x 2). */
         int buttonRows;
         /** Width of a cell of the block. */
         int cellWidthPx;
@@ -109,9 +126,15 @@ final class MusicWidgetPlan {
         @Override
         public String toString() {
             if (wide) {
-                return "wide=true compact=" + compact + " buttons=" + (buttonRows == 2 ? "30%" : "40%")
-                        + " rows=" + buttonRows + " block=" + buttonBlockPx + " cover(" + coverPx + ") row="
-                        + rowPx + " text=" + textPx + " cell=" + cellWidthPx + "x" + buttonRowPx + "/"
+                return "layout=beside oneLine=" + oneLine + " large=" + largeText + " cover=" + coverPx + "+"
+                        + coverGapPx + " R=" + restPx + " text=" + columnPx + " buttons=" + buttonBlockPx
+                        + "(" + buttonRows + "x2) row=" + rowPx + " textPx=" + textPx + " cell="
+                        + cellWidthPx + "x" + buttonRowPx + "/" + buttonSidePx + " gap=" + gapPx;
+            }
+            if (columnPx > 0) {
+                return "layout=below oneLine=" + oneLine + " large=" + largeText + " cover=" + coverPx + "+"
+                        + coverGapPx + " R=" + restPx + " text=" + columnPx + " buttons=" + columnPx
+                        + "(1x4) row=" + rowPx + " textPx=" + textPx + " buttonRow=" + buttonRowPx + "/"
                         + buttonSidePx + " gap=" + gapPx;
             }
             return "compact=" + compact + " cover=" + cover + "(" + coverPx + ") row=" + rowPx
@@ -177,20 +200,39 @@ final class MusicWidgetPlan {
     }
 
     /**
-     * The bar. {@code oneLine} is the user's choice (the setting 'Title and artist in one line'):
-     * one text row ("artist - title") instead of two, on every bar height.
+     * The usual width W0 of the widget of a bar, from the width it has now: the same widget with no
+     * widget of the bar hidden. The cover and the space behind it are worked out from W0, never
+     * from the widened width, so they are the same whatever the settings hide.
      */
-    static Plan planBar(int w, int h, float density, boolean oneLine) {
-        return planBar(w, h, density, false, oneLine);
+    static int usualWidth(int w, float baseShare, float musicShare) {
+        if (w <= 0 || baseShare <= 0f || musicShare <= baseShare) {
+            return w;
+        }
+        return Math.min(w, Math.round(w * baseShare / musicShare));
     }
 
-    /** {@link #planBar} with the bigger text rows of 'Large text' when {@code largeText}. */
-    static Plan planBar(int w, int h, float density, boolean largeText, boolean oneLine) {
+    /** The cover of a bar and the space behind it, for a widget of usual width W0 and height h. */
+    private static void placeCover(Plan plan, int w, int h, int baseW) {
+        int w0 = baseW > 0 ? Math.min(baseW, w) : w;
+        plan.cover = true;
+        plan.coverPx = Math.min(part(h, BAR_COVER_HEIGHT), part(w0, BAR_COVER_WIDTH));
+        plan.coverGapPx = part(w0, BAR_COLUMN_GAP);
+        plan.restPx = Math.max(0, w - plan.coverPx - plan.coverGapPx);
+    }
+
+    /**
+     * The bar with the buttons below the text. {@code oneLine} is the user's choice (the setting
+     * 'Title and artist in one line'): one text row ("artist - title") instead of two, on every
+     * bar height. {@code baseW} is the usual width W0 of the widget (see {@link #usualWidth}); with
+     * nothing hidden it equals {@code w}. The column right of the cover is all that is left of w.
+     */
+    static Plan planBar(int w, int h, int baseW, float density, boolean largeText, boolean oneLine) {
         Plan plan = new Plan();
         plan.compact = oneLine;
-        plan.cover = true;
-        plan.coverPx = Math.min(part(h, BAR_COVER_HEIGHT), part(w, BAR_COVER_WIDTH));
-        plan.columnPx = w - plan.coverPx - part(w, BAR_COLUMN_GAP);
+        plan.oneLine = oneLine;
+        plan.largeText = largeText;
+        placeCover(plan, w, h, baseW);
+        plan.columnPx = plan.restPx;
         float[] shares = largeText
                 ? (plan.compact ? BAR_COMPACT_LARGE : BAR_STANDARD_LARGE)
                 : (plan.compact ? BAR_COMPACT : BAR_STANDARD);
@@ -211,30 +253,22 @@ final class MusicWidgetPlan {
     }
 
     /**
-     * The wide bar: cover, then the text (title above artist, or one row when {@code oneLine}), then
-     * a block of buttons on the right of 30% of the widget's width in 2 x 2 (prev and next above
-     * play/pause and favorite), or 40% in one row of four with one line of text.
+     * The bar with the buttons beside the text: cover, then the text (title above artist, or one
+     * row with {@code oneLine}) in 65% of what is left (R), then a block of buttons in the other
+     * 35%. The block is always 2 x 2 (prev and next above play/pause and favorite), on every bar
+     * height and with one line or two. With 'Large text' the rows fill the whole height of the
+     * column (two halves, or 0.8 of it with one line) and the font has the smaller line factor.
      */
-    static Plan planBarWide(int w, int h, float density, boolean oneLine) {
-        return planBarWide(w, h, density, false, oneLine);
-    }
-
-    /**
-     * {@link #planBarWide} with 'Large text': the rows fill the whole height of the column (two
-     * halves, or 0.8 of it with one line) and the font has the smaller line factor. The width
-     * of the block of buttons (30% / 40%) is the same.
-     */
-    static Plan planBarWide(int w, int h, float density, boolean largeText, boolean oneLine) {
+    static Plan planBarWide(int w, int h, int baseW, float density, boolean largeText, boolean oneLine) {
         Plan plan = new Plan();
         plan.wide = true;
         plan.compact = oneLine;
-        plan.cover = true;
-        plan.coverPx = Math.min(part(h, BAR_COVER_HEIGHT), part(w, BAR_COVER_WIDTH));
-        float blockShare = plan.compact ? BAR_WIDE_BUTTONS_COMPACT : BAR_WIDE_BUTTONS_STANDARD;
-        plan.buttonBlockPx = Math.round(w * blockShare);
-        plan.buttonRows = plan.compact ? 1 : 2;
-        int gap = part(w, BAR_COLUMN_GAP);
-        plan.columnPx = Math.max(0, w - plan.coverPx - gap - plan.buttonBlockPx);
+        plan.oneLine = oneLine;
+        plan.largeText = largeText;
+        placeCover(plan, w, h, baseW);
+        plan.buttonBlockPx = (int) (plan.restPx * BAR_BESIDE_BUTTONS_SHARE);
+        plan.buttonRows = 2;
+        plan.columnPx = plan.restPx - plan.buttonBlockPx;
         float[] shares = largeText
                 ? (plan.compact ? BAR_WIDE_COMPACT_LARGE : BAR_WIDE_STANDARD_LARGE)
                 : (plan.compact ? BAR_WIDE_COMPACT : BAR_WIDE_STANDARD);
@@ -242,8 +276,8 @@ final class MusicWidgetPlan {
         plan.gapPx = part(h, shares[shares.length - 1] / (plan.rows() + 1));
         float lineFactor = largeText ? LINE_FACTOR_LARGE : LINE_FACTOR;
         plan.textPx = Math.max(plan.rowPx / lineFactor, MIN_TEXT_SP_FLOOR * density);
-        plan.cellWidthPx = plan.buttonBlockPx / (plan.buttonRows == 2 ? 2 : 4);
-        plan.buttonRowPx = plan.buttonRows == 2 ? h / 2 : h;
+        plan.cellWidthPx = plan.buttonBlockPx / 2;
+        plan.buttonRowPx = h / 2;
         plan.buttonSidePx = Math.round(Math.min(plan.cellWidthPx, plan.buttonRowPx) * BUTTON_FILL);
         return plan;
     }

@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">제목과 아티스트를 한 줄로 표시</string>
     <string name="widget_bar_one_line_on">한 줄: 아티스트 – 제목</string>
     <string name="widget_bar_one_line_off">제목을 아티스트 위에 표시</string>
+    <string name="widget_bar_buttons_beside">버튼을 제목 옆에 배치</string>
+    <string name="widget_bar_buttons_beside_on">제목과 아티스트 오른쪽에 버튼 두 줄</string>
+    <string name="widget_bar_buttons_beside_off">버튼을 제목과 아티스트 아래에 배치</string>
 </resources>

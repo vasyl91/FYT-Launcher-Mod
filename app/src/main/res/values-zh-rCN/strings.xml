@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">标题和歌手显示在同一行</string>
     <string name="widget_bar_one_line_on">单行：歌手 – 标题</string>
     <string name="widget_bar_one_line_off">标题显示在歌手上方</string>
+    <string name="widget_bar_buttons_beside">按钮位于标题旁边</string>
+    <string name="widget_bar_buttons_beside_on">两排按钮位于标题和歌手右侧</string>
+    <string name="widget_bar_buttons_beside_off">按钮位于标题和歌手下方</string>
 </resources>

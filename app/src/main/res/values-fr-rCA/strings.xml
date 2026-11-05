@@ -49,4 +49,7 @@
     <string name="widget_bar_one_line">Titre et artiste sur une seule ligne</string>
     <string name="widget_bar_one_line_on">Une ligne : artiste – titre</string>
     <string name="widget_bar_one_line_off">Le titre au-dessus de l\'artiste</string>
+    <string name="widget_bar_buttons_beside">Boutons à côté du titre</string>
+    <string name="widget_bar_buttons_beside_on">Deux rangées de boutons à droite du titre et de l\'artiste</string>
+    <string name="widget_bar_buttons_beside_off">Boutons sous le titre et l\'artiste</string>
 </resources>

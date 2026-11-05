@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Гарчиг болон уран бүтээлчийг нэг мөрөнд</string>
     <string name="widget_bar_one_line_on">Нэг мөр: уран бүтээлч – гарчиг</string>
     <string name="widget_bar_one_line_off">Гарчиг уран бүтээлчийн дээр</string>
+    <string name="widget_bar_buttons_beside">Товчнууд гарчгийн хажууд</string>
+    <string name="widget_bar_buttons_beside_on">Гарчиг, уран бүтээлчийн баруун талд хоёр мөр товч</string>
+    <string name="widget_bar_buttons_beside_off">Товчнууд гарчиг, уран бүтээлчийн доор</string>
 </resources>

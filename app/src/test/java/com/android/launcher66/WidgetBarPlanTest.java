@@ -57,4 +57,23 @@ class WidgetBarPlanTest {
         float[] shares = WidgetBarPlan.largeWeatherShares(0.5f, 0.3f);
         assertEquals(0.3f * WidgetBarPlan.WEATHER_ICON_MIN_SHARE, shares[1], 0.0001f);
     }
+
+    @Test
+    void theBaseShareIsTheWidthWithNothingHidden() {
+        assertEquals(0.28f, WidgetBarPlan.baseShare(false), 0.0001f);
+        assertEquals(0.295f, WidgetBarPlan.baseShare(true), 0.0001f);
+        assertEquals(WidgetBarPlan.musicShare(false, false, false), WidgetBarPlan.baseShare(false), 0f);
+        assertEquals(WidgetBarPlan.musicShare(true, false, false), WidgetBarPlan.baseShare(true), 0f);
+    }
+
+    @Test
+    void theButtonsGoBesideTheTextOnlyWhenSomethingIsHiddenAndTheSwitchIsOn() {
+        assertTrue(WidgetBarPlan.buttonsBeside(true, false, true));
+        assertTrue(WidgetBarPlan.buttonsBeside(false, true, true));
+        assertTrue(WidgetBarPlan.buttonsBeside(true, true, true));
+        assertFalse(WidgetBarPlan.buttonsBeside(true, true, false));
+        assertFalse(WidgetBarPlan.buttonsBeside(false, true, false));
+        assertFalse(WidgetBarPlan.buttonsBeside(false, false, true));
+        assertFalse(WidgetBarPlan.buttonsBeside(false, false, false));
+    }
 }

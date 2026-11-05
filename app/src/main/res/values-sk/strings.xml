@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Názov a interpret v jednom riadku</string>
     <string name="widget_bar_one_line_on">Jeden riadok: interpret – názov</string>
     <string name="widget_bar_one_line_off">Názov nad interpretom</string>
+    <string name="widget_bar_buttons_beside">Tlačidlá vedľa názvu</string>
+    <string name="widget_bar_buttons_beside_on">Dva rady tlačidiel vpravo od názvu a interpreta</string>
+    <string name="widget_bar_buttons_beside_off">Tlačidlá pod názvom a interpretom</string>
 </resources>

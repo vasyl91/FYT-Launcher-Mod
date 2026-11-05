@@ -17,8 +17,9 @@ import com.android.launcher66.settings.Keys;
  * for the overlay of the auto-hide bar.
  *
  * <p>It runs on a freshly inflated bar, before any view of the music widget is looked up and
- * bound: the music widget is then replaced by its wide variant (music_bar_content_wide), whose
- * views have the same ids. A change of the settings rebuilds the bar anyway. Main thread only.
+ * bound: when the buttons go beside the text the music widget is replaced by its wide variant
+ * (music_bar_content_wide), whose views have the same ids. A change of the settings rebuilds the
+ * bar anyway. Main thread only.
  */
 final class WidgetBarLayout {
 
@@ -31,6 +32,11 @@ final class WidgetBarLayout {
 
     static boolean weatherHidden(SharedPreferences prefs) {
         return prefs.getBoolean(Keys.WIDGET_BAR_NO_WEATHER, false);
+    }
+
+    static boolean buttonsBeside(SharedPreferences prefs, boolean portrait) {
+        return WidgetBarPlan.buttonsBeside(dateHidden(prefs, portrait), weatherHidden(prefs),
+                prefs.getBoolean(Keys.WIDGET_BAR_BUTTONS_BESIDE, true));
     }
 
     /** @return whether the bar was changed (some widget is hidden) */
@@ -54,9 +60,12 @@ final class WidgetBarLayout {
             weather.setVisibility(View.GONE);
         }
 
-        // The wide variant of the music widget, in place of the usual one.
-        music.removeAllViews();
-        inflater.inflate(R.layout.music_bar_content_wide, music, true);
+        // With the buttons beside the text the wide variant of the music widget replaces the
+        // usual one. Otherwise the usual layout stays and has the whole widened width.
+        if (buttonsBeside(prefs, portrait)) {
+            music.removeAllViews();
+            inflater.inflate(R.layout.music_bar_content_wide, music, true);
+        }
 
         // The music widget ends where the last widget that is left begins, or at the bar's edge.
         boolean dateLeft = date != null && !noDate;

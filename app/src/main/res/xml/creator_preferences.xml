@@ -159,6 +159,13 @@
             android:summaryOn="@string/widget_bar_hidden_on"
             app:layout="@layout/nested_preference_category_switch" />
         <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="widget_bar_buttons_beside"
+            android:defaultValue="true"
+            android:title="@string/widget_bar_buttons_beside"
+            android:summaryOn="@string/widget_bar_buttons_beside_on"
+            android:summaryOff="@string/widget_bar_buttons_beside_off"
+            app:layout="@layout/nested_preference_category_switch" />
+        <com.android.launcher66.settings.CustomSwitchPreference
             android:key="widget_bar_large_text"
             android:defaultValue="false"
             android:title="@string/widget_bar_large_text"

@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">ชื่อเพลงและศิลปินในบรรทัดเดียว</string>
     <string name="widget_bar_one_line_on">บรรทัดเดียว: ศิลปิน – ชื่อเพลง</string>
     <string name="widget_bar_one_line_off">ชื่อเพลงอยู่เหนือศิลปิน</string>
+    <string name="widget_bar_buttons_beside">ปุ่มอยู่ข้างชื่อเพลง</string>
+    <string name="widget_bar_buttons_beside_on">ปุ่มสองแถวทางขวาของชื่อเพลงและศิลปิน</string>
+    <string name="widget_bar_buttons_beside_off">ปุ่มอยู่ใต้ชื่อเพลงและศิลปิน</string>
 </resources>

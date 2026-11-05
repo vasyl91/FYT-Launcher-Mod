@@ -144,6 +144,11 @@ public final class Keys {
     public static final String WIDGET_BAR_NO_DATE = "widget_bar_no_date";
     /** The weather is not shown in the widget bar and the music widget takes its room. */
     public static final String WIDGET_BAR_NO_WEATHER = "widget_bar_no_weather";
+    /**
+     * With the date or the weather hidden, the buttons of the music widget are beside the title and
+     * artist in two rows (on), or below them as usual (off).
+     */
+    public static final String WIDGET_BAR_BUTTONS_BESIDE = "widget_bar_buttons_beside";
     /** The texts of the widget bar are as large as the room allows (the usual size otherwise). */
     public static final String WIDGET_BAR_LARGE_TEXT = "widget_bar_large_text";
     /** The music widget of the bar shows "artist - title" in one line (two lines otherwise). */

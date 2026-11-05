@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">ចំណងជើង និងសិល្បករក្នុងបន្ទាត់តែមួយ</string>
     <string name="widget_bar_one_line_on">មួយបន្ទាត់៖ សិល្បករ – ចំណងជើង</string>
     <string name="widget_bar_one_line_off">ចំណងជើងនៅលើសិល្បករ</string>
+    <string name="widget_bar_buttons_beside">ប៊ូតុងនៅក្បែរចំណងជើង</string>
+    <string name="widget_bar_buttons_beside_on">ប៊ូតុងពីរជួរនៅខាងស្តាំចំណងជើង និងសិល្បករ</string>
+    <string name="widget_bar_buttons_beside_off">ប៊ូតុងនៅក្រោមចំណងជើង និងសិល្បករ</string>
 </resources>

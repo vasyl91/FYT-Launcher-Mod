@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">शीर्षक और कलाकार एक ही पंक्ति में</string>
     <string name="widget_bar_one_line_on">एक पंक्ति: कलाकार – शीर्षक</string>
     <string name="widget_bar_one_line_off">शीर्षक कलाकार के ऊपर</string>
+    <string name="widget_bar_buttons_beside">बटन शीर्षक के बगल में</string>
+    <string name="widget_bar_buttons_beside_on">शीर्षक और कलाकार के दाईं ओर बटनों की दो पंक्तियाँ</string>
+    <string name="widget_bar_buttons_beside_off">बटन शीर्षक और कलाकार के नीचे</string>
 </resources>

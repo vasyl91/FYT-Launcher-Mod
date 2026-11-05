@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Tiêu đề và nghệ sĩ trên một dòng</string>
     <string name="widget_bar_one_line_on">Một dòng: nghệ sĩ – tiêu đề</string>
     <string name="widget_bar_one_line_off">Tiêu đề ở trên nghệ sĩ</string>
+    <string name="widget_bar_buttons_beside">Nút bên cạnh tiêu đề</string>
+    <string name="widget_bar_buttons_beside_on">Hai hàng nút ở bên phải tiêu đề và nghệ sĩ</string>
+    <string name="widget_bar_buttons_beside_off">Nút bên dưới tiêu đề và nghệ sĩ</string>
 </resources>

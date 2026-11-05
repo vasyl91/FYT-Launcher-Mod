@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Cím és előadó egy sorban</string>
     <string name="widget_bar_one_line_on">Egy sor: előadó – cím</string>
     <string name="widget_bar_one_line_off">A cím az előadó felett</string>
+    <string name="widget_bar_buttons_beside">Gombok a cím mellett</string>
+    <string name="widget_bar_buttons_beside_on">Két sor gomb a cím és az előadó jobb oldalán</string>
+    <string name="widget_bar_buttons_beside_off">Gombok a cím és az előadó alatt</string>
 </resources>

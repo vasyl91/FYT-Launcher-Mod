@@ -6,7 +6,7 @@ package com.android.launcher66;
  * what happens to them when the date or the weather is hidden: the music widget takes their room.
  * Kept free of views so that the arithmetic can be tested; {@link WidgetBarLayout} applies it.
  */
-final class WidgetBarPlan {
+public final class WidgetBarPlan {
 
     static final float MUSIC_LAND = 0.28f;
     static final float DATE_LAND = 0.05f;
@@ -40,8 +40,13 @@ final class WidgetBarPlan {
     }
 
     /** In portrait the bar has no date, so only the weather can be hidden there. */
-    static boolean dateHidden(boolean noDate, boolean portrait) {
+    public static boolean dateHidden(boolean noDate, boolean portrait) {
         return noDate && !portrait;
+    }
+
+    /** The music widget's width share with nothing hidden: the width its cover is sized from. */
+    static float baseShare(boolean portrait) {
+        return portrait ? MUSIC_PORT : MUSIC_LAND;
     }
 
     /** The music widget's own width plus the widths of the hidden widgets. */
@@ -52,8 +57,17 @@ final class WidgetBarPlan {
         return MUSIC_LAND + (dateHidden ? DATE_LAND : 0f) + (weatherHidden ? WEATHER_LAND : 0f);
     }
 
-    /** The wide layout of the music widget is used when any widget of the bar is hidden. */
-    static boolean wide(boolean dateHidden, boolean weatherHidden) {
+    /** The music widget is wider than usual when any widget of the bar is hidden. */
+    public static boolean wide(boolean dateHidden, boolean weatherHidden) {
         return dateHidden || weatherHidden;
+    }
+
+    /**
+     * The layout with the buttons beside the text (music_bar_content_wide) is used when something
+     * is hidden and the user wants the buttons there. Otherwise the usual layout (the text, and
+     * the buttons below it) is used, with the whole widened width.
+     */
+    static boolean buttonsBeside(boolean dateHidden, boolean weatherHidden, boolean switchOn) {
+        return wide(dateHidden, weatherHidden) && switchOn;
     }
 }

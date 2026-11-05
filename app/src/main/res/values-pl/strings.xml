@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Tytuł i wykonawca w jednej linii</string>
     <string name="widget_bar_one_line_on">Jedna linia: wykonawca – tytuł</string>
     <string name="widget_bar_one_line_off">Tytuł nad wykonawcą</string>
+    <string name="widget_bar_buttons_beside">Przyciski obok tytułu</string>
+    <string name="widget_bar_buttons_beside_on">Dwa rzędy przycisków na prawo od tytułu i wykonawcy</string>
+    <string name="widget_bar_buttons_beside_off">Przyciski pod tytułem i wykonawcą</string>
 </resources>

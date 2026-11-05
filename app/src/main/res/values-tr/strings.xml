@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Başlık ve sanatçı tek satırda</string>
     <string name="widget_bar_one_line_on">Tek satır: sanatçı – başlık</string>
     <string name="widget_bar_one_line_off">Başlık sanatçının üstünde</string>
+    <string name="widget_bar_buttons_beside">Düğmeler başlığın yanında</string>
+    <string name="widget_bar_buttons_beside_on">Başlığın ve sanatçının sağında iki sıra düğme</string>
+    <string name="widget_bar_buttons_beside_off">Düğmeler başlığın ve sanatçının altında</string>
 </resources>

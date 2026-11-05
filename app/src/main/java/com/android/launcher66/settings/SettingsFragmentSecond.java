@@ -59,6 +59,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.ServiceIntentGate;
+import com.android.launcher66.WidgetBarPlan;
 import com.android.launcher66.colorpicker.ColorPicker;
 import com.android.launcher66.colorpicker.ColorPickerCallback;
 import com.fyt.skin.SkinAttribute;
@@ -123,6 +124,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomSwitchPreference widgetBarNoWeatherPreference;
     private CustomSwitchPreference widgetBarLargeTextPreference;
     private CustomSwitchPreference widgetBarOneLinePreference;
+    private CustomSwitchPreference widgetBarButtonsBesidePreference;
     private SwitchPreferenceCompat resizableBarPreference;
     private BottomBarHeightSeekBarPreference barHeightSeekBar;
     private Preference margin;
@@ -367,6 +369,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         widgetBarNoWeatherPreference = findPreference(Keys.WIDGET_BAR_NO_WEATHER);
         widgetBarLargeTextPreference = findPreference(Keys.WIDGET_BAR_LARGE_TEXT);
         widgetBarOneLinePreference = findPreference(Keys.WIDGET_BAR_ONE_LINE);
+        widgetBarButtonsBesidePreference = findPreference(Keys.WIDGET_BAR_BUTTONS_BESIDE);
 
         margin = findPreference(Keys.LAYOUT_MARGIN);
         String marginStr = sharedPrefs.getString(Keys.LAYOUT_MARGIN, "5");
@@ -569,6 +572,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (widgetBarOneLinePreference != null) {
             widgetBarOneLinePreference.setOnPreferenceClickListener(this);
+        }
+        if (widgetBarButtonsBesidePreference != null) {
+            widgetBarButtonsBesidePreference.setOnPreferenceClickListener(this);
         }
         updateWidgetBarRows();
         if (margin != null) {
@@ -775,6 +781,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 break;
             case Keys.WIDGET_BAR_NO_DATE:
             case Keys.WIDGET_BAR_NO_WEATHER:
+                // The layout row below appears (or goes) at once with the first hidden widget
+                updateWidgetBarRows();
+                helpers.setBarSettingsChanged(true);
+                break;
+            case Keys.WIDGET_BAR_BUTTONS_BESIDE:
             case Keys.WIDGET_BAR_LARGE_TEXT:
             case Keys.WIDGET_BAR_ONE_LINE:
                 helpers.setBarSettingsChanged(true);
@@ -1121,6 +1132,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         widgetBarNoWeatherPreference = null;
         widgetBarLargeTextPreference = null;
         widgetBarOneLinePreference = null;
+        widgetBarButtonsBesidePreference = null;
         resizableBarPreference = null;
         barHeightSeekBar = null;
         imm = null;
@@ -1143,7 +1155,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
     /**
      * The rows under "Widget bottom bar" are shown only while it is on. The date is hidden in
-     * landscape only: the portrait bar has no date.
+     * landscape only: the portrait bar has no date. "Buttons beside the title" is shown only
+     * while something is hidden (that is when the music widget has room to put them there).
      */
     private void updateWidgetBarRows() {
         boolean widgetBar = sharedPrefs.getBoolean(Keys.WIDGET_BAR, false);
@@ -1154,6 +1167,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (widgetBarNoWeatherPreference != null) {
             widgetBarNoWeatherPreference.setVisible(widgetBar);
+        }
+        if (widgetBarButtonsBesidePreference != null) {
+            boolean dateHidden = WidgetBarPlan.dateHidden(
+                    sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_DATE, false), portrait);
+            boolean weatherHidden = sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_WEATHER, false);
+            widgetBarButtonsBesidePreference.setVisible(widgetBar && WidgetBarPlan.wide(dateHidden, weatherHidden));
         }
         if (widgetBarLargeTextPreference != null) {
             widgetBarLargeTextPreference.setVisible(widgetBar);

@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Titel und Interpret in einer Zeile</string>
     <string name="widget_bar_one_line_on">Eine Zeile: Interpret – Titel</string>
     <string name="widget_bar_one_line_off">Der Titel über dem Interpreten</string>
+    <string name="widget_bar_buttons_beside">Tasten neben dem Titel</string>
+    <string name="widget_bar_buttons_beside_on">Zwei Tastenreihen rechts von Titel und Interpret</string>
+    <string name="widget_bar_buttons_beside_off">Tasten unter Titel und Interpret</string>
 </resources>

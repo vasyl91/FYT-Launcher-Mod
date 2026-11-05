@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">العنوان والفنان في سطر واحد</string>
     <string name="widget_bar_one_line_on">سطر واحد: الفنان – العنوان</string>
     <string name="widget_bar_one_line_off">العنوان فوق اسم الفنان</string>
+    <string name="widget_bar_buttons_beside">الأزرار بجانب العنوان</string>
+    <string name="widget_bar_buttons_beside_on">صفّان من الأزرار على يمين العنوان والفنان</string>
+    <string name="widget_bar_buttons_beside_off">الأزرار تحت العنوان والفنان</string>
 </resources>

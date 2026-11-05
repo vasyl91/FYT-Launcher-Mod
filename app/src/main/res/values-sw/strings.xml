@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Kichwa na msanii katika mstari mmoja</string>
     <string name="widget_bar_one_line_on">Mstari mmoja: msanii – kichwa</string>
     <string name="widget_bar_one_line_off">Kichwa juu ya msanii</string>
+    <string name="widget_bar_buttons_beside">Vitufe kando ya kichwa</string>
+    <string name="widget_bar_buttons_beside_on">Safu mbili za vitufe upande wa kulia wa kichwa na msanii</string>
+    <string name="widget_bar_buttons_beside_off">Vitufe chini ya kichwa na msanii</string>
 </resources>

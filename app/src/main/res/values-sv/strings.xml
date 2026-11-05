@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Titel och artist på en rad</string>
     <string name="widget_bar_one_line_on">En rad: artist – titel</string>
     <string name="widget_bar_one_line_off">Titeln ovanför artisten</string>
+    <string name="widget_bar_buttons_beside">Knappar bredvid titeln</string>
+    <string name="widget_bar_buttons_beside_on">Två rader knappar till höger om titel och artist</string>
+    <string name="widget_bar_buttons_beside_off">Knappar under titel och artist</string>
 </resources>

@@ -136,12 +136,19 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
             boolean largeText = prefs.getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_LARGE_TEXT, false);
             // The user's choice on every bar height (it used to follow the height of the bar)
             boolean oneLine = prefs.getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_ONE_LINE, false);
+            // The cover and the space behind it are sized from the widget's usual width, the one it
+            // has with the date and the weather shown, so they do not move when those are hidden.
+            boolean portrait = mRoot.getResources().getConfiguration().orientation
+                    == android.content.res.Configuration.ORIENTATION_PORTRAIT;
+            int baseW = MusicWidgetPlan.usualWidth(w, WidgetBarPlan.baseShare(portrait),
+                    WidgetBarPlan.musicShare(portrait, WidgetBarLayout.dateHidden(prefs, portrait),
+                            WidgetBarLayout.weatherHidden(prefs)));
             if (buttons instanceof FlexboxLayout) {
                 // The wide layout (WidgetBarLayout): the buttons are a block beside the text.
-                plan = MusicWidgetPlan.planBarWide(w, h, density, largeText, oneLine);
+                plan = MusicWidgetPlan.planBarWide(w, h, baseW, density, largeText, oneLine);
                 applyBarWide(plan, w);
             } else {
-                plan = MusicWidgetPlan.planBar(w, h, density, largeText, oneLine);
+                plan = MusicWidgetPlan.planBar(w, h, baseW, density, largeText, oneLine);
                 applyBar(plan, w);
             }
         } else {
@@ -202,7 +209,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         }
         if (column != null) {
             ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) column.getLayoutParams();
-            int gap = w - plan.columnPx - plan.coverPx;
+            int gap = plan.coverGapPx;
             if (lp.leftMargin != gap) {
                 lp.leftMargin = gap;
                 column.setLayoutParams(lp);
@@ -218,9 +225,8 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
     }
 
     /**
-     * The wide bar: the cover, the column of text between it and the block of buttons, and the
-     * block, a FlexboxLayout whose cells are 50% (2 x 2) or 25% (one row) wide. The order of the
-     * cells is set here, so that a change of the bar's height changes only sizes and order.
+     * The bar with the buttons beside the text: the cover, the column of text between it and the
+     * block of buttons, and the block, a FlexboxLayout of 2 x 2 cells (50% wide each).
      */
     private void applyBarWide(MusicWidgetPlan.Plan plan, int w) {
         View cover = mRoot.findViewById(R.id.iv_album_bg_two);
@@ -234,7 +240,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         }
         if (column != null) {
             ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) column.getLayoutParams();
-            int gap = Math.max(0, w - plan.columnPx - plan.coverPx - plan.buttonBlockPx);
+            int gap = plan.coverGapPx;
             if (lp.leftMargin != gap) {
                 lp.leftMargin = gap;
                 column.setLayoutParams(lp);
@@ -250,21 +256,17 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
                 buttons.setLayoutParams(lp);
             }
         }
-        // 2 x 2: prev, next, play/pause, favorite. One row: prev, play/pause, next, favorite.
-        int[] cells = plan.buttonRows == 2
-                ? new int[]{R.id.constraint_layout_prev_two, R.id.constraint_layout_next_two,
-                        R.id.constraint_layout_playpause_two, R.id.constraint_layout_favorite_two}
-                : new int[]{R.id.constraint_layout_prev_two, R.id.constraint_layout_playpause_two,
-                        R.id.constraint_layout_next_two, R.id.constraint_layout_favorite_two};
-        float basis = plan.buttonRows == 2 ? 0.5f : 0.25f;
+        // Always 2 x 2: prev and next above play/pause and favorite. Only the sizes are set here.
+        int[] cells = {R.id.constraint_layout_prev_two, R.id.constraint_layout_next_two,
+                R.id.constraint_layout_playpause_two, R.id.constraint_layout_favorite_two};
         for (int i = 0; i < cells.length; i++) {
             View cell = mRoot.findViewById(cells[i]);
             if (cell == null || !(cell.getLayoutParams() instanceof FlexboxLayout.LayoutParams)) {
                 continue;
             }
             FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) cell.getLayoutParams();
-            if (lp.getFlexBasisPercent() != basis || lp.getOrder() != i || lp.height != plan.buttonRowPx) {
-                lp.setFlexBasisPercent(basis);
+            if (lp.getFlexBasisPercent() != 0.5f || lp.getOrder() != i || lp.height != plan.buttonRowPx) {
+                lp.setFlexBasisPercent(0.5f);
                 lp.setOrder(i);
                 lp.height = plan.buttonRowPx;
                 cell.setLayoutParams(lp);

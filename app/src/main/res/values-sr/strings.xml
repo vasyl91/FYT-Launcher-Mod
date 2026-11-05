@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Наслов и извођач у једном реду</string>
     <string name="widget_bar_one_line_on">Један ред: извођач – наслов</string>
     <string name="widget_bar_one_line_off">Наслов изнад извођача</string>
+    <string name="widget_bar_buttons_beside">Дугмад поред наслова</string>
+    <string name="widget_bar_buttons_beside_on">Два реда дугмади десно од наслова и извођача</string>
+    <string name="widget_bar_buttons_beside_off">Дугмад испод наслова и извођача</string>
 </resources>

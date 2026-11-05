@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Naslov in izvajalec v eni vrstici</string>
     <string name="widget_bar_one_line_on">Ena vrstica: izvajalec – naslov</string>
     <string name="widget_bar_one_line_off">Naslov nad izvajalcem</string>
+    <string name="widget_bar_buttons_beside">Gumbi ob naslovu</string>
+    <string name="widget_bar_buttons_beside_on">Dve vrsti gumbov desno od naslova in izvajalca</string>
+    <string name="widget_bar_buttons_beside_off">Gumbi pod naslovom in izvajalcem</string>
 </resources>

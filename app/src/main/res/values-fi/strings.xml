@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Nimi ja esittäjä yhdellä rivillä</string>
     <string name="widget_bar_one_line_on">Yksi rivi: esittäjä – nimi</string>
     <string name="widget_bar_one_line_off">Nimi esittäjän yläpuolella</string>
+    <string name="widget_bar_buttons_beside">Painikkeet nimen vieressä</string>
+    <string name="widget_bar_buttons_beside_on">Kaksi painikeriviä nimen ja esittäjän oikealla puolella</string>
+    <string name="widget_bar_buttons_beside_off">Painikkeet nimen ja esittäjän alla</string>
 </resources>

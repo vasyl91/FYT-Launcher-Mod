@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Заглавие и изпълнител на един ред</string>
     <string name="widget_bar_one_line_on">Един ред: изпълнител – заглавие</string>
     <string name="widget_bar_one_line_off">Заглавието над изпълнителя</string>
+    <string name="widget_bar_buttons_beside">Бутони до заглавието</string>
+    <string name="widget_bar_buttons_beside_on">Два реда бутони вдясно от заглавието и изпълнителя</string>
+    <string name="widget_bar_buttons_beside_off">Бутони под заглавието и изпълнителя</string>
 </resources>

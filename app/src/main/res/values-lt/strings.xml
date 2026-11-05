@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Pavadinimas ir atlikėjas vienoje eilutėje</string>
     <string name="widget_bar_one_line_on">Viena eilutė: atlikėjas – pavadinimas</string>
     <string name="widget_bar_one_line_off">Pavadinimas virš atlikėjo</string>
+    <string name="widget_bar_buttons_beside">Mygtukai šalia pavadinimo</string>
+    <string name="widget_bar_buttons_beside_on">Dvi mygtukų eilės dešinėje nuo pavadinimo ir atlikėjo</string>
+    <string name="widget_bar_buttons_beside_off">Mygtukai po pavadinimu ir atlikėju</string>
 </resources>

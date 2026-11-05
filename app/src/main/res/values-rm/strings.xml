@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Titel ed artist en ina lingia</string>
     <string name="widget_bar_one_line_on">Ina lingia: artist – titel</string>
     <string name="widget_bar_one_line_off">Il titel sur l\'artist</string>
+    <string name="widget_bar_buttons_beside">Buttuns ordaifer il titel</string>
+    <string name="widget_bar_buttons_beside_on">Duas retschas da buttuns a dretga dal titel e da l\'artist</string>
+    <string name="widget_bar_buttons_beside_off">Buttuns sut il titel e l\'artist</string>
 </resources>

@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Titolo e artista su una sola riga</string>
     <string name="widget_bar_one_line_on">Una riga: artista – titolo</string>
     <string name="widget_bar_one_line_off">Il titolo sopra l\'artista</string>
+    <string name="widget_bar_buttons_beside">Pulsanti accanto al titolo</string>
+    <string name="widget_bar_buttons_beside_on">Due file di pulsanti a destra di titolo e artista</string>
+    <string name="widget_bar_buttons_beside_off">Pulsanti sotto titolo e artista</string>
 </resources>

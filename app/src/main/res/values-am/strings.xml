@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">ርዕስና አርቲስት በአንድ መስመር</string>
     <string name="widget_bar_one_line_on">አንድ መስመር፦ አርቲስት – ርዕስ</string>
     <string name="widget_bar_one_line_off">ርዕሱ ከአርቲስቱ በላይ</string>
+    <string name="widget_bar_buttons_beside">አዝራሮች ከርዕሱ ጎን</string>
+    <string name="widget_bar_buttons_beside_on">ሁለት ረድፍ አዝራሮች ከርዕሱና ከአርቲስቱ በስተቀኝ</string>
+    <string name="widget_bar_buttons_beside_off">አዝራሮች ከርዕሱና ከአርቲስቱ በታች</string>
 </resources>

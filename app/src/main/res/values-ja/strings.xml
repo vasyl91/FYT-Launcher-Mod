@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">タイトルとアーティストを1行で表示</string>
     <string name="widget_bar_one_line_on">1行：アーティスト – タイトル</string>
     <string name="widget_bar_one_line_off">タイトルをアーティストの上に表示</string>
+    <string name="widget_bar_buttons_beside">ボタンをタイトルの横に配置</string>
+    <string name="widget_bar_buttons_beside_on">タイトルとアーティストの右に2段のボタン</string>
+    <string name="widget_bar_buttons_beside_off">ボタンをタイトルとアーティストの下に配置</string>
 </resources>

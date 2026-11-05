@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Pealkiri ja esitaja ühel real</string>
     <string name="widget_bar_one_line_on">Üks rida: esitaja – pealkiri</string>
     <string name="widget_bar_one_line_off">Pealkiri esitaja kohal</string>
+    <string name="widget_bar_buttons_beside">Nupud pealkirja kõrval</string>
+    <string name="widget_bar_buttons_beside_on">Kaks nupurida pealkirja ja esitaja paremal pool</string>
+    <string name="widget_bar_buttons_beside_off">Nupud pealkirja ja esitaja all</string>
 </resources>

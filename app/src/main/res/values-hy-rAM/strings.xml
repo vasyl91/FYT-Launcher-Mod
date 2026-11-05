@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Վերնագիրն ու կատարողը մեկ տողում</string>
     <string name="widget_bar_one_line_on">Մեկ տող՝ կատարող – վերնագիր</string>
     <string name="widget_bar_one_line_off">Վերնագիրը կատարողից վերև</string>
+    <string name="widget_bar_buttons_beside">Կոճակները վերնագրի կողքին</string>
+    <string name="widget_bar_buttons_beside_on">Կոճակների երկու շարք վերնագրի և կատարողի աջ կողմում</string>
+    <string name="widget_bar_buttons_beside_off">Կոճակները վերնագրի և կատարողի տակ</string>
 </resources>

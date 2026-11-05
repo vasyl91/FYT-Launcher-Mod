@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Naslov i izvođač u jednom retku</string>
     <string name="widget_bar_one_line_on">Jedan redak: izvođač – naslov</string>
     <string name="widget_bar_one_line_off">Naslov iznad izvođača</string>
+    <string name="widget_bar_buttons_beside">Gumbi pokraj naslova</string>
+    <string name="widget_bar_buttons_beside_on">Dva reda gumba desno od naslova i izvođača</string>
+    <string name="widget_bar_buttons_beside_off">Gumbi ispod naslova i izvođača</string>
 </resources>

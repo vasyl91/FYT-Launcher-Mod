@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Titel og kunstner på én linje</string>
     <string name="widget_bar_one_line_on">Én linje: kunstner – titel</string>
     <string name="widget_bar_one_line_off">Titlen over kunstneren</string>
+    <string name="widget_bar_buttons_beside">Knapper ved siden af titlen</string>
+    <string name="widget_bar_buttons_beside_on">To rækker knapper til højre for titel og kunstner</string>
+    <string name="widget_bar_buttons_beside_off">Knapper under titel og kunstner</string>
 </resources>

@@ -516,4 +516,7 @@
     <string name="widget_bar_one_line">Назва і выканаўца ў адным радку</string>
     <string name="widget_bar_one_line_on">Адзін радок: выканаўца – назва</string>
     <string name="widget_bar_one_line_off">Назва над выканаўцам</string>
+    <string name="widget_bar_buttons_beside">Кнопкі побач з назвай</string>
+    <string name="widget_bar_buttons_beside_on">Два рады кнопак справа ад назвы і выканаўцы</string>
+    <string name="widget_bar_buttons_beside_off">Кнопкі пад назвай і выканаўцам</string>
 </resources>
