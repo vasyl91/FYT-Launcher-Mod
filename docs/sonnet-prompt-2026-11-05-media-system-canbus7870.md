@@ -14,8 +14,8 @@ Numery linii to stan z `bbcfaa49`. Są orientacyjne (≈): zawsze sprawdzaj je w
 | C4 | `Canbus: a library and callbacks of its own for the 7870` | 6 | C5 porównuje kandydatów z biblioteką, więc musi mieć właściwą bibliotekę dla urządzenia. |
 | C5 | `Fuel statistics: reader codes reach the service, automatic code check while driving` | 5 | Korzysta z C2 i C4. |
 | C6 | `VD host: protocol 3 with optional calls, older hosts keep the panes` | 1, 3 (infrastruktura) | Ścieżka Shizuku dla C7/C8 i nadawanie uprawnień w C9. |
-| C7 | `Music widget: covers of com.syu.media's online radio, FM and BT` | 1 | Niezależne od serc. Najpierw rzeczy pewne. |
-| C8 | `Music widget: com.syu.media favorites both ways` | 1 | Zależy od analizy dekompilacji (krok 0 w C7). |
+| C7 | `Music widget: covers of com.syu.media's online radio, FM and BT` | 1 | Najpierw okładki: drogi odczytu (pliki, providery), z których korzysta też C8. |
+| C8 | `Music widget: com.syu.media favorites, FM read-only, a note on the app's screen` | 1 | Korzysta z odczytu providera radia i z `SyuMediaFiles` z C7. |
 | C9 | `Standard version: overlay, notification access and unknown apps through root or Shizuku` | 3 (rozszerzenie) | Korzysta z C6. |
 | C10 | `PiP: panes survive a recreated launcher, day/night diagnostics` | 4 | Dotyka cyklu życia paneli. Osobno, żeby łatwo było cofnąć. |
 | C11 | `Docs: README and briefs consistent` | wszystkie | Tylko jeśli po C1–C10 coś w README zostało niespójne. |
@@ -74,35 +74,41 @@ Prefy zapisuj przez `apply()`.
    - gałęzie com.syu.music w `MediaFavoriteController`;
    - `fyt/car/MusicService.onStartCommand`;
    - nazwy i logo stacji z com.syu.radio w `StockRadioSource`.
-2. Każda operacja, która wymaga uprawnień, ma ścieżki w kolejności: **aplikacja systemowa → root → Shizuku**.
-   - Jeśli com.syu.media daje drogę bez uprawnień (eksportowany komponent, provider bez uprawnienia, AIDL), to ona idzie pierwsza, w każdym flavorze.
-   - Czego nie da się zrobić przez Shizuku, ma być logowane raz na proces i opisane w raporcie.
+2. Najpierw droga bez uprawnień: wszystko, czego tu używasz z com.syu.media, jest na 7870 eksportowane albo czytelne. Kiedy krok wymaga uprawnień, kolejność to **aplikacja systemowa → root → Shizuku**. Czego nie da się zrobić przez Shizuku, loguj raz na proces i opisz w raporcie.
+3. Serce muzyki USB i radia online w widżecie:
+   - zapis do bazy com.syu.media jak dziś;
+   - plus jednorazowy (raz na proces) Toast, że com.syu.media pokaże zmianę po przeładowaniu biblioteki;
+   - **bez** nowej opcji w ustawieniach; com.syu.media zostaje ukryte na liście „Select the music apps that should use the favorite cache”.
+4. Serce FM w widżecie:
+   - pokazuje stan z com.syu.media (**tylko odczyt**); naciśnięcie nic nie zmienia (log raz na proces);
+   - dotknięcie samego widżetu dalej otwiera stronę radia;
+   - serce BT zostaje szare.
 
 **Problem 3 (flavor):**
 
-3. Flavor `fyt` staje się `system`. W miejscach, które dzielą kod na „jednostka FYT” i „inne urządzenia”, **nazw nie zmieniasz** (lista w C1).
-4. Oba flavory działają na każdym urządzeniu, tak jak dziś:
+5. Flavor `fyt` staje się `system`. W miejscach, które dzielą kod na „jednostka FYT” i „inne urządzenia”, **nazw nie zmieniasz** (lista w C1).
+6. Oba flavory działają na każdym urządzeniu, tak jak dziś:
    - `system` tam, gdzie klucz platformy pasuje;
    - `standard` wszędzie, z rootem lub Shizuku.
-5. Kod przeznaczony dla jednostek FYT nie może wywrócić launchera.
+7. Kod przeznaczony dla jednostek FYT nie może wywrócić launchera.
    - Wyjątek z takiego kodu jest przechwycony i zapisany jako **raport niekrytyczny** przez mechanizm crash handlera, w pliku `compat_pid_<czas>.txt`.
    - Legenda w ustawieniach dostaje linię `compat – …` pod linią `crash – …`. Tłumaczenia muszą być we wszystkich językach.
-6. Sekcja `app_version` w ustawieniach:
+8. Sekcja `app_version` w ustawieniach:
    - druga linia pokazuje **tylko typ buildu** („Release build” / „Debug build”);
    - przycisk aktualizacji pokazuje w nawiasie plik, który pobierze, np. „Tap to download and update the app (system_release_1.2.2.apk)”.
 
 **Problem 5 (automatyczna diagnostyka CAN):**
 
-7. Startuje **2 minuty po wykryciu ruchu z GPS**.
+9. Startuje **2 minuty po wykryciu ruchu z GPS**.
    - Tylko na jednostkach FYT (`LauncherApplication.isFytDevice()`).
    - Tylko przy włączonych „Fuel statistics” (`user_stats`).
    - Tylko gdy dla tego auta test jeszcze się nie odbył albo poprzedni został przerwany (ACC off) lub nie skończył się z innego powodu.
-8. Diagnostyka nie zapisuje pliku. Do logcata trafia tylko jedna linia podsumowania.
-9. Kody wpisane ręcznie zawsze wygrywają. Kandydat z diagnostyki jest używany, gdy biblioteka nie ma kodu dla auta albo gdy jej kod w teście nie dał żadnych danych, a kandydat dał. Różnice są logowane.
+10. Diagnostyka nie zapisuje pliku. Do logcata trafia tylko jedna linia podsumowania.
+11. Kody wpisane ręcznie zawsze wygrywają. Kandydat z diagnostyki jest używany, gdy biblioteka nie ma kodu dla auta albo gdy jej kod w teście nie dał żadnych danych, a kandydat dał. Różnice są logowane.
 
 **Problem 6 (com.syu.canbus 7870):**
 
-10. 7870 dostaje własną ścieżkę callbacków i własną bibliotekę w assets. Launcher wybiera ją sam, po urządzeniu.
+12. 7870 dostaje własną ścieżkę callbacków i własną bibliotekę w assets. Launcher wybiera ją sam, po urządzeniu.
     - Obecna ścieżka i biblioteka 7862/8581 zostają domyślne dla pozostałych jednostek FYT.
     - Bibliotekę 7870 da się zaktualizować (skrypt i import) tak samo jak domyślną.
 
@@ -115,49 +121,102 @@ Prefy zapisuj przez `apply()`.
 - Brak okładek dla radia online, FM i BT.
 - AIMP działa w pełni.
 
-**Kod:**
+**Kod launchera:**
 - `fyt/car/SyuMediaClient` binduje `com.syu.media.music.MusicService` i `com.syu.media.online.OnlineRadioService` (IPlayer).
-- Ulubione zapisuje w `content://com.syu.media/song` lub `/radio` (`writeFavorite` ≈399, `readFavorite` ≈419). Selekcja: `_id=? AND path=?`.
-- `Song.read()` (≈536–562) czyta po `length` tylko `type` i pomija resztę pól `RadioSource`. Kolejność pól według Javadoc klasy: `type, country, local, freqTitle, icon`.
+- Ulubione zapisuje w `content://com.syu.media/song` lub `/radio` (`writeFavorite` ≈399, `readFavorite` ≈419), selekcja `_id=? AND path=?`. Widżet czyta flagę z providera (przy nowym utworze, po zapisie i co 5 tików), więc po naciśnięciu serce w widżecie się nie cofa.
+- `Song.read()` (≈536–562) czyta po `length` tylko `type` i pomija resztę pól `RadioSource`.
 - `MusicService.applySyuMedia` (≈258–307) buduje `StockTrack` z `cover = null`.
+- `StockRadioSource.requestLookup()` (≈204) **wyłącza** szukanie w `/sdcard/radio_logo` na jednostce com.syu.media. Komentarz „com.syu.media keeps no such files” jest błędny (pkt 6 niżej).
+- `StockBtSource` rejestruje kody modułu 2: 0, 1, 2, 13, 26, 28. Kodu okładki (51) nie zna.
+- `MediaFavoriteController.isStockFavoriteAvailable()` (≈1330) zwraca false dla nakładek RADIO i BT.
 
-**Serca: zapis z widżetu trafia do bazy, ale aplikacja tego nie widzi.**
-- W logu: `SyuMedia: favorite MEDIA_MUSIC=… written to 1 row(s)` (06:56:26.440, 06:56:32.795, …) oraz `MEDIA_ONLINE` (06:59:31.905, 06:59:37.819).
-- Po każdym zapisie com.syu.media loguje tylko `getPlayingSong` i `MediaProvider query uri: content://com.syu.media/song 1`. To odczyt zwrotny launchera. Nie ma żadnej reakcji listy ani ekranu.
-
-**Serce naciśnięte w samej aplikacji (06:56:22.722):**
-```
-MusicFragment: listFavoriteNotify:<path> favorite:true
-MusicFragment: update item music:MediaSource(... favorite=true)
-MediaBaseFragment: notifyItemChanged favorite:true
-```
-Aplikacja ma własną ścieżkę zmiany ulubionego, która aktualizuje kopię w pamięci (`MediaSource.favorite`) i UI. Zapis przez provider tej ścieżki nie uruchamia. Lista jest z Room/Flow (`MediaDao_Impl`, `DistinctFlowImpl`).
-
-**FM:** com.syu.media trzyma ulubione stacji u siebie, np.:
-```
-RadioCtrlFragment: updateFavorite station: RadioStation: _id:null, title:null city:DEF freq:10740 favorite:false cover_path:null   (07:00:48.113)
-RadioCtrlFragment: updateFavorite:true,freqInt:9040
-RadioCtrlFragment: radioCtrFavorite isChecked: true
-```
-- Launcher nie czyta tego wcale: `MediaFavoriteController.isStockFavoriteAvailable()` (≈1330) zwraca false dla nakładek RADIO i BT.
-- Ikony stacji FM:
-  - `RadioIconCache: coverSave filename:/storage/emulated/0/radio_logo` (06:56:12.360);
-  - `RadioIconCache: key:8760 ,path:null`, klucz to częstotliwość.
-- `StockRadioSource.requestLookup()` (≈204) **wyłącza** szukanie w `/sdcard/radio_logo` na jednostce com.syu.media. Komentarz „com.syu.media keeps no such files” jest sprzeczny z logiem.
-
-**BT:**
-- Demon `blink` (PID 1179) zapisuje okładkę telefonu do `/data/blink/Id3_CoverArt.JPEG` (07:04:20.835, `avc … create … name="Id3_CoverArt.JPEG"`).
-- `BtmusicFragment` czyta ją 07:04:23.683 (`iconPath:/data/blink/Id3_CoverArt.JPEG`, `albumChange album:/data/blink/…`).
-- Zmiana utworu w launcherze nastąpiła 07:04:19.754.
-- `StockBtSource` (kody modułu 2: 0, 1, 2, 13, 26, 28) okładki nie zna. Nie wiadomo, którym kodem com.syu.ms podaje ścieżkę.
-
-**Uprawnienia na tym urządzeniu:**
+**Log (03-11):**
+- Zapis z widżetu się udaje: `SyuMedia: favorite MEDIA_MUSIC=… written to 1 row(s)` (06:56:26.440, 06:56:32.795, …) i `MEDIA_ONLINE` (06:59:31.905, 06:59:37.819).
+- Po zapisie com.syu.media loguje tylko `getPlayingSong` i `MediaProvider query uri: content://com.syu.media/song 1` (odczyt zwrotny launchera). Lista i ekran nie reagują.
+- Serce naciśnięte w samej aplikacji (06:56:22.722):
+  ```
+  MusicFragment: listFavoriteNotify:<path> favorite:true
+  MusicFragment: update item music:MediaSource(... favorite=true)
+  MediaBaseFragment: notifyItemChanged favorite:true
+  ```
+- FM: `RadioCtrlFragment: updateFavorite station: RadioStation: _id:null, title:null city:DEF freq:10740 favorite:false cover_path:null` (07:00:48.113), `updateFavorite:true,freqInt:9040`, `RadioIconCache: coverSave filename:/storage/emulated/0/radio_logo` (06:56:12.360), `RadioIconCache: key:8760 ,path:null`.
+- Radio online: `ResourcesLoader: path:odm/app/cabinet.data` (06:57:54.247).
+- BT:
+  - `blink` (PID 1179) zapisuje `/data/blink/Id3_CoverArt.JPEG` o 07:04:20.835;
+  - `BtmusicFragment` czyta go o 07:04:23.683 (`iconPath:…`, `albumChange album:…`);
+  - zmiana utworu w launcherze nastąpiła o 07:04:19.754.
 - SELinux działa w trybie **permissive** (`permissive=1` we wszystkich `avc`).
-- com.syu.media działa jako zwykły uid aplikacji `u0a82` (domena `platform_app`), **nie jako uid 1000**. Czyta `/data/blink/…`, więc DAC tego pliku wpuszcza „others”.
+- com.syu.media działa jako zwykły uid aplikacji `u0a82` (domena `platform_app`), **nie jako uid 1000**. Wersja systemowa launchera nie ma więc do jej danych większego dostępu niż standard.
 
-**Zdekompilowane com.syu.media:**
-- Są w repo: `decompiled_com.syu.media/classes.dex/sources/com/syu/media/` (226 klas aplikacji). Katalogi `classes2.dex`–`classes4.dex` to biblioteki.
-- Komentarz `SyuMediaClient` mówi, że protokół IPlayer pochodzi właśnie z takiej dekompilacji.
+**Dekompilacja** (`decompiled_com.syu.media/classes.dex/sources/`):
+- Lokalizacja:
+  - aplikacja w `com/syu/media/`;
+  - radio w `com/syu/radio/` i `com/syu/manger/`;
+  - provider radia w `decompiled_com.syu.media/classes2.dex/sources/com/syu/radio/provider/`.
+- Manifestu nie ma. O eksporcie providera radia rozstrzyga próba w czasie działania (`SecurityException`). Sprawdź poniższe fakty w kodzie, zanim na nich oprzesz zmianę; różnice zgłoś.
+
+1. **Provider `com.syu.media`** (`provider/MediaProvider`, baza Room `media_database.db`):
+   - ścieżki:
+     - `song` (1);
+     - `list/#` (2): tylko query, zapytania łączone dla list 1 i 8;
+     - `video` (3): query omyłkowo czyta `song`;
+     - `Folder/#` (4): nieużywane;
+     - `radio` (5).
+   - `insert`, `update` i `delete` piszą przez surowe `SupportSQLiteDatabase` (własna transakcja, bez DAO Room) i **bez `notifyChange`**. `InvalidationTracker` Room nie zobaczy takiego zapisu, dopóki aplikacja nie zrobi własnej transakcji Room.
+   - Provider jest eksportowany bez uprawnienia: zapis launchera z uid 10199 się udaje.
+   - Kolumny:
+     - `song(_id, title, displayName, artist, album, path, folder, duration, favorite, length)`;
+     - `radio(type, country, local, freq, icon, _id, title, displayName, artist, album, path, folder, duration, favorite, length)`.
+   - Skany wstawiają `INSERT OR IGNORE`, więc nie kasują `favorite`. `UPDATE` całego wiersza robi tylko serce naciśnięte w aplikacji (`MediaBaseFragment.notifyItemChanged` → `MediaDao.update`).
+2. **Serce w aplikacji:**
+   - muzyka: checkbox `musicFavorite` w `music/fragment/MusicFragment` → `playSong.setFavorite(z)` (obiekt w pamięci) → LiveData `MusicModel.musicFavorite` → `MediaBaseFragment.notifyItemChanged` → `MediaDao.update` (Room). Room odświeża Flow: `MediaProxy.mPlayingList` (lista grania) i `MediaApp` (`getPlayListById(1)`);
+   - radio online: to samo z `RadioSource`;
+   - FM: `radio/fragment/RadioCtrlFragment.updateFavorite(fav, true)` → `RadioDao.findStationByFreqAndCity(freq, city)` → `insert`, `delete` albo `update` w `radio_database.db`, tabela `city_station(_id, title, freq, city, cover_path, url, online, favorite)`. `city` to `"DEF"` albo wybrane miasto.
+   - **Nic w aplikacji nie słucha zmian z zewnątrz.** Nie ma `ContentObserver`, receivera ani metody IPC dla ulubionych.
+   - Zmiana zapisana przez provider pojawi się w aplikacji dopiero po jej własnym zapisie Room (serce w niej, skan nośnika) albo po jej restarcie. **Zmiana utworu niczego nie przeładowuje**, bo lista grania jest w pamięci.
+3. **IPC** (`IPlayer`, implementacja `ipc/PlaybackBinder`):
+   - transakcje: 1 `play`, 2 `playListWithId(list, id)`, 3 `playWithPath`, 4 `playWithId`, 5 `playLast`, 6 `playNext`, 7 `pause`, 8 `isPlaying`, 9 `getProgress`, 10 `getPlayingSong`, 11 `getPlayMode`, 12 `seekTo`, 13 `setPlayMode`, 14 `audioSessionId`, 15/16 `(un)registerCallback`, 17/18 `(un)registerCallback2` (rozmiar wideo);
+   - **brak czegokolwiek o ulubionych**;
+   - `playListWithId` ładuje listę z bazy, ale uruchamia utwór od nowa (`playListWithSource`), więc odpada;
+   - `ICallback`: `onSongChanged`, `onPlayStatusChanged`, `onPlayModeChanged`;
+   - kody, których używa `SyuMediaClient`, są zgodne;
+   - `getPlayingSong()` daje kopię z pamięci, więc jej `favorite` bywa nieaktualne. Launcher słusznie czyta flagę z providera.
+4. **Receivery i akcje:**
+   - `companion/receiver/Receiver`, rejestrowany tylko przez `MainAct`: `com.fyt.systemui.remove` (zapis stanu, możliwa zmiana kanału dźwięku) i `PACKAGE_*`;
+   - `MediaFiles`: `MEDIA_MOUNTED`, `UNMOUNTED`, `EJECT` (chronione; uruchamiają skan);
+   - `MainAct` przyjmuje akcje kart: `com.syu.music`, `com.syu.radio`, `com.syu.online`, `com.syu.btmusic`;
+   - nie ma obsługi klawisza „ulubione”.
+5. **Provider `com.syu.radio`** (`com/syu/radio/provider/RadioProvider`, w tej samej aplikacji):
+   - `city_station` (1): query. Gdy jest selekcja, `selectionArgs` są wymagane (`Intrinsics.checkNotNull`), inaczej NPE. Dlatego `content query --where …` bez argumentów zawodzi;
+   - `city_station/*/#` (2): zwraca `query("")`. Nie używaj;
+   - `local_assert` (3): statyczny kursor `freq, cover_path, title` z logo znalezionymi w `radio_logo`. `MediaApp` odświeża go i woła `notifyChange("content://com.syu.radio/local_assert")`, czyli jest przewidziany dla innych aplikacji;
+   - `insert`, `update` i `delete` zwracają `null`/`-1`: **tylko odczyt**.
+6. **Okładki:**
+   - **FM** (`companion/cache/RadioIconCache`):
+     - katalog `MediaApp.getInternalPath()` (`/storage/emulated/0`) + `/radio_logo`, opcjonalnie podkatalog miasta;
+     - pliki `<Nazwa>_<freq>.png`: nazwa dzielona po `_` na **dokładnie 2** części; z częstotliwości usuwana jest kropka (`90.40` → 9040, więc dwa miejsca po przecinku);
+     - bez logo aplikacja pokazuje losowo obrazek `radio1`–`radio3` ze swoich zasobów.
+   - **Radio online** (`online/fragment/OnlineFragment` ≈565–570, `companion/resources/ResourcesLoader`):
+     - `RadioSource.icon` to **nazwa pliku drawable** w paczce zasobów `/odm/app/cabinet.data` (APK);
+     - aplikacja bierze pakiet z `getPackageArchiveInfo` i zasób przez `getIdentifier(nazwa bez rozszerzenia, "drawable", pakiet)`;
+     - bez ikony bierze okładkę z `IconCache` (osadzoną albo losową `album*`).
+   - **BT** (`com/syu/manger/module/bt/BluetoothObserver`):
+     - com.syu.ms, moduł 2, **kod 51** (`strs[0]`) to ścieżka okładki (tu `/data/blink/Id3_CoverArt.JPEG`);
+     - aplikacja czyta plik od razu po kodzie 51 i ponownie 1,5 s po zmianie tytułu lub czasu (`BluetoothObserver$updateIcon$1`);
+     - inne kody tej klasy: 0 tytuł, 1 wykonawca, 2 czas całkowity, 3/4 numer i liczba utworów, 9 stan BT, 13 gra, 26 album, 28 pozycja, 44 bateria telefonu, 45 sygnał.
+   - **Muzyka USB:** okładka osadzona. Launcher czyta ją sam; bez zmian.
+
+**Co jest możliwe** (rozstrzyga C7/C8):
+
+| Operacja | Bez uprawnień | System (uid 1000) | Root | Shizuku (shell) |
+|---|---|---|---|---|
+| Serce muzyki/online: widżet → baza com.syu.media | tak (provider, dziś) | tak | tak | tak |
+| …widżet → ekran com.syu.media od razu | **nie** (brak API) | nie | nie (tylko restart aplikacji/utworu, zabroniony) | nie |
+| Serce FM: aplikacja → widżet | tak, jeśli `com.syu.radio` eksportowany | tak (czyta też nieeksportowany) | tak (`su -c content query`) | **nie**, jeśli nieeksportowany |
+| Serce FM: widżet → aplikacja | **nie** (provider tylko do odczytu, baza prywatna, aplikacja i tak by nie zauważyła) | nie | nie | nie |
+| Logo FM | tak (`local_assert`; `/sdcard/radio_logo` z dostępem do pamięci) | tak | tak | tak |
+| Ikona stacji online | tak (APK w `/odm/app`; na 7870 SELinux permissive) | tak | tak (kopia przez `su -c cat`) | tak (kopia przez host, C6) |
+| Okładka BT | tak (kod 51 + odczyt pliku; permissive) | tak | tak | tak, jeśli DAC pozwala |
 
 ### 3.2 Problem 2: logi (ten sam plik)
 
@@ -358,7 +417,7 @@ Pakiet to nadal `com.syu.canbus`, a launcher rozmawia z `com.syu.ms` bezpośredn
    - `LEGACY_UPDATE_FILE_PREFIXES = {"update", "phone_release_", "fyt_release_"}`, żeby `deleteInstalledUpdates()` sprzątał stare pobrania;
    - nowe `public static String updateFileName(String version)`, używane w URL-u (≈225, ≈263) i w przycisku;
    - popraw komentarze ≈35–40.
-7. `settings/SettingsFragmentFirst` (decyzja 6):
+7. `settings/SettingsFragmentFirst` (decyzja 8):
    - `buildLine` to tylko typ buildu. Usuń użycie `build_flavor_*`.
    - Kolejność linii zostaje: najpierw `deviceLine + "\n" + buildLine`, potem `appType + "\n" + buildLine + "\n" + deviceLine`.
    - Release, w `onUpdateAvailable`: `appVersionUpdate.setTitle(getString(R.string.update_version_button_file, VersionChecker.updateFileName(latestVersion)))`.
@@ -583,7 +642,7 @@ Nie owijaj kodu, który nie jest kodem FYT. Nie rozsiewaj try/catch w środku lo
 - potem `readerGuessesChanged()`;
 - jedna linia `Log.i("CanbusAutoCheck", "done car=… speed=… rpm=… fuel=… range=… librarySilent=… notFound=[…]")`. Bez pliku i bez Toastu.
 
-**Użycie kandydatów (decyzja 9)** w `CanbusService`:
+**Użycie kandydatów (decyzja 11)** w `CanbusService`:
 - spalanie i zasięg: kod użytkownika → para biblioteki, która daje dane (`CodePairChooser`) → kandydat `auto_codes`, gdy biblioteka nie ma pary albo flaga mówi „milczała”;
 - prędkość i RPM: jak dziś (użytkownik → podpowiedź readera lub diagnostyki);
 - loguj różnicę kandydat ≠ biblioteka.
@@ -594,8 +653,7 @@ Nie owijaj kodu, który nie jest kodem FYT. Nie rozsiewaj try/catch w środku lo
 2. Nowe transakcje (implementacja w `HostServices`, sprawdzanie uid jak w `allowWriteSettings`, `VdHostCore.isPackageOfUid`):
    - `TX_READ_FILE(path)`:
      - zwraca `ParcelFileDescriptor` do odczytu;
-     - tylko zwykły plik ≤2 MB, ścieżka kanoniczna (bez dowiązań) z białej listy: `/data/blink/Id3_CoverArt.JPEG`, `/storage/emulated/0/radio_logo/`, `/storage/emulated/0/Android/data/com.syu.media/`;
-     - listę zawęź lub uzupełnij według dekompilacji com.syu.media;
+     - tylko zwykły plik ≤2 MB, ścieżka kanoniczna (bez dowiązań) z białej listy: pliki obrazów w `/data/blink/` (ścieżka z kodu 51, §3.1), `/storage/emulated/0/radio_logo/`, `/odm/app/cabinet.data` (paczka ikon radia online);
      - samą białą listę zrób w czystej klasie `HostFilePolicy` z testem.
    - `TX_ALLOW_APP_OP(pkg, op)`: `op ∈ {SYSTEM_ALERT_WINDOW, REQUEST_INSTALL_PACKAGES, WRITE_SETTINGS}` → `cmd appops set <pkg> <op> allow`.
    - `TX_ALLOW_NOTIFICATION_LISTENER(component)`: komponent pakietu wywołującego → `cmd notification allow_listener <component>`. Przy błędzie zwraca raport.
@@ -611,112 +669,106 @@ Nie owijaj kodu, który nie jest kodem FYT. Nie rozsiewaj try/catch w środku lo
 
 ## C7 — `Music widget: covers of com.syu.media's online radio, FM and BT`
 
-### Krok 0 — analiza dekompilacji com.syu.media
-Odpowiedzi na pytania a–f zapisz w Javadoc `SyuMediaClient` i w treści commitów C7/C8.
+Klasy i linie com.syu.media podane w §3.1 pochodzą z dekompilacji. Przed kodowaniem sprawdź je w `decompiled_com.syu.media/`, a różnice opisz w raporcie.
 
-**a. Provider** (authority `com.syu.media`):
-- ścieżki i kody `UriMatcher`;
-- tabele i kolumny (`song`, `radio`, tabela stacji FM?);
-- czy `update()` woła `notifyChange`;
-- Room czy surowe SQLite.
+### C7.1 Odczyt plików z łańcuchem uprawnień: `com/fyt/car/SyuMediaFiles.java` (tylko w tle)
 
-**b. Ulubione wewnątrz aplikacji:**
-- jak ekran i listy dowiadują się o zmianie: `MusicFragment.listFavoriteNotify`, `MediaBaseFragment.notifyItemChanged`, `RadioCtrlFragment.updateFavorite`, `OnlineFragment`;
-- gdzie aktualizowane jest `MediaSource.favorite` grającego utworu (Player/MediaProxy).
-
-**c. Każde wejście z zewnątrz, które zmienia ulubione albo odświeża listę:**
-- eksportowane komponenty z manifestu (`exported`, uprawnienia);
-- receivery rejestrowane dynamicznie: przy targetSdk 26 są eksportowane;
-- wszystkie transakcje IPlayer i innych AIDL (szukaj `setFavorite`, `collect`, `updateSong`, `reload`);
-- obsługa klawisza „ulubione” z com.syu.ms.
-
-**d. Ulubione stacji FM:** gdzie leżą, klucz (`freq` + `band`? `city "DEF"`), czy provider je udostępnia.
-
-**e. Okładki:**
-- nazewnictwo w `RadioIconCache` (`/storage/emulated/0/radio_logo`, klucz `freq`) i `RadioStation.cover_path`;
-- zawartość pola `icon` stacji online (URL? asset? plik?) i jego cache;
-- skąd `BtmusicFragment` bierze `/data/blink/Id3_CoverArt.JPEG`: kod modułu 2 com.syu.ms czy stała.
-
-**f.** uid i procesy com.syu.media. Według logu to zwykły uid aplikacji, nie 1000.
-
-**Jeśli dekompilacji nie ma w repo:**
-- C7 zrób z tym, co wiadomo z logu: stała ścieżka BT, oba schematy nazw `radio_logo`, `icon` tylko jako URL lub ścieżka;
-- C8 pomiń;
-- zgłoś to w raporcie.
-
-### C7.1 Odczyt plików z łańcuchem uprawnień — `com/fyt/car/SyuMediaFiles.java` (tylko w tle)
 Kolejne próby:
-1. bezpośredni `FileInputStream`. Na 7870 SELinux jest permissive, a com.syu.media (zwykły uid) czyta te pliki, więc to zadziała w każdym flavorze;
-2. aplikacja systemowa: to ten sam odczyt jako uid 1000. Osobnego kroku nie ma, ale zaloguj, który uid czytał;
-3. root: `su -c cat <path>` (strumień binarny, limit 2 MB, timeout 3 s). Tylko gdy `WindowHostVdClient.hasRoot()`;
-4. Shizuku lub demon: `TX_READ_FILE` (C6), gdy `supportsOptionalCalls()`.
+1. Bezpośredni `FileInputStream`. Na 7870 SELinux jest permissive, a com.syu.media (zwykły uid) sama czyta te pliki, więc to zadziała w każdym flavorze.
+2. Aplikacja systemowa: ten sam odczyt jako uid 1000. Osobnego kroku nie ma, ale zaloguj uid.
+3. Root: `su -c cat <path>` (strumień binarny, limit 2 MB, timeout 3 s), tylko gdy `WindowHostVdClient.hasRoot()`.
+4. Shizuku albo demon: `TX_READ_FILE` (C6), gdy `supportsOptionalCalls()`.
 
 Zasady:
 - Zapamiętaj per rodzina ścieżek, co zadziałało, żeby nie pytać `su` przy każdej okładce.
-- Ścieżki tylko z białej listy C6.
+- Ścieżki tylko z białej listy C6:
+  - plik ze ścieżki kodu 51 w `/data/blink/`;
+  - `/storage/emulated/0/radio_logo/`;
+  - `/odm/app/cabinet.data`.
 - Log raz na rodzinę: `SyuMediaFiles: <family> via <direct|system|root|shizuku|daemon> -> ok|fail`.
+- Plik paczki zasobów, którego nie da się otworzyć bezpośrednio, kopiuj do `getCacheDir()/stock_res/cabinet.apk`. Odśwież kopię, gdy zmieni się rozmiar lub czas modyfikacji źródła.
 
 ### C7.2 Radio online
-1. `SyuMediaClient.Song.read()` czyta wszystkie pola `RadioSource` w kolejności z dekompilacji. Sprawdzaj `dataAvail()` przed każdym polem.
-2. `State` dostaje `iconRef`.
-3. `com/fyt/car/StockCoverLoader` (executor w tle) rozwiązuje ikonę:
-   - `http(s)` → OkHttp, cache `getCacheDir()/stock_covers/<sha1>`, limit 512 KB;
-   - plik → `SyuMediaFiles`;
-   - asset lub zasób com.syu.media → `createPackageContext("com.syu.media", 0)`;
-   - cokolwiek innego → raz log i brak okładki.
-4. Dekoduj z `inSampleSize` do ≤512 px. Gdy okładka dojdzie, opublikuj nowy `State`.
-5. `MusicService.applySyuMedia` (≈287) przekazuje `cover` do `StockTrack`. Tik co sekundę nie może czekać na okładkę.
+1. `SyuMediaClient.Song.read()`:
+   - po `type` czytaj `country`, `local`, `freqTitle` i `icon`, w kolejności z `RadioSource.writeToParcel`;
+   - przed każdym polem sprawdź `dataAvail()`;
+   - `State` dostaje `icon`.
+2. `com/fyt/car/StockCoverLoader` (executor w tle, cache w pamięci per nazwa ikony):
+   - `PackageInfo pi = pm.getPackageArchiveInfo("/odm/app/cabinet.data", 0)`, potem `pi.applicationInfo.sourceDir = publicSourceDir = <ścieżka albo kopia>` i `Resources r = pm.getResourcesForApplication(pi.applicationInfo)`. To publiczne API; **nie** używaj ukrytego `AssetManager.addAssetPath`, którego używa com.syu.media;
+   - zasób: `r.getIdentifier(<icon bez rozszerzenia>, "drawable", pi.packageName)`;
+   - dekoduj z `inSampleSize` do ≤512 px; bajty PNG trafiają do `StockTrack.cover`;
+   - `Resources` paczki trzymaj raz na proces. Gdy plik się zmieni (rozmiar lub czas modyfikacji), wczytaj je ponownie;
+   - `icon` pusty albo nieznany daje okładkę domyślną widżetu;
+   - log raz na stację: `StockCovers: online '<title>' icon=<name> -> ok|missing (via …)`.
+3. `MusicService.applySyuMedia` (≈287) przekazuje `cover` do `StockTrack`. Okładka dochodzi później jako nowy `State`, więc tik co sekundę na nią nie czeka.
 
 ### C7.3 FM
-1. `StockRadioSource.requestLookup()` (≈204): zdejmij wyłączenie dla jednostki com.syu.media.
-2. Na 7870 szukaj w `/storage/emulated/0/radio_logo` według schematu com.syu.media (z `RadioIconCache`) i schematu com.syu.radio (`<Name>_<freq>.png`).
-3. Do tego `cover_path` stacji, jeśli C8 daje do niego dostęp (odczyt przez `SyuMediaFiles`).
-4. Ścieżka 7862 (com.syu.radio, `fmbd`) zostaje bez zmian.
+1. `StockRadioSource.requestLookup()` (≈204): zdejmij wyłączenie dla jednostki com.syu.media i popraw komentarz.
+2. Na 7870, w tej kolejności:
+   - a) `content://com.syu.radio/local_assert` (`freq`, `cover_path`, `title`; `freq` w tych samych jednostkach co `StockRadioSource.freq`):
+     - bez uprawnień, jeśli provider jest eksportowany;
+     - `SecurityException` → jeden log i krok b);
+   - b) skan `/storage/emulated/0/radio_logo` istniejącym `lookup()`. Schemat `<Nazwa>_<freq>.png` jest taki sam jak w com.syu.radio. Dopilnuj reguł `RadioIconCache`: dokładnie 2 części, kropka usuwana, `90.40` → 9040;
+   - c) `cover_path` stacji z `city_station` (odczyt z C8.2), jeśli jest niepusty.
+3. `title` z `local_assert` lub z nazwy pliku jest nazwą stacji, gdy brak RDS PS (tak jak dziś na 7862).
+4. Bez logo:
+   - obrazek `radio1`–`radio3` z zasobów com.syu.media: `pm.getResourcesForApplication("com.syu.media")`, `getIdentifier("radio" + (1 + freq % 3), "drawable", "com.syu.media")`;
+   - wybór ma być stały dla częstotliwości, nie losowy jak w aplikacji;
+   - brak zasobu daje okładkę domyślną widżetu.
+5. Ścieżka 7862 (com.syu.radio, `fmbd`) zostaje bez zmian.
 
 ### C7.4 BT (tylko jednostka com.syu.media)
-1. `StockBtSource`: ścieżka okładki z dekompilacji. Jeśli com.syu.ms podaje ją kodem, zarejestruj ten kod. W innym przypadku stała `/data/blink/Id3_CoverArt.JPEG`.
-2. Odczyt 1,5, 3 i 6 s po zmianie utworu.
-3. Plik jest przyjmowany tylko, gdy `lastModified ≥ czas zmiany utworu − 2 s`. W innym przypadku to okładka poprzedniego utworu.
-4. Przy zmianie utworu okładkę czyść. Telefon bez okładki daje domyślną.
-5. Serce BT zostaje szare.
-6. Widżet: sprawdź, że `StockTrack.cover` jest rysowany dla `MEDIA_ONLINE`, `RADIO` i `MEDIA_BT`. Dla `RADIO` działa już dziś.
+1. `StockBtSource.start()`: zarejestruj też **kod 51** modułu 2. `iconPath = firstString(strs)`; pusty oznacza brak okładki.
+2. Plik ze ścieżki czytaj przez `SyuMediaFiles`:
+   - od razu po kodzie 51 z niepustą ścieżką;
+   - 1,5 s po zmianie tytułu, jak `BluetoothObserver`;
+   - jeśli plik się jeszcze nie zmienił, ponownie po 3 i 6 s.
+3. Plik przyjmij tylko, gdy `lastModified ≥ czas zmiany utworu − 2 s`. `blink` nadpisuje jeden plik, więc starszy to okładka poprzedniego utworu.
+4. Przy zmianie utworu okładkę wyczyść. Telefon bez okładki daje okładkę domyślną. Serce BT zostaje szare.
+5. Widżet: sprawdź, że `StockTrack.cover` jest rysowany dla `MEDIA_ONLINE`, `RADIO` i `MEDIA_BT`. Dla `RADIO` działa to już dziś.
 
 ### C7.5 Testy (czysta Java, `app/src/test/java/com/fyt/car/`)
-- klasyfikator rodzaju ikony;
-- dopasowanie nazw plików logo w obu schematach;
-- reguła świeżości okładki BT.
+- Parser nazwy logo zgodny z `RadioIconCache` (`<Nazwa>_<freq>.png`, dokładnie 2 części, kropka usuwana).
+- Reguła świeżości okładki BT.
+- Wybór `radio1..3` po częstotliwości.
+- Odczyt pól `RadioSource`, jeśli da się go wydzielić z `Parcel` do czystej funkcji. Jeśli nie, pomiń.
 
-## C8 — `Music widget: com.syu.media favorites both ways`
+## C8 — `Music widget: com.syu.media favorites, FM read-only, a note on the app's screen`
 
-### C8.1 Zapis z widżetu (muzyka, radio online, FM)
-Dobierz drogę według kroku 0 (b, c, d) i zaimplementuj w `com/fyt/car/SyuMediaFavorites`:
+### C8.1 Muzyka USB i radio online (decyzja 3)
+1. Zapis z widżetu zostaje jak dziś: `SyuMediaClient.writeFavorite`, provider, `_id=? AND path=?`, potem odczyt zwrotny.
+   - To jedyna droga, która nie przerywa odtwarzania. com.syu.media nie ma API ulubionych, a jej provider omija Room (§3.1, punkty 1–3).
+   - **Nie** dodawaj `notifyChange`, bo nikt go nie słucha.
+   - **Nie** wołaj `playListWithId` ani `playWithId`, bo restartują utwór.
+   - **Nie** restartuj aplikacji.
+2. Po pierwszym udanym zapisie w procesie pokaż krótki Toast na wątku głównym, raz na proces (statyczna flaga). Nowy string `syu_media_favorite_note` dodaj do 59 plików:
+   - EN: „Saved. The media app shows the heart after it reloads its library (e.g. after a restart).”;
+   - PL: „Zapisano. Aplikacja multimedialna pokaże serce po przeładowaniu biblioteki (np. po ponownym uruchomieniu).”
+3. Bez nowej opcji w ustawieniach. com.syu.media zostaje ukryte na liście „Select the music apps that should use the favorite cache” (`MediaFavoriteController.isFavoriteCacheBlockedByAccount`). Sprawdź, że nadal tak jest.
+4. Log w `writeFavorite` uzupełnij o id: `favorite <kind> id=<id> =<b> written to <n> row(s)`.
+5. README, sekcja Music widget: serce z widżetu com.syu.media pokazuje dopiero po przeładowaniu biblioteki.
 
-| Co daje com.syu.media | Droga | System | Root | Shizuku |
-|---|---|---|---|---|
-| Eksportowany lub dynamiczny receiver, eksportowana usługa albo metoda AIDL, która zmienia lub przeładowuje ulubione | wywołaj ją bezpośrednio, bez uprawnień | tak | tak | tak |
-| Tylko komponent nieeksportowany | jawny intent lub bind w procesie (uid 1000 może) → `su -c am broadcast\|start-service -n …` | tak | tak | **nie**: shell nie dosięga nieeksportowanych komponentów |
-| Tylko provider, a aplikacja obserwuje go `ContentObserver` | zapis jak dziś + `notifyChange` na dokładnie obserwowany URI | tak | tak | tak |
-| Nic z powyższych | zapis jak dziś; raz na proces log „com.syu.media shows it after it reloads its list” | — | — | — |
-
-- Wolno używać tylko dróg, które com.syu.media sama przewiduje.
-- **Nigdy** nie rób force-stop ani kill com.syu.media.
-- **Nigdy** nie zapisuj jej prywatnej bazy, kiedy aplikacja działa.
-
-### C8.2 Odczyt (FM)
-1. Najpierw provider, bez uprawnień.
-2. Gdy tabela jest tylko prywatna: root przez `su -c content query --uri …` (provider nieeksportowany) albo przez kopię plików bazy do `cacheDir` (`su -c cat`) i odczyt kopii tylko do odczytu.
-3. Shizuku tego nie potrafi. Wpisz to w log i raport.
-4. Stan stacji (częstotliwość i pasmo ze `StockRadioSource`):
-   - czytaj przy zmianie stacji;
-   - co około 5 s, gdy radio jest pokazane;
-   - przy powrocie launchera na wierzch, jak `SyuMusicLibrary.onLauncherResumed`.
-
-### C8.3 `MediaFavoriteController`
-- Serce FM jest aktywne na jednostce com.syu.media, gdy ulubione FM są osiągalne. BT zostaje szare.
-- Naciśnięcie trafia do `SyuMediaFavorites`.
-- Gałęzie com.syu.music bez zmian. Sprawdź: `git diff` nie dotyka `SyuMusicLibrary`.
-- Log `SyuMediaFav: <kind> <key> favorite=<b> via <droga> -> <wynik>`.
-- Test czystej funkcji wyboru drogi z zestawu możliwości.
+### C8.2 FM: tylko odczyt (decyzja 4)
+1. Nowa klasa `com/fyt/car/SyuMediaRadioFavorites` (praca w tle).
+   - Zapytanie:
+     - `content://com.syu.radio/city_station`, projekcja `favorite, cover_path, title`;
+     - selekcja `freq=? AND favorite=1`, `selectionArgs` zawsze podane;
+     - miasta nie znamy, bo jego wybór siedzi w prywatnych prefach com.syu.media. Ulubiony wiersz tej częstotliwości w dowolnym mieście liczy się jako ulubiony.
+   - Kolejność dróg:
+     1. bez uprawnień (provider eksportowany);
+     2. aplikacja systemowa: ten sam odczyt (uid 1000 czyta też nieeksportowany);
+     3. root: `su -c content query --uri content://com.syu.radio/city_station --projection freq:favorite:cover_path:title --sort "favorite DESC"`.
+        - Bez `--where`, bo provider rzuca NPE przy selekcji bez argumentów.
+        - Czytaj wiersze `Row: …`, dopóki `favorite=1`, potem zakończ proces.
+        - Wynik trzymaj 60 s.
+     4. Shizuku: niemożliwe, gdy provider nie jest eksportowany (shell). Zaloguj raz.
+   - Kiedy czytać: przy zmianie stacji, co około 5 s, gdy radio jest pokazane, i przy powrocie launchera na wierzch. Wynik trzymaj w pamięci per częstotliwość.
+2. `StockRadioSource.buildTrack()` na jednostce com.syu.media ustawia `favorite` na wynik odczytu albo na `null`, gdy stan jest nieznany.
+3. `MediaFavoriteController`:
+   - `isStockFavoriteAvailable()` i `getStockFavoriteState()`: dla nakładki `RADIO` na jednostce com.syu.media pokaż stan (pełne lub puste), gdy jest znany. Użyj istniejącego wyglądu nieaktywnego przycisku, z wypełnieniem według stanu, bez nowych grafik;
+   - `toggleStockFavorite()`: dla FM nic nie zmienia. Log raz na proces: `Press ignored: com.syu.media's FM favorites are read-only`;
+   - BT zostaje szare. com.syu.music bez zmian (`git diff` nie dotyka `SyuMusicLibrary`).
+4. Test czystej funkcji, która parsuje wynik `content query`.
 
 ## C9 — `Standard version: overlay, notification access and unknown apps through root or Shizuku`
 
@@ -776,16 +828,24 @@ Rób go tylko wtedy, gdy po C1–C10 w README zostały niespójności.
    - c) Światła mijania wł./wył.: w logu brak `onDestroy … isChangingConfigurations=true`, a jeśli się pojawi, to `panes handed over`.
    - d) Brak plików `compat_pid_` w normalnej pracy.
 4. Scenariusze dla testera 7870 (standard + Shizuku). Wypisz je po angielsku, w stylu instrukcji testera:
-   - a) Pliki USB: serce w widżecie zmienia serce w aplikacji. Log `SyuMediaFav: … via …` mówi, którą drogą.
-   - b) Radio online: okładka i serca w obie strony.
-   - c) FM: logo, jeśli com.syu.media je ma; serca w obie strony, jeśli dostępne.
-   - d) BT: okładka telefonu 2–6 s po zmianie utworu.
-   - e) Klasa w „Fuel statistics” z biblioteki 7870. Import trafia do biblioteki 7870.
-   - f) W logu brak `avc … getattr … /odm/app/…apk` z `launcher-loader`. Ostrzeżenia `SurfaceSyncer`/`Parcel` mogą zostać (framework).
+   - a) Pliki USB:
+     - serce w widżecie zmienia się od razu i zostaje;
+     - przy pierwszym naciśnięciu pojawia się komunikat;
+     - com.syu.media pokazuje zmianę po ponownym uruchomieniu albo po dowolnym sercu naciśniętym w niej;
+     - serce zmienione w aplikacji trafia do widżetu w ciągu ≤5 s.
+   - b) Radio online: okładka stacji taka jak w aplikacji; serca jak w a).
+   - c) FM:
+     - logo z `radio_logo`, jeśli jest, a w innym razie obrazek radia jak w aplikacji;
+     - serce pokazuje stan z aplikacji;
+     - naciśnięcie w widżecie nic nie zmienia.
+   - d) BT: okładka telefonu 1,5–6 s po zmianie utworu. Log pokazuje kod 51 i odczyt pliku.
+   - e) Klasa w „Fuel statistics” pochodzi z biblioteki 7870. Import trafia do biblioteki 7870.
+   - f) W logu nie ma `avc … getattr … /odm/app/…apk` z `launcher-loader`. Ostrzeżenia `SurfaceSyncer`/`Parcel` mogą zostać (framework).
+   - g) W logu jest jedna linia mówiąca, czy provider `com.syu.radio` jest eksportowany (decyduje o drodze dla FM).
 
 ## 6. Raport końcowy (w odpowiedzi, po polsku)
 - Commity (hash i temat) z wynikiem CI każdego.
-- Odpowiedzi a–f z dekompilacji com.syu.media. Dla każdej operacji (serce muzyki, online, FM; okładki): droga i to, co działa przez system, root i Shizuku.
+- Potwierdzenie faktów z §3.1 w kodzie com.syu.media albo różnice. Dla każdej operacji (serce muzyki, online, FM; okładki): droga i to, co działa przez system, root i Shizuku (tabela z §3.1 po sprawdzeniu).
 - **Czego nie da się zrobić przez Shizuku** (potwierdzone w kodzie).
 - Lista przeniesionych i pominiętych klas `Callback_*` oraz liczby z biblioteki 7870.
 - Każde odstępstwo od instrukcji i jego powód.
