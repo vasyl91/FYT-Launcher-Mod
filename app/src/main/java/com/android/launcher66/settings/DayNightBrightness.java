@@ -33,7 +33,7 @@ import java.time.format.DateTimeParseException;
  * FYT head units: the backlight is driven by the syu service (com.syu.ms), not by Android. The
  * launcher's own brightness popup (PopWindowBright) sends FinalMain.C_BRIGHT_LEVEL (0-100) to the
  * main module, and so does this class. Writing Settings.System.SCREEN_BRIGHTNESS there succeeds
- * (the fyt build runs as android.uid.system, so there is not even an exception to log) but the
+ * (the system build runs as android.uid.system, so there is not even an exception to log) but the
  * screen does not change - which is why the previous implementation had no visible effect.
  *
  * Other devices: Settings.System.SCREEN_BRIGHTNESS, after switching adaptive brightness off,

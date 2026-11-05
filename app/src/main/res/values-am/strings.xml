@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku ተጭኗል፣ አይሰራም</string>
     <string name="build_type_release">የመለቀቅ ግንባታ</string>
     <string name="build_type_debug">የማረሚያ ግንባታ</string>
-    <string name="build_flavor_fyt">የFYT ስሪት</string>
-    <string name="build_flavor_standard">መደበኛ ስሪት</string>
     <string name="app_version">ስሪት፦ %1$s</string>
     <string name="app_version_update">ስሪት፦ %1$s (አዲስ ስሪት አለ፦ %2$s)</string>
     <string name="update_version_button">መተግበሪያውን ለማውረድ እና ለማዘመን መታ ያድርጉ</string>
-    <string name="install_release_button">የመለቀቅ ስሪት %1$sን ለማውረድ እና ለመጫን መታ ያድርጉ</string>
+    <string name="update_version_button_file">መተግበሪያውን ለማውረድ እና ለማዘመን መታ ያድርጉ (%1$s)</string>
+    <string name="install_release_button_file">የመለቀቅ ስሪት %1$sን ለማውረድ እና ለመጫን መታ ያድርጉ (%2$s)</string>
     <string name="shizuku_download_button">Shizuku Next ለማውረድ መታ ያድርጉ (ያለ root ለPiP ፓነሎች ያስፈልጋል)</string>
     <string name="confirmation_dialog">ወደ ስሪት %1$s ማዘመን ይፈልጋሉ?</string>
     <string name="update_btn">አዘምን</string>

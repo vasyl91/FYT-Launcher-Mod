@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">បានដំឡើង Shizuku មិនកំពុងដំណើរការ</string>
     <string name="build_type_release">កំណែចេញផ្សាយ</string>
     <string name="build_type_debug">កំណែបំបាត់កំហុស</string>
-    <string name="build_flavor_fyt">កំណែ FYT</string>
-    <string name="build_flavor_standard">កំណែស្តង់ដារ</string>
     <string name="app_version">កំណែ៖ %1$s</string>
     <string name="app_version_update">កំណែ៖ %1$s (មានកំណែថ្មីជាង៖ %2$s)</string>
     <string name="update_version_button">ប៉ះដើម្បីទាញយក និងធ្វើបច្ចុប្បន្នភាពកម្មវិធី</string>
-    <string name="install_release_button">ប៉ះដើម្បីទាញយក និងដំឡើងកំណែចេញផ្សាយ %1$s</string>
+    <string name="update_version_button_file">ប៉ះដើម្បីទាញយក និងធ្វើបច្ចុប្បន្នភាពកម្មវិធី (%1$s)</string>
+    <string name="install_release_button_file">ប៉ះដើម្បីទាញយក និងដំឡើងកំណែចេញផ្សាយ %1$s (%2$s)</string>
     <string name="shizuku_download_button">ប៉ះដើម្បីទាញយក Shizuku Next (ត្រូវការសម្រាប់ផ្ទាំង PiP ដោយគ្មាន Root)</string>
     <string name="confirmation_dialog">តើអ្នកចង់ធ្វើបច្ចុប្បន្នភាពទៅកំណែ %1$s ទេ?</string>
     <string name="update_btn">ធ្វើបច្ចុប្បន្នភាព</string>

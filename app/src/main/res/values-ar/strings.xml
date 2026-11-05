@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku مثبّت ولا يعمل</string>
     <string name="build_type_release">إصدار نهائي</string>
     <string name="build_type_debug">إصدار تصحيح الأخطاء</string>
-    <string name="build_flavor_fyt">إصدار FYT</string>
-    <string name="build_flavor_standard">الإصدار القياسي</string>
     <string name="app_version">الإصدار: %1$s</string>
     <string name="app_version_update">الإصدار: %1$s (يتوفر إصدار أحدث: %2$s)</string>
     <string name="update_version_button">المس لتنزيل التطبيق وتحديثه</string>
-    <string name="install_release_button">المس لتنزيل الإصدار النهائي %1$s وتثبيته</string>
+    <string name="update_version_button_file">المس لتنزيل التطبيق وتحديثه (%1$s)</string>
+    <string name="install_release_button_file">المس لتنزيل الإصدار النهائي %1$s وتثبيته (%2$s)</string>
     <string name="shizuku_download_button">المس لتنزيل Shizuku Next (مطلوب للوحات PiP بدون الروت)</string>
     <string name="confirmation_dialog">هل تريد التحديث إلى الإصدار %1$s؟</string>
     <string name="update_btn">تحديث</string>

@@ -16,13 +16,13 @@ FYT test unit or on a phone, and delivering it to user devices (no root, no PC).
 | `su_wrapper.sh` | `baselineprofile/tools/` | Makes Magisk understand Macrobenchmark's `su root <cmd>` |
 | `apply_profile_on_device.sh` | `baselineprofile/tools/` | Dev unit only: applies a profile manually for quick checks |
 | `BaselineProfileCompiler.kt` | `app/src/main/java/com/android/launcher66/perf/` | Applies the profile on user units automatically |
-| Generated profiles | `app/src/main/generated/baselineProfiles/` | `baseline-prof.txt`, `startup-prof.txt` – committed to Git, used by every release build (fyt and standard) |
+| Generated profiles | `app/src/main/generated/baselineProfiles/` | `baseline-prof.txt`, `startup-prof.txt` – committed to Git, used by every release build (system and standard) |
 
 Data flow:
 
 ```
 test unit (root)                         build                     user unit (no root)
-generateFytReleaseBaselineProfile  ->  baseline-prof.txt   ->  fytRelease APK contains      ->  BaselineProfileCompiler
+generateSystemReleaseBaselineProfile  ->  baseline-prof.txt   ->  systemRelease APK contains      ->  BaselineProfileCompiler
 (BaselineProfileGenerator)             startup-prof.txt        assets/dexopt/baseline.prof      compiles it (speed-profile)
                                                                + R8 startup DEX layout          90 s after the first start
 ```
@@ -41,7 +41,7 @@ long inactivity) – a head unit in a car practically never gets there.
 - Git Bash (MINGW64) for `prepare_device.sh`. Gradle commands work in PowerShell or Git Bash.
 
 **Test device** – an FYT unit or a phone; the profile is the same file for both builds.
-- FYT unit (fyt build, validated on Android 10 / API 29): rooted with Magisk, root access for
+- FYT unit (system build, validated on Android 10 / API 29): rooted with Magisk, root access for
   **Shell** allowed (Magisk → Superuser); the launcher installed as a system app
   (`/oem/priv-app/…`, `sharedUserId=android.uid.system`).
 - Phone or any other non-FYT device (standard build): Android 13+ (API 33) needs no root; Android 9–12 need root as above.
@@ -50,7 +50,7 @@ long inactivity) – a head unit in a car practically never gets there.
 - Connected over ADB (USB or Wi-Fi), exactly one device.
 
 **Signing** – the most common source of failures
-- Gradle installs `fytNonMinifiedRelease` as an **update** of the system app. It must be signed
+- Gradle installs `systemNonMinifiedRelease` as an **update** of the system app. It must be signed
   with the **same platform key** as the APK in `/oem/priv-app` (release signing config:
   `keystore.properties` or the fallback `app/keystore.jks`).
 - On a phone `standardNonMinifiedRelease` replaces the installed launcher: one signed with another
@@ -106,24 +106,24 @@ If a root prompt appears on the head unit screen, allow it for **Shell** permane
 ## 4. Generate the profile
 
 From the project root. On a phone use `generateStandardReleaseBaselineProfile` instead of
-`generateFytReleaseBaselineProfile` (`prepare_device.sh` prints the right one).
+`generateSystemReleaseBaselineProfile` (`prepare_device.sh` prints the right one).
 
 **PowerShell** – the `-P` argument must be quoted, otherwise PowerShell splits it at the dot:
 
 ```powershell
-./gradlew :app:generateFytReleaseBaselineProfile "-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile"
+./gradlew :app:generateSystemReleaseBaselineProfile "-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile"
 ```
 
 **Git Bash**:
 
 ```bash
-./gradlew :app:generateFytReleaseBaselineProfile -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile
+./gradlew :app:generateSystemReleaseBaselineProfile -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile
 ```
 
 Notes:
 - `enabledRules=BaselineProfile` runs only the generator; the two `StartupBenchmark` tests are
   reported as `SKIPPED`. Gradle still counts them (e.g. `Starting 4 tests`).
-- The task picks the right variants itself (`fytNonMinifiedRelease` or
+- The task picks the right variants itself (`systemNonMinifiedRelease` or
   `standardNonMinifiedRelease`); the selection in the *Build Variants* panel does not matter.
 - Either run overwrites the same `baseline-prof.txt` / `startup-prof.txt`, used by both builds.
 - Duration on a UMS512 unit: roughly **10–16 minutes**. Do not touch the unit meanwhile.
@@ -151,7 +151,7 @@ wallpaper picker with changing previews → back directly to the home screen.
 At the end Gradle prints the paths and a comparison with the previous profile, e.g.:
 
 ```
-A baseline profile was generated for the variant `fytRelease`:
+A baseline profile was generated for the variant `systemRelease`:
 file:///…/app/src/main/generated/baselineProfiles/baseline-prof.txt
 Comparison with previous baseline profile:
   11230 Old rules / 11175 New rules / 24 Added / 79 Removed
@@ -178,13 +178,13 @@ overwrites them.
 ## 5. Build the release APK
 
 ```powershell
-./gradlew :app:assembleFytRelease
+./gradlew :app:assembleSystemRelease
 ```
 
 Verify that the profile is packaged (Windows 10+ `tar` can list ZIP files):
 
 ```powershell
-tar -tf app\build\outputs\apk\fyt\release\fyt_release_<version>.apk | findstr dexopt
+tar -tf app\build\outputs\apk\system\release\system_release_<version>.apk | findstr dexopt
 ```
 
 Expected:
@@ -397,10 +397,10 @@ API – see Troubleshooting.
 ## 8. Optional: measure the gain
 
 `StartupBenchmark` compares a cold start without compilation against a start with the profile
-(variant `fytBenchmarkRelease` or `standardBenchmarkRelease`, minified like the shipped APK):
+(variant `systemBenchmarkRelease` or `standardBenchmarkRelease`, minified like the shipped APK):
 
 ```powershell
-./gradlew :baselineprofile:connectedFytBenchmarkReleaseAndroidTest "-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=Macrobenchmark"
+./gradlew :baselineprofile:connectedSystemBenchmarkReleaseAndroidTest "-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=Macrobenchmark"
 ./gradlew :baselineprofile:connectedStandardBenchmarkReleaseAndroidTest "-Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=Macrobenchmark"
 ```
 
@@ -479,8 +479,9 @@ Key decisions in the build setup and why they matter:
 - **Self-instrumenting test module** (`android.experimental.self-instrumenting = true`): the test
   APK instruments itself and drives the launcher via shell/UiAutomator, so it does not need the
   platform key even though the launcher runs as UID 1000.
-- **Same flavors in `:baselineprofile`** (`standard`, `fyt`) so the plugin pairs variants: the
-  fyt build installs on FYT units only (a system app), the standard build everywhere else. The
+- **Same flavors in `:baselineprofile`** (`standard`, `system`) so the plugin pairs variants: the
+  system build installs only where the firmware has its platform key (a system app), the
+  standard build everywhere else. The
   `nonMinifiedProfile` / `benchmarkProfile` variants in `:app` are disabled with
   `beforeVariants`.
 - **`suppressErrors = EMULATOR,LOW-BATTERY,UNLOCKED`**: a head unit has no battery / lock screen.

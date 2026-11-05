@@ -2,13 +2,13 @@
 
 **Launcher Mod has been tested on Android 10 with a 2000x1200 resolution, as this is the only FYT device I own.**
 
-It should work with all resolutions on Android 8 through 16 (see [Supported devices](#supported-devices)), as the FYT version (a system app) on FYT units, or as the standard version (a user app) on any device.
+It should work with all resolutions on Android 8 through 16 (see [Supported devices](#supported-devices)), as the system version (a system app) on a device whose firmware has its platform key (FYT units and some custom ROMs), or as the standard version (a user app) on any device.
 
-The FYT version declares `android:sharedUserId="android.uid.system"`, so it runs as the system itself (uid 1000). Android accepts that only from an APK signed with the same platform key as the firmware, and this one is signed with the public AOSP test key, which FYT firmware is built with. A firmware signed with its own platform key refuses it (`INSTALL_FAILED_SHARED_USER_INCOMPATIBLE`), whatever its Android version and whether it is rooted or not: the check is the signature, not a permission root could grant. On such a unit, and on any other device, use the standard version (see [Versions and updates](#versions-and-updates)): it gets the privileges it needs from root through the [FYT VDHost](vdhost/README.md) Magisk module, or from Shizuku without root. The PiPs work in it as windows, and pinned PiP works on the FYT units except the 7870 (recognised by the chipset) as in the FYT version. It is not offered on the 7870.
+The system version declares `android:sharedUserId="android.uid.system"`, so it runs as the system itself (uid 1000). Android accepts that only from an APK signed with the same platform key as the firmware, and this one is signed with the public AOSP test key, which FYT firmware is built with. A firmware signed with its own platform key refuses it (`INSTALL_FAILED_SHARED_USER_INCOMPATIBLE`), whatever its Android version and whether it is rooted or not: the check is the signature, not a permission root could grant. On such a unit, and on any other device, use the standard version (see [Versions and updates](#versions-and-updates)): it gets the privileges it needs from root through the [FYT VDHost](vdhost/README.md) Magisk module, or from Shizuku without root. The PiPs work in it as windows, and pinned PiP works on the FYT units except the 7870 (recognised by the chipset) as in the system version. It is not offered on the 7870.
 
-The check is the key, not the brand: some custom ROMs (unofficial builds in particular) are made with the same public AOSP test key, and the FYT version installs there as a system app too. It then works as on an FYT unit wherever the system is all it needs (the PiPs, the Baseline Profile, the status bar swipe area, the boot autostart, the full logcat), while what only an FYT unit has (pinned PiP, radio, CAN bus, FYT's music and navigation sources, skins) stays off: the launcher sees it is not on one. A ROM signed with its own platform key would need the launcher built and signed with that key, which only the ROM's maintainer has. **No such build exists yet**: on these ROMs use the standard version.
+The check is the key, not the brand: some custom ROMs (unofficial builds in particular) are made with the same public AOSP test key, and the system version installs there as a system app too. It then works as on an FYT unit wherever the system is all it needs (the PiPs, the Baseline Profile, the status bar swipe area, the boot autostart, the full logcat), while what only an FYT unit has (pinned PiP, radio, CAN bus, FYT's music and navigation sources, skins) stays off: the launcher sees it is not on one. A ROM signed with its own platform key would need the launcher built and signed with that key, which only the ROM's maintainer has. **No such build exists yet**: on these ROMs use the standard version.
 
-Both versions are the same app (`com.android.launcher66`), but Android does not let an update change the shared user id: the FYT version has to be uninstalled before installing the standard one, and the other way round (this wipes the launcher's data).
+Both versions are the same app (`com.android.launcher66`), but Android does not let an update change the shared user id: the system version has to be uninstalled before installing the standard one, and the other way round (this wipes the launcher's data).
 
 IMPORTANT: Note that some FYT devices do not support pinned PiP on the main screen. On the 7870 (recognised by the chipset) the launcher does not offer it at all: every PiP is a window there. You can still use the launcher, but you'll have to turn off PiP in the launcher's settings (otherwise Google Maps will pop up every time you try to open the home page — if this happens, wipe the launcher's data or reinstall it).
 
@@ -44,20 +44,20 @@ For the first installation, download `installer.zip`, unpack it onto a FAT32-for
 
 If installation doesn't start automatically, please try other USB ports. If it still doesn't start regardless of the USB port, it means either your device is not an FYT device, or it is an FYT device but runs Android 12 or higher (some brands don't allow installing apps via scripts from a USB drive).
 
-This method installs the FYT version as a privileged system app, in place of the stock launcher: install it this way the first time. Where the script cannot run, or the firmware refuses the FYT version (see above), install the standard version like any other APK and give it root with the [FYT VDHost](vdhost/README.md) Magisk module or start Shizuku.
+This method installs the system version as a privileged system app, in place of the stock launcher: install it this way the first time. Where the script cannot run, or the firmware refuses the system version (see above), install the standard version like any other APK and give it root with the [FYT VDHost](vdhost/README.md) Magisk module or start Shizuku.
 
 <a id="supported-devices"></a>**Supported devices:**
 
 | Android | Installed as | Privileges from | Multiple PiPs | Pinned PiP | Tested |
 |---|---|---|---|---|---|
-| 8–9 | FYT version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ➖ |
-| 10 | FYT version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ✅ FYT unit, 2000x1200 |
-| 11–16 | FYT version | the system (uid 1000) | ✅ the launcher's own virtual displays | ✅ | ➖ |
+| 8–9 | system version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ➖ |
+| 10 | system version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ✅ FYT unit, 2000x1200 |
+| 11–16 | system version | the system (uid 1000) | ✅ the launcher's own virtual displays | ✅ | ➖ |
 | 8–10 | standard version | root ([FYT VDHost](vdhost/README.md) module) or Shizuku | ✅ virtual displays through the module or Shizuku | ✅ on FYT units except the 7870 | ➖ |
 | 11–16 | standard version | root ([FYT VDHost](vdhost/README.md) module) | ✅ virtual displays through the module | ✅ on FYT units except the 7870 | ✅ Android 14, Xiaomi Redmi Note 8T |
 | 11–16 | standard version | Shizuku | ✅ virtual displays through Shizuku ¹ | ✅ on FYT units except the 7870 | ✅ Android 16, Samsung Galaxy A55 |
 | 8–16 | standard version | none | ❌ | ✅ on FYT units except the 7870 | ➖ |
-| 8–16 | FYT version on a non-FYT ROM made with the AOSP test key | the system (uid 1000) | ✅ as the FYT version on the same Android | ❌ FYT units only (not the 7870) | ➖ |
+| 8–16 | system version on a non-FYT ROM made with the AOSP test key | the system (uid 1000) | ✅ as the system version on the same Android | ❌ FYT units only (not the 7870) | ➖ |
 
 ¹ Apps that protect their content (`FLAG_SECURE`: video streaming, banking) show black in a PiP, and the PiPs come up only once Shizuku has started (about half a minute after a boot, longer if it waits for Wi-Fi).
 
@@ -71,7 +71,7 @@ Most FYT ROMs offer two ways of displaying apps on the launcher's screen. The mo
 The only reliable way I've found to prevent Google Maps from switching to its minimal UI requires root, LSPosed, and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/latest). It successfully forces the app to keep its full UI inside FYT's Picture-in-Picture mode (remember to select Google Maps in the LSPosed "Enable module" section).
 Check out this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always make a full backup (AllAppUpdate.bin, config.txt, etc.) before flashing anything!
 
-The second method displays apps in windowed mode as they normally appear: through Android's hidden ActivityView class (FYT version on Android 8–10; FYT did not modify it), otherwise through the launcher's own virtual displays. This doesn't affect the layout and needs no root in the FYT version. The multiple-PiP feature uses this method.
+The second method displays apps in windowed mode as they normally appear: through Android's hidden ActivityView class (system version on Android 8–10; FYT did not modify it), otherwise through the launcher's own virtual displays. This doesn't affect the layout and needs no root in the system version. The multiple-PiP feature uses this method.
 
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
@@ -152,7 +152,7 @@ Its state and two resets (the refresh schedule only, or everything back to the p
 
 | Installed as | Android | After installing | Usage refreshes | Reset | Compiled by |
 |---|---|---|---|---|---|
-| FYT version (system app) | 8–16 | ✅ | ✅ | ✅ | Android's package manager, asked by the launcher itself (uid 1000) |
+| system version (system app) | 8–16 | ✅ | ✅ | ✅ | Android's package manager, asked by the launcher itself (uid 1000) |
 | Standard version + [FYT VDHost](vdhost/README.md) module (root) | 8–16 | ✅ | ✅ | ✅ | the module's daemon (uid 1000) |
 | Standard version + Shizuku | 8–16 | ✅ | ✅ | ✅ ¹ | Shizuku's service, as `adb shell cmd package compile -m speed-profile -f` would |
 | Standard version, no root, no Shizuku | 8–16 | ❌ ² | ❌ ² | ❌ | – |
@@ -162,7 +162,7 @@ Its state and two resets (the refresh schedule only, or everything back to the p
 ² Android's own idle maintenance applies the profile one day.<br>
 ³ Debug builds carry no Baseline Profile.
 
-**Generating a new profile** (for developers, after larger code changes; see [baselineProfile/README.md](baselineProfile/README.md)) takes one test device, an FYT unit (FYT version) or any other device (standard version), connected over ADB:
+**Generating a new profile** (for developers, after larger code changes; see [baselineProfile/README.md](baselineProfile/README.md)) takes one test device, an FYT unit (system version) or any other device (standard version), connected over ADB:
 
 | Android on the test device | Generating a profile |
 |---|---|
@@ -178,14 +178,14 @@ Every release comes in two versions:
 
 | File | Version | Where |
 |---|---|---|
-| `fyt_release_<version>.apk` | FYT version | FYT units only. A system app (signed with the platform key, `android:sharedUserId="android.uid.system"`), installed with `installer.zip`. |
-| `standard_release_<version>.apk` | Standard version (called "phone" up to 1.2.1) | Any other Android 8+ device: phones, tablets, other head units. A user app; the privileged features come from the [FYT VDHost](vdhost/README.md) Magisk module (root) or Shizuku. |
+| `system_release_<version>.apk` | System version | The same app on every device whose firmware has its platform key: FYT units and some custom ROMs, FYT or not. A system app (signed with the platform key, `android:sharedUserId="android.uid.system"`), installed with `installer.zip`. |
+| `standard_release_<version>.apk` | Standard version (called "phone" up to 1.2.1) | Every other Android 8+ device, including FYT units whose firmware has another key: phones, tablets, other head units. A user app; the privileged features come from the [FYT VDHost](vdhost/README.md) Magisk module (root) or Shizuku. |
 
-The launcher's settings show which one is installed, under its version (e.g. "Release build · FYT version").
+The launcher's settings show which one is installed, under its version (a line with how the launcher runs, and a line with "Release build" or "Debug build"); the update button names the file it downloads (e.g. "Tap to download and update the app (system_release_1.2.2.apk)").
 
-**Built-in update.** The updater downloads its own version's file (`fyt_release_` or `standard_release_` + the version) from the [latest release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest). A debug build is offered the release of the same or a newer version, to install over it ("Press here to download and install release version …").
+**Built-in update.** The updater downloads its own version's file (`system_release_` or `standard_release_` + the version) from the [latest release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest). A debug build is offered the release of the same or a newer version, to install over it ("Tap to download and install release version … (system_release_….apk)").
 
-Versions up to 1.2.1 download `update<version>.apk` instead, whichever version they are. So that they still find their update, every release also carries the FYT version under that name: the [Release assets](.github/workflows/release-assets.yml) workflow adds it by itself when a release is published. It waits up to 10 minutes for `fyt_release_<version>.apk`, if the files are uploaded after publishing; otherwise run it by hand (Actions → Release assets → Run workflow, with the tag). A standard ("phone") 1.2.1 would download the FYT version and fail to install it: it has to be updated to the standard version by hand once.
+Versions up to 1.2.1 download `update<version>.apk` instead, whichever version they are. So that they still find their update, every release also carries the system version under that name (and as `fyt_release_<version>.apk`, the name test builds made before the flavor was renamed look for): the [Release assets](.github/workflows/release-assets.yml) workflow adds it by itself when a release is published. It waits up to 10 minutes for `system_release_<version>.apk`, if the files are uploaded after publishing; otherwise run it by hand (Actions → Release assets → Run workflow, with the tag). A standard ("phone") 1.2.1 would download the system version and fail to install it: it has to be updated to the standard version by hand once.
 
 Releases are tagged `v<version>` (e.g. `v1.2.2`): the updater reads the version from the tag.
 
@@ -328,7 +328,7 @@ for build 1.1.7 — use `android.jar` from this [repository](https://github.com/
 
 </details>
 
-2. Open the project and choose the build you want to use.
+2. Open the project and choose the build you want to use: `systemRelease` (the system version, the default) or `standardRelease` (the standard version), or their debug variants.
 3. To generate the app, use `keystore.jks` located in `FYT-Launcher-Mod\app`. Choose the existing `android` key alias with password `android`. 
 
 To debug the app on an FYT device, connect it to your PC. As USB connection can be problematic, for Android 11 and above use ADB over Wi-Fi. On Android 10 with root access, use this guide - [ADB over Wi-Fi on Android 10 using Magisk](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/MagiskWiFiADB.MD).

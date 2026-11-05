@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * favorite state.
  *
  * Reaching that database (it is owned by com.syu.music, uid system, mode 660):
- *   - with system privileges (the FYT build, uid 1000 like com.syu.music): opened directly;
+ *   - with system privileges (the system build, uid 1000 like com.syu.music): opened directly;
  *   - on a rooted unit, with the user's root: the file must be touched through a real SQLite
  *     connection - replacing it as a whole file would corrupt com.syu.music's open connection, and
  *     there is no sqlite3 binary on the unit to run SQL as root - so root widens the file's

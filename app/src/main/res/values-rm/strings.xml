@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku installà, betg en funcziun</string>
     <string name="build_type_release">Build da release</string>
     <string name="build_type_debug">Build da debug</string>
-    <string name="build_flavor_fyt">Versiun FYT</string>
-    <string name="build_flavor_standard">Versiun standard</string>
     <string name="app_version">Versiun: %1$s</string>
     <string name="app_version_update">Versiun: %1$s (versiun pli nova disponibla: %2$s)</string>
     <string name="update_version_button">Tutgar per telechargiar ed actualisar l\'app</string>
-    <string name="install_release_button">Tutgar per telechargiar ed installar la versiun da release %1$s</string>
+    <string name="update_version_button_file">Tutgar per telechargiar ed actualisar l\'app (%1$s)</string>
+    <string name="install_release_button_file">Tutgar per telechargiar ed installar la versiun da release %1$s (%2$s)</string>
     <string name="shizuku_download_button">Tutgar per telechargiar Shizuku Next (necessari per ils panels PiP senza root)</string>
     <string name="confirmation_dialog">Vuls ti actualisar a la versiun %1$s?</string>
     <string name="update_btn">ACTUALISAR</string>

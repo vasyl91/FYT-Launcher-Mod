@@ -32,17 +32,23 @@ public class VersionChecker {
     private static final String GITHUB_RELEASES_URL = "https://github.com/vasyl91/FYT-Launcher-Mod/releases/latest";
     /**
      * The release asset this build updates from, which is also the downloaded file's name:
-     * fyt_release_ or standard_release_ + version. Up to 1.2.1 the download fetched
-     * update<version>.apk (the FYT build) whatever the flavor, so the standard build (then
-     * "phone") got the FYT build, which declares permissions in a group Android 12+ does not
+     * system_release_ or standard_release_ + version. Up to 1.2.1 the download fetched
+     * update<version>.apk (the system build) whatever the flavor, so the standard build (then
+     * "phone") got the system build, which declares permissions in a group Android 12+ does not
      * have: -127, INSTALL_FAILED_BAD_PERMISSION_GROUP (and its shared system uid could not have
-     * replaced the standard build either). Releases still carry the FYT build as
-     * update<version>.apk too, for those versions (.github/workflows/release-assets.yml).
+     * replaced the standard build either). Releases still carry the system build as
+     * update<version>.apk too, for those versions, and as fyt_release_<version>.apk, the name
+     * it had while this build was called "fyt" (.github/workflows/release-assets.yml).
      */
     private static final String UPDATE_FILE_PREFIX = BuildConfig.FLAVOR + "_release_";
     private static final String UPDATE_FILE_SUFFIX = ".apk";
     /** Names earlier versions downloaded updates as: such files are never used again. */
-    private static final String[] LEGACY_UPDATE_FILE_PREFIXES = { "update", "phone_release_" };
+    private static final String[] LEGACY_UPDATE_FILE_PREFIXES = { "update", "phone_release_", "fyt_release_" };
+
+    /** The name of the release file this build downloads for the given version. */
+    public static String updateFileName(String version) {
+        return UPDATE_FILE_PREFIX + version + UPDATE_FILE_SUFFIX;
+    }
 
     private AsyncTask<Void, Void, String> checkTask;
     private AsyncTask<Void, Integer, File> downloadTask;
@@ -223,7 +229,7 @@ public class VersionChecker {
             protected void onPreExecute() {
                 downloadUrl = GITHUB_RELEASES_URL.replace("/releases/latest",
                         "/releases/download/v" + latestVersion + "/"
-                                + UPDATE_FILE_PREFIX + latestVersion + UPDATE_FILE_SUFFIX);
+                                + updateFileName(latestVersion));
             }
 
             @Override
@@ -260,7 +266,7 @@ public class VersionChecker {
 
                     input = connection.getInputStream();
                     outputFile = new File(appContext.getExternalFilesDir(null),
-                            UPDATE_FILE_PREFIX + latestVersion + UPDATE_FILE_SUFFIX);
+                            updateFileName(latestVersion));
                     output = new FileOutputStream(outputFile);
 
                     byte[] buffer = new byte[4096];

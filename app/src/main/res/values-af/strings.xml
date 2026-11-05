@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku geïnstalleer, loop nie</string>
     <string name="build_type_release">Vrystellingsbou</string>
     <string name="build_type_debug">Ontfoutbou</string>
-    <string name="build_flavor_fyt">FYT-weergawe</string>
-    <string name="build_flavor_standard">Standaardweergawe</string>
     <string name="app_version">Weergawe: %1$s</string>
     <string name="app_version_update">Weergawe: %1$s (nuwer weergawe beskikbaar: %2$s)</string>
     <string name="update_version_button">Tik om die program af te laai en op te dateer</string>
-    <string name="install_release_button">Tik om vrystellingsweergawe %1$s af te laai en te installeer</string>
+    <string name="update_version_button_file">Tik om die program af te laai en op te dateer (%1$s)</string>
+    <string name="install_release_button_file">Tik om vrystellingsweergawe %1$s af te laai en te installeer (%2$s)</string>
     <string name="shizuku_download_button">Tik om Shizuku Next af te laai (nodig vir PiP-panele sonder root)</string>
     <string name="confirmation_dialog">Wil jy opdateer na weergawe %1$s?</string>
     <string name="update_btn">OPDATEER</string>

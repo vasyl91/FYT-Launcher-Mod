@@ -46,9 +46,13 @@ android {
         create("standard") {
             dimension = "device"
         }
-        create("fyt") {
+        // The app signed with the platform key, with android:sharedUserId="android.uid.system"
+        // (a system app, uid 1000). Android installs it only where the firmware is signed with
+        // the same key (the public AOSP test key: FYT units and some custom ROMs), on any
+        // device of that kind, FYT or not. The standard flavor installs everywhere else.
+        create("system") {
             dimension = "device"
-            // Android Studio selects this flavor by default (with release -> fytRelease).
+            // Android Studio selects this flavor by default (with release -> systemRelease).
             isDefault = true
         }
     }
@@ -75,7 +79,7 @@ android {
 
     buildTypes {
         release {
-            // Default build type in Android Studio's Build Variants (with fyt -> fytRelease).
+            // Default build type in Android Studio's Build Variants (with system -> systemRelease).
             isDefault = true
             signingConfig = signingConfigs.getByName("release")
             isCrunchPngs = true
@@ -142,7 +146,7 @@ android {
 androidComponents {
     // initWith() also copies isDefault, so the Baseline Profile build types (nonMinifiedRelease,
     // benchmarkRelease) would inherit it from "release" -> AGP reports an ambiguous default build
-    // type and Studio would not pick fytRelease. Keep the flag on "release" only. Runs after the
+    // type and Studio would not pick systemRelease. Keep the flag on "release" only. Runs after the
     // plugin's finalizeDsl (registered at plugin apply), so those types already exist.
     finalizeDsl { extension ->
         extension.buildTypes
@@ -152,7 +156,8 @@ androidComponents {
 
     // The Baseline Profile plugin adds nonMinified* and benchmark* build types for every
     // non-debuggable build type. Only those made from release are used, for both flavors (the
-    // fyt build installs on FYT units only, being a system app; the standard build everywhere else):
+    // system build installs only where the firmware has the platform key it is signed with, being
+    // a system app; the standard build everywhere else):
     // <flavor>NonMinifiedRelease - the generator installs and profiles it on the device,
     // <flavor>BenchmarkRelease   - StartupBenchmark measures startup with the profile.
     // The generated profile itself is used by every release build (src/main, see baselineProfile {}).
@@ -181,7 +186,7 @@ baselineProfile {
     automaticGenerationDuringBuild = false
     // Save the result in src/ (committed to the repository).
     saveInSrc = true
-    // In src/main/generated/baselineProfiles, for every flavor: standard runs the same code as fyt
+    // In src/main/generated/baselineProfiles, for every flavor: standard runs the same code as system
     // (the flavors differ in the manifest only), so a profile made on either device serves both.
     mergeIntoMain = true
     // Startup profile -> R8 places startup classes in the primary DEX file.

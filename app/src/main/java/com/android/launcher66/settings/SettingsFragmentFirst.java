@@ -537,13 +537,12 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (appVersion != null) {
             // Under the version: how the launcher runs here, the device and its Android, and the
-            // build and which of the two apps it is (the update downloads that one's file).
+            // kind of build. Which of the two apps it is shows on the update button, which names
+            // the file it downloads.
             // The device line is system properties and Build fields only: no disk, no binder.
             String build = getString(com.android.launcher66.BuildConfig.DEBUG
                     ? R.string.build_type_debug : R.string.build_type_release);
-            String flavor = getString("fyt".equals(com.android.launcher66.BuildConfig.FLAVOR)
-                    ? R.string.build_flavor_fyt : R.string.build_flavor_standard);
-            String buildLine = build + " · " + flavor;
+            String buildLine = build;
             String deviceLine = DeviceIdentity.deviceLine();
             appVersion.setSummary(deviceLine + "\n" + buildLine);
             // The root check looks for su files on disk: off the main thread
@@ -568,11 +567,15 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                             // newer one) to install over it, not a newer version as such.
                             appVersion.setTitle(getString(R.string.app_version, currentVersion));
                             if (appVersionUpdate != null) {
-                                appVersionUpdate.setTitle(getString(R.string.install_release_button,
-                                        latestVersion));
+                                appVersionUpdate.setTitle(getString(R.string.install_release_button_file,
+                                        latestVersion, VersionChecker.updateFileName(latestVersion)));
                             }
                         } else {
                             appVersion.setTitle(getString(R.string.app_version_update, currentVersion, latestVersion));
+                            if (appVersionUpdate != null) {
+                                appVersionUpdate.setTitle(getString(R.string.update_version_button_file,
+                                        VersionChecker.updateFileName(latestVersion)));
+                            }
                         }
                         if (appVersionUpdate != null) {
                             appVersionUpdate.setVisible(true);
@@ -1539,7 +1542,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     /**
      * Shows the button to download Shizuku Next in the standard version while Shizuku is not
      * installed, on a device without root: it is what hosts the PiP panes there without root.
-     * Root and the system privileges of the fyt version do not need it. The checks are a binder
+     * Root and the system privileges of the system version do not need it. The checks are a binder
      * call and files, so they run off the main thread; onResume() calls it, so the button goes
      * away on coming back from installing it.
      */

@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku dipasang, tidak berjalan</string>
     <string name="build_type_release">Binaan keluaran</string>
     <string name="build_type_debug">Binaan nyahpepijat</string>
-    <string name="build_flavor_fyt">Versi FYT</string>
-    <string name="build_flavor_standard">Versi standard</string>
     <string name="app_version">Versi: %1$s</string>
     <string name="app_version_update">Versi: %1$s (versi lebih baharu tersedia: %2$s)</string>
     <string name="update_version_button">Ketik untuk memuat turun dan mengemas kini apl</string>
-    <string name="install_release_button">Ketik untuk memuat turun dan memasang versi keluaran %1$s</string>
+    <string name="update_version_button_file">Ketik untuk memuat turun dan mengemas kini apl (%1$s)</string>
+    <string name="install_release_button_file">Ketik untuk memuat turun dan memasang versi keluaran %1$s (%2$s)</string>
     <string name="shizuku_download_button">Ketik untuk memuat turun Shizuku Next (diperlukan untuk panel PiP tanpa root)</string>
     <string name="confirmation_dialog">Adakah anda mahu mengemas kini kepada versi %1$s?</string>
     <string name="update_btn">KEMAS KINI</string>

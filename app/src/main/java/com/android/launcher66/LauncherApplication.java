@@ -775,7 +775,7 @@ public class LauncherApplication extends Application {
 
     /**
      * Whether a pane can be FYT's pinned PiP instead of a window: on every FYT platform but the
-     * 7870, in the fyt and the standard version alike (see PinnedPip; the 7870 has no pinned
+     * 7870, in the system and the standard version alike (see PinnedPip; the 7870 has no pinned
      * stack for the launcher to use, owner's decision). What it calls that a user app may be
      * refused (system properties, setPinnedStackVisible, forceStopPackage) is caught, see
      * WindowUtil.

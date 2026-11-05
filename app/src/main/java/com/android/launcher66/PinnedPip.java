@@ -3,7 +3,7 @@ package com.android.launcher66;
 /**
  * Where FYT's pinned PiP is offered. Every FYT platform has it (7862, 8581, 9853i and the ones
  * not known by name) but the 7870, whose pinned stack the launcher has nothing to use (owner's
- * decision); off FYT units there is none. It works in the fyt and the standard version alike.
+ * decision); off FYT units there is none. It works in the system and the standard version alike.
  * Elsewhere every pane is a window. Also how PinnedPipFocus tells a touch on the PiP from one on
  * the launcher. Free of android.* so the rules can be tested.
  */

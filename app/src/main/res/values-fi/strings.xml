@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku asennettu, ei käynnissä</string>
     <string name="build_type_release">Julkaisuversio</string>
     <string name="build_type_debug">Virheenkorjausversio</string>
-    <string name="build_flavor_fyt">FYT-versio</string>
-    <string name="build_flavor_standard">Vakioversio</string>
     <string name="app_version">Versio: %1$s</string>
     <string name="app_version_update">Versio: %1$s (uudempi versio saatavilla: %2$s)</string>
     <string name="update_version_button">Lataa ja päivitä sovellus napauttamalla</string>
-    <string name="install_release_button">Lataa ja asenna julkaisuversio %1$s napauttamalla</string>
+    <string name="update_version_button_file">Lataa ja päivitä sovellus napauttamalla (%1$s)</string>
+    <string name="install_release_button_file">Lataa ja asenna julkaisuversio %1$s napauttamalla (%2$s)</string>
     <string name="shizuku_download_button">Lataa Shizuku Next napauttamalla (tarvitaan PiP-paneeleihin ilman root-oikeuksia)</string>
     <string name="confirmation_dialog">Haluatko päivittää versioon %1$s?</string>
     <string name="update_btn">PÄIVITÄ</string>

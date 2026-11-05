@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku imesakinishwa, haifanyi kazi</string>
     <string name="build_type_release">Toleo la kutolewa</string>
     <string name="build_type_debug">Toleo la utatuzi</string>
-    <string name="build_flavor_fyt">Toleo la FYT</string>
-    <string name="build_flavor_standard">Toleo la kawaida</string>
     <string name="app_version">Toleo: %1$s</string>
     <string name="app_version_update">Toleo: %1$s (toleo jipya zaidi linapatikana: %2$s)</string>
     <string name="update_version_button">Gusa ili kupakua na kusasisha programu</string>
-    <string name="install_release_button">Gusa ili kupakua na kusakinisha toleo la kutolewa %1$s</string>
+    <string name="update_version_button_file">Gusa ili kupakua na kusasisha programu (%1$s)</string>
+    <string name="install_release_button_file">Gusa ili kupakua na kusakinisha toleo la kutolewa %1$s (%2$s)</string>
     <string name="shizuku_download_button">Gusa ili kupakua Shizuku Next (inahitajika kwa paneli za PiP bila root)</string>
     <string name="confirmation_dialog">Je, unataka kusasisha hadi toleo la %1$s?</string>
     <string name="update_btn">SASISHA</string>

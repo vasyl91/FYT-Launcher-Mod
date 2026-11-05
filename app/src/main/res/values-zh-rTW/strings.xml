@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">已安裝 Shizuku，未執行</string>
     <string name="build_type_release">Release 版本</string>
     <string name="build_type_debug">Debug 版本</string>
-    <string name="build_flavor_fyt">FYT 版本</string>
-    <string name="build_flavor_standard">標準版本</string>
     <string name="app_version">版本: %1$s</string>
     <string name="app_version_update">版本: %1$s（有新版本: %2$s）</string>
     <string name="update_version_button">點選此處下載並更新應用程式</string>
-    <string name="install_release_button">點選此處下載並安裝正式版 %1$s</string>
+    <string name="update_version_button_file">點選此處下載並更新應用程式 (%1$s)</string>
+    <string name="install_release_button_file">點選此處下載並安裝正式版 %1$s (%2$s)</string>
     <string name="shizuku_download_button">點選此處下載 Shizuku Next（無 root 使用子母畫面窗格時需要）</string>
     <string name="confirmation_dialog">是否要更新到 %1$s 版本？</string>
     <string name="update_btn">更新</string>

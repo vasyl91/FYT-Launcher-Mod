@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku je instaliran, ne radi</string>
     <string name="build_type_release">Izdanje za objavu</string>
     <string name="build_type_debug">Debug izdanje</string>
-    <string name="build_flavor_fyt">FYT verzija</string>
-    <string name="build_flavor_standard">Standardna verzija</string>
     <string name="app_version">Verzija: %1$s</string>
     <string name="app_version_update">Verzija: %1$s (dostupna je novija verzija: %2$s)</string>
     <string name="update_version_button">Dodirnite za preuzimanje i ažuriranje aplikacije</string>
-    <string name="install_release_button">Dodirnite za preuzimanje i instalaciju izdanja za objavu %1$s</string>
+    <string name="update_version_button_file">Dodirnite za preuzimanje i ažuriranje aplikacije (%1$s)</string>
+    <string name="install_release_button_file">Dodirnite za preuzimanje i instalaciju izdanja za objavu %1$s (%2$s)</string>
     <string name="shizuku_download_button">Dodirnite za preuzimanje Shizuku Next (potreban za PiP okna bez roota)</string>
     <string name="confirmation_dialog">Želite li ažurirati na verziju %1$s?</string>
     <string name="update_btn">AŽURIRAJ</string>

@@ -22,6 +22,8 @@
     <string name="black_bar">Bottom bar text and button colour</string>
     <string name="logcat_names_info">Log file names:</string>
     <string name="logcat_names_info_summary">reboot – started with the launcher after the device restarted\nstart – started with the launcher when it started again without a device restart (update, crash)\nwake – started when the device woke up\nuser – started by hand with “Logcat service”\nfull – holds all of the device\'s logs\npid – holds the launcher\'s logs only\ncrash – written the moment the launcher crashed: the error and the last log lines (what follows the restart is in the start log)</string>
+    <string name="install_release_button_file">Tap to download and install release version %1$s (%2$s)</string>
+    <string name="update_version_button_file">Tap to download and update the app (%1$s)</string>
     <string name="logcat_locations_info">Where to find the logs and crash reports:</string>
     <string name="logcat_locations_info_summary">Download/Launcher66_Logs – the logs and the crash reports (crash_pid_…)\nAndroid/data/com.android.launcher66/files/Download/Launcher66_Logs – used while Download cannot be written (e.g. right after a restart); moved to Download later</string>
     <string name="logcat_last_crash">Last crash report: %1$s</string>

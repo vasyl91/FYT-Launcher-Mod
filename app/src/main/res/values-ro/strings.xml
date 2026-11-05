@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku instalat, nu rulează</string>
     <string name="build_type_release">Build de lansare</string>
     <string name="build_type_debug">Build de depanare</string>
-    <string name="build_flavor_fyt">Versiune FYT</string>
-    <string name="build_flavor_standard">Versiune standard</string>
     <string name="app_version">Versiune: %1$s</string>
     <string name="app_version_update">Versiune: %1$s (este disponibilă o versiune mai nouă: %2$s)</string>
     <string name="update_version_button">Atingeți pentru a descărca și actualiza aplicația</string>
-    <string name="install_release_button">Atingeți pentru a descărca și instala versiunea de lansare %1$s</string>
+    <string name="update_version_button_file">Atingeți pentru a descărca și actualiza aplicația (%1$s)</string>
+    <string name="install_release_button_file">Atingeți pentru a descărca și instala versiunea de lansare %1$s (%2$s)</string>
     <string name="shizuku_download_button">Atingeți pentru a descărca Shizuku Next (necesar pentru panourile PiP fără root)</string>
     <string name="confirmation_dialog">Doriți să actualizați la versiunea %1$s?</string>
     <string name="update_btn">ACTUALIZARE</string>

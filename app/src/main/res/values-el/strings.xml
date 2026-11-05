@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Το Shizuku είναι εγκατεστημένο, δεν εκτελείται</string>
     <string name="build_type_release">Έκδοση κυκλοφορίας</string>
     <string name="build_type_debug">Έκδοση εντοπισμού σφαλμάτων</string>
-    <string name="build_flavor_fyt">Έκδοση FYT</string>
-    <string name="build_flavor_standard">Τυπική έκδοση</string>
     <string name="app_version">Έκδοση: %1$s</string>
     <string name="app_version_update">Έκδοση: %1$s (διαθέσιμη νεότερη έκδοση: %2$s)</string>
     <string name="update_version_button">Πατήστε για λήψη και ενημέρωση της εφαρμογής</string>
-    <string name="install_release_button">Πατήστε για λήψη και εγκατάσταση της έκδοσης κυκλοφορίας %1$s</string>
+    <string name="update_version_button_file">Πατήστε για λήψη και ενημέρωση της εφαρμογής (%1$s)</string>
+    <string name="install_release_button_file">Πατήστε για λήψη και εγκατάσταση της έκδοσης κυκλοφορίας %1$s (%2$s)</string>
     <string name="shizuku_download_button">Πατήστε για λήψη του Shizuku Next (απαραίτητο για τα παράθυρα PiP χωρίς root)</string>
     <string name="confirmation_dialog">Θέλετε να ενημερώσετε στην έκδοση %1$s;</string>
     <string name="update_btn">ΕΝΗΜΕΡΩΣΗ</string>

@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku installert, kjører ikke</string>
     <string name="build_type_release">Utgivelsesbygg</string>
     <string name="build_type_debug">Feilsøkingsbygg</string>
-    <string name="build_flavor_fyt">FYT-versjon</string>
-    <string name="build_flavor_standard">Standardversjon</string>
     <string name="app_version">Versjon: %1$s</string>
     <string name="app_version_update">Versjon: %1$s (nyere versjon tilgjengelig: %2$s)</string>
     <string name="update_version_button">Trykk for å laste ned og oppdatere appen</string>
-    <string name="install_release_button">Trykk for å laste ned og installere utgivelsesversjon %1$s</string>
+    <string name="update_version_button_file">Trykk for å laste ned og oppdatere appen (%1$s)</string>
+    <string name="install_release_button_file">Trykk for å laste ned og installere utgivelsesversjon %1$s (%2$s)</string>
     <string name="shizuku_download_button">Trykk for å laste ned Shizuku Next (kreves for PiP-paneler uten root)</string>
     <string name="confirmation_dialog">Vil du oppdatere til versjon %1$s?</string>
     <string name="update_btn">OPPDATER</string>

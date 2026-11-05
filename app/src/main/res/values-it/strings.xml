@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku installato, non in esecuzione</string>
     <string name="build_type_release">Build di rilascio</string>
     <string name="build_type_debug">Build di debug</string>
-    <string name="build_flavor_fyt">Versione FYT</string>
-    <string name="build_flavor_standard">Versione standard</string>
     <string name="app_version">Versione: %1$s</string>
     <string name="app_version_update">Versione: %1$s (nuova versione disponibile: %2$s)</string>
     <string name="update_version_button">Tocca per scaricare e aggiornare l\'app</string>
-    <string name="install_release_button">Tocca per scaricare e installare la versione di rilascio %1$s</string>
+    <string name="update_version_button_file">Tocca per scaricare e aggiornare l\'app (%1$s)</string>
+    <string name="install_release_button_file">Tocca per scaricare e installare la versione di rilascio %1$s (%2$s)</string>
     <string name="shizuku_download_button">Tocca per scaricare Shizuku Next (necessario per i pannelli PiP senza root)</string>
     <string name="confirmation_dialog">Vuoi aggiornare alla versione %1$s?</string>
     <string name="update_btn">AGGIORNA</string>

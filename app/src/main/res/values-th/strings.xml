@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">ติดตั้ง Shizuku แล้วแต่ไม่ได้ทำงาน</string>
     <string name="build_type_release">บิลด์รุ่นเผยแพร่</string>
     <string name="build_type_debug">บิลด์ดีบัก</string>
-    <string name="build_flavor_fyt">รุ่น FYT</string>
-    <string name="build_flavor_standard">รุ่นมาตรฐาน</string>
     <string name="app_version">เวอร์ชัน: %1$s</string>
     <string name="app_version_update">เวอร์ชัน: %1$s (มีเวอร์ชันใหม่กว่า: %2$s)</string>
     <string name="update_version_button">แตะเพื่อดาวน์โหลดและอัปเดตแอป</string>
-    <string name="install_release_button">แตะเพื่อดาวน์โหลดและติดตั้งรุ่นเผยแพร่ %1$s</string>
+    <string name="update_version_button_file">แตะเพื่อดาวน์โหลดและอัปเดตแอป (%1$s)</string>
+    <string name="install_release_button_file">แตะเพื่อดาวน์โหลดและติดตั้งรุ่นเผยแพร่ %1$s (%2$s)</string>
     <string name="shizuku_download_button">แตะเพื่อดาวน์โหลด Shizuku Next (จำเป็นสำหรับแผง PiP โดยไม่ต้องใช้รูท)</string>
     <string name="confirmation_dialog">ต้องการอัปเดตเป็นเวอร์ชัน %1$s หรือไม่</string>
     <string name="update_btn">อัปเดต</string>

@@ -1,12 +1,15 @@
-# Adds update<version>.apk to a published release: a copy of fyt_release_<version>.apk.
+# Adds update<version>.apk and fyt_release_<version>.apk to a published release: copies of
+# system_release_<version>.apk.
 #
 # The built-in updater of versions up to 1.2.1 downloads releases/download/v<version>/update<version>.apk
 # from the latest release, whatever their build. From 1.2.2 on it downloads the file of its own
-# build (fyt_release_ or standard_release_), so only the old name needs this copy. The FYT build
-# is the one copied: up to 1.2.0 the updater was there only on FYT units. (A standard -- then
-# "phone" -- 1.2.1 gets the FYT build too and cannot install it: it needs one update by hand.)
+# build (system_release_ or standard_release_), so only the old name needs this copy. The system
+# build is the one copied: up to 1.2.0 the updater was there only on FYT units. (A standard --
+# then "phone" -- 1.2.1 gets the system build too and cannot install it: it needs one update by
+# hand.) Test builds made while the system build was still called "fyt" look for
+# fyt_release_<version>.apk, so that name is added as well.
 #
-# Runs when a release is published; it waits a while for fyt_release_<version>.apk in case the
+# Runs when a release is published; it waits a while for system_release_<version>.apk in case the
 # files are uploaded after publishing. Run it by hand (Actions > Release assets > Run workflow)
 # with the tag for a release published before this workflow, or after replacing the file.
 name: Release assets
@@ -29,7 +32,7 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - name: Copy the FYT build as update<version>.apk
+      - name: Copy the system build under its older names
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -37,10 +40,9 @@ jobs:
         run: |
           set -euo pipefail
           version="${TAG#v}"
-          src="fyt_release_${version}.apk"
-          dst="update${version}.apk"
+          src="system_release_${version}.apk"
 
-          # Up to 10 minutes for the FYT build to be uploaded.
+          # Up to 10 minutes for the system build to be uploaded.
           for i in $(seq 1 30); do
             if gh release view "$TAG" -R "$REPO" --json assets -q '.assets[].name' | grep -qxF "$src"; then
               break
@@ -55,6 +57,8 @@ jobs:
 
           dir="$(mktemp -d)"
           gh release download "$TAG" -R "$REPO" -p "$src" -D "$dir"
-          cp "$dir/$src" "$dir/$dst"
-          gh release upload "$TAG" -R "$REPO" "$dir/$dst" --clobber
-          echo "Added $dst (a copy of $src) to release $TAG"
+          for dst in "update${version}.apk" "fyt_release_${version}.apk"; do
+            cp "$dir/$src" "$dir/$dst"
+            gh release upload "$TAG" -R "$REPO" "$dir/$dst" --clobber
+            echo "Added $dst (a copy of $src) to release $TAG"
+          done

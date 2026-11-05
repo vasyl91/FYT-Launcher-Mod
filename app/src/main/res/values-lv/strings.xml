@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku ir instalēts, bet nedarbojas</string>
     <string name="build_type_release">Izlaiduma būvējums</string>
     <string name="build_type_debug">Atkļūdošanas būvējums</string>
-    <string name="build_flavor_fyt">FYT versija</string>
-    <string name="build_flavor_standard">Standarta versija</string>
     <string name="app_version">Versija: %1$s</string>
     <string name="app_version_update">Versija: %1$s (pieejama jaunāka versija: %2$s)</string>
     <string name="update_version_button">Pieskarieties, lai lejupielādētu un atjauninātu lietotni</string>
-    <string name="install_release_button">Pieskarieties, lai lejupielādētu un instalētu izlaiduma versiju %1$s</string>
+    <string name="update_version_button_file">Pieskarieties, lai lejupielādētu un atjauninātu lietotni (%1$s)</string>
+    <string name="install_release_button_file">Pieskarieties, lai lejupielādētu un instalētu izlaiduma versiju %1$s (%2$s)</string>
     <string name="shizuku_download_button">Pieskarieties, lai lejupielādētu Shizuku Next (nepieciešams PiP paneļiem bez root)</string>
     <string name="confirmation_dialog">Vai vēlaties atjaunināt uz versiju %1$s?</string>
     <string name="update_btn">ATJAUNINĀT</string>

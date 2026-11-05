@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku yüklü, çalışmıyor</string>
     <string name="build_type_release">Yayın sürümü</string>
     <string name="build_type_debug">Hata ayıklama sürümü</string>
-    <string name="build_flavor_fyt">FYT sürümü</string>
-    <string name="build_flavor_standard">Standart sürüm</string>
     <string name="app_version">Sürüm: %1$s</string>
     <string name="app_version_update">Sürüm: %1$s (daha yeni sürüm var: %2$s)</string>
     <string name="update_version_button">Uygulamayı indirip güncellemek için dokunun</string>
-    <string name="install_release_button">%1$s yayın sürümünü indirip yüklemek için dokunun</string>
+    <string name="update_version_button_file">Uygulamayı indirip güncellemek için dokunun (%1$s)</string>
+    <string name="install_release_button_file">%1$s yayın sürümünü indirip yüklemek için dokunun (%2$s)</string>
     <string name="shizuku_download_button">Shizuku Next\'i indirmek için dokunun (root olmadan PiP bölmeleri için gerekli)</string>
     <string name="confirmation_dialog">%1$s sürümüne güncellemek istiyor musunuz?</string>
     <string name="update_btn">GÜNCELLE</string>

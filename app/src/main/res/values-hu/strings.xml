@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">A Shizuku telepítve van, de nem fut</string>
     <string name="build_type_release">Kiadási build</string>
     <string name="build_type_debug">Hibakeresési build</string>
-    <string name="build_flavor_fyt">FYT-verzió</string>
-    <string name="build_flavor_standard">Szabványos verzió</string>
     <string name="app_version">Verzió: %1$s</string>
     <string name="app_version_update">Verzió: %1$s (újabb verzió érhető el: %2$s)</string>
     <string name="update_version_button">Koppintson az alkalmazás letöltéséhez és frissítéséhez</string>
-    <string name="install_release_button">Koppintson a(z) %1$s kiadási verzió letöltéséhez és telepítéséhez</string>
+    <string name="update_version_button_file">Koppintson az alkalmazás letöltéséhez és frissítéséhez (%1$s)</string>
+    <string name="install_release_button_file">Koppintson a(z) %1$s kiadási verzió letöltéséhez és telepítéséhez (%2$s)</string>
     <string name="shizuku_download_button">Koppintson a Shizuku Next letöltéséhez (root nélküli PiP-panelekhez szükséges)</string>
     <string name="confirmation_dialog">Frissíteni szeretne a(z) %1$s verzióra?</string>
     <string name="update_btn">FRISSÍTÉS</string>

@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku დაინსტალირებულია, არ მუშაობს</string>
     <string name="build_type_release">გამოშვების აწყობა</string>
     <string name="build_type_debug">გამართვის აწყობა</string>
-    <string name="build_flavor_fyt">FYT ვერსია</string>
-    <string name="build_flavor_standard">სტანდარტული ვერსია</string>
     <string name="app_version">ვერსია: %1$s</string>
     <string name="app_version_update">ვერსია: %1$s (ხელმისაწვდომია უფრო ახალი ვერსია: %2$s)</string>
     <string name="update_version_button">შეეხეთ აპის ჩამოსატვირთად და გასაახლებლად</string>
-    <string name="install_release_button">შეეხეთ გამოშვების ვერსიის %1$s ჩამოსატვირთად და დასაინსტალირებლად</string>
+    <string name="update_version_button_file">შეეხეთ აპის ჩამოსატვირთად და გასაახლებლად (%1$s)</string>
+    <string name="install_release_button_file">შეეხეთ გამოშვების ვერსიის %1$s ჩამოსატვირთად და დასაინსტალირებლად (%2$s)</string>
     <string name="shizuku_download_button">შეეხეთ Shizuku Next-ის ჩამოსატვირთად (საჭიროა PiP პანელებისთვის Root-ის გარეშე)</string>
     <string name="confirmation_dialog">გსურთ განახლება ვერსიამდე %1$s?</string>
     <string name="update_btn">განახლება</string>

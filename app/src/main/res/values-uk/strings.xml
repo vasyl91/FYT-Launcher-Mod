@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku установлено, але не запущено</string>
     <string name="build_type_release">Релізна збірка</string>
     <string name="build_type_debug">Налагоджувальна збірка</string>
-    <string name="build_flavor_fyt">Версія FYT</string>
-    <string name="build_flavor_standard">Стандартна версія</string>
     <string name="app_version">Версія: %1$s</string>
     <string name="app_version_update">Версія: %1$s (доступна новіша версія: %2$s)</string>
     <string name="update_version_button">Торкніться, щоб завантажити й оновити застосунок</string>
-    <string name="install_release_button">Торкніться, щоб завантажити й установити релізну версію %1$s</string>
+    <string name="update_version_button_file">Торкніться, щоб завантажити й оновити застосунок (%1$s)</string>
+    <string name="install_release_button_file">Торкніться, щоб завантажити й установити релізну версію %1$s (%2$s)</string>
     <string name="shizuku_download_button">Торкніться, щоб завантажити Shizuku Next (потрібен для панелей PiP без root)</string>
     <string name="confirmation_dialog">Оновити до версії %1$s?</string>
     <string name="update_btn">ОНОВИТИ</string>

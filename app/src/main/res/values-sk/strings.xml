@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku nainštalované, nie je spustené</string>
     <string name="build_type_release">Vydané zostavenie</string>
     <string name="build_type_debug">Ladiace zostavenie</string>
-    <string name="build_flavor_fyt">Verzia FYT</string>
-    <string name="build_flavor_standard">Štandardná verzia</string>
     <string name="app_version">Verzia: %1$s</string>
     <string name="app_version_update">Verzia: %1$s (je dostupná novšia verzia: %2$s)</string>
     <string name="update_version_button">Klepnutím stiahnete a aktualizujete aplikáciu</string>
-    <string name="install_release_button">Klepnutím stiahnete a nainštalujete vydanú verziu %1$s</string>
+    <string name="update_version_button_file">Klepnutím stiahnete a aktualizujete aplikáciu (%1$s)</string>
+    <string name="install_release_button_file">Klepnutím stiahnete a nainštalujete vydanú verziu %1$s (%2$s)</string>
     <string name="shizuku_download_button">Klepnutím stiahnete Shizuku Next (potrebný pre panely PiP bez rootu)</string>
     <string name="confirmation_dialog">Chcete aktualizovať na verziu %1$s?</string>
     <string name="update_btn">AKTUALIZOVAŤ</string>

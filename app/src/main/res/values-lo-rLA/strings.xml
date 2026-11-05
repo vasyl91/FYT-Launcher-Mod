@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">ຕິດຕັ້ງ Shizuku ແລ້ວ, ບໍ່ໄດ້ເຮັດວຽກ</string>
     <string name="build_type_release">ເວີຊັນປ່ອຍ</string>
     <string name="build_type_debug">ເວີຊັນດີບັກ</string>
-    <string name="build_flavor_fyt">ເວີຊັນ FYT</string>
-    <string name="build_flavor_standard">ເວີຊັນມາດຕະຖານ</string>
     <string name="app_version">ເວີຊັນ: %1$s</string>
     <string name="app_version_update">ເວີຊັນ: %1$s (ມີເວີຊັນໃໝ່ກວ່າ: %2$s)</string>
     <string name="update_version_button">ແຕະເພື່ອດາວໂຫຼດ ແລະ ອັບເດດແອັບ</string>
-    <string name="install_release_button">ແຕະເພື່ອດາວໂຫຼດ ແລະ ຕິດຕັ້ງເວີຊັນປ່ອຍ %1$s</string>
+    <string name="update_version_button_file">ແຕະເພື່ອດາວໂຫຼດ ແລະ ອັບເດດແອັບ (%1$s)</string>
+    <string name="install_release_button_file">ແຕະເພື່ອດາວໂຫຼດ ແລະ ຕິດຕັ້ງເວີຊັນປ່ອຍ %1$s (%2$s)</string>
     <string name="shizuku_download_button">ແຕະເພື່ອດາວໂຫຼດ Shizuku Next (ຈຳເປັນສຳລັບແຜງ PiP ໂດຍບໍ່ມີ Root)</string>
     <string name="confirmation_dialog">ທ່ານຕ້ອງການອັບເດດເປັນເວີຊັນ %1$s ບໍ?</string>
     <string name="update_btn">ອັບເດດ</string>

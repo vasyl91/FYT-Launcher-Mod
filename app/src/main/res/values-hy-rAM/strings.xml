@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Shizuku-ն տեղադրված է, չի աշխատում</string>
     <string name="build_type_release">Թողարկման կառուցում</string>
     <string name="build_type_debug">Վրիպազերծման կառուցում</string>
-    <string name="build_flavor_fyt">FYT տարբերակ</string>
-    <string name="build_flavor_standard">Ստանդարտ տարբերակ</string>
     <string name="app_version">Տարբերակ՝ %1$s</string>
     <string name="app_version_update">Տարբերակ՝ %1$s (հասանելի է ավելի նոր տարբերակ՝ %2$s)</string>
     <string name="update_version_button">Հպեք՝ հավելվածը ներբեռնելու և թարմացնելու համար</string>
-    <string name="install_release_button">Հպեք՝ %1$s թողարկման տարբերակը ներբեռնելու և տեղադրելու համար</string>
+    <string name="update_version_button_file">Հպեք՝ հավելվածը ներբեռնելու և թարմացնելու համար (%1$s)</string>
+    <string name="install_release_button_file">Հպեք՝ %1$s թողարկման տարբերակը ներբեռնելու և տեղադրելու համար (%2$s)</string>
     <string name="shizuku_download_button">Հպեք՝ Shizuku Next-ը ներբեռնելու համար (անհրաժեշտ է PiP վահանակների համար առանց Root-ի)</string>
     <string name="confirmation_dialog">Ցանկանո՞ւմ եք թարմացնել մինչև %1$s տարբերակը։</string>
     <string name="update_btn">ԹԱՐՄԱՑՆԵԼ</string>

@@ -1,9 +1,5 @@
 # Builds the app and runs the JVM unit tests on every push and pull request, so a change that does
 # not compile is caught right away rather than in Android Studio.
-#
-# [BRANCH-ONLY, NOT FOR MAIN] On branch ccr-087eed00-gbqsuz this file also builds the standard debug
-# APK next to the fyt one (the 7870 runs the standard build). It is a single commit tagged
-# "[BRANCH-ONLY]"; drop or revert it before opening the pull request to main.
 name: Build
 
 on:
@@ -57,19 +53,19 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Unit tests
-        run: bash ./gradlew :app:testFytDebugUnitTest --stacktrace
+        run: bash ./gradlew :app:testSystemDebugUnitTest --stacktrace
 
-      - name: Build (fyt debug)
-        run: bash ./gradlew :app:assembleFytDebug --stacktrace
+      - name: Build (system debug)
+        run: bash ./gradlew :app:assembleSystemDebug --stacktrace
 
       - name: Build (standard debug)
         run: bash ./gradlew :app:assembleStandardDebug --stacktrace
 
-      - name: Upload the APK (fyt debug)
+      - name: Upload the APK (system debug)
         uses: actions/upload-artifact@v4
         with:
-          name: fyt-debug-apk
-          path: app/build/outputs/apk/fyt/debug/*.apk
+          name: system-debug-apk
+          path: app/build/outputs/apk/system/debug/*.apk
           if-no-files-found: warn
 
       - name: Upload the APK (standard debug)

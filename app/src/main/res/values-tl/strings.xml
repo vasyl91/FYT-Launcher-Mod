@@ -321,12 +321,11 @@
     <string name="app_type_shizuku_stopped">Naka-install ang Shizuku, hindi tumatakbo</string>
     <string name="build_type_release">Release build</string>
     <string name="build_type_debug">Debug build</string>
-    <string name="build_flavor_fyt">Bersyon ng FYT</string>
-    <string name="build_flavor_standard">Karaniwang bersyon</string>
     <string name="app_version">Bersyon: %1$s</string>
     <string name="app_version_update">Bersyon: %1$s (may mas bagong bersyon: %2$s)</string>
     <string name="update_version_button">I-tap para i-download at i-update ang app</string>
-    <string name="install_release_button">I-tap para i-download at i-install ang release version %1$s</string>
+    <string name="update_version_button_file">I-tap para i-download at i-update ang app (%1$s)</string>
+    <string name="install_release_button_file">I-tap para i-download at i-install ang release version %1$s (%2$s)</string>
     <string name="shizuku_download_button">I-tap para i-download ang Shizuku Next (kailangan para sa mga PiP pane nang walang root)</string>
     <string name="confirmation_dialog">Gusto mo bang mag-update sa bersyon %1$s?</string>
     <string name="update_btn">I-UPDATE</string>

@@ -23,7 +23,7 @@ Three hosts, used in this order of preference (`WindowHostVdClient`):
 
 | # | When | VD host | Runs as | Needs |
 |---|---|---|---|---|
-| 1 | launcher installed as `android.uid.system` (fyt flavor via the USB installer) | inside the launcher | 1000 | nothing else |
+| 1 | launcher installed as `android.uid.system` (system flavor via the USB installer) | inside the launcher | 1000 | nothing else |
 | 2 | FYT VDHost Magisk module installed | the module's daemon | 1000 | Magisk |
 | 3 | Shizuku running (no root needed) | `WindowHostVdShizukuService`, a Shizuku UserService | 2000 (shell) | Shizuku 13+, one-time permission prompt |
 
