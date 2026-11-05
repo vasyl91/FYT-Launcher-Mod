@@ -1586,13 +1586,13 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private boolean shouldExcludeFirstBottomCell() {
         int page = shownWorkspacePage();
         return page >= 0 && BottomBarPlacement.reserve(page, barOnEveryPage(prefs),
-                prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) == BottomBarPlacement.Reserve.CELL;
+                prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false), prefs.getBoolean(Keys.USER_LAYOUT, false)) == BottomBarPlacement.Reserve.CELL;
     }
 
     private boolean shouldExcludeLastRow() {
         int page = shownWorkspacePage();
         return page >= 0 && BottomBarPlacement.reserve(page, barOnEveryPage(prefs),
-                prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) == BottomBarPlacement.Reserve.ROW;
+                prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false), prefs.getBoolean(Keys.USER_LAYOUT, false)) == BottomBarPlacement.Reserve.ROW;
     }
 
     /** 'Bottom bar on every page'. */
@@ -4549,14 +4549,14 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     private boolean isBarRowExcluded(int pageIndex) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
         return BottomBarPlacement.reserve(pageIndex, barOnEveryPage(p),
-                p.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) == BottomBarPlacement.Reserve.ROW;
+                p.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false), p.getBoolean(Keys.USER_LAYOUT, false)) == BottomBarPlacement.Reserve.ROW;
     }
 
     /** With the auto-hiding bar, only its handle in the bottom-left cell of a page is taken. */
     private boolean isFirstBottomCellExcluded(int pageIndex) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
         return BottomBarPlacement.reserve(pageIndex, barOnEveryPage(p),
-                p.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) == BottomBarPlacement.Reserve.CELL;
+                p.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false), p.getBoolean(Keys.USER_LAYOUT, false)) == BottomBarPlacement.Reserve.CELL;
     }
 
     /** A copy of mOccupied with the cells under the bottom bar marked as taken. */

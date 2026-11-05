@@ -2617,7 +2617,8 @@ public class Workspace extends SmoothPagedView
                 && mLauncher != null
                 && mLauncher.mState == Launcher.State.WORKSPACE
                 && mState == State.NORMAL
-                && BottomBarPlacement.bar(placementPage(), mEveryPage, true, mLeftBar, isPageMoving())
+                && BottomBarPlacement.bar(placementPage(), mEveryPage, true, mLeftBar, isPageMoving(),
+                        mPrefs.getBoolean(Keys.USER_LAYOUT, false))
                         == BottomBarPlacement.Bar.HANDLE;
     }
 
@@ -2702,7 +2703,7 @@ public class Workspace extends SmoothPagedView
             return;
         }
         BottomBarPlacement.Bar bar = BottomBarPlacement.bar(placementPage(), true, false, mLeftBar,
-                isPageMoving());
+                isPageMoving(), true);   // the mode check above includes the user layout
         boolean want = bar == BottomBarPlacement.Bar.PERSISTENT_OVERLAY && persistentBarAllowed();
         if (want && !mOverlayPersistent) {
             showPersistentOverlay(reason);

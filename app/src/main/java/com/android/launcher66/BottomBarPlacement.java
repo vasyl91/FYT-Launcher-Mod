@@ -34,8 +34,12 @@ final class BottomBarPlacement {
     /**
      * @param page the page that is shown (or being left), 0 for the first
      * @param pageMoving whether the pages are moving, between two pages or back to the same one
+     * @param userLayout whether the user layout is on: the persistent overlay and the handles of the
+     *                   other pages exist only there, so without it 'every page' means nothing
      */
-    static Bar bar(int page, boolean everyPage, boolean autoHide, boolean leftBar, boolean pageMoving) {
+    static Bar bar(int page, boolean everyPage, boolean autoHide, boolean leftBar, boolean pageMoving,
+                   boolean userLayout) {
+        everyPage &= userLayout;
         if (!everyPage && page != 0) {
             return Bar.NONE;
         }
@@ -53,7 +57,12 @@ final class BottomBarPlacement {
         return everyPage ? Bar.PERSISTENT_OVERLAY : Bar.EMBEDDED;
     }
 
-    static Reserve reserve(int page, boolean everyPage, boolean autoHide) {
+    /**
+     * Without the user layout there is no bar on the other pages (see {@link #bar}), so they must
+     * not lose their last row or cell to one that is never there.
+     */
+    static Reserve reserve(int page, boolean everyPage, boolean autoHide, boolean userLayout) {
+        everyPage &= userLayout;
         if (!everyPage && page != 0) {
             return Reserve.NONE;
         }
