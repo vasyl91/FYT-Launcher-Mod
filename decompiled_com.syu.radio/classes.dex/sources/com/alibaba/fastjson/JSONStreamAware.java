@@ -1,0 +1,8 @@
+package com.alibaba.fastjson;
+
+import java.io.IOException;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\com.syu.radio_1.0.apk\dexFile\classes.dex */
+public interface JSONStreamAware {
+    void writeJSONString(Appendable appendable) throws IOException;
+}

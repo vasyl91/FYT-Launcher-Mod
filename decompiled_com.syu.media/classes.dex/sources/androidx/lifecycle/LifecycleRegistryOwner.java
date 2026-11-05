@@ -1,0 +1,8 @@
+package androidx.lifecycle;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.media.apk\dexFile\classes.dex */
+@Deprecated
+public interface LifecycleRegistryOwner extends LifecycleOwner {
+    @Override // androidx.lifecycle.LifecycleOwner
+    LifecycleRegistry getLifecycle();
+}

@@ -1,0 +1,22 @@
+package com.google.android.material.transition;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.media.apk\dexFile\classes.dex */
+class FadeModeResult {
+    final int endAlpha;
+    final boolean endOnTop;
+    final int startAlpha;
+
+    static FadeModeResult startOnTop(int i, int i2) {
+        return new FadeModeResult(i, i2, false);
+    }
+
+    static FadeModeResult endOnTop(int i, int i2) {
+        return new FadeModeResult(i, i2, true);
+    }
+
+    private FadeModeResult(int i, int i2, boolean z) {
+        this.startAlpha = i;
+        this.endAlpha = i2;
+        this.endOnTop = z;
+    }
+}

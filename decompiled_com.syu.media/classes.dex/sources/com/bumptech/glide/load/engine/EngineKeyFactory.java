@@ -1,0 +1,16 @@
+package com.bumptech.glide.load.engine;
+
+import com.bumptech.glide.load.Key;
+import com.bumptech.glide.load.Options;
+import com.bumptech.glide.load.Transformation;
+import java.util.Map;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.media.apk\dexFile\classes.dex */
+class EngineKeyFactory {
+    EngineKeyFactory() {
+    }
+
+    EngineKey buildKey(Object obj, Key key, int i, int i2, Map<Class<?>, Transformation<?>> map, Class<?> cls, Class<?> cls2, Options options) {
+        return new EngineKey(obj, key, i, i2, map, cls, cls2, options);
+    }
+}

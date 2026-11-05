@@ -1,0 +1,10 @@
+package org.apache.poi.ss.formula;
+
+import org.apache.poi.ss.formula.eval.ValueEval;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.media.apk\dexFile\classes2.dex */
+final class PlainValueCellCacheEntry extends CellCacheEntry {
+    public PlainValueCellCacheEntry(ValueEval valueEval) {
+        updateValue(valueEval);
+    }
+}

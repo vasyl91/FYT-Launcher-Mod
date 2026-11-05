@@ -1,0 +1,61 @@
+package com.nostra13.universalimageloader.core.assist.deque;
+
+import java.util.Iterator;
+import java.util.Queue;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\com.syu.radio_1.0.apk\dexFile\classes.dex */
+public interface Deque<E> extends Queue<E> {
+    boolean add(E e);
+
+    void addFirst(E e);
+
+    void addLast(E e);
+
+    boolean contains(Object obj);
+
+    Iterator<E> descendingIterator();
+
+    E element();
+
+    E getFirst();
+
+    E getLast();
+
+    Iterator<E> iterator();
+
+    boolean offer(E e);
+
+    boolean offerFirst(E e);
+
+    boolean offerLast(E e);
+
+    E peek();
+
+    E peekFirst();
+
+    E peekLast();
+
+    E poll();
+
+    E pollFirst();
+
+    E pollLast();
+
+    E pop();
+
+    void push(E e);
+
+    E remove();
+
+    boolean remove(Object obj);
+
+    E removeFirst();
+
+    boolean removeFirstOccurrence(Object obj);
+
+    E removeLast();
+
+    boolean removeLastOccurrence(Object obj);
+
+    int size();
+}

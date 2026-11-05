@@ -1,0 +1,118 @@
+package androidx.room;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/* JADX INFO: loaded from: D:\APK\APKRepatcher_v1.1.2\Projects\190000000_com.syu.media.apk\dexFile\classes.dex */
+class MultiInstanceInvalidationClient {
+    final Context mAppContext;
+    int mClientId;
+    final Executor mExecutor;
+    final InvalidationTracker mInvalidationTracker;
+    final String mName;
+    final InvalidationTracker.Observer mObserver;
+    final Runnable mRemoveObserverRunnable;
+    IMultiInstanceInvalidationService mService;
+    final ServiceConnection mServiceConnection;
+    final Runnable mSetUpRunnable;
+    final IMultiInstanceInvalidationCallback mCallback = new IMultiInstanceInvalidationCallback.Stub() { // from class: androidx.room.MultiInstanceInvalidationClient.1
+        @Override // androidx.room.IMultiInstanceInvalidationCallback
+        public void onInvalidation(final String[] tables) {
+            MultiInstanceInvalidationClient.this.mExecutor.execute(new Runnable() { // from class: androidx.room.MultiInstanceInvalidationClient.1.1
+                @Override // java.lang.Runnable
+                public void run() {
+                    MultiInstanceInvalidationClient.this.mInvalidationTracker.notifyObserversByTableNames(tables);
+                }
+            });
+        }
+    };
+    final AtomicBoolean mStopped = new AtomicBoolean(false);
+
+    MultiInstanceInvalidationClient(Context context, String name, InvalidationTracker invalidationTracker, Executor executor) {
+        ServiceConnection serviceConnection = new ServiceConnection() { // from class: androidx.room.MultiInstanceInvalidationClient.2
+            @Override // android.content.ServiceConnection
+            public void onServiceConnected(ComponentName name2, IBinder service) {
+                MultiInstanceInvalidationClient.this.mService = IMultiInstanceInvalidationService.Stub.asInterface(service);
+                MultiInstanceInvalidationClient.this.mExecutor.execute(MultiInstanceInvalidationClient.this.mSetUpRunnable);
+            }
+
+            @Override // android.content.ServiceConnection
+            public void onServiceDisconnected(ComponentName name2) {
+                MultiInstanceInvalidationClient.this.mExecutor.execute(MultiInstanceInvalidationClient.this.mRemoveObserverRunnable);
+                MultiInstanceInvalidationClient.this.mService = null;
+            }
+        };
+        this.mServiceConnection = serviceConnection;
+        this.mSetUpRunnable = new Runnable() { // from class: androidx.room.MultiInstanceInvalidationClient.3
+            @Override // java.lang.Runnable
+            public void run() {
+                try {
+                    IMultiInstanceInvalidationService iMultiInstanceInvalidationService = MultiInstanceInvalidationClient.this.mService;
+                    if (iMultiInstanceInvalidationService != null) {
+                        MultiInstanceInvalidationClient multiInstanceInvalidationClient = MultiInstanceInvalidationClient.this;
+                        multiInstanceInvalidationClient.mClientId = iMultiInstanceInvalidationService.registerCallback(multiInstanceInvalidationClient.mCallback, MultiInstanceInvalidationClient.this.mName);
+                        MultiInstanceInvalidationClient.this.mInvalidationTracker.addObserver(MultiInstanceInvalidationClient.this.mObserver);
+                    }
+                } catch (RemoteException e) {
+                    Log.w("ROOM", "Cannot register multi-instance invalidation callback", e);
+                }
+            }
+        };
+        this.mRemoveObserverRunnable = new Runnable() { // from class: androidx.room.MultiInstanceInvalidationClient.4
+            @Override // java.lang.Runnable
+            public void run() {
+                MultiInstanceInvalidationClient.this.mInvalidationTracker.removeObserver(MultiInstanceInvalidationClient.this.mObserver);
+            }
+        };
+        Context applicationContext = context.getApplicationContext();
+        this.mAppContext = applicationContext;
+        this.mName = name;
+        this.mInvalidationTracker = invalidationTracker;
+        this.mExecutor = executor;
+        this.mObserver = new InvalidationTracker.Observer((String[]) invalidationTracker.mTableIdLookup.keySet().toArray(new String[0])) { // from class: androidx.room.MultiInstanceInvalidationClient.5
+            @Override // androidx.room.InvalidationTracker.Observer
+            boolean isRemote() {
+                return true;
+            }
+
+            @Override // androidx.room.InvalidationTracker.Observer
+            public void onInvalidated(Set<String> tables) {
+                if (MultiInstanceInvalidationClient.this.mStopped.get()) {
+                    return;
+                }
+                try {
+                    IMultiInstanceInvalidationService iMultiInstanceInvalidationService = MultiInstanceInvalidationClient.this.mService;
+                    if (iMultiInstanceInvalidationService != null) {
+                        iMultiInstanceInvalidationService.broadcastInvalidation(MultiInstanceInvalidationClient.this.mClientId, (String[]) tables.toArray(new String[0]));
+                    }
+                } catch (RemoteException e) {
+                    Log.w("ROOM", "Cannot broadcast invalidation", e);
+                }
+            }
+        };
+        applicationContext.bindService(new Intent(applicationContext, (Class<?>) MultiInstanceInvalidationService.class), serviceConnection, 1);
+    }
+
+    void stop() {
+        if (this.mStopped.compareAndSet(false, true)) {
+            this.mInvalidationTracker.removeObserver(this.mObserver);
+            try {
+                IMultiInstanceInvalidationService iMultiInstanceInvalidationService = this.mService;
+                if (iMultiInstanceInvalidationService != null) {
+                    iMultiInstanceInvalidationService.unregisterCallback(this.mCallback, this.mClientId);
+                }
+            } catch (RemoteException e) {
+                Log.w("ROOM", "Cannot unregister multi-instance invalidation callback", e);
+            }
+            this.mAppContext.unbindService(this.mServiceConnection);
+        }
+    }
+}
