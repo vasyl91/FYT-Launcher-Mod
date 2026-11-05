@@ -239,9 +239,9 @@ final class SyuMediaFiles {
                 return;
             }
             outcomes.add(outcome);
-            if (outcome == Outcome.MISSING) {
+            if (SyuMediaReadPolicy.endsRound(outcome)) {
                 // An answer, not a refusal: su and the host would only find the same.
-                logOnce(family, "missing", true);
+                logOnce(family, outcome == Outcome.TOO_LARGE ? "too large" : "missing", true);
                 return;
             }
         }
@@ -282,7 +282,8 @@ final class SyuMediaFiles {
             return Opened.of(Outcome.MISSING);
         }
         if (stat.st_size > max) {
-            return Opened.of(Outcome.DENIED);
+            // The host and su have the same limit, so asking them (3 s for su) would find the same.
+            return Opened.of(Outcome.TOO_LARGE);
         }
         try {
             FileInputStream in = new FileInputStream(path);
@@ -413,6 +414,8 @@ final class SyuMediaFiles {
         if (sLogged.add(family + "|" + via + "|" + ok)) {
             if ("missing".equals(via)) {
                 Log.i(TAG, family + " -> the file is not there (uid " + Process.myUid() + ")");
+            } else if ("too large".equals(via)) {
+                Log.i(TAG, family + " -> the file is over " + SyuMediaReadPolicy.maxBytes(family) + " bytes");
             } else {
                 Log.i(TAG, family + " via " + via + " -> " + (ok ? "ok" : "fail") + " (uid " + Process.myUid() + ")");
             }

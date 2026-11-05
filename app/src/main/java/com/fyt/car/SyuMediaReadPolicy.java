@@ -13,11 +13,21 @@ import java.util.List;
  * ways (a {@code su}, a call to the host) would only find the same and are not asked. The cover of
  * a song a phone plays over Bluetooth is written about a second after the track changes, so
  * "missing" is the normal state at the first look. {@link Outcome#DENIED}: the way could not
- * read it (no permission, a failure): the next way may.
+ * read it (no permission, a failure): the next way may. {@link Outcome#TOO_LARGE}: the file is
+ * there but over the limit of its family, which every way would refuse for the same reason (the
+ * host has the same limit), so it ends the round like a missing file does.
  */
 final class SyuMediaReadPolicy {
 
-    enum Outcome { OK, MISSING, DENIED }
+    enum Outcome { OK, MISSING, DENIED, TOO_LARGE }
+
+    /**
+     * Whether an outcome is an answer for the file, so that the other ways are not asked. A way
+     * that merely could not read it (DENIED) leaves the next one to try.
+     */
+    static boolean endsRound(Outcome outcome) {
+        return outcome == Outcome.MISSING || outcome == Outcome.TOO_LARGE;
+    }
 
     /** The ways, in the order they are tried when nothing is remembered. */
     static final String[] WAYS = {"direct", "root", "host"};

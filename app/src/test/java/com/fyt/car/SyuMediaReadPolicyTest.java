@@ -70,4 +70,20 @@ class SyuMediaReadPolicyTest {
         assertEquals(2L * 1024 * 1024, SyuMediaReadPolicy.maxBytes(SyuMediaFiles.FAMILY_RADIO_LOGO));
         assertEquals(2L * 1024 * 1024, SyuMediaReadPolicy.maxBytes(SyuMediaFiles.FAMILY_BT_COVER));
     }
+
+    @Test
+    void aFileOverItsLimitEndsTheRoundLikeAMissingOne() {
+        assertTrue(SyuMediaReadPolicy.endsRound(Outcome.MISSING));
+        assertTrue(SyuMediaReadPolicy.endsRound(Outcome.TOO_LARGE));
+        assertFalse(SyuMediaReadPolicy.endsRound(Outcome.DENIED));
+        assertFalse(SyuMediaReadPolicy.endsRound(Outcome.OK));
+    }
+
+    @Test
+    void aFileOverItsLimitIsNotHeldOff() {
+        assertFalse(SyuMediaReadPolicy.holdOff(SyuMediaFiles.FAMILY_RADIO_LOGO,
+                Collections.singletonList(Outcome.TOO_LARGE)));
+        assertFalse(SyuMediaReadPolicy.holdOff(SyuMediaFiles.FAMILY_ICON_PACK,
+                Arrays.asList(Outcome.DENIED, Outcome.TOO_LARGE)));
+    }
 }
