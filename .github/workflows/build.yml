@@ -61,6 +61,9 @@ jobs:
       - name: Build (standard debug)
         run: bash ./gradlew :app:assembleStandardDebug --stacktrace
 
+      - name: Build the VD host Magisk module
+        run: bash ./gradlew :vdhost-server:magiskZip --stacktrace
+
       - name: Upload the APK (system debug)
         uses: actions/upload-artifact@v4
         with:

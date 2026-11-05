@@ -164,6 +164,46 @@ public class VdHostStub extends Binder {
                     reply.writeString(res);
                     return true;
                 }
+                case VdHostProtocol.TX_READ_FILE: {
+                    String path = data.readString();
+                    ParcelFileDescriptor file;
+                    long ident = Binder.clearCallingIdentity();
+                    try {
+                        file = mServices.readFile(uid, path);
+                    } finally {
+                        Binder.restoreCallingIdentity(ident);
+                    }
+                    reply.writeNoException();
+                    reply.writeTypedObject(file, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+                    return true;
+                }
+                case VdHostProtocol.TX_ALLOW_APP_OP: {
+                    String pkg = data.readString();
+                    String op = data.readString();
+                    String res;
+                    long ident = Binder.clearCallingIdentity();
+                    try {
+                        res = mServices.allowAppOp(uid, pkg, op);
+                    } finally {
+                        Binder.restoreCallingIdentity(ident);
+                    }
+                    reply.writeNoException();
+                    reply.writeString(res);
+                    return true;
+                }
+                case VdHostProtocol.TX_ALLOW_NOTIFICATION_LISTENER: {
+                    String component = data.readString();
+                    String res;
+                    long ident = Binder.clearCallingIdentity();
+                    try {
+                        res = mServices.allowNotificationListener(uid, component);
+                    } finally {
+                        Binder.restoreCallingIdentity(ident);
+                    }
+                    reply.writeNoException();
+                    reply.writeString(res);
+                    return true;
+                }
                 case VdHostProtocol.TX_SET_OBSCURING_LIMIT: {
                     String pkg = data.readString();
                     String value = data.readString();

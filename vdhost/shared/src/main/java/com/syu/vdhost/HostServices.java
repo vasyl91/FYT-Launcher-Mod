@@ -262,6 +262,62 @@ final class HostServices {
     }
 
     // ---------------------------------------------------------------------------------------
+    // Version 3: files, app ops, notification listeners
+    // ---------------------------------------------------------------------------------------
+
+    /** The app ops allowAppOp() sets: the three a user app gets from its own screens in Settings. */
+    private static final List<String> ALLOWED_APP_OPS = Arrays.asList(
+            "SYSTEM_ALERT_WINDOW", "REQUEST_INSTALL_PACKAGES", "WRITE_SETTINGS");
+
+    /**
+     * A read-only descriptor of one of the files of HostFilePolicy, for the uids the host serves. null when the
+     * path is not one of them (not canonical, a link, not a regular file, longer than 2 MB).
+     */
+    ParcelFileDescriptor readFile(int callerUid, String path) {
+        // The caller is one of the uids the host serves (VdHostStub's CallerPolicy): the launcher.
+        if (path == null) {
+            return null;
+        }
+        try {
+            java.io.File file = new java.io.File(path);
+            String canonical = file.getCanonicalPath();
+            if (!HostFilePolicy.allowed(path, canonical, file.isFile(), file.length())) {
+                Log.i(TAG, "readFile refused: " + path);
+                return null;
+            }
+            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+        } catch (IOException e) {
+            Log.w(TAG, "readFile failed: " + path + ": " + e);
+            return null;
+        }
+    }
+
+    /** Allows the caller's package one of ALLOWED_APP_OPS, as the user can in Settings. */
+    String allowAppOp(int callerUid, String pkg, String op) {
+        if (pkg == null || !VdHostCore.isPackageOfUid(pkg, callerUid)) {
+            throw new SecurityException(pkg + " is not a package of uid " + callerUid);
+        }
+        if (op == null || !ALLOWED_APP_OPS.contains(op)) {
+            throw new IllegalArgumentException("op not allowed: " + op);
+        }
+        String result = VdHostCore.runCommand(null, "/system/bin/cmd", "appops", "set", pkg, op, "allow");
+        Log.i(TAG, op + " for " + pkg + ": " + result);
+        return result;
+    }
+
+    /** Lets a notification listener of the caller's package read the notifications. */
+    String allowNotificationListener(int callerUid, String component) {
+        ComponentName name = component == null ? null : ComponentName.unflattenFromString(component);
+        if (name == null || !VdHostCore.isPackageOfUid(name.getPackageName(), callerUid)) {
+            throw new SecurityException(component + " is not a component of a package of uid " + callerUid);
+        }
+        String result = VdHostCore.runCommand(null, "/system/bin/cmd", "notification", "allow_listener",
+                name.flattenToString());
+        Log.i(TAG, "notification listener " + name.flattenToString() + ": " + result);
+        return result;
+    }
+
+    // ---------------------------------------------------------------------------------------
     // Obscuring opacity limit
     // ---------------------------------------------------------------------------------------
 

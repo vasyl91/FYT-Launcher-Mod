@@ -77,8 +77,12 @@ Launcher side, `app/src/main/java/com/syu/util/`:
 ```
 
 Output: `vdhost/server/build/outputs/magisk/FYT-VDHost-<version>.zip`. Flash it in Magisk and
-reboot. The launcher must be a build that contains `WindowHostVdProvider`; the protocol versions
-of the module and the launcher must match (`VdHostProtocol.VERSION`).
+reboot. The launcher must be a build that contains `WindowHostVdProvider`. The module and the launcher
+speak the same protocol (`VdHostProtocol.VERSION`, now 3), but the launcher also takes a host down to
+`VdHostProtocol.MIN_VERSION` (2): an older module (1.0.x) keeps hosting the panes and doing the older
+errands below, and the calls added in protocol 3 are not made to it (the launcher logs once "VD host
+protocol 2: file reads and permission grants need the module update"). A host of protocol 1, or newer
+than the launcher, is refused.
 
 ## How the daemon runs
 
@@ -112,7 +116,7 @@ feature ActivityTaskManager silently starts a pane's app on the main screen inst
 - `cat /dev/fyt_vdhost/server.log`, `logcat -s FytVdHost WindowHostVdView WindowHostVdClient`
 - `ready` and `binder delivered to com.android.launcher66` should appear after boot.
 - "not running as uid 1000": the root solution's `su` does not support a target uid.
-- "protocol N, expected M": update the module and the launcher together.
+- "protocol N, expected M..K": the host is older than M or newer than K; update the module and the launcher together.
 - `W Parcel: Expecting binder but got null!` (from the graphics thread, next to `mali_gralloc register/unregister`)
   and `E SurfaceSyncer: Failed to find sync for id=0`: warnings of Android 13's own surface code (BLAST /
   SurfaceSyncer) when a SurfaceView of a pane is created or its window is laid out again; they have no
@@ -134,6 +138,14 @@ The host also does the few things the launcher does itself as `android.uid.syste
 | BOOT_COMPLETED to an autostarted app | `ColdStart` | yes | no: a protected broadcast |
 | The app in front, without the accessibility service | `ForegroundAppTracker` | yes | yes |
 | WRITE_SETTINGS without the trip to Settings | `LauncherPermissionFlow` | yes | yes |
+| Draw over other apps (SYSTEM_ALERT_WINDOW), install unknown apps (REQUEST_INSTALL_PACKAGES) without the trip to Settings (protocol 3) | `LauncherPermissionFlow` through `allowAppOp` | yes | yes |
+| Notification access for the launcher's listener without the trip to Settings (protocol 3) | `LauncherPermissionFlow` through `allowNotificationListener` | yes | yes (the listener is the caller's own component) |
+| Read the cover a phone plays over Bluetooth, the stock radio's logos and icon pack (protocol 3) | `SyuMediaFiles` through `readFile` | yes | yes where the files are readable by shell |
+
+`readFile` hands out a read-only descriptor of nothing but those files (`HostFilePolicy`: images in `/data/blink/`,
+`.png` logos in `/storage/emulated/0/radio_logo/`, `/odm/app/cabinet.data`; canonical path, a regular file, at most 2 MB),
+`allowAppOp` the three app ops above for the caller's own package, `allowNotificationListener` a component of the
+caller's own package.
 
 ## Differences from ActivityView
 

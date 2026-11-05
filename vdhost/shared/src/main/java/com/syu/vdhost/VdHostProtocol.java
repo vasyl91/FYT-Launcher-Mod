@@ -26,11 +26,18 @@ public final class VdHostProtocol {
 
     public static final String DESCRIPTOR = "com.syu.vdhost.IVdHost";
     /**
-     * Raised whenever a transaction is added or changed: a host of another version is refused (see
-     * WindowHostVdClient), since one that does not know a call answers it with an empty reply --
-     * no exception, just nothing (version 1 hosts ran no logcat at all for version 2 launchers).
+     * Raised whenever a transaction is added or changed. A host older than {@link #MIN_VERSION}, or
+     * newer than this, is refused (see WindowHostVdClient), since one that does not know a call
+     * answers it with an empty reply -- no exception, just nothing (version 1 hosts ran no logcat at
+     * all for version 2 launchers).
+     *
+     * <p>3: readFile(), allowAppOp() and allowNotificationListener(). They are optional: a version 2
+     * host keeps hosting the panes and the older errands, and the launcher does not make these calls
+     * to it (see VdHostVersion).
      */
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
+    /** The oldest host version the launcher still works with. */
+    public static final int MIN_VERSION = 2;
 
     static final int TX_GET_VERSION      = IBinder.FIRST_CALL_TRANSACTION;
     static final int TX_CREATE_DISPLAY   = IBinder.FIRST_CALL_TRANSACTION + 1;
@@ -49,6 +56,10 @@ public final class VdHostProtocol {
     static final int TX_WATCH_FOREGROUND = IBinder.FIRST_CALL_TRANSACTION + 14;
     static final int TX_ALLOW_WRITE_SETTINGS = IBinder.FIRST_CALL_TRANSACTION + 15;
     static final int TX_SET_OBSCURING_LIMIT = IBinder.FIRST_CALL_TRANSACTION + 16;
+    // Version 3
+    static final int TX_READ_FILE = IBinder.FIRST_CALL_TRANSACTION + 17;
+    static final int TX_ALLOW_APP_OP = IBinder.FIRST_CALL_TRANSACTION + 18;
+    static final int TX_ALLOW_NOTIFICATION_LISTENER = IBinder.FIRST_CALL_TRANSACTION + 19;
 
     /** The handle exec() returns: waitFor() (blocking, the exit code), destroy(). */
     static final int EXEC_WAIT_FOR = IBinder.FIRST_CALL_TRANSACTION;
@@ -317,6 +328,60 @@ public final class VdHostProtocol {
                 reply.recycle();
                 data.recycle();
             }
+        }
+
+        /**
+         * Version 3. Opens a file for reading: only the few files of HostFilePolicy (the cover of the
+         * song a phone plays over Bluetooth, the logos of the stock radio, its icon pack), at most
+         * 2 MB. The descriptor is read-only.
+         *
+         * @return the descriptor, or null when the host refuses the path
+         */
+        public ParcelFileDescriptor readFile(String path) throws RemoteException {
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(DESCRIPTOR);
+                data.writeString(path);
+                mRemote.transact(TX_READ_FILE, data, reply, 0);
+                reply.readException();
+                return reply.readTypedObject(ParcelFileDescriptor.CREATOR);
+            } finally {
+                reply.recycle();
+                data.recycle();
+            }
+        }
+
+        /**
+         * Version 3. Allows the caller's package an app op the user would give it in Settings:
+         * op is SYSTEM_ALERT_WINDOW, REQUEST_INSTALL_PACKAGES or WRITE_SETTINGS.
+         *
+         * @return the host's report, starting with "OK" on success
+         */
+        public String allowAppOp(String packageName, String op) throws RemoteException {
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(DESCRIPTOR);
+                data.writeString(packageName);
+                data.writeString(op);
+                mRemote.transact(TX_ALLOW_APP_OP, data, reply, 0);
+                reply.readException();
+                return reply.readString();
+            } finally {
+                reply.recycle();
+                data.recycle();
+            }
+        }
+
+        /**
+         * Version 3. Lets the caller's notification listener (a component of its package, as
+         * "package/class") read the notifications, as the user can in Settings.
+         *
+         * @return the host's report, starting with "OK" on success
+         */
+        public String allowNotificationListener(String component) throws RemoteException {
+            return packageCall(TX_ALLOW_NOTIFICATION_LISTENER, component);
         }
 
         /**

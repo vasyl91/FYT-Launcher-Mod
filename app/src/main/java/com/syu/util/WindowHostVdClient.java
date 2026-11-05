@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.syu.vdhost.VdHostCore;
 import com.syu.vdhost.VdHostProtocol;
+import com.syu.vdhost.VdHostVersion;
 import com.syu.vdhost.VdHostStub;
 
 import java.util.Set;
@@ -46,6 +47,8 @@ public final class WindowHostVdClient {
     private static Source sSource;
     /** The uid the attached host runs as (see VdHostProtocol.Proxy.getHostUid()), -1 if unknown. */
     private static int sHostUid = -1;
+    /** The protocol version the attached host speaks; see hostVersion(). */
+    private static int sHostVersion;
     private static IBinder.DeathRecipient sDeath;
 
     private static final CopyOnWriteArrayList<Listener> sListeners = new CopyOnWriteArrayList<>();
@@ -191,6 +194,64 @@ public final class WindowHostVdClient {
         return false;
     }
 
+    private static final java.util.concurrent.atomic.AtomicBoolean sLoggedOldHost =
+            new java.util.concurrent.atomic.AtomicBoolean();
+
+    /** Which kind of host is attached, for the logs: "daemon", "shizuku", "local" or "none". */
+    public static String hostSourceName() {
+        synchronized (sLock) {
+            return sHost == null || sSource == null ? "none" : sSource.name().toLowerCase(java.util.Locale.ROOT);
+        }
+    }
+
+    /**
+     * The protocol version of the attached host, 0 when none is. A host older than the launcher still
+     * hosts the panes, but does not know the calls added since (see VdHostVersion).
+     */
+    public static int hostVersion() {
+        synchronized (sLock) {
+            return sHost == null ? 0 : sHostVersion;
+        }
+    }
+
+    /**
+     * Whether the privileged host knows the optional calls of protocol 3: readFile(), allowAppOp() and
+     * allowNotificationListener(). They are not made to a host that does not: it would answer with an
+     * empty reply.
+     */
+    public static boolean supportsOptionalCalls() {
+        synchronized (sLock) {
+            return sHost != null && sSource != Source.LOCAL && VdHostVersion.supportsOptionalCalls(sHostVersion);
+        }
+    }
+
+    /**
+     * See VdHostProtocol.Proxy.readFile(). Blocking: never on the main thread.
+     * @return the descriptor; null without a host that knows the call, or when it refuses the path
+     */
+    public static android.os.ParcelFileDescriptor readFile(String path) throws RemoteException {
+        VdHostProtocol.Proxy host = optionalHost();
+        return host != null ? host.readFile(path) : null;
+    }
+
+    /** See VdHostProtocol.Proxy.allowAppOp(). Blocking. @return the report, null without a host that knows the call */
+    public static String allowAppOp(String pkg, String op) throws RemoteException {
+        VdHostProtocol.Proxy host = optionalHost();
+        return host != null ? host.allowAppOp(pkg, op) : null;
+    }
+
+    /** See VdHostProtocol.Proxy.allowNotificationListener(). Blocking. @return the report, null as above */
+    public static String allowNotificationListener(String component) throws RemoteException {
+        VdHostProtocol.Proxy host = optionalHost();
+        return host != null ? host.allowNotificationListener(component) : null;
+    }
+
+    private static VdHostProtocol.Proxy optionalHost() {
+        synchronized (sLock) {
+            return supportsOptionalCalls() ? sHost : null;
+        }
+    }
+
     /** The privileged host, or null: none attached, or the launcher is its own (system) host. */
     private static VdHostProtocol.Proxy privilegedHost() {
         synchronized (sLock) {
@@ -302,11 +363,16 @@ public final class WindowHostVdClient {
             Log.w(TAG, source + " VD host did not answer", t);
             return false;
         }
-        if (version != VdHostProtocol.VERSION) {
+        if (!VdHostVersion.accepts(version, VdHostProtocol.MIN_VERSION, VdHostProtocol.VERSION)) {
             Log.w(TAG, source + " VD host speaks protocol " + version + ", expected "
-                    + VdHostProtocol.VERSION + " -- update the Magisk module and the launcher together");
+                    + VdHostProtocol.MIN_VERSION + ".." + VdHostProtocol.VERSION
+                    + " -- update the Magisk module and the launcher together");
             return false;
         }
+        if (!VdHostVersion.supportsOptionalCalls(version) && sLoggedOldHost.compareAndSet(false, true)) {
+            Log.i(TAG, "VD host protocol " + version + ": file reads and permission grants need the module update");
+        }
+        final int hostVersion = version;
 
         int hostUid;
         try {
@@ -338,6 +404,7 @@ public final class WindowHostVdClient {
             sSource = source;
             sDeath = death;
             sHostUid = hostUid;
+            sHostVersion = hostVersion;
         }
 
         Log.i(TAG, source + " VD host attached" + (replaced ? ", replacing Shizuku" : ""));
@@ -375,6 +442,7 @@ public final class WindowHostVdClient {
             sSource = null;
             sDeath = null;
             sHostUid = -1;
+            sHostVersion = 0;
         }
         sDisplays.clear();
         Log.w(TAG, source + " VD host died; its displays are gone");
