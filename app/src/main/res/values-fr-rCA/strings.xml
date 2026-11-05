@@ -36,4 +36,7 @@
     <string name="crash_restarted_toast">Le lanceur a redémarré après une erreur : %1$s. Rapport : %2$s</string>
     <string name="crash_safe_mode_toast">Le lanceur a planté %1$d fois de suite (%2$s). Les widgets personnalisés, les fenêtres PiP et la fenêtre de statistiques sont désactivés jusqu\'à ce que vous quittiez les paramètres. Rapport : %3$s</string>
     <string name="shizuku_download_button">Appuyez pour télécharger Shizuku Next (nécessaire pour les volets PiP sans root)</string>
+    <string name="widget_bar_no_date">Masquer la date</string>
+    <string name="widget_bar_no_weather">Masquer la météo</string>
+    <string name="widget_bar_hidden_on">Le widget musique prend sa place</string>
 </resources>

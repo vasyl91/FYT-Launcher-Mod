@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus․ հաջողվեց, հաշվետվությունը չհաջողվեց պահպանել</string>
     <string name="canbus_library_toast_failed_no_report">Canbus․ ձախողվեց, հաշվետվությունը չհաջողվեց պահպանել</string>
     <string name="logcat_stop_button">Կանգնեցնել logcat-ը</string>
+    <string name="widget_bar_no_date">Թաքցնել ամսաթիվը</string>
+    <string name="widget_bar_no_weather">Թաքցնել եղանակը</string>
+    <string name="widget_bar_hidden_on">Նրա տեղը զբաղեցնում է երաժշտության վիջեթը</string>
 </resources>

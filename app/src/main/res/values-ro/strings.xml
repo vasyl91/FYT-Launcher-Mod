@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: succes, raportul nu a putut fi salvat</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: eșec, raportul nu a putut fi salvat</string>
     <string name="logcat_stop_button">Oprește logcat</string>
+    <string name="widget_bar_no_date">Ascunde data</string>
+    <string name="widget_bar_no_weather">Ascunde vremea</string>
+    <string name="widget_bar_hidden_on">Locul lui este luat de widgetul de muzică</string>
 </resources>

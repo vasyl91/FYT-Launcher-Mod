@@ -140,6 +140,18 @@
             android:key="widget_bar"
             android:defaultValue="false"
             android:title="@string/widget_bar" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="widget_bar_no_date"
+            android:defaultValue="false"
+            android:title="@string/widget_bar_no_date"
+            android:summaryOn="@string/widget_bar_hidden_on"
+            app:layout="@layout/nested_preference_category_switch" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="widget_bar_no_weather"
+            android:defaultValue="false"
+            android:title="@string/widget_bar_no_weather"
+            android:summaryOn="@string/widget_bar_hidden_on"
+            app:layout="@layout/nested_preference_category_switch" />
         <SwitchPreferenceCompat
             android:key="left_bar"
             android:defaultValue="false"

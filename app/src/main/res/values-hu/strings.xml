@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: sikeres, a jelentést nem sikerült elmenteni</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: sikertelen, a jelentést nem sikerült elmenteni</string>
     <string name="logcat_stop_button">A logcat leállítása</string>
+    <string name="widget_bar_no_date">Dátum elrejtése</string>
+    <string name="widget_bar_no_weather">Időjárás elrejtése</string>
+    <string name="widget_bar_hidden_on">A helyét a zenei widget foglalja el</string>
 </resources>

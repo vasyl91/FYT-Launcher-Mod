@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: ສຳເລັດ, ບໍ່ສາມາດບັນທຶກລາຍງານໄດ້</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: ບໍ່ສຳເລັດ, ບໍ່ສາມາດບັນທຶກລາຍງານໄດ້</string>
     <string name="logcat_stop_button">ຢຸດ logcat</string>
+    <string name="widget_bar_no_date">ເຊື່ອງວັນທີ</string>
+    <string name="widget_bar_no_weather">ເຊື່ອງສະພາບອາກາດ</string>
+    <string name="widget_bar_hidden_on">ວິດເຈັດເພງຈະມາແທນບ່ອນຂອງມັນ</string>
 </resources>

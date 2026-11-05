@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: success, il rapport n’ha betg pudì vegnir memorisà</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: sbagl, il rapport n’ha betg pudì vegnir memorisà</string>
     <string name="logcat_stop_button">Fermar logcat</string>
+    <string name="widget_bar_no_date">Zuppar la data</string>
+    <string name="widget_bar_no_weather">Zuppar il temp</string>
+    <string name="widget_bar_hidden_on">Il widget da musica prenda il lieu</string>
 </resources>

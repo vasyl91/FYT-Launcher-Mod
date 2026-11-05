@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: सफल, रिपोर्ट सहेजी नहीं जा सकी</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: विफल, रिपोर्ट सहेजी नहीं जा सकी</string>
     <string name="logcat_stop_button">logcat रोकें</string>
+    <string name="widget_bar_no_date">तारीख़ छिपाएँ</string>
+    <string name="widget_bar_no_weather">मौसम छिपाएँ</string>
+    <string name="widget_bar_hidden_on">उसकी जगह म्यूज़िक विजेट ले लेता है</string>
 </resources>

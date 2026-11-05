@@ -513,4 +513,7 @@
     <string name="volcanic_ash">Volcanic ash</string>
     <string name="squalls">Squalls</string>
     <string name="tornado">Tornado</string>
+    <string name="widget_bar_no_date">Hide the date</string>
+    <string name="widget_bar_no_weather">Hide the weather</string>
+    <string name="widget_bar_hidden_on">The music widget takes its place</string>
 </resources>

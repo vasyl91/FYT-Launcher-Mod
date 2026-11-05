@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: uspjeh, izvješće nije moglo biti spremljeno</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: neuspjeh, izvješće nije moglo biti spremljeno</string>
     <string name="logcat_stop_button">Zaustavi logcat</string>
+    <string name="widget_bar_no_date">Sakrij datum</string>
+    <string name="widget_bar_no_weather">Sakrij vrijeme</string>
+    <string name="widget_bar_hidden_on">Njegovo mjesto zauzima glazbeni widget</string>
 </resources>

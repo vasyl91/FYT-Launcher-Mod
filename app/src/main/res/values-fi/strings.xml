@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: onnistui, raporttia ei voitu tallentaa</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: epäonnistui, raporttia ei voitu tallentaa</string>
     <string name="logcat_stop_button">Pysäytä logcat</string>
+    <string name="widget_bar_no_date">Piilota päivämäärä</string>
+    <string name="widget_bar_no_weather">Piilota sää</string>
+    <string name="widget_bar_hidden_on">Musiikkiwidget ottaa sen paikan</string>
 </resources>

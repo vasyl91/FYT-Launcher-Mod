@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: vellykket, rapporten kunne ikke lagres</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: mislyktes, rapporten kunne ikke lagres</string>
     <string name="logcat_stop_button">Stopp logcat</string>
+    <string name="widget_bar_no_date">Skjul datoen</string>
+    <string name="widget_bar_no_weather">Skjul været</string>
+    <string name="widget_bar_hidden_on">Musikkwidgeten tar plassen</string>
 </resources>

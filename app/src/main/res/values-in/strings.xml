@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: Berhasil, laporan tidak dapat disimpan</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: Gagal, laporan tidak dapat disimpan</string>
     <string name="logcat_stop_button">Hentikan logcat</string>
+    <string name="widget_bar_no_date">Sembunyikan tanggal</string>
+    <string name="widget_bar_no_weather">Sembunyikan cuaca</string>
+    <string name="widget_bar_hidden_on">Widget musik mengisi tempatnya</string>
 </resources>

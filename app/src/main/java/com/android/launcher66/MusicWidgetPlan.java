@@ -49,6 +49,20 @@ final class MusicWidgetPlan {
     /** The space between the cover and the column in a bar, as a share of its width. */
     static final float BAR_COLUMN_GAP = 0.03f;
 
+    // Bar, wide (the date or the weather is hidden and the widget has their room): the text sits
+    // between the cover and a block of buttons on the right. Nothing is below the text, so the
+    // rows may use the height of the column.
+    /** Two text rows, gaps. */
+    static final float[] BAR_WIDE_STANDARD = {0.45f, 0.45f, 0.10f};
+
+    /** One text row, gaps. */
+    static final float[] BAR_WIDE_COMPACT = {0.70f, 0.30f};
+
+    /** The block of buttons in the wide bar, as a share of the widget's width: 2 x 2, or a row. */
+    static final float BAR_WIDE_BUTTONS_STANDARD = 0.30f;
+
+    static final float BAR_WIDE_BUTTONS_COMPACT = 0.40f;
+
     /** The cover of the home widget is at most this share of its width. */
     static final float HOME_COVER_WIDTH = 0.9f;
 
@@ -66,12 +80,27 @@ final class MusicWidgetPlan {
         /** Width of the column right of the cover (the bar only). */
         int columnPx;
 
+        /** The wide bar: the buttons are a block beside the text (see planBarWide). */
+        boolean wide;
+        /** Width of the block of buttons (the wide bar only). */
+        int buttonBlockPx;
+        /** Rows of buttons in the block: 2 (2 x 2) or 1 (a row of four). */
+        int buttonRows;
+        /** Width of a cell of the block. */
+        int cellWidthPx;
+
         int rows() {
             return compact ? 1 : 2;
         }
 
         @Override
         public String toString() {
+            if (wide) {
+                return "wide=true compact=" + compact + " buttons=" + (buttonRows == 2 ? "30%" : "40%")
+                        + " rows=" + buttonRows + " block=" + buttonBlockPx + " cover(" + coverPx + ") row="
+                        + rowPx + " text=" + textPx + " cell=" + cellWidthPx + "x" + buttonRowPx + "/"
+                        + buttonSidePx + " gap=" + gapPx;
+            }
             return "compact=" + compact + " cover=" + cover + "(" + coverPx + ") row=" + rowPx
                     + " text=" + textPx + " progress=" + progressPx + " buttons=" + buttonRowPx
                     + "/" + buttonSidePx + " gap=" + gapPx;
@@ -156,6 +185,33 @@ final class MusicWidgetPlan {
         plan.gapPx = part(h, shares[shares.length - 1] / (plan.rows() + 1));
         plan.textPx = Math.max(plan.rowPx / LINE_FACTOR, MIN_TEXT_SP_FLOOR * density);
         plan.buttonSidePx = Math.round(Math.min(plan.buttonRowPx, plan.columnPx / 4f) * BUTTON_FILL);
+        return plan;
+    }
+
+    /**
+     * The wide bar: cover, then the text (title above artist, or one row in the compact bar), then
+     * a block of buttons on the right of 30% of the widget's width in 2 x 2 (prev and next above
+     * play/pause and favorite), or 40% in one row of four in the compact bar. The bar is compact
+     * on the same limit as {@link #planBar}.
+     */
+    static Plan planBarWide(int w, int h, int barHeightPx, int shortSidePx, float density) {
+        Plan plan = new Plan();
+        plan.wide = true;
+        plan.compact = barCompact(barHeightPx, shortSidePx);
+        plan.cover = true;
+        plan.coverPx = Math.min(part(h, BAR_COVER_HEIGHT), part(w, BAR_COVER_WIDTH));
+        float blockShare = plan.compact ? BAR_WIDE_BUTTONS_COMPACT : BAR_WIDE_BUTTONS_STANDARD;
+        plan.buttonBlockPx = Math.round(w * blockShare);
+        plan.buttonRows = plan.compact ? 1 : 2;
+        int gap = part(w, BAR_COLUMN_GAP);
+        plan.columnPx = Math.max(0, w - plan.coverPx - gap - plan.buttonBlockPx);
+        float[] shares = plan.compact ? BAR_WIDE_COMPACT : BAR_WIDE_STANDARD;
+        plan.rowPx = part(h, shares[0]);
+        plan.gapPx = part(h, shares[shares.length - 1] / (plan.rows() + 1));
+        plan.textPx = Math.max(plan.rowPx / LINE_FACTOR, MIN_TEXT_SP_FLOOR * density);
+        plan.cellWidthPx = plan.buttonBlockPx / (plan.buttonRows == 2 ? 2 : 4);
+        plan.buttonRowPx = plan.buttonRows == 2 ? h / 2 : h;
+        plan.buttonSidePx = Math.round(Math.min(plan.cellWidthPx, plan.buttonRowPx) * BUTTON_FILL);
         return plan;
     }
 }

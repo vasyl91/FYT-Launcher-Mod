@@ -32,4 +32,7 @@
     <string name="crash_restarted_toast">Käivitaja taaskäivitus pärast viga: %1$s. Aruanne: %2$s</string>
     <string name="crash_safe_mode_toast">Käivitaja jooksis %1$d korda järjest kokku (%2$s). Oma vidinad, PiP-paneelid ja statistikaaken on välja lülitatud, kuni seadetest väljute. Aruanne: %3$s</string>
     <string name="shizuku_download_button">Puudutage Shizuku Next allalaadimiseks (vajalik PiP-paneelide jaoks ilma rootita)</string>
+    <string name="widget_bar_no_date">Peida kuupäev</string>
+    <string name="widget_bar_no_weather">Peida ilm</string>
+    <string name="widget_bar_hidden_on">Selle koha võtab muusikavidin</string>
 </resources>

@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: επιτυχία, η αναφορά δεν μπόρεσε να αποθηκευτεί</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: αποτυχία, η αναφορά δεν μπόρεσε να αποθηκευτεί</string>
     <string name="logcat_stop_button">Διακοπή του logcat</string>
+    <string name="widget_bar_no_date">Απόκρυψη ημερομηνίας</string>
+    <string name="widget_bar_no_weather">Απόκρυψη καιρού</string>
+    <string name="widget_bar_hidden_on">Τη θέση του παίρνει το γραφικό στοιχείο μουσικής</string>
 </resources>

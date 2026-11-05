@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: pavyko, ataskaitos išsaugoti nepavyko</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: nepavyko, ataskaitos išsaugoti nepavyko</string>
     <string name="logcat_stop_button">Sustabdyti logcat</string>
+    <string name="widget_bar_no_date">Slėpti datą</string>
+    <string name="widget_bar_no_weather">Slėpti orus</string>
+    <string name="widget_bar_hidden_on">Jo vietą užima muzikos valdiklis</string>
 </resources>

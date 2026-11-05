@@ -140,6 +140,10 @@ public final class Keys {
     public static final String AUTO_CODES_PREFIX = "auto_codes_";
     public static final String LEFT_BAR = "left_bar";
     public static final String WIDGET_BAR = "widget_bar";
+    /** The date is not shown in the widget bar and the music widget takes its room (landscape only). */
+    public static final String WIDGET_BAR_NO_DATE = "widget_bar_no_date";
+    /** The weather is not shown in the widget bar and the music widget takes its room. */
+    public static final String WIDGET_BAR_NO_WEATHER = "widget_bar_no_weather";
     public static final String WIDGETS_BACKGROUND = "choose_widgets_background";
     public static final String BAR_BACKGROUND = "choose_bar_background";
     public static final String WIDGETS_SELECTED_BACKGROUND = "widgets_selected_background";

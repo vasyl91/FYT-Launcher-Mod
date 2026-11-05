@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: موفق، گزارش ذخیره نشد</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: ناموفق، گزارش ذخیره نشد</string>
     <string name="logcat_stop_button">توقف logcat</string>
+    <string name="widget_bar_no_date">پنهان کردن تاریخ</string>
+    <string name="widget_bar_no_weather">پنهان کردن آب‌وهوا</string>
+    <string name="widget_bar_hidden_on">ابزارک موسیقی جای آن را می‌گیرد</string>
 </resources>

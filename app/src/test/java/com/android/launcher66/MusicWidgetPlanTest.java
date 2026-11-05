@@ -104,4 +104,56 @@ class MusicWidgetPlanTest {
             }
         }
     }
+
+    // The wide bar: the date or the weather is hidden and the music widget has their room.
+
+    @Test
+    void theWideBarGivesTheButtonsThirtyPercentOfTheWidthIn2x2() {
+        // 359x66 would be compact; a bar of 12% + 1 px of a 600 px short side is not
+        MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(600, 90, 73, 600, 1f);
+        assertTrue(plan.wide);
+        assertFalse(plan.compact);
+        assertEquals(2, plan.buttonRows);
+        assertEquals(180, plan.buttonBlockPx, 1);
+        assertEquals(90, plan.cellWidthPx);
+        assertEquals(45, plan.buttonRowPx);
+        assertEquals(Math.round(45 * MusicWidgetPlan.BUTTON_FILL), plan.buttonSidePx);
+    }
+
+    @Test
+    void theCompactWideBarGivesTheButtonsFortyPercentInOneRow() {
+        MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(359, 66, 54, 600, 1f);
+        assertTrue(plan.wide);
+        assertTrue(plan.compact);
+        assertEquals(1, plan.buttonRows);
+        assertEquals(144, plan.buttonBlockPx, 1);   // 40% of 359
+        assertEquals(36, plan.cellWidthPx, 1);
+        assertEquals(66, plan.buttonRowPx);
+        assertEquals(Math.round(Math.min(plan.cellWidthPx, 66) * MusicWidgetPlan.BUTTON_FILL), plan.buttonSidePx);
+    }
+
+    @Test
+    void theWideBarSwitchesModeOnTheLimitOfTheUsualBar() {
+        assertTrue(MusicWidgetPlan.planBarWide(400, 72, 72, 600, 1f).compact);
+        assertFalse(MusicWidgetPlan.planBarWide(400, 73, 73, 600, 1f).compact);
+        for (int bar : new int[]{40, 66, 72, 73, 91, 120}) {
+            assertEquals(MusicWidgetPlan.planBar(400, bar, bar, 600, 1f).compact,
+                    MusicWidgetPlan.planBarWide(400, bar, bar, 600, 1f).compact);
+        }
+    }
+
+    @Test
+    void thePartsOfTheWideBarFitTheWidgetInBothDirections() {
+        for (int w : new int[]{200, 359, 400, 560, 800}) {
+            for (int h : new int[]{40, 54, 66, 72, 73, 91, 120}) {
+                MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(w, h, h, 600, 1f);
+                int gap = (int) (w * MusicWidgetPlan.BAR_COLUMN_GAP);
+                assertTrue(plan.coverPx + gap + plan.columnPx + plan.buttonBlockPx <= w,
+                        "width " + w + "x" + h);
+                assertTrue(plan.buttonRows * plan.buttonRowPx <= h, "buttons " + w + "x" + h);
+                assertTrue(plan.rows() * (plan.rowPx + plan.gapPx) <= h, "rows " + w + "x" + h);
+                assertTrue(plan.buttonSidePx <= plan.cellWidthPx && plan.buttonSidePx <= plan.buttonRowPx);
+            }
+        }
+    }
 }

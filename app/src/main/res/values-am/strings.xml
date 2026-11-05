@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus፦ ተሳክቷል፣ ሪፖርቱን ማስቀመጥ አልተቻለም</string>
     <string name="canbus_library_toast_failed_no_report">Canbus፦ አልተሳካም፣ ሪፖርቱን ማስቀመጥ አልተቻለም</string>
     <string name="logcat_stop_button">logcat አቁም</string>
+    <string name="widget_bar_no_date">ቀኑን ደብቅ</string>
+    <string name="widget_bar_no_weather">የአየር ሁኔታን ደብቅ</string>
+    <string name="widget_bar_hidden_on">የሙዚቃ ምግብር ቦታውን ይወስዳል</string>
 </resources>

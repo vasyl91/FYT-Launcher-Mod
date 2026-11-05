@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: 성공, 보고서를 저장할 수 없습니다</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: 실패, 보고서를 저장할 수 없습니다</string>
     <string name="logcat_stop_button">logcat 중지</string>
+    <string name="widget_bar_no_date">날짜 숨기기</string>
+    <string name="widget_bar_no_weather">날씨 숨기기</string>
+    <string name="widget_bar_hidden_on">그 자리를 음악 위젯이 차지합니다</string>
 </resources>

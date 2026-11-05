@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: Tagumpay, hindi na-save ang ulat</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: Nabigo, hindi na-save ang ulat</string>
     <string name="logcat_stop_button">Ihinto ang logcat</string>
+    <string name="widget_bar_no_date">Itago ang petsa</string>
+    <string name="widget_bar_no_weather">Itago ang panahon</string>
+    <string name="widget_bar_hidden_on">Ang music widget ang pumapalit sa puwesto nito</string>
 </resources>

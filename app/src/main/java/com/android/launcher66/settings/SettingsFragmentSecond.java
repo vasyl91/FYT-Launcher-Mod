@@ -118,6 +118,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private AlertDialog alertStartPageDialog;
     private SwitchPreferenceCompat autoHidePreference;
     private AutoHideSeekBarPreference autoHideSeekBar;
+    private CustomSwitchPreference widgetBarNoDatePreference;
+    private CustomSwitchPreference widgetBarNoWeatherPreference;
     private SwitchPreferenceCompat resizableBarPreference;
     private BottomBarHeightSeekBarPreference barHeightSeekBar;
     private Preference margin;
@@ -357,6 +359,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         Preference leftBar = findPreference(Keys.LEFT_BAR);
         Preference widgetBar = findPreference(Keys.WIDGET_BAR);
+        widgetBarNoDatePreference = findPreference(Keys.WIDGET_BAR_NO_DATE);
+        widgetBarNoWeatherPreference = findPreference(Keys.WIDGET_BAR_NO_WEATHER);
 
         margin = findPreference(Keys.LAYOUT_MARGIN);
         String marginStr = sharedPrefs.getString(Keys.LAYOUT_MARGIN, "5");
@@ -544,6 +548,13 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (widgetBar != null) {
             widgetBar.setOnPreferenceClickListener(this);
         }
+        if (widgetBarNoDatePreference != null) {
+            widgetBarNoDatePreference.setOnPreferenceClickListener(this);
+        }
+        if (widgetBarNoWeatherPreference != null) {
+            widgetBarNoWeatherPreference.setOnPreferenceClickListener(this);
+        }
+        updateWidgetBarRows();
         if (margin != null) {
             margin.setOnPreferenceClickListener(this);
         }
@@ -736,6 +747,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.LEFT_BAR:
+                helpers.setBarSettingsChanged(true);
+                break;
+            case Keys.WIDGET_BAR:
+                // The rows that belong to the widget bar appear and disappear with it.
+                updateWidgetBarRows();
+                break;
+            case Keys.WIDGET_BAR_NO_DATE:
+            case Keys.WIDGET_BAR_NO_WEATHER:
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.LAYOUT_MARGIN:
@@ -1075,9 +1094,27 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         extraStatsCodes = null;
         autoHidePreference = null;
         autoHideSeekBar = null;
+        widgetBarNoDatePreference = null;
+        widgetBarNoWeatherPreference = null;
         resizableBarPreference = null;
         barHeightSeekBar = null;
         imm = null;
+    }
+
+    /**
+     * The rows under "Widget bottom bar" are shown only while it is on. The date is hidden in
+     * landscape only: the portrait bar has no date.
+     */
+    private void updateWidgetBarRows() {
+        boolean widgetBar = sharedPrefs.getBoolean(Keys.WIDGET_BAR, false);
+        boolean portrait = getResources().getConfiguration().orientation
+                == android.content.res.Configuration.ORIENTATION_PORTRAIT;
+        if (widgetBarNoDatePreference != null) {
+            widgetBarNoDatePreference.setVisible(widgetBar && !portrait);
+        }
+        if (widgetBarNoWeatherPreference != null) {
+            widgetBarNoWeatherPreference.setVisible(widgetBar);
+        }
     }
 
     private void refreshAllWidgetPreferences() {

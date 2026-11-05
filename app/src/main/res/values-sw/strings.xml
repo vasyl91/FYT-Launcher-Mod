@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: Imefanikiwa, ripoti haikuweza kuhifadhiwa</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: Imeshindikana, ripoti haikuweza kuhifadhiwa</string>
     <string name="logcat_stop_button">Simamisha logcat</string>
+    <string name="widget_bar_no_date">Ficha tarehe</string>
+    <string name="widget_bar_no_weather">Ficha hali ya hewa</string>
+    <string name="widget_bar_hidden_on">Wijeti ya muziki huchukua nafasi yake</string>
 </resources>

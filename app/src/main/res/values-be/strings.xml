@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: паспяхова, не ўдалося захаваць звестку</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: збой, не ўдалося захаваць звестку</string>
     <string name="logcat_stop_button">Спыніць logcat</string>
+    <string name="widget_bar_no_date">Схаваць дату</string>
+    <string name="widget_bar_no_weather">Схаваць надвор\'е</string>
+    <string name="widget_bar_hidden_on">Яго месца займае віджэт музыкі</string>
 </resources>

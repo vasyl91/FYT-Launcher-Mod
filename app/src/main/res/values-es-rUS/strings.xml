@@ -60,4 +60,7 @@
     <string name="crash_restarted_toast">El lanzador se reinició tras un error: %1$s. Informe: %2$s</string>
     <string name="crash_safe_mode_toast">El lanzador falló %1$d veces seguidas (%2$s). Los widgets propios, los paneles PiP y la ventana de estadísticas están desactivados hasta que salgas de los ajustes. Informe: %3$s</string>
     <string name="shizuku_download_button">Toca para descargar Shizuku Next (necesario para los paneles PiP sin root)</string>
+    <string name="widget_bar_no_date">Ocultar la fecha</string>
+    <string name="widget_bar_no_weather">Ocultar el clima</string>
+    <string name="widget_bar_hidden_on">El widget de música ocupa su lugar</string>
 </resources>

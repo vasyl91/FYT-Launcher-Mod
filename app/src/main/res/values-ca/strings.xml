@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: correcte, no s’ha pogut desar l’informe</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: error, no s’ha pogut desar l’informe</string>
     <string name="logcat_stop_button">Atura logcat</string>
+    <string name="widget_bar_no_date">Amaga la data</string>
+    <string name="widget_bar_no_weather">Amaga el temps</string>
+    <string name="widget_bar_hidden_on">El giny de música ocupa el seu lloc</string>
 </resources>

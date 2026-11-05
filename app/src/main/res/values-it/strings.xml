@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: riuscito, impossibile salvare il report</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: non riuscito, impossibile salvare il report</string>
     <string name="logcat_stop_button">Ferma logcat</string>
+    <string name="widget_bar_no_date">Nascondi la data</string>
+    <string name="widget_bar_no_weather">Nascondi il meteo</string>
+    <string name="widget_bar_hidden_on">Il widget musicale prende il suo posto</string>
 </resources>

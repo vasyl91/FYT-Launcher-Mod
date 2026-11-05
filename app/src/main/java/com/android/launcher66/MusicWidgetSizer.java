@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.google.android.flexbox.FlexboxLayout;
+
 /**
  * Sizes the children of a music widget (home screen or bottom bar) from the size the widget has,
  * following the plan MusicWidgetPlan makes: the cover, the two text rows (one font for both), the
@@ -129,8 +131,15 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         MusicWidgetPlan.Plan plan;
         if (mBar) {
             int shortSide = Math.min(Launcher.screenWidth, Launcher.screenHeight);
-            plan = MusicWidgetPlan.planBar(w, h, barH, shortSide, density);
-            applyBar(plan, w);
+            View buttons = mRoot.findViewById(R.id.music_bar_buttons);
+            if (buttons instanceof FlexboxLayout) {
+                // The wide layout (WidgetBarLayout): the buttons are a block beside the text.
+                plan = MusicWidgetPlan.planBarWide(w, h, barH, shortSide, density);
+                applyBarWide(plan, w);
+            } else {
+                plan = MusicWidgetPlan.planBar(w, h, barH, shortSide, density);
+                applyBar(plan, w);
+            }
         } else {
             plan = MusicWidgetPlan.planHome(w, h, density, maxText);
             applyHome(plan, w);
@@ -199,6 +208,63 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         applyText(artist, plan, plan.gapPx);
         if (buttons != null) {
             setBox(buttons, ViewGroup.LayoutParams.MATCH_PARENT, plan.buttonRowPx, plan.gapPx, 0);
+        }
+        sizeButtons(plan.buttonSidePx, R.id.music_prev_two, R.id.music_playpause_two,
+                R.id.music_next_two, R.id.music_favorite_two);
+    }
+
+    /**
+     * The wide bar: the cover, the column of text between it and the block of buttons, and the
+     * block, a FlexboxLayout whose cells are 50% (2 x 2) or 25% (one row) wide. The order of the
+     * cells is set here, so that a change of the bar's height changes only sizes and order.
+     */
+    private void applyBarWide(MusicWidgetPlan.Plan plan, int w) {
+        View cover = mRoot.findViewById(R.id.iv_album_bg_two);
+        View column = mRoot.findViewById(R.id.music_bar_column);
+        TextView title = mRoot.findViewById(R.id.tv_musicName_two);
+        TextView artist = mRoot.findViewById(R.id.tv_artist_two);
+        View buttons = mRoot.findViewById(R.id.music_bar_buttons);
+
+        if (cover != null) {
+            setBox(cover, plan.coverPx, plan.coverPx, 0, 0);
+        }
+        if (column != null) {
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) column.getLayoutParams();
+            int gap = Math.max(0, w - plan.columnPx - plan.coverPx - plan.buttonBlockPx);
+            if (lp.leftMargin != gap) {
+                lp.leftMargin = gap;
+                column.setLayoutParams(lp);
+            }
+        }
+        applyText(title, plan, plan.gapPx);
+        applyText(artist, plan, plan.gapPx);
+        if (buttons != null && buttons.getLayoutParams() instanceof LinearLayout.LayoutParams) {
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) buttons.getLayoutParams();
+            if (lp.width != plan.buttonBlockPx || lp.weight != 0f) {
+                lp.width = plan.buttonBlockPx;
+                lp.weight = 0f;
+                buttons.setLayoutParams(lp);
+            }
+        }
+        // 2 x 2: prev, next, play/pause, favorite. One row: prev, play/pause, next, favorite.
+        int[] cells = plan.buttonRows == 2
+                ? new int[]{R.id.constraint_layout_prev_two, R.id.constraint_layout_next_two,
+                        R.id.constraint_layout_playpause_two, R.id.constraint_layout_favorite_two}
+                : new int[]{R.id.constraint_layout_prev_two, R.id.constraint_layout_playpause_two,
+                        R.id.constraint_layout_next_two, R.id.constraint_layout_favorite_two};
+        float basis = plan.buttonRows == 2 ? 0.5f : 0.25f;
+        for (int i = 0; i < cells.length; i++) {
+            View cell = mRoot.findViewById(cells[i]);
+            if (cell == null || !(cell.getLayoutParams() instanceof FlexboxLayout.LayoutParams)) {
+                continue;
+            }
+            FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) cell.getLayoutParams();
+            if (lp.getFlexBasisPercent() != basis || lp.getOrder() != i || lp.height != plan.buttonRowPx) {
+                lp.setFlexBasisPercent(basis);
+                lp.setOrder(i);
+                lp.height = plan.buttonRowPx;
+                cell.setLayoutParams(lp);
+            }
         }
         sizeButtons(plan.buttonSidePx, R.id.music_prev_two, R.id.music_playpause_two,
                 R.id.music_next_two, R.id.music_favorite_two);

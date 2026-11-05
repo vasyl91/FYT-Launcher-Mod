@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: úspěch, zprávu se nepodařilo uložit</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: selhání, zprávu se nepodařilo uložit</string>
     <string name="logcat_stop_button">Zastavit logcat</string>
+    <string name="widget_bar_no_date">Skrýt datum</string>
+    <string name="widget_bar_no_weather">Skrýt počasí</string>
+    <string name="widget_bar_hidden_on">Jeho místo zaujme widget hudby</string>
 </resources>

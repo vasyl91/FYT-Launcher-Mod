@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: õnnestus, aruannet ei õnnestunud salvestada</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: ebaõnnestus, aruannet ei õnnestunud salvestada</string>
     <string name="logcat_stop_button">Peata logcat</string>
+    <string name="widget_bar_no_date">Peida kuupäev</string>
+    <string name="widget_bar_no_weather">Peida ilm</string>
+    <string name="widget_bar_hidden_on">Selle koha võtab muusikavidin</string>
 </resources>

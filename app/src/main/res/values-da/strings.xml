@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: lykkedes, rapporten kunne ikke gemmes</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: mislykkedes, rapporten kunne ikke gemmes</string>
     <string name="logcat_stop_button">Stop logcat</string>
+    <string name="widget_bar_no_date">Skjul datoen</string>
+    <string name="widget_bar_no_weather">Skjul vejret</string>
+    <string name="widget_bar_hidden_on">Musikwidgetten tager dens plads</string>
 </resources>

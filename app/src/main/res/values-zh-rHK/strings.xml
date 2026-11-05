@@ -39,4 +39,7 @@
     <string name="crash_restarted_toast">啟動器在發生錯誤後已重新啟動：%1$s。報告：%2$s</string>
     <string name="crash_safe_mode_toast">啟動器已連續當機 %1$d 次（%2$s）。在離開設定之前，自訂小工具、子母畫面窗格和統計視窗均已關閉。報告：%3$s</string>
     <string name="shizuku_download_button">點選此處下載 Shizuku Next（無 root 使用子母畫面窗格時需要）</string>
+    <string name="widget_bar_no_date">隱藏日期</string>
+    <string name="widget_bar_no_weather">隱藏天氣</string>
+    <string name="widget_bar_hidden_on">由音樂小工具佔用其位置</string>
 </resources>

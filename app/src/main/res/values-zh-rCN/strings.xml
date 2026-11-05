@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus：成功，无法保存报告</string>
     <string name="canbus_library_toast_failed_no_report">Canbus：失败，无法保存报告</string>
     <string name="logcat_stop_button">停止 logcat</string>
+    <string name="widget_bar_no_date">隐藏日期</string>
+    <string name="widget_bar_no_weather">隐藏天气</string>
+    <string name="widget_bar_hidden_on">由音乐小部件占用其位置</string>
 </resources>

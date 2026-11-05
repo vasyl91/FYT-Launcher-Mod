@@ -150,4 +150,7 @@
     <string name="logcat_no_crash">Sem relatórios de falhas</string>
     <string name="crash_restarted_toast">O launcher foi reiniciado após um erro: %1$s. Relatório: %2$s</string>
     <string name="crash_safe_mode_toast">O launcher falhou %1$d vezes seguidas (%2$s). Widgets próprios, painéis PiP e a janela de estatísticas ficam desativados até sair das definições. Relatório: %3$s</string>
+    <string name="widget_bar_no_date">Ocultar a data</string>
+    <string name="widget_bar_no_weather">Ocultar a meteorologia</string>
+    <string name="widget_bar_hidden_on">O widget de música ocupa o lugar</string>
 </resources>

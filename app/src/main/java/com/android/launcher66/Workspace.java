@@ -864,6 +864,10 @@ public class Workspace extends SmoothPagedView
             }
 
             if (widgetBar) {
+                // Before any view of the music widget is looked up: a hidden date or weather
+                // replaces it with its wide variant, which has the same ids.
+                WidgetBarLayout.apply(workspaceView, this.mLauncher.getLayoutInflater(), mPrefs,
+                        orientation == Configuration.ORIENTATION_PORTRAIT);
                 mLauncher.removeCustomView("WS_Music_Two");
                 mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
                 mLauncher.initMusicBarView(mBarMusicWidget);
@@ -1033,6 +1037,9 @@ public class Workspace extends SmoothPagedView
     private void adjustTextSize(TextView textView, float targetSize) {
         if (textView == null || !(textView.getParent() instanceof View)) {
             return;
+        }
+        if (((View) textView.getParent()).getVisibility() == View.GONE) {
+            return;   // a widget hidden in the settings (WidgetBarLayout): nothing to fit
         }
 
         BarTextFit fit = mBarTextFits.get(textView);
@@ -1603,6 +1610,10 @@ public class Workspace extends SmoothPagedView
             // horizontal swipe on this window page the workspace (BarSwipeFrame).
             final View barContent = inflater.inflate(
                     widgetBar ? R.layout.custom_layout_two_user : R.layout.custom_layout_one_user, null);
+            if (widgetBar) {
+                WidgetBarLayout.apply(barContent, inflater, mPrefs,
+                        orientation == Configuration.ORIENTATION_PORTRAIT);
+            }
             final BarSwipeFrame barFrame = new BarSwipeFrame(getContext(), mBarSwipeHost);
             barFrame.addView(barContent, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -1870,6 +1881,14 @@ public class Workspace extends SmoothPagedView
             dateWidgetWidth = (int) (screenWidth * 0.05);
             weatherWidgetWidth = (int) (screenWidth * 0.12);
         }
+
+        // A hidden date or weather (WidgetBarLayout): the music widget takes their room.
+        final boolean portraitBar = orientation == Configuration.ORIENTATION_PORTRAIT;
+        final boolean noDate = WidgetBarLayout.dateHidden(mPrefs, portraitBar);
+        final boolean noWeather = WidgetBarLayout.weatherHidden(mPrefs);
+        if (WidgetBarPlan.wide(noDate, noWeather)) {
+            musicWidgetWidth = (int) (screenWidth * WidgetBarPlan.musicShare(portraitBar, noDate, noWeather));
+        }
         
         // Apply forced dimensions
         ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
@@ -1925,7 +1944,14 @@ public class Workspace extends SmoothPagedView
                 constraintParams.width = musicWidgetWidth;
                 constraintParams.height = bottomBarHeight;
                 constraintParams.startToEnd = R.id.recycler_view;
-                constraintParams.endToStart = R.id.bar_widget_date;
+                if (noWeather && (noDate || portraitBar)) {
+                    // Nothing is left of the bar after the music widget (the portrait bar has no date).
+                    constraintParams.endToStart = ConstraintLayout.LayoutParams.UNSET;
+                    constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+                } else {
+                    constraintParams.endToEnd = ConstraintLayout.LayoutParams.UNSET;
+                    constraintParams.endToStart = noDate ? R.id.bar_widget_weather : R.id.bar_widget_date;
+                }
                 constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
                 if (resizableBottomBar) {
@@ -1944,7 +1970,13 @@ public class Workspace extends SmoothPagedView
                     constraintParams.width = dateWidgetWidth;
                     constraintParams.height = bottomBarHeight;
                     constraintParams.startToEnd = R.id.rl_music_two;
-                    constraintParams.endToStart = R.id.bar_widget_weather;
+                    if (noWeather) {
+                        constraintParams.endToStart = ConstraintLayout.LayoutParams.UNSET;
+                        constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+                    } else {
+                        constraintParams.endToEnd = ConstraintLayout.LayoutParams.UNSET;
+                        constraintParams.endToStart = R.id.bar_widget_weather;
+                    }
                     constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                     constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
                     if (resizableBottomBar) {
@@ -1961,7 +1993,7 @@ public class Workspace extends SmoothPagedView
             if (weatherParams instanceof ConstraintLayout.LayoutParams constraintParams) {
                 constraintParams.width = weatherWidgetWidth;
                 constraintParams.height = bottomBarHeight;
-                constraintParams.startToEnd = R.id.bar_widget_date;
+                constraintParams.startToEnd = noDate ? R.id.rl_music_two : R.id.bar_widget_date;
                 constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;

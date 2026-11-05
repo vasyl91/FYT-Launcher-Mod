@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: نجح، تعذّر حفظ التقرير</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: فشل، تعذّر حفظ التقرير</string>
     <string name="logcat_stop_button">إيقاف logcat</string>
+    <string name="widget_bar_no_date">إخفاء التاريخ</string>
+    <string name="widget_bar_no_weather">إخفاء الطقس</string>
+    <string name="widget_bar_hidden_on">تشغل أداة الموسيقى مكانه</string>
 </resources>

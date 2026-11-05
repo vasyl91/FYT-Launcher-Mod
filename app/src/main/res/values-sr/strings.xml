@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: успех, извештај није могао бити сачуван</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: неуспех, извештај није могао бити сачуван</string>
     <string name="logcat_stop_button">Заустави logcat</string>
+    <string name="widget_bar_no_date">Сакриј датум</string>
+    <string name="widget_bar_no_weather">Сакриј време</string>
+    <string name="widget_bar_hidden_on">Његово место заузима музички виџет</string>
 </resources>

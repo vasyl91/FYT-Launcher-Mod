@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: gelukt, het rapport kon niet worden opgeslagen</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: mislukt, het rapport kon niet worden opgeslagen</string>
     <string name="logcat_stop_button">Logcat stoppen</string>
+    <string name="widget_bar_no_date">Datum verbergen</string>
+    <string name="widget_bar_no_weather">Weer verbergen</string>
+    <string name="widget_bar_hidden_on">De muziekwidget neemt zijn plaats in</string>
 </resources>

@@ -503,4 +503,7 @@
     <string name="canbus_library_toast_success_no_report">Canbus: 成功。レポートを保存できませんでした</string>
     <string name="canbus_library_toast_failed_no_report">Canbus: 失敗。レポートを保存できませんでした</string>
     <string name="logcat_stop_button">logcatを停止</string>
+    <string name="widget_bar_no_date">日付を非表示</string>
+    <string name="widget_bar_no_weather">天気を非表示</string>
+    <string name="widget_bar_hidden_on">その場所をミュージックウィジェットが使います</string>
 </resources>
