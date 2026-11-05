@@ -50,6 +50,8 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
     private int mLastMaxText = -1;
     private Boolean mLastCompact;
     private String mLastPlan;
+    /** Px per sp, as of the last plan: the floor of the one line's text size. */
+    private float mDensity = 1f;
 
     private MusicWidgetSizer(View root, boolean bar, Callback callback) {
         mRoot = root;
@@ -128,6 +130,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         mLastMaxText = maxText;
 
         float density = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 1f, dm);
+        mDensity = density;
         MusicWidgetPlan.Plan plan;
         if (mBar) {
             View buttons = mRoot.findViewById(R.id.music_bar_buttons);
@@ -184,8 +187,8 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
             setVisibility(cover, plan.cover ? View.VISIBLE : View.GONE);
             setBox(cover, plan.coverPx, plan.coverPx, plan.gapPx, 0);
         }
-        applyText(title, plan, plan.gapPx);
-        applyText(artist, plan, plan.gapPx);
+        applyText(title, plan);
+        applyText(artist, plan);
         if (progress != null) {
             setBox(progress, ViewGroup.LayoutParams.MATCH_PARENT, plan.progressPx, plan.gapPx,
                     (int) (w * PROGRESS_MARGIN));
@@ -215,8 +218,8 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
                 column.setLayoutParams(lp);
             }
         }
-        applyText(title, plan, plan.gapPx);
-        applyText(artist, plan, plan.gapPx);
+        applyText(title, plan);
+        applyText(artist, plan);
         if (buttons != null) {
             setBox(buttons, ViewGroup.LayoutParams.MATCH_PARENT, plan.buttonRowPx, plan.gapPx, 0);
         }
@@ -246,8 +249,8 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
                 column.setLayoutParams(lp);
             }
         }
-        applyText(title, plan, plan.gapPx);
-        applyText(artist, plan, plan.gapPx);
+        applyText(title, plan);
+        applyText(artist, plan);
         if (buttons != null && buttons.getLayoutParams() instanceof LinearLayout.LayoutParams) {
             LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) buttons.getLayoutParams();
             if (lp.width != plan.buttonBlockPx || lp.weight != 0f) {
@@ -276,21 +279,40 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
                 R.id.music_next_two, R.id.music_favorite_two);
     }
 
-    /** One font for both rows; the second row is hidden by the widget in the one-line mode. */
-    private void applyText(TextView view, MusicWidgetPlan.Plan plan, int gap) {
+    /**
+     * One font for both rows; the second row is hidden by the widget in the one-line mode. The
+     * one line has no margin on top and the height of its whole room, so the column centres it,
+     * and no font padding, so that the letters (not the padding) are centred; its size comes from
+     * the box of the font this view really has.
+     */
+    private void applyText(TextView view, MusicWidgetPlan.Plan plan) {
         if (view == null) {
             return;
         }
-        setBox(view, ViewGroup.LayoutParams.MATCH_PARENT, plan.rowPx, gap, 0);
-        if (Math.abs(view.getTextSize() - plan.textPx) > 0.5f) {
-            view.setTextSize(TypedValue.COMPLEX_UNIT_PX, plan.textPx);
+        float textPx = plan.textPx;
+        if (plan.oneLine && mBar) {
+            textPx = plan.withFontRatio(fontRatio(view), mDensity).textPx;
+        }
+        setBox(view, ViewGroup.LayoutParams.MATCH_PARENT, plan.rowPx, plan.rowTopPx, 0);
+        if (Math.abs(view.getTextSize() - textPx) > 0.5f) {
+            view.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);
         }
         if (view.getGravity() != Gravity.CENTER) {
             view.setGravity(Gravity.CENTER);
         }
-        if (!view.getIncludeFontPadding()) {
-            view.setIncludeFontPadding(true);
+        boolean fontPadding = !(plan.oneLine && mBar);
+        if (view.getIncludeFontPadding() != fontPadding) {
+            view.setIncludeFontPadding(fontPadding);
         }
+    }
+
+    /** (descent - ascent) / size of the font of a view: the height of its box per unit of size. */
+    private static float fontRatio(TextView view) {
+        android.graphics.Paint paint = new android.graphics.Paint();
+        paint.setTypeface(view.getTypeface());
+        paint.setTextSize(100f);
+        android.graphics.Paint.FontMetrics fm = paint.getFontMetrics();
+        return (fm.descent - fm.ascent) / 100f;
     }
 
     private void sizeButtons(int side, int... ids) {
