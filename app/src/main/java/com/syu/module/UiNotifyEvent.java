@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class UiNotifyEvent implements Runnable {
+    /** The area of a failing listener in the compat reports; the code is appended only when one fails. */
+    private static final String NOTIFY_AREA = "canbus.notify ";
     public static final Handler HANDLER_UI = new Handler(Looper.getMainLooper());
     private final ArrayList<IUiNotify> mUiNotifies = new ArrayList<>();
     private int mUpdateCode;
@@ -49,7 +51,7 @@ public final class UiNotifyEvent implements Runnable {
             }
             if (onNotify == 1) {
                 final int code = this.mUpdateCode;
-                FytCompat.run("canbus.notify " + code, () -> notify.onNotify(code, null, null, null));
+                FytCompat.run(NOTIFY_AREA, code, () -> notify.onNotify(code, null, null, null));
             }
         }
     }
@@ -63,7 +65,13 @@ public final class UiNotifyEvent implements Runnable {
     private void dispatch(int[] ints, float[] flts, String[] strs) {
         final int code = this.mUpdateCode;
         for (IUiNotify notify : snapshot()) {
-            FytCompat.run("canbus.notify " + code, () -> notify.onNotify(code, ints, flts, strs));
+            try {
+                notify.onNotify(code, ints, flts, strs);
+            } catch (RuntimeException | LinkageError e) {
+                // The name of the area is built here, not before every call: this runs for every
+                // listener of every event.
+                FytCompat.report(NOTIFY_AREA + code, e);
+            }
         }
     }
 

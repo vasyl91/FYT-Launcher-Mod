@@ -40,7 +40,12 @@ public class ModuleCallbackCanUpProxy extends IModuleCallback.Stub {
 
     @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        FytCompat.run("ms.canup code " + updateCode, () -> dispatch(updateCode, ints, flts, strs));
+        try {
+            dispatch(updateCode, ints, flts, strs);
+        } catch (RuntimeException | LinkageError e) {
+            // The name of the area is built here, not before every call: this runs for every CAN message.
+            FytCompat.report("ms.canup code " + updateCode, e);
+        }
     }
 
     private void dispatch(int updateCode, int[] ints, float[] flts, String[] strs) {

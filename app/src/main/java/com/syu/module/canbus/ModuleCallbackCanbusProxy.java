@@ -47,7 +47,12 @@ public class ModuleCallbackCanbusProxy extends IModuleCallback.Stub {
 
     @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        FytCompat.run("ms.canbus code " + updateCode, () -> dispatch(updateCode, ints, flts, strs));
+        try {
+            dispatch(updateCode, ints, flts, strs);
+        } catch (RuntimeException | LinkageError e) {
+            // The name of the area is built here, not before every call: this runs for every CAN message.
+            FytCompat.report("ms.canbus code " + updateCode, e);
+        }
     }
 
     private void dispatch(int updateCode, int[] ints, float[] flts, String[] strs) {

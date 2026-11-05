@@ -22,7 +22,12 @@ public class ModuleCallbackSound extends IModuleCallback.Stub {
     @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
         if (updateCode >= 0 && updateCode < 50 && intsOk(ints, 1)) {
-            FytCompat.run("ms.sound code " + updateCode, () -> HandlerSound.update(updateCode, ints[0]));
+            try {
+                HandlerSound.update(updateCode, ints[0]);
+            } catch (RuntimeException | LinkageError e) {
+                // The name of the area is built here, not before every call: this runs for every message.
+                FytCompat.report("ms.sound code " + updateCode, e);
+            }
         }
     }
 }

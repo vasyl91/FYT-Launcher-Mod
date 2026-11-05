@@ -455,7 +455,12 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private final IModuleCallback.Stub statsCallback = new IModuleCallback.Stub() {
         @Override
         public void update(int updateCode, int[] ints, float[] flts, String[] strs) {
-            FytCompat.run("canbus.stats code " + updateCode, () -> onStatsCode(updateCode, ints));
+            try {
+                onStatsCode(updateCode, ints);
+            } catch (RuntimeException | LinkageError e) {
+                // The name of the area is built here, not before every call: this runs for every message.
+                FytCompat.report("canbus.stats code " + updateCode, e);
+            }
         }
 
         private void onStatsCode(int updateCode, int[] ints) {

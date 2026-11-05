@@ -67,9 +67,13 @@ public class Callback extends IModuleCallback.Stub {
             for (Lisenter lisenter : Callback.this.mLisenters) {
                 if (lisenter.code == Massage.this.code) {
                     // A listener of FYT's data that fails is reported; the next ones still get theirs.
-                    FytCompat.run("ms.callback code " + Massage.this.code,
-                            () -> lisenter.lisenter.onRefresh(Massage.this.code, Massage.this.ints,
-                                    Massage.this.flts, Massage.this.strs));
+                    try {
+                        lisenter.lisenter.onRefresh(Massage.this.code, Massage.this.ints,
+                                Massage.this.flts, Massage.this.strs);
+                    } catch (RuntimeException | LinkageError e) {
+                        // The name of the area is built here, not for every listener of every message.
+                        FytCompat.report("ms.callback code " + Massage.this.code, e);
+                    }
                 }
             }
         };

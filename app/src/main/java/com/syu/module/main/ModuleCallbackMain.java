@@ -24,7 +24,12 @@ public class ModuleCallbackMain extends IModuleCallback.Stub {
 
     @Override
     public void update(int updateCode, int[] ints, float[] flts, String[] strs) throws RemoteException {
-        FytCompat.run("ms.main code " + updateCode, () -> dispatch(updateCode, ints, flts, strs));
+        try {
+            dispatch(updateCode, ints, flts, strs);
+        } catch (RuntimeException | LinkageError e) {
+            // The name of the area is built here, not before every call: this runs for every message.
+            FytCompat.report("ms.main code " + updateCode, e);
+        }
     }
 
     private void dispatch(int updateCode, int[] ints, float[] flts, String[] strs) {

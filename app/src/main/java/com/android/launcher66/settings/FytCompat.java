@@ -44,6 +44,18 @@ public final class FytCompat {
         }
     }
 
+    /**
+     * Like {@link #run(String, Runnable)} with the area {@code prefix + code}, but the text is only
+     * built when the work fails. For callers that run often and have a Runnable to pass anyway.
+     */
+    public static void run(String prefix, int code, Runnable r) {
+        try {
+            r.run();
+        } catch (RuntimeException | LinkageError e) {
+            report(prefix + code, e);
+        }
+    }
+
     /** Returns what {@code s} gives, or {@code fallback} when it fails (the failure is reported). */
     public static <T> T call(String area, Supplier<T> s, T fallback) {
         try {
