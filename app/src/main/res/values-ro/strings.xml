@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Butoane lângă titlu</string>
     <string name="widget_bar_buttons_beside_on">Două rânduri de butoane în dreapta titlului și a artistului</string>
     <string name="widget_bar_buttons_beside_off">Butoane sub titlu și artist</string>
+    <string name="widget_bar_one_line_reversed">Un rând: titlu – artist</string>
+    <string name="widget_bar_buttons_one_line">Butoane pe un singur rând</string>
+    <string name="widget_bar_buttons_one_line_on">Un rând de patru butoane lângă titlu și artist</string>
+    <string name="widget_bar_buttons_one_line_off">Două rânduri a câte două butoane</string>
 </resources>

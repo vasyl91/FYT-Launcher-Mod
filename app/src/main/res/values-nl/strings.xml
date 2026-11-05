@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Knoppen naast de titel</string>
     <string name="widget_bar_buttons_beside_on">Twee rijen knoppen rechts van titel en artiest</string>
     <string name="widget_bar_buttons_beside_off">Knoppen onder titel en artiest</string>
+    <string name="widget_bar_one_line_reversed">Eén regel: titel – artiest</string>
+    <string name="widget_bar_buttons_one_line">Knoppen op één rij</string>
+    <string name="widget_bar_buttons_one_line_on">Eén rij van vier knoppen naast titel en artiest</string>
+    <string name="widget_bar_buttons_one_line_off">Twee rijen van twee knoppen</string>
 </resources>

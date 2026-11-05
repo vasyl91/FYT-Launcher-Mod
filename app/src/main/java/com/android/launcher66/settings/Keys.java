@@ -151,8 +151,18 @@ public final class Keys {
     public static final String WIDGET_BAR_BUTTONS_BESIDE = "widget_bar_buttons_beside";
     /** The texts of the widget bar are as large as the room allows (the usual size otherwise). */
     public static final String WIDGET_BAR_LARGE_TEXT = "widget_bar_large_text";
-    /** The music widget of the bar shows "artist - title" in one line (two lines otherwise). */
+    /**
+     * Old boolean (one line "artist - title"); migrated to WIDGET_BAR_LINE_MODE, once, by
+     * LauncherApplication.
+     */
     public static final String WIDGET_BAR_ONE_LINE = "widget_bar_one_line";
+    /**
+     * How the music widget of the bar writes the title and the artist: "two" (the title above the
+     * artist), "artist_title" or "title_artist" (one line); see WidgetBarLines.
+     */
+    public static final String WIDGET_BAR_LINE_MODE = "widget_bar_line_mode";
+    /** The buttons of the music widget beside the text are in one row of four (two rows of two otherwise). */
+    public static final String WIDGET_BAR_BUTTONS_ONE_LINE = "widget_bar_buttons_one_line";
     public static final String WIDGETS_BACKGROUND = "choose_widgets_background";
     public static final String BAR_BACKGROUND = "choose_bar_background";
     public static final String WIDGETS_SELECTED_BACKGROUND = "widgets_selected_background";

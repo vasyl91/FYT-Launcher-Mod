@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Buttuns ordaifer il titel</string>
     <string name="widget_bar_buttons_beside_on">Duas retschas da buttuns a dretga dal titel e da l\'artist</string>
     <string name="widget_bar_buttons_beside_off">Buttuns sut il titel e l\'artist</string>
+    <string name="widget_bar_one_line_reversed">Ina lingia: titel – artist</string>
+    <string name="widget_bar_buttons_one_line">Buttuns en ina retscha</string>
+    <string name="widget_bar_buttons_one_line_on">Ina retscha da quatter buttuns ordaifer il titel e l\'artist</string>
+    <string name="widget_bar_buttons_one_line_off">Duas retschas cun duos buttuns</string>
 </resources>

@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Mygtukai šalia pavadinimo</string>
     <string name="widget_bar_buttons_beside_on">Dvi mygtukų eilės dešinėje nuo pavadinimo ir atlikėjo</string>
     <string name="widget_bar_buttons_beside_off">Mygtukai po pavadinimu ir atlikėju</string>
+    <string name="widget_bar_one_line_reversed">Viena eilutė: pavadinimas – atlikėjas</string>
+    <string name="widget_bar_buttons_one_line">Mygtukai vienoje eilutėje</string>
+    <string name="widget_bar_buttons_one_line_on">Viena keturių mygtukų eilė šalia pavadinimo ir atlikėjo</string>
+    <string name="widget_bar_buttons_one_line_off">Dvi eilės po du mygtukus</string>
 </resources>

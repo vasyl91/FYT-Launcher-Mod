@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">बटन शीर्षक के बगल में</string>
     <string name="widget_bar_buttons_beside_on">शीर्षक और कलाकार के दाईं ओर बटनों की दो पंक्तियाँ</string>
     <string name="widget_bar_buttons_beside_off">बटन शीर्षक और कलाकार के नीचे</string>
+    <string name="widget_bar_one_line_reversed">एक पंक्ति: शीर्षक – कलाकार</string>
+    <string name="widget_bar_buttons_one_line">बटन एक पंक्ति में</string>
+    <string name="widget_bar_buttons_one_line_on">शीर्षक और कलाकार के बगल में चार बटनों की एक पंक्ति</string>
+    <string name="widget_bar_buttons_one_line_off">दो-दो बटनों की दो पंक्तियाँ</string>
 </resources>

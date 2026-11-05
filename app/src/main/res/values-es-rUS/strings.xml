@@ -76,4 +76,8 @@
     <string name="widget_bar_buttons_beside">Botones junto al título</string>
     <string name="widget_bar_buttons_beside_on">Dos filas de botones a la derecha del título y el artista</string>
     <string name="widget_bar_buttons_beside_off">Botones debajo del título y el artista</string>
+    <string name="widget_bar_one_line_reversed">Una línea: título – artista</string>
+    <string name="widget_bar_buttons_one_line">Botones en una sola fila</string>
+    <string name="widget_bar_buttons_one_line_on">Una fila de cuatro botones junto al título y el artista</string>
+    <string name="widget_bar_buttons_one_line_off">Dos filas de dos botones</string>
 </resources>

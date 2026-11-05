@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">ปุ่มอยู่ข้างชื่อเพลง</string>
     <string name="widget_bar_buttons_beside_on">ปุ่มสองแถวทางขวาของชื่อเพลงและศิลปิน</string>
     <string name="widget_bar_buttons_beside_off">ปุ่มอยู่ใต้ชื่อเพลงและศิลปิน</string>
+    <string name="widget_bar_one_line_reversed">บรรทัดเดียว: ชื่อเพลง – ศิลปิน</string>
+    <string name="widget_bar_buttons_one_line">ปุ่มในแถวเดียว</string>
+    <string name="widget_bar_buttons_one_line_on">ปุ่มสี่ปุ่มในแถวเดียวข้างชื่อเพลงและศิลปิน</string>
+    <string name="widget_bar_buttons_one_line_off">สองแถว แถวละสองปุ่ม</string>
 </resources>

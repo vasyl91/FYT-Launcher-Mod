@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">አዝራሮች ከርዕሱ ጎን</string>
     <string name="widget_bar_buttons_beside_on">ሁለት ረድፍ አዝራሮች ከርዕሱና ከአርቲስቱ በስተቀኝ</string>
     <string name="widget_bar_buttons_beside_off">አዝራሮች ከርዕሱና ከአርቲስቱ በታች</string>
+    <string name="widget_bar_one_line_reversed">አንድ መስመር፦ ርዕስ – አርቲስት</string>
+    <string name="widget_bar_buttons_one_line">አዝራሮች በአንድ መስመር</string>
+    <string name="widget_bar_buttons_one_line_on">አራት አዝራሮች በአንድ ረድፍ ከርዕሱና ከአርቲስቱ ጎን</string>
+    <string name="widget_bar_buttons_one_line_off">ሁለት ረድፍ፣ በእያንዳንዱ ሁለት አዝራሮች</string>
 </resources>

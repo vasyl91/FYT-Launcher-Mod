@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">دکمه‌ها کنار عنوان</string>
     <string name="widget_bar_buttons_beside_on">دو ردیف دکمه در سمت راست عنوان و خواننده</string>
     <string name="widget_bar_buttons_beside_off">دکمه‌ها زیر عنوان و خواننده</string>
+    <string name="widget_bar_one_line_reversed">یک خط: عنوان – خواننده</string>
+    <string name="widget_bar_buttons_one_line">دکمه‌ها در یک ردیف</string>
+    <string name="widget_bar_buttons_one_line_on">یک ردیف چهار دکمه‌ای کنار عنوان و خواننده</string>
+    <string name="widget_bar_buttons_one_line_off">دو ردیف دو دکمه‌ای</string>
 </resources>

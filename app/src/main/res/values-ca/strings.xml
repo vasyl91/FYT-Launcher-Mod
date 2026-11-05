@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Botons al costat del títol</string>
     <string name="widget_bar_buttons_beside_on">Dues files de botons a la dreta del títol i l\'artista</string>
     <string name="widget_bar_buttons_beside_off">Botons sota el títol i l\'artista</string>
+    <string name="widget_bar_one_line_reversed">Una línia: títol – artista</string>
+    <string name="widget_bar_buttons_one_line">Botons en una sola fila</string>
+    <string name="widget_bar_buttons_one_line_on">Una fila de quatre botons al costat del títol i l\'artista</string>
+    <string name="widget_bar_buttons_one_line_off">Dues files de dos botons</string>
 </resources>

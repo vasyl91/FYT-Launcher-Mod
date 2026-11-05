@@ -39,6 +39,18 @@ final class WidgetBarLayout {
                 prefs.getBoolean(Keys.WIDGET_BAR_BUTTONS_BESIDE, true));
     }
 
+    /** The title and artist as they are written in the bar now (see {@link WidgetBarLines#effective}). */
+    static WidgetBarLines.Text lineText(SharedPreferences prefs, boolean portrait) {
+        WidgetBarLines.Text chosen = WidgetBarLines.parse(prefs.getString(Keys.WIDGET_BAR_LINE_MODE, null),
+                prefs.getBoolean(Keys.WIDGET_BAR_ONE_LINE, false));
+        return WidgetBarLines.effective(chosen, buttonsBeside(prefs, portrait));
+    }
+
+    static boolean buttonsInOneRow(SharedPreferences prefs, boolean portrait) {
+        return WidgetBarLines.buttonsInOneRow(prefs.getBoolean(Keys.WIDGET_BAR_BUTTONS_ONE_LINE, false),
+                buttonsBeside(prefs, portrait));
+    }
+
     /** @return whether the bar was changed (some widget is hidden) */
     static boolean apply(View bar, LayoutInflater inflater, SharedPreferences prefs, boolean portrait) {
         boolean noDate = dateHidden(prefs, portrait);

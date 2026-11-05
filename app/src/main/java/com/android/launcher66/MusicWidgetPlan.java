@@ -89,12 +89,13 @@ final class MusicWidgetPlan {
 
     /**
      * With the buttons beside the text, what is left of the widget right of the cover and its gap
-     * (R) is divided in these shares: the text (title and artist, or one line) and the block of
-     * buttons, which is always 2 x 2. The rounding left over goes to the text.
+     * (R) is divided between the text and the block of buttons. The block is 2 x 2 and takes 35%
+     * of R; with 'Buttons in one line' it is one row of four and takes 40% (the text keeps the
+     * rest, rounding included).
      */
-    static final float BAR_BESIDE_TEXT_SHARE = 0.65f;
-
     static final float BAR_BESIDE_BUTTONS_SHARE = 0.35f;
+
+    static final float BAR_BESIDE_BUTTONS_ONE_ROW_SHARE = 0.40f;
 
     /** The cover of the home widget is at most this share of its width. */
     static final float HOME_COVER_WIDTH = 0.9f;
@@ -130,7 +131,7 @@ final class MusicWidgetPlan {
         boolean wide;
         /** Width of the block of buttons (the wide bar only). */
         int buttonBlockPx;
-        /** Rows of buttons in the block: always 2 (2 x 2). */
+        /** Rows of buttons in the block: 2 (2 x 2), or 1 (a row of four) with 'Buttons in one line'. */
         int buttonRows;
         /** Width of a cell of the block. */
         int cellWidthPx;
@@ -156,7 +157,7 @@ final class MusicWidgetPlan {
             if (wide) {
                 return "layout=beside oneLine=" + oneLine + " large=" + largeText + " cover=" + coverPx + "+"
                         + coverGapPx + " R=" + restPx + " text=" + columnPx + " buttons=" + buttonBlockPx
-                        + "(" + buttonRows + "x2) row=" + rowPx + " textPx=" + textPx + " cell="
+                        + "(" + (buttonRows == 1 ? "1x4" : "2x2") + ") row=" + rowPx + " textPx=" + textPx + " cell="
                         + cellWidthPx + "x" + buttonRowPx + "/" + buttonSidePx + " gap=" + gapPx;
             }
             if (columnPx > 0) {
@@ -299,24 +300,29 @@ final class MusicWidgetPlan {
     /**
      * The bar with the buttons beside the text: cover, then the text (title above artist, or one
      * row with {@code oneLine}) in 65% of what is left (R), then a block of buttons in the other
-     * 35%. The block is always 2 x 2 (prev and next above play/pause and favorite), on every bar
-     * height and with one line or two. With 'Large text' two rows fill the whole height of the
-     * column (two halves) and the font has the smaller line factor; one line has the whole height
-     * in both cases and its font is sized from the box of the font (see {@link #textForBox}).
+     * 35%. The block is 2 x 2 (prev and next above play/pause and favorite), on every bar height
+     * and with one line or two. With {@code buttonsOneRow} ('Buttons in one line') it is one row
+     * of four (prev, play/pause, next, favorite) and takes 40% of R, the text 60%. With 'Large
+     * text' two rows fill the whole height of the column (two halves) and the font has the
+     * smaller line factor; one line has the whole height in both cases and its font is sized from
+     * the box of the font (see {@link #textForBox}).
      */
-    static Plan planBarWide(int w, int h, int baseW, float density, boolean largeText, boolean oneLine) {
+    static Plan planBarWide(int w, int h, int baseW, float density, boolean largeText, boolean oneLine,
+                            boolean buttonsOneRow) {
         Plan plan = new Plan();
         plan.wide = true;
         plan.compact = oneLine;
         plan.oneLine = oneLine;
         plan.largeText = largeText;
         placeCover(plan, w, h, baseW);
-        // The block is two whole cells wide. A block of an odd width with cells of 50% each would
-        // round both cells up (52.5 -> 53 + 53 = 106 > 105), the second cell would not fit and the
-        // flexbox would wrap to one button per row.
-        plan.cellWidthPx = (int) (plan.restPx * BAR_BESIDE_BUTTONS_SHARE) / 2;
-        plan.buttonBlockPx = 2 * plan.cellWidthPx;
-        plan.buttonRows = 2;
+        // The block is a whole number of cells wide, each a whole number of px. A block of an odd
+        // width with cells of 50% each would round both cells up (52.5 -> 53 + 53 = 106 > 105),
+        // the second cell would not fit and the flexbox would wrap to one button per row.
+        int cells = buttonsOneRow ? 4 : 2;
+        float share = buttonsOneRow ? BAR_BESIDE_BUTTONS_ONE_ROW_SHARE : BAR_BESIDE_BUTTONS_SHARE;
+        plan.cellWidthPx = (int) (plan.restPx * share) / cells;
+        plan.buttonBlockPx = cells * plan.cellWidthPx;
+        plan.buttonRows = buttonsOneRow ? 1 : 2;
         plan.columnPx = plan.restPx - plan.buttonBlockPx;
         float lineFactor = largeText ? LINE_FACTOR_LARGE : LINE_FACTOR;
         if (oneLine) {
@@ -333,7 +339,7 @@ final class MusicWidgetPlan {
             plan.rowTopPx = plan.gapPx;
             plan.textPx = Math.max(plan.rowPx / lineFactor, MIN_TEXT_SP_FLOOR * density);
         }
-        plan.buttonRowPx = h / 2;
+        plan.buttonRowPx = buttonsOneRow ? h : h / 2;
         plan.buttonSidePx = Math.round(Math.min(plan.cellWidthPx, plan.buttonRowPx) * BUTTON_FILL);
         return plan;
     }

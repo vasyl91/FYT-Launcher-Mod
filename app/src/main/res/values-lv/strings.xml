@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Pogas blakus nosaukumam</string>
     <string name="widget_bar_buttons_beside_on">Divas pogu rindas pa labi no nosaukuma un izpildītāja</string>
     <string name="widget_bar_buttons_beside_off">Pogas zem nosaukuma un izpildītāja</string>
+    <string name="widget_bar_one_line_reversed">Viena rinda: nosaukums – izpildītājs</string>
+    <string name="widget_bar_buttons_one_line">Pogas vienā rindā</string>
+    <string name="widget_bar_buttons_one_line_on">Viena četru pogu rinda blakus nosaukumam un izpildītājam</string>
+    <string name="widget_bar_buttons_one_line_off">Divas rindas ar divām pogām</string>
 </resources>

@@ -141,17 +141,20 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
                     .getDefaultSharedPreferences(mRoot.getContext());
             boolean largeText = prefs.getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_LARGE_TEXT, false);
             // The user's choice on every bar height (it used to follow the height of the bar)
-            boolean oneLine = prefs.getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_ONE_LINE, false);
+            // The user's choice with the buttons beside the text; one line always without (WidgetBarLines)
+            boolean portraitBar = mRoot.getResources().getConfiguration().orientation
+                    == android.content.res.Configuration.ORIENTATION_PORTRAIT;
+            boolean oneLine = WidgetBarLayout.lineText(prefs, portraitBar).oneLine();
             // The cover and the space behind it are sized from the widget's usual width, the one it
             // has with the date and the weather shown, so they do not move when those are hidden.
-            boolean portrait = mRoot.getResources().getConfiguration().orientation
-                    == android.content.res.Configuration.ORIENTATION_PORTRAIT;
+            boolean portrait = portraitBar;
             int baseW = MusicWidgetPlan.usualWidth(w, WidgetBarPlan.baseShare(portrait),
                     WidgetBarPlan.musicShare(portrait, WidgetBarLayout.dateHidden(prefs, portrait),
                             WidgetBarLayout.weatherHidden(prefs)));
             if (buttons instanceof FlexboxLayout) {
                 // The wide layout (WidgetBarLayout): the buttons are a block beside the text.
-                plan = MusicWidgetPlan.planBarWide(w, h, baseW, density, largeText, oneLine);
+                plan = MusicWidgetPlan.planBarWide(w, h, baseW, density, largeText, oneLine,
+                        WidgetBarLayout.buttonsInOneRow(prefs, portraitBar));
                 applyBarWide(plan, w);
             } else {
                 plan = MusicWidgetPlan.planBar(w, h, baseW, density, largeText, oneLine);
@@ -232,7 +235,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
 
     /**
      * The bar with the buttons beside the text: the cover, the column of text between it and the
-     * block of buttons, and the block, a FlexboxLayout of 2 x 2 cells (each a whole number of px wide).
+     * block of buttons, and the block, a FlexboxLayout of 2 x 2 cells, or one row of four (each cell a whole number of px wide).
      */
     private void applyBarWide(MusicWidgetPlan.Plan plan, int w) {
         View cover = mRoot.findViewById(R.id.iv_album_bg_two);
@@ -262,9 +265,12 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
                 buttons.setLayoutParams(lp);
             }
         }
-        // Always 2 x 2: prev and next above play/pause and favorite. Only the sizes are set here.
-        int[] cells = {R.id.constraint_layout_prev_two, R.id.constraint_layout_next_two,
-                R.id.constraint_layout_playpause_two, R.id.constraint_layout_favorite_two};
+        // 2 x 2: prev and next above play/pause and favorite. One row: prev, play/pause, next, favorite.
+        int[] cells = plan.buttonRows == 1
+                ? new int[] {R.id.constraint_layout_prev_two, R.id.constraint_layout_playpause_two,
+                        R.id.constraint_layout_next_two, R.id.constraint_layout_favorite_two}
+                : new int[] {R.id.constraint_layout_prev_two, R.id.constraint_layout_next_two,
+                        R.id.constraint_layout_playpause_two, R.id.constraint_layout_favorite_two};
         for (int i = 0; i < cells.length; i++) {
             View cell = mRoot.findViewById(cells[i]);
             if (cell == null || !(cell.getLayoutParams() instanceof FlexboxLayout.LayoutParams)) {

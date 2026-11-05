@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Կոճակները վերնագրի կողքին</string>
     <string name="widget_bar_buttons_beside_on">Կոճակների երկու շարք վերնագրի և կատարողի աջ կողմում</string>
     <string name="widget_bar_buttons_beside_off">Կոճակները վերնագրի և կատարողի տակ</string>
+    <string name="widget_bar_one_line_reversed">Մեկ տող՝ վերնագիր – կատարող</string>
+    <string name="widget_bar_buttons_one_line">Կոճակները մեկ շարքով</string>
+    <string name="widget_bar_buttons_one_line_on">Չորս կոճակի մեկ շարք վերնագրի և կատարողի կողքին</string>
+    <string name="widget_bar_buttons_one_line_off">Երկու շարք՝ երկուական կոճակով</string>
 </resources>

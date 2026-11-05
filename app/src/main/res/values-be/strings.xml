@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Кнопкі побач з назвай</string>
     <string name="widget_bar_buttons_beside_on">Два рады кнопак справа ад назвы і выканаўцы</string>
     <string name="widget_bar_buttons_beside_off">Кнопкі пад назвай і выканаўцам</string>
+    <string name="widget_bar_one_line_reversed">Адзін радок: назва – выканаўца</string>
+    <string name="widget_bar_buttons_one_line">Кнопкі ў адзін рад</string>
+    <string name="widget_bar_buttons_one_line_on">Адзін рад з чатырох кнопак побач з назвай і выканаўцам</string>
+    <string name="widget_bar_buttons_one_line_off">Два рады па дзве кнопкі</string>
 </resources>

@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Knapper ved siden av tittelen</string>
     <string name="widget_bar_buttons_beside_on">To rader med knapper til høyre for tittel og artist</string>
     <string name="widget_bar_buttons_beside_off">Knapper under tittel og artist</string>
+    <string name="widget_bar_one_line_reversed">Én linje: tittel – artist</string>
+    <string name="widget_bar_buttons_one_line">Knapper på én rad</string>
+    <string name="widget_bar_buttons_one_line_on">Én rad med fire knapper ved siden av tittel og artist</string>
+    <string name="widget_bar_buttons_one_line_off">To rader med to knapper</string>
 </resources>

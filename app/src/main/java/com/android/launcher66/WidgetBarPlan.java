@@ -67,7 +67,7 @@ public final class WidgetBarPlan {
      * is hidden and the user wants the buttons there. Otherwise the usual layout (the text, and
      * the buttons below it) is used, with the whole widened width.
      */
-    static boolean buttonsBeside(boolean dateHidden, boolean weatherHidden, boolean switchOn) {
+    public static boolean buttonsBeside(boolean dateHidden, boolean weatherHidden, boolean switchOn) {
         return wide(dateHidden, weatherHidden) && switchOn;
     }
 }

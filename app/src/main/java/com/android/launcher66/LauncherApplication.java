@@ -179,6 +179,14 @@ public class LauncherApplication extends Application {
                     .remove(Keys.COVER_SPLASH)
                     .apply();
         }
+        // The widget bar's one-line switch became three choices (CustomNestedThreePreference), once.
+        if (prefs.contains(Keys.WIDGET_BAR_ONE_LINE)) {
+            prefs.edit()
+                    .putString(Keys.WIDGET_BAR_LINE_MODE, WidgetBarLines.parse(null,
+                            prefs.getBoolean(Keys.WIDGET_BAR_ONE_LINE, false)).value)
+                    .remove(Keys.WIDGET_BAR_ONE_LINE)
+                    .apply();
+        }
         // Pinned PiP exists on the FYT platforms but the 7870: elsewhere every pane is a window,
         // and a mode saved as pinned (by an older version, or on another device's backup) is put
         // back right away, the 7870 included.

@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">按钮位于标题旁边</string>
     <string name="widget_bar_buttons_beside_on">两排按钮位于标题和歌手右侧</string>
     <string name="widget_bar_buttons_beside_off">按钮位于标题和歌手下方</string>
+    <string name="widget_bar_one_line_reversed">单行：标题 – 歌手</string>
+    <string name="widget_bar_buttons_one_line">按钮排成一行</string>
+    <string name="widget_bar_buttons_one_line_on">四个按钮排成一行，位于标题和歌手旁边</string>
+    <string name="widget_bar_buttons_one_line_off">两排，每排两个按钮</string>
 </resources>

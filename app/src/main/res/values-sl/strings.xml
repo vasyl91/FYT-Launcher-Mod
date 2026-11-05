@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Gumbi ob naslovu</string>
     <string name="widget_bar_buttons_beside_on">Dve vrsti gumbov desno od naslova in izvajalca</string>
     <string name="widget_bar_buttons_beside_off">Gumbi pod naslovom in izvajalcem</string>
+    <string name="widget_bar_one_line_reversed">Ena vrstica: naslov – izvajalec</string>
+    <string name="widget_bar_buttons_one_line">Gumbi v eni vrsti</string>
+    <string name="widget_bar_buttons_one_line_on">Ena vrsta štirih gumbov ob naslovu in izvajalcu</string>
+    <string name="widget_bar_buttons_one_line_off">Dve vrsti po dva gumba</string>
 </resources>

@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Pulsanti accanto al titolo</string>
     <string name="widget_bar_buttons_beside_on">Due file di pulsanti a destra di titolo e artista</string>
     <string name="widget_bar_buttons_beside_off">Pulsanti sotto titolo e artista</string>
+    <string name="widget_bar_one_line_reversed">Una riga: titolo – artista</string>
+    <string name="widget_bar_buttons_one_line">Pulsanti su una sola riga</string>
+    <string name="widget_bar_buttons_one_line_on">Una riga di quattro pulsanti accanto a titolo e artista</string>
+    <string name="widget_bar_buttons_one_line_off">Due file di due pulsanti</string>
 </resources>

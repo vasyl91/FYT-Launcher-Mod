@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Izinkinobho eceleni kwesihloko</string>
     <string name="widget_bar_buttons_beside_on">Imigqa emibili yezinkinobho engakwesokudla sesihloko nomculi</string>
     <string name="widget_bar_buttons_beside_off">Izinkinobho ngezansi kwesihloko nomculi</string>
+    <string name="widget_bar_one_line_reversed">Umugqa owodwa: isihloko – umculi</string>
+    <string name="widget_bar_buttons_one_line">Izinkinobho emgqeni owodwa</string>
+    <string name="widget_bar_buttons_one_line_on">Umugqa owodwa wezinkinobho ezine eceleni kwesihloko nomculi</string>
+    <string name="widget_bar_buttons_one_line_off">Imigqa emibili yezinkinobho ezimbili</string>
 </resources>

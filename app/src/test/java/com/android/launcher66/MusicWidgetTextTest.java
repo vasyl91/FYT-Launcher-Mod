@@ -59,4 +59,14 @@ class MusicWidgetTextTest {
         assertEquals("Song?", MusicWidgetText.compactLine("", "", "Song?"));
         assertEquals("Song?", MusicWidgetText.compactLine(null, null, "Song?"));
     }
+
+    @Test
+    void theOneLineCanReadTitleFirst() {
+        assertEquals("Song – Artist", MusicWidgetText.compactLine("Song", "Artist", "Song?", true));
+        assertEquals("Artist – Song", MusicWidgetText.compactLine("Song", "Artist", "Song?", false));
+        // with one of them missing the order does not matter
+        assertEquals("Song", MusicWidgetText.compactLine("Song", "", "Song?", true));
+        assertEquals("Artist", MusicWidgetText.compactLine("", "Artist", "Song?", true));
+        assertEquals("Song?", MusicWidgetText.compactLine("", "", "Song?", true));
+    }
 }

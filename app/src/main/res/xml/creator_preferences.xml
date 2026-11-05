@@ -172,12 +172,19 @@
             android:summaryOn="@string/widget_bar_large_text_on"
             android:summaryOff="@string/widget_bar_large_text_off"
             app:layout="@layout/nested_preference_category_switch" />
-        <com.android.launcher66.settings.CustomSwitchPreference
-            android:key="widget_bar_one_line"
-            android:defaultValue="false"
+        <com.android.launcher66.settings.CustomNestedThreePreference
+            android:key="widget_bar_line_mode"
+            android:defaultValue="two"
             android:title="@string/widget_bar_one_line"
-            android:summaryOn="@string/widget_bar_one_line_on"
-            android:summaryOff="@string/widget_bar_one_line_off"
+            android:entries="@array/widget_bar_line_mode_entries"
+            android:entryValues="@array/widget_bar_line_mode_values"
+            app:layout="@layout/nested_preference_category_no_switch" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="widget_bar_buttons_one_line"
+            android:defaultValue="false"
+            android:title="@string/widget_bar_buttons_one_line"
+            android:summaryOn="@string/widget_bar_buttons_one_line_on"
+            android:summaryOff="@string/widget_bar_buttons_one_line_off"
             app:layout="@layout/nested_preference_category_switch" />
         <SwitchPreferenceCompat
             android:key="left_bar"

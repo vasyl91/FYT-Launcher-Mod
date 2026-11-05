@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Кнопки рядом с названием</string>
     <string name="widget_bar_buttons_beside_on">Два ряда кнопок справа от названия и исполнителя</string>
     <string name="widget_bar_buttons_beside_off">Кнопки под названием и исполнителем</string>
+    <string name="widget_bar_one_line_reversed">Одна строка: название – исполнитель</string>
+    <string name="widget_bar_buttons_one_line">Кнопки в один ряд</string>
+    <string name="widget_bar_buttons_one_line_on">Один ряд из четырёх кнопок рядом с названием и исполнителем</string>
+    <string name="widget_bar_buttons_one_line_off">Два ряда по две кнопки</string>
 </resources>

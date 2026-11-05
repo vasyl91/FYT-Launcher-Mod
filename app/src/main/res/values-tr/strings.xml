@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Düğmeler başlığın yanında</string>
     <string name="widget_bar_buttons_beside_on">Başlığın ve sanatçının sağında iki sıra düğme</string>
     <string name="widget_bar_buttons_beside_off">Düğmeler başlığın ve sanatçının altında</string>
+    <string name="widget_bar_one_line_reversed">Tek satır: başlık – sanatçı</string>
+    <string name="widget_bar_buttons_one_line">Düğmeler tek sırada</string>
+    <string name="widget_bar_buttons_one_line_on">Başlığın ve sanatçının yanında dört düğmeli tek sıra</string>
+    <string name="widget_bar_buttons_one_line_off">İkişer düğmeli iki sıra</string>
 </resources>

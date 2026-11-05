@@ -924,8 +924,8 @@ final class LauncherMusicWidget {
      * on the first line and the second one gone.
      */
     void render() {
-        renderPair(tvMusicName, tvAritst, mHomeCompact);
-        renderPair(tvMusicNameTwo, tvAritstTwo, mBarCompact);
+        renderPair(tvMusicName, tvAritst, mHomeCompact, false);
+        renderPair(tvMusicNameTwo, tvAritstTwo, mBarCompact, barTitleFirst());
     }
 
     private void onCompactChanged(boolean bar, boolean compact) {
@@ -951,7 +951,14 @@ final class LauncherMusicWidget {
         }
     }
 
-    private void renderPair(TextView first, TextView second, boolean compact) {
+    /** The bar's one line reads "title - artist" when the user chose that order (see WidgetBarLines). */
+    private boolean barTitleFirst() {
+        boolean portrait = mLauncher.getResources().getConfiguration().orientation
+                == android.content.res.Configuration.ORIENTATION_PORTRAIT;
+        return WidgetBarLayout.lineText(mLauncher.mPrefs, portrait) == WidgetBarLines.Text.TITLE_ARTIST;
+    }
+
+    private void renderPair(TextView first, TextView second, boolean compact, boolean titleFirst) {
         if (first == null && second == null) {
             return;
         }
@@ -959,7 +966,7 @@ final class LauncherMusicWidget {
         String secondText = null;
         if (compact) {
             firstText = MusicWidgetText.compactLine(mTitle, mSecond,
-                    mLauncher.getString(R.string.music_name));
+                    mLauncher.getString(R.string.music_name), titleFirst);
         } else {
             firstText = mTitle.isEmpty() ? mLauncher.getString(R.string.music_name) : mTitle;
             secondText = mSecond.isEmpty() ? mLauncher.getString(R.string.music_author) : mSecond;

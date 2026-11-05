@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">ប៊ូតុងនៅក្បែរចំណងជើង</string>
     <string name="widget_bar_buttons_beside_on">ប៊ូតុងពីរជួរនៅខាងស្តាំចំណងជើង និងសិល្បករ</string>
     <string name="widget_bar_buttons_beside_off">ប៊ូតុងនៅក្រោមចំណងជើង និងសិល្បករ</string>
+    <string name="widget_bar_one_line_reversed">មួយបន្ទាត់៖ ចំណងជើង – សិល្បករ</string>
+    <string name="widget_bar_buttons_one_line">ប៊ូតុងក្នុងជួរតែមួយ</string>
+    <string name="widget_bar_buttons_one_line_on">ប៊ូតុងបួនក្នុងមួយជួរនៅក្បែរចំណងជើង និងសិល្បករ</string>
+    <string name="widget_bar_buttons_one_line_off">ពីរជួរ ជួរនីមួយៗមានប៊ូតុងពីរ</string>
 </resources>

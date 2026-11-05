@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Товчнууд гарчгийн хажууд</string>
     <string name="widget_bar_buttons_beside_on">Гарчиг, уран бүтээлчийн баруун талд хоёр мөр товч</string>
     <string name="widget_bar_buttons_beside_off">Товчнууд гарчиг, уран бүтээлчийн доор</string>
+    <string name="widget_bar_one_line_reversed">Нэг мөр: гарчиг – уран бүтээлч</string>
+    <string name="widget_bar_buttons_one_line">Товчнууд нэг мөрөнд</string>
+    <string name="widget_bar_buttons_one_line_on">Гарчиг, уран бүтээлчийн хажууд дөрвөн товчтой нэг мөр</string>
+    <string name="widget_bar_buttons_one_line_off">Хоёр товчтой хоёр мөр</string>
 </resources>

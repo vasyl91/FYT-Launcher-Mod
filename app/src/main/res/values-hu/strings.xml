@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Gombok a cím mellett</string>
     <string name="widget_bar_buttons_beside_on">Két sor gomb a cím és az előadó jobb oldalán</string>
     <string name="widget_bar_buttons_beside_off">Gombok a cím és az előadó alatt</string>
+    <string name="widget_bar_one_line_reversed">Egy sor: cím – előadó</string>
+    <string name="widget_bar_buttons_one_line">Gombok egy sorban</string>
+    <string name="widget_bar_buttons_one_line_on">Egy sor négy gomb a cím és az előadó mellett</string>
+    <string name="widget_bar_buttons_one_line_off">Két sor, soronként két gomb</string>
 </resources>

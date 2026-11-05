@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Knapper ved siden af titlen</string>
     <string name="widget_bar_buttons_beside_on">To rækker knapper til højre for titel og kunstner</string>
     <string name="widget_bar_buttons_beside_off">Knapper under titel og kunstner</string>
+    <string name="widget_bar_one_line_reversed">Én linje: titel – kunstner</string>
+    <string name="widget_bar_buttons_one_line">Knapper på én række</string>
+    <string name="widget_bar_buttons_one_line_on">Én række med fire knapper ved siden af titel og kunstner</string>
+    <string name="widget_bar_buttons_one_line_off">To rækker med to knapper</string>
 </resources>

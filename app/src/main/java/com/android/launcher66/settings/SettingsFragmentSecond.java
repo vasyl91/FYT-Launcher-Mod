@@ -123,7 +123,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomSwitchPreference widgetBarNoDatePreference;
     private CustomSwitchPreference widgetBarNoWeatherPreference;
     private CustomSwitchPreference widgetBarLargeTextPreference;
-    private CustomSwitchPreference widgetBarOneLinePreference;
+    private Preference widgetBarLineModePreference;
+    private CustomSwitchPreference widgetBarButtonsOneLinePreference;
     private CustomSwitchPreference widgetBarButtonsBesidePreference;
     private SwitchPreferenceCompat resizableBarPreference;
     private BottomBarHeightSeekBarPreference barHeightSeekBar;
@@ -368,7 +369,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         widgetBarNoDatePreference = findPreference(Keys.WIDGET_BAR_NO_DATE);
         widgetBarNoWeatherPreference = findPreference(Keys.WIDGET_BAR_NO_WEATHER);
         widgetBarLargeTextPreference = findPreference(Keys.WIDGET_BAR_LARGE_TEXT);
-        widgetBarOneLinePreference = findPreference(Keys.WIDGET_BAR_ONE_LINE);
+        widgetBarLineModePreference = findPreference(Keys.WIDGET_BAR_LINE_MODE);
+        widgetBarButtonsOneLinePreference = findPreference(Keys.WIDGET_BAR_BUTTONS_ONE_LINE);
         widgetBarButtonsBesidePreference = findPreference(Keys.WIDGET_BAR_BUTTONS_BESIDE);
 
         margin = findPreference(Keys.LAYOUT_MARGIN);
@@ -570,8 +572,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (widgetBarLargeTextPreference != null) {
             widgetBarLargeTextPreference.setOnPreferenceClickListener(this);
         }
-        if (widgetBarOneLinePreference != null) {
-            widgetBarOneLinePreference.setOnPreferenceClickListener(this);
+        if (widgetBarLineModePreference != null) {
+            widgetBarLineModePreference.setOnPreferenceClickListener(this);
+        }
+        if (widgetBarButtonsOneLinePreference != null) {
+            widgetBarButtonsOneLinePreference.setOnPreferenceClickListener(this);
         }
         if (widgetBarButtonsBesidePreference != null) {
             widgetBarButtonsBesidePreference.setOnPreferenceClickListener(this);
@@ -786,8 +791,13 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.WIDGET_BAR_BUTTONS_BESIDE:
+                // The two rows below belong to that layout and appear and go with it
+                updateWidgetBarRows();
+                helpers.setBarSettingsChanged(true);
+                break;
             case Keys.WIDGET_BAR_LARGE_TEXT:
-            case Keys.WIDGET_BAR_ONE_LINE:
+            case Keys.WIDGET_BAR_LINE_MODE:
+            case Keys.WIDGET_BAR_BUTTONS_ONE_LINE:
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.LAYOUT_MARGIN:
@@ -1131,7 +1141,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         widgetBarNoDatePreference = null;
         widgetBarNoWeatherPreference = null;
         widgetBarLargeTextPreference = null;
-        widgetBarOneLinePreference = null;
+        widgetBarLineModePreference = null;
+        widgetBarButtonsOneLinePreference = null;
         widgetBarButtonsBesidePreference = null;
         resizableBarPreference = null;
         barHeightSeekBar = null;
@@ -1156,7 +1167,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     /**
      * The rows under "Widget bottom bar" are shown only while it is on. The date is hidden in
      * landscape only: the portrait bar has no date. "Buttons beside the title" is shown only
-     * while something is hidden (that is when the music widget has room to put them there).
+     * while something is hidden (that is when the music widget has room to put them there), and
+     * "Title and artist in one line" and "Buttons in one line" only while the buttons are beside.
      */
     private void updateWidgetBarRows() {
         boolean widgetBar = sharedPrefs.getBoolean(Keys.WIDGET_BAR, false);
@@ -1168,17 +1180,24 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (widgetBarNoWeatherPreference != null) {
             widgetBarNoWeatherPreference.setVisible(widgetBar);
         }
+        boolean dateHidden = WidgetBarPlan.dateHidden(
+                sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_DATE, false), portrait);
+        boolean weatherHidden = sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_WEATHER, false);
+        boolean wide = WidgetBarPlan.wide(dateHidden, weatherHidden);
         if (widgetBarButtonsBesidePreference != null) {
-            boolean dateHidden = WidgetBarPlan.dateHidden(
-                    sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_DATE, false), portrait);
-            boolean weatherHidden = sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_WEATHER, false);
-            widgetBarButtonsBesidePreference.setVisible(widgetBar && WidgetBarPlan.wide(dateHidden, weatherHidden));
+            widgetBarButtonsBesidePreference.setVisible(widgetBar && wide);
         }
         if (widgetBarLargeTextPreference != null) {
             widgetBarLargeTextPreference.setVisible(widgetBar);
         }
-        if (widgetBarOneLinePreference != null) {
-            widgetBarOneLinePreference.setVisible(widgetBar);
+        // Only with the buttons beside the text: without them the text is always one line
+        boolean beside = WidgetBarPlan.buttonsBeside(dateHidden, weatherHidden,
+                sharedPrefs.getBoolean(Keys.WIDGET_BAR_BUTTONS_BESIDE, true));
+        if (widgetBarLineModePreference != null) {
+            widgetBarLineModePreference.setVisible(widgetBar && beside);
+        }
+        if (widgetBarButtonsOneLinePreference != null) {
+            widgetBarButtonsOneLinePreference.setVisible(widgetBar && beside);
         }
     }
 

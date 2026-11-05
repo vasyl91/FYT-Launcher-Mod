@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Бутони до заглавието</string>
     <string name="widget_bar_buttons_beside_on">Два реда бутони вдясно от заглавието и изпълнителя</string>
     <string name="widget_bar_buttons_beside_off">Бутони под заглавието и изпълнителя</string>
+    <string name="widget_bar_one_line_reversed">Един ред: заглавие – изпълнител</string>
+    <string name="widget_bar_buttons_one_line">Бутони на един ред</string>
+    <string name="widget_bar_buttons_one_line_on">Един ред от четири бутона до заглавието и изпълнителя</string>
+    <string name="widget_bar_buttons_one_line_off">Два реда по два бутона</string>
 </resources>

@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">ボタンをタイトルの横に配置</string>
     <string name="widget_bar_buttons_beside_on">タイトルとアーティストの右に2段のボタン</string>
     <string name="widget_bar_buttons_beside_off">ボタンをタイトルとアーティストの下に配置</string>
+    <string name="widget_bar_one_line_reversed">1行：タイトル – アーティスト</string>
+    <string name="widget_bar_buttons_one_line">ボタンを1列に配置</string>
+    <string name="widget_bar_buttons_one_line_on">タイトルとアーティストの横にボタン4つを1列で表示</string>
+    <string name="widget_bar_buttons_one_line_off">2個ずつ2段で表示</string>
 </resources>

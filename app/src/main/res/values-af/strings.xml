@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Knoppies langs die titel</string>
     <string name="widget_bar_buttons_beside_on">Twee rye knoppies regs van die titel en kunstenaar</string>
     <string name="widget_bar_buttons_beside_off">Knoppies onder die titel en kunstenaar</string>
+    <string name="widget_bar_one_line_reversed">Een reël: titel – kunstenaar</string>
+    <string name="widget_bar_buttons_one_line">Knoppies in een ry</string>
+    <string name="widget_bar_buttons_one_line_on">Een ry van vier knoppies langs die titel en kunstenaar</string>
+    <string name="widget_bar_buttons_one_line_off">Twee rye van twee knoppies</string>
 </resources>

@@ -56,10 +56,15 @@ final class MusicWidgetText {
      * say nothing.
      */
     static String compactLine(String title, String second, String titlePlaceholder) {
+        return compactLine(title, second, titlePlaceholder, false);
+    }
+
+    /** {@code titleFirst}: "title - artist" instead of "artist - title". */
+    static String compactLine(String title, String second, String titlePlaceholder, boolean titleFirst) {
         boolean hasTitle = title != null && !title.isEmpty();
         boolean hasSecond = second != null && !second.isEmpty();
         if (hasTitle && hasSecond) {
-            return second + SEPARATOR + title;
+            return titleFirst ? title + SEPARATOR + second : second + SEPARATOR + title;
         }
         if (hasTitle) {
             return title;

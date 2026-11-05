@@ -48,4 +48,8 @@
     <string name="widget_bar_buttons_beside">Nupud pealkirja kõrval</string>
     <string name="widget_bar_buttons_beside_on">Kaks nupurida pealkirja ja esitaja paremal pool</string>
     <string name="widget_bar_buttons_beside_off">Nupud pealkirja ja esitaja all</string>
+    <string name="widget_bar_one_line_reversed">Üks rida: pealkiri – esitaja</string>
+    <string name="widget_bar_buttons_one_line">Nupud ühel real</string>
+    <string name="widget_bar_buttons_one_line_on">Üks neljast nupust rida pealkirja ja esitaja kõrval</string>
+    <string name="widget_bar_buttons_one_line_off">Kaks rida kahe nupuga</string>
 </resources>

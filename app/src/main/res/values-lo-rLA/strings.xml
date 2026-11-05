@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">ປຸ່ມຢູ່ຂ້າງຊື່ເພງ</string>
     <string name="widget_bar_buttons_beside_on">ປຸ່ມສອງແຖວຢູ່ທາງຂວາຂອງຊື່ເພງ ແລະ ນັກຮ້ອງ</string>
     <string name="widget_bar_buttons_beside_off">ປຸ່ມຢູ່ກ້ອງຊື່ເພງ ແລະ ນັກຮ້ອງ</string>
+    <string name="widget_bar_one_line_reversed">ແຖວດຽວ: ຊື່ເພງ – ນັກຮ້ອງ</string>
+    <string name="widget_bar_buttons_one_line">ປຸ່ມໃນແຖວດຽວ</string>
+    <string name="widget_bar_buttons_one_line_on">ປຸ່ມສີ່ປຸ່ມໃນແຖວດຽວຢູ່ຂ້າງຊື່ເພງ ແລະ ນັກຮ້ອງ</string>
+    <string name="widget_bar_buttons_one_line_off">ສອງແຖວ ແຖວລະສອງປຸ່ມ</string>
 </resources>

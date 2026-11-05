@@ -45,4 +45,8 @@
     <string name="widget_bar_buttons_beside">Butang di sebelah tajuk</string>
     <string name="widget_bar_buttons_beside_on">Dua baris butang di sebelah kanan tajuk dan artis</string>
     <string name="widget_bar_buttons_beside_off">Butang di bawah tajuk dan artis</string>
+    <string name="widget_bar_one_line_reversed">Satu baris: tajuk – artis</string>
+    <string name="widget_bar_buttons_one_line">Butang dalam satu baris</string>
+    <string name="widget_bar_buttons_one_line_on">Satu baris empat butang di sebelah tajuk dan artis</string>
+    <string name="widget_bar_buttons_one_line_off">Dua baris, setiap satu dua butang</string>
 </resources>

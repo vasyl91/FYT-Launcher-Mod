@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Tlačítka vedle názvu</string>
     <string name="widget_bar_buttons_beside_on">Dvě řady tlačítek vpravo od názvu a interpreta</string>
     <string name="widget_bar_buttons_beside_off">Tlačítka pod názvem a interpretem</string>
+    <string name="widget_bar_one_line_reversed">Jeden řádek: název – interpret</string>
+    <string name="widget_bar_buttons_one_line">Tlačítka v jedné řadě</string>
+    <string name="widget_bar_buttons_one_line_on">Jedna řada čtyř tlačítek vedle názvu a interpreta</string>
+    <string name="widget_bar_buttons_one_line_off">Dvě řady po dvou tlačítkách</string>
 </resources>

@@ -48,4 +48,8 @@
     <string name="widget_bar_buttons_beside">Buttons beside the title</string>
     <string name="widget_bar_buttons_beside_on">Two rows of buttons to the right of the title and artist</string>
     <string name="widget_bar_buttons_beside_off">Buttons below the title and artist</string>
+    <string name="widget_bar_one_line_reversed">One line: title – artist</string>
+    <string name="widget_bar_buttons_one_line">Buttons in one line</string>
+    <string name="widget_bar_buttons_one_line_on">One row of four buttons beside the title and artist</string>
+    <string name="widget_bar_buttons_one_line_off">Two rows of two buttons</string>
 </resources>

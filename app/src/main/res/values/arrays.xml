@@ -37,6 +37,16 @@
         <item>0</item>
     </integer-array>
     <!-- PiP splash colour (CustomNestedThreePreference, Keys.COVER_SPLASH_MODE). -->
+    <string-array name="widget_bar_line_mode_entries">
+        <item>@string/widget_bar_one_line_off</item>
+        <item>@string/widget_bar_one_line_on</item>
+        <item>@string/widget_bar_one_line_reversed</item>
+    </string-array>
+    <string-array name="widget_bar_line_mode_values" translatable="false">
+        <item>two</item>
+        <item>artist_title</item>
+        <item>title_artist</item>
+    </string-array>
     <string-array name="cover_splash_entries">
         <item>@string/cover_splash_icon</item>
         <item>@string/cover_splash_night_mode</item>

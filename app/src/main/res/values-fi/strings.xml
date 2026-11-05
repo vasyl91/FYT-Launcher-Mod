@@ -519,4 +519,8 @@
     <string name="widget_bar_buttons_beside">Painikkeet nimen vieressä</string>
     <string name="widget_bar_buttons_beside_on">Kaksi painikeriviä nimen ja esittäjän oikealla puolella</string>
     <string name="widget_bar_buttons_beside_off">Painikkeet nimen ja esittäjän alla</string>
+    <string name="widget_bar_one_line_reversed">Yksi rivi: nimi – esittäjä</string>
+    <string name="widget_bar_buttons_one_line">Painikkeet yhdellä rivillä</string>
+    <string name="widget_bar_buttons_one_line_on">Yksi neljän painikkeen rivi nimen ja esittäjän vieressä</string>
+    <string name="widget_bar_buttons_one_line_off">Kaksi kahden painikkeen riviä</string>
 </resources>
