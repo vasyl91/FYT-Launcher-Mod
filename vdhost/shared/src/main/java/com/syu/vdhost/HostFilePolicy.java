@@ -17,12 +17,19 @@ import java.util.Locale;
  *
  * A file is read only if the path is canonical (the caller passes File.getCanonicalPath() of the path
  * it was given: a link, "..", or a path that is not absolute is a different path from its canonical
- * one), it is a regular file and it is at most {@link #MAX_BYTES} long.
+ * one), it is a regular file and it is at most {@link #maxBytes(String)} long: 2 MB, and 64 MB for
+ * the icon pack, which is an APK of its own.
  */
 public final class HostFilePolicy {
 
-    /** The longest file the host hands out. */
+    /** The longest file the host hands out, the icon pack apart. */
     public static final long MAX_BYTES = 2L * 1024 * 1024;
+
+    /**
+     * The longest icon pack. It is an APK with the drawables of the online radio's stations and
+     * can be well over 2 MB; the caller copies it in a stream, so it is not held in memory.
+     */
+    public static final long ICON_PACK_MAX_BYTES = 64L * 1024 * 1024;
 
     public static final String BLINK_DIR = "/data/blink/";
     public static final String RADIO_LOGO_DIR = "/storage/emulated/0/radio_logo/";
@@ -41,7 +48,12 @@ public final class HostFilePolicy {
         if (requested == null || canonical == null || !requested.equals(canonical)) {
             return false;
         }
-        return isRegularFile && length >= 0 && length <= MAX_BYTES && pathAllowed(canonical);
+        return isRegularFile && length >= 0 && length <= maxBytes(canonical) && pathAllowed(canonical);
+    }
+
+    /** The longest file the host hands out for this path. */
+    public static long maxBytes(String path) {
+        return ICON_PACK.equals(path) ? ICON_PACK_MAX_BYTES : MAX_BYTES;
     }
 
     /** The path alone, for a canonical one. */

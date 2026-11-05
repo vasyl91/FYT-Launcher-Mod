@@ -6,9 +6,13 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
+import androidx.core.content.res.ResourcesCompat;
 
 import com.android.launcher66.settings.FytCompat;
 
@@ -162,15 +166,20 @@ final class StockCoverLoader {
         PackageManager pm = app.getPackageManager();
         String path = ICON_PACK;
         PackageInfo info = size > 0 ? pm.getPackageArchiveInfo(path, 0) : null;
+        if (info != null && info.applicationInfo != null) {
+            logPackOnce(size, "direct");
+        }
         if (info == null || info.applicationInfo == null) {
             // not readable here: a copy, from whatever way reads it
             File copy = new File(new File(app.getCacheDir(), "stock_res"), "cabinet.apk");
             if (sPackResources != null && size <= 0 && copy.isFile()) {
                 return sPackResources; // the source cannot even be looked at: keep what was loaded
             }
-            if (!SyuMediaFiles.copyTo(SyuMediaFiles.FAMILY_ICON_PACK, ICON_PACK, copy)) {
+            SyuMediaFiles.Copied copied = SyuMediaFiles.copyTo(SyuMediaFiles.FAMILY_ICON_PACK, ICON_PACK, copy);
+            if (copied == null) {
                 return null;
             }
+            logPackOnce(copied.bytes, copied.via);
             path = copy.getPath();
             info = pm.getPackageArchiveInfo(path, 0);
         }
@@ -197,6 +206,16 @@ final class StockCoverLoader {
         return sPackResources;
     }
 
+    private static boolean sPackLogged;
+
+    /** Once per process: how big the icon pack is and by which way it was had (it was read into memory before 64 MB). */
+    private static synchronized void logPackOnce(long bytes, String way) {
+        if (!sPackLogged) {
+            sPackLogged = true;
+            Log.i(TAG, "icon pack " + bytes + " bytes, " + way);
+        }
+    }
+
     /** Worker thread. */
     private static byte[] loadMediaDrawable(Context app, String name) {
         try {
@@ -208,18 +227,50 @@ final class StockCoverLoader {
         }
     }
 
-    /** A drawable resource as PNG bytes of at most MAX_PX; null if it is not a bitmap. */
+    /**
+     * A drawable resource as PNG bytes of at most MAX_PX; null if it cannot be drawn. A bitmap
+     * is decoded (sampled down); a vector or an XML drawable, for which decodeResource() gives
+     * nothing, is drawn on a bitmap of its own size (MAX_PX at the most). The types radio1 to
+     * radio3 of com.syu.media were not known to be bitmaps.
+     */
     private static byte[] toPng(Resources r, int id) {
         BitmapFactory.Options bounds = new BitmapFactory.Options();
         bounds.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(r, id, bounds);
-        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
+        if (bounds.outWidth > 0 && bounds.outHeight > 0) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = sampleSize(bounds.outWidth, bounds.outHeight);
+            Bitmap bitmap = BitmapFactory.decodeResource(r, id, options);
+            if (bitmap != null) {
+                return compress(bitmap);
+            }
+        }
+        return drawnPng(r, id);
+    }
+
+    private static byte[] drawnPng(Resources r, int id) {
+        try {
+            Drawable drawable = ResourcesCompat.getDrawable(r, id, null);
+            if (drawable == null) {
+                return null;
+            }
+            int width = drawable.getIntrinsicWidth();
+            int height = drawable.getIntrinsicHeight();
+            if (width <= 0 || height <= 0) {
+                return null;
+            }
+            float scale = Math.min(1f, (float) MAX_PX / Math.max(width, height));
+            width = Math.max(1, Math.round(width * scale));
+            height = Math.max(1, Math.round(height * scale));
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, width, height);
+            drawable.draw(canvas);
+            return compress(bitmap);
+        } catch (RuntimeException e) {
+            Log.w(TAG, "drawable " + id + " cannot be drawn: " + e);
             return null;
         }
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = sampleSize(bounds.outWidth, bounds.outHeight);
-        Bitmap bitmap = BitmapFactory.decodeResource(r, id, options);
-        return compress(bitmap);
     }
 
     /** Image bytes (PNG, JPEG ...) as PNG bytes of at most MAX_PX; null if they are not an image. */

@@ -208,6 +208,8 @@ public final class Keys {
     public static final String KEY_FAB_X_RIGHT = "fab_x_right";
     public static final String KEY_FAB_Y_RIGHT = "fab_y_right";
     public static final String KEY_POSITION_SAVED_RIGHT = "position_saved_right";
+    /** The note about com.syu.media's screen (syu_media_favorite_note) has been shown once, ever. */
+    public static final String SYU_MEDIA_FAVORITE_NOTE_SHOWN = "syu_media_favorite_note_shown";
     public static final String SHOW_FAB = "show_fab";
     public static final String HIDE_FAB = "hide_fab";
 }

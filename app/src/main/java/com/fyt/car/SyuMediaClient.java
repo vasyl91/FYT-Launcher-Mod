@@ -20,6 +20,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.launcher66.R;
+import com.android.launcher66.settings.Keys;
+import androidx.preference.PreferenceManager;
 
 import com.fyt.car.StockKindArbiter.Kind;
 
@@ -415,10 +417,13 @@ final class SyuMediaClient implements ServiceConnection {
                 FytCompat.report("syumedia.favorite", e);
             }
             Log.d(TAG, "favorite " + kind + " id=" + track.id + " =" + favorite + " written to " + rows + " row(s)");
-            if (rows > 0 && !sFavoriteNoteShown) {
+            if (rows > 0 && !sFavoriteNoteShown && !favoriteNoteShownBefore()) {
                 // com.syu.media has no way to be told: it reads the flag from its library when it loads it,
-                // and keeps its lists in memory. Said once per process.
+                // and keeps its lists in memory. Said once, ever: the launcher's process lives from one
+                // start of the car to the next, so a flag of the process alone brought the note back
+                // every time. The static flag stays, so that two writes in a row do not show it twice.
                 sFavoriteNoteShown = true;
+                markFavoriteNoteShown();
                 new Handler(Looper.getMainLooper()).post(() ->
                         Toast.makeText(app, R.string.syu_media_favorite_note, Toast.LENGTH_LONG).show());
             }
@@ -431,6 +436,17 @@ final class SyuMediaClient implements ServiceConnection {
 
     /** The note about the app's screen has been shown in this process. */
     private static volatile boolean sFavoriteNoteShown;
+
+    /** Worker thread. Whether an earlier run of the launcher showed the note. */
+    private boolean favoriteNoteShownBefore() {
+        return PreferenceManager.getDefaultSharedPreferences(app)
+                .getBoolean(Keys.SYU_MEDIA_FAVORITE_NOTE_SHOWN, false);
+    }
+
+    private void markFavoriteNoteShown() {
+        PreferenceManager.getDefaultSharedPreferences(app).edit()
+                .putBoolean(Keys.SYU_MEDIA_FAVORITE_NOTE_SHOWN, true).apply();
+    }
 
     /** The track's favorite flag in com.syu.media's library; null if it cannot be read. */
     private Boolean readFavorite(Song song) {

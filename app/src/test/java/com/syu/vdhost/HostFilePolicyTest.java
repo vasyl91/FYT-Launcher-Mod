@@ -1,5 +1,6 @@
 package com.syu.vdhost;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -48,7 +49,16 @@ class HostFilePolicyTest {
     @Test
     void aFileOverTwoMegabytesIsNotRead() {
         assertFalse(ok("/data/blink/cover.png", HostFilePolicy.MAX_BYTES + 1));
-        assertFalse(ok("/odm/app/cabinet.data", HostFilePolicy.MAX_BYTES + 1));
+    }
+
+    @Test
+    void theIconPackMayBeBiggerThanTwoMegabytesButNotThanSixtyFour() {
+        assertTrue(ok("/odm/app/cabinet.data", HostFilePolicy.MAX_BYTES + 1));
+        assertTrue(ok("/odm/app/cabinet.data", 30L * 1024 * 1024));
+        assertTrue(ok("/odm/app/cabinet.data", HostFilePolicy.ICON_PACK_MAX_BYTES));
+        assertFalse(ok("/odm/app/cabinet.data", HostFilePolicy.ICON_PACK_MAX_BYTES + 1));
+        assertEquals(HostFilePolicy.MAX_BYTES, HostFilePolicy.maxBytes("/data/blink/cover.png"));
+        assertEquals(HostFilePolicy.ICON_PACK_MAX_BYTES, HostFilePolicy.maxBytes("/odm/app/cabinet.data"));
     }
 
     @Test
