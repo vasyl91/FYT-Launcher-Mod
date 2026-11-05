@@ -112,8 +112,8 @@ class MusicWidgetPlanTest {
                     assertTrue(plan.wide);
                     int rest = w - plan.coverPx - plan.coverGapPx;
                     assertEquals(rest, plan.restPx);
-                    assertEquals(rest * 0.35f, plan.buttonBlockPx, 1f, "buttons " + w + "x" + h);
-                    assertEquals(rest * 0.65f, plan.columnPx, 1.01f, "text " + w + "x" + h);
+                    assertEquals(rest * 0.35f, plan.buttonBlockPx, 2f, "buttons " + w + "x" + h);
+                    assertEquals(rest * 0.65f, plan.columnPx, 2.01f, "text " + w + "x" + h);
                     assertEquals(rest, plan.columnPx + plan.buttonBlockPx);
                 }
             }
@@ -340,6 +340,17 @@ class MusicWidgetPlanTest {
             int above = plan.rowTopPx + free / 2;
             int below = h - above - Math.round(plan.fontBoxPx);
             assertEquals(above, below, 1, "centred " + h);
+        }
+    }
+
+    @Test
+    void theBlockIsWholeCellsWideSoTheFlexboxNeverWrapsToOneButtonPerRow() {
+        for (int w = 150; w < 900; w++) {
+            for (boolean oneLine : new boolean[] {false, true}) {
+                MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(w, 66, w * 28 / 45, 1f, false, oneLine);
+                assertEquals(2 * plan.cellWidthPx, plan.buttonBlockPx, "block " + w);
+                assertEquals(plan.restPx, plan.columnPx + plan.buttonBlockPx, "rest " + w);
+            }
         }
     }
 }

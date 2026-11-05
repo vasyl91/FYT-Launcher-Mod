@@ -311,7 +311,11 @@ final class MusicWidgetPlan {
         plan.oneLine = oneLine;
         plan.largeText = largeText;
         placeCover(plan, w, h, baseW);
-        plan.buttonBlockPx = (int) (plan.restPx * BAR_BESIDE_BUTTONS_SHARE);
+        // The block is two whole cells wide. A block of an odd width with cells of 50% each would
+        // round both cells up (52.5 -> 53 + 53 = 106 > 105), the second cell would not fit and the
+        // flexbox would wrap to one button per row.
+        plan.cellWidthPx = (int) (plan.restPx * BAR_BESIDE_BUTTONS_SHARE) / 2;
+        plan.buttonBlockPx = 2 * plan.cellWidthPx;
         plan.buttonRows = 2;
         plan.columnPx = plan.restPx - plan.buttonBlockPx;
         float lineFactor = largeText ? LINE_FACTOR_LARGE : LINE_FACTOR;
@@ -329,7 +333,6 @@ final class MusicWidgetPlan {
             plan.rowTopPx = plan.gapPx;
             plan.textPx = Math.max(plan.rowPx / lineFactor, MIN_TEXT_SP_FLOOR * density);
         }
-        plan.cellWidthPx = plan.buttonBlockPx / 2;
         plan.buttonRowPx = h / 2;
         plan.buttonSidePx = Math.round(Math.min(plan.cellWidthPx, plan.buttonRowPx) * BUTTON_FILL);
         return plan;

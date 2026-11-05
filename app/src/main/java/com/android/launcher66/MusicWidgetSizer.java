@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.google.android.flexbox.FlexItem;
 import com.google.android.flexbox.FlexboxLayout;
 
 /**
@@ -229,7 +230,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
 
     /**
      * The bar with the buttons beside the text: the cover, the column of text between it and the
-     * block of buttons, and the block, a FlexboxLayout of 2 x 2 cells (50% wide each).
+     * block of buttons, and the block, a FlexboxLayout of 2 x 2 cells (each a whole number of px wide).
      */
     private void applyBarWide(MusicWidgetPlan.Plan plan, int w) {
         View cover = mRoot.findViewById(R.id.iv_album_bg_two);
@@ -268,10 +269,13 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
                 continue;
             }
             FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams) cell.getLayoutParams();
-            if (lp.getFlexBasisPercent() != 0.5f || lp.getOrder() != i || lp.height != plan.buttonRowPx) {
-                lp.setFlexBasisPercent(0.5f);
+            // A width in px, not a share of the block: the two cells add up to the block exactly.
+            if (lp.getFlexBasisPercent() != FlexItem.FLEX_BASIS_PERCENT_DEFAULT || lp.getOrder() != i
+                    || lp.height != plan.buttonRowPx || lp.width != plan.cellWidthPx) {
+                lp.setFlexBasisPercent(FlexItem.FLEX_BASIS_PERCENT_DEFAULT);
                 lp.setOrder(i);
                 lp.height = plan.buttonRowPx;
+                lp.width = plan.cellWidthPx;
                 cell.setLayoutParams(lp);
             }
         }

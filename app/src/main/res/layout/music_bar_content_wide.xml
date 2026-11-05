@@ -2,8 +2,8 @@
 <!--
     The wide inside of the music widget (bottom bar), used when the date or the weather of the
     widget bar is hidden and the music widget has their room. The text (title, artist) is between
-    the cover and the buttons, and the buttons are a block on the right: 2 x 2 (30% of the widget,
-    prev and next above play/pause and favorite) or one row of four (40%, in the compact bar). The
+    the cover and the buttons, and the buttons are a block on the right in 2 x 2 (prev and next above play/pause and
+    favorite), 35% of what is left of the widget after the cover. The
     ids are those of music_bar_content.xml. The sizes and the order of the cells are set in code
     by MusicWidgetSizer (the 0dp here are placeholders), so a change of the bar's height only
     changes the sizes and the order, never the views.
@@ -68,8 +68,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_layout_prev_two"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_flexBasisPercent="50%">
+            android:layout_height="0dp">
 
             <Button
                 android:id="@+id/music_prev_two"
@@ -86,8 +85,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_layout_playpause_two"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_flexBasisPercent="50%">
+            android:layout_height="0dp">
 
             <Button
                 android:id="@+id/music_playpause_two"
@@ -104,8 +102,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_layout_next_two"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_flexBasisPercent="50%">
+            android:layout_height="0dp">
 
             <Button
                 android:id="@+id/music_next_two"
@@ -122,8 +119,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_layout_favorite_two"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_flexBasisPercent="50%">
+            android:layout_height="0dp">
 
             <Button
                 android:id="@+id/music_favorite_two"
