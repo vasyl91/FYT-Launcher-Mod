@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -1545,7 +1546,9 @@ public final class LogcatWorker {
             Log.w(TAG, "Could not rename " + file + " to " + target.getName());
             return file;
         }
-        String offset = describeOffset(offBy);
+        // The lines of the capture carry local time, so the note gives the shift they show; a
+        // daylight-saving change between the two readings makes the real time differ by an hour.
+        String offset = LogClockShift.describe(offBy, realStartMs, shownMs, TimeZone.getDefault());
         appendNote(target, "===== renamed from " + name + ": the clock was " + offset
                 + " when this capture started; times logged before it was corrected are off"
                 + " by the same amount =====");
@@ -1626,16 +1629,6 @@ public final class LogcatWorker {
         }
     }
 
-    /** "behind by 659d 03:40:52" for a clock that showed an earlier time than the real one. */
-    private static String describeOffset(long offByMs) {
-        long abs = Math.abs(offByMs);
-        long days = abs / 86_400_000L;
-        long rest = abs % 86_400_000L;
-        String hms = String.format(Locale.US, "%02d:%02d:%02d",
-                rest / 3_600_000L, (rest / 60_000L) % 60L, (rest / 1000L) % 60L);
-        return (offByMs > 0 ? "behind by " : "ahead by ") + (days > 0 ? days + "d " : "") + hms;
-    }
-
     // ---------------------------------------------------------------- notes inside the file
 
     static String streamHeader(int pid, String buffer, int timeoutSeconds, Mode mode, Trigger trigger) {
@@ -1649,7 +1642,7 @@ public final class LogcatWorker {
 
     /** shiftMs: how far the displayed time jumped, forward positive. */
     static String clockChangedLine(long shiftMs, long uptimeSeconds) {
-        return "===== CLOCK CHANGED (was " + describeOffset(shiftMs) + ") at " + uptimeSeconds
+        return "===== CLOCK CHANGED (was " + LogClockShift.describe(shiftMs) + ") at " + uptimeSeconds
                 + " s of uptime: the lines below use the new time =====";
     }
 
@@ -1746,6 +1739,7 @@ public final class LogcatWorker {
             String lastStack = null;
             int samples = 0;
             int places = 0;
+            final MainStallPlaces seen = new MainStallPlaces();
             while (running && generation == stallWatchGeneration) {
                 if (pongPending.compareAndSet(false, true)) {
                     mainHandler.post(pong);
@@ -1760,7 +1754,9 @@ public final class LogcatWorker {
                 long waited = now - last;
                 if (waited >= 2 * MAIN_STALL_PING_MS) {
                     // The ping is late: note where the thread is.
-                    String stack = formatStack(mainThread.getStackTrace());
+                    StackTraceElement[] frames = mainThread.getStackTrace();
+                    String stack = formatStack(frames);
+                    seen.add(frames);
                     samples++;
                     if (!stack.equals(lastStack)) {
                         places++;
@@ -1770,6 +1766,7 @@ public final class LogcatWorker {
                     samples = 0;
                     places = 0;
                     lastStack = null;
+                    seen.clear();
                 }
                 if (waited >= MAIN_STALL_REPORT_MS) {
                     if (stallStart == 0L) {
@@ -1784,6 +1781,7 @@ public final class LogcatWorker {
                                 ? "blocked in one place (" + samples + " samples)"
                                 : "busy, " + places + " different places in " + samples + " samples";
                         Log.w(TAG, "Main thread not responding for " + waited + " ms, " + state
+                                + (places > 1 ? ", places: " + seen.describe() : "")
                                 + ", it is at:" + lastStack);
                     }
                 } else if (stallStart != 0L) {
