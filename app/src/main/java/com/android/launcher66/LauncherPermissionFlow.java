@@ -1,6 +1,7 @@
 package com.android.launcher66;
 
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import com.syu.util.HostAwait;
 import com.syu.util.WindowHostVdClient;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -98,7 +100,7 @@ final class LauncherPermissionFlow {
             }
             // Not handled yet while a VD host that could grant it is attached or on its way: the
             // other steps go on, and this one is asked again when the host has answered.
-            if (step == PermissionStep.WRITE_SETTINGS && writeSettingsAwaitsHost()) {
+            if (stepAwaitsHost(step)) {
                 continue;
             }
             sPermissionStepsHandled.add(step);
@@ -132,54 +134,71 @@ final class LauncherPermissionFlow {
         }
     }
 
-    /** The host's answer about WRITE_SETTINGS is in (or none will come): what is left goes to the Settings screen. */
-    private static boolean sWriteSettingsHostDone;
-    private static boolean sWriteSettingsHostCallRunning;
-    /** The wait of this Launcher instance for a host that is on its way; main thread. */
-    private HostAwait.Handle mWriteSettingsHostWait;
+    /**
+     * The host's answer about a step is in (or none will come): what is left goes to the Settings screen.
+     * Per step, for the process: the first answer is the answer.
+     */
+    private static final EnumSet<PermissionStep> sHostDone = EnumSet.noneOf(PermissionStep.class);
+    private static final EnumSet<PermissionStep> sHostCallRunning = EnumSet.noneOf(PermissionStep.class);
+    /** The waits of this Launcher instance for a host that is on its way; main thread. */
+    private final EnumMap<PermissionStep, HostAwait.Handle> mHostWaits = new EnumMap<>(PermissionStep.class);
+
+    /** The steps a VD host (or the system) can grant without the trip to Settings. */
+    private static boolean canGoThroughHost(PermissionStep step) {
+        return step == PermissionStep.OVERLAY || step == PermissionStep.NOTIFICATION_ACCESS
+                || step == PermissionStep.WRITE_SETTINGS || step == PermissionStep.INSTALL_PACKAGES;
+    }
 
     /**
-     * WRITE_SETTINGS is missing and a VD host may still grant it: the Settings screen is what
-     * the user got when no host was there at that moment, and on the 7870 Shizuku is not there
-     * for the first minutes. With a host attached the (blocking) call into it goes to a worker
-     * thread and the flow runs again with its answer; with one on its way the flow waits for it,
-     * up to HostAwait.windowForUptime(), then falls back to the Settings screen. Where no host is
-     * there or expected (nothing installed), and on a system launcher, this is false at once.
+     * A step is missing and a VD host may still grant it: the Settings screen is what the user got when no
+     * host was there at that moment, and on the 7870 Shizuku is not there for the first minutes. With a host
+     * attached the (blocking) call into it goes to a worker thread and the flow runs again with its answer;
+     * with one on its way the flow waits for it, up to HostAwait.windowForUptime(), then falls back to the
+     * Settings screen. Where no host is there or expected (nothing installed), and on a system launcher, this is
+     * false at once.
+     *
+     * <p>WRITE_SETTINGS goes through any host. The others (draw over other apps, notification access, install
+     * unknown apps) are calls of protocol 3: a host that is older does not know them, and then the Settings
+     * screen is what is left.
      *
      * @return whether the step waits
      */
-    private boolean writeSettingsAwaitsHost() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || LauncherApplication.hasSystemPrivileges()
-                || sWriteSettingsHostDone || Settings.System.canWrite(mLauncher)) {
+    private boolean stepAwaitsHost(PermissionStep step) {
+        if (!canGoThroughHost(step) || LauncherApplication.hasSystemPrivileges() || sHostDone.contains(step)
+                || !isPermissionStepNeeded(step)) {
             return false;
         }
         if (WindowHostVdClient.hasPrivilegedHost()) {
-            if (!sWriteSettingsHostCallRunning) {
-                sWriteSettingsHostCallRunning = true;
+            if (step != PermissionStep.WRITE_SETTINGS && !WindowHostVdClient.supportsOptionalCalls()) {
+                return false;   // a host of protocol 2: the Settings screen
+            }
+            if (sHostCallRunning.add(step)) {
                 final Launcher launcher = mLauncher;
                 new Thread(() -> {
-                    allowWriteSettingsThroughHost();
+                    boolean granted = grantThroughHost(step);
                     launcher.mHandler.post(() -> {
-                        sWriteSettingsHostCallRunning = false;
-                        sWriteSettingsHostDone = true;
+                        sHostCallRunning.remove(step);
+                        sHostDone.add(step);
+                        Log.i(Launcher.TAG, "Permission flow: " + step + " through the VD host: "
+                                + (granted ? "granted" : "not granted, Settings next"));
                         runLater();
                     });
-                }, "WriteSettingsHost").start();
+                }, "PermissionHost").start();
             }
             return true;
         }
         if (!HostAwait.isExpected(mLauncher)) {
             return false;
         }
-        if (mWriteSettingsHostWait == null) {
-            mWriteSettingsHostWait = HostAwait.await(HostAwait.windowForUptime(SystemClock.elapsedRealtime()),
-                    "WRITE_SETTINGS", attached -> {
-                mWriteSettingsHostWait = null;
+        if (!mHostWaits.containsKey(step)) {
+            mHostWaits.put(step, HostAwait.await(HostAwait.windowForUptime(SystemClock.elapsedRealtime()),
+                    step.name(), attached -> {
+                mHostWaits.remove(step);
                 if (!attached) {
-                    sWriteSettingsHostDone = true;   // no host came: the Settings screen, as before
+                    sHostDone.add(step);   // no host came: the Settings screen, as before
                 }
                 runLater();
-            });
+            }));
         }
         return true;
     }
@@ -190,29 +209,49 @@ final class LauncherPermissionFlow {
         mLauncher.mHandler.postDelayed(mPermissionFlowRunnable, PERMISSION_FLOW_DELAY_MS);
     }
 
-    /** The Launcher goes: its wait for a host ends with it. */
+    /** The Launcher goes: its waits for a host end with it. */
     void onDestroy() {
-        if (mWriteSettingsHostWait != null) {
-            mWriteSettingsHostWait.cancel();
-            mWriteSettingsHostWait = null;
+        for (HostAwait.Handle wait : mHostWaits.values()) {
+            wait.cancel();
         }
+        mHostWaits.clear();
     }
 
     /**
-     * With a VD host (the FYT VDHost Magisk module or Shizuku) there is no trip to Settings: the
-     * host turns the WRITE_SETTINGS app op on, as the user would there. A blocking call into the
-     * host: never on the main thread, see writeSettingsAwaitsHost().
+     * With a VD host (the FYT VDHost Magisk module or Shizuku) there is no trip to Settings: the host turns
+     * the app op on (or allows the notification listener), as the user would there. A blocking call into the
+     * host: never on the main thread, see stepAwaitsHost().
+     *
+     * @return whether the step is granted afterwards
      */
-    private boolean allowWriteSettingsThroughHost() {
+    private boolean grantThroughHost(PermissionStep step) {
         try {
-            String report = WindowHostVdClient.allowWriteSettings(mLauncher.getPackageName());
+            String pkg = mLauncher.getPackageName();
+            String report;
+            switch (step) {
+                case WRITE_SETTINGS:
+                    report = WindowHostVdClient.allowWriteSettings(pkg);
+                    break;
+                case OVERLAY:
+                    report = WindowHostVdClient.allowAppOp(pkg, "SYSTEM_ALERT_WINDOW");
+                    break;
+                case INSTALL_PACKAGES:
+                    report = WindowHostVdClient.allowAppOp(pkg, "REQUEST_INSTALL_PACKAGES");
+                    break;
+                case NOTIFICATION_ACCESS:
+                    report = WindowHostVdClient.allowNotificationListener(
+                            new ComponentName(mLauncher, NotificationListener.class).flattenToString());
+                    break;
+                default:
+                    return false;
+            }
             if (report == null) {
                 return false;
             }
-            Log.i(Launcher.TAG, "Permission flow: WRITE_SETTINGS through the VD host: " + report);
-            return Settings.System.canWrite(mLauncher);
+            Log.i(Launcher.TAG, "Permission flow: " + step + " through the VD host: " + report);
+            return !isPermissionStepNeeded(step);
         } catch (Throwable t) {
-            Log.w(Launcher.TAG, "Permission flow: WRITE_SETTINGS through the VD host failed: " + t);
+            Log.w(Launcher.TAG, "Permission flow: " + step + " through the VD host failed: " + t);
             return false;
         }
     }

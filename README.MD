@@ -61,6 +61,8 @@ This method installs the system version as a privileged system app, in place of 
 
 ¹ Apps that protect their content (`FLAG_SECURE`: video streaming, banking) show black in a PiP, and the PiPs come up only once Shizuku has started (about half a minute after a boot, longer if it waits for Wi-Fi).
 
+**What the standard version gets from root or Shizuku.** Besides the PiPs, the Baseline Profile compilation, the full logcat, the boot autostart and the foreground app (see [FYT VDHost](vdhost/README.md)), a host that speaks protocol 3 (the module 1.1.0 or newer; Shizuku has it built in) also grants the launcher three permissions without the trip to Settings: drawing over other apps, notification access and installing unknown apps (for the built-in update), next to WRITE_SETTINGS. It is tried first; the Settings screen is still what you get where no host is there or the module is older. Not done on purpose: the swipe area on the status bar (it needs a system window type in the launcher's own process), the input monitor of the touches (it would need a monitor in the host and a way to pass the events on), FYT's skins in the standard version (possible without a permission by installing the factory before AppCompat, but with a risk for the inflation of AppCompat views: a brief of its own) and the checks of the foreground tasks of Spotify through the host (little to gain).
+
 Without system privileges, root or Shizuku the launcher itself works everywhere; what needs them (the multiple PiPs, the status bar swipe area, the boot autostart, the full logcat) is hidden or does nothing.
 
 ---
