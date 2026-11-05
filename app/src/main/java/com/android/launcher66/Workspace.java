@@ -85,6 +85,7 @@ import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.recycler.SimpleDividerDecoration;
+import com.syu.util.WindowHost;
 import com.syu.util.WindowUtil;
 
 import java.lang.reflect.Field;
@@ -2433,7 +2434,8 @@ public class Workspace extends SmoothPagedView
         }
         if (shouldShowEdgeHandle()) {
             if (mEdgeHandle == null) {
-                mEdgeHandle = new BottomBarEdgeHandle(getContext(), this::onEdgeHandleTriggered);
+                mEdgeHandle = new BottomBarEdgeHandle(getContext(), this::onEdgeHandleTriggered,
+                        this::findEdgeHandleTarget);
             }
             applyEdgeHandleGeometry();
             if (mEdgeHandle.show(durationMs, showDelayMs)) {
@@ -2467,14 +2469,29 @@ public class Workspace extends SmoothPagedView
         int screenHeight = Launcher.screenHeight;
         int longerEdge = Math.max(screenWidth, screenHeight);
         int stripWidth = Math.max(1, Math.round(longerEdge * BottomBarEdgeHandle.STRIP_WIDTH_FRACTION));
-        int touchMargin = Math.round(longerEdge * BottomBarEdgeHandle.TOUCH_MARGIN_FRACTION);
-        // The transparent margin stops where a widget next to the strip begins, so it never takes
-        // that widget's touches; the strip itself stays on top of it.
-        int clearance = Helpers.getBottomBandLeftClearance(mPrefs);
-        int touchWidth = stripWidth + Math.max(0, Math.min(touchMargin, clearance - stripWidth));
+        // The transparent margin only takes a swipe to the right; a tap or a drag in it is handed
+        // to what is below, so it does not have to stop short of a widget next to the strip.
+        int minMargin = Math.round(BottomBarEdgeHandle.MIN_TOUCH_MARGIN_DP
+                * getResources().getDisplayMetrics().density);
+        int touchMargin = Math.max(minMargin,
+                Math.round(longerEdge * BottomBarEdgeHandle.TOUCH_MARGIN_FRACTION));
+        int touchWidth = stripWidth + touchMargin;
         mEdgeHandle.setGeometry(stripWidth, touchWidth,
                 getBottomBarHeight(screenWidth, screenHeight),
                 mPrefs.getBoolean(Keys.BLACK_BAR, false));
+    }
+
+    /** What a touch that the edge handle does not take belongs to: a pane under it, else the launcher. */
+    private BottomBarEdgeHandle.Target findEdgeHandleTarget(int rawX, int rawY) {
+        if (mLauncher == null) {
+            return null;
+        }
+        WindowHost host = mLauncher.getWindowHost();
+        View pane = host == null ? null : host.paneRootAt(rawX, rawY);
+        if (pane != null) {
+            return new BottomBarEdgeHandle.Target(pane, "pane");
+        }
+        return new BottomBarEdgeHandle.Target(mLauncher.getWindow().getDecorView(), "launcher");
     }
 
     private void onEdgeHandleTriggered() {

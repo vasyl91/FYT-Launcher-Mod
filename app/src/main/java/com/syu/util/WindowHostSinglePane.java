@@ -157,6 +157,20 @@ public class WindowHostSinglePane {
 
     boolean isVisible() { return visible.get(); }
 
+    /**
+     * The root view of this pane's window when it is on screen and covers the point (screen
+     * coordinates), else null. For the edge handle, which passes a touch on to what is below it.
+     */
+    View rootAt(int rawX, int rawY) {
+        FrameLayout r = root;
+        if (r == null || !visible.get() || !r.isAttachedToWindow()) return null;
+        int[] at = new int[2];
+        r.getLocationOnScreen(at);
+        boolean inside = rawX >= at[0] && rawX < at[0] + r.getWidth()
+                && rawY >= at[1] && rawY < at[1] + r.getHeight();
+        return inside ? r : null;
+    }
+
     // =====================================================================================
     // 3. Public API
     // =====================================================================================

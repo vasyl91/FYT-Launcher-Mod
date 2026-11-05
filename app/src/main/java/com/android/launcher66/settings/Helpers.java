@@ -1312,41 +1312,6 @@ public class Helpers {
     }
 
     /**
-     * Distance from the left edge of the widget box to the nearest widget, PiP or stats window on
-     * the first screen that reaches into the bottom bar band - the rows the auto-hide edge handle
-     * covers. Workspace keeps the handle's transparent touch margin within it, so the margin never
-     * takes the touches of a widget standing next to the handle.
-     *
-     * @return the distance in pixels, Integer.MAX_VALUE if nothing is in the band.
-     */
-    public static int getBottomBandLeftClearance(SharedPreferences prefs) {
-        int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
-        BarGeometry bar = getBarGeometry(prefs, orientation);
-        boolean[] enabledStates = getEnabledStates(prefs);
-
-        int clearance = Integer.MAX_VALUE;
-        for (int i = 0; i < RECTANGLE_KEYS.length; i++) {
-            if (!enabledStates[i] || prefs.getInt(SCREEN_KEYS[i], 1) - 1 != 0) continue;
-            clearance = Math.min(clearance,
-                    leftEdgeInBand(getRectangleBounds(prefs, RECTANGLE_KEYS[i]), bar));
-        }
-        // The stats window may overlap widgets, so the overlap checks leave it out - but the touch
-        // margin must not cover it either.
-        if (prefs.getBoolean(Keys.USER_STATS, false) && prefs.getInt(Keys.STATS_SCREEN, 1) - 1 == 0) {
-            clearance = Math.min(clearance, leftEdgeInBand(getRectangleBounds(prefs, "stats"), bar));
-        }
-        return clearance;
-    }
-
-    /** Left edge of the rectangle if it reaches into the bar band, Integer.MAX_VALUE otherwise. */
-    private static int leftEdgeInBand(RectF rect, BarGeometry bar) {
-        if (rect.isEmpty() || rect.bottom <= bar.barTop || rect.top >= bar.rootHeight) {
-            return Integer.MAX_VALUE;
-        }
-        return Math.max(0, (int) rect.left);
-    }
-
-    /**
      * Bottom bar height used by the overlap checks: the same value Workspace gives the bar, taken
      * from the box the bar lives in (portrait: its width, landscape: its height - the shortest edge
      * rule as before).

@@ -114,6 +114,22 @@ public class WindowHost {
         WindowHostAvReaper.retireAll(retired);
     }
 
+    /**
+     * The window of the pane that is on screen at this point (screen coordinates), null when there
+     * is none. The panes sit above the launcher's own window; the edge handle asks which of them,
+     * if any, a touch it does not take belongs to.
+     */
+    public View paneRootAt(int rawX, int rawY) {
+        View v = dual.rootAt(rawX, rawY);
+        if (v != null) return v;
+        WindowHostSinglePane[] singles = {fourth, third, second, first};
+        for (WindowHostSinglePane pane : singles) {
+            v = pane.rootAt(rawX, rawY);
+            if (v != null) return v;
+        }
+        return null;
+    }
+
     public boolean isFirstVisible()  { return first.isVisible(); }
     public boolean isSecondVisible() { return second.isVisible(); }
     public boolean isThirdVisible()  { return third.isVisible(); }
