@@ -41,6 +41,22 @@ final class MusicWidgetPlan {
     /** One text row, buttons, gaps. */
     static final float[] BAR_COMPACT = {0.42f, 0.52f, 0.06f};
 
+    // Large text (settings 'Large text' of the widget bar): the text rows get a bigger share of
+    // the height and the font a smaller line factor, at the cost of the buttons' row and the gaps.
+    /** Two text rows, buttons, gaps. */
+    static final float[] BAR_STANDARD_LARGE = {0.30f, 0.30f, 0.35f, 0.05f};
+
+    /** One text row, buttons, gaps. */
+    static final float[] BAR_COMPACT_LARGE = {0.50f, 0.44f, 0.06f};
+
+    /** Height of a text row / font size in px with large text. */
+    static final float LINE_FACTOR_LARGE = 1.2f;
+
+    /** The wide bar with large text: the rows fill the whole height of the column. */
+    static final float[] BAR_WIDE_STANDARD_LARGE = {0.50f, 0.50f, 0.00f};
+
+    static final float[] BAR_WIDE_COMPACT_LARGE = {0.80f, 0.20f};
+
     /** The cover of a bar is at most this share of the bar's height and of its width. */
     static final float BAR_COVER_HEIGHT = 0.86f;
 
@@ -174,17 +190,32 @@ final class MusicWidgetPlan {
      * bar's while it lays out.
      */
     static Plan planBar(int w, int h, int barHeightPx, int shortSidePx, float density) {
+        return planBar(w, h, barHeightPx, shortSidePx, density, false);
+    }
+
+    /** {@link #planBar} with the bigger text rows of 'Large text' when {@code largeText}. */
+    static Plan planBar(int w, int h, int barHeightPx, int shortSidePx, float density, boolean largeText) {
         Plan plan = new Plan();
         plan.compact = barCompact(barHeightPx, shortSidePx);
         plan.cover = true;
         plan.coverPx = Math.min(part(h, BAR_COVER_HEIGHT), part(w, BAR_COVER_WIDTH));
         plan.columnPx = w - plan.coverPx - part(w, BAR_COLUMN_GAP);
-        float[] shares = plan.compact ? BAR_COMPACT : BAR_STANDARD;
+        float[] shares = largeText
+                ? (plan.compact ? BAR_COMPACT_LARGE : BAR_STANDARD_LARGE)
+                : (plan.compact ? BAR_COMPACT : BAR_STANDARD);
         plan.rowPx = part(h, shares[0]);
         plan.buttonRowPx = part(h, plan.compact ? shares[1] : shares[2]);
         plan.gapPx = part(h, shares[shares.length - 1] / (plan.rows() + 1));
-        plan.textPx = Math.max(plan.rowPx / LINE_FACTOR, MIN_TEXT_SP_FLOOR * density);
+        float lineFactor = largeText ? LINE_FACTOR_LARGE : LINE_FACTOR;
+        plan.textPx = Math.max(plan.rowPx / lineFactor, MIN_TEXT_SP_FLOOR * density);
         plan.buttonSidePx = Math.round(Math.min(plan.buttonRowPx, plan.columnPx / 4f) * BUTTON_FILL);
+        if (largeText) {
+            // The buttons are not smaller than today's, as far as their (now lower) row allows.
+            float[] usual = plan.compact ? BAR_COMPACT : BAR_STANDARD;
+            int usualRow = part(h, plan.compact ? usual[1] : usual[2]);
+            int usualSide = Math.round(Math.min(usualRow, plan.columnPx / 4f) * BUTTON_FILL);
+            plan.buttonSidePx = Math.max(plan.buttonSidePx, Math.min(usualSide, plan.buttonRowPx));
+        }
         return plan;
     }
 
@@ -195,6 +226,16 @@ final class MusicWidgetPlan {
      * on the same limit as {@link #planBar}.
      */
     static Plan planBarWide(int w, int h, int barHeightPx, int shortSidePx, float density) {
+        return planBarWide(w, h, barHeightPx, shortSidePx, density, false);
+    }
+
+    /**
+     * {@link #planBarWide} with 'Large text': the rows fill the whole height of the column (two
+     * halves, or 0.8 of it in the compact bar) and the font has the smaller line factor. The width
+     * of the block of buttons (30% / 40%) is the same.
+     */
+    static Plan planBarWide(int w, int h, int barHeightPx, int shortSidePx, float density,
+                            boolean largeText) {
         Plan plan = new Plan();
         plan.wide = true;
         plan.compact = barCompact(barHeightPx, shortSidePx);
@@ -205,10 +246,13 @@ final class MusicWidgetPlan {
         plan.buttonRows = plan.compact ? 1 : 2;
         int gap = part(w, BAR_COLUMN_GAP);
         plan.columnPx = Math.max(0, w - plan.coverPx - gap - plan.buttonBlockPx);
-        float[] shares = plan.compact ? BAR_WIDE_COMPACT : BAR_WIDE_STANDARD;
+        float[] shares = largeText
+                ? (plan.compact ? BAR_WIDE_COMPACT_LARGE : BAR_WIDE_STANDARD_LARGE)
+                : (plan.compact ? BAR_WIDE_COMPACT : BAR_WIDE_STANDARD);
         plan.rowPx = part(h, shares[0]);
         plan.gapPx = part(h, shares[shares.length - 1] / (plan.rows() + 1));
-        plan.textPx = Math.max(plan.rowPx / LINE_FACTOR, MIN_TEXT_SP_FLOOR * density);
+        float lineFactor = largeText ? LINE_FACTOR_LARGE : LINE_FACTOR;
+        plan.textPx = Math.max(plan.rowPx / lineFactor, MIN_TEXT_SP_FLOOR * density);
         plan.cellWidthPx = plan.buttonBlockPx / (plan.buttonRows == 2 ? 2 : 4);
         plan.buttonRowPx = plan.buttonRows == 2 ? h / 2 : h;
         plan.buttonSidePx = Math.round(Math.min(plan.cellWidthPx, plan.buttonRowPx) * BUTTON_FILL);

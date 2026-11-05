@@ -506,4 +506,7 @@
     <string name="widget_bar_no_date">Ascunde data</string>
     <string name="widget_bar_no_weather">Ascunde vremea</string>
     <string name="widget_bar_hidden_on">Locul lui este luat de widgetul de muzică</string>
+    <string name="widget_bar_large_text">Text mare</string>
+    <string name="widget_bar_large_text_on">Cât de mare permite spațiul din bară</string>
+    <string name="widget_bar_large_text_off">Dimensiune obișnuită a textului</string>
 </resources>

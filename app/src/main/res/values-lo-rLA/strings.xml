@@ -506,4 +506,7 @@
     <string name="widget_bar_no_date">ເຊື່ອງວັນທີ</string>
     <string name="widget_bar_no_weather">ເຊື່ອງສະພາບອາກາດ</string>
     <string name="widget_bar_hidden_on">ວິດເຈັດເພງຈະມາແທນບ່ອນຂອງມັນ</string>
+    <string name="widget_bar_large_text">ຕົວອັກສອນໃຫຍ່</string>
+    <string name="widget_bar_large_text_on">ໃຫຍ່ເທົ່າທີ່ແຖບມີບ່ອນ</string>
+    <string name="widget_bar_large_text_off">ຂະໜາດຕົວອັກສອນປົກກະຕິ</string>
 </resources>

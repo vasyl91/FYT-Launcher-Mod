@@ -506,4 +506,7 @@
     <string name="widget_bar_no_date">Zuppar la data</string>
     <string name="widget_bar_no_weather">Zuppar il temp</string>
     <string name="widget_bar_hidden_on">Il widget da musica prenda il lieu</string>
+    <string name="widget_bar_large_text">Text grond</string>
+    <string name="widget_bar_large_text_on">Uschè grond sco che la bara lubescha</string>
+    <string name="widget_bar_large_text_off">Grondezza da text usitada</string>
 </resources>

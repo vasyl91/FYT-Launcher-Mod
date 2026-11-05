@@ -506,4 +506,7 @@
     <string name="widget_bar_no_date">तारीख़ छिपाएँ</string>
     <string name="widget_bar_no_weather">मौसम छिपाएँ</string>
     <string name="widget_bar_hidden_on">उसकी जगह म्यूज़िक विजेट ले लेता है</string>
+    <string name="widget_bar_large_text">बड़ा टेक्स्ट</string>
+    <string name="widget_bar_large_text_on">जितना बड़ा बार में जगह हो</string>
+    <string name="widget_bar_large_text_off">सामान्य टेक्स्ट आकार</string>
 </resources>

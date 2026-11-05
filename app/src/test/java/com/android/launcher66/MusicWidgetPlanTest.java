@@ -156,4 +156,62 @@ class MusicWidgetPlanTest {
             }
         }
     }
+
+    // 'Large text' of the widget bar.
+
+    @Test
+    void largeTextIsNeverSmallerThanTheUsualTextInTheUsualBar() {
+        for (int h : new int[]{40, 54, 66, 72, 73, 91, 120}) {
+            for (int bar : new int[]{h}) {
+                MusicWidgetPlan.Plan usual = MusicWidgetPlan.planBar(359, h, bar, 600, 1f, false);
+                MusicWidgetPlan.Plan large = MusicWidgetPlan.planBar(359, h, bar, 600, 1f, true);
+                assertTrue(large.textPx >= usual.textPx, "text " + h);
+                assertTrue(large.rowPx >= usual.rowPx, "row " + h);
+            }
+        }
+    }
+
+    @Test
+    void largeTextIsNeverSmallerThanTheUsualTextInTheWideBar() {
+        for (int h : new int[]{40, 54, 66, 72, 73, 91, 120}) {
+            MusicWidgetPlan.Plan usual = MusicWidgetPlan.planBarWide(359, h, h, 600, 1f, false);
+            MusicWidgetPlan.Plan large = MusicWidgetPlan.planBarWide(359, h, h, 600, 1f, true);
+            assertTrue(large.textPx >= usual.textPx, "text " + h);
+            // the block of buttons keeps its width
+            assertEquals(usual.buttonBlockPx, large.buttonBlockPx);
+            assertEquals(usual.buttonRows, large.buttonRows);
+        }
+    }
+
+    @Test
+    void largeTextKeepsTheButtonsAsBigAsTheirRowAllows() {
+        for (int h : new int[]{40, 54, 66, 72, 73, 91, 120}) {
+            MusicWidgetPlan.Plan usual = MusicWidgetPlan.planBar(359, h, h, 600, 1f, false);
+            MusicWidgetPlan.Plan large = MusicWidgetPlan.planBar(359, h, h, 600, 1f, true);
+            assertTrue(large.buttonSidePx >= Math.min(usual.buttonSidePx, large.buttonRowPx), "buttons " + h);
+            assertTrue(large.buttonSidePx <= large.buttonRowPx + 1, "row " + h);
+        }
+    }
+
+    @Test
+    void theSharesOfTheLargePlansAddUpToNoMoreThanTheHeight() {
+        float standard = 0f;
+        for (float share : MusicWidgetPlan.BAR_STANDARD_LARGE) standard += share;
+        float compact = 0f;
+        for (float share : MusicWidgetPlan.BAR_COMPACT_LARGE) compact += share;
+        float wide = 0f;
+        for (float share : MusicWidgetPlan.BAR_WIDE_STANDARD_LARGE) wide += share;
+        float wideCompact = 0f;
+        for (float share : MusicWidgetPlan.BAR_WIDE_COMPACT_LARGE) wideCompact += share;
+        assertTrue(standard <= 1.0001f);
+        assertTrue(compact <= 1.0001f);
+        assertTrue(wide <= 1.0001f);
+        assertTrue(wideCompact <= 1.0001f);
+        for (int h : new int[]{40, 66, 91, 120}) {
+            MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBar(359, h, h, 600, 1f, true);
+            assertTrue(plan.rows() * (plan.rowPx + plan.gapPx) + plan.buttonRowPx <= h + (plan.compact ? 0 : 0), "bar " + h);
+            MusicWidgetPlan.Plan wideLarge = MusicWidgetPlan.planBarWide(359, h, h, 600, 1f, true);
+            assertTrue(wideLarge.rows() * (wideLarge.rowPx + wideLarge.gapPx) <= h, "wide " + h);
+        }
+    }
 }

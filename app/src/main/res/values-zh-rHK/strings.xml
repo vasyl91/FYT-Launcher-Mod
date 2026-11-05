@@ -42,4 +42,7 @@
     <string name="widget_bar_no_date">隱藏日期</string>
     <string name="widget_bar_no_weather">隱藏天氣</string>
     <string name="widget_bar_hidden_on">由音樂小工具佔用其位置</string>
+    <string name="widget_bar_large_text">大字體</string>
+    <string name="widget_bar_large_text_on">盡可能大，以欄內空間為限</string>
+    <string name="widget_bar_large_text_off">一般字級</string>
 </resources>

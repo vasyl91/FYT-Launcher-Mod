@@ -29,6 +29,8 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
 
     /** Share of this view's slot in the parent (parent height / TextView count) the text may fill. */
     private static final float TARGET_HEIGHT_FRACTION = 0.9f;
+    /** The same with 'Large text' of the widget bar. */
+    private static final float TARGET_HEIGHT_FRACTION_LARGE = 0.95f;
     /** Floor for the text size: the date can never end up invisible. */
     private static final float MIN_TEXT_SP = 8f;
     /** A parent lower than this fraction of the bar height is a transient layout - do not fit from it. */
@@ -319,7 +321,9 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
         }
 
         // Calculate target height for this TextView
-        int targetHeight = (int) ((parentHeight / textViewCount) * TARGET_HEIGHT_FRACTION);
+        boolean largeText = mPrefs.getBoolean(Keys.WIDGET_BAR_LARGE_TEXT, false);
+        int targetHeight = (int) ((parentHeight / textViewCount)
+                * (largeText ? TARGET_HEIGHT_FRACTION_LARGE : TARGET_HEIGHT_FRACTION));
         if (targetHeight <= 0) {
             return;
         }

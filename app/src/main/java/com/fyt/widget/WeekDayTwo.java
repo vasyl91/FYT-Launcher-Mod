@@ -166,7 +166,8 @@ public class WeekDayTwo extends AppCompatTextView implements SharedPreferences.O
             }
 
             // Calculate target height for this TextView
-            float targetSize = 0.55f;
+            // 'Large text' of the widget bar: the same text, as large as the room allows
+            float targetSize = mPrefs.getBoolean(Keys.WIDGET_BAR_LARGE_TEXT, false) ? 0.8f : 0.55f;
             int targetHeight = (int)((parentHeight / textViewCount) * targetSize);
 
             // Set max height to prevent overflow

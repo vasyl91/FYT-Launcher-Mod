@@ -506,4 +506,7 @@
     <string name="widget_bar_no_date">Приховати дату</string>
     <string name="widget_bar_no_weather">Приховати погоду</string>
     <string name="widget_bar_hidden_on">Його місце займає віджет музики</string>
+    <string name="widget_bar_large_text">Великий текст</string>
+    <string name="widget_bar_large_text_on">Настільки великий, наскільки дозволяє панель</string>
+    <string name="widget_bar_large_text_off">Звичайний розмір тексту</string>
 </resources>

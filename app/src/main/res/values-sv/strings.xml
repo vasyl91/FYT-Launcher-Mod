@@ -506,4 +506,7 @@
     <string name="widget_bar_no_date">Dölj datumet</string>
     <string name="widget_bar_no_weather">Dölj vädret</string>
     <string name="widget_bar_hidden_on">Musikwidgeten tar dess plats</string>
+    <string name="widget_bar_large_text">Stor text</string>
+    <string name="widget_bar_large_text_on">Så stor som det finns plats för i fältet</string>
+    <string name="widget_bar_large_text_off">Vanlig textstorlek</string>
 </resources>

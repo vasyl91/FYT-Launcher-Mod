@@ -506,4 +506,7 @@
     <string name="widget_bar_no_date">លាក់កាលបរិច្ឆេទ</string>
     <string name="widget_bar_no_weather">លាក់អាកាសធាតុ</string>
     <string name="widget_bar_hidden_on">ធាតុក្រាហ្វិកតន្ត្រីយកកន្លែងរបស់វា</string>
+    <string name="widget_bar_large_text">អក្សរធំ</string>
+    <string name="widget_bar_large_text_on">ធំតាមដែលរបារមានកន្លែង</string>
+    <string name="widget_bar_large_text_off">ទំហំអក្សរធម្មតា</string>
 </resources>

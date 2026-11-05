@@ -132,12 +132,15 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         if (mBar) {
             int shortSide = Math.min(Launcher.screenWidth, Launcher.screenHeight);
             View buttons = mRoot.findViewById(R.id.music_bar_buttons);
+            boolean largeText = androidx.preference.PreferenceManager
+                    .getDefaultSharedPreferences(mRoot.getContext())
+                    .getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_LARGE_TEXT, false);
             if (buttons instanceof FlexboxLayout) {
                 // The wide layout (WidgetBarLayout): the buttons are a block beside the text.
-                plan = MusicWidgetPlan.planBarWide(w, h, barH, shortSide, density);
+                plan = MusicWidgetPlan.planBarWide(w, h, barH, shortSide, density, largeText);
                 applyBarWide(plan, w);
             } else {
-                plan = MusicWidgetPlan.planBar(w, h, barH, shortSide, density);
+                plan = MusicWidgetPlan.planBar(w, h, barH, shortSide, density, largeText);
                 applyBar(plan, w);
             }
         } else {
