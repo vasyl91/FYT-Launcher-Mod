@@ -364,6 +364,11 @@ public class Workspace extends SmoothPagedView
     private static final long EDGE_HANDLE_FADE_MS = 150;
     /** The persistent bar fades out in this time when the first page's own bar of another width takes over. */
     private static final long PERSISTENT_CROSSFADE_MS = 150;
+    /**
+     * The window in standby is built this long after the launcher comes to the front: not in the
+     * resume itself, which has enough to do, and well before anybody moves a page.
+     */
+    private static final long PERSISTENT_STANDBY_DELAY_MS = 250;
     // The edge handle returns only in the second half of the slide-out. It is an overlay window:
     // when the bar goes away because an app is being launched (Launcher.cleanWidgetBar()), onPause()
     // hides it again before it can show above the incoming app.
@@ -413,8 +418,20 @@ public class Workspace extends SmoothPagedView
      * no timer); with it every page has the edge handle.
      */
     private boolean mEveryPage = false;
-    /** The overlay on screen (or being built) is the persistent one, not the auto-hide bar. */
+    /** The overlay window (shown, or in standby) is the persistent one, not the auto-hide bar. */
     private boolean mOverlayPersistent = false;
+    /**
+     * The persistent bar is shown by the overlay: the widgets of the bar are bound to its views.
+     * In standby the window exists but the widgets belong to the page's own bar. It stays set while
+     * the bar fades out (parking), until the widgets are given back.
+     */
+    private boolean mPersistentShown = false;
+    /** The persistent bar is fading out to standby; counted as standby, so a new move can activate it. */
+    private boolean mPersistentParking = false;
+    /** Counts the changes that cancel a fade-out in progress: its end action must not run after them. */
+    private int mPersistentGen = 0;
+    /** The window being built is a standby one: invisible, not touchable, widgets left to the page's bar. */
+    private boolean mBuildStandby = false;
     /** The left bar setting of the page that was built last. */
     private boolean mLeftBar = false;
     /** Adding the persistent overlay failed (no permission): not tried again until the page is rebuilt. */
@@ -1500,7 +1517,9 @@ public class Workspace extends SmoothPagedView
             return;
         }
         // With auto-hide the texts live in the overlay window; setupOverlayWidgetBar() owns them.
-        if (isOverlayShowing || mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
+        // (isOverlayShowing is no longer the test: it means "a window exists", and the persistent
+        // window in standby has nothing bound to it.)
+        if (mPersistentShown || mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
             return;
         }
 
@@ -1697,7 +1716,9 @@ public class Workspace extends SmoothPagedView
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                             | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                             | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-                            | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                            | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                            // A window in standby takes no touch; the page below gets all of it
+                            | (mBuildStandby ? WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE : 0),
                     PixelFormat.TRANSLUCENT
             );
 
@@ -1762,7 +1783,13 @@ public class Workspace extends SmoothPagedView
                 isOverlayShowing = true;
                 final View addedBar = overlayBottomBar;
                 addedBar.post(addedBar::requestApplyInsets);
-                if (mOverlayPersistent) {
+                if (mOverlayPersistent && mBuildStandby) {
+                    // Built and laid out in advance, invisible: showing it is a change of alpha
+                    // (activatePersistentOverlay()).
+                    overlayBottomBar.setAlpha(0f);
+                    overlayBottomBar.setTranslationY(0f);
+                    primeStandbyWindowAfterLayout(addedBar);
+                } else if (mOverlayPersistent) {
                     // Over the page's own bar, in the same place: it is there at once, no slide,
                     // so that it covers the bar that leaves with the page without a jump. No timer.
                     overlayBottomBar.setAlpha(1f);
@@ -1781,13 +1808,43 @@ public class Workspace extends SmoothPagedView
                 isOverlayAnimating = false;
             }
             final Launcher launcher = mLauncher;
-            if (launcher != null) {
+            if (launcher != null && !mBuildStandby) {
                 mainHandler.post(() -> {
                     launcher.updateWeather();
                     launcher.enableRecycler();
                 });
             }
         }
+    }
+
+    /**
+     * A window in standby is bound to the widgets once, after its first layout, so that the music
+     * widget's sizer and the text fits are computed for its own views; then the widgets go back to
+     * the page's own bar. Activating it later changes no size.
+     */
+    private void primeStandbyWindowAfterLayout(final View bar) {
+        bar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                ViewTreeObserver observer = bar.getViewTreeObserver();
+                if (observer.isAlive()) {
+                    observer.removeOnGlobalLayoutListener(this);
+                }
+                mainHandler.post(() -> primeStandbyWindow(bar));
+            }
+        });
+    }
+
+    private void primeStandbyWindow(View bar) {
+        synchronized (overlayLock) {
+            if (bar != overlayBottomBar || !mOverlayPersistent || mPersistentShown || mPersistentParking
+                    || !widgetBar) {
+                return;
+            }
+        }
+        setupOverlayWidgetBar();
+        // The widgets of the bar belong to the page's own bar while the window is in standby
+        refreshWidgetBarAfterWake("persistent bar standby");
     }
 
     private void setupOverlayView(int screenWidth, int bottomBarHeight) {
@@ -1813,8 +1870,8 @@ public class Workspace extends SmoothPagedView
             setupRecyclerView(bottomBarRecycler, overlayRecycler);
         }
         
-        // Setup widget bar if enabled
-        if (widgetBar) {
+        // Setup widget bar if enabled (a standby window is bound later, see primeStandbyWindow())
+        if (widgetBar && !mBuildStandby) {
             setupOverlayWidgetBar();
         }
         
@@ -2723,31 +2780,71 @@ public class Workspace extends SmoothPagedView
      * list of apps (opened from the bar) is open.
      */
     private void updatePersistentBar(String reason) {
+        updatePersistentBar(reason, false);
+    }
+
+    /**
+     * @param standbyDue called by the delay that waited before building the window in standby
+     */
+    private void updatePersistentBar(String reason, boolean standbyDue) {
         boolean mode = mEveryPage && !autoHideBottomBar && workspaceView != null && mLauncher != null
                 && mPrefs != null && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        if (!mode) {
-            if (mOverlayPersistent) {
+        BottomBarPlacement.Bar bar = mode
+                ? BottomBarPlacement.bar(placementPage(), true, false, mLeftBar, isPageMoving(), true)
+                : BottomBarPlacement.Bar.NONE;   // the mode check above includes the user layout
+        boolean permitted = mode && mEdgeHandleHostVisible && !mPersistentFailed
+                && Settings.canDrawOverlays(getContext());
+        PersistentBarWindow.State target = PersistentBarWindow.target(mode, mEdgeHandleHostVisible, permitted,
+                bar == BottomBarPlacement.Bar.PERSISTENT_OVERLAY, mode && persistentBarFree());
+        PersistentBarWindow.Action action = PersistentBarWindow.action(persistentState(), target, isPageMoving());
+        switch (action) {
+            case REMOVE:
+                mainHandler.removeCallbacks(mBuildStandbyRunnable);
                 hidePersistentOverlay(0, reason);
-            }
-            return;
-        }
-        BottomBarPlacement.Bar bar = BottomBarPlacement.bar(placementPage(), true, false, mLeftBar,
-                isPageMoving(), true);   // the mode check above includes the user layout
-        boolean want = bar == BottomBarPlacement.Bar.PERSISTENT_OVERLAY && persistentBarAllowed();
-        if (want && !mOverlayPersistent) {
-            showPersistentOverlay(reason);
-        } else if (!want && mOverlayPersistent) {
-            // The first page's bar is under it again. With the left bar that bar is another width
-            // than the overlay, so the overlay fades out (it must not show two bars for long).
-            hidePersistentOverlay(bar == BottomBarPlacement.Bar.EMBEDDED && mLeftBar
-                    ? PERSISTENT_CROSSFADE_MS : 0, reason);
+                break;
+            case BUILD_LATER:
+                if (standbyDue) {
+                    showPersistentOverlay(reason, true);
+                } else {
+                    mainHandler.removeCallbacks(mBuildStandbyRunnable);
+                    mainHandler.postDelayed(mBuildStandbyRunnable, PERSISTENT_STANDBY_DELAY_MS);
+                }
+                break;
+            case BUILD_NOW:
+                if (isPageMoving()) {
+                    Log.d(TAG, "Persistent bottom bar: no standby window yet, built now");
+                }
+                showPersistentOverlay(reason, false);
+                break;
+            case ACTIVATE:
+                activatePersistentOverlay(reason);
+                break;
+            case PARK:
+                // The first page's bar is under it again. With the left bar that bar is another width
+                // than the overlay, so the overlay fades out (it must not show two bars for long).
+                parkPersistentOverlay(bar == BottomBarPlacement.Bar.EMBEDDED && mLeftBar
+                        ? PERSISTENT_CROSSFADE_MS : 0, reason);
+                break;
+            default:
+                break;
         }
     }
 
+    private final Runnable mBuildStandbyRunnable = () -> updatePersistentBar("standby delay", true);
+
+    /** What the window is now. A bar that is fading out to standby counts as standby. */
+    private PersistentBarWindow.State persistentState() {
+        if (!mOverlayPersistent || overlayBottomBar == null) {
+            return PersistentBarWindow.State.NONE;
+        }
+        return mPersistentShown && !mPersistentParking
+                ? PersistentBarWindow.State.SHOWN : PersistentBarWindow.State.STANDBY;
+    }
+
     /** Whether nothing else the launcher shows is in the persistent bar's place now. */
-    private boolean persistentBarAllowed() {
-        if (mPersistentFailed || !mEdgeHandleHostVisible || mState != State.NORMAL || mIsDragOccuring
-                || mLauncher.mState != Launcher.State.WORKSPACE || getOpenFolder() != null) {
+    private boolean persistentBarFree() {
+        if (mState != State.NORMAL || mIsDragOccuring || mLauncher.mState != Launcher.State.WORKSPACE
+                || getOpenFolder() != null) {
             return false;
         }
         if (mDragController != null && mDragController.isDragging()) {
@@ -2760,22 +2857,104 @@ public class Workspace extends SmoothPagedView
         } catch (RuntimeException e) {
             return false;   // the activity is going away
         }
-        return Settings.canDrawOverlays(getContext());
+        return true;
     }
 
-    private void showPersistentOverlay(String reason) {
+    /**
+     * Builds the window. In standby it is invisible, takes no touch and leaves the widgets to the
+     * page's own bar; otherwise the bar is needed this moment (the only case of building in a
+     * gesture).
+     */
+    private void showPersistentOverlay(String reason, boolean standby) {
         synchronized (overlayLock) {
             if (isOverlayShowing || isOverlayAnimating || overlayBottomBar != null
                     || bottomBarAllApps == null) {
                 return;
             }
-            Log.d(TAG, "Persistent bottom bar shown (" + reason + ") on page " + getCurrentPage());
+            Log.d(TAG, (standby ? "Persistent bottom bar window built, in standby (" : "Persistent bottom bar shown (")
+                    + reason + ")" + (standby ? "" : " on page " + getCurrentPage()));
             mOverlayPersistent = true;
             isOverlayAnimating = true;
+            mBuildStandby = standby;
+            mPersistentGen++;
             // The inline bar stays as it is: it leaves with its page, or lies under the overlay.
-            showOverlayBottomBar();
+            try {
+                showOverlayBottomBar();
+            } finally {
+                mBuildStandby = false;
+            }
             if (!isOverlayShowing) {
                 mOverlayPersistent = false;
+            } else {
+                mPersistentShown = !standby;
+                mPersistentParking = false;
+            }
+        }
+    }
+
+    /**
+     * STANDBY to SHOWN, in the gesture that needs it: the widgets are bound to the window, alpha 1,
+     * touchable. No inflation, no addView, no weather fetch, no enableRecycler.
+     */
+    private void activatePersistentOverlay(String reason) {
+        synchronized (overlayLock) {
+            final View bar = overlayBottomBar;
+            if (bar == null || !mOverlayPersistent) {
+                return;
+            }
+            long started = SystemClock.uptimeMillis();
+            mPersistentGen++;   // a fade-out that is running must not finish after this
+            mPersistentParking = false;
+            bar.animate().cancel();
+            if (!mPersistentShown) {
+                if (widgetBar) {
+                    setupOverlayWidgetBar();
+                    mLauncher.mMusicWidget.updateFavoriteButtonState();
+                }
+                mPersistentShown = true;
+            }
+            bar.setTranslationY(0f);
+            bar.setAlpha(1f);
+            setOverlayTouchable(true);
+            Log.d(TAG, "Persistent bottom bar shown (" + reason + ") on page " + getCurrentPage()
+                    + ", from standby in " + (SystemClock.uptimeMillis() - started) + " ms");
+        }
+    }
+
+    /**
+     * SHOWN to STANDBY. Touches pass through at once; the bar fades for {@code fadeMs} (the first
+     * page's own bar is another width with the left bar), then the widgets go back to the page's own
+     * bar. The window and its adapter stay. A move that begins meanwhile activates it again.
+     */
+    private void parkPersistentOverlay(long fadeMs, String reason) {
+        synchronized (overlayLock) {
+            final View bar = overlayBottomBar;
+            if (bar == null || !mOverlayPersistent || mPersistentParking) {
+                return;
+            }
+            Log.d(TAG, "Persistent bottom bar parked (" + reason + ")");
+            final int gen = ++mPersistentGen;
+            mPersistentParking = true;
+            mOverlayTouchHeld = false;
+            setOverlayTouchable(false);
+            bar.animate().cancel();
+            final Runnable end = () -> {
+                synchronized (overlayLock) {
+                    if (gen != mPersistentGen || bar != overlayBottomBar) {
+                        return;   // activated again, or the window is gone
+                    }
+                    bar.setAlpha(0f);
+                    mPersistentShown = false;
+                    mPersistentParking = false;
+                }
+                // The widgets of the bar are the page's own bar's again (the same as after a wake)
+                refreshWidgetBarAfterWake("persistent bar parked");
+            };
+            if (fadeMs <= 0 || !bar.isAttachedToWindow()) {
+                bar.setAlpha(0f);
+                mainHandler.post(end);
+            } else {
+                bar.animate().alpha(0f).setDuration(fadeMs).withEndAction(end).start();
             }
         }
     }
@@ -2788,6 +2967,7 @@ public class Workspace extends SmoothPagedView
             if (!mOverlayPersistent) {
                 return;
             }
+            mPersistentGen++;   // a fade-out to standby that is running must not finish after this
             if (bar == null || windowManager == null) {
                 mOverlayPersistent = false;
                 return;
@@ -2844,6 +3024,8 @@ public class Workspace extends SmoothPagedView
         overlayWindowParams = null;
         overlayWindowManager = null;
         mOverlayPersistent = false;
+        mPersistentShown = false;
+        mPersistentParking = false;
         mOverlayTouchHeld = false;
         mOverlayRemoveAtUp = false;
         mOverlayHideAtUp = false;
@@ -2966,6 +3148,7 @@ public class Workspace extends SmoothPagedView
     private void cleanupAllResources() {
         // Cancel any pending operations
         cancelPendingAutoHide();
+        mainHandler.removeCallbacks(mBuildStandbyRunnable);
         
         // Clean up overlay
         if (isOverlayShowing) {
