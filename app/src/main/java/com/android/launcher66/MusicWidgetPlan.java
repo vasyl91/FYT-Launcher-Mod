@@ -12,9 +12,6 @@ final class MusicWidgetPlan {
     /** Height of a text row / font size in px (font metrics plus padding). */
     static final float LINE_FACTOR = 1.3f;
 
-    /** The bar goes to one text row when it is at most this share of the screen's shorter side. */
-    static final float BAR_COMPACT_MAX_FRACTION = 0.12f;
-
     /** Below this the home widget drops a step (two rows, one row, one row without the cover). */
     static final float MIN_TEXT_SP = 12f;
 
@@ -126,11 +123,6 @@ final class MusicWidgetPlan {
     private MusicWidgetPlan() {
     }
 
-    /** Integer arithmetic: 0.12 as a float is off at the boundary. */
-    static boolean barCompact(int barHeightPx, int shortSidePx) {
-        return shortSidePx > 0 && (long) barHeightPx * 100 <= (long) shortSidePx * 12;
-    }
-
     /** The shares are truncated, never rounded, so that the parts never add up to more than h. */
     private static int part(int h, float share) {
         return (int) (h * share);
@@ -185,18 +177,17 @@ final class MusicWidgetPlan {
     }
 
     /**
-     * The bar. {@code barHeightPx} is the bar's height from the settings (what Workspace uses),
-     * {@code shortSidePx} the shorter side of the screen; the widget's own h can differ from the
-     * bar's while it lays out.
+     * The bar. {@code oneLine} is the user's choice (the setting 'Title and artist in one line'):
+     * one text row ("artist - title") instead of two, on every bar height.
      */
-    static Plan planBar(int w, int h, int barHeightPx, int shortSidePx, float density) {
-        return planBar(w, h, barHeightPx, shortSidePx, density, false);
+    static Plan planBar(int w, int h, float density, boolean oneLine) {
+        return planBar(w, h, density, false, oneLine);
     }
 
     /** {@link #planBar} with the bigger text rows of 'Large text' when {@code largeText}. */
-    static Plan planBar(int w, int h, int barHeightPx, int shortSidePx, float density, boolean largeText) {
+    static Plan planBar(int w, int h, float density, boolean largeText, boolean oneLine) {
         Plan plan = new Plan();
-        plan.compact = barCompact(barHeightPx, shortSidePx);
+        plan.compact = oneLine;
         plan.cover = true;
         plan.coverPx = Math.min(part(h, BAR_COVER_HEIGHT), part(w, BAR_COVER_WIDTH));
         plan.columnPx = w - plan.coverPx - part(w, BAR_COLUMN_GAP);
@@ -220,25 +211,23 @@ final class MusicWidgetPlan {
     }
 
     /**
-     * The wide bar: cover, then the text (title above artist, or one row in the compact bar), then
+     * The wide bar: cover, then the text (title above artist, or one row when {@code oneLine}), then
      * a block of buttons on the right of 30% of the widget's width in 2 x 2 (prev and next above
-     * play/pause and favorite), or 40% in one row of four in the compact bar. The bar is compact
-     * on the same limit as {@link #planBar}.
+     * play/pause and favorite), or 40% in one row of four with one line of text.
      */
-    static Plan planBarWide(int w, int h, int barHeightPx, int shortSidePx, float density) {
-        return planBarWide(w, h, barHeightPx, shortSidePx, density, false);
+    static Plan planBarWide(int w, int h, float density, boolean oneLine) {
+        return planBarWide(w, h, density, false, oneLine);
     }
 
     /**
      * {@link #planBarWide} with 'Large text': the rows fill the whole height of the column (two
-     * halves, or 0.8 of it in the compact bar) and the font has the smaller line factor. The width
+     * halves, or 0.8 of it with one line) and the font has the smaller line factor. The width
      * of the block of buttons (30% / 40%) is the same.
      */
-    static Plan planBarWide(int w, int h, int barHeightPx, int shortSidePx, float density,
-                            boolean largeText) {
+    static Plan planBarWide(int w, int h, float density, boolean largeText, boolean oneLine) {
         Plan plan = new Plan();
         plan.wide = true;
-        plan.compact = barCompact(barHeightPx, shortSidePx);
+        plan.compact = oneLine;
         plan.cover = true;
         plan.coverPx = Math.min(part(h, BAR_COVER_HEIGHT), part(w, BAR_COVER_WIDTH));
         float blockShare = plan.compact ? BAR_WIDE_BUTTONS_COMPACT : BAR_WIDE_BUTTONS_STANDARD;

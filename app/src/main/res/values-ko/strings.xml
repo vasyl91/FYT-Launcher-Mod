@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">홈 화면의 모든 페이지에 표시됩니다</string>
     <string name="bottom_bar_every_page_off">첫 페이지에만</string>
     <string name="bottom_bar_every_page_no_overlay">다른 앱 위에 표시할 권한이 필요합니다</string>
+    <string name="widget_bar_one_line">제목과 아티스트를 한 줄로 표시</string>
+    <string name="widget_bar_one_line_on">한 줄: 아티스트 – 제목</string>
+    <string name="widget_bar_one_line_off">제목을 아티스트 위에 표시</string>
 </resources>

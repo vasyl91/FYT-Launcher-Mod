@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Ditampilkan di setiap halaman layar utama</string>
     <string name="bottom_bar_every_page_off">Hanya di halaman pertama</string>
     <string name="bottom_bar_every_page_no_overlay">Memerlukan izin untuk tampil di atas aplikasi lain</string>
+    <string name="widget_bar_one_line">Judul dan artis dalam satu baris</string>
+    <string name="widget_bar_one_line_on">Satu baris: artis – judul</string>
+    <string name="widget_bar_one_line_off">Judul di atas artis</string>
 </resources>

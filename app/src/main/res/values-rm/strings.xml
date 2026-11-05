@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Visibla sin mintga pagina da la surfatscha da partenza</string>
     <string name="bottom_bar_every_page_off">Be sin l\'emprima pagina</string>
     <string name="bottom_bar_every_page_no_overlay">Dovra l\'autorisaziun da mussar sur autras apps</string>
+    <string name="widget_bar_one_line">Titel ed artist en ina lingia</string>
+    <string name="widget_bar_one_line_on">Ina lingia: artist – titel</string>
+    <string name="widget_bar_one_line_off">Il titel sur l\'artist</string>
 </resources>

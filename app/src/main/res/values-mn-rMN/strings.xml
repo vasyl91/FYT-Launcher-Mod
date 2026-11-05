@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Үндсэн дэлгэцийн хуудас бүр дээр харагдана</string>
     <string name="bottom_bar_every_page_off">Зөвхөн эхний хуудас дээр</string>
     <string name="bottom_bar_every_page_no_overlay">Бусад аппын дээр харуулах зөвшөөрөл шаардлагатай</string>
+    <string name="widget_bar_one_line">Гарчиг болон уран бүтээлчийг нэг мөрөнд</string>
+    <string name="widget_bar_one_line_on">Нэг мөр: уран бүтээлч – гарчиг</string>
+    <string name="widget_bar_one_line_off">Гарчиг уран бүтээлчийн дээр</string>
 </resources>

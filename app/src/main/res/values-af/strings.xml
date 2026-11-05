@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Op elke bladsy van die tuisskerm gewys</string>
     <string name="bottom_bar_every_page_off">Net op die eerste bladsy</string>
     <string name="bottom_bar_every_page_no_overlay">Vereis die toestemming om oor ander toepassings te vertoon</string>
+    <string name="widget_bar_one_line">Titel en kunstenaar in een reël</string>
+    <string name="widget_bar_one_line_on">Een reël: kunstenaar – titel</string>
+    <string name="widget_bar_one_line_off">Die titel bo die kunstenaar</string>
 </resources>

@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Visas på alla sidor på startskärmen</string>
     <string name="bottom_bar_every_page_off">Bara på första sidan</string>
     <string name="bottom_bar_every_page_no_overlay">Kräver behörighet att visas ovanpå andra appar</string>
+    <string name="widget_bar_one_line">Titel och artist på en rad</string>
+    <string name="widget_bar_one_line_on">En rad: artist – titel</string>
+    <string name="widget_bar_one_line_off">Titeln ovanför artisten</string>
 </resources>

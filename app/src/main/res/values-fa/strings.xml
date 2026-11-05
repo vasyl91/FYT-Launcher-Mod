@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">در هر صفحه از صفحه اصلی نمایش داده می‌شود</string>
     <string name="bottom_bar_every_page_off">فقط در صفحه اول</string>
     <string name="bottom_bar_every_page_no_overlay">نیاز به مجوز نمایش روی سایر برنامه‌ها دارد</string>
+    <string name="widget_bar_one_line">عنوان و خواننده در یک خط</string>
+    <string name="widget_bar_one_line_on">یک خط: خواننده – عنوان</string>
+    <string name="widget_bar_one_line_off">عنوان بالای خواننده</string>
 </resources>

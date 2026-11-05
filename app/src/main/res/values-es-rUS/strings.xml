@@ -70,4 +70,7 @@
     <string name="bottom_bar_every_page_on">Se muestra en todas las páginas de la pantalla de inicio</string>
     <string name="bottom_bar_every_page_off">Solo en la primera página</string>
     <string name="bottom_bar_every_page_no_overlay">Necesita el permiso para mostrarse sobre otras aplicaciones</string>
+    <string name="widget_bar_one_line">Título y artista en una sola línea</string>
+    <string name="widget_bar_one_line_on">Una línea: artista – título</string>
+    <string name="widget_bar_one_line_off">El título encima del artista</string>
 </resources>

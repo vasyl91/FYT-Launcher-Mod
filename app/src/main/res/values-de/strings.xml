@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Auf jeder Seite des Startbildschirms sichtbar</string>
     <string name="bottom_bar_every_page_off">Nur auf der ersten Seite</string>
     <string name="bottom_bar_every_page_no_overlay">Benötigt die Berechtigung „Über anderen Apps einblenden“</string>
+    <string name="widget_bar_one_line">Titel und Interpret in einer Zeile</string>
+    <string name="widget_bar_one_line_on">Eine Zeile: Interpret – Titel</string>
+    <string name="widget_bar_one_line_off">Der Titel über dem Interpreten</string>
 </resources>

@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Ցուցադրվում է հիմնական էկրանի յուրաքանչյուր էջում</string>
     <string name="bottom_bar_every_page_off">Միայն առաջին էջում</string>
     <string name="bottom_bar_every_page_no_overlay">Պահանջվում է այլ հավելվածների վրայով ցուցադրելու թույլտվություն</string>
+    <string name="widget_bar_one_line">Վերնագիրն ու կատարողը մեկ տողում</string>
+    <string name="widget_bar_one_line_on">Մեկ տող՝ կատարող – վերնագիր</string>
+    <string name="widget_bar_one_line_off">Վերնագիրը կատարողից վերև</string>
 </resources>

@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Kuvatakse avaekraani igal lehel</string>
     <string name="bottom_bar_every_page_off">Ainult esimesel lehel</string>
     <string name="bottom_bar_every_page_no_overlay">Vajab luba kuvamiseks teiste rakenduste peal</string>
+    <string name="widget_bar_one_line">Pealkiri ja esitaja ühel real</string>
+    <string name="widget_bar_one_line_on">Üks rida: esitaja – pealkiri</string>
+    <string name="widget_bar_one_line_off">Pealkiri esitaja kohal</string>
 </resources>

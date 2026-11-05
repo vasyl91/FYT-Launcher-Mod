@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Op elke pagina van het startscherm getoond</string>
     <string name="bottom_bar_every_page_off">Alleen op de eerste pagina</string>
     <string name="bottom_bar_every_page_no_overlay">Vereist de toestemming om over andere apps te worden weergegeven</string>
+    <string name="widget_bar_one_line">Titel en artiest op één regel</string>
+    <string name="widget_bar_one_line_on">Eén regel: artiest – titel</string>
+    <string name="widget_bar_one_line_off">De titel boven de artiest</string>
 </resources>

@@ -49,4 +49,7 @@
     <string name="bottom_bar_every_page_on">在主畫面的每一頁顯示</string>
     <string name="bottom_bar_every_page_off">僅在第一頁</string>
     <string name="bottom_bar_every_page_no_overlay">需要「顯示在其他應用程式上層」的權限</string>
+    <string name="widget_bar_one_line">標題與歌手顯示在同一行</string>
+    <string name="widget_bar_one_line_on">單行：歌手 – 標題</string>
+    <string name="widget_bar_one_line_off">標題顯示在歌手上方</string>
 </resources>

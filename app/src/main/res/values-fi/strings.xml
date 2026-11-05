@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Näkyy aloitusnäytön jokaisella sivulla</string>
     <string name="bottom_bar_every_page_off">Vain ensimmäisellä sivulla</string>
     <string name="bottom_bar_every_page_no_overlay">Vaatii luvan näyttää muiden sovellusten päällä</string>
+    <string name="widget_bar_one_line">Nimi ja esittäjä yhdellä rivillä</string>
+    <string name="widget_bar_one_line_on">Yksi rivi: esittäjä – nimi</string>
+    <string name="widget_bar_one_line_off">Nimi esittäjän yläpuolella</string>
 </resources>

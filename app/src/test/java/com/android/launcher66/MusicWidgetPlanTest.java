@@ -11,18 +11,14 @@ import org.junit.jupiter.api.Test;
 class MusicWidgetPlanTest {
 
     @Test
-    void theBarGoesToOneRowAtTwelvePercentOfTheShorterSide() {
-        assertTrue(MusicWidgetPlan.barCompact(72, 600));
-        assertFalse(MusicWidgetPlan.barCompact(73, 600));
-        assertFalse(MusicWidgetPlan.barCompact(10, 0));
-    }
-
-    @Test
-    void theDefaultBarsAreNotCompact() {
-        // 1024x600 with a status bar of 40: (int) (560 * 0.1638) = 91
-        assertFalse(MusicWidgetPlan.barCompact((int) (560 * 0.1638f), 600));
-        // 600x1024: (int) (600 * 0.142) = 85
-        assertFalse(MusicWidgetPlan.barCompact((int) (600 * 0.142f), 600));
+    void theBarShowsOneRowOnlyWhenTheUserAsksForIt() {
+        // the height of the bar does not matter any more: 40 px and 120 px give the same answer
+        for (int h : new int[] {40, 66, 72, 73, 91, 120}) {
+            assertFalse(MusicWidgetPlan.planBar(400, h, 1f, false).compact, "two lines " + h);
+            assertTrue(MusicWidgetPlan.planBar(400, h, 1f, true).compact, "one line " + h);
+            assertFalse(MusicWidgetPlan.planBarWide(400, h, 1f, false).compact, "wide two lines " + h);
+            assertTrue(MusicWidgetPlan.planBarWide(400, h, 1f, true).compact, "wide one line " + h);
+        }
     }
 
     @Test
@@ -61,11 +57,9 @@ class MusicWidgetPlanTest {
     }
 
     @Test
-    void theBarIsCompactOnlyAtTwelvePercent() {
-        assertTrue(MusicWidgetPlan.planBar(400, 72, 72, 600, 1f).compact);
-        assertFalse(MusicWidgetPlan.planBar(400, 91, 91, 600, 1f).compact);
-        assertTrue(MusicWidgetPlan.planBar(400, 72, 72, 600, 1f).buttonSidePx > 0);
-        assertTrue(MusicWidgetPlan.planBar(400, 91, 91, 600, 1f).buttonSidePx > 0);
+    void theBarHasButtonsInBothModes() {
+        assertTrue(MusicWidgetPlan.planBar(400, 72, 1f, true).buttonSidePx > 0);
+        assertTrue(MusicWidgetPlan.planBar(400, 91, 1f, false).buttonSidePx > 0);
     }
 
     @Test
@@ -78,9 +72,11 @@ class MusicWidgetPlanTest {
                         + home.gapPx * ((home.cover ? 1 : 0) + home.rows() + 2);
                 assertTrue(homeSum <= h, "home " + w + "x" + h + " " + home + " sum " + homeSum);
 
-                MusicWidgetPlan.Plan bar = MusicWidgetPlan.planBar(w, h, h, 1000, 1f);
-                int barSum = bar.rows() * bar.rowPx + bar.buttonRowPx + bar.gapPx * (bar.rows() + 1);
-                assertTrue(barSum <= h, "bar " + w + "x" + h + " " + bar + " sum " + barSum);
+                for (boolean oneLine : new boolean[] {false, true}) {
+                    MusicWidgetPlan.Plan bar = MusicWidgetPlan.planBar(w, h, 1f, oneLine);
+                    int barSum = bar.rows() * bar.rowPx + bar.buttonRowPx + bar.gapPx * (bar.rows() + 1);
+                    assertTrue(barSum <= h, "bar " + w + "x" + h + " " + bar + " sum " + barSum);
+                }
             }
         }
     }
@@ -109,8 +105,7 @@ class MusicWidgetPlanTest {
 
     @Test
     void theWideBarGivesTheButtonsThirtyPercentOfTheWidthIn2x2() {
-        // 359x66 would be compact; a bar of 12% + 1 px of a 600 px short side is not
-        MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(600, 90, 73, 600, 1f);
+        MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(600, 90, 1f, false);
         assertTrue(plan.wide);
         assertFalse(plan.compact);
         assertEquals(2, plan.buttonRows);
@@ -122,7 +117,7 @@ class MusicWidgetPlanTest {
 
     @Test
     void theCompactWideBarGivesTheButtonsFortyPercentInOneRow() {
-        MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(359, 66, 54, 600, 1f);
+        MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(359, 66, 1f, true);
         assertTrue(plan.wide);
         assertTrue(plan.compact);
         assertEquals(1, plan.buttonRows);
@@ -133,26 +128,18 @@ class MusicWidgetPlanTest {
     }
 
     @Test
-    void theWideBarSwitchesModeOnTheLimitOfTheUsualBar() {
-        assertTrue(MusicWidgetPlan.planBarWide(400, 72, 72, 600, 1f).compact);
-        assertFalse(MusicWidgetPlan.planBarWide(400, 73, 73, 600, 1f).compact);
-        for (int bar : new int[]{40, 66, 72, 73, 91, 120}) {
-            assertEquals(MusicWidgetPlan.planBar(400, bar, bar, 600, 1f).compact,
-                    MusicWidgetPlan.planBarWide(400, bar, bar, 600, 1f).compact);
-        }
-    }
-
-    @Test
     void thePartsOfTheWideBarFitTheWidgetInBothDirections() {
         for (int w : new int[]{200, 359, 400, 560, 800}) {
             for (int h : new int[]{40, 54, 66, 72, 73, 91, 120}) {
-                MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(w, h, h, 600, 1f);
-                int gap = (int) (w * MusicWidgetPlan.BAR_COLUMN_GAP);
-                assertTrue(plan.coverPx + gap + plan.columnPx + plan.buttonBlockPx <= w,
-                        "width " + w + "x" + h);
-                assertTrue(plan.buttonRows * plan.buttonRowPx <= h, "buttons " + w + "x" + h);
-                assertTrue(plan.rows() * (plan.rowPx + plan.gapPx) <= h, "rows " + w + "x" + h);
-                assertTrue(plan.buttonSidePx <= plan.cellWidthPx && plan.buttonSidePx <= plan.buttonRowPx);
+                for (boolean oneLine : new boolean[] {false, true}) {
+                    MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBarWide(w, h, 1f, oneLine);
+                    int gap = (int) (w * MusicWidgetPlan.BAR_COLUMN_GAP);
+                    assertTrue(plan.coverPx + gap + plan.columnPx + plan.buttonBlockPx <= w,
+                            "width " + w + "x" + h);
+                    assertTrue(plan.buttonRows * plan.buttonRowPx <= h, "buttons " + w + "x" + h);
+                    assertTrue(plan.rows() * (plan.rowPx + plan.gapPx) <= h, "rows " + w + "x" + h);
+                    assertTrue(plan.buttonSidePx <= plan.cellWidthPx && plan.buttonSidePx <= plan.buttonRowPx);
+                }
             }
         }
     }
@@ -162,9 +149,9 @@ class MusicWidgetPlanTest {
     @Test
     void largeTextIsNeverSmallerThanTheUsualTextInTheUsualBar() {
         for (int h : new int[]{40, 54, 66, 72, 73, 91, 120}) {
-            for (int bar : new int[]{h}) {
-                MusicWidgetPlan.Plan usual = MusicWidgetPlan.planBar(359, h, bar, 600, 1f, false);
-                MusicWidgetPlan.Plan large = MusicWidgetPlan.planBar(359, h, bar, 600, 1f, true);
+            for (boolean oneLine : new boolean[] {false, true}) {
+                MusicWidgetPlan.Plan usual = MusicWidgetPlan.planBar(359, h, 1f, false, oneLine);
+                MusicWidgetPlan.Plan large = MusicWidgetPlan.planBar(359, h, 1f, true, oneLine);
                 assertTrue(large.textPx >= usual.textPx, "text " + h);
                 assertTrue(large.rowPx >= usual.rowPx, "row " + h);
             }
@@ -174,22 +161,26 @@ class MusicWidgetPlanTest {
     @Test
     void largeTextIsNeverSmallerThanTheUsualTextInTheWideBar() {
         for (int h : new int[]{40, 54, 66, 72, 73, 91, 120}) {
-            MusicWidgetPlan.Plan usual = MusicWidgetPlan.planBarWide(359, h, h, 600, 1f, false);
-            MusicWidgetPlan.Plan large = MusicWidgetPlan.planBarWide(359, h, h, 600, 1f, true);
-            assertTrue(large.textPx >= usual.textPx, "text " + h);
-            // the block of buttons keeps its width
-            assertEquals(usual.buttonBlockPx, large.buttonBlockPx);
-            assertEquals(usual.buttonRows, large.buttonRows);
+            for (boolean oneLine : new boolean[] {false, true}) {
+                MusicWidgetPlan.Plan usual = MusicWidgetPlan.planBarWide(359, h, 1f, false, oneLine);
+                MusicWidgetPlan.Plan large = MusicWidgetPlan.planBarWide(359, h, 1f, true, oneLine);
+                assertTrue(large.textPx >= usual.textPx, "text " + h);
+                // the block of buttons keeps its width
+                assertEquals(usual.buttonBlockPx, large.buttonBlockPx);
+                assertEquals(usual.buttonRows, large.buttonRows);
+            }
         }
     }
 
     @Test
     void largeTextKeepsTheButtonsAsBigAsTheirRowAllows() {
         for (int h : new int[]{40, 54, 66, 72, 73, 91, 120}) {
-            MusicWidgetPlan.Plan usual = MusicWidgetPlan.planBar(359, h, h, 600, 1f, false);
-            MusicWidgetPlan.Plan large = MusicWidgetPlan.planBar(359, h, h, 600, 1f, true);
-            assertTrue(large.buttonSidePx >= Math.min(usual.buttonSidePx, large.buttonRowPx), "buttons " + h);
-            assertTrue(large.buttonSidePx <= large.buttonRowPx + 1, "row " + h);
+            for (boolean oneLine : new boolean[] {false, true}) {
+                MusicWidgetPlan.Plan usual = MusicWidgetPlan.planBar(359, h, 1f, false, oneLine);
+                MusicWidgetPlan.Plan large = MusicWidgetPlan.planBar(359, h, 1f, true, oneLine);
+                assertTrue(large.buttonSidePx >= Math.min(usual.buttonSidePx, large.buttonRowPx), "buttons " + h);
+                assertTrue(large.buttonSidePx <= large.buttonRowPx + 1, "row " + h);
+            }
         }
     }
 
@@ -208,10 +199,12 @@ class MusicWidgetPlanTest {
         assertTrue(wide <= 1.0001f);
         assertTrue(wideCompact <= 1.0001f);
         for (int h : new int[]{40, 66, 91, 120}) {
-            MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBar(359, h, h, 600, 1f, true);
-            assertTrue(plan.rows() * (plan.rowPx + plan.gapPx) + plan.buttonRowPx <= h + (plan.compact ? 0 : 0), "bar " + h);
-            MusicWidgetPlan.Plan wideLarge = MusicWidgetPlan.planBarWide(359, h, h, 600, 1f, true);
-            assertTrue(wideLarge.rows() * (wideLarge.rowPx + wideLarge.gapPx) <= h, "wide " + h);
+            for (boolean oneLine : new boolean[] {false, true}) {
+                MusicWidgetPlan.Plan plan = MusicWidgetPlan.planBar(359, h, 1f, true, oneLine);
+                assertTrue(plan.rows() * (plan.rowPx + plan.gapPx) + plan.buttonRowPx <= h, "bar " + h);
+                MusicWidgetPlan.Plan wideLarge = MusicWidgetPlan.planBarWide(359, h, 1f, true, oneLine);
+                assertTrue(wideLarge.rows() * (wideLarge.rowPx + wideLarge.gapPx) <= h, "wide " + h);
+            }
         }
     }
 }

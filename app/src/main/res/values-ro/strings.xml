@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Afișată pe fiecare pagină a ecranului de pornire</string>
     <string name="bottom_bar_every_page_off">Doar pe prima pagină</string>
     <string name="bottom_bar_every_page_no_overlay">Necesită permisiunea de afișare peste alte aplicații</string>
+    <string name="widget_bar_one_line">Titlul și artistul pe un singur rând</string>
+    <string name="widget_bar_one_line_on">Un rând: artist – titlu</string>
+    <string name="widget_bar_one_line_off">Titlul deasupra artistului</string>
 </resources>

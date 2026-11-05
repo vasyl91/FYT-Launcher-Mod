@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">បង្ហាញនៅគ្រប់ទំព័រនៃអេក្រង់ដើម</string>
     <string name="bottom_bar_every_page_off">តែនៅទំព័រដំបូងប៉ុណ្ណោះ</string>
     <string name="bottom_bar_every_page_no_overlay">ត្រូវការការអនុញ្ញាតឱ្យបង្ហាញលើកម្មវិធីផ្សេងទៀត</string>
+    <string name="widget_bar_one_line">ចំណងជើង និងសិល្បករក្នុងបន្ទាត់តែមួយ</string>
+    <string name="widget_bar_one_line_on">មួយបន្ទាត់៖ សិល្បករ – ចំណងជើង</string>
+    <string name="widget_bar_one_line_off">ចំណងជើងនៅលើសិល្បករ</string>
 </resources>

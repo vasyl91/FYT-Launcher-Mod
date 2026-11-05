@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">Es mostra a cada pàgina de la pantalla d\'inici</string>
     <string name="bottom_bar_every_page_off">Només a la primera pàgina</string>
     <string name="bottom_bar_every_page_no_overlay">Cal el permís per mostrar sobre altres aplicacions</string>
+    <string name="widget_bar_one_line">Títol i artista en una sola línia</string>
+    <string name="widget_bar_one_line_on">Una línia: artista – títol</string>
+    <string name="widget_bar_one_line_off">El títol damunt de l\'artista</string>
 </resources>

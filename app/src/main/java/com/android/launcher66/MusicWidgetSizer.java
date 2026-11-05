@@ -130,17 +130,18 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         float density = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 1f, dm);
         MusicWidgetPlan.Plan plan;
         if (mBar) {
-            int shortSide = Math.min(Launcher.screenWidth, Launcher.screenHeight);
             View buttons = mRoot.findViewById(R.id.music_bar_buttons);
-            boolean largeText = androidx.preference.PreferenceManager
-                    .getDefaultSharedPreferences(mRoot.getContext())
-                    .getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_LARGE_TEXT, false);
+            android.content.SharedPreferences prefs = androidx.preference.PreferenceManager
+                    .getDefaultSharedPreferences(mRoot.getContext());
+            boolean largeText = prefs.getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_LARGE_TEXT, false);
+            // The user's choice on every bar height (it used to follow the height of the bar)
+            boolean oneLine = prefs.getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_ONE_LINE, false);
             if (buttons instanceof FlexboxLayout) {
                 // The wide layout (WidgetBarLayout): the buttons are a block beside the text.
-                plan = MusicWidgetPlan.planBarWide(w, h, barH, shortSide, density, largeText);
+                plan = MusicWidgetPlan.planBarWide(w, h, density, largeText, oneLine);
                 applyBarWide(plan, w);
             } else {
-                plan = MusicWidgetPlan.planBar(w, h, barH, shortSide, density, largeText);
+                plan = MusicWidgetPlan.planBar(w, h, density, largeText, oneLine);
                 applyBar(plan, w);
             }
         } else {

@@ -513,4 +513,7 @@
     <string name="bottom_bar_every_page_on">ສະແດງໃນທຸກໜ້າຂອງໜ້າຈໍຫຼັກ</string>
     <string name="bottom_bar_every_page_off">ສະເພາະໜ້າທຳອິດ</string>
     <string name="bottom_bar_every_page_no_overlay">ຕ້ອງການສິດໃນການສະແດງທັບແອັບອື່ນ</string>
+    <string name="widget_bar_one_line">ຊື່ເພງ ແລະ ນັກຮ້ອງໃນແຖວດຽວ</string>
+    <string name="widget_bar_one_line_on">ແຖວດຽວ: ນັກຮ້ອງ – ຊື່ເພງ</string>
+    <string name="widget_bar_one_line_off">ຊື່ເພງຢູ່ເໜືອນັກຮ້ອງ</string>
 </resources>

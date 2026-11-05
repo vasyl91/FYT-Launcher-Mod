@@ -122,6 +122,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomSwitchPreference widgetBarNoDatePreference;
     private CustomSwitchPreference widgetBarNoWeatherPreference;
     private CustomSwitchPreference widgetBarLargeTextPreference;
+    private CustomSwitchPreference widgetBarOneLinePreference;
     private SwitchPreferenceCompat resizableBarPreference;
     private BottomBarHeightSeekBarPreference barHeightSeekBar;
     private Preference margin;
@@ -365,6 +366,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         widgetBarNoDatePreference = findPreference(Keys.WIDGET_BAR_NO_DATE);
         widgetBarNoWeatherPreference = findPreference(Keys.WIDGET_BAR_NO_WEATHER);
         widgetBarLargeTextPreference = findPreference(Keys.WIDGET_BAR_LARGE_TEXT);
+        widgetBarOneLinePreference = findPreference(Keys.WIDGET_BAR_ONE_LINE);
 
         margin = findPreference(Keys.LAYOUT_MARGIN);
         String marginStr = sharedPrefs.getString(Keys.LAYOUT_MARGIN, "5");
@@ -564,6 +566,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (widgetBarLargeTextPreference != null) {
             widgetBarLargeTextPreference.setOnPreferenceClickListener(this);
+        }
+        if (widgetBarOneLinePreference != null) {
+            widgetBarOneLinePreference.setOnPreferenceClickListener(this);
         }
         updateWidgetBarRows();
         if (margin != null) {
@@ -771,6 +776,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             case Keys.WIDGET_BAR_NO_DATE:
             case Keys.WIDGET_BAR_NO_WEATHER:
             case Keys.WIDGET_BAR_LARGE_TEXT:
+            case Keys.WIDGET_BAR_ONE_LINE:
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.LAYOUT_MARGIN:
@@ -1114,6 +1120,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         widgetBarNoDatePreference = null;
         widgetBarNoWeatherPreference = null;
         widgetBarLargeTextPreference = null;
+        widgetBarOneLinePreference = null;
         resizableBarPreference = null;
         barHeightSeekBar = null;
         imm = null;
@@ -1150,6 +1157,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (widgetBarLargeTextPreference != null) {
             widgetBarLargeTextPreference.setVisible(widgetBar);
+        }
+        if (widgetBarOneLinePreference != null) {
+            widgetBarOneLinePreference.setVisible(widgetBar);
         }
     }
 
