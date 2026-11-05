@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">يظهر في كل صفحة من الشاشة الرئيسية</string>
     <string name="bottom_bar_every_page_off">في الصفحة الأولى فقط</string>
     <string name="bottom_bar_every_page_no_overlay">يتطلب إذن العرض فوق التطبيقات الأخرى</string>
-    <string name="widget_bar_one_line">العنوان والفنان في سطر واحد</string>
+    <string name="widget_bar_line_mode">ترتيب العنوان والفنان</string>
     <string name="widget_bar_one_line_on">سطر واحد: الفنان – العنوان</string>
     <string name="widget_bar_one_line_off">العنوان فوق اسم الفنان</string>
     <string name="widget_bar_buttons_beside">الأزرار بجانب العنوان</string>
-    <string name="widget_bar_buttons_beside_on">صفّان من الأزرار على يمين العنوان والفنان</string>
+    <string name="widget_bar_buttons_beside_on">الأزرار على يمين العنوان والفنان</string>
     <string name="widget_bar_buttons_beside_off">الأزرار تحت العنوان والفنان</string>
     <string name="widget_bar_one_line_reversed">سطر واحد: العنوان – الفنان</string>
     <string name="widget_bar_buttons_one_line">الأزرار في سطر واحد</string>

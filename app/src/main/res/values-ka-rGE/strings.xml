@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">ჩანს მთავარი ეკრანის ყველა გვერდზე</string>
     <string name="bottom_bar_every_page_off">მხოლოდ პირველ გვერდზე</string>
     <string name="bottom_bar_every_page_no_overlay">საჭიროა სხვა აპებზე გამოსახვის ნებართვა</string>
-    <string name="widget_bar_one_line">სათაური და შემსრულებელი ერთ ხაზზე</string>
+    <string name="widget_bar_line_mode">სათაურისა და შემსრულებლის განლაგება</string>
     <string name="widget_bar_one_line_on">ერთი ხაზი: შემსრულებელი – სათაური</string>
     <string name="widget_bar_one_line_off">სათაური შემსრულებლის ზემოთ</string>
     <string name="widget_bar_buttons_beside">ღილაკები სათაურის გვერდით</string>
-    <string name="widget_bar_buttons_beside_on">ღილაკების ორი რიგი სათაურისა და შემსრულებლის მარჯვნივ</string>
+    <string name="widget_bar_buttons_beside_on">ღილაკები სათაურისა და შემსრულებლის მარჯვნივ</string>
     <string name="widget_bar_buttons_beside_off">ღილაკები სათაურისა და შემსრულებლის ქვემოთ</string>
     <string name="widget_bar_one_line_reversed">ერთი ხაზი: სათაური – შემსრულებელი</string>
     <string name="widget_bar_buttons_one_line">ღილაკები ერთ რიგში</string>

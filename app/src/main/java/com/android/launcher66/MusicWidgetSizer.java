@@ -141,10 +141,10 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
                     .getDefaultSharedPreferences(mRoot.getContext());
             boolean largeText = prefs.getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_LARGE_TEXT, false);
             // The user's choice on every bar height (it used to follow the height of the bar)
-            // The user's choice with the buttons beside the text; one line always without (WidgetBarLines)
+            // The user's arrangement of the title and artist, in either layout (WidgetBarLines)
             boolean portraitBar = mRoot.getResources().getConfiguration().orientation
                     == android.content.res.Configuration.ORIENTATION_PORTRAIT;
-            boolean oneLine = WidgetBarLayout.lineText(prefs, portraitBar).oneLine();
+            boolean oneLine = WidgetBarLayout.lineText(prefs).oneLine();
             // The cover and the space behind it are sized from the widget's usual width, the one it
             // has with the date and the weather shown, so they do not move when those are hidden.
             boolean portrait = portraitBar;

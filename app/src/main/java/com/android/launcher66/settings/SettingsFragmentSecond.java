@@ -1168,7 +1168,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
      * The rows under "Widget bottom bar" are shown only while it is on. The date is hidden in
      * landscape only: the portrait bar has no date. "Buttons beside the title" is shown only
      * while something is hidden (that is when the music widget has room to put them there), and
-     * "Title and artist in one line" and "Buttons in one line" only while the buttons are beside.
+     * "Buttons in one line" only while the buttons are beside. "Title and artist arrangement"
+     * and "Large text" are always shown. Their order is the order in creator_preferences.xml.
      */
     private void updateWidgetBarRows() {
         boolean widgetBar = sharedPrefs.getBoolean(Keys.WIDGET_BAR, false);
@@ -1190,11 +1191,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (widgetBarLargeTextPreference != null) {
             widgetBarLargeTextPreference.setVisible(widgetBar);
         }
-        // Only with the buttons beside the text: without them the text is always one line
         boolean beside = WidgetBarPlan.buttonsBeside(dateHidden, weatherHidden,
                 sharedPrefs.getBoolean(Keys.WIDGET_BAR_BUTTONS_BESIDE, true));
         if (widgetBarLineModePreference != null) {
-            widgetBarLineModePreference.setVisible(widgetBar && beside);
+            widgetBarLineModePreference.setVisible(widgetBar);
         }
         if (widgetBarButtonsOneLinePreference != null) {
             widgetBarButtonsOneLinePreference.setVisible(widgetBar && beside);

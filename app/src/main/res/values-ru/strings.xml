@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Показывается на каждой странице главного экрана</string>
     <string name="bottom_bar_every_page_off">Только на первой странице</string>
     <string name="bottom_bar_every_page_no_overlay">Нужно разрешение на показ поверх других приложений</string>
-    <string name="widget_bar_one_line">Название и исполнитель в одной строке</string>
+    <string name="widget_bar_line_mode">Расположение названия и исполнителя</string>
     <string name="widget_bar_one_line_on">Одна строка: исполнитель – название</string>
     <string name="widget_bar_one_line_off">Название над исполнителем</string>
     <string name="widget_bar_buttons_beside">Кнопки рядом с названием</string>
-    <string name="widget_bar_buttons_beside_on">Два ряда кнопок справа от названия и исполнителя</string>
+    <string name="widget_bar_buttons_beside_on">Кнопки справа от названия и исполнителя</string>
     <string name="widget_bar_buttons_beside_off">Кнопки под названием и исполнителем</string>
     <string name="widget_bar_one_line_reversed">Одна строка: название – исполнитель</string>
     <string name="widget_bar_buttons_one_line">Кнопки в один ряд</string>

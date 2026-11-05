@@ -953,9 +953,7 @@ final class LauncherMusicWidget {
 
     /** The bar's one line reads "title - artist" when the user chose that order (see WidgetBarLines). */
     private boolean barTitleFirst() {
-        boolean portrait = mLauncher.getResources().getConfiguration().orientation
-                == android.content.res.Configuration.ORIENTATION_PORTRAIT;
-        return WidgetBarLayout.lineText(mLauncher.mPrefs, portrait) == WidgetBarLines.Text.TITLE_ARTIST;
+        return WidgetBarLayout.lineText(mLauncher.mPrefs) == WidgetBarLines.Text.TITLE_ARTIST;
     }
 
     private void renderPair(TextView first, TextView second, boolean compact, boolean titleFirst) {

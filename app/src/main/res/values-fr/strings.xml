@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Affichée sur chaque page de l\'écran d\'accueil</string>
     <string name="bottom_bar_every_page_off">Uniquement sur la première page</string>
     <string name="bottom_bar_every_page_no_overlay">Nécessite l\'autorisation d\'afficher par-dessus les autres applications</string>
-    <string name="widget_bar_one_line">Titre et artiste sur une seule ligne</string>
+    <string name="widget_bar_line_mode">Disposition du titre et de l\'artiste</string>
     <string name="widget_bar_one_line_on">Une ligne : artiste – titre</string>
     <string name="widget_bar_one_line_off">Le titre au-dessus de l\'artiste</string>
     <string name="widget_bar_buttons_beside">Boutons à côté du titre</string>
-    <string name="widget_bar_buttons_beside_on">Deux rangées de boutons à droite du titre et de l\'artiste</string>
+    <string name="widget_bar_buttons_beside_on">Boutons à droite du titre et de l\'artiste</string>
     <string name="widget_bar_buttons_beside_off">Boutons sous le titre et l\'artiste</string>
     <string name="widget_bar_one_line_reversed">Une ligne : titre – artiste</string>
     <string name="widget_bar_buttons_one_line">Boutons sur une seule rangée</string>

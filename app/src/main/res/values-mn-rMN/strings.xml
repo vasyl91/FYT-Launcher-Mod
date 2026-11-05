@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Үндсэн дэлгэцийн хуудас бүр дээр харагдана</string>
     <string name="bottom_bar_every_page_off">Зөвхөн эхний хуудас дээр</string>
     <string name="bottom_bar_every_page_no_overlay">Бусад аппын дээр харуулах зөвшөөрөл шаардлагатай</string>
-    <string name="widget_bar_one_line">Гарчиг болон уран бүтээлчийг нэг мөрөнд</string>
+    <string name="widget_bar_line_mode">Гарчиг, уран бүтээлчийн байршил</string>
     <string name="widget_bar_one_line_on">Нэг мөр: уран бүтээлч – гарчиг</string>
     <string name="widget_bar_one_line_off">Гарчиг уран бүтээлчийн дээр</string>
     <string name="widget_bar_buttons_beside">Товчнууд гарчгийн хажууд</string>
-    <string name="widget_bar_buttons_beside_on">Гарчиг, уран бүтээлчийн баруун талд хоёр мөр товч</string>
+    <string name="widget_bar_buttons_beside_on">Товчнууд гарчиг, уран бүтээлчийн баруун талд</string>
     <string name="widget_bar_buttons_beside_off">Товчнууд гарчиг, уран бүтээлчийн доор</string>
     <string name="widget_bar_one_line_reversed">Нэг мөр: гарчиг – уран бүтээлч</string>
     <string name="widget_bar_buttons_one_line">Товчнууд нэг мөрөнд</string>

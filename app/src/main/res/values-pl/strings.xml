@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Widoczny na każdej stronie ekranu głównego</string>
     <string name="bottom_bar_every_page_off">Tylko na pierwszej stronie</string>
     <string name="bottom_bar_every_page_no_overlay">Wymaga zgody na wyświetlanie nad innymi aplikacjami</string>
-    <string name="widget_bar_one_line">Tytuł i wykonawca w jednej linii</string>
+    <string name="widget_bar_line_mode">Układ tytułu i wykonawcy</string>
     <string name="widget_bar_one_line_on">Jedna linia: wykonawca – tytuł</string>
     <string name="widget_bar_one_line_off">Tytuł nad wykonawcą</string>
     <string name="widget_bar_buttons_beside">Przyciski obok tytułu</string>
-    <string name="widget_bar_buttons_beside_on">Dwa rzędy przycisków na prawo od tytułu i wykonawcy</string>
+    <string name="widget_bar_buttons_beside_on">Przyciski na prawo od tytułu i wykonawcy</string>
     <string name="widget_bar_buttons_beside_off">Przyciski pod tytułem i wykonawcą</string>
     <string name="widget_bar_one_line_reversed">Jedna linia: tytuł – wykonawca</string>
     <string name="widget_bar_buttons_one_line">Przyciski w jednej linii</string>

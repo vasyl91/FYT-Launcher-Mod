@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Rodoma kiekviename pagrindinio ekrano puslapyje</string>
     <string name="bottom_bar_every_page_off">Tik pirmame puslapyje</string>
     <string name="bottom_bar_every_page_no_overlay">Reikia leidimo rodyti virš kitų programų</string>
-    <string name="widget_bar_one_line">Pavadinimas ir atlikėjas vienoje eilutėje</string>
+    <string name="widget_bar_line_mode">Pavadinimo ir atlikėjo išdėstymas</string>
     <string name="widget_bar_one_line_on">Viena eilutė: atlikėjas – pavadinimas</string>
     <string name="widget_bar_one_line_off">Pavadinimas virš atlikėjo</string>
     <string name="widget_bar_buttons_beside">Mygtukai šalia pavadinimo</string>
-    <string name="widget_bar_buttons_beside_on">Dvi mygtukų eilės dešinėje nuo pavadinimo ir atlikėjo</string>
+    <string name="widget_bar_buttons_beside_on">Mygtukai dešinėje nuo pavadinimo ir atlikėjo</string>
     <string name="widget_bar_buttons_beside_off">Mygtukai po pavadinimu ir atlikėju</string>
     <string name="widget_bar_one_line_reversed">Viena eilutė: pavadinimas – atlikėjas</string>
     <string name="widget_bar_buttons_one_line">Mygtukai vienoje eilutėje</string>

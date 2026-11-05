@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Prikazana na vsaki strani začetnega zaslona</string>
     <string name="bottom_bar_every_page_off">Samo na prvi strani</string>
     <string name="bottom_bar_every_page_no_overlay">Zahteva dovoljenje za prikaz čez druge aplikacije</string>
-    <string name="widget_bar_one_line">Naslov in izvajalec v eni vrstici</string>
+    <string name="widget_bar_line_mode">Razporeditev naslova in izvajalca</string>
     <string name="widget_bar_one_line_on">Ena vrstica: izvajalec – naslov</string>
     <string name="widget_bar_one_line_off">Naslov nad izvajalcem</string>
     <string name="widget_bar_buttons_beside">Gumbi ob naslovu</string>
-    <string name="widget_bar_buttons_beside_on">Dve vrsti gumbov desno od naslova in izvajalca</string>
+    <string name="widget_bar_buttons_beside_on">Gumbi desno od naslova in izvajalca</string>
     <string name="widget_bar_buttons_beside_off">Gumbi pod naslovom in izvajalcem</string>
     <string name="widget_bar_one_line_reversed">Ena vrstica: naslov – izvajalec</string>
     <string name="widget_bar_buttons_one_line">Gumbi v eni vrsti</string>

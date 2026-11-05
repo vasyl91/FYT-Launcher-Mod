@@ -36,23 +36,6 @@ class WidgetBarLinesTest {
     }
 
     @Test
-    void withTheButtonsBesideTheChoiceIsUsed() {
-        for (WidgetBarLines.Text text : WidgetBarLines.Text.values()) {
-            assertEquals(text, WidgetBarLines.effective(text, true));
-        }
-    }
-
-    @Test
-    void withoutTheButtonsBesideTheTextIsAlwaysOneLine() {
-        assertEquals(ARTIST_TITLE, WidgetBarLines.effective(TWO_LINES, false));
-        assertEquals(ARTIST_TITLE, WidgetBarLines.effective(ARTIST_TITLE, false));
-        assertEquals(TITLE_ARTIST, WidgetBarLines.effective(TITLE_ARTIST, false));
-        for (WidgetBarLines.Text text : WidgetBarLines.Text.values()) {
-            assertTrue(WidgetBarLines.effective(text, false).oneLine());
-        }
-    }
-
-    @Test
     void theButtonsGoInOneRowOnlyBesideTheText() {
         assertTrue(WidgetBarLines.buttonsInOneRow(true, true));
         assertFalse(WidgetBarLines.buttonsInOneRow(true, false));

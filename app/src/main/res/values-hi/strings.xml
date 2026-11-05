@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">होम स्क्रीन के हर पेज पर दिखता है</string>
     <string name="bottom_bar_every_page_off">केवल पहले पेज पर</string>
     <string name="bottom_bar_every_page_no_overlay">दूसरे ऐप्लिकेशन के ऊपर दिखाने की अनुमति ज़रूरी है</string>
-    <string name="widget_bar_one_line">शीर्षक और कलाकार एक ही पंक्ति में</string>
+    <string name="widget_bar_line_mode">शीर्षक और कलाकार का क्रम</string>
     <string name="widget_bar_one_line_on">एक पंक्ति: कलाकार – शीर्षक</string>
     <string name="widget_bar_one_line_off">शीर्षक कलाकार के ऊपर</string>
     <string name="widget_bar_buttons_beside">बटन शीर्षक के बगल में</string>
-    <string name="widget_bar_buttons_beside_on">शीर्षक और कलाकार के दाईं ओर बटनों की दो पंक्तियाँ</string>
+    <string name="widget_bar_buttons_beside_on">बटन शीर्षक और कलाकार के दाईं ओर</string>
     <string name="widget_bar_buttons_beside_off">बटन शीर्षक और कलाकार के नीचे</string>
     <string name="widget_bar_one_line_reversed">एक पंक्ति: शीर्षक – कलाकार</string>
     <string name="widget_bar_buttons_one_line">बटन एक पंक्ति में</string>

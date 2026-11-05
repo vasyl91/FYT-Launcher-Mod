@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Visibla sin mintga pagina da la surfatscha da partenza</string>
     <string name="bottom_bar_every_page_off">Be sin l\'emprima pagina</string>
     <string name="bottom_bar_every_page_no_overlay">Dovra l\'autorisaziun da mussar sur autras apps</string>
-    <string name="widget_bar_one_line">Titel ed artist en ina lingia</string>
+    <string name="widget_bar_line_mode">Disposiziun dal titel e da l\'artist</string>
     <string name="widget_bar_one_line_on">Ina lingia: artist – titel</string>
     <string name="widget_bar_one_line_off">Il titel sur l\'artist</string>
     <string name="widget_bar_buttons_beside">Buttuns ordaifer il titel</string>
-    <string name="widget_bar_buttons_beside_on">Duas retschas da buttuns a dretga dal titel e da l\'artist</string>
+    <string name="widget_bar_buttons_beside_on">Buttuns a dretga dal titel e da l\'artist</string>
     <string name="widget_bar_buttons_beside_off">Buttuns sut il titel e l\'artist</string>
     <string name="widget_bar_one_line_reversed">Ina lingia: titel – artist</string>
     <string name="widget_bar_buttons_one_line">Buttuns en ina retscha</string>

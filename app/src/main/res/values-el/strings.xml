@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Εμφανίζεται σε κάθε σελίδα της αρχικής οθόνης</string>
     <string name="bottom_bar_every_page_off">Μόνο στην πρώτη σελίδα</string>
     <string name="bottom_bar_every_page_no_overlay">Απαιτείται η άδεια εμφάνισης πάνω από άλλες εφαρμογές</string>
-    <string name="widget_bar_one_line">Τίτλος και καλλιτέχνης σε μία γραμμή</string>
+    <string name="widget_bar_line_mode">Διάταξη τίτλου και καλλιτέχνη</string>
     <string name="widget_bar_one_line_on">Μία γραμμή: καλλιτέχνης – τίτλος</string>
     <string name="widget_bar_one_line_off">Ο τίτλος πάνω από τον καλλιτέχνη</string>
     <string name="widget_bar_buttons_beside">Κουμπιά δίπλα στον τίτλο</string>
-    <string name="widget_bar_buttons_beside_on">Δύο σειρές κουμπιών δεξιά από τον τίτλο και τον καλλιτέχνη</string>
+    <string name="widget_bar_buttons_beside_on">Κουμπιά δεξιά από τον τίτλο και τον καλλιτέχνη</string>
     <string name="widget_bar_buttons_beside_off">Κουμπιά κάτω από τον τίτλο και τον καλλιτέχνη</string>
     <string name="widget_bar_one_line_reversed">Μία γραμμή: τίτλος – καλλιτέχνης</string>
     <string name="widget_bar_buttons_one_line">Κουμπιά σε μία σειρά</string>

@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Hiển thị ở mọi trang của màn hình chính</string>
     <string name="bottom_bar_every_page_off">Chỉ ở trang đầu tiên</string>
     <string name="bottom_bar_every_page_no_overlay">Cần quyền hiển thị trên các ứng dụng khác</string>
-    <string name="widget_bar_one_line">Tiêu đề và nghệ sĩ trên một dòng</string>
+    <string name="widget_bar_line_mode">Bố cục tiêu đề và nghệ sĩ</string>
     <string name="widget_bar_one_line_on">Một dòng: nghệ sĩ – tiêu đề</string>
     <string name="widget_bar_one_line_off">Tiêu đề ở trên nghệ sĩ</string>
     <string name="widget_bar_buttons_beside">Nút bên cạnh tiêu đề</string>
-    <string name="widget_bar_buttons_beside_on">Hai hàng nút ở bên phải tiêu đề và nghệ sĩ</string>
+    <string name="widget_bar_buttons_beside_on">Nút ở bên phải tiêu đề và nghệ sĩ</string>
     <string name="widget_bar_buttons_beside_off">Nút bên dưới tiêu đề và nghệ sĩ</string>
     <string name="widget_bar_one_line_reversed">Một dòng: tiêu đề – nghệ sĩ</string>
     <string name="widget_bar_buttons_one_line">Nút trên một hàng</string>

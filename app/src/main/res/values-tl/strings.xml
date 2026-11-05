@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Ipinapakita sa bawat pahina ng home screen</string>
     <string name="bottom_bar_every_page_off">Sa unang pahina lang</string>
     <string name="bottom_bar_every_page_no_overlay">Kailangan ng pahintulot na magpakita sa ibabaw ng iba pang app</string>
-    <string name="widget_bar_one_line">Pamagat at artist sa isang linya</string>
+    <string name="widget_bar_line_mode">Ayos ng pamagat at artist</string>
     <string name="widget_bar_one_line_on">Isang linya: artist – pamagat</string>
     <string name="widget_bar_one_line_off">Ang pamagat sa itaas ng artist</string>
     <string name="widget_bar_buttons_beside">Mga button sa tabi ng pamagat</string>
-    <string name="widget_bar_buttons_beside_on">Dalawang hanay ng mga button sa kanan ng pamagat at artist</string>
+    <string name="widget_bar_buttons_beside_on">Mga button sa kanan ng pamagat at artist</string>
     <string name="widget_bar_buttons_beside_off">Mga button sa ibaba ng pamagat at artist</string>
     <string name="widget_bar_one_line_reversed">Isang linya: pamagat – artist</string>
     <string name="widget_bar_buttons_one_line">Mga button sa isang hanay</string>

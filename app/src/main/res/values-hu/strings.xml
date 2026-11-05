@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">A kezdőképernyő minden oldalán látható</string>
     <string name="bottom_bar_every_page_off">Csak az első oldalon</string>
     <string name="bottom_bar_every_page_no_overlay">Engedély kell a más alkalmazások feletti megjelenítéshez</string>
-    <string name="widget_bar_one_line">Cím és előadó egy sorban</string>
+    <string name="widget_bar_line_mode">A cím és az előadó elrendezése</string>
     <string name="widget_bar_one_line_on">Egy sor: előadó – cím</string>
     <string name="widget_bar_one_line_off">A cím az előadó felett</string>
     <string name="widget_bar_buttons_beside">Gombok a cím mellett</string>
-    <string name="widget_bar_buttons_beside_on">Két sor gomb a cím és az előadó jobb oldalán</string>
+    <string name="widget_bar_buttons_beside_on">Gombok a cím és az előadó jobb oldalán</string>
     <string name="widget_bar_buttons_beside_off">Gombok a cím és az előadó alatt</string>
     <string name="widget_bar_one_line_reversed">Egy sor: cím – előadó</string>
     <string name="widget_bar_buttons_one_line">Gombok egy sorban</string>

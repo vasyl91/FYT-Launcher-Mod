@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">แสดงในทุกหน้าของหน้าจอหลัก</string>
     <string name="bottom_bar_every_page_off">เฉพาะหน้าแรก</string>
     <string name="bottom_bar_every_page_no_overlay">ต้องได้รับสิทธิ์แสดงทับแอปอื่น</string>
-    <string name="widget_bar_one_line">ชื่อเพลงและศิลปินในบรรทัดเดียว</string>
+    <string name="widget_bar_line_mode">การจัดวางชื่อเพลงและศิลปิน</string>
     <string name="widget_bar_one_line_on">บรรทัดเดียว: ศิลปิน – ชื่อเพลง</string>
     <string name="widget_bar_one_line_off">ชื่อเพลงอยู่เหนือศิลปิน</string>
     <string name="widget_bar_buttons_beside">ปุ่มอยู่ข้างชื่อเพลง</string>
-    <string name="widget_bar_buttons_beside_on">ปุ่มสองแถวทางขวาของชื่อเพลงและศิลปิน</string>
+    <string name="widget_bar_buttons_beside_on">ปุ่มอยู่ทางขวาของชื่อเพลงและศิลปิน</string>
     <string name="widget_bar_buttons_beside_off">ปุ่มอยู่ใต้ชื่อเพลงและศิลปิน</string>
     <string name="widget_bar_one_line_reversed">บรรทัดเดียว: ชื่อเพลง – ศิลปิน</string>
     <string name="widget_bar_buttons_one_line">ปุ่มในแถวเดียว</string>

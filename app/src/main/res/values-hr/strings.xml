@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Prikazuje se na svakoj stranici početnog zaslona</string>
     <string name="bottom_bar_every_page_off">Samo na prvoj stranici</string>
     <string name="bottom_bar_every_page_no_overlay">Potrebno je dopuštenje za prikaz preko drugih aplikacija</string>
-    <string name="widget_bar_one_line">Naslov i izvođač u jednom retku</string>
+    <string name="widget_bar_line_mode">Raspored naslova i izvođača</string>
     <string name="widget_bar_one_line_on">Jedan redak: izvođač – naslov</string>
     <string name="widget_bar_one_line_off">Naslov iznad izvođača</string>
     <string name="widget_bar_buttons_beside">Gumbi pokraj naslova</string>
-    <string name="widget_bar_buttons_beside_on">Dva reda gumba desno od naslova i izvođača</string>
+    <string name="widget_bar_buttons_beside_on">Gumbi desno od naslova i izvođača</string>
     <string name="widget_bar_buttons_beside_off">Gumbi ispod naslova i izvođača</string>
     <string name="widget_bar_one_line_reversed">Jedan redak: naslov – izvođač</string>
     <string name="widget_bar_buttons_one_line">Gumbi u jednom redu</string>

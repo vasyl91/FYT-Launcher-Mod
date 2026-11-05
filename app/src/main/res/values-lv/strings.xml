@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Tiek rādīta katrā sākuma ekrāna lapā</string>
     <string name="bottom_bar_every_page_off">Tikai pirmajā lapā</string>
     <string name="bottom_bar_every_page_no_overlay">Nepieciešama atļauja attēlot pāri citām lietotnēm</string>
-    <string name="widget_bar_one_line">Nosaukums un izpildītājs vienā rindā</string>
+    <string name="widget_bar_line_mode">Nosaukuma un izpildītāja izkārtojums</string>
     <string name="widget_bar_one_line_on">Viena rinda: izpildītājs – nosaukums</string>
     <string name="widget_bar_one_line_off">Nosaukums virs izpildītāja</string>
     <string name="widget_bar_buttons_beside">Pogas blakus nosaukumam</string>
-    <string name="widget_bar_buttons_beside_on">Divas pogu rindas pa labi no nosaukuma un izpildītāja</string>
+    <string name="widget_bar_buttons_beside_on">Pogas pa labi no nosaukuma un izpildītāja</string>
     <string name="widget_bar_buttons_beside_off">Pogas zem nosaukuma un izpildītāja</string>
     <string name="widget_bar_one_line_reversed">Viena rinda: nosaukums – izpildītājs</string>
     <string name="widget_bar_buttons_one_line">Pogas vienā rindā</string>

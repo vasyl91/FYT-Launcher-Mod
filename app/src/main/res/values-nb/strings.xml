@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Vises på alle sidene på startskjermen</string>
     <string name="bottom_bar_every_page_off">Bare på første side</string>
     <string name="bottom_bar_every_page_no_overlay">Krever tillatelse til å vises over andre apper</string>
-    <string name="widget_bar_one_line">Tittel og artist på én linje</string>
+    <string name="widget_bar_line_mode">Plassering av tittel og artist</string>
     <string name="widget_bar_one_line_on">Én linje: artist – tittel</string>
     <string name="widget_bar_one_line_off">Tittelen over artisten</string>
     <string name="widget_bar_buttons_beside">Knapper ved siden av tittelen</string>
-    <string name="widget_bar_buttons_beside_on">To rader med knapper til høyre for tittel og artist</string>
+    <string name="widget_bar_buttons_beside_on">Knapper til høyre for tittel og artist</string>
     <string name="widget_bar_buttons_beside_off">Knapper under tittel og artist</string>
     <string name="widget_bar_one_line_reversed">Én linje: tittel – artist</string>
     <string name="widget_bar_buttons_one_line">Knapper på én rad</string>

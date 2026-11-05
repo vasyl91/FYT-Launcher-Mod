@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">በመነሻ ማያ ገጽ በእያንዳንዱ ገጽ ላይ ይታያል</string>
     <string name="bottom_bar_every_page_off">በመጀመሪያው ገጽ ላይ ብቻ</string>
     <string name="bottom_bar_every_page_no_overlay">በሌሎች መተግበሪያዎች ላይ የማሳየት ፈቃድ ያስፈልጋል</string>
-    <string name="widget_bar_one_line">ርዕስና አርቲስት በአንድ መስመር</string>
+    <string name="widget_bar_line_mode">የርዕስና የአርቲስት አቀማመጥ</string>
     <string name="widget_bar_one_line_on">አንድ መስመር፦ አርቲስት – ርዕስ</string>
     <string name="widget_bar_one_line_off">ርዕሱ ከአርቲስቱ በላይ</string>
     <string name="widget_bar_buttons_beside">አዝራሮች ከርዕሱ ጎን</string>
-    <string name="widget_bar_buttons_beside_on">ሁለት ረድፍ አዝራሮች ከርዕሱና ከአርቲስቱ በስተቀኝ</string>
+    <string name="widget_bar_buttons_beside_on">አዝራሮች ከርዕሱና ከአርቲስቱ በስተቀኝ</string>
     <string name="widget_bar_buttons_beside_off">አዝራሮች ከርዕሱና ከአርቲስቱ በታች</string>
     <string name="widget_bar_one_line_reversed">አንድ መስመር፦ ርዕስ – አርቲስት</string>
     <string name="widget_bar_buttons_one_line">አዝራሮች በአንድ መስመር</string>

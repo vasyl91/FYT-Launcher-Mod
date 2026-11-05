@@ -9,9 +9,8 @@ package com.android.launcher66;
  *   <li>{@link Text#ARTIST_TITLE}: one line, "artist - title";</li>
  *   <li>{@link Text#TITLE_ARTIST}: one line, "title - artist".</li>
  * </ul>
- * The choice exists only with the buttons beside the text. Without them the text has the classic
- * stacked look (the text, and the row of buttons below it), where there is room for one line only,
- * so the text is always one line there ({@link #effective}).
+ * The choice works the same in both layouts (the buttons beside the text, and the usual one with the
+ * text above a row of buttons).
  */
 public final class WidgetBarLines {
 
@@ -47,18 +46,6 @@ public final class WidgetBarLines {
             }
         }
         return Text.TWO_LINES;
-    }
-
-    /**
-     * What is used. With the buttons beside the text it is the choice; without them it is always
-     * one line, in the order of the choice ("artist - title" when two lines were chosen, because
-     * there is no order to take).
-     */
-    public static Text effective(Text chosen, boolean buttonsBeside) {
-        if (buttonsBeside) {
-            return chosen;
-        }
-        return chosen == Text.TWO_LINES ? Text.ARTIST_TITLE : chosen;
     }
 
     /** 'Buttons in one line' counts only in the layout with the buttons beside the text. */

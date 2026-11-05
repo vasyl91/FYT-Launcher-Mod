@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Näkyy aloitusnäytön jokaisella sivulla</string>
     <string name="bottom_bar_every_page_off">Vain ensimmäisellä sivulla</string>
     <string name="bottom_bar_every_page_no_overlay">Vaatii luvan näyttää muiden sovellusten päällä</string>
-    <string name="widget_bar_one_line">Nimi ja esittäjä yhdellä rivillä</string>
+    <string name="widget_bar_line_mode">Nimen ja esittäjän asettelu</string>
     <string name="widget_bar_one_line_on">Yksi rivi: esittäjä – nimi</string>
     <string name="widget_bar_one_line_off">Nimi esittäjän yläpuolella</string>
     <string name="widget_bar_buttons_beside">Painikkeet nimen vieressä</string>
-    <string name="widget_bar_buttons_beside_on">Kaksi painikeriviä nimen ja esittäjän oikealla puolella</string>
+    <string name="widget_bar_buttons_beside_on">Painikkeet nimen ja esittäjän oikealla puolella</string>
     <string name="widget_bar_buttons_beside_off">Painikkeet nimen ja esittäjän alla</string>
     <string name="widget_bar_one_line_reversed">Yksi rivi: nimi – esittäjä</string>
     <string name="widget_bar_buttons_one_line">Painikkeet yhdellä rivillä</string>

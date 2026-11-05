@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Zobrazený na každej stránke domovskej obrazovky</string>
     <string name="bottom_bar_every_page_off">Iba na prvej stránke</string>
     <string name="bottom_bar_every_page_no_overlay">Vyžaduje povolenie zobrazovať sa nad inými aplikáciami</string>
-    <string name="widget_bar_one_line">Názov a interpret v jednom riadku</string>
+    <string name="widget_bar_line_mode">Usporiadanie názvu a interpreta</string>
     <string name="widget_bar_one_line_on">Jeden riadok: interpret – názov</string>
     <string name="widget_bar_one_line_off">Názov nad interpretom</string>
     <string name="widget_bar_buttons_beside">Tlačidlá vedľa názvu</string>
-    <string name="widget_bar_buttons_beside_on">Dva rady tlačidiel vpravo od názvu a interpreta</string>
+    <string name="widget_bar_buttons_beside_on">Tlačidlá vpravo od názvu a interpreta</string>
     <string name="widget_bar_buttons_beside_off">Tlačidlá pod názvom a interpretom</string>
     <string name="widget_bar_one_line_reversed">Jeden riadok: názov – interpret</string>
     <string name="widget_bar_buttons_one_line">Tlačidlá v jednom rade</string>

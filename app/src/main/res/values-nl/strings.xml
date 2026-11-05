@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Op elke pagina van het startscherm getoond</string>
     <string name="bottom_bar_every_page_off">Alleen op de eerste pagina</string>
     <string name="bottom_bar_every_page_no_overlay">Vereist de toestemming om over andere apps te worden weergegeven</string>
-    <string name="widget_bar_one_line">Titel en artiest op één regel</string>
+    <string name="widget_bar_line_mode">Opmaak van titel en artiest</string>
     <string name="widget_bar_one_line_on">Eén regel: artiest – titel</string>
     <string name="widget_bar_one_line_off">De titel boven de artiest</string>
     <string name="widget_bar_buttons_beside">Knoppen naast de titel</string>
-    <string name="widget_bar_buttons_beside_on">Twee rijen knoppen rechts van titel en artiest</string>
+    <string name="widget_bar_buttons_beside_on">Knoppen rechts van titel en artiest</string>
     <string name="widget_bar_buttons_beside_off">Knoppen onder titel en artiest</string>
     <string name="widget_bar_one_line_reversed">Eén regel: titel – artiest</string>
     <string name="widget_bar_buttons_one_line">Knoppen op één rij</string>

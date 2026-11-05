@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">در هر صفحه از صفحه اصلی نمایش داده می‌شود</string>
     <string name="bottom_bar_every_page_off">فقط در صفحه اول</string>
     <string name="bottom_bar_every_page_no_overlay">نیاز به مجوز نمایش روی سایر برنامه‌ها دارد</string>
-    <string name="widget_bar_one_line">عنوان و خواننده در یک خط</string>
+    <string name="widget_bar_line_mode">چیدمان عنوان و خواننده</string>
     <string name="widget_bar_one_line_on">یک خط: خواننده – عنوان</string>
     <string name="widget_bar_one_line_off">عنوان بالای خواننده</string>
     <string name="widget_bar_buttons_beside">دکمه‌ها کنار عنوان</string>
-    <string name="widget_bar_buttons_beside_on">دو ردیف دکمه در سمت راست عنوان و خواننده</string>
+    <string name="widget_bar_buttons_beside_on">دکمه‌ها در سمت راست عنوان و خواننده</string>
     <string name="widget_bar_buttons_beside_off">دکمه‌ها زیر عنوان و خواننده</string>
     <string name="widget_bar_one_line_reversed">یک خط: عنوان – خواننده</string>
     <string name="widget_bar_buttons_one_line">دکمه‌ها در یک ردیف</string>

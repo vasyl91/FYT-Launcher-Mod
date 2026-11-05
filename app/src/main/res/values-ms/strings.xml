@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Dipaparkan pada setiap halaman skrin utama</string>
     <string name="bottom_bar_every_page_off">Pada halaman pertama sahaja</string>
     <string name="bottom_bar_every_page_no_overlay">Memerlukan kebenaran untuk dipaparkan di atas apl lain</string>
-    <string name="widget_bar_one_line">Tajuk dan artis dalam satu baris</string>
+    <string name="widget_bar_line_mode">Susunan tajuk dan artis</string>
     <string name="widget_bar_one_line_on">Satu baris: artis – tajuk</string>
     <string name="widget_bar_one_line_off">Tajuk di atas artis</string>
     <string name="widget_bar_buttons_beside">Butang di sebelah tajuk</string>
-    <string name="widget_bar_buttons_beside_on">Dua baris butang di sebelah kanan tajuk dan artis</string>
+    <string name="widget_bar_buttons_beside_on">Butang di sebelah kanan tajuk dan artis</string>
     <string name="widget_bar_buttons_beside_off">Butang di bawah tajuk dan artis</string>
     <string name="widget_bar_one_line_reversed">Satu baris: tajuk – artis</string>
     <string name="widget_bar_buttons_one_line">Butang dalam satu baris</string>

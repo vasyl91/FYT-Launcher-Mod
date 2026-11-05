@@ -513,11 +513,11 @@
     <string name="bottom_bar_every_page_on">Ցուցադրվում է հիմնական էկրանի յուրաքանչյուր էջում</string>
     <string name="bottom_bar_every_page_off">Միայն առաջին էջում</string>
     <string name="bottom_bar_every_page_no_overlay">Պահանջվում է այլ հավելվածների վրայով ցուցադրելու թույլտվություն</string>
-    <string name="widget_bar_one_line">Վերնագիրն ու կատարողը մեկ տողում</string>
+    <string name="widget_bar_line_mode">Վերնագրի և կատարողի դասավորությունը</string>
     <string name="widget_bar_one_line_on">Մեկ տող՝ կատարող – վերնագիր</string>
     <string name="widget_bar_one_line_off">Վերնագիրը կատարողից վերև</string>
     <string name="widget_bar_buttons_beside">Կոճակները վերնագրի կողքին</string>
-    <string name="widget_bar_buttons_beside_on">Կոճակների երկու շարք վերնագրի և կատարողի աջ կողմում</string>
+    <string name="widget_bar_buttons_beside_on">Կոճակները վերնագրի և կատարողի աջ կողմում</string>
     <string name="widget_bar_buttons_beside_off">Կոճակները վերնագրի և կատարողի տակ</string>
     <string name="widget_bar_one_line_reversed">Մեկ տող՝ վերնագիր – կատարող</string>
     <string name="widget_bar_buttons_one_line">Կոճակները մեկ շարքով</string>
