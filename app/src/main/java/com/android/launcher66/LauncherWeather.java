@@ -3,6 +3,7 @@ package com.android.launcher66;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import com.android.launcher66.settings.Keys;
 import com.syu.util.WeatherUtils;
 import com.syu.weather.WeatherDescription;
 import com.syu.weather.WeatherManager;
@@ -51,7 +52,50 @@ final class LauncherWeather {
         }
     };
 
+    /**
+     * Whether anything on screen shows the weather (see {@link WeatherNeed}). The bar's weather
+     * widget is the only place with the default resources; the hotseat has one only where
+     * R.bool.weather_show says so.
+     */
+    boolean weatherNeeded() {
+        android.content.SharedPreferences prefs = mLauncher.mPrefs;
+        return WeatherNeed.needed(prefs.getBoolean(Keys.USER_LAYOUT, false),
+                prefs.getBoolean(Keys.WIDGET_BAR, false), prefs.getBoolean(Keys.WIDGET_BAR_NO_WEATHER, false),
+                LauncherApplication.sApp.getResources().getBoolean(R.bool.weather_show));
+    }
+
+    /** Set when the manager was stopped because no weather is shown: the next start says so. */
+    private boolean mStoppedForNeed;
+
+    /**
+     * Stops the manager: no location updates, no receiver, no listener, nothing scheduled. It is
+     * created again by ensureWeatherManager() when the weather is shown again.
+     */
+    private void stopManager() {
+        weatherHandler.removeCallbacks(periodicWeatherCheck);
+        weatherHandler.removeCallbacks(mDeferredWeatherInit);
+        if (mWeatherListenerOwner != null && mWeatherChangedListener != null) {
+            mWeatherListenerOwner.removeOnWeatherChangedListener(mWeatherChangedListener);
+        }
+        mWeatherListenerOwner = null;
+        WeatherManager manager = weatherManager;
+        weatherManager = null;
+        WeatherManager.setForeground(false);
+        if (manager != null) {
+            manager.shutdown();
+            mStoppedForNeed = true;
+        }
+    }
+
     void scheduleWeatherCheckAfterHome() {
+        if (!weatherNeeded()) {
+            // Nothing shows the weather: no check is planned, and a manager that is still there stops
+            weatherHandler.removeCallbacks(periodicWeatherCheck);
+            if (weatherManager != null) {
+                stopManager();
+            }
+            return;
+        }
         WeatherManager.setForeground(true);
         weatherHandler.removeCallbacks(periodicWeatherCheck);
         weatherHandler.postDelayed(periodicWeatherCheck, WEATHER_HOME_DEFER_MS);
@@ -77,6 +121,15 @@ final class LauncherWeather {
      * @return true when the manager exists
      */
     boolean ensureWeatherManager(Runnable retry) {
+        if (!weatherNeeded()) {
+            // No weather on screen: no manager, no retry. This is also how a bar rebuilt without
+            // the weather (or without the widget bar) stops the manager that was running.
+            weatherHandler.removeCallbacks(retry);
+            if (weatherManager != null) {
+                stopManager();
+            }
+            return false;
+        }
         if (weatherManager != null) {
             return true;
         }
@@ -87,6 +140,10 @@ final class LauncherWeather {
             return false;
         }
         weatherManager = WeatherManager.initialize(mLauncher);
+        if (mStoppedForNeed) {
+            mStoppedForNeed = false;
+            Log.i(Launcher.TAG, "WeatherManager started: the weather is shown again");
+        }
         return true;
     }
 

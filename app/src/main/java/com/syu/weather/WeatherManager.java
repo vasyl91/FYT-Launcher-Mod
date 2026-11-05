@@ -234,7 +234,7 @@ public class WeatherManager {
         this.inChina = preferences.getBoolean("inChina", this.inChina);
         this.mLocationManager = (LocationManager) this.mContext.getSystemService(Context.LOCATION_SERVICE);
         this.mNetworkCheck = new NetworkCheck(this.mContext);
-        this.mNetworkCheck.registerLisenter(new NetworkCheck.OnNetworkStateChangeLisenter() { 
+        this.mNetworkListener = new NetworkCheck.OnNetworkStateChangeLisenter() { 
             @Override
             public void onChanged(boolean vaild) {
                 if (vaild) {
@@ -247,8 +247,36 @@ public class WeatherManager {
                 }
                 WeatherManager.this.stop();
             }
-        });
+        };
+        this.mNetworkCheck.registerLisenter(this.mNetworkListener);
         this.mNetworkCheck.register(this.mContext);
+    }
+
+    private NetworkCheck.OnNetworkStateChangeLisenter mNetworkListener;
+
+    /**
+     * Ends everything the manager started, for when no weather is shown: the GPS requests, the
+     * receiver of network changes, the listeners, and the singleton itself, so that the next
+     * initialize() builds a new one. A fetch that is already under way finishes into nobody.
+     * Main thread.
+     */
+    public void shutdown() {
+        stop();
+        if (mNetworkCheck != null) {
+            mNetworkCheck.unRegisterLisenter(mNetworkListener);
+            try {
+                mNetworkCheck.unregister(mContext);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Unregistering the network receiver failed: " + e);
+            }
+        }
+        clearListeners();
+        mNextAttemptAt = 0L;
+        mRetryDelayMs = 0L;
+        if (instance == this) {
+            instance = null;
+        }
+        Log.i(TAG, "WeatherManager stopped: no weather is shown");
     }
 
     @SuppressLint("MissingPermission")

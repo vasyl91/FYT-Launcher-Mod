@@ -993,6 +993,10 @@ public class Workspace extends SmoothPagedView
 
             // Bar text sizes
             setWidgetBarTextView(workspaceView);
+        } else {
+            // No widget bar (or no user layout): the same call, which stops a weather manager that
+            // was running for the bar and creates none (LauncherWeather.weatherNeeded()).
+            mainHandler.post(() -> mLauncher.updateWeather());
         }
 
         new CanbusAsyncTask(LauncherApplication.sApp).execute();

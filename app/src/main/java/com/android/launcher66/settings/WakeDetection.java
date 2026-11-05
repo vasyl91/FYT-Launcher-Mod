@@ -387,6 +387,9 @@ public final class WakeDetection implements WakeSignals.Listener {
         }
 
         boolean widgetBar = prefs.getBoolean(Keys.WIDGET_BAR, false);
+        // The weather is asked for only when the bar shows it (LauncherWeather checks the same
+        // rule again, and creates no manager otherwise)
+        boolean weatherShown = !prefs.getBoolean(Keys.WIDGET_BAR_NO_WEATHER, false);
         if (widgetBar) {
             // Called directly, not only through ACTION_WAKE_REFRESH: the launcher's
             // receiver is unregistered while it is stopped, so the broadcast can be lost.
@@ -394,7 +397,9 @@ public final class WakeDetection implements WakeSignals.Listener {
                 if (wakeGen != wakeGeneration) return;   // device went back to sleep
                 Launcher launcher = Launcher.getLauncher();
                 if (launcher != null) {
-                    launcher.updateWeather();
+                    if (weatherShown) {
+                        launcher.updateWeather();
+                    }
                     launcher.onDeviceWake("wakeService+" + WIDGET_BAR_WAKE_FIRST_MS);
                 }
             }, WIDGET_BAR_WAKE_FIRST_MS);
