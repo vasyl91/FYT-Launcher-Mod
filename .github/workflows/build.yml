@@ -64,6 +64,13 @@ jobs:
       - name: Build the VD host Magisk module
         run: bash ./gradlew :vdhost-server:magiskZip --stacktrace
 
+      - name: Upload the VD host Magisk module
+        uses: actions/upload-artifact@v4
+        with:
+          name: vdhost-magisk-module
+          path: vdhost/server/build/outputs/magisk/*.zip
+          if-no-files-found: error
+
       - name: Upload the APK (system debug)
         uses: actions/upload-artifact@v4
         with:

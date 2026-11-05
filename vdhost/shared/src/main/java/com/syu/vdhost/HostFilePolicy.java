@@ -51,6 +51,22 @@ public final class HostFilePolicy {
         return isRegularFile && length >= 0 && length <= maxBytes(canonical) && pathAllowed(canonical);
     }
 
+    /**
+     * The decision after the file is open: the host opens the path with O_NOFOLLOW and looks at
+     * the descriptor it holds (fstat and the link of /proc/self/fd/N), not at the path, which
+     * another app with access to the storage can change between a check and the open. A link,
+     * a directory, a file over the limit and a descriptor that is another path than the one
+     * asked for are all refused.
+     *
+     * @param requested the path the caller asked for
+     * @param openedPath where the open descriptor leads (readlink of /proc/self/fd/N), null when unknown
+     * @param isRegularFile fstat(): whether the descriptor is a regular file
+     * @param length fstat(): its size in bytes
+     */
+    public static boolean allowedOpened(String requested, String openedPath, boolean isRegularFile, long length) {
+        return allowed(requested, openedPath, isRegularFile, length);
+    }
+
     /** The longest file the host hands out for this path. */
     public static long maxBytes(String path) {
         return ICON_PACK.equals(path) ? ICON_PACK_MAX_BYTES : MAX_BYTES;

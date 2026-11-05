@@ -12,6 +12,10 @@ import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.os.RemoteException;
+import android.system.ErrnoException;
+import android.system.Os;
+import android.system.OsConstants;
+import android.system.StructStat;
 import android.util.Log;
 
 import java.io.IOException;
@@ -271,24 +275,60 @@ final class HostServices {
 
     /**
      * A read-only descriptor of one of the files of HostFilePolicy, for the uids the host serves. null when the
-     * path is not one of them (not canonical, a link, not a regular file, longer than 2 MB).
+     * path is not one of them (a link, not a regular file, longer than its limit, not the path asked for).
+     *
+     * <p>The check is on the descriptor that is handed out, not on the path before it is opened: the
+     * radio logos are in a folder every app with access to the storage can write to, and between a
+     * check of the path and the open the file can be swapped for a link, which the host (root, shell or
+     * system) would then open at its target. So: open with O_NOFOLLOW, look at what was opened (fstat,
+     * and where /proc/self/fd/N leads), and only then hand out a duplicate.
      */
     ParcelFileDescriptor readFile(int callerUid, String path) {
         // The caller is one of the uids the host serves (VdHostStub's CallerPolicy): the launcher.
-        if (path == null) {
+        // The first sieve: the path alone, before anything is opened.
+        if (path == null || !HostFilePolicy.pathAllowed(path)) {
+            Log.i(TAG, "readFile refused: " + path);
             return null;
         }
+        java.io.FileDescriptor fd = null;
+        ParcelFileDescriptor dup = null;
         try {
-            java.io.File file = new java.io.File(path);
-            String canonical = file.getCanonicalPath();
-            if (!HostFilePolicy.allowed(path, canonical, file.isFile(), file.length())) {
+            fd = Os.open(path, OsConstants.O_RDONLY | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0);
+            // The duplicate is what is handed out if the checks pass, and its number is the one
+            // /proc/self/fd names (the original is closed at once below, so the descriptor is
+            // not held twice).
+            dup = ParcelFileDescriptor.dup(fd);
+            StructStat stat = Os.fstat(dup.getFileDescriptor());
+            String opened = Os.readlink("/proc/self/fd/" + dup.getFd());
+            if (!HostFilePolicy.allowedOpened(path, opened, OsConstants.S_ISREG(stat.st_mode), stat.st_size)) {
                 Log.i(TAG, "readFile refused: " + path);
+                dup.close();
                 return null;
             }
-            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+            ParcelFileDescriptor result = dup;
+            dup = null;
+            return result;
+        } catch (ErrnoException e) {
+            Log.w(TAG, "readFile failed: " + path + ": " + e);
+            return null;
         } catch (IOException e) {
             Log.w(TAG, "readFile failed: " + path + ": " + e);
             return null;
+        } finally {
+            if (fd != null) {
+                try {
+                    Os.close(fd);
+                } catch (ErrnoException ignored) {
+                    // nothing left to do
+                }
+            }
+            if (dup != null) {
+                try {
+                    dup.close();
+                } catch (IOException ignored) {
+                    // nothing left to do
+                }
+            }
         }
     }
 

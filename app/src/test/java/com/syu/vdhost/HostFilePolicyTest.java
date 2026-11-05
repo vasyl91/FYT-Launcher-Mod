@@ -85,4 +85,23 @@ class HostFilePolicyTest {
         assertFalse(HostFilePolicy.pathAllowed(null));
         assertFalse(HostFilePolicy.pathAllowed("/data/blink/cover\0.png"));
     }
+
+    @Test
+    void theOpenedFileIsJudgedByTheDescriptorNotByThePath() {
+        String path = "/storage/emulated/0/radio_logo/BBC_9040.png";
+        assertTrue(HostFilePolicy.allowedOpened(path, path, true, 5_000));
+        // swapped for a link after the path was checked: the descriptor leads somewhere else
+        assertFalse(HostFilePolicy.allowedOpened(path, "/data/system/users/0.xml", true, 100));
+        assertFalse(HostFilePolicy.allowedOpened(path, "/storage/emulated/0/radio_logo/other.png", true, 100));
+        // a directory or something that is not a regular file
+        assertFalse(HostFilePolicy.allowedOpened(path, path, false, 4_096));
+        // too big for the path's family
+        assertFalse(HostFilePolicy.allowedOpened(path, path, true, HostFilePolicy.MAX_BYTES + 1));
+        assertTrue(HostFilePolicy.allowedOpened("/odm/app/cabinet.data", "/odm/app/cabinet.data", true,
+                HostFilePolicy.MAX_BYTES + 1));
+        // the link could not be read
+        assertFalse(HostFilePolicy.allowedOpened(path, null, true, 100));
+        // a path outside the allowed ones, even if the descriptor agrees
+        assertFalse(HostFilePolicy.allowedOpened("/data/system/users/0.xml", "/data/system/users/0.xml", true, 100));
+    }
 }
