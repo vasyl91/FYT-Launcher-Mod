@@ -163,6 +163,17 @@ public class IconCache {
         }
     }
 
+    /**
+     * The title this launcher already has for the activity (in memory, no disk, no package
+     * manager), or null if the app list has not been loaded with it.
+     */
+    public String getCachedTitle(ComponentName componentName) {
+        synchronized (this.mCache) {
+            CacheEntry entry = this.mCache.get(componentName);
+            return entry != null ? entry.title : null;
+        }
+    }
+
     public Bitmap getIcon(Intent intent) {
         Bitmap bitmap;
         synchronized (this.mCache) {
@@ -282,6 +293,11 @@ public class IconCache {
 
     public void putFirstInstallTime(ComponentName componentName, ApplicationInfo appInfo, long firstInstallTime) {
         this.mDiskCache.putFirstInstallTime(componentName, appInfo, firstInstallTime);
+    }
+
+    /** A load of the app list starts: the disk cache asks the package manager afresh. */
+    public void beginLoad() {
+        this.mDiskCache.beginLoad();
     }
 
     /** Forgets disk entries of activities that are no longer in the app list. */

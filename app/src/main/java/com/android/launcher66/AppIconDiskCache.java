@@ -3,8 +3,12 @@ package com.android.launcher66;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.os.Looper;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -25,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -38,8 +43,10 @@ import java.util.concurrent.TimeUnit;
  * during which system_server hashes the APEX files and the disk is saturated (captures
  * 29-09-2026 20:51 and 21:40). With this cache a start only reads what changed.
  *
- * An entry is used only while its app's APK is the same file (size and modification time of
- * applicationInfo.sourceDir: no update, no reinstall), and only while the header matches: the
+ * An entry is used only while its app is the same install (the package manager's last update
+ * time, version code and APK path, so the launcher never touches another app's APK to know; the
+ * launcher's own APK is stamped by its size and modification time), and only while the header
+ * matches: the
  * launcher's own APK (icon code and resources) and the locale (titles). An icon is also used only
  * at the current icon size. Anything else is a miss, and a miss runs the old code.
  *
@@ -51,7 +58,7 @@ final class AppIconDiskCache {
     private static final String TAG = "Launcher.IconDiskCache";
     private static final String FILE_NAME = "app_icon_cache.bin";
     private static final int MAGIC = 0x4C364943; // "L6IC"
-    private static final int FORMAT = 1;
+    private static final int FORMAT = 2;
     private static final long SAVE_DELAY_MS = 3000L;
 
     private static AppIconDiskCache sInstance;
@@ -96,6 +103,9 @@ final class AppIconDiskCache {
     /** Current size of the icons IconCache renders; 0 = not known yet (then icons are not used). */
     private int mIconWidth;
     private int mIconHeight;
+
+    /** The package manager's stamp per package, for the load in progress; "" for an unknown one. */
+    private final ConcurrentHashMap<String, String> mForeignStamps = new ConcurrentHashMap<>();
 
     AppIconDiskCache(Context context) {
         mContext = context;
@@ -250,11 +260,48 @@ final class AppIconDiskCache {
         return e;
     }
 
-    /** Size and modification time of the APK: both change with every update or reinstall. */
-    static String apkStamp(ApplicationInfo ai) {
+    /**
+     * What identifies the install of an app. For another app: the package manager's last update
+     * time and version code, and the APK's path. They change with every update or reinstall, and
+     * need no access to the APK itself: stat'ing the files of apps in /odm/app made the launcher's
+     * loader thread the subject of SELinux denials (vendor_file getattr). The answer is remembered
+     * per package for one load of the app list (beginLoad()). The package manager is not asked on
+     * the main thread: there a package not seen in this load is simply a miss, so nothing is
+     * cached for it. Null (no caching) when the package manager does not know the app.
+     */
+    private String apkStamp(ApplicationInfo ai) {
         if (ai == null || ai.sourceDir == null) {
             return null;
         }
+        if (ai.packageName == null || ai.packageName.equals(mContext.getPackageName())) {
+            return fileStamp(ai);
+        }
+        String known = mForeignStamps.get(ai.packageName);
+        if (known != null) {
+            return known.isEmpty() ? null : known;
+        }
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            return null;
+        }
+        String stamp = "";
+        try {
+            PackageInfo pi = mContext.getPackageManager().getPackageInfo(ai.packageName, 0);
+            long code = Build.VERSION.SDK_INT >= 28 ? pi.getLongVersionCode() : pi.versionCode;
+            stamp = pi.lastUpdateTime + ":" + code + ":" + ai.sourceDir;
+        } catch (PackageManager.NameNotFoundException | RuntimeException e) {
+            Log.w(TAG, "no package info for " + ai.packageName + ": " + e);
+        }
+        mForeignStamps.put(ai.packageName, stamp);
+        return stamp.isEmpty() ? null : stamp;
+    }
+
+    /** Starts a load of the app list: what the package manager said before may be out of date. */
+    void beginLoad() {
+        mForeignStamps.clear();
+    }
+
+    /** Size and modification time of the APK: both change with every update or reinstall. */
+    private static String fileStamp(ApplicationInfo ai) {
         File apk = new File(ai.sourceDir);
         long length = apk.length();
         if (length <= 0L) {
@@ -264,7 +311,8 @@ final class AppIconDiskCache {
     }
 
     private String currentLauncherStamp() {
-        String stamp = apkStamp(mContext.getApplicationInfo());
+        ApplicationInfo own = mContext.getApplicationInfo();
+        String stamp = own != null && own.sourceDir != null ? fileStamp(own) : null;
         return stamp != null ? stamp : "";
     }
 

@@ -2824,6 +2824,7 @@ public class LauncherModel extends BroadcastReceiver {
 
             // Clear the list of apps
             mBgAllAppsList.clear();
+            mIconCache.beginLoad();
 
             // Query for the set of apps
             final long qiaTime = DEBUG_LOADERS ? SystemClock.uptimeMillis() : 0;

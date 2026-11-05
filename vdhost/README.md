@@ -113,6 +113,14 @@ feature ActivityTaskManager silently starts a pane's app on the main screen inst
 - `ready` and `binder delivered to com.android.launcher66` should appear after boot.
 - "not running as uid 1000": the root solution's `su` does not support a target uid.
 - "protocol N, expected M": update the module and the launcher together.
+- `W Parcel: Expecting binder but got null!` (from the graphics thread, next to `mali_gralloc register/unregister`)
+  and `E SurfaceSyncer: Failed to find sync for id=0`: warnings of Android 13's own surface code (BLAST /
+  SurfaceSyncer) when a SurfaceView of a pane is created or its window is laid out again; they have no
+  effect on the panes. In a 15-minute capture they came 1:1 with a new pane taking over a display
+  (114 times "taken over from the previous pane") and the relayouts of the PipWindowHost windows, and the
+  same lines came from other apps' processes as well (258 `Parcel` lines, 117 of them the launcher's; 3813
+  `SurfaceSyncer` lines, 333 of them the launcher's). Nothing in the launcher is wrong, so nothing is fixed
+  for them.
 
 ## Other errands for a launcher that is not a system app
 

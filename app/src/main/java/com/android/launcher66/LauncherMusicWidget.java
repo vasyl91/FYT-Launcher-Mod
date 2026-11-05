@@ -1398,17 +1398,31 @@ final class LauncherMusicWidget {
             return;
         }
 
-        try {
-            ComponentName componentName = launchIntent.getComponent();
-            PackageManager pm = mLauncher.getPackageManager();
-            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-            String appTitle = appInfo.loadLabel(pm).toString();
-            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-            mLauncher.mAppBars.refreshLeftCycle(bean);
-            mLauncher.cleanWidgetBar();
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.w(Launcher.TAG, "Unable to refresh music app cycle", e);
+        final ComponentName componentName = launchIntent.getComponent();
+        // The title is in the launcher's own app list; reading the label from the APK is a disk
+        // read (it opened com.syu.media's APK on the main thread at every tap on the widget).
+        // An app that is not in the list gets its label in the background.
+        String listed = LauncherAppState.getInstance().getIconCache().getCachedTitle(componentName);
+        if (listed != null) {
+            applyLeftCycle(componentName, listed);
+            return;
         }
+        final PackageManager pm = mLauncher.getPackageManager();
+        new Thread(() -> {
+            try {
+                ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+                String appTitle = appInfo.loadLabel(pm).toString();
+                mLauncher.mHandler.post(() -> applyLeftCycle(componentName, appTitle));
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.w(Launcher.TAG, "Unable to refresh music app cycle", e);
+            }
+        }, "MusicWidgetLabel").start();
+    }
+
+    private void applyLeftCycle(ComponentName componentName, String appTitle) {
+        AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+        mLauncher.mAppBars.refreshLeftCycle(bean);
+        mLauncher.cleanWidgetBar();
     }
 
     void openActiveMusicPlayer(View v) {
