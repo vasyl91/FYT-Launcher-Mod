@@ -20,8 +20,9 @@ List of modifications:
 - Universal music widget with a favorite button (requires Notification Listener permission) that works with most music players (including the stock one).
 - Enabled widgets (upscaled for better interaction), shortcuts, and folders on the main screen. Reworked screen grid. Extra screens as well.
 - Launcher creator allowing the launcher's layout to be adjusted to user preferences. All layout elements except the bottom bar can be turned off. Users can also specify which screen should be the main screen.
-- Bottom bar with optional widgets.
-- Auto-hide bottom bar option.
+- Bottom bar with optional widgets. The date and the weather can be hidden, and the music widget takes their room: its text goes between the cover and a block of buttons on the right (2 x 2, 30% of the widget, or one row, 40%, when the bar is low). An optional large text for the widgets of the bar.
+- Auto-hide bottom bar option. Without the left bar a thin handle on the left edge reveals the bar: a swipe to the right opens it (so does a tap on the handle itself). The handle has a wider transparent margin that takes only that swipe, and passes a tap, a vertical drag or a long press on to the widget or the pane below.
+- Bottom bar on every page of the home screen (optional). Without auto-hide the bar stays in place while the pages move, and icons and panes keep out of its strip on every page; with auto-hide every page has the handle. It steps aside in all apps, in the overview, while dragging and in folders.
 - Resizable bottom bar.
 - Skins for widgets and bottom bar.
 - Optional floating buttons for quickly switching apps between PiPs.
