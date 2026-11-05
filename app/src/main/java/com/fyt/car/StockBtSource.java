@@ -12,7 +12,10 @@ import com.syu.car.CarStates;
 import com.syu.remote.Callback;
 import com.syu.remote.RemoteTools;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * BT audio as a source of the music widget, on the 7870: the song of the phone, read from
@@ -23,7 +26,12 @@ import java.util.Objects;
  *   code 0  title (strs)      code 13 state, ints[0] == 1 when it plays
  *   code 1  artist (strs)     code 26 album (strs)
  *   code 2  total time, ms    code 28 position, ms
+ *   code 51 path of the cover (strs), on the 7870 only
  * </pre>
+ * The cover is a file the Bluetooth app (blink) writes, /data/blink/Id3_CoverArt.JPEG, a little after the
+ * song changes, and one file for every song: it is read at once when the path is reported, again 1.5 s
+ * after the title changed (the time BluetoothObserver of com.syu.media waits) and, if it is still the
+ * previous song's, after 3 and 6 s (StockBtCover). A file older than the change of the song is not taken.
  * Nothing in strs means the field was cleared (BluetoothObserver posts an empty text then).
  * Launcher.refreshBtInfo reads the same codes for the BT page of the home screen and is left as
  * it is.
@@ -45,6 +53,19 @@ final class StockBtSource {
     private long positionMs;
     private boolean btPlaying;
     private StockTrack lastPublished;
+    /** The path code 51 reported ("" = none) and the cover read from it for the song shown. */
+    private String coverPath = "";
+    private byte[] cover;
+    /** When the title last changed (wall clock, the clock of the file's modification time). */
+    private long songChangedAtMs;
+    private int coverGeneration;
+    private int coverHash;
+    private final ExecutorService coverWorker = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "StockBtCover");
+        t.setPriority(Thread.MIN_PRIORITY);
+        t.setDaemon(true);
+        return t;
+    });
 
     private volatile StockTrack current;
     /** When it was last seen playing; 0 if it never was. See StockResumePolicy. */
@@ -56,7 +77,7 @@ final class StockBtSource {
 
     void start(RemoteTools tools) {
         Callback.OnRefreshLisenter listener = this::onBtUpdate;
-        tools.addRefreshLisenter(2, listener, 0, 1, 2, 13, 26, 28);
+        tools.addRefreshLisenter(2, listener, 0, 1, 2, 13, 26, 28, 51);
     }
 
     StockTrack current() {
@@ -78,7 +99,7 @@ final class StockBtSource {
         RemoteTools tools = StockSources.tools();
         if (tools != null) {
             // Registering again makes com.syu.ms report the current values
-            tools.notify(2, 0, 1, 26, 2, 28, 13);
+            tools.notify(2, 0, 1, 26, 2, 28, 13, 51);
         }
         publishNow();
     }
@@ -93,8 +114,17 @@ final class StockBtSource {
     private void onBtUpdate(int code, int[] ints, float[] flts, String[] strs) {
         switch (code) {
             case 0:
-                title = firstString(strs);
+                String newTitle = firstString(strs);
+                if (!newTitle.equals(title)) {
+                    onTitleChanged();
+                }
+                title = newTitle;
                 break;
+            case 51:
+                if (StockSources.isSyuMediaUnit()) {
+                    onCoverPath(firstString(strs));
+                }
+                return;
             case 1:
                 artist = firstString(strs);
                 break;
@@ -122,6 +152,72 @@ final class StockBtSource {
         }
     }
 
+    /** A new song: the cover of the one before is gone, the new one is looked for at the times of StockBtCover. */
+    private void onTitleChanged() {
+        songChangedAtMs = System.currentTimeMillis();
+        coverHashBeforeChange = coverHash;
+        cover = null;
+        final int generation = ++coverGeneration;
+        main.removeCallbacksAndMessages(COVER_TOKEN);
+        if (!StockSources.isSyuMediaUnit()) {
+            return;
+        }
+        for (long delay : StockBtCover.readDelaysAfterTitleChange()) {
+            main.postAtTime(() -> readCover(generation), COVER_TOKEN, android.os.SystemClock.uptimeMillis() + delay);
+        }
+    }
+
+    private static final Object COVER_TOKEN = new Object();
+
+    /** Code 51: the path of the cover; read at once if there is one. */
+    private void onCoverPath(String path) {
+        if (!path.equals(coverPath)) {
+            coverPath = path;
+            if (!path.isEmpty()) {
+                Log.i(TAG, "bt cover: code 51 reports " + path);
+            }
+        }
+        if (!path.isEmpty()) {
+            readCover(coverGeneration);
+        }
+    }
+
+    /** Reads the cover file in the background and, if it is this song's, shows it. Main thread. */
+    private void readCover(int generation) {
+        final String path = coverPath;
+        if (path.isEmpty() || generation != coverGeneration) {
+            return;
+        }
+        final long changedAt = songChangedAtMs;
+        coverWorker.execute(() -> {
+            SyuMediaFiles.Data data = SyuMediaFiles.read(SyuMediaFiles.FAMILY_BT_COVER, path);
+            if (data == null) {
+                return;
+            }
+            int hash = Arrays.hashCode(data.bytes);
+            // A way that cannot tell the time of the file: it counts if it is not the picture taken before
+            boolean fresh = data.lastModifiedMs > 0
+                    ? StockBtCover.isFresh(data.lastModifiedMs, changedAt)
+                    : hash != coverHashBeforeChange;
+            byte[] png = fresh ? StockCoverLoader.toPng(data.bytes) : null;
+            if (png == null) {
+                return;
+            }
+            main.post(() -> {
+                if (generation != coverGeneration || Arrays.equals(png, cover)) {
+                    return;
+                }
+                cover = png;
+                coverHash = hash;
+                if (StockSources.isBtShown()) {
+                    publishNow();
+                }
+            });
+        });
+    }
+
+    private volatile int coverHashBeforeChange;
+
     private void publishNow() {
         StockTrack t = buildTrack();
         current = t;
@@ -146,7 +242,7 @@ final class StockBtSource {
         String key = "stock-bt:/" + Integer.toHexString(Objects.hash(title, artist, album));
         boolean playing = btPlaying && CarStates.mAppID == Kind.MEDIA_BT.channel;
         return new StockTrack(Kind.MEDIA_BT, key, shownTitle, artist.trim(), album.trim(),
-                totalMs, positionMs, playing, false, null, null);
+                totalMs, positionMs, playing, false, cover, null);
     }
 
     private static String firstString(String[] strs) {

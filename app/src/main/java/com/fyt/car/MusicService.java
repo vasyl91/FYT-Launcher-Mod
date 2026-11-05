@@ -284,8 +284,17 @@ public class MusicService extends Service {
 
         // The widget gets the track as it is, not a path to read the tags of: a stream has none,
         // and a file may not be readable here (the standard version without storage access)
+        // An online station's cover is its icon from the icon pack of com.syu.media; read in the background,
+        // it follows as a new state (the update of a second does not wait for it)
+        byte[] cover = null;
+        if (s.kind == StockKindArbiter.Kind.MEDIA_ONLINE && !s.icon.isEmpty()) {
+            cover = StockCoverLoader.cachedOnline(s.icon);
+            if (cover == null && !StockCoverLoader.knownOnline(s.icon)) {
+                StockCoverLoader.requestOnline(app, s.title, s.icon, () -> reapplySyuMedia(app, s.icon));
+            }
+        }
         StockTrack track = new StockTrack(s.kind, s.path, s.title, s.artist, s.album, s.duration,
-                s.progress, s.playing, StockTitles.isLocalFile(s.path), null, s.favorite);
+                s.progress, s.playing, StockTitles.isLocalFile(s.path), cover, s.favorite);
         if (s.playing) {
             // Held back, like com.syu.music's in onStartCommand(), for the moment after a
             // session's player took over (NotificationListener.setStatus(2)); the next second's
@@ -303,6 +312,15 @@ public class MusicService extends Service {
         if (before == null || before.kind != s.kind || !before.path.equals(s.path)
                 || !Objects.equals(before.favorite, s.favorite)) {
             MediaFavoriteController.onStockFavoriteChanged(app);
+        }
+    }
+
+    /** The icon of the station shown was loaded: the widget gets the state again, with the cover. Main thread. */
+    private static void reapplySyuMedia(Context app, String icon) {
+        SyuMediaClient.State shown = sSyuMediaShown;
+        if (shown != null && icon.equals(shown.icon) && StockSources.acceptSyuMedia(shown.kind, shown.playing,
+                shown.sampledAtMs)) {
+            applySyuMedia(app, shown);
         }
     }
 

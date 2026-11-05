@@ -535,6 +535,11 @@ final class SyuMediaClient implements ServiceConnection {
         int duration;
         /** RadioSource: the kind of station (Pop, News ...), "" for a track. */
         String type = "";
+        /**
+         * RadioSource: the icon of the station, the file name of a drawable in /odm/app/cabinet.data
+         * (com.syu.media/entities/RadioSource: type, country, local, freqTitle, icon, in this order); "" for a track.
+         */
+        String icon = "";
 
         /** Reads a MediaSource written with its "non-null" int in front, as IPlayer sends it. */
         static Song read(Parcel p) {
@@ -558,6 +563,12 @@ final class SyuMediaClient implements ServiceConnection {
             if (p.dataAvail() > 0) {
                 try {
                     s.type = nonNull(p.readString());
+                    // country, local, freqTitle, then the icon; each only if there is more to read
+                    String[] rest = new String[4];
+                    for (int i = 0; i < rest.length && p.dataAvail() > 0; i++) {
+                        rest[i] = p.readString();
+                    }
+                    s.icon = nonNull(rest[3]);
                 } catch (RuntimeException e) {
                     // not a RadioSource after all
                 }
@@ -582,6 +593,8 @@ final class SyuMediaClient implements ServiceConnection {
         final String artist;
         final String album;
         final String path;
+        /** An online station's icon (a drawable of the icon pack), "" for a track. */
+        final String icon;
         /** From its library; null when it could not be read. */
         final Boolean favorite;
         /** When the player was read (SystemClock.elapsedRealtime()). */
@@ -599,6 +612,7 @@ final class SyuMediaClient implements ServiceConnection {
             this.artist = song.artist.isEmpty() || "unknown".equals(song.artist) ? song.type : song.artist;
             this.album = song.album;
             this.path = song.path;
+            this.icon = song.icon;
             this.favorite = favorite;
             this.sampledAtMs = sampledAtMs;
         }
@@ -613,6 +627,7 @@ final class SyuMediaClient implements ServiceConnection {
             this.artist = o.artist;
             this.album = o.album;
             this.path = o.path;
+            this.icon = o.icon;
             this.favorite = favorite;
             this.sampledAtMs = sampledAtMs;
         }

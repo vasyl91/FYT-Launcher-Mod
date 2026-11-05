@@ -101,6 +101,8 @@ The second method displays apps in windowed mode as they normally appear: throug
 
 **Music widget:**
 
+On the 7870, where the radio, USB music, Bluetooth audio and the online radio are all `com.syu.media`, the widget shows the cover of each: the online radio's station icon (read from the icon pack `/odm/app/cabinet.data`), the FM station's logo from the folder `radio_logo` (the list `content://com.syu.radio/local_assert`, the same one `com.syu.media` shows; a station without a logo gets the picture the app shows for it, the same one every time) and the cover of the song the phone plays over Bluetooth (the file the Bluetooth app writes, taken 1.5-6 s after the song changes). The files are read directly (that works in both versions on the 7870), otherwise through root or Shizuku (see the [FYT VDHost](vdhost/README.md) module, protocol 3). Cover files of the radio follow the rules of `com.syu.media`: `<Name>_<frequency>.png`, the name without `_`, `.png` in lower case, the frequency without the dot (`90.40` is 9040).
+
 <details>
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_music.gif)

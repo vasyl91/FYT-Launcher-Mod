@@ -2,6 +2,10 @@ package com.fyt.car;
 
 import com.android.launcher66.settings.FytCompat;
 import android.content.Context;
+import android.content.pm.ProviderInfo;
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.net.Uri;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
@@ -41,6 +45,12 @@ import java.util.concurrent.Executors;
  * stations by city (content://com.syu.radio/city_station, radio_freqs.json) hold the stations of
  * Chinese cities, not what is tuned in here, and are not used. The names the user edited in
  * com.syu.radio are in its private database (radio.db), out of reach without root.
+ *
+ * On the 7870 the radio is part of com.syu.media, and its station logos are read as that app reads them:
+ * from content://com.syu.radio/local_assert (the list its RadioIconCache loaded from /sdcard/radio_logo,
+ * which it announces with a change notification once the list is filled), if that provider is not there
+ * from the folder by the rules of that app (StockLogoNames); a station without a logo gets the picture the
+ * app shows for it (radio1 .. radio3 of com.syu.media, the same one for a frequency).
  *
  * Callbacks come on the main thread, so everything here is on it; the files are read on a thread
  * of their own.
@@ -201,10 +211,12 @@ final class StockRadioSource {
     // ---------------------------------------------------------------------------------------------
 
     private void requestLookup(int forFreq) {
-        // Only where com.syu.radio is the radio: com.syu.media keeps no such files
-        if (forFreq <= 0 || StockSources.isSyuMediaUnit() || lookupCache.containsKey(forFreq)
-                || !lookupsInFlight.add(forFreq)) {
+        if (forFreq <= 0 || lookupCache.containsKey(forFreq) || !lookupsInFlight.add(forFreq)) {
             return;
+        }
+        final boolean mediaUnit = StockSources.isSyuMediaUnit();
+        if (mediaUnit) {
+            watchLocalAssert();
         }
         if (lookups == null) {
             lookups = Executors.newSingleThreadExecutor(r -> {
@@ -217,7 +229,7 @@ final class StockRadioSource {
         lookups.execute(() -> {
             Lookup found;
             try {
-                found = lookup(forFreq);
+                found = mediaUnit ? lookupMedia(forFreq) : lookup(forFreq);
             } catch (RuntimeException e) {
                 Log.w(TAG, "radio logo lookup failed for " + forFreq + ": " + e);
                 FytCompat.report("radio.logo lookup", e);
@@ -232,6 +244,138 @@ final class StockRadioSource {
                 }
             });
         });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Names and logos of com.syu.media (7870)
+    // ---------------------------------------------------------------------------------------------
+
+    private static final Uri LOCAL_ASSERT = Uri.parse("content://com.syu.radio/local_assert");
+    private static final String RADIO_LOGO_DIR = "/storage/emulated/0/radio_logo";
+    private static volatile Boolean sProviderIsMedia;
+    private ContentObserver logoObserver;
+
+    /**
+     * The list of the logos is filled by com.syu.media a while after it starts and announced with a change
+     * notification; it is watched while the radio is the source shown (then com.syu.media is running anyway,
+     * the launcher starts nothing with it). Main thread.
+     */
+    private void watchLocalAssert() {
+        if (logoObserver != null) {
+            return;
+        }
+        logoObserver = new ContentObserver(main) {
+            @Override
+            public void onChange(boolean selfChange) {
+                if (!StockSources.isRadioShown()) {
+                    app.getContentResolver().unregisterContentObserver(this);
+                    logoObserver = null;
+                    return;
+                }
+                lookupCache.clear();
+                requestLookup(freq);
+            }
+        };
+        try {
+            app.getContentResolver().registerContentObserver(LOCAL_ASSERT, false, logoObserver);
+        } catch (RuntimeException e) {
+            Log.w(TAG, "local_assert not watched: " + e);
+            logoObserver = null;
+        }
+    }
+
+    /**
+     * The logo and name of a station as com.syu.media has them. The authority com.syu.radio is the 7870's
+     * com.syu.media's own, but on the 7862 it is the nonexported provider of the radio app, so the owner is
+     * checked, once. Worker thread.
+     */
+    private Lookup lookupMedia(int forFreq) {
+        String name = null;
+        byte[] logo = null;
+        boolean scan = true;
+        if (providerIsMedia()) {
+            try {
+                String[] hit = queryLocalAssert(forFreq);
+                scan = false;
+                if (hit != null) {
+                    name = hit[0];
+                    logo = readLogo(hit[1]);
+                }
+            } catch (RuntimeException e) {
+                // another firmware: the folder is read by the rules of the app instead
+                Log.w(TAG, "local_assert not readable, scanning radio_logo: " + e);
+            }
+        }
+        if (scan) {
+            File[] folders = {new File(RADIO_LOGO_DIR)};
+            File[] top = folders[0].listFiles();
+            java.util.List<File> all = new java.util.ArrayList<>();
+            if (top != null) {
+                for (File f : top) {
+                    if (f.isDirectory()) {
+                        File[] inner = f.listFiles();
+                        if (inner != null) {
+                            all.addAll(java.util.Arrays.asList(inner));
+                        }
+                    } else {
+                        all.add(f);
+                    }
+                }
+            }
+            for (File f : all) {
+                StockLogoNames.Logo l = f.isFile() ? StockLogoNames.parse(f.getName()) : null;
+                if (l != null && l.freq == forFreq) {
+                    name = l.name;
+                    logo = readLogo(f.getPath());
+                    break;
+                }
+            }
+        }
+        if (logo == null) {
+            // what the app shows for a station without a logo; the same one for a frequency
+            logo = StockCoverLoader.stationFallback(app, forFreq);
+        }
+        return new Lookup(name, logo);
+    }
+
+    private boolean providerIsMedia() {
+        Boolean known = sProviderIsMedia;
+        if (known != null) {
+            return known;
+        }
+        ProviderInfo info = app.getPackageManager().resolveContentProvider("com.syu.radio", 0);
+        String owner = info != null ? info.packageName : null;
+        boolean media = MusicService.MEDIA_PKG.equals(owner);
+        sProviderIsMedia = media;
+        Log.i(TAG, "authority com.syu.radio is owned by " + owner + (media ? "" : " (not com.syu.media)"));
+        return media;
+    }
+
+    /** {title, cover_path} of the station of the frequency in local_assert, null if the list has none. */
+    private String[] queryLocalAssert(int forFreq) {
+        try (Cursor c = app.getContentResolver().query(LOCAL_ASSERT,
+                new String[]{"freq", "cover_path", "title"}, null, null, null)) {
+            if (c == null) {
+                throw new IllegalStateException("local_assert gave no cursor");
+            }
+            while (c.moveToNext()) {
+                if (c.getInt(0) == forFreq) {
+                    String cover = c.getString(1);
+                    String title = c.getString(2);
+                    return new String[]{title != null && !title.trim().isEmpty() ? title.trim() : null, cover};
+                }
+            }
+        }
+        return null;
+    }
+
+    /** A logo file as PNG bytes, read the ways SyuMediaFiles has; null if it cannot be. */
+    private static byte[] readLogo(String path) {
+        if (path == null || path.isEmpty()) {
+            return null;
+        }
+        SyuMediaFiles.Data data = SyuMediaFiles.read(SyuMediaFiles.FAMILY_RADIO_LOGO, path);
+        return data == null ? null : StockCoverLoader.toPng(data.bytes);
     }
 
     private static final class Lookup {
