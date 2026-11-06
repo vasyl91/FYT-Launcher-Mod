@@ -32,7 +32,8 @@ import java.util.List;
  * <p>It lives in its own TYPE_APPLICATION_OVERLAY window - the window type of the bar overlay -
  * so it stays above the widgets and the PiP panes. Vertically the window is framed exactly like the
  * bar overlay (same type, flags, gravity and height), so the strip is level with the bar. The
- * window is wider than the strip, so that a swipe to the right is easy to start: a transparent
+ * window is as wide as the left bar (computed as a share of the screen like the bar, see
+ * {@link EdgeHandleGeometry}), so that a swipe to the right is easy to start: a transparent
  * margin beside the strip takes only that swipe ({@link BottomBarEdgeGesture} holds the rules).
  * Anything else that begins in the margin - a tap, a vertical drag, a long press - is handed to
  * the window of the launcher or of the pane that is under the finger, which is always one of the
@@ -48,12 +49,6 @@ final class BottomBarEdgeHandle {
 
     /** Width of the visible strip, as a share of the longer screen edge. */
     static final float STRIP_WIDTH_FRACTION = 0.01f;
-    /**
-     * Transparent touch margin beside the strip, as a share of the longer screen edge (about 45 px
-     * on 1280 px), and at least MIN_TOUCH_MARGIN_DP. The margin only takes a swipe to the right.
-     */
-    static final float TOUCH_MARGIN_FRACTION = 0.035f;
-    static final int MIN_TOUCH_MARGIN_DP = 24;
 
     /** Radius of the two inner corners, as a share of the strip width. */
     private static final float CORNER_RADIUS_FRACTION = 0.4f;
@@ -97,7 +92,7 @@ final class BottomBarEdgeHandle {
 
     /**
      * @param stripWidth width of the visible strip
-     * @param touchWidth width of the window, i.e. the strip plus the transparent touch margin
+     * @param touchWidth width of the window, i.e. the width of the left bar (never below the strip)
      * @param barHeight  height of the bottom bar, which the strip matches
      * @param dark       black strip instead of a white one (the "black bar" setting)
      */

@@ -86,6 +86,7 @@ import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.PipEdgeTrim;
 import com.android.recycler.AppListDialogFragment;
 import com.android.recycler.SimpleDividerDecoration;
 import com.syu.util.WindowHost;
@@ -2713,6 +2714,10 @@ public class Workspace extends SmoothPagedView
         return getCurrentPage() == getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1) ? 0 : 1;
     }
 
+    /** The geometry last logged, so that the log line comes once per change. */
+    private int mEdgeHandleStripLogged = -1;
+    private int mEdgeHandleTouchLogged = -1;
+
     private void applyEdgeHandleGeometry() {
         if (mPrefs == null) {
             mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -2721,15 +2726,25 @@ public class Workspace extends SmoothPagedView
         int screenHeight = Launcher.screenHeight;
         int longerEdge = Math.max(screenWidth, screenHeight);
         int stripWidth = Math.max(1, Math.round(longerEdge * BottomBarEdgeHandle.STRIP_WIDTH_FRACTION));
-        // The transparent margin only takes a swipe to the right; a tap or a drag in it is handed
-        // to what is below, so it does not have to stop short of a widget next to the strip.
-        int minMargin = Math.round(BottomBarEdgeHandle.MIN_TOUCH_MARGIN_DP
-                * getResources().getDisplayMetrics().density);
-        int touchMargin = Math.max(minMargin,
-                Math.round(longerEdge * BottomBarEdgeHandle.TOUCH_MARGIN_FRACTION));
-        int touchWidth = stripWidth + touchMargin;
+        // The window that catches the swipe is as wide as the left bar and computed like it, as a
+        // share of the screen, so the swipe starts where the bar would be on any display. Only a
+        // swipe to the right is taken there; a tap or a drag is handed to what is below, so it does
+        // not have to stop short of a widget next to the strip. The width is the one Helpers uses
+        // for the first page: what the launcher measured, else the formula of the layouts.
+        int barHeight = getBottomBarHeight(screenWidth, screenHeight);
+        boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
+        float leftBarWidth = Launcher.calculatedLeftBarWidth > 0
+                ? Launcher.calculatedLeftBarWidth
+                : PipEdgeTrim.computeLeftBarWidth(portrait, screenWidth, screenHeight, barHeight);
+        int touchWidth = EdgeHandleGeometry.touchWidth(stripWidth, leftBarWidth);
+        if (stripWidth != mEdgeHandleStripLogged || touchWidth != mEdgeHandleTouchLogged) {
+            mEdgeHandleStripLogged = stripWidth;
+            mEdgeHandleTouchLogged = touchWidth;
+            Log.i(TAG, "Edge handle geometry: strip " + stripWidth + " px, touch " + touchWidth
+                    + " px (left bar width)");
+        }
         mEdgeHandle.setGeometry(stripWidth, touchWidth,
-                getBottomBarHeight(screenWidth, screenHeight),
+                barHeight,
                 mPrefs.getBoolean(Keys.BLACK_BAR, false));
     }
 
