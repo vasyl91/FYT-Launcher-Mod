@@ -37,8 +37,10 @@ import com.android.launcher66.R;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DrawViewOtherScreens extends View implements View.OnClickListener {
 
@@ -76,6 +78,11 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
     private String selectedWidgetKey = null;
     private String activeRectKey = null;
     private final RectangleTouchHelper touchHelper = new RectangleTouchHelper();
+    // Rectangles the user dragged, resized or stepped with the arrows since the last save. Only
+    // those get a new user rectangle (Helpers.putUserRect): the others show a layout the bars may
+    // have cut back (the bottom bar on every page cuts these screens too), which must not replace
+    // what the user drew.
+    private final Set<String> touchedKeys = new HashSet<>();
     private static final int NO_POINTER = -1;
     // The finger that started the drag; other fingers on the canvas are ignored.
     private int activePointerId = NO_POINTER;
@@ -615,7 +622,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
                     if (cfg == null) return false;
                     resizeActiveRect(ids, cfg, before, moveX, moveY);
                 } else {
-                    moveActiveRect(ids, before, moveX, moveY);
+                    moveActiveRect(ids, activeRectKey, before, moveX, moveY);
                 }
                 invalidate();
                 return true;
@@ -668,12 +675,13 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
     }
 
     /** Moves the grabbed rectangle with the finger, inside the margins. */
-    private void moveActiveRect(Integer[] ids, RectF before, float x, float y) {
+    private void moveActiveRect(Integer[] ids, String key, RectF before, float x, float y) {
         RectF after = new RectF();
         touchHelper.move(x, y, before, minBorderX, minBorderY, maxBorderX, maxBorderY, after);
         int dx = Math.round(after.left - before.left);
         int dy = Math.round(after.top - before.top);
         if (dx == 0 && dy == 0) return;
+        touchedKeys.add(key);
         for (int id : ids) {
             point[id].x += dx;
             point[id].y += dy;
@@ -686,7 +694,15 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
         touchHelper.resize(x, y, before, cfg.minWidth, cfg.minHeight,
                 minBorderX, minBorderY, maxBorderX, maxBorderY, cand);
         if (cand.equals(before)) return;
+        touchedKeys.add(cfg.key);
         candToPoints(ids, cand);
+    }
+
+    /** Applies one arrow step and remembers that the user changed this rectangle. */
+    private void applyStep(String key, Integer[] ids, RectF before, RectF cand) {
+        if (!cand.equals(before)) touchedKeys.add(key);
+        candToPoints(ids, cand);
+        saveAndRedraw();
     }
 
     private String hitTestRect(int x, int y) {
@@ -726,38 +742,38 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
 
         if (viewId == R.id.top_up) {
             RectF cand = new RectF(r.left, r.top - STEP, r.right, r.bottom);
-            if (cand.top >= margin) { candToPoints(ids, cand); saveAndRedraw(); }
+            if (cand.top >= margin) { applyStep(cfg.key, ids, r, cand); }
 
         } else if (viewId == R.id.top_down) {
             RectF cand = new RectF(r.left, r.top + STEP, r.right, r.bottom);
-            if (cand.height() >= cfg.minHeight) { candToPoints(ids, cand); saveAndRedraw(); }
+            if (cand.height() >= cfg.minHeight) { applyStep(cfg.key, ids, r, cand); }
 
         } else if (viewId == R.id.bottom_up) {
             float newBottom = Math.max(r.top + cfg.minHeight, r.bottom - STEP);
             RectF cand = new RectF(r.left, r.top, r.right, newBottom);
-            candToPoints(ids, cand); saveAndRedraw();
+            applyStep(cfg.key, ids, r, cand);
 
         } else if (viewId == R.id.bottom_down) {
             RectF cand = new RectF(r.left, r.top, r.right, r.bottom + STEP);
-            if (cand.bottom <= (maxBorderY - margin)) { candToPoints(ids, cand); saveAndRedraw(); }
+            if (cand.bottom <= (maxBorderY - margin)) { applyStep(cfg.key, ids, r, cand); }
 
         } else if (viewId == R.id.left_to_left) {
             RectF cand = new RectF(r.left - STEP, r.top, r.right, r.bottom);
-            if (cand.left >= (minBorderX)) { candToPoints(ids, cand); saveAndRedraw(); }
+            if (cand.left >= (minBorderX)) { applyStep(cfg.key, ids, r, cand); }
 
         } else if (viewId == R.id.left_to_right) {
             float newLeft = Math.min(r.right - stepMinWidth(cfg, r), r.left + STEP);
             RectF cand = new RectF(newLeft, r.top, r.right, r.bottom);
-            candToPoints(ids, cand); saveAndRedraw();
+            applyStep(cfg.key, ids, r, cand);
 
         } else if (viewId == R.id.right_to_left) {
             float newRight = Math.max(r.left + stepMinWidth(cfg, r), r.right - STEP);
             RectF cand = new RectF(r.left, r.top, newRight, r.bottom);
-            candToPoints(ids, cand); saveAndRedraw();
+            applyStep(cfg.key, ids, r, cand);
 
         } else if (viewId == R.id.right_to_right) {
             RectF cand = new RectF(r.left, r.top, r.right + STEP, r.bottom);
-            if (cand.right <= (maxBorderX - margin)) { candToPoints(ids, cand); saveAndRedraw(); }
+            if (cand.right <= (maxBorderX - margin)) { applyStep(cfg.key, ids, r, cand); }
 
         } else if (viewId == R.id.confirm_layout) {
             if (hasAnyIntersection()) {
@@ -924,12 +940,14 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
             e.putInt(cfg.key + "BottomRightY", point[ids[2]].y);
             e.putInt(cfg.key + "BottomLeftX", point[ids[3]].x);
             e.putInt(cfg.key + "BottomLeftY", point[ids[3]].y);
-            // No bar cuts anything back on these screens: what is drawn is what the user drew.
-            if (!"stats".equals(cfg.key)) {
+            // The bottom bar on every page cuts these screens back too, so only what the user
+            // touched replaces the rectangle the user drew.
+            if (touchedKeys.contains(cfg.key) && !"stats".equals(cfg.key)) {
                 Helpers.putUserRect(e, cfg.key, point[ids[0]].x, point[ids[0]].y,
                         point[ids[2]].x, point[ids[2]].y);
             }
         }
+        touchedKeys.clear();
         e.apply();
     }
 

@@ -970,6 +970,9 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             RectF clampedCand = clampAwayFromAutoHideBar(cand);
             // Only apply if the clamping didn't change the rectangle (no collision)
             if (clampedCand.equals(cand)) {
+                // The arrows change the rectangle like a finger does, so it must replace the user
+                // rectangle too, or the next fit to the room starts from the old one.
+                if (!cand.equals(r)) touchedKeys.add(cfg.key);
                 candToPoints(ids, cand);
                 saveAndRedraw();
             }
