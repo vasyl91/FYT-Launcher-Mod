@@ -114,7 +114,10 @@ final class CanbusAutoCheck {
         dropped.discard();
         setState(carId, state.ended(CanbusAutoCheckPolicy.State.INTERRUPTED, System.currentTimeMillis()));
         Log.i(TAG, "interrupted car=" + carId + " (" + why + ")");
-        worker.execute(dropped::unregisterCodesInBatches);
+        worker.execute(() -> {
+            dropped.unregisterCodesInBatches();
+            dropped.release();
+        });
     }
 
     void destroy() {
@@ -222,7 +225,10 @@ final class CanbusAutoCheck {
             rec.discard();
             setState(carId, state.ended(CanbusAutoCheckPolicy.State.INTERRUPTED, System.currentTimeMillis()));
             Log.i(TAG, "interrupted car=" + carId + " (the car changed)");
-            worker.execute(rec::unregisterCodesInBatches);
+            worker.execute(() -> {
+                rec.unregisterCodesInBatches();
+                rec.release();
+            });
             return;
         }
         final CanbusAutoCheckPolicy.Record before = state;
@@ -234,6 +240,7 @@ final class CanbusAutoCheck {
         List<CanbusCodeEstimator.GpsFix> fixes = rec.fixes();
         CanbusRecorder.Snapshot snapshot = rec.freeze();
         rec.unregisterCodesInBatches();
+        rec.release();
         long drivingMs = drivingMs(fixes);
         CanbusAutoCheckPolicy.State outcome = CanbusAutoCheckPolicy.outcome(drivingMs, fixes.size());
         long now = System.currentTimeMillis();

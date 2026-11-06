@@ -77,12 +77,29 @@ final class CanbusRecorder {
     /** The GPS speed during the recording. */
     private final List<CanbusCodeEstimator.GpsFix> gpsFixes = Collections.synchronizedList(new ArrayList<>());
 
-    final IModuleCallback.Stub callback = new IModuleCallback.Stub() {
+    final RecorderCallback callback = new RecorderCallback(this);
+
+    /**
+     * The binder stub com.syu.ms holds. The remote process keeps a proxy to it (a JNI global reference)
+     * for minutes after unregister, until its own GC runs, and an anonymous class would keep the recorder
+     * alive meanwhile, with up to 200 000 events and the GPS fixes. This one is static and reaches the
+     * recorder only through a field that release() clears.
+     */
+    static final class RecorderCallback extends IModuleCallback.Stub {
+        private volatile CanbusRecorder target;
+
+        RecorderCallback(CanbusRecorder target) {
+            this.target = target;
+        }
+
         @Override
         public void update(int updateCode, int[] ints, float[] flts, String[] strs) {
-            record(updateCode, ints, flts, strs);
+            CanbusRecorder recorder = target;
+            if (recorder != null) {
+                recorder.record(updateCode, ints, flts, strs);
+            }
         }
-    };
+    }
 
     CanbusRecorder(Set<Integer> skipCodes) {
         this.skipCodes = skipCodes;
@@ -155,6 +172,16 @@ final class CanbusRecorder {
             droppedEvents = 0;
         }
         gpsFixes.clear();
+    }
+
+    /**
+     * The codes are unregistered and the recording has been taken (freeze, fixes): the recorder lets go
+     * of everything it holds. Call it after unregisterCodesInBatches, from the background thread; a
+     * proxy that com.syu.ms still has to the callback then keeps only the empty stub.
+     */
+    void release() {
+        callback.target = null;
+        discard();
     }
 
     /** A GPS fix, with its speed, bearing and altitude; one without a speed is not kept. */

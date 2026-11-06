@@ -119,7 +119,8 @@ public class CanbusCodeInspector extends Service {
         batchExecutor.execute(() -> {
             writeDataToFile();
             mainHandler.post(() ->
-                Toast.makeText(this, R.string.code_inspector_toast, Toast.LENGTH_SHORT).show()
+                // The service may be destroyed by now: its own context is not used for the toast
+                Toast.makeText(getApplicationContext(), R.string.code_inspector_toast, Toast.LENGTH_SHORT).show()
             );
         });
     }
@@ -139,6 +140,8 @@ public class CanbusCodeInspector extends Service {
     private void unregisterCodesInBatches() {
         batchExecutor.execute(() -> {
             recorder.unregisterCodesInBatches();
+            // The recording was written by the task queued before this one
+            recorder.release();
             batchExecutor.shutdown();
         });
     }

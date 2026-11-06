@@ -332,6 +332,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
             Log.w(TAG, "pipReceiver was not registered", e);
         }
         removeNotify();
+        // The remote process keeps the stub for a while: it must not keep this service.
+        statsCallback.detach();
         removeView();
         StatsOverlayAlpha.onWindowHiddenNow(this);
         Intent broadcastIntent = new Intent(this, ServiceRestarter.class);
@@ -452,50 +454,73 @@ public class CanbusService extends Service implements PropertyChangeListener {
      * callback of the car (Callback_XXXX) registered. DataCanbus.DATA and NOTIFY_EVENTS only know the
      * codes that callback registered, and for a car the launcher has no callback for, only code 0.
      */
-    private final IModuleCallback.Stub statsCallback = new IModuleCallback.Stub() {
+    private final StatsCallback statsCallback = new StatsCallback(this);
+
+    /**
+     * The binder stub com.syu.ms holds. The remote process keeps a proxy to it (a JNI global
+     * reference) for minutes after unregister, until its own GC runs, and an anonymous class would
+     * keep the whole service alive meanwhile. This one is static and reaches the service only through
+     * a field that onDestroy clears.
+     */
+    private static final class StatsCallback extends IModuleCallback.Stub {
+        private volatile CanbusService target;
+
+        StatsCallback(CanbusService target) {
+            this.target = target;
+        }
+
+        /** The service ended: the stub no longer refers to it. */
+        void detach() {
+            target = null;
+        }
+
         @Override
         public void update(int updateCode, int[] ints, float[] flts, String[] strs) {
+            CanbusService service = target;
+            if (service == null) {
+                return;
+            }
             try {
-                onStatsCode(updateCode, ints);
+                service.onStatsCode(updateCode, ints);
             } catch (RuntimeException | LinkageError e) {
                 // The name of the area is built here, not before every call: this runs for every message.
                 FytCompat.report("canbus.stats code " + updateCode, e);
             }
         }
+    }
 
-        private void onStatsCode(int updateCode, int[] ints) {
-            if (ints == null || ints.length == 0) {
-                return;
-            }
-            int value = ints[0];
-            lastCodeValues.put(updateCode, value);
-            CodePairChooser chooser = pairChooser;
-            if (chooser != null && chooser.onValue(updateCode, value)) {
-                uiHandler.post(CanbusService.this::onPairChanged);
-            }
-            if (updateCode == fuelCode) {
-                fuelRaw = value;
-                fuelValue = fuelFromRaw(value);
-                uiHandler.post(CanbusService.this::mUpdaterOilExpend);
-            }
-            FuelUnit unit = fuelUnit;
-            if (unit != null && unit.unitCode() == updateCode) {
-                uiHandler.post(CanbusService.this::onFuelUnitChanged);
-            }
-            if (updateCode == rangeCode) {
-                rangeValue = value;
-                uiHandler.post(CanbusService.this::mUpdaterDrivingMileage);
-            }
-            if (updateCode == rpmCode) {
-                rpmValue = value;
-                uiHandler.post(CanbusService.this::mUpdaterRPM);
-            }
-            if (updateCode == speedCode) {
-                speedValue = value;
-                uiHandler.post(CanbusService.this::onSpeedCode);
-            }
+    private void onStatsCode(int updateCode, int[] ints) {
+        if (ints == null || ints.length == 0) {
+            return;
         }
-    };
+        int value = ints[0];
+        lastCodeValues.put(updateCode, value);
+        CodePairChooser chooser = pairChooser;
+        if (chooser != null && chooser.onValue(updateCode, value)) {
+            uiHandler.post(this::onPairChanged);
+        }
+        if (updateCode == fuelCode) {
+            fuelRaw = value;
+            fuelValue = fuelFromRaw(value);
+            uiHandler.post(this::mUpdaterOilExpend);
+        }
+        FuelUnit unit = fuelUnit;
+        if (unit != null && unit.unitCode() == updateCode) {
+            uiHandler.post(this::onFuelUnitChanged);
+        }
+        if (updateCode == rangeCode) {
+            rangeValue = value;
+            uiHandler.post(this::mUpdaterDrivingMileage);
+        }
+        if (updateCode == rpmCode) {
+            rpmValue = value;
+            uiHandler.post(this::mUpdaterRPM);
+        }
+        if (updateCode == speedCode) {
+            speedValue = value;
+            uiHandler.post(this::onSpeedCode);
+        }
+    }
 
     /** The codes registered with statsCallback; main thread. */
     private final Set<Integer> statsCodesRegistered = new HashSet<>();
