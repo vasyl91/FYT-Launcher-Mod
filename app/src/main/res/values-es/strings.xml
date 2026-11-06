@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Página:</string>
     <string name="pip_position_button">\u0020\u0020\u0020AJUSTAR\u0020\u0020\u0020</string>
     <string name="double_tap">Página: %1$s \nToca dos veces en cualquier lugar \npara mostrar u ocultar la barra inferior</string>
+    <string name="screen_number">Página: %1$s</string>
     <string name="screen_first">Página: 1</string>
     <string name="adjust_widget">Ajusta tu widget</string>
     <string name="restart_pip">Reiniciar PiP</string>

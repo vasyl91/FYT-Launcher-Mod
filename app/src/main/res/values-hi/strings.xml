@@ -353,6 +353,7 @@
     <string name="pip_screen_button">पृष्ठ:</string>
     <string name="pip_position_button">\u0020\u0020\u0020समायोजित करें\u0020\u0020\u0020</string>
     <string name="double_tap">पृष्ठ: %1$s \nनिचला बार दिखाने/छिपाने के लिए \nकहीं भी दो बार टैप करें</string>
+    <string name="screen_number">पृष्ठ: %1$s</string>
     <string name="screen_first">पृष्ठ: 1</string>
     <string name="adjust_widget">अपने विजेट को समायोजित करें</string>
     <string name="restart_pip">PiP रीस्टार्ट करें</string>

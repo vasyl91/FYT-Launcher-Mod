@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Старонка:</string>
     <string name="pip_position_button">\u0020\u0020\u0020НАЛАДЗІЦЬ\u0020\u0020\u0020</string>
     <string name="double_tap">Старонка: %1$s \nДвойчы націсніце ў любым месцы, \nкаб паказаць/схаваць ніжнюю панэль</string>
+    <string name="screen_number">Старонка: %1$s</string>
     <string name="screen_first">Старонка: 1</string>
     <string name="adjust_widget">Наладзьце свой віджэт</string>
     <string name="restart_pip">Перазапусціць PiP</string>

@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Stránka:</string>
     <string name="pip_position_button">\u0020\u0020\u0020UPRAVIŤ\u0020\u0020\u0020</string>
     <string name="double_tap">Stránka: %1$s \nDvojitým klepnutím kdekoľvek \nzobrazíte/skryjete spodný panel</string>
+    <string name="screen_number">Stránka: %1$s</string>
     <string name="screen_first">Stránka: 1</string>
     <string name="adjust_widget">Upravte svoj widget</string>
     <string name="restart_pip">Reštartovať PiP</string>

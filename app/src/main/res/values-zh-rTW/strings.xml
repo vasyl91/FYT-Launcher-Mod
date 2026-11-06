@@ -353,6 +353,7 @@
     <string name="pip_screen_button">頁面：</string>
     <string name="pip_position_button">\u0020\u0020\u0020調整\u0020\u0020\u0020</string>
     <string name="double_tap">頁面: %1$s \n在任意位置輕點兩下 \n可隱藏/顯示底部欄</string>
+    <string name="screen_number">頁面: %1$s</string>
     <string name="screen_first">頁面: 1</string>
     <string name="adjust_widget">調整您的小工具</string>
     <string name="restart_pip">重新啟動子母畫面</string>

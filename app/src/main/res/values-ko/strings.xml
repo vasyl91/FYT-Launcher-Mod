@@ -353,6 +353,7 @@
     <string name="pip_screen_button">페이지:</string>
     <string name="pip_position_button">\u0020\u0020\u0020조정\u0020\u0020\u0020</string>
     <string name="double_tap">페이지: %1$s \n아무 곳이나 두 번 탭하여 \n하단 바 표시/숨기기</string>
+    <string name="screen_number">페이지: %1$s</string>
     <string name="screen_first">페이지: 1</string>
     <string name="adjust_widget">위젯 조정</string>
     <string name="restart_pip">PiP 다시 시작</string>

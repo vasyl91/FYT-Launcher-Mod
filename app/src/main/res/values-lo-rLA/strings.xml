@@ -353,6 +353,7 @@
     <string name="pip_screen_button">ໜ້າ:</string>
     <string name="pip_position_button">ປັບ</string>
     <string name="double_tap">ໜ້າ: %1$s \nແຕະສອງຄັ້ງບ່ອນໃດກໍໄດ້ \nເພື່ອສະແດງ/ເຊື່ອງແຖບລຸ່ມ</string>
+    <string name="screen_number">ໜ້າ: %1$s</string>
     <string name="screen_first">ໜ້າ: 1</string>
     <string name="adjust_widget">ປັບວິດເຈັດຂອງທ່ານ</string>
     <string name="restart_pip">ເລີ່ມ PiP ໃໝ່</string>

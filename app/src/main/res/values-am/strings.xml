@@ -353,6 +353,7 @@
     <string name="pip_screen_button">ገጽ፦</string>
     <string name="pip_position_button">\u0020\u0020\u0020አስተካክል\u0020\u0020\u0020</string>
     <string name="double_tap">ገጽ፦ %1$s \nየታች አሞሌን ለማሳየት/ለመደበቅ \nበየትኛውም ቦታ ሁለቴ መታ ያድርጉ</string>
+    <string name="screen_number">ገጽ፦ %1$s</string>
     <string name="screen_first">ገጽ፦ 1</string>
     <string name="adjust_widget">ምግብዎን ያስተካክሉ</string>
     <string name="restart_pip">PiPን ዳግም አስጀምር</string>

@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Pagina:</string>
     <string name="pip_position_button">\u0020\u0020\u0020AANPASSEN\u0020\u0020\u0020</string>
     <string name="double_tap">Pagina: %1$s \nDubbeltik ergens \nom de onderbalk te tonen/verbergen</string>
+    <string name="screen_number">Pagina: %1$s</string>
     <string name="screen_first">Pagina: 1</string>
     <string name="adjust_widget">Pas je widget aan</string>
     <string name="restart_pip">PiP opnieuw starten</string>

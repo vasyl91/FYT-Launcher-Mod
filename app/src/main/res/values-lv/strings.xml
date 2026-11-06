@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Lapa:</string>
     <string name="pip_position_button">\u0020\u0020\u0020PIELĀGOT\u0020\u0020\u0020</string>
     <string name="double_tap">Lapa: %1$s \nDivreiz pieskarieties jebkur, \nlai rādītu/slēptu apakšējo joslu</string>
+    <string name="screen_number">Lapa: %1$s</string>
     <string name="screen_first">Lapa: 1</string>
     <string name="adjust_widget">Pielāgojiet savu logrīku</string>
     <string name="restart_pip">Pārstartēt PiP</string>

@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Sayfa:</string>
     <string name="pip_position_button">\u0020\u0020\u0020AYARLA\u0020\u0020\u0020</string>
     <string name="double_tap">Sayfa: %1$s \nAlt çubuğu göstermek/gizlemek için \nher yere çift dokunun</string>
+    <string name="screen_number">Sayfa: %1$s</string>
     <string name="screen_first">Sayfa: 1</string>
     <string name="adjust_widget">Widget\'ınızı ayarlayın</string>
     <string name="restart_pip">PiP\'i yeniden başlat</string>

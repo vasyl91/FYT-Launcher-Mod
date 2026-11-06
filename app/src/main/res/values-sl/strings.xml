@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Stran:</string>
     <string name="pip_position_button">\u0020\u0020\u0020PRILAGODI\u0020\u0020\u0020</string>
     <string name="double_tap">Stran: %1$s \nDvakrat se dotaknite kjer koli, \nda prikažete/skrijete spodnjo vrstico</string>
+    <string name="screen_number">Stran: %1$s</string>
     <string name="screen_first">Stran: 1</string>
     <string name="adjust_widget">Prilagodite svoj gradnik</string>
     <string name="restart_pip">Znova zaženi PiP</string>

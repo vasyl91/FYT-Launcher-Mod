@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Bladsy:</string>
     <string name="pip_position_button">\u0020\u0020\u0020PAS AAN\u0020\u0020\u0020</string>
     <string name="double_tap">Bladsy: %1$s \nDubbeltik enige plek \nom die onderste balk te wys/versteek</string>
+    <string name="screen_number">Bladsy: %1$s</string>
     <string name="screen_first">Bladsy: 1</string>
     <string name="adjust_widget">Pas jou legstuk aan</string>
     <string name="restart_pip">Herbegin PiP</string>

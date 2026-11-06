@@ -353,6 +353,7 @@
     <string name="pip_screen_button">الصفحة:</string>
     <string name="pip_position_button">\u0020\u0020\u0020ضبط\u0020\u0020\u0020</string>
     <string name="double_tap">الصفحة: %1$s \nالمس مرتين في أي مكان \nلإظهار/إخفاء الشريط السفلي</string>
+    <string name="screen_number">الصفحة: %1$s</string>
     <string name="screen_first">الصفحة: 1</string>
     <string name="adjust_widget">اضبط عنصر الواجهة</string>
     <string name="restart_pip">إعادة تشغيل PiP</string>

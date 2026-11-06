@@ -353,6 +353,7 @@
     <string name="pip_screen_button">หน้า:</string>
     <string name="pip_position_button">\u0020\u0020\u0020ปรับ\u0020\u0020\u0020</string>
     <string name="double_tap">หน้า: %1$s \nแตะสองครั้งที่ใดก็ได้ \nเพื่อแสดง/ซ่อนแถบด้านล่าง</string>
+    <string name="screen_number">หน้า: %1$s</string>
     <string name="screen_first">หน้า: 1</string>
     <string name="adjust_widget">ปรับวิดเจ็ตของคุณ</string>
     <string name="restart_pip">รีสตาร์ท PiP</string>

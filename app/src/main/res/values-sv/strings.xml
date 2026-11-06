@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Sida:</string>
     <string name="pip_position_button">\u0020\u0020\u0020JUSTERA\u0020\u0020\u0020</string>
     <string name="double_tap">Sida: %1$s \nDubbeltryck var som helst \nför att visa/dölja det nedre fältet</string>
+    <string name="screen_number">Sida: %1$s</string>
     <string name="screen_first">Sida: 1</string>
     <string name="adjust_widget">Justera din widget</string>
     <string name="restart_pip">Starta om PiP</string>

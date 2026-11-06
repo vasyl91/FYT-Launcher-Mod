@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Ukurasa:</string>
     <string name="pip_position_button">\u0020\u0020\u0020REKEBISHA\u0020\u0020\u0020</string>
     <string name="double_tap">Ukurasa: %1$s \nGusa mara mbili popote \nili kuonyesha/kuficha upau wa chini</string>
+    <string name="screen_number">Ukurasa: %1$s</string>
     <string name="screen_first">Ukurasa: 1</string>
     <string name="adjust_widget">Rekebisha wijeti yako</string>
     <string name="restart_pip">Anzisha upya PiP</string>

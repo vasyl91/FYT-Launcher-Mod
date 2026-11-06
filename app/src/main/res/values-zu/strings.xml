@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Ikhasi:</string>
     <string name="pip_position_button">\u0020\u0020\u0020LUNGISA\u0020\u0020\u0020</string>
     <string name="double_tap">Ikhasi: %1$s \nThepha kabili noma kuphi \nukuze ubonise/ufihle ibha engezansi</string>
+    <string name="screen_number">Ikhasi: %1$s</string>
     <string name="screen_first">Ikhasi: 1</string>
     <string name="adjust_widget">Lungisa iwijethi yakho</string>
     <string name="restart_pip">Qalisa kabusha i-PiP</string>

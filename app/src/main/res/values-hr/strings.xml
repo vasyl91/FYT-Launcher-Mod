@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Stranica:</string>
     <string name="pip_position_button">\u0020\u0020\u0020PRILAGODI\u0020\u0020\u0020</string>
     <string name="double_tap">Stranica: %1$s \nDvaput dodirnite bilo gdje \nza prikaz/skrivanje donje trake</string>
+    <string name="screen_number">Stranica: %1$s</string>
     <string name="screen_first">Stranica: 1</string>
     <string name="adjust_widget">Prilagodite svoj widget</string>
     <string name="restart_pip">Ponovno pokreni PiP</string>

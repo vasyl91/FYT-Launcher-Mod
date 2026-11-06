@@ -353,6 +353,7 @@
     <string name="pip_screen_button">ページ:</string>
     <string name="pip_position_button">\u0020\u0020\u0020調整\u0020\u0020\u0020</string>
     <string name="double_tap">ページ: %1$s \n画面のどこかをダブルタップして\n下バーを表示/非表示</string>
+    <string name="screen_number">ページ: %1$s</string>
     <string name="screen_first">ページ: 1</string>
     <string name="adjust_widget">ウィジェットを調整</string>
     <string name="restart_pip">PiPを再起動</string>

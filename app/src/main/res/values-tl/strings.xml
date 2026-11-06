@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Pahina:</string>
     <string name="pip_position_button">\u0020\u0020\u0020ISAAYOS\u0020\u0020\u0020</string>
     <string name="double_tap">Pahina: %1$s \nI-double-tap kahit saan \npara ipakita/itago ang ibabang bar</string>
+    <string name="screen_number">Pahina: %1$s</string>
     <string name="screen_first">Pahina: 1</string>
     <string name="adjust_widget">Isaayos ang iyong widget</string>
     <string name="restart_pip">I-restart ang PiP</string>

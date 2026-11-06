@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Страница:</string>
     <string name="pip_position_button">\u0020\u0020\u0020ПОДЕСИ\u0020\u0020\u0020</string>
     <string name="double_tap">Страница: %1$s \nДвапут додирните било где \nда прикажете/сакријете доњу траку</string>
+    <string name="screen_number">Страница: %1$s</string>
     <string name="screen_first">Страница: 1</string>
     <string name="adjust_widget">Подесите свој виџет</string>
     <string name="restart_pip">Поново покрени PiP</string>

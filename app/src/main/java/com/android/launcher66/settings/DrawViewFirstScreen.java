@@ -303,7 +303,9 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                         saveStatsAndRedraw();
                         return true;
                     }
-                    if (!sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
+                    if (!CreatorBarToggle.canToggle(true,
+                            sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false),
+                            sharedPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false))) {
                         return true;
                     }
                     boolean showControls = creatorBar.getVisibility() != View.VISIBLE;
@@ -569,7 +571,8 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         hint.setTextAlign(Paint.Align.CENTER);
         hint.setShadowLayer(2, 1, 1, Color.WHITE);
         float centerX = getWidth() / 2f;
-        if (sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
+        if (CreatorBarToggle.canToggle(true, sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false),
+                sharedPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false))) {
             float centerY = SettingsActivity.screenHeight / 2f;
             float lineHeight = hint.getTextSize() * 1.2f; 
             String centerText = getSafeContext().getString(R.string.double_tap, "1");

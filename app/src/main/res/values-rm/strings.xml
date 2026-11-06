@@ -353,6 +353,7 @@
     <string name="pip_screen_button">Pagina:</string>
     <string name="pip_position_button">\u0020\u0020\u0020ADATTAR\u0020\u0020\u0020</string>
     <string name="double_tap">Pagina: %1$s \nTutgar duas giadas qua e là \nper mussar/zuppar la bara sutvart</string>
+    <string name="screen_number">Pagina: %1$s</string>
     <string name="screen_first">Pagina: 1</string>
     <string name="adjust_widget">Adattescha ton widget</string>
     <string name="restart_pip">Far in reboot da PiP</string>

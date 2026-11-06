@@ -353,6 +353,7 @@
     <string name="pip_screen_button">页面：</string>
     <string name="pip_position_button">\u0020\u0020\u0020调整\u0020\u0020\u0020</string>
     <string name="double_tap">页面: %1$s \n在任意位置双击 \n可隐藏/显示底部栏</string>
+    <string name="screen_number">页面: %1$s</string>
     <string name="screen_first">页面: 1</string>
     <string name="adjust_widget">调整您的小部件</string>
     <string name="restart_pip">重启画中画</string>
