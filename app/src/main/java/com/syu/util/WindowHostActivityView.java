@@ -294,6 +294,18 @@ public class WindowHostActivityView {
 
     static View asView(Object av) { return (View) av; }
 
+    /** The view of this ActivityView when it is on screen and covers the point (screen coordinates), else null. */
+    static View viewAt(Object av, boolean paneVisible, int rawX, int rawY) {
+        if (!paneVisible || !(av instanceof View)) return null;
+        View v = (View) av;
+        if (!v.isAttachedToWindow() || v.getVisibility() != View.VISIBLE) return null;
+        int[] at = new int[2];
+        v.getLocationOnScreen(at);
+        boolean inside = rawX >= at[0] && rawX < at[0] + v.getWidth()
+                && rawY >= at[1] && rawY < at[1] + v.getHeight();
+        return inside ? v : null;
+    }
+
     /** A WindowHostVdView (Android 11+), not the framework's ActivityView. */
     static boolean isHosted(Object av) { return av instanceof WindowHostVdView; }
 

@@ -171,6 +171,11 @@ public class WindowHostSinglePane {
         return inside ? r : null;
     }
 
+    /** The embedded app's view when it is on screen and covers the point (screen coordinates). */
+    View embeddedViewAt(int rawX, int rawY) {
+        return WindowHostActivityView.viewAt(av, visible.get(), rawX, rawY);
+    }
+
     // =====================================================================================
     // 3. Public API
     // =====================================================================================

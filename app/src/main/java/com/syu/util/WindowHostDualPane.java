@@ -230,6 +230,12 @@ public class WindowHostDualPane {
         return inside ? r : null;
     }
 
+    /** The embedded app's view of either side when it is on screen and covers the point. */
+    View embeddedViewAt(int rawX, int rawY) {
+        View v = WindowHostActivityView.viewAt(leftAV, visible.get(), rawX, rawY);
+        return v != null ? v : WindowHostActivityView.viewAt(rightAV, visible.get(), rawX, rawY);
+    }
+
     private Object avOf(Side s)          { return s == Side.LEFT ? leftAV : rightAV; }
     private FrameLayout hostOf(Side s)   { return s == Side.LEFT ? leftHost : rightHost; }
     private boolean attachedOf(Side s)   { return s == Side.LEFT ? leftAttached : rightAttached; }

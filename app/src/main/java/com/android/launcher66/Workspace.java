@@ -2756,7 +2756,16 @@ public class Workspace extends SmoothPagedView
         WindowHost host = mLauncher.getWindowHost();
         View pane = host == null ? null : host.paneRootAt(rawX, rawY);
         if (pane != null) {
-            return new BottomBarEdgeHandle.Target(pane, "pane");
+            View embedded = host.embeddedViewAt(rawX, rawY);
+            if (embedded == null) {
+                return new BottomBarEdgeHandle.Target(pane, "pane");
+            }
+            if (WindowHost.isHostedView(embedded)) {
+                return new BottomBarEdgeHandle.Target(pane, "pane vd", EdgePassRoute.TargetKind.VD_VIEW, null, -1);
+            }
+            int displayId = WindowHost.activityViewDisplayId(embedded);
+            return new BottomBarEdgeHandle.Target(pane, "pane av display " + displayId,
+                    EdgePassRoute.TargetKind.ACTIVITY_VIEW, embedded, displayId);
         }
         return new BottomBarEdgeHandle.Target(mLauncher.getWindow().getDecorView(), "launcher");
     }

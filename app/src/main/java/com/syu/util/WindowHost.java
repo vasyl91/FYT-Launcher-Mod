@@ -130,6 +130,32 @@ public class WindowHost {
         return null;
     }
 
+    /**
+     * The embedded app's view under this point (screen coordinates): a WindowHostVdView, or the
+     * framework's ActivityView, whichever the pane uses; null when there is none. The edge handle
+     * chooses how to hand a touch on by which of the two it is.
+     */
+    public View embeddedViewAt(int rawX, int rawY) {
+        View v = dual.embeddedViewAt(rawX, rawY);
+        if (v != null) return v;
+        WindowHostSinglePane[] singles = {fourth, third, second, first};
+        for (WindowHostSinglePane pane : singles) {
+            v = pane.embeddedViewAt(rawX, rawY);
+            if (v != null) return v;
+        }
+        return null;
+    }
+
+    /** Whether this view is a WindowHostVdView, which injects touches through the VD host itself. */
+    public static boolean isHostedView(View v) {
+        return v instanceof WindowHostVdView;
+    }
+
+    /** The display the framework's ActivityView renders to, -1 if it cannot be read. */
+    public static int activityViewDisplayId(View v) {
+        return WindowHostActivityView.getVirtualDisplayId(v);
+    }
+
     public boolean isFirstVisible()  { return first.isVisible(); }
     public boolean isSecondVisible() { return second.isVisible(); }
     public boolean isThirdVisible()  { return third.isVisible(); }

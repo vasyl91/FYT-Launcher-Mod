@@ -13,6 +13,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -60,10 +61,21 @@ final class BottomBarEdgeHandle {
     static final class Target {
         final View view;
         final String name;
+        final EdgePassRoute.TargetKind kind;
+        /** The framework's ActivityView under the finger and its display; only for ACTIVITY_VIEW. */
+        final View activityView;
+        final int displayId;
 
         Target(View view, String name) {
+            this(view, name, EdgePassRoute.TargetKind.LAUNCHER, null, -1);
+        }
+
+        Target(View view, String name, EdgePassRoute.TargetKind kind, View activityView, int displayId) {
             this.view = view;
             this.name = name;
+            this.kind = kind;
+            this.activityView = activityView;
+            this.displayId = displayId;
         }
     }
 
@@ -310,6 +322,7 @@ final class BottomBarEdgeHandle {
         private final List<MotionEvent> held = new ArrayList<>();
         private boolean tracking;
         private Target passing;
+        private EdgePassRoute.Route route = EdgePassRoute.Route.VIEW_TREE;
         private final Runnable timeout = this::onTimeout;
 
         StripView(Context context, Runnable onTrigger, TargetFinder finder, Runnable onPassEnded) {
@@ -504,7 +517,13 @@ final class BottomBarEdgeHandle {
                     Log.d(TAG, "Edge handle: pass (nothing under the finger)");
                     return;
                 }
-                Log.d(TAG, "Edge handle: pass (" + target.name + ")");
+                route = EdgePassRoute.of(Build.VERSION.SDK_INT, target.kind);
+                if (route == EdgePassRoute.Route.DISPLAY_INJECT
+                        && (target.activityView == null || target.displayId < 0)) {
+                    route = EdgePassRoute.Route.VIEW_TREE;
+                }
+                Log.i(TAG, "Edge handle: pass to " + target.name + " via "
+                        + (route == EdgePassRoute.Route.DISPLAY_INJECT ? "inject" : "view"));
                 passing = target;
                 boolean ended = false;
                 // The original down time and positions: the target sees the gesture from its start.
@@ -533,6 +552,12 @@ final class BottomBarEdgeHandle {
                 return;
             }
             getLocationOnScreen(windowAt);
+            if (route == EdgePassRoute.Route.DISPLAY_INJECT) {
+                if (injectOnDisplay(target, event)) {
+                    return;
+                }
+                route = EdgePassRoute.Route.VIEW_TREE;   // said once; the rest of the gesture goes the old way
+            }
             target.view.getLocationOnScreen(targetAt);
             MotionEvent copy = MotionEvent.obtain(event);
             copy.offsetLocation(windowAt[0] - targetAt[0], windowAt[1] - targetAt[1]);
@@ -540,6 +565,46 @@ final class BottomBarEdgeHandle {
                 target.view.dispatchTouchEvent(copy);
             } finally {
                 copy.recycle();
+            }
+        }
+
+        /**
+         * The event, rebuilt in the coordinates of the ActivityView's display and injected there: from
+         * Android 10 the input dispatcher sends a touch on that display to its window by itself, and
+         * dispatching it to the view reaches no one. Rebuilt, not copied: before Android 12 the
+         * dispatcher ignores the offset of a copy. Needs INJECT_EVENTS (the system uid has it).
+         *
+         * @return false when it could not be injected; the caller then uses the view tree
+         */
+        private boolean injectOnDisplay(Target target, MotionEvent event) {
+            View av = target.activityView;
+            if (av == null || !av.isAttachedToWindow()) {
+                return false;
+            }
+            av.getLocationOnScreen(targetAt);
+            final float dx = windowAt[0] - targetAt[0];
+            final float dy = windowAt[1] - targetAt[1];
+            final int count = event.getPointerCount();
+            MotionEvent.PointerProperties[] props = new MotionEvent.PointerProperties[count];
+            MotionEvent.PointerCoords[] coords = new MotionEvent.PointerCoords[count];
+            for (int p = 0; p < count; p++) {
+                props[p] = new MotionEvent.PointerProperties();
+                event.getPointerProperties(p, props[p]);
+                coords[p] = new MotionEvent.PointerCoords();
+                event.getPointerCoords(p, coords[p]);
+                coords[p].x += dx;
+                coords[p].y += dy;
+            }
+            // The times are the ones the events came with: they come from uptimeMillis() and grow
+            long downTime = event.getDownTime();
+            long eventTime = Math.max(event.getEventTime(), downTime);
+            MotionEvent out = MotionEvent.obtain(downTime, eventTime, event.getAction(), count, props, coords,
+                    event.getMetaState(), event.getButtonState(), event.getXPrecision(), event.getYPrecision(),
+                    event.getDeviceId(), event.getEdgeFlags(), InputDevice.SOURCE_TOUCHSCREEN, event.getFlags());
+            try {
+                return EdgeInject.inject(out, target.displayId);
+            } finally {
+                out.recycle();
             }
         }
 
