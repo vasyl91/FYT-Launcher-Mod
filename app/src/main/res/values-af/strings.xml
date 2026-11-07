@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Versteek die albumomslag</string>
     <string name="widget_bar_no_cover_on">Die titel, kunstenaar en knoppies neem sy plek in</string>
     <string name="spotify_state_signing_in">Teken tans aan…</string>
+    <string name="fyt_rating_state_checking">Verbinding met fYT Rating word nagegaan…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating antwoord nie – maak dit een keer oop</string>
 </resources>

@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Dölj albumomslaget</string>
     <string name="widget_bar_no_cover_on">Titel, artist och knappar tar dess plats</string>
     <string name="spotify_state_signing_in">Loggar in…</string>
+    <string name="fyt_rating_state_checking">Kontrollerar anslutningen till fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating svarar inte – öppna den en gång</string>
 </resources>

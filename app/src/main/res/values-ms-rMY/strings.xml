@@ -52,4 +52,6 @@
     <string name="widget_bar_no_cover">Sembunyikan sampul album</string>
     <string name="widget_bar_no_cover_on">Tajuk, artis dan butang mengambil tempatnya</string>
     <string name="spotify_state_signing_in">Sedang log masuk…</string>
+    <string name="fyt_rating_state_checking">Menyemak sambungan ke fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating tidak menjawab – buka sekali</string>
 </resources>

@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">پنهان کردن جلد آلبوم</string>
     <string name="widget_bar_no_cover_on">عنوان، خواننده و دکمه‌ها جای آن را می‌گیرند</string>
     <string name="spotify_state_signing_in">در حال ورود…</string>
+    <string name="fyt_rating_state_checking">در حال بررسی اتصال به fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating پاسخ نمی‌دهد – یک بار آن را باز کنید</string>
 </resources>

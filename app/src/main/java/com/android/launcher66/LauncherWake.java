@@ -2,6 +2,7 @@ package com.android.launcher66;
 
 import android.os.SystemClock;
 import com.android.launcher66.settings.FytRating;
+import com.android.launcher66.settings.FytRatingBridgeStarter;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.WakeDetection;
 import com.syu.util.WindowHost;
@@ -39,6 +40,7 @@ final class LauncherWake {
      * which is unregistered while the launcher is stopped.
      */
     public void onDeviceWake(String source) {
+        FytRatingBridgeStarter.start(mLauncher, "wake");
         scheduleWidgetBarWakeRefresh(source == null ? "wakeService" : source);
     }
 
@@ -107,7 +109,8 @@ final class LauncherWake {
                 return;
             }
             mFytRatingWakeWaits = 0;
-            FytRating.wakeIfNeeded(mLauncher);
+            // The ping needs none of the waits above, the wake activity has its own gate (uptime)
+            FytRatingBridgeStarter.start(mLauncher, "resume");
         }
     };
 

@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Slėpti albumo viršelį</string>
     <string name="widget_bar_no_cover_on">Jo vietą užima pavadinimas, atlikėjas ir mygtukai</string>
     <string name="spotify_state_signing_in">Prisijungiama…</string>
+    <string name="fyt_rating_state_checking">Tikrinamas ryšys su fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating neatsako – atidarykite ją vieną kartą</string>
 </resources>

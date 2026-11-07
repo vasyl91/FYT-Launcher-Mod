@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Ocultar la portada del álbum</string>
     <string name="widget_bar_no_cover_on">El título, el artista y los botones ocupan su lugar</string>
     <string name="spotify_state_signing_in">Iniciando sesión…</string>
+    <string name="fyt_rating_state_checking">Comprobando la conexión con fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating no responde – ábrela una vez</string>
 </resources>

@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">ซ่อนปกอัลบั้ม</string>
     <string name="widget_bar_no_cover_on">ชื่อเพลง ศิลปิน และปุ่มจะใช้พื้นที่แทน</string>
     <string name="spotify_state_signing_in">กำลังลงชื่อเข้าใช้…</string>
+    <string name="fyt_rating_state_checking">กำลังตรวจสอบการเชื่อมต่อกับ fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating ไม่ตอบสนอง – เปิดแอปนี้หนึ่งครั้ง</string>
 </resources>

@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Ficha jalada la albamu</string>
     <string name="widget_bar_no_cover_on">Kichwa, msanii na vitufe huchukua nafasi yake</string>
     <string name="spotify_state_signing_in">Inaingia…</string>
+    <string name="fyt_rating_state_checking">Inakagua muunganisho na fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating haijibu – ifungue mara moja</string>
 </resources>

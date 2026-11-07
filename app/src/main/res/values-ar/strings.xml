@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">إخفاء غلاف الألبوم</string>
     <string name="widget_bar_no_cover_on">يشغل العنوان والفنان والأزرار مكانه</string>
     <string name="spotify_state_signing_in">جارٍ تسجيل الدخول…</string>
+    <string name="fyt_rating_state_checking">جارٍ التحقق من الاتصال بـ fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating لا يستجيب – افتحه مرة واحدة</string>
 </resources>

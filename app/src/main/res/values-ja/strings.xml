@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">アルバムカバーを非表示</string>
     <string name="widget_bar_no_cover_on">タイトル、アーティスト、ボタンがその場所を使います</string>
     <string name="spotify_state_signing_in">ログインしています…</string>
+    <string name="fyt_rating_state_checking">fYT Rating への接続を確認しています…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating が応答しません – 一度開いてください</string>
 </resources>

@@ -32,6 +32,7 @@ import android.widget.TextView;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.perf.BaselineProfileCompiler;
+import com.android.launcher66.settings.FytRatingBridgeStarter;
 import com.android.launcher66.settings.CrashLogger;
 import com.android.launcher66.settings.CrashLoopGuard;
 import com.android.launcher66.settings.Helpers;
@@ -925,5 +926,8 @@ public class LauncherApplication extends Application {
         // A device restart always counts as a Baseline Profile usage session.
         BaselineProfileCompiler.scheduleIfNeeded(this, coldStart != null && coldStart.isColdBoot());
         VersionChecker.deleteInstalledUpdates(this);
+        // After the stall of a boot (this runs after it): the bridge of fYT Rating is looked for
+        // before the first resume of the launcher asks again
+        FytRatingBridgeStarter.start(this, "process start");
     }
 }

@@ -639,6 +639,48 @@ public final class FytRating {
         CONSECUTIVE_FAILURES.set(0);
         lastAnswerAtMs = SystemClock.elapsedRealtime();
         lastExchangeAnswered = true;
+        noAnswer = false;
+    }
+
+    /** The last exchange with the bridge was answered. */
+    public static boolean isBridgeAnswering() {
+        return lastExchangeAnswered;
+    }
+
+    /**
+     * A sequence of FytRatingBridgeStarter ended without an answer; cleared by the next answer. The settings say
+     * so instead of "checking" for ever.
+     */
+    private static volatile boolean noAnswer;
+    private static volatile Runnable stateListener;
+
+    public static void setNoAnswer(boolean value) {
+        noAnswer = value;
+    }
+
+    /** The settings redraw the state when the starter has an answer or none; null to stop. */
+    public static void setStateListener(Runnable listener) {
+        stateListener = listener;
+    }
+
+    /** Main thread. */
+    static void notifyStateChanged() {
+        Runnable listener = stateListener;
+        if (listener != null) {
+            listener.run();
+        }
+    }
+
+    /**
+     * Allows the broadcast launch to be tried again after it was given up. The first try was once per process,
+     * so a bridge that was not reachable by broadcast at a boot stayed unreachable until the next one.
+     */
+    public static void retryBroadcastLaunch() {
+        if (autoLaunchState == AUTOLAUNCH_UNAVAILABLE || broadcastLaunchFailed) {
+            autoLaunchState = AUTOLAUNCH_UNKNOWN;
+            broadcastLaunchFailed = false;
+            UNANSWERED_AUTOLAUNCH_STATUS.set(0);
+        }
     }
 
     private static void noteExchangeFailed() {
@@ -758,6 +800,7 @@ public final class FytRating {
             return answer.get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            noteExchangeFailed();    // no reply is no reply, whatever cut the wait short
             return null;
         } catch (Exception e) {
             Log.w(TAG, "Request failed", e);
@@ -834,7 +877,7 @@ public final class FytRating {
         // Answered last time and still present: leave it alone. Not only when signed in and
         // allowed: with either missing, the bridge used to be woken every five minutes although it
         // was answering all along.
-        if (lastExchangeAnswered && isBridgeRunning(context)) {
+        if (lastExchangeAnswered && Boolean.TRUE.equals(isBridgeRunning(context))) {
             return;
         }
 
@@ -953,22 +996,22 @@ public final class FytRating {
     }
 
     /**
-     * @return true when a process of the bridge exists, and also when that
-     *         cannot be determined - an unprivileged caller only ever sees its
-     *         own processes here, and absence is then not evidence
+     * @return true when a process of the bridge exists, false when the others' are listed and it is
+     *         not among them, null when that cannot be determined - an unprivileged caller only
+     *         ever sees its own processes here, and absence is then not evidence
      */
-    private static boolean isBridgeRunning(Context context) {
+    private static Boolean isBridgeRunning(Context context) {
         try {
             ActivityManager activityManager =
                     (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
             if (activityManager == null) {
-                return true;
+                return null;
             }
 
             List<ActivityManager.RunningAppProcessInfo> processes =
                     activityManager.getRunningAppProcesses();
             if (processes == null || processes.isEmpty()) {
-                return true;
+                return null;
             }
 
             boolean sawOthers = false;
@@ -978,17 +1021,17 @@ public final class FytRating {
                 }
                 for (String packageName : process.pkgList) {
                     if (BRIDGE_PACKAGE.equals(packageName)) {
-                        return true;
+                        return Boolean.TRUE;
                     }
                     if (!context.getPackageName().equals(packageName)) {
                         sawOthers = true;
                     }
                 }
             }
-            return !sawOthers;
+            return sawOthers ? Boolean.FALSE : null;
         } catch (Exception e) {
             Log.w(TAG, "Could not read the bridge's process state", e);
-            return true;
+            return null;
         }
     }
 
@@ -1026,8 +1069,18 @@ public final class FytRating {
         }
 
         Toast.makeText(activity, R.string.fyt_rating_opening, Toast.LENGTH_SHORT).show();
+        sOpenedFromSettings = true;
         launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activity.startActivity(launch);
+    }
+
+    private static volatile boolean sOpenedFromSettings;
+
+    /** @return whether the bridge was opened from the settings since the last call; then forgotten */
+    public static boolean consumeOpenedFromSettings() {
+        boolean was = sOpenedFromSettings;
+        sOpenedFromSettings = false;
+        return was;
     }
 
     private static void openReleasesPage(Activity activity) {
@@ -1069,6 +1122,9 @@ public final class FytRating {
             int stateLine;
             if (!installed) {
                 stateLine = R.string.fyt_rating_state_unavailable;
+            } else if (!statusKnown) {
+                // Not "not signed in": the bridge has not said anything yet
+                stateLine = noAnswer ? R.string.fyt_rating_state_no_answer : R.string.fyt_rating_state_checking;
             } else if (!signedIn) {
                 stateLine = R.string.fyt_rating_state_not_logged_in;
             } else if (!allowed) {

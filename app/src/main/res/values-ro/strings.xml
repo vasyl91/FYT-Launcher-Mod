@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Ascunde coperta albumului</string>
     <string name="widget_bar_no_cover_on">Locul ei este luat de titlu, artist și butoane</string>
     <string name="spotify_state_signing_in">Se conectează…</string>
+    <string name="fyt_rating_state_checking">Se verifică conexiunea cu fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating nu răspunde – deschide-l o dată</string>
 </resources>

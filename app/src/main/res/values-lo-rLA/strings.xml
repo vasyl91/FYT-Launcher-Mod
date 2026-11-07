@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">ເຊື່ອງໜ້າປົກອັລບັ້ມ</string>
     <string name="widget_bar_no_cover_on">ຊື່ເພງ, ນັກຮ້ອງ ແລະ ປຸ່ມຈະມາແທນທີ່</string>
     <string name="spotify_state_signing_in">ກຳລັງເຂົ້າສູ່ລະບົບ…</string>
+    <string name="fyt_rating_state_checking">ກຳລັງກວດສອບການເຊື່ອມຕໍ່ກັບ fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating ບໍ່ຕອບສະໜອງ – ກະລຸນາເປີດມັນຄັ້ງໜຶ່ງ</string>
 </resources>

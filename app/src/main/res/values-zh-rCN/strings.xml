@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">隐藏专辑封面</string>
     <string name="widget_bar_no_cover_on">标题、歌手和按钮将占用其位置</string>
     <string name="spotify_state_signing_in">正在登录…</string>
+    <string name="fyt_rating_state_checking">正在检查与 fYT Rating 的连接…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating 没有响应 – 请打开它一次</string>
 </resources>

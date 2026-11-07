@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Paslēpt albuma vāku</string>
     <string name="widget_bar_no_cover_on">Tā vietu ieņem nosaukums, izpildītājs un pogas</string>
     <string name="spotify_state_signing_in">Notiek pieteikšanās…</string>
+    <string name="fyt_rating_state_checking">Tiek pārbaudīts savienojums ar fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating neatbild – atveriet to vienu reizi</string>
 </resources>

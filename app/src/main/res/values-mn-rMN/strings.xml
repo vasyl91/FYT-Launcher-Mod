@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Цомгийн хавтсыг нуух</string>
     <string name="widget_bar_no_cover_on">Түүний оронд гарчиг, уран бүтээлч, товчнууд орно</string>
     <string name="spotify_state_signing_in">Нэвтэрч байна…</string>
+    <string name="fyt_rating_state_checking">fYT Rating-тэй холболтыг шалгаж байна…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating хариу өгөхгүй байна – нэг удаа нээнэ үү</string>
 </resources>

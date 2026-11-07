@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Piilota albumin kansi</string>
     <string name="widget_bar_no_cover_on">Sen paikan ottavat nimi, esittäjä ja painikkeet</string>
     <string name="spotify_state_signing_in">Kirjaudutaan sisään…</string>
+    <string name="fyt_rating_state_checking">Tarkistetaan yhteyttä fYT Ratingiin…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating ei vastaa – avaa se kerran</string>
 </resources>

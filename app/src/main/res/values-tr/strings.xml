@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Albüm kapağını gizle</string>
     <string name="widget_bar_no_cover_on">Yerini başlık, sanatçı ve düğmeler alır</string>
     <string name="spotify_state_signing_in">Oturum açılıyor…</string>
+    <string name="fyt_rating_state_checking">fYT Rating bağlantısı denetleniyor…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating yanıt vermiyor – bir kez açın</string>
 </resources>

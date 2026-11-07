@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Masquer la pochette de l\'album</string>
     <string name="widget_bar_no_cover_on">Le titre, l\'artiste et les boutons prennent sa place</string>
     <string name="spotify_state_signing_in">Connexion en cours…</string>
+    <string name="fyt_rating_state_checking">Vérification de la connexion à fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating ne répond pas – ouvrez-le une fois</string>
 </resources>

@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Peida albumi kaas</string>
     <string name="widget_bar_no_cover_on">Selle koha võtavad pealkiri, esitaja ja nupud</string>
     <string name="spotify_state_signing_in">Sisselogimine…</string>
+    <string name="fyt_rating_state_checking">Kontrollin ühendust fYT Ratinguga…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating ei vasta – ava see üks kord</string>
 </resources>

@@ -618,6 +618,17 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         super.onResume();
         if (oauthForYoutubeRevanced != null && youtubeRevancedKids != null) {
             FytRating.syncPreference(requireContext(), oauthForYoutubeRevanced, youtubeRevancedKids);
+            // Drawn again after each answer of the starter (or its silence)
+            FytRating.setStateListener(() -> {
+                if (isAdded() && oauthForYoutubeRevanced != null) {
+                    FytRating.syncPreference(requireContext(), oauthForYoutubeRevanced, youtubeRevancedKids);
+                }
+            });
+            // Back from the bridge: its answer is asked for at once, and if it does not come the whole
+            // sequence of the starter runs
+            if (FytRating.consumeOpenedFromSettings()) {
+                FytRatingBridgeStarter.start(requireContext(), "settings");
+            }
         }
         // The browser is a task of its own, so coming back from the Spotify
         // sign-in lands here and nowhere else. Everything drawn is read from
@@ -647,6 +658,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     @Override
     public void onPause() {
         SpotifyRating.setStateListener(null);
+        FytRating.setStateListener(null);
         if (getContext() != null) {
             PreferenceManager.getDefaultSharedPreferences(getContext())
                     .unregisterOnSharedPreferenceChangeListener(mSpotifyStateListener);

@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Zuppentar la cuverta da l\'album</string>
     <string name="widget_bar_no_cover_on">Il titel, l\'artist ed ils buttuns pigliano ses lieu</string>
     <string name="spotify_state_signing_in">Annunzia…</string>
+    <string name="fyt_rating_state_checking">Controllar la colliaziun cun fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating na respunda betg – avra l\'ina giada</string>
 </resources>

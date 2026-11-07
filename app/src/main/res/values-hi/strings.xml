@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">एल्बम कवर छिपाएँ</string>
     <string name="widget_bar_no_cover_on">इसकी जगह शीर्षक, कलाकार और बटन ले लेते हैं</string>
     <string name="spotify_state_signing_in">साइन इन हो रहा है…</string>
+    <string name="fyt_rating_state_checking">fYT Rating से कनेक्शन जाँचा जा रहा है…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating जवाब नहीं दे रहा – इसे एक बार खोलें</string>
 </resources>

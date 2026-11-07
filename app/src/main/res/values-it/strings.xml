@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Nascondi la copertina dell\'album</string>
     <string name="widget_bar_no_cover_on">Titolo, artista e pulsanti prendono il suo posto</string>
     <string name="spotify_state_signing_in">Accesso in corso…</string>
+    <string name="fyt_rating_state_checking">Controllo della connessione a fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating non risponde – aprila una volta</string>
 </resources>

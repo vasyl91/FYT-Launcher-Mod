@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Скрыть обложку альбома</string>
     <string name="widget_bar_no_cover_on">Её место занимают название, исполнитель и кнопки</string>
     <string name="spotify_state_signing_in">Вход…</string>
+    <string name="fyt_rating_state_checking">Проверка связи с fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating не отвечает – откройте его один раз</string>
 </resources>

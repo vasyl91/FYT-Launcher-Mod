@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Απόκρυψη εξωφύλλου άλμπουμ</string>
     <string name="widget_bar_no_cover_on">Ο τίτλος, ο καλλιτέχνης και τα κουμπιά παίρνουν τη θέση του</string>
     <string name="spotify_state_signing_in">Σύνδεση…</string>
+    <string name="fyt_rating_state_checking">Έλεγχος σύνδεσης με το fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">Το fYT Rating δεν απαντά – ανοίξτε το μία φορά</string>
 </resources>

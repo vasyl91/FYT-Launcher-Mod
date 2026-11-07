@@ -122,6 +122,7 @@ import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.FabOverlayService;
 import com.android.launcher66.settings.ForegroundAppTracker;
 import com.android.launcher66.settings.FytRating;
+import com.android.launcher66.settings.FytRatingBridgeStarter;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.MainViewModel;
@@ -2188,6 +2189,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             MusicService.requestSyuMediaRefresh();
             StockSources.onLauncherResumed();
         }
+        // The starter wakes the activity of fYT Rating only through a resumed launcher
+        FytRatingBridgeStarter.onLauncherResumed(this);
         // Deferred until the panes are up; see mFytRatingWake.
         mDeviceWake.scheduleFytRatingWake();
         scheduleStatusBarSwipeDetectorSync();
@@ -2933,6 +2936,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
         AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
         super.onPause();
+        FytRatingBridgeStarter.onLauncherPaused(this);
         // Before the early return below: an overlay window, it would keep the focus from the next
         // activity.
         PinnedPipFocus.release("launcher paused");

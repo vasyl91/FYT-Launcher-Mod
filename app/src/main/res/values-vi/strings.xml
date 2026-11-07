@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Ẩn ảnh bìa album</string>
     <string name="widget_bar_no_cover_on">Tiêu đề, nghệ sĩ và các nút chiếm vị trí của ảnh</string>
     <string name="spotify_state_signing_in">Đang đăng nhập…</string>
+    <string name="fyt_rating_state_checking">Đang kiểm tra kết nối với fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating không phản hồi – hãy mở nó một lần</string>
 </resources>

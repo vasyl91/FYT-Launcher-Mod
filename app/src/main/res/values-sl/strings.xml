@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Skrij ovitek albuma</string>
     <string name="widget_bar_no_cover_on">Njegovo mesto zavzamejo naslov, izvajalec in gumbi</string>
     <string name="spotify_state_signing_in">Prijava…</string>
+    <string name="fyt_rating_state_checking">Preverjanje povezave s fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating se ne odziva – odprite jo enkrat</string>
 </resources>

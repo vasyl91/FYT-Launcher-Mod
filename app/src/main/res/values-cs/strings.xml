@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Skrýt obal alba</string>
     <string name="widget_bar_no_cover_on">Jeho místo zaujmou název, interpret a tlačítka</string>
     <string name="spotify_state_signing_in">Přihlašování…</string>
+    <string name="fyt_rating_state_checking">Kontroluje se spojení s fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating neodpovídá – jednou ji otevřete</string>
 </resources>

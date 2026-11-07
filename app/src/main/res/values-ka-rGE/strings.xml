@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">ალბომის ყდის დამალვა</string>
     <string name="widget_bar_no_cover_on">მის ადგილს იკავებს სათაური, შემსრულებელი და ღილაკები</string>
     <string name="spotify_state_signing_in">შესვლა…</string>
+    <string name="fyt_rating_state_checking">მოწმდება კავშირი fYT Rating-თან…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating არ პასუხობს – გახსენით ერთხელ</string>
 </resources>

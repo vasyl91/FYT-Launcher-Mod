@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Albumcover ausblenden</string>
     <string name="widget_bar_no_cover_on">Titel, Interpret und Tasten nehmen seinen Platz ein</string>
     <string name="spotify_state_signing_in">Anmeldung läuft…</string>
+    <string name="fyt_rating_state_checking">Verbindung zu fYT Rating wird geprüft…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating antwortet nicht – einmal öffnen</string>
 </resources>

@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Сакриј омот албума</string>
     <string name="widget_bar_no_cover_on">Његово место заузимају наслов, извођач и дугмад</string>
     <string name="spotify_state_signing_in">Пријављивање…</string>
+    <string name="fyt_rating_state_checking">Провера везе са fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating не одговара – отворите га једном</string>
 </resources>

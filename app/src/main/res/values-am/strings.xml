@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">የአልበም ሽፋንን ደብቅ</string>
     <string name="widget_bar_no_cover_on">ርዕሱ፣ አርቲስቱና አዝራሮቹ ቦታውን ይወስዳሉ</string>
     <string name="spotify_state_signing_in">በመግባት ላይ…</string>
+    <string name="fyt_rating_state_checking">ከ fYT Rating ጋር ያለው ግንኙነት በመፈተሽ ላይ…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating አይመልስም – አንድ ጊዜ ይክፈቱት</string>
 </resources>

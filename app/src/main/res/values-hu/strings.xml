@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Albumborító elrejtése</string>
     <string name="widget_bar_no_cover_on">A helyét a cím, az előadó és a gombok veszik át</string>
     <string name="spotify_state_signing_in">Bejelentkezés…</string>
+    <string name="fyt_rating_state_checking">Kapcsolat ellenőrzése az fYT Rating alkalmazással…</string>
+    <string name="fyt_rating_state_no_answer">Az fYT Rating nem válaszol – nyissa meg egyszer</string>
 </resources>

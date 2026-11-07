@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Ukryj okładkę albumu</string>
     <string name="widget_bar_no_cover_on">Jej miejsce zajmują tytuł, wykonawca i przyciski</string>
     <string name="spotify_state_signing_in">Logowanie…</string>
+    <string name="fyt_rating_state_checking">Sprawdzanie połączenia z fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating nie odpowiada – otwórz ją raz</string>
 </resources>

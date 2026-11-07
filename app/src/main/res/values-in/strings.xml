@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Sembunyikan sampul album</string>
     <string name="widget_bar_no_cover_on">Judul, artis, dan tombol menempati tempatnya</string>
     <string name="spotify_state_signing_in">Sedang masuk…</string>
+    <string name="fyt_rating_state_checking">Memeriksa koneksi ke fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">fYT Rating tidak menjawab – buka sekali</string>
 </resources>

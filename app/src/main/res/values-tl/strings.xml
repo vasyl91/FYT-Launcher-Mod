@@ -527,4 +527,6 @@
     <string name="widget_bar_no_cover">Itago ang cover ng album</string>
     <string name="widget_bar_no_cover_on">Ang pamagat, artist at mga button ang papalit sa lugar nito</string>
     <string name="spotify_state_signing_in">Nagsa-sign in…</string>
+    <string name="fyt_rating_state_checking">Sinusuri ang koneksyon sa fYT Rating…</string>
+    <string name="fyt_rating_state_no_answer">Hindi sumasagot ang fYT Rating – buksan ito nang isang beses</string>
 </resources>
