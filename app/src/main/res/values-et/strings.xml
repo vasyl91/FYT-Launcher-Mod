@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Sisselogimine…</string>
     <string name="fyt_rating_state_checking">Kontrollin ühendust fYT Ratinguga…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating ei vasta – ava see üks kord</string>
+    <string name="bars_category">Ribad</string>
+    <string name="vertical_bar_background_preference">Vali vertikaalse riba taust</string>
+    <string name="vertical_bar_background_dialog_title">Valige vertikaalse riba taust:</string>
 </resources>

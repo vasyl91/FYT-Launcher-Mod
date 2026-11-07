@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Logger inn…</string>
     <string name="fyt_rating_state_checking">Sjekker forbindelsen til fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating svarer ikke – åpne den én gang</string>
+    <string name="bars_category">Felt</string>
+    <string name="vertical_bar_background_preference">Velg bakgrunn for vertikalt felt</string>
+    <string name="vertical_bar_background_dialog_title">Velg bakgrunn for vertikalt felt:</string>
 </resources>

@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Пријављивање…</string>
     <string name="fyt_rating_state_checking">Провера везе са fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating не одговара – отворите га једном</string>
+    <string name="bars_category">Траке</string>
+    <string name="vertical_bar_background_preference">Изабери позадину за вертикалну траку</string>
+    <string name="vertical_bar_background_dialog_title">Изаберите позадину за вертикалну траку:</string>
 </resources>

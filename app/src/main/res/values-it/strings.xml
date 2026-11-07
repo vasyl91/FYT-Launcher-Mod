@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Accesso in corso…</string>
     <string name="fyt_rating_state_checking">Controllo della connessione a fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating non risponde – aprila una volta</string>
+    <string name="bars_category">Barre</string>
+    <string name="vertical_bar_background_preference">Scegli lo sfondo della barra verticale</string>
+    <string name="vertical_bar_background_dialog_title">Seleziona lo sfondo della barra verticale:</string>
 </resources>

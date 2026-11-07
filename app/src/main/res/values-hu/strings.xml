@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Bejelentkezés…</string>
     <string name="fyt_rating_state_checking">Kapcsolat ellenőrzése az fYT Rating alkalmazással…</string>
     <string name="fyt_rating_state_no_answer">Az fYT Rating nem válaszol – nyissa meg egyszer</string>
+    <string name="bars_category">Sávok</string>
+    <string name="vertical_bar_background_preference">Függőleges sáv hátterének kiválasztása</string>
+    <string name="vertical_bar_background_dialog_title">Válassza ki a függőleges sáv hátterét:</string>
 </resources>

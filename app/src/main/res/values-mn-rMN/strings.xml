@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Нэвтэрч байна…</string>
     <string name="fyt_rating_state_checking">fYT Rating-тэй холболтыг шалгаж байна…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating хариу өгөхгүй байна – нэг удаа нээнэ үү</string>
+    <string name="bars_category">Самбарууд</string>
+    <string name="vertical_bar_background_preference">Босоо самбарын дэвсгэрийг сонгох</string>
+    <string name="vertical_bar_background_dialog_title">Босоо самбарын дэвсгэрийг сонгоно уу:</string>
 </resources>

@@ -171,6 +171,8 @@ public final class Keys {
     public static final String BAR_BACKGROUND = "choose_bar_background";
     public static final String WIDGETS_SELECTED_BACKGROUND = "widgets_selected_background";
     public static final String BAR_SELECTED_BACKGROUND = "bar_selected_background";
+    public static final String VERTICAL_BAR_BACKGROUND = "choose_vertical_bar_background";
+    public static final String VERTICAL_BAR_SELECTED_BACKGROUND = "vertical_bar_selected_background";
     public static final String BLACK_BAR = "black_bar";
     public static final String BLACK_WIDGETS = "black_widgets";
     public static final String START_PAGE = "start_page";

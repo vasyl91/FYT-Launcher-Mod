@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Aanmelden…</string>
     <string name="fyt_rating_state_checking">Verbinding met fYT Rating wordt gecontroleerd…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating reageert niet – open de app één keer</string>
+    <string name="bars_category">Balken</string>
+    <string name="vertical_bar_background_preference">Achtergrond voor verticale balk kiezen</string>
+    <string name="vertical_bar_background_dialog_title">Selecteer achtergrond voor verticale balk:</string>
 </resources>

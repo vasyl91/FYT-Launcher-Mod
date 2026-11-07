@@ -86,9 +86,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private enum PendingDialog {
         NONE,
         WIDGETS,
-        BAR
+        BAR,
+        VERTICAL_BAR
     }
     private PendingDialog pendingDialog = PendingDialog.NONE;
+    /** "Choose background for vertical bar": only with the vertical bar on. */
+    private Preference verticalBarBackground;
 
     private int defaultColorR = 255;
     private int defaultColorG = 255;
@@ -525,6 +528,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (barTintBlack != null) {
             barTintBlack.setOnPreferenceClickListener(this);
         }
+        verticalBarBackground = findPreference(Keys.VERTICAL_BAR_BACKGROUND);
+        if (verticalBarBackground != null) {
+            verticalBarBackground.setVisible(sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false));
+            verticalBarBackground.setOnPreferenceClickListener(preference -> {
+                checkAndShowVerticalBarBackgroundSelector();
+                return true;
+            });
+        }
         if (startPage != null) {
             startPage.setOnPreferenceClickListener(this);
         }
@@ -783,6 +794,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.VERTICAL_BAR:
+                if (verticalBarBackground != null) {
+                    verticalBarBackground.setVisible(sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false));
+                }
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.WIDGET_BAR:
@@ -1030,6 +1044,17 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
     }
 
+    private void checkAndShowVerticalBarBackgroundSelector() {
+        List<String> perms = getMissingReadWallpaperPermissions(requireContext());
+        if (perms.isEmpty()) {
+            BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(), "vertical_bar", "app_list_bg");
+            pendingDialog = PendingDialog.NONE;
+        } else {
+            pendingDialog = PendingDialog.VERTICAL_BAR;
+            requestPermissions(perms.toArray(new String[0]), REQ_READ_WALLPAPER);
+        }
+    }
+
     private static List<String> getMissingReadWallpaperPermissions(@NonNull Context ctx) {
         List<String> perms = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -1074,6 +1099,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 break;
             case BAR:
                 BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(), "bar", "app_list_bg");
+                break;
+            case VERTICAL_BAR:
+                BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(), "vertical_bar", "app_list_bg");
                 break;
             case NONE:
             default:

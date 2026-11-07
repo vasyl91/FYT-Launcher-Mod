@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">กำลังลงชื่อเข้าใช้…</string>
     <string name="fyt_rating_state_checking">กำลังตรวจสอบการเชื่อมต่อกับ fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating ไม่ตอบสนอง – เปิดแอปนี้หนึ่งครั้ง</string>
+    <string name="bars_category">แถบ</string>
+    <string name="vertical_bar_background_preference">เลือกพื้นหลังสำหรับแถบแนวตั้ง</string>
+    <string name="vertical_bar_background_dialog_title">เลือกพื้นหลังสำหรับแถบแนวตั้ง:</string>
 </resources>

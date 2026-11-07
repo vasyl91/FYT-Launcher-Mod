@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Logger ind…</string>
     <string name="fyt_rating_state_checking">Kontrollerer forbindelsen til fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating svarer ikke – åbn den én gang</string>
+    <string name="bars_category">Bjælker</string>
+    <string name="vertical_bar_background_preference">Vælg baggrund til lodret bjælke</string>
+    <string name="vertical_bar_background_dialog_title">Vælg baggrund til lodret bjælke:</string>
 </resources>

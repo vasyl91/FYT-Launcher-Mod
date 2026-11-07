@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Inaingia…</string>
     <string name="fyt_rating_state_checking">Inakagua muunganisho na fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating haijibu – ifungue mara moja</string>
+    <string name="bars_category">Pau</string>
+    <string name="vertical_bar_background_preference">Chagua mandharinyuma ya upau wima</string>
+    <string name="vertical_bar_background_dialog_title">Chagua mandharinyuma ya upau wima:</string>
 </resources>

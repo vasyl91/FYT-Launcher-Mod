@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Đang đăng nhập…</string>
     <string name="fyt_rating_state_checking">Đang kiểm tra kết nối với fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating không phản hồi – hãy mở nó một lần</string>
+    <string name="bars_category">Thanh</string>
+    <string name="vertical_bar_background_preference">Chọn nền cho thanh dọc</string>
+    <string name="vertical_bar_background_dialog_title">Chọn nền cho thanh dọc:</string>
 </resources>

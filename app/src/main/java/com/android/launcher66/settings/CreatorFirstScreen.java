@@ -99,6 +99,15 @@ public class CreatorFirstScreen extends Fragment {
         stats = sharedPrefs.getBoolean(Keys.USER_STATS, true);        
         if (verticalBar) {           
             rootView = inflater.inflate(R.layout.creator_vertical, container, false);
+            // The preview shows the background chosen for the vertical bar
+            View verticalBarView = rootView.findViewById(R.id.rl_vertical_bar);
+            String chosenBackground = sharedPrefs.getString(Keys.VERTICAL_BAR_SELECTED_BACKGROUND, "hotseat_bg");
+            if (verticalBarView != null && !"hotseat_bg".equals(chosenBackground)) {
+                int backgroundRes = BackgroundSelectorDialog.getResId(chosenBackground, R.drawable.class);
+                if (backgroundRes > 0) {
+                    verticalBarView.setBackgroundResource(backgroundRes);
+                }
+            }
         } else {
             rootView = inflater.inflate(R.layout.creator, container, false);
         }

@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">در حال ورود…</string>
     <string name="fyt_rating_state_checking">در حال بررسی اتصال به fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating پاسخ نمی‌دهد – یک بار آن را باز کنید</string>
+    <string name="bars_category">نوارها</string>
+    <string name="vertical_bar_background_preference">انتخاب پس‌زمینه نوار عمودی</string>
+    <string name="vertical_bar_background_dialog_title">پس‌زمینه نوار عمودی را انتخاب کنید:</string>
 </resources>

@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Oturum açılıyor…</string>
     <string name="fyt_rating_state_checking">fYT Rating bağlantısı denetleniyor…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating yanıt vermiyor – bir kez açın</string>
+    <string name="bars_category">Çubuklar</string>
+    <string name="vertical_bar_background_preference">Dikey çubuk için arka plan seçin</string>
+    <string name="vertical_bar_background_dialog_title">Dikey çubuk için arka plan seçin:</string>
 </resources>

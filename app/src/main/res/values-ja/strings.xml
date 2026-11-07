@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">ログインしています…</string>
     <string name="fyt_rating_state_checking">fYT Rating への接続を確認しています…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating が応答しません – 一度開いてください</string>
+    <string name="bars_category">バー</string>
+    <string name="vertical_bar_background_preference">縦バーの背景を選択</string>
+    <string name="vertical_bar_background_dialog_title">縦バーの背景を選んでください:</string>
 </resources>

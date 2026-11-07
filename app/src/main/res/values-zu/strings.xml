@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Iyangena…</string>
     <string name="fyt_rating_state_checking">Iyahlola ukuxhumeka ku-fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">I-fYT Rating ayiphenduli – yivule kanye</string>
+    <string name="bars_category">Amabha</string>
+    <string name="vertical_bar_background_preference">Khetha isizinda sebha eqondile</string>
+    <string name="vertical_bar_background_dialog_title">Khetha isizinda sebha eqondile:</string>
 </resources>

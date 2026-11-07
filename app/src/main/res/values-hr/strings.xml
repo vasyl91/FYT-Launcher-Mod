@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Prijava u tijeku…</string>
     <string name="fyt_rating_state_checking">Provjera veze s fYT Ratingom…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating ne odgovara – otvorite ga jednom</string>
+    <string name="bars_category">Trake</string>
+    <string name="vertical_bar_background_preference">Odaberi pozadinu za okomitu traku</string>
+    <string name="vertical_bar_background_dialog_title">Odaberite pozadinu za okomitu traku:</string>
 </resources>

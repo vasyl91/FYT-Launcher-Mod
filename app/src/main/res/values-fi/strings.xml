@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Kirjaudutaan sisään…</string>
     <string name="fyt_rating_state_checking">Tarkistetaan yhteyttä fYT Ratingiin…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating ei vastaa – avaa se kerran</string>
+    <string name="bars_category">Palkit</string>
+    <string name="vertical_bar_background_preference">Valitse pystypalkin tausta</string>
+    <string name="vertical_bar_background_dialog_title">Valitse pystypalkin tausta:</string>
 </resources>

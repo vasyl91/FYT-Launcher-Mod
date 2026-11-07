@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Σύνδεση…</string>
     <string name="fyt_rating_state_checking">Έλεγχος σύνδεσης με το fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">Το fYT Rating δεν απαντά – ανοίξτε το μία φορά</string>
+    <string name="bars_category">Γραμμές</string>
+    <string name="vertical_bar_background_preference">Επιλογή φόντου για την κάθετη γραμμή</string>
+    <string name="vertical_bar_background_dialog_title">Επιλέξτε φόντο για την κάθετη γραμμή:</string>
 </resources>

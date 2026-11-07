@@ -64,4 +64,7 @@
     <string name="spotify_state_signing_in">正在登入…</string>
     <string name="fyt_rating_state_checking">正在檢查與 fYT Rating 的連線…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating 沒有回應 – 請開啟一次</string>
+    <string name="bars_category">欄</string>
+    <string name="vertical_bar_background_preference">選擇縱欄背景</string>
+    <string name="vertical_bar_background_dialog_title">為縱欄選擇背景：</string>
 </resources>

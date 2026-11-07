@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Teken tans aan…</string>
     <string name="fyt_rating_state_checking">Verbinding met fYT Rating word nagegaan…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating antwoord nie – maak dit een keer oop</string>
+    <string name="bars_category">Balke</string>
+    <string name="vertical_bar_background_preference">Kies agtergrond vir vertikale balk</string>
+    <string name="vertical_bar_background_dialog_title">Kies agtergrond vir vertikale balk:</string>
 </resources>

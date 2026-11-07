@@ -105,6 +105,21 @@
             android:summaryOff="@string/white_color"
             app:layout="@layout/preference_no_switch" />
         <Preference
+            android:key="layout_margin"
+            android:title="@string/margins_str"
+            android:summary="10" />
+
+    </PreferenceCategory>
+
+    <Preference
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
+
+    <PreferenceCategory
+        app:key="bars_category"
+        app:title="@string/bars_category">
+
+        <Preference
             android:key="start_page"
             android:title="@string/start_page"
             android:summary="1" />   
@@ -199,9 +214,8 @@
             android:summaryOn="@string/vertical_bar_on"
             android:summaryOff="@string/vertical_bar_off" />
         <Preference
-            android:key="layout_margin"
-            android:title="@string/margins_str"
-            android:summary="10" />
+            android:key="choose_vertical_bar_background"
+            android:title="@string/vertical_bar_background_preference" />
 
     </PreferenceCategory>
 

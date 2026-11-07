@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Sedang log masuk…</string>
     <string name="fyt_rating_state_checking">Menyemak sambungan ke fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating tidak menjawab – buka sekali</string>
+    <string name="bars_category">Bar</string>
+    <string name="vertical_bar_background_preference">Pilih latar belakang untuk bar menegak</string>
+    <string name="vertical_bar_background_dialog_title">Pilih latar belakang untuk bar menegak:</string>
 </resources>

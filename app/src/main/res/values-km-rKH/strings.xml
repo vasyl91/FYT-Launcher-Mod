@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">កំពុងចូល…</string>
     <string name="fyt_rating_state_checking">កំពុងពិនិត្យការតភ្ជាប់ទៅ fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating មិនឆ្លើយតប – សូមបើកវាម្តង</string>
+    <string name="bars_category">របារ</string>
+    <string name="vertical_bar_background_preference">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់របារបញ្ឈរ</string>
+    <string name="vertical_bar_background_dialog_title">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់របារបញ្ឈរ៖</string>
 </resources>

@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">በመግባት ላይ…</string>
     <string name="fyt_rating_state_checking">ከ fYT Rating ጋር ያለው ግንኙነት በመፈተሽ ላይ…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating አይመልስም – አንድ ጊዜ ይክፈቱት</string>
+    <string name="bars_category">አሞሌዎች</string>
+    <string name="vertical_bar_background_preference">ለቀጥ ያለ አሞሌ ዳራ ምረጥ</string>
+    <string name="vertical_bar_background_dialog_title">ለቀጥ ያለ አሞሌ ዳራ ይምረጡ፦</string>
 </resources>

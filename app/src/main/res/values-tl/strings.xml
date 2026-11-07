@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Nagsa-sign in…</string>
     <string name="fyt_rating_state_checking">Sinusuri ang koneksyon sa fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">Hindi sumasagot ang fYT Rating – buksan ito nang isang beses</string>
+    <string name="bars_category">Mga bar</string>
+    <string name="vertical_bar_background_preference">Pumili ng background para sa patayong bar</string>
+    <string name="vertical_bar_background_dialog_title">Piliin ang background para sa patayong bar:</string>
 </resources>

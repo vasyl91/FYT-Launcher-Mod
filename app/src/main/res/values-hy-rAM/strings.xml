@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Մուտք…</string>
     <string name="fyt_rating_state_checking">fYT Rating-ի հետ կապը ստուգվում է…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating-ը չի պատասխանում – բացեք այն մեկ անգամ</string>
+    <string name="bars_category">Գոտիներ</string>
+    <string name="vertical_bar_background_preference">Ընտրել ֆոն ուղղահայաց գոտու համար</string>
+    <string name="vertical_bar_background_dialog_title">Ընտրեք ֆոն ուղղահայաց գոտու համար՝</string>
 </resources>

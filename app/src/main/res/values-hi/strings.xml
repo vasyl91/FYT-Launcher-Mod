@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">साइन इन हो रहा है…</string>
     <string name="fyt_rating_state_checking">fYT Rating से कनेक्शन जाँचा जा रहा है…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating जवाब नहीं दे रहा – इसे एक बार खोलें</string>
+    <string name="bars_category">बार</string>
+    <string name="vertical_bar_background_preference">ऊर्ध्वाधर बार के लिए पृष्ठभूमि चुनें</string>
+    <string name="vertical_bar_background_dialog_title">ऊर्ध्वाधर बार के लिए पृष्ठभूमि चुनें:</string>
 </resources>

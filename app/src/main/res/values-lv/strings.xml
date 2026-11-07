@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Notiek pieteikšanās…</string>
     <string name="fyt_rating_state_checking">Tiek pārbaudīts savienojums ar fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating neatbild – atveriet to vienu reizi</string>
+    <string name="bars_category">Joslas</string>
+    <string name="vertical_bar_background_preference">Izvēlēties vertikālās joslas fonu</string>
+    <string name="vertical_bar_background_dialog_title">Atlasiet vertikālās joslas fonu:</string>
 </resources>

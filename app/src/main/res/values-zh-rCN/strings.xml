@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">正在登录…</string>
     <string name="fyt_rating_state_checking">正在检查与 fYT Rating 的连接…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating 没有响应 – 请打开它一次</string>
+    <string name="bars_category">栏</string>
+    <string name="vertical_bar_background_preference">选择纵栏背景</string>
+    <string name="vertical_bar_background_dialog_title">为纵栏选择背景：</string>
 </resources>

@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Se conectează…</string>
     <string name="fyt_rating_state_checking">Se verifică conexiunea cu fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating nu răspunde – deschide-l o dată</string>
+    <string name="bars_category">Bare</string>
+    <string name="vertical_bar_background_preference">Alegeți fundalul pentru bara verticală</string>
+    <string name="vertical_bar_background_dialog_title">Selectați fundalul pentru bara verticală:</string>
 </resources>

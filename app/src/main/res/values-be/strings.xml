@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Уваход…</string>
     <string name="fyt_rating_state_checking">Праверка сувязі з fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating не адказвае – адкрыйце яго адзін раз</string>
+    <string name="bars_category">Панэлі</string>
+    <string name="vertical_bar_background_preference">Выбраць фон для вертыкальнай панэлі</string>
+    <string name="vertical_bar_background_dialog_title">Выберыце фон для вертыкальнай панэлі:</string>
 </resources>

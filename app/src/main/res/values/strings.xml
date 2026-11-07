@@ -539,4 +539,7 @@
     <string name="spotify_state_signing_in">Signing in…</string>
     <string name="fyt_rating_state_checking">Checking the connection to fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating does not answer – open it once</string>
+    <string name="bars_category">Bars</string>
+    <string name="vertical_bar_background_preference">Choose background for vertical bar</string>
+    <string name="vertical_bar_background_dialog_title">Select background for vertical bar:</string>
 </resources>

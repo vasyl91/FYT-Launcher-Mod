@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Přihlašování…</string>
     <string name="fyt_rating_state_checking">Kontroluje se spojení s fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating neodpovídá – jednou ji otevřete</string>
+    <string name="bars_category">Panely</string>
+    <string name="vertical_bar_background_preference">Vybrat pozadí pro svislý panel</string>
+    <string name="vertical_bar_background_dialog_title">Vyberte pozadí pro svislý panel:</string>
 </resources>

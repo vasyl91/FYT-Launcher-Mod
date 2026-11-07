@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Annunzia…</string>
     <string name="fyt_rating_state_checking">Controllar la colliaziun cun fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating na respunda betg – avra l\'ina giada</string>
+    <string name="bars_category">Bars</string>
+    <string name="vertical_bar_background_preference">Tscherner il fund per la bara verticala</string>
+    <string name="vertical_bar_background_dialog_title">Tscherna il fund per la bara verticala:</string>
 </resources>

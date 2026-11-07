@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Вхід…</string>
     <string name="fyt_rating_state_checking">Перевірка зв\'язку з fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating не відповідає – відкрийте його один раз</string>
+    <string name="bars_category">Панелі</string>
+    <string name="vertical_bar_background_preference">Вибрати тло для вертикальної панелі</string>
+    <string name="vertical_bar_background_dialog_title">Виберіть тло для вертикальної панелі:</string>
 </resources>

@@ -928,6 +928,7 @@ public class Workspace extends SmoothPagedView
             if (!selectedBackground.equals("app_list_bg")) {
                 horizontalBarBg.setImageResource(getResId(selectedBackground));
             }
+            applyVerticalBarBackground(workspaceView);
 
             // Resizable horizontal bar (no-op when Keys.RESIZABLE_HORIZONTAL_BAR is off). Has to run before
             // toggleHorizontalBar(): hideNormalHorizontalBar() collapses iv_list_bg, and the XML size of
@@ -950,6 +951,7 @@ public class Workspace extends SmoothPagedView
             mEveryPage = false;
             workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one, workspaceLayout, false);
             customScreen[0].addView(workspaceView);
+            applyVerticalBarBackground(workspaceView);
 
             TextView naviTextSize = workspaceView.findViewById(R.id.tv_map);
             naviTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeTitle);
@@ -1543,6 +1545,21 @@ public class Workspace extends SmoothPagedView
         mLauncher.rebindBarWidgetsAfterWake(musicWidget, weatherWidget);
         mLauncher.refreshMusicSizes();
         Log.d(TAG, "Widget bar refreshed after wake: " + source);
+    }
+
+    /** The background chosen for the vertical bar ("Choose background for vertical bar"); hotseat_bg is its own. */
+    private void applyVerticalBarBackground(View root) {
+        View bar = root == null ? null : root.findViewById(R.id.rl_vertical_bar);
+        if (bar == null) {
+            return;
+        }
+        String chosen = mPrefs.getString(Keys.VERTICAL_BAR_SELECTED_BACKGROUND, "hotseat_bg");
+        if (!"hotseat_bg".equals(chosen)) {
+            int resId = getResId(chosen);
+            if (resId > 0) {
+                bar.setBackgroundResource(resId);
+            }
+        }
     }
 
     private static int getResId(String resName) {

@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">A iniciar sessão…</string>
     <string name="fyt_rating_state_checking">A verificar a ligação ao fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">O fYT Rating não responde – abra-o uma vez</string>
+    <string name="bars_category">Barras</string>
+    <string name="vertical_bar_background_preference">Escolher o plano de fundo da barra vertical</string>
+    <string name="vertical_bar_background_dialog_title">Selecione o plano de fundo da barra vertical:</string>
 </resources>

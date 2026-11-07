@@ -63,6 +63,8 @@ public class BackgroundSelectorDialog extends DialogFragment {
     private static String backgrounds;
     private static String name;
     private static String key;
+    /** The background the choice starts from when none was chosen; null = the name given to show(). */
+    private static String defaultBackground;
     private static final int REQ_PICK_WALLPAPER = 5001;
     private static final String PREF_KEY_SELECTED_BG_URI = "selected_background_uri";
 
@@ -87,8 +89,13 @@ public class BackgroundSelectorDialog extends DialogFragment {
         loaderExecutor.submit(() -> {
             backgrounds = bgs;
             name = tag;
+            defaultBackground = null;
             if (tag.equals("widgets")) {
                 key = Keys.WIDGETS_SELECTED_BACKGROUND;
+            } else if (tag.equals("vertical_bar")) {
+                // hotseat_bg (the one the bar has) and the backgrounds of the horizontal bar
+                key = Keys.VERTICAL_BAR_SELECTED_BACKGROUND;
+                defaultBackground = "hotseat_bg";
             } else {
                 key = Keys.BAR_SELECTED_BACKGROUND;
             }
@@ -504,6 +511,9 @@ public class BackgroundSelectorDialog extends DialogFragment {
     private void loadBackgrounds() {
         // populate backgroundNames with drawables named bg_custom*
         backgroundNames = new ArrayList<>();
+        if (defaultBackground != null) {
+            backgroundNames.add(defaultBackground);   // first
+        }
         Field[] drawables = R.drawable.class.getFields();
         for (Field field : drawables) {
             try {
@@ -533,7 +543,8 @@ public class BackgroundSelectorDialog extends DialogFragment {
         if (itemSize < minItem) itemSize = minItem;
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
-        String selectedBackground = sharedPreferences.getString(key, backgrounds);
+        String selectedBackground = sharedPreferences.getString(key,
+                defaultBackground != null ? defaultBackground : backgrounds);
 
         for (String bgName : backgroundNames) {
             CardView cardView = new CardView(requireContext());

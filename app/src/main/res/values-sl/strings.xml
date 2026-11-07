@@ -529,4 +529,7 @@
     <string name="spotify_state_signing_in">Prijava…</string>
     <string name="fyt_rating_state_checking">Preverjanje povezave s fYT Rating…</string>
     <string name="fyt_rating_state_no_answer">fYT Rating se ne odziva – odprite jo enkrat</string>
+    <string name="bars_category">Vrstice</string>
+    <string name="vertical_bar_background_preference">Izberi ozadje za navpično vrstico</string>
+    <string name="vertical_bar_background_dialog_title">Izberite ozadje za navpično vrstico:</string>
 </resources>
