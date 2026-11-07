@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Két sor, soronként két gomb</string>
     <string name="widget_bar_no_cover">Albumborító elrejtése</string>
     <string name="widget_bar_no_cover_on">A helyét a cím, az előadó és a gombok veszik át</string>
+    <string name="spotify_state_signing_in">Bejelentkezés…</string>
 </resources>

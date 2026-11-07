@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">两排，每排两个按钮</string>
     <string name="widget_bar_no_cover">隐藏专辑封面</string>
     <string name="widget_bar_no_cover_on">标题、歌手和按钮将占用其位置</string>
+    <string name="spotify_state_signing_in">正在登录…</string>
 </resources>

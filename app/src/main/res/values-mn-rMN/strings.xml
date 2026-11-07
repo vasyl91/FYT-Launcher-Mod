@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Хоёр товчтой хоёр мөр</string>
     <string name="widget_bar_no_cover">Цомгийн хавтсыг нуух</string>
     <string name="widget_bar_no_cover_on">Түүний оронд гарчиг, уран бүтээлч, товчнууд орно</string>
+    <string name="spotify_state_signing_in">Нэвтэрч байна…</string>
 </resources>

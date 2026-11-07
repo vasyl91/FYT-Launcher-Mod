@@ -1,10 +1,13 @@
 package com.android.launcher66.settings;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Display;
 import android.widget.Toast;
 
 import com.android.launcher66.R;
@@ -60,6 +63,19 @@ public class SpotifyAuthCallbackActivity extends Activity {
                         Toast.LENGTH_LONG).show();
             }
         });
+
+        // Started from the settings: they are shown again, the same instance (REORDER_TO_FRONT),
+        // so the user does not have to find the way back from the browser's task.
+        if (SpotifyRating.consumeReturnToSettings()) {
+            Intent settings = new Intent(appContext, SettingsActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            Bundle options = ActivityOptions.makeBasic().setLaunchDisplayId(Display.DEFAULT_DISPLAY).toBundle();
+            try {
+                startActivity(settings, options);
+            } catch (RuntimeException e) {
+                Log.w("SpotifyAuth", "The settings could not be brought back", e);
+            }
+        }
 
         finish();
     }

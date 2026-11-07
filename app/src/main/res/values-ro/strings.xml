@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Două rânduri a câte două butoane</string>
     <string name="widget_bar_no_cover">Ascunde coperta albumului</string>
     <string name="widget_bar_no_cover_on">Locul ei este luat de titlu, artist și butoane</string>
+    <string name="spotify_state_signing_in">Se conectează…</string>
 </resources>

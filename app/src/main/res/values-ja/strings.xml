@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">2個ずつ2段で表示</string>
     <string name="widget_bar_no_cover">アルバムカバーを非表示</string>
     <string name="widget_bar_no_cover_on">タイトル、アーティスト、ボタンがその場所を使います</string>
+    <string name="spotify_state_signing_in">ログインしています…</string>
 </resources>

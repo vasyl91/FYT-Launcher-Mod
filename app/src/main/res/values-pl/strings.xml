@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Dwa rzędy po dwa przyciski</string>
     <string name="widget_bar_no_cover">Ukryj okładkę albumu</string>
     <string name="widget_bar_no_cover_on">Jej miejsce zajmują tytuł, wykonawca i przyciski</string>
+    <string name="spotify_state_signing_in">Logowanie…</string>
 </resources>

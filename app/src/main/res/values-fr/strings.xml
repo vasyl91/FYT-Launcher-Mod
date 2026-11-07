@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Deux rangées de deux boutons</string>
     <string name="widget_bar_no_cover">Masquer la pochette de l\'album</string>
     <string name="widget_bar_no_cover_on">Le titre, l\'artiste et les boutons prennent sa place</string>
+    <string name="spotify_state_signing_in">Connexion en cours…</string>
 </resources>

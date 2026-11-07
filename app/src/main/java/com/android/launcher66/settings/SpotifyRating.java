@@ -341,11 +341,10 @@ public final class SpotifyRating {
      * Generates the verifier and its challenge, records the verifier, and hands
      * the user to a browser.
      *
-     * The verifier has to survive leaving the application, and leaving it is
-     * exactly when the launcher is most likely to be killed, so it is written
-     * with commit() rather than apply(). It is two short strings; the write
-     * costs less than the failure it prevents, which is a sign-in that cannot
-     * be completed and gives no reason why.
+     * The verifier is written with apply(): StrictMode forbids commit() on the main thread, and
+     * the values are in the memory of the preferences at once, which is where the redirect, in
+     * this process, reads them. Only a launcher killed within the milliseconds before the file is
+     * written loses them, and the sign-in is then started again.
      *
      * @return false when nothing was opened, and a message has been shown
      */
@@ -379,7 +378,9 @@ public final class SpotifyRating {
         preferences.edit()
                 .putString(Keys.SPOTIFY_CODE_VERIFIER, verifier)
                 .putString(Keys.SPOTIFY_AUTH_STATE, state)
-                .commit();
+                .apply();
+        // Started from the settings: they are brought back when the redirect has been handled
+        sReturnToSettings = context instanceof SettingsActivity;
 
         Uri authorizeUri = Uri.parse(AUTH_ENDPOINT).buildUpon()
                 .appendQueryParameter("client_id", clientId)
@@ -582,6 +583,43 @@ public final class SpotifyRating {
                 && REDIRECT_HOST.equalsIgnoreCase(uri.getHost());
     }
 
+    /** The code is being exchanged for tokens: the settings say "Signing in…" meanwhile. */
+    private static volatile boolean sExchanging;
+    /** The sign-in was started from the settings, which are brought back after it. */
+    private static volatile boolean sReturnToSettings;
+    /** Redraws the settings; set while the fragment is resumed. */
+    private static volatile Runnable sStateListener;
+
+    public static boolean isExchanging() {
+        return sExchanging;
+    }
+
+    /** @return whether the sign-in started from the settings, once; the answer is then forgotten */
+    public static boolean consumeReturnToSettings() {
+        boolean was = sReturnToSettings;
+        sReturnToSettings = false;
+        return was;
+    }
+
+    /** The settings draw the state again when the exchange ends. Null to stop. */
+    public static void setStateListener(Runnable listener) {
+        sStateListener = listener;
+    }
+
+    private static void exchangeEnded(Context appContext, boolean signedIn) {
+        sExchanging = false;
+        MAIN.post(() -> {
+            Runnable listener = sStateListener;
+            if (listener != null) {
+                listener.run();
+            }
+            if (signedIn) {
+                // The favorite button is drawn from the account while one is linked
+                MediaFavoriteController.refreshWidget(appContext);
+            }
+        });
+    }
+
     public interface AuthCallback {
         void onSuccess();
 
@@ -647,7 +685,9 @@ public final class SpotifyRating {
             return;
         }
 
+        sExchanging = true;
         IO.execute(() -> {
+            boolean signedIn = false;
             try {
                 String body = form(
                         "grant_type", "authorization_code",
@@ -667,6 +707,7 @@ public final class SpotifyRating {
                 storeTokens(preferences, new JSONObject(response.body));
                 authBroken = false;
                 forgetState();
+                signedIn = true;
                 Log.i(TAG, "Signed in to Spotify");
                 MAIN.post(() -> {
                     if (callback != null) {
@@ -676,6 +717,8 @@ public final class SpotifyRating {
             } catch (Exception e) {
                 Log.e(TAG, "Token exchange failed", e);
                 fail(callback, message(e));
+            } finally {
+                exchangeEnded(appContext, signedIn);
             }
         });
     }
@@ -790,7 +833,7 @@ public final class SpotifyRating {
             editor.putString(Keys.SPOTIFY_REFRESH_TOKEN, refresh);
         }
         editor.putLong(Keys.SPOTIFY_TOKEN_EXPIRY, System.currentTimeMillis() + expiresIn * 1000L);
-        editor.commit();
+        editor.apply();
     }
 
     /**
@@ -804,14 +847,14 @@ public final class SpotifyRating {
                 .remove(Keys.SPOTIFY_REFRESH_TOKEN)
                 .remove(Keys.SPOTIFY_TOKEN_EXPIRY)
                 .remove(PREF_GRANTED_SCOPE)
-                .commit();
+                .apply();
     }
 
     private static void clearPendingAuth(SharedPreferences preferences) {
         preferences.edit()
                 .remove(Keys.SPOTIFY_CODE_VERIFIER)
                 .remove(Keys.SPOTIFY_AUTH_STATE)
-                .commit();
+                .apply();
     }
 
     /** Thrown when no amount of retrying will help and the user has to sign in. */
@@ -1317,7 +1360,9 @@ public final class SpotifyRating {
 
         if (oauthPreference != null) {
             int stateLine;
-            if (!hasClientId) {
+            if (sExchanging) {
+                stateLine = R.string.spotify_state_signing_in;
+            } else if (!hasClientId) {
                 stateLine = R.string.spotify_state_no_client_id;
             } else if (!loggedIn) {
                 stateLine = R.string.spotify_state_not_logged_in;

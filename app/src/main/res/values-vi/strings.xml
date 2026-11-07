@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Hai hàng, mỗi hàng hai nút</string>
     <string name="widget_bar_no_cover">Ẩn ảnh bìa album</string>
     <string name="widget_bar_no_cover_on">Tiêu đề, nghệ sĩ và các nút chiếm vị trí của ảnh</string>
+    <string name="spotify_state_signing_in">Đang đăng nhập…</string>
 </resources>

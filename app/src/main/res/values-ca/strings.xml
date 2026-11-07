@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Dues files de dos botons</string>
     <string name="widget_bar_no_cover">Amaga la coberta de l\'àlbum</string>
     <string name="widget_bar_no_cover_on">El títol, l\'artista i els botons ocupen el seu lloc</string>
+    <string name="spotify_state_signing_in">S\'està iniciant la sessió…</string>
 </resources>

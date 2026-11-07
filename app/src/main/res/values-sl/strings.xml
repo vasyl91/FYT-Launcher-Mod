@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Dve vrsti po dva gumba</string>
     <string name="widget_bar_no_cover">Skrij ovitek albuma</string>
     <string name="widget_bar_no_cover_on">Njegovo mesto zavzamejo naslov, izvajalec in gumbi</string>
+    <string name="spotify_state_signing_in">Prijava…</string>
 </resources>

@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Duas fileiras de dois botões</string>
     <string name="widget_bar_no_cover">Ocultar a capa do álbum</string>
     <string name="widget_bar_no_cover_on">O título, o artista e os botões ocupam o seu lugar</string>
+    <string name="spotify_state_signing_in">A iniciar sessão…</string>
 </resources>

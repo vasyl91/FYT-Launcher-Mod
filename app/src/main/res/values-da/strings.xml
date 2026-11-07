@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">To rækker med to knapper</string>
     <string name="widget_bar_no_cover">Skjul albumcoveret</string>
     <string name="widget_bar_no_cover_on">Titel, kunstner og knapper træder i stedet</string>
+    <string name="spotify_state_signing_in">Logger ind…</string>
 </resources>

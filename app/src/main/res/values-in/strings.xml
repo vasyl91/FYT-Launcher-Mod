@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Dua baris, masing-masing dua tombol</string>
     <string name="widget_bar_no_cover">Sembunyikan sampul album</string>
     <string name="widget_bar_no_cover_on">Judul, artis, dan tombol menempati tempatnya</string>
+    <string name="spotify_state_signing_in">Sedang masuk…</string>
 </resources>

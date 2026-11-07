@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Два ряда по две кнопки</string>
     <string name="widget_bar_no_cover">Скрыть обложку альбома</string>
     <string name="widget_bar_no_cover_on">Её место занимают название, исполнитель и кнопки</string>
+    <string name="spotify_state_signing_in">Вход…</string>
 </resources>

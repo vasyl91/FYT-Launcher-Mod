@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">دو ردیف دو دکمه‌ای</string>
     <string name="widget_bar_no_cover">پنهان کردن جلد آلبوم</string>
     <string name="widget_bar_no_cover_on">عنوان، خواننده و دکمه‌ها جای آن را می‌گیرند</string>
+    <string name="spotify_state_signing_in">در حال ورود…</string>
 </resources>

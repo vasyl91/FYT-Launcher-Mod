@@ -624,8 +624,34 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         // SharedPreferences, so unlike the call above there is nothing to wait
         // for and no background refresh to start.
         SpotifyRating.syncPreference(requireContext(), clientIdPreference, oauthForSpotify);
+        // The sign-in ends on a background thread, possibly after this screen was resumed: the
+        // summary follows the tokens and the exchange instead of waiting for the next resume.
+        SpotifyRating.setStateListener(() ->
+                SpotifyRating.syncPreference(requireContext(), clientIdPreference, oauthForSpotify));
+        PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .registerOnSharedPreferenceChangeListener(mSpotifyStateListener);
         updateShizukuDownload();
         updateLastCrashReport();
+    }
+
+    private final SharedPreferences.OnSharedPreferenceChangeListener mSpotifyStateListener =
+            (sharedPreferences, key) -> {
+                if (Keys.SPOTIFY_REFRESH_TOKEN.equals(key) || Keys.SPOTIFY_ACCESS_TOKEN.equals(key)
+                        || Keys.SPOTIFY_TOKEN_EXPIRY.equals(key) || Keys.SPOTIFY_CLIENT_ID.equals(key)) {
+                    if (isAdded()) {
+                        SpotifyRating.syncPreference(requireContext(), clientIdPreference, oauthForSpotify);
+                    }
+                }
+            };
+
+    @Override
+    public void onPause() {
+        SpotifyRating.setStateListener(null);
+        if (getContext() != null) {
+            PreferenceManager.getDefaultSharedPreferences(getContext())
+                    .unregisterOnSharedPreferenceChangeListener(mSpotifyStateListener);
+        }
+        super.onPause();
     }
 
     @Override

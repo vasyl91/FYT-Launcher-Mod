@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Երկու շարք՝ երկուական կոճակով</string>
     <string name="widget_bar_no_cover">Թաքցնել ալբոմի շապիկը</string>
     <string name="widget_bar_no_cover_on">Նրա տեղը զբաղեցնում են վերնագիրը, կատարողը և կոճակները</string>
+    <string name="spotify_state_signing_in">Մուտք…</string>
 </resources>

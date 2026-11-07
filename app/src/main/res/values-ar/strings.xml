@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">صفّان من زرّين</string>
     <string name="widget_bar_no_cover">إخفاء غلاف الألبوم</string>
     <string name="widget_bar_no_cover_on">يشغل العنوان والفنان والأزرار مكانه</string>
+    <string name="spotify_state_signing_in">جارٍ تسجيل الدخول…</string>
 </resources>

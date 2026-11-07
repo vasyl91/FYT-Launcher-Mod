@@ -526,4 +526,5 @@
     <string name="widget_bar_buttons_one_line_off">Dva rady po dve tlačidlá</string>
     <string name="widget_bar_no_cover">Skryť obal albumu</string>
     <string name="widget_bar_no_cover_on">Jeho miesto zaujmú názov, interpret a tlačidlá</string>
+    <string name="spotify_state_signing_in">Prihlasovanie…</string>
 </resources>
